@@ -1,0 +1,55 @@
+version: '3'
+services:
+  db:
+    image: postgres:12.5
+    environment:
+      POSTGRES_USER: secretariat
+      POSTGRES_PASSWORD: secretariat
+    ports:
+      - "5432:5432"
+  maildev:
+    image: maildev/maildev:1.1.0
+    environment:
+      MAILDEV_INCOMING_USER: mailuser
+      MAILDEV_INCOMING_PASS: mailpassword
+    ports:
+      - "1080:80"
+      - "1025:25"
+  redis:
+    image: redis:alpine
+    command: redis-server --requirepass localpwd
+    hostname: redis
+    restart: always
+    ports:
+      - 6379:6379
+  web:
+    build:
+      context: ./
+    volumes:
+      - .:/app
+    command: "npm run dev"
+    ports:
+      - "3000:3000"
+    environment:
+      NODE_ENV: development
+      CHAT_WEBHOOK_URL_GENERAL: 'https://example.com'
+      CHAT_WEBHOOK_URL_SECRETARIAT: 'https://example.com'
+      CHAT_WEBHOOK_URL_DINUM: 'https://example.com'
+      DATABASE_URL: postgres://secretariat:secretariat@db:5432/secretariat
+      MAIL_PASS: mailpassword
+      MAIL_USER: mailuser
+      MAIL_HOST: maildev
+      MAIL_PORT: 25
+      MAIL_IGNORE_TLS: "true"
+      MAIL_SENDER: "addresse@localhost"
+      SECURE: "false"
+      HOSTNAME: localhost
+      SESSION_SECRET: "SecretThatShouldChangedInProduction"
+      FEATURE_SHOULD_SEND_MESSAGE_TO_AUTHOR: "true"
+      REDIS_PORT: 6379
+      REDIS_HOST: localhost
+      REDIS_PASSWORD: localpwd
+      REDIS_EVENT_BUS_STREAM_NAME: eventbus-local
+      REDIS_URL: redis://:localpwd@redis:6379
+      HASH_SALT: "FakeHashSaltToChangeInProduction"
+

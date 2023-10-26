@@ -1,0 +1,184 @@
+import {
+    AddContactsToMailingLists,
+    GetAllContacts,
+    GetAllContactsFromList,
+    GetAllTransacBlockedContacts,
+    IMailingService,
+    RemoveContactsFromMailingList,
+    SendCampaignEmail,
+    SendEmail,
+    SmtpBlockedContactsEmailDelete,
+    UpdateContactEmail,
+    UnblacklistContactEmail,
+} from "@/modules/email";
+import {
+    fakeAddContactsToMailingLists,
+    fakeGetAllTransacBlockedContacts,
+    fakeRemoveContactsFromMailingList,
+    fakeSendCampaignEmail,
+    fakeSendEmail,
+    fakeSmtpBlockedContactsEmailDelete,
+    fakeUpdateContactEmail,
+    makeSendEmailNodemailer,
+    fakeGetAllContacts,
+    fakeGetAllContactsFromList,
+    fakeUnblacklistContactEmail,
+} from "@/infra/email";
+// import { makeSendinblue } from '@/infra/email/sendInBlue'
+import htmlBuilder from "@/modules/htmlbuilder/htmlbuilder";
+import Email from "next-auth/providers/email";
+
+let sendEmail: SendEmail = fakeSendEmail;
+let addContactsToMailingLists: AddContactsToMailingLists =
+    fakeAddContactsToMailingLists;
+let removeContactsFromMailingList: RemoveContactsFromMailingList =
+    fakeRemoveContactsFromMailingList;
+let sendCampaignEmail: SendCampaignEmail = fakeSendCampaignEmail;
+let updateContactEmail: UpdateContactEmail = fakeUpdateContactEmail;
+let smtpBlockedContactsEmailDelete: SmtpBlockedContactsEmailDelete =
+    fakeSmtpBlockedContactsEmailDelete;
+let getAllTransacBlockedContacts: GetAllTransacBlockedContacts =
+    fakeGetAllTransacBlockedContacts;
+let getAllContacts: GetAllContacts = fakeGetAllContacts;
+let getAllContactsFromList: GetAllContactsFromList = fakeGetAllContactsFromList;
+let unblacklistContactEmail: UnblacklistContactEmail =
+    fakeUnblacklistContactEmail;
+
+enum MAIL_SERVICES {
+    mailjet = "mailjet",
+    SendinBlue = "SendinBlue",
+    malspons = "mailspons",
+    maildev = "maildev",
+}
+
+export const buildEmailHeader: Record<
+    MAIL_SERVICES,
+    Record<"standart" | "campaign", any>
+> = {
+    mailjet: {
+        standart: () => ({
+            "X-Mailjet-TrackOpen": "0",
+            "X-Mailjet-TrackClick": "0",
+        }),
+        campaign: (id) => {
+            return {
+                "X-Mailjet-Campaign": id,
+                "X-Mailjet-TrackOpen": "1",
+                "X-Mailjet-TrackClick": "1",
+            };
+        },
+    },
+    maildev: {
+        standart: () => ({
+            "X-Mailjet-TrackOpen": "0",
+            "X-Mailjet-TrackClick": "0",
+        }),
+        campaign: (id) => {
+            return {};
+        },
+    },
+    SendinBlue: {
+        standart: () => ({
+            "X-Mailjet-TrackOpen": "0",
+            "X-Mailjet-TrackClick": "0",
+        }),
+        campaign: (id) => {
+            return {};
+        },
+    },
+    mailspons: {
+        standart: () => ({}),
+        campaign: () => {
+            return {};
+        },
+    },
+};
+
+export const EMAIL_CONFIG = {
+    MAIL_DEBUG: process.env.MAIL_DEBUG,
+    MAIL_HOST: process.env.MAIL_HOST,
+    MAIL_IGNORE_TLS: process.env.MAIL_IGNORE_TLS,
+    MAIL_PASS: process.env.MAIL_PASS,
+    MAIL_PORT: process.env.MAIL_PORT,
+    MAIL_SENDER: process.env.MAIL_SENDER || "espace-membre@incubateur.net",
+    MAIL_SERVICE: process.env.MAIL_SERVICE,
+    MAIL_USER: process.env.MAIL_USER,
+    SIB_APIKEY_PUBLIC: process.env.SIB_APIKEY_PUBLIC,
+    SIB_APIKEY_PRIVATE: process.env.SIB_APIKEY_PRIVATE,
+};
+
+const {
+    MAIL_DEBUG,
+    MAIL_HOST,
+    MAIL_IGNORE_TLS,
+    MAIL_PASS,
+    MAIL_PORT,
+    MAIL_SENDER,
+    MAIL_SERVICE,
+    MAIL_USER,
+    SIB_APIKEY_PUBLIC,
+    SIB_APIKEY_PRIVATE,
+} = EMAIL_CONFIG;
+
+if (process.env.NODE_ENV === "test") {
+    console.log("Emails will go through a FAKE email service (no mails sent).");
+} else if (process.env.NODE_ENV === "development") {
+    console.log("Email wil send email using node mailer");
+    const emailer = {
+        sendEmail: makeSendEmailNodemailer({
+            MAIL_DEBUG,
+            MAIL_HOST,
+            MAIL_IGNORE_TLS,
+            MAIL_PASS,
+            MAIL_PORT,
+            MAIL_SENDER,
+            MAIL_SERVICE,
+            MAIL_SERVICE_HEADERS: MAIL_SERVICE
+                ? buildEmailHeader[EMAIL_CONFIG.MAIL_SERVICE]["standart"]()
+                : {},
+            MAIL_USER,
+            htmlBuilder,
+        }),
+    };
+    sendEmail = emailer.sendEmail;
+} else {
+    console.log("Emails will be sent using Sendinblue");
+
+    try {
+        const sendInBlue = makeSendinblue({
+            MAIL_SENDER,
+            SIB_APIKEY_PUBLIC,
+            SIB_APIKEY_PRIVATE,
+            htmlBuilder,
+        });
+        const emailer: IMailingService = sendInBlue;
+        sendEmail = emailer.sendEmail;
+        sendCampaignEmail = sendInBlue.sendCampaignEmail;
+        addContactsToMailingLists = sendInBlue.addContactsToMailingLists;
+        removeContactsFromMailingList =
+            sendInBlue.removeContactsFromMailingList;
+        updateContactEmail = sendInBlue.updateContactEmail;
+        smtpBlockedContactsEmailDelete =
+            sendInBlue.smtpBlockedContactsEmailDelete;
+        getAllTransacBlockedContacts = sendInBlue.getAllTransacBlockedContacts;
+        getAllContacts = sendInBlue.getAllContacts;
+        getAllContactsFromList = sendInBlue.getAllContactsFromList;
+        unblacklistContactEmail = sendInBlue.unblacklistContactEmail;
+    } catch (e) {
+        console.error(e);
+        process.exit(1);
+    }
+}
+
+export {
+    sendEmail,
+    addContactsToMailingLists,
+    sendCampaignEmail,
+    removeContactsFromMailingList,
+    updateContactEmail,
+    smtpBlockedContactsEmailDelete,
+    getAllTransacBlockedContacts,
+    getAllContacts,
+    getAllContactsFromList,
+    unblacklistContactEmail,
+};
