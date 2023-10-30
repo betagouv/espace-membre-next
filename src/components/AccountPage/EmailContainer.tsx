@@ -9,7 +9,7 @@ import BlocRedirection from "./BlocRedirection";
 import BlocEmailResponder from "./BlocEmailResponder";
 import { fr } from "@codegouvfr/react-dsfr";
 import axios from "axios";
-import routes from "@/routes/routes";
+import routes, { computeRoute } from "@/routes/routes";
 
 export default function EmailContainer({
     updatePullRequest,
@@ -90,10 +90,9 @@ export default function EmailContainer({
                             className="no-margin"
                             onSubmit={() => {
                                 axios.post(
-                                    routes.USER_UPGRADE_EMAIL.replace(
-                                        ":username",
-                                        userInfos.id
-                                    )
+                                    computeRoute(
+                                        routes.USER_UPGRADE_EMAIL
+                                    ).replace(":username", userInfos.id)
                                 );
                             }}
                         >
@@ -127,10 +126,9 @@ export default function EmailContainer({
                             className="no-margin"
                             onSubmit={() => {
                                 axios.post(
-                                    routes.USER_CREATE_EMAIL_API.replace(
-                                        ":username",
-                                        userInfos.id
-                                    )
+                                    computeRoute(
+                                        routes.USER_CREATE_EMAIL_API
+                                    ).replace(":username", userInfos.id)
                                 );
                             }}
                         >

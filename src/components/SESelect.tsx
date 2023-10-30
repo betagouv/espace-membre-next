@@ -51,6 +51,10 @@ export default ({
             </Select>
         );
     }
+    const onTagsChange = (event, values) => {
+        onChange(values);
+    };
+
     return (
         <div className="fr-select-group">
             <label className="fr-label">
@@ -63,7 +67,7 @@ export default ({
                     id: se.value,
                     label: se.label,
                 }))}
-                onChange={onChange}
+                onChange={onTagsChange}
                 defaultValue={
                     defaultValue
                         ? defaultValue.map((se) => ({

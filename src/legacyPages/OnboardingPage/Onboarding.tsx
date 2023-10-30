@@ -11,7 +11,7 @@ import MemberSelect from "../../components/MemberSelect";
 import SESelect from "../../components/SESelect";
 import CommunicationEmailSelect from "../../components/CommunicationEmailSelect";
 import { createUsername } from "@/controllers/helpers/githubHelpers/createContentName";
-import routes from "@/routes/routes";
+import routes, { computeRoute } from "@/routes/routes";
 import Input from "@codegouvfr/react-dsfr/Input";
 import Select from "@codegouvfr/react-dsfr/Select";
 import { RadioButtons } from "@codegouvfr/react-dsfr/RadioButtons";
@@ -207,9 +207,12 @@ export const Onboarding = function (props: Props) {
         // }
         // setIsSaving(true);
         try {
-            const { data } = await axios.post(routes.ONBOARDING_ACTION, {
-                ...state.formData,
-            });
+            const { data } = await axios.post(
+                computeRoute(routes.ONBOARDING_ACTION),
+                {
+                    ...state.formData,
+                }
+            );
 
             window.location.replace(
                 `/onboardingSuccess/${data.prInfoNumber}?isEmailBetaAsked=${data.isEmailBetaAsked}`

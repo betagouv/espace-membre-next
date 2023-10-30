@@ -4,6 +4,7 @@ import CredentialsProvider from "next-auth/providers/credentials";
 import PostgresAdapter from "@auth/pg-adapter";
 import { Pool } from "pg";
 import { postSignIn } from "@/controllers/loginController/postSignIn";
+import config from "@/config";
 
 // const pool = new Pool({
 //     connectionString: process.env.DATABASE_URL,
@@ -15,6 +16,22 @@ import { postSignIn } from "@/controllers/loginController/postSignIn";
 // Adapter : The Credentials provider can only be used if JSON Web Tokens are enabled for sessions. Users authenticated with the Credentials provider are not persisted in the database.
 export const authOptions: NextAuthOptions = {
     //adapter: PostgresAdapter(pool),
+    secret: config.secret,
+    cookies: {
+        sessionToken: {
+            name: "espaceMembreCookieName",
+            options: {
+                maxAge: 24 * 60 * 60 * 1000 * 7,
+                httpOnly: true,
+                secure: process.env.NODE_ENV === "production" ? true : false,
+                sameSite: "lax",
+            },
+        },
+    },
+    jwt: {
+        secret: config.secret,
+        maxAge: 24 * 60 * 60 * 1000 * 7,
+    },
     providers: [
         // EmailProvider({
         //     server: {

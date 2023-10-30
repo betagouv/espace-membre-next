@@ -40,11 +40,12 @@ const OVH_ENV_VAR = {
 export default {
     ...OVH_ENV_VAR,
     ...CRON_TASK_ENV_VAR,
+    API_SERVER: process.env.API_SERVER || "http://localhost:8100",
     secret: process.env.SESSION_SECRET,
     secure: isSecure,
     protocol: isSecure ? "https" : "http",
     host: process.env.HOSTNAME || "localhost:3000",
-    port: process.env.PORT || 8100,
+    port: process.env.PORT || 3100,
     CALENDAR_URL: process.env.CALENDAR_URL,
     CALENDAR_PUBLIC_URL: process.env.CALENDAR_PUBLIC_URL,
     CALENDAR_GIP_URL: process.env.CALENDAR_GIP_URL,

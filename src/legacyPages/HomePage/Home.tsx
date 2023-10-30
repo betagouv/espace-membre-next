@@ -1,6 +1,6 @@
 import React from "react";
 import axios from "axios";
-import routes from "@/routes/routes";
+import routes, { computeRoute } from "@/routes/routes";
 import { Input } from "@codegouvfr/react-dsfr/Input";
 import { useRouter } from "next/navigation";
 import { CallOut } from "@codegouvfr/react-dsfr/CallOut";
@@ -59,7 +59,7 @@ export const Home = function (props: Props) {
         setIsSaving(true);
         console.log("LCS SEND LOGIN");
         axios
-            .post(`/api/login${props.next}#test`, {
+            .post(computeRoute(`${routes.LOGIN_API}${props.next}#test`), {
                 emailInput: email,
             })
             .then(async (resp) => {

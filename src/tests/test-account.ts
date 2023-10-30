@@ -8,7 +8,6 @@ import knex from "@/db";
 import session from "next-auth";
 import * as searchCommune from "@/lib/searchCommune";
 import utils from "./utils";
-import app from "@/server"; // chemin vers votre fichier server.js
 
 chai.use(chaiHttp);
 // const app = "http://localhost:3000";

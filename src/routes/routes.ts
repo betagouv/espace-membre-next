@@ -1,3 +1,12 @@
+import config from "@/config";
+
+export const computeRoute = (route) => {
+    if (config.API_SERVER) {
+        return `${config.API_SERVER}${route}`;
+    }
+    return route;
+};
+
 class routes {
     // startup
     static STARTUP_GET_ALL = "/startups";
@@ -50,6 +59,7 @@ class routes {
     static PULL_REQUEST_GET_PRS: string = "/api/pull-requests";
     static ME: string = "/api/me";
     static LOGIN_API: string = "/api/login";
+    static SIGNIN_API: string = "/signin";
     static API_UPDATE_BADGE_STATUS: string;
     static API_PUBLIC_INCUBATORS_GET_ALL: string = "/api/incubators";
     static API_PUBLIC_SPONSORS_GET_ALL: string = "/api/sponsors";

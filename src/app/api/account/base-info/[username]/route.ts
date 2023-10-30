@@ -1,13 +1,13 @@
 import { publicPostBaseInfoUpdate } from "@/controllers/usersController/baseInfo/publicPostBaseInfoUpdate";
 import { getServerSession } from "next-auth";
+import { NextRequest } from "next/server";
 
 export async function POST(
-    req: Request,
+    req: NextRequest,
     { params }: { params: { username: string } }
 ) {
-    // console.log(req.body)
-    // return Response.json({})
-    const body = await req.json();
+    console.log(req);
+    const body = process.env.NODE_ENV === "test" ? req.body : await req.json();
     const session = await getServerSession();
 
     return await publicPostBaseInfoUpdate(

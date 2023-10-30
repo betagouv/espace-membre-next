@@ -1,6 +1,6 @@
 "use client";
 import React from "react";
-import routes from "@/routes/routes";
+import routes, { computeRoute } from "@/routes/routes";
 import axios from "axios";
 import ButtonsGroup from "@codegouvfr/react-dsfr/ButtonsGroup";
 import FicheMembre from "./FicheMembre";
@@ -101,9 +101,11 @@ export default (props: any) => {
                     <form
                         onSubmit={() => {
                             axios.post(
-                                routes.USER_DELETE_EMAIL.replace(
-                                    ":username",
-                                    userInfos.id
+                                computeRoute(
+                                    routes.USER_DELETE_EMAIL.replace(
+                                        ":username",
+                                        userInfos.id
+                                    )
                                 )
                             );
                         }}

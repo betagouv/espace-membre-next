@@ -1,5 +1,5 @@
 "use client";
-import routes from "@/routes/routes";
+import routes, { computeRoute } from "@/routes/routes";
 import Accordion from "@codegouvfr/react-dsfr/Accordion";
 import Button from "@codegouvfr/react-dsfr/Button";
 import Input from "@codegouvfr/react-dsfr/Input";
@@ -63,10 +63,9 @@ export default function MemberPage({
                                         )
                                     ) {
                                         await axios.post(
-                                            routes.USER_DELETE_EMAIL.replace(
-                                                ":username",
-                                                username
-                                            )
+                                            computeRoute(
+                                                routes.USER_DELETE_EMAIL
+                                            ).replace(":username", username)
                                         );
                                     }
                                 }}
@@ -300,10 +299,9 @@ export default function MemberPage({
                             onSubmit={async (e) => {
                                 e.preventDefault();
                                 await axios.post(
-                                    routes.USER_UPDATE_SECONDARY_EMAIL.replace(
-                                        ":username",
-                                        userInfos.id
-                                    )
+                                    computeRoute(
+                                        routes.USER_UPDATE_SECONDARY_EMAIL
+                                    ).replace(":username", userInfos.id)
                                 );
                             }}
                         >

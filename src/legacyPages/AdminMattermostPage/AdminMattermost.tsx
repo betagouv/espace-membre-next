@@ -4,7 +4,7 @@ import axios from "axios";
 import { Request } from "express";
 
 import { Member } from "@/models/member";
-import routes from "@/routes/routes";
+import routes, { computeRoute } from "@/routes/routes";
 import { AdminMattermostUser } from "./AdminMattermostUser";
 import RadioButtons from "@codegouvfr/react-dsfr/RadioButtons";
 import { Checkbox } from "@codegouvfr/react-dsfr/Checkbox";
@@ -73,7 +73,9 @@ export const AdminMattermost = (props: CommunityProps) => {
         try {
             const usersForMessage = await axios
                 .get(
-                    `${routes.ADMIN_MATTERMOST_MESSAGE_API}?${queryParamsString}`
+                    `${computeRoute(
+                        routes.ADMIN_MATTERMOST_MESSAGE_API
+                    )}?${queryParamsString}`
                 )
                 .then((resp) => resp.data.users);
             setUsersForMessage(usersForMessage);
@@ -104,7 +106,7 @@ export const AdminMattermost = (props: CommunityProps) => {
             ) === true
         ) {
             const res = await axios.post(
-                routes.ADMIN_MATTERMOST_SEND_MESSAGE,
+                computeRoute(routes.ADMIN_MATTERMOST_SEND_MESSAGE),
                 buildParams(true)
             );
             alert(`${res.data.message}`);
@@ -115,7 +117,7 @@ export const AdminMattermost = (props: CommunityProps) => {
     const sendTest = async () => {
         try {
             const res = await axios.post(
-                routes.ADMIN_MATTERMOST_SEND_MESSAGE,
+                computeRoute(routes.ADMIN_MATTERMOST_SEND_MESSAGE),
                 buildParams(false)
             );
             alert(`${res.data.message}`);

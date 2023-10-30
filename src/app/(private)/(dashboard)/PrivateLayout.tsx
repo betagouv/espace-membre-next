@@ -8,8 +8,14 @@ import { useEffect, useState } from "react";
 import { Breadcrumb } from "@codegouvfr/react-dsfr/Breadcrumb";
 
 export function PrivateLayout({ children }: { children: React.ReactNode }) {
-    const sessionWrapper = useSession();
+    // const session = await getServerSession();
+    // if (!session) {
+    //     router.push("/login");
+    //     return;
+    // }
     const router = useRouter();
+
+    const sessionWrapper = useSession();
     const pathname = usePathname();
     const { status } = useSession({
         required: true,

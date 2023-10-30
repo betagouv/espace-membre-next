@@ -6,9 +6,10 @@ import DatepickerSelect from "../../components/DatepickerSelect";
 import { Mission } from "@/models/mission";
 import axios from "axios";
 import { DBPullRequest } from "@/models/pullRequests";
-import routes from "@/routes/routes";
+import routes, { computeRoute } from "@/routes/routes";
 import Input from "@codegouvfr/react-dsfr/Input";
 import { Button } from "@codegouvfr/react-dsfr/Button";
+import { useSession } from "next-auth/react";
 
 interface Option {
     key: string;
@@ -66,6 +67,7 @@ export const BaseInfoUpdate = (props: BaseInfoUpdateProps) => {
             end: props.formData.end ? new Date(props.formData.end) : "",
         },
     });
+    const session = useSession();
     const [formErrors, setFormErrors] = React.useState<Record<string, string>>(
         {}
     );
@@ -84,13 +86,12 @@ export const BaseInfoUpdate = (props: BaseInfoUpdateProps) => {
     };
 
     const changesExist = () => {
+        console.log(state.formData);
+
         let changed = false;
         if (state.formData.role !== props.formData.role) {
             changed = true;
-        } else if (
-            state.formData.end.toISOString().split("T")[0] !==
-            props.formData.end
-        ) {
+        } else if (state.formData.end !== props.formData.end) {
             changed = true;
         } else if (
             state.formData.startups
@@ -119,40 +120,41 @@ export const BaseInfoUpdate = (props: BaseInfoUpdateProps) => {
     };
 
     const save = async (event) => {
+        event.preventDefault();
         if (isSaving) {
             return;
         }
-        event.preventDefault();
         setIsSaving(true);
-        axios
-            .post(
-                routes.ACCOUNT_POST_BASE_INFO_FORM.replace(
+        console.log(state.formData);
+        try {
+            await axios.post(
+                computeRoute(routes.ACCOUNT_POST_BASE_INFO_FORM).replace(
                     ":username",
-                    props.username
+                    session.data?.user?.name as string
                 ),
                 {
                     ...state.formData,
                     startups: state.formData.startups.map((s) => s.value),
                     previously: state.formData.previously.map((s) => s.value),
                 }
-            )
-            .then(() => {
-                window.location.replace("/account");
-            })
-            .catch(
-                ({
-                    response: { data },
-                }: {
-                    response: { data: FormErrorResponse };
-                }) => {
-                    const ErrorResponse: FormErrorResponse = data;
-                    setErrorMessage(ErrorResponse.message);
-                    setIsSaving(false);
-                    if (ErrorResponse.errors) {
-                        setFormErrors(ErrorResponse.errors);
-                    }
-                }
             );
+        } catch (e) {
+            console.log(e);
+        }
+        // .catch(
+        //     ({
+        //         response: { data },
+        //     }: {
+        //         response: { data: FormErrorResponse };
+        //     }) => {
+        //         const ErrorResponse: FormErrorResponse = data;
+        //         setErrorMessage(ErrorResponse.message);
+        //         setIsSaving(false);
+        //         if (ErrorResponse.errors) {
+        //             setFormErrors(ErrorResponse.errors);
+        //         }
+        //     }
+        // );
     };
 
     return (
@@ -254,7 +256,8 @@ export const BaseInfoUpdate = (props: BaseInfoUpdateProps) => {
                                 title: "En format YYYY-MM-DD, par exemple : 2020-01-31",
                                 required: true,
                                 defaultValue: state.formData.end,
-                                onChange: (date) => changeFormData("end", date),
+                                onChange: (e) =>
+                                    changeFormData("end", e.target.value),
                             }}
                         />
                         <Button

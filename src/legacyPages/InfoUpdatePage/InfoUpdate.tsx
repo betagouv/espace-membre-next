@@ -6,10 +6,11 @@ import type { Request } from "express";
 import CitySelect from "../../components/CitySelect";
 import { CommuneInfo } from "@/models/communeInfo";
 import { Option } from "@/models/misc";
-import routes from "@/routes/routes";
+import routes, { computeRoute } from "@/routes/routes";
 import Input from "@codegouvfr/react-dsfr/Input";
 import RadioButtons from "@codegouvfr/react-dsfr/RadioButtons";
 import Select from "@codegouvfr/react-dsfr/Select";
+import axios from "axios";
 
 interface FormData {
     gender: string;
@@ -98,7 +99,7 @@ export const InfoUpdate = (props: InfoUpdateProps) => {
         setIsSaving(true);
         axios
             .post(
-                routes.ACCOUNT_POST_DETAIL_INFO_FORM.replace(
+                computeRoute(routes.ACCOUNT_POST_DETAIL_INFO_FORM).replace(
                     ":username",
                     props.username
                 ),
