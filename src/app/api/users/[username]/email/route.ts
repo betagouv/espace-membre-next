@@ -2,7 +2,7 @@ import {
     createRedirectionForUser,
     deleteRedirectionForUser,
 } from "@/controllers/usersController";
-import { getServerSession } from "next-auth";
+import { getServerSession } from "@/proxies/next-auth";
 
 export async function DELETE(
     req: Request,

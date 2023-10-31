@@ -270,14 +270,14 @@ export const StartupForm = (props: StartupForm) => {
                                     setIncubator(e.value);
                                 }}
                             />
-                            <SponsorBlock
+                            {/* <SponsorBlock
                                 newSponsors={newSponsors}
                                 setNewSponsors={setNewSponsors}
                                 sponsors={sponsors}
                                 setSponsors={(sponsors) =>
                                     setSponsors(sponsors)
                                 }
-                            />
+                            /> */}
                             <div className="fr-input-group">
                                 <label className="fr-label">Phase</label>
                                 <p>
@@ -286,7 +286,6 @@ export const StartupForm = (props: StartupForm) => {
                                 </p>
                                 <Table
                                     data={phases.map((phase, index) => {
-                                        console.log(phase);
                                         return [
                                             <PhaseSelectionCell
                                                 end={phase.end}

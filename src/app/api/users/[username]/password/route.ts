@@ -1,5 +1,5 @@
 import { updatePasswordForUser } from "@/controllers/usersController/updatePasswordForUser";
-import { getServerSession } from "next-auth";
+import { getServerSession } from "@/proxies/next-auth";
 
 export async function POST(
     req: Request,

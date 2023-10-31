@@ -1,5 +1,5 @@
 import { getCurrentUser } from "@/controllers/accountController";
-import { getServerSession } from "next-auth";
+import { getServerSession } from "@/proxies/next-auth";
 export async function GET(
     req: Request,
     { params }: { params: { username: string } }

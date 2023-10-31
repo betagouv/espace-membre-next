@@ -1,5 +1,5 @@
 import { managePrimaryEmailForUser } from "@/controllers/usersController/managePrimaryEmailForUser";
-import { getServerSession } from "next-auth";
+import { getServerSession } from "@/proxies/next-auth";
 
 export async function PUT(
     req: Request,

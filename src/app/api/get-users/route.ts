@@ -1,6 +1,6 @@
 import { getUsers } from "@/controllers/adminController/getUsers";
 import { NextRequest } from "next/server";
-import { getServerSession } from "next-auth";
+import { getServerSession } from "@/proxies/next-auth";
 
 function paramsToObject(entries) {
     const result = {};

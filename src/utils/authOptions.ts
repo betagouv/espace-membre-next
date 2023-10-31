@@ -19,18 +19,9 @@ export const authOptions: NextAuthOptions = {
     secret: config.secret,
     cookies: {
         sessionToken: {
-            name: "espaceMembreCookieName",
-            options: {
-                maxAge: 24 * 60 * 60 * 1000 * 7,
-                httpOnly: true,
-                secure: process.env.NODE_ENV === "production" ? true : false,
-                sameSite: "lax",
-            },
+            name: "espaceMembreCookieName2",
+            options: {},
         },
-    },
-    jwt: {
-        secret: config.secret,
-        maxAge: 24 * 60 * 60 * 1000 * 7,
     },
     providers: [
         // EmailProvider({

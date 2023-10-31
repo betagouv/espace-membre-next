@@ -6,6 +6,8 @@ import { signIn, useSession } from "next-auth/react";
 import { usePathname, useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 import { Breadcrumb } from "@codegouvfr/react-dsfr/Breadcrumb";
+import routes, { computeRoute } from "@/routes/routes";
+import axios from "axios";
 
 export function PrivateLayout({ children }: { children: React.ReactNode }) {
     // const session = await getServerSession();
@@ -17,6 +19,23 @@ export function PrivateLayout({ children }: { children: React.ReactNode }) {
 
     const sessionWrapper = useSession();
     const pathname = usePathname();
+
+    const [data, setData] = useState(null);
+    const [isLoading, setLoading] = useState(true);
+
+    useEffect(() => {
+        axios
+            .get(computeRoute(routes.ME), { withCredentials: true })
+            .then((data) => {
+                setData(data);
+                setLoading(false);
+            });
+    }, []);
+
+    if (isLoading) return <p>Loading...</p>;
+    if (!data) return <p>No profile data</p>;
+
+    /* USE SESSION
     const { status } = useSession({
         required: true,
         onUnauthenticated() {
@@ -27,6 +46,7 @@ export function PrivateLayout({ children }: { children: React.ReactNode }) {
     if (status === "loading") {
         return "Loading or not authenticated...";
     }
+    */
 
     const accountLink = linkRegistry.get("account", undefined);
     const accountBadgeLink = linkRegistry.get("accountBadge", undefined);
@@ -165,7 +185,7 @@ export function PrivateLayout({ children }: { children: React.ReactNode }) {
             </div>
             <div className="fr-col-12 fr-col-md-9 fr-col-lg-9">
                 <Breadcrumb
-                    currentPageLabel={tree[tree.length - 1].text}
+                    currentPageLabel={tree[tree.length - 1]?.text}
                     homeLinkProps={{
                         href: "/",
                     }}

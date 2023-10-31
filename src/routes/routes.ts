@@ -10,10 +10,14 @@ export const computeRoute = (route) => {
 class routes {
     // startup
     static STARTUP_GET_ALL = "/startups";
+    static STARTUP_GET_ALL_API = "/api/startups";
     static STARTUP_GET_DETAIL = "/startups/:startup";
     static STARTUP_GET_INFO_UPDATE_FORM = "/startups/:startup/info-form";
+    static STARTUP_GET_INFO_UPDATE_FORM_API =
+        "/api/startups/:startup/info-form";
     static STARTUP_POST_INFO_UPDATE_FORM = "/api/startups/:startup/info-form";
     static STARTUP_GET_INFO_CREATE_FORM = "/startups/create-form";
+    static STARTUP_GET_INFO_CREATE_FORM_API = "/api/startups/create-form";
     static STARTUP_POST_INFO_CREATE_FORM = "/api/startups";
 
     // page de diagnostic
@@ -23,6 +27,7 @@ class routes {
     // ADMIN
     static ADMIN = "/admin";
     static ADMIN_MATTERMOST = "/admin/mattermost";
+    static ADMIN_MATTERMOST_API = "/api/admin/mattermost";
     static ADMIN_MATTERMOST_MESSAGE_API = "/api/admin/mattermost/message/users";
     static ADMIN_MATTERMOST_SEND_MESSAGE = "api/admin/mattermost/send-message";
     // onboarding
@@ -47,9 +52,13 @@ class routes {
         "/api/users/:username/update_communication_email";
     // account
     static ACCOUNT_GET = "/account";
+    static ACCOUNT_GET_API = "/api/account";
     static ACCOUNT_GET_BASE_INFO_FORM = "/account/base-info";
+    static ACCOUNT_GET_BASE_INFO_FORM_API = "/api/account/base-info";
+
     static ACCOUNT_POST_BASE_INFO_FORM = "/api/account/base-info/:username";
     static ACCOUNT_GET_DETAIL_INFO_FORM = "/account/info";
+    static ACCOUNT_GET_DETAIL_INFO_FORM_API = "/api/account/info";
     static ACCOUNT_POST_DETAIL_INFO_FORM = "/api/account/info";
     static API_PUBLIC_POST_BASE_INFO_FORM =
         "/api/public/account/base-info/:username";
@@ -63,6 +72,9 @@ class routes {
     static API_UPDATE_BADGE_STATUS: string;
     static API_PUBLIC_INCUBATORS_GET_ALL: string = "/api/incubators";
     static API_PUBLIC_SPONSORS_GET_ALL: string = "/api/sponsors";
+
+    static GET_USER: string = "/community/:username";
+    static GET_USER_API: string = "/api/community/:username";
 }
 
 export default routes;

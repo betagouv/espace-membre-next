@@ -1,5 +1,5 @@
 import { publicPostBaseInfoUpdate } from "@/controllers/usersController/baseInfo/publicPostBaseInfoUpdate";
-import { getServerSession } from "next-auth";
+import { getServerSession } from "@/proxies/next-auth";
 import { NextRequest } from "next/server";
 
 export async function POST(

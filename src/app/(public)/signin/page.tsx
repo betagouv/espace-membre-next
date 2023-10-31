@@ -15,7 +15,6 @@ export default function SignIn() {
         return null;
     }
     const hash = window.location.hash.split("#")[1];
-    console.log(hash);
     const onSubmit = async () => {
         // const data = await signIn("credentials", {
         //     token: hash,
@@ -23,7 +22,7 @@ export default function SignIn() {
         await axios.post(computeRoute(routes.SIGNIN_API), {
             token: hash,
         });
-        getSession();
+        // getSession();
     };
 
     return (
