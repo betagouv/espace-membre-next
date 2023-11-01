@@ -10,7 +10,7 @@ const options = Object.values(SponsorType).map((type) => ({
     label: type,
 }));
 
-export default ({
+export default function SponsorTypeSelect({
     onChange,
     isMulti,
     placeholder,
@@ -21,7 +21,7 @@ export default ({
     isMulti?: boolean;
     placeholder?: any;
     defaultValue?: string;
-}) => {
+}) {
     if (!isMulti) {
         return (
             <SingleSelect
@@ -46,7 +46,7 @@ export default ({
             />
         </ClientOnly>
     );
-};
+}
 
 function SingleSelect({
     defaultValue,
@@ -73,8 +73,10 @@ function SingleSelect({
             <option value="" disabled hidden>
                 {placeholder}
             </option>
-            {options.map((option) => (
-                <option value={option.value}>{option.label}</option>
+            {options.map((option, index) => (
+                <option value={option.value} key={index}>
+                    {option.label}
+                </option>
             ))}
         </Select>
     );

@@ -1,23 +1,23 @@
-"use client"
+"use client";
 import { useState, useEffect, createElement, Fragment } from "react";
 
 export const ClientOnly = ({ children }) => {
-  const hasMounted = useClientOnly();
+    const hasMounted = useClientOnly();
 
-  if (!hasMounted) {
-    return null;
-  }
+    if (!hasMounted) {
+        return null;
+    }
 
-  return createElement(Fragment, { children });
+    return createElement(Fragment, {}, children);
 };
 
 /** React hook that returns true if the component has mounted client-side */
 export const useClientOnly = () => {
-  const [hasMounted, setHasMounted] = useState(false);
+    const [hasMounted, setHasMounted] = useState(false);
 
-  useEffect(() => {
-    setHasMounted(true);
-  }, []);
+    useEffect(() => {
+        setHasMounted(true);
+    }, []);
 
-  return hasMounted;
+    return hasMounted;
 };

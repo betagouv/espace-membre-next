@@ -121,9 +121,12 @@ export default {
     MAILING_LIST_REMINDER: process.env.MAILING_LIST_REMINDER
         ? parseInt(process.env.MAILING_LIST_REMINDER)
         : null,
-    MARRAINAGE_GROUP_LIMIT: parseInt(process.env.MARRAINAGE_GROUP_LIMIT) || 5,
-    MARRAINAGE_GROUP_WEEK_LIMIT:
-        parseInt(process.env.MARRAINAGE_GROUP_WEEK_LIMIT) || 2,
+    MARRAINAGE_GROUP_LIMIT: process.env.MARRAINAGE_GROUP_LIMIT
+        ? parseInt(process.env.MARRAINAGE_GROUP_LIMIT)
+        : 5,
+    MARRAINAGE_GROUP_WEEK_LIMIT: process.env.MARRAINAGE_GROUP_WEEK_LIMIT
+        ? parseInt(process.env.MARRAINAGE_GROUP_WEEK_LIMIT)
+        : 2,
     mattermostBotToken: process.env.MATTERMOST_BOT_TOKEN,
     mattermostTeamId: process.env.MATTERMOST_TEAM_ID || "testteam",
     mattermostAlumniTeamId:

@@ -1,6 +1,5 @@
 "use client";
-import { getDetailInfoUpdate } from "@/controllers/accountController/getDetailInfoUpdate";
-import { InfoUpdate } from "@/legacyPages/InfoUpdatePage";
+import { InfoUpdate, InfoUpdateProps } from "@/legacyPages/InfoUpdatePage";
 import routes, { computeRoute } from "@/routes/routes";
 import axios from "axios";
 import { getServerSession } from "next-auth";
@@ -25,9 +24,5 @@ export default function Page() {
     if (isLoading) return <p>Loading...</p>;
     if (!data) return <p>No profile data</p>;
 
-    // const props = await getDetailInfoUpdate({
-    //     auth: { id: session?.user?.name },
-    // });
-
-    return <InfoUpdate {...data} />;
+    return <InfoUpdate {...(data as InfoUpdateProps)} />;
 }

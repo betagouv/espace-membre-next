@@ -1,5 +1,4 @@
 "use client";
-import { getBaseInfoUpdate } from "@/controllers/usersController/baseInfo/getBaseInfoUpdate";
 import {
     BaseInfoUpdate,
     BaseInfoUpdateProps,
@@ -32,5 +31,5 @@ export default function Page() {
     //     auth: { id: session?.user?.name },
     // })) as BaseInfoUpdateProps;
 
-    return <BaseInfoUpdate {...data} />;
+    return <BaseInfoUpdate {...(data as BaseInfoUpdateProps)} />;
 }

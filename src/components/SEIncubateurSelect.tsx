@@ -2,7 +2,7 @@ import React from "react";
 import Autocomplete from "@mui/material/Autocomplete";
 import TextField from "@mui/material/TextField";
 
-export default ({
+export default function SEIncubateurSelect({
     incubators,
     onChange,
     label,
@@ -10,7 +10,15 @@ export default ({
     state,
     stateRelatedMessage,
     defaultValue,
-}) => {
+}: {
+    incubators?: any;
+    onChange?: any;
+    label?: any;
+    hint?: any;
+    state?: any;
+    stateRelatedMessage?: any;
+    defaultValue?: any;
+}) {
     return (
         <div className="fr-select-group">
             {!!label && (
@@ -48,4 +56,4 @@ export default ({
             )}
         </div>
     );
-};
+}

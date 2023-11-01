@@ -15,7 +15,7 @@ const MainHeader = () => {
             iconId: "fr-icon-account-line",
             text: session?.user?.name,
             linkProps: {
-                href: linkRegistry.get("account", {}),
+                href: linkRegistry.get("account", undefined),
             },
         });
         quickAccessItems.push({

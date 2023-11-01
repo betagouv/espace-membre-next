@@ -1,7 +1,8 @@
 "use client";
 import React, { useEffect, useState } from "react";
-import MemberPage from "@/components/MemberPage/MemberPage";
-import { getUser } from "@/controllers/communityController/getUser";
+import MemberPage, {
+    MemberPageProps,
+} from "@/components/MemberPage/MemberPage";
 import routes, { computeRoute } from "@/routes/routes";
 import axios from "axios";
 
@@ -25,10 +26,10 @@ export default function Page({ params }: { params: { id: string } }) {
                 setData(res.data);
                 setLoading(false);
             });
-    }, []);
+    }, [params.id]);
 
     if (isLoading) return <p>Loading...</p>;
     if (!data) return <p>No profile data</p>;
     // const props = await getUser({ id: params.id }) //props
-    return <MemberPage {...data} />;
+    return <MemberPage {...(data as MemberPageProps)} />;
 }

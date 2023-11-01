@@ -10,14 +10,21 @@ const statusOptions = [
     { value: "both", label: "Membres actifs et Alumnis" },
 ];
 
-export default ({
+export default function MemberStatusSelect({
     onChange,
     label,
     hint,
     state,
     stateRelatedMessage,
     defaultValue,
-}) => {
+}: {
+    onChange?: any;
+    label?: any;
+    hint?: any;
+    state?: any;
+    stateRelatedMessage?: any;
+    defaultValue?: any;
+}) {
     return (
         <div className="fr-select-group">
             {!!label && (
@@ -55,4 +62,4 @@ export default ({
             )}
         </div>
     );
-};
+}

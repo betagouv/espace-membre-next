@@ -25,7 +25,8 @@ export const Home = function (props: Props) {
     const router = useRouter();
     const [isSaving, setIsSaving] = React.useState(false);
     const [errorMessage, setErrorMessage] = React.useState("");
-    const [formErrors, setFormErrors] = React.useState();
+    const [formErrors, setFormErrors] =
+        React.useState<Record<string, string[]>>();
     const [loginSent, setLoginSent] = React.useState(false);
     const [connected, setConnected] = React.useState(false);
     const [email, setEmail] = React.useState("");

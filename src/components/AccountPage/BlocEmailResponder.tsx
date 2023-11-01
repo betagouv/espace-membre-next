@@ -1,6 +1,6 @@
 "use client";
 import React from "react";
-import routes from "@/routes/routes";
+import routes, { computeRoute } from "@/routes/routes";
 import axios from "axios";
 import { Accordion } from "@codegouvfr/react-dsfr/Accordion";
 import { Input } from "@codegouvfr/react-dsfr/Input";
@@ -29,7 +29,7 @@ export default function BlocEmailResponder({
                     console.log(e);
                     e.preventDefault();
                     axios
-                        .post(computeRoute(USER_SET_EMAIL_RESPONDER), {
+                        .post(computeRoute(routes.USER_SET_EMAIL_RESPONDER), {
                             content,
                             from,
                             to,

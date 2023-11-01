@@ -12,6 +12,7 @@ class routes {
     static STARTUP_GET_ALL = "/startups";
     static STARTUP_GET_ALL_API = "/api/startups";
     static STARTUP_GET_DETAIL = "/startups/:startup";
+    static STARTUP_GET_DETAIL_API = "/api/startups/:startup";
     static STARTUP_GET_INFO_UPDATE_FORM = "/startups/:startup/info-form";
     static STARTUP_GET_INFO_UPDATE_FORM_API =
         "/api/startups/:startup/info-form";
@@ -32,7 +33,8 @@ class routes {
     static ADMIN_MATTERMOST_SEND_MESSAGE = "api/admin/mattermost/send-message";
     // onboarding
     static ONBOARDING = "/onboarding";
-    static ONBOARDING_ACTION = "/api/onboarding";
+    static ONBOARDING_API = "/api/onboarding";
+    static ONBOARDING_ACTION = "/onboarding";
     // users
     static USER_CREATE_EMAIL = "/api/users/:username/email";
     static USER_DELETE_EMAIL = "/api/users/:username/email/delete";
@@ -75,6 +77,8 @@ class routes {
 
     static GET_USER: string = "/community/:username";
     static GET_USER_API: string = "/api/community/:username";
+    static GET_COMMUNITY: string = "/community";
+    static GET_COMMUNITY_API: string = "/api/community";
 }
 
 export default routes;

@@ -27,13 +27,15 @@ export function PrivateLayout({ children }: { children: React.ReactNode }) {
         axios
             .get(computeRoute(routes.ME), { withCredentials: true })
             .then((data) => {
-                setData(data);
+                setData(data.data);
                 setLoading(false);
             });
     }, []);
 
     if (isLoading) return <p>Loading...</p>;
-    if (!data) return <p>No profile data</p>;
+    if (!data) {
+        router.push("/login");
+    }
 
     /* USE SESSION
     const { status } = useSession({
@@ -113,7 +115,7 @@ export function PrivateLayout({ children }: { children: React.ReactNode }) {
         },
     ];
 
-    const MenuItems = [
+    const MenuItems: ItemLink[] = [
         {
             isActive: hasPathnameThisMatch(pathname, accountLink),
             linkProps: {
@@ -152,13 +154,14 @@ export function PrivateLayout({ children }: { children: React.ReactNode }) {
         linkProps: { href: string };
         text: string;
         isActive: boolean;
-        items: ItemLink[];
+        expandedByDefault?: boolean;
+        items?: ItemLink[];
     }
 
     const findActiveItem = (items: ItemLink[]) => {
-        let tree = [];
+        let tree: ItemLink[] = [];
         items.forEach((i) => {
-            let childrenTree = [];
+            let childrenTree: ItemLink[] = [];
             if (i.items && i.items.length) {
                 childrenTree = findActiveItem(i.items);
             }
@@ -172,7 +175,6 @@ export function PrivateLayout({ children }: { children: React.ReactNode }) {
     };
 
     const tree = findActiveItem(MenuItems);
-    console.log(tree);
     return (
         <>
             <div className="fr-col-12 fr-col-md-3 fr-col-lg-3">

@@ -1,8 +1,6 @@
 "use client";
 import React, { useEffect, useState } from "react";
 import AccountPage from "@/components/AccountPage/AccountPage";
-import { getCurrentAccount } from "@/controllers/accountController/getCurrentAccount";
-import { getServerSession } from "@/proxies/next-auth";
 import axios from "axios";
 import routes, { computeRoute } from "@/routes/routes";
 

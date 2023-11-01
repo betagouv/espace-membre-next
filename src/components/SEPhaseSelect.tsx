@@ -13,7 +13,7 @@ const options = [
     { value: "alumni", label: "Partenariat terminé (alumni)" },
 ];
 
-export default ({
+export default function SEPhaseSelect({
     onChange,
     isMulti,
     placeholder,
@@ -26,12 +26,16 @@ export default ({
     startups?: any;
     onChange?: any;
     isMulti?: any;
+    label?: string;
+    hint?: string;
+    state?: string;
+    stateRelatedMessage?: string;
     placeholder?: any;
-    defaultValue?: string;
-}) => {
-    if (!isMulti) {
-        const [value, setValue] = useState(defaultValue);
+    defaultValue?: string | { value: string; label: string }[];
+}) {
+    const [value, setValue] = useState(defaultValue);
 
+    if (!isMulti) {
         return (
             <Select
                 nativeSelectProps={{
@@ -39,15 +43,18 @@ export default ({
                         setValue(event.target.value);
                         onChange({ value: event.target.value });
                     },
-                    value,
-                    defaultValue: value,
+                    value: value as string,
+                    defaultValue: value as string,
                 }}
+                label={undefined}
             >
                 <option value="" disabled hidden>
                     {placeholder || "Selectionnez une phase"}
                 </option>
-                {options.map((option) => (
-                    <option value={option.value}>{option.label}</option>
+                {options.map((option, index) => (
+                    <option key={index} value={option.value}>
+                        {option.label}
+                    </option>
                 ))}
             </Select>
         );
@@ -70,7 +77,9 @@ export default ({
                 onChange={onChange}
                 defaultValue={
                     defaultValue
-                        ? defaultValue.map((se) => ({
+                        ? (
+                              defaultValue as { value: string; label: string }[]
+                          ).map((se) => ({
                               id: se.value,
                               label: se.label,
                           }))
@@ -90,4 +99,4 @@ export default ({
             )}
         </div>
     );
-};
+}

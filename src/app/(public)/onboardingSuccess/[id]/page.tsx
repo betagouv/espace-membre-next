@@ -3,7 +3,11 @@
 import config from "@/config";
 import { useSearchParams } from "next/navigation";
 
-export default function ({ params }: { params: { id: string } }) {
+export default function OnboardingSuccessPage({
+    params,
+}: {
+    params: { id: string };
+}) {
     const searchParams = useSearchParams();
     return (
         <div className="container container-small">

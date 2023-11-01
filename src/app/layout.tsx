@@ -41,7 +41,7 @@ function MainStructure(props: PropsWithChildren) {
     );
 }
 
-export function RootLayout(props: PropsWithChildren<RootLayoutProps>) {
+function RootLayout(props: PropsWithChildren<RootLayoutProps>) {
     if (props.workaroundForNextJsPages === true) {
         // When embedded through a server-side only page (for errors for example) `<html>` and `<body>`
         // are already included by Next.js (the browser can ajust the structure but in our case `<html>` duplication

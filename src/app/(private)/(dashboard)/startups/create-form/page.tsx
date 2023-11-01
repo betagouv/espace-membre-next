@@ -1,6 +1,6 @@
 "use client";
 
-import { getStartupInfoCreate } from "@/controllers/startupController/getStartupInfoCreate";
+// import { getStartupInfoCreate } from "@/controllers/startupController/getStartupInfoCreate";
 import {
     StartupInfoCreate,
     StartupInfoCreateProps,
@@ -26,5 +26,5 @@ export default function Page() {
     if (isLoading) return <p>Loading...</p>;
     if (!data) return <p>No profile data</p>;
 
-    return <StartupInfoCreate {...data} />;
+    return <StartupInfoCreate {...(data as StartupInfoCreateProps)} />;
 }

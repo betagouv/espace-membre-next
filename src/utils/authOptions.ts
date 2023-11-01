@@ -3,7 +3,6 @@ import EmailProvider from "next-auth/providers/email";
 import CredentialsProvider from "next-auth/providers/credentials";
 import PostgresAdapter from "@auth/pg-adapter";
 import { Pool } from "pg";
-import { postSignIn } from "@/controllers/loginController/postSignIn";
 import config from "@/config";
 
 // const pool = new Pool({
@@ -35,31 +34,34 @@ export const authOptions: NextAuthOptions = {
         //     },
         //     from: process.env.EMAIL_FROM,
         // }),
-        CredentialsProvider({
-            name: "Credentials",
-            credentials: {
-                // email: { label: "Email", type: "text" },
-                token: { label: "token", type: "password" },
-            },
-            async authorize(credentials: any, req) {
-                // database operations
-                try {
-                    const user = await postSignIn(
-                        {
-                            body: {
-                                token: credentials.token,
-                            },
-                        },
-                        Response
-                    );
-                    return {
-                        ...user,
-                    };
-                } catch (e) {
-                    console.error(e);
-                    return null;
-                }
-            },
-        }),
+        // CredentialsProvider({
+        //     name: "Credentials",
+        //     credentials: {
+        //         // email: { label: "Email", type: "text" },
+        //         token: { label: "token", type: "password" },
+        //     },
+        //     async authorize(credentials: any, req) {
+        //         // database operations
+        //         try {
+        //             return {
+        //                 user: {},
+        //             };
+        //             // const user = await postSignIn(
+        //             //     {
+        //             //         body: {
+        //             //             token: credentials.token,
+        //             //         },
+        //             //     },
+        //             //     Response
+        //             // );
+        //             // return {
+        //             //     ...user,
+        //             // };
+        //         } catch (e) {
+        //             console.error(e);
+        //             return null;
+        //         }
+        //     },
+        // }),
     ],
 };

@@ -1,7 +1,7 @@
 import Autocomplete from "@mui/material/Autocomplete";
 import TextField from "@mui/material/TextField";
 
-export default ({
+export default function DomaineSelect({
     onChange,
     label,
     hint,
@@ -9,7 +9,15 @@ export default ({
     stateRelatedMessage,
     defaultValue,
     domaines,
-}) => {
+}: {
+    onChange?: any;
+    label?: any;
+    hint?: any;
+    state?: any;
+    stateRelatedMessage?: any;
+    defaultValue?: any;
+    domaines?: any;
+}) {
     return (
         <div className="fr-select-group">
             {!!label && (
@@ -47,4 +55,4 @@ export default ({
             )}
         </div>
     );
-};
+}

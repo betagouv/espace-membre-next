@@ -1,5 +1,6 @@
 "use client";
 import { Member } from "@/models/member";
+import { Phase } from "@/models/startup";
 import Accordion from "@codegouvfr/react-dsfr/Accordion";
 import Button from "@codegouvfr/react-dsfr/Button";
 import { Table } from "@codegouvfr/react-dsfr/Table";
@@ -7,8 +8,9 @@ import { Table } from "@codegouvfr/react-dsfr/Table";
 function MemberTable({ members }: { members: Member[] }) {
     return (
         <Table
-            data={members.map((member: Member) => [
+            data={members.map((member: Member, index: number) => [
                 <a
+                    key={index}
                     className="fr-link"
                     target="_blank"
                     href={`https://github.com/betagouv/beta.gouv.fr/edit/master/content/_authors/${member.id}.md`}
@@ -23,12 +25,23 @@ function MemberTable({ members }: { members: Member[] }) {
     );
 }
 
-export default async function StartupPage({
+export interface StartupPageProps {
+    startupInfos: any;
+    currentPhase: Phase;
+    updatePullRequest: any;
+    members: {
+        expired_members: Member[];
+        active_members: Member[];
+        previous_members: Member[];
+    };
+}
+
+export default function StartupPage({
     startupInfos,
     currentPhase,
     updatePullRequest,
     members,
-}) {
+}: StartupPageProps) {
     return (
         <>
             <p className="fr-text--sm fr-mb-2v">
@@ -87,7 +100,11 @@ export default async function StartupPage({
 
             <div className="fr-mb-4v">
                 <h3>Membres</h3>
-                <Accordion label="Membres actuels" expanded={true}>
+                <Accordion
+                    label="Membres actuels"
+                    expanded={true}
+                    onExpandedChange={(expanded, e) => {}}
+                >
                     <MemberTable members={members.active_members} />
                 </Accordion>
                 <Accordion label="Membres expirés">

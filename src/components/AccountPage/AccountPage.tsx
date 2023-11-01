@@ -7,7 +7,7 @@ import FicheMembre from "./FicheMembre";
 import EmailContainer from "./EmailContainer";
 import Observatoire from "./Observatoire";
 
-export default (props: any) => {
+export default function AccountPage(props: any) {
     const {
         updatePullRequest,
         hasActiveResponder,
@@ -124,4 +124,4 @@ export default (props: any) => {
             )}
         </div>
     );
-};
+}

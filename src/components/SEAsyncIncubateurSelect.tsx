@@ -2,7 +2,15 @@ import React, { useState } from "react";
 import axios from "axios";
 import Select from "@codegouvfr/react-dsfr/Select";
 
-export default ({ onChange, value, placeholder }) => {
+export default function SEIncubateurSelect({
+    onChange,
+    value,
+    placeholder,
+}: {
+    onChange: any;
+    value: any;
+    placeholder?: any;
+}) {
     const [options, setOptions] = React.useState<
         { value: string; label: string }[]
     >([]);
@@ -52,9 +60,11 @@ export default ({ onChange, value, placeholder }) => {
             <option value="" disabled hidden>
                 {placeholder || "Selectionnez un incubateur"}
             </option>
-            {options.map((incubateur) => (
-                <option value={incubateur.value}>{incubateur.label}</option>
+            {options.map((incubateur, index) => (
+                <option value={incubateur.value} key={index}>
+                    {incubateur.label}
+                </option>
             ))}
         </Select>
     );
-};
+}

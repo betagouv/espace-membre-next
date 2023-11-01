@@ -7,16 +7,15 @@ import Button from "@codegouvfr/react-dsfr/Button";
 import { Input } from "@codegouvfr/react-dsfr/Input";
 import { Checkbox } from "@codegouvfr/react-dsfr/Checkbox";
 
-export default ({
+export default function BlocRedirection({
     redirections,
     canCreateRedirection,
     userInfos,
     isExpired,
     domain,
-}) => {
+}) {
     const [toEmail, setToEmail] = React.useState<string>("");
-    const [keepCopy, setKeepCopy] = React.useState<boolean>("");
-    console.log(redirections);
+    const [keepCopy, setKeepCopy] = React.useState<boolean>(false);
     return (
         <Accordion label="Rediriger vers une autre adresse mail">
             <p>
@@ -25,9 +24,9 @@ export default ({
                 redirection peut être utile en complément d'une récupération{" "}
                 <i>POP</i> ou d'une application type Frontapp.
             </p>
-            {(redirections || []).map((redirection) => {
+            {(redirections || []).map((redirection, i: number) => {
                 return (
-                    <div className="redirection-item">
+                    <div className="redirection-item" key={i}>
                         {redirection.to}
                         {canCreateRedirection && (
                             <form
@@ -123,4 +122,4 @@ export default ({
             )}
         </Accordion>
     );
-};
+}

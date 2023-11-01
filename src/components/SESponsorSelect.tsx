@@ -3,18 +3,33 @@ import axios from "axios";
 import Select from "react-select";
 import { ClientOnly } from "./ClientOnly";
 import { Autocomplete, TextField } from "@mui/material";
+import { Sponsor } from "@/models/sponsor";
 
-export default ({
-    onChange,
+interface SESponsorSelectProps {
+    value: {
+        value: string;
+        label: string;
+    }[];
+    newSponsors: Sponsor[];
+    label?: string;
+    hint?: string;
+    state?: string;
+    onChange: any;
+    stateMessageRelated?: string;
+}
+
+export default function SESponsorSelect({
     value,
     newSponsors,
-    defaultValue,
     label,
     hint,
     state,
+    onChange,
     stateMessageRelated,
-}) => {
-    const [options, setOptions] = React.useState([]);
+}: SESponsorSelectProps) {
+    const [options, setOptions] = React.useState<
+        { value: string; label: string }[]
+    >([]);
 
     React.useEffect(() => {
         // React advises to declare the async function directly inside useEffect
@@ -76,6 +91,9 @@ export default ({
                     id: se.value,
                     label: se.label,
                 }))}
+                onInputChange={(...[, newValue]) => {
+                    onChange(newValue);
+                }}
                 defaultValue={
                     value
                         ? value.map((se) => ({
@@ -98,4 +116,4 @@ export default ({
             )}
         </div>
     );
-};
+}

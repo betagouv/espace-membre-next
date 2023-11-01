@@ -1,20 +1,28 @@
 import React from "react";
-import { Phase } from "@/models/startup";
+import { Phase, StartupPhase } from "@/models/startup";
 import SEPhaseSelect from "../SEPhaseSelect";
 import DatepickerSelect from "../DatepickerSelect";
 import Input from "@codegouvfr/react-dsfr/Input";
 import Button from "@codegouvfr/react-dsfr/Button";
 
-interface PhaseItemProps extends Phase {
-    deletePhase(): void;
-    onChange(phase: Phase): void;
+interface PhaseSelectionCellProps {
+    changePhase(index: number, phase: StartupPhase): void;
+    index: number;
+    name: string;
+}
+
+interface PhaseDatePickerCellProps {
+    name: string;
+    changePhaseDate(index: number, value: string);
+    index: number;
+    start: string;
 }
 
 export const PhaseSelectionCell = ({
     name,
     index,
     changePhase,
-}: PhaseItemProps) => {
+}: PhaseSelectionCellProps) => {
     return (
         <SEPhaseSelect
             onChange={(phase) => {
@@ -31,9 +39,10 @@ export const PhaseDatePickerCell = ({
     start,
     changePhaseDate,
     index,
-}: PhaseItemProps) => {
+}: PhaseDatePickerCellProps) => {
     return (
         <Input
+            label={undefined}
             nativeInputProps={{
                 type: "date",
                 name: "startDate",
@@ -60,7 +69,12 @@ export const PhaseDatePickerCell = ({
     // );
 };
 
-export const PhaseActionCell = ({ index, deletePhase }: PhaseItemProps) => {
+interface PhaseActionProps {
+    deletePhase(index: number): void;
+    index: number;
+}
+
+export const PhaseActionCell = ({ index, deletePhase }: PhaseActionProps) => {
     return (
         <Button
             nativeButtonProps={{
@@ -72,57 +86,3 @@ export const PhaseActionCell = ({ index, deletePhase }: PhaseItemProps) => {
         </Button>
     );
 };
-
-const PhaseItem = ({ name, start, deletePhase, onChange }: PhaseItemProps) => {
-    const [startDate, setStartDate]: [Date, (Date) => void] = React.useState(
-        start ? new Date(start) : undefined
-    );
-    const [phase, setPhase] = React.useState(name);
-    React.useEffect(() => {
-        onChange({
-            name: phase,
-            start: startDate,
-        });
-    }, [phase, startDate]);
-    return (
-        <>
-            <tr style={{ border: "none" }}>
-                <td style={{ padding: 5 }}>
-                    <SEPhaseSelect
-                        onChange={(phase) => {
-                            setPhase(phase.value);
-                        }}
-                        defaultValue={name}
-                        isMulti={false}
-                        placeholder={"Selectionne la phase"}
-                    />
-                </td>
-                <td style={{ padding: 5 }}>
-                    {
-                        <DatepickerSelect
-                            name="startDate"
-                            min={"2020-01-31"}
-                            title="En format YYYY-MM-DD, par exemple : 2020-01-31"
-                            required
-                            dateFormat="dd/MM/yyyy"
-                            selected={startDate}
-                            onChange={(dateInput: Date) =>
-                                setStartDate(dateInput)
-                            }
-                        />
-                    }
-                </td>
-                <td style={{ padding: 5 }}>
-                    <a
-                        style={{ textDecoration: "none" }}
-                        onClick={() => deletePhase()}
-                    >
-                        🗑️
-                    </a>
-                </td>
-            </tr>
-        </>
-    );
-};
-
-export default PhaseItem;

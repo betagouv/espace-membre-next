@@ -10,7 +10,7 @@ const options = Object.values(SponsorDomaineMinisteriel).map((type) => ({
     label: type,
 }));
 
-export default ({
+export default function SponsorDomainSelect({
     onChange,
     isMulti,
     placeholder,
@@ -21,7 +21,7 @@ export default ({
     isMulti?: boolean;
     placeholder?: any;
     defaultValue?: string;
-}) => {
+}) {
     if (!isMulti) {
         return (
             <SingleSelect
@@ -41,14 +41,18 @@ export default ({
                         ? options.filter((opt) => opt.value === defaultValue)
                         : options.filter((opt) => opt.value === defaultValue)[0]
                 }
-                onChange={(e) => onChange(e["value"])}
+                onChange={(e) => {
+                    if (e) {
+                        onChange(e["value"]);
+                    }
+                }}
                 placeholder={
                     placeholder || "Sélectionne un domaine ministériel"
                 }
             />
         </ClientOnly>
     );
-};
+}
 
 function SingleSelect({
     defaultValue,
@@ -75,8 +79,10 @@ function SingleSelect({
             <option value="" disabled hidden>
                 {placeholder}
             </option>
-            {options.map((option) => (
-                <option value={option.value}>{option.label}</option>
+            {options.map((option, index) => (
+                <option value={option.value} key={index}>
+                    {option.label}
+                </option>
             ))}
         </Select>
     );

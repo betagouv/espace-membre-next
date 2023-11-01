@@ -20,7 +20,7 @@ interface BaseInfoFormData {
     missions: Mission[];
     end: string;
     start: string;
-    previously?: {
+    previously: {
         value: string;
         label: string;
     }[];

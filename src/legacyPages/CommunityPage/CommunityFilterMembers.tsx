@@ -41,7 +41,6 @@ const css = ".panel { min-height: 400px; }"; // to have enough space to display 
 /* Pure component */
 export const CommunityFilterMembers = (props: CommunityProps) => {
     const [state, setState] = React.useState<any>({
-        users: [],
         selectedName: "",
         ...props,
     });
