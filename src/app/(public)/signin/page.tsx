@@ -2,13 +2,13 @@
 
 import { useSearchParams } from "next/navigation";
 import Button from "@codegouvfr/react-dsfr/Button";
-import { getSession, signIn, useSession } from "next-auth/react";
+// import { getSession, signIn, useSession } from "next-auth/react";
 import routes, { computeRoute } from "@/routes/routes";
 import axios from "axios";
 
 export default function SignIn() {
-    const { data: session, status } = useSession();
-    console.log(session, status);
+    // const { data: session, status } = useSession();
+    // console.log(session, status);
     const searchParams = useSearchParams();
     const next = searchParams.get("next");
     if (!window) {

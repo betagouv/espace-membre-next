@@ -2,8 +2,11 @@ import config from "@/config";
 import { signIn as real_signIn } from "next-auth/react";
 import { signOut as real_signOut } from "next-auth/react";
 import { getSession as real_getSession } from "next-auth/react";
+export { useSession as real_useSession } from "next-auth/react";
 import { getServerSession as real_getServerSession } from "next-auth";
-export { useSession, SessionProvider } from "next-auth/react";
+import { useEffect, useState } from "react";
+import routes, { computeRoute } from "@/routes/routes";
+import axios from "axios";
 
 const mock_signIn: typeof real_signIn = async function () {
     console.log(`"signIn" mock has been called`);
@@ -47,6 +50,50 @@ const mock_getServerSession: typeof real_getServerSession = async function () {
     return {
         status: "loading",
     } as any;
+};
+
+export const useSession = function useSession(props?: {
+    required?: boolean;
+    onUnauthenticated?: () => void;
+}) {
+    const [loading, setLoading] = useState<boolean>(false);
+    const [data, setData] = useState<{ user: { name: string } }>();
+    const [status, setStatus] = useState<string>("loading");
+
+    useEffect(() => {
+        setStatus("loading");
+        axios
+            .get(computeRoute(routes.ME), { withCredentials: true })
+            .then((data) => {
+                setLoading(false);
+                if (data.data) {
+                    setStatus("authenticated");
+                    setData({
+                        user: data.data,
+                    });
+                } else {
+                    setStatus("unauthenticated");
+                    if (props && props.onUnauthenticated) {
+                        props.onUnauthenticated();
+                    }
+                }
+            })
+            .catch(() => {
+                setStatus("unauthenticated");
+                setLoading(false);
+                if (props && props.onUnauthenticated) {
+                    props.onUnauthenticated();
+                }
+            });
+
+        return () => {};
+    }, [loading]);
+
+    return {
+        loading,
+        data,
+        status,
+    };
 };
 
 export const getServerSession: typeof real_getServerSession =

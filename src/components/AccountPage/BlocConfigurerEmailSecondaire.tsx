@@ -1,9 +1,9 @@
+import { useSession } from "@/proxies/next-auth";
 import routes, { computeRoute } from "@/routes/routes";
 import Accordion from "@codegouvfr/react-dsfr/Accordion";
 import Button from "@codegouvfr/react-dsfr/Button";
 import Input from "@codegouvfr/react-dsfr/Input";
 import axios from "axios";
-import { useSession } from "next-auth/react";
 import React from "react";
 
 export default function BlocConfigurerEmailSecondaire({

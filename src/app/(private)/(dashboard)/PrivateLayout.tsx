@@ -1,7 +1,7 @@
 import { linkRegistry } from "@/utils/routes/registry";
 import { hasPathnameThisMatch } from "@/utils/url";
 import { SideMenu } from "@codegouvfr/react-dsfr/SideMenu";
-import { signIn, useSession } from "next-auth/react";
+import { useSession } from "@/proxies/next-auth";
 import { usePathname, useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 import { Breadcrumb } from "@codegouvfr/react-dsfr/Breadcrumb";
@@ -16,27 +16,18 @@ export function PrivateLayout({ children }: { children: React.ReactNode }) {
     // }
     const router = useRouter();
 
-    const sessionWrapper = useSession();
+    // const sessionWrapper = useSession();
     const pathname = usePathname();
 
     const [data, setData] = useState(null);
     const [isLoading, setLoading] = useState(true);
 
-    useEffect(() => {
-        axios
-            .get(computeRoute(routes.ME), { withCredentials: true })
-            .then((data) => {
-                setData(data.data);
-                setLoading(false);
-            });
-    }, []);
+    // if (isLoading) return <p>Loading...</p>;
+    // if (!data) {
+    //     router.push("/login");
+    // }
 
-    if (isLoading) return <p>Loading...</p>;
-    if (!data) {
-        router.push("/login");
-    }
-
-    /* USE SESSION
+    /* USE SESSION */
     const { status } = useSession({
         required: true,
         onUnauthenticated() {
@@ -47,7 +38,6 @@ export function PrivateLayout({ children }: { children: React.ReactNode }) {
     if (status === "loading") {
         return "Loading or not authenticated...";
     }
-    */
 
     const accountLink = linkRegistry.get("account", undefined);
     const accountBadgeLink = linkRegistry.get("accountBadge", undefined);

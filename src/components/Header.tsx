@@ -2,12 +2,14 @@
 import React from "react";
 import { useRouter } from "next/navigation";
 import { Header, HeaderProps } from "@codegouvfr/react-dsfr/Header";
-import { useSession, signIn, signOut } from "next-auth/react";
+// import { useSession, signIn, signOut } from "next-auth/react";
 import { linkRegistry } from "@/utils/routes/registry";
+import { useSession } from "@/proxies/next-auth";
 
 const MainHeader = () => {
     const router = useRouter();
     const { data: session, status } = useSession();
+
     const quickAccessItems: (React.ReactNode | HeaderProps.QuickAccessItem)[] =
         [];
     if (session) {
@@ -21,7 +23,7 @@ const MainHeader = () => {
         quickAccessItems.push({
             buttonProps: {
                 onClick: () => {
-                    signOut();
+                    // signOut();
                 },
             },
             iconId: "fr-icon-logout-box-r-line",

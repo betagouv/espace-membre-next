@@ -7,7 +7,7 @@ import { DBPullRequest } from "@/models/pullRequests";
 import routes, { computeRoute } from "@/routes/routes";
 import Input from "@codegouvfr/react-dsfr/Input";
 import { Button } from "@codegouvfr/react-dsfr/Button";
-import { useSession } from "next-auth/react";
+import { useSession } from "@/proxies/next-auth";
 
 interface Option {
     key: string;
