@@ -28,7 +28,7 @@ export function PrivateLayout({ children }: { children: React.ReactNode }) {
     // }
 
     /* USE SESSION */
-    const { status } = useSession({
+    const { status, data: session } = useSession({
         required: true,
         onUnauthenticated() {
             router.push("/login");
@@ -130,14 +130,17 @@ export function PrivateLayout({ children }: { children: React.ReactNode }) {
             expandedByDefault: Boolean(startupSubPage.find((a) => a.isActive)),
             items: startupSubPage,
         },
-        {
+    ];
+
+    if (session.user.isAdmin) {
+        MenuItems.push({
             linkProps: {
                 href: adminMattermostLink,
             },
             text: "Admin",
             isActive: hasPathnameThisMatch(pathname, adminMattermostLink),
-        },
-    ];
+        });
+    }
 
     interface ItemLink {
         linkProps: { href: string };

@@ -57,7 +57,9 @@ export const useSession = function useSession(props?: {
     onUnauthenticated?: () => void;
 }) {
     const [loading, setLoading] = useState<boolean>(false);
-    const [data, setData] = useState<{ user: { name: string } }>();
+    const [data, setData] = useState<{
+        user: { name: string; isAdmin: boolean };
+    }>();
     const [status, setStatus] = useState<string>("loading");
 
     useEffect(() => {
