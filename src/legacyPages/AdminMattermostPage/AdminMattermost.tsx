@@ -108,7 +108,10 @@ export const AdminMattermost = (props: AdminMattermostProps) => {
         ) {
             const res = await axios.post(
                 computeRoute(routes.ADMIN_MATTERMOST_SEND_MESSAGE),
-                buildParams(true)
+                buildParams(true),
+                {
+                    withCredentials: true,
+                }
             );
             alert(`${res.data.message}`);
         } else {
@@ -119,7 +122,10 @@ export const AdminMattermost = (props: AdminMattermostProps) => {
         try {
             const res = await axios.post(
                 computeRoute(routes.ADMIN_MATTERMOST_SEND_MESSAGE),
-                buildParams(false)
+                buildParams(false),
+                {
+                    withCredentials: true,
+                }
             );
             alert(`${res.data.message}`);
             console.log("Done");

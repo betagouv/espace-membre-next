@@ -108,6 +108,9 @@ export const InfoUpdate = (props: InfoUpdateProps) => {
                 ),
                 {
                     ...state.formData,
+                },
+                {
+                    withCredentials: true,
                 }
             )
             .then(() => {

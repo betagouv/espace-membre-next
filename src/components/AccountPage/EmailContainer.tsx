@@ -128,7 +128,11 @@ export default function EmailContainer({
                                 axios.post(
                                     computeRoute(
                                         routes.USER_CREATE_EMAIL_API
-                                    ).replace(":username", userInfos.id)
+                                    ).replace(":username", userInfos.id),
+                                    undefined,
+                                    {
+                                        withCredentials: true,
+                                    }
                                 );
                             }}
                         >

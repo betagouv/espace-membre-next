@@ -58,7 +58,6 @@ export const Home = function (props: Props) {
         }
         event.preventDefault();
         setIsSaving(true);
-        console.log("LCS SEND LOGIN");
         axios
             .post(computeRoute(`${routes.LOGIN_API}${props.next}#test`), {
                 emailInput: email,

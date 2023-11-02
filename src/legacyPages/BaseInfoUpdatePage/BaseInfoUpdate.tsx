@@ -133,6 +133,9 @@ export const BaseInfoUpdate = (props: BaseInfoUpdateProps) => {
                     ...state.formData,
                     startups: state.formData.startups.map((s) => s.value),
                     previously: state.formData.previously.map((s) => s.value),
+                },
+                {
+                    withCredentials: true,
                 }
             );
         } catch (e) {

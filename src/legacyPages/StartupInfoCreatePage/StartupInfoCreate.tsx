@@ -29,9 +29,15 @@ export const StartupInfoCreate = (props: StartupInfoCreateProps) => {
 
     const save = async (data) => {
         return axios
-            .post(computeRoute(routes.STARTUP_POST_INFO_CREATE_FORM), {
-                ...data,
-            })
+            .post(
+                computeRoute(routes.STARTUP_POST_INFO_CREATE_FORM),
+                {
+                    ...data,
+                },
+                {
+                    withCredentials: true,
+                }
+            )
             .then(() => {
                 window.location.replace(`/startups`);
             });

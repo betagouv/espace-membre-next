@@ -29,11 +29,17 @@ export default function BlocEmailResponder({
                     console.log(e);
                     e.preventDefault();
                     axios
-                        .post(computeRoute(routes.USER_SET_EMAIL_RESPONDER), {
-                            content,
-                            from,
-                            to,
-                        })
+                        .post(
+                            computeRoute(routes.USER_SET_EMAIL_RESPONDER),
+                            {
+                                content,
+                                from,
+                                to,
+                            },
+                            {
+                                withCredentials: true,
+                            }
+                        )
                         .then((data) => {
                             console.log(data);
                         })

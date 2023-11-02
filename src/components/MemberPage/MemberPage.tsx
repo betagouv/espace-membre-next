@@ -79,7 +79,11 @@ export default function MemberPage({
                                         await axios.post(
                                             computeRoute(
                                                 routes.USER_DELETE_EMAIL
-                                            ).replace(":username", username)
+                                            ).replace(":username", username),
+                                            undefined,
+                                            {
+                                                withCredentials: true,
+                                            }
                                         );
                                     }
                                 }}
@@ -196,7 +200,12 @@ export default function MemberPage({
                                                 onSubmit={async (e) => {
                                                     e.preventDefault();
                                                     await axios.post(
-                                                        `/users/${userInfos.id}/email-upgrade`
+                                                        `/users/${userInfos.id}/email-upgrade`,
+                                                        undefined,
+                                                        {
+                                                            withCredentials:
+                                                                true,
+                                                        }
                                                     );
                                                 }}
                                             >
@@ -249,7 +258,11 @@ export default function MemberPage({
                                     onSubmit={async (e) => {
                                         e.preventDefault();
                                         await axios.post(
-                                            `/users/${username}/email`
+                                            `/users/${username}/email`,
+                                            undefined,
+                                            {
+                                                withCredentials: true,
+                                            }
                                         );
                                     }}
                                 >
@@ -315,7 +328,11 @@ export default function MemberPage({
                                 await axios.post(
                                     computeRoute(
                                         routes.USER_UPDATE_SECONDARY_EMAIL
-                                    ).replace(":username", userInfos.id)
+                                    ).replace(":username", userInfos.id),
+                                    undefined,
+                                    {
+                                        withCredentials: true,
+                                    }
                                 );
                             }}
                         >

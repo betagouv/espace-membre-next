@@ -66,6 +66,9 @@ export default function BlocRedirection({
                             {
                                 toEmail,
                                 keepCopy,
+                            },
+                            {
+                                withCredentials: true,
                             }
                         );
                     }}

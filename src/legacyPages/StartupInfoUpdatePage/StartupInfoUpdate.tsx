@@ -52,6 +52,9 @@ export const StartupInfoUpdate = (props: StartupInfoUpdateProps) => {
                 ),
                 {
                     ...data,
+                },
+                {
+                    withCredentials: true,
                 }
             );
             window.location.replace(`/startups/${props.startup.id}`);

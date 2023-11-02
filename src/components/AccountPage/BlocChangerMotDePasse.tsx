@@ -28,6 +28,9 @@ export default function BlocChangerMotDePasse({
                                     ),
                                     {
                                         new_password: password,
+                                    },
+                                    {
+                                        withCredentials: true,
                                     }
                                 )
                                 .then(() => {

@@ -106,7 +106,11 @@ export default function AccountPage(props: any) {
                                         ":username",
                                         userInfos.id
                                     )
-                                )
+                                ),
+                                undefined,
+                                {
+                                    withCredentials: true,
+                                }
                             );
                         }}
                         className="no-margin"

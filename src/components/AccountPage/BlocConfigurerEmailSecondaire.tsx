@@ -32,6 +32,9 @@ export default function BlocConfigurerEmailSecondaire({
                                 ),
                                 {
                                     secondaryEmail: value,
+                                },
+                                {
+                                    withCredentials: true,
                                 }
                             )
                             .then((data) => {
