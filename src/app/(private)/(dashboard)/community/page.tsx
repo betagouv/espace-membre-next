@@ -5,10 +5,10 @@ import routes, { computeRoute } from "@/routes/routes";
 import axios from "axios";
 import { useEffect, useState } from "react";
 
-export default async function Page() {
+export default function Page() {
     // const props: CommunityProps = await getCommunity();
     const props = {};
-    const [data, setData] = useState({});
+    const [data, setData] = useState();
     const [isLoading, setLoading] = useState(true);
     useEffect(() => {
         axios
@@ -24,5 +24,5 @@ export default async function Page() {
 
     if (isLoading) return <p>Loading...</p>;
     if (!data) return <p>No profile data</p>;
-    return <Community {...(props as CommunityProps)} />;
+    return <Community {...(data as CommunityProps)} />;
 }
