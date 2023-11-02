@@ -26,9 +26,8 @@ export default function Page({ params }: { params: { id: string } }) {
             });
     }, [params.id]);
 
-    if (isLoading) return <p>Loading...</p>;
+    if (isLoading) return <p>Chargement....</p>;
     if (!data) return <p>No profile data</p>;
 
-    // const props = await getStartup({ startup: params.id });
     return <StartupPage {...(data as StartupPageProps)} />;
 }

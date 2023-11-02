@@ -22,7 +22,7 @@ export default function Page() {
             });
     }, []);
 
-    if (isLoading) return <p>Loading...</p>;
+    if (isLoading) return <p>Chargement...</p>;
     if (!data) return <p>No profile data</p>;
     return <Community {...(data as CommunityProps)} />;
 }

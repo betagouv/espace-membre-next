@@ -3,31 +3,14 @@ import { hasPathnameThisMatch } from "@/utils/url";
 import { SideMenu } from "@codegouvfr/react-dsfr/SideMenu";
 import { useSession } from "@/proxies/next-auth";
 import { usePathname, useRouter } from "next/navigation";
-import { useEffect, useState } from "react";
 import { Breadcrumb } from "@codegouvfr/react-dsfr/Breadcrumb";
-import routes, { computeRoute } from "@/routes/routes";
-import axios from "axios";
 
 export function PrivateLayout({ children }: { children: React.ReactNode }) {
-    // const session = await getServerSession();
-    // if (!session) {
-    //     router.push("/login");
-    //     return;
-    // }
     const router = useRouter();
 
     // const sessionWrapper = useSession();
     const pathname = usePathname();
 
-    const [data, setData] = useState(null);
-    const [isLoading, setLoading] = useState(true);
-
-    // if (isLoading) return <p>Loading...</p>;
-    // if (!data) {
-    //     router.push("/login");
-    // }
-
-    /* USE SESSION */
     const { status, data: session } = useSession({
         required: true,
         onUnauthenticated() {
@@ -36,7 +19,7 @@ export function PrivateLayout({ children }: { children: React.ReactNode }) {
     });
 
     if (status === "loading") {
-        return "Loading or not authenticated...";
+        return "Chargement...";
     }
 
     const accountLink = linkRegistry.get("account", undefined);
@@ -79,12 +62,6 @@ export function PrivateLayout({ children }: { children: React.ReactNode }) {
                 accountEditPrivateInfoLink
             ),
         },
-        // {
-        //     linkProps: {
-        //         href: accountBadgeLink,
-        //     },
-        //     text: "Badge",
-        // },
     ];
 
     const startupSubPage = [
