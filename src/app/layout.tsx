@@ -4,7 +4,6 @@ import { getHtmlAttributes } from "@codegouvfr/react-dsfr/next-appdir/getHtmlAtt
 import { PropsWithChildren } from "react";
 import { StartDsfr } from "./StartDsfr";
 import { MuiDsfrThemeProvider } from "./MuiDsfrThemeProvider";
-import NextAuthSessionProvider from "@/providers/SessionProvider";
 import Header from "@/components/Header";
 import { defaultColorScheme } from "./defaultColorScheme";
 
@@ -26,14 +25,12 @@ function MainStructure(props: PropsWithChildren) {
             <body>
                 <DsfrProvider>
                     <MuiDsfrThemeProvider>
-                        <NextAuthSessionProvider>
-                            <Header></Header>
-                            <div className="fr-container fr-container--fluid fr-mb-14v fr-mt-14v">
-                                <div className="fr-grid-row fr-grid-row-gutters fr-grid-row--center">
-                                    {props.children}
-                                </div>
+                        <Header></Header>
+                        <div className="fr-container fr-container--fluid fr-mb-14v fr-mt-14v">
+                            <div className="fr-grid-row fr-grid-row-gutters fr-grid-row--center">
+                                {props.children}
                             </div>
-                        </NextAuthSessionProvider>
+                        </div>
                     </MuiDsfrThemeProvider>
                 </DsfrProvider>
             </body>

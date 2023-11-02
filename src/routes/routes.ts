@@ -70,7 +70,8 @@ class routes {
     static PULL_REQUEST_GET_PRS: string = "/api/pull-requests";
     static ME: string = "/api/me";
     static LOGIN_API: string = "/api/login";
-    static SIGNIN_API: string = "/signin";
+    static SIGNIN: string = "/signin";
+    static SIGNIN_API: string = "/api/signin";
     static API_UPDATE_BADGE_STATUS: string;
     static API_PUBLIC_INCUBATORS_GET_ALL: string = "/api/incubators";
     static API_PUBLIC_SPONSORS_GET_ALL: string = "/api/sponsors";
@@ -79,6 +80,9 @@ class routes {
     static GET_USER_API: string = "/api/community/:username";
     static GET_COMMUNITY: string = "/community";
     static GET_COMMUNITY_API: string = "/api/community";
+
+    static LOGOUT: string = "/logout";
+    static LOGOUT_API: string = "/api/logout";
 }
 
 export default routes;

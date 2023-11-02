@@ -4,12 +4,13 @@ import { useRouter } from "next/navigation";
 import { Header, HeaderProps } from "@codegouvfr/react-dsfr/Header";
 // import { useSession, signIn, signOut } from "next-auth/react";
 import { linkRegistry } from "@/utils/routes/registry";
-import { useSession } from "@/proxies/next-auth";
+import { useSession, signOut } from "@/proxies/next-auth";
+import axios from "axios";
+import routes, { computeRoute } from "@/routes/routes";
 
 const MainHeader = () => {
     const router = useRouter();
     const { data: session, status } = useSession();
-
     const quickAccessItems: (React.ReactNode | HeaderProps.QuickAccessItem)[] =
         [];
     if (session) {
@@ -22,8 +23,12 @@ const MainHeader = () => {
         });
         quickAccessItems.push({
             buttonProps: {
-                onClick: () => {
-                    // signOut();
+                onClick: async () => {
+                    await axios.get(computeRoute(routes.LOGOUT_API), {
+                        withCredentials: true,
+                    });
+                    router.push("/");
+                    //signOut();
                 },
             },
             iconId: "fr-icon-logout-box-r-line",

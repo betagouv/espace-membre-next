@@ -66,10 +66,10 @@ export const useSession = function useSession(props?: {
             .get(computeRoute(routes.ME), { withCredentials: true })
             .then((data) => {
                 setLoading(false);
-                if (data.data) {
+                if (data.data.user) {
                     setStatus("authenticated");
                     setData({
-                        user: data.data,
+                        ...data.data,
                     });
                 } else {
                     setStatus("unauthenticated");

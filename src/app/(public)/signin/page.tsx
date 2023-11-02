@@ -1,6 +1,6 @@
 "use client";
 
-import { useSearchParams } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 import Button from "@codegouvfr/react-dsfr/Button";
 // import { getSession, signIn, useSession } from "next-auth/react";
 import routes, { computeRoute } from "@/routes/routes";
@@ -9,6 +9,7 @@ import axios from "axios";
 export default function SignIn() {
     // const { data: session, status } = useSession();
     // console.log(session, status);
+    const router = useRouter();
     const searchParams = useSearchParams();
     const next = searchParams.get("next");
     if (!window) {
@@ -19,9 +20,11 @@ export default function SignIn() {
         // const data = await signIn("credentials", {
         //     token: hash,
         // });
-        await axios.post(computeRoute(routes.SIGNIN_API), {
+        const value = await axios.post(computeRoute(routes.SIGNIN_API), {
             token: hash,
         });
+        await axios.get(computeRoute(routes.ME));
+        router.push("/account");
         // getSession();
     };
 
