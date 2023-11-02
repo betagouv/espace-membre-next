@@ -132,7 +132,7 @@ export function PrivateLayout({ children }: { children: React.ReactNode }) {
         },
     ];
 
-    if (session.user.isAdmin) {
+    if (session?.user?.isAdmin) {
         MenuItems.push({
             linkProps: {
                 href: adminMattermostLink,
