@@ -1,7 +1,5 @@
 import React from "react";
 import axios from "axios";
-import Select from "react-select";
-import { ClientOnly } from "./ClientOnly";
 import { Autocomplete, TextField } from "@mui/material";
 import { Sponsor } from "@/models/sponsor";
 

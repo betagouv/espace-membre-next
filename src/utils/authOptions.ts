@@ -1,16 +1,5 @@
 import { NextAuthOptions } from "next-auth";
-import EmailProvider from "next-auth/providers/email";
-import CredentialsProvider from "next-auth/providers/credentials";
-import PostgresAdapter from "@auth/pg-adapter";
-import { Pool } from "pg";
 import config from "@/config";
-
-// const pool = new Pool({
-//     connectionString: process.env.DATABASE_URL,
-//     max: 20,
-//     idleTimeoutMillis: 30000,
-//     connectionTimeoutMillis: 2000,
-// });
 
 // Adapter : The Credentials provider can only be used if JSON Web Tokens are enabled for sessions. Users authenticated with the Credentials provider are not persisted in the database.
 export const authOptions: NextAuthOptions = {

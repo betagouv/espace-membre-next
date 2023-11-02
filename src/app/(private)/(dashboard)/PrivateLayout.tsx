@@ -1,4 +1,3 @@
-import Header from "@/components/Header";
 import { linkRegistry } from "@/utils/routes/registry";
 import { hasPathnameThisMatch } from "@/utils/url";
 import { SideMenu } from "@codegouvfr/react-dsfr/SideMenu";

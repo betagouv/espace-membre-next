@@ -1,6 +1,5 @@
 "use client";
 import React from "react";
-import ReactSelect from "react-select";
 import { Select } from "@codegouvfr/react-dsfr/Select";
 import Autocomplete from "@mui/material/Autocomplete";
 import TextField from "@mui/material/TextField";
