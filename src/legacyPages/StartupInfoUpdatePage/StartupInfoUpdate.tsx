@@ -5,7 +5,7 @@ import axios from "axios";
 import { DBPullRequest } from "@/models/pullRequests";
 import routes, { computeRoute } from "@/routes/routes";
 import { StartupForm } from "../../components/StartupForm/StartupForm";
-import { StartupInfo } from "@/models/startup";
+import { StartupInfo, StartupPhase } from "@/models/startup";
 
 // import style manually
 export interface StartupInfoFormData {
@@ -57,7 +57,6 @@ export const StartupInfoUpdate = (props: StartupInfoUpdateProps) => {
             window.location.replace(`/startups/${props.startup.id}`);
         } catch (e) {
             console.log(e);
-            throw new Error(e);
         }
     };
 
@@ -105,7 +104,13 @@ export const StartupInfoUpdate = (props: StartupInfoUpdateProps) => {
                         }
                         save={save}
                         startup={props.startup}
-                        phases={props.startup.attributes.phases}
+                        phases={
+                            props.startup.attributes.phases as unknown as {
+                                start: string;
+                                end?: string | undefined;
+                                name: StartupPhase;
+                            }[]
+                        }
                         link={props.formData.link}
                         dashlord_url={props.formData.dashlord_url}
                         stats_url={props.formData.stats_url}

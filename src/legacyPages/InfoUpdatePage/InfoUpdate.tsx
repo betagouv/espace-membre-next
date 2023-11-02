@@ -1,11 +1,10 @@
 "use client";
 
 import React from "react";
-import type { Request } from "express";
 
 import CitySelect from "../../components/CitySelect";
 import { CommuneInfo } from "@/models/communeInfo";
-import { Option } from "@/models/misc";
+import { FormErrorResponse, Option } from "@/models/misc";
 import routes, { computeRoute } from "@/routes/routes";
 import Input from "@codegouvfr/react-dsfr/Input";
 import RadioButtons from "@codegouvfr/react-dsfr/RadioButtons";
@@ -22,13 +21,12 @@ interface FormData {
     average_nb_of_days: number;
 }
 
-interface InfoUpdateProps {
+export interface InfoUpdateProps {
     title: string;
     currentUserId: string;
     errors: string[];
     messages: string[];
     activeTab: string;
-    request: Request;
     formData: FormData;
     statusOptions: Option[];
     genderOptions: Option[];
@@ -37,6 +35,7 @@ interface InfoUpdateProps {
     startups: string[];
     startupOptions: Option[];
     isAdmin: boolean;
+    username: string;
 }
 
 /* Pure component */
@@ -45,9 +44,11 @@ export const InfoUpdate = (props: InfoUpdateProps) => {
         selectedName: "",
         ...props,
     });
+    const [isSaving, setIsSaving] = React.useState<boolean>(false);
     const [formErrors, setFormErrors] = React.useState<Record<string, string>>(
         {}
     );
+    const [errorMessage, setErrorMessage] = React.useState<string>();
 
     const changeFormData = (key, value) => {
         const formData = state.formData;
@@ -83,7 +84,9 @@ export const InfoUpdate = (props: InfoUpdateProps) => {
     const getDefaultValue = () => {
         if (props.formData.workplace_insee_code) {
             return props.communeInfo
-                ? `${props.communeInfo.nom}  (${props.communeInfo.codesPostaux[0]})`
+                ? `${props.communeInfo.nom}  (${
+                      (props.communeInfo.codesPostaux as string[])[0]
+                  })`
                 : null;
         } else if (state.formData.osm_city) {
             return JSON.parse(props.formData.osm_city).label;

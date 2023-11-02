@@ -68,8 +68,10 @@ export default function MemberSelect({
             <option value="" disabled hidden>
                 {placeholder || "Selectionnez un membre"}
             </option>
-            {members.map((member) => (
-                <option value={member.value}>{member.label}</option>
+            {members.map((member, index) => (
+                <option value={member.value} key={index}>
+                    {member.label}
+                </option>
             ))}
         </Select>
     );

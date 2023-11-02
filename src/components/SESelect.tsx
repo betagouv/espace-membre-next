@@ -1,13 +1,12 @@
 "use client";
 import React from "react";
-import ReactSelect from "react-select";
 import { Select } from "@codegouvfr/react-dsfr/Select";
 import Autocomplete from "@mui/material/Autocomplete";
 import TextField from "@mui/material/TextField";
 
 import { ClientOnly } from "./ClientOnly";
 
-export default ({
+export default function SESelect({
     startups,
     onChange,
     isMulti,
@@ -22,14 +21,17 @@ export default ({
     onChange?: any;
     isMulti?: boolean;
     placeholder?: string;
-    defaultValue?: { value: string; label: string }[];
+    defaultValue?:
+        | { value: string; label: string }
+        | { value: string; label: string }[];
     hint?: string;
     label?: string;
     state?: "default" | "success" | "error" | undefined;
     stateMessageRelated?: string;
-}) => {
+}) {
+    const [value, setValue] = React.useState("");
+
     if (!isMulti) {
-        const [value, setValue] = React.useState("");
         return (
             <Select
                 label={label || "De quel produit voulez-vous voir les infos ?"}
@@ -45,8 +47,10 @@ export default ({
                 <option value="" disabled hidden>
                     {placeholder || "Selectionnez un produit"}
                 </option>
-                {startups.map((startup) => (
-                    <option value={startup.value}>{startup.label}</option>
+                {startups.map((startup, index) => (
+                    <option value={startup.value} key={index}>
+                        {startup.label}
+                    </option>
                 ))}
             </Select>
         );
@@ -70,7 +74,9 @@ export default ({
                 onChange={onTagsChange}
                 defaultValue={
                     defaultValue
-                        ? defaultValue.map((se) => ({
+                        ? (
+                              defaultValue as { value: string; label: string }[]
+                          ).map((se) => ({
                               id: se.value,
                               label: se.label,
                           }))
@@ -90,4 +96,4 @@ export default ({
             )}
         </div>
     );
-};
+}

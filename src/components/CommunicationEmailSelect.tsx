@@ -47,8 +47,7 @@
 //   }
 import { useState } from "react";
 import { Select } from "@codegouvfr/react-dsfr/Select";
-export default function MemberSelect({
-    members,
+export default function CommunicationEmailSelect({
     onChange,
     email,
     placeholder,
@@ -56,7 +55,6 @@ export default function MemberSelect({
     label,
     defaultValue,
 }: {
-    members: { value: string; label: string }[];
     defaultValue: any;
     onChange: any;
     name?: string;
@@ -94,8 +92,10 @@ export default function MemberSelect({
             <option value="" disabled hidden>
                 {placeholder}
             </option>
-            {options.map((opt) => (
-                <option value={opt.value}>{opt.label}</option>
+            {options.map((opt, index) => (
+                <option key={index} value={opt.value}>
+                    {opt.label}
+                </option>
             ))}
         </Select>
     );

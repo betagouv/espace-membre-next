@@ -1,15 +1,13 @@
 "use client";
 import React from "react";
-import type { Request } from "express";
 import SESelect from "../../components/SESelect";
-import DatepickerSelect from "../../components/DatepickerSelect";
 import { Mission } from "@/models/mission";
 import axios from "axios";
 import { DBPullRequest } from "@/models/pullRequests";
 import routes, { computeRoute } from "@/routes/routes";
 import Input from "@codegouvfr/react-dsfr/Input";
 import { Button } from "@codegouvfr/react-dsfr/Button";
-import { useSession } from "next-auth/react";
+import { useSession } from "@/proxies/next-auth";
 
 interface Option {
     key: string;
@@ -20,7 +18,7 @@ interface BaseInfoFormData {
     missions: Mission[];
     end: string;
     start: string;
-    previously?: {
+    previously: {
         value: string;
         label: string;
     }[];
@@ -37,7 +35,6 @@ export interface BaseInfoUpdateProps {
     errors: string[];
     messages: string[];
     activeTab: string;
-    request: Request;
     formData: BaseInfoFormData;
     statusOptions: Option[];
     genderOptions: Option[];

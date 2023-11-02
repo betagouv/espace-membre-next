@@ -1,7 +1,6 @@
 "use client";
 import React, { useEffect, useState } from "react";
 import axios from "axios";
-import { Request } from "express";
 
 import { Member } from "@/models/member";
 import routes, { computeRoute } from "@/routes/routes";
@@ -17,14 +16,13 @@ interface Option {
     label: string;
 }
 
-interface CommunityProps {
+export interface AdminMattermostProps {
     title: string;
     currentUserId: string;
     errors: string[];
     messages: string[];
     users: Member[];
     activeTab: string;
-    request: Request;
     isAdmin: boolean;
     channelOptions: Option[];
 }
@@ -32,7 +30,7 @@ interface CommunityProps {
 const css = ".panel { min-height: 400px; }"; // to have enough space to display dropdown
 
 /* Pure component */
-export const AdminMattermost = (props: CommunityProps) => {
+export const AdminMattermost = (props: AdminMattermostProps) => {
     const [usersForMessage, setUsersForMessage] = useState([]);
     const [channel, setChannel] = useState("town-square");
     const [messageType, setMessageType] = useState("channel");
@@ -99,8 +97,11 @@ export const AdminMattermost = (props: CommunityProps) => {
                 `Est-tu sur de vouloir envoyer cette email à ${
                     messageType === "channel"
                         ? "au canal " +
-                          props.channelOptions.find((c) => c.value === channel)
-                              .label
+                          (
+                              props.channelOptions.find(
+                                  (c) => c.value === channel
+                              ) as Option
+                          ).label
                         : "à " + usersForMessage.length + " membres ?"
                 }`
             ) === true
@@ -210,8 +211,8 @@ export const AdminMattermost = (props: CommunityProps) => {
                                     Sélectionne le canal sur lequel envoyé le
                                     message
                                 </option>
-                                {props.channelOptions.map((opt) => (
-                                    <option value={opt.value}>
+                                {props.channelOptions.map((opt, index) => (
+                                    <option key={index} value={opt.value}>
                                         {opt.label}
                                     </option>
                                 ))}
@@ -232,8 +233,10 @@ export const AdminMattermost = (props: CommunityProps) => {
                                 ⚠️ Attention ce message sera envoyé{" "}
                                 {messageType === "channel"
                                     ? ` au canal ${
-                                          props.channelOptions.find(
-                                              (c) => c.value === channel
+                                          (
+                                              props.channelOptions.find(
+                                                  (c) => c.value === channel
+                                              ) as Option
                                           ).label
                                       }`
                                     : `à ${usersForMessage.length} membres`}

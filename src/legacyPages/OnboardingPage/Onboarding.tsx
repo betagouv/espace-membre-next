@@ -1,6 +1,5 @@
 "use client";
 import React from "react";
-import type { Request } from "express";
 import _ from "lodash";
 import axios from "axios";
 
@@ -10,7 +9,6 @@ import { StartupInfo } from "@/models/startup";
 import MemberSelect from "../../components/MemberSelect";
 import SESelect from "../../components/SESelect";
 import CommunicationEmailSelect from "../../components/CommunicationEmailSelect";
-import { createUsername } from "@/controllers/helpers/githubHelpers/createContentName";
 import routes, { computeRoute } from "@/routes/routes";
 import Input from "@codegouvfr/react-dsfr/Input";
 import Select from "@codegouvfr/react-dsfr/Select";
@@ -21,6 +19,7 @@ import { createModal } from "@codegouvfr/react-dsfr/Modal";
 import ModalOnboarding from "./ModalOnboarding";
 import Alert from "@codegouvfr/react-dsfr/Alert";
 import { FormErrorResponse } from "@/models/misc";
+import { createUsername } from "@/utils/github";
 
 const modal = createModal({
     id: "foo-modal",
@@ -56,28 +55,25 @@ interface FormData {
     lastName?: string;
     start?: string;
     end?: string;
-    firstName?: string;
-    lastName?: string;
     average_nb_of_days?: number;
     communication_email: "primary" | "secondary";
     should_create_marrainage: boolean;
     memberType: string;
 }
 
-interface Props {
+export interface OnboardingProps {
     title?: string;
     errors?: string[];
     messages?: string[];
-    request: Request;
     formData: FormData;
     users: Member[];
     allUsers: Member[];
-    domaineOptions?: Option[];
-    statusOptions?: Option[];
-    genderOptions?: Option[];
-    communeInfo?: CommuneInfo;
-    startups?: StartupInfo[];
-    startupOptions?: {
+    domaineOptions: Option[];
+    statusOptions: Option[];
+    genderOptions: Option[];
+    communeInfo: CommuneInfo;
+    startups: StartupInfo[];
+    startupOptions: {
         value: string;
         label: string;
     }[];
@@ -90,7 +86,7 @@ interface Props {
 }
 
 /* Pure component */
-export const Onboarding = function (props: Props) {
+export const Onboarding = function (props: OnboardingProps) {
     const [state, setState] = React.useState<any>({
         selectedName: "",
         ...props,
@@ -174,7 +170,7 @@ export const Onboarding = function (props: Props) {
                     state.formData.firstName,
                     state.formData.lastName
                 );
-                const userExists: Member = props.allUsers.find(
+                const userExists: Member | undefined = props.allUsers.find(
                     (user) => user.id === username
                 );
                 if (userExists) {
@@ -187,7 +183,9 @@ export const Onboarding = function (props: Props) {
     const getDefaultValue = () => {
         if (props.formData.workplace_insee_code) {
             return props.communeInfo
-                ? `${props.communeInfo.nom}  (${props.communeInfo.codesPostaux[0]})`
+                ? `${props.communeInfo.nom}  (${
+                      (props.communeInfo.codesPostaux as string[])[0]
+                  })`
                 : null;
         } else if (state.formData.osm_city) {
             return JSON.parse(state.formData.osm_city).label;
@@ -206,26 +204,29 @@ export const Onboarding = function (props: Props) {
         //     return;
         // }
         // setIsSaving(true);
-        try {
-            const { data } = await axios.post(
-                computeRoute(routes.ONBOARDING_ACTION),
-                {
-                    ...state.formData,
+        axios
+            .post(computeRoute(routes.ONBOARDING_ACTION), {
+                ...state.formData,
+            })
+            .then(({ data }) => {
+                window.location.replace(
+                    `/onboardingSuccess/${data.prInfoNumber}?isEmailBetaAsked=${data.isEmailBetaAsked}`
+                );
+            })
+            .catch(
+                ({
+                    response: { data },
+                }: {
+                    response: { data: FormErrorResponse };
+                }) => {
+                    const ErrorResponse: FormErrorResponse = data;
+                    setErrorMessage(ErrorResponse.message);
+                    setIsSaving(false);
+                    if (ErrorResponse.errors) {
+                        setFormErrors(ErrorResponse.errors);
+                    }
                 }
             );
-
-            window.location.replace(
-                `/onboardingSuccess/${data.prInfoNumber}?isEmailBetaAsked=${data.isEmailBetaAsked}`
-            );
-        } catch (resp: { response: { data: FormErrorResponse } }) {
-            console.log(resp);
-            setIsSaving(false);
-            const ErrorResponse: FormErrorResponse = resp.response.data;
-            setErrorMessage(ErrorResponse.message);
-            if (ErrorResponse.errors) {
-                setFormErrors(ErrorResponse.errors);
-            }
-        }
     };
 
     const previewEmail: string = createUsername(
@@ -474,7 +475,6 @@ export const Onboarding = function (props: Props) {
                                         name: "startDate",
                                         min: props.userConfig.minStartDate,
                                         title: "En format YYYY-MM-DD, par exemple : 2020-01-31",
-                                        selected: state.formData.start,
                                         onChange: (e) =>
                                             changeFormData(
                                                 "start",
@@ -712,7 +712,6 @@ export const Onboarding = function (props: Props) {
                                             label: "Je souhaite une adresse @beta.gouv.fr",
                                             nativeInputProps: {
                                                 name: "checkboxes-1",
-                                                value: "true",
                                                 onChange: (e) =>
                                                     changeFormData(
                                                         "isEmailBetaAsked",

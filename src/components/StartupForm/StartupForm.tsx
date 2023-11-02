@@ -10,7 +10,7 @@ import MdEditor from "react-markdown-editor-lite";
 import MarkdownIt from "markdown-it";
 import SEAsyncIncubateurSelect from "../SEAsyncIncubateurSelect";
 import SponsorBlock from "./SponsorBlock";
-import PhaseItem, {
+import {
     PhaseActionCell,
     PhaseDatePickerCell,
     PhaseSelectionCell,
@@ -53,8 +53,12 @@ interface StartupForm {
     repository?: string;
     content: string;
     save: any;
-    phases?: Phase[];
-    startup: StartupInfo;
+    phases?: {
+        start: string;
+        end?: string;
+        name: StartupPhase;
+    }[];
+    startup?: StartupInfo;
 }
 
 interface FormErrorResponse {
@@ -92,10 +96,11 @@ export const StartupForm = (props: StartupForm) => {
         props.phases || [
             {
                 name: StartupPhase.PHASE_INVESTIGATION,
-                start: new Date(),
+                start: "",
             },
         ]
     );
+    console.log(phases);
     const [errorMessage, setErrorMessage] = React.useState("");
     const [formErrors, setFormErrors] = React.useState({});
     const [isSaving, setIsSaving] = React.useState(false);
@@ -147,13 +152,15 @@ export const StartupForm = (props: StartupForm) => {
 
     function addPhase() {
         let nextPhase = StartupPhase.PHASE_INVESTIGATION;
-        let nextDate = new Date();
+        let nextDate = new Date().toISOString().split("T")[0];
         if (phases.length) {
             const previousPhase: StartupPhase = phases[phases.length - 1].name;
             const previousPhaseIndex = PHASES_ORDERED_LIST.findIndex(
                 (value) => value === previousPhase
             );
-            nextDate = phases[phases.length - 1].end || new Date();
+            nextDate =
+                phases[phases.length - 1].end ||
+                new Date().toISOString().split("T")[0];
             nextPhase = PHASES_ORDERED_LIST[previousPhaseIndex + 1];
         }
 
@@ -166,7 +173,7 @@ export const StartupForm = (props: StartupForm) => {
         setPhases([...newPhases]);
     }
 
-    function changePhase(index: number, phase: string) {
+    function changePhase(index: number, phase: StartupPhase) {
         const newPhases = [...phases];
         newPhases[index].name = phase;
         setPhases([...newPhases]);
@@ -232,7 +239,7 @@ export const StartupForm = (props: StartupForm) => {
                                     fiche produit". Pas besoin de faire plus
                                     long.`}
                                 textArea={true}
-                                nativeInputProps={{
+                                nativeTextAreaProps={{
                                     onChange: (e) => {
                                         setMission(e.currentTarget.value);
                                     },
@@ -270,14 +277,14 @@ export const StartupForm = (props: StartupForm) => {
                                     setIncubator(e.value);
                                 }}
                             />
-                            <SponsorBlock
+                            {/* <SponsorBlock
                                 newSponsors={newSponsors}
                                 setNewSponsors={setNewSponsors}
                                 sponsors={sponsors}
                                 setSponsors={(sponsors) =>
                                     setSponsors(sponsors)
                                 }
-                            />
+                            /> */}
                             <div className="fr-input-group">
                                 <label className="fr-label">Phase</label>
                                 <p>
@@ -286,18 +293,14 @@ export const StartupForm = (props: StartupForm) => {
                                 </p>
                                 <Table
                                     data={phases.map((phase, index) => {
-                                        console.log(phase);
                                         return [
                                             <PhaseSelectionCell
-                                                end={phase.end}
-                                                start={phase.start}
                                                 name={phase.name}
                                                 index={index}
                                                 changePhase={changePhase}
                                                 key={index}
                                             />,
                                             <PhaseDatePickerCell
-                                                end={phase.end}
                                                 start={phase.start}
                                                 name={phase.name}
                                                 index={index}
@@ -307,9 +310,6 @@ export const StartupForm = (props: StartupForm) => {
                                                 key={index}
                                             />,
                                             <PhaseActionCell
-                                                end={phase.end}
-                                                start={phase.start}
-                                                name={phase.name}
                                                 index={index}
                                                 deletePhase={deletePhase}
                                                 key={index}

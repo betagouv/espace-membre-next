@@ -1,17 +1,5 @@
 import { NextAuthOptions } from "next-auth";
-import EmailProvider from "next-auth/providers/email";
-import CredentialsProvider from "next-auth/providers/credentials";
-import PostgresAdapter from "@auth/pg-adapter";
-import { Pool } from "pg";
-import { postSignIn } from "@/controllers/loginController/postSignIn";
 import config from "@/config";
-
-// const pool = new Pool({
-//     connectionString: process.env.DATABASE_URL,
-//     max: 20,
-//     idleTimeoutMillis: 30000,
-//     connectionTimeoutMillis: 2000,
-// });
 
 // Adapter : The Credentials provider can only be used if JSON Web Tokens are enabled for sessions. Users authenticated with the Credentials provider are not persisted in the database.
 export const authOptions: NextAuthOptions = {
@@ -19,18 +7,9 @@ export const authOptions: NextAuthOptions = {
     secret: config.secret,
     cookies: {
         sessionToken: {
-            name: "espaceMembreCookieName",
-            options: {
-                maxAge: 24 * 60 * 60 * 1000 * 7,
-                httpOnly: true,
-                secure: process.env.NODE_ENV === "production" ? true : false,
-                sameSite: "lax",
-            },
+            name: "espaceMembreCookieName2",
+            options: {},
         },
-    },
-    jwt: {
-        secret: config.secret,
-        maxAge: 24 * 60 * 60 * 1000 * 7,
     },
     providers: [
         // EmailProvider({
@@ -44,31 +23,34 @@ export const authOptions: NextAuthOptions = {
         //     },
         //     from: process.env.EMAIL_FROM,
         // }),
-        CredentialsProvider({
-            name: "Credentials",
-            credentials: {
-                // email: { label: "Email", type: "text" },
-                token: { label: "token", type: "password" },
-            },
-            async authorize(credentials: any, req) {
-                // database operations
-                try {
-                    const user = await postSignIn(
-                        {
-                            body: {
-                                token: credentials.token,
-                            },
-                        },
-                        Response
-                    );
-                    return {
-                        ...user,
-                    };
-                } catch (e) {
-                    console.error(e);
-                    return null;
-                }
-            },
-        }),
+        // CredentialsProvider({
+        //     name: "Credentials",
+        //     credentials: {
+        //         // email: { label: "Email", type: "text" },
+        //         token: { label: "token", type: "password" },
+        //     },
+        //     async authorize(credentials: any, req) {
+        //         // database operations
+        //         try {
+        //             return {
+        //                 user: {},
+        //             };
+        //             // const user = await postSignIn(
+        //             //     {
+        //             //         body: {
+        //             //             token: credentials.token,
+        //             //         },
+        //             //     },
+        //             //     Response
+        //             // );
+        //             // return {
+        //             //     ...user,
+        //             // };
+        //         } catch (e) {
+        //             console.error(e);
+        //             return null;
+        //         }
+        //     },
+        // }),
     ],
 };

@@ -8,6 +8,7 @@ import {
     type ReactNode,
     useCallback,
 } from "react";
+import _ from "lodash";
 import { useStyles } from "tss-react/dsfr";
 import { assert } from "tsafe/assert";
 import Autocomplete from "@mui/material/Autocomplete";
@@ -76,7 +77,7 @@ export function Search(props: SearchProps) {
 
     const [isOpen, setIsOpen] = useState(false);
 
-    const valueRef = useRef(props.value);
+    const valueRef = useRef(defaultValue);
 
     return (
         <Autocomplete
@@ -125,30 +126,6 @@ export function Search(props: SearchProps) {
             options={results.map((result) => result.label)}
             filterOptions={(ids) => ids} // No filtering
             getOptionLabel={() => ""}
-            // @ts-expect-error: We return a ReactNode instead of a string
-            // but it's okay as long as we always return the same object reference
-            // for a given group.
-            // groupBy={(id) => {
-            //     const index = results.findIndex(
-            //         (result) => result.label === id
-            //     );
-
-            //     const getPrefix = (index: number): ReactNode => {
-            //         const result = results[index];
-
-            //         if (result.prefix) {
-            //             return result.prefix;
-            //         }
-
-            //         if (index === 0) {
-            //             return "";
-            //         }
-
-            //         return getPrefix(index - 1);
-            //     };
-
-            //     return getPrefix(index);
-            // }}
             renderOption={(liProps, id) => (
                 <li {...liProps} id={id} key={id}>
                     {getResult(id).label}
@@ -222,19 +199,21 @@ export function NativeInputPropsProvider(props: {
     );
 }
 
-function debounce(func, wait) {
-    let timeout;
-    return function (...args) {
-        const context = this;
-        if (timeout) clearTimeout(timeout);
-        timeout = setTimeout(() => {
-            timeout = null;
-            func.apply(context, args);
-        }, wait);
-    };
-}
-
-export default function ({ value, onChange, placeholder, defaultValue }) {
+export default function CitySelect({
+    value,
+    onChange,
+    placeholder,
+    defaultValue,
+    state,
+    stateRelatedMessage,
+}: {
+    value?: any;
+    onChange: any;
+    placeholder?: string;
+    defaultValue: any;
+    state?: string;
+    stateRelatedMessage?: string;
+}) {
     const loadOptions = async (
         inputValue: string,
         callback: (data: any) => void
@@ -242,7 +221,7 @@ export default function ({ value, onChange, placeholder, defaultValue }) {
         const data = await searchForeignCity(inputValue);
         callback(data);
     };
-    const debounceLoadOptions = useCallback(debounce(loadOptions, 2000), []);
+    const debounceLoadOptions = useCallback(_.debounce(loadOptions, 2000), []);
     const [search, onSearchChange] = useState("");
     const [inputElement, setInputElement] = useState<HTMLInputElement | null>(
         null
@@ -260,9 +239,7 @@ export default function ({ value, onChange, placeholder, defaultValue }) {
             </label>
             <SearchBar
                 label="Lieu de travail principal"
-                containerWidth={"100%"}
                 onButtonClick={function noRefCheck() {}}
-                value={value}
                 renderInput={({ className, id, placeholder, type }) => (
                     <NativeInputPropsProvider
                         nativeInputProps={{
@@ -274,10 +251,8 @@ export default function ({ value, onChange, placeholder, defaultValue }) {
                     >
                         <>
                             <Search
-                                value={search}
-                                value={value}
                                 defaultValue={defaultValue}
-                                ref={setInputElement}
+                                // ref={setInputElement}
                                 onChange={(value) => {
                                     onSearchChange(value);
                                     debounceLoadOptions(value, (data) => {
@@ -290,12 +265,12 @@ export default function ({ value, onChange, placeholder, defaultValue }) {
                                 onSelect={(value) => {
                                     onChange(value);
                                 }}
-                                onKeyDown={(event) => {
-                                    if (event.key === "Escape") {
-                                        assert(inputElement !== null);
-                                        inputElement.blur();
-                                    }
-                                }}
+                                // onKeyDown={(event) => {
+                                //     if (event.key === "Escape") {
+                                //         assert(inputElement !== null);
+                                //         inputElement.blur();
+                                //     }
+                                // }}
                                 overlayClassName="nx-w-full"
                                 results={results}
                             />

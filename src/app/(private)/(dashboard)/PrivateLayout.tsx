@@ -1,11 +1,12 @@
-import Header from "@/components/Header";
 import { linkRegistry } from "@/utils/routes/registry";
 import { hasPathnameThisMatch } from "@/utils/url";
 import { SideMenu } from "@codegouvfr/react-dsfr/SideMenu";
-import { signIn, useSession } from "next-auth/react";
+import { useSession } from "@/proxies/next-auth";
 import { usePathname, useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 import { Breadcrumb } from "@codegouvfr/react-dsfr/Breadcrumb";
+import routes, { computeRoute } from "@/routes/routes";
+import axios from "axios";
 
 export function PrivateLayout({ children }: { children: React.ReactNode }) {
     // const session = await getServerSession();
@@ -15,8 +16,18 @@ export function PrivateLayout({ children }: { children: React.ReactNode }) {
     // }
     const router = useRouter();
 
-    const sessionWrapper = useSession();
+    // const sessionWrapper = useSession();
     const pathname = usePathname();
+
+    const [data, setData] = useState(null);
+    const [isLoading, setLoading] = useState(true);
+
+    // if (isLoading) return <p>Loading...</p>;
+    // if (!data) {
+    //     router.push("/login");
+    // }
+
+    /* USE SESSION */
     const { status } = useSession({
         required: true,
         onUnauthenticated() {
@@ -93,7 +104,7 @@ export function PrivateLayout({ children }: { children: React.ReactNode }) {
         },
     ];
 
-    const MenuItems = [
+    const MenuItems: ItemLink[] = [
         {
             isActive: hasPathnameThisMatch(pathname, accountLink),
             linkProps: {
@@ -132,13 +143,14 @@ export function PrivateLayout({ children }: { children: React.ReactNode }) {
         linkProps: { href: string };
         text: string;
         isActive: boolean;
-        items: ItemLink[];
+        expandedByDefault?: boolean;
+        items?: ItemLink[];
     }
 
     const findActiveItem = (items: ItemLink[]) => {
-        let tree = [];
+        let tree: ItemLink[] = [];
         items.forEach((i) => {
-            let childrenTree = [];
+            let childrenTree: ItemLink[] = [];
             if (i.items && i.items.length) {
                 childrenTree = findActiveItem(i.items);
             }
@@ -152,7 +164,6 @@ export function PrivateLayout({ children }: { children: React.ReactNode }) {
     };
 
     const tree = findActiveItem(MenuItems);
-    console.log(tree);
     return (
         <>
             <div className="fr-col-12 fr-col-md-3 fr-col-lg-3">
@@ -165,7 +176,7 @@ export function PrivateLayout({ children }: { children: React.ReactNode }) {
             </div>
             <div className="fr-col-12 fr-col-md-9 fr-col-lg-9">
                 <Breadcrumb
-                    currentPageLabel={tree[tree.length - 1].text}
+                    currentPageLabel={tree[tree.length - 1]?.text}
                     homeLinkProps={{
                         href: "/",
                     }}

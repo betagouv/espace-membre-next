@@ -1,6 +1,5 @@
 "use client";
 import React from "react";
-import type { Request } from "express";
 import _ from "lodash";
 import { Member } from "@/models/member";
 import { StartupInfo } from "@/models/startup";

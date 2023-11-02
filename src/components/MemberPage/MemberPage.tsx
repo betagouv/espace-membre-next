@@ -12,6 +12,20 @@ import {
     PromiseLikeOfReactNode,
 } from "react";
 
+export interface MemberPageProps {
+    isExpired: boolean;
+    emailInfos: any;
+    redirections: any;
+    userInfos: any;
+    secondaryEmail: string;
+    canCreateEmail: boolean;
+    hasPublicServiceEmail: boolean;
+    isAdmin: boolean;
+    availableEmailPros: any;
+    primaryEmailStatus: string;
+    username: string;
+}
+
 export default function MemberPage({
     isExpired,
     emailInfos,
@@ -24,7 +38,7 @@ export default function MemberPage({
     availableEmailPros,
     primaryEmailStatus,
     username,
-}) {
+}: MemberPageProps) {
     return (
         <>
             <div className="fr-mb-8v">
