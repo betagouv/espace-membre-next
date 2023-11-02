@@ -1,7 +1,6 @@
 "use client";
 import React, { useEffect, useState } from "react";
 import axios from "axios";
-import { Request } from "express";
 
 import { Member } from "@/models/member";
 import routes, { computeRoute } from "@/routes/routes";
@@ -24,7 +23,6 @@ export interface AdminMattermostProps {
     messages: string[];
     users: Member[];
     activeTab: string;
-    request: Request;
     isAdmin: boolean;
     channelOptions: Option[];
 }

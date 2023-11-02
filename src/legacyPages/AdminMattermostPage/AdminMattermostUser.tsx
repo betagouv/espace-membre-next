@@ -1,5 +1,4 @@
 import React from "react";
-import { Request } from "express";
 
 import { Member } from "@/models/member";
 import { ReactTabulator, ColumnDefinition } from "react-tabulator";
@@ -11,7 +10,6 @@ interface CommunityProps {
     messages: string[];
     users: Member[];
     activeTab: string;
-    request: Request;
     isAdmin: boolean;
 }
 
