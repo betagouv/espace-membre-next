@@ -40,7 +40,7 @@ const OVH_ENV_VAR = {
 export default {
     ...OVH_ENV_VAR,
     ...CRON_TASK_ENV_VAR,
-    API_SERVER: process.env.API_SERVER || "http://localhost:8100",
+    API_SERVER: process.env.NEXT_PUBLIC_API_SERVER || "http://localhost:8100",
     secret: process.env.SESSION_SECRET,
     secure: isSecure,
     protocol: isSecure ? "https" : "http",
