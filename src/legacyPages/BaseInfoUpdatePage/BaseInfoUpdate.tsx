@@ -1,8 +1,6 @@
 "use client";
 import React from "react";
-import type { Request } from "express";
 import SESelect from "../../components/SESelect";
-import DatepickerSelect from "../../components/DatepickerSelect";
 import { Mission } from "@/models/mission";
 import axios from "axios";
 import { DBPullRequest } from "@/models/pullRequests";
@@ -37,7 +35,6 @@ export interface BaseInfoUpdateProps {
     errors: string[];
     messages: string[];
     activeTab: string;
-    request: Request;
     formData: BaseInfoFormData;
     statusOptions: Option[];
     genderOptions: Option[];

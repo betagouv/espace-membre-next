@@ -1,7 +1,6 @@
 "use client";
 
 import React from "react";
-import type { Request } from "express";
 
 import CitySelect from "../../components/CitySelect";
 import { CommuneInfo } from "@/models/communeInfo";
@@ -28,7 +27,6 @@ export interface InfoUpdateProps {
     errors: string[];
     messages: string[];
     activeTab: string;
-    request: Request;
     formData: FormData;
     statusOptions: Option[];
     genderOptions: Option[];

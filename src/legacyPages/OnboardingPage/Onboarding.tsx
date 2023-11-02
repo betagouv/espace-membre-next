@@ -1,6 +1,5 @@
 "use client";
 import React from "react";
-import type { Request } from "express";
 import _ from "lodash";
 import axios from "axios";
 
@@ -66,7 +65,6 @@ export interface OnboardingProps {
     title?: string;
     errors?: string[];
     messages?: string[];
-    request: Request;
     formData: FormData;
     users: Member[];
     allUsers: Member[];
