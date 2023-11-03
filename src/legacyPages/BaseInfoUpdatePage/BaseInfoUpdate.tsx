@@ -1,11 +1,12 @@
 "use client";
-import React from "react";
-import SESelect from "../../components/SESelect";
-import { Mission } from "@/models/mission";
 import axios from "axios";
+import React from "react";
+import SESelect from "@/components/SESelect";
+import { Mission } from "@/models/mission";
 import { DBPullRequest } from "@/models/pullRequests";
 import routes, { computeRoute } from "@/routes/routes";
 import Input from "@codegouvfr/react-dsfr/Input";
+import Alert from "@codegouvfr/react-dsfr/Alert";
 import { Button } from "@codegouvfr/react-dsfr/Button";
 import { useSession } from "@/proxies/next-auth";
 
@@ -49,7 +50,7 @@ export interface BaseInfoUpdateProps {
 }
 
 interface FormErrorResponse {
-    errors?: Record<string, string[]>;
+    errors?: Record<string, string>;
     message: string;
 }
 
@@ -69,9 +70,11 @@ export const BaseInfoUpdate = (props: BaseInfoUpdateProps) => {
         {}
     );
     const [errorMessage, setErrorMessage] = React.useState("");
+    const [alertMessage, setAlertMessage] = React.useState<{
+        message: string;
+        type: "success" | "warning";
+    }>();
     const [isSaving, setIsSaving] = React.useState(false);
-
-    const css = ".panel { overflow: hidden; width: auto; }";
 
     const changeFormData = (key, value) => {
         const formData = state.formData;
@@ -124,7 +127,11 @@ export const BaseInfoUpdate = (props: BaseInfoUpdateProps) => {
         setIsSaving(true);
         console.log(state.formData);
         try {
-            await axios.post(
+            const {
+                data: { message, pr_url },
+            }: {
+                data: { message: string; pr_url: string };
+            } = await axios.post(
                 computeRoute(routes.ACCOUNT_POST_BASE_INFO_FORM).replace(
                     ":username",
                     session.data?.user?.name as string
@@ -138,143 +145,135 @@ export const BaseInfoUpdate = (props: BaseInfoUpdateProps) => {
                     withCredentials: true,
                 }
             );
+            setAlertMessage({
+                message,
+                type: "success",
+            });
         } catch (e) {
             console.log(e);
+            const ErrorResponse: FormErrorResponse = e as FormErrorResponse;
+            setAlertMessage({
+                message: ErrorResponse.message,
+                type: "warning",
+            });
+            setIsSaving(false);
+            if (ErrorResponse.errors) {
+                setFormErrors(ErrorResponse.errors);
+            }
         }
-        // .catch(
-        //     ({
-        //         response: { data },
-        //     }: {
-        //         response: { data: FormErrorResponse };
-        //     }) => {
-        //         const ErrorResponse: FormErrorResponse = data;
-        //         setErrorMessage(ErrorResponse.message);
-        //         setIsSaving(false);
-        //         if (ErrorResponse.errors) {
-        //             setFormErrors(ErrorResponse.errors);
-        //         }
-        //     }
-        // );
     };
 
     return (
         <>
-            <div className="module">
-                <div>
-                    <small>
-                        <a href="/account">Mon Compte</a> &gt;{" "}
-                        <a href="">Mise à jour de mes informations</a>
-                    </small>
-                </div>
-                <div className="margin-top-m"></div>
-                <div className="panel">
-                    <h3>Mise à jour de mes informations</h3>
-                    {!!props.updatePullRequest && (
-                        <div className="notification">
-                            ⚠️ Une pull request existe déjà sur ta fiche membre.
-                            Toi ou un membre de ton équipe doit la merger pour
-                            que les changements soit pris en compte
-                            <a
-                                href={props.updatePullRequest.url}
-                                target="_blank"
-                            >
-                                {props.updatePullRequest.url}
-                            </a>
-                            <br />
-                            (la prise en compte peut prendre 10 minutes.)
-                        </div>
-                    )}
-                    {!!errorMessage && (
-                        <p className="text-small text-color-red">
-                            {errorMessage}
-                        </p>
-                    )}
-                    <div className="beta-banner"></div>
-                    <form className="no-margin" onSubmit={save}>
-                        <Input
-                            label="Rôle chez beta.gouv.fr"
-                            nativeInputProps={{
-                                name: "role",
-                                onChange: (e: {
-                                    currentTarget: { value: string };
-                                }) => {
-                                    changeFormData(
-                                        "role",
-                                        e.currentTarget.value
-                                    );
-                                },
-                                value: state.formData.role,
-                                required: true,
-                            }}
-                            state={!!formErrors["role"] ? "error" : "default"}
-                            stateRelatedMessage={formErrors["role"]}
-                        />
-                        <SESelect
-                            label="Produits actuels :"
-                            hint="Produits auxquels tu participes actuellement."
-                            startups={props.startupOptions}
-                            onChange={(startups) => {
-                                changeFormData("startups", startups);
-                            }}
-                            isMulti={true}
-                            placeholder={"Sélectionne un produit"}
-                            defaultValue={props.formData.startups}
-                            state={
-                                !!formErrors["startups"] ? "error" : "default"
-                            }
-                            stateMessageRelated={formErrors["startups"]}
-                        />
-                        <SESelect
-                            label="Produits précédents :"
-                            hint="Produits auxquels tu as participé précédemment."
-                            startups={props.startupOptions}
-                            onChange={(startups) => {
-                                changeFormData("previously", startups);
-                            }}
-                            isMulti={true}
-                            placeholder={"Sélectionne un produit"}
-                            defaultValue={props.formData.previously}
-                            state={
-                                !!formErrors["startups"] ? "error" : "default"
-                            }
-                            stateMessageRelated={formErrors["startups"]}
-                        />
-                        <Input
-                            label={"Fin de la mission (obligatoire) :"}
-                            hintText={
-                                <>
-                                    Si tu ne la connais pas, mets une date dans
-                                    6 mois, tu pourras la corriger plus tard.
-                                    <br />
-                                    <i>Au format JJ/MM/YYYY</i>
-                                </>
-                            }
-                            nativeInputProps={{
-                                type: "date",
-                                name: "endDate",
-                                min: "2020-01-31",
-                                title: "En format YYYY-MM-DD, par exemple : 2020-01-31",
-                                required: true,
-                                defaultValue: state.formData.end,
-                                onChange: (e) =>
-                                    changeFormData("end", e.target.value),
-                            }}
-                        />
-                        <Button
-                            children={
-                                isSaving
-                                    ? `Enregistrement en cours...`
-                                    : `Enregistrer`
-                            }
-                            nativeButtonProps={{
-                                type: "submit",
-                                disabled: isSaving || !changesExist(),
-                            }}
-                        />
-                    </form>
-                </div>
+            <div>
+                <h3>Mise à jour de mes informations</h3>
+                {!!props.updatePullRequest && (
+                    <Alert
+                        className="fr-mb-8v"
+                        severity="warning"
+                        small={true}
+                        closable={false}
+                        title="Une pull request existe déjà sur cette fiche."
+                        description={
+                            <>
+                                Toi ou un membre de ton équipe doit la merger
+                                pour que les changements soit pris en compte
+                                <a
+                                    href={props.updatePullRequest.url}
+                                    target="_blank"
+                                >
+                                    {props.updatePullRequest.url}
+                                </a>
+                                <br />
+                                (la prise en compte peut prendre 10 minutes.)
+                            </>
+                        }
+                    />
+                )}
+                {!!alertMessage && (
+                    <Alert
+                        className="fr-mb-8v"
+                        severity={alertMessage.type}
+                        closable={false}
+                        title={alertMessage.message}
+                    />
+                )}
+                <form onSubmit={save}>
+                    <Input
+                        label="Rôle chez beta.gouv.fr"
+                        nativeInputProps={{
+                            name: "role",
+                            onChange: (e: {
+                                currentTarget: { value: string };
+                            }) => {
+                                changeFormData("role", e.currentTarget.value);
+                            },
+                            value: state.formData.role,
+                            required: true,
+                        }}
+                        state={!!formErrors["role"] ? "error" : "default"}
+                        stateRelatedMessage={formErrors["role"]}
+                    />
+                    <SESelect
+                        label="Produits actuels :"
+                        hint="Produits auxquels tu participes actuellement."
+                        startups={props.startupOptions}
+                        onChange={(startups) => {
+                            changeFormData("startups", startups);
+                        }}
+                        isMulti={true}
+                        placeholder={"Sélectionne un produit"}
+                        defaultValue={props.formData.startups}
+                        state={!!formErrors["startups"] ? "error" : "default"}
+                        stateMessageRelated={formErrors["startups"]}
+                    />
+                    <SESelect
+                        label="Produits précédents :"
+                        hint="Produits auxquels tu as participé précédemment."
+                        startups={props.startupOptions}
+                        onChange={(startups) => {
+                            changeFormData("previously", startups);
+                        }}
+                        isMulti={true}
+                        placeholder={"Sélectionne un produit"}
+                        defaultValue={props.formData.previously}
+                        state={!!formErrors["startups"] ? "error" : "default"}
+                        stateMessageRelated={formErrors["startups"]}
+                    />
+                    <Input
+                        label={"Fin de la mission (obligatoire) :"}
+                        hintText={
+                            <>
+                                Si tu ne la connais pas, mets une date dans 6
+                                mois, tu pourras la corriger plus tard.
+                                <br />
+                                <i>Au format JJ/MM/YYYY</i>
+                            </>
+                        }
+                        nativeInputProps={{
+                            type: "date",
+                            name: "endDate",
+                            min: "2020-01-31",
+                            title: "En format YYYY-MM-DD, par exemple : 2020-01-31",
+                            required: true,
+                            defaultValue: props.formData.end,
+                            onChange: (e) =>
+                                changeFormData("end", e.target.value),
+                        }}
+                    />
+                    <Button
+                        children={
+                            isSaving
+                                ? `Enregistrement en cours...`
+                                : `Enregistrer`
+                        }
+                        nativeButtonProps={{
+                            type: "submit",
+                            disabled: isSaving || !changesExist(),
+                        }}
+                    />
+                </form>
             </div>
-            <style media="screen">{css}</style>
         </>
     );
 };

@@ -6,6 +6,7 @@ import { DBPullRequest } from "@/models/pullRequests";
 import routes, { computeRoute } from "@/routes/routes";
 import { StartupForm } from "../../components/StartupForm/StartupForm";
 import { StartupInfo, StartupPhase } from "@/models/startup";
+import Alert from "@codegouvfr/react-dsfr/Alert";
 
 // import style manually
 export interface StartupInfoFormData {
@@ -65,64 +66,57 @@ export const StartupInfoUpdate = (props: StartupInfoUpdateProps) => {
 
     return (
         <>
-            <div className="module">
-                <div>
-                    <small>
-                        <a href="/startups">Produit</a> &gt;{" "}
-                        <a href={`/startups/${props.startup.id}`}>
-                            {props.startup.id}
-                        </a>{" "}
-                        &gt;{" "}
-                        <a href="">
-                            Mise à jour des informations de {props.startup.id}
-                        </a>
-                    </small>
-                </div>
-                <div className="margin-top-m"></div>
-                <div className="panel">
-                    <h3>
-                        Mise à jour des informations de{" "}
-                        {props.startup.attributes.name}
-                    </h3>
-                    {!!props.updatePullRequest && (
-                        <div className="notification">
-                            ⚠️ Une pull request existe déjà sur cette startup.
-                            Quelqu'un doit la merger pour que le changement soit
-                            pris en compte.
-                            <a
-                                href={props.updatePullRequest.url}
-                                target="_blank"
-                            >
-                                {props.updatePullRequest.url}
-                            </a>
-                            <br />
-                            (la prise en compte peut prendre 10 minutes.)
-                        </div>
-                    )}
-                    <div className="beta-banner"></div>
-                    <StartupForm
-                        content={
-                            props.startup.attributes
-                                .content_url_encoded_markdown
+            <div>
+                <h3>
+                    Mise à jour des informations de{" "}
+                    {props.startup.attributes.name}
+                </h3>
+                {!!props.updatePullRequest && (
+                    <Alert
+                        className="fr-mb-8v"
+                        severity="warning"
+                        small={true}
+                        closable={false}
+                        title="Une pull request existe déjà sur cette fiche."
+                        description={
+                            <>
+                                Toi ou un membre de ton équipe doit la merger
+                                pour que les changements soit pris en compte
+                                <a
+                                    className="fr-link"
+                                    href={props.updatePullRequest.url}
+                                    target="_blank"
+                                >
+                                    {props.updatePullRequest.url}
+                                </a>
+                                <br />
+                                (la prise en compte peut prendre 10 minutes.)
+                            </>
                         }
-                        save={save}
-                        startup={props.startup}
-                        phases={
-                            props.startup.attributes.phases as unknown as {
-                                start: string;
-                                end?: string | undefined;
-                                name: StartupPhase;
-                            }[]
-                        }
-                        link={props.formData.link}
-                        dashlord_url={props.formData.dashlord_url}
-                        stats_url={props.formData.stats_url}
-                        mission={props.formData.mission}
-                        repository={props.formData.repository}
-                        incubator={props.formData.incubator}
-                        sponsors={props.formData.sponsors}
                     />
-                </div>
+                )}
+                <div className="beta-banner"></div>
+                <StartupForm
+                    content={
+                        props.startup.attributes.content_url_encoded_markdown
+                    }
+                    save={save}
+                    startup={props.startup}
+                    phases={
+                        props.startup.attributes.phases as unknown as {
+                            start: string;
+                            end?: string | undefined;
+                            name: StartupPhase;
+                        }[]
+                    }
+                    link={props.formData.link}
+                    dashlord_url={props.formData.dashlord_url}
+                    stats_url={props.formData.stats_url}
+                    mission={props.formData.mission}
+                    repository={props.formData.repository}
+                    incubator={props.formData.incubator}
+                    sponsors={props.formData.sponsors}
+                />
             </div>
             <style media="screen">{css}</style>
         </>

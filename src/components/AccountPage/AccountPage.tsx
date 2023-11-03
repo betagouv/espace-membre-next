@@ -6,6 +6,7 @@ import ButtonsGroup from "@codegouvfr/react-dsfr/ButtonsGroup";
 import FicheMembre from "./FicheMembre";
 import EmailContainer from "./EmailContainer";
 import Observatoire from "./Observatoire";
+import Button from "@codegouvfr/react-dsfr/Button";
 
 export default function AccountPage(props: any) {
     const {
@@ -15,25 +16,10 @@ export default function AccountPage(props: any) {
         workplace,
         gender,
         emailInfos,
-        primaryEmail,
-        canCreateEmail,
-        canCreateRedirection,
-        hasPublicServiceEmail,
         legal_status,
-        availableEmailPros,
-        secondaryEmail,
-        domain,
         tjm,
         average_nb_of_days,
-        isAdmin,
-        hasResponder,
-        canChangeEmails,
-        canChangePassword,
-        emailSuspended,
-        marrainageState,
         redirections,
-        isExpired,
-        responderFormData,
     } = props;
     return (
         <div>
@@ -113,15 +99,16 @@ export default function AccountPage(props: any) {
                                 }
                             );
                         }}
-                        className="no-margin"
                     >
-                        <div className="form__group">
-                            <button
-                                className="button margin-right-10"
-                                type="submit"
+                        <div>
+                            <Button
+                                iconId="fr-icon-warning-line"
+                                nativeButtonProps={{
+                                    type: "submit",
+                                }}
                             >
                                 Clôturer mon compte
-                            </button>
+                            </Button>
                         </div>
                     </form>
                 </div>
