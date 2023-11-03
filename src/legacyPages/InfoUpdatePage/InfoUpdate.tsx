@@ -10,6 +10,8 @@ import Input from "@codegouvfr/react-dsfr/Input";
 import RadioButtons from "@codegouvfr/react-dsfr/RadioButtons";
 import Select from "@codegouvfr/react-dsfr/Select";
 import axios from "axios";
+import Button from "@codegouvfr/react-dsfr/Button";
+import Alert from "@codegouvfr/react-dsfr/Alert";
 
 interface FormData {
     gender: string;
@@ -48,6 +50,10 @@ export const InfoUpdate = (props: InfoUpdateProps) => {
     const [formErrors, setFormErrors] = React.useState<Record<string, string>>(
         {}
     );
+    const [alertMessage, setAlertMessage] = React.useState<{
+        message: string;
+        type: "success" | "warning";
+    }>();
     const [errorMessage, setErrorMessage] = React.useState<string>();
 
     const changeFormData = (key, value) => {
@@ -114,7 +120,10 @@ export const InfoUpdate = (props: InfoUpdateProps) => {
                 }
             )
             .then(() => {
-                window.location.replace("/account");
+                setAlertMessage({
+                    message: "Les informations ont bien été enregistrées.",
+                    type: "warning",
+                });
             })
             .catch(
                 ({
@@ -123,7 +132,10 @@ export const InfoUpdate = (props: InfoUpdateProps) => {
                     response: { data: FormErrorResponse };
                 }) => {
                     const ErrorResponse: FormErrorResponse = data;
-                    setErrorMessage(ErrorResponse.message);
+                    setAlertMessage({
+                        message: ErrorResponse.message,
+                        type: "warning",
+                    });
                     setIsSaving(false);
                     if (ErrorResponse.errors) {
                         setFormErrors(ErrorResponse.errors);
@@ -136,8 +148,14 @@ export const InfoUpdate = (props: InfoUpdateProps) => {
         <>
             <div>
                 <h3>Mise à jour de mes informations</h3>
-
-                <div className="beta-banner"></div>
+                {!!alertMessage && (
+                    <Alert
+                        className="fr-mb-8v"
+                        severity={alertMessage.type}
+                        closable={false}
+                        title={alertMessage.message}
+                    />
+                )}
                 <form onSubmit={save} method="POST">
                     <h4>Participez à notre observatoire statisique </h4>
                     ⚠️ Ces valeurs servent à alimenter l'
@@ -212,9 +230,18 @@ export const InfoUpdate = (props: InfoUpdateProps) => {
                         }
                         stateRelatedMessage={formErrors["workplace_insee_code"]}
                     />
-                    <button className="button" type="submit">
-                        Enregistrer
-                    </button>
+                    <Button
+                        nativeButtonProps={{
+                            type: "submit",
+                            disabled: isSaving,
+                            onClick: save,
+                        }}
+                        children={
+                            isSaving
+                                ? `Enregistrement en cours...`
+                                : `Enregistrer`
+                        }
+                    />
                 </form>
             </div>
         </>
