@@ -327,7 +327,7 @@ export default function MemberPage({
                                 e.preventDefault();
                                 await axios.post(
                                     computeRoute(
-                                        routes.USER_UPDATE_SECONDARY_EMAIL
+                                        routes.USER_UPDATE_SECONDARY_EMAIL_API
                                     ).replace(":username", userInfos.id),
                                     undefined,
                                     {
