@@ -13,7 +13,7 @@ export default function BlocConfigurerCommunicationEmail({
     const [value, setValue] = React.useState<
         "primary" | "secondary" | undefined
     >(communication_email);
-
+    const [isSaving, setIsSaving] = React.useState<boolean>(false);
     return (
         <Accordion label="Quel email utiliser pour les communications @beta.gouv.fr ?">
             {!!primaryEmail &&
@@ -22,13 +22,23 @@ export default function BlocConfigurerCommunicationEmail({
             {!!primaryEmail && !!secondaryEmail && (
                 <form
                     method="POST"
-                    onSubmit={() => {
-                        axios.put(
-                            computeRoute(routes.USER_UPDATE_SECONDARY_EMAIL),
-                            {
-                                communication_email,
-                            }
-                        );
+                    onSubmit={async (e) => {
+                        e.preventDefault();
+                        setIsSaving(true);
+                        try {
+                            await axios.put(
+                                computeRoute(
+                                    routes.USER_UPDATE_SECONDARY_EMAIL
+                                ),
+                                {
+                                    communication_email,
+                                }
+                            );
+                        } catch (e) {
+                            setIsSaving(false);
+                            console.error(e);
+                        }
+                        setIsSaving(false);
                     }}
                 >
                     <RadioButtons
@@ -55,10 +65,12 @@ export default function BlocConfigurerCommunicationEmail({
                     <Button
                         nativeButtonProps={{
                             type: "submit",
+                            disabled: isSaving,
                         }}
-                    >
-                        Sauvegarder
-                    </Button>
+                        children={
+                            isSaving ? `Sauvegarde en cours...` : `Sauvegarder`
+                        }
+                    />
                 </form>
             )}
         </Accordion>

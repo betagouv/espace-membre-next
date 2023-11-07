@@ -11,6 +11,7 @@ export default function BlocChangerMotDePasse({
     userInfos,
 }) {
     const [password, setPassword] = React.useState<string>("");
+    const [isSaving, setIsSaving] = React.useState<boolean>(false);
     return (
         <Accordion label="Changer mon mot de passe">
             {canChangePassword && (
@@ -18,6 +19,7 @@ export default function BlocChangerMotDePasse({
                     <form
                         onSubmit={(e) => {
                             e.preventDefault();
+                            setIsSaving(true);
                             axios
                                 .post(
                                     computeRoute(
@@ -34,9 +36,12 @@ export default function BlocChangerMotDePasse({
                                     }
                                 )
                                 .then(() => {
+                                    setIsSaving(false);
+
                                     console.log("Done");
                                 })
                                 .catch((err) => {
+                                    setIsSaving(false);
                                     console.log(err);
                                 });
                         }}
@@ -56,10 +61,14 @@ export default function BlocChangerMotDePasse({
                         <Button
                             nativeButtonProps={{
                                 type: "submit",
+                                disabled: isSaving,
                             }}
-                        >
-                            Changer
-                        </Button>
+                            children={
+                                isSaving
+                                    ? `Changement du mot de passe...`
+                                    : `Changer le mot de passe`
+                            }
+                        />
                     </form>
                 </>
             )}

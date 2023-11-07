@@ -199,11 +199,10 @@ export const Onboarding = function (props: OnboardingProps) {
 
     const save = async (e) => {
         e.preventDefault();
-        console.log(state.formData);
-        // if (isSaving) {
-        //     return;
-        // }
-        // setIsSaving(true);
+        if (isSaving) {
+            return;
+        }
+        setIsSaving(true);
         axios
             .post(computeRoute(routes.ONBOARDING_ACTION), {
                 ...state.formData,
@@ -219,9 +218,9 @@ export const Onboarding = function (props: OnboardingProps) {
                 }: {
                     response: { data: FormErrorResponse };
                 }) => {
+                    setIsSaving(false);
                     const ErrorResponse: FormErrorResponse = data;
                     setErrorMessage(ErrorResponse.message);
-                    setIsSaving(false);
                     if (ErrorResponse.errors) {
                         setFormErrors(ErrorResponse.errors);
                     }
@@ -755,10 +754,15 @@ export const Onboarding = function (props: OnboardingProps) {
                                     />
                                 )}
                                 <Button
-                                    children="Créer ma fiche"
                                     nativeButtonProps={{
                                         type: "submit",
+                                        disabled: isSaving,
                                     }}
+                                    children={
+                                        isSaving
+                                            ? `Création de la fiche en cours...`
+                                            : `Créer ma fiche`
+                                    }
                                 />
                             </form>
                         </div>

@@ -12,6 +12,7 @@ export default function BlocConfigurerEmailSecondaire({
 }) {
     const sessionWrapper = useSession();
     const [value, setValue] = React.useState(secondaryEmail);
+    const [isSaving, setIsSaving] = React.useState<boolean>(false);
     return (
         <Accordion label="Configurer mon email secondaire">
             <p>
@@ -22,6 +23,7 @@ export default function BlocConfigurerEmailSecondaire({
                 <form
                     onSubmit={(e) => {
                         e.preventDefault();
+                        setIsSaving(true);
                         axios
                             .post(
                                 computeRoute(
@@ -38,9 +40,11 @@ export default function BlocConfigurerEmailSecondaire({
                                 }
                             )
                             .then((data) => {
+                                setIsSaving(false);
                                 console.log(data);
                             })
                             .catch((e) => {
+                                setIsSaving(false);
                                 console.log(e);
                             });
                     }}
@@ -59,10 +63,14 @@ export default function BlocConfigurerEmailSecondaire({
                     <Button
                         nativeButtonProps={{
                             type: "submit",
+                            disabled: isSaving,
                         }}
-                    >
-                        Sauvegarder l'email secondaire
-                    </Button>
+                        children={
+                            isSaving
+                                ? `Sauvegarde en cours...`
+                                : `Sauvegarder l'email secondaire`
+                        }
+                    />
                 </form>
             )}
         </Accordion>

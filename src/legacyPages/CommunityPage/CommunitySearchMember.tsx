@@ -13,12 +13,6 @@ export const CommunitySearchMember = (props: CommunityProps) => {
     const router = useRouter();
     const [username, setUsername] = React.useState<string | undefined>();
 
-    const [isSaving, setIsSaving] = React.useState<boolean>(false);
-    const [errorMessage, setErrorMessage] = React.useState<string | null>();
-    const [formErrors, setFormErrors] =
-        React.useState<Record<string, string>>();
-
-    console.log(props);
     const save = (event: { preventDefault: () => void }) => {
         event.preventDefault();
         router.push(`/community/${username}`);

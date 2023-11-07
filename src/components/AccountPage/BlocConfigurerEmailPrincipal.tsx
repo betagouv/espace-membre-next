@@ -11,6 +11,7 @@ export default function BlocConfigurerEmailPrincipal({
     primaryEmail,
 }) {
     const [value, setValue] = React.useState<string>(primaryEmail);
+    const [isSaving, setIsSaving] = React.useState<boolean>(false);
     return (
         <Accordion label="Configurer mon email principal">
             <p>
@@ -25,7 +26,9 @@ export default function BlocConfigurerEmailPrincipal({
             {canChangeEmails && (
                 <form
                     method="POST"
-                    onSubmit={() => {
+                    onSubmit={(e) => {
+                        e.preventDefault();
+                        setIsSaving(true);
                         axios
                             .put(
                                 computeRoute(
@@ -36,9 +39,11 @@ export default function BlocConfigurerEmailPrincipal({
                                 }
                             )
                             .then((resp) => {
+                                setIsSaving(false);
                                 console.log(resp);
                             })
                             .catch((err) => {
+                                setIsSaving(false);
                                 console.log(err);
                             });
                     }}
@@ -56,10 +61,14 @@ export default function BlocConfigurerEmailPrincipal({
                     <Button
                         nativeButtonProps={{
                             type: "submit",
+                            disabled: isSaving,
                         }}
-                    >
-                        Sauvegarder l'email principal
-                    </Button>
+                        children={
+                            isSaving
+                                ? `Sauvegarde en cours...`
+                                : `Sauvegarder l'email principal`
+                        }
+                    />
                 </form>
             )}
         </Accordion>

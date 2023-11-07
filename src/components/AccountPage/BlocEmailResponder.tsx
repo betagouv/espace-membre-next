@@ -10,6 +10,7 @@ export default function BlocEmailResponder({
     hasResponder,
     responderFormData,
 }) {
+    const [isSaving, setIsSaving] = React.useState<boolean>(false);
     const [from, setFrom] = React.useState<string>(responderFormData.from);
     const [to, setTo] = React.useState<string>(responderFormData.to);
     const [content, setContent] = React.useState<string>(
@@ -26,8 +27,8 @@ export default function BlocEmailResponder({
             <form
                 className="fr-mb-6v"
                 onSubmit={(e) => {
-                    console.log(e);
                     e.preventDefault();
+                    setIsSaving(true);
                     axios
                         .post(
                             computeRoute(routes.USER_SET_EMAIL_RESPONDER),
@@ -41,9 +42,11 @@ export default function BlocEmailResponder({
                             }
                         )
                         .then((data) => {
+                            setIsSaving(false);
                             console.log(data);
                         })
                         .catch((e) => {
+                            setIsSaving(false);
                             console.log(e);
                         });
                 }}
@@ -89,10 +92,12 @@ export default function BlocEmailResponder({
                 <Button
                     nativeButtonProps={{
                         type: "submit",
+                        disabled: isSaving,
                     }}
-                >
-                    Sauvegarder
-                </Button>
+                    children={
+                        isSaving ? `Sauvegarde en cours...` : `Sauvegarder`
+                    }
+                />
             </form>
         </Accordion>
     );
