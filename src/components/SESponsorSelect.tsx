@@ -105,7 +105,7 @@ export default function SESponsorSelect({
                     <TextField
                         {...params}
                         // label="limitTags"
-                        placeholder="Produit"
+                        placeholder="Sponsor"
                     />
                 )}
                 // sx={{ width: "500px" }}
