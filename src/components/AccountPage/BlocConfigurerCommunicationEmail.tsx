@@ -28,10 +28,13 @@ export default function BlocConfigurerCommunicationEmail({
                         try {
                             await axios.put(
                                 computeRoute(
-                                    routes.USER_UPDATE_SECONDARY_EMAIL
+                                    routes.USER_UPDATE_COMMUNICATION_EMAIL_API
                                 ),
                                 {
                                     communication_email,
+                                },
+                                {
+                                    withCredentials: true,
                                 }
                             );
                         } catch (e) {

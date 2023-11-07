@@ -176,6 +176,7 @@ export default function EmailContainer({
                     </a>
                 </Accordion>
                 <BlocEmailResponder
+                    username={userInfos.id}
                     hasResponder={hasResponder}
                     responderFormData={responderFormData}
                 />

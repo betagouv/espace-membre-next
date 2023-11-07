@@ -27,7 +27,7 @@ export default function BlocConfigurerEmailSecondaire({
                         axios
                             .post(
                                 computeRoute(
-                                    routes.USER_UPDATE_SECONDARY_EMAIL
+                                    routes.USER_UPDATE_SECONDARY_EMAIL_API
                                 ).replace(
                                     ":username",
                                     sessionWrapper.data?.user?.name

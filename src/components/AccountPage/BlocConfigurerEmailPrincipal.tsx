@@ -32,10 +32,13 @@ export default function BlocConfigurerEmailPrincipal({
                         axios
                             .put(
                                 computeRoute(
-                                    routes.USER_UPDATE_PRIMARY_EMAIL
+                                    routes.USER_UPDATE_PRIMARY_EMAIL_API
                                 ).replace(":username", userInfos.id),
                                 {
                                     primaryEmail: value,
+                                },
+                                {
+                                    withCredentials: true,
                                 }
                             )
                             .then((resp) => {

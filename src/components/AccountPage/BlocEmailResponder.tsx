@@ -9,12 +9,25 @@ import Button from "@codegouvfr/react-dsfr/Button";
 export default function BlocEmailResponder({
     hasResponder,
     responderFormData,
+    username,
+}: {
+    hasResponder: boolean;
+    responderFormData?: {
+        from: string;
+        to: string;
+        content: string;
+    };
+    username: string;
 }) {
     const [isSaving, setIsSaving] = React.useState<boolean>(false);
-    const [from, setFrom] = React.useState<string>(responderFormData.from);
-    const [to, setTo] = React.useState<string>(responderFormData.to);
+    const [from, setFrom] = React.useState<string>(
+        (responderFormData && responderFormData.from) || ""
+    );
+    const [to, setTo] = React.useState<string>(
+        (responderFormData && responderFormData.to) || ""
+    );
     const [content, setContent] = React.useState<string>(
-        responderFormData.content
+        (responderFormData && responderFormData.content) || ""
     );
     return (
         <Accordion label="Configurer une réponse automatique">
@@ -31,7 +44,7 @@ export default function BlocEmailResponder({
                     setIsSaving(true);
                     axios
                         .post(
-                            computeRoute(routes.USER_SET_EMAIL_RESPONDER),
+                            computeRoute(routes.USER_SET_EMAIL_RESPONDER_API),
                             {
                                 content,
                                 from,
@@ -64,7 +77,8 @@ export default function BlocEmailResponder({
                         onChange: (e: { target: { value: string } }) => {
                             setContent(e.target.value);
                         },
-                        // placeholder: "Je ne serai pas en mesure de vous répondre du XX/XX au XX/XX. En cas d'urgence, n'hésitez pas à contacter ...",
+                        placeholder:
+                            "Je ne serai pas en mesure de vous répondre du XX/XX au XX/XX. En cas d'urgence, n'hésitez pas à contacter ...",
                     }}
                 />
                 <Input

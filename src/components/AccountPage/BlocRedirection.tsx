@@ -37,10 +37,18 @@ export default function BlocRedirection({
                                     e.preventDefault();
                                     try {
                                         await axios.delete(
-                                            routes.USER_DELETE_REDIRECTION.replace(
-                                                ":username",
-                                                userInfos.id
-                                            ).replace(":email", redirection.to)
+                                            computeRoute(
+                                                routes.USER_DELETE_REDIRECTION_API
+                                            )
+                                                .replace(
+                                                    ":username",
+                                                    userInfos.id
+                                                )
+                                                .replace(
+                                                    ":email",
+                                                    redirection.to
+                                                ),
+                                            { withCredentials: true }
                                         );
                                     } catch (e) {}
                                 }}
@@ -63,18 +71,22 @@ export default function BlocRedirection({
                     onSubmit={async (e) => {
                         e.preventDefault();
                         setIsSaving(true);
-                        await axios.post(
-                            computeRoute(
-                                routes.USER_CREATE_REDIRECTION
-                            ).replace(":username", userInfos.id),
-                            {
-                                toEmail,
-                                keepCopy,
-                            },
-                            {
-                                withCredentials: true,
-                            }
-                        );
+                        try {
+                            await axios.post(
+                                computeRoute(
+                                    routes.USER_CREATE_REDIRECTION_API
+                                ).replace(":username", userInfos.id),
+                                {
+                                    to_email: toEmail,
+                                    keepCopy,
+                                },
+                                {
+                                    withCredentials: true,
+                                }
+                            );
+                        } catch (e) {
+                            console.error(e);
+                        }
                         setIsSaving(false);
                     }}
                 >

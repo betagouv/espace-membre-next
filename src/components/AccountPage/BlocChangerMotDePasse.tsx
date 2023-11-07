@@ -23,7 +23,7 @@ export default function BlocChangerMotDePasse({
                             axios
                                 .post(
                                     computeRoute(
-                                        routes.USER_UPDATE_PASSWORD.replace(
+                                        routes.USER_UPDATE_PASSWORD_API.replace(
                                             ":username",
                                             userInfos.id
                                         )
