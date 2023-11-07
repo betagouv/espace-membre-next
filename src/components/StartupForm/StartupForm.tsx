@@ -133,15 +133,18 @@ export const StartupForm = (props: StartupForm) => {
         }
         props
             .save(data)
+            .then(() => {
+                setIsSaving(false);
+            })
             .catch(
                 ({
                     response: { data },
                 }: {
                     response: { data: FormErrorResponse };
                 }) => {
+                    setIsSaving(false);
                     const ErrorResponse: FormErrorResponse = data;
                     setErrorMessage(ErrorResponse.message);
-                    setIsSaving(false);
                     if (ErrorResponse.errors) {
                         setFormErrors(ErrorResponse.errors);
                     }
@@ -276,14 +279,14 @@ export const StartupForm = (props: StartupForm) => {
                                     setIncubator(e.value);
                                 }}
                             />
-                            {/* <SponsorBlock
+                            <SponsorBlock
                                 newSponsors={newSponsors}
                                 setNewSponsors={setNewSponsors}
                                 sponsors={sponsors}
                                 setSponsors={(sponsors) =>
                                     setSponsors(sponsors)
                                 }
-                            /> */}
+                            />
                             <div className="fr-input-group">
                                 <label className="fr-label">Phase</label>
                                 <p>

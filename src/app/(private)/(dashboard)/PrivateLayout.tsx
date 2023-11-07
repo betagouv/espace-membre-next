@@ -37,14 +37,7 @@ export function PrivateLayout({ children }: { children: React.ReactNode }) {
         undefined
     );
 
-    const accountSubPage = [
-        {
-            linkProps: {
-                href: accountLink,
-            },
-            text: "Mes infos",
-            isActive: hasPathnameThisMatch(pathname, accountLink),
-        },
+    const userInfoSubPages = [
         {
             linkProps: {
                 href: accountEditBaseInfoLink,
@@ -61,6 +54,20 @@ export function PrivateLayout({ children }: { children: React.ReactNode }) {
                 pathname,
                 accountEditPrivateInfoLink
             ),
+        },
+    ];
+
+    const accountSubPages = [
+        {
+            // linkProps: {
+            //     href: accountLink,
+            // },
+            text: "Mes infos",
+            isActive: hasPathnameThisMatch(pathname, accountLink),
+            expandedByDefault: Boolean(
+                userInfoSubPages.find((a) => a.isActive)
+            ),
+            items: userInfoSubPages,
         },
     ];
 
@@ -88,8 +95,10 @@ export function PrivateLayout({ children }: { children: React.ReactNode }) {
                 href: accountLink,
             },
             text: "Compte",
-            expandedByDefault: Boolean(accountSubPage.find((a) => a.isActive)),
-            items: accountSubPage,
+            expandedByDefault:
+                Boolean(accountSubPages.find((a) => a.isActive)) ||
+                Boolean(accountSubPages.find((a) => a.expandedByDefault)),
+            items: accountSubPages,
         },
         {
             linkProps: {
@@ -120,7 +129,7 @@ export function PrivateLayout({ children }: { children: React.ReactNode }) {
     }
 
     interface ItemLink {
-        linkProps: { href: string };
+        linkProps?: { href: string };
         text: string;
         isActive: boolean;
         expandedByDefault?: boolean;
@@ -160,12 +169,15 @@ export function PrivateLayout({ children }: { children: React.ReactNode }) {
                     homeLinkProps={{
                         href: "/",
                     }}
-                    segments={tree.slice(0, tree.length - 1).map((segment) => ({
-                        label: segment.text,
-                        linkProps: {
-                            href: segment.linkProps.href,
-                        },
-                    }))}
+                    segments={tree
+                        .slice(0, tree.length - 1)
+                        .filter((segment) => segment.linkProps?.href)
+                        .map((segment) => ({
+                            label: segment.text,
+                            linkProps: {
+                                href: segment.linkProps.href,
+                            },
+                        }))}
                 />
                 {children}
             </div>

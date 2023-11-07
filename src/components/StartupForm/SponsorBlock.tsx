@@ -22,9 +22,7 @@ const SponsorBlock = ({
     }
 
     function addSponsor(newSponsor: Sponsor) {
-        console.log(newSponsor);
         setNewSponsors([...newSponsors, newSponsor]);
-        console.log([...sponsors, newSponsor.acronym]);
         setSponsors([...sponsors, newSponsor.acronym]);
         modal.close();
     }
@@ -62,13 +60,6 @@ const SponsorBlock = ({
             >
                 Ajouter un sponsor
             </Button>
-            {/* <Modal
-                isOpen={modalIsOpen}
-                onAfterOpen={afterOpenModal}
-                onRequestClose={closeModal}
-                style={customStyles}
-                contentLabel="Example Modal"
-            /> */}
             <modal.Component title="Ajouter un sponsor">
                 <SponsorForm addSponsor={addSponsor} />
             </modal.Component>

@@ -59,8 +59,10 @@ export function Search(props: SearchProps) {
     } = props;
 
     const nativeInputProps = useContext(nativeInputPropsContext);
-    const [value, setValue] = useState<string>("");
-    const [selectedValue, setSelectedValue] = useState<string>("");
+    const [value, setValue] = useState<string>(defaultValue || "");
+    const [selectedValue, setSelectedValue] = useState<string>(
+        defaultValue || ""
+    );
     const [isEditing, setIsEditing] = useState<boolean>(false);
     assert(
         nativeInputProps !== undefined,
@@ -122,7 +124,8 @@ export function Search(props: SearchProps) {
                 onSelect(getResult(id));
                 setSelectedValue(getResult(id).label);
             }}
-            value={null}
+            defaultValue={defaultValue}
+            // value={null}
             options={results.map((result) => result.label)}
             filterOptions={(ids) => ids} // No filtering
             getOptionLabel={() => ""}
@@ -207,10 +210,10 @@ export default function CitySelect({
     state,
     stateRelatedMessage,
 }: {
-    value?: any;
+    value?: string;
     onChange: any;
     placeholder?: string;
-    defaultValue: any;
+    defaultValue: string;
     state?: string;
     stateRelatedMessage?: string;
 }) {
@@ -231,14 +234,14 @@ export default function CitySelect({
     return (
         <div className="fr-select-group">
             <label className="fr-label">
-                Lieu de travail principal
+                Lieu de travail principal :
                 <span className="fr-hint-text">
                     Cette information est utilisée pour faire une carte des
                     membres de la communauté
                 </span>
             </label>
             <SearchBar
-                label="Lieu de travail principal"
+                label="Lieu de travail principal :"
                 onButtonClick={function noRefCheck() {}}
                 renderInput={({ className, id, placeholder, type }) => (
                     <NativeInputPropsProvider

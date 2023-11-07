@@ -84,12 +84,12 @@ export default {
     CHAT_WEBHOOK_URL_DINUM: process.env.CHAT_WEBHOOK_URL_DINUM,
     CHAT_WEBHOOK_URL_GIP: process.env.CHAT_WEBHOOK_URL_GIP,
     SPONSOR_API:
-        process.env.SPONSOR_API ||
+        process.env.NEXT_PUBLIC_SPONSOR_API ||
         "https://beta.gouv.fr/api/v2.5/sponsors.json",
     usersAPI:
         process.env.USERS_API || "https://beta.gouv.fr/api/v2.3/authors.json",
     incubatorAPI:
-        process.env.INCUBATOR_API ||
+        process.env.NEXT_PUBLIC_INCUBATOR_API ||
         "https://beta.gouv.fr/api/v2.5/incubators.json",
     startupsAPI:
         process.env.STARTUPS_API ||

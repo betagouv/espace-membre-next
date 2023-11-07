@@ -120,9 +120,10 @@ export const InfoUpdate = (props: InfoUpdateProps) => {
                 }
             )
             .then(() => {
+                setIsSaving(false);
                 setAlertMessage({
                     message: "Les informations ont bien été enregistrées.",
-                    type: "warning",
+                    type: "success",
                 });
             })
             .catch(
@@ -131,12 +132,12 @@ export const InfoUpdate = (props: InfoUpdateProps) => {
                 }: {
                     response: { data: FormErrorResponse };
                 }) => {
+                    setIsSaving(false);
                     const ErrorResponse: FormErrorResponse = data;
                     setAlertMessage({
                         message: ErrorResponse.message,
                         type: "warning",
                     });
-                    setIsSaving(false);
                     if (ErrorResponse.errors) {
                         setFormErrors(ErrorResponse.errors);
                     }
@@ -168,7 +169,7 @@ export const InfoUpdate = (props: InfoUpdateProps) => {
                     . Elles sont confidentielles et anonymisées mis à part le
                     lieu de travail.<br></br>
                     <Select
-                        label="Genre"
+                        label="Genre :"
                         hint="Cette information est utilisée uniquement pour
                             faire des statistiques. Elle n'est pas affichée."
                         nativeSelectProps={{
@@ -190,7 +191,7 @@ export const InfoUpdate = (props: InfoUpdateProps) => {
                         })}
                     </Select>
                     <RadioButtons
-                        legend="Statut legal de ton entreprise (obligatoire)"
+                        legend="Statut legal de ton entreprise (obligatoire) :"
                         options={props.statusOptions.map((legal_status) => ({
                             label: legal_status.name,
                             nativeInputProps: {
@@ -208,7 +209,7 @@ export const InfoUpdate = (props: InfoUpdateProps) => {
                         stateRelatedMessage={formErrors["legal_status"]}
                     />
                     <Input
-                        label="TJM moyen HT (si tu es indépendant)"
+                        label="TJM moyen HT (si tu es indépendant) :"
                         hintText="Cette information est utilisée uniquement pour
                                     faire des statistiques. Elle n'est pas affichée."
                         nativeInputProps={{

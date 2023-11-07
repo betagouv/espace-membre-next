@@ -160,6 +160,7 @@ export const BaseInfoUpdate = (props: BaseInfoUpdateProps) => {
                 setFormErrors(ErrorResponse.errors);
             }
         }
+        setIsSaving(false);
     };
 
     return (

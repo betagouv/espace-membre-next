@@ -24,7 +24,8 @@ export const SponsorForm = (props: SponsorForm) => {
     const [type, setType] = React.useState("");
     const [domaine, setDomaine] = React.useState("");
 
-    const save = async () => {
+    const save = async (e) => {
+        e.preventDefault();
         props.addSponsor({
             name,
             domaine_ministeriel: domaine as SponsorDomaineMinisteriel,
