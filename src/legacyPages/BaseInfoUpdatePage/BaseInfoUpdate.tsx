@@ -69,7 +69,6 @@ export const BaseInfoUpdate = (props: BaseInfoUpdateProps) => {
     const [formErrors, setFormErrors] = React.useState<Record<string, string>>(
         {}
     );
-    const [errorMessage, setErrorMessage] = React.useState("");
     const [alertMessage, setAlertMessage] = React.useState<{
         message: string;
         type: "success" | "warning";

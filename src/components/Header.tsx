@@ -27,7 +27,7 @@ const MainHeader = () => {
                     await axios.get(computeRoute(routes.LOGOUT_API), {
                         withCredentials: true,
                     });
-                    router.push("/");
+                    window.location.href = "/";
                     //signOut();
                 },
             },

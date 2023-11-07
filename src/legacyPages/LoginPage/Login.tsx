@@ -21,36 +21,20 @@ interface FormErrorResponse {
 }
 
 /* Pure component */
-export const Home = function (props: Props) {
-    const router = useRouter();
-    const [isSaving, setIsSaving] = React.useState(false);
+export const LoginPage = function (props: Props) {
     const [errorMessage, setErrorMessage] = React.useState("");
     const [formErrors, setFormErrors] =
         React.useState<Record<string, string[]>>();
-    const [loginSent, setLoginSent] = React.useState(false);
-    const [connected, setConnected] = React.useState(false);
     const [email, setEmail] = React.useState("");
-    const [calledOnce, setCalledOnce] = React.useState(false);
-    const [wasAlreadyConnected, setWasAlreadyConnected] = React.useState(false);
+    const [isSaving, setIsSaving] = React.useState<boolean>(false);
+    const [alertMessage, setAlertMessage] = React.useState<{
+        message: string;
+        type: "success" | "warning";
+        description?: string;
+    }>();
 
     const pingConnection = async () => {
-        console.log("Ping connection");
-        // const user = await axios.get(routes.ME).then(res => res.data.user)
-        // .catch(e => {
-        //     console.log(`L'utilisateur n'est pas connecté`)
-        // })
         const user = await getSession();
-
-        if (user) {
-            if (!calledOnce) {
-                setWasAlreadyConnected(true);
-            }
-            setConnected(true);
-            window.location.replace("/account");
-        }
-        if (!calledOnce) {
-            setCalledOnce(true);
-        }
     };
     const sendLogin = (event: { preventDefault: () => void }) => {
         if (isSaving) {
@@ -63,7 +47,12 @@ export const Home = function (props: Props) {
                 emailInput: email,
             })
             .then(async (resp) => {
-                setLoginSent(true);
+                setIsSaving(false);
+                setAlertMessage({
+                    message:
+                        "Un email avec un lien de connexion a été envoyé à ton adresse.",
+                    type: "success",
+                });
                 await pingConnection();
             })
             .catch(
@@ -73,10 +62,9 @@ export const Home = function (props: Props) {
                     response: { data: FormErrorResponse };
                 }) => {
                     console.log("Error", data);
-
+                    setIsSaving(false);
                     const ErrorResponse: FormErrorResponse = data;
                     setErrorMessage(ErrorResponse.message);
-                    setIsSaving(false);
                     if (ErrorResponse.errors) {
                         setFormErrors(ErrorResponse.errors);
                     }
@@ -101,6 +89,15 @@ export const Home = function (props: Props) {
                                         onClose={function noRefCheck() {}}
                                         severity="error"
                                         title="Le formulaire a renvoyer une erreur"
+                                    />
+                                )}
+                                {!!alertMessage && (
+                                    <Alert
+                                        className="fr-mb-8v"
+                                        severity={alertMessage.type}
+                                        closable={false}
+                                        description={alertMessage.description}
+                                        title={alertMessage.message}
                                     />
                                 )}
                                 <form
@@ -153,9 +150,11 @@ export const Home = function (props: Props) {
                                     <ButtonsGroup
                                         buttons={[
                                             {
-                                                children:
-                                                    "Recevoir le lien de connexion",
+                                                children: isSaving
+                                                    ? "Envoie du lien de connexion..."
+                                                    : "Recevoir le lien de connexion",
                                                 onClick: () => {},
+                                                disabled: isSaving,
                                                 type: "submit",
                                             },
                                         ]}
