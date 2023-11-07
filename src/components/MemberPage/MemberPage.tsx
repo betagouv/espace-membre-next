@@ -78,7 +78,7 @@ export default function MemberPage({
                                     ) {
                                         await axios.post(
                                             computeRoute(
-                                                routes.USER_DELETE_EMAIL
+                                                routes.USER_DELETE_EMAIL_API
                                             ).replace(":username", username),
                                             undefined,
                                             {

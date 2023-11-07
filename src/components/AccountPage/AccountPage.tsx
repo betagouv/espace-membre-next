@@ -88,7 +88,7 @@ export default function AccountPage(props: any) {
                         onSubmit={() => {
                             axios.post(
                                 computeRoute(
-                                    routes.USER_DELETE_EMAIL.replace(
+                                    routes.USER_DELETE_EMAIL_API.replace(
                                         ":username",
                                         userInfos.id
                                     )
