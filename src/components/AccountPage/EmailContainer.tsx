@@ -92,7 +92,7 @@ export default function EmailContainer({
                                 e.preventDefault();
                                 axios.post(
                                     computeRoute(
-                                        routes.USER_UPGRADE_EMAIL
+                                        routes.USER_UPGRADE_EMAIL_API
                                     ).replace(":username", userInfos.id)
                                 );
                             }}
