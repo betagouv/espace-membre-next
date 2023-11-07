@@ -80,8 +80,8 @@ export const StartupInfoUpdate = (props: StartupInfoUpdateProps) => {
                         title="Une pull request existe déjà sur cette fiche."
                         description={
                             <>
-                                Toi ou un membre de ton équipe doit la merger
-                                pour que les changements soit pris en compte
+                                {`Toi ou un membre de ton équipe doit la merger
+                                pour que les changements soit pris en compte : `}
                                 <a
                                     className="fr-link"
                                     href={props.updatePullRequest.url}

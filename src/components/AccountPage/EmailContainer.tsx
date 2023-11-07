@@ -88,7 +88,8 @@ export default function EmailContainer({
                         <p>Passer ce compte en pro : </p>
                         <form
                             className="no-margin"
-                            onSubmit={() => {
+                            onSubmit={(e) => {
+                                e.preventDefault();
                                 axios.post(
                                     computeRoute(
                                         routes.USER_UPGRADE_EMAIL
@@ -175,6 +176,7 @@ export default function EmailContainer({
                     </a>
                 </Accordion>
                 <BlocEmailResponder
+                    username={userInfos.id}
                     hasResponder={hasResponder}
                     responderFormData={responderFormData}
                 />

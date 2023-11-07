@@ -30,28 +30,30 @@ class routes {
     static ADMIN_MATTERMOST = "/admin/mattermost";
     static ADMIN_MATTERMOST_API = "/api/admin/mattermost";
     static ADMIN_MATTERMOST_MESSAGE_API = "/api/admin/mattermost/message/users";
-    static ADMIN_MATTERMOST_SEND_MESSAGE = "api/admin/mattermost/send-message";
+    static ADMIN_MATTERMOST_SEND_MESSAGE = "/admin/mattermost/send-message";
     // onboarding
     static ONBOARDING = "/onboarding";
     static ONBOARDING_API = "/api/onboarding";
     static ONBOARDING_ACTION = "/onboarding";
     // users
-    static USER_CREATE_EMAIL = "/api/users/:username/email";
-    static USER_DELETE_EMAIL = "/api/users/:username/email/delete";
-    static USER_CREATE_REDIRECTION = "/api/users/:username/redirections";
-    static USER_DELETE_REDIRECTION =
+    static USER_CREATE_EMAIL = "/users/:username/email";
+    static USER_DELETE_EMAIL_API = "/api/users/:username/email/delete";
+    static USER_CREATE_REDIRECTION_API = "/api/users/:username/redirections";
+    static USER_DELETE_REDIRECTION_API =
         "/api/users/:username/redirections/:email/delete";
-    static USER_UPDATE_PASSWORD = "/api/users/:username/password";
-    static USER_UPDATE_SECONDARY_EMAIL = "/api/users/:username/secondary_email";
-    static USER_UPDATE_PRIMARY_EMAIL = "/api/users/:username/primary_email";
-    static USER_UPDATE_END_DATE = "/api/users/:username/end-date";
-    static USER_UPGRADE_EMAIL = "/api/users/:username/email-upgrade";
+    static USER_UPDATE_PASSWORD_API = "/api/users/:username/password";
+    static USER_UPDATE_SECONDARY_EMAIL_API =
+        "/api/users/:username/secondary_email";
+    static USER_UPDATE_PRIMARY_EMAIL_API = "/api/users/:username/primary_email";
+    static USER_UPDATE_END_DATE_API = "/api/users/:username/end-date";
+    static USER_UPGRADE_EMAIL_API = "/api/users/:username/email-upgrade";
     static USER_CREATE_EMAIL_API = "/api/users/:username/create-email";
     static API_GET_PUBLIC_USER_INFO = "/api/public/users/:username";
-    static USER_SET_EMAIL_RESPONDER = "/api/users/:username/email-responder";
-    static USER_DELETE_EMAIL_RESPONDER = "/api/users/:username/email-responder";
-    static USER_UPDATE_COMMUNICATION_EMAIL =
-        "/api/users/:username/update_communication_email";
+    static USER_SET_EMAIL_RESPONDER_API = "/api/account/set_email_responder";
+    static USER_DELETE_EMAIL_RESPONDER_API =
+        "/api/account/delete_email_responder";
+    static USER_UPDATE_COMMUNICATION_EMAIL_API =
+        "/api/account/update_communication_email";
     // account
     static ACCOUNT_GET = "/account";
     static ACCOUNT_GET_API = "/api/account";

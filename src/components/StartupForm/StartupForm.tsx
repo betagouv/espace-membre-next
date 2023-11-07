@@ -100,7 +100,6 @@ export const StartupForm = (props: StartupForm) => {
             },
         ]
     );
-    console.log(phases);
     const [errorMessage, setErrorMessage] = React.useState("");
     const [formErrors, setFormErrors] = React.useState({});
     const [isSaving, setIsSaving] = React.useState(false);

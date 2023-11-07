@@ -16,6 +16,7 @@ export default function BlocRedirection({
 }) {
     const [toEmail, setToEmail] = React.useState<string>("");
     const [keepCopy, setKeepCopy] = React.useState<boolean>(false);
+    const [isSaving, setIsSaving] = React.useState<boolean>(false);
     return (
         <Accordion label="Rediriger vers une autre adresse mail">
             <p>
@@ -32,14 +33,24 @@ export default function BlocRedirection({
                             <form
                                 className="redirection-form"
                                 method="POST"
-                                onSubmit={(e) => {
+                                onSubmit={async (e) => {
                                     e.preventDefault();
-                                    axios.delete(
-                                        routes.USER_DELETE_REDIRECTION.replace(
-                                            ":username",
-                                            userInfos.id
-                                        ).replace(":email", redirection.to)
-                                    );
+                                    try {
+                                        await axios.delete(
+                                            computeRoute(
+                                                routes.USER_DELETE_REDIRECTION_API
+                                            )
+                                                .replace(
+                                                    ":username",
+                                                    userInfos.id
+                                                )
+                                                .replace(
+                                                    ":email",
+                                                    redirection.to
+                                                ),
+                                            { withCredentials: true }
+                                        );
+                                    } catch (e) {}
                                 }}
                             >
                                 <Button
@@ -57,20 +68,26 @@ export default function BlocRedirection({
             })}
             {canCreateRedirection && (
                 <form
-                    onSubmit={(e) => {
+                    onSubmit={async (e) => {
                         e.preventDefault();
-                        axios.post(
-                            computeRoute(
-                                routes.USER_CREATE_REDIRECTION
-                            ).replace(":username", userInfos.id),
-                            {
-                                toEmail,
-                                keepCopy,
-                            },
-                            {
-                                withCredentials: true,
-                            }
-                        );
+                        setIsSaving(true);
+                        try {
+                            await axios.post(
+                                computeRoute(
+                                    routes.USER_CREATE_REDIRECTION_API
+                                ).replace(":username", userInfos.id),
+                                {
+                                    to_email: toEmail,
+                                    keepCopy,
+                                },
+                                {
+                                    withCredentials: true,
+                                }
+                            );
+                        } catch (e) {
+                            console.error(e);
+                        }
+                        setIsSaving(false);
                     }}
                 >
                     <Input
@@ -102,10 +119,14 @@ export default function BlocRedirection({
                         priority="primary"
                         nativeButtonProps={{
                             type: "submit",
+                            disabled: isSaving,
                         }}
-                    >
-                        Ajouter la redirection
-                    </Button>
+                        children={
+                            isSaving
+                                ? `Ajout en cours...`
+                                : `Ajouter la redirection`
+                        }
+                    />
                 </form>
             )}
             {canCreateRedirection && (

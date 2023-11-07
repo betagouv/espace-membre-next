@@ -81,9 +81,9 @@ export default function StartupPage({
                             title="Une pull request existe déjà sur cette fiche."
                             description={
                                 <>
-                                    Toi ou un membre de ton équipe doit la
+                                    {`Toi ou un membre de ton équipe doit la
                                     merger pour que les changements soit pris en
-                                    compte
+                                    compte : `}
                                     <a
                                         href={updatePullRequest.url}
                                         target="_blank"
