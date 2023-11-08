@@ -17,6 +17,7 @@ import { CommunityProps } from ".";
 import ButtonsGroup from "@codegouvfr/react-dsfr/ButtonsGroup";
 import "react-tabulator/lib/styles.css"; // required styles
 import "react-tabulator/lib/css/tabulator.min.css"; // theme
+import { computeRoute } from "@/routes/routes";
 
 function Link(props: any) {
     // props.cell._cell.row.data;
@@ -46,14 +47,14 @@ export const CommunityFilterMembers = (props: CommunityProps) => {
     });
 
     const onClickSearch = async () => {
-        const domaines = (state.domaines || []).map((d) => d.value).join(",");
-        const incubators = (state.incubators || [])
-            .map((d) => d.value)
+        const domaines = (state.domaines || []).map((d) => d.id).join(",");
+        const incubators = (state.incubators || []).map((d) => d.id).join(",");
+        const startups = (state.startups || []).map((d) => d.id).join(",");
+        const memberStatus = (state.memberStatus || {})
+            .map((d) => d.id)
             .join(",");
-        const startups = (state.startups || []).map((d) => d.value).join(",");
-        const memberStatus = (state.memberStatus || {}).value;
         const startupPhases = (state.startupPhases || [])
-            .map((d) => d.value)
+            .map((d) => d.id)
             .join(",");
         const params = {
             domaines,
@@ -66,7 +67,9 @@ export const CommunityFilterMembers = (props: CommunityProps) => {
             .map((key) => key + "=" + params[key])
             .join("&");
         const data = await axios
-            .get(`/api/get-users?${queryParamsString}`)
+            .get(computeRoute(`/api/get-users?${queryParamsString}`), {
+                withCredentials: true,
+            })
             .then((response) => response.data);
         setState({
             ...state,
@@ -124,12 +127,12 @@ export const CommunityFilterMembers = (props: CommunityProps) => {
                     <div className="fr-col-6">
                         <SEIncubateurSelect
                             incubators={props.incubatorOptions}
-                            onChange={(incubators) =>
+                            onChange={(e, incubators) => {
                                 setState({
                                     ...state,
                                     incubators,
-                                })
-                            }
+                                });
+                            }}
                         />
                     </div>
                     <div className="fr-col-6">
@@ -137,12 +140,12 @@ export const CommunityFilterMembers = (props: CommunityProps) => {
                             placeholder={"Sélectionne un ou plusieurs produits"}
                             isMulti={true}
                             startups={props.startupOptions}
-                            onChange={(startups) =>
+                            onChange={(startups) => {
                                 setState({
                                     ...state,
                                     startups,
-                                })
-                            }
+                                });
+                            }}
                         />
                     </div>
                 </div>
@@ -150,7 +153,7 @@ export const CommunityFilterMembers = (props: CommunityProps) => {
                     <div className="fr-col-6">
                         <DomaineSelect
                             domaines={props.domaineOptions}
-                            onChange={(domaines) =>
+                            onChange={(e, domaines) =>
                                 setState({
                                     ...state,
                                     domaines,
@@ -160,7 +163,7 @@ export const CommunityFilterMembers = (props: CommunityProps) => {
                     </div>
                     <div className="fr-col-6">
                         <MemberStatusSelect
-                            onChange={(memberStatus) =>
+                            onChange={(e, memberStatus) =>
                                 setState({
                                     ...state,
                                     memberStatus,
@@ -173,7 +176,7 @@ export const CommunityFilterMembers = (props: CommunityProps) => {
                     <div className="fr-col-6">
                         <SEPhaseSelect
                             isMulti={true}
-                            onChange={(startupPhases) =>
+                            onChange={(e, startupPhases) =>
                                 setState({
                                     ...state,
                                     startupPhases,
