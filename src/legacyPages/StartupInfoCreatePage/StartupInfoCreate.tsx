@@ -25,8 +25,6 @@ export interface StartupInfoCreateProps {
 
 /* Pure component */
 export const StartupInfoCreate = (props: StartupInfoCreateProps) => {
-    const css = ".panel { overflow: hidden; width: auto; min-height: 100vh; }";
-
     const save = async (data) => {
         return axios
             .post(
@@ -44,40 +42,25 @@ export const StartupInfoCreate = (props: StartupInfoCreateProps) => {
     };
     return (
         <>
-            <div className="module">
-                <div>
-                    <small>
-                        <a href="/startups">Produit</a> &gt;{" "}
-                        <a href="/startups/create-form">
-                            Créer une fiche produit
+            <div>
+                <h3>Créer une fiche produit</h3>
+                {!!props.updatePullRequest && (
+                    <div className="notification">
+                        ⚠️ Une pull request existe déjà sur cette startup.
+                        Quelqu'un doit la merger pour que le changement soit
+                        pris en compte.
+                        <a href={props.updatePullRequest.url} target="_blank">
+                            {props.updatePullRequest.url}
                         </a>
-                    </small>
-                </div>
-                <div className="margin-top-m"></div>
-                <div className="panel">
-                    <h3>Créer une fiche produit</h3>
-                    {!!props.updatePullRequest && (
-                        <div className="notification">
-                            ⚠️ Une pull request existe déjà sur cette startup.
-                            Quelqu'un doit la merger pour que le changement soit
-                            pris en compte.
-                            <a
-                                href={props.updatePullRequest.url}
-                                target="_blank"
-                            >
-                                {props.updatePullRequest.url}
-                            </a>
-                            <br />
-                            (la prise en compte peut prendre 10 minutes.)
-                        </div>
-                    )}
-                    <div className="beta-banner"></div>
-                    <div>
-                        <StartupForm content={""} save={save} />
+                        <br />
+                        (la prise en compte peut prendre 10 minutes.)
                     </div>
+                )}
+                <div className="beta-banner"></div>
+                <div>
+                    <StartupForm content={""} save={save} />
                 </div>
             </div>
-            <style media="screen">{css}</style>
         </>
     );
 };
