@@ -1,6 +1,6 @@
 import { linkRegistry } from "@/utils/routes/registry";
 import { hasPathnameThisMatch } from "@/utils/url";
-import { SideMenu } from "@codegouvfr/react-dsfr/SideMenu";
+import { SideMenu, SideMenuProps } from "@codegouvfr/react-dsfr/SideMenu";
 import { useSession } from "@/proxies/next-auth";
 import { usePathname, useRouter } from "next/navigation";
 import { Breadcrumb } from "@codegouvfr/react-dsfr/Breadcrumb";
@@ -8,7 +8,6 @@ import { Breadcrumb } from "@codegouvfr/react-dsfr/Breadcrumb";
 export function PrivateLayout({ children }: { children: React.ReactNode }) {
     const router = useRouter();
 
-    // const sessionWrapper = useSession();
     const pathname = usePathname();
 
     const { status, data: session } = useSession({
@@ -37,7 +36,14 @@ export function PrivateLayout({ children }: { children: React.ReactNode }) {
         undefined
     );
 
-    const userInfoSubPages = [
+    const accountSubPages: ItemLink[] = [
+        {
+            linkProps: {
+                href: accountLink,
+            },
+            text: "Mes infos",
+            isActive: hasPathnameThisMatch(pathname, accountLink),
+        },
         {
             linkProps: {
                 href: accountEditBaseInfoLink,
@@ -57,21 +63,7 @@ export function PrivateLayout({ children }: { children: React.ReactNode }) {
         },
     ];
 
-    const accountSubPages = [
-        {
-            // linkProps: {
-            //     href: accountLink,
-            // },
-            text: "Mes infos",
-            isActive: hasPathnameThisMatch(pathname, accountLink),
-            expandedByDefault: Boolean(
-                userInfoSubPages.find((a) => a.isActive)
-            ),
-            items: userInfoSubPages,
-        },
-    ];
-
-    const startupSubPage = [
+    const startupSubPage: ItemLink[] = [
         {
             linkProps: {
                 href: startupListLink,
@@ -91,7 +83,7 @@ export function PrivateLayout({ children }: { children: React.ReactNode }) {
     const MenuItems: ItemLink[] = [
         {
             isActive: hasPathnameThisMatch(pathname, accountLink),
-            linkProps: {
+            breadcrumb: {
                 href: accountLink,
             },
             text: "Compte",
@@ -133,6 +125,9 @@ export function PrivateLayout({ children }: { children: React.ReactNode }) {
         text: string;
         isActive: boolean;
         expandedByDefault?: boolean;
+        breadcrumb?: {
+            href: string;
+        };
         items?: ItemLink[];
     }
 
@@ -159,7 +154,7 @@ export function PrivateLayout({ children }: { children: React.ReactNode }) {
                 <SideMenu
                     align="left"
                     burgerMenuButtonText="Dans cette rubrique"
-                    items={MenuItems}
+                    items={MenuItems as SideMenuProps.Item[]}
                     title="Espace-Membre"
                 />
             </div>
@@ -171,11 +166,16 @@ export function PrivateLayout({ children }: { children: React.ReactNode }) {
                     }}
                     segments={tree
                         .slice(0, tree.length - 1)
-                        .filter((segment) => segment.linkProps?.href)
+                        .filter(
+                            (segment) =>
+                                segment.linkProps?.href ||
+                                segment.breadcrumb?.href
+                        )
                         .map((segment) => ({
                             label: segment.text,
                             linkProps: {
-                                href: segment.linkProps.href,
+                                href: (segment.linkProps?.href ||
+                                    segment.breadcrumb?.href) as string,
                             },
                         }))}
                 />
