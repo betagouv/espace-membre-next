@@ -81,15 +81,23 @@ export const StartupForm = (props: StartupForm) => {
     const [text, setText] = React.useState(
         decodeURIComponent(props.content) || ""
     );
-    const [title, setTitle] = React.useState("");
-    const [link, setLink] = React.useState(props.link);
-    const [repository, setRepository] = React.useState(props.repository);
+    const [title, setTitle] = React.useState<string | undefined>(
+        props.startup?.attributes.name
+    );
+    const [link, setLink] = React.useState<string | undefined>(props.link);
+    const [repository, setRepository] = React.useState<string | undefined>(
+        props.repository
+    );
     const [mission, setMission] = React.useState(props.mission);
     const [sponsors, setSponsors] = React.useState(props.sponsors || []);
     const [newSponsors, setNewSponsors] = React.useState([]);
     const [incubator, setIncubator] = React.useState(props.incubator);
-    const [stats_url, setStatsUrl] = React.useState(props.stats_url);
-    const [dashlord_url, setDashlord] = React.useState(props.dashlord_url);
+    const [stats_url, setStatsUrl] = React.useState<string | undefined>(
+        props.stats_url
+    );
+    const [dashlord_url, setDashlord] = React.useState<string | undefined>(
+        props.dashlord_url
+    );
     const [selectedFile, setSelectedFile]: [undefined | File, (File) => void] =
         React.useState();
     const [phases, setPhases] = React.useState(
@@ -227,7 +235,7 @@ export const StartupForm = (props: StartupForm) => {
                                     onChange: (e) => {
                                         setTitle(e.currentTarget.value);
                                     },
-                                    value: title,
+                                    defaultValue: title,
                                 }}
                             />
                             {!!formErrors["startup"] && (

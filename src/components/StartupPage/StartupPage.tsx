@@ -28,7 +28,7 @@ function MemberTable({ members }: { members: Member[] }) {
 
 export interface StartupPageProps {
     startupInfos: any;
-    currentPhase: Phase;
+    currentPhase: string;
     updatePullRequest: any;
     members: {
         expired_members: Member[];
@@ -45,27 +45,34 @@ export default function StartupPage({
 }: StartupPageProps) {
     return (
         <>
-            <p className="fr-text--sm fr-mb-2v">
-                <a href="/startups">Produit</a> &gt;{" "}
-                <a href="">{startupInfos.id}</a>
-            </p>
             <div className="fr-mb-8v">
-                <h3>Startup</h3>
+                <h3>{startupInfos.name}</h3>
                 <p>
                     <span>
-                        Nom :
+                        Fiche github :{" "}
                         <a
+                            className="fr-link"
+                            target="_blank"
                             href={`https://github.com/betagouv/beta.gouv.fr/edit/master/content/_startups/${startupInfos.id}.md`}
                         >
                             {startupInfos.name}
                         </a>
                     </span>
                     <br />
-                    <span>Repository :{startupInfos.repository}</span>
+                    <span>
+                        Repository :{" "}
+                        <a
+                            className="fr-link"
+                            target="_blank"
+                            href={startupInfos.repository}
+                        >
+                            {startupInfos.repository}
+                        </a>
+                    </span>
                     <br />
                     <span>Contact : {startupInfos.contact}</span>
                     <br />
-                    <span>Phase : currentPhase</span>
+                    <span>Phase : {currentPhase}</span>
                     <br />
                 </p>
                 <p className="fr-text--sm" style={{ fontStyle: "italic" }}>

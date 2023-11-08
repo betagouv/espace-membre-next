@@ -259,7 +259,6 @@ export default function CitySelect({
                                 onChange={(value) => {
                                     onSearchChange(value);
                                     debounceLoadOptions(value, (data) => {
-                                        console.log(data);
                                         if (data) {
                                             setResults(data);
                                         }

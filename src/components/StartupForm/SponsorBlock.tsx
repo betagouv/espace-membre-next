@@ -47,8 +47,8 @@ const SponsorBlock = ({
             <SESponsorSelect
                 value={sponsors}
                 newSponsors={newSponsors}
-                onChange={(sponsors) => {
-                    setSponsors(sponsors);
+                onChange={(newSponsors) => {
+                    setSponsors(newSponsors);
                 }}
             />
             <p>Le sponsor n'est pas encore dans la base de donnée ? </p>

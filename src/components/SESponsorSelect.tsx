@@ -5,10 +5,7 @@ import { Sponsor } from "@/models/sponsor";
 import { computeRoute } from "@/routes/routes";
 
 interface SESponsorSelectProps {
-    value: {
-        value: string;
-        label: string;
-    }[];
+    value: string[];
     newSponsors: Sponsor[];
     label?: string;
     hint?: string;
@@ -65,19 +62,6 @@ export default function SESponsorSelect({
     }));
 
     const allOptions = [...options, ...newSponsorsOptions];
-    // return <ClientOnly>
-    //     <Select
-    //         isMulti
-    //         defaultValue={allOptions.filter(opt => value.includes(opt.value))}
-    //         // value={options.filter(opt => value.includes(opt.value))}
-    //         value={allOptions.filter(opt => value.includes(opt.value))}
-    //         onChange={(opts) => onChange(opts.map(opt => opt.value))}
-    //         options={allOptions}
-    //         placeholder={'Sélectionne un ou plusieurs sponsors'}
-    //         hideSelectedOptions={false}
-    //         blurInputOnSelect={false}
-    //       />
-    //   </ClientOnly>
     return (
         <div className="fr-select-group">
             <label className="fr-label">
@@ -86,29 +70,19 @@ export default function SESponsorSelect({
             </label>
             <Autocomplete
                 multiple
-                options={allOptions.map((se) => ({
-                    id: se.value,
-                    label: se.label,
-                }))}
-                onInputChange={(...[, newValue]) => {
-                    onChange(newValue);
+                options={allOptions}
+                onChange={(event, newValue) => {
+                    onChange(newValue.map((v) => v.value));
                 }}
-                defaultValue={
-                    value
-                        ? value.map((se) => ({
-                              id: se.value,
-                              label: se.label,
-                          }))
+                getOptionLabel={(option) => option.label}
+                value={
+                    value && value.length
+                        ? allOptions.filter((se) => value.includes(se.value))
                         : undefined
                 }
                 renderInput={(params) => (
-                    <TextField
-                        {...params}
-                        // label="limitTags"
-                        placeholder="Sponsor"
-                    />
+                    <TextField {...params} placeholder="Sponsor" />
                 )}
-                // sx={{ width: "500px" }}
             />
             {!!state && !!stateMessageRelated && (
                 <p className="fr-error-text">{stateMessageRelated}</p>
