@@ -21,7 +21,7 @@
     "@codegouvfr/react-dsfr": "^0.76.4",
     "@mui/material": "^5.14.14",
     "@sendinblue/client": "^3.3.1",
-    "axios": "^1.5.1",
+    "axios": "^1.6.0",
     "better-sqlite3": "^8.6.0",
     "chai": "^4.3.10",
     "chai-http": "^4.4.0",
