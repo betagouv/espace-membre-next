@@ -36,7 +36,7 @@
     "mysql2": "^3.6.1",
     "net": "^1.0.2",
     "next": "latest",
-    "next-auth": "^4.24.3",
+    "next-auth": "^4.24.5",
     "oracledb": "^6.1.0",
     "ovh": "^2.0.3",
     "pg-query-stream": "^4.5.3",
