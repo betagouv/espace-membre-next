@@ -307,9 +307,18 @@ export const Onboarding = function (props: OnboardingProps) {
                                             required: true,
                                         }}
                                     />
-                                    Ton email sera :{" "}
-                                    {previewEmail || "prenom.nom"}
-                                    @beta.gouv.fr
+                                    <Alert
+                                        description={
+                                            <>
+                                                Ton email sera :{" "}
+                                                {previewEmail || "prenom.nom"}
+                                                @beta.gouv.fr
+                                            </>
+                                        }
+                                        className="fr-mb-2w"
+                                        severity="info"
+                                        small
+                                    />
                                 </div>
                                 <Input
                                     label="Courte bio"

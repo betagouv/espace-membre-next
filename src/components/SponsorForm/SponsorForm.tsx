@@ -10,6 +10,7 @@ import {
 import SponsorTypeSelect from "./SponsorTypeSelect";
 import Input from "@codegouvfr/react-dsfr/Input";
 import Button from "@codegouvfr/react-dsfr/Button";
+import Alert from "@codegouvfr/react-dsfr/Alert";
 
 // import style manually
 
@@ -45,6 +46,11 @@ export const SponsorForm = (props: SponsorForm) => {
     return (
         <>
             <div>
+                <Alert
+                    description="Attention ceci ajoutera un nouveau sponsor. Vérifie bien que le sponsor n'existe pas déjà."
+                    severity="info"
+                    small
+                />
                 {
                     <>
                         <form onSubmit={save}>

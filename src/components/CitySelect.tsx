@@ -83,7 +83,7 @@ export function Search(props: SearchProps) {
 
     return (
         <Autocomplete
-            freeSolo
+            // freeSolo
             PopperComponent={(props) => (
                 <Popper
                     {...props}
@@ -105,6 +105,7 @@ export function Search(props: SearchProps) {
                     placement="bottom-start"
                 />
             )}
+            loading={loading}
             className={className}
             fullWidth
             onInputChange={(...[, newValue]) => {
@@ -134,9 +135,8 @@ export function Search(props: SearchProps) {
                     {getResult(id).label}
                 </li>
             )}
-            noOptionsText={"no result"}
-            loadingText={"loading"}
-            loading={loading}
+            noOptionsText={"Pas de résultat"}
+            loadingText={"Chargement..."}
             onFocus={() => {
                 onActive?.(true);
                 setIsEditing(true);
@@ -224,6 +224,7 @@ export default function CitySelect({
         const data = await searchForeignCity(inputValue);
         callback(data);
     };
+    const [loading, setLoading] = useState<boolean>(false);
     const debounceLoadOptions = useCallback(_.debounce(loadOptions, 2000), []);
     const [search, onSearchChange] = useState("");
     const [inputElement, setInputElement] = useState<HTMLInputElement | null>(
@@ -257,13 +258,16 @@ export default function CitySelect({
                                 defaultValue={defaultValue}
                                 // ref={setInputElement}
                                 onChange={(value) => {
+                                    setLoading(true);
                                     onSearchChange(value);
                                     debounceLoadOptions(value, (data) => {
                                         if (data) {
+                                            setLoading(false);
                                             setResults(data);
                                         }
                                     });
                                 }}
+                                loading={loading}
                                 onSelect={(value) => {
                                     onChange(value);
                                 }}

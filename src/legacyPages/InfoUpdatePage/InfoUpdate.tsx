@@ -158,7 +158,7 @@ export const InfoUpdate = (props: InfoUpdateProps) => {
                     />
                 )}
                 <form onSubmit={save} method="POST">
-                    <h4>Participez à notre observatoire statisique </h4>
+                    <h4>Participez à notre observatoire statistique </h4>
                     ⚠️ Ces valeurs servent à alimenter l'
                     <a
                         href="https://metabase.incubateur.net/public/dashboard/554ff353-6104-4c25-a261-d8bdc40f75d5"
