@@ -25,7 +25,7 @@ function MainStructure(props: PropsWithChildren) {
             <body>
                 <DsfrProvider>
                     <MuiDsfrThemeProvider>
-                        <Header></Header>
+                        <Header />
                         <div className="fr-container fr-container--fluid fr-mb-14v fr-mt-14v">
                             <div className="fr-grid-row fr-grid-row-gutters fr-grid-row--center">
                                 {props.children}

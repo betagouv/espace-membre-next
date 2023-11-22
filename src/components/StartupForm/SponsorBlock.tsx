@@ -27,36 +27,33 @@ const SponsorBlock = ({
         modal.close();
     }
 
-    const customStyles = {
-        content: {
-            top: "50%",
-            left: "50%",
-            right: "auto",
-            bottom: "auto",
-            marginRight: "-50%",
-            maxWidth: "550px",
-            width: "80%",
-            transform: "translate(-50%, -50%)",
-        },
-    };
-
     return (
         <div className="fr-input-group">
-            <label className="fr-label">Sponsor</label>
-            <br />
             <SESponsorSelect
                 value={sponsors}
                 newSponsors={newSponsors}
                 onChange={(newSponsors) => {
                     setSponsors(newSponsors);
                 }}
+                placeholder={"Sélectionnez des sponsors"}
+                containerStyle={{
+                    marginBottom: `0.5rem`,
+                }}
             />
-            <p>Le sponsor n'est pas encore dans la base de donnée ? </p>
+            <span className="fr-text fr-text--sm">
+                Le sponsor n'est pas encore dans la base de donnée ?
+            </span>
             <Button
                 nativeButtonProps={{
                     onClick: openModal,
                 }}
-                priority="tertiary"
+                style={{
+                    marginLeft: `0.5rem`,
+                    transform: `translateY(0.25rem)`,
+                }}
+                iconId="fr-icon-add-circle-fill"
+                priority="tertiary no outline"
+                size="small"
             >
                 Ajouter un sponsor
             </Button>

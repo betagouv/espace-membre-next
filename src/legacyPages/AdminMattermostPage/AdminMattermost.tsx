@@ -73,7 +73,10 @@ export const AdminMattermost = (props: AdminMattermostProps) => {
                 .get(
                     `${computeRoute(
                         routes.ADMIN_MATTERMOST_MESSAGE_API
-                    )}?${queryParamsString}`
+                    )}?${queryParamsString}`,
+                    {
+                        withCredentials: true,
+                    }
                 )
                 .then((resp) => resp.data.users);
             setUsersForMessage(usersForMessage);

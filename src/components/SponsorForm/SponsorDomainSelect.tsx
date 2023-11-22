@@ -59,15 +59,15 @@ function SingleSelect({
     onChange,
     placeholder,
 }: {
-    defaultValue: any;
+    defaultValue?: string;
     onChange: any;
     placeholder?: string;
 }) {
-    const [value, setValue] = useState(defaultValue);
+    const [value, setValue] = useState(defaultValue || "");
 
     return (
         <Select
-            label="Sélectionnez un domaine ministériel"
+            label="Domaine ministériel"
             nativeSelectProps={{
                 onChange: (event) => {
                     setValue(event.target.value);
@@ -77,7 +77,7 @@ function SingleSelect({
             }}
         >
             <option value="" disabled hidden>
-                {placeholder}
+                Sélectionne un domaine ministériel
             </option>
             {options.map((option, index) => (
                 <option value={option.value} key={index}>

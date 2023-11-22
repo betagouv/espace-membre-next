@@ -265,7 +265,7 @@ export const StartupForm = (props: StartupForm) => {
                                 <label className="fr-label">
                                     Description du produit :
                                     <span className="fr-hint-text">
-                                        Décrive votre produit
+                                        Décrivez votre produit
                                     </span>
                                 </label>
                                 <ClientOnly>
@@ -273,7 +273,10 @@ export const StartupForm = (props: StartupForm) => {
                                         defaultValue={decodeURIComponent(
                                             props.content || DEFAULT_CONTENT
                                         )}
-                                        style={{ height: "500px" }}
+                                        style={{
+                                            height: "500px",
+                                            marginTop: "0.5rem",
+                                        }}
                                         renderHTML={(text) =>
                                             mdParser.render(text)
                                         }
@@ -296,12 +299,15 @@ export const StartupForm = (props: StartupForm) => {
                                 }
                             />
                             <div className="fr-input-group">
-                                <label className="fr-label">Phase</label>
-                                <p>
-                                    Voici l'historique des phases dans
-                                    lesquelles a été ce produit.
-                                </p>
+                                <label className="fr-label">
+                                    Phase
+                                    <span className="fr-hint-text">
+                                        Voici l'historique des phases dans
+                                        lesquelles a été ce produit.
+                                    </span>
+                                </label>
                                 <Table
+                                    style={{ marginBottom: "0.5rem" }}
                                     data={phases.map((phase, index) => {
                                         return [
                                             <PhaseSelectionCell
@@ -332,12 +338,21 @@ export const StartupForm = (props: StartupForm) => {
                                         "Action",
                                     ]}
                                 />
+                                <span className="fr-text fr-text--sm">
+                                    Il manque une phase ?
+                                </span>
                                 <Button
                                     children={`Ajouter une phase`}
                                     nativeButtonProps={{
                                         onClick: () => addPhase(),
                                     }}
-                                    priority="secondary"
+                                    style={{
+                                        marginLeft: `0.5rem`,
+                                        transform: `translateY(0.25rem)`,
+                                    }}
+                                    iconId="fr-icon-add-circle-fill"
+                                    size="small"
+                                    priority="tertiary no outline"
                                 />
                             </div>
                             <FileUpload
