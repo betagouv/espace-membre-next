@@ -184,38 +184,43 @@ export function PrivateLayout({ children }: { children: React.ReactNode }) {
     const tree = findActiveItem(MenuItems);
     return (
         <>
-            <div className="fr-col-12 fr-col-md-3 fr-col-lg-3">
-                <SideMenu
-                    align="left"
-                    burgerMenuButtonText="Dans cette rubrique"
-                    items={
-                        displayMenuForSubPage(pathname) as SideMenuProps.Item[]
-                    }
-                    // title="Espace-Membre"
-                />
-            </div>
-            <div className="fr-col-12 fr-col-md-9 fr-col-lg-9">
-                <Breadcrumb
-                    currentPageLabel={tree[tree.length - 1]?.text}
-                    homeLinkProps={{
-                        href: "/",
-                    }}
-                    segments={tree
-                        .slice(0, tree.length - 1)
-                        .filter(
-                            (segment) =>
-                                segment.linkProps?.href ||
-                                segment.breadcrumb?.href
-                        )
-                        .map((segment) => ({
-                            label: segment.text,
-                            linkProps: {
-                                href: (segment.linkProps?.href ||
-                                    segment.breadcrumb?.href) as string,
-                            },
-                        }))}
-                />
-                {children}
+            {/* <div className="fr-grid-row"> */}
+            <Breadcrumb
+                currentPageLabel={tree[tree.length - 1]?.text}
+                homeLinkProps={{
+                    href: "/",
+                }}
+                segments={tree
+                    .slice(0, tree.length - 1)
+                    .filter(
+                        (segment) =>
+                            segment.linkProps?.href || segment.breadcrumb?.href
+                    )
+                    .map((segment) => ({
+                        label: segment.text,
+                        linkProps: {
+                            href: (segment.linkProps?.href ||
+                                segment.breadcrumb?.href) as string,
+                        },
+                    }))}
+            />
+            {/* </div> */}
+            <div className="fr-grid-row fr-grid-row-gutters fr-grid-row--center">
+                <div className="fr-col-12 fr-col-md-3 fr-col-lg-3">
+                    <SideMenu
+                        align="left"
+                        burgerMenuButtonText="Dans cette rubrique"
+                        items={
+                            displayMenuForSubPage(
+                                pathname
+                            ) as SideMenuProps.Item[]
+                        }
+                        // title="Espace-Membre"
+                    />
+                </div>
+                <div className="fr-col-12 fr-col-md-9 fr-col-lg-9">
+                    {children}
+                </div>
             </div>
         </>
     );

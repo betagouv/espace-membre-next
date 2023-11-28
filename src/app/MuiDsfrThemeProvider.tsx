@@ -15,7 +15,7 @@ export const { MuiDsfrThemeProvider } = createMuiDsfrThemeProvider({
     augmentMuiTheme: ({ nonAugmentedMuiTheme, isDark }) => ({
         ...nonAugmentedMuiTheme,
         custom: {
-            isDarkModeEnabled: isDark,
+            isDarkModeEnabled: true, //isDark,
         },
     }),
 });

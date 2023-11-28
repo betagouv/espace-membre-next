@@ -1,30 +1,10 @@
-"use client";
+import type { Metadata } from "next";
+import AdminMattermostClientPage from "./AdminMattermostClientPage";
 
-import React, { useEffect, useState } from "react";
-import axios from "axios";
-import routes, { computeRoute } from "@/routes/routes";
-import {
-    AdminMattermost,
-    AdminMattermostProps,
-} from "@/legacyPages/AdminMattermostPage/AdminMattermost";
+export const metadata: Metadata = {
+    title: "Espace-Membre: Administration mattermost",
+};
 
-export default function Page() {
-    const [data, setData] = useState({});
-    const [isLoading, setLoading] = useState(true);
-    useEffect(() => {
-        axios
-            .get(computeRoute(routes.ADMIN_MATTERMOST_API), {
-                withCredentials: true,
-            })
-            .then((res) => {
-                console.log(res.data);
-                setData(res.data);
-                setLoading(false);
-            });
-    }, []);
-
-    if (isLoading) return <p>Chargement...</p>;
-    if (!data) return <p>No profile data</p>;
-
-    return <AdminMattermost {...(data as AdminMattermostProps)} />;
+export default function Page(props) {
+    return <AdminMattermostClientPage {...props} />;
 }
