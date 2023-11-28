@@ -1,7 +1,10 @@
-"use client";
-
+import { Metadata } from "next";
 import config from "@/config";
 import { useSearchParams } from "next/navigation";
+
+export const metadata: Metadata = {
+    title: "Espace-Membre: fiche créée avec succès",
+};
 
 export default function OnboardingSuccessPage({
     params,

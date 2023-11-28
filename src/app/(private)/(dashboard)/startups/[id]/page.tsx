@@ -1,33 +1,22 @@
-"use client";
+import { Metadata, ResolvingMetadata } from "next";
+import StartupIdClientPage from "./StartupIdClientPage";
 
-import StartupPage, {
-    StartupPageProps,
-} from "@/components/StartupPage/StartupPage";
-import React, { useEffect, useState } from "react";
-import axios from "axios";
-import routes, { computeRoute } from "@/routes/routes";
+type Props = {
+    params: { id: string };
+};
 
-export default function Page({ params }: { params: { id: string } }) {
-    const [data, setData] = useState({});
-    const [isLoading, setLoading] = useState(true);
-    useEffect(() => {
-        axios
-            .get(
-                computeRoute(
-                    routes.STARTUP_GET_DETAIL_API.replace(":startup", params.id)
-                ),
-                {
-                    withCredentials: true,
-                }
-            )
-            .then((res) => {
-                setData(res.data);
-                setLoading(false);
-            });
-    }, [params.id]);
+export async function generateMetadata(
+    { params }: Props,
+    parent: ResolvingMetadata
+): Promise<Metadata> {
+    // read route params
+    const id = params.id;
 
-    if (isLoading) return <p>Chargement....</p>;
-    if (!data) return <p>No profile data</p>;
+    return {
+        title: `Espace-Membre : produit ${id}`,
+    };
+}
 
-    return <StartupPage {...(data as StartupPageProps)} />;
+export default function Page(props) {
+    return <StartupIdClientPage {...props} />;
 }

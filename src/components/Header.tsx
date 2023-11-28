@@ -70,7 +70,10 @@ const MainHeader = () => {
                 title: "Accueil - Espace Membre @beta.gouv.fr",
             }}
             navigation={
-                session?.user
+                session?.user &&
+                ["/account", "/community", "/admin", "/startups"].find((url) =>
+                    pathname.startsWith(url)
+                )
                     ? [
                           {
                               linkProps: {

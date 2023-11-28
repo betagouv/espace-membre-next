@@ -1,14 +1,14 @@
-"use client";
-
+import axios from "axios";
+import { Metadata } from "next";
 import { useRouter, useSearchParams } from "next/navigation";
 import Button from "@codegouvfr/react-dsfr/Button";
-// import { getSession, signIn, useSession } from "next-auth/react";
 import routes, { computeRoute } from "@/routes/routes";
-import axios from "axios";
+
+export const metadata: Metadata = {
+    title: "Espace-Membre: me connecter",
+};
 
 export default function SignIn() {
-    // const { data: session, status } = useSession();
-    // console.log(session, status);
     const router = useRouter();
     const searchParams = useSearchParams();
     const next = searchParams.get("next");
@@ -17,15 +17,11 @@ export default function SignIn() {
     }
     const hash = window.location.hash.split("#")[1];
     const onSubmit = async () => {
-        // const data = await signIn("credentials", {
-        //     token: hash,
-        // });
         const value = await axios.post(computeRoute(routes.SIGNIN_API), {
             token: hash,
         });
         await axios.get(computeRoute(routes.ME));
         router.push("/account");
-        // getSession();
     };
 
     return (

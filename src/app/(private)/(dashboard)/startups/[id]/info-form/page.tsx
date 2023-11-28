@@ -1,38 +1,22 @@
-"use client";
+import { Metadata, ResolvingMetadata } from "next";
+import StartupInfoFormClientPage from "./StartupInfoFormClientPage";
 
-import {
-    StartupInfoUpdate,
-    StartupInfoUpdateProps,
-} from "@/legacyPages/StartupInfoUpdatePage";
+type Props = {
+    params: { id: string };
+};
 
-import React, { useEffect, useState } from "react";
-import axios from "axios";
-import routes, { computeRoute } from "@/routes/routes";
+export async function generateMetadata(
+    { params }: Props,
+    parent: ResolvingMetadata
+): Promise<Metadata> {
+    // read route params
+    const id = params.id;
 
-export default function Page({ params }: { params: { id: string } }) {
-    const [data, setData] = useState({});
-    const [isLoading, setLoading] = useState(true);
-    useEffect(() => {
-        axios
-            .get(
-                computeRoute(
-                    routes.STARTUP_GET_INFO_UPDATE_FORM_API.replace(
-                        ":startup",
-                        params.id
-                    )
-                ),
-                {
-                    withCredentials: true,
-                }
-            )
-            .then((res) => {
-                setData(res.data);
-                setLoading(false);
-            });
-    }, [params.id]);
+    return {
+        title: `Espace-Membre : éditer ${id}`,
+    };
+}
 
-    if (isLoading) return <p>Chargement...</p>;
-    if (!data) return <p>No profile data</p>;
-
-    return <StartupInfoUpdate {...(data as StartupInfoUpdateProps)} />;
+export default function Page(props) {
+    return <StartupInfoFormClientPage {...props} />;
 }
