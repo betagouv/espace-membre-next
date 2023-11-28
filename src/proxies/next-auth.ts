@@ -55,6 +55,7 @@ const mock_getServerSession: typeof real_getServerSession = async function () {
 export const useSession = function useSession(props?: {
     required?: boolean;
     onUnauthenticated?: () => void;
+    onAuthenticated?: () => void;
 }) {
     const [loading, setLoading] = useState<boolean>(false);
     const [data, setData] = useState<{
@@ -73,6 +74,9 @@ export const useSession = function useSession(props?: {
                     setData({
                         ...data.data,
                     });
+                    if (props && props.onAuthenticated) {
+                        props.onAuthenticated();
+                    }
                 } else {
                     setStatus("unauthenticated");
                     if (props && props.onUnauthenticated) {

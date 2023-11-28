@@ -1,16 +1,33 @@
 "use client";
 import React from "react";
-import { useRouter } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
 import { Header, HeaderProps } from "@codegouvfr/react-dsfr/Header";
 // import { useSession, signIn, signOut } from "next-auth/react";
 import { linkRegistry } from "@/utils/routes/registry";
 import { useSession, signOut } from "@/proxies/next-auth";
 import axios from "axios";
 import routes, { computeRoute } from "@/routes/routes";
+import { hasPathnameThisMatch, hasPathnameThisRoot } from "@/utils/url";
 
 const MainHeader = () => {
     const router = useRouter();
     const { data: session, status } = useSession();
+    const pathname = usePathname();
+
+    const accountLink = linkRegistry.get("account", undefined);
+    const accountBadgeLink = linkRegistry.get("accountBadge", undefined);
+    const communityLink = linkRegistry.get("community", undefined);
+    const startupListLink = linkRegistry.get("startupList", undefined);
+    const startupCreateLink = linkRegistry.get("startupCreate", undefined);
+    const adminMattermostLink = linkRegistry.get("adminMattermost", undefined);
+    const accountEditBaseInfoLink = linkRegistry.get(
+        "accountEditBaseInfo",
+        undefined
+    );
+    const accountEditPrivateInfoLink = linkRegistry.get(
+        "accountEditPrivateInfo",
+        undefined
+    );
     const quickAccessItems: (React.ReactNode | HeaderProps.QuickAccessItem)[] =
         [];
     if (session) {
@@ -52,6 +69,56 @@ const MainHeader = () => {
                 href: "/",
                 title: "Accueil - Espace Membre @beta.gouv.fr",
             }}
+            navigation={
+                session?.user
+                    ? [
+                          {
+                              linkProps: {
+                                  href: "/account",
+                                  target: "_self",
+                              },
+                              text: "Mon Compte",
+                              isActive: hasPathnameThisRoot(
+                                  pathname,
+                                  accountLink
+                              ),
+                          },
+                          {
+                              isActive: hasPathnameThisRoot(
+                                  pathname,
+                                  communityLink
+                              ),
+                              linkProps: {
+                                  href: "/community",
+                                  target: "_self",
+                              },
+                              text: "Communauté",
+                          },
+                          {
+                              linkProps: {
+                                  href: "/startups",
+                                  target: "_self",
+                              },
+                              text: "Produit",
+                              isActive: hasPathnameThisRoot(
+                                  pathname,
+                                  startupListLink
+                              ),
+                          },
+                          {
+                              linkProps: {
+                                  href: "/admin/mattermost",
+                                  target: "_self",
+                              },
+                              text: "Admin",
+                              isActive: hasPathnameThisRoot(
+                                  pathname,
+                                  adminMattermostLink
+                              ),
+                          },
+                      ]
+                    : undefined
+            }
             id="fr-header-header-with-quick-access-items"
             quickAccessItems={[...quickAccessItems]}
             serviceTagline="Mon espace membre de la communauté"

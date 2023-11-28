@@ -147,6 +147,40 @@ export function PrivateLayout({ children }: { children: React.ReactNode }) {
         return tree;
     };
 
+    const displayMenuForSubPage = (pathname) => {
+        const firstSubPage = pathname.split("/")[1];
+        console.log(pathname, firstSubPage);
+        if (firstSubPage.includes("account")) {
+            return accountSubPages;
+        } else if (firstSubPage.includes("startups")) {
+            return startupSubPage;
+        } else if (firstSubPage.includes("community")) {
+            return [
+                {
+                    linkProps: {
+                        href: communityLink,
+                    },
+                    text: "Rechercher un ou une membre",
+                    isActive: hasPathnameThisMatch(pathname, communityLink),
+                },
+            ];
+        } else if (firstSubPage.includes("admin")) {
+            return [
+                {
+                    linkProps: {
+                        href: communityLink,
+                    },
+                    text: "Administration Mattermost",
+                    isActive: hasPathnameThisMatch(
+                        pathname,
+                        adminMattermostLink
+                    ),
+                },
+            ];
+        }
+        return [];
+    };
+
     const tree = findActiveItem(MenuItems);
     return (
         <>
@@ -154,8 +188,10 @@ export function PrivateLayout({ children }: { children: React.ReactNode }) {
                 <SideMenu
                     align="left"
                     burgerMenuButtonText="Dans cette rubrique"
-                    items={MenuItems as SideMenuProps.Item[]}
-                    title="Espace-Membre"
+                    items={
+                        displayMenuForSubPage(pathname) as SideMenuProps.Item[]
+                    }
+                    // title="Espace-Membre"
                 />
             </div>
             <div className="fr-col-12 fr-col-md-9 fr-col-lg-9">
