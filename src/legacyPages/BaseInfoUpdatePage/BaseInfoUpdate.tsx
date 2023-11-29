@@ -151,7 +151,7 @@ export const BaseInfoUpdate = (props: BaseInfoUpdateProps) => {
                 message: (
                     <>
                         Demande à un membre de ton équipe de merger ta fiche :{" "}
-                        <a href="${pr_url}" target="_blank">
+                        <a href={pr_url} target="_blank">
                             {pr_url}
                         </a>
                         .
