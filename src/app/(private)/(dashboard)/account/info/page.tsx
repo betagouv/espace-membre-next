@@ -1,8 +1,9 @@
 import type { Metadata } from "next";
 import AccountInfoClientPage from "./AccountInfoClientPage";
+import { routeTitles } from "@/utils/routes/routeTitles";
 
 export const metadata: Metadata = {
-    title: "Espace-Membre: Modifier les infos privées",
+    title: `${routeTitles.accountEditPrivateInfo()} / Espace Membre`,
 };
 
 export default function Page() {

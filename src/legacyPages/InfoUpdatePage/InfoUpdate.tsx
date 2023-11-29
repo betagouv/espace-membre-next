@@ -12,6 +12,7 @@ import Select from "@codegouvfr/react-dsfr/Select";
 import axios from "axios";
 import Button from "@codegouvfr/react-dsfr/Button";
 import Alert from "@codegouvfr/react-dsfr/Alert";
+import { routeTitles } from "@/utils/routes/routeTitles";
 
 interface FormData {
     gender: string;
@@ -148,7 +149,7 @@ export const InfoUpdate = (props: InfoUpdateProps) => {
     return (
         <>
             <div>
-                <h3>Mise à jour de mes informations</h3>
+                <h1>{routeTitles.accountEditPrivateInfo()}</h1>
                 {!!alertMessage && (
                     <Alert
                         className="fr-mb-8v"

@@ -7,6 +7,7 @@ import FicheMembre from "./FicheMembre";
 import EmailContainer from "./EmailContainer";
 import Observatoire from "./Observatoire";
 import Button from "@codegouvfr/react-dsfr/Button";
+import { routeTitles } from "@/utils/routes/routeTitles";
 
 export default function AccountPage(props: any) {
     const {
@@ -30,6 +31,7 @@ export default function AccountPage(props: any) {
                     <a href="/account#responder">Configurer la réponse</a>
                 </div>
             )}
+            <h1>{routeTitles.account()}</h1>
             {userInfos && (
                 <>
                     <FicheMembre

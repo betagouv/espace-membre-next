@@ -124,8 +124,7 @@ const MainHeader = () => {
             }
             id="fr-header-header-with-quick-access-items"
             quickAccessItems={[...quickAccessItems]}
-            serviceTagline="Mon espace membre de la communauté"
-            serviceTitle="Espace-Membre @beta.gouv.fr"
+            serviceTitle="Espace Membre @beta.gouv.fr"
         />
     );
 };

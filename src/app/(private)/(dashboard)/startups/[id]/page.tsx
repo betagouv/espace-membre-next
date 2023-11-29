@@ -13,7 +13,7 @@ export async function generateMetadata(
     const id = params.id;
 
     return {
-        title: `Espace-Membre : produit ${id}`,
+        title: `Produit ${id} / Espace Membre`,
     };
 }
 

@@ -42,24 +42,20 @@ export const StartupInfoCreate = (props: StartupInfoCreateProps) => {
     };
     return (
         <>
-            <div>
-                <h3>Créer une fiche produit</h3>
-                {!!props.updatePullRequest && (
-                    <div className="notification">
-                        ⚠️ Une pull request existe déjà sur cette startup.
-                        Quelqu'un doit la merger pour que le changement soit
-                        pris en compte.
-                        <a href={props.updatePullRequest.url} target="_blank">
-                            {props.updatePullRequest.url}
-                        </a>
-                        <br />
-                        (la prise en compte peut prendre 10 minutes.)
-                    </div>
-                )}
-                <div className="beta-banner"></div>
-                <div>
-                    <StartupForm content={""} save={save} />
+            {!!props.updatePullRequest && (
+                <div className="notification">
+                    ⚠️ Une pull request existe déjà sur cette startup. Quelqu'un
+                    doit la merger pour que le changement soit pris en compte.
+                    <a href={props.updatePullRequest.url} target="_blank">
+                        {props.updatePullRequest.url}
+                    </a>
+                    <br />
+                    (la prise en compte peut prendre 10 minutes.)
                 </div>
+            )}
+            <div className="beta-banner"></div>
+            <div>
+                <StartupForm content={""} save={save} />
             </div>
         </>
     );

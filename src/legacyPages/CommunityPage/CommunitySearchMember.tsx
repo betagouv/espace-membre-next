@@ -5,8 +5,7 @@ import MemberSelect from "../../components/MemberSelect";
 import { CommunityProps } from ".";
 import Button from "@codegouvfr/react-dsfr/Button";
 import { useRouter } from "next/navigation";
-
-const css = ".panel { min-height: 400px; }"; // to have enough space to display dropdown
+import { routeTitles } from "@/utils/routes/routeTitles";
 
 /* Pure component */
 export const CommunitySearchMember = (props: CommunityProps) => {
@@ -21,46 +20,40 @@ export const CommunitySearchMember = (props: CommunityProps) => {
     return (
         <>
             <div>
-                <div>
-                    <h3>Rechercher un ou une membre</h3>
-                    <form onSubmit={save}>
-                        <div>
-                            <MemberSelect
-                                name="username"
-                                placeholder="Sélectionner un membre"
-                                onChange={(e: { value: any }) => {
-                                    console.log(e);
-                                    setUsername(e.value);
-                                }}
-                                members={props.users.map((u) => ({
-                                    value: u.id,
-                                    label: u.fullname,
-                                }))}
-                                defaultValue={undefined}
-                            ></MemberSelect>
-                        </div>
-                        <div className="fr-mt-6v">
-                            <Button
-                                nativeButtonProps={{
-                                    type: "submit",
-                                }}
-                            >
-                                Voir la fiche
-                            </Button>
-                        </div>
-                    </form>
-                    <br />
-                    <p>
-                        Le membre que vous cherchez n'existe pas ? Vous pouvez
-                        lui donner le lien du{" "}
-                        <a href="/onboarding">
-                            formulaire de création de fiche
-                        </a>
-                        .
-                    </p>
-                </div>
+                <h1>{routeTitles.community()}</h1>
+                <form onSubmit={save}>
+                    <div>
+                        <MemberSelect
+                            name="username"
+                            placeholder="Sélectionner un membre"
+                            onChange={(e: { value: any }) => {
+                                console.log(e);
+                                setUsername(e.value);
+                            }}
+                            members={props.users.map((u) => ({
+                                value: u.id,
+                                label: u.fullname,
+                            }))}
+                            defaultValue={undefined}
+                        ></MemberSelect>
+                    </div>
+                    <div className="fr-mt-6v">
+                        <Button
+                            nativeButtonProps={{
+                                type: "submit",
+                            }}
+                        >
+                            Voir la fiche
+                        </Button>
+                    </div>
+                </form>
+                <br />
+                <p>
+                    Le membre que vous cherchez n'existe pas ? Vous pouvez lui
+                    donner le lien du{" "}
+                    <a href="/onboarding">formulaire de création de fiche</a>.
+                </p>
             </div>
-            <style media="screen">{css}</style>
         </>
     );
 };

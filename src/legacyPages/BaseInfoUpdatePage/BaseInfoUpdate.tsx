@@ -9,6 +9,7 @@ import Input from "@codegouvfr/react-dsfr/Input";
 import Alert from "@codegouvfr/react-dsfr/Alert";
 import { Button } from "@codegouvfr/react-dsfr/Button";
 import { useSession } from "@/proxies/next-auth";
+import { routeTitles } from "@/utils/routes/routeTitles";
 
 interface Option {
     key: string;
@@ -166,7 +167,7 @@ export const BaseInfoUpdate = (props: BaseInfoUpdateProps) => {
     return (
         <>
             <div>
-                <h3>Mise à jour de mes informations</h3>
+                <h1>{routeTitles.accountEditBaseInfo()}</h1>
                 {!!props.updatePullRequest && (
                     <Alert
                         className="fr-mb-8v"

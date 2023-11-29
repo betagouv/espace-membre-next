@@ -1,5 +1,6 @@
 import { Metadata, ResolvingMetadata } from "next";
 import StartupInfoFormClientPage from "./StartupInfoFormClientPage";
+import { routeTitles } from "@/utils/routes/routeTitles";
 
 type Props = {
     params: { id: string };
@@ -13,7 +14,7 @@ export async function generateMetadata(
     const id = params.id;
 
     return {
-        title: `Espace-Membre : éditer ${id}`,
+        title: `${routeTitles.startupDetailsEdit(id)} / Espace Membre`,
     };
 }
 

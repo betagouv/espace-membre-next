@@ -6,13 +6,6 @@ import routes, { computeRoute } from "@/routes/routes";
 import { StartupList, StartupListProps } from "@/legacyPages/StartupListPage";
 
 export default function Page() {
-    // const session = await getServerSession();
-    // const props = await getMattermostAdmin({
-    //     auth: { id: session?.user?.name },
-    // });
-
-    // const session = await getServerSession();
-
     const [data, setData] = useState({});
     const [isLoading, setLoading] = useState(true);
     useEffect(() => {
@@ -28,6 +21,5 @@ export default function Page() {
 
     if (isLoading) return <p>Chargement...</p>;
     if (!data) return <p>No profile data</p>;
-
     return <StartupList {...(data as StartupListProps)} />;
 }

@@ -1,8 +1,9 @@
 import { Metadata } from "next";
 import { LoginPage } from "@/legacyPages/LoginPage";
+import { routeTitles } from "@/utils/routes/routeTitles";
 
 export const metadata: Metadata = {
-    title: "Espace-Membre: page de connexion",
+    title: `${routeTitles.login()} / Espace Membre`,
 };
 
 export default function Login() {

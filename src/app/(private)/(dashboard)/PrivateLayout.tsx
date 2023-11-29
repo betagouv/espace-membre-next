@@ -4,6 +4,7 @@ import { SideMenu, SideMenuProps } from "@codegouvfr/react-dsfr/SideMenu";
 import { useSession } from "@/proxies/next-auth";
 import { usePathname, useRouter } from "next/navigation";
 import { Breadcrumb } from "@codegouvfr/react-dsfr/Breadcrumb";
+import { routeTitles } from "@/utils/routes/routeTitles";
 
 export function PrivateLayout({ children }: { children: React.ReactNode }) {
     const router = useRouter();
@@ -37,27 +38,38 @@ export function PrivateLayout({ children }: { children: React.ReactNode }) {
         "accountEditPrivateInfo",
         undefined
     );
+    const accountBadge = linkRegistry.get("accountBadge", undefined);
 
     const accountSubPages: ItemLink[] = [
         {
             linkProps: {
                 href: accountLink,
             },
-            text: "Mes infos",
+            text: routeTitles.account(),
             isActive: hasPathnameThisMatch(pathname, accountLink),
         },
         {
             linkProps: {
                 href: accountEditBaseInfoLink,
             },
-            text: "Mise à jour de mes infos",
+            text: routeTitles.accountEditBaseInfo(),
             isActive: hasPathnameThisMatch(pathname, accountEditBaseInfoLink),
         },
         {
             linkProps: {
                 href: accountEditPrivateInfoLink,
             },
-            text: "Mise à jour des mes infos privées",
+            text: routeTitles.accountEditPrivateInfo(),
+            isActive: hasPathnameThisMatch(
+                pathname,
+                accountEditPrivateInfoLink
+            ),
+        },
+        {
+            linkProps: {
+                href: accountEditPrivateInfoLink,
+            },
+            text: routeTitles.accountBadge(),
             isActive: hasPathnameThisMatch(
                 pathname,
                 accountEditPrivateInfoLink
@@ -70,14 +82,14 @@ export function PrivateLayout({ children }: { children: React.ReactNode }) {
             linkProps: {
                 href: startupListLink,
             },
-            text: "Rechercher un produit",
+            text: routeTitles.startupList(),
             isActive: hasPathnameThisMatch(pathname, startupListLink),
         },
         {
             linkProps: {
                 href: startupCreateLink,
             },
-            text: "Créer une fiche produit",
+            text: routeTitles.startupCreate(),
             isActive: hasPathnameThisMatch(pathname, startupCreateLink),
         },
     ];
@@ -162,7 +174,7 @@ export function PrivateLayout({ children }: { children: React.ReactNode }) {
                     linkProps: {
                         href: communityLink,
                     },
-                    text: "Rechercher un ou une membre",
+                    text: routeTitles.community(),
                     isActive: hasPathnameThisMatch(pathname, communityLink),
                 },
             ];
@@ -172,7 +184,7 @@ export function PrivateLayout({ children }: { children: React.ReactNode }) {
                     linkProps: {
                         href: communityLink,
                     },
-                    text: "Administration Mattermost",
+                    text: routeTitles.adminMattermost(),
                     isActive: hasPathnameThisMatch(
                         pathname,
                         adminMattermostLink

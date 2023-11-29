@@ -7,6 +7,7 @@ import routes, { computeRoute } from "@/routes/routes";
 import { StartupForm } from "../../components/StartupForm/StartupForm";
 import { StartupInfo, StartupPhase } from "@/models/startup";
 import Alert from "@codegouvfr/react-dsfr/Alert";
+import { routeTitles } from "@/utils/routes/routeTitles";
 
 // import style manually
 export interface StartupInfoFormData {
@@ -67,10 +68,11 @@ export const StartupInfoUpdate = (props: StartupInfoUpdateProps) => {
     return (
         <>
             <div>
-                <h3>
-                    Mise à jour des informations de{" "}
-                    {props.startup.attributes.name}
-                </h3>
+                <h1>
+                    {routeTitles.startupDetailsEdit(
+                        props.startup.attributes.name
+                    )}
+                </h1>
                 {!!props.updatePullRequest && (
                     <Alert
                         className="fr-mb-8v"

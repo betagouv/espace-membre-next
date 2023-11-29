@@ -34,7 +34,6 @@ export const StartupList = (props: StartupListProps) => {
     };
     return (
         <>
-            <h3>Rechercher un produit</h3>
             <form onSubmit={save}>
                 <SESelect
                     startups={props.startupOptions}

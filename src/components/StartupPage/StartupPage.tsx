@@ -46,7 +46,7 @@ export default function StartupPage({
     return (
         <>
             <div className="fr-mb-8v">
-                <h3>{startupInfos.name}</h3>
+                <h1>{startupInfos.name}</h1>
                 <p>
                     <span>
                         Fiche github :{" "}
