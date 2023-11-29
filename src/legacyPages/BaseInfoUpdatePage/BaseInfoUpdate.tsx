@@ -10,6 +10,7 @@ import Alert from "@codegouvfr/react-dsfr/Alert";
 import { Button } from "@codegouvfr/react-dsfr/Button";
 import { useSession } from "@/proxies/next-auth";
 import { routeTitles } from "@/utils/routes/routeTitles";
+import { ReactComponent } from "tss-react/tools/ReactComponent";
 
 interface Option {
     key: string;
@@ -72,7 +73,7 @@ export const BaseInfoUpdate = (props: BaseInfoUpdateProps) => {
     );
     const [alertMessage, setAlertMessage] = React.useState<{
         title: string;
-        message: string;
+        message: ReactComponent;
         type: "success" | "warning";
     }>();
     const [isSaving, setIsSaving] = React.useState(false);
@@ -148,8 +149,17 @@ export const BaseInfoUpdate = (props: BaseInfoUpdateProps) => {
             );
             setAlertMessage({
                 title: `⚠️ Pull request pour la mise à jour de la fiche de ${username} ouverte.`,
-                message: `Demande à un membre de ton équipe de merger ta fiche : <a href="${pr_url}" target="_blank">${pr_url}}</a>. 
-                \nUne fois mergée, ton profil sera mis à jour.`,
+                message: (
+                    <>
+                        Demande à un membre de ton équipe de merger ta fiche :{" "}
+                        <a href="${pr_url}" target="_blank">
+                            {pr_url}
+                        </a>
+                        .
+                        <br />
+                        Une fois mergée, ton profil sera mis à jour.
+                    </>
+                ),
                 type: "success",
             });
         } catch (e) {
@@ -157,7 +167,7 @@ export const BaseInfoUpdate = (props: BaseInfoUpdateProps) => {
             const ErrorResponse: FormErrorResponse = e as FormErrorResponse;
             setAlertMessage({
                 title: "Erreur",
-                message: ErrorResponse.message,
+                message: <>{ErrorResponse.message}</>,
                 type: "warning",
             });
             setIsSaving(false);
