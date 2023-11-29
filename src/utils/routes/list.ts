@@ -16,6 +16,10 @@ export const routes = {
             localizedRoutes.account.params,
             localizedRoutes.account.paths.fr
         ),
+        signIn: defineRoute(
+            localizedRoutes.signIn.params,
+            localizedRoutes.signIn.paths.fr
+        ),
         accountEditBaseInfo: defineRoute(
             localizedRoutes.accountEditBaseInfo.params,
             localizedRoutes.accountEditBaseInfo.paths.fr

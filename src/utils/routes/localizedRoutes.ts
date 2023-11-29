@@ -20,6 +20,12 @@ export const localizedRoutes = {
             fr: (p) => `/account/info`,
         }
     ),
+    signIn: defineLocalizedRoute(
+        {},
+        {
+            fr: (p) => `/signin`,
+        }
+    ),
     accountBadge: defineLocalizedRoute(
         {},
         {

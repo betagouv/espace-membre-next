@@ -18,6 +18,7 @@ export const routeTitles: {
     startupCreate: () => "Créer une fiche produit",
     adminMattermost: () => "Administration mattermost",
     home: () => "",
+    signIn: () => "Me connecter",
     login: () => "Me connecter",
     onboarding: () => "Créer une fiche membre",
 };
