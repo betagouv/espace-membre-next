@@ -58,13 +58,6 @@ export default function AccountPage(props: any) {
                                 href: "https://doc.incubateur.net/",
                             },
                         },
-                        {
-                            children: "Contacter l'équipe support",
-                            linkProps: {
-                                href: "#",
-                            },
-                            priority: "secondary",
-                        },
                     ]}
                     inlineLayoutWhen="md and up"
                 />

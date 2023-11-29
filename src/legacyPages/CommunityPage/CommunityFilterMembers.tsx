@@ -50,7 +50,7 @@ export const CommunityFilterMembers = (props: CommunityProps) => {
         const domaines = (state.domaines || []).map((d) => d.id).join(",");
         const incubators = (state.incubators || []).map((d) => d.id).join(",");
         const startups = (state.startups || []).map((d) => d.id).join(",");
-        const memberStatus = (state.memberStatus || {})
+        const memberStatus = (state.memberStatus || [])
             .map((d) => d.id)
             .join(",");
         const startupPhases = (state.startupPhases || [])
@@ -126,6 +126,7 @@ export const CommunityFilterMembers = (props: CommunityProps) => {
                 <div className="fr-grid-row fr-grid-row--gutters fr-grid-row--center">
                     <div className="fr-col-6">
                         <SEIncubateurSelect
+                            label={"Incubateurs"}
                             incubators={props.incubatorOptions}
                             onChange={(e, incubators) => {
                                 setState({
@@ -137,6 +138,7 @@ export const CommunityFilterMembers = (props: CommunityProps) => {
                     </div>
                     <div className="fr-col-6">
                         <SESelect
+                            label={"Produits"}
                             placeholder={"Sélectionne un ou plusieurs produits"}
                             isMulti={true}
                             startups={props.startupOptions}
@@ -152,6 +154,7 @@ export const CommunityFilterMembers = (props: CommunityProps) => {
                 <div className="fr-grid-row fr-grid-row--gutters fr-grid-row--center">
                     <div className="fr-col-6">
                         <DomaineSelect
+                            label={"Domaines"}
                             domaines={props.domaineOptions}
                             onChange={(e, domaines) =>
                                 setState({
@@ -163,6 +166,7 @@ export const CommunityFilterMembers = (props: CommunityProps) => {
                     </div>
                     <div className="fr-col-6">
                         <MemberStatusSelect
+                            label={"Membres"}
                             onChange={(e, memberStatus) =>
                                 setState({
                                     ...state,
@@ -175,6 +179,7 @@ export const CommunityFilterMembers = (props: CommunityProps) => {
                 <div className="fr-grid-row fr-grid-row--gutters">
                     <div className="fr-col-6">
                         <SEPhaseSelect
+                            label={"Phases"}
                             isMulti={true}
                             onChange={(e, startupPhases) =>
                                 setState({

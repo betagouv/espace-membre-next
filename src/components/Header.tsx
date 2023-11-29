@@ -64,7 +64,13 @@ const MainHeader = () => {
     }
     return (
         <Header
-            brandTop={<>beta.gouv.fr</>}
+            brandTop={
+                <>
+                    République
+                    <br />
+                    Française
+                </>
+            }
             homeLinkProps={{
                 href: "/",
                 title: "Accueil - Espace Membre @beta.gouv.fr",

@@ -71,6 +71,7 @@ export const BaseInfoUpdate = (props: BaseInfoUpdateProps) => {
         {}
     );
     const [alertMessage, setAlertMessage] = React.useState<{
+        title: string;
         message: string;
         type: "success" | "warning";
     }>();
@@ -128,9 +129,9 @@ export const BaseInfoUpdate = (props: BaseInfoUpdateProps) => {
         console.log(state.formData);
         try {
             const {
-                data: { message, pr_url },
+                data: { message, pr_url, username },
             }: {
-                data: { message: string; pr_url: string };
+                data: { message: string; pr_url: string; username: string };
             } = await axios.post(
                 computeRoute(routes.ACCOUNT_POST_BASE_INFO_FORM).replace(
                     ":username",
@@ -146,13 +147,16 @@ export const BaseInfoUpdate = (props: BaseInfoUpdateProps) => {
                 }
             );
             setAlertMessage({
-                message,
+                title: `⚠️ Pull request pour la mise à jour de la fiche de ${username} ouverte.`,
+                message: `Demande à un membre de ton équipe de merger ta fiche : <a href="${pr_url}" target="_blank">${pr_url}}</a>. 
+                \nUne fois mergée, ton profil sera mis à jour.`,
                 type: "success",
             });
         } catch (e) {
             console.log(e);
             const ErrorResponse: FormErrorResponse = e as FormErrorResponse;
             setAlertMessage({
+                title: "Erreur",
                 message: ErrorResponse.message,
                 type: "warning",
             });
@@ -196,7 +200,8 @@ export const BaseInfoUpdate = (props: BaseInfoUpdateProps) => {
                         className="fr-mb-8v"
                         severity={alertMessage.type}
                         closable={false}
-                        title={alertMessage.message}
+                        title={alertMessage.title}
+                        description={alertMessage.message}
                     />
                 )}
                 <form onSubmit={save}>
