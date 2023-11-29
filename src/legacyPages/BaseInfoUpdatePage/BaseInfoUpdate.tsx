@@ -72,7 +72,7 @@ export const BaseInfoUpdate = (props: BaseInfoUpdateProps) => {
     );
     const [alertMessage, setAlertMessage] = React.useState<{
         title: string;
-        message: React.ReactNode;
+        message: NonNullable<React.ReactNode>;
         type: "success" | "warning";
     }>();
     const [isSaving, setIsSaving] = React.useState(false);
