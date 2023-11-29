@@ -1,3 +1,4 @@
+"use client";
 import React from "react";
 import axios from "axios";
 import routes, { computeRoute } from "@/routes/routes";
