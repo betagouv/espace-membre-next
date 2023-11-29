@@ -65,16 +65,16 @@ export function PrivateLayout({ children }: { children: React.ReactNode }) {
                 accountEditPrivateInfoLink
             ),
         },
-        {
-            linkProps: {
-                href: accountEditPrivateInfoLink,
-            },
-            text: routeTitles.accountBadge(),
-            isActive: hasPathnameThisMatch(
-                pathname,
-                accountEditPrivateInfoLink
-            ),
-        },
+        // {
+        //     linkProps: {
+        //         href: accountEditPrivateInfoLink,
+        //     },
+        //     text: routeTitles.accountBadge(),
+        //     isActive: hasPathnameThisMatch(
+        //         pathname,
+        //         accountEditPrivateInfoLink
+        //     ),
+        // },
     ];
 
     const startupSubPage: ItemLink[] = [
