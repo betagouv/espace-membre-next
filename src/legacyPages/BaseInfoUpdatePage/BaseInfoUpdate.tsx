@@ -10,7 +10,6 @@ import Alert from "@codegouvfr/react-dsfr/Alert";
 import { Button } from "@codegouvfr/react-dsfr/Button";
 import { useSession } from "@/proxies/next-auth";
 import { routeTitles } from "@/utils/routes/routeTitles";
-import { ReactComponent } from "tss-react/tools/ReactComponent";
 
 interface Option {
     key: string;
@@ -73,7 +72,7 @@ export const BaseInfoUpdate = (props: BaseInfoUpdateProps) => {
     );
     const [alertMessage, setAlertMessage] = React.useState<{
         title: string;
-        message: ReactComponent;
+        message: React.ReactNode;
         type: "success" | "warning";
     }>();
     const [isSaving, setIsSaving] = React.useState(false);
