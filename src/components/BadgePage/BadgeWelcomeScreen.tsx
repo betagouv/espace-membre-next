@@ -1,13 +1,20 @@
+import { BadgeDossier } from "@/models/badgeDemande";
+import { BadgeRequest } from "@/models/badgeRequests";
 import routes, { computeRoute } from "@/routes/routes";
 import Button from "@codegouvfr/react-dsfr/Button";
 import axios from "axios";
-import { useState } from "react";
+import React, { useState } from "react";
 
 export const WelcomeScreen = function ({
     next,
     badgeRequest,
     dossier,
     setDSToken,
+}: {
+    next: () => void;
+    badgeRequest: BadgeRequest;
+    dossier: BadgeDossier;
+    setDSToken: React.Dispatch<React.SetStateAction<string | null>>;
 }) {
     const [isSaving, setIsSaving] = useState(false);
 
