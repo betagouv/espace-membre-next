@@ -33,7 +33,7 @@ export interface BadgeProps {
     primaryEmail: string;
 }
 
-export const Badge = function (props: Props) {
+export const Badge = function (props: BadgeProps) {
     const [step, setStep] = React.useState(
         props.badgeRequest || props.dossier
             ? STEP.documentScreen
