@@ -13,7 +13,7 @@ enum STEP {
     finalScreen = "finalScreen",
 }
 
-interface Props {
+export interface BadgeProps {
     title: string;
     currentUserId: string;
     dossier: BadgeDossier;

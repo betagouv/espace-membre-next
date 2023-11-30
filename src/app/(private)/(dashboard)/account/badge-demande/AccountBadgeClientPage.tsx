@@ -2,7 +2,7 @@
 import axios from "axios";
 import { useEffect, useState } from "react";
 import routes, { computeRoute } from "@/routes/routes";
-import { Badge } from "@/components/BadgePage/BadgePage";
+import { Badge, BadgeProps } from "@/components/BadgePage/BadgePage";
 
 export default function Page() {
     const [data, setData] = useState({});
@@ -22,5 +22,5 @@ export default function Page() {
     if (isLoading) return <p>Chargement...</p>;
     if (!data) return <p>No profile data</p>;
 
-    return <Badge />;
+    return <Badge {...(data as BadgeProps)} />;
 }
