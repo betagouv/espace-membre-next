@@ -1,6 +1,8 @@
+import { useState } from "react";
+import { BadgeDossier } from "@/models/badgeDemande";
 import Button from "@codegouvfr/react-dsfr/Button";
 import Checkbox from "@codegouvfr/react-dsfr/Checkbox";
-import { useState } from "react";
+import config from "@/config";
 
 const STATUS = {
     "En attente de traitement": {
@@ -31,16 +33,30 @@ const STATUS = {
         status: `Formulaire non valide`,
         description: `Ton formulaire est non valide tu as du recevoir un message dans tes emails.`,
     },
+    ERROR: {
+        status: `Impossible de récupérer le status du badge`,
+        description: `Impossible de récupérer le status du badge, il faut contacter le support par email ${config.SUPPORT_EMAIL}`,
+    },
 };
 
-export const BadgePendingView = ({ dossier, dsToken, primaryEmail }) => {
+export const BadgePendingView = ({
+    dossier,
+    dsToken,
+    primaryEmail,
+}: {
+    dossier: BadgeDossier;
+    dsToken: string;
+    primaryEmail: string;
+}) => {
     const [understoodBox, setUnderstoodBox] = useState<boolean>(false);
 
-    function getStatus(dossier) {
-        const status = dossier.annotations.find(
+    function getStatus(dossier: BadgeDossier) {
+        const statusObject = dossier.annotations.find(
             (annotation) => annotation.label === "Status"
-        ).stringValue;
-        console.log(status);
+        );
+        const status: string = statusObject
+            ? statusObject.stringValue
+            : "ERROR";
         return (
             <>
                 <p>
