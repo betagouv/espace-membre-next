@@ -45,7 +45,7 @@ export const BadgePendingView = ({
     primaryEmail,
 }: {
     dossier: BadgeDossier;
-    dsToken: string;
+    dsToken: string | null;
     primaryEmail: string;
 }) => {
     const [understoodBox, setUnderstoodBox] = useState<boolean>(false);
