@@ -39,6 +39,9 @@ export default {
         ? parseInt(process.env.DS_DEMARCHE_NUMBER)
         : null,
     DS_DEMARCHE_ID: process.env.DS_DEMARCHE_ID,
+    ESPACE_MEMBRE_ADMIN: process.env.ESPACE_MEMBRE_ADMIN
+        ? process.env.ESPACE_MEMBRE_ADMIN.split(",")
+        : [],
     user: {
         statusOptions: userStatusOptions,
         minStartDate: "2013-07-01",
