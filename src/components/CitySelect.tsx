@@ -59,7 +59,7 @@ export function Search(props: SearchProps) {
     } = props;
 
     const nativeInputProps = useContext(nativeInputPropsContext);
-    const [value, setValue] = useState<string>(defaultValue || "");
+    const [value, setValue] = useState<string>("");
     const [selectedValue, setSelectedValue] = useState<string>(
         defaultValue || ""
     );
@@ -112,10 +112,6 @@ export function Search(props: SearchProps) {
                 valueRef.current = newValue;
                 onChange(newValue);
                 setValue(newValue);
-                setSelectedValue("");
-                if (newValue === "") {
-                    setIsOpen(false);
-                }
             }}
             blurOnSelect
             onChange={(...[, id]) => {
@@ -146,7 +142,9 @@ export function Search(props: SearchProps) {
                 setIsEditing(false);
             }}
             handleHomeEndKeys
-            isOptionEqualToValue={() => false}
+            isOptionEqualToValue={(option, value) => {
+                return option === value;
+            }}
             renderInput={(params) => (
                 <div ref={params.InputProps.ref}>
                     <input
@@ -323,9 +321,11 @@ async function getCountry(value: string) {
 }
 
 async function searchForeignCity(value: string) {
+    if (!value) {
+        return [];
+    }
     const frenchCities = await searchCommunes(value);
     const search = value;
-
     const response = await fetch(
         `https://nominatim.openstreetmap.org/search?city=${search}&format=json&featuretype=city`
     );
