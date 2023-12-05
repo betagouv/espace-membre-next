@@ -9,7 +9,7 @@ export default function Page() {
     const [isLoading, setLoading] = useState(true);
     useEffect(() => {
         axios
-            .get(computeRoute(routes.ACCOUNT_GET_API), {
+            .get(computeRoute(routes.ACCOUNT_GET_BADGE_REQUEST_PAGE_API), {
                 withCredentials: true,
             })
             .then((res) => {
