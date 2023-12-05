@@ -1,4 +1,6 @@
-export const BadgeExistingView = (dossier) => {
+import { BadgeDossier } from "@/models/badgeDemande";
+
+export const BadgeExistingView = ({ dossier }: { dossier: BadgeDossier }) => {
     return (
         <p>
             <b>Date de fin de validité du badge :</b>{" "}
