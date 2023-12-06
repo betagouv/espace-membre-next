@@ -43,16 +43,6 @@ export default function SignClientPage() {
                 <center>
                     <Button onClick={onSubmit}>Me connecter</Button>
                 </center>
-                <form action={`${config.API_SERVER}/${routes.SIGNIN}`}>
-                    <input hidden={true} type="text" name="next" value={""} />
-                    <input
-                        hidden={true}
-                        type="text"
-                        name="token"
-                        value={hash}
-                    />
-                    <input type="submit" value="Submit" />
-                </form>
             </div>
         </div>
     );
