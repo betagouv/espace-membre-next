@@ -26,7 +26,7 @@ export default function SignClientPage() {
         await axios.get(computeRoute(routes.ME), {
             withCredentials: true,
         });
-        // router.push("/account");
+        window.location.href = "/account";
     };
 
     return (
