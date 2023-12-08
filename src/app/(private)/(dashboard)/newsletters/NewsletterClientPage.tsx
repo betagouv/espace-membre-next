@@ -26,7 +26,8 @@ export default function Page({ params }: Props) {
     }, [params.id]);
 
     if (isLoading) return <p>Chargement....</p>;
-    if (!data) return <p>No profile data</p>;
+    if (!data || !(data as NewsletterPageProps).newsletters)
+        return <p>Il n'y a pas de données</p>;
 
     return <NewsletterPage {...(data as NewsletterPageProps)} />;
 }
