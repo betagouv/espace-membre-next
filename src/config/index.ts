@@ -48,6 +48,7 @@ export default {
         badgeOptions: userBadgeOptions,
         memberOptions: memberTypeOptions,
     },
+    githubRepository: process.env.GITHUB_REPOSITORY,
     SPONSOR_API:
         process.env.NEXT_PUBLIC_SPONSOR_API ||
         "https://beta.gouv.fr/api/v2.5/sponsors.json",

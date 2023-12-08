@@ -86,4 +86,10 @@ export const localizedRoutes = {
             fr: (p) => `/onboarding`,
         }
     ),
+    onboardingSuccess: defineLocalizedRoute(
+        {},
+        {
+            fr: (p) => `/onboardingSuccess`,
+        }
+    ),
 };

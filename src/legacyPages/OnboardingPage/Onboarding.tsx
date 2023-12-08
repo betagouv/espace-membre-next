@@ -204,13 +204,14 @@ export const Onboarding = function (props: OnboardingProps) {
         }
         setIsSaving(true);
         axios
-            .post(computeRoute(routes.ONBOARDING_ACTION), {
+            .post(computeRoute(routes.ONBOARDING_ACTION_API), {
                 ...state.formData,
             })
             .then(({ data }) => {
                 window.location.replace(
                     `/onboardingSuccess/${data.prInfoNumber}?isEmailBetaAsked=${data.isEmailBetaAsked}`
                 );
+                setIsSaving(false);
             })
             .catch(
                 ({

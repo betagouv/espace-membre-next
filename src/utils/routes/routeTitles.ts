@@ -21,4 +21,5 @@ export const routeTitles: {
     signIn: () => "Me connecter",
     login: () => "Me connecter",
     onboarding: () => "Créer une fiche membre",
+    onboardingSuccess: () => "Fiche membre créée",
 };
