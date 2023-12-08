@@ -1,26 +1,4 @@
 "use client";
-import { Member } from "@/models/member";
-import { Table } from "@codegouvfr/react-dsfr/Table";
-
-function MemberTable({ members }: { members: Member[] }) {
-    return (
-        <Table
-            data={members.map((member: Member, index: number) => [
-                <a
-                    key={index}
-                    className="fr-link"
-                    target="_blank"
-                    href={`https://github.com/betagouv/beta.gouv.fr/edit/master/content/_authors/${member.id}.md`}
-                >
-                    {member.fullname}
-                </a>,
-                member.role,
-                member.end,
-            ])}
-            headers={["Nom", "Role", "Date de fin"]}
-        />
-    );
-}
 
 export interface NewsletterPageProps {
     currentNewsletter: any;
