@@ -38,8 +38,8 @@ export default function NewsletterPage({
                     )}
                     <table className="sortable">
                         <tbody>
-                            {newsletters.map((newsletter) => (
-                                <tr>
+                            {newsletters.map((newsletter, index) => (
+                                <tr key={index}>
                                     <td>
                                         <b>{newsletter.title}</b>
                                     </td>
