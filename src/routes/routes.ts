@@ -88,6 +88,7 @@ class routes {
 
     static LOGOUT: string = "/logout";
     static LOGOUT_API: string = "/api/logout";
+    static NEWSLETTERS_API: string = "/api/newsletters";
 }
 
 export default routes;
