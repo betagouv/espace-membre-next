@@ -68,5 +68,9 @@ export const routes = {
             localizedRoutes.onboarding.params,
             localizedRoutes.onboarding.paths.fr
         ),
+        onboardingSuccess: defineRoute(
+            localizedRoutes.onboardingSuccess.params,
+            localizedRoutes.onboardingSuccess.paths.fr
+        ),
     }).routes,
 };
