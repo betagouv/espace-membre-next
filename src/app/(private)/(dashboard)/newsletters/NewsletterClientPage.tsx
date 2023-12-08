@@ -12,7 +12,7 @@ type Props = {
 };
 
 export default function Page({ params }: Props) {
-    const [data, setData] = useState({});
+    const [data, setData] = useState();
     const [isLoading, setLoading] = useState(true);
     useEffect(() => {
         axios
