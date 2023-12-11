@@ -48,12 +48,12 @@ export default function BlocChangerMotDePasse({
                     >
                         <Input
                             label="Nouveau mot de passe du compte email"
-                            hintText="Le mot de passe doit comporter entre 9 et 30 caractères, pas d'accents, et pas
+                            hintText="Le mot de passe doit comporter entre 14 et 30 caractères, pas d'accents, et pas
                     d'espace au début ou à la fin."
                             nativeInputProps={{
                                 name: "new_password",
                                 type: "password",
-                                minLength: 9,
+                                minLength: 14,
                                 required: true,
                                 onChange: (e) => setPassword(e.target.value),
                             }}
