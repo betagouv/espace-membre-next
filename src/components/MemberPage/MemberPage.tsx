@@ -10,6 +10,7 @@ import {
     ReactNode,
     ReactPortal,
     PromiseLikeOfReactNode,
+    useState,
 } from "react";
 
 export interface MemberPageProps {
@@ -25,6 +26,64 @@ export interface MemberPageProps {
     primaryEmailStatus: string;
     username: string;
 }
+
+const CreateEmailForm = ({
+    userInfos,
+    hasPublicServiceEmail,
+    username,
+    secondaryEmail,
+}) => {
+    const [email, setValue] = useState<string>();
+    return (
+        <>
+            <p>Tu peux créer un compte email pour {userInfos.fullname}.</p>
+            {hasPublicServiceEmail &&
+                `Attention s'iel a une adresse de service public en adresse primaire. L'adresse @beta.gouv.fr deviendra son adresse primaire :
+celle à utiliser pour mattermost, et d'autres outils.`}
+            <form
+                onSubmit={async (e) => {
+                    e.preventDefault();
+                    await axios.post(
+                        computeRoute(
+                            routes.USER_CREATE_EMAIL_API.replace(
+                                ":username",
+                                username
+                            )
+                        ),
+                        {
+                            to_email: email,
+                        },
+                        {
+                            withCredentials: true,
+                        }
+                    );
+                }}
+            >
+                <Input
+                    label="Email personnel ou professionnel"
+                    hintText="Le mot de passe et les informations de connexion seront envoyées à cet email"
+                    nativeInputProps={{
+                        defaultValue: secondaryEmail,
+                        name: "to_email",
+                        type: "email",
+                        required: true,
+                        onChange: (e) => {
+                            console.log(e.target.value);
+                            setValue(e.target.value);
+                        },
+                    }}
+                />
+                <Button
+                    nativeButtonProps={{
+                        type: "submit",
+                    }}
+                >
+                    Créer un compte
+                </Button>
+            </form>
+        </>
+    );
+};
 
 export default function MemberPage({
     isExpired,
@@ -243,55 +302,13 @@ export default function MemberPage({
                         </ul>
                     </>
                 )}
-                {!emailInfos && (
-                    <>
-                        {canCreateEmail && (
-                            <>
-                                <p>
-                                    Tu peux créer un compte mail pour{" "}
-                                    {userInfos.fullname}.
-                                </p>
-                                {hasPublicServiceEmail &&
-                                    `Attention s'iel a une adresse de service public en adresse primaire. L'adresse @beta.gouv.fr deviendra son adresse primaire :
-                    celle à utiliser pour mattermost, et d'autres outils.`}
-                                <form
-                                    onSubmit={async (e) => {
-                                        e.preventDefault();
-                                        await axios.post(
-                                            computeRoute(
-                                                routes.USER_CREATE_EMAIL_API.replace(
-                                                    ":username",
-                                                    username
-                                                )
-                                            ),
-                                            undefined,
-                                            {
-                                                withCredentials: true,
-                                            }
-                                        );
-                                    }}
-                                >
-                                    <Input
-                                        label="Email personnel ou professionnel"
-                                        hintText="Le mot de passe et les informations de connexion seront envoyées à cet email"
-                                        nativeInputProps={{
-                                            value: secondaryEmail,
-                                            name: "to_email",
-                                            type: "email",
-                                            required: true,
-                                        }}
-                                    />
-                                    <Button
-                                        nativeButtonProps={{
-                                            type: "submit",
-                                        }}
-                                    >
-                                        Créer un compte
-                                    </Button>
-                                </form>
-                            </>
-                        )}
-                    </>
+                {!emailInfos && canCreateEmail && (
+                    <CreateEmailForm
+                        userInfos={userInfos}
+                        secondaryEmail={secondaryEmail}
+                        username={username}
+                        hasPublicServiceEmail={hasPublicServiceEmail}
+                    />
                 )}
                 {isExpired && (
                     <>
