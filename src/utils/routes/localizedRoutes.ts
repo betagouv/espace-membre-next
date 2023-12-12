@@ -1,5 +1,5 @@
 import { param } from "type-route";
-import { Lang, defineLocalizedRoute } from "./common";
+import { defineLocalizedRoute } from "./common";
 
 export const localizedRoutes = {
     account: defineLocalizedRoute(
@@ -90,6 +90,12 @@ export const localizedRoutes = {
         {},
         {
             fr: (p) => `/onboardingSuccess`,
+        }
+    ),
+    newsletters: defineLocalizedRoute(
+        {},
+        {
+            fr: (p) => `/newsletters`,
         }
     ),
 };

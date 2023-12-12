@@ -1,4 +1,4 @@
-import { createRouter, defineRoute, param } from "type-route";
+import { createRouter, defineRoute } from "type-route";
 import { localizedRoutes } from "./localizedRoutes";
 
 // `ts-import` paths as `compilerOptions` are not working, we modified the import below to use a relative one
@@ -71,6 +71,10 @@ export const routes = {
         onboardingSuccess: defineRoute(
             localizedRoutes.onboardingSuccess.params,
             localizedRoutes.onboardingSuccess.paths.fr
+        ),
+        newsletters: defineRoute(
+            localizedRoutes.newsletters.params,
+            localizedRoutes.newsletters.paths.fr
         ),
     }).routes,
 };

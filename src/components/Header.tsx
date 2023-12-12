@@ -8,11 +8,13 @@ import { useSession, signOut } from "@/proxies/next-auth";
 import axios from "axios";
 import routes, { computeRoute } from "@/routes/routes";
 import { hasPathnameThisMatch, hasPathnameThisRoot } from "@/utils/url";
+import { routeTitles } from "@/utils/routes/routeTitles";
 
 const MainHeader = () => {
     const router = useRouter();
     const { data: session, status } = useSession();
     const pathname = usePathname();
+    const newsletterLink = linkRegistry.get("newsletters", undefined);
 
     const accountLink = linkRegistry.get("account", undefined);
     const accountBadgeLink = linkRegistry.get("accountBadge", undefined);
@@ -62,6 +64,56 @@ const MainHeader = () => {
             text: "Se connecter",
         });
     }
+
+    const nav =
+        session?.user &&
+        ["/account", "/community", "/admin", "/startups", "/newsletters"].find(
+            (url) => pathname.startsWith(url)
+        )
+            ? [
+                  {
+                      linkProps: {
+                          href: "/account",
+                          target: "_self",
+                      },
+                      text: routeTitles.account(),
+                      isActive: hasPathnameThisRoot(pathname, accountLink),
+                  },
+                  {
+                      isActive: hasPathnameThisRoot(pathname, communityLink),
+                      linkProps: {
+                          href: "/community",
+                          target: "_self",
+                      },
+                      text: "Commaunauté",
+                  },
+                  {
+                      linkProps: {
+                          href: "/startups",
+                          target: "_self",
+                      },
+                      text: "Produit",
+                      isActive: hasPathnameThisRoot(pathname, startupListLink),
+                  },
+                  {
+                      linkProps: {
+                          href: "/newsletters",
+                      },
+                      text: routeTitles.newsletters(),
+                      isActive: hasPathnameThisMatch(pathname, newsletterLink),
+                  },
+              ]
+            : [];
+    if (session?.user?.isAdmin) {
+        nav.push({
+            linkProps: {
+                href: "/admin/mattermost",
+                target: "_self",
+            },
+            text: "Admin",
+            isActive: hasPathnameThisRoot(pathname, adminMattermostLink),
+        });
+    }
     return (
         <Header
             brandTop={
@@ -75,59 +127,7 @@ const MainHeader = () => {
                 href: "/",
                 title: "Accueil - Espace Membre @beta.gouv.fr",
             }}
-            navigation={
-                session?.user &&
-                ["/account", "/community", "/admin", "/startups"].find((url) =>
-                    pathname.startsWith(url)
-                )
-                    ? [
-                          {
-                              linkProps: {
-                                  href: "/account",
-                                  target: "_self",
-                              },
-                              text: "Mon Compte",
-                              isActive: hasPathnameThisRoot(
-                                  pathname,
-                                  accountLink
-                              ),
-                          },
-                          {
-                              isActive: hasPathnameThisRoot(
-                                  pathname,
-                                  communityLink
-                              ),
-                              linkProps: {
-                                  href: "/community",
-                                  target: "_self",
-                              },
-                              text: "Communauté",
-                          },
-                          {
-                              linkProps: {
-                                  href: "/startups",
-                                  target: "_self",
-                              },
-                              text: "Produit",
-                              isActive: hasPathnameThisRoot(
-                                  pathname,
-                                  startupListLink
-                              ),
-                          },
-                          {
-                              linkProps: {
-                                  href: "/admin/mattermost",
-                                  target: "_self",
-                              },
-                              text: "Admin",
-                              isActive: hasPathnameThisRoot(
-                                  pathname,
-                                  adminMattermostLink
-                              ),
-                          },
-                      ]
-                    : undefined
-            }
+            navigation={nav}
             id="fr-header-header-with-quick-access-items"
             quickAccessItems={[...quickAccessItems]}
             serviceTitle="Espace Membre @beta.gouv.fr"
