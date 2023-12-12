@@ -76,5 +76,9 @@ export const routes = {
             localizedRoutes.newsletters.params,
             localizedRoutes.newsletters.paths.fr
         ),
+        map: defineRoute(
+            localizedRoutes.map.params,
+            localizedRoutes.map.paths.fr
+        ),
     }).routes,
 };

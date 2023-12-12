@@ -23,4 +23,5 @@ export const routeTitles: {
     onboarding: () => "Créer une fiche membre",
     onboardingSuccess: () => "Fiche membre créée",
     newsletters: () => "Infolettre",
+    map: () => "Carte des membres",
 };

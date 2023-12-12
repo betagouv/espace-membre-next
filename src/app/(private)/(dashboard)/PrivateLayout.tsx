@@ -40,6 +40,7 @@ export function PrivateLayout({ children }: { children: React.ReactNode }) {
         undefined
     );
     const accountBadge = linkRegistry.get("accountBadge", undefined);
+    const mapLink = linkRegistry.get("map", undefined);
 
     const accountSubPages: ItemLink[] = [
         {
@@ -182,6 +183,13 @@ export function PrivateLayout({ children }: { children: React.ReactNode }) {
                     },
                     text: routeTitles.community(),
                     isActive: hasPathnameThisMatch(pathname, communityLink),
+                },
+                {
+                    linkProps: {
+                        href: mapLink,
+                    },
+                    text: routeTitles.map(),
+                    isActive: hasPathnameThisMatch(pathname, mapLink),
                 },
             ];
         } else if (firstSubPage.includes("admin")) {
