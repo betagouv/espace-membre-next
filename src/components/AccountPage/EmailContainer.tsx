@@ -10,6 +10,7 @@ import BlocEmailResponder from "./BlocEmailResponder";
 import { fr } from "@codegouvfr/react-dsfr";
 import axios from "axios";
 import routes, { computeRoute } from "@/routes/routes";
+import Input from "@codegouvfr/react-dsfr/Input";
 
 export default function EmailContainer({
     updatePullRequest,
@@ -73,50 +74,6 @@ export default function EmailContainer({
                 {secondaryEmail || "Non renseigné"}
             </p>
             <div className={fr.cx("fr-accordions-group")}>
-                {Boolean(
-                    isAdmin &&
-                        availableEmailPros.length &&
-                        emailInfos &&
-                        !emailInfos.isPro &&
-                        !emailInfos.isExchange
-                ) && (
-                    <>
-                        <p>
-                            Il y a {availableEmailPros.length} comptes
-                            disponibles.
-                        </p>
-                        <p>Passer ce compte en pro : </p>
-                        <form
-                            className="no-margin"
-                            onSubmit={(e) => {
-                                e.preventDefault();
-                                axios.post(
-                                    computeRoute(
-                                        routes.USER_UPGRADE_EMAIL_API
-                                    ).replace(":username", userInfos.id)
-                                );
-                            }}
-                        >
-                            <label>
-                                <span className="text-color-almost-black">
-                                    Un mot de passe pour ton compte
-                                </span>
-                                <br />
-                            </label>
-                            <input
-                                name="password"
-                                type="password"
-                                required
-                                min="8"
-                            />
-                            <button className="button no-margin" type="submit">
-                                Upgrader en compte pro
-                            </button>
-                        </form>
-                        <br />
-                        <br />
-                    </>
-                )}
                 {canCreateEmail && (
                     <>
                         <p>Tu peux créer ton compte email @beta.gouv.fr.</p>

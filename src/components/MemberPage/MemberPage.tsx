@@ -85,6 +85,56 @@ celle à utiliser pour mattermost, et d'autres outils.`}
     );
 };
 
+function EmailUpgrade({ availableEmailPros, userInfos }) {
+    const [password, setPassword] = useState<string>();
+    const onSubmit = async () => {
+        try {
+            await axios.post(
+                computeRoute(routes.USER_UPGRADE_EMAIL_API).replace(
+                    ":username",
+                    userInfos.id
+                ),
+                {
+                    password,
+                },
+                { withCredentials: true }
+            );
+            alert(`Le compte sera upgradé d'ici quelques minutes`);
+        } catch (e) {
+            console.log(e);
+            alert("Une erreur est survenue");
+        }
+    };
+    return (
+        <>
+            <p>Il y a {availableEmailPros.length} comptes disponibles.</p>
+            <p>Passer ce compte en pro : </p>
+            <div
+                className="no-margin"
+                onSubmit={(e) => {
+                    e.preventDefault();
+                }}
+            >
+                <Input
+                    label={`Un mot de passe pour ce compte`}
+                    nativeInputProps={{
+                        name: "password",
+                        type: "password",
+                        required: true,
+                        min: 14,
+                        onChange: (e) => {
+                            setPassword(e.target.value);
+                        },
+                    }}
+                />
+                <Button onClick={onSubmit}>Upgrader en compte pro</Button>
+            </div>
+            <br />
+            <br />
+        </>
+    );
+}
+
 export default function MemberPage({
     isExpired,
     emailInfos,
@@ -98,6 +148,13 @@ export default function MemberPage({
     primaryEmailStatus,
     username,
 }: MemberPageProps) {
+    const shouldDisplayUpgrade = Boolean(
+        isAdmin &&
+            availableEmailPros.length &&
+            emailInfos &&
+            !emailInfos.isPro &&
+            !emailInfos.isExchange
+    );
     return (
         <>
             <div className="fr-mb-8v">
@@ -242,55 +299,6 @@ export default function MemberPage({
                             {emailInfos.isPro && `(offre OVH Pro)`}
                             {emailInfos.isExchange && `(offre OVH Exchange)`}
                         </p>
-                        {!!isAdmin && (
-                            <>
-                                {!!(
-                                    availableEmailPros.length &&
-                                    emailInfos &&
-                                    !emailInfos.isPro &&
-                                    !emailInfos.isExchange
-                                ) && (
-                                    <>
-                                        <p>
-                                            Il y a {availableEmailPros.length}{" "}
-                                            compte disponibles.
-                                        </p>
-                                        <p>Passer ce compte en pro : </p>
-                                        <form
-                                            onSubmit={async (e) => {
-                                                e.preventDefault();
-                                                await axios.post(
-                                                    `/users/${userInfos.id}/email-upgrade`,
-                                                    undefined,
-                                                    {
-                                                        withCredentials: true,
-                                                    }
-                                                );
-                                            }}
-                                        >
-                                            <Input
-                                                label="Un mot de passe pour ton compte"
-                                                nativeInputProps={{
-                                                    name: "password",
-                                                    type: "password",
-                                                    required: true,
-                                                    min: 8,
-                                                }}
-                                            />
-                                            <Button
-                                                nativeButtonProps={{
-                                                    type: "submit",
-                                                }}
-                                            >
-                                                Upgrader en compte pro
-                                            </Button>
-                                        </form>
-                                        <br />
-                                        <br />
-                                    </>
-                                )}
-                            </>
-                        )}
                         <ul>
                             <li>statut de l'email : {primaryEmailStatus}</li>
                             <li>
@@ -376,6 +384,16 @@ export default function MemberPage({
                             </Button>
                         </form>
                     </Accordion>
+                    {shouldDisplayUpgrade && (
+                        <Accordion label="Passer en compte pro">
+                            {shouldDisplayUpgrade && (
+                                <EmailUpgrade
+                                    availableEmailPros={availableEmailPros}
+                                    userInfos={userInfos}
+                                />
+                            )}
+                        </Accordion>
+                    )}
                 </div>
             )}
         </>
