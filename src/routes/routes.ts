@@ -16,10 +16,10 @@ class routes {
     static STARTUP_GET_INFO_UPDATE_FORM = "/startups/:startup/info-form";
     static STARTUP_GET_INFO_UPDATE_FORM_API =
         "/api/startups/:startup/info-form";
-    static STARTUP_POST_INFO_UPDATE_FORM = "/api/startups/:startup/info-form";
+    static STARTUP_POST_INFO_UPDATE_FORM = "/startups/:startup/info-form";
     static STARTUP_GET_INFO_CREATE_FORM = "/startups/create-form";
     static STARTUP_GET_INFO_CREATE_FORM_API = "/api/startups/create-form";
-    static STARTUP_POST_INFO_CREATE_FORM = "/api/startups";
+    static STARTUP_POST_INFO_CREATE_FORM = "/startups";
 
     // page de diagnostic
     static WHAT_IS_GOING_ON_WITH_MEMBER_WITH_TYPO = "/que-ce-passe-t-il";
