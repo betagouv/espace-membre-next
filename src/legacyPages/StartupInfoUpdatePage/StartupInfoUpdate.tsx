@@ -47,7 +47,7 @@ export const StartupInfoUpdate = (props: StartupInfoUpdateProps) => {
 
     const save = async (data, image) => {
         try {
-            await axios.post(
+            const resp = await axios.post(
                 computeRoute(routes.STARTUP_POST_INFO_UPDATE_FORM).replace(
                     ":startup",
                     props.startup.id
@@ -59,7 +59,11 @@ export const StartupInfoUpdate = (props: StartupInfoUpdateProps) => {
                     withCredentials: true,
                 }
             );
-            window.location.replace(`/startups/${props.startup.id}`);
+            window.scrollTo({ top: 20, behavior: "smooth" });
+            return {
+                ...resp,
+                isUpdate: true,
+            };
         } catch (e) {
             console.log(e);
         }

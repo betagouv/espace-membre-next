@@ -151,7 +151,9 @@ export const StartupForm = (props: StartupForm) => {
                 console.log(resp);
                 setIsSaving(false);
                 setAlertMessage({
-                    title: `⚠️ Pull request pour la mise à jour de la fiche produit ouverte.`,
+                    title: `⚠️ Pull request pour ${
+                        resp.isUpdate ? "la mise à jour" : "la création"
+                    } de la fiche produit ouverte.`,
                     message: (
                         <>
                             Tu peux merger cette pull request :
@@ -159,8 +161,11 @@ export const StartupForm = (props: StartupForm) => {
                                 {resp.data.pr_url}
                             </a>
                             <br />
-                            Une fois mergée, la fiche apparaitra sur le site
-                            beta.
+                            Une fois mergée,{" "}
+                            {resp.isUpdate
+                                ? `les changements apparaitront`
+                                : `la fiche apparaitra`}{" "}
+                            sur le site beta.
                         </>
                     ),
                     type: "success",
