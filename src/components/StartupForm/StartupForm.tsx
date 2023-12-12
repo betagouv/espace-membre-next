@@ -20,6 +20,7 @@ import "react-markdown-editor-lite/lib/index.css";
 import Button from "@codegouvfr/react-dsfr/Button";
 import Input from "@codegouvfr/react-dsfr/Input";
 import Table from "@codegouvfr/react-dsfr/Table";
+import { Alert } from "@codegouvfr/react-dsfr/Alert";
 
 // import style manually
 const mdParser = new MarkdownIt(/* Markdown-it options */);
@@ -84,6 +85,11 @@ export const StartupForm = (props: StartupForm) => {
     const [title, setTitle] = React.useState<string | undefined>(
         props.startup?.attributes.name
     );
+    const [alertMessage, setAlertMessage] = React.useState<{
+        title: string;
+        message: NonNullable<React.ReactNode>;
+        type: "success" | "warning";
+    }>();
     const [link, setLink] = React.useState<string | undefined>(props.link);
     const [repository, setRepository] = React.useState<string | undefined>(
         props.repository
@@ -141,23 +147,41 @@ export const StartupForm = (props: StartupForm) => {
         }
         props
             .save(data)
-            .then(() => {
+            .then((resp) => {
+                console.log(resp);
                 setIsSaving(false);
+                setAlertMessage({
+                    title: `⚠️ Pull request pour la mise à jour de la fiche produit ouverte.`,
+                    message: (
+                        <>
+                            Tu peux merger cette pull request :
+                            <a href={resp.data.pr_url} target="_blank">
+                                {resp.data.pr_url}
+                            </a>
+                            <br />
+                            Une fois mergée, la fiche apparaitra sur le site
+                            beta.
+                        </>
+                    ),
+                    type: "success",
+                });
+                return resp;
             })
-            .catch(
-                ({
-                    response: { data },
-                }: {
-                    response: { data: FormErrorResponse };
-                }) => {
-                    setIsSaving(false);
-                    const ErrorResponse: FormErrorResponse = data;
-                    setErrorMessage(ErrorResponse.message);
-                    if (ErrorResponse.errors) {
-                        setFormErrors(ErrorResponse.errors);
-                    }
+            .catch((e) => {
+                console.log(e);
+                setIsSaving(false);
+                const ErrorResponse: FormErrorResponse = e.response
+                    .data as FormErrorResponse;
+                setAlertMessage({
+                    title: "Erreur",
+                    message: <>{ErrorResponse.message}</>,
+                    type: "warning",
+                });
+                setIsSaving(false);
+                if (ErrorResponse.errors) {
+                    setFormErrors(ErrorResponse.errors);
                 }
-            );
+            });
     };
 
     function addPhase() {
@@ -221,8 +245,14 @@ export const StartupForm = (props: StartupForm) => {
     return (
         <>
             <div>
-                {!!errorMessage && (
-                    <p className="text-small text-color-red">{errorMessage}</p>
+                {!!alertMessage && (
+                    <Alert
+                        className="fr-mb-8v"
+                        severity={alertMessage.type}
+                        closable={false}
+                        title={alertMessage.title}
+                        description={alertMessage.message}
+                    />
                 )}
                 {
                     <>
@@ -231,18 +261,22 @@ export const StartupForm = (props: StartupForm) => {
                                 label="Nom du produit"
                                 hintText={`Ce nom sert d'identifiant pour la startup et
                                 ne doit pas dépasser 30 caractères.`}
+                                stateRelatedMessage={
+                                    formErrors && formErrors["startup"]
+                                }
+                                state={
+                                    !!(formErrors && formErrors["startup"])
+                                        ? "error"
+                                        : "default"
+                                }
                                 nativeInputProps={{
                                     onChange: (e) => {
                                         setTitle(e.currentTarget.value);
                                     },
                                     defaultValue: title,
+                                    required: true,
                                 }}
                             />
-                            {!!formErrors["startup"] && (
-                                <p className="text-small text-color-red">
-                                    {formErrors["startup"]}
-                                </p>
-                            )}
                             <Input
                                 label="Quel est son objectif principal ?"
                                 hintText={`Par exemple : "Faciliter la création d'une
@@ -254,14 +288,25 @@ export const StartupForm = (props: StartupForm) => {
                                         setMission(e.currentTarget.value);
                                     },
                                     value: mission,
+                                    required: true,
                                 }}
+                                stateRelatedMessage={
+                                    formErrors && formErrors["mission"]
+                                }
+                                state={
+                                    !!(formErrors && formErrors["mission"])
+                                        ? "error"
+                                        : "default"
+                                }
                             />
-                            {!!formErrors["mission"] && (
-                                <p className="text-small text-color-red">
-                                    {formErrors["mission"]}
-                                </p>
-                            )}
-                            <div className="fr-input-group">
+
+                            <div
+                                className={`fr-input-group ${
+                                    formErrors["description du produit"]
+                                        ? "fr-input-group--error"
+                                        : ""
+                                }`}
+                            >
                                 <label className="fr-label">
                                     Description du produit :
                                     <span className="fr-hint-text">
@@ -283,6 +328,14 @@ export const StartupForm = (props: StartupForm) => {
                                         onChange={handleEditorChange}
                                     />
                                 </ClientOnly>
+                                {!!formErrors["description du produit"] && (
+                                    <p
+                                        id="text-input-error-desc-error"
+                                        className="fr-error-text"
+                                    >
+                                        {formErrors["description du produit"]}
+                                    </p>
+                                )}
                             </div>
                             <SEAsyncIncubateurSelect
                                 value={incubator}
@@ -298,7 +351,13 @@ export const StartupForm = (props: StartupForm) => {
                                     setSponsors(sponsors)
                                 }
                             />
-                            <div className="fr-input-group">
+                            <div
+                                className={`fr-input-group ${
+                                    formErrors["phases"] || formErrors["date"]
+                                        ? "fr-input-group--error"
+                                        : ""
+                                }`}
+                            >
                                 <label className="fr-label">
                                     Phase
                                     <span className="fr-hint-text">
@@ -354,6 +413,22 @@ export const StartupForm = (props: StartupForm) => {
                                     size="small"
                                     priority="tertiary no outline"
                                 />
+                                {!!formErrors["phases"] && (
+                                    <p
+                                        id="text-input-error-desc-error"
+                                        className="fr-error-text"
+                                    >
+                                        {formErrors["phases"]}
+                                    </p>
+                                )}
+                                {!!formErrors["date"] && (
+                                    <p
+                                        id="text-input-error-desc-error"
+                                        className="fr-error-text"
+                                    >
+                                        Une des dates n'est pas valide
+                                    </p>
+                                )}
                             </div>
                             <FileUpload
                                 selectedFile={selectedFile}

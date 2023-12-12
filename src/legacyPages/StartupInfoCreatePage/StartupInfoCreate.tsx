@@ -36,8 +36,9 @@ export const StartupInfoCreate = (props: StartupInfoCreateProps) => {
                     withCredentials: true,
                 }
             )
-            .then(() => {
-                window.location.replace(`/startups`);
+            .then((data) => {
+                window.scrollTo({ top: 20, behavior: "smooth" });
+                return data;
             });
     };
     return (
