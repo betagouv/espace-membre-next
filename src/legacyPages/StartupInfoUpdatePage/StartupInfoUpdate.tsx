@@ -83,7 +83,7 @@ export const StartupInfoUpdate = (props: StartupInfoUpdateProps) => {
                         description={
                             <>
                                 {`Toi ou un membre de ton équipe doit la merger
-                                pour que les changements soit pris en compte : `}
+                                pour que les changements soient pris en compte : `}
                                 <a
                                     className="fr-link"
                                     href={props.updatePullRequest.url}

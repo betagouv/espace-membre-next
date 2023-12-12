@@ -86,7 +86,7 @@ export default function FicheMembre({ userInfos, updatePullRequest }) {
                         description={
                             <>
                                 {`Toi ou un membre de ton équipe doit la merger
-                                pour que les changements soit pris en compte : `}
+                                pour que les changements soient pris en compte : `}
                                 <a
                                     className="fr-link"
                                     href={updatePullRequest.url}

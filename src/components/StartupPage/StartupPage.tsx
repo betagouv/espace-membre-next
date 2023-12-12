@@ -89,7 +89,7 @@ export default function StartupPage({
                             description={
                                 <>
                                     {`Toi ou un membre de ton équipe doit la
-                                    merger pour que les changements soit pris en
+                                    merger pour que les changements soient pris en
                                     compte : `}
                                     <a
                                         href={updatePullRequest.url}

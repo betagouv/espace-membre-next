@@ -191,7 +191,7 @@ export const BaseInfoUpdate = (props: BaseInfoUpdateProps) => {
                         description={
                             <>
                                 {`Toi ou un membre de ton équipe doit la merger
-                                pour que les changements soit pris en compte : `}
+                                pour que les changements soient pris en compte : `}
                                 <a
                                     href={props.updatePullRequest.url}
                                     target="_blank"
