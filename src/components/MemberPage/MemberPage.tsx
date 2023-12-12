@@ -235,60 +235,60 @@ export default function MemberPage({
             </div>
             <div className="fr-mb-8v">
                 <h2>Compte mail</h2>
-                {emailInfos && (
+                {!!emailInfos && (
                     <>
                         <p className="text-color-blue font-weight-bold">
                             {emailInfos.email}
                             {emailInfos.isPro && `(offre OVH Pro)`}
                             {emailInfos.isExchange && `(offre OVH Exchange)`}
                         </p>
-                        {isAdmin && (
+                        {!!isAdmin && (
                             <>
-                                {availableEmailPros.length &&
+                                {!!(
+                                    availableEmailPros.length &&
                                     emailInfos &&
                                     !emailInfos.isPro &&
-                                    !emailInfos.isExchange && (
-                                        <>
-                                            <p>
-                                                Il y a{" "}
-                                                {availableEmailPros.length}{" "}
-                                                compte disponibles.
-                                            </p>
-                                            <p>Passer ce compte en pro : </p>
-                                            <form
-                                                onSubmit={async (e) => {
-                                                    e.preventDefault();
-                                                    await axios.post(
-                                                        `/users/${userInfos.id}/email-upgrade`,
-                                                        undefined,
-                                                        {
-                                                            withCredentials:
-                                                                true,
-                                                        }
-                                                    );
+                                    !emailInfos.isExchange
+                                ) && (
+                                    <>
+                                        <p>
+                                            Il y a {availableEmailPros.length}{" "}
+                                            compte disponibles.
+                                        </p>
+                                        <p>Passer ce compte en pro : </p>
+                                        <form
+                                            onSubmit={async (e) => {
+                                                e.preventDefault();
+                                                await axios.post(
+                                                    `/users/${userInfos.id}/email-upgrade`,
+                                                    undefined,
+                                                    {
+                                                        withCredentials: true,
+                                                    }
+                                                );
+                                            }}
+                                        >
+                                            <Input
+                                                label="Un mot de passe pour ton compte"
+                                                nativeInputProps={{
+                                                    name: "password",
+                                                    type: "password",
+                                                    required: true,
+                                                    min: 8,
+                                                }}
+                                            />
+                                            <Button
+                                                nativeButtonProps={{
+                                                    type: "submit",
                                                 }}
                                             >
-                                                <Input
-                                                    label="Un mot de passe pour ton compte"
-                                                    nativeInputProps={{
-                                                        name: "password",
-                                                        type: "password",
-                                                        required: true,
-                                                        min: 8,
-                                                    }}
-                                                />
-                                                <Button
-                                                    nativeButtonProps={{
-                                                        type: "submit",
-                                                    }}
-                                                >
-                                                    Upgrader en compte pro
-                                                </Button>
-                                            </form>
-                                            <br />
-                                            <br />
-                                        </>
-                                    )}
+                                                Upgrader en compte pro
+                                            </Button>
+                                        </form>
+                                        <br />
+                                        <br />
+                                    </>
+                                )}
                             </>
                         )}
                         <ul>
