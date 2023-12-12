@@ -11,6 +11,100 @@ import { fr } from "@codegouvfr/react-dsfr";
 import axios from "axios";
 import routes, { computeRoute } from "@/routes/routes";
 import Input from "@codegouvfr/react-dsfr/Input";
+import { EmailInfos } from "@/models/member";
+import Table from "@codegouvfr/react-dsfr/Table";
+
+function BlocEmailConfiguration({ emailInfos }: { emailInfos: EmailInfos }) {
+    interface ServerConf {
+        server: string;
+        method: string;
+        port: string;
+    }
+    enum EmailPlan {
+        pro = "pro",
+        exchange = "exchange",
+        mx = "mx",
+    }
+    const conf: { [key in EmailPlan]: { smtp: ServerConf; imap: ServerConf } } =
+        {
+            pro: {
+                smtp: {
+                    server: "pro1.mail.ovh.net",
+                    method: "TLS",
+                    port: "587",
+                },
+                imap: {
+                    server: "pro1.mail.ovh.net",
+                    method: "SSL",
+                    port: "993",
+                },
+            },
+            exchange: {
+                smtp: {
+                    server: "ex3.mail.ovh.fr",
+                    method: "TLS",
+                    port: "587",
+                },
+                imap: {
+                    server: "ex3.mail.ovh.net",
+                    method: "SSL",
+                    port: "993",
+                },
+            },
+            mx: {
+                smtp: {
+                    server: "ssl0.ovh.net",
+                    method: "TLS",
+                    port: "587",
+                },
+                imap: {
+                    server: "ssl0.ovh.net",
+                    method: "SSL",
+                    port: "993",
+                },
+            },
+        };
+    let plan = "mx";
+    if (emailInfos.isPro) {
+        plan = "pro";
+    } else if (emailInfos.isExchange) {
+        plan = "exchange";
+    }
+    return (
+        <Accordion label="Configurer ton email beta">
+            <p>
+                Configure ton client mail préféré (Mail, Thunderbird,
+                Mailspring, Microsoft Courier, Gmail, etc) pour recevoir et
+                envoyer des emails. D'avantage d'info ici :{" "}
+                <a
+                    href="https://doc.incubateur.net/communaute/travailler-a-beta-gouv/jutilise-les-outils-de-la-communaute/emails/envoyer-et-recevoir-des-mails-beta.gouv.fr"
+                    target="_blank"
+                    className="button no-margin"
+                >
+                    documentation de configuration du webmail
+                </a>
+            </p>
+            {["imap", "smtp"].map((confType) => (
+                <>
+                    <b>{confType} : </b>
+                    <Table
+                        data={[
+                            ["Serveur", conf[plan][confType].server],
+                            ["Port", conf[plan][confType].port],
+                            [
+                                "Méthode de chiffrement",
+                                conf[plan][confType].method,
+                            ],
+                            [`Nom d'utilisateur`, emailInfos.email],
+                            ["Mot de passe", "Le mot de passe de ton email"],
+                        ]}
+                        headers={["Paramètre", "Valeur"]}
+                    />
+                </>
+            ))}
+        </Accordion>
+    );
+}
 
 export default function EmailContainer({
     updatePullRequest,
@@ -118,20 +212,7 @@ export default function EmailContainer({
                         <br />
                     </>
                 )}
-                <Accordion label="Configurer ton email beta">
-                    <p>
-                        Configure ton client mail préféré (Mail, Thunderbird,
-                        Mailspring, Microsoft Courier, Gmail, etc) pour recevoir
-                        et envoyer des emails :
-                    </p>
-                    <a
-                        href="https://doc.incubateur.net/communaute/travailler-a-beta-gouv/jutilise-les-outils-de-la-communaute/emails#envoyer-et-recevoir-des-mails-beta.gouv.fr"
-                        target="_blank"
-                        className="button no-margin"
-                    >
-                        Documentation de configuration du webmail
-                    </a>
-                </Accordion>
+                <BlocEmailConfiguration emailInfos={emailInfos} />
                 <BlocEmailResponder
                     username={userInfos.id}
                     hasResponder={hasResponder}

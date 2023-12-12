@@ -1,4 +1,4 @@
-import { OvhRedirection, OvhResponder } from "@/models/ovh";
+import { EMAIL_PLAN_TYPE, OvhRedirection, OvhResponder } from "@/models/ovh";
 import { EmailStatusCode } from "./dbUser";
 import { Mission } from "./mission";
 
@@ -78,6 +78,13 @@ export interface MemberWithEmailsAndMattermostUsername extends Member {
     secondary_email?: string;
     communication_email: string;
     mattermostUsername: string;
+}
+
+export interface EmailInfos {
+    email: string;
+    emailPlan: EMAIL_PLAN_TYPE;
+    isPro?: boolean;
+    isExchange?: boolean;
 }
 
 export interface MemberWithPermission {
