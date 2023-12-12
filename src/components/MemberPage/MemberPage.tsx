@@ -258,7 +258,12 @@ export default function MemberPage({
                                     onSubmit={async (e) => {
                                         e.preventDefault();
                                         await axios.post(
-                                            `/users/${username}/email`,
+                                            computeRoute(
+                                                routes.USER_CREATE_EMAIL_API.replace(
+                                                    ":username",
+                                                    username
+                                                )
+                                            ),
                                             undefined,
                                             {
                                                 withCredentials: true,
