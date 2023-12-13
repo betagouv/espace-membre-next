@@ -57,33 +57,6 @@ export default function MemberSelect({
 }) {
     const [value, setValue] = useState("");
 
-    //     return (
-    //         <Select
-    //             label={label || "Nom ou prénom du membre"}
-    //             hint={hint}
-    //             nativeSelectProps={{
-    //                 onChange: (event) => {
-    //                     setValue(event.target.value);
-    //                     onChange({ value: event.target.value });
-    //                 },
-    //                 value,
-    //                 required,
-    //             }}
-    //             state={state}
-    //             stateRelatedMessage={stateRelatedMessage}
-    //         >
-    //             <option value="" disabled hidden>
-    //                 {placeholder || "Selectionnez un membre"}
-    //             </option>
-    //             {members.map((member, index) => (
-    //                 <option value={member.value} key={index}>
-    //                     {member.label}
-    //                 </option>
-    //             ))}
-    //         </Select>
-    //     );
-    // }
-
     const onTagsChange = (event, data) => {
         onChange(
             !!multiple

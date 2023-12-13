@@ -619,8 +619,11 @@ export const Onboarding = function (props: OnboardingProps) {
                                     label="Référent (obligatoire)"
                                     hint="Selectionne un membre l'équipe de co-animation
                                 avec qui tu es en contact."
-                                    onChange={(e) =>
-                                        changeFormData("referent", e.value)
+                                    onChange={(member) =>
+                                        changeFormData(
+                                            "referent",
+                                            (member as { value: string }).value
+                                        )
                                     }
                                     members={props.users.map((u) => ({
                                         value: u.id,
