@@ -212,25 +212,31 @@ export default function EmailContainer({
                         <br />
                     </>
                 )}
-                <BlocEmailConfiguration emailInfos={emailInfos} />
-                <BlocEmailResponder
-                    username={userInfos.id}
-                    hasResponder={hasResponder}
-                    responderFormData={responderFormData}
-                />
+                {!!emailInfos && (
+                    <BlocEmailConfiguration emailInfos={emailInfos} />
+                )}
+                {!!emailInfos && (
+                    <BlocEmailResponder
+                        username={userInfos.id}
+                        hasResponder={hasResponder}
+                        responderFormData={responderFormData}
+                    />
+                )}
                 <BlocChangerMotDePasse
                     canChangePassword={canChangePassword}
                     emailSuspended={emailSuspended}
                     userInfos={userInfos}
                 />
-                <BlocAccederAuWebmail />
-                <BlocRedirection
-                    redirections={redirections}
-                    canCreateRedirection={canCreateRedirection}
-                    userInfos={userInfos}
-                    isExpired={isExpired}
-                    domain={domain}
-                />
+                {!!emailInfos && <BlocAccederAuWebmail />}
+                {!!emailInfos && (
+                    <BlocRedirection
+                        redirections={redirections}
+                        canCreateRedirection={canCreateRedirection}
+                        userInfos={userInfos}
+                        isExpired={isExpired}
+                        domain={domain}
+                    />
+                )}
                 <BlocConfigurerEmailPrincipal
                     canChangeEmails={canChangeEmails}
                     userInfos={userInfos}
