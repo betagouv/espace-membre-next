@@ -26,9 +26,9 @@ export const CommunitySearchMember = (props: CommunityProps) => {
                         <MemberSelect
                             name="username"
                             placeholder="Sélectionner un membre"
-                            onChange={(e: { value: any }) => {
-                                console.log(e);
-                                setUsername(e.value);
+                            onChange={(obj: { value: string }) => {
+                                console.log(obj);
+                                setUsername(obj.value);
                             }}
                             members={props.users.map((u) => ({
                                 value: u.id,
