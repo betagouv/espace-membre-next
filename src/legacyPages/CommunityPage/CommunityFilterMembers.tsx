@@ -49,7 +49,7 @@ export const CommunityFilterMembers = (props: CommunityProps) => {
     const onClickSearch = async () => {
         const domaines = (state.domaines || []).map((d) => d.id).join(",");
         const incubators = (state.incubators || []).map((d) => d.id).join(",");
-        const startups = (state.startups || []).map((d) => d.id).join(",");
+        const startups = (state.startups || []).map((d) => d.value).join(",");
         const memberStatus = (state.memberStatus || [])
             .map((d) => d.id)
             .join(",");

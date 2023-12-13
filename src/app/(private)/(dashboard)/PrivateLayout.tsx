@@ -20,7 +20,7 @@ export function PrivateLayout({ children }: { children: React.ReactNode }) {
 
     if (status === "loading") {
         <div className="fr-grid-row fr-grid-row-gutters fr-grid-row--center fr-mb-14v">
-            "Chargement...";
+            "Chargement..."
         </div>;
     }
 
