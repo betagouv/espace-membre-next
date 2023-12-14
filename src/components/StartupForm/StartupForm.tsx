@@ -2,7 +2,6 @@ import React from "react";
 import {
     AccessibilityStatus,
     PHASES_ORDERED_LIST,
-    Phase,
     StartupInfo,
     StartupPhase,
 } from "@/models/startup";
@@ -22,7 +21,6 @@ import Button from "@codegouvfr/react-dsfr/Button";
 import Input from "@codegouvfr/react-dsfr/Input";
 import Table from "@codegouvfr/react-dsfr/Table";
 import { Alert } from "@codegouvfr/react-dsfr/Alert";
-import config from "@/config";
 import RadioButtons from "@codegouvfr/react-dsfr/RadioButtons";
 import SelectAccessibilityStatus from "../SelectAccessibilityStatus";
 
