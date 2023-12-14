@@ -57,7 +57,7 @@ interface StartupForm {
     analyse_risques?: boolean;
     repository?: string;
     content: string;
-    accessibility_status: any;
+    accessibility_status?: any;
     save: any;
     contact?: string;
     phases?: {
