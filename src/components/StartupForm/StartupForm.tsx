@@ -458,7 +458,7 @@ export const StartupForm = (props: StartupForm) => {
                                 }}
                             />
                             <Input
-                                label="Lien du dashlord"
+                                label="Lien du repository github"
                                 nativeInputProps={{
                                     name: "Lien du repository github",
                                     onChange: (e) => {
