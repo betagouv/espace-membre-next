@@ -6,7 +6,7 @@ const options = [
     { value: "partiellement conforme", label: "partiellement conforme" },
     { value: "totalement conforme", label: "totalement conforme" },
 ];
-export default ({ value, onChange }) => {
+export default function SelectAccebilityStatus({ value, onChange }) {
     return (
         <Select
             label="Sélectionne l'accessibilité de votre produit"
@@ -25,4 +25,4 @@ export default ({ value, onChange }) => {
             })}
         </Select>
     );
-};
+}
