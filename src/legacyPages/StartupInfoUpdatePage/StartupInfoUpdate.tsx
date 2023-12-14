@@ -122,6 +122,14 @@ export const StartupInfoUpdate = (props: StartupInfoUpdateProps) => {
                     repository={props.formData.repository}
                     incubator={props.formData.incubator}
                     sponsors={props.formData.sponsors}
+                    accessibility_status={
+                        props.startup.attributes.accessibility_status
+                    }
+                    analyse_risques={props.startup.attributes.analyse_risques}
+                    analyse_risques_url={
+                        props.startup.attributes.analyse_risques_url
+                    }
+                    contact={props.startup.attributes.contact}
                 />
             </div>
             <style media="screen">{css}</style>

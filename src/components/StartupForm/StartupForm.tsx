@@ -1,5 +1,6 @@
 import React from "react";
 import {
+    AccessibilityStatus,
     PHASES_ORDERED_LIST,
     Phase,
     StartupInfo,
@@ -21,6 +22,9 @@ import Button from "@codegouvfr/react-dsfr/Button";
 import Input from "@codegouvfr/react-dsfr/Input";
 import Table from "@codegouvfr/react-dsfr/Table";
 import { Alert } from "@codegouvfr/react-dsfr/Alert";
+import config from "@/config";
+import RadioButtons from "@codegouvfr/react-dsfr/RadioButtons";
+import SelectAccessibilityStatus from "../SelectAccessibilityStatus";
 
 // import style manually
 const mdParser = new MarkdownIt(/* Markdown-it options */);
@@ -51,9 +55,13 @@ interface StartupForm {
     stats_url?: string;
     link?: string;
     dashlord_url?: string;
+    analyse_risques_url?: string;
+    analyse_risques?: boolean;
     repository?: string;
     content: string;
+    accessibility_status: any;
     save: any;
+    contact?: string;
     phases?: {
         start: string;
         end?: string;
@@ -97,12 +105,23 @@ export const StartupForm = (props: StartupForm) => {
     const [mission, setMission] = React.useState(props.mission);
     const [sponsors, setSponsors] = React.useState(props.sponsors || []);
     const [newSponsors, setNewSponsors] = React.useState([]);
+    const [contact, setContact] = React.useState(props.contact);
+
     const [incubator, setIncubator] = React.useState(props.incubator);
     const [stats_url, setStatsUrl] = React.useState<string | undefined>(
         props.stats_url
     );
+    const [analyse_risques_url, setAnalyseRisquesUrl] = React.useState<
+        string | undefined
+    >(props.analyse_risques_url);
+    const [analyse_risques, setAnalyseRisques] = React.useState<
+        boolean | undefined
+    >(props.analyse_risques || undefined);
     const [dashlord_url, setDashlord] = React.useState<string | undefined>(
         props.dashlord_url
+    );
+    const [accessibility_status, setAccessibilityStatus] = React.useState(
+        props.accessibility_status || AccessibilityStatus.NON_CONFORME
     );
     const [selectedFile, setSelectedFile]: [undefined | File, (File) => void] =
         React.useState();
@@ -119,10 +138,10 @@ export const StartupForm = (props: StartupForm) => {
     const [isSaving, setIsSaving] = React.useState(false);
 
     const save = async (event) => {
+        event.preventDefault();
         if (isSaving) {
             return;
         }
-        event.preventDefault();
         setIsSaving(true);
         let data = {
             phases,
@@ -137,6 +156,10 @@ export const StartupForm = (props: StartupForm) => {
             stats_url,
             repository,
             image: "",
+            contact,
+            analyse_risques,
+            analyse_risques_url,
+            accessibility_status,
         };
         if (selectedFile) {
             const imageAsBase64 = await blobToBase64(selectedFile);
@@ -178,7 +201,7 @@ export const StartupForm = (props: StartupForm) => {
                 const ErrorResponse: FormErrorResponse = e.response
                     .data as FormErrorResponse;
                 setAlertMessage({
-                    title: "Erreur",
+                    title: "Une erreur est pas survenue",
                     message: <>{ErrorResponse.message}</>,
                     type: "warning",
                 });
@@ -239,6 +262,10 @@ export const StartupForm = (props: StartupForm) => {
             dashlord_url === props.dashlord_url &&
             stats_url === props.stats_url &&
             mission === props.mission &&
+            contact === props.contact &&
+            analyse_risques === props.analyse_risques &&
+            analyse_risques_url === props.analyse_risques_url &&
+            accessibility_status === props.accessibility_status &&
             repository === props.repository &&
             incubator === props.incubator &&
             !selectedFile &&
@@ -264,7 +291,7 @@ export const StartupForm = (props: StartupForm) => {
                 )}
                 {
                     <>
-                        <div>
+                        <form onSubmit={save}>
                             <Input
                                 label="Nom du produit"
                                 hintText={`Ce nom sert d'identifiant pour la startup et
@@ -354,6 +381,7 @@ export const StartupForm = (props: StartupForm) => {
                                 onChange={(e) => {
                                     setIncubator(e.value || undefined);
                                 }}
+                                required={true}
                             />
                             <SponsorBlock
                                 newSponsors={newSponsors}
@@ -482,6 +510,66 @@ export const StartupForm = (props: StartupForm) => {
                                 }}
                             />
                             <Input
+                                label="Contact"
+                                nativeInputProps={{
+                                    onChange: (e) => {
+                                        setContact(
+                                            e.currentTarget.value || undefined
+                                        );
+                                    },
+                                    value: contact,
+                                    required: true,
+                                }}
+                            />
+                            <SelectAccessibilityStatus
+                                value={accessibility_status}
+                                onChange={(e) =>
+                                    setAccessibilityStatus(
+                                        e.currentTarget.value || undefined
+                                    )
+                                }
+                            />
+                            <RadioButtons
+                                legend="Indique si ta startup à déjà réalisé un atelier d'analyse de risque agile."
+                                options={[
+                                    {
+                                        label: "Oui",
+                                        nativeInputProps: {
+                                            defaultChecked:
+                                                analyse_risques === true,
+                                            checked: analyse_risques === true,
+                                            onChange: () =>
+                                                setAnalyseRisques(true),
+                                        },
+                                    },
+                                    {
+                                        label: "Non",
+                                        nativeInputProps: {
+                                            defaultChecked:
+                                                analyse_risques === false ||
+                                                !analyse_risques,
+                                            checked:
+                                                analyse_risques === false ||
+                                                !analyse_risques,
+                                            onChange: () =>
+                                                setAnalyseRisques(false),
+                                        },
+                                    },
+                                ]}
+                            />
+                            <Input
+                                label="Url de l'analyse de risque"
+                                hintText="Si vous avez rendu une analyse de risques publique, tu peux indiquer le lien vers ce document ici."
+                                nativeInputProps={{
+                                    onChange: (e) => {
+                                        setAnalyseRisquesUrl(
+                                            e.currentTarget.value || undefined
+                                        );
+                                    },
+                                    defaultValue: analyse_risques_url,
+                                }}
+                            />
+                            <Input
                                 label="Lien de la page stats"
                                 nativeInputProps={{
                                     name: "stats_url",
@@ -497,7 +585,6 @@ export const StartupForm = (props: StartupForm) => {
                                 nativeButtonProps={{
                                     type: "submit",
                                     disabled: isSaving || disabled,
-                                    onClick: save,
                                 }}
                                 children={
                                     isSaving
@@ -505,7 +592,7 @@ export const StartupForm = (props: StartupForm) => {
                                         : `Enregistrer`
                                 }
                             />
-                        </div>
+                        </form>
                     </>
                 }
             </div>

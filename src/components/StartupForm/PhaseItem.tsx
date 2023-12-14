@@ -46,7 +46,7 @@ export const PhaseDatePickerCell = ({
             nativeInputProps={{
                 type: "date",
                 name: "startDate",
-                min: "2020-01-31",
+                min: "2014-01-31",
                 // hint: "En format YYYY-MM-DD, par exemple : 2020-01-31",
                 required: true,
                 value: start,

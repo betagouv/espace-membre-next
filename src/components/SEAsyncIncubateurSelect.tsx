@@ -6,10 +6,12 @@ export default function SEIncubateurSelect({
     onChange,
     value,
     placeholder,
+    required,
 }: {
     onChange: any;
     value: any;
     placeholder?: any;
+    required: boolean;
 }) {
     const [options, setOptions] = React.useState<
         { value: string; label: string }[]
@@ -55,6 +57,7 @@ export default function SEIncubateurSelect({
                 },
                 value,
                 defaultValue: value,
+                required,
             }}
         >
             <option value="" disabled hidden>

@@ -2,7 +2,7 @@ import React from "react";
 
 const UPLOAD_SIZE_LIMIT_IN_MO = 0.6;
 
-const FileUpload = ({ selectedFile, setSelectedFile }) => {
+const FileUpload = ({ selectedFile, setSelectedFile, defaultImage }) => {
     const onFileChange = (event) => {
         // Update the state
         const fileSize = event.target.files.item(0).size;
@@ -22,13 +22,13 @@ const FileUpload = ({ selectedFile, setSelectedFile }) => {
     }
 
     const fileData = () => {
-        if (url) {
+        if (url || defaultImage) {
             return (
                 <>
                     <br />
                     <div style={{ height: 150, width: 240 }}>
                         <img
-                            src={url}
+                            src={url || defaultImage}
                             style={{
                                 height: "auto",
                                 width: "auto",
