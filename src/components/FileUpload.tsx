@@ -1,9 +1,17 @@
 import React from "react";
 
+const UPLOAD_SIZE_LIMIT_IN_MO = 0.6;
+
 const FileUpload = ({ selectedFile, setSelectedFile }) => {
     const onFileChange = (event) => {
         // Update the state
-        setSelectedFile(event.target.files[0]);
+        const fileSize = event.target.files.item(0).size;
+        const fileMb = fileSize / 1024 ** 2;
+        if (fileMb < UPLOAD_SIZE_LIMIT_IN_MO) {
+            setSelectedFile(event.target.files[0]);
+        } else {
+            alert("Le fichier ne peux pas faire plus de ");
+        }
     };
 
     // File content to be displayed after
@@ -45,7 +53,7 @@ const FileUpload = ({ selectedFile, setSelectedFile }) => {
                 Image
                 <span className="fr-hint-text">
                     Une image rectangulaire au format 16/9 pour présenter le
-                    produit (max: 10mo)
+                    produit (max: 60ko)
                 </span>
             </label>
             {!selectedFile && (
