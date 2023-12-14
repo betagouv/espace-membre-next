@@ -230,8 +230,10 @@ export const StartupForm = (props: StartupForm) => {
 
     function hasChanged() {
         return (
-            props.startup &&
-            (!phases || phases === props.phases) &&
+            !!props.startup &&
+            (!phases ||
+                JSON.stringify(phases) === JSON.stringify(props.phases)) &&
+            title === props.startup?.attributes.name &&
             (!text || text === decodeURIComponent(props.content)) &&
             link === props.link &&
             dashlord_url === props.dashlord_url &&
@@ -239,7 +241,8 @@ export const StartupForm = (props: StartupForm) => {
             mission === props.mission &&
             repository === props.repository &&
             incubator === props.incubator &&
-            sponsors === props.sponsors
+            !selectedFile &&
+            JSON.stringify(sponsors) === JSON.stringify(props.sponsors)
         );
     }
     let disabled = false;
@@ -276,7 +279,9 @@ export const StartupForm = (props: StartupForm) => {
                                 }
                                 nativeInputProps={{
                                     onChange: (e) => {
-                                        setTitle(e.currentTarget.value);
+                                        setTitle(
+                                            e.currentTarget.value || undefined
+                                        );
                                     },
                                     defaultValue: title,
                                     required: true,
@@ -290,7 +295,9 @@ export const StartupForm = (props: StartupForm) => {
                                 textArea={true}
                                 nativeTextAreaProps={{
                                     onChange: (e) => {
-                                        setMission(e.currentTarget.value);
+                                        setMission(
+                                            e.currentTarget.value || undefined
+                                        );
                                     },
                                     value: mission,
                                     required: true,
@@ -345,7 +352,7 @@ export const StartupForm = (props: StartupForm) => {
                             <SEAsyncIncubateurSelect
                                 value={incubator}
                                 onChange={(e) => {
-                                    setIncubator(e.value);
+                                    setIncubator(e.value || undefined);
                                 }}
                             />
                             <SponsorBlock
@@ -443,7 +450,9 @@ export const StartupForm = (props: StartupForm) => {
                                 label="URL du site"
                                 nativeInputProps={{
                                     onChange: (e) => {
-                                        setLink(e.currentTarget.value);
+                                        setLink(
+                                            e.currentTarget.value || undefined
+                                        );
                                     },
                                     value: link,
                                 }}
@@ -453,7 +462,9 @@ export const StartupForm = (props: StartupForm) => {
                                 nativeInputProps={{
                                     name: "Lien du repository github",
                                     onChange: (e) => {
-                                        setRepository(e.currentTarget.value);
+                                        setRepository(
+                                            e.currentTarget.value || undefined
+                                        );
                                     },
                                     value: repository,
                                 }}
@@ -463,7 +474,9 @@ export const StartupForm = (props: StartupForm) => {
                                 nativeInputProps={{
                                     name: "dashlord",
                                     onChange: (e) => {
-                                        setDashlord(e.currentTarget.value);
+                                        setDashlord(
+                                            e.currentTarget.value || undefined
+                                        );
                                     },
                                     value: dashlord_url,
                                 }}
@@ -473,7 +486,9 @@ export const StartupForm = (props: StartupForm) => {
                                 nativeInputProps={{
                                     name: "stats_url",
                                     onChange: (e) => {
-                                        setStatsUrl(e.currentTarget.value);
+                                        setStatsUrl(
+                                            e.currentTarget.value || undefined
+                                        );
                                     },
                                     value: stats_url,
                                 }}
