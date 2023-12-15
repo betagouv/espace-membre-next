@@ -64,7 +64,24 @@ export default function MemberSelect({
                 : { value: data.id, label: data.label }
         );
     };
-
+    let defaultMemberValue;
+    if (!!multiple && defaultValue) {
+        defaultMemberValue = (
+            defaultValue as { value: string; label: string }[]
+        ).map((se) => ({
+            id: se.value,
+            label: se.label,
+        }));
+    } else if (!multiple && defaultValue) {
+        let singleDefaultValue = defaultValue as {
+            value: string;
+            label: string;
+        };
+        defaultMemberValue = {
+            id: singleDefaultValue.value,
+            label: singleDefaultValue.label,
+        };
+    }
     return (
         <div className="fr-select-group">
             <label className="fr-label">
@@ -78,16 +95,7 @@ export default function MemberSelect({
                     label: se.label,
                 }))}
                 onChange={onTagsChange}
-                defaultValue={
-                    defaultValue
-                        ? (
-                              defaultValue as { value: string; label: string }[]
-                          ).map((se) => ({
-                              id: se.value,
-                              label: se.label,
-                          }))
-                        : undefined
-                }
+                defaultValue={defaultMemberValue}
                 isOptionEqualToValue={(option, value) => option.id === value.id}
                 renderInput={(params) => (
                     <TextField
