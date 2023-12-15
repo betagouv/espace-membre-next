@@ -85,7 +85,7 @@ const MainHeader = () => {
                           href: "/community",
                           target: "_self",
                       },
-                      text: "Commaunauté",
+                      text: "Communauté",
                   },
                   {
                       linkProps: {
