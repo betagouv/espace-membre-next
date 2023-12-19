@@ -69,7 +69,10 @@ class routes {
         "/api/public/account/base-info/:username";
     static ACCOUNT_GET_BADGE_REQUEST_PAGE = "/account/badge-demande";
     static ACCOUNT_GET_BADGE_REQUEST_PAGE_API = "/api/account/badge-demande";
+    static ACCOUNT_GET_BADGE_RENEWAL_REQUEST_PAGE_API =
+        "/api/account/badge-demande/renewal";
     static API_POST_BADGE_REQUEST = "/api/badge";
+    static API_POST_BADGE_RENEWAL_REQUEST = "/api/badge/renewal";
     static API_UPDATE_BADGE_REQUEST_STATUS = "/api/badge/status";
     static PULL_REQUEST_GET_PRS: string = "/api/pull-requests";
     static ME: string = "/api/me";

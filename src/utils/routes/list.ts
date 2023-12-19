@@ -32,6 +32,10 @@ export const routes = {
             localizedRoutes.accountBadge.params,
             localizedRoutes.accountBadge.paths.fr
         ),
+        accountBadgeRenewal: defineRoute(
+            localizedRoutes.accountBadgeRenewal.params,
+            localizedRoutes.accountBadgeRenewal.paths.fr
+        ),
         community: defineRoute(
             localizedRoutes.community.params,
             localizedRoutes.community.paths.fr

@@ -40,6 +40,10 @@ export function PrivateLayout({ children }: { children: React.ReactNode }) {
         undefined
     );
     const accountBadge = linkRegistry.get("accountBadge", undefined);
+    const accountBadgeRenewalLink = linkRegistry.get(
+        "accountBadgeRenewal",
+        undefined
+    );
     const mapLink = linkRegistry.get("map", undefined);
 
     const accountSubPages: ItemLink[] = [
@@ -71,8 +75,27 @@ export function PrivateLayout({ children }: { children: React.ReactNode }) {
             linkProps: {
                 href: accountBadgeLink,
             },
-            text: routeTitles.accountBadge(),
+            text: "Badge",
             isActive: hasPathnameThisMatch(pathname, accountBadgeLink),
+            items: [
+                {
+                    linkProps: {
+                        href: accountBadgeLink,
+                    },
+                    text: routeTitles.accountBadge(),
+                    isActive: hasPathnameThisMatch(pathname, accountBadgeLink),
+                },
+                {
+                    linkProps: {
+                        href: accountBadgeRenewalLink,
+                    },
+                    text: routeTitles.accountBadgeRenewal(),
+                    isActive: hasPathnameThisMatch(
+                        pathname,
+                        accountBadgeRenewalLink
+                    ),
+                },
+            ],
         },
     ];
 
