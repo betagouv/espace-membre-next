@@ -33,7 +33,7 @@ const CreateEmailForm = ({
     username,
     secondaryEmail,
 }) => {
-    const [email, setValue] = useState<string>();
+    const [email, setValue] = useState<string>(secondaryEmail);
     return (
         <>
             <p>Tu peux créer un compte email pour {userInfos.fullname}.</p>
