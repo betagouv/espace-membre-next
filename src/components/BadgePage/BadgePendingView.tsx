@@ -69,7 +69,6 @@ export const BadgePendingView = ({
     }
     return (
         <>
-            <h2>Demande de badge</h2>
             {dsToken && !dossier && (
                 <>
                     <p>

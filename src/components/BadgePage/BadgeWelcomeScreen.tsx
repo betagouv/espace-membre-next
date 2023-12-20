@@ -1,49 +1,42 @@
-import { BadgeDossier } from "@/models/badgeDemande";
+import config from "@/config";
 import { BadgeRequest } from "@/models/badgeRequests";
 import routes, { computeRoute } from "@/routes/routes";
 import Button from "@codegouvfr/react-dsfr/Button";
+import Checkbox from "@codegouvfr/react-dsfr/Checkbox";
 import axios from "axios";
 import React, { useState } from "react";
 
 export const WelcomeScreen = function ({
-    next,
     badgeRequest,
-    dossier,
-    setDSToken,
 }: {
-    next: () => void;
     badgeRequest: BadgeRequest;
-    dossier: BadgeDossier;
-    setDSToken: React.Dispatch<React.SetStateAction<string | null>>;
 }) {
     const [isSaving, setIsSaving] = useState(false);
-
+    const [understoodBox, setUnderstoodBox] = useState<boolean>(false);
+    const [dsToken, setDSToken] = useState(
+        badgeRequest ? badgeRequest.ds_token : null
+    );
     function askForBadge() {
-        if (dossier || badgeRequest) {
-            next();
-        } else {
-            if (isSaving) {
-                return;
-            }
-            setIsSaving(true);
-            axios
-                .post(computeRoute(routes.API_POST_BADGE_REQUEST), undefined, {
-                    withCredentials: true,
-                })
-                .then((resp) => {
-                    setIsSaving(false);
-                    setDSToken(resp.data.dossier_token);
-                    next();
-                })
-                .catch((resp) => {
-                    setIsSaving(false);
-                });
+        if (isSaving) {
+            return;
         }
+        setIsSaving(true);
+        axios
+            .post(computeRoute(routes.API_POST_BADGE_REQUEST), undefined, {
+                withCredentials: true,
+            })
+            .then((resp) => {
+                setIsSaving(false);
+                setUnderstoodBox(!understoodBox);
+                setDSToken(resp.data.dossier_token);
+            })
+            .catch((resp) => {
+                setIsSaving(false);
+            });
     }
 
     return (
         <>
-            <h2>Demande de badge</h2>
             <p>
                 Tu t'apprêtes à faire une demande de badge.
                 <br />
@@ -64,7 +57,41 @@ export const WelcomeScreen = function ({
                 <li>une photo de ta piéce d'identité</li>
                 <li>une photo d'identité</li>
             </ul>
-            <Button onClick={askForBadge}>Faire la demande de badge</Button>
+
+            {
+                <>
+                    <Checkbox
+                        options={[
+                            {
+                                label: "J'ai compris",
+                                nativeInputProps: {
+                                    name: "checkboxes-1",
+                                    value: "true",
+                                    onChange: (e) => {
+                                        askForBadge();
+                                    },
+                                },
+                            },
+                        ]}
+                        state="default"
+                    ></Checkbox>
+                    {!understoodBox && (
+                        <Button disabled={true}>
+                            Poursuivre la démarche sur démarches-simplifiees.fr
+                        </Button>
+                    )}
+                    {understoodBox && (
+                        <Button
+                            linkProps={{
+                                target: "_blank",
+                                href: `${config.DS_BADGE_FORM_URL}${dsToken}`,
+                            }}
+                        >
+                            Poursuivre la démarche sur démarches-simplifiees.fr
+                        </Button>
+                    )}
+                </>
+            }
         </>
     );
 };
