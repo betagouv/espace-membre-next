@@ -111,7 +111,7 @@ export const BadgePendingView = ({
                         <Button
                             linkProps={{
                                 target: "_blank",
-                                href: `https://www.demarches-simplifiees.fr/commencer/demande-de-badge-segur?prefill_token=${dsToken}`,
+                                href: `${config.DS_BADGE_FORM_URL}${dsToken}`,
                             }}
                         >
                             Poursuivre la démarche sur démarches-simplifiees.fr

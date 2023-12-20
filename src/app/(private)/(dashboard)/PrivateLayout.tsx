@@ -1,5 +1,5 @@
 import { linkRegistry } from "@/utils/routes/registry";
-import { hasPathnameThisMatch } from "@/utils/url";
+import { hasPathnameThisMatch, hasPathnameThisRoot } from "@/utils/url";
 import { SideMenu, SideMenuProps } from "@codegouvfr/react-dsfr/SideMenu";
 import { useSession } from "@/proxies/next-auth";
 import { usePathname, useRouter } from "next/navigation";
@@ -73,10 +73,11 @@ export function PrivateLayout({ children }: { children: React.ReactNode }) {
         },
         {
             linkProps: {
-                href: accountBadgeLink,
+                href: "#",
             },
             text: "Badge",
-            isActive: hasPathnameThisMatch(pathname, accountBadgeLink),
+            isActive: hasPathnameThisRoot(pathname, accountBadgeLink),
+            expandedByDefault: hasPathnameThisRoot(pathname, accountBadgeLink),
             items: [
                 {
                     linkProps: {
