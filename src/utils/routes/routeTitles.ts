@@ -9,6 +9,7 @@ export const routeTitles: {
     accountEditBaseInfo: () => "Mise à jour de mes informations",
     accountEditPrivateInfo: () => "Mise à jour de mes informations privées",
     accountBadge: () => "Demande de badge",
+    accountBadgeRenewal: () => "Renouvellement de badge",
     community: () => "Rechercher un ou une membre",
     startupList: () => "Rechercher un produit",
     startupDetails: () => "",

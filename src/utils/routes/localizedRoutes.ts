@@ -32,6 +32,12 @@ export const localizedRoutes = {
             fr: (p) => `/account/badge-demande`,
         }
     ),
+    accountBadgeRenewal: defineLocalizedRoute(
+        {},
+        {
+            fr: (p) => `/account/badge-demande/renouvellement`,
+        }
+    ),
     community: defineLocalizedRoute(
         {},
         {

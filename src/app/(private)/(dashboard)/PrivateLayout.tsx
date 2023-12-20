@@ -1,5 +1,5 @@
 import { linkRegistry } from "@/utils/routes/registry";
-import { hasPathnameThisMatch } from "@/utils/url";
+import { hasPathnameThisMatch, hasPathnameThisRoot } from "@/utils/url";
 import { SideMenu, SideMenuProps } from "@codegouvfr/react-dsfr/SideMenu";
 import { useSession } from "@/proxies/next-auth";
 import { usePathname, useRouter } from "next/navigation";
@@ -40,6 +40,10 @@ export function PrivateLayout({ children }: { children: React.ReactNode }) {
         undefined
     );
     const accountBadge = linkRegistry.get("accountBadge", undefined);
+    const accountBadgeRenewalLink = linkRegistry.get(
+        "accountBadgeRenewal",
+        undefined
+    );
     const mapLink = linkRegistry.get("map", undefined);
 
     const accountSubPages: ItemLink[] = [
@@ -69,10 +73,30 @@ export function PrivateLayout({ children }: { children: React.ReactNode }) {
         },
         {
             linkProps: {
-                href: accountBadgeLink,
+                href: "#",
             },
-            text: routeTitles.accountBadge(),
-            isActive: hasPathnameThisMatch(pathname, accountBadgeLink),
+            text: "Badge",
+            isActive: hasPathnameThisRoot(pathname, accountBadgeLink),
+            expandedByDefault: hasPathnameThisRoot(pathname, accountBadgeLink),
+            items: [
+                {
+                    linkProps: {
+                        href: accountBadgeLink,
+                    },
+                    text: routeTitles.accountBadge(),
+                    isActive: hasPathnameThisMatch(pathname, accountBadgeLink),
+                },
+                {
+                    linkProps: {
+                        href: accountBadgeRenewalLink,
+                    },
+                    text: routeTitles.accountBadgeRenewal(),
+                    isActive: hasPathnameThisMatch(
+                        pathname,
+                        accountBadgeRenewalLink
+                    ),
+                },
+            ],
         },
     ];
 

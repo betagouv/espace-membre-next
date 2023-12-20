@@ -34,14 +34,12 @@ export default {
     host: process.env.HOSTNAME || "localhost:3000",
     port: process.env.PORT || 3100,
     domain: process.env.SECRETARIAT_DOMAIN || "beta.gouv.fr",
-    DS_TOKEN: process.env.DS_TOKEN,
-    DS_DEMARCHE_NUMBER: process.env.DS_DEMARCHE_NUMBER
-        ? parseInt(process.env.DS_DEMARCHE_NUMBER)
-        : null,
-    DS_DEMARCHE_ID: process.env.DS_DEMARCHE_ID,
     ESPACE_MEMBRE_ADMIN: process.env.ESPACE_MEMBRE_ADMIN
         ? process.env.ESPACE_MEMBRE_ADMIN.split(",")
         : [],
+    DS_BADGE_FORM_URL: process.env.NEXT_PUBLIC_DS_BADGE_FORM_URL,
+    DS_BADGE_RENEWAL_FORM_URL:
+        process.env.NEXT_PUBLIC_DS_BADGE_RENEWAL_FORM_URL,
     user: {
         statusOptions: userStatusOptions,
         minStartDate: "2013-07-01",
