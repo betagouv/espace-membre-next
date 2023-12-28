@@ -367,11 +367,11 @@ export default function MemberPage({
                             }}
                         >
                             <Input
-                                label="Email secondare"
+                                label="Email secondaire"
                                 hintText="L'email secondaire est utile pour récupérer son mot de passe ou garder contact après ton départ."
                                 nativeInputProps={{
                                     name: "secondaryEmail",
-                                    value: secondaryEmail,
+                                    defaultValue: secondaryEmail,
                                     type: "email",
                                 }}
                             />
