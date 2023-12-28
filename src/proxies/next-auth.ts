@@ -68,7 +68,6 @@ export const useSession = function useSession(props?: {
         axios
             .get(computeRoute(routes.ME), { withCredentials: true })
             .then((data) => {
-                setLoading(false);
                 if (data.data.user) {
                     setStatus("authenticated");
                     setData({
@@ -83,13 +82,14 @@ export const useSession = function useSession(props?: {
                         props.onUnauthenticated();
                     }
                 }
+                setLoading(false);
             })
             .catch(() => {
                 setStatus("unauthenticated");
-                setLoading(false);
                 if (props && props.onUnauthenticated) {
                     props.onUnauthenticated();
                 }
+                setLoading(false);
             });
 
         return () => {};

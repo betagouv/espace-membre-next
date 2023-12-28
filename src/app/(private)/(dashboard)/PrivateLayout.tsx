@@ -18,10 +18,12 @@ export function PrivateLayout({ children }: { children: React.ReactNode }) {
         },
     });
 
-    if (status === "loading") {
-        <div className="fr-grid-row fr-grid-row-gutters fr-grid-row--center fr-mb-14v">
-            "Chargement..."
-        </div>;
+    if (status === "loading" || status === "unauthenticated") {
+        return (
+            <div className="fr-grid-row fr-grid-row-gutters fr-grid-row--center fr-mb-14v">
+                Chargement...
+            </div>
+        );
     }
 
     const accountLink = linkRegistry.get("account", undefined);
