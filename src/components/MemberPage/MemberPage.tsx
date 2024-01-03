@@ -27,6 +27,67 @@ export interface MemberPageProps {
     username: string;
 }
 
+const ChangeSecondaryEmailBloc = ({ secondaryEmail, userInfos }) => {
+    const [newSecondaryEmail, setNewSecondaryEmail] =
+        useState<string>(secondaryEmail);
+    const [isSaving, setIsSaving] = useState<boolean>(false);
+
+    return (
+        <Accordion label="Définir/changer l'email secondaire pour cette personne">
+            <form
+                onSubmit={async (e) => {
+                    e.preventDefault();
+                    setIsSaving(true);
+                    axios
+                        .post(
+                            computeRoute(
+                                routes.USER_UPDATE_SECONDARY_EMAIL_API
+                            ).replace(":username", userInfos.id),
+                            {
+                                secondaryEmail: newSecondaryEmail,
+                            },
+                            {
+                                withCredentials: true,
+                            }
+                        )
+                        .then((data) => {
+                            setIsSaving(false);
+                            console.log(data);
+                        })
+                        .catch((e) => {
+                            setIsSaving(false);
+                            console.log(e);
+                        });
+                }}
+            >
+                <Input
+                    label="Email secondaire"
+                    hintText="L'email secondaire est utile pour récupérer son mot de passe ou garder contact après ton départ."
+                    nativeInputProps={{
+                        name: "secondaryEmail",
+                        defaultValue: newSecondaryEmail,
+                        type: "email",
+                        onChange: (e) => {
+                            setNewSecondaryEmail(e.target.value);
+                        },
+                    }}
+                />
+                <Button
+                    nativeButtonProps={{
+                        type: "submit",
+                        disabled: isSaving,
+                    }}
+                    children={
+                        isSaving
+                            ? `Sauvegarde en cours...`
+                            : `Sauvegarder l'email secondaire`
+                    }
+                />
+            </form>
+        </Accordion>
+    );
+};
+
 const CreateEmailForm = ({
     userInfos,
     hasPublicServiceEmail,
@@ -351,39 +412,10 @@ export default function MemberPage({
             {isAdmin && (
                 <div className="fr-mb-8v">
                     <h2>Actions admin</h2>
-                    <Accordion label="Définir/changer l'email secondaire pour cette personne">
-                        <form
-                            onSubmit={async (e) => {
-                                e.preventDefault();
-                                await axios.post(
-                                    computeRoute(
-                                        routes.USER_UPDATE_SECONDARY_EMAIL_API
-                                    ).replace(":username", userInfos.id),
-                                    undefined,
-                                    {
-                                        withCredentials: true,
-                                    }
-                                );
-                            }}
-                        >
-                            <Input
-                                label="Email secondaire"
-                                hintText="L'email secondaire est utile pour récupérer son mot de passe ou garder contact après ton départ."
-                                nativeInputProps={{
-                                    name: "secondaryEmail",
-                                    defaultValue: secondaryEmail,
-                                    type: "email",
-                                }}
-                            />
-                            <Button
-                                nativeButtonProps={{
-                                    type: "submit",
-                                }}
-                            >
-                                Sauvegarder l'email secondaire
-                            </Button>
-                        </form>
-                    </Accordion>
+                    <ChangeSecondaryEmailBloc
+                        userInfos={userInfos}
+                        secondaryEmail={secondaryEmail}
+                    ></ChangeSecondaryEmailBloc>
                     {shouldDisplayUpgrade && (
                         <Accordion label="Passer en compte pro">
                             {shouldDisplayUpgrade && (
