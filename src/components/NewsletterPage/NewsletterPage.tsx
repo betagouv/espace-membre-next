@@ -19,7 +19,7 @@ export default function NewsletterPage({
                             {currentNewsletter.title}
                         </h3>
                         <p>Lien de l'infolettre</p>
-                        <a href="<%= currentNewsletter.url %>" target="_blank">
+                        <a href={currentNewsletter.url} target="_blank">
                             {currentNewsletter.url}
                         </a>
                         <br />
