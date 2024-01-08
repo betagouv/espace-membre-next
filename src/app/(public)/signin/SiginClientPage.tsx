@@ -4,6 +4,7 @@ import { useRouter, useSearchParams } from "next/navigation";
 import Button from "@codegouvfr/react-dsfr/Button";
 import routes, { computeRoute } from "@/routes/routes";
 import config from "@/config";
+import { fr } from "@codegouvfr/react-dsfr";
 
 export default function SignClientPage() {
     const router = useRouter();
@@ -31,7 +32,7 @@ export default function SignClientPage() {
 
     return (
         <div>
-            <p>
+            <p className={fr.cx("fr-mt-10v")}>
                 Gère ton compte email (mot de passe, redirections, etc) et les
                 membres de la communauté (arrivées et départs).
             </p>
