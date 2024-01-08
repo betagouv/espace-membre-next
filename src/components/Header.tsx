@@ -54,15 +54,17 @@ const MainHeader = () => {
             text: `Se déconnecter`,
         });
     } else {
-        quickAccessItems.push({
-            buttonProps: {
-                onClick: () => {
-                    router.push("/login");
+        if (pathname !== "/login") {
+            quickAccessItems.push({
+                buttonProps: {
+                    onClick: () => {
+                        router.push("/login");
+                    },
                 },
-            },
-            iconId: "fr-icon-account-line",
-            text: "Se connecter",
-        });
+                iconId: "fr-icon-account-line",
+                text: "Se connecter",
+            });
+        }
     }
 
     const nav =
