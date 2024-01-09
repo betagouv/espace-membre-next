@@ -8,6 +8,7 @@ import { CallOut } from "@codegouvfr/react-dsfr/CallOut";
 import { ButtonsGroup } from "@codegouvfr/react-dsfr/ButtonsGroup";
 import { Alert } from "@codegouvfr/react-dsfr/Alert";
 import { getSession } from "next-auth/react";
+import { fr } from "@codegouvfr/react-dsfr";
 
 interface Props {
     errors: any[];
@@ -72,13 +73,20 @@ export const LoginPage = function (props: Props) {
                 }
             )
             .catch((e) => {
-                console.log(e);
+                // arrive quand il n'y a pas de "data"
+                console.log("Error no data", e);
+                setIsSaving(false);
+                const ErrorResponse: FormErrorResponse = e;
+                setErrorMessage(ErrorResponse.message);
+                if (ErrorResponse.errors) {
+                    setFormErrors(ErrorResponse.errors);
+                }
             });
     };
 
     return (
         <>
-            <div className="fr-col-12 fr-col-md-8 fr-col-lg-6">
+            <div className="fr-col-12">
                 <div className="fr-container fr-background-alt--grey fr-px-md-0 fr-py-10v fr-py-md-14v">
                     <div className="fr-grid-row fr-grid-row-gutters fr-grid-row--center">
                         <div className="fr-col-12 fr-col-md-9 fr-col-lg-8">
@@ -89,7 +97,8 @@ export const LoginPage = function (props: Props) {
                                         description={errorMessage}
                                         onClose={function noRefCheck() {}}
                                         severity="error"
-                                        title="Le formulaire a renvoyer une erreur"
+                                        title="Le formulaire a renvoyé une erreur"
+                                        className={fr.cx("fr-mb-5v")}
                                     />
                                 )}
                                 {!!alertMessage && (
@@ -127,7 +136,7 @@ export const LoginPage = function (props: Props) {
                                         )}
                                     </fieldset>
                                     <Input
-                                        hintText="Email beta.gouv.fr ou ton email secondaire"
+                                        hintText="Email beta.gouv.fr ou email secondaire"
                                         label="Mon email"
                                         nativeInputProps={{
                                             type: "email",
@@ -161,11 +170,6 @@ export const LoginPage = function (props: Props) {
                                         ]}
                                     />
                                 </form>
-                                <p className="fr-text--sm fr-mt-3v">
-                                    <a href="#forgot" className="fr-link">
-                                        Mot de passe oublié ?
-                                    </a>
-                                </p>
                                 <p className="fr-hr-or">ou</p>
                             </div>
                             <div className="fr-mb-6v">
@@ -193,44 +197,52 @@ export const LoginPage = function (props: Props) {
                                     title="Besoin d'aide ?"
                                 >
                                     <>
-                                        <ul>
-                                            <li>
-                                                <b>
-                                                    J'ai oublié mon email pour
-                                                    me connecter :
-                                                </b>{" "}
-                                                l'accès à l'espace membre se
-                                                fait avec une adresse du service
-                                                public (@beta.gouv.fr,
-                                                @pole-emploi.fr...) ou un email
-                                                secondaire (celui sur lequel tu
-                                                as reçu tes accès). En cas
-                                                d'oubli, demande de l'aide sur
-                                                Mattermost{" "}
-                                                <a
-                                                    href="https://mattermost.incubateur.net/betagouv/channels/incubateur-help"
-                                                    target="_blank"
-                                                    title="Lien vers le channel secretariat sur Mattermost"
-                                                >
-                                                    ~incubateur-help
-                                                </a>
-                                            </li>
-                                            <li>
-                                                <b>
-                                                    Je n'arrive pas à accéder à
-                                                    mes emails :
-                                                </b>{" "}
-                                                <a
-                                                    className="fr-link"
-                                                    href="https://doc.incubateur.net/communaute/travailler-a-beta-gouv/jutilise-les-outils-de-la-communaute/emails#2.-configurer-la-reception-et-lenvoi-demails"
-                                                    target="_blank"
-                                                    title="lien vers la documentation pour se connecter à sa boite mail"
-                                                >
-                                                    configure ton client webmail
-                                                </a>
-                                                .
-                                            </li>
-                                        </ul>
+                                        <div>
+                                            <b>
+                                                J'ai oublié mon email pour me
+                                                connecter :
+                                            </b>{" "}
+                                            l'accès à l'espace membre se fait
+                                            avec une adresse du service public
+                                            (@beta.gouv.fr, @pole-emploi.fr...)
+                                            ou un email secondaire (celui sur
+                                            lequel tu as reçu tes accès). En cas
+                                            d'oubli, demande de l'aide sur
+                                            Mattermost{" "}
+                                            <a
+                                                href="https://mattermost.incubateur.net/betagouv/channels/incubateur-help"
+                                                target="_blank"
+                                                title="Lien vers le channel secretariat sur Mattermost"
+                                            >
+                                                ~incubateur-help
+                                            </a>
+                                        </div>
+                                        <div className={fr.cx("fr-mt-2v")}>
+                                            <b>
+                                                Je n'arrive pas à accéder à mes
+                                                emails :
+                                            </b>{" "}
+                                            <a
+                                                className="fr-link"
+                                                href="https://doc.incubateur.net/communaute/travailler-a-beta-gouv/jutilise-les-outils-de-la-communaute/emails#2.-configurer-la-reception-et-lenvoi-demails"
+                                                target="_blank"
+                                                title="lien vers la documentation pour se connecter à sa boite mail"
+                                            >
+                                                configure ton client webmail
+                                            </a>
+                                            .
+                                        </div>
+                                        <div className={fr.cx("fr-mt-2v")}>
+                                            Voir aussi :{" "}
+                                            <a
+                                                className="fr-link"
+                                                href="https://doc.incubateur.net/communaute/travailler-a-beta-gouv/jutilise-les-outils-de-la-communaute/problemes-frequents"
+                                                target="_blank"
+                                                title="lien vers les questions fréquentes de la documentation"
+                                            >
+                                                questions fréquentes
+                                            </a>
+                                        </div>
                                     </>
                                 </CallOut>
                             </div>
