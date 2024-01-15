@@ -31,10 +31,12 @@ export interface MemberPageProps {
     };
     emailServiceInfo?: {
         primaryEmail?: {
-            isEmailBlacklisted: boolean;
+            emailBlacklisted: boolean;
+            listIds: number[];
         };
         secondaryEmail?: {
-            isEmailBlacklisted: boolean;
+            emailBlacklisted: boolean;
+            listIds: number[];
         };
     };
 }
@@ -389,7 +391,7 @@ export default function MemberPage({
                                             Email primaire blacklisté sur brevo
                                             :{" "}
                                             {emailServiceInfo.primaryEmail
-                                                .isEmailBlacklisted
+                                                .emailBlacklisted
                                                 ? "oui"
                                                 : "non"}
                                         </li>
@@ -399,7 +401,7 @@ export default function MemberPage({
                                             Email secondaire blacklisté sur
                                             brevo :{" "}
                                             {emailServiceInfo.secondaryEmail
-                                                .isEmailBlacklisted
+                                                .emailBlacklisted
                                                 ? "oui"
                                                 : "non"}
                                         </li>
