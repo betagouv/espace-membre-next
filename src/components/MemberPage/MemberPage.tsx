@@ -25,6 +25,18 @@ export interface MemberPageProps {
     availableEmailPros: any;
     primaryEmailStatus: string;
     username: string;
+    mattermostInfo: {
+        hasMattermostAccount: boolean;
+        isInactiveOrNotInTeam: boolean;
+    };
+    emailServiceInfo?: {
+        primaryEmail?: {
+            isEmailBlacklisted: boolean;
+        };
+        secondaryEmail?: {
+            isEmailBlacklisted: boolean;
+        };
+    };
 }
 
 const ChangeSecondaryEmailBloc = ({ secondaryEmail, userInfos }) => {
@@ -208,6 +220,8 @@ export default function MemberPage({
     availableEmailPros,
     primaryEmailStatus,
     username,
+    mattermostInfo,
+    emailServiceInfo,
 }: MemberPageProps) {
     const shouldDisplayUpgrade = Boolean(
         isAdmin &&
@@ -352,7 +366,7 @@ export default function MemberPage({
                 )}
             </div>
             <div className="fr-mb-8v">
-                <h2>Compte mail</h2>
+                <h2>Compte email</h2>
                 {!!emailInfos && (
                     <>
                         <p className="text-color-blue font-weight-bold">
@@ -368,6 +382,30 @@ export default function MemberPage({
                                     ? "oui (contactez un.e administrat.eur.rice)"
                                     : "non"}
                             </li>
+                            {!!emailServiceInfo && (
+                                <>
+                                    {emailServiceInfo.primaryEmail && (
+                                        <li>
+                                            Email primaire blacklisté sur brevo
+                                            :{" "}
+                                            {emailServiceInfo.primaryEmail
+                                                .isEmailBlacklisted
+                                                ? "oui"
+                                                : "non"}
+                                        </li>
+                                    )}
+                                    {emailServiceInfo.secondaryEmail && (
+                                        <li>
+                                            Email secondaire blacklisté sur
+                                            brevo :{" "}
+                                            {emailServiceInfo.secondaryEmail
+                                                .isEmailBlacklisted
+                                                ? "oui"
+                                                : "non"}
+                                        </li>
+                                    )}
+                                </>
+                            )}
                         </ul>
                     </>
                 )}
@@ -405,8 +443,27 @@ export default function MemberPage({
                 })}
                 {redirections.length === 0 && (
                     <p>
-                        <strong>Aucune</strong>
+                        <strong>Aucune redirection</strong>
                     </p>
+                )}
+            </div>
+            <div className="fr-mb-8v">
+                <h2>Compte mattermost</h2>
+                {!!mattermostInfo && (
+                    <ul>
+                        <li>
+                            Compte mattermost :{" "}
+                            {!!mattermostInfo.hasMattermostAccount
+                                ? "le compte existe"
+                                : `aucun compte trouvé`}
+                        </li>
+                        <li>
+                            Compte actif :{" "}
+                            {!!mattermostInfo.isInactiveOrNotInTeam
+                                ? `le compte est inactif ou n'est pas dans l'espace communauté`
+                                : `le compte est actif`}
+                        </li>
+                    </ul>
                 )}
             </div>
             {isAdmin && (
