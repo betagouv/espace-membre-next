@@ -25,7 +25,7 @@ export default function SEIncubateurSelect({
                 .get<any[]>("/api/incubators")
                 .then((response) => response.data)
                 .catch((err) => {
-                    console.log(err);
+                    console.error(err);
                     throw new Error(`Error to get incubators infos : ${err}`);
                 });
             const optionValues = Object.keys(incubators).map((incubator) => {

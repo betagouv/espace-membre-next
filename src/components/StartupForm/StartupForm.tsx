@@ -169,7 +169,6 @@ export const StartupForm = (props: StartupForm) => {
         props
             .save(data)
             .then((resp) => {
-                console.log(resp);
                 setIsSaving(false);
                 setAlertMessage({
                     title: `⚠️ Pull request pour ${
@@ -194,7 +193,7 @@ export const StartupForm = (props: StartupForm) => {
                 return resp;
             })
             .catch((e) => {
-                console.log(e);
+                console.error(e);
                 setIsSaving(false);
                 const ErrorResponse: FormErrorResponse = e.response
                     .data as FormErrorResponse;

@@ -16,7 +16,6 @@ export default function Page() {
                 withCredentials: true,
             })
             .then((res) => {
-                console.log(res.data);
                 setData(res.data);
                 setLoading(false);
             });

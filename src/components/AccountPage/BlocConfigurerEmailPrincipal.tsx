@@ -43,11 +43,10 @@ export default function BlocConfigurerEmailPrincipal({
                             )
                             .then((resp) => {
                                 setIsSaving(false);
-                                console.log(resp);
                             })
                             .catch((err) => {
                                 setIsSaving(false);
-                                console.log(err);
+                                console.error(err);
                             });
                     }}
                 >

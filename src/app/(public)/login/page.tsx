@@ -1,5 +1,5 @@
 import { Metadata } from "next";
-import { LoginPage } from "@/legacyPages/LoginPage";
+import { LoginPage } from "@/components/LoginPage";
 import { routeTitles } from "@/utils/routes/routeTitles";
 
 export const metadata: Metadata = {

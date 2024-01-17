@@ -1,7 +1,7 @@
 "use client";
 import axios from "axios";
 import { useEffect, useState } from "react";
-import { Onboarding, OnboardingProps } from "@/legacyPages/OnboardingPage";
+import { Onboarding, OnboardingProps } from "@/components/OnboardingPage";
 import routes, { computeRoute } from "@/routes/routes";
 
 export default function OnboardingClientPage() {

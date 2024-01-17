@@ -60,8 +60,6 @@ export default function BlocChangerMotDePasse({
                                             type: "success",
                                         });
                                     }, 1000);
-
-                                    console.log("Done");
                                 })
                                 .catch((err) => {
                                     setIsSaving(false);

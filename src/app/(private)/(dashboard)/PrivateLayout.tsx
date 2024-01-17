@@ -196,7 +196,6 @@ export function PrivateLayout({ children }: { children: React.ReactNode }) {
 
     const displayMenuForSubPage = (pathname) => {
         const firstSubPage = pathname.split("/")[1];
-        console.log(pathname, firstSubPage);
         if (firstSubPage.includes("account")) {
             return accountSubPages;
         } else if (firstSubPage.includes("startups")) {

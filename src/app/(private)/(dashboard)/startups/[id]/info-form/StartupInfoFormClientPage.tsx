@@ -7,7 +7,7 @@ import routes, { computeRoute } from "@/routes/routes";
 import {
     StartupInfoUpdate,
     StartupInfoUpdateProps,
-} from "@/legacyPages/StartupInfoUpdatePage";
+} from "@/components/StartupInfoUpdatePage";
 
 type Props = {
     params: { id: string };

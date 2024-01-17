@@ -1,11 +1,10 @@
 "use client";
 import axios from "axios";
 import { useEffect, useState } from "react";
-import { InfoUpdate, InfoUpdateProps } from "@/legacyPages/InfoUpdatePage";
+import { InfoUpdate, InfoUpdateProps } from "@/components/InfoUpdatePage";
 import routes, { computeRoute } from "@/routes/routes";
 
 export default function Page() {
-    // const session = await getServerSession();
     const [data, setData] = useState({});
     const [isLoading, setLoading] = useState(true);
     useEffect(() => {
@@ -14,7 +13,6 @@ export default function Page() {
                 withCredentials: true,
             })
             .then((res) => {
-                console.log(res.data);
                 setData(res.data);
                 setLoading(false);
             });

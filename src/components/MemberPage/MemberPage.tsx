@@ -66,11 +66,10 @@ const ChangeSecondaryEmailBloc = ({ secondaryEmail, userInfos }) => {
                         )
                         .then((data) => {
                             setIsSaving(false);
-                            console.log(data);
                         })
                         .catch((e) => {
                             setIsSaving(false);
-                            console.log(e);
+                            console.error(e);
                         });
                 }}
             >
@@ -176,7 +175,7 @@ function EmailUpgrade({ availableEmailPros, userInfos }) {
             );
             alert(`Le compte sera upgradé d'ici quelques minutes`);
         } catch (e) {
-            console.log(e);
+            console.error(e);
             alert("Une erreur est survenue");
         }
     };

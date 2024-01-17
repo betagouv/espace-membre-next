@@ -2,12 +2,10 @@
 import axios from "axios";
 import type { Metadata } from "next";
 import { useEffect, useState } from "react";
-// import { getCommunity } from "@/controllers/communityController/getCommunity";
-import { Community, CommunityProps } from "@/legacyPages/CommunityPage";
+import { Community, CommunityProps } from "@/components/CommunityPage";
 import routes, { computeRoute } from "@/routes/routes";
 
 export default function Page() {
-    // const props: CommunityProps = await getCommunity();
     const props = {};
     const [data, setData] = useState();
     const [isLoading, setLoading] = useState(true);
@@ -17,7 +15,6 @@ export default function Page() {
                 withCredentials: true,
             })
             .then((res) => {
-                console.log(res.data);
                 setData(res.data);
                 setLoading(false);
             });

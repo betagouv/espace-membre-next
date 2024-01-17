@@ -6,7 +6,7 @@ import { Metadata } from "next";
 import {
     StartupInfoCreate,
     StartupInfoCreateProps,
-} from "@/legacyPages/StartupInfoCreatePage";
+} from "@/components/StartupInfoCreatePage";
 import routes, { computeRoute } from "@/routes/routes";
 
 export default function Page() {
