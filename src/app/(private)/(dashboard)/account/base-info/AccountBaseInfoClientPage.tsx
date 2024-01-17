@@ -6,7 +6,7 @@ import { useEffect, useState } from "react";
 import {
     BaseInfoUpdate,
     BaseInfoUpdateProps,
-} from "@/legacyPages/BaseInfoUpdatePage";
+} from "@/components/BaseInfoUpdatePage";
 import routes, { computeRoute } from "@/routes/routes";
 import { getServerSession } from "next-auth";
 
