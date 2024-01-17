@@ -56,11 +56,10 @@ export default function BlocEmailResponder({
                         )
                         .then((data) => {
                             setIsSaving(false);
-                            console.log(data);
                         })
                         .catch((e) => {
                             setIsSaving(false);
-                            console.log(e);
+                            console.error(e);
                         });
                 }}
             >

@@ -59,7 +59,6 @@ export const Badge = function ({ badgeRequest, dossier }: BadgeProps) {
             </>
         );
     }
-    console.log(dossier, badgeRequest);
     return (
         <>
             <h2>Demande de badge</h2>

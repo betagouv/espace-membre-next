@@ -18,7 +18,6 @@ export default function Page() {
                 }
             )
             .then((res) => {
-                console.log("LCS DATA RENEWAL", res.data);
                 setData(res.data);
                 setLoading(false);
             });

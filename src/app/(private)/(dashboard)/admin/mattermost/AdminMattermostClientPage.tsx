@@ -6,7 +6,7 @@ import routes, { computeRoute } from "@/routes/routes";
 import {
     AdminMattermost,
     AdminMattermostProps,
-} from "@/legacyPages/AdminMattermostPage/AdminMattermost";
+} from "@/components/AdminMattermostPage/AdminMattermost";
 
 export default function Page() {
     const [data, setData] = useState({});
@@ -17,7 +17,6 @@ export default function Page() {
                 withCredentials: true,
             })
             .then((res) => {
-                console.log(res.data);
                 setData(res.data);
                 setLoading(false);
             });

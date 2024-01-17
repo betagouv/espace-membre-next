@@ -41,11 +41,10 @@ export default function BlocConfigurerEmailSecondaire({
                             )
                             .then((data) => {
                                 setIsSaving(false);
-                                console.log(data);
                             })
                             .catch((e) => {
                                 setIsSaving(false);
-                                console.log(e);
+                                console.error(e);
                             });
                     }}
                 >
@@ -55,7 +54,6 @@ export default function BlocConfigurerEmailSecondaire({
                             type: "email",
                             value: value,
                             onChange: (e) => {
-                                console.log(e.target.value);
                                 setValue(e.target.value);
                             },
                         }}

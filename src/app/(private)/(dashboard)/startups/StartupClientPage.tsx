@@ -3,7 +3,7 @@
 import React, { useEffect, useState } from "react";
 import axios from "axios";
 import routes, { computeRoute } from "@/routes/routes";
-import { StartupList, StartupListProps } from "@/legacyPages/StartupListPage";
+import { StartupList, StartupListProps } from "@/components/StartupListPage";
 
 export default function Page() {
     const [data, setData] = useState({});

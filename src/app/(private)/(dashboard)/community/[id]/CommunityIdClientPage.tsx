@@ -25,7 +25,6 @@ export default function Page({ params }: Props) {
                 }
             )
             .then((res) => {
-                console.log(res.data);
                 setData(res.data);
                 setLoading(false);
             });
