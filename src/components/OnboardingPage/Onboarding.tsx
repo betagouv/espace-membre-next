@@ -244,7 +244,7 @@ export const Onboarding = function (props: OnboardingProps) {
                                     closable
                                     description={errorMessage}
                                     severity="error"
-                                    title="Le formulaire a renvoyer une erreur"
+                                    title="Le formulaire a renvoyé une erreur"
                                 />
                             )}
                             {!!formErrors["utilisateur existant"] && (
