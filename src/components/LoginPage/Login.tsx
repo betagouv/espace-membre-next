@@ -32,7 +32,7 @@ export const LoginPage = function (props: Props) {
         message: string;
         type: "success" | "warning";
         description?: string;
-    }>();
+    } | null>();
 
     const pingConnection = async () => {
         const user = await getSession();
@@ -45,6 +45,7 @@ export const LoginPage = function (props: Props) {
         setFormErrors("");
         setErrorMessage("");
         setIsSaving(true);
+        setAlertMessage(null);
         axios
             .post(computeRoute(`${routes.LOGIN_API}${props.next}#test`), {
                 emailInput: email,
