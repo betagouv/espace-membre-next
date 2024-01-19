@@ -8,6 +8,7 @@ import { ClientOnly } from "./ClientOnly";
 export default function SESelect({
     startups,
     onChange,
+    onBlur,
     isMulti,
     placeholder,
     defaultValue,
@@ -18,6 +19,7 @@ export default function SESelect({
 }: {
     startups: { value: string; label: string }[];
     onChange?: any;
+    onBlur?: any;
     isMulti?: boolean;
     placeholder?: string;
     defaultValue?:
@@ -42,6 +44,7 @@ export default function SESelect({
                 multiple={isMulti}
                 options={startups}
                 onChange={onTagsChange}
+                onBlur={onBlur}
                 defaultValue={
                     defaultValue
                         ? (defaultValue as { value: string; label: string }[])
