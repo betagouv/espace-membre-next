@@ -18,15 +18,14 @@ interface Props {
 }
 
 interface FormErrorResponse {
-    errors?: Record<string, string[]>;
+    errors?: string;
     message: string;
 }
 
 /* Pure component */
 export const LoginPage = function (props: Props) {
     const [errorMessage, setErrorMessage] = React.useState("");
-    const [formErrors, setFormErrors] =
-        React.useState<Record<string, string[]>>();
+    const [formErrors, setFormErrors] = React.useState<string>();
     const [email, setEmail] = React.useState("");
     const [isSaving, setIsSaving] = React.useState<boolean>(false);
     const [alertMessage, setAlertMessage] = React.useState<{
@@ -43,6 +42,8 @@ export const LoginPage = function (props: Props) {
             return;
         }
         event.preventDefault();
+        setFormErrors("");
+        setErrorMessage("");
         setIsSaving(true);
         axios
             .post(computeRoute(`${routes.LOGIN_API}${props.next}#test`), {
@@ -145,22 +146,14 @@ export const LoginPage = function (props: Props) {
                                                 setEmail(e.target.value),
                                             required: true,
                                         }}
-                                        state={
-                                            formErrors &&
-                                            formErrors["emailInput"]
-                                                ? "error"
-                                                : "default"
-                                        }
-                                        stateRelatedMessage={
-                                            formErrors &&
-                                            formErrors["emailInput"]
-                                        }
+                                        state={formErrors ? "error" : "default"}
+                                        stateRelatedMessage={formErrors}
                                     />
                                     <ButtonsGroup
                                         buttons={[
                                             {
                                                 children: isSaving
-                                                    ? "Envoie du lien de connexion..."
+                                                    ? "Envoi du lien de connexion..."
                                                     : "Recevoir le lien de connexion",
                                                 onClick: () => {},
                                                 disabled: isSaving,
