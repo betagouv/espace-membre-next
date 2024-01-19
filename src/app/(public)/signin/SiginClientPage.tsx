@@ -1,4 +1,5 @@
 "use client";
+import React from "react";
 import axios from "axios";
 import { useRouter, useSearchParams } from "next/navigation";
 import Button from "@codegouvfr/react-dsfr/Button";
@@ -10,11 +11,9 @@ export default function SignClientPage() {
     const router = useRouter();
     const searchParams = useSearchParams();
     const next = searchParams.get("next");
-    if (!window) {
-        return null;
-    }
+
     const hash = window.location.hash.split("#")[1];
-    const onSubmit = async () => {
+    const onSubmit = React.useCallback(async () => {
         const value = await axios.post(
             computeRoute(`${routes.SIGNIN_API}`),
             {
@@ -28,8 +27,15 @@ export default function SignClientPage() {
             withCredentials: true,
         });
         window.location.href = "/account";
-    };
+    }, [hash]);
 
+    React.useEffect(() => {
+        onSubmit();
+    }, [onSubmit]);
+
+    if (!window) {
+        return null;
+    }
     return (
         <div>
             <p className={fr.cx("fr-mt-10v")}>
