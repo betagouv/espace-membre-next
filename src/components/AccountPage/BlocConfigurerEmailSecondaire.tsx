@@ -50,6 +50,7 @@ export default function BlocConfigurerEmailSecondaire({
                 >
                     <Input
                         label="Email"
+                        hintText="Attention les emails en @octo.com ne sont pas conseillés à cause de probleme de déliverabilité"
                         nativeInputProps={{
                             type: "email",
                             value: value,
