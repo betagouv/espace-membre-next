@@ -5,6 +5,27 @@ config();
 
 const isSecure = (process.env.SECURE || "true") === "true";
 
+export const userStatusOptions = [
+    { name: "Indépendant", key: "independent" },
+    {
+        name: "Agent Public (fonctionnaire ou sous contrat stage, alternance, CDD ou CDI avec une structure publique)",
+        key: "admin",
+    },
+    { name: "Société de service", key: "service" },
+];
+
+const memberTypeOptions = [
+    { name: `Membre d'une startup ou d'un incubateur`, key: MemberType.BETA },
+    { name: "Attributaire", key: MemberType.ATTRIBUTAIRE },
+    {
+        name: `Membre d'un autre service DINUM (etalab, ...)`,
+        key: MemberType.DINUM,
+    },
+    { name: `Autre`, key: MemberType.OTHER },
+];
+
+const userBadgeOptions = [{ name: "Ségur (Paris)", key: "segur" }];
+
 export default {
     secret: process.env.SESSION_SECRET,
     secure: isSecure,

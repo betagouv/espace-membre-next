@@ -1,19 +1,23 @@
 "use client";
-import { zodResolver } from "@hookform/resolvers/zod";
-import axios from "axios";
 import React from "react";
-import SESelect from "@/components/SESelect";
-import { Mission } from "@/models/mission";
-import { DBPullRequest } from "@/models/pullRequests";
-import routes, { computeRoute } from "@/routes/routes";
+import { z } from "zod";
+
 import Input from "@codegouvfr/react-dsfr/Input";
 import Alert from "@codegouvfr/react-dsfr/Alert";
 import { Button } from "@codegouvfr/react-dsfr/Button";
-import { Table } from "@codegouvfr/react-dsfr/Table";
-import { useSession } from "@/proxies/next-auth";
-import { routeTitles } from "@/utils/routes/routeTitles";
+import { fr } from "@codegouvfr/react-dsfr";
+
+import { zodResolver } from "@hookform/resolvers/zod";
 import { Controller, useForm } from "react-hook-form";
 import { DevTool } from "@hookform/devtools";
+
+import SESelect from "@/components/SESelect";
+import { Mission } from "@/models/mission";
+import { DBPullRequest } from "@/models/pullRequests";
+import { routeTitles } from "@/utils/routes/routeTitles";
+
+import { employers } from "./employers";
+import { MissionsEditor } from "./MissionsEditor";
 
 interface Option {
     key: string;
@@ -54,59 +58,6 @@ export interface BaseInfoUpdateProps {
     isAdmin: boolean;
 }
 
-interface FormErrorResponse {
-    errors?: Record<string, string>;
-    message: string;
-}
-
-import { z } from "zod";
-import { fr } from "@codegouvfr/react-dsfr";
-
-// https://github.com/betagouv/secretariat/issues/247
-const employers = [
-    "OCTO",
-    "DINUM",
-    "Codeurs en Liberté",
-    "MTES",
-    "Ministère de la Culture",
-    "Pole Emploi",
-    "NUMA",
-    "Ministère des Armées",
-    "LaZone / ScopyLeft",
-    "Agglomération de Pau Béarn Pyrénées",
-    "Ministère de l'Intérieur",
-    "Département du Pas-de-Calais",
-    "EY",
-    "UT7",
-    "EIG",
-    "Ministère des Affaires Sociales",
-    "Région Bretagne",
-    "DJEPVA",
-    "Éducation Nationale",
-    "Réseau Canopé",
-    "DGCCRF",
-    "INOPS",
-    "ICC",
-    "KeiruaProd",
-    "DIRECCTE",
-    "Cour des comptes",
-    "Ministère des affaires étrangères",
-    "Ministère de l'Intérieur",
-    "MAS",
-    "Ippon/LLL",
-    "Arolla",
-    "pass-culture",
-    "département du Val-d'Oise",
-    "département du Nord",
-    "drjscs",
-    "dila",
-    "cnamts",
-    "captive",
-    "Sogilis Lyon",
-    "DGE",
-    "CGET",
-] as [string, ...string[]]; // TODO: ??
-
 const MissionSchema = z.object({
     start: z.string().describe("Date de début de la mission"),
     end: z.string().describe("Date de début de la mission").optional(),
@@ -127,10 +78,8 @@ export const BetaGouvGitHubMemberSchema = z.object({
     missions: z
         .array(MissionSchema)
         .min(1, "Vous devez définir au moins une mission"),
-    startups: z
-        .array(z.string())
-        .min(1, "Vous devez sélectionner au moins un produit"),
-    previously: z.array(z.string()).min(0),
+    startups: z.array(z.string()),
+    previously: z.array(z.string()),
 });
 
 export type BetaGouvGitHubMemberSchemaType = z.infer<
@@ -143,57 +92,25 @@ export type BetaGouvGitHubMemberPrefillSchemaType = z.infer<
     typeof BetaGouvGitHubMemberPrefillSchema
 >;
 
-const MissionsEditor = ({ missions, onAddMissionClick }) => {
-    const columns = [
-        { key: "start", label: "Début" },
-        { key: "end", label: "Fin" },
-        { key: "status", label: "Statut" },
-        { key: "employer", label: "Employeur" },
-        { key: "actions", label: "" },
-    ];
-    const formats = {
-        start: (v) => new Date(v).toLocaleDateString(),
-        end: (v) => new Date(v).toLocaleDateString(),
-        actions: (_, i) => (
-            <div>
-                <i
-                    className={fr.cx("fr-icon-edit-box-line")}
-                    style={{ cursor: "pointer" }}
-                    onClick={editMissionClick(i)}
-                />
-            </div>
-        ),
-    };
-
-    const editMissionClick = (missionIndex) => (e) => {
-        console.log("edit", missionIndex, e);
-    };
-
-    const data = missions.map((mission, i) =>
-        columns
-            .map((h) => h.key)
-            .map((key) =>
-                formats[key] ? formats[key](mission[key], i) : mission[key]
-            )
-    );
+const StartupsEditor = ({ name, control, startups, ...props }) => {
     return (
-        <div className={fr.cx("fr-mb-3w")}>
-            <Table
-                headers={columns.map((h) => h.label)}
-                caption="Mes missions beta.gouv.fr"
-                data={data}
-                style={{ marginBottom: 5 }}
-            />
-            <Button
-                iconId="fr-icon-add-circle-line"
-                priority="secondary"
-                size="small"
-                type="button"
-                onClick={onAddMissionClick}
-            >
-                Ajouter une mission
-            </Button>
-        </div>
+        <Controller
+            control={control}
+            rules={{
+                required: true,
+            }}
+            render={({ field: { onChange, onBlur, value } }) => (
+                <SESelect
+                    onChange={onChange}
+                    onBlur={onBlur}
+                    isMulti={true}
+                    placeholder={"Sélectionne un produit"}
+                    startups={startups}
+                    {...props}
+                />
+            )}
+            name={name}
+        />
     );
 };
 
@@ -223,137 +140,13 @@ export const BaseInfoUpdate = (props: BaseInfoUpdateProps) => {
 
     console.log({ props, errors, isValid, isDirty, isLoading, isSubmitting });
 
-    // const [state, setState] = React.useState<any>({
-    //     selectedName: "",
-    //     ...props,
-    //     formData: {
-    //         ...props.formData,
-    //         start: props.formData.start ? new Date(props.formData.start) : "",
-    //         end: props.formData.end ? new Date(props.formData.end) : "",
-    //     },
-    // });
-    // const session = useSession();
-    // const [formErrors, setFormErrors] = React.useState<Record<string, string>>(
-    //     {}
-    // );
-    // const [alertMessage, setAlertMessage] = React.useState<{
-    //     title: string;
-    //     message: NonNullable<React.ReactNode>;
-    //     type: "success" | "warning";
-    // }>();
-    // const [isSaving, setIsSaving] = React.useState(false);
-
-    // const changeFormData = (key, value) => {
-    //     const formData = state.formData;
-    //     formData[key] = value;
-    //     setState({
-    //         ...state,
-    //         formData,
-    //     });
-    // };
-
-    // const changesExist = () => {
-    //     let changed = false;
-    //     if (state.formData.role !== props.formData.role) {
-    //         changed = true;
-    //     } else if (state.formData.end !== props.formData.end) {
-    //         changed = true;
-    //     } else if (
-    //         state.formData.startups
-    //             .map((s) => s.value)
-    //             .sort()
-    //             .join(",") !==
-    //         props.formData.startups
-    //             .map((s) => s.value)
-    //             .sort()
-    //             .join(",")
-    //     ) {
-    //         changed = true;
-    //     } else if (
-    //         state.formData.previously
-    //             .map((s) => s.value)
-    //             .sort()
-    //             .join(",") !==
-    //         props.formData.previously
-    //             .map((s) => s.value)
-    //             .sort()
-    //             .join(",")
-    //     ) {
-    //         changed = true;
-    //     }
-    //     return changed;
-    // };
-
-    // const save = async (event) => {
-    //     event.preventDefault();
-    //     if (isSaving) {
-    //         return;
-    //     }
-    //     setIsSaving(true);
-    //     try {
-    //         const {
-    //             data: { message, pr_url, username },
-    //         }: {
-    //             data: { message: string; pr_url: string; username: string };
-    //         } = await axios.post(
-    //             computeRoute(routes.ACCOUNT_POST_BASE_INFO_FORM).replace(
-    //                 ":username",
-    //                 session.data?.user?.name as string
-    //             ),
-    //             {
-    //                 ...state.formData,
-    //                 startups: state.formData.startups.map((s) => s.value),
-    //                 previously: state.formData.previously.map((s) => s.value),
-    //             },
-    //             {
-    //                 withCredentials: true,
-    //             }
-    //         );
-    //         setAlertMessage({
-    //             title: `⚠️ Pull request pour la mise à jour de la fiche de ${username} ouverte.`,
-    //             message: (
-    //                 <>
-    //                     Demande à un membre de ton équipe de merger ta fiche :{" "}
-    //                     <a href={pr_url} target="_blank">
-    //                         {pr_url}
-    //                     </a>
-    //                     .
-    //                     <br />
-    //                     Une fois mergée, ton profil sera mis à jour.
-    //                 </>
-    //             ),
-    //             type: "success",
-    //         });
-    //     } catch (e) {
-    //         console.log(e);
-    //         const ErrorResponse: FormErrorResponse = e as FormErrorResponse;
-    //         setAlertMessage({
-    //             title: "Erreur",
-    //             message: <>{ErrorResponse.message}</>,
-    //             type: "warning",
-    //         });
-    //         setIsSaving(false);
-    //         if (ErrorResponse.errors) {
-    //             setFormErrors(ErrorResponse.errors);
-    //         }
-    //     }
-    //     setIsSaving(false);
-    // };
-
-    const onAddMissionClick = (e) => {
-        console.log("onAddMissionClick", e);
-        props.formData.missions.push({
-            start: "",
-            end: "",
-            status: "independant",
-            employer: "",
-        });
-    };
-
     return (
         <>
             <div>
                 <h1>{routeTitles.accountEditBaseInfo()}</h1>
+                <p>
+                    Ces informations seront publiées sur le site beta.gouv.fr.
+                </p>
                 {!!props.updatePullRequest && (
                     <Alert
                         className="fr-mb-8v"
@@ -392,64 +185,42 @@ export const BaseInfoUpdate = (props: BaseInfoUpdateProps) => {
                 >
                     <Input
                         label="Rôle chez beta.gouv.fr"
-                        nativeInputProps={register("role", {
-                            required: true,
-                        })}
+                        nativeInputProps={{
+                            placeholder: "ex: UX designer",
+                            ...register("role", {
+                                required: true,
+                            }),
+                        }}
                         state={errors.role ? "error" : "default"}
                         stateRelatedMessage={errors.role?.message}
                     />
 
-                    <MissionsEditor
-                        missions={props.formData.missions}
-                        onAddMissionClick={onAddMissionClick}
-                    />
+                    <h3>Mes missions</h3>
+
+                    <MissionsEditor control={control} register={register} />
 
                     <h3>Mes startups </h3>
 
-                    <Controller
-                        control={control}
-                        rules={{
-                            required: true,
-                        }}
-                        render={({ field: { onChange, onBlur, value } }) => (
-                            <SESelect
-                                label="Produits actuels :"
-                                hint="Produits auxquels tu participes actuellement."
-                                startups={props.startupOptions}
-                                onChange={onChange}
-                                onBlur={onBlur}
-                                isMulti={true}
-                                placeholder={"Sélectionne un produit"}
-                                defaultValue={defaultValues.startups}
-                                state={!!errors.startups ? "error" : "default"}
-                                stateMessageRelated={errors.startups?.message}
-                            />
-                        )}
+                    <StartupsEditor
                         name="startups"
+                        control={control}
+                        startups={props.startupOptions}
+                        label="Produits actuels :"
+                        hint="Produits auxquels tu participes actuellement."
+                        defaultValue={defaultValues.startups}
+                        state={!!errors.startups ? "error" : "default"}
+                        stateMessageRelated={errors.startups?.message}
                     />
 
-                    <Controller
-                        control={control}
-                        rules={{
-                            required: false,
-                        }}
-                        render={({ field: { onChange, onBlur, value } }) => (
-                            <SESelect
-                                label="Produits précédents :"
-                                hint="Produits auxquels tu as participé précédemment."
-                                startups={props.startupOptions}
-                                onChange={onChange}
-                                onBlur={onBlur}
-                                isMulti={true}
-                                placeholder={"Sélectionne un produit"}
-                                defaultValue={props.formData.previously}
-                                state={
-                                    !!errors.previously ? "error" : "default"
-                                }
-                                stateMessageRelated={errors.previously?.message}
-                            />
-                        )}
+                    <StartupsEditor
                         name="previously"
+                        control={control}
+                        startups={props.startupOptions}
+                        label="Produits précédents :"
+                        hint="Produits auxquels tu as participé précédemment."
+                        defaultValue={defaultValues.previously}
+                        state={!!errors.previously ? "error" : "default"}
+                        stateMessageRelated={errors.previously?.message}
                     />
 
                     <Button
