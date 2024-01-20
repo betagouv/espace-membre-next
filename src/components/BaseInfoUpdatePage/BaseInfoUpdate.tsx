@@ -9,6 +9,7 @@ import routes, { computeRoute } from "@/routes/routes";
 import Input from "@codegouvfr/react-dsfr/Input";
 import Alert from "@codegouvfr/react-dsfr/Alert";
 import { Button } from "@codegouvfr/react-dsfr/Button";
+import { Table } from "@codegouvfr/react-dsfr/Table";
 import { useSession } from "@/proxies/next-auth";
 import { routeTitles } from "@/utils/routes/routeTitles";
 import { Controller, useForm } from "react-hook-form";
@@ -59,6 +60,7 @@ interface FormErrorResponse {
 }
 
 import { z } from "zod";
+import { fr } from "@codegouvfr/react-dsfr";
 
 // https://github.com/betagouv/secretariat/issues/247
 const employers = [
@@ -140,6 +142,60 @@ export const BetaGouvGitHubMemberPrefillSchema =
 export type BetaGouvGitHubMemberPrefillSchemaType = z.infer<
     typeof BetaGouvGitHubMemberPrefillSchema
 >;
+
+const MissionsEditor = ({ missions, onAddMissionClick }) => {
+    const columns = [
+        { key: "start", label: "Début" },
+        { key: "end", label: "Fin" },
+        { key: "status", label: "Statut" },
+        { key: "employer", label: "Employeur" },
+        { key: "actions", label: "" },
+    ];
+    const formats = {
+        start: (v) => new Date(v).toLocaleDateString(),
+        end: (v) => new Date(v).toLocaleDateString(),
+        actions: (_, i) => (
+            <div>
+                <i
+                    className={fr.cx("fr-icon-edit-box-line")}
+                    style={{ cursor: "pointer" }}
+                    onClick={editMissionClick(i)}
+                />
+            </div>
+        ),
+    };
+
+    const editMissionClick = (missionIndex) => (e) => {
+        console.log("edit", missionIndex, e);
+    };
+
+    const data = missions.map((mission, i) =>
+        columns
+            .map((h) => h.key)
+            .map((key) =>
+                formats[key] ? formats[key](mission[key], i) : mission[key]
+            )
+    );
+    return (
+        <div className={fr.cx("fr-mb-3w")}>
+            <Table
+                headers={columns.map((h) => h.label)}
+                caption="Mes missions beta.gouv.fr"
+                data={data}
+                style={{ marginBottom: 5 }}
+            />
+            <Button
+                iconId="fr-icon-add-circle-line"
+                priority="secondary"
+                size="small"
+                type="button"
+                onClick={onAddMissionClick}
+            >
+                Ajouter une mission
+            </Button>
+        </div>
+    );
+};
 
 /* Pure component */
 export const BaseInfoUpdate = (props: BaseInfoUpdateProps) => {
@@ -284,6 +340,16 @@ export const BaseInfoUpdate = (props: BaseInfoUpdateProps) => {
     //     setIsSaving(false);
     // };
 
+    const onAddMissionClick = (e) => {
+        console.log("onAddMissionClick", e);
+        props.formData.missions.push({
+            start: "",
+            end: "",
+            status: "independant",
+            employer: "",
+        });
+    };
+
     return (
         <>
             <div>
@@ -333,7 +399,12 @@ export const BaseInfoUpdate = (props: BaseInfoUpdateProps) => {
                         stateRelatedMessage={errors.role?.message}
                     />
 
-                    {/* missions */}
+                    <MissionsEditor
+                        missions={props.formData.missions}
+                        onAddMissionClick={onAddMissionClick}
+                    />
+
+                    <h3>Mes startups </h3>
 
                     <Controller
                         control={control}
@@ -382,6 +453,7 @@ export const BaseInfoUpdate = (props: BaseInfoUpdateProps) => {
                     />
 
                     <Button
+                        className={fr.cx("fr-mt-3w")}
                         children={
                             isSubmitting
                                 ? `Enregistrement en cours...`
