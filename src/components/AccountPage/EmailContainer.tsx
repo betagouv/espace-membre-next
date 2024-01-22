@@ -13,6 +13,7 @@ import routes, { computeRoute } from "@/routes/routes";
 import Input from "@codegouvfr/react-dsfr/Input";
 import { EmailInfos } from "@/models/member";
 import Table from "@codegouvfr/react-dsfr/Table";
+import BlocCreateEmail from "./BlocCreateEmail";
 
 function BlocEmailConfiguration({ emailInfos }: { emailInfos: EmailInfos }) {
     interface ServerConf {
@@ -169,48 +170,11 @@ export default function EmailContainer({
             </p>
             <div className={fr.cx("fr-accordions-group")}>
                 {canCreateEmail && (
-                    <>
-                        <p>Tu peux créer ton compte email @beta.gouv.fr.</p>
-                        {hasPublicServiceEmail &&
-                            `Attention tu as une adresse de service public en adresse primaire. Si tu créés une adresse @beta.gouv.fr, elle deviendra ton adresse primaire :
-                    celle à utiliser pour mattermost, et d'autres outils.`}
-                        <form
-                            className="no-margin"
-                            onSubmit={() => {
-                                axios.post(
-                                    computeRoute(
-                                        routes.USER_CREATE_EMAIL_API
-                                    ).replace(":username", userInfos.id),
-                                    undefined,
-                                    {
-                                        withCredentials: true,
-                                    }
-                                );
-                            }}
-                        >
-                            <div className="form__group  margin-10-0">
-                                <label>
-                                    <span className="text-color-almost-black">
-                                        Email personnel ou professionnel
-                                    </span>
-                                    <br />
-                                    Les informations de connexion seront
-                                    envoyées à cet email
-                                </label>
-                                <input
-                                    value="<%= secondaryEmail %>"
-                                    name="to_email"
-                                    type="email"
-                                    required
-                                />
-                            </div>
-                            <button className="button no-margin" type="submit">
-                                Créer un compte
-                            </button>
-                        </form>
-                        <br />
-                        <br />
-                    </>
+                    <BlocCreateEmail
+                        secondaryEmail={secondaryEmail}
+                        hasPublicServiceEmail={hasPublicServiceEmail}
+                        userInfos={userInfos}
+                    />
                 )}
                 {!!emailInfos && (
                     <BlocEmailConfiguration emailInfos={emailInfos} />
