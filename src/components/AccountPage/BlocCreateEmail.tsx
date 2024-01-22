@@ -23,20 +23,27 @@ export default function BlocCreateEmail({
                     celle à utiliser pour mattermost, et d'autres outils.`}
             <form
                 className="no-margin"
-                onSubmit={(e) => {
+                onSubmit={async (e) => {
                     e.preventDefault();
-                    axios.post(
-                        computeRoute(routes.USER_CREATE_EMAIL_API).replace(
-                            ":username",
-                            userInfos.id
-                        ),
-                        {
-                            to_email: email,
-                        },
-                        {
-                            withCredentials: true,
-                        }
-                    );
+                    try {
+                        await axios.post(
+                            computeRoute(routes.USER_CREATE_EMAIL_API).replace(
+                                ":username",
+                                userInfos.id
+                            ),
+                            {
+                                to_email: email,
+                            },
+                            {
+                                withCredentials: true,
+                            }
+                        );
+                        alert("Ton email a bien été créé.");
+                    } catch (e) {
+                        alert(
+                            `Ton email n'a pas pu être créé suite à une erreur.`
+                        );
+                    }
                 }}
             >
                 <Input
