@@ -1,34 +1,58 @@
 "use client";
+import React from "react";
 import axios from "axios";
-import { useRouter, useSearchParams } from "next/navigation";
 import Button from "@codegouvfr/react-dsfr/Button";
 import routes, { computeRoute } from "@/routes/routes";
-import config from "@/config";
 import { fr } from "@codegouvfr/react-dsfr";
+import Alert from "@codegouvfr/react-dsfr/Alert";
+import { useSession } from "@/proxies/next-auth";
 
 export default function SignClientPage() {
-    const router = useRouter();
-    const searchParams = useSearchParams();
-    const next = searchParams.get("next");
-    if (!window) {
-        return null;
-    }
-    const hash = window.location.hash.split("#")[1];
-    const onSubmit = async () => {
-        const value = await axios.post(
-            computeRoute(`${routes.SIGNIN_API}`),
-            {
-                token: hash,
-            },
-            {
-                withCredentials: true,
-            }
-        );
-        await axios.get(computeRoute(routes.ME), {
-            withCredentials: true,
-        });
+    const [error, setError] = React.useState<string>("");
+    const { status, data: session } = useSession();
+
+    if (status === "authenticated") {
         window.location.href = "/account";
+    }
+
+    const onSubmit = React.useCallback(async () => {
+        const hash =
+            window !== undefined ? window.location.hash.split("#")[1] : null;
+        setError("");
+        if (hash) {
+            await axios
+                .post(
+                    computeRoute(`${routes.SIGNIN_API}`),
+                    {
+                        token: hash,
+                    },
+                    {
+                        withCredentials: true,
+                    }
+                )
+                .then((r) =>
+                    axios.get(computeRoute(routes.ME), {
+                        withCredentials: true,
+                    })
+                )
+                .then((r) => {
+                    window.location.href = "/account";
+                })
+                .catch((e) => {
+                    if (e.response?.data?.error) {
+                        setError(e.response?.data?.error);
+                    }
+                });
+        }
+    }, []);
+
+    const onRetry = () => {
+        document.location = "/";
     };
+
+    React.useEffect(() => {
+        if (window) onSubmit();
+    }, [onSubmit]);
 
     return (
         <div>
@@ -36,15 +60,31 @@ export default function SignClientPage() {
                 Gère ton compte email (mot de passe, redirections, etc) et les
                 membres de la communauté (arrivées et départs).
             </p>
-
-            <div>
-                <h4>
-                    <center>Connexion à l'espace membre</center>
-                </h4>
-                <center>
-                    <Button onClick={onSubmit}>Me connecter</Button>
-                </center>
-            </div>
+            {(error && (
+                <div>
+                    <Alert
+                        closable
+                        description={error}
+                        severity="error"
+                        title="Le formulaire a renvoyé une erreur"
+                    />
+                    <br />
+                    <center>
+                        <Button onClick={onRetry}>
+                            Demander un nouveau lien de connexion
+                        </Button>
+                    </center>
+                </div>
+            )) || (
+                <div>
+                    <h4>
+                        <center>Connexion à l'espace membre</center>
+                    </h4>
+                    <center>
+                        <Button onClick={onSubmit}>Me connecter</Button>
+                    </center>
+                </div>
+            )}
         </div>
     );
 }
