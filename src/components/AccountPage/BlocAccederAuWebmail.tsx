@@ -1,7 +1,11 @@
 import Accordion from "@codegouvfr/react-dsfr/Accordion";
 import React from "react";
 
-export default function BlocAccederAuWebmail() {
+export default function BlocAccederAuWebmail({
+    isExchange = false,
+}: {
+    isExchange: boolean;
+}) {
     return (
         <Accordion label="Accéder au webmail">
             <p>
@@ -11,7 +15,11 @@ export default function BlocAccederAuWebmail() {
                 web habituel.
             </p>
             <a
-                href="https://www.ovhcloud.com/fr/mail/"
+                href={
+                    isExchange
+                        ? "https://ex5.mail.ovh.net/"
+                        : "https://www.ovhcloud.com/fr/mail/"
+                }
                 target="_blank"
                 className="fr-link"
             >

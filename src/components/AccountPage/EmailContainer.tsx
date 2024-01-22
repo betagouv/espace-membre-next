@@ -215,7 +215,7 @@ export default function EmailContainer({
                 {!!emailInfos && (
                     <BlocEmailConfiguration emailInfos={emailInfos} />
                 )}
-                {!!emailInfos && (
+                {!!emailInfos && !emailInfos.isExchange && (
                     <BlocEmailResponder
                         username={userInfos.id}
                         hasResponder={hasResponder}
@@ -227,8 +227,10 @@ export default function EmailContainer({
                     emailSuspended={emailSuspended}
                     userInfos={userInfos}
                 />
-                {!!emailInfos && <BlocAccederAuWebmail />}
                 {!!emailInfos && (
+                    <BlocAccederAuWebmail isExchange={emailInfos.isExchange} />
+                )}
+                {!!emailInfos && !emailInfos.isExchange && (
                     <BlocRedirection
                         redirections={redirections}
                         canCreateRedirection={canCreateRedirection}
