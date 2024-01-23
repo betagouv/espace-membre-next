@@ -5,27 +5,6 @@ config();
 
 const isSecure = (process.env.SECURE || "true") === "true";
 
-const userStatusOptions = [
-    { name: "Indépendant", key: "independent" },
-    {
-        name: "Agent Public (fonctionnaire ou sous contrat stage, alternance, CDD ou CDI avec une structure publique)",
-        key: "admin",
-    },
-    { name: "Société de service", key: "service" },
-];
-
-const memberTypeOptions = [
-    { name: `Membre d'une startup ou d'un incubateur`, key: MemberType.BETA },
-    { name: "Attributaire", key: MemberType.ATTRIBUTAIRE },
-    {
-        name: `Membre d'un autre service DINUM (etalab, ...)`,
-        key: MemberType.DINUM,
-    },
-    { name: `Autre`, key: MemberType.OTHER },
-];
-
-const userBadgeOptions = [{ name: "Ségur (Paris)", key: "segur" }];
-
 export default {
     API_SERVER: process.env.NEXT_PUBLIC_API_SERVER || "http://localhost:8100",
     secret: process.env.SESSION_SECRET,
@@ -40,12 +19,6 @@ export default {
     DS_BADGE_FORM_URL: process.env.NEXT_PUBLIC_DS_BADGE_FORM_URL,
     DS_BADGE_RENEWAL_FORM_URL:
         process.env.NEXT_PUBLIC_DS_BADGE_RENEWAL_FORM_URL,
-    user: {
-        statusOptions: userStatusOptions,
-        minStartDate: "2013-07-01",
-        badgeOptions: userBadgeOptions,
-        memberOptions: memberTypeOptions,
-    },
     githubRepository: process.env.GITHUB_REPOSITORY,
     SPONSOR_API:
         process.env.NEXT_PUBLIC_SPONSOR_API ||
