@@ -17,7 +17,7 @@ export default function SponsorDomainSelect({
     defaultValue,
 }: {
     value?: any;
-    onChange?: any;
+    onChange: (string) => void;
     isMulti?: boolean;
     placeholder?: any;
     defaultValue?: string;
@@ -60,7 +60,7 @@ function SingleSelect({
     placeholder,
 }: {
     defaultValue?: string;
-    onChange: any;
+    onChange: (string) => void;
     placeholder?: string;
 }) {
     const [value, setValue] = useState(defaultValue || "");
@@ -71,13 +71,13 @@ function SingleSelect({
             nativeSelectProps={{
                 onChange: (event) => {
                     setValue(event.target.value);
-                    onChange({ value: event.target.value });
+                    onChange(event.target.value);
                 },
                 value,
             }}
         >
             <option value="" disabled hidden>
-                Sélectionne un domaine ministériel
+                {`Sélectionne un domaine ministériel` || placeholder}
             </option>
             {options.map((option, index) => (
                 <option value={option.value} key={index}>

@@ -16,10 +16,10 @@ export default function SponsorTypeSelect({
     placeholder,
     defaultValue,
 }: {
-    value?: any;
-    onChange?: any;
+    value?: string;
+    onChange: (string) => void;
     isMulti?: boolean;
-    placeholder?: any;
+    placeholder?: string;
     defaultValue?: string;
 }) {
     if (!isMulti) {
@@ -54,7 +54,7 @@ function SingleSelect({
     placeholder,
 }: {
     defaultValue?: string;
-    onChange: any;
+    onChange: (string) => void;
     placeholder?: string;
 }) {
     const [value, setValue] = useState(defaultValue || "");
@@ -65,7 +65,7 @@ function SingleSelect({
             nativeSelectProps={{
                 onChange: (event) => {
                     setValue(event.target.value);
-                    onChange({ value: event.target.value });
+                    onChange(event.target.value);
                 },
                 value,
             }}
