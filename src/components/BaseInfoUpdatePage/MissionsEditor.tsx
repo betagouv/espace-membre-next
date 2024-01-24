@@ -53,12 +53,17 @@ export const MissionsEditor = ({
                     <div key={index} className={fr.cx("fr-mb-6w")}>
                         <div className={fr.cx("fr-text--heavy")}>
                             Mission {index + 1}
-                            <button
-                                className={fr.cx("fr-icon-delete-bin-line")}
-                                style={{ cursor: "pointer", float: "right" }}
-                                onClick={() => missionsRemove(index)}
-                                title="Supprimer la mission 1"
-                            />
+                            {index > 0 && (
+                                <button
+                                    className={fr.cx("fr-icon-delete-bin-line")}
+                                    style={{
+                                        cursor: "pointer",
+                                        float: "right",
+                                    }}
+                                    onClick={() => missionsRemove(index)}
+                                    title="Supprimer la mission 1"
+                                />
+                            )}
                             <hr className={fr.cx("fr-mt-1w")} />
                         </div>
                         <div
