@@ -1,6 +1,8 @@
 import Autocomplete from "@mui/material/Autocomplete";
 import TextField from "@mui/material/TextField";
 
+import { DOMAINE_OPTIONS } from "../models/member";
+
 export default function DomaineSelect({
     onChange,
     label,
@@ -8,7 +10,6 @@ export default function DomaineSelect({
     state,
     stateRelatedMessage,
     defaultValue,
-    domaines,
 }: {
     onChange?: any;
     label?: any;
@@ -16,8 +17,8 @@ export default function DomaineSelect({
     state?: any;
     stateRelatedMessage?: any;
     defaultValue?: any;
-    domaines?: any;
 }) {
+    const domaines = DOMAINE_OPTIONS;
     return (
         <div className="fr-select-group">
             {!!label && (
@@ -29,15 +30,15 @@ export default function DomaineSelect({
             <Autocomplete
                 multiple
                 options={domaines.map((se) => ({
-                    id: se.value,
-                    label: se.label,
+                    id: se.key,
+                    label: se.name,
                 }))}
                 onChange={onChange}
                 defaultValue={
                     defaultValue
                         ? defaultValue.map((se) => ({
-                              id: se.value,
-                              label: se.label,
+                              id: se.key,
+                              label: se.name,
                           }))
                         : undefined
                 }

@@ -8,16 +8,22 @@ import { Button } from "@codegouvfr/react-dsfr/Button";
 import { fr } from "@codegouvfr/react-dsfr";
 
 import { zodResolver } from "@hookform/resolvers/zod";
-import { Controller, useForm } from "react-hook-form";
+import { useForm } from "react-hook-form";
 import { DevTool } from "@hookform/devtools";
 
-import SESelect from "@/components/SESelect";
 import { Mission } from "@/models/mission";
 import { DBPullRequest } from "@/models/pullRequests";
 import { routeTitles } from "@/utils/routes/routeTitles";
 
-import { employers } from "./employers";
 import { MissionsEditor } from "./MissionsEditor";
+import { DOMAINE_OPTIONS } from "@/models/member";
+import Select from "@codegouvfr/react-dsfr/Select";
+import axios from "axios";
+import routes, { computeRoute } from "@/routes/routes";
+import { useSession } from "@/proxies/next-auth";
+import { FormErrorResponse } from "@/models/misc";
+
+import { MemberSchema } from "./schemas";
 
 interface Option {
     key: string;
@@ -37,6 +43,7 @@ interface BaseInfoFormData {
         label: string;
     }[];
     role: string;
+    domaine: string;
 }
 
 export interface BaseInfoUpdateProps {
@@ -58,87 +65,136 @@ export interface BaseInfoUpdateProps {
     isAdmin: boolean;
 }
 
-const MissionSchema = z.object({
-    start: z.string().describe("Date de début de la mission"),
-    end: z.string().describe("Date de début de la mission").optional(),
-    status: z
-        .enum(["independant", "admin", "service"])
-        .describe("Type de contrat"),
-    employer: z
-        .enum(employers)
-        .describe("Entité avec qui vous avez contractualisé"),
-});
+export type MemberSchemaType = z.infer<typeof MemberSchema>;
 
-export const BetaGouvGitHubMemberSchema = z.object({
-    role: z
-        .string({ required_error: "Le rôle est un champ obligatoire" })
-        .describe("Rôle actuel, ex: UX designer"),
-    link: z.string().url().optional(),
-    github: z.string().describe("Login GitHub").optional(),
-    missions: z
-        .array(MissionSchema)
-        .min(1, "Vous devez définir au moins une mission"),
-    startups: z.array(z.string()),
-    previously: z.array(z.string()),
-});
-
-export type BetaGouvGitHubMemberSchemaType = z.infer<
-    typeof BetaGouvGitHubMemberSchema
->;
-
-export const BetaGouvGitHubMemberPrefillSchema =
-    BetaGouvGitHubMemberSchema.deepPartial();
-export type BetaGouvGitHubMemberPrefillSchemaType = z.infer<
-    typeof BetaGouvGitHubMemberPrefillSchema
->;
-
-const StartupsEditor = ({ name, control, startups, ...props }) => {
+const PullRequestWarning = ({ pullRequest }) => {
     return (
-        <Controller
-            control={control}
-            rules={{
-                required: true,
-            }}
-            render={({ field: { onChange, onBlur, value } }) => (
-                <SESelect
-                    onChange={onChange}
-                    onBlur={onBlur}
-                    isMulti={true}
-                    placeholder={"Sélectionne un produit"}
-                    startups={startups}
-                    {...props}
-                />
-            )}
-            name={name}
-        />
+        pullRequest && (
+            <Alert
+                className="fr-mb-8v"
+                severity="warning"
+                small={true}
+                closable={false}
+                title="Une pull request existe déjà sur cette fiche."
+                description={
+                    <>
+                        {`Toi ou un membre de ton équipe doit la merger
+                                pour que les changements soient pris en compte : `}
+                        <a href={pullRequest.url} target="_blank">
+                            {pullRequest.url}
+                        </a>
+                        <br />
+                        (la prise en compte peut prendre 10 minutes.)
+                    </>
+                }
+            />
+        )
     );
 };
 
-/* Pure component */
+const postMemberData = async ({ values, sessionUsername }) => {
+    const {
+        data: { pr_url, username },
+    }: {
+        data: { pr_url: string; username: string };
+    } = await axios.post(
+        computeRoute(routes.ACCOUNT_POST_BASE_INFO_FORM).replace(
+            ":username",
+            sessionUsername
+        ),
+        values,
+        {
+            withCredentials: true,
+        }
+    );
+    return { pr_url, username };
+};
+
 export const BaseInfoUpdate = (props: BaseInfoUpdateProps) => {
-    const defaultValues = props.formData;
+    const defaultValues: MemberSchemaType = {
+        fullname: "Some user",
+        role: "Dresseur d'insectes",
+        link: "",
+        domaine: "Développement",
+        missions: [
+            {
+                start: "2023-01-01",
+                end: "2023-12-31",
+                employer: "OCTO",
+                status: "admin",
+                startups: ["aidess", "accesscite"],
+            },
+        ],
+        startups: [],
+        previously: [],
+        bio: "Living proof that nobody is perfect.",
+    };
+
     const {
         register,
         handleSubmit,
-        formState: { errors, isDirty, isLoading, isValid, isSubmitting },
-        watch,
+        formState: { errors, isDirty, isSubmitting },
+        setValue,
         control,
-    } = useForm<BetaGouvGitHubMemberSchemaType>({
-        resolver: zodResolver(BetaGouvGitHubMemberSchema),
-        defaultValues: {
-            ...defaultValues,
-            startups: defaultValues.startups.map((s) => s.value),
-            previously: defaultValues.startups.map((s) => s.value),
-        },
+    } = useForm<MemberSchemaType>({
+        resolver: zodResolver(MemberSchema),
+        mode: "onChange",
+        defaultValues,
     });
 
-    const onSubmit = async (input: BetaGouvGitHubMemberSchemaType) => {
-        //const result = await signUp.mutateAsync(input);
-        console.log("onSubmit", input);
-        //router.push(linkRegistry.get("signIn", { registered: true }));
-    };
+    const session = useSession();
 
-    console.log({ props, errors, isValid, isDirty, isLoading, isSubmitting });
+    const [alertMessage, setAlertMessage] = React.useState<{
+        title: string;
+        message: NonNullable<React.ReactNode>;
+        type: "success" | "warning";
+    } | null>();
+    const [isSaving, setIsSaving] = React.useState(false);
+
+    const onSubmit = async (input: MemberSchemaType) => {
+        if (isSaving) {
+            return;
+        }
+        setIsSaving(true);
+        setAlertMessage(null);
+        try {
+            const { pr_url, username } = await postMemberData({
+                values: input,
+                sessionUsername: session.data?.user?.name as string,
+            });
+            setAlertMessage({
+                title: `⚠️ Pull request pour la mise à jour de la fiche de ${username} ouverte.`,
+                message: (
+                    <>
+                        Demande à un membre de ton équipe de merger ta fiche :{" "}
+                        <a href={pr_url} target="_blank">
+                            {pr_url}
+                        </a>
+                        .
+                        <br />
+                        Une fois mergée, ton profil sera mis à jour.
+                    </>
+                ),
+                type: "success",
+            });
+        } catch (e) {
+            // todo: sentry
+            console.log(e);
+            const ErrorResponse: FormErrorResponse = e as FormErrorResponse;
+            setAlertMessage({
+                title: "Erreur",
+                message: <>{ErrorResponse.message}</>,
+                type: "warning",
+            });
+            setIsSaving(false);
+            if (ErrorResponse.errors) {
+                control.setError("root", {
+                    message: Object.values(ErrorResponse.errors).join("\n"),
+                });
+            }
+        }
+        setIsSaving(false);
+    };
 
     return (
         <>
@@ -147,30 +203,13 @@ export const BaseInfoUpdate = (props: BaseInfoUpdateProps) => {
                 <p>
                     Ces informations seront publiées sur le site beta.gouv.fr.
                 </p>
+
                 {!!props.updatePullRequest && (
-                    <Alert
-                        className="fr-mb-8v"
-                        severity="warning"
-                        small={true}
-                        closable={false}
-                        title="Une pull request existe déjà sur cette fiche."
-                        description={
-                            <>
-                                {`Toi ou un membre de ton équipe doit la merger
-                                pour que les changements soient pris en compte : `}
-                                <a
-                                    href={props.updatePullRequest.url}
-                                    target="_blank"
-                                >
-                                    {props.updatePullRequest.url}
-                                </a>
-                                <br />
-                                (la prise en compte peut prendre 10 minutes.)
-                            </>
-                        }
-                    />
+                    <PullRequestWarning pullRequest={props.updatePullRequest} />
                 )}
-                {/*!!alertMessage && (
+
+                {!!alertMessage && (
+                    // todo: sentry
                     <Alert
                         className="fr-mb-8v"
                         severity={alertMessage.type}
@@ -178,51 +217,79 @@ export const BaseInfoUpdate = (props: BaseInfoUpdateProps) => {
                         title={alertMessage.title}
                         description={alertMessage.message}
                     />
-                ) */}
+                )}
                 <form
                     onSubmit={handleSubmit(onSubmit)}
                     aria-label="Modifier mes informations"
                 >
                     <Input
+                        label="Nom complet"
+                        nativeInputProps={{
+                            placeholder: "ex: Grace HOPPER",
+                            ...register("fullname"),
+                        }}
+                        state={errors.fullname ? "error" : "default"}
+                        stateRelatedMessage={errors.fullname?.message}
+                    />
+                    <Input
                         label="Rôle chez beta.gouv.fr"
                         nativeInputProps={{
-                            placeholder: "ex: UX designer",
-                            ...register("role", {
-                                required: true,
-                            }),
+                            placeholder: "ex: Développeuse",
+                            ...register("role"),
                         }}
                         state={errors.role ? "error" : "default"}
                         stateRelatedMessage={errors.role?.message}
                     />
 
+                    <Input
+                        label="Adresse du site ou profil LinkedIn"
+                        nativeInputProps={{
+                            placeholder: "ex: https://linkedin.com/in/xxxx",
+                            ...register("link"),
+                        }}
+                        state={errors.link ? "error" : "default"}
+                        stateRelatedMessage={errors.link?.message}
+                    />
+                    <Select
+                        label="Domaine"
+                        nativeSelectProps={{
+                            ...register(`domaine`),
+                        }}
+                        state={errors.domaine ? "error" : "default"}
+                        stateRelatedMessage={errors.domaine?.message}
+                    >
+                        <option value="">Domaine:</option>
+                        {DOMAINE_OPTIONS.map((domaine) => (
+                            <option
+                                key={domaine.key}
+                                selected={
+                                    domaine.name === props.formData.domaine
+                                }
+                                value={domaine.name}
+                            >
+                                {domaine.name}
+                            </option>
+                        ))}
+                    </Select>
+                    <Input
+                        textArea
+                        label="Courte bio"
+                        nativeTextAreaProps={{ ...register("bio") }}
+                        state={errors.bio ? "error" : "default"}
+                        stateRelatedMessage={errors.bio?.message}
+                    />
                     <h3>Mes missions</h3>
-
-                    <MissionsEditor control={control} register={register} />
-
-                    <h3>Mes startups </h3>
-
-                    <StartupsEditor
-                        name="startups"
+                    <p>
+                        Précise les dates et employeurs de tes missions, et les
+                        produits concernés.
+                    </p>
+                    <MissionsEditor
                         control={control}
-                        startups={props.startupOptions}
-                        label="Produits actuels :"
-                        hint="Produits auxquels tu participes actuellement."
-                        defaultValue={defaultValues.startups}
-                        state={!!errors.startups ? "error" : "default"}
-                        stateMessageRelated={errors.startups?.message}
+                        setValue={setValue}
+                        register={register}
+                        startupOptions={props.startupOptions}
+                        errors={errors.missions}
                     />
-
-                    <StartupsEditor
-                        name="previously"
-                        control={control}
-                        startups={props.startupOptions}
-                        label="Produits précédents :"
-                        hint="Produits auxquels tu as participé précédemment."
-                        defaultValue={defaultValues.previously}
-                        state={!!errors.previously ? "error" : "default"}
-                        stateMessageRelated={errors.previously?.message}
-                    />
-
                     <Button
                         className={fr.cx("fr-mt-3w")}
                         children={
@@ -232,7 +299,7 @@ export const BaseInfoUpdate = (props: BaseInfoUpdateProps) => {
                         }
                         nativeButtonProps={{
                             type: "submit",
-                            disabled: !isDirty || isSubmitting, //isSubmitting || !isDirty,
+                            disabled: !isDirty || isSubmitting,
                         }}
                     />
                 </form>

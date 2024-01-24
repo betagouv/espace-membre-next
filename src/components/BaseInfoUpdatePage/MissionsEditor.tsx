@@ -3,16 +3,24 @@ import { fr } from "@codegouvfr/react-dsfr";
 import { Button } from "@codegouvfr/react-dsfr/Button";
 import { Input } from "@codegouvfr/react-dsfr/Input";
 import { Select } from "@codegouvfr/react-dsfr/Select";
-import { Table } from "@codegouvfr/react-dsfr/Table";
 import { useFieldArray } from "react-hook-form";
+import { StartupsPicker } from "./StartupsPicker";
 
 import { employers } from "./employers";
+import { MissionSchema } from "./index";
 
-export const MissionsEditor = ({ control, register }) => {
+export const MissionsEditor = ({
+    control,
+    errors,
+    register,
+    setValue,
+    startupOptions,
+}) => {
     const {
         fields: missionsFields,
         append: missionsAppend,
         remove: missionsRemove,
+        update: missionsUpdate,
     } = useFieldArray({
         rules: { minLength: 1 },
         control,
@@ -27,121 +35,189 @@ export const MissionsEditor = ({ control, register }) => {
                 .substring(0, 10), // 6 months,
             status: null,
             employer: null,
+            startups: [],
         });
     };
 
-    const columns = [
-        {
-            key: "start",
-            label: "Début",
-            renderer: (v, index) => (
-                <Input
-                    label="Date de début"
-                    hideLabel
-                    nativeInputProps={{
-                        style: { width: 150 },
-                        placeholder: "JJ/MM/YYYY",
-                        type: "date",
-                        ...register(`missions.${index}.start`),
-                    }}
-                />
-            ),
-        },
-        {
-            key: "end",
-            label: "Fin",
-            renderer: (v, index) => (
-                <Input
-                    label="Date de fin"
-                    hideLabel
-                    nativeInputProps={{
-                        style: { width: 150 },
-                        placeholder: "JJ/MM/YYYY",
-                        type: "date",
-                        ...register(`missions.${index}.end`),
-                    }}
-                />
-            ),
-        },
-        {
-            key: "status",
-            label: "Statut",
-            renderer: (v, index) => (
-                <Select
-                    label=""
-                    nativeSelectProps={{
-                        ...register(`missions.${index}.status`),
-                    }}
-                >
-                    <option value="">Statut:</option>
-                    {userStatusOptions.map((option) => (
-                        <option
-                            key={option.key}
-                            selected={option.key === v}
-                            value={option.key}
-                        >
-                            {option.name}
-                        </option>
-                    ))}
-                </Select>
-            ),
-        },
-        {
-            key: "employer",
-            label: "Employeur",
-            renderer: (v, index) => (
-                <Select
-                    label=""
-                    nativeSelectProps={{
-                        ...register(`missions.${index}.employer`),
-                    }}
-                >
-                    <option value="">Employeur:</option>
-                    {employers.map((employer) => (
-                        <option
-                            key={employer}
-                            selected={employer === v}
-                            value={employer}
-                        >
-                            {employer}
-                        </option>
-                    ))}
-                </Select>
-            ),
-        },
-        {
-            key: "actions",
-            label: "",
-            renderer: (_, index, all) => (
-                <div>
-                    {all.length > 1 && (
-                        <button
-                            className={fr.cx("fr-icon-delete-bin-line")}
-                            style={{ cursor: "pointer" }}
-                            onClick={() => missionsRemove(index)}
-                        />
-                    )}
-                </div>
-            ),
-        },
-    ];
-
-    const tableData = missionsFields.map((mission, i, all) =>
-        columns.map(({ key, renderer }) =>
-            renderer ? renderer(mission[key], i, all) : mission[key]
-        )
-    );
-
     return (
         <div className={fr.cx("fr-mb-3w")}>
-            <Table
-                headers={columns.map((h) => h.label)}
-                caption="Liste des missions"
-                noCaption
-                data={tableData}
-                style={{ marginBottom: 5 }}
-            />
-
+            {errors && errors.message && (
+                <div className={fr.cx("fr-error-text", "fr-mb-3w")}>
+                    {errors.message}
+                </div>
+            )}
+            {missionsFields.map((mission, index, all) => {
+                const missionErrors = errors && errors[index];
+                return (
+                    <div key={index} className={fr.cx("fr-mb-6w")}>
+                        <div className={fr.cx("fr-text--heavy")}>
+                            Mission {index + 1}
+                            <button
+                                className={fr.cx("fr-icon-delete-bin-line")}
+                                style={{ cursor: "pointer", float: "right" }}
+                                onClick={() => missionsRemove(index)}
+                            />
+                            <hr className={fr.cx("fr-mt-1w")} />
+                        </div>
+                        <div
+                            className={fr.cx(
+                                "fr-grid-row",
+                                "fr-grid-row--gutters"
+                            )}
+                        >
+                            <div className={fr.cx("fr-col-2")}>
+                                <Input
+                                    label="Date de début"
+                                    nativeInputProps={{
+                                        style: { width: 150 },
+                                        placeholder: "JJ/MM/YYYY",
+                                        type: "date",
+                                        ...register(`missions.${index}.start`),
+                                    }}
+                                    state={
+                                        missionErrors && missionErrors.start
+                                            ? "error"
+                                            : "default"
+                                    }
+                                    stateRelatedMessage={
+                                        missionErrors &&
+                                        missionErrors.start?.message
+                                    }
+                                />
+                            </div>{" "}
+                            <div className={fr.cx("fr-col-6")}>
+                                <Input
+                                    label="Date de fin"
+                                    nativeInputProps={{
+                                        style: { width: 150 },
+                                        placeholder: "JJ/MM/YYYY",
+                                        type: "date",
+                                        ...register(`missions.${index}.end`),
+                                    }}
+                                    state={
+                                        missionErrors && missionErrors.end
+                                            ? "error"
+                                            : "default"
+                                    }
+                                    stateRelatedMessage={
+                                        missionErrors &&
+                                        missionErrors.end?.message
+                                    }
+                                />
+                            </div>
+                        </div>
+                        <div
+                            className={fr.cx(
+                                "fr-grid-row",
+                                "fr-grid-row--gutters"
+                            )}
+                        >
+                            <div className={fr.cx("fr-col-6")}>
+                                <Select
+                                    label="Employeur"
+                                    state={
+                                        missionErrors && missionErrors.employer
+                                            ? "error"
+                                            : "default"
+                                    }
+                                    stateRelatedMessage={
+                                        missionErrors &&
+                                        missionErrors.employer?.message
+                                    }
+                                    nativeSelectProps={{
+                                        ...register(
+                                            `missions.${index}.employer`
+                                        ),
+                                    }}
+                                >
+                                    <option value="">Employeur:</option>
+                                    {employers.map((employer) => (
+                                        <option
+                                            key={employer}
+                                            selected={
+                                                employer === mission.employer
+                                            }
+                                            value={employer}
+                                        >
+                                            {employer}
+                                        </option>
+                                    ))}
+                                </Select>
+                            </div>
+                            <div className={fr.cx("fr-col-6")}>
+                                <Select
+                                    label="Statut"
+                                    state={
+                                        missionErrors && missionErrors.status
+                                            ? "error"
+                                            : "default"
+                                    }
+                                    stateRelatedMessage={
+                                        missionErrors &&
+                                        missionErrors.status?.message
+                                    }
+                                    nativeSelectProps={{
+                                        ...register(`missions.${index}.status`),
+                                    }}
+                                >
+                                    <option value="">Statut:</option>
+                                    {userStatusOptions.map((option) => (
+                                        <option
+                                            key={option.key}
+                                            selected={
+                                                option.key === mission.status
+                                            }
+                                            value={option.key}
+                                        >
+                                            {option.name}
+                                        </option>
+                                    ))}
+                                </Select>{" "}
+                            </div>
+                        </div>
+                        <div
+                            className={fr.cx(
+                                "fr-grid-row",
+                                "fr-grid-row--gutters"
+                            )}
+                        >
+                            <div className={fr.cx("fr-col-12")}>
+                                <StartupsPicker
+                                    name="startups"
+                                    control={control}
+                                    startups={startupOptions}
+                                    label="Produits concernés par la mission :"
+                                    defaultValue={startupOptions.filter((s) =>
+                                        mission.startups.includes(s.value)
+                                    )}
+                                    onChange={(startups) => {
+                                        console.log("startups", startups);
+                                        setValue(
+                                            `missions.${index}.startups`,
+                                            startups.map(
+                                                (startup) => startup.value
+                                            ),
+                                            {
+                                                shouldValidate: true,
+                                                shouldDirty: true,
+                                            }
+                                        );
+                                    }}
+                                    state={
+                                        missionErrors && missionErrors.startups
+                                            ? "error"
+                                            : "default"
+                                    }
+                                    stateMessageRelated={
+                                        missionErrors &&
+                                        missionErrors.startups?.message
+                                    }
+                                />
+                            </div>
+                        </div>
+                    </div>
+                );
+            })}
             <Button
                 iconId="fr-icon-add-circle-line"
                 priority="secondary"

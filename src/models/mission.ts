@@ -1,26 +1,28 @@
-export type Status = 'independant' | 'admin' | 'service';
+export type Status = "independant" | "admin" | "service";
 
 export interface Mission {
-  start: string,
-  end: string,
-  status: Status,
-  employer: string
+    start: string;
+    end: string;
+    status: Status;
+    employer: string;
+    startups: string[];
 }
 
 export interface DBMission {
-  id: number,
-  startup: string,
-  status: string,
-  role?: string,
-  employer: string,
-  username: string,
-  start: Date,
-  end?: Date
+    id: number;
+    startup: string;
+    status: string;
+    role?: string;
+    employer: string;
+    username: string;
+    start: Date;
+    end?: Date;
 }
 
 export interface GithubMission {
-  start: Date,
-  end: Date,
-  status: Status,
-  employer: string
+    start: Date;
+    end: Date;
+    status: Status;
+    employer: string;
+    startups?: string[];
 }
