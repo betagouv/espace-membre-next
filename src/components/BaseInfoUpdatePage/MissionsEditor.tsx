@@ -3,10 +3,16 @@ import { fr } from "@codegouvfr/react-dsfr";
 import { Button } from "@codegouvfr/react-dsfr/Button";
 import { Input } from "@codegouvfr/react-dsfr/Input";
 import { Select } from "@codegouvfr/react-dsfr/Select";
-import { useFieldArray } from "react-hook-form";
+import {
+    Control,
+    FieldValues,
+    useFieldArray,
+    UseFormRegister,
+    UseFormSetValue,
+} from "react-hook-form";
 import { StartupsPicker } from "./StartupsPicker";
 
-import { employers } from "./employers";
+import { MemberSchemaType } from "./BaseInfoUpdate";
 
 const TRIMESTER_DURATION = 1000 * 60 * 60 * 24 * 30 * 3;
 
@@ -16,6 +22,12 @@ export const MissionsEditor = ({
     register,
     setValue,
     startupOptions,
+}: {
+    control: Control<MemberSchemaType>;
+    errors?: Record<string, any>;
+    register: UseFormRegister<MemberSchemaType>;
+    setValue: UseFormSetValue<MemberSchemaType>;
+    startupOptions: any;
 }) => {
     const {
         fields: missionsFields,
@@ -34,8 +46,8 @@ export const MissionsEditor = ({
             end: new Date(new Date().getTime() + TRIMESTER_DURATION)
                 .toISOString()
                 .substring(0, 10), // 6 months,
-            status: null,
-            employer: null,
+            status: "",
+            employer: "",
             startups: [],
         });
     };
@@ -61,7 +73,7 @@ export const MissionsEditor = ({
                                         float: "right",
                                     }}
                                     onClick={() => missionsRemove(index)}
-                                    title="Supprimer la mission 1"
+                                    title={`Supprimer la mission ${index + 1}`}
                                 />
                             )}
                             <hr className={fr.cx("fr-mt-1w")} />
@@ -112,7 +124,9 @@ export const MissionsEditor = ({
                                                 )}
                                                 onClick={() => {
                                                     const endDate = new Date(
-                                                        new Date().getTime() +
+                                                        new Date(
+                                                            mission.start
+                                                        ).getTime() +
                                                             TRIMESTER_DURATION
                                                     );
                                                     setValue(
@@ -154,8 +168,14 @@ export const MissionsEditor = ({
                             )}
                         >
                             <div className={fr.cx("fr-col-6")}>
-                                <Select
+                                <Input
                                     label="Employeur"
+                                    nativeInputProps={{
+                                        placeholder: "ex: Scopyleft",
+                                        ...register(
+                                            `missions.${index}.employer`
+                                        ),
+                                    }}
                                     state={
                                         missionErrors && missionErrors.employer
                                             ? "error"
@@ -165,25 +185,7 @@ export const MissionsEditor = ({
                                         missionErrors &&
                                         missionErrors.employer?.message
                                     }
-                                    nativeSelectProps={{
-                                        ...register(
-                                            `missions.${index}.employer`
-                                        ),
-                                    }}
-                                >
-                                    <option value="">Employeur:</option>
-                                    {employers.map((employer) => (
-                                        <option
-                                            key={employer}
-                                            selected={
-                                                employer === mission.employer
-                                            }
-                                            value={employer}
-                                        >
-                                            {employer}
-                                        </option>
-                                    ))}
-                                </Select>
+                                />
                             </div>
                             <div className={fr.cx("fr-col-6")}>
                                 <Select
@@ -228,8 +230,10 @@ export const MissionsEditor = ({
                                     control={control}
                                     startups={startupOptions}
                                     label="Produits concernés par la mission :"
-                                    defaultValue={startupOptions.filter((s) =>
-                                        mission.startups.includes(s.value)
+                                    defaultValue={startupOptions.filter(
+                                        (s) =>
+                                            mission.startups &&
+                                            mission.startups.includes(s.value)
                                     )}
                                     onChange={(startups) => {
                                         console.log("startups", startups);

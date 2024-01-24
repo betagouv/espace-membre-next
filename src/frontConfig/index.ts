@@ -44,7 +44,7 @@ export default {
         process.env.NEXT_PUBLIC_SPONSOR_API ||
         "https://beta.gouv.fr/api/v2.5/sponsors.json",
     usersAPI:
-        process.env.USERS_API || "https://beta.gouv.fr/api/v2.3/authors.json",
+        process.env.USERS_API || "https://beta.gouv.fr/api/v2.6/authors.json",
     incubatorAPI:
         process.env.NEXT_PUBLIC_INCUBATOR_API ||
         "https://beta.gouv.fr/api/v2.5/incubators.json",

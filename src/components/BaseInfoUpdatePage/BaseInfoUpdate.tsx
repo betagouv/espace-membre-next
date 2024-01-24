@@ -11,7 +11,6 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import { DevTool } from "@hookform/devtools";
 
-import { Mission } from "@/models/mission";
 import { DBPullRequest } from "@/models/pullRequests";
 import { routeTitles } from "@/utils/routes/routeTitles";
 
@@ -25,34 +24,23 @@ import { FormErrorResponse } from "@/models/misc";
 
 import { MemberSchema } from "./schemas";
 
+import { PullRequestWarning } from "./PullRequestWarning";
+
 interface Option {
     key: string;
     name: string;
 }
 
-interface BaseInfoFormData {
-    missions: Mission[];
-    end: string;
-    start: string;
-    previously: {
-        value: string;
-        label: string;
-    }[];
-    startups: {
-        value: string;
-        label: string;
-    }[];
-    role: string;
-    domaine: string;
-}
+export type MemberSchemaType = z.infer<typeof MemberSchema>;
 
+// data from secretariat API
 export interface BaseInfoUpdateProps {
     title: string;
     currentUserId: string;
     errors: string[];
     messages: string[];
     activeTab: string;
-    formData: BaseInfoFormData;
+    formData: MemberSchemaType;
     statusOptions: Option[];
     genderOptions: Option[];
     formValidationErrors: any;
@@ -64,33 +52,6 @@ export interface BaseInfoUpdateProps {
     updatePullRequest?: DBPullRequest;
     isAdmin: boolean;
 }
-
-export type MemberSchemaType = z.infer<typeof MemberSchema>;
-
-const PullRequestWarning = ({ pullRequest }) => {
-    return (
-        pullRequest && (
-            <Alert
-                className="fr-mb-8v"
-                severity="warning"
-                small={true}
-                closable={false}
-                title="Une pull request existe déjà sur cette fiche."
-                description={
-                    <>
-                        {`Toi ou un membre de ton équipe doit la merger
-                                pour que les changements soient pris en compte : `}
-                        <a href={pullRequest.url} target="_blank">
-                            {pullRequest.url}
-                        </a>
-                        <br />
-                        (la prise en compte peut prendre 10 minutes.)
-                    </>
-                }
-            />
-        )
-    );
-};
 
 const postMemberData = async ({ values, sessionUsername }) => {
     const {
@@ -111,24 +72,8 @@ const postMemberData = async ({ values, sessionUsername }) => {
 };
 
 export const BaseInfoUpdate = (props: BaseInfoUpdateProps) => {
-    const defaultValues: MemberSchemaType = {
-        fullname: "Some user",
-        role: "Dresseur d'insectes",
-        link: "",
-        domaine: "Développement",
-        missions: [
-            {
-                start: "2023-01-01",
-                end: "2023-12-31",
-                employer: "OCTO",
-                status: "admin",
-                startups: ["aidess", "accesscite"],
-            },
-        ],
-        startups: [],
-        previously: [],
-        bio: "Living proof that nobody is perfect.",
-    };
+    console.log("props.formData", props.formData);
+    const defaultValues: MemberSchemaType = { ...props.formData };
 
     const {
         register,
@@ -292,7 +237,7 @@ export const BaseInfoUpdate = (props: BaseInfoUpdateProps) => {
                         setValue={setValue}
                         register={register}
                         startupOptions={props.startupOptions}
-                        errors={errors.missions}
+                        errors={errors.missions || []}
                     />
                     <Button
                         className={fr.cx("fr-mt-3w")}

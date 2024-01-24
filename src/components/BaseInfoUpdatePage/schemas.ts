@@ -1,7 +1,5 @@
 import { z } from "zod";
 
-import { employers } from "./employers";
-
 import { userStatusOptions } from "@/config";
 import { DOMAINE_OPTIONS } from "@/models/member";
 
@@ -17,7 +15,7 @@ export const MissionSchema = z.object({
     end: z.string().describe("Date de début de la mission").optional(),
     status: z
         .enum(
-            userStatusOptions.map((status) => status.key),
+            userStatusOptions.map((status) => status.key), //?
             {
                 errorMap: (issue, ctx) => ({
                     message: "Le statut est requis",
@@ -26,19 +24,14 @@ export const MissionSchema = z.object({
         )
         .describe("Type de contrat"),
     employer: z
-        .enum(employers, {
+        .string({
             errorMap: (issue, ctx) => ({
-                message: "L'employeur est requis",
+                message: "Précisez un employeur",
             }),
         })
-        .describe("Entité avec qui vous avez contractualisé"),
-    startups: z
-        .array(z.string(), {
-            errorMap: (issue, ctx) => ({
-                message: "Choisissez au moins un produit",
-            }),
-        })
-        .min(1),
+        .describe("Entité avec qui vous avez contractualisé")
+        .min(3),
+    startups: z.array(z.string()),
 });
 
 export const MemberSchema = z.object({

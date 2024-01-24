@@ -14,7 +14,7 @@ export default function Page() {
     // const session = await getServerSession();
     const [data, setData] = useState({});
     const [isLoading, setLoading] = useState(true);
-    console.log("data", data);
+
     useEffect(() => {
         axios
             .get(computeRoute(routes.ACCOUNT_GET_BASE_INFO_FORM_API), {
