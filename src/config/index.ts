@@ -6,7 +6,7 @@ config();
 const isSecure = (process.env.SECURE || "true") === "true";
 
 export default {
-    API_SERVER: process.env.NEXT_PUBLIC_API_SERVER || "http://localhost:8100",
+    API_SERVER: process.env.NEXT_PUBLIC_API_SERVER,
     secret: process.env.SESSION_SECRET,
     secure: isSecure,
     protocol: isSecure ? "https" : "http",
