@@ -133,7 +133,7 @@ export const BaseInfoUpdate = (props: BaseInfoUpdateProps) => {
     const {
         register,
         handleSubmit,
-        formState: { errors, isDirty, isSubmitting },
+        formState: { errors, isDirty, isSubmitting, isValid },
         setValue,
         control,
     } = useForm<MemberSchemaType>({
@@ -152,7 +152,12 @@ export const BaseInfoUpdate = (props: BaseInfoUpdateProps) => {
     const [isSaving, setIsSaving] = React.useState(false);
 
     const onSubmit = async (input: MemberSchemaType) => {
+        console.log("onSubmit", input);
         if (isSaving) {
+            return;
+        }
+        if (!isValid) {
+            console.log("invalid");
             return;
         }
         setIsSaving(true);
@@ -240,16 +245,6 @@ export const BaseInfoUpdate = (props: BaseInfoUpdateProps) => {
                         state={errors.role ? "error" : "default"}
                         stateRelatedMessage={errors.role?.message}
                     />
-
-                    <Input
-                        label="Adresse du site ou profil LinkedIn"
-                        nativeInputProps={{
-                            placeholder: "ex: https://linkedin.com/in/xxxx",
-                            ...register("link"),
-                        }}
-                        state={errors.link ? "error" : "default"}
-                        stateRelatedMessage={errors.link?.message}
-                    />
                     <Select
                         label="Domaine"
                         nativeSelectProps={{
@@ -277,6 +272,15 @@ export const BaseInfoUpdate = (props: BaseInfoUpdateProps) => {
                         nativeTextAreaProps={{ ...register("bio") }}
                         state={errors.bio ? "error" : "default"}
                         stateRelatedMessage={errors.bio?.message}
+                    />
+                    <Input
+                        label="Adresse du profil LinkedIn"
+                        nativeInputProps={{
+                            placeholder: "ex: https://linkedin.com/in/xxxx",
+                            ...register("link"),
+                        }}
+                        state={errors.link ? "error" : "default"}
+                        stateRelatedMessage={errors.link?.message}
                     />
                     <h3>Mes missions</h3>
                     <p>

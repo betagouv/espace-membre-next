@@ -7,7 +7,8 @@ import { useFieldArray } from "react-hook-form";
 import { StartupsPicker } from "./StartupsPicker";
 
 import { employers } from "./employers";
-import { MissionSchema } from "./index";
+
+const TRIMESTER_DURATION = 1000 * 60 * 60 * 24 * 30 * 3;
 
 export const MissionsEditor = ({
     control,
@@ -30,7 +31,7 @@ export const MissionsEditor = ({
     const addMissionClick = (e) => {
         missionsAppend({
             start: new Date().toISOString().substring(0, 10),
-            end: new Date(new Date().getTime() + 1000 * 60 * 60 * 24 * 30 * 6)
+            end: new Date(new Date().getTime() + TRIMESTER_DURATION)
                 .toISOString()
                 .substring(0, 10), // 6 months,
             status: null,
@@ -56,6 +57,7 @@ export const MissionsEditor = ({
                                 className={fr.cx("fr-icon-delete-bin-line")}
                                 style={{ cursor: "pointer", float: "right" }}
                                 onClick={() => missionsRemove(index)}
+                                title="Supprimer la mission 1"
                             />
                             <hr className={fr.cx("fr-mt-1w")} />
                         </div>
@@ -65,11 +67,12 @@ export const MissionsEditor = ({
                                 "fr-grid-row--gutters"
                             )}
                         >
-                            <div className={fr.cx("fr-col-2")}>
+                            <div className={fr.cx("fr-col-3")}>
                                 <Input
                                     label="Date de début"
+                                    hintText="Début de ta mission"
                                     nativeInputProps={{
-                                        style: { width: 150 },
+                                        style: { width: 200 },
                                         placeholder: "JJ/MM/YYYY",
                                         type: "date",
                                         ...register(`missions.${index}.start`),
@@ -85,15 +88,48 @@ export const MissionsEditor = ({
                                     }
                                 />
                             </div>{" "}
-                            <div className={fr.cx("fr-col-6")}>
+                            <div className={fr.cx("fr-col-4")}>
                                 <Input
                                     label="Date de fin"
                                     nativeInputProps={{
-                                        style: { width: 150 },
+                                        style: { width: 200 },
                                         placeholder: "JJ/MM/YYYY",
                                         type: "date",
                                         ...register(`missions.${index}.end`),
                                     }}
+                                    hintText={
+                                        <div>
+                                            En cas de doute, mettre{" "}
+                                            <button
+                                                className={fr.cx(
+                                                    "fr-link",
+                                                    "fr-text--xs"
+                                                )}
+                                                onClick={() => {
+                                                    const endDate = new Date(
+                                                        new Date().getTime() +
+                                                            TRIMESTER_DURATION
+                                                    );
+                                                    setValue(
+                                                        `missions.${index}.end`,
+                                                        endDate
+                                                            .toISOString()
+                                                            .substring(0, 10),
+                                                        {
+                                                            shouldValidate:
+                                                                true,
+                                                            shouldDirty: true,
+                                                        }
+                                                    );
+                                                }}
+                                                role="button"
+                                                type="button"
+                                                title="Mettre la date de fin à +3 mois"
+                                            >
+                                                J+3 mois
+                                            </button>
+                                        </div>
+                                    }
                                     state={
                                         missionErrors && missionErrors.end
                                             ? "error"
