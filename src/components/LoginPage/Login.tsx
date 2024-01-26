@@ -52,11 +52,17 @@ export const LoginPage = function (props: Props) {
             })
             .then(async (resp) => {
                 setIsSaving(false);
-                setAlertMessage({
-                    message:
-                        "Un email avec un lien de connexion a été envoyé à ton adresse.",
-                    type: "success",
-                });
+                if (resp.data && resp.data.errors) {
+                    const message = resp.data.errors;
+                    setErrorMessage(message);
+                    setFormErrors(message);
+                } else {
+                    setAlertMessage({
+                        message:
+                            "Un email avec un lien de connexion a été envoyé à ton adresse.",
+                        type: "success",
+                    });
+                }
                 await pingConnection();
             })
             .catch(
