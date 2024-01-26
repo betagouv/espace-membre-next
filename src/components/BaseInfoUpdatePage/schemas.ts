@@ -76,5 +76,5 @@ export const MemberSchema = z.object({
                 message: "La bio est obligatoire, be creative",
             }),
         })
-        .min(30),
+        .min(15),
 });
