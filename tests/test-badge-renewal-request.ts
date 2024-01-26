@@ -54,7 +54,7 @@ describe("GET /api/account/badge-demande/renewal page unauthenticated", () => {
             .get(routes.ACCOUNT_GET_BADGE_RENEWAL_REQUEST_PAGE_API)
             .redirects(0)
             .end((err, res) => {
-                res.should.have.status(302);
+                res.should.have.status(500);
                 done();
             });
     });

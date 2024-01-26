@@ -8,6 +8,8 @@ import knex from "@db";
 import db from "@db";
 import { EmailStatusCode } from "@/models/dbUser/dbUser";
 import * as session from "@/server/helpers/session";
+import app from "@/server/index";
+import routes from "@/routes/routes";
 
 chai.use(chaiHttp);
 
@@ -41,7 +43,7 @@ describe("Login token", () => {
             .merge();
 
         // Make a login request to generate a token
-        await chai.request(app).post("/login").type("form").send({
+        await chai.request(app).post(routes.LOGIN_API).type("form").send({
             emailInput: userEmail,
         });
 
@@ -56,7 +58,7 @@ describe("Login token", () => {
     it("should be deleted after use", async () => {
         const userEmail = `membre.actif@${config.domain}`;
         // Make a login request to generate a token
-        await chai.request(app).post("/login").type("form").send({
+        await chai.request(app).post(routes.LOGIN_API).type("form").send({
             emailInput: userEmail,
         });
 
@@ -68,10 +70,10 @@ describe("Login token", () => {
         // Use the token making a GET request
         await chai
             .request(app)
-            .get(`/signin?next=users&token=${encodeURIComponent(token)}`);
+            .get(`/api/signin?next=users&token=${encodeURIComponent(token)}`);
         await chai
             .request(app)
-            .post(`/signin`)
+            .post(`/api/signin`)
             .type("form")
             .send({
                 next: "/community",
@@ -88,7 +90,7 @@ describe("Login token", () => {
         let token = null;
 
         // Make a login request to generate a token
-        await chai.request(app).post("/login").type("form").send({
+        await chai.request(app).post(routes.LOGIN_API).type("form").send({
             emailInput: userEmail,
         });
 
@@ -102,13 +104,13 @@ describe("Login token", () => {
         await chai
             .request(app)
             .get(
-                `/signin?next=${"/community"}&token=${encodeURIComponent(
+                `/api/signin?next=${"/community"}&token=${encodeURIComponent(
                     token
                 )}`
             );
         const res1 = await chai
             .request(app)
-            .post(`/signin`)
+            .post(`/api/signin`)
             .type("form")
             .send({
                 next: "/community",
@@ -120,7 +122,7 @@ describe("Login token", () => {
         // Make the same GET request again (second time)
         const res2 = await chai
             .request(app)
-            .post(`/signin`)
+            .post(`/api/signin`)
             .type("form")
             .send({
                 next: "/community",
@@ -146,7 +148,7 @@ describe("Login token", () => {
             .merge();
 
         // Make a login request to generate a token
-        await chai.request(app).post("/login").type("form").send({
+        await chai.request(app).post(routes.LOGIN_API).type("form").send({
             emailInput: userEmail,
         });
 
@@ -158,10 +160,14 @@ describe("Login token", () => {
         // Use the token making a GET request
         await chai
             .request(app)
-            .get(`/signin?next=users&token=${encodeURIComponent(token)}`);
+            .get(
+                `${routes.SIGNIN_API}?next=users&token=${encodeURIComponent(
+                    token
+                )}`
+            );
         await chai
             .request(app)
-            .post(`/signin`)
+            .post(routes.SIGNIN_API)
             .type("form")
             .send({
                 next: "/community",
@@ -198,7 +204,7 @@ describe("Login token", () => {
         // Try to login using this expired token
         const res = await chai
             .request(app)
-            .get(`/community?token=${encodeURIComponent(token)}`)
+            .get(`/api/community?token=${encodeURIComponent(token)}`)
             .redirects(0);
         // Ensure the response did NOT set an auth cookie
         getJwtTokenForUser.calledOnce.should.be.false;

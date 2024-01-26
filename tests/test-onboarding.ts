@@ -13,18 +13,19 @@ import * as email from "@config/email.config";
 import * as mattermost from "@lib/mattermost";
 import { MattermostUser } from "@lib/mattermost";
 import * as github from "@lib/github";
+import routes from "@/routes/routes";
 
 chai.use(chaiHttp);
 
 describe("Onboarding", () => {
-    describe("GET /onboarding", () => {
+    describe("GET /api/onboarding", () => {
         it("should return a valid page", (done) => {
             nock.cleanAll();
 
             utils.mockStartups();
 
             chai.request(app)
-                .get("/onboarding")
+                .get(routes.ONBOARDING_API)
                 .end((err, res) => {
                     res.should.have.status(200);
                     res.body.should.be.a("object");
@@ -33,7 +34,7 @@ describe("Onboarding", () => {
         });
     });
 
-    describe("POST /onboarding", () => {
+    describe("POST /api/onboarding", () => {
         let getGithubMasterSha;
         let createGithubBranch;
         let createGithubFile;
@@ -116,18 +117,22 @@ describe("Onboarding", () => {
         });
 
         it("should not call Github API if a mandatory field is missing", async () => {
-            await chai.request(app).post("/onboarding").type("form").send({
-                // firstName: 'missing',
-                lastName: "Úñíbe",
-                role: "Dev",
-                start: "2020-01-01",
-                end: "2021-01-01",
-                status: "Independant",
-                domaine: "Coaching",
-                referent: "membre.actif",
-                email: "test@example.com",
-                memberType: "beta",
-            });
+            await chai
+                .request(app)
+                .post(routes.ONBOARDING_API)
+                .type("form")
+                .send({
+                    // firstName: 'missing',
+                    lastName: "Úñíbe",
+                    role: "Dev",
+                    start: "2020-01-01",
+                    end: "2021-01-01",
+                    status: "Independant",
+                    domaine: "Coaching",
+                    referent: "membre.actif",
+                    email: "test@example.com",
+                    memberType: "beta",
+                });
             getGithubMasterSha.called.should.be.false;
             createGithubBranch.called.should.be.false;
             createGithubFile.called.should.be.false;
@@ -136,7 +141,7 @@ describe("Onboarding", () => {
 
         it("should not call Github API if a date is wrong", (done) => {
             chai.request(app)
-                .post("/onboarding")
+                .post(routes.ONBOARDING_API)
                 .type("form")
                 .send({
                     firstName: "Férnàndáô",
@@ -161,7 +166,7 @@ describe("Onboarding", () => {
 
         it("should not call Github API if a date doesn't exist", (done) => {
             chai.request(app)
-                .post("/onboarding")
+                .post(routes.ONBOARDING_API)
                 .type("form")
                 .send({
                     firstName: "Férnàndáô",
@@ -186,7 +191,7 @@ describe("Onboarding", () => {
 
         it("should not call Github API if the end date is smaller than the start date", (done) => {
             chai.request(app)
-                .post("/onboarding")
+                .post(routes.ONBOARDING_API)
                 .type("form")
                 .send({
                     firstName: "Férnàndáô",
@@ -211,7 +216,7 @@ describe("Onboarding", () => {
 
         it("should not call Github API if the start date is too small", (done) => {
             chai.request(app)
-                .post("/onboarding")
+                .post(routes.ONBOARDING_API)
                 .type("form")
                 .send({
                     firstName: "Férnàndáô",
@@ -236,7 +241,7 @@ describe("Onboarding", () => {
 
         it("should not call Github API if domaine missing", (done) => {
             chai.request(app)
-                .post("/onboarding")
+                .post(routes.ONBOARDING_API)
                 .type("form")
                 .send({
                     firstName: "Férnàndáô",
@@ -261,7 +266,7 @@ describe("Onboarding", () => {
 
         it("should not call Github API if referent missing", (done) => {
             chai.request(app)
-                .post("/onboarding")
+                .post(routes.ONBOARDING_API)
                 .type("form")
                 .send({
                     firstName: "Férnàndáô",
@@ -286,7 +291,7 @@ describe("Onboarding", () => {
 
         it("should not call Github API if domaine has wrong value", (done) => {
             chai.request(app)
-                .post("/onboarding")
+                .post(routes.ONBOARDING_API)
                 .type("form")
                 .send({
                     firstName: "Férnàndáô",
@@ -311,7 +316,7 @@ describe("Onboarding", () => {
 
         it("should not call Github API if the website field is not a full url", (done) => {
             chai.request(app)
-                .post("/onboarding")
+                .post(routes.ONBOARDING_API)
                 .type("form")
                 .send({
                     firstName: "Férnàndáô",
@@ -337,7 +342,7 @@ describe("Onboarding", () => {
 
         it("should not call Github API if the github username field is an url", (done) => {
             chai.request(app)
-                .post("/onboarding")
+                .post(routes.ONBOARDING_API)
                 .type("form")
                 .send({
                     firstName: "Férnàndáô",
@@ -363,7 +368,7 @@ describe("Onboarding", () => {
 
         it("should not call Github API if the github username field is an url (even without http)", (done) => {
             chai.request(app)
-                .post("/onboarding")
+                .post(routes.ONBOARDING_API)
                 .type("form")
                 .send({
                     firstName: "Férnàndáô",
@@ -389,7 +394,7 @@ describe("Onboarding", () => {
 
         it("should not call Github API if email is not public email and isEmailBetaAsked false", (done) => {
             chai.request(app)
-                .post("/onboarding")
+                .post(routes.ONBOARDING_API)
                 .type("form")
                 .send({
                     firstName: "Férnàndáô",
@@ -435,7 +440,7 @@ describe("Onboarding", () => {
                 .then();
 
             chai.request(app)
-                .post("/onboarding")
+                .post(routes.ONBOARDING_API)
                 .type("form")
                 .send({
                     firstName: "Férnàndáô",
@@ -462,7 +467,7 @@ describe("Onboarding", () => {
         it("should call Github API if mandatory fields are present", async () => {
             const res = await chai
                 .request(app)
-                .post("/onboarding")
+                .post(routes.ONBOARDING_API)
                 .type("form")
                 .send({
                     firstName: "Férnàndáô",
@@ -486,7 +491,7 @@ describe("Onboarding", () => {
         it("should call Github API if email is public email", (done) => {
             isPublicServiceEmailStub.returns(Promise.resolve(true));
             chai.request(app)
-                .post("/onboarding")
+                .post(routes.ONBOARDING_API)
                 .type("form")
                 .send({
                     firstName: "Férnàndáô",
@@ -513,7 +518,7 @@ describe("Onboarding", () => {
 
         it("branch should be created on latest SHA", (done) => {
             chai.request(app)
-                .post("/onboarding")
+                .post(routes.ONBOARDING_API)
                 .type("form")
                 .send({
                     firstName: "Férnàndáô",
@@ -537,37 +542,45 @@ describe("Onboarding", () => {
         });
 
         it("branch name should not contain accents or special characters", async () => {
-            await chai.request(app).post("/onboarding").type("form").send({
-                firstName: "Raphaël Férnàndáô",
-                lastName: "Úñíïbe",
-                role: "Dev",
-                start: "2020-01-01",
-                end: "2021-01-01",
-                status: "Independant",
-                domaine: "Coaching",
-                email: "test-membre@example.com",
-                referent: "membre.actif",
-                memberType: "beta",
-                isEmailBetaAsked: true,
-            });
+            await chai
+                .request(app)
+                .post(routes.ONBOARDING_API)
+                .type("form")
+                .send({
+                    firstName: "Raphaël Férnàndáô",
+                    lastName: "Úñíïbe",
+                    role: "Dev",
+                    start: "2020-01-01",
+                    end: "2021-01-01",
+                    status: "Independant",
+                    domaine: "Coaching",
+                    email: "test-membre@example.com",
+                    referent: "membre.actif",
+                    memberType: "beta",
+                    isEmailBetaAsked: true,
+                });
             const branch = createGithubBranch.args[0][1];
             branch.should.contain("author-raphael-fernandao-uniibe-");
         });
 
         it("filename should handle multiple spaces gracefully", async () => {
-            await chai.request(app).post("/onboarding").type("form").send({
-                firstName: "Jean   .  Jacques'    .",
-                lastName: "    Dupont    ",
-                role: "Dev",
-                start: "2020-01-01",
-                end: "2021-01-01",
-                status: "Independant",
-                domaine: "Coaching",
-                email: "jean-jacques@example.com",
-                referent: "membre.actif",
-                memberType: "beta",
-                isEmailBetaAsked: true,
-            });
+            await chai
+                .request(app)
+                .post(routes.ONBOARDING_API)
+                .type("form")
+                .send({
+                    firstName: "Jean   .  Jacques'    .",
+                    lastName: "    Dupont    ",
+                    role: "Dev",
+                    start: "2020-01-01",
+                    end: "2021-01-01",
+                    status: "Independant",
+                    domaine: "Coaching",
+                    email: "jean-jacques@example.com",
+                    referent: "membre.actif",
+                    memberType: "beta",
+                    isEmailBetaAsked: true,
+                });
             const path1 = createGithubFile.args[0][0];
             path1.should.contain("jean.jacques.dupont.md");
         });
@@ -575,7 +588,7 @@ describe("Onboarding", () => {
         it("filename should handle hyphen gracefully", async () => {
             const res = await chai
                 .request(app)
-                .post("/onboarding")
+                .post(routes.ONBOARDING_API)
                 .type("form")
                 .send({
                     firstName: "Jean-Claude'    .",
@@ -596,7 +609,7 @@ describe("Onboarding", () => {
 
         it("PR title should contain the referent", (done) => {
             chai.request(app)
-                .post("/onboarding")
+                .post(routes.ONBOARDING_API)
                 .type("form")
                 .send({
                     firstName: "Diférnàndáô",
@@ -620,7 +633,7 @@ describe("Onboarding", () => {
 
         it("special characters should be replaced with dashes in the filename", (done) => {
             chai.request(app)
-                .post("/onboarding")
+                .post(routes.ONBOARDING_API)
                 .type("form")
                 .send({
                     firstName: `René d'Herblay`,
@@ -644,7 +657,7 @@ describe("Onboarding", () => {
 
         it("only a-z chars should be kept in the filename", (done) => {
             chai.request(app)
-                .post("/onboarding")
+                .post(routes.ONBOARDING_API)
                 .type("form")
                 .send({
                     firstName: "René 123 *ł",
@@ -668,7 +681,7 @@ describe("Onboarding", () => {
 
         it("should redirect to onboarding success page", (done) => {
             chai.request(app)
-                .post("/onboarding")
+                .post(routes.ONBOARDING_API)
                 .type("form")
                 .send({
                     firstName: `René d'Herblay`,
@@ -686,14 +699,16 @@ describe("Onboarding", () => {
                 .redirects(0)
                 .end((err, res) => {
                     res.should.have.status(302);
-                    res.header.location.should.contain("/onboardingSuccess/");
+                    res.header.location.should.contain(
+                        "/api/onboardingSuccess/"
+                    );
                     done();
                 });
         });
 
         it("should store in database the secondary email, primary_email and status", (done) => {
             chai.request(app)
-                .post("/onboarding")
+                .post(routes.ONBOARDING_API)
                 .type("form")
                 .send({
                     firstName: "John",
@@ -725,7 +740,7 @@ describe("Onboarding", () => {
         it("should store the primary_email_status as active if no beta email and email is public service", (done) => {
             isPublicServiceEmailStub.returns(Promise.resolve(true));
             chai.request(app)
-                .post("/onboarding")
+                .post(routes.ONBOARDING_API)
                 .type("form")
                 .send({
                     firstName: "John",
@@ -760,19 +775,23 @@ describe("Onboarding", () => {
                 .update({
                     secondary_email: "test@example.com",
                 });
-            await chai.request(app).post("/onboarding").type("form").send({
-                firstName: "John",
-                lastName: "Doe",
-                role: "Dev",
-                start: "2020-01-01",
-                end: "2021-01-01",
-                status: "Independant",
-                domaine: "Coaching",
-                email: "updated@example.com",
-                referent: "membre.actif",
-                memberType: "beta",
-                isEmailBetaAsked: true,
-            });
+            await chai
+                .request(app)
+                .post(routes.ONBOARDING_API)
+                .type("form")
+                .send({
+                    firstName: "John",
+                    lastName: "Doe",
+                    role: "Dev",
+                    start: "2020-01-01",
+                    end: "2021-01-01",
+                    status: "Independant",
+                    domaine: "Coaching",
+                    email: "updated@example.com",
+                    referent: "membre.actif",
+                    memberType: "beta",
+                    isEmailBetaAsked: true,
+                });
             const dbRes = await knex("users").where({ username: "john.doe" });
             dbRes.length.should.equal(1);
             dbRes[0].secondary_email.should.equal("updated@example.com");
@@ -786,19 +805,25 @@ describe("Onboarding", () => {
         });
 
         it("Field should be sanitized", async () => {
-            await chai.request(app).post("/onboarding").type("form").send({
-                firstName: "</scrip</script>t><img src =q onerror=prompt(8 )>",
-                lastName: "</scrip</script>t><img src =q onerror=prompt(8 )>",
-                role: "</scrip</script>t><img src =q onerror=prompt(8 )>",
-                start: "2020-01-01",
-                end: "2021-01-01",
-                status: "Independant",
-                domaine: "Coaching",
-                email: "xssinjection@example.com",
-                referent: "membre.actif",
-                memberType: "beta",
-                isEmailBetaAsked: true,
-            });
+            await chai
+                .request(app)
+                .post(routes.ONBOARDING_API)
+                .type("form")
+                .send({
+                    firstName:
+                        "</scrip</script>t><img src =q onerror=prompt(8 )>",
+                    lastName:
+                        "</scrip</script>t><img src =q onerror=prompt(8 )>",
+                    role: "</scrip</script>t><img src =q onerror=prompt(8 )>",
+                    start: "2020-01-01",
+                    end: "2021-01-01",
+                    status: "Independant",
+                    domaine: "Coaching",
+                    email: "xssinjection@example.com",
+                    referent: "membre.actif",
+                    memberType: "beta",
+                    isEmailBetaAsked: true,
+                });
             const dbRes = await knex("users")
                 .where({ secondary_email: "xssinjection@example.com" })
                 .first();

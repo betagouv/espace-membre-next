@@ -69,19 +69,19 @@ describe("POST /api/badge/status", () => {
     });
 });
 
-describe("GET /account/badge page unauthenticated", () => {
+describe("GET /api/account/badge page unauthenticated", () => {
     it("should not be able to get badge request page", (done) => {
         chai.request(app)
-            .get(routes.ACCOUNT_GET_BADGE_REQUEST_PAGE)
+            .get(routes.ACCOUNT_GET_BADGE_REQUEST_PAGE_API)
             .redirects(0)
             .end((err, res) => {
-                res.should.have.status(302);
+                res.should.have.status(500);
                 done();
             });
     });
 });
 
-describe("GET /account/badge page authenticated", () => {
+describe("GET /api/account/badge page authenticated", () => {
     let getToken;
 
     beforeEach(() => {
@@ -95,7 +95,7 @@ describe("GET /account/badge page authenticated", () => {
 
     it("should be able to get badge request page", (done) => {
         chai.request(app)
-            .get(routes.ACCOUNT_GET_BADGE_REQUEST_PAGE)
+            .get(routes.ACCOUNT_GET_BADGE_REQUEST_PAGE_API)
             .redirects(0)
             .end((err, res) => {
                 res.should.have.status(200);

@@ -5,7 +5,24 @@ import { MemberWithPermission } from "@models/member";
 import { statusOptions, genderOptions } from "@models/dbUser/dbUser";
 import { fetchCommuneDetails } from "@lib/searchCommune";
 
-export async function postCurrentInfo(req, res) {
+export async function postCurrentInfoApi(req, res) {
+    postCurrentInfoPage(
+        req,
+        res,
+        () => {
+            res.json({
+                message: "success",
+            });
+        },
+        (err) => {
+            res.json({
+                message: req.flash("error"),
+            });
+        }
+    );
+}
+
+export async function postCurrentInfoPage(req, res, onSuccess, onError) {
     const formValidationErrors = {};
     const title = "Mon compte";
     const [currentUser]: [MemberWithPermission] = await Promise.all([
@@ -85,30 +102,11 @@ export async function postCurrentInfo(req, res) {
             .onConflict("hash")
             .merge();
 
-        req.flash("message", "Mise à jour");
-        res.redirect(`/account/info`);
+        onSuccess();
     } catch (err) {
         if (err.message) {
             req.flash("error", err.message);
         }
-        const startups = await betagouv.startupsInfos();
-        res.render("info-update", {
-            title,
-            formValidationErrors,
-            currentUserId: req.auth.id,
-            startups,
-            statusOptions,
-            genderOptions,
-            currentUser,
-            activeTab: "account",
-            communeInfo: req.body.workplace_insee_code
-                ? await fetchCommuneDetails(req.body.workplace_insee_code)
-                : null,
-            formData: {
-                ...req.body,
-            },
-            errors: req.flash("error"),
-            messages: req.flash("message"),
-        });
+        onError();
     }
 }

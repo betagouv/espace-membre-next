@@ -47,6 +47,7 @@ const getAccount = async (req, res, onSuccess, onError) => {
             })
             .orderBy("created_at", "desc")
             .first();
+
         const hasPublicServiceEmail =
             dbUser.primary_email &&
             !dbUser.primary_email.includes(config.domain);

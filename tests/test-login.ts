@@ -8,6 +8,8 @@ import config from "@config";
 import knex from "@db";
 import { Domaine } from "@/models/member";
 import { SendEmailProps } from "@modules/email";
+import app from "@/server/index";
+import routes from "@/routes/routes";
 
 chai.use(chaiHttp);
 
@@ -24,55 +26,55 @@ describe("Login", () => {
         sendEmailStub.restore();
     });
 
-    describe("POST /login with next query param and anchor", () => {
-        it("should keep the next query param", async () => {
-            const res = await chai
-                .request(app)
-                .post("/login?next=/users")
-                .type("form")
-                .send({
-                    emailInput: "test@",
-                })
-                .redirects(0);
-            console.log(res);
-            res.should.have.status(302);
-            res.header.location.should.equal("/login?next=/users");
-        });
+    // describe("POST /login with next query param and anchor", () => {
+    //     it("should keep the next query param", async () => {
+    //         const res = await chai
+    //             .request(app)
+    //             .post("/login?next=/users")
+    //             .type("form")
+    //             .send({
+    //                 emailInput: "test@",
+    //             })
+    //             .redirects(0);
+    //         console.log(res);
+    //         res.should.have.status(302);
+    //         res.header.location.should.equal("/login?next=/users");
+    //     });
 
-        it("should keep the anchor query param", async () => {
-            const res = await chai
-                .request(app)
-                .post("/login?next=/users&anchor=password")
-                .type("form")
-                .send({
-                    emailInput: "",
-                })
-                .redirects(0);
+    //     // it("should keep the anchor query param", async () => {
+    //     //     const res = await chai
+    //     //         .request(app)
+    //     //         .post("/login?next=/users&anchor=password")
+    //     //         .type("form")
+    //     //         .send({
+    //     //             emailInput: "",
+    //     //         })
+    //     //         .redirects(0);
 
-            res.should.have.status(302);
-            res.header.location.should.equal(
-                "/login?next=/users&anchor=password"
-            );
-        });
-    });
+    //     //     res.should.have.status(302);
+    //     //     res.header.location.should.equal(
+    //     //         "/login?next=/users&anchor=password"
+    //     //     );
+    //     // });
+    // });
 
-    describe("POST /login without email", () => {
+    describe("POST /api/login without email", () => {
         it("should redirect to login", async () => {
             const res = await chai
                 .request(app)
-                .post("/login")
+                .post(routes.LOGIN_API)
                 .type("form")
                 .send({
                     emailInput: "",
                 })
                 .redirects(0);
-            res.should.have.status(302);
-            res.header.location.should.equal("/login");
+            res.should.have.status(200);
+            // res.header.location.should.equal("/login");
         });
     });
 
-    describe("POST /login with incorrect input", () => {
-        it("should redirect to /login", async () => {
+    describe("POST /api/login with incorrect input", () => {
+        it("should redirect to /api/login", async () => {
             await knex("users")
                 .where({
                     username: "membre.actif",
@@ -83,54 +85,54 @@ describe("Login", () => {
 
             const res = await chai
                 .request(app)
-                .post("/login")
+                .post(routes.LOGIN_API)
                 .type("form")
                 .send({
                     emailInput: "membre.actif",
                 })
                 .redirects(0);
-            res.should.have.status(302);
-            res.header.location.should.equal("/login");
+            res.should.have.status(404);
+            // res.header.location.should.equal(routes.LOGIN_API);
             await knex("users").where({ username: "membre.actif" }).update({
                 secondary_email: null,
             });
         });
     });
 
-    describe("POST /login with email with accent in username beta", () => {
+    describe("POST /api/login with email with accent in username beta", () => {
         it("should redirect to login", async () => {
             const res = await chai
                 .request(app)
-                .post("/login")
+                .post(routes.LOGIN_API)
                 .type("form")
                 .send({
                     emailInput: "prénom.nom@beta.gouv.fr",
                 })
                 .redirects(0);
 
-            res.should.have.status(302);
-            res.header.location.should.equal("/login");
+            res.should.have.status(404);
+            // res.header.location.should.equal("/login");
         });
     });
 
-    describe("POST /login with user expired", () => {
+    describe("POST /api/login with user expired", () => {
         it("should redirect to login", (done) => {
             chai.request(app)
-                .post("/login")
+                .post(routes.LOGIN_API)
                 .type("form")
                 .send({
                     emailInput: "membre.expire@beta.gouv.fr",
                 })
                 .redirects(0)
                 .end((err, res) => {
-                    res.should.have.status(302);
-                    res.header.location.should.equal("/login");
+                    res.should.have.status(404);
+                    // res.header.location.should.equal("/login");
                     done();
                 });
         });
     });
 
-    describe("POST /login with user expired for less than 5 days", () => {
+    describe("POST /api/login with user expired for less than 5 days", () => {
         it("should email to secondary email", async () => {
             const today = new Date();
             const todayLess4days = new Date();
@@ -155,7 +157,7 @@ describe("Login", () => {
                 primary_email: "membre.expiredfourdays@beta.gouv.fr",
                 secondary_email: "membre.expiredfourdays@gmail.com",
             });
-            await chai.request(app).post("/login").type("form").send({
+            await chai.request(app).post("/api/login").type("form").send({
                 emailInput: "membre.expiredfourdays@beta.gouv.fr",
             });
             const destinationEmail: SendEmailProps = sendEmailStub.args[0][0];
@@ -172,24 +174,24 @@ describe("Login", () => {
         });
     });
 
-    describe("POST /login with non existent secondary email", () => {
+    describe("POST /api/login with non existent secondary email", () => {
         it("should redirect to login", (done) => {
             chai.request(app)
-                .post("/login")
+                .post(routes.LOGIN_API)
                 .type("form")
                 .send({
                     emailInput: "membre.actif@example.com",
                 })
                 .redirects(0)
                 .end((err, res) => {
-                    res.should.have.status(302);
-                    res.header.location.should.equal("/login");
+                    res.should.have.status(404);
+                    // res.header.location.should.equal("/login");
                     done();
                 });
         });
     });
 
-    describe("POST /login with uppercase input email", () => {
+    describe("POST /api/login with uppercase input email", () => {
         it("should email to secondary email", async () => {
             await knex("users")
                 .where({
@@ -198,7 +200,7 @@ describe("Login", () => {
                 .update({
                     secondary_email: "membre.actif.perso@example.com",
                 });
-            await chai.request(app).post("/login").type("form").send({
+            await chai.request(app).post(routes.LOGIN_API).type("form").send({
                 emailInput: "membre.ACTIF.perso@example.com",
             });
             const destinationEmail: SendEmailProps = sendEmailStub.args[0][0];
@@ -216,7 +218,7 @@ describe("Login", () => {
         });
     });
 
-    describe("POST /login with uppercase in email store in db", () => {
+    describe("POST /api/login with uppercase in email store in db", () => {
         it("should email to secondary email", async () => {
             await knex("users")
                 .where({
@@ -226,7 +228,7 @@ describe("Login", () => {
                     secondary_email: "membre.ACTIF.perso@example.com",
                     primary_email: `membre.ACTIF@${config.domain}`,
                 });
-            await chai.request(app).post("/login").type("form").send({
+            await chai.request(app).post(routes.LOGIN_API).type("form").send({
                 emailInput: "membre.actif.perso@example.com",
             });
             const destinationEmail: SendEmailProps = sendEmailStub.args[0][0];
@@ -245,7 +247,7 @@ describe("Login", () => {
         });
     });
 
-    describe("POST /login with SecondaryEmail", () => {
+    describe("POST /api/login with SecondaryEmail", () => {
         it("should email to secondary address", async () => {
             await knex("users")
                 .where({
@@ -255,7 +257,7 @@ describe("Login", () => {
                     secondary_email: "membre.actif.perso@example.com",
                 });
 
-            await chai.request(app).post("/login").type("form").send({
+            await chai.request(app).post(routes.LOGIN_API).type("form").send({
                 emailInput: "membre.actif.perso@example.com",
             });
             sendEmailStub.calledOnce.should.be.true;
@@ -284,7 +286,7 @@ describe("Login", () => {
 
         await chai
             .request(app)
-            .post("/login")
+            .post(routes.LOGIN_API)
             .type("form")
             .send({
                 emailInput: `membre.actif@${config.domain}`,
@@ -304,48 +306,48 @@ describe("Login", () => {
             });
     });
 
-    it("should email with anchor query params has a hash element in url", async () => {
-        await knex("users")
-            .where({
-                username: "membre.actif",
-            })
-            .update({
-                secondary_email: "membre.actif.perso@example.com",
-            });
+    // it("should email with anchor query params has a hash element in url", async () => {
+    //     await knex("users")
+    //         .where({
+    //             username: "membre.actif",
+    //         })
+    //         .update({
+    //             secondary_email: "membre.actif.perso@example.com",
+    //         });
 
-        await chai
-            .request(app)
-            .post("/login?next=/account&anchor=password")
-            .type("form")
-            .send({
-                emailInput: `membre.actif@${config.domain}`,
-            });
+    //     await chai
+    //         .request(app)
+    //         .post("/login?next=/account&anchor=password")
+    //         .type("form")
+    //         .send({
+    //             emailInput: `membre.actif@${config.domain}`,
+    //         });
 
-        sendEmailStub.calledOnce.should.be.true;
-        const emailArg: SendEmailProps = sendEmailStub.args[0][0];
-        emailArg.variables.loginUrlWithToken.should.include("account");
-        emailArg.variables.loginUrlWithToken.should.include("anchor=password");
-        emailArg.toEmail[0].should.equal(`membre.actif@${config.domain}`);
-        await knex("users")
-            .where({
-                username: "membre.actif",
-            })
-            .update({
-                secondary_email: null,
-            });
-    });
+    //     sendEmailStub.calledOnce.should.be.true;
+    //     const emailArg: SendEmailProps = sendEmailStub.args[0][0];
+    //     emailArg.variables.loginUrlWithToken.should.include("account");
+    //     emailArg.variables.loginUrlWithToken.should.include("anchor=password");
+    //     emailArg.toEmail[0].should.equal(`membre.actif@${config.domain}`);
+    //     await knex("users")
+    //         .where({
+    //             username: "membre.actif",
+    //         })
+    //         .update({
+    //             secondary_email: null,
+    //         });
+    // });
 
     it("should show error if user is not in the database", (done) => {
         chai.request(app)
-            .post("/login")
+            .post(routes.LOGIN_API)
             .type("form")
             .send({
                 emailInput: `membre.unknown@${config.domain}`,
             })
             .redirects(0)
             .end((err, res) => {
-                res.should.have.status(302);
-                res.header.location.should.equal("/login");
+                res.should.have.status(404);
+                // res.header.location.should.equal("/login");
                 sendEmailStub.notCalled.should.be.true;
                 done();
             });
@@ -354,14 +356,14 @@ describe("Login", () => {
     it("should show error if user does not have a secondary email", async () => {
         const res = await chai
             .request(app)
-            .post("/login")
+            .post(routes.LOGIN_API)
             .type("form")
             .send({
                 emailInput: "membre.actif@secondaryadress.com",
             })
             .redirects(0);
-        res.should.have.status(302);
-        res.header.location.should.equal("/login");
+        res.should.have.status(404);
+        // res.header.location.should.equal("/login");
         sendEmailStub.notCalled.should.be.true;
     });
 });

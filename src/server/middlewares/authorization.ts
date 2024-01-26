@@ -10,6 +10,7 @@ export enum MemberRole {
 export default function permit(...permittedRoles: MemberRole[]) {
     return (request, response, next) => {
         const { auth } = request;
+        console.log(auth, getAdmin());
         if (
             auth &&
             permittedRoles.includes(MemberRole.MEMBER_ROLE_ADMIN) &&

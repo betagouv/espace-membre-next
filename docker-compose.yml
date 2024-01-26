@@ -37,6 +37,7 @@ services:
             CHAT_WEBHOOK_URL_DINUM: "https://example.com"
             DATABASE_URL: postgres://secretariat:secretariat@db:5432/secretariat
             MAIL_PASS: mailpassword
+            NEXT_TELEMETRY_DISABLED: 1
             MAIL_USER: mailuser
             MAIL_HOST: maildev
             MAIL_PORT: 25

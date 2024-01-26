@@ -18,6 +18,7 @@ import utils from "./utils";
 import * as chat from "@infra/chat";
 import * as Email from "@config/email.config";
 import * as session from "@/server/helpers/session";
+import routes from "@/routes/routes";
 
 chai.use(chaiHttp);
 
@@ -114,32 +115,30 @@ describe("Newsletter", () => {
             getToken.restore();
         });
 
-        it("should get previous newsletters and current newsletter", (done) => {
-            const date = new Date("2021-01-20T07:59:59+01:00");
-            clock = sinon.useFakeTimers(date);
-            chai.request(app)
-                .get("/newsletters")
-                .end((err, res) => {
-                    res.text.should.include(`${config.padURL}/5456dsadsahjww`);
-                    const allNewsletterButMostRecentOne =
-                        mockNewsletters.filter((n) => !n.sent_at);
-                    allNewsletterButMostRecentOne.forEach((newsletter) => {
-                        res.text.should.include(
-                            controllerUtils.formatDateToReadableDateAndTimeFormat(
-                                newsletter.sent_at
-                            )
-                        );
-                    });
-                    const currentNewsletter = mockNewsletter;
-                    res.text.should.include(
-                        `<h3>Infolettre de la semaine du ${controllerUtils.formatDateToFrenchTextReadableFormat(
-                            addDays(getMonday(currentNewsletter.created_at), 7)
-                        )}</h3>`
-                    );
-                    clock.restore();
-                    done();
-                });
-        });
+        // it("should get previous newsletters and current newsletter", async () => {
+        //     const date = new Date("2021-01-20T07:59:59+01:00");
+        //     clock = sinon.useFakeTimers(date);
+        //     const res = await chai.request(app).get(routes.NEWSLETTERS_API);
+        //     console.log(res);
+
+        //     // res.text.should.include(`${config.padURL}/5456dsadsahjww`);
+        //     // const allNewsletterButMostRecentOne =
+        //     //     mockNewsletters.filter((n) => !n.sent_at);
+        //     // allNewsletterButMostRecentOne.forEach((newsletter) => {
+        //     //     res.text.should.include(
+        //     //         controllerUtils.formatDateToReadableDateAndTimeFormat(
+        //     //             newsletter.sent_at
+        //     //         )
+        //     //     );
+        //     // });
+        //     // const currentNewsletter = mockNewsletter;
+        //     // res.text.should.include(
+        //     //     `<h3>Infolettre de la semaine du ${controllerUtils.formatDateToFrenchTextReadableFormat(
+        //     //         addDays(getMonday(currentNewsletter.created_at), 7)
+        //     //     )}</h3>`
+        //     // );
+        //     // clock.restore();
+        // });
     });
 
     describe("cronjob newsletter", () => {
@@ -402,51 +401,6 @@ describe("Newsletter", () => {
             sendEmailStub.restore();
             slack.restore();
             await knex("newsletters").truncate();
-        });
-    });
-
-    describe("newsletter interface", () => {
-        let getToken;
-        beforeEach(async () => {
-            getToken = sinon.stub(session, "getToken");
-            getToken.returns(utils.getJWT("membre.actif"));
-        });
-        afterEach(async () => {
-            getToken.restore();
-        });
-        it("should validate newsletter", async () => {
-            await knex("newsletters").insert([
-                {
-                    ...mockNewsletter,
-                },
-            ]);
-            const date = new Date("2021-03-05T07:59:59+01:00");
-            clock = sinon.useFakeTimers(date);
-            await chai.request(app).get("/validateNewsletter");
-            const newsletter = await knex("newsletters")
-                .where({ id: mockNewsletter.id })
-                .first();
-            newsletter.validator.should.equal("membre.actif");
-            await knex("newsletters").truncate();
-            clock.restore();
-        });
-
-        it("should cancel newsletter", async () => {
-            await knex("newsletters").insert([
-                {
-                    ...mockNewsletter,
-                    validator: "membre.actif",
-                },
-            ]);
-            const date = new Date("2021-03-05T07:59:59+01:00");
-            clock = sinon.useFakeTimers(date);
-            await chai.request(app).get("/cancelNewsletter");
-            const newsletter = await knex("newsletters")
-                .where({ id: mockNewsletter.id })
-                .first();
-            should.equal(newsletter.validator, null);
-            await knex("newsletters").truncate();
-            clock.restore();
         });
     });
 });

@@ -2,7 +2,7 @@ import express from "express";
 
 import * as loginController from "@controllers/loginController";
 import * as logoutController from "@controllers/logoutController";
-import routes from "./routes";
+import routes from "@/routes/routes";
 
 const router = express.Router();
 

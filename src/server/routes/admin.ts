@@ -1,7 +1,7 @@
 import express from "express";
 import * as adminController from "@controllers/adminController";
 import permit, { MemberRole } from "../middlewares/authorization";
-import routes from "./routes";
+import routes from "@/routes/routes";
 
 const router = express.Router();
 

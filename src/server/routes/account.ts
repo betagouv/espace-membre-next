@@ -1,5 +1,5 @@
 import express from "express";
-import routes from "./routes";
+import routes from "@/routes/routes";
 import * as usersController from "@controllers/usersController";
 import * as accountController from "@controllers/accountController";
 import { publicPostRouteRateLimiter } from "../middlewares/rateLimiter";
@@ -23,7 +23,7 @@ router.get(
 router.post(
     routes.ACCOUNT_POST_DETAIL_INFO_FORM_API,
     express.json({ type: "*/*" }),
-    accountController.postCurrentInfo
+    accountController.postCurrentInfoApi
 );
 router.get(
     routes.ACCOUNT_GET_BASE_INFO_FORM_API,
@@ -56,20 +56,20 @@ router.post(
     express.json({ type: "*/*" }),
     accountController.deleteEmailResponderApi
 );
+// router.post(
+//     "/account/set_email_responder",
+//     accountController.setEmailResponder
+// );
 router.post(
-    "/account/set_email_responder",
-    accountController.setEmailResponder
-);
-router.post(
-    "/api/account/set_email_responder",
+    routes.USER_SET_EMAIL_RESPONDER_API,
     express.json({ type: "*/*" }),
     accountController.setEmailResponderApi
 );
 
-router.post(
-    routes.USER_UPDATE_COMMUNICATION_EMAIL,
-    accountController.updateCommunicationEmail
-);
+// router.post(
+//     routes.USER_UPDATE_COMMUNICATION_EMAIL,
+//     accountController.updateCommunicationEmail
+// );
 router.put(
     routes.USER_UPDATE_COMMUNICATION_EMAIL_API,
     express.json({ type: "*/*" }),

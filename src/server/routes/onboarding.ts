@@ -2,7 +2,7 @@ import express from "express";
 import { checkSchema } from "express-validator";
 
 import * as onboardingController from "@controllers/onboardingController";
-import routes from "./routes";
+import routes from "@/routes/routes";
 
 const router = express.Router();
 
