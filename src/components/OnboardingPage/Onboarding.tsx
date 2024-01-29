@@ -392,7 +392,6 @@ export const Onboarding = function (props: OnboardingProps) {
                                         name: "gender",
                                         value: state.formData.gender,
                                         onChange: handleGenderChange,
-                                        placeholder: "Sélectionne une valeur",
                                         required: true,
                                     }}
                                     state={
@@ -434,7 +433,6 @@ export const Onboarding = function (props: OnboardingProps) {
                                         name: "domaine",
                                         value: state.formData.domaine,
                                         onChange: handleDomaineChange,
-                                        placeholder: "Sélectionne une valeur",
                                         required: true,
                                     }}
                                     state={

@@ -66,17 +66,13 @@ const SUBJECTS_BY_TYPE: Record<EmailProps["type"], string | SubjectFunction> = {
     MARRAINAGE_ACCEPT_NEWCOMER_EMAIL: "Mise en contact 👋",
     MARRAINAGE_ACCEPT_ONBOARDER_EMAIL: "Mise en contact 👋",
     MARRAINAGE_REQUEST_FAILED: `La demande de marrainage n'a pas fonctionné`,
-    ONBOARDING_REFERENT_EMAIL: ({
-        name,
-    }: EmailOnboardingReferent["variables"]) => {
+    ONBOARDING_REFERENT_EMAIL: ({ name }: EmailProps["variables"]) => {
         return `${name} vient de créer sa fiche Github`;
     },
     EMAIL_CREATED_EMAIL: "Bienvenue chez BetaGouv 🙂",
     EMAIL_MATTERMOST_ACCOUNT_CREATED: "Inscription à mattermost",
     EMAIL_PR_PENDING: `PR en attente`,
-    EMAIL_PR_PENDING_TO_TEAM: ({
-        username,
-    }: EmailPRPendingToTeam["variables"]) => {
+    EMAIL_PR_PENDING_TO_TEAM: ({ username }: EmailProps["variables"]) => {
         return `PR en attente de ${username} en attente de merge`;
     },
     EMAIL_ENDING_CONTRACT_2_DAYS: "Départ dans 2 jours 🙂",
@@ -85,20 +81,20 @@ const SUBJECTS_BY_TYPE: Record<EmailProps["type"], string | SubjectFunction> = {
     EMAIL_NO_MORE_CONTRACT_1_DAY: "A bientôt 🙂",
     EMAIL_NO_MORE_CONTRACT_30_DAY: "A bientôt 🙂",
     EMAIL_USER_SHOULD_UPDATE_INFO: "Mise à jour de tes informations",
-    EMAIL_NEWSLETTER: ({ subject }: EmailNewsletter["variables"]) => {
+    EMAIL_NEWSLETTER: ({ subject }: EmailProps["variables"]) => {
         return `${subject}`;
     },
-    EMAIL_NEW_MEMBER_PR: ({ name }: EmailNewMemberPR["variables"]) => {
+    EMAIL_NEW_MEMBER_PR: ({ name }: EmailProps["variables"]) => {
         return `${name} vient de créer sa fiche Github`;
     },
     EMAIL_STARTUP_ENTER_CONSTRUCTION_PHASE: ({
         startup,
-    }: EmailStartupEnterConstructionPhase["variables"]) => {
+    }: EmailProps["variables"]) => {
         return `${startup} passe en construction : les bonnes pratiques`;
     },
     EMAIL_STARTUP_ENTER_ACCELERATION_PHASE: ({
         startup,
-    }: EmailStartupEnterAccelerationPhase["variables"]) => {
+    }: EmailProps["variables"]) => {
         return `${startup} passe en acceleration : les bonnes pratiques`;
     },
     EMAIL_STARTUP_ENTER_INVESTIGATION_PHASE: "",
@@ -158,7 +154,7 @@ const htmlBuilder: HtmlBuilderType = {
         let subject = "";
         if (typeof SUBJECTS_BY_TYPE[type] === "function") {
             const buildSubject = SUBJECTS_BY_TYPE[type] as SubjectFunction;
-            subject = buildSubject(variables);
+            subject = buildSubject(variables as EmailProps["variables"]);
         } else {
             subject = SUBJECTS_BY_TYPE[type] as string;
         }

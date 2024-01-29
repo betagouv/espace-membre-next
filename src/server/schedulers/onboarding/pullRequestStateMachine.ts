@@ -9,7 +9,7 @@ import { CommunicationEmailCode } from "@/models/dbUser";
 import { sendInfoToChat } from "@infra/chat";
 import htmlBuilder from "@modules/htmlbuilder/htmlbuilder";
 import * as mattermost from "@lib/mattermost";
-import { DBStartup } from "@models/startup";
+import { DBStartup } from "@/models/startup";
 import {
     DBPullRequest,
     PULL_REQUEST_STATE,

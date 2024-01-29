@@ -1,5 +1,5 @@
-import juice from 'juice';
-import { marked } from 'marked';
+import juice from "juice";
+import { marked } from "marked";
 
 const css = `.markdown-body {
   font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol";
@@ -175,133 +175,139 @@ overflow: visible !important;
 `;
 
 function generateId() {
-  return Math.random().toString(16).slice(2)
+    return Math.random().toString(16).slice(2);
+}
+
+interface TocItem {
+    anchor: string;
+    level: string;
+    text: string;
+    raw?: string;
 }
 
 export function getTitle(content) {
-  const toc = [];
+    const toc: TocItem[] = [];
 
-  const renderer = {
-    heading(text, level, raw) {
-      const anchor =
-        this.options.headerPrefix + raw.toLowerCase().replace(/[^\w]+/g, '-');
-      toc.push({
-        anchor,
-        level,
-        text,
-        raw,
-      });
-      return `<h${level} id='${anchor}'>${text}</h${level}>\n`;
-    }
-  }
+    const renderer = {
+        heading(text, level, raw) {
+            const anchor = raw.toLowerCase().replace(/[^\w]+/g, "-");
+            toc.push({
+                anchor,
+                level,
+                text,
+                raw,
+            });
+            return `<h${level} id='${anchor}'>${text}</h${level}>\n`;
+        },
+    };
 
-  marked.use({
-    renderer,
-  });
-  marked.parse(content);
-  return toc[0].raw;
+    marked.use({
+        renderer,
+    });
+    marked.parse(content);
+    return toc[0].raw;
 }
 
 export function renderHtmlFromMdWithAttachements(content) {
-  const images = [];
+    const images: string[] = [];
 
-  const rendererImage = function(href, title, text) {
-    images.push(href)
-    if (href === null) {
-      return text;
+    const rendererImage = function (href, title, text) {
+        images.push(href);
+        if (href === null) {
+            return text;
+        }
+
+        let out = '<img src="' + href + '" alt="' + text + '"';
+
+        if (title) {
+            out += ' title="' + title + '"';
+        }
+
+        out += ">";
+        return out;
+    };
+
+    let html = renderHtmlFromMd(content, { image: rendererImage });
+    console.log(images);
+    const imagesDict = {};
+    for (const image of images) {
+        // const base64Image = await getBase64(image)
+        imagesDict[image] = `${generateId()}`; //base64Image
     }
-
-    let out = '<img src="' + href + '" alt="' + text + '"';
-
-    if (title) {
-      out += ' title="' + title + '"';
-    }
-
-    out += this.options.xhtml ? '/>' : '>';
-    return out;
-  }
-
-  let html = renderHtmlFromMd(content, { image: rendererImage })
-  console.log(images)
-  const imagesDict = {}
-  for (const image of images) {
-    // const base64Image = await getBase64(image)
-    imagesDict[image] = `${generateId()}` //base64Image
-  }
-  images.forEach(image => {
-    html = html.replace(image, `cid:${imagesDict[image]}`)
-  })
-  console.log(images, imagesDict)
-  return {
-    html,
-    attachments: Object.keys(imagesDict).map(key => {
-      return {
-        filename: 'image.png',
-        path: key,
-        cid: imagesDict[key] //same cid value as in the html img src
-      }
-    })
-  }
+    images.forEach((image) => {
+        html = html.replace(image, `cid:${imagesDict[image]}`);
+    });
+    console.log(images, imagesDict);
+    return {
+        html,
+        attachments: Object.keys(imagesDict).map((key) => {
+            return {
+                filename: "image.png",
+                path: key,
+                cid: imagesDict[key], //same cid value as in the html img src
+            };
+        }),
+    };
 }
 
-export function renderHtmlFromMd(content, rendererConfig={}) {
-  const toc = [];
-  const renderer = {
-    heading(text, level, raw) {
-      const anchor =
-        this.options.headerPrefix +
-        raw.toLowerCase().replace(/[^\w\\u4e00-\\u9fa5]]+/g, '-');
-      toc.push({
-        anchor,
-        level,
-        text,
-      });
-      return `<h${level} id='${anchor}'>${text}</h${level}>\n`;
-    },
-    ...rendererConfig
-  }
+export function renderHtmlFromMd(content, rendererConfig = {}) {
+    const toc: TocItem[] = [];
+    const renderer = {
+        heading(text, level, raw) {
+            const anchor = raw
+                .toLowerCase()
+                .replace(/[^\w\\u4e00-\\u9fa5]]+/g, "-");
+            toc.push({
+                anchor,
+                level,
+                text,
+            });
+            return `<h${level} id='${anchor}'>${text}</h${level}>\n`;
+        },
+        ...rendererConfig,
+    };
 
-  marked.use({
-    renderer,
-    // gfm: true,
-    // tables: true,
-    // breaks: false,
-    // pedantic: false,
-    // sanitize: true,
-    // smartLists: true,
-    // smartypants: false,
-  });
+    marked.use({
+        renderer,
+        // gfm: true,
+        // tables: true,
+        // breaks: false,
+        // pedantic: false,
+        // sanitize: true,
+        // smartLists: true,
+        // smartypants: false,
+    });
 
-  function build(coll, k, level, ctx) {
-    /* eslint-disable no-param-reassign */
-    if (k >= coll.length || coll[k].level <= level) {
-      return k;
+    function build(coll, k, level, ctx) {
+        /* eslint-disable no-param-reassign */
+        if (k >= coll.length || coll[k].level <= level) {
+            return k;
+        }
+        const node = coll[k];
+        ctx.push(`<li><a href='#${node.anchor}'>${node.text}</a>`);
+        k += 1;
+        const childCtx = [];
+        k = build(coll, k, node.level, childCtx);
+        if (childCtx.length > 0) {
+            ctx.push("<ul>");
+            childCtx.forEach((idm) => {
+                ctx.push(idm);
+            });
+            ctx.push("</ul>");
+        }
+        ctx.push("</li>");
+        k = build(coll, k, level, ctx);
+        return k;
     }
-    const node = coll[k];
-    ctx.push(`<li><a href='#${node.anchor}'>${node.text}</a>`);
-    k += 1;
-    const childCtx = [];
-    k = build(coll, k, node.level, childCtx);
-    if (childCtx.length > 0) {
-      ctx.push('<ul>');
-      childCtx.forEach((idm) => {
-        ctx.push(idm);
-      });
-      ctx.push('</ul>');
-    }
-    ctx.push('</li>');
-    k = build(coll, k, level, ctx);
-    return k;
-  }
 
-  let html = marked.parse(content);
-  const ctx = [];
-  build(toc, 0, 0, ctx);
-  // console.log(toc, ctx);
-  html = html.replace('[TOC]', ctx.join(''));
-  html = juice(`<style>
+    let html = marked.parse(content);
+    const ctx = [];
+    build(toc, 0, 0, ctx);
+    // console.log(toc, ctx);
+    html = html.replace("[TOC]", ctx.join(""));
+    html = juice(`<style>
     ${css}
   </style><div id='doc' class='container markdown-body'>${html}</div>`);
-  
-  return html
+
+    return html;
 }

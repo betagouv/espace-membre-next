@@ -22,7 +22,6 @@ import {
     statusOptions,
 } from "@/models/dbUser/dbUser";
 import { fetchCommuneDetails } from "@lib/searchCommune";
-import { OnboardingPage } from "@views";
 import { DOMAINE_OPTIONS } from "@/models/member";
 import {
     getGithubMasterSha,
@@ -147,26 +146,6 @@ export async function postOnboardingFormApi(req, res) {
                 errors: data.formValidationErrors,
                 messages: data.errors,
             });
-        }
-    );
-}
-
-export async function postOnboardingForm(req, res) {
-    postOnboardingData(
-        req,
-        res,
-        ({ prInfo, isEmailBetaAsked }) => {
-            res.redirect(
-                `/onboardingSuccess/${prInfo.number}?isEmailBetaAsked=${isEmailBetaAsked}`
-            );
-        },
-        (data) => {
-            res.send(
-                OnboardingPage({
-                    ...data,
-                    request: req,
-                })
-            );
         }
     );
 }
@@ -402,7 +381,7 @@ async function postOnboardingData(req, res, onSuccess, onError) {
             prInfo,
         });
     } catch (err) {
-        if (err.message) {
+        if (err instanceof Error) {
             req.flash("error", err.message);
         }
         const startups = await BetaGouv.startupsInfos();

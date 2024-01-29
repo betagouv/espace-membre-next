@@ -11,7 +11,7 @@ const getUnknownGithubUsersInOrganization = async (org) => {
 
     const activeGithubUsers = users
         .filter((x) => x.github)
-        .map((x) => x.github.toLowerCase());
+        .map((x) => (x.github as string).toLowerCase());
 
     return allGithubOrganizationMembers.filter((user) => {
         const githubUsername = user.login.toLowerCase();

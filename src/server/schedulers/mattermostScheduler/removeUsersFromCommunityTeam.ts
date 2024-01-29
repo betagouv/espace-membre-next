@@ -12,7 +12,7 @@ export async function removeUsersFromCommunityTeam(
     checkAll = true
 ) {
     // Removed users referenced on github but expired for more than 3 months
-    let users: Member[] = optionalUsers;
+    let users = optionalUsers;
     console.log("Start function remove users from community team");
     if (!users) {
         users = await betagouv.usersInfos();

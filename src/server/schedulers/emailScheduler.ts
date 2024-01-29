@@ -18,7 +18,7 @@ import {
     MemberType,
     USER_EVENT,
 } from "@models/dbUser/dbUser";
-import { Member } from "@models/member";
+import { Member } from "@/models/member";
 import { IEventBus } from "@infra/eventBus";
 import { Contact, IMailingService, MAILING_LIST_TYPE } from "@modules/email";
 import {
@@ -71,24 +71,25 @@ export async function setEmailAddressesActive() {
                 listTypes: listTypes,
                 contacts: [
                     {
-                        email:
-                            user.communication_email ===
-                                CommunicationEmailCode.SECONDARY &&
-                            user.secondary_email
-                                ? user.secondary_email
-                                : user.primary_email,
+                        email: (user.communication_email ===
+                            CommunicationEmailCode.SECONDARY &&
+                        user.secondary_email
+                            ? user.secondary_email
+                            : user.primary_email) as string,
                         firstname: utils.capitalizeWords(
-                            user.username.split(".")[0]
+                            user?.username?.split(".")[0]
                         ),
                         lastname: utils.capitalizeWords(
                             user.username.split(".")[1]
                         ),
                         domaine: githubUsers.find((x) => user.username === x.id)
-                            .domaine,
+                            ?.domaine,
                     },
                 ],
             });
-            await smtpBlockedContactsEmailDelete({ email: user.primary_email });
+            await smtpBlockedContactsEmailDelete({
+                email: user.primary_email as string,
+            });
             await setEmailActive(user.username);
             // once email created we create marrainage
         })
@@ -123,12 +124,11 @@ export async function setCreatedEmailRedirectionsActive() {
                     listTypes: listTypes,
                     contacts: [
                         {
-                            email:
-                                user.communication_email ===
-                                    CommunicationEmailCode.SECONDARY &&
-                                user.secondary_email
-                                    ? user.secondary_email
-                                    : user.primary_email,
+                            email: (user.communication_email ===
+                                CommunicationEmailCode.SECONDARY &&
+                            user.secondary_email
+                                ? user.secondary_email
+                                : user.primary_email) as string,
                             firstname: utils.capitalizeWords(
                                 user.username.split(".")[0]
                             ),
@@ -137,12 +137,14 @@ export async function setCreatedEmailRedirectionsActive() {
                             ),
                             domaine: githubUsers.find(
                                 (x) => user.username === x.id
-                            ).domaine,
+                            )?.domaine,
                         },
                     ],
                 });
             }
-            await smtpBlockedContactsEmailDelete({ email: user.primary_email });
+            await smtpBlockedContactsEmailDelete({
+                email: user.primary_email as string,
+            });
             await setEmailRedirectionActive(user.username);
             // once email created we create marrainage
         })
@@ -164,10 +166,11 @@ export async function createRedirectionEmailAdresses() {
 
     const allOvhRedirectionEmails = Array.from(
         new Set([
-            ...redirections.reduce(
-                (acc, r) => (!isBetaEmail(r.to) ? [...acc, r.from] : acc),
+            ...(redirections.reduce(
+                (acc: string[], r) =>
+                    !isBetaEmail(r.to) ? [...acc, r.from] : acc,
                 []
-            ),
+            ) as []),
         ])
     ).sort();
     let unregisteredMembers: Member[] = _.differenceWith(
@@ -272,7 +275,7 @@ export async function reinitPasswordEmail() {
                 await BetaGouv.changePassword(
                     user.username,
                     newPassword,
-                    emailInfos.emailPlan
+                    emailInfos?.emailPlan
                 );
                 await setEmailSuspended(user.username);
                 console.log(
@@ -292,25 +295,33 @@ export async function reinitPasswordEmail() {
 export async function subscribeEmailAddresses() {
     const dbUsers: DBUser[] = await knex("users").whereNotNull("primary_email");
 
-    const githubUsers: Member[] = await getValidUsers();
-    const concernedUsers = githubUsers.reduce((acc, user) => {
-        const dbUser: DBUser = dbUsers.find((x) => x.username === user.id);
-        if (dbUser) {
-            acc.push({ ...user, ...{ primary_email: dbUser.primary_email } });
-        }
-        return acc;
-    }, []);
+    const githubUsers = await getValidUsers();
+    const concernedUsers = githubUsers.reduce(
+        (acc: (Member & { primary_email: string | undefined })[], user) => {
+            const dbUser = dbUsers.find((x) => x.username === user.id);
+            if (dbUser) {
+                acc.push({
+                    ...user,
+                    ...{ primary_email: dbUser.primary_email },
+                });
+            }
+            return acc;
+        },
+        []
+    );
 
     const allIncubateurSubscribers = await BetaGouv.getMailingListSubscribers(
         config.incubateurMailingListName
     );
-    const unsubscribedUsers = concernedUsers.filter((concernedUser) => {
-        return !allIncubateurSubscribers.find(
-            (email) =>
-                email.toLowerCase() ===
-                concernedUser.primary_email.toLowerCase()
-        );
-    });
+    const unsubscribedUsers = concernedUsers
+        .filter((concernedUser) => {
+            return !allIncubateurSubscribers.find(
+                (email) =>
+                    email.toLowerCase() ===
+                    concernedUser?.primary_email?.toLowerCase()
+            );
+        })
+        .filter((user) => user.primary_email);
     console.log(
         `Email subscription : ${unsubscribedUsers.length} unsubscribed user(s) in incubateur mailing list.`
     );
@@ -320,7 +331,7 @@ export async function subscribeEmailAddresses() {
         unsubscribedUsers.map(async (user) => {
             await BetaGouv.subscribeToMailingList(
                 config.incubateurMailingListName,
-                user.primary_email
+                user.primary_email as string
             );
             console.log(
                 `Subscribe ${user.primary_email} to mailing list incubateur`
@@ -335,13 +346,19 @@ export async function unsubscribeEmailAddresses() {
         users.filter((x) => utils.checkUserIsExpired(x))
     );
 
-    const concernedUsers = githubUsers.reduce((acc, user) => {
-        const dbUser: DBUser = dbUsers.find((x) => x.username === user.id);
-        if (dbUser) {
-            acc.push({ ...user, ...{ primary_email: dbUser.primary_email } });
-        }
-        return acc;
-    }, []);
+    const concernedUsers = githubUsers.reduce(
+        (acc: (Member & { primary_email: string | undefined })[], user) => {
+            const dbUser = dbUsers.find((x) => x.username === user.id);
+            if (dbUser) {
+                acc.push({
+                    ...user,
+                    ...{ primary_email: dbUser.primary_email },
+                });
+            }
+            return acc;
+        },
+        []
+    );
 
     const allIncubateurSubscribers: string[] =
         await BetaGouv.getMailingListSubscribers(
@@ -351,7 +368,7 @@ export async function unsubscribeEmailAddresses() {
         return concernedUsers.find(
             (concernedUser) =>
                 email.toLowerCase() ===
-                concernedUser.primary_email.toLowerCase()
+                concernedUser?.primary_email?.toLowerCase()
         );
     });
 

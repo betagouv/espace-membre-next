@@ -2,13 +2,13 @@ import PromiseMemoize from "promise-memoize";
 import config from "@config";
 import BetaGouv from "../../betagouv";
 import * as utils from "../utils";
-// import { AdminPage } from "@views";
 import betagouv from "../../betagouv";
-import { Domaine, Member } from "@models/member";
+import { Domaine, Member } from "@/models/member";
 import db from "../../db";
 import { CommunicationEmailCode, DBUser } from "@/models/dbUser/dbUser";
 import { getBetaEmailId, isBetaEmail } from "../utils";
 import { makeSendinblue } from "@infra/email/sendInBlue";
+import { OvhRedirection } from "@/models/ovh";
 
 const emailWithMetadataMemoized = PromiseMemoize(
     async () => {
@@ -17,13 +17,16 @@ const emailWithMetadataMemoized = PromiseMemoize(
             BetaGouv.redirections(),
             BetaGouv.usersInfos(),
         ]);
-
         const emails = Array.from(
             new Set([
-                ...redirections.reduce(
-                    (acc, r) => (!isBetaEmail(r.to) ? [...acc, r.from] : acc),
-                    []
-                ),
+                // Process redirections
+                ...redirections.reduce<string[]>((acc, r) => {
+                    if (!isBetaEmail(r.to)) {
+                        acc.push(r.from);
+                    }
+                    return acc;
+                }, []),
+                // Process accounts
                 ...accounts.map(utils.buildBetaEmail),
             ])
         ).sort();
@@ -38,7 +41,7 @@ const emailWithMetadataMemoized = PromiseMemoize(
                 github: user !== undefined,
                 redirections: redirections.reduce(
                     (acc, r) => (r.from === email ? [...acc, r.to] : acc),
-                    []
+                    [] as string[]
                 ),
                 account: accounts.includes(id),
                 endDate: user ? user.end : undefined,
@@ -59,7 +62,7 @@ export async function getSendinblueInfo(req, res) {
         MAIL_SENDER: config.senderEmail,
         SIB_APIKEY_PUBLIC: config.SIB_APIKEY_TECH_PUBLIC,
         SIB_APIKEY_PRIVATE: config.SIB_APIKEY_TECH_PRIVATE,
-        htmlBuilder: null,
+        htmlBuilder: undefined,
     });
 
     const startDate = new Date();
@@ -78,12 +81,12 @@ export async function getSendinblueInfo(req, res) {
     const sendInBlueCommu = makeSendinblue({
         MAIL_SENDER: config.senderEmail,
         SIB_APIKEY_PUBLIC: config.SIB_APIKEY_PUBLIC,
-        SIB_APIKEY_PRIVATE: config.SIB_APIKEY_PRIVATE,
-        htmlBuilder: null,
+        SIB_APIKEY_PRIVATE: config.SIB_APIKEY_PRIVATE!,
+        htmlBuilder: undefined,
     });
 
     let contacts = await sendInBlueCommu.getAllContactsFromList({
-        listId: config.MAILING_LIST_NEWSLETTER,
+        listId: config.MAILING_LIST_NEWSLETTER!,
     }); // SIB newsletter mailing list
     contacts = contacts.filter((c) => c.emailBlacklisted);
     const commuTransacBlockedContact =

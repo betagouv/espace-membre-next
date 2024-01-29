@@ -165,7 +165,7 @@ export async function postLoginApi(req, res) {
     } catch (err) {
         console.error(err);
         return res.status(500).json({
-            errors: err.message,
+            errors: err instanceof Error ? err.message : "",
         });
     }
 }

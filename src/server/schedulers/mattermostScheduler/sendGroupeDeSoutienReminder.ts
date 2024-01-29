@@ -10,10 +10,12 @@ export enum DAY_OF_THE_WEEK {
     SUNDAY = 7,
 }
 
-function getAllXDaysOfTheMonth(dayOfTheWeek: DAY_OF_THE_WEEK = 0): Date[] {
+function getAllXDaysOfTheMonth(
+    dayOfTheWeek: DAY_OF_THE_WEEK = DAY_OF_THE_WEEK.MONDAY
+): Date[] {
     var d = new Date(),
         month = d.getMonth(),
-        allXDaysOfTheWeek = [];
+        allXDaysOfTheWeek: Date[] = [];
 
     d.setDate(1);
 
@@ -38,7 +40,7 @@ const datesAreOnSameDay = (first: Date, second: Date) =>
 
 export const sendGroupDeSoutienReminder = async (
     canal: string = "general",
-    dayOfTheWeek: DAY_OF_THE_WEEK = 0,
+    dayOfTheWeek: DAY_OF_THE_WEEK = DAY_OF_THE_WEEK.MONDAY,
     nXDayOfTheWeek: number = 0
 ) => {
     const message = `# Groupe de soutien 

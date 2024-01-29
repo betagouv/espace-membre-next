@@ -15,29 +15,27 @@ import db from "@db";
 
 const getAccount = async (req, res, onSuccess, onError) => {
     try {
-        const [currentUser, marrainageState, dbUser, dbUserDetail]: [
-            MemberWithPermission,
-            string,
-            DBUser,
-            DBUserDetail
-        ] = await Promise.all([
-            (async () => utils.userInfos(req.auth.id, true))(),
-            (async () => {
-                const [state] = await db("marrainage").where({
-                    username: req.auth.id,
-                });
-                return state;
-            })(),
-            (async () => {
-                const rows = await db("users").where({ username: req.auth.id });
-                return rows.length === 1 ? rows[0] : null;
-            })(),
-            (async () => {
-                const hash = utils.computeHash(req.auth.id);
-                const rows = await db("user_details").where({ hash });
-                return rows.length === 1 ? rows[0] : {};
-            })(),
-        ]);
+        const [currentUser, marrainageState, dbUser, dbUserDetail] =
+            await Promise.all([
+                utils.userInfos(req.auth.id, true),
+                (async (): Promise<string> => {
+                    const [state] = await db("marrainage").where({
+                        username: req.auth.id,
+                    });
+                    return state;
+                })(),
+                (async (): Promise<DBUser | null> => {
+                    const rows = await db("users").where({
+                        username: req.auth.id,
+                    });
+                    return rows.length === 1 ? rows[0] : null;
+                })(),
+                (async (): Promise<DBUserDetail | null> => {
+                    const hash = utils.computeHash(req.auth.id);
+                    const rows = await db("user_details").where({ hash });
+                    return rows.length === 1 ? rows[0] : null;
+                })(),
+            ]);
         const today = new Date();
         const title = "Mon compte";
         const updatePullRequest = await db("pull_requests")
@@ -49,10 +47,10 @@ const getAccount = async (req, res, onSuccess, onError) => {
             .first();
 
         const hasPublicServiceEmail =
-            dbUser.primary_email &&
+            dbUser?.primary_email &&
             !dbUser.primary_email.includes(config.domain);
-        const gender = dbUserDetail.gender || "NSP";
-        let availableEmailPros = [];
+        const gender = dbUserDetail?.gender || "NSP";
+        let availableEmailPros: string[] = [];
         if (config.ESPACE_MEMBRE_ADMIN.includes(req.auth.id)) {
             availableEmailPros = await betagouv.getAvailableProEmailInfos();
         }
@@ -74,30 +72,31 @@ const getAccount = async (req, res, onSuccess, onError) => {
             updatePullRequest,
             canCreateRedirection: currentUser.canCreateRedirection,
             canChangePassword: currentUser.canChangePassword,
-            communication_email: dbUser.communication_email,
+            communication_email: dbUser?.communication_email,
             emailSuspended:
-                dbUser.primary_email_status === EmailStatusCode.EMAIL_SUSPENDED,
+                dbUser?.primary_email_status ===
+                EmailStatusCode.EMAIL_SUSPENDED,
             canChangeEmails: currentUser.canChangeEmails,
             redirections: currentUser.redirections,
-            secondaryEmail: dbUser.secondary_email,
-            primaryEmail: dbUser.primary_email,
+            secondaryEmail: dbUser?.secondary_email,
+            primaryEmail: dbUser?.primary_email,
             activeTab: "account",
             subActiveTab: "account",
             marrainageState,
-            tjm: dbUserDetail.tjm
+            tjm: dbUserDetail?.tjm
                 ? `${dbUserDetail.tjm} euros`
                 : "Non renseigné",
-            average_nb_of_days: dbUserDetail.average_nb_of_days,
+            average_nb_of_days: dbUserDetail?.average_nb_of_days,
             gender: genderOptions.find(
                 (opt) => opt.key.toLowerCase() === gender.toLowerCase()
-            ).name,
-            legal_status: dbUser.legal_status
+            )?.name,
+            legal_status: dbUser?.legal_status
                 ? statusOptions.find((opt) => opt.key === dbUser.legal_status)
-                      .name
+                      ?.name
                 : "Non renseigné",
-            workplace: dbUser.workplace_insee_code
+            workplace: dbUser?.workplace_insee_code
                 ? await fetchCommuneDetails(dbUser.workplace_insee_code).then(
-                      (commune) => commune.nom
+                      (commune) => commune?.nom
                   )
                 : "Non renseigné",
             formData: {},

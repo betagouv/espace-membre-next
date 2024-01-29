@@ -1,13 +1,10 @@
 import config from "@config";
 import * as utils from "@controllers/utils";
-import { MemberWithPermission } from "@models/member";
-import { BadgePage } from "@views";
 import DS from "@config/ds/ds.config";
 import { BadgeDossier } from "@models/badgeDemande";
 import { BADGE_REQUEST, BadgeRequest } from "@models/badgeRequests";
 import { getBadgeRequestWithStatus } from "@db/dbBadgeRequests";
 import db from "@db";
-import { DBUser } from "@models/dbUser";
 
 export async function getBadgePageApi(req, res) {
     getBadge(
@@ -26,35 +23,14 @@ export async function getBadgePageApi(req, res) {
     );
 }
 
-export async function getBadgePage(req, res) {
-    getBadge(
-        req,
-        res,
-        (data) => {
-            res.send(
-                BadgePage({
-                    ...data,
-                    errors: req.flash("error"),
-                    request: req,
-                    messages: req.flash("message"),
-                })
-            );
-        },
-        () => {
-            return res.redirect("/");
-        }
-    );
-}
-
 export async function getBadge(req, res, onSuccess, onError) {
     try {
-        const [currentUser, dbUser]: [MemberWithPermission, DBUser] =
-            await Promise.all([
-                (async () => utils.userInfos(req.auth.id, true))(),
-                db("users").where({ username: req.auth.id }).first(),
-            ]);
+        const [currentUser, dbUser] = await Promise.all([
+            (async () => utils.userInfos(req.auth.id, true))(),
+            db("users").where({ username: req.auth.id }).first(),
+        ]);
         // const dossiers = await DS.getAllDossiersForDemarche(config.DS_DEMARCHE_NUMBER)
-        let badgeRequest: BadgeRequest = await getBadgeRequestWithStatus(
+        let badgeRequest = await getBadgeRequestWithStatus(
             req.auth.id,
             BADGE_REQUEST.BADGE_REQUEST_PENDING
         );
@@ -74,12 +50,12 @@ export async function getBadge(req, res, onSuccess, onError) {
             dossier,
             currentUserId: req.auth.id,
             primaryEmail: dbUser.primary_email,
-            firstName: currentUser.userInfos.fullname.split(" ")[0],
-            lastName: currentUser.userInfos.fullname
+            firstName: currentUser.userInfos?.fullname.split(" ")[0],
+            lastName: currentUser.userInfos?.fullname
                 .split(" ")[1]
                 .toUpperCase(),
-            attributaire: currentUser.userInfos.employer.split("/")[1],
-            endDate: currentUser.userInfos.end,
+            attributaire: currentUser.userInfos?.employer.split("/")[1],
+            endDate: currentUser.userInfos?.end,
             domain: config.domain,
             isExpired: currentUser.isExpired,
             badgeRequest,

@@ -5,6 +5,7 @@ import { requiredError, isValidDate } from "@controllers/validator";
 import betagouv from "@betagouv";
 import { updateAuthorGithubFile } from "../helpers/githubHelpers";
 import { GithubAuthorChange } from "../helpers/githubHelpers/githubEntryInterface";
+import { GithubMission } from "@/models/mission";
 
 export async function updateEndDateForUser(req, res) {
     const { username } = req.params;
@@ -12,7 +13,7 @@ export async function updateEndDateForUser(req, res) {
     try {
         const formValidationErrors = {};
         const errorHandler = (field, message) => {
-            const errorMessagesForKey = [];
+            const errorMessagesForKey: string[] = [];
             // get previous message
             if (formValidationErrors[field]) {
                 errorMessagesForKey.push(formValidationErrors[field]);
@@ -49,13 +50,18 @@ export async function updateEndDateForUser(req, res) {
             throw new Error();
         }
         const info = await betagouv.userInfosById(username);
-        const missions = info.missions.map((mission) => ({
-            ...mission,
-            end: mission.end ? new Date(mission.end) : undefined,
-            start: mission.start ? new Date(mission.start) : undefined,
-        }));
-        missions[missions.length - 1].end = newEndDate;
-        const changes: GithubAuthorChange = { missions };
+        const missions =
+            info?.missions.map((mission) => ({
+                ...mission,
+                end: mission.end ? new Date(mission.end) : undefined,
+                start: mission.start ? new Date(mission.start) : undefined,
+            })) || [];
+        if (missions?.length) {
+            missions[missions.length - 1].end = newEndDate;
+        }
+        const changes: GithubAuthorChange = {
+            missions: missions as GithubMission[],
+        };
         await updateAuthorGithubFile(username, changes);
         addEvent(EventCode.MEMBER_END_DATE_UPDATED, {
             created_by_username: req.auth.id,
@@ -76,7 +82,9 @@ export async function updateEndDateForUser(req, res) {
         res.redirect(`/community/${username}`);
     } catch (err) {
         console.error(err);
-        req.flash("error", err.message);
+        if (err instanceof Error) {
+            req.flash("error", err.message);
+        }
         res.redirect(`/community/${username}`);
     }
 }

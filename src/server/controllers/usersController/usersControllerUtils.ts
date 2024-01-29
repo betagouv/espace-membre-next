@@ -83,9 +83,9 @@ export async function sendEmailCreatedEmail(username) {
     let emailUrl = "https://mail.ovh.net/roundcube/";
     try {
         const emailInfos = await betagouv.emailInfos(username);
-        if (emailInfos.isPro) {
+        if (emailInfos?.isPro) {
             emailUrl = "https://pro1.mail.ovh.net/";
-        } else if (emailInfos.isExchange) {
+        } else if (emailInfos?.isExchange) {
             emailUrl = "https://ex.mail.ovh.net/";
         }
     } catch (e) {

@@ -21,13 +21,11 @@ const computeStartDate = () => {
 };
 
 export async function postBadgeRequest(req, res) {
-    const [currentUser]: [MemberWithPermission] = await Promise.all([
-        (async () => userInfos(req.auth.id, true))(),
-    ]);
-    const endDate = currentUser.userInfos.end;
+    const currentUser = await userInfos(req.auth.id, true);
     const startDate = computeStartDate();
+    let endDate: Date;
 
-    let badgeRequest: BadgeRequest = await getBadgeRequestWithStatus(
+    let badgeRequest = await getBadgeRequestWithStatus(
         req.auth.id,
         BADGE_REQUEST.BADGE_REQUEST_PENDING
     );
@@ -42,6 +40,12 @@ export async function postBadgeRequest(req, res) {
     }
     if (!isRequestPendingToBeFilled) {
         try {
+            if (!currentUser.userInfos?.end) {
+                endDate = startDate;
+                endDate.setMonth(endDate.getMonth() + 6);
+            } else {
+                endDate = new Date(currentUser.userInfos?.end);
+            }
             const names = req.auth.id.split(".");
             const firstname = capitalizeWords(names.shift());
             const lastname = names
@@ -54,7 +58,7 @@ export async function postBadgeRequest(req, res) {
                     champ_Q2hhbXAtNjYxNzM3: lastname,
                     identite_prenom: firstname,
                     identite_nom: lastname,
-                    champ_Q2hhbXAtNjYxNzM4: currentUser.userInfos.employer
+                    champ_Q2hhbXAtNjYxNzM4: currentUser.userInfos?.employer
                         ? currentUser.userInfos.employer.split("/")[1]
                         : "",
                     champ_Q2hhbXAtNjcxODAy: endDate,
@@ -88,8 +92,8 @@ export async function postBadgeRequest(req, res) {
         }
     }
     return res.status(200).json({
-        request_id: badgeRequest.request_id,
-        dossier_token: badgeRequest.ds_token,
-        dossier_number: badgeRequest.dossier_number,
+        request_id: badgeRequest?.request_id,
+        dossier_token: badgeRequest?.ds_token,
+        dossier_number: badgeRequest?.dossier_number,
     });
 }

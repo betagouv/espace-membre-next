@@ -1,7 +1,6 @@
 import betagouv from "@betagouv";
 import * as utils from "@controllers/utils";
 import { DBUser, statusOptions, genderOptions } from "@/models/dbUser/dbUser";
-import { BaseInfoUpdatePage } from "@views";
 import { MemberWithPermission } from "@/models/member";
 import { PULL_REQUEST_STATE } from "@/models/pullRequests";
 import db from "@db";
@@ -24,41 +23,9 @@ export async function getBaseInfoUpdateApi(req, res) {
     );
 }
 
-export async function getBaseInfoUpdate(req, res) {
-    getBaseInfo(
-        req,
-        res,
-        (data) => {
-            res.send(
-                BaseInfoUpdatePage({
-                    ...data,
-                    errors: req.flash("error"),
-                    messages: req.flash("message"),
-                    request: req,
-                })
-            );
-        },
-        (err) => {
-            console.error(err);
-            req.flash("error", "Impossible de récupérer vos informations.");
-            return res.redirect("/");
-        }
-    );
-}
-
 const getBaseInfo = async (req, res, onSuccess, onError) => {
     try {
-        const [currentUser]: [MemberWithPermission, DBUser] = await Promise.all(
-            [
-                (async () => utils.userInfos(req.auth.id, true))(),
-                (async () => {
-                    const rows = await db("users").where({
-                        username: req.auth.id,
-                    });
-                    return rows.length === 1 ? rows[0] : null;
-                })(),
-            ]
-        );
+        const currentUser = await utils.userInfos(req.auth.id, true);
         const title = "Mon compte";
         const formValidationErrors = {};
         const startups: StartupInfo[] = await betagouv.startupsInfos();
@@ -68,7 +35,7 @@ const getBaseInfo = async (req, res, onSuccess, onError) => {
                 label: startup.attributes.name,
             };
         });
-        const userStartups = (currentUser.userInfos.startups || []).map(
+        const userStartups = (currentUser.userInfos?.startups || []).map(
             (userStartup) => {
                 const startupInfo = startups.find((s) => s.id === userStartup);
                 return {
@@ -78,7 +45,7 @@ const getBaseInfo = async (req, res, onSuccess, onError) => {
             }
         );
         const userPreviousStartups = (
-            currentUser.userInfos.previously || []
+            currentUser.userInfos?.previously || []
         ).map((userStartup) => {
             const startupInfo = startups.find((s) => s.id === userStartup);
             return {
@@ -106,10 +73,10 @@ const getBaseInfo = async (req, res, onSuccess, onError) => {
             updatePullRequest,
             formData: {
                 startups: userStartups || [],
-                role: currentUser.userInfos.role,
-                missions: currentUser.userInfos.missions,
-                end: currentUser.userInfos.end,
-                start: currentUser.userInfos.start,
+                role: currentUser.userInfos?.role,
+                missions: currentUser.userInfos?.missions,
+                end: currentUser.userInfos?.end,
+                start: currentUser.userInfos?.start,
                 previously: userPreviousStartups,
             },
         });

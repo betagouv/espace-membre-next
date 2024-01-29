@@ -84,7 +84,9 @@ export async function manageSecondaryEmailForUserHandler(
         }
     } catch (err) {
         console.error(err);
-        req.flash("error", err.message);
+        if (err instanceof Error) {
+            req.flash("error", err.message);
+        }
         onError();
     }
 }

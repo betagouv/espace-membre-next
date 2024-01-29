@@ -85,7 +85,7 @@ export async function updatePasswordForUserHandler(
         await BetaGouv.changePassword(
             username,
             password,
-            user.emailInfos.emailPlan
+            user.emailInfos?.emailPlan
         );
         await addEvent(EventCode.MEMBER_PASSWORD_UPDATED, {
             created_by_username: req.auth.id,
@@ -109,7 +109,9 @@ export async function updatePasswordForUserHandler(
     } catch (err) {
         console.error(err);
 
-        req.flash("error", err.message);
+        if (err instanceof Error) {
+            req.flash("error", err.message);
+        }
         onError(`/community/${username}`);
     }
 }

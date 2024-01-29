@@ -20,9 +20,11 @@ export async function createEmailAndUpdateSecondaryEmail(
     currentUser: string
 ) {
     const isCurrentUser = currentUser === username;
-    const [user, dbUser]: [MemberWithPermission, DBUser] = await Promise.all([
+    const [user, dbUser] = await Promise.all([
         utils.userInfos(username, isCurrentUser),
-        knex("users").where({ username }).first(),
+        ((): Promise<DBUser> => {
+            return knex("users").where({ username }).first();
+        })(),
     ]);
     if (!user.userInfos) {
         throw new Error(

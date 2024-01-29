@@ -44,12 +44,12 @@ export const getActiveGithubUsersUnregisteredOnMattermost = async (): Promise<
     const activeGithubUsers: Member[] = githubUsers.filter(
         (x) => !utils.checkUserIsExpired(x)
     );
-    const concernedUsers: MemberWithPrimaryEmailInfo[] = activeGithubUsers
+    const concernedUsers = activeGithubUsers
         .map((user: Member) => {
             const dbUser = findDBUser(dbUsers, user);
-            return mergedMemberAndDBUser(user, dbUser);
+            return mergedMemberAndDBUser(user, dbUser as DBUser);
         })
-        .filter(filterActiveUser);
+        .filter(filterActiveUser) as MemberWithPrimaryEmailInfo[];
     const allMattermostUsersEmails = allMattermostUsers.map(
         (mattermostUser) => mattermostUser.email
     );
@@ -69,10 +69,10 @@ export const getMattermostUsersActiveGithubUsersNotInTeam = async (
         (x) => !utils.checkUserIsExpired(x)
     );
     console.log(`Active github users ${activeGithubUsers.length}`);
-    const concernedUsers: MemberWithPrimaryEmailInfo[] = activeGithubUsers
+    const concernedUsers = activeGithubUsers
         .map((user: Member) => {
             const dbUser = findDBUser(dbUsers, user);
-            return mergedMemberAndDBUser(user, dbUser);
+            return mergedMemberAndDBUser(user, dbUser as DBUser);
         })
         .filter(filterActiveUser);
     console.log(`Active github users ${activeGithubUsers.length}`);
@@ -95,10 +95,10 @@ export const getMattermostUsersActiveGithubUsersInTeam = async (
         (x) => !utils.checkUserIsExpired(x)
     );
     console.log(`Active github users ${activeGithubUsers.length}`);
-    const concernedUsers: MemberWithPrimaryEmailInfo[] = activeGithubUsers
+    const concernedUsers = activeGithubUsers
         .map((user: Member) => {
             const dbUser = findDBUser(dbUsers, user);
-            return mergedMemberAndDBUser(user, dbUser);
+            return mergedMemberAndDBUser(user, dbUser as DBUser);
         })
         .filter(filterActiveUser);
     console.log(`Active github users ${activeGithubUsers.length}`);

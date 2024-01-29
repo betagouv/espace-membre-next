@@ -24,10 +24,6 @@ export async function postCurrentInfoApi(req, res) {
 
 export async function postCurrentInfoPage(req, res, onSuccess, onError) {
     const formValidationErrors = {};
-    const title = "Mon compte";
-    const [currentUser]: [MemberWithPermission] = await Promise.all([
-        (async () => utils.userInfos(req.auth.id, true))(),
-    ]);
     try {
         const username = req.auth.id;
         const gender = req.body.gender;
@@ -104,7 +100,7 @@ export async function postCurrentInfoPage(req, res, onSuccess, onError) {
 
         onSuccess();
     } catch (err) {
-        if (err.message) {
+        if (err instanceof Error) {
             req.flash("error", err.message);
         }
         onError();

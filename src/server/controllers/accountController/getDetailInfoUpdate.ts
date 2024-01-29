@@ -8,7 +8,6 @@ import {
     genderOptions,
 } from "@/models/dbUser/dbUser";
 import { fetchCommuneDetails } from "@lib/searchCommune";
-import { InfoUpdatePage } from "@views";
 import config from "@config";
 
 export async function getDetailInfoUpdateApi(req, res) {
@@ -24,28 +23,6 @@ export async function getDetailInfoUpdateApi(req, res) {
             res.status(500).json({
                 error: err,
             });
-        }
-    );
-}
-
-export async function getDetailInfoUpdate(req, res) {
-    getDetailInfoUpdatePageData(
-        req,
-        res,
-        (data) => {
-            res.send(
-                InfoUpdatePage({
-                    ...data,
-                    errors: req.flash("error"),
-                    messages: req.flash("message"),
-                    request: req,
-                })
-            );
-        },
-        (err) => {
-            console.error(err);
-            req.flash("error", "Impossible de récupérer vos informations.");
-            return res.redirect("/");
         }
     );
 }

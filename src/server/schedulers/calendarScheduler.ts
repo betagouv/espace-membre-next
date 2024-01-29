@@ -15,7 +15,7 @@ interface ReadableEvents {
 }
 
 const makeReadableEvent = (events) => {
-    const titles = [];
+    const titles: string[] = [];
     return events
         .sort((event) => event.startDate)
         .map((event) => ({

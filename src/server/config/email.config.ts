@@ -87,16 +87,16 @@ export const buildEmailHeader: Record<
 };
 
 export const EMAIL_CONFIG = {
-    MAIL_DEBUG: process.env.MAIL_DEBUG,
-    MAIL_HOST: process.env.MAIL_HOST,
-    MAIL_IGNORE_TLS: process.env.MAIL_IGNORE_TLS,
-    MAIL_PASS: process.env.MAIL_PASS,
-    MAIL_PORT: process.env.MAIL_PORT,
+    MAIL_DEBUG: process.env.MAIL_DEBUG!,
+    MAIL_HOST: process.env.MAIL_HOST!,
+    MAIL_IGNORE_TLS: process.env.MAIL_IGNORE_TLS!,
+    MAIL_PASS: process.env.MAIL_PASS!,
+    MAIL_PORT: process.env.MAIL_PORT!,
     MAIL_SENDER: process.env.MAIL_SENDER || "espace-membre@incubateur.net",
-    MAIL_SERVICE: process.env.MAIL_SERVICE,
-    MAIL_USER: process.env.MAIL_USER,
-    SIB_APIKEY_PUBLIC: process.env.SIB_APIKEY_PUBLIC,
-    SIB_APIKEY_PRIVATE: process.env.SIB_APIKEY_PRIVATE,
+    MAIL_SERVICE: process.env.MAIL_SERVICE!,
+    MAIL_USER: process.env.MAIL_USER!,
+    SIB_APIKEY_PUBLIC: process.env.SIB_APIKEY_PUBLIC!,
+    SIB_APIKEY_PRIVATE: process.env.SIB_APIKEY_PRIVATE!,
 };
 
 const {
@@ -122,7 +122,7 @@ if (process.env.NODE_ENV !== "test") {
         });
         const emailer: IMailingService = process.env.MAIL_USE_SIB
             ? sendInBlue
-            : {
+            : ({
                   sendEmail: makeSendEmailNodemailer({
                       MAIL_DEBUG,
                       MAIL_HOST,
@@ -139,7 +139,7 @@ if (process.env.NODE_ENV !== "test") {
                       MAIL_USER,
                       htmlBuilder,
                   }),
-              };
+              } as IMailingService);
         if (process.env.MAIL_USE_SIB) {
             console.log("Emails will be sent using Sendinblue");
         } else {

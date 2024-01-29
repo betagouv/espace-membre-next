@@ -90,7 +90,9 @@ export async function deleteEmailForUserHandler(req, res, onSuccess, onError) {
         onSuccess(redirectUrl);
     } catch (err) {
         console.error(err);
-        req.flash("error", err.message);
+        if (err instanceof Error) {
+            req.flash("error", err.message);
+        }
         onError(`/community/${username}`);
     }
 }

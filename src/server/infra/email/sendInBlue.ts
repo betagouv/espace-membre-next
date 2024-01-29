@@ -54,7 +54,7 @@ type SendEmailFromSendinblueDeps = {
               renderFile(url: string, params: any): Promise<string>;
               renderContentForType(params: EmailVariants): Promise<string>;
               renderSubjectForType(params: EmailVariants): string;
-              templates: Record<EmailProps["type"], string>;
+              templates: Record<EmailProps["type"], string | null>;
           }
         | undefined;
 };
@@ -75,7 +75,7 @@ type SendinblueDeps = {
               renderFile(url: string, params: any): Promise<string>;
               renderContentForType(params: EmailVariants): Promise<string>;
               renderSubjectForType(params: EmailVariants): string;
-              templates: Record<EmailProps["type"], string>;
+              templates: Record<EmailProps["type"], string | null>;
           }
         | undefined;
 };
@@ -164,8 +164,8 @@ export const makeSendCampaignEmail = ({
             forceTemplate,
         } = props;
 
-        let templateId: number;
-        let html: string;
+        let templateId: number | undefined;
+        let html: string | undefined;
         if (htmlContent) {
             html = htmlContent;
             if (!html.includes(`unsubscribe`)) {
@@ -176,15 +176,15 @@ export const makeSendCampaignEmail = ({
             if (!htmlBuilder || forceTemplate) {
                 templateId = TEMPLATE_ID_BY_TYPE[type];
                 if (!templateId) {
-                    return Promise.reject(
-                        new Error("Cannot find template for type " + type)
-                    );
+                    throw new Error("Cannot find template for type " + type);
                 }
             } else {
                 const templateURL = htmlBuilder.templates[type];
-                html = await htmlBuilder.renderFile(templateURL, {
-                    ...variables,
-                });
+                if (templateURL) {
+                    html = await htmlBuilder.renderFile(templateURL, {
+                        ...variables,
+                    });
+                }
             }
         }
 
@@ -279,7 +279,7 @@ export async function importContactsToMailingLists({
             console.error(error);
         }
     );
-    return;
+    return null;
 }
 
 export async function smtpBlockedContactsEmailDelete({
@@ -303,7 +303,7 @@ export async function unblacklistContactEmail({
     email,
 }: {
     email: string;
-}): Promise<null> {
+}): Promise<void> {
     let apiInstance = new SibApiV3Sdk.ContactsApi();
 
     let updateContact = new SibApiV3Sdk.UpdateContact();
@@ -445,61 +445,6 @@ export async function getContactInfo({ email }: { email: string }) {
     return data;
 }
 
-export async function addOrCreateContactsToMailingLists({
-    contacts,
-    listTypes,
-}) {
-    // importContactsToMailingLists to the same things but update contacts at the same time
-    let apiInstance = new SibApiV3Sdk.ContactsApi();
-    const emails = contacts.map((contact) => contact.email);
-    const listIds = listTypes.map((id) => MAILING_LIST_ID_BY_TYPE[id]);
-    const chunkSize = 25;
-    let newContacts = [];
-    for (const listId of listIds) {
-        const contacts: { email: string }[] = await getAllContactsFromList({
-            listId,
-        });
-        const listEmails = contacts.map((contact) => contact.email);
-        const concernedEmails = emails.filter((x) => !listEmails.includes(x));
-        for (let i = 0; i < concernedEmails.length; i += chunkSize) {
-            const concernedEmailsChunk = concernedEmails.slice(
-                i,
-                i + chunkSize
-            );
-            let contactEmails = new SibApiV3Sdk.AddContactToList();
-            contactEmails.emails = concernedEmailsChunk;
-            try {
-                const data: { contacts: { failure: string[] } } =
-                    await apiInstance.addContactToList(listId, contactEmails);
-                newContacts = [...newContacts, ...data.contacts.failure];
-            } catch (error) {
-                console.error(
-                    "Cannot add users ${error}",
-                    concernedEmailsChunk
-                );
-            }
-            // do whatever
-        }
-    }
-    for (const newContact of newContacts) {
-        try {
-            const contact = contacts.find(
-                (contact) => (contact.email = newContact)
-            );
-            await createContact({
-                email: newContact,
-                listIds,
-                attributes: {
-                    PRENOM: contact.firstname,
-                    NOM: contact.lastname,
-                },
-            });
-        } catch (error) {
-            console.error(`Cannot create contact ${error}`);
-        }
-    }
-}
-
 export async function addContactsToMailingLists({
     contacts,
     listTypes,
@@ -529,8 +474,8 @@ export const makeSendEmail = ({
             forceTemplate,
         } = props;
 
-        let templateId: number;
-        let html: string;
+        let templateId: number | undefined;
+        let html: string | undefined;
         let subject;
         console.log(`Will send email from SIB : ${forceTemplate}`);
         if (htmlContent) {

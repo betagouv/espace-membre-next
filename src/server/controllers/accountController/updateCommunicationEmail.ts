@@ -90,7 +90,9 @@ export async function updateCommunicationEmailHandler(
                 action_on_username: username,
                 action_metadata: {
                     value: communication_email,
-                    old_value: dbUser ? dbUser.communication_email : null,
+                    old_value: dbUser
+                        ? (dbUser.communication_email as string)
+                        : undefined,
                 },
             });
             const newEmail =
@@ -102,7 +104,7 @@ export async function updateCommunicationEmailHandler(
                     ? dbUser.primary_email
                     : dbUser.secondary_email;
             await changeContactEmail(previousEmail, {
-                email: newEmail,
+                email: newEmail as string,
                 firstname: capitalizeWords(dbUser.username.split(".")[0]),
                 lastname: capitalizeWords(dbUser.username.split(".")[1]),
             });
@@ -117,7 +119,9 @@ export async function updateCommunicationEmailHandler(
         onSuccess();
     } catch (err) {
         console.error(err);
-        req.flash("error", err.message);
+        if (err instanceof Error) {
+            req.flash("error", err.message);
+        }
         onError(err);
     }
 }

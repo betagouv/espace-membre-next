@@ -10,6 +10,6 @@ export default {
     },
     seeds: {
         extension: "ts",
-        directory: "./tests/seed",
+        directory: "./__tests__/seed",
     },
 };

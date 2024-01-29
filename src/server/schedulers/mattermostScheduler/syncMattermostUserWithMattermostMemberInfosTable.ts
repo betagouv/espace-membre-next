@@ -41,11 +41,13 @@ export async function syncMattermostUserWithMattermostMemberInfosTable() {
         const mattermostUser = mattermostUsers.find((mUser) =>
             isSameUser(mUser, dbUser)
         );
-        const mattermostMemberInfo: MattermostMemberInfo = {
-            username: dbUser.username,
-            mattermost_user_id: mattermostUser.id,
-        };
-        await db("mattermost_member_infos").insert(mattermostMemberInfo);
-        console.log(`Ajoute ${dbUser.username} à la table mattermost`);
+        if (mattermostUser) {
+            const mattermostMemberInfo: MattermostMemberInfo = {
+                username: dbUser.username,
+                mattermost_user_id: mattermostUser.id,
+            };
+            await db("mattermost_member_infos").insert(mattermostMemberInfo);
+            console.log(`Ajoute ${dbUser.username} à la table mattermost`);
+        }
     }
 }

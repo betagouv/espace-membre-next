@@ -47,10 +47,7 @@ export async function managePrimaryEmailForUserHandler(
     const { username } = req.params;
     const isCurrentUser = req.auth.id === username;
     const { primaryEmail } = req.body;
-    const user: MemberWithPermission = await utils.userInfos(
-        username,
-        isCurrentUser
-    );
+    const user = await utils.userInfos(username, isCurrentUser);
     try {
         if (!user.canChangeEmails) {
             throw new Error(
@@ -71,7 +68,7 @@ export async function managePrimaryEmailForUserHandler(
                 username,
             })
             .then((db) => db[0]);
-        if (dbUser.primary_email.includes(config.domain)) {
+        if (dbUser.primary_email?.includes(config.domain)) {
             await betagouv.createRedirection(
                 dbUser.primary_email,
                 primaryEmail,
@@ -102,7 +99,7 @@ export async function managePrimaryEmailForUserHandler(
             action_on_username: username,
             action_metadata: {
                 value: primaryEmail,
-                old_value: dbUser ? dbUser.primary_email : null,
+                old_value: dbUser ? dbUser.primary_email : undefined,
             },
         });
         req.flash(
@@ -113,7 +110,9 @@ export async function managePrimaryEmailForUserHandler(
         onSuccess();
     } catch (err) {
         console.error(err);
-        req.flash("error", err.message);
+        if (err instanceof Error) {
+            req.flash("error", err.message);
+        }
         onError();
     }
 }

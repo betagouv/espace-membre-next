@@ -1,30 +1,4 @@
-import { StartupInfoCreatePage } from "@views";
 import config from "@config";
-
-export async function getStartupInfoCreate(req, res) {
-    getStartupInfoCreatePageData(
-        req,
-        res,
-        (data) => {
-            res.send(
-                StartupInfoCreatePage({
-                    ...data,
-                    errors: req.flash("error"),
-                    messages: req.flash("message"),
-                    request: req,
-                })
-            );
-        },
-        (err) => {
-            console.error(err);
-            req.flash(
-                "error",
-                "Impossible de récupérer les information de la startup."
-            );
-            return res.redirect("/");
-        }
-    );
-}
 
 export async function getStartupInfoCreateApi(req, res) {
     getStartupInfoCreatePageData(

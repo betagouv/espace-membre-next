@@ -16,12 +16,6 @@ import {
     removeGithubUserFromOrganization,
 } from "./githubScheduler";
 import {
-    reloadMarrainages,
-    createMarrainages,
-    checkMarrainageStatus,
-    comsumeMarrainageStatusEvent,
-} from "./marrainageScheduler";
-import {
     createUsersByEmail,
     moveUsersToAlumniTeam,
     reactivateUsers,
@@ -52,15 +46,10 @@ import { setEmailExpired } from "@schedulers/setEmailExpired";
 import { sendMessageToActiveUsersWithoutSecondaryEmail } from "./updateProfileScheduler";
 import {
     buildCommunityBDD,
-    publishJobsToMattermost,
-    publishJobsWTTJToMattermost,
-    sendMessageToTeamForJobOpenedForALongTime,
     syncBetagouvStartupAPI,
     syncBetagouvUserAPI,
 } from "./syncBetagouvAPIScheduler";
 import { postEventsOnMattermost } from "./calendarScheduler";
-import ConsumeEmailEvent from "./emailScheduler/consumeEmailEvent";
-import EventBus from "@infra/eventBus/eventBus";
 import {
     removeBetaAndParnersUsersFromCommunityTeam,
     sendReminderToUserAtDays,
@@ -120,33 +109,6 @@ const onTickWrapper = (
         }
     };
 };
-
-const marrainageJobs: Job[] = [
-    {
-        cronTime: "0 0 10 * * 1-5",
-        onTick: reloadMarrainages,
-        isActive: false,
-        name: "reloadMarrainageJob",
-    },
-    {
-        cronTime: "0 */2 * * * *",
-        onTick: createMarrainages,
-        isActive: !!config.FEATURE_CREATE_MARRAINAGE,
-        name: "createMarrainages",
-    },
-    {
-        cronTime: "0 */10 * * * 1-5",
-        onTick: checkMarrainageStatus,
-        isActive: !!config.FEATURE_USE_NEW_MARRAINAGE,
-        name: "checkMarrainageStatus",
-    },
-    {
-        cronTime: "0 */10 * * * 1-5",
-        onTick: () => comsumeMarrainageStatusEvent(EventBus),
-        isActive: !!config.FEATURE_USE_NEW_MARRAINAGE,
-        name: "comsumeMarrainageStatusEvent",
-    },
-];
 
 const mattermostJobs: Job[] = [
     {
@@ -217,8 +179,8 @@ const mattermostJobs: Job[] = [
             postEventsOnMattermost({
                 numberOfDays: 6,
                 canal: "general",
-                calendarURL: config.CALENDAR_URL,
-                calendarPublicUrl: config.CALENDAR_PUBLIC_URL,
+                calendarURL: config.CALENDAR_URL!,
+                calendarPublicUrl: config.CALENDAR_PUBLIC_URL!,
                 chatWebhook: config.CHAT_WEBHOOK_URL_GENERAL,
             }),
         timeZone: "Europe/Paris",
@@ -231,41 +193,13 @@ const mattermostJobs: Job[] = [
         onTick: () =>
             postEventsOnMattermost({
                 numberOfDays: 6,
-                calendarURL: config.CALENDAR_GIP_URL,
-                calendarPublicUrl: config.CALENDAR_GIP_PUBLIC_URL,
+                calendarURL: config.CALENDAR_GIP_URL!,
+                calendarPublicUrl: config.CALENDAR_GIP_PUBLIC_URL!,
                 chatWebhook: config.CHAT_WEBHOOK_URL_GIP,
             }),
         timeZone: "Europe/Paris",
         isActive: true,
         name: "Post event of the week from gip calendar",
-    },
-    {
-        cronTime: "0 10 * * *", // every day at 10,
-        onTick: publishJobsToMattermost,
-        start: true,
-        timeZone: "Europe/Paris",
-        isActive: !!config.FEATURE_PUBLISH_JOBS_TO_MATTERMOST,
-        name: "publishJobsToMattermost",
-        description: "Publish job offer to mattermost on dedicated channel",
-    },
-    {
-        cronTime: "0 10 * * *", // every day at 10,
-        onTick: publishJobsWTTJToMattermost,
-        start: true,
-        timeZone: "Europe/Paris",
-        isActive: !!config.FEATURE_PUBLISH_WTTJ_JOBS_TO_MATTERMOST,
-        name: "publishJobsWTTJToMattermost",
-        description:
-            "Publish wttj job offer to mattermost on dedicated channel",
-    },
-];
-
-const emailJobs: Job[] = [
-    {
-        cronTime: "0 */4 * * * *",
-        onTick: ConsumeEmailEvent,
-        isActive: !!config.FEATURE_USE_NEW_MARRAINAGE,
-        name: "ConsumeEmailEvent",
     },
 ];
 
@@ -386,8 +320,6 @@ const synchronizationJobs = [
 
 const jobs: Job[] = [
     ...newsletterJobs,
-    ...marrainageJobs,
-    ...emailJobs,
     ...mattermostJobs,
     ...startupJobs,
     ...metricJobs,
@@ -553,16 +485,6 @@ const jobs: Job[] = [
         name: "sendMessageToActiveUsersWithoutSecondaryEmail",
         description:
             "Send message to active user without secondary email to update secondary email",
-    },
-    {
-        cronTime: "0 0 10 * * 1",
-        onTick: sendMessageToTeamForJobOpenedForALongTime,
-        start: true,
-        timeZone: "Europe/Paris",
-        isActive:
-            !!config.FEATURE_SEND_MESSAGE_TO_TEAM_FOR_JOB_OPENED_FOR_A_LONG_TIME,
-        name: "sendMessageToTeamForJobOpenedForALongTime",
-        description: "Send message to team to remind them to close job offer",
     },
 ];
 

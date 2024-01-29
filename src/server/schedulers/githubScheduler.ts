@@ -26,7 +26,7 @@ const getGithubUsersNotInOrganization = async (org) => {
         r.login.toLowerCase()
     );
     const githubUserNotOnOrganization = activeGithubUsers.filter((user) => {
-        const githubUsername = user.github.toLowerCase();
+        const githubUsername = user?.github?.toLowerCase();
         return (
             !allGithubOrganizationMembersUsername.includes(githubUsername) &&
             !pendingInvitationsUsernames.includes(githubUsername)
@@ -56,7 +56,7 @@ const getExpiredGithubUsersInOrganization = async (
         );
 
     const githubUserNotOnOrganization = expiredGithubUsers.filter((user) => {
-        const githubUsername = user.github.toLowerCase();
+        const githubUsername = user?.github?.toLowerCase();
         return allGithubOrganizationMembersUsername.includes(githubUsername);
     });
 

@@ -12,6 +12,7 @@ import {
     GithubAuthorChange,
     GithubBetagouvFile,
 } from "@controllers/helpers/githubHelpers/githubEntryInterface";
+import { GithubMission } from "@/models/mission";
 
 export async function postBaseInfoUpdate(req, res) {
     const { username } = req.params;
@@ -55,14 +56,17 @@ export async function postBaseInfoUpdate(req, res) {
         }
 
         const info = await betagouv.userInfosById(username);
-        const missions = info.missions.map((mission) => ({
-            ...mission,
-            end: mission.end ? new Date(mission.end) : undefined,
-            start: mission.start ? new Date(mission.start) : undefined,
-        }));
-        missions[missions.length - 1].end = newEndDate;
+        const missions =
+            info?.missions.map((mission) => ({
+                ...mission,
+                end: mission.end ? new Date(mission.end) : undefined,
+                start: mission.start ? new Date(mission.start) : undefined,
+            })) || [];
+        if (missions.length) {
+            missions[missions.length - 1].end = newEndDate;
+        }
         const changes: GithubAuthorChange = {
-            missions,
+            missions: missions as GithubMission[],
             role,
             startups,
             previously,
@@ -101,9 +105,13 @@ export async function postBaseInfoUpdate(req, res) {
             pr_url: prInfo.html_url,
         });
     } catch (err) {
-        res.status(400).json({
-            message: err.message,
-            errors: err.cause,
-        });
+        let message;
+        if (err instanceof Error) {
+            message = {
+                message: err.message,
+                errors: err.cause,
+            };
+        }
+        res.status(400).json(message);
     }
 }

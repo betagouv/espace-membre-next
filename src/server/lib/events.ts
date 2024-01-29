@@ -32,8 +32,8 @@ interface ActionMetadata {
 
 interface Event {
     action_code: EventCode;
-    action_metadata: ActionMetadata;
-    action_on_username: string;
+    action_metadata: ActionMetadata | undefined;
+    action_on_username: string | undefined;
     created_by_username: string;
 }
 

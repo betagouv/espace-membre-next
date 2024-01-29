@@ -2,7 +2,8 @@ import {
     createDefaultObjectWithKeysAndValue,
     formatDateToISOString,
     sortASC,
-} from "@/controllers/utils";
+} from "@controllers/utils";
+import { DBUser } from "@/models/dbUser";
 import db from "@db";
 
 const convert = (str) =>
@@ -11,7 +12,7 @@ const convert = (str) =>
         .replace(/[\u0300-\u036f]/g, "")
         .toLowerCase();
 
-export const communityBdd = async (users = []) => {
+export const communityBdd = async (users: DBUser[] = []) => {
     await db("community").truncate();
     const result = {
         employer: {
@@ -50,7 +51,7 @@ export const communityBdd = async (users = []) => {
 
     const now = new Date();
     for (const user of users) {
-        const missions = user["missions"] || [];
+        const missions = JSON.parse(user["missions"] || []);
         for (const mission of missions) {
             const startDate = mission["start"];
             const endDate = mission["end"];
@@ -84,7 +85,7 @@ export const communityBdd = async (users = []) => {
             }
             if (
                 user["missions"].length &&
-                user["missions"][user.missions.length - 1]["end"] >= now
+                user["missions"][missions.length - 1]["end"] >= now
             ) {
                 result["domaine"][convert(user.domaine)] =
                     result["domaine"][convert(user.domaine)] + 1;
@@ -208,7 +209,7 @@ export const communityBdd = async (users = []) => {
 };
 
 export async function buildCommunityBDD() {
-    const users = await db("users");
+    const users: DBUser[] = await db("users");
     const datasets = await communityBdd(users);
     return datasets;
 }

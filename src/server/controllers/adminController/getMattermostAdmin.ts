@@ -1,31 +1,10 @@
 import config from "@config";
 import { MattermostChannel } from "@lib/mattermost";
-import { getMattermostUsersWithStatus } from "@schedulers/mattermostScheduler/removeBetaAndParnersUsersFromCommunityTeam";
-import { AdminMattermostPage } from "../../views";
+import {
+    MattermostUserWithStatus,
+    getMattermostUsersWithStatus,
+} from "@schedulers/mattermostScheduler/removeBetaAndParnersUsersFromCommunityTeam";
 import { getAllChannels } from "@infra/chat";
-
-export function getMattermostAdmin(req, res) {
-    getMattermostAdminPageData(
-        req,
-        res,
-        (data) => {
-            res.send(
-                AdminMattermostPage({
-                    ...data,
-                    errors: req.flash("error"),
-                    messages: req.flash("message"),
-                    request: req,
-                })
-            );
-        },
-        (err) => {
-            console.error(err);
-            return res.send(
-                "Erreur interne : impossible de récupérer les informations de la communauté"
-            );
-        }
-    );
-}
 
 export function getMattermostAdminApi(req, res) {
     getMattermostAdminPageData(
@@ -41,7 +20,7 @@ export function getMattermostAdminApi(req, res) {
 }
 
 async function getMattermostAdminPageData(req, res, onSuccess, onError) {
-    let users = [];
+    let users: MattermostUserWithStatus[] = [];
 
     if (process.env.NODE_ENV === "production") {
         users = await getMattermostUsersWithStatus({

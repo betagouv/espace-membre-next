@@ -1,39 +1,53 @@
-import ICAL from 'ical.js';
-import axios from 'axios';
+import ICAL from "ical.js";
+import axios from "axios";
 
-const isOccurenceOverdue = function(event, startDate) {
-    const rule = event.component.getFirstPropertyValue('rrule')
-    if (rule.count && rule.freq === 'WEEKLY') {
-        const date = new Date(event.startDate)
-        date.setDate(date.getDate() + (7 * rule.interval * rule.count))
-        return date < startDate
+const isOccurenceOverdue = function (event, startDate) {
+    const rule = event.component.getFirstPropertyValue("rrule");
+    if (rule.count && rule.freq === "WEEKLY") {
+        const date = new Date(event.startDate);
+        date.setDate(date.getDate() + 7 * rule.interval * rule.count);
+        return date < startDate;
     }
-    return true
-}
+    return true;
+};
 
 const buildEvent = (occurence, initialEvent) => {
-    const startDate = new Date(occurence.startDate)
-    const endDate = new Date(occurence.endDate)
-    const initStartDate = new Date(initialEvent.startDate)
-    const initEndDate = new Date(initialEvent.endtDate)
-    startDate.setHours(initStartDate.getHours())
-    endDate.setHours(initEndDate.getHours())
-    startDate.setMinutes(initStartDate.getMinutes())
-    endDate.setMinutes(initEndDate.getMinutes())
+    const startDate = new Date(occurence.startDate);
+    const endDate = new Date(occurence.endDate);
+    const initStartDate = new Date(initialEvent.startDate);
+    const initEndDate = new Date(initialEvent.endtDate);
+    startDate.setHours(initStartDate.getHours());
+    endDate.setHours(initEndDate.getHours());
+    startDate.setMinutes(initStartDate.getMinutes());
+    endDate.setMinutes(initEndDate.getMinutes());
     return {
         startDate,
         endDate,
         location: initialEvent.location,
         title: initialEvent.summary,
-        duration: initialEvent.duration
-    }
+        duration: initialEvent.duration,
+    };
+};
+
+interface CalEvent {
+    startDate: Date;
+    endDate: Date;
+    location: string;
+    title: string;
+    duration: string;
 }
 
-export const getEventsForCalendarFromDateToDate = async (calendarIcalUrl, startDate, endDate) => {
-    const iCalendarData = await axios.get(calendarIcalUrl).then(res => res.data)
+export const getEventsForCalendarFromDateToDate = async (
+    calendarIcalUrl,
+    startDate,
+    endDate
+) => {
+    const iCalendarData = await axios
+        .get(calendarIcalUrl)
+        .then((res) => res.data);
     const jcalData = ICAL.parse(iCalendarData);
     const vcalendar = new ICAL.Component(jcalData);
-    console.log('Get events for calendar from date to date', calendarIcalUrl)
+    console.log("Get events for calendar from date to date", calendarIcalUrl);
     // Get all non recurrent event
     const time = new ICAL.Time({
         year: startDate.getFullYear(),
@@ -41,44 +55,53 @@ export const getEventsForCalendarFromDateToDate = async (calendarIcalUrl, startD
         day: startDate.getDate(),
         minute: 0,
         second: 0,
-        isDate: false
+        isDate: false,
     });
-    let vevents = vcalendar.getAllSubcomponents('vevent')
-    console.log('Get events for calendar number of events : ', vevents.length)
+    let vevents = vcalendar.getAllSubcomponents("vevent");
+    console.log("Get events for calendar number of events : ", vevents.length);
 
-    const events = []
+    const events: CalEvent[] = [];
 
     for (const item of vevents) {
-        const vevent = new ICAL.Event(item)
+        const vevent = new ICAL.Event(item);
         if (vevent.isRecurring()) {
-            const iter = vevent.iterator(time)
+            const iter = vevent.iterator(time);
             for (let next = iter.next(); next; next = iter.next()) {
-                if (vevent.component.getFirstPropertyValue('rrule').count && isOccurenceOverdue(vevent, startDate)) {
+                if (
+                    vevent.component.getFirstPropertyValue("rrule").count &&
+                    isOccurenceOverdue(vevent, startDate)
+                ) {
                     continue;
                 }
                 const occ = vevent.getOccurrenceDetails(next);
-                if ((new Date(occ.startDate) >= startDate && new Date(occ.endDate) <= endDate)) {
-                    events.push(buildEvent(occ, vevent))
+                if (
+                    new Date(occ.startDate) >= startDate &&
+                    new Date(occ.endDate) <= endDate
+                ) {
+                    events.push(buildEvent(occ, vevent));
                 }
-                if ((new Date(occ.startDate) > endDate)) {
+                if (new Date(occ.startDate) > endDate) {
                     break;
                 }
             }
         } else {
-            if (new Date(vevent.startDate) >= startDate && new Date(vevent.endDate) <= endDate) {
-            events.push({
-                startDate: new Date(vevent.startDate),
-                endDate: new Date(vevent.endDate),
-                location: vevent.location,
-                title: vevent.summary,
-                duration: vevent.duration
-            })
+            if (
+                new Date(vevent.startDate) >= startDate &&
+                new Date(vevent.endDate) <= endDate
+            ) {
+                events.push({
+                    startDate: new Date(vevent.startDate),
+                    endDate: new Date(vevent.endDate),
+                    location: vevent.location,
+                    title: vevent.summary,
+                    duration: vevent.duration,
+                });
             }
         }
     }
-    return events.sort((a,b) => a.startDate - b.startDate);
-}
+    return events.sort((a, b) => a.startDate.getTime() - b.startDate.getTime());
+};
 
 export default {
-    getEventsForCalendarFromDateToDate
-}
+    getEventsForCalendarFromDateToDate,
+};

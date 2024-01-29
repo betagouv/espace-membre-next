@@ -34,13 +34,20 @@ const CRON_TASK_ENV_VAR = {
     AIRTABLE_FORMATION_BASE_ID: process.env.AIRTABLE_FORMATION_BASE_ID,
 };
 
+const getOrThrowError = (key: string): string => {
+    if (process.env[key] && typeof process.env[key] === "string") {
+        return process.env[key] as string;
+    }
+    throw new Error(`Environement variable ${key} is required`);
+};
+
 export default {
     ...CRON_TASK_ENV_VAR,
     AUTH_URL: process.env.AUTH_URL,
     OVH_APP_KEY: process.env.OVH_APP_KEY,
     OVH_APP_SECRET: process.env.OVH_APP_SECRET,
     OVH_CONSUMER_KEY: process.env.OVH_CONSUMER_KEY,
-    secret: process.env.SESSION_SECRET,
+    secret: getOrThrowError(`SESSION_SECRET`),
     secure: isSecure,
     protocol: isSecure ? "https" : "http",
     host: process.env.HOSTNAME,
@@ -50,7 +57,9 @@ export default {
     CALENDAR_GIP_URL: process.env.CALENDAR_GIP_URL,
     CALENDAR_GIP_PUBLIC_URL: process.env.CALENDAR_GIP_PUBLIC_URL,
     CHATWOOT_ID: process.env.CHATWOOT_ID,
-    CHATWOOT_IGNORE_EMAILS: process.env.CHATWOOT_IGNORE_EMAILS || [],
+    CHATWOOT_IGNORE_EMAILS: (process.env.CHATWOOT_IGNORE_EMAILS || "").split(
+        ""
+    ),
     CHATWOOT_BADGE_ID: process.env.CHATWOOT_BADGE_ID,
     CORS_ORIGIN: process.env.CORS_ORIGIN
         ? process.env.CORS_ORIGIN.split(",")
@@ -90,10 +99,12 @@ export default {
     mattermostURL:
         process.env.MATTERMOST_URL || "https://mattermost.incubateur.net",
     senderEmail: process.env.MAIL_SENDER || "espace-membre@incubateur.net",
-    CHAT_WEBHOOK_URL_SECRETARIAT: process.env.CHAT_WEBHOOK_URL_SECRETARIAT,
-    CHAT_WEBHOOK_URL_GENERAL: process.env.CHAT_WEBHOOK_URL_GENERAL,
-    CHAT_WEBHOOK_URL_DINUM: process.env.CHAT_WEBHOOK_URL_DINUM,
-    CHAT_WEBHOOK_URL_GIP: process.env.CHAT_WEBHOOK_URL_GIP,
+    CHAT_WEBHOOK_URL_SECRETARIAT: getOrThrowError(
+        "CHAT_WEBHOOK_URL_SECRETARIAT"
+    ),
+    CHAT_WEBHOOK_URL_GENERAL: getOrThrowError("CHAT_WEBHOOK_URL_GENERAL"),
+    CHAT_WEBHOOK_URL_DINUM: getOrThrowError("CHAT_WEBHOOK_URL_DINUM"),
+    CHAT_WEBHOOK_URL_GIP: getOrThrowError("CHAT_WEBHOOK_URL_GIP"),
     FRONT_URL: process.env.FRONT_URL,
     SPONSOR_API:
         process.env.SPONSOR_API ||
@@ -113,7 +124,7 @@ export default {
     githubOrganizationName: process.env.GITHUB_ORGANIZATION_NAME || "betagouv",
     githubOrgAdminToken: process.env.GITHUB_ORG_ADMIN_TOKEN,
     githubRepository: process.env.GITHUB_REPOSITORY,
-    githubFork: process.env.GITHUB_FORK,
+    githubFork: getOrThrowError("GITHUB_FORK"),
     githubBetagouvTeam: process.env.GITHUB_BETAGOUV_TEAM || "beta-gouv-fr",
     defaultLoggedInRedirectUrl: "/account",
     visitRecipientEmail:
@@ -124,18 +135,19 @@ export default {
     ESPACE_MEMBRE_ADMIN: process.env.ESPACE_MEMBRE_ADMIN
         ? process.env.ESPACE_MEMBRE_ADMIN.split(",")
         : [],
-    MAILING_LIST_NEWSLETTER: process.env.MAILING_LIST_NEWSLETTER
-        ? parseInt(process.env.MAILING_LIST_NEWSLETTER)
-        : null,
+    MAILING_LIST_NEWSLETTER: parseInt(
+        getOrThrowError("MAILING_LIST_NEWSLETTER")
+    ),
     MAILING_LIST_ONBOARDING: process.env.MAILING_LIST_ONBOARDING
         ? parseInt(process.env.MAILING_LIST_ONBOARDING)
         : null,
     MAILING_LIST_REMINDER: process.env.MAILING_LIST_REMINDER
         ? parseInt(process.env.MAILING_LIST_REMINDER)
         : null,
-    MARRAINAGE_GROUP_LIMIT: parseInt(process.env.MARRAINAGE_GROUP_LIMIT) || 5,
-    MARRAINAGE_GROUP_WEEK_LIMIT:
-        parseInt(process.env.MARRAINAGE_GROUP_WEEK_LIMIT) || 2,
+    MARRAINAGE_GROUP_LIMIT: parseInt(process.env.MARRAINAGE_GROUP_LIMIT || "5"),
+    MARRAINAGE_GROUP_WEEK_LIMIT: parseInt(
+        process.env.MARRAINAGE_GROUP_WEEK_LIMIT || "2"
+    ),
     mattermostBotToken: process.env.MATTERMOST_BOT_TOKEN,
     mattermostTeamId: process.env.MATTERMOST_TEAM_ID || "testteam",
     mattermostAlumniTeamId:
@@ -152,7 +164,7 @@ export default {
         : [],
     MATTERMOST_EMAIL_REGEX_EXCEPTION:
         process.env.MATTERMOST_EMAIL_REGEX_EXCEPTION,
-    OVH_EMAIL_PRO_NAME: process.env.OVH_EMAIL_PRO_NAME,
+    OVH_EMAIL_PRO_NAME: getOrThrowError("OVH_EMAIL_PRO_NAME"),
     OVH_EMAIL_EXCHANGE_NAME: process.env.OVH_EMAIL_EXCHANGE_NAME,
     investigationReportsIframeURL:
         process.env.INVESTIGATION_REPORTS_IFRAME_URL || "",
@@ -236,9 +248,11 @@ export default {
     SIB_WEBHOOK_ID: process.env.SIB_WEBHOOK_ID,
     SIB_APIKEY_PRIVATE: process.env.SIB_APIKEY_PRIVATE,
     SIB_APIKEY_PUBLIC: process.env.SIB_APIKEY_TECH_PUBLIC,
-    SIB_APIKEY_TECH_PRIVATE: process.env.SIB_APIKEY_TECH_PRIVATE,
+    SIB_APIKEY_TECH_PRIVATE: process.env.SIB_APIKEY_TECH_PRIVATE!,
     SIB_APIKEY_TECH_PUBLIC: process.env.SIB_APIKEY_TECH_PUBLIC,
     tchap_api: process.env.TCHAP_API,
     HASH_SALT: process.env.HASH_SALT,
-    REDIS_URL: process.env.REDIS_URL,
+    REDIS_URL: getOrThrowError("REDIS_URL"),
+    GITHUB_CLIENT_ID: getOrThrowError("GITHUB_CLIENT_ID"),
+    GITHUB_CLIENT_SECRET: getOrThrowError("GITHUB_CLIENT_SECRET"),
 };

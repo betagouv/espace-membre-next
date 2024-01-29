@@ -3,7 +3,7 @@ import db from "@db";
 import { PULL_REQUEST_STATE } from "@/models/pullRequests";
 import config from "@config";
 import { Member } from "@models/member";
-import { PHASE_READABLE_NAME, Startup } from "@models/startup";
+import { PHASE_READABLE_NAME, Startup, StartupPhase } from "@/models/startup";
 
 function getCurrentPhase(startup: Startup) {
     return startup.phases
@@ -50,7 +50,10 @@ export async function getStartupApi(req, res) {
 async function getStartupPageData(req, res, onSuccess, onError) {
     try {
         const { startup } = req.params;
-        const startupInfos: Startup = await betagouv.startupInfosById(startup);
+        const startupInfos = await betagouv.startupInfosById(startup);
+        if (!startupInfos) {
+            throw new Error("Not found");
+        }
         const usersInfos: Member[] = await betagouv.usersInfos();
         const members = {};
         const memberTypes = [
@@ -75,7 +78,11 @@ async function getStartupPageData(req, res, onSuccess, onError) {
             title,
             currentUserId: req.auth.id,
             startupInfos: startupInfos,
-            currentPhase: PHASE_READABLE_NAME[getCurrentPhase(startupInfos)],
+            currentPhase: getCurrentPhase(startupInfos)
+                ? PHASE_READABLE_NAME[
+                      getCurrentPhase(startupInfos) as StartupPhase
+                  ]
+                : undefined,
             members,
             isAdmin: config.ESPACE_MEMBRE_ADMIN.includes(req.auth.id),
             subActiveTab: "list",

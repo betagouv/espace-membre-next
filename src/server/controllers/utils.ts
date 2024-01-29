@@ -4,12 +4,12 @@ import nodemailer from "nodemailer";
 import BetaGouv from "../betagouv";
 import config from "@config";
 import crypto from "crypto";
-import { Member } from "@/models/member";
+import { EmailInfos, Member } from "@/models/member";
 
 export const computeHash = function (username) {
     const hash = crypto.createHmac(
         "sha512",
-        config.HASH_SALT
+        config.HASH_SALT as string
     ); /** Hashing algorithm sha512 */
     return hash.update(username).digest("hex");
 };
@@ -82,7 +82,13 @@ export const isBetaEmail = (email) =>
 
 export const getBetaEmailId = (email) => email && email.split("@")[0];
 
-export function objectArrayToCSV<T>(arr: Array<T>) {
+export function objectArrayToCSV<T extends Record<string, any>>(
+    arr: T[]
+): string {
+    if (arr.length === 0) {
+        return ""; // or handle empty array case as needed
+    }
+
     const replacer = (key, value) => (value === null ? "" : value); // specify how you want to handle null values here
     const header = Object.keys(arr[0]);
     const csv = [
@@ -128,7 +134,7 @@ export function getExpiredUsers(users: Member[], minDaysOfExpiration = 0) {
 export function getExpiredUsersForXDays(users: Member[], nbDays) {
     const date = new Date();
     date.setDate(date.getDate() - nbDays);
-    const formatedDate = this.formatDateYearMonthDay(date);
+    const formatedDate = formatDateYearMonthDay(date);
     return users.filter((x) => x.end === formatedDate);
 }
 
@@ -268,7 +274,22 @@ export const asyncFilter = async (arr: Array<any>, predicate) => {
     return arr.filter((_v, index) => results[index]);
 };
 
-export async function userInfos(id, isCurrentUser) {
+export interface UserInfos {
+    emailInfos: EmailInfos | null;
+    userInfos: Member | undefined;
+    redirections: any[];
+    isExpired: boolean;
+    canCreateEmail: boolean;
+    canCreateRedirection: boolean;
+    canChangePassword: boolean;
+    canChangeEmails: boolean;
+    responder: any;
+}
+
+export async function userInfos(
+    id: string,
+    isCurrentUser: boolean
+): Promise<UserInfos> {
     try {
         const [userInfos, emailInfos, redirections, responder] =
             await Promise.all([

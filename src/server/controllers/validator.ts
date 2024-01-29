@@ -18,7 +18,7 @@ export const isValidDate = function (
         return date;
     }
     callback(field, "La date n‘est pas valide");
-    return null;
+    return undefined;
 };
 
 export const isValidUrl = function (

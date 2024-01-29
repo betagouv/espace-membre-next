@@ -8,11 +8,11 @@ const router = express.Router();
 
 router.get(routes.ONBOARDING_API, onboardingController.getFormApi);
 
-router.post(
-    routes.ONBOARDING_ACTION,
-    checkSchema(onboardingController.postFormSchema),
-    onboardingController.postOnboardingForm
-);
+// router.post(
+//     routes.ONBOARDING_ACTION,
+//     checkSchema(onboardingController.postFormSchema),
+//     onboardingController.postOnboardingForm
+// );
 router.post(
     routes.ONBOARDING_ACTION_API,
     checkSchema(onboardingController.postFormSchema),

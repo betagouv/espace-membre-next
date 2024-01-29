@@ -51,9 +51,15 @@ async function compareAndTriggerChange(
         newStartupInfo.current_phase !== previousStartupInfo.current_phase
     ) {
         const startupInfos = await betagouv.startupInfosById(newStartupInfo.id);
+        if (!startupInfos) {
+            return;
+        }
         const phase = startupInfos.phases.find(
             (phase) => phase.name === newStartupInfo.current_phase
         );
+        if (!phase) {
+            return;
+        }
         const phaseDate = new Date(phase.start);
         if (isRecent(phaseDate)) {
             if (
@@ -105,9 +111,12 @@ export async function syncBetagouvStartupAPI() {
         const previousStartupInfo: DBStartup = await db("startups")
             .where({ id: startup.id })
             .first();
-        const startupDetailInfo: Startup = startupDetailsInfo.find(
+        const startupDetailInfo = startupDetailsInfo.find(
             (s) => s.id === startup.id
         );
+        if (!startupDetailInfo) {
+            continue;
+        }
         let has_intra = false;
         let has_coach = false;
         for (const member of startupDetailInfo.active_members) {
@@ -155,16 +164,13 @@ export async function syncBetagouvStartupAPI() {
                 ? startup.relationships.incubator.data.id
                 : undefined,
             nb_active_members: startupDetailInfo.active_members.length,
-            last_github_update: undefined,
+            last_github_update: res.data
+                ? new Date(res.data[0].commit.committer.date)
+                : undefined,
             nb_total_members: Array.from(nb_total_members).length,
             has_intra,
             has_coach,
         };
-        if (res.data) {
-            newStartupInfo.last_github_update = new Date(
-                res.data[0].commit.committer.date
-            );
-        }
         if (previousStartupInfo) {
             await db("startups").update(newStartupInfo).where({
                 id: startup.id,
@@ -177,7 +183,7 @@ export async function syncBetagouvStartupAPI() {
                 {
                     ...newStartupInfo,
                     phases: startup.attributes.phases,
-                },
+                } as DBStartup,
                 previousStartupInfo
             );
         } catch (e) {

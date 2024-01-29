@@ -3,10 +3,7 @@ import routes from "@/routes/routes";
 import * as usersController from "@controllers/usersController";
 import * as accountController from "@controllers/accountController";
 import { publicPostRouteRateLimiter } from "../middlewares/rateLimiter";
-import {
-    getBadgePage,
-    getBadgePageApi,
-} from "@controllers/accountController/getBadgePage";
+import { getBadgePageApi } from "@controllers/accountController/getBadgePage";
 import { getBadgeRenewalPage } from "@controllers/accountController/getBadgeRenewalPage";
 
 const router = express.Router();

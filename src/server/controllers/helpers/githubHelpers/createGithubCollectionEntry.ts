@@ -112,12 +112,8 @@ export async function updateFileOnBranch(
     branch,
     sha
 ) {
-    return getGithubFile(file.path, branch)
-        .catch((e) => {
-            console.log("File not found");
-            return;
-        })
-        .then((res: OctokitResponse<any> | undefined) => {
+    return getGithubFile(file.path, branch).then(
+        (res: OctokitResponse<any> | undefined) => {
             const yaml = require("js-yaml");
             let fileContent = file["content"] || "";
             const isTextFile = "changes" in file;
@@ -168,7 +164,8 @@ export async function updateFileOnBranch(
                 fileContent,
                 res ? res.data.sha : sha
             );
-        });
+        }
+    );
 }
 
 export async function createMultipleFilesPR(
@@ -234,7 +231,7 @@ export function makeGithubStartupFile(
 }
 
 export function makeImageFile(name: string, content: string): GithubImageFile {
-    let mimeType = content.match(/[^:/]\w+(?=;|,)/)[0];
+    let mimeType = (content.match(/[^:/]\w+(?=;|,)/) || ["jpg"])[0];
     return {
         name,
         path: `img/startups/${name}.${mimeType}`,
@@ -251,7 +248,7 @@ export function makeGithubAuthorFile(
         path: `content/_authors/${name}.md`,
         name,
         changes,
-        content,
+        content: content || "",
     };
 }
 

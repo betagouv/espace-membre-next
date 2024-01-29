@@ -236,8 +236,8 @@ export async function sendJ30Email(users) {
 }
 
 export async function deleteOVHEmailAcounts(optionalExpiredUsers?: Member[]) {
-    let expiredUsers: Member[] = optionalExpiredUsers;
-    let dbUsers: DBUser[];
+    let expiredUsers = optionalExpiredUsers;
+    let dbUsers: DBUser[] = [];
     if (!expiredUsers) {
         const users: Member[] = await BetaGouv.usersInfos();
         const allOvhEmails = await BetaGouv.getAllEmailInfos();
@@ -285,7 +285,7 @@ export async function deleteOVHEmailAcounts(optionalExpiredUsers?: Member[]) {
 export async function deleteSecondaryEmailsForUsers(
     optionalExpiredUsers?: Member[]
 ) {
-    let expiredUsers: Member[] = optionalExpiredUsers;
+    let expiredUsers = optionalExpiredUsers;
     if (!expiredUsers) {
         const users: Member[] = await BetaGouv.usersInfos();
         expiredUsers = users.filter((user) =>
@@ -327,7 +327,7 @@ export async function deleteSecondaryEmailsForUsers(
 export async function deleteRedirectionsAfterQuitting(
     check_all = false
 ): Promise<unknown[]> {
-    const users: Member[] = await BetaGouv.usersInfos();
+    const users = await BetaGouv.usersInfos();
     const expiredUsers: Member[] = check_all
         ? utils.getExpiredUsers(users, 1)
         : utils.getExpiredUsersForXDays(users, 1);
@@ -389,9 +389,9 @@ export async function removeEmailsFromMailingList(
     optionalExpiredUsers?: Member[],
     nbDays = 30
 ) {
-    let expiredUsers: Member[] = optionalExpiredUsers;
+    let expiredUsers = optionalExpiredUsers;
     if (!expiredUsers) {
-        const users: Member[] = await BetaGouv.usersInfos();
+        const users = await BetaGouv.usersInfos();
         expiredUsers = utils.getExpiredUsersForXDays(users, nbDays);
     }
     const mailingList: string[] = await betagouv.getAllMailingList();
@@ -409,7 +409,9 @@ export async function removeEmailsFromMailingList(
     for (const user of dbUsers) {
         try {
             await removeContactsFromMailingList({
-                emails: [user.primary_email, user.secondary_email],
+                emails: [user.primary_email, user.secondary_email].filter(
+                    (str) => str
+                ) as string[],
                 listType: MAILING_LIST_TYPE.NEWSLETTER,
             });
         } catch (e) {
@@ -417,7 +419,9 @@ export async function removeEmailsFromMailingList(
         }
         try {
             await removeContactsFromMailingList({
-                emails: [user.primary_email, user.secondary_email],
+                emails: [user.primary_email, user.secondary_email].filter(
+                    (str) => str
+                ) as string[],
                 listType: MAILING_LIST_TYPE.ONBOARDING,
             });
         } catch (e) {

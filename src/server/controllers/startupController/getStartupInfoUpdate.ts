@@ -1,34 +1,8 @@
 import betagouv from "@betagouv";
-import { StartupInfoUpdatePage } from "@views";
 import { PULL_REQUEST_STATE } from "@models/pullRequests";
 import db from "@db";
-import { StartupInfo } from "@models/startup";
+import { StartupInfo } from "@/models/startup";
 import config from "@config";
-
-export async function getStartupInfoUpdate(req, res) {
-    getStartupInfoUpdatePageData(
-        req,
-        res,
-        (data) => {
-            res.send(
-                StartupInfoUpdatePage({
-                    ...data,
-                    errors: req.flash("error"),
-                    messages: req.flash("message"),
-                    request: req,
-                })
-            );
-        },
-        (err) => {
-            console.error(err);
-            req.flash(
-                "error",
-                "Impossible de récupérer les information de la startup."
-            );
-            return res.redirect("/");
-        }
-    );
-}
 
 export async function getStartupInfoUpdateApi(req, res) {
     getStartupInfoUpdatePageData(

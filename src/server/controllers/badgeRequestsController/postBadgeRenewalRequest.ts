@@ -21,13 +21,11 @@ const computeStartDate = () => {
 };
 
 export async function postBadgeRenewalRequest(req, res) {
-    const [currentUser]: [MemberWithPermission] = await Promise.all([
-        (async () => userInfos(req.auth.id, true))(),
-    ]);
-    const endDate = currentUser.userInfos.end;
+    const currentUser = await userInfos(req.auth.id, true);
     const startDate = computeStartDate();
+    let endDate: Date;
     let isRequestPendingToBeFilled = false;
-    let badgeRequest: BadgeRequest = await getBadgeRequestWithStatus(
+    let badgeRequest = await getBadgeRequestWithStatus(
         req.auth.id,
         BADGE_REQUEST.BADGE_RENEWAL_REQUEST_PENDING
     );
@@ -40,6 +38,12 @@ export async function postBadgeRenewalRequest(req, res) {
         }
     }
     if (!isRequestPendingToBeFilled) {
+        if (!currentUser.userInfos?.end) {
+            endDate = startDate;
+            endDate.setMonth(endDate.getMonth() + 6);
+        } else {
+            endDate = new Date(currentUser.userInfos?.end);
+        }
         try {
             const names = req.auth.id.split(".");
             const firstname = capitalizeWords(names.shift());
@@ -64,7 +68,7 @@ export async function postBadgeRenewalRequest(req, res) {
                     username: req.auth.id,
                     status: BADGE_REQUEST.BADGE_RENEWAL_REQUEST_PENDING,
                     start_date: startDate,
-                    end_date: new Date(endDate),
+                    end_date: endDate,
                     dossier_number,
                     request_id: buildRequestId(),
                     ds_token: dossier.dossier_prefill_token,
@@ -75,8 +79,8 @@ export async function postBadgeRenewalRequest(req, res) {
         }
     }
     return res.status(200).json({
-        request_id: badgeRequest.request_id,
-        dossier_token: badgeRequest.ds_token,
-        dossier_number: badgeRequest.dossier_number,
+        request_id: badgeRequest?.request_id,
+        dossier_token: badgeRequest?.ds_token,
+        dossier_number: badgeRequest?.dossier_number,
     });
 }

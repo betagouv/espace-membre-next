@@ -4,16 +4,21 @@ export async function createEmailApi(req, res) {
     const username = req.sanitize(req.params.username);
     const email = req.sanitize(req.body.to_email);
     try {
-        await createEmailAndUpdateSecondaryEmail({ username, email}, req.auth.id)
-        req.flash('message', 'Le compte email a bien été créé.');
+        await createEmailAndUpdateSecondaryEmail(
+            { username, email },
+            req.auth.id
+        );
+        req.flash("message", "Le compte email a bien été créé.");
         res.json({
-            status: 'created'
-        })
+            status: "created",
+        });
     } catch (err) {
         console.error(err);
         res.status(500).json({
-            errors: err.message
-        })
+            errors:
+                err instanceof Error
+                    ? err.message
+                    : "Le compte email a bien été créé",
+        });
     }
 }
-  

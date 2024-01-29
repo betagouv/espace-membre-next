@@ -6,6 +6,7 @@ import { PULL_REQUEST_TYPE, PULL_REQUEST_STATE } from "@models/pullRequests";
 import { requiredError, isValidDate } from "@controllers/validator";
 import { updateAuthorGithubFile } from "@controllers/helpers/githubHelpers";
 import { GithubAuthorChange } from "@controllers/helpers/githubHelpers/githubEntryInterface";
+import { GithubMission } from "@/models/mission";
 
 export async function publicPostBaseInfoUpdate(req, res) {
     const { username } = req.params;
@@ -29,7 +30,7 @@ export async function publicPostBaseInfoUpdate(req, res) {
         const info = await betagouv.userInfosById(username);
         const newEnd =
             req.body.end || requiredError("nouvelle date de fin", errorHandler);
-        const startDate = new Date(info.start);
+        const startDate = info?.start ? new Date(info?.start) : new Date();
         const newEndDate = isValidDate(
             "nouvelle date de fin",
             new Date(end),
@@ -43,13 +44,18 @@ export async function publicPostBaseInfoUpdate(req, res) {
                 );
             }
         }
-        const missions = info.missions.map((mission) => ({
-            ...mission,
-            end: mission.end ? new Date(mission.end) : undefined,
-            start: mission.start ? new Date(mission.start) : undefined,
-        }));
-        missions[missions.length - 1].end = newEndDate;
-        const changes: GithubAuthorChange = { missions };
+        const missions =
+            info?.missions.map((mission) => ({
+                ...mission,
+                end: mission.end ? new Date(mission.end) : undefined,
+                start: mission.start ? new Date(mission.start) : undefined,
+            })) || [];
+        if (missions.length) {
+            missions[missions.length - 1].end = newEndDate;
+        }
+        const changes: GithubAuthorChange = {
+            missions: missions as GithubMission[],
+        };
         const prInfo: PRInfo = await updateAuthorGithubFile(username, changes);
         addEvent(EventCode.MEMBER_BASE_INFO_UPDATED, {
             created_by_username: req.auth
@@ -78,9 +84,14 @@ export async function publicPostBaseInfoUpdate(req, res) {
             pr_url: prInfo.html_url,
         });
     } catch (err) {
-        res.status(400).json({
-            message: err.message,
-            errors: err.cause,
-        });
+        let message;
+
+        if (err instanceof Error) {
+            message = {
+                message: err.message,
+                errors: err.cause,
+            };
+        }
+        res.status(400).json(message);
     }
 }

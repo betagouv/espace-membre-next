@@ -9,7 +9,7 @@ export async function moveUsersToAlumniTeam(
     optionalUsers?: Member[],
     checkAll = false
 ) {
-    let users: Member[] = optionalUsers;
+    let users = optionalUsers;
     console.log("Start function move users to team alumni");
     if (!users) {
         users = await betagouv.usersInfos();

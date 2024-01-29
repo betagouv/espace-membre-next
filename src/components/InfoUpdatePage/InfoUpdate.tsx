@@ -177,7 +177,6 @@ export const InfoUpdate = (props: InfoUpdateProps) => {
                             name: "gender",
                             value: state.formData.gender,
                             onChange: handleGenderChange,
-                            placeholder: "Sélectionne une valeur",
                             required: true,
                         }}
                         state={formErrors["gender"] ? "error" : "default"}

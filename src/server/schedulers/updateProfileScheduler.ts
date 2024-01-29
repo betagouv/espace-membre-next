@@ -5,17 +5,7 @@ import knex from "@db";
 import { DBUser } from "@/models/dbUser/dbUser";
 import { Member, MemberWithEmailsAndMattermostUsername } from "@models/member";
 import * as mattermost from "@lib/mattermost";
-import { makeHtmlEmail } from "@views/index.html";
-import { EmailSecondaryEmail } from "@views/emails/EmailSecondaryEmail";
 import { sleep } from "@controllers/utils";
-
-export const EmailSecondaryEmailHtml = (
-    props: Parameters<typeof EmailSecondaryEmail>[0]
-) =>
-    makeHtmlEmail({
-        Component: EmailSecondaryEmail,
-        props,
-    });
 
 export async function sendMessageToActiveUsersWithoutSecondaryEmail() {
     const allMattermostUsers = await mattermost.getUserWithParams();
@@ -31,21 +21,20 @@ export async function sendMessageToActiveUsersWithoutSecondaryEmail() {
             activeUsers.map((user) => user.id)
         );
 
-    const concernedUserWithMattermostUsers: MemberWithEmailsAndMattermostUsername[] =
-        concernedUsers.map((user) => {
-            const index = allMattermostUsersEmails.indexOf(user.primary_email);
-            const githubUser = activeUsers.find(
-                (ghUser) => ghUser.id === user.username
-            );
-            return {
-                ...githubUser,
-                primary_email: user.primary_email,
-                secondary_email: user.secondary_email,
-                communication_email: user.communication_email,
-                mattermostUsername:
-                    index > -1 ? allMattermostUsers[index].username : undefined,
-            };
-        });
+    const concernedUserWithMattermostUsers = concernedUsers.map((user) => {
+        const index = allMattermostUsersEmails.indexOf(user.primary_email);
+        const githubUser = activeUsers.find(
+            (ghUser) => ghUser.id === user.username
+        );
+        return {
+            ...githubUser,
+            primary_email: user.primary_email,
+            secondary_email: user.secondary_email,
+            communication_email: user.communication_email,
+            mattermostUsername:
+                index > -1 ? allMattermostUsers[index].username : undefined,
+        };
+    }) as MemberWithEmailsAndMattermostUsername[];
 
     for (const user of concernedUserWithMattermostUsers) {
         if (user.mattermostUsername) {

@@ -44,7 +44,7 @@ enum MattermostUserStatus {
     USER_HAS_SUSPENDED_PRIMARY_EMAIL_BUT_NO_EXPIRED_INFO = "USER_HAS_SUSPENDED_PRIMARY_EMAIL_BUT_NO_EXPIRED_INFO",
 }
 
-type MattermostUserWithStatus = MattermostUser & {
+export type MattermostUserWithStatus = MattermostUser & {
     status: MattermostUserStatus;
     memberInfo?: Member;
     dbUser?: DBUser;
@@ -91,7 +91,7 @@ const MESSAGE_FOR_TYPE: Record<
 Tu reçois ce message car ta fiche membre beta.gouv.fr à une date de fin dépassée sur github.
 
 Si c'est normal tu n'as rien a faire et ton compte mattermost sera ajouté à l'espace alumni et retiré de l'espace "Communauté" dans 1 semaine. 
-Sinon il faudrait la mettre à jour : [ici](https://github.com/betagouv/beta.gouv.fr/edit/master/content/_authors/${user.memberInfo.id}.md)
+Sinon il faudrait la mettre à jour : [ici](https://github.com/betagouv/beta.gouv.fr/edit/master/content/_authors/${user?.memberInfo?.id}.md)
 
 Si tu n'y arrives pas un membre de ton équipe pourra sans doute t'aider.
 
@@ -106,7 +106,7 @@ Ceci est un message automatique envoyé par l'app Espace Membre.
     ): string {
         return `Bonjour ${user.first_name},
 Tu reçois ce message car ta fiche membre beta.gouv.fr à une date de fin à jour, mais l'email lié a ton compte mattermost semble supprimé.
-Tu peux le recréer dans l'[espace membre](https://espace-membre.incubateur.net/) auquel tu peux te connecter avec ton adresse secondaire : ${user.dbUser.secondary_email}.
+Tu peux le recréer dans l'[espace membre](https://espace-membre.incubateur.net/) auquel tu peux te connecter avec ton adresse secondaire : ${user?.dbUser?.secondary_email}.
 Dans Mon compte > Mon email.
 Si tu as des questions tu peux les poser dans [~incubateur-help](https://mattermost.incubateur.net/betagouv/channels/incubateur-help). S'il y a une erreur tu peux écrire à espace-membre@incubateur.net.
         
@@ -119,7 +119,7 @@ Ceci est un message automatique envoyé par l'app Espace Membre
         return `Bonjour ${user.first_name},
 Tu reçois ce message car ta fiche membre beta.gouv.fr à une date de fin à jour, mais l'email lié a ton compte mattermost semble supprimé.
 Tu peux le recréer dans l'[espace membre](https://espace-membre.incubateur.net/account) sur la page Mon compte > Mon Email.
-Tu peux te connecter à l'espace membre avec ton adresse secondaire : ${user.dbUser.secondary_email}.
+Tu peux te connecter à l'espace membre avec ton adresse secondaire : ${user?.dbUser?.secondary_email}.
 
 Si tu as des questions tu peux les poser dans [~incubateur-help](https://mattermost.incubateur.net/betagouv/channels/incubateur-help). S'il y a une erreur tu peux écrire à espace-membre@incubateur.net.
         
@@ -131,7 +131,7 @@ Ceci est un message automatique envoyé par l'app Espace Membre
     ): string {
         return `Bonjour ${user.first_name},
 Tu reçois ce message car ta fiche membre beta.gouv.fr à une date de fin à jour, mais l'email lié a ton compte mattermost semble suspendu.
-Tu peux le reactiver dans l'[espace membre](https://espace-membre.incubateur.net/) auquel tu peux te connecter avec ton adresse secondaire : ${user.dbUser.secondary_email}.
+Tu peux le reactiver dans l'[espace membre](https://espace-membre.incubateur.net/) auquel tu peux te connecter avec ton adresse secondaire : ${user?.dbUser?.secondary_email}.
 Il te suffit ensuite de mettre à jour ton mot de passe pour le réactiver : https://espace-membre.incubateur.net/account#password>
 
 Si tu as des questions tu peux les poser dans [~incubateur-help](https://mattermost.incubateur.net/betagouv/channels/incubateur-help). S'il y a une erreur tu peux écrire à espace-membre@incubateur.net.
@@ -166,7 +166,7 @@ Ceci est un message automatique envoyé par l'app Espace Membre.
 Tu reçois ce message car ta fiche membre beta.gouv.fr à une date de fin dépassée sur github.
 
 Si c'est normal tu n'as rien a faire et ton compte mattermost sera ajouté à l'espace alumni et retiré de l'espace "Communauté" dans 1 semaine. 
-Sinon il faudrait la mettre à jour : [ici](https://github.com/betagouv/beta.gouv.fr/edit/master/content/_authors/${user.memberInfo.id}.md)
+Sinon il faudrait la mettre à jour : [ici](https://github.com/betagouv/beta.gouv.fr/edit/master/content/_authors/${user?.memberInfo?.id}.md)
 Et merger la pull request.
 
 Si tu n'y arrives pas un membre de ton équipe pourra sans doute t'aider.
@@ -184,7 +184,7 @@ Ceci est un message automatique envoyé par l'app Espace Membre.
 Tu reçois ce message car ta fiche membre beta.gouv.fr à une date de fin dépassée sur github.
 
 Si c'est normal tu n'as rien a faire et ton compte mattermost sera ajouté à l'espace alumni et retiré de l'espace "Communauté" dans 1 mois. 
-Sinon il faudrait la mettre à jour : [ici](https://github.com/betagouv/beta.gouv.fr/edit/master/content/_authors/${user.memberInfo.id}.md)
+Sinon il faudrait la mettre à jour : [ici](https://github.com/betagouv/beta.gouv.fr/edit/master/content/_authors/${user?.memberInfo?.id}.md)
 Et merger la pull request.
 
 Si tu n'y arrives pas un membre de ton équipe pourra sans doute t'aider.
@@ -206,10 +206,10 @@ export async function getMattermostUsersWithStatus({
     let users = await betagouv.usersInfos();
     // Member in db
     const dbUsers: DBUser[] = await knex("users");
-    const dbuser_primary_emails: string[] = dbUsers
+    const dbuser_primary_emails = dbUsers
         .map((dbUser) => dbUser.primary_email)
         .filter((email) => email);
-    const dbuser_not_active_primary_emails: string[] = dbUsers
+    const dbuser_not_active_primary_emails = dbUsers
         .filter(
             (dbUser) =>
                 dbUser.primary_email_status !== EmailStatusCode.EMAIL_ACTIVE
@@ -432,7 +432,7 @@ async function getPartnersUserEmails({
         api_token: string;
         domain: string;
     }[] = config.MATTERMOST_PARTNERS_AUTHORS_URLS;
-    let emails = [];
+    let emails: string[] = [];
     for (const partnerAuthor of partnerAuthors) {
         const config = partnerAuthor.api_token
             ? {

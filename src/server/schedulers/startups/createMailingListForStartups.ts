@@ -1,10 +1,10 @@
 import betagouv from "@betagouv";
 import db from "@db";
 import { CommunicationEmailCode, DBUser } from "@models/dbUser";
-import { ACTIVE_PHASES, Startup, StartupPhase } from "@models/startup";
+import { ACTIVE_PHASES, Startup, StartupPhase } from "@/models/startup";
 import { generateMailingListName } from ".";
 
-function getCurrentPhase(startup: Startup): StartupPhase {
+function getCurrentPhase(startup: Startup): StartupPhase | undefined {
     return startup.phases
         ? startup.phases[startup.phases.length - 1].name
         : undefined;
@@ -21,16 +21,19 @@ const addAndRemoveMemberToMailingListForStartup = async (startup: Startup) => {
         "username",
         startup.active_members
     );
-    const emails = dbUsers.map((dbUser) => {
-        let email = dbUser.primary_email;
-        if (
-            dbUser.communication_email === CommunicationEmailCode.SECONDARY &&
-            dbUser.secondary_email
-        ) {
-            email = dbUser.secondary_email;
-        }
-        return email;
-    });
+    const emails = dbUsers
+        .map((dbUser) => {
+            let email = dbUser.primary_email;
+            if (
+                dbUser.communication_email ===
+                    CommunicationEmailCode.SECONDARY &&
+                dbUser.secondary_email
+            ) {
+                email = dbUser.secondary_email;
+            }
+            return email;
+        })
+        .filter((email) => email) as string[];
     const subscribers = await betagouv.getMailingListSubscribers(
         mailingListName
     );
@@ -53,7 +56,7 @@ export const createMailingListForStartups = async () => {
     console.log(`Will create ${startupDetails.length} mailing lists`);
     for (const startup of startupDetails) {
         const phase = getCurrentPhase(startup);
-        if (ACTIVE_PHASES.includes(phase)) {
+        if (phase && ACTIVE_PHASES.includes(phase)) {
             try {
                 if (!mailingLists.includes(generateMailingListName(startup))) {
                     await createMailingListForStartup(startup);

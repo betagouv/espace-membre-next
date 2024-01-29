@@ -1,9 +1,23 @@
 import makeDS from "@lib/ds";
 import config from "..";
 
-const makeFakeMathods = () => {
+interface Annotation {
+    label: string;
+    stringValue: string;
+}
+
+interface Dossier {
+    dossier_url: string;
+    state: string;
+    dossier_id: string;
+    dossier_number: number; // Assuming dossierInt is a number
+    dossier_prefill_token: string;
+    annotations: Annotation[];
+}
+
+const makeFakeMethods = () => {
     let dossierInt = 0;
-    let dossiers = [];
+    let dossiers: Dossier[] = [];
     return {
         getAllDossiersForDemarche: async (demarcheNumber) => {
             return dossiers;
@@ -36,7 +50,7 @@ const makeFakeMathods = () => {
         },
     };
 };
-let DS_METHODS = makeFakeMathods();
+let DS_METHODS = makeFakeMethods();
 
 if (process.env.NODE_ENV !== "test") {
     try {

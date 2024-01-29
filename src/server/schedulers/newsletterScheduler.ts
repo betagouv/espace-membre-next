@@ -27,7 +27,7 @@ const replaceMacroInContent = (newsletterTemplateContent, replaceConfig) => {
 
 const computeId = (dateAsString) => {
     const id = crypto
-        .createHmac("sha256", config.newsletterHashSecret)
+        .createHmac("sha256", config.newsletterHashSecret!)
         .update(dateAsString)
         .digest("hex")
         .slice(0, 8);
@@ -234,7 +234,7 @@ export async function sendNewsletterAndCreateNewOne(
             await sendCampaignEmail({
                 mailingListType: MAILING_LIST_TYPE.NEWSLETTER,
                 type: EMAIL_TYPES.EMAIL_NEWSLETTER,
-                variables: undefined,
+                variables: {},
                 campaignName: `${getTitle(newsletterContent)}`,
                 subject: `${getTitle(newsletterContent)}`,
                 htmlContent: html,

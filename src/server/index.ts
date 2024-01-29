@@ -15,7 +15,6 @@ import * as resourceController from "@controllers/resourceController";
 import * as hookController from "@controllers/hookController";
 import * as pullRequestsController from "@controllers/pullRequestsController";
 import EventBus from "@infra/eventBus/eventBus";
-import { MARRAINAGE_EVENTS_VALUES } from "@models/marrainage";
 import routes from "@/routes/routes";
 import { rateLimiter } from "./middlewares/rateLimiter";
 import { getJwtTokenForUser, getToken } from "@/server/helpers/session";
@@ -32,7 +31,6 @@ import {
     userApiRouter,
     userPublicApiRouter,
     mapRouter,
-    marrainageRouter,
     newsletterRouter,
     onboardingRouter,
     setupStaticFiles,
@@ -57,7 +55,6 @@ const startServer = () => {
 
         // server.use(cors(corsOptions));
         // server.options("*", cors(corsOptions));
-        EventBus.init([...MARRAINAGE_EVENTS_VALUES]);
 
         // server.set("view engine", "ejs");
         // server.set("views", path.join(__dirname, "./views/templates")); // the code is running in directory "dist".
@@ -86,6 +83,7 @@ const startServer = () => {
         // Save a token in cookie that expire after 7 days if user is logged
         server.use("/api", (req: Request, res, nextCall) => {
             if (req.auth && req.auth.id) {
+                // @ts-expect-error
                 (req.session.token = getJwtTokenForUser(req.auth.id)),
                     { sameSite: "lax" };
             }
@@ -98,7 +96,6 @@ const startServer = () => {
         server.use(userRouter);
         server.use(userApiRouter);
         server.use(userPublicApiRouter);
-        server.use(marrainageRouter);
         server.use(accountRouter);
         server.use(startupRouter);
         server.use(communityRouter);

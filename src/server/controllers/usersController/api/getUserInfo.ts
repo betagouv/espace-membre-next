@@ -1,5 +1,4 @@
 import * as utils from "@controllers/utils";
-import { MemberWithPermission } from "@models/member";
 import db from "@db";
 import config from "@config";
 import { EMAIL_STATUS_READABLE_FORMAT } from "@models/misc";
@@ -11,9 +10,7 @@ export async function getUserInfo(req, res) {
     const isCurrentUser = req.auth ? req.auth.id === username : false;
 
     try {
-        const [user]: [MemberWithPermission] = await Promise.all([
-            utils.userInfos(username, isCurrentUser),
-        ]);
+        const user = await utils.userInfos(username, isCurrentUser);
 
         const hasGithubFile = user.userInfos;
         const hasEmailAddress = user.emailInfos || user.redirections.length > 0;
@@ -24,7 +21,7 @@ export async function getUserInfo(req, res) {
         }
         const dbUser: DBUser = await db("users").where({ username }).first();
         const secondaryEmail: string = dbUser?.secondary_email || "";
-        let mattermostUser: MattermostUser = dbUser?.primary_email
+        let mattermostUser = dbUser?.primary_email
             ? await getUserByEmail(dbUser.primary_email).catch((e) => null)
             : null;
         let [mattermostUserInTeamAndActive]: MattermostUser[] =

@@ -7,7 +7,7 @@ import { Formation } from "@/models/formation";
 
 export const syncFormationInscriptionFromAirtable = (syncOnlyNewRecord) => {
     var base = new Airtable({ apiKey: config.AIRTABLE_API_KEY }).base(
-        config.AIRTABLE_FORMATION_BASE_ID
+        config.AIRTABLE_FORMATION_BASE_ID!
     );
     var date = new Date();
     date.setDate(date.getDate() - 19);
@@ -32,7 +32,7 @@ export const syncFormationInscriptionFromAirtable = (syncOnlyNewRecord) => {
                             "Record ID (from Formation)"
                         ) as [string];
                         if (formation_record_id) {
-                            const formation: Formation = await getFormation({
+                            const formation = await getFormation({
                                 airtable_id: formation_record_id[0],
                             });
                             if (formation && username) {

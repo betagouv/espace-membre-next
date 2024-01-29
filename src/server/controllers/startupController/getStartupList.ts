@@ -1,7 +1,6 @@
 import betagouv from "@betagouv";
-import { StartupListPage } from "@views";
 import config from "@config";
-import { Startup } from "@models/startup";
+import { Startup } from "@/models/startup";
 
 export async function getStartupListApi(req, res) {
     getStartupListDataPage(
@@ -16,28 +15,6 @@ export async function getStartupListApi(req, res) {
             res.status(500).json({
                 error: err && err.message,
             });
-        }
-    );
-}
-
-export async function getStartupList(req, res) {
-    getStartupListDataPage(
-        req,
-        res,
-        (data) => {
-            res.send(
-                StartupListPage({
-                    errors: req.flash("error"),
-                    messages: req.flash("message"),
-                    request: req,
-                    ...data,
-                })
-            );
-        },
-        (err) => {
-            console.error(err);
-            req.flash("error", "Impossible de récupérer vos informations.");
-            return res.redirect("/");
         }
     );
 }

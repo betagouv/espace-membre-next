@@ -95,7 +95,7 @@ export async function setEmailResponderHandler(req, res, onSuccess, onError) {
     } catch (err) {
         console.error(err);
         const errors = req.flash("error");
-        if (err.message) {
+        if (err instanceof Error) {
             req.flash("error", [errors, err.message]);
         }
         return onError();

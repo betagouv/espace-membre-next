@@ -7,8 +7,8 @@ import { EmailStatusCode } from "@/models/dbUser/dbUser";
 import config from "@config";
 
 export async function setEmailExpired(optionalExpiredUsers?: Member[]) {
-    let expiredUsers: Member[] = optionalExpiredUsers;
-    let dbUsers: DBUser[];
+    let expiredUsers = optionalExpiredUsers;
+    let dbUsers: DBUser[] = [];
     if (!expiredUsers) {
         const users: Member[] = await BetaGouv.usersInfos();
         expiredUsers = users.filter((user) => {

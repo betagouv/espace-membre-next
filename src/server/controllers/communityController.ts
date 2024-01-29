@@ -5,35 +5,11 @@ import BetaGouv from "../betagouv";
 import * as utils from "./utils";
 import knex from "../db";
 import { MemberWithPermission } from "@models/member";
-import { CommunityPage } from "../views";
 import betagouv from "../betagouv";
 import { EMAIL_STATUS_READABLE_FORMAT } from "@/models/misc";
 import { MattermostUser, getUserByEmail, searchUsers } from "@lib/mattermost";
 import { getContactInfo } from "@config/email.config";
 import { DBUser } from "@/models/dbUser";
-
-export async function getCommunity(req, res) {
-    getCommunityPageData(
-        req,
-        res,
-        (data) => {
-            res.send(
-                CommunityPage({
-                    ...data,
-                    errors: req.flash("error"),
-                    messages: req.flash("message"),
-                    request: req,
-                })
-            );
-        },
-        (err) => {
-            console.error(err);
-            return res.send(
-                "Erreur interne : impossible de récupérer les informations de la communauté"
-            );
-        }
-    );
-}
 
 export async function getCommunityApi(req, res) {
     getCommunityPageData(
@@ -150,27 +126,34 @@ export async function getUser(req, res) {
     );
 }
 
-const getMattermostUserInfo = async (dbUser) => {
-    let mattermostUser: MattermostUser, mattermostUserInTeamAndActive: boolean;
+const getMattermostUserInfo = async (
+    dbUser
+): Promise<{
+    mattermostUser: MattermostUser | null;
+    mattermostUserInTeamAndActive: boolean;
+}> => {
     try {
-        mattermostUser = dbUser?.primary_email
+        let mattermostUser = dbUser?.primary_email
             ? await getUserByEmail(dbUser.primary_email).catch((e) => null)
             : null;
-        [mattermostUserInTeamAndActive] = dbUser?.primary_email
+        const [mattermostUserInTeamAndActive] = dbUser?.primary_email
             ? await searchUsers({
                   term: dbUser.primary_email,
                   team_id: config.mattermostTeamId,
                   allow_inactive: false,
               }).catch((e) => [])
             : [];
+        return {
+            mattermostUser,
+            mattermostUserInTeamAndActive,
+        };
     } catch (e) {
         Sentry.captureException(e);
+        return {
+            mattermostUser: null,
+            mattermostUserInTeamAndActive: false,
+        };
     }
-
-    return {
-        mattermostUser,
-        mattermostUserInTeamAndActive,
-    };
 };
 
 async function getUserPageData(req, res, onSuccess, onError) {
@@ -178,9 +161,7 @@ async function getUserPageData(req, res, onSuccess, onError) {
     const isCurrentUser = req.auth.id === username;
 
     try {
-        const [user]: [MemberWithPermission] = await Promise.all([
-            utils.userInfos(username, isCurrentUser),
-        ]);
+        const user = await utils.userInfos(username, isCurrentUser);
 
         const hasGithubFile = user.userInfos;
         const hasEmailAddress = user.emailInfos || user.redirections.length > 0;
@@ -200,7 +181,7 @@ async function getUserPageData(req, res, onSuccess, onError) {
             .where({ username })
             .first();
         const secondaryEmail = dbUser ? dbUser.secondary_email : "";
-        let availableEmailPros = [];
+        let availableEmailPros: string[] = [];
         if (config.ESPACE_MEMBRE_ADMIN.includes(req.auth.id)) {
             availableEmailPros = await betagouv.getAvailableProEmailInfos();
         }
