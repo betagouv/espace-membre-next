@@ -9,6 +9,7 @@ import { sendEmail } from "@config/email.config";
 import { EMAIL_TYPES } from "@modules/email";
 import { isValidEmail } from "./validator";
 import { getJwtTokenForUser } from "@/server/helpers/session";
+import { saveToken } from "./loginController/loginUtils";
 
 // function renderLogin(req, res, params) {
 //     res.send(
@@ -62,27 +63,27 @@ async function sendLoginEmail(
     }
 }
 
-export async function saveToken(
-    username: string,
-    token: string,
-    email: string
-) {
-    try {
-        const expirationDate = new Date();
-        expirationDate.setMinutes(expirationDate.getMinutes() + 90); // set duration to 1h30, some users receives emails one hours after
+// export async function saveToken(
+//     username: string,
+//     token: string,
+//     email: string
+// ) {
+//     try {
+//         const expirationDate = new Date();
+//         expirationDate.setMinutes(expirationDate.getMinutes() + 90); // set duration to 1h30, some users receives emails one hours after
 
-        await knex("login_tokens").insert({
-            token,
-            username,
-            email,
-            expires_at: expirationDate,
-        });
-        console.log(`Login token créé pour ${email}`);
-    } catch (err) {
-        console.error(`Erreur de sauvegarde du token : ${err}`);
-        throw new Error("Erreur de sauvegarde du token");
-    }
-}
+//         await knex("login_tokens").insert({
+//             token,
+//             username,
+//             email,
+//             expires_at: expirationDate,
+//         });
+//         console.log(`Login token créé pour ${email}`);
+//     } catch (err) {
+//         console.error(`Erreur de sauvegarde du token : ${err}`);
+//         throw new Error("Erreur de sauvegarde du token");
+//     }
+// }
 
 // export async function getLogin(req, res) {
 //     renderLogin(req, res, {});
@@ -163,7 +164,7 @@ export async function postLoginApi(req, res) {
         });
     } catch (err) {
         console.error(err);
-        return res.json({
+        return res.status(500).json({
             errors: err.message,
         });
     }
@@ -268,53 +269,53 @@ export function getSignIn(req, res) {
     });
 }
 
-export async function postSignIn(req, res) {
-    if (!req.body.token) {
-        req.flash("error", `Ce lien de connexion n'est pas valide.`);
-        return res.redirect("/");
-    }
-    const token = decodeURIComponent(req.body.token);
-    try {
-        const tokenDbResponse = await knex("login_tokens")
-            .select()
-            .where({ token })
-            .andWhere("expires_at", ">", new Date());
+// export async function postSignIn(req, res) {
+//     if (!req.body.token) {
+//         req.flash("error", `Ce lien de connexion n'est pas valide.`);
+//         return res.redirect("/");
+//     }
+//     const token = decodeURIComponent(req.body.token);
+//     try {
+//         const tokenDbResponse = await knex("login_tokens")
+//             .select()
+//             .where({ token })
+//             .andWhere("expires_at", ">", new Date());
 
-        if (tokenDbResponse.length !== 1) {
-            req.flash("error", "Ce lien de connexion a expiré.");
-            return res.redirect("/");
-        }
+//         if (tokenDbResponse.length !== 1) {
+//             req.flash("error", "Ce lien de connexion a expiré.");
+//             return res.redirect("/");
+//         }
 
-        const dbToken = tokenDbResponse[0];
-        if (dbToken.token !== token) {
-            req.flash("error", "Ce lien de connexion a expiré.");
-            return res.redirect("/");
-        }
+//         const dbToken = tokenDbResponse[0];
+//         if (dbToken.token !== token) {
+//             req.flash("error", "Ce lien de connexion a expiré.");
+//             return res.redirect("/");
+//         }
 
-        await knex("login_tokens").where({ email: dbToken.email }).del();
+//         await knex("login_tokens").where({ email: dbToken.email }).del();
 
-        req.session.token = getJwtTokenForUser(dbToken.username);
+//         req.session.token = getJwtTokenForUser(dbToken.username);
 
-        if (
-            config.FRONT_APP_URL &&
-            config.FRONT_APP_EMAIL_TEST.includes(dbToken.username)
-        ) {
-            return res.redirect(
-                config.FRONT_APP_URL +
-                    (req.body.next || "/account") +
-                    `${req.query.anchor ? `#` + req.query.anchor : ""}`
-            );
-        } else {
-            return res.redirect(
-                `${decodeURIComponent(req.body.next) || "/account"}` +
-                    `${req.query.anchor ? `#` + req.query.anchor : ""}`
-            );
-        }
-    } catch (err) {
-        console.log(`Erreur dans l'utilisation du login token : ${err}`);
-        return res.redirect("/");
-    }
-}
+//         if (
+//             config.FRONT_APP_URL &&
+//             config.FRONT_APP_EMAIL_TEST.includes(dbToken.username)
+//         ) {
+//             return res.redirect(
+//                 config.FRONT_APP_URL +
+//                     (req.body.next || "/account") +
+//                     `${req.query.anchor ? `#` + req.query.anchor : ""}`
+//             );
+//         } else {
+//             return res.redirect(
+//                 `${decodeURIComponent(req.body.next) || "/account"}` +
+//                     `${req.query.anchor ? `#` + req.query.anchor : ""}`
+//             );
+//         }
+//     } catch (err) {
+//         console.log(`Erreur dans l'utilisation du login token : ${err}`);
+//         return res.redirect("/");
+//     }
+// }
 
 export async function postSignInApi(req, res) {
     if (!req.body.token) {

@@ -26,7 +26,7 @@ export async function publishJobsToMattermost(jobs = undefined) {
         );
         if (jobsForDomaine.length) {
             const jobMessage = await ejs.renderFile(
-                "./src/views/templates/emails/jobMessage.ejs",
+                "./src/server/views/templates/emails/jobMessage.ejs",
                 {
                     jobs: jobsForDomaine,
                     domaine,

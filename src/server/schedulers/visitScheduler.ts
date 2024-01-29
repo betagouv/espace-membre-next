@@ -39,7 +39,7 @@ const sendVisitEmail = async function () {
     }));
 
     const html = await ejs.renderFile(
-        "./src/views/templates/emails/visitEmail.ejs",
+        "./src/server/views/templates/emails/visitEmail.ejs",
         {
             visitsInfos,
         }

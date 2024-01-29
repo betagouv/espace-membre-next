@@ -1,9 +1,9 @@
 import betagouv from "@betagouv";
-import { createEmail } from "@controllers/usersController";
 import db from "@db";
 import { DBUser, EmailStatusCode } from "@models/dbUser";
 import { Member } from "@models/member";
 import * as Sentry from "@sentry/node";
+import { createEmail } from "../controllers/usersController/createEmailForUser";
 
 export async function recreateEmailIfUserActive() {
     const activeUsers: Member[] = await betagouv.getActiveUsers();

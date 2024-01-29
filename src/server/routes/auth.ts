@@ -17,7 +17,7 @@ router.post(
     loginController.postSignInApi
 );
 
-router.post(routes.SIGNIN, loginController.postSignIn);
+// router.post(routes.SIGNIN, loginController.postSignIn);
 router.get(routes.LOGOUT_API, logoutController.getLogoutApi);
 
 export { router as authRouter };

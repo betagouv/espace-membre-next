@@ -5,7 +5,6 @@ import BetaGouv from "@betagouv";
 import { OvhRedirection } from "@models/ovh";
 import config from "@config";
 import {
-    createEmail,
     setEmailActive,
     setEmailRedirectionActive,
     setEmailSuspended,
@@ -28,6 +27,7 @@ import {
 } from "@config/email.config";
 import betagouv from "../betagouv";
 import { isBetaEmail } from "@controllers/utils";
+import { createEmail } from "../controllers/usersController/createEmailForUser";
 
 const differenceGithubOVH = function differenceGithubOVH(user, ovhAccountName) {
     return user.id === ovhAccountName;

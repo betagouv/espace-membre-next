@@ -8,7 +8,7 @@ const apiRouter = express.Router();
 const publicApiRouter = express.Router();
 
 // users
-router.post(routes.USER_CREATE_EMAIL, usersController.createEmailForUser);
+// router.post(routes.USER_CREATE_EMAIL, usersController.createEmailForUser);
 
 apiRouter.post(
     routes.USER_DELETE_EMAIL_API,

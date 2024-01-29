@@ -316,7 +316,7 @@ async function postOnboardingData(req, res, onSuccess, onError) {
         const name = `${firstName} ${lastName}`;
         const username = createUsername(firstName, lastName);
         const content = await ejs.renderFile(
-            "./src/views/templates/markdown/githubAuthor.ejs",
+            "./src/server/views/templates/markdown/githubAuthor.ejs",
             {
                 name,
                 description,

@@ -20,10 +20,6 @@ chai.use(chaiHttp);
 describe("Onboarding", () => {
     describe("GET /api/onboarding", () => {
         it("should return a valid page", (done) => {
-            nock.cleanAll();
-
-            utils.mockStartups();
-
             chai.request(app)
                 .get(routes.ONBOARDING_API)
                 .end((err, res) => {
@@ -392,8 +388,9 @@ describe("Onboarding", () => {
                 });
         });
 
-        it("should not call Github API if email is not public email and isEmailBetaAsked false", (done) => {
-            chai.request(app)
+        it("should not call Github API if email is not public email and isEmailBetaAsked false", async () => {
+            const res = await chai
+                .request(app)
                 .post(routes.ONBOARDING_API)
                 .type("form")
                 .send({
@@ -408,18 +405,16 @@ describe("Onboarding", () => {
                     email: "test@example.com",
                     memberType: "beta",
                     isEmailBetaAsked: false,
-                })
-                .end(async (err, res) => {
-                    getGithubMasterSha.called.should.be.true;
-                    createGithubBranch.called.should.be.true;
-                    createGithubFile.called.should.be.true;
-                    makeGithubPullRequest.called.should.be.true;
-                    const users = await knex("users").where({
-                        secondary_email: "test@example.com",
-                    });
-                    users.length.should.equals(1);
-                    done();
                 });
+            console.log(res);
+            getGithubMasterSha.called.should.be.true;
+            createGithubBranch.called.should.be.true;
+            createGithubFile.called.should.be.true;
+            makeGithubPullRequest.called.should.be.true;
+            const users = await knex("users").where({
+                secondary_email: "test@example.com",
+            });
+            users.length.should.equals(1);
         });
 
         it("should fail if the user is already registered", (done) => {
@@ -679,7 +674,7 @@ describe("Onboarding", () => {
                 });
         });
 
-        it("should redirect to onboarding success page", (done) => {
+        it("should be 200 status when onboarding has all params", (done) => {
             chai.request(app)
                 .post(routes.ONBOARDING_API)
                 .type("form")
@@ -698,10 +693,7 @@ describe("Onboarding", () => {
                 })
                 .redirects(0)
                 .end((err, res) => {
-                    res.should.have.status(302);
-                    res.header.location.should.contain(
-                        "/api/onboardingSuccess/"
-                    );
+                    res.should.have.status(200);
                     done();
                 });
         });

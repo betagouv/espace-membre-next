@@ -51,7 +51,7 @@ export async function sendMessageToActiveUsersWithoutSecondaryEmail() {
         if (user.mattermostUsername) {
             try {
                 const messageContent = await ejs.renderFile(
-                    `./src/views/templates/emails/updateSecondaryEmail.ejs`,
+                    `./src/server/views/templates/emails/updateSecondaryEmail.ejs`,
                     {
                         user,
                     }

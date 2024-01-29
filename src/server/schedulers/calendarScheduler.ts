@@ -59,7 +59,7 @@ export const sendForumBetaReminder = async (
     );
     if (forumBetaEvent) {
         const messageContent = await ejs.renderFile(
-            "./src/views/templates/emails/forumBetaMessage.ejs",
+            "./src/server/views/templates/emails/forumBetaMessage.ejs",
             {
                 event: forumBetaEvent,
                 date: utils.formatDateToFrenchTextReadableFormat(
@@ -114,7 +114,7 @@ export const postEventsOnMattermost = async ({
 
     const readableEvents: ReadableEvents[] = makeReadableEvent(events);
     const messageContent = await ejs.renderFile(
-        "./src/views/templates/emails/eventMessage.ejs",
+        "./src/server/views/templates/emails/eventMessage.ejs",
         {
             events: readableEvents,
             CALENDAR_PUBLIC_URL: calendarPublicUrl,

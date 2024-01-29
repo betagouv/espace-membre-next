@@ -12,7 +12,7 @@ export async function publishJobsWTTJToMattermost(jobs = undefined) {
 
     if (jobs.length) {
         const jobMessage = await ejs.renderFile(
-            "./src/views/templates/emails/jobWTTJMessage.ejs",
+            "./src/server/views/templates/emails/jobWTTJMessage.ejs",
             {
                 jobs,
             }

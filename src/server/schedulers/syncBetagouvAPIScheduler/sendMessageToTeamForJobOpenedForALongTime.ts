@@ -46,7 +46,7 @@ export async function sendMessageToTeamForJobOpenedForALongTime(
             );
             if (mattermostUser) {
                 const JobMessageLongTimeOpened = await ejs.renderFile(
-                    "./src/views/templates/emails/reminderJobMessage.ejs",
+                    "./src/server/views/templates/emails/reminderJobMessage.ejs",
                     {
                         member: contact,
                         job,

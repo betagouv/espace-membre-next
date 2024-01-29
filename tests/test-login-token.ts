@@ -67,10 +67,6 @@ describe("Login token", () => {
             .select()
             .where({ email: userEmail })
             .then((dbRes) => dbRes[0].token);
-        // Use the token making a GET request
-        await chai
-            .request(app)
-            .get(`/api/signin?next=users&token=${encodeURIComponent(token)}`);
         await chai
             .request(app)
             .post(`/api/signin`)
@@ -100,14 +96,6 @@ describe("Login token", () => {
             .where({ email: userEmail })
             .then((dbRes) => (token = dbRes[0].token));
 
-        // Use the token to make a first GET request
-        await chai
-            .request(app)
-            .get(
-                `/api/signin?next=${"/community"}&token=${encodeURIComponent(
-                    token
-                )}`
-            );
         const res1 = await chai
             .request(app)
             .post(`/api/signin`)
@@ -157,14 +145,7 @@ describe("Login token", () => {
             .select()
             .where({ email: userEmail })
             .then((dbRes) => dbRes[0].token);
-        // Use the token making a GET request
-        await chai
-            .request(app)
-            .get(
-                `${routes.SIGNIN_API}?next=users&token=${encodeURIComponent(
-                    token
-                )}`
-            );
+
         await chai
             .request(app)
             .post(routes.SIGNIN_API)
@@ -202,10 +183,14 @@ describe("Login token", () => {
             expires_at: expirationDate,
         });
         // Try to login using this expired token
-        const res = await chai
+        await chai
             .request(app)
-            .get(`/api/community?token=${encodeURIComponent(token)}`)
-            .redirects(0);
+            .post(routes.SIGNIN_API)
+            .type("form")
+            .send({
+                next: "/community",
+                token: encodeURIComponent(token),
+            });
         // Ensure the response did NOT set an auth cookie
         getJwtTokenForUser.calledOnce.should.be.false;
     });

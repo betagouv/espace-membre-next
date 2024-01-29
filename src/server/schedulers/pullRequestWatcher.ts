@@ -82,7 +82,7 @@ const sendMattermostMessageToAuthorsIfExists = async (
 
     if (mattermostUser) {
         const messageContent = await ejs.renderFile(
-            `./src/views/templates/emails/pendingGithubAuthorPR.ejs`,
+            `./src/server/views/templates/emails/pendingGithubAuthorPR.ejs`,
             {
                 username: mattermostUser.username,
                 pr_link: `https://github.com/${config.githubRepository}/pull/${pullRequestNumber}`,

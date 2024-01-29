@@ -29,7 +29,7 @@ export default {
     mockStartupsDetails() {
         const url = config.startupsDetailsAPI || "https://beta.gouv.fr"; // can't replace with config.startupsApi ?
         return nock(url)
-            .get((uri) => uri.includes("startups.json"))
+            .get((uri) => uri.includes("startups_details.json"))
             .reply(200, testStartups)
             .persist();
     },

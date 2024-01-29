@@ -68,24 +68,24 @@ export async function createEmailAndUpdateSecondaryEmail(
     await createEmail(username, currentUser, emailIsRecreated);
 }
 
-export async function createEmailForUser(req, res) {
-    const username = req.sanitize(req.params.username);
-    const email = req.sanitize(req.body.to_email);
+// export async function createEmailForUser(req, res) {
+//     const username = req.sanitize(req.params.username);
+//     const email = req.sanitize(req.body.to_email);
 
-    try {
-        await createEmailAndUpdateSecondaryEmail(
-            { username, email },
-            req.auth.id
-        );
-        req.flash("message", "Le compte email a bien été créé.");
-        res.redirect(`/community/${username}`);
-    } catch (err) {
-        console.error(err);
+//     try {
+//         await createEmailAndUpdateSecondaryEmail(
+//             { username, email },
+//             req.auth.id
+//         );
+//         req.flash("message", "Le compte email a bien été créé.");
+//         res.redirect(`/community/${username}`);
+//     } catch (err) {
+//         console.error(err);
 
-        req.flash("error", err.message);
-        res.redirect("/community");
-    }
-}
+//         req.flash("error", err.message);
+//         res.redirect("/community");
+//     }
+// }
 
 async function getEmailCreationParams(username: string): Promise<
     | {
