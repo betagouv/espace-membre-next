@@ -41,11 +41,27 @@ export const MissionsEditor = ({
     const addMissionClick = (e) => {
         missionsAppend({
             start: new Date().toISOString().substring(0, 10),
-            end: addMonths(new Date(), 3).toISOString().substring(0, 10), // 6 months,
+            end: addMonths(new Date(), 3).toISOString().substring(0, 10),
             status: "",
             employer: "",
             startups: [],
         });
+    };
+
+    const onMissionAutoEndClick = (missionIndex) => {
+        const endDate = addMonths(
+            new Date(missionsFields[missionIndex].start),
+            3
+        );
+
+        setValue(
+            `missions.${missionIndex}.end`,
+            endDate.toISOString().substring(0, 10),
+            {
+                shouldValidate: true,
+                shouldDirty: true,
+            }
+        );
     };
 
     return (
@@ -57,6 +73,14 @@ export const MissionsEditor = ({
             )}
             {missionsFields.map((mission, index, all) => {
                 const missionErrors = errors && errors[index];
+                const defaultState = (field) => ({
+                    state:
+                        missionErrors && missionErrors[field]
+                            ? ("error" as const)
+                            : ("default" as const),
+                    stateRelatedMessage:
+                        missionErrors && missionErrors[field]?.message,
+                });
                 return (
                     <div key={index} className={fr.cx("fr-mb-6w")}>
                         <div className={fr.cx("fr-text--heavy")}>
@@ -90,15 +114,7 @@ export const MissionsEditor = ({
                                         type: "date",
                                         ...register(`missions.${index}.start`),
                                     }}
-                                    state={
-                                        missionErrors && missionErrors.start
-                                            ? "error"
-                                            : "default"
-                                    }
-                                    stateRelatedMessage={
-                                        missionErrors &&
-                                        missionErrors.start?.message
-                                    }
+                                    {...defaultState("start")}
                                 />
                             </div>{" "}
                             <div className={fr.cx("fr-col-4")}>
@@ -118,24 +134,9 @@ export const MissionsEditor = ({
                                                     "fr-link",
                                                     "fr-text--xs"
                                                 )}
-                                                onClick={() => {
-                                                    const endDate = addMonths(
-                                                        new Date(mission.start),
-                                                        3
-                                                    );
-
-                                                    setValue(
-                                                        `missions.${index}.end`,
-                                                        endDate
-                                                            .toISOString()
-                                                            .substring(0, 10),
-                                                        {
-                                                            shouldValidate:
-                                                                true,
-                                                            shouldDirty: true,
-                                                        }
-                                                    );
-                                                }}
+                                                onClick={() =>
+                                                    onMissionAutoEndClick(index)
+                                                }
                                                 role="button"
                                                 type="button"
                                                 title="Mettre la date de fin à +3 mois"
@@ -144,18 +145,11 @@ export const MissionsEditor = ({
                                             </button>
                                         </div>
                                     }
-                                    state={
-                                        missionErrors && missionErrors.end
-                                            ? "error"
-                                            : "default"
-                                    }
-                                    stateRelatedMessage={
-                                        missionErrors &&
-                                        missionErrors.end?.message
-                                    }
+                                    {...defaultState("end")}
                                 />
                             </div>
                         </div>
+
                         <div
                             className={fr.cx(
                                 "fr-grid-row",
@@ -171,32 +165,16 @@ export const MissionsEditor = ({
                                             `missions.${index}.employer`
                                         ),
                                     }}
-                                    state={
-                                        missionErrors && missionErrors.employer
-                                            ? "error"
-                                            : "default"
-                                    }
-                                    stateRelatedMessage={
-                                        missionErrors &&
-                                        missionErrors.employer?.message
-                                    }
+                                    {...defaultState("employer")}
                                 />
                             </div>
                             <div className={fr.cx("fr-col-6")}>
                                 <Select
                                     label="Statut"
-                                    state={
-                                        missionErrors && missionErrors.status
-                                            ? "error"
-                                            : "default"
-                                    }
-                                    stateRelatedMessage={
-                                        missionErrors &&
-                                        missionErrors.status?.message
-                                    }
                                     nativeSelectProps={{
                                         ...register(`missions.${index}.status`),
                                     }}
+                                    {...defaultState("status")}
                                 >
                                     <option value="">Statut:</option>
                                     {userStatusOptions.map((option) => (
@@ -243,15 +221,7 @@ export const MissionsEditor = ({
                                             }
                                         );
                                     }}
-                                    state={
-                                        missionErrors && missionErrors.startups
-                                            ? "error"
-                                            : "default"
-                                    }
-                                    stateMessageRelated={
-                                        missionErrors &&
-                                        missionErrors.startups?.message
-                                    }
+                                    {...defaultState("startups")}
                                 />
                             </div>
                         </div>
