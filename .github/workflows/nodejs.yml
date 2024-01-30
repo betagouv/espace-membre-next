@@ -48,3 +48,4 @@ jobs:
                   HASH_SALT: fakesaltfortestenv
                   GITHUB_FORK: dummy-github-fork
                   MAILING_LIST_NEWSLETTER: 0
+                  REDIS_URL: "dummy-url"

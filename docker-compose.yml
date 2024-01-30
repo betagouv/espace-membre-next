@@ -13,8 +13,8 @@ services:
             MAILDEV_INCOMING_USER: mailuser
             MAILDEV_INCOMING_PASS: mailpassword
         ports:
-            - "80:80"
-            - "25:25"
+            - "1080:80"
+            - "1025:25"
     redis:
         image: redis:alpine
         command: redis-server --requirepass localpwd
