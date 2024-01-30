@@ -247,7 +247,6 @@ describe("Test Account", () => {
                 .send({
                     communication_email: "primary",
                 });
-            console.log(res);
             const dbNewRes = await knex("users").select().where({ username });
             dbNewRes.length.should.equal(1);
             dbNewRes[0].communication_email.should.equal("primary");

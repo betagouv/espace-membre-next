@@ -14,7 +14,6 @@ import * as indexController from "@controllers/indexController";
 import * as resourceController from "@controllers/resourceController";
 import * as hookController from "@controllers/hookController";
 import * as pullRequestsController from "@controllers/pullRequestsController";
-import EventBus from "@infra/eventBus/eventBus";
 import routes from "@/routes/routes";
 import { rateLimiter } from "./middlewares/rateLimiter";
 import { getJwtTokenForUser, getToken } from "@/server/helpers/session";

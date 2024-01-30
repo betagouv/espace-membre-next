@@ -4,7 +4,6 @@ import knex from "@db/index";
 import { DBUser, EmailStatusCode, USER_EVENT } from "@models/dbUser/dbUser";
 import { EMAIL_TYPES } from "@modules/email";
 import { sendEmail } from "@config/email.config";
-import EventBus from "@infra/eventBus/eventBus";
 import betagouv from "@betagouv";
 
 export async function setEmailActive(username) {
@@ -33,9 +32,6 @@ export async function setEmailActive(username) {
     if (shouldSendEmailCreatedEmail) {
         await sendEmailCreatedEmail(username);
     }
-    EventBus.produce(USER_EVENT.USER_EMAIL_ACTIVATED, {
-        user_id: user.username,
-    });
 }
 
 export async function setEmailRedirectionActive(username) {
@@ -58,9 +54,6 @@ export async function setEmailRedirectionActive(username) {
             active: true,
         });
     console.log(`Email actif pour ${user.username}`);
-    EventBus.produce(USER_EVENT.USER_EMAIL_REDIRECTION_ACTIVATED, {
-        user_id: user.username,
-    });
 }
 
 export async function setEmailSuspended(username) {

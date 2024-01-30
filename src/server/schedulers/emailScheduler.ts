@@ -19,7 +19,6 @@ import {
     USER_EVENT,
 } from "@models/dbUser/dbUser";
 import { Member } from "@/models/member";
-import { IEventBus } from "@infra/eventBus";
 import { Contact, IMailingService, MAILING_LIST_TYPE } from "@modules/email";
 import {
     addContactsToMailingLists,
@@ -386,42 +385,6 @@ export async function unsubscribeEmailAddresses() {
             console.log(`Unsubscribe ${email} from mailing list incubateur`);
         })
     );
-}
-
-export async function consumePrimaryEmailStatusEvent(EventBus: IEventBus) {
-    const messageHandler = async ({ user_id }: { user_id: string }) => {
-        EventBus.produce(USER_EVENT.ADD_USER_TO_ONBOARDING_MAILING_LIST, {
-            user_id,
-        });
-        // potentialy other events toproduce
-    };
-    EventBus.consume(USER_EVENT.USER_EMAIL_ACTIVATED, messageHandler);
-}
-
-export async function addUserToOnboardingMailingList(
-    EventBus: IEventBus,
-    MailingService: IMailingService
-) {
-    const messageHandler = async ({ contact }: { contact: Contact }) => {
-        MailingService.addContactsToMailingLists({
-            listTypes: [MAILING_LIST_TYPE.ONBOARDING],
-            contacts: [contact],
-        });
-    };
-    EventBus.consume(
-        USER_EVENT.ADD_USER_TO_ONBOARDING_MAILING_LIST,
-        messageHandler
-    );
-}
-
-export async function addUserToNewsletterMailingList(
-    MailingService: IMailingService,
-    contact: Contact
-) {
-    MailingService.addContactsToMailingLists({
-        listTypes: [MAILING_LIST_TYPE.NEWSLETTER],
-        contacts: [contact],
-    });
 }
 
 export async function setEmailStatusActiveForUsers() {

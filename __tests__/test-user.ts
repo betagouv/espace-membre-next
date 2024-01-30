@@ -467,7 +467,6 @@ describe("User", () => {
                 .delete(
                     "/api/users/membre.actif/redirections/test-2@example.com/delete"
                 );
-            console.log(res);
             ovhRedirectionDeletion.isDone().should.be.true;
         });
 
@@ -925,7 +924,6 @@ describe("User", () => {
                     username,
                     primaryEmail: primaryEmail,
                 });
-            console.log(res);
             const dbNewRes = await knex("users")
                 .select()
                 .where({ username: "membre.nouveau" });
@@ -962,7 +960,6 @@ describe("User", () => {
                     username,
                     primaryEmail: primaryEmail,
                 });
-            console.log(res);
             const dbNewRes = await knex("users")
                 .select()
                 .where({ username: "membre.nouveau" });

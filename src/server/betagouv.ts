@@ -206,15 +206,8 @@ const betaOVH = {
             });
         } catch (err) {
             // Check if err is an instance of Error and has the property 'error'
-            if (err instanceof Error && "error" in err) {
-                const typedError = err as { error: number; message: string };
-                if (typedError.error === 404) return null;
-                throw new Error(
-                    `OVH Error GET on ${url} : ${JSON.stringify(typedError)}`
-                );
-            }
-            // If it's not an Error instance or doesn't have the 'error' property
-            throw err;
+            if ((err as { error: number }).error === 404) return null;
+            throw new Error(`OVH Error GET on ${url} : ${JSON.stringify(err)}`);
         }
     },
     getAllEmailInfos: async (): Promise<string[]> => {
@@ -305,21 +298,8 @@ const betaOVH = {
         try {
             return await ovh.requestPromised("GET", url, {});
         } catch (err) {
-            if (err instanceof Error) {
-                // Safely extract additional properties if they exist
-                const errorObj = err as Error & { error?: number };
-
-                if (errorObj.error === 404) {
-                    return null;
-                }
-
-                throw new Error(`OVH Error GET on ${url} : ${err.message}`);
-            } else {
-                // Handle cases where err is not an Error instance
-                throw new Error(
-                    `OVH Error GET on ${url} : ${JSON.stringify(err)}`
-                );
-            }
+            if ((err as { error: number }).error === 404) return null;
+            throw new Error(`OVH Error GET on ${url} : ${err}`);
         }
     },
     createMailingList: async (mailingListName: string) => {
@@ -336,25 +316,8 @@ const betaOVH = {
                 ownerEmail: "espace-membre@beta.gouv.fr",
             });
         } catch (err) {
-            if (err instanceof Error) {
-                // Safely extract additional properties if they exist
-                const errorObj = err as Error & { error?: number };
-
-                if (errorObj.error === 404) {
-                    return null;
-                }
-
-                throw new Error(
-                    `OVH Error createMailingList on ${url} : ${err.message}`
-                );
-            } else {
-                // Handle cases where err is not an Error instance
-                throw new Error(
-                    `OVH Error createMailingList on ${url} : ${JSON.stringify(
-                        err
-                    )}`
-                );
-            }
+            if ((err as { error: number }).error === 404) return null;
+            throw new Error(`OVH Error createMailingList on ${url} : ${err}`);
         }
     },
     unsubscribeFromMailingList: async (
@@ -365,21 +328,8 @@ const betaOVH = {
         try {
             return await ovh.requestPromised("DELETE", url);
         } catch (err) {
-            if (err instanceof Error) {
-                // Safely extract additional properties if they exist
-                const errorObj = err as Error & { error?: number };
-
-                if (errorObj.error === 404) {
-                    return null;
-                }
-
-                throw new Error(`OVH Error DELETE on ${url} : ${err.message}`);
-            } else {
-                // Handle cases where err is not an Error instance
-                throw new Error(
-                    `OVH Error DELETE on ${url} : ${JSON.stringify(err)}`
-                );
-            }
+            if ((err as { error: number }).error === 404) return null;
+            throw new Error(`OVH Error DELETE on ${url} : ${err}`);
         }
     },
     subscribeToMailingList: async (
@@ -418,21 +368,9 @@ const betaOVH = {
         try {
             return await ovh.requestPromised("GET", url);
         } catch (err) {
-            if (err instanceof Error) {
-                // Safely extract additional properties if they exist
-                const errorObj = err as Error & { error?: number };
-
-                if (errorObj.error === 404) {
-                    return null;
-                }
-
-                throw new Error(`OVH Error GET on ${url} : ${err.message}`);
-            } else {
-                // Handle cases where err is not an Error instance
-                throw new Error(
-                    `OVH Error GET on ${url} : ${JSON.stringify(err)}`
-                );
-            }
+            console.log(typeof err);
+            if ((err as { error: number }).error === 404) return null;
+            throw new Error(`OVH Error GET on ${url} : ${err}`);
         }
     },
     setResponder: async (id, { content, from, to }) => {
@@ -600,23 +538,8 @@ const betaOVH = {
         try {
             return await ovh.requestPromised("GET", url, {});
         } catch (err) {
-            if (err instanceof Error) {
-                // Safely extract additional properties if they exist
-                const errorObj = err as Error & { error?: number };
-
-                if (errorObj.error === 404) {
-                    return null;
-                }
-
-                throw new Error(
-                    `OVH Error GET on ${url} : ${JSON.stringify(err)}`
-                );
-            } else {
-                // Handle cases where err is not an Error instance
-                throw new Error(
-                    `OVH Error GET on ${url} : ${JSON.stringify(err)}`
-                );
-            }
+            if ((err as { error: number }).error === 404) return null;
+            throw new Error(`OVH Error GET on ${url} : ${JSON.stringify(err)}`);
         }
     },
     changePassword: async (id, password, plan) => {

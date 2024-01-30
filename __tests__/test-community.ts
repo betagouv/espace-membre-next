@@ -96,7 +96,6 @@ describe("Community endpoint", () => {
                 )
                 .end((err, res) => {
                     chai.expect(res).to.be.json;
-                    console.log(res.body);
                     res.body.userInfos.fullname.should.include("Membre Parti");
                     res.body.userInfos.start.should.include("2016-11-03");
                     res.body.userInfos.end.should.include("2050-10-30");
@@ -122,7 +121,6 @@ describe("Community endpoint", () => {
                         "membre.parti"
                     )}`
                 );
-            console.log(res.body);
             res.body.secondaryEmail.should.include("perso@example.com");
             await knex("users")
                 .where({

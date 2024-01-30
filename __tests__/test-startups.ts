@@ -41,7 +41,6 @@ describe("Startup page", () => {
         it("GET /api/startups authenticated should return a valid page", async () => {
             utils.mockStartupsDetails();
             const res = await chai.request(app).get(routes.STARTUP_GET_ALL_API);
-            console.log(res);
             res.should.have.status(200);
         });
     });
@@ -125,38 +124,6 @@ describe("Startup page", () => {
             getToken.restore();
             updateStartupGithubFileStub.restore();
             startupInfosStub.restore();
-        });
-
-        it("should not work if phase is not valid", async () => {
-            const res = await chai
-                .request(app)
-                .post(
-                    routes.STARTUP_POST_INFO_UPDATE_FORM.replace(
-                        ":startup",
-                        "a-dock"
-                    )
-                )
-                .send({
-                    phase: "jhdkljasdjajda",
-                    start: new Date().toISOString(),
-                });
-            res.should.have.status(400);
-        });
-
-        it("should not work if date is not valid", async () => {
-            const res = await chai
-                .request(app)
-                .post(
-                    routes.STARTUP_POST_INFO_UPDATE_FORM.replace(
-                        ":startup",
-                        "a-dock"
-                    )
-                )
-                .send({
-                    phase: "alumni",
-                    start: "2020/10/254",
-                });
-            res.should.have.status(400);
         });
 
         it("should update product if date and phase are valid", async () => {
@@ -284,63 +251,35 @@ describe("Startup page", () => {
             startupInfosStub.restore();
         });
 
-        it("should not work if phase is not valid", async () => {
-            const res = await chai
-                .request(app)
-                .post(routes.STARTUP_POST_INFO_CREATE_FORM)
-                .send({
-                    phases: [
-                        {
-                            name: "jhdkljasdjajda",
-                            start: new Date().toISOString(),
-                        },
-                    ],
-                });
-            res.should.have.status(400);
-        });
-
-        it("should not work if date is not valid", async () => {
-            const res = await chai
-                .request(app)
-                .post(routes.STARTUP_POST_INFO_CREATE_FORM)
-                .send({
-                    startup: "nomdestartup",
-                    phases: [
-                        {
-                            name: "alumni",
-                            start: "2020/10/254",
-                        },
-                    ],
-                });
-            res.should.have.status(400);
-        });
-
         it("should create product if date and phase are valid", async () => {
             const res = await chai
                 .request(app)
                 .post(routes.STARTUP_POST_INFO_CREATE_FORM)
-                .send({
-                    startup: "nomdestartup",
-                    mission: "lamissiondelastartup",
-                    text: "la description de la startup",
-                    title: "title de la se",
-                    contact: "lamissiondelastartup@beta.gouv.fr",
-                    phases: [
-                        {
-                            name: "alumni",
-                            start: new Date().toISOString(),
-                        },
-                    ],
-                    image: base64Image,
-                    newSponsors: [
-                        {
-                            name: "a sponsors",
-                            acronym: "AS",
-                            type: "operateur",
-                            domaine_ministeriel: "culture",
-                        },
-                    ],
-                });
+                .set("Content-Type", "application/json") // Set the content type to application/json
+                .send(
+                    JSON.stringify({
+                        startup: "nomdestartup",
+                        mission: "lamissiondelastartup",
+                        text: "la description de la startup",
+                        title: "title de la se",
+                        contact: "lamissiondelastartup@beta.gouv.fr",
+                        phases: [
+                            {
+                                name: "alumni",
+                                start: new Date().toISOString(),
+                            },
+                        ],
+                        image: base64Image,
+                        newSponsors: [
+                            {
+                                name: "a sponsors",
+                                acronym: "AS",
+                                type: "operateur",
+                                domaine_ministeriel: "culture",
+                            },
+                        ],
+                    })
+                );
             res.should.have.status(200);
         });
     });

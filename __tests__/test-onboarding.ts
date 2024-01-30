@@ -406,7 +406,6 @@ describe("Onboarding", () => {
                     memberType: "beta",
                     isEmailBetaAsked: false,
                 });
-            console.log(res);
             getGithubMasterSha.called.should.be.true;
             createGithubBranch.called.should.be.true;
             createGithubFile.called.should.be.true;

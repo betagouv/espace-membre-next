@@ -116,7 +116,6 @@ describe("Test Admin", () => {
                     includeEmails: "",
                     text: "",
                 });
-            console.log(res.body);
             res.should.have.status(200);
             sendInfoToChat.calledOnce.should.be.true;
             getUserWithParams.callCount.should.be.eq(0);

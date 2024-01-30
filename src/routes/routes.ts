@@ -59,7 +59,7 @@ class routes {
     static ACCOUNT_GET_BASE_INFO_FORM = "/account/base-info";
     static ACCOUNT_GET_BASE_INFO_FORM_API = "/api/account/base-info";
 
-    static ACCOUNT_POST_BASE_INFO_FORM = "/account/base-info/:username";
+    static ACCOUNT_POST_BASE_INFO_FORM = "/api/account/base-info/:username";
     static ACCOUNT_GET_DETAIL_INFO_FORM_API = "/api/account/info";
     static ACCOUNT_POST_DETAIL_INFO_FORM = "/api/account/info";
     static API_PUBLIC_POST_BASE_INFO_FORM =
