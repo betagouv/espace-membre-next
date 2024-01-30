@@ -47,3 +47,4 @@ jobs:
                   HOSTNAME: localhost
                   HASH_SALT: fakesaltfortestenv
                   GITHUB_FORK: dummy-github-fork
+                  MAILING_LIST_NEWSLETTER: 0
