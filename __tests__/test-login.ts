@@ -68,7 +68,7 @@ describe("Login", () => {
                     emailInput: "",
                 })
                 .redirects(0);
-            res.should.have.status(200);
+            res.should.have.status(500);
             // res.header.location.should.equal("/login");
         });
     });
@@ -106,11 +106,11 @@ describe("Login", () => {
                 .post(routes.LOGIN_API)
                 .type("form")
                 .send({
-                    emailInput: "prénom.nom@beta.gouv.fr",
+                    emailInput: `prénom.nom@${config.domain}`,
                 })
                 .redirects(0);
 
-            res.should.have.status(404);
+            res.should.have.status(500);
             // res.header.location.should.equal("/login");
         });
     });
@@ -121,11 +121,11 @@ describe("Login", () => {
                 .post(routes.LOGIN_API)
                 .type("form")
                 .send({
-                    emailInput: "membre.expire@beta.gouv.fr",
+                    emailInput: `membre.expire@${config.domain}`,
                 })
                 .redirects(0)
                 .end((err, res) => {
-                    res.should.have.status(404);
+                    res.should.have.status(403);
                     // res.header.location.should.equal("/login");
                     done();
                 });

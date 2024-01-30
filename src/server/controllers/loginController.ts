@@ -98,11 +98,9 @@ export async function postLoginApi(req, res) {
         req.body.emailInput.toLowerCase() ||
         isValidEmail("email", req.body.emailInput.toLowerCase(), errorHandler);
     if (Object.keys(formValidationErrors).length) {
-        return res
-            .json({
-                errors: formValidationErrors,
-            })
-            .status(500);
+        return res.status(500).json({
+            errors: formValidationErrors,
+        });
     }
     let username;
 
@@ -113,11 +111,9 @@ export async function postLoginApi(req, res) {
             username === undefined ||
             !/^[a-z0-9_-]+\.[a-z0-9_-]+$/.test(username)
         ) {
-            return res
-                .json({
-                    errors: `Le nom de l'adresse email renseigné n'a pas le bon format. Il doit contenir des caractères alphanumériques en minuscule et un '.' Exemple : charlotte.duret@${config.domain}`,
-                })
-                .status(500);
+            return res.status(500).json({
+                errors: `Le nom de l'adresse email renseigné n'a pas le bon format. Il doit contenir des caractères alphanumériques en minuscule et un '.' Exemple : charlotte.duret@${config.domain}`,
+            });
         }
     }
 
