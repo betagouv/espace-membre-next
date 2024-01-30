@@ -155,7 +155,9 @@ const betaOVH = {
     emailInfos: async (id: string): Promise<EmailInfos | null> => {
         const errorHandler = (err) => {
             if (err.error === 404) return null;
-            throw err;
+            throw new Error(
+                `Error to get email info in ${config.domain}:${err}`
+            );
         };
         const promises: Promise<any>[] = [];
         const url = `/email/domain/${config.domain}/account/${id}`;

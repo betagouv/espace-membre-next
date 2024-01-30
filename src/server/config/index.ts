@@ -164,7 +164,7 @@ export default {
         : [],
     MATTERMOST_EMAIL_REGEX_EXCEPTION:
         process.env.MATTERMOST_EMAIL_REGEX_EXCEPTION,
-    OVH_EMAIL_PRO_NAME: getOrThrowError("OVH_EMAIL_PRO_NAME"),
+    OVH_EMAIL_PRO_NAME: process.env.OVH_EMAIL_PRO_NAME,
     OVH_EMAIL_EXCHANGE_NAME: process.env.OVH_EMAIL_EXCHANGE_NAME,
     investigationReportsIframeURL:
         process.env.INVESTIGATION_REPORTS_IFRAME_URL || "",

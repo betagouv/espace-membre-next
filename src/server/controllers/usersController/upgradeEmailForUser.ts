@@ -44,6 +44,9 @@ export async function upgradeEmailForUserHandler(req, res, onSuccess, onError) {
             `Vous n'etes pas admin vous ne pouvez pas upgrade ce compte.`
         );
     }
+    if (!config.OVH_EMAIL_PRO_NAME) {
+        throw new Error(`OVH email pro account is not defined`);
+    }
 
     try {
         const availableProEmail: string[] =
