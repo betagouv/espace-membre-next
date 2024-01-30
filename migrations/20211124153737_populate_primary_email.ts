@@ -7,7 +7,8 @@ exports.up = function (knex) {
         .select()
         .then((users) => {
             knex.transaction((trx) => {
-                const queries: Promise<any>[] = []; // Replace 'any' with a more specific type if possible
+                // @ts-ignore
+                const queries = []; // Replace 'any' with a more specific type if possible
                 users.forEach((user) => {
                     const query = knex("users")
                         .where("username", user.username)
@@ -17,6 +18,7 @@ exports.up = function (knex) {
                             }`,
                         })
                         .transacting(trx); // This makes every update be in the same transaction
+                    // @ts-ignore
                     queries.push(query);
                 });
                 return Promise.all(queries) // Once every query is written
@@ -31,7 +33,8 @@ exports.down = function (knex) {
         .whereNotNull("primary_email")
         .then((users) => {
             knex.transaction((trx) => {
-                const queries: Promise<any>[] = []; // Replace 'any' with a more specific type if possible
+                // @ts-ignore
+                const queries = []; // Replace 'any' with a more specific type if possible
                 users.forEach((user) => {
                     const query = knex("users")
                         .where("username", user.username)
@@ -39,6 +42,7 @@ exports.down = function (knex) {
                             primary_email: null,
                         })
                         .transacting(trx); // This makes every update be in the same transaction
+                    // @ts-ignore
                     queries.push(query);
                 });
                 Promise.all(queries) // Once every query is written

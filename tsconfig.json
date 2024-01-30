@@ -125,7 +125,8 @@
             "@views/*": [
                 "./src/server/views/*"
             ]
-        },"plugins": [
+        },
+        "plugins": [
             {
                 "transform": "typescript-transform-paths"
             }

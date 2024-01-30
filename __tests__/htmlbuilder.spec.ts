@@ -5,8 +5,8 @@ import {
     EmailUserShouldUpdateInfo,
     EMAIL_TYPES,
 } from "@modules/email";
-import htmlBuilder from "./htmlbuilder";
-import testUsers from "../../../../tests/users.json";
+import htmlBuilder from "../src/server/modules/htmlbuilder/htmlbuilder";
+import testUsers from "./users.json";
 import { Domaine, Member } from "@/models/member";
 import * as mdtohtml from "@lib/mdtohtml";
 import sinon from "sinon";

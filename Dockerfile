@@ -11,7 +11,7 @@ COPY . .
 USER node
 
 # Inform Docker that the container listens on port 3000 at runtime
-EXPOSE 3000
+EXPOSE 8100
 
 # Command to run the application
 CMD ["npm", "run", "dev"]

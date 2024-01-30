@@ -42,7 +42,7 @@ import { setupSessionMiddleware } from "./middlewares/sessionMiddleware";
 import { PUBLIC_ROUTES } from "./config/jwt.config";
 import { initializeSentry, sentryErrorHandler } from "./lib/sentry";
 
-const port = parseInt(process.env.PORT || "3000", 10);
+const port = parseInt(process.env.PORT || "8100", 10);
 const dev = process.env.NODE_ENV !== "production";
 const app = next({ dev });
 const handle = app.getRequestHandler();
@@ -135,9 +135,9 @@ const startServer = () => {
         });
         server.use(sentryErrorHandler);
 
-        return server.listen(config.port, () =>
+        return server.listen(port, () =>
             console.log(
-                `Running on: ${config.protocol}://${config.host}:${config.port}`
+                `Running on: ${config.protocol}://${config.host}:${port}`
             )
         );
     });

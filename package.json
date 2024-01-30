@@ -4,8 +4,11 @@
   "private": true,
   "scripts": {
     "dev": "ts-node src/server/server.ts",
-    "build": "next build",
-    "start": "next start",
+    "build:back": "ttsc -p tsconfig.build.json && cp -R src/public dist/src && cp -R static dist/static && cp -R src/views/templates dist/src/views",
+    "build:next": "next build",
+    "build:server": "ttsc -p tsconfig.server.json",
+    "build": "npm run build:next && npm run build:server",
+    "start": "NODE_ENV=production node dist/src/server/server.js",
     "lint": "next lint",
     "migrate": "knex migrate:latest --esm",
     "makeMigration": "knex migrate:make -x ts --esm",
@@ -74,6 +77,7 @@
     "tedious": "^16.4.1",
     "ts-mocha": "^10.0.0",
     "tss-react": "^4.9.3",
+    "ttsc": "^0.3.1",
     "type-route": "^1.0.1",
     "uuid": "^9.0.1"
   },
@@ -104,6 +108,7 @@
     "ts-node": "^10.9.2",
     "ts-node-dev": "^2.0.0",
     "tsconfig-paths": "^4.2.0",
-    "typescript": "^5.3.3"
+    "typescript": "^5.3.3",
+    "typescript-transform-paths": "^3.4.6"
   }
 }
