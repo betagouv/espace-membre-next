@@ -37,7 +37,7 @@ export const makeSendEmailNodemailer = (
     const transport = {
         debug: MAIL_DEBUG === "true",
         service: MAIL_SERVICE ? MAIL_SERVICE : null,
-        host: MAIL_SERVICE ? null : "localhost",
+        host: MAIL_SERVICE ? null : MAIL_HOST,
         port: MAIL_SERVICE ? null : parseInt(MAIL_PORT || "25", 10),
         ignoreTLS: MAIL_SERVICE ? null : MAIL_IGNORE_TLS === "true",
         auth: {
