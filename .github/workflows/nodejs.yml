@@ -46,3 +46,4 @@ jobs:
                   DATABASE_URL: postgres://postgres:postgres@localhost:5432/postgres
                   HOSTNAME: localhost
                   HASH_SALT: fakesaltfortestenv
+                  GITHUB_FORK: dummy-github-fork
