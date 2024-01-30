@@ -4,7 +4,6 @@
   "private": true,
   "scripts": {
     "dev": "ts-node src/server/server.ts",
-    "build:back": "ttsc -p tsconfig.build.json && cp -R src/public dist/src && cp -R static dist/static && cp -R src/views/templates dist/src/views",
     "build:next": "next build",
     "build:server": "ttsc -p tsconfig.server.json",
     "build": "npm run build:next && npm run build:server",

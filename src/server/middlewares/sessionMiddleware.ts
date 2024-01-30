@@ -6,7 +6,7 @@ const setupSessionMiddleware = (app) => {
     app.use(
         "/api",
         session({
-            // store: process.env.NODE_ENV !== "test" ? makeSessionStore() : null,
+            store: process.env.NODE_ENV !== "test" ? makeSessionStore() : null,
             secret: config.secret,
             resave: false, // required: force lightweight session keep alive (touch)
             saveUninitialized: false, // recommended: only save session when data exists
