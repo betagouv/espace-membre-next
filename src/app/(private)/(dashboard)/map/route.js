@@ -1,5 +1,3 @@
-import config from "@/frontConfig";
-
 export const dynamic = "force-dynamic"; // defaults to auto
 export async function GET(req) {
     const response = new Response(
@@ -12,11 +10,11 @@ export async function GET(req) {
       <title>Carte des membres beta.gouv</title>
       <meta name="viewport" content="initial-scale=1,maximum-scale=1,user-scalable=no" />
       <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
-      <link rel="apple-touch-icon" sizes="180x180" href="${config.API_SERVER}/static/favicon/apple-touch-icon.png">
-      <link rel="icon" type="image/png" sizes="32x32" href="${config.API_SERVER}/static/favicon/favicon-32x32.png">
-      <link rel="icon" type="image/png" sizes="16x16" href="${config.API_SERVER}/static/favicon/favicon-16x16.png">
-      <link rel="manifest" href="${config.API_SERVER}/static/favicon/site.webmanifest">
-      <link rel="stylesheet" href="${config.API_SERVER}/static/css/main.css">
+      <link rel="apple-touch-icon" sizes="180x180" href="/static/favicon/apple-touch-icon.png">
+      <link rel="icon" type="image/png" sizes="32x32" href="/static/favicon/favicon-32x32.png">
+      <link rel="icon" type="image/png" sizes="16x16" href="/static/favicon/favicon-16x16.png">
+      <link rel="manifest" href="/static/favicon/site.webmanifest">
+      <link rel="stylesheet" href="/static/css/main.css">
     </head>
       <script src="https://unpkg.com/maplibre-gl@2.1.9/dist/maplibre-gl.js"></script>
       <link href="https://unpkg.com/maplibre-gl@2.1.9/dist/maplibre-gl.css" rel="stylesheet" />
@@ -163,7 +161,7 @@ export async function GET(req) {
               </ul>
           </aside>
         </div>
-        <script src="${config.API_SERVER}/static/scripts/buildmap.js"></script>
+        <script src="/static/scripts/buildmap.js"></script>
     </body>
     
     </html>

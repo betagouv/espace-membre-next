@@ -102,10 +102,10 @@ export const InfoUpdate = (props: InfoUpdateProps) => {
     };
 
     const save = (event: { preventDefault: () => void }) => {
+        event.preventDefault();
         if (isSaving) {
             return;
         }
-        event.preventDefault();
         setIsSaving(true);
         axios
             .post(
