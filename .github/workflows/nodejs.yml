@@ -24,6 +24,32 @@ jobs:
                   postgresql password: postgres
             - run: npm install
             - run: npm run build --if-present
+              env:
+                  CI: true
+                  FEATURE_SHOULD_SEND_MESSAGE_TO_AUTHOR: true
+                  NEWSLETTER_HASH_SECRET: fakenewslettersecret
+                  SHOULD_SEND_NL: true
+                  OVH_APP_KEY: fakeovhkey
+                  OVH_APP_SECRET: fakeovhsecret
+                  OVH_CONSUMER_KEY: fakeconsumerkey
+                  SESSION_SECRET: fakesessionsecret
+                  CHAT_WEBHOOK_URL_SECRETARIAT: https://example.com
+                  CHAT_WEBHOOK_URL_GENERAL: https://example.com
+                  CHAT_WEBHOOK_URL_DINUM: https://example.com
+                  CHAT_WEBHOOK_URL_GIP: https://example.com
+                  MATTERMOST_BOT_TOKEN: faketoken
+                  MATTERMOST_INVITE_ID: fakeid
+                  MAIL_PASS: fakepass
+                  MAIL_USER: fakeuser
+                  MAIL_SENDER: fake@localhost
+                  DATABASE_URL: postgres://postgres:postgres@localhost:5432/postgres
+                  HOSTNAME: localhost
+                  HASH_SALT: fakesaltfortestenv
+                  GITHUB_FORK: dummy-github-fork
+                  MAILING_LIST_NEWSLETTER: 0
+                  REDIS_URL: "dummy-url"
+                  GITHUB_CLIENT_ID: dumygithubclient
+                  GITHUB_CLIENT_SECRET: dummygithubsecret
             - run: npm run test
               env:
                   CI: true

@@ -35,7 +35,7 @@ const CRON_TASK_ENV_VAR = {
 };
 
 const getOrThrowError = (key: string): string => {
-    if (process.env[key]) {
+    if (process.env[key] && typeof process.env[key] === "string") {
         return process.env[key] as string;
     }
     throw new Error(`Environement variable ${key} is required`);
