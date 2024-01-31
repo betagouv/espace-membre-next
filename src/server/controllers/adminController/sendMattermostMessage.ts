@@ -1,8 +1,8 @@
-import config from "@config";
+import config from "@/config";
 import db from "@db";
 import { getUserWithParams, sendInfoToChat } from "@infra/chat";
-import { DBUser, EmailStatusCode } from "@models/dbUser";
-import { MattermostUser } from "@lib/mattermost";
+import { DBUser, EmailStatusCode } from "@/models/dbUser";
+import { MattermostUser } from "@/lib/mattermost";
 
 export const getMattermostUsers = async ({
     fromBeta,

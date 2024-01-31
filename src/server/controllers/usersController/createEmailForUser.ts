@@ -1,5 +1,5 @@
 import crypto from "crypto";
-import config from "@config";
+import config from "@/config";
 import {
     EMAIL_PLAN_TYPE,
     OvhExchangeCreationData,
@@ -8,9 +8,8 @@ import {
 import BetaGouv from "@betagouv";
 import * as utils from "@controllers/utils";
 import knex from "@db/index";
-import { MemberWithPermission } from "@models/member";
 import { DBUser, EmailStatusCode } from "@/models/dbUser/dbUser";
-import { addEvent, EventCode } from "@lib/events";
+import { addEvent, EventCode } from "@/lib/events";
 import { _ } from "lodash";
 
 const INCUBATORS_USING_EXCHANGE = ["gip-inclusion"];

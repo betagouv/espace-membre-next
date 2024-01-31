@@ -1,9 +1,9 @@
 import axios from "axios";
 import ovh0 from "ovh";
-import config from "@config";
+import config from "@/config";
 import { checkUserIsExpired } from "@controllers/utils";
-import { Incubator } from "@models/incubator";
-import { Job, JobWTTJ } from "@models/job";
+import { Incubator } from "@/models/incubator";
+import { Job, JobWTTJ } from "@/models/job";
 import { Member } from "@/models/member";
 import { Startup } from "@/models/startup";
 import _ from "lodash";
@@ -14,7 +14,7 @@ import {
     OvhProCreationData,
     OvhResponder,
     OvhRedirection,
-} from "./models/ovh";
+} from "@/models/ovh";
 import { EmailInfos } from "@/models/member";
 
 const ovh = ovh0({

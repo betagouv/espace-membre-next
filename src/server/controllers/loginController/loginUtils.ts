@@ -1,9 +1,9 @@
 import crypto from "crypto";
 import BetaGouv from "../../betagouv";
-import config from "@config";
+import config from "@/config";
 import knex from "../../db";
 import * as utils from "../utils";
-import { sendEmail } from "@config/email.config";
+import { sendEmail } from "@/config/email.config";
 import { EMAIL_TYPES } from "@modules/email";
 
 export async function saveToken(

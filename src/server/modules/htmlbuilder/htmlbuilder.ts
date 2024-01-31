@@ -11,7 +11,7 @@ import {
     EmailStartupEnterAccelerationPhase,
     EmailPRPendingToTeam,
 } from "@modules/email";
-import * as mdtohtml from "@lib/mdtohtml";
+import * as mdtohtml from "@/lib/mdtohtml";
 
 const TEMPLATES_BY_TYPE: Record<EmailProps["type"], string | null> = {
     MARRAINAGE_NEWCOMER_EMAIL:

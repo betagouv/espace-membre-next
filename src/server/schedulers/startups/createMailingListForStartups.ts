@@ -1,6 +1,6 @@
 import betagouv from "@betagouv";
 import db from "@db";
-import { CommunicationEmailCode, DBUser } from "@models/dbUser";
+import { CommunicationEmailCode, DBUser } from "@/models/dbUser";
 import { ACTIVE_PHASES, Startup, StartupPhase } from "@/models/startup";
 import { generateMailingListName } from ".";
 

@@ -1,9 +1,9 @@
 import * as utils from "@controllers/utils";
 import db from "@db";
-import config from "@config";
-import { EMAIL_STATUS_READABLE_FORMAT } from "@models/misc";
-import { getUserByEmail, MattermostUser, searchUsers } from "@lib/mattermost";
-import { DBUser } from "@models/dbUser";
+import config from "@/config";
+import { EMAIL_STATUS_READABLE_FORMAT } from "@/models/misc";
+import { getUserByEmail, MattermostUser, searchUsers } from "@/lib/mattermost";
+import { DBUser } from "@/models/dbUser";
 
 export async function getUserInfo(req, res) {
     const { username } = req.params;

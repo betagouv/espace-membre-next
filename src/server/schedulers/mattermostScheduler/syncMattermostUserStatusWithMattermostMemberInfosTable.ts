@@ -1,5 +1,5 @@
 import db from "@db";
-import * as mattermost from "@lib/mattermost";
+import * as mattermost from "@/lib/mattermost";
 import { MattermostMemberInfo } from "@/models/mattermostMemberInfo";
 
 export async function syncMattermostUserStatusWithMattermostMemberInfosTable() {

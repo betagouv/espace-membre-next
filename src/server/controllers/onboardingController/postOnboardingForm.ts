@@ -2,7 +2,7 @@ import ejs from "ejs";
 import crypto from "crypto";
 import { Schema } from "express-validator";
 
-import config from "@config";
+import config from "@/config";
 import * as utils from "@controllers/utils";
 import BetaGouv from "@betagouv";
 import knex from "@db";
@@ -21,7 +21,7 @@ import {
     genderOptions,
     statusOptions,
 } from "@/models/dbUser/dbUser";
-import { fetchCommuneDetails } from "@lib/searchCommune";
+import { fetchCommuneDetails } from "@/lib/searchCommune";
 import { DOMAINE_OPTIONS } from "@/models/member";
 import {
     getGithubMasterSha,
@@ -30,7 +30,7 @@ import {
     makeGithubPullRequest,
     deleteGithubBranch,
     PRInfo,
-} from "@lib/github";
+} from "@/lib/github";
 import { createUsername } from "../helpers/githubHelpers/createContentName";
 
 function createBranchName(username) {

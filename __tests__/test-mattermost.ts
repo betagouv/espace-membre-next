@@ -1,11 +1,11 @@
 import nock from "nock";
 import rewire from "rewire";
 import sinon from "sinon";
-import config from "@config";
+import config from "@/config";
 import testUsers from "./users.json";
 import utils from "./utils";
-import * as mattermost from "@lib/mattermost";
-import * as email from "@config/email.config";
+import * as mattermost from "@/lib/mattermost";
+import * as email from "@/config/email.config";
 import knex from "@db";
 import { EmailStatusCode } from "@/models/dbUser/dbUser";
 import { removeBetaAndParnersUsersFromCommunityTeam } from "@schedulers/mattermostScheduler/removeBetaAndParnersUsersFromCommunityTeam";

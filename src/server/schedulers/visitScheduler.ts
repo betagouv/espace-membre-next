@@ -1,6 +1,6 @@
 import { CronJob } from "cron";
 import ejs from "ejs";
-import config from "@config";
+import config from "@/config";
 import BetaGouv from "@betagouv";
 import knex from "@db";
 import * as utils from "@controllers/utils";

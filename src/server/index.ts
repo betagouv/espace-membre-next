@@ -8,7 +8,7 @@ import { expressjwt, Request } from "express-jwt";
 import expressSanitizer from "express-sanitizer";
 import path from "path";
 import cors from "cors";
-import config from "@config";
+import config from "@/config";
 import * as githubNotificationController from "@controllers/githubNotificationController";
 import * as indexController from "@controllers/indexController";
 import * as resourceController from "@controllers/resourceController";
@@ -35,11 +35,10 @@ import {
     setupStaticFiles,
     startupRouter,
 } from "./routes";
-import { corsOptions } from "./utils/corsConfig";
 import { errorHandler } from "./middlewares/errorHandler";
 import { setupSessionMiddleware } from "./middlewares/sessionMiddleware";
-import { PUBLIC_ROUTES } from "./config/jwt.config";
-import { initializeSentry, sentryErrorHandler } from "./lib/sentry";
+import { PUBLIC_ROUTES } from "../config/jwt.config";
+import { initializeSentry, sentryErrorHandler } from "@lib/sentry";
 
 const port = parseInt(process.env.PORT || "8100", 10);
 const dev = process.env.NODE_ENV !== "production";

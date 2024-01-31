@@ -7,8 +7,8 @@ import {
     statusOptions,
     genderOptions,
 } from "@/models/dbUser/dbUser";
-import { fetchCommuneDetails } from "@lib/searchCommune";
-import config from "@config";
+import { fetchCommuneDetails } from "@/lib/searchCommune";
+import config from "@/config";
 
 export async function getDetailInfoUpdateApi(req, res) {
     getDetailInfoUpdatePageData(

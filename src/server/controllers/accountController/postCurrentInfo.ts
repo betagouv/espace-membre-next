@@ -1,9 +1,7 @@
-import betagouv from "@betagouv";
 import knex from "@db";
 import * as utils from "@controllers/utils";
-import { MemberWithPermission } from "@models/member";
-import { statusOptions, genderOptions } from "@models/dbUser/dbUser";
-import { fetchCommuneDetails } from "@lib/searchCommune";
+import { statusOptions, genderOptions } from "@/models/dbUser/dbUser";
+import { fetchCommuneDetails } from "@/lib/searchCommune";
 
 export async function postCurrentInfoApi(req, res) {
     postCurrentInfoPage(

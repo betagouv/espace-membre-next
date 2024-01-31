@@ -2,10 +2,9 @@ import {
     createBadgeRequest,
     getBadgeRequestWithStatus,
 } from "@db/dbBadgeRequests";
-import { BadgeRequest, BADGE_REQUEST } from "@models/badgeRequests";
-import DS from "@config/ds/ds.config";
-import config from "@config";
-import { MemberWithPermission } from "@models/member";
+import { BADGE_REQUEST } from "@/models/badgeRequests";
+import DS from "@/config/ds/ds.config";
+import config from "@/config";
 import { capitalizeWords, userInfos } from "../utils";
 
 const buildRequestId = () => {

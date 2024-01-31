@@ -1,5 +1,5 @@
-import config from "@config";
-import * as github from "@lib/github";
+import config from "@/config";
+import * as github from "@/lib/github";
 
 export async function getAllPullRequests(req, res) {
     try {

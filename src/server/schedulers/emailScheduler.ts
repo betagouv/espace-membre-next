@@ -2,8 +2,8 @@ import crypto from "crypto";
 import _ from "lodash/array";
 
 import BetaGouv from "@betagouv";
-import { OvhRedirection } from "@models/ovh";
-import config from "@config";
+import { OvhRedirection } from "@/models/ovh";
+import config from "@/config";
 import {
     setEmailActive,
     setEmailRedirectionActive,
@@ -16,14 +16,13 @@ import {
     DBUser,
     EmailStatusCode,
     MemberType,
-    USER_EVENT,
-} from "@models/dbUser/dbUser";
+} from "@/models/dbUser/dbUser";
 import { Member } from "@/models/member";
-import { Contact, IMailingService, MAILING_LIST_TYPE } from "@modules/email";
+import { MAILING_LIST_TYPE } from "@modules/email";
 import {
     addContactsToMailingLists,
     smtpBlockedContactsEmailDelete,
-} from "@config/email.config";
+} from "@/config/email.config";
 import betagouv from "../betagouv";
 import { isBetaEmail } from "@controllers/utils";
 import { createEmail } from "../controllers/usersController/createEmailForUser";

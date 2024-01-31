@@ -1,10 +1,10 @@
-import { MattermostUser } from "@lib/mattermost";
+import { MattermostUser } from "@/lib/mattermost";
 import { DBUser, EmailStatusCode } from "@/models/dbUser/dbUser";
 import { Member } from "@/models/member";
 import knex from "@db";
-import config from "@config";
+import config from "@/config";
 import * as utils from "@controllers/utils";
-import * as mattermost from "@lib/mattermost";
+import * as mattermost from "@/lib/mattermost";
 import betagouv from "@betagouv";
 import { sendInfoToChat } from "@infra/chat";
 import axios from "axios";

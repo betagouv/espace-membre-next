@@ -15,7 +15,7 @@ import Autocomplete from "@mui/material/Autocomplete";
 import { fr } from "@codegouvfr/react-dsfr";
 import Popper from "@mui/material/Popper";
 import { SearchBar } from "@codegouvfr/react-dsfr/SearchBar";
-import { searchCommunes } from "@lib/searchCommune";
+import { searchCommunes } from "@/lib/searchCommune";
 
 interface InternationPlaceResult {
     label: string;

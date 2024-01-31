@@ -3,8 +3,8 @@ import BetaGouv from "@betagouv";
 import * as utils from "@controllers/utils";
 import knex from "@db";
 import { DBUser } from "@/models/dbUser/dbUser";
-import { Member, MemberWithEmailsAndMattermostUsername } from "@models/member";
-import * as mattermost from "@lib/mattermost";
+import { Member, MemberWithEmailsAndMattermostUsername } from "@/models/member";
+import * as mattermost from "@/lib/mattermost";
 import { sleep } from "@controllers/utils";
 
 export async function sendMessageToActiveUsersWithoutSecondaryEmail() {

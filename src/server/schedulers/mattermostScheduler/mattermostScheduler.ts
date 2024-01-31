@@ -1,12 +1,12 @@
 import betagouv from "@betagouv";
-import { MattermostUser } from "@lib/mattermost";
-import { DBUser, EmailStatusCode } from "@models/dbUser/dbUser";
-import { MemberWithPrimaryEmailInfo, Member } from "@models/member";
+import { MattermostUser } from "@/lib/mattermost";
+import { DBUser, EmailStatusCode } from "@/models/dbUser/dbUser";
+import { MemberWithPrimaryEmailInfo, Member } from "@/models/member";
 import knex from "@db";
 import * as utils from "@controllers/utils";
-import * as mattermost from "@lib/mattermost";
+import * as mattermost from "@/lib/mattermost";
 import { sendInfoToChat } from "@infra/chat";
-import config from "@config";
+import config from "@/config";
 
 const mergedMemberAndDBUser = (user: Member, dbUser: DBUser) => {
     return {

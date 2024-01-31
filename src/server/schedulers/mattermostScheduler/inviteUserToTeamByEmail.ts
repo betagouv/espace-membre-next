@@ -1,6 +1,6 @@
-import config from "@config";
+import config from "@/config";
 import { MemberWithPrimaryEmailInfo } from "@/models/member";
-import * as mattermost from "@lib/mattermost";
+import * as mattermost from "@/lib/mattermost";
 import { getActiveGithubUsersUnregisteredOnMattermost } from ".";
 
 export async function inviteUsersToTeamByEmail() {

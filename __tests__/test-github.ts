@@ -1,6 +1,6 @@
 import nock from "nock";
 import sinon from "sinon";
-import * as github from "@lib/github";
+import * as github from "@/lib/github";
 import testUsers from "./users.json";
 import {
     addGithubUserToOrganization,

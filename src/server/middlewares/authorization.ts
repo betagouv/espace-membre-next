@@ -1,4 +1,4 @@
-import { getAdmin } from "@config/admin.config";
+import { getAdmin } from "@/config/admin.config";
 
 // middleware for doing role-based permissions
 export enum MemberRole {

@@ -1,8 +1,8 @@
-import config from "@config";
+import config from "@/config";
 import BetaGouv from "@betagouv";
 import * as utils from "@controllers/utils";
 import knex from "@db/index";
-import { addEvent, EventCode } from "@lib/events";
+import { addEvent, EventCode } from "@/lib/events";
 
 export async function deleteEmailForUserApi(req, res) {
     deleteEmailForUserHandler(

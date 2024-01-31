@@ -1,14 +1,14 @@
 import crypto from "crypto";
 import HedgedocApi from "hedgedoc-api";
 import BetaGouv from "../betagouv";
-import config from "@config";
+import config from "@/config";
 import knex from "@db";
 import * as utils from "@controllers/utils";
-import { getTitle, renderHtmlFromMd } from "@lib/mdtohtml";
-import { JobWTTJ } from "@models/job";
+import { getTitle, renderHtmlFromMd } from "@/lib/mdtohtml";
+import { JobWTTJ } from "@/models/job";
 import { sendInfoToChat } from "@infra/chat";
 import { EMAIL_TYPES, MAILING_LIST_TYPE } from "@modules/email";
-import { sendEmail, sendCampaignEmail } from "@config/email.config";
+import { sendEmail, sendCampaignEmail } from "@/config/email.config";
 
 const {
     NUMBER_OF_DAY_IN_A_WEEK,

@@ -1,16 +1,15 @@
-import config from "@config";
+import config from "@/config";
 import * as utils from "@controllers/utils";
-import { MemberWithPermission } from "@models/member";
 import {
     DBUserDetail,
     DBUser,
     statusOptions,
     genderOptions,
-} from "@models/dbUser/dbUser";
-import { EmailStatusCode } from "@models/dbUser/dbUser";
-import { fetchCommuneDetails } from "@lib/searchCommune";
+} from "@/models/dbUser/dbUser";
+import { EmailStatusCode } from "@/models/dbUser/dbUser";
+import { fetchCommuneDetails } from "@/lib/searchCommune";
 import betagouv from "@betagouv";
-import { PULL_REQUEST_STATE } from "@models/pullRequests";
+import { PULL_REQUEST_STATE } from "@/models/pullRequests";
 import db from "@db";
 
 const getAccount = async (req, res, onSuccess, onError) => {

@@ -1,7 +1,7 @@
-import config from "@config";
+import config from "@/config";
 import BetaGouv from "@betagouv";
 import * as utils from "@controllers/utils";
-import { addEvent, EventCode } from "@lib/events";
+import { addEvent, EventCode } from "@/lib/events";
 
 export async function createRedirectionForUserApi(req, res) {
     createRedirectionForUserHandler(

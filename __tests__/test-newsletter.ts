@@ -5,18 +5,18 @@ import nock from "nock";
 import rewire from "rewire";
 import sinon from "sinon";
 import BetaGouv from "@betagouv";
-import config from "@config";
+import config from "@/config";
 import * as controllerUtils from "@controllers/utils";
 import knex from "@db";
 import app from "@/server/index";
-import { renderHtmlFromMd } from "@lib/mdtohtml";
+import { renderHtmlFromMd } from "@/lib/mdtohtml";
 import {
     createNewsletter,
     getJobOfferContent,
 } from "@schedulers/newsletterScheduler";
 import utils from "./utils";
 import * as chat from "@infra/chat";
-import * as Email from "@config/email.config";
+import * as Email from "@/config/email.config";
 import * as session from "@/server/helpers/session";
 import routes from "@/routes/routes";
 

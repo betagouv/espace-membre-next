@@ -1,5 +1,5 @@
-import { getAllChannels } from "@lib/mattermost";
-import config from "@config";
+import { getAllChannels } from "@/lib/mattermost";
+import config from "@/config";
 import { formatDateToReadableFormat } from "./utils";
 
 export async function getResources(req, res) {

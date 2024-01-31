@@ -1,8 +1,8 @@
-import { MattermostUser } from "@lib/mattermost";
+import { MattermostUser } from "@/lib/mattermost";
 import { Member } from "@/models/member";
-import config from "@config";
+import config from "@/config";
 import * as utils from "@controllers/utils";
-import * as mattermost from "@lib/mattermost";
+import * as mattermost from "@/lib/mattermost";
 import betagouv from "@betagouv";
 
 export async function moveUsersToAlumniTeam(

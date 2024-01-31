@@ -1,5 +1,5 @@
 import jwt from "jsonwebtoken";
-import config from "@config";
+import config from "@/config";
 
 export const getToken = (req) => {
     return (req.session && req.session.token) || null;

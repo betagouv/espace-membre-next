@@ -5,7 +5,7 @@ import {
     getGithubMasterSha,
     makeGithubPullRequest,
     PRInfo,
-} from "@lib/github";
+} from "@/lib/github";
 import { createBranchName } from "./createBranchName";
 import {
     GithubAuthorChange,

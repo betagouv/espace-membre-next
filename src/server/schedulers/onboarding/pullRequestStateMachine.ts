@@ -1,20 +1,20 @@
 import * as Sentry from "@sentry/node";
 
-import * as github from "@lib/github";
+import * as github from "@/lib/github";
 import db from "@db";
-import config from "@config";
-import { sendEmail } from "@config/email.config";
+import config from "@/config";
+import { sendEmail } from "@/config/email.config";
 import { EMAIL_TYPES } from "@modules/email";
 import { CommunicationEmailCode } from "@/models/dbUser";
 import { sendInfoToChat } from "@infra/chat";
 import htmlBuilder from "@modules/htmlbuilder/htmlbuilder";
-import * as mattermost from "@lib/mattermost";
+import * as mattermost from "@/lib/mattermost";
 import { DBStartup } from "@/models/startup";
 import {
     DBPullRequest,
     PULL_REQUEST_STATE,
     PULL_REQUEST_TYPE,
-} from "@models/pullRequests";
+} from "@/models/pullRequests";
 import { nbOfDaysBetweenDate } from "@controllers/utils";
 
 async function sendMessageToReferent({

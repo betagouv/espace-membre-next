@@ -1,24 +1,24 @@
 import BetaGouv from "@betagouv";
-import { OvhRedirection } from "@models/ovh";
+import { OvhRedirection } from "@/models/ovh";
 import * as utils from "@controllers/utils";
 import knex from "@db";
-import * as mattermost from "@lib/mattermost";
+import * as mattermost from "@/lib/mattermost";
 import {
     CommunicationEmailCode,
     DBUser,
     EmailStatusCode,
-} from "@models/dbUser/dbUser";
-import { Member, MemberWithEmailsAndMattermostUsername } from "@models/member";
+} from "@/models/dbUser/dbUser";
+import { Member, MemberWithEmailsAndMattermostUsername } from "@/models/member";
 import betagouv from "@betagouv";
 import { sleep } from "@controllers/utils";
-import { Job } from "@models/job";
+import { Job } from "@/models/job";
 import {
     EmailEndingContract,
     EmailNoMoreContract,
     EMAIL_TYPES,
     MAILING_LIST_TYPE,
 } from "@modules/email";
-import { sendEmail } from "@config/email.config";
+import { sendEmail } from "@/config/email.config";
 import htmlBuilder from "@modules/htmlbuilder/htmlbuilder";
 import { removeContactsFromMailingList } from "@infra/email/sendInBlue";
 import db from "@db";

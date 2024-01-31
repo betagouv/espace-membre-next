@@ -1,4 +1,4 @@
-import makeDS from "@lib/ds";
+import makeDS from "@/lib/ds";
 import config from "..";
 
 interface Annotation {

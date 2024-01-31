@@ -1,5 +1,5 @@
-import config from "@config";
-import { sendEmail } from "@config/email.config";
+import config from "@/config";
+import { sendEmail } from "@/config/email.config";
 import { EMAIL_TYPES } from "@modules/email";
 
 const sendTemplateEmail = async () => {

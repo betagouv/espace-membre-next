@@ -1,7 +1,7 @@
 import chai from "chai";
 import chaiHttp from "chai-http";
 import { unblockEmailsThatAreActive } from "@schedulers/unblockEmailsThatAreActive";
-import * as EmailConfig from "@config/email.config";
+import * as EmailConfig from "@/config/email.config";
 import Sinon from "sinon";
 import betagouv from "@betagouv";
 import config from "@/config";

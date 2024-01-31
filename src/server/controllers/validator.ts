@@ -1,4 +1,4 @@
-import { isValidGithubUserName } from "@lib/github";
+import { isValidGithubUserName } from "@/lib/github";
 
 type ValidatorCalback = (field: string, message: string) => void;
 

@@ -1,7 +1,7 @@
 import betagouv from "@betagouv";
 import db from "@db";
-import { DBUser, EmailStatusCode } from "@models/dbUser";
-import { Member } from "@models/member";
+import { DBUser, EmailStatusCode } from "@/models/dbUser";
+import { Member } from "@/models/member";
 import * as Sentry from "@sentry/node";
 import { createEmail } from "../controllers/usersController/createEmailForUser";
 

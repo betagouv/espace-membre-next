@@ -1,4 +1,4 @@
-import { getAdmin } from "@config/admin.config";
+import { getAdmin } from "@/config/admin.config";
 
 export async function getCurrentUser(req, res) {
     return res.json({

@@ -1,8 +1,8 @@
 import betagouv from "@betagouv";
 import db from "@db";
 import { PULL_REQUEST_STATE } from "@/models/pullRequests";
-import config from "@config";
-import { Member } from "@models/member";
+import config from "@/config";
+import { Member } from "@/models/member";
 import { PHASE_READABLE_NAME, Startup, StartupPhase } from "@/models/startup";
 
 function getCurrentPhase(startup: Startup) {

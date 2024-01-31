@@ -1,8 +1,8 @@
-import { addEvent, EventCode } from "@lib/events";
+import { addEvent, EventCode } from "@/lib/events";
 import betagouv from "@betagouv";
-import { PRInfo } from "@lib/github";
+import { PRInfo } from "@/lib/github";
 import db from "@db";
-import { PULL_REQUEST_TYPE, PULL_REQUEST_STATE } from "@models/pullRequests";
+import { PULL_REQUEST_TYPE, PULL_REQUEST_STATE } from "@/models/pullRequests";
 import { requiredError, isValidDate } from "@controllers/validator";
 import { updateAuthorGithubFile } from "@controllers/helpers/githubHelpers";
 import { GithubAuthorChange } from "@controllers/helpers/githubHelpers/githubEntryInterface";

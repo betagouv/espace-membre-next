@@ -1,30 +1,7 @@
 import BetaGouv from "@betagouv";
 import { genderOptions, statusOptions } from "@/models/dbUser/dbUser";
-// import { OnboardingPage } from "@views";
-import { DOMAINE_OPTIONS, Member } from "@models/member";
-import config from "@config";
-
-// export async function getForm(req, res) {
-//     getOnboardingPageData(
-//         req,
-//         res,
-//         (data) => {
-//             res.send(
-//                 OnboardingPage({
-//                     ...data,
-//                     errors: req.flash("error"),
-//                     messages: req.flash("message"),
-//                     request: req,
-//                 })
-//             );
-//         },
-//         (err) => {
-//             console.error(err);
-//             req.flash("error", "Impossible de récupérer vos informations.");
-//             return res.redirect("/");
-//         }
-//     );
-// }
+import { DOMAINE_OPTIONS, Member } from "@/models/member";
+import config from "@/config";
 
 export async function getFormApi(req, res) {
     getOnboardingPageData(

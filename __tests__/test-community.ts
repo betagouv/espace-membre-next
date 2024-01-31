@@ -7,7 +7,7 @@ import knex from "@db";
 import routes from "@/routes/routes";
 import utils from "./utils";
 import config from "@/config";
-import * as mattermost from "@lib/mattermost";
+import * as mattermost from "@/lib/mattermost";
 import app from "@/server/index";
 
 chai.use(chaiHttp);

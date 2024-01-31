@@ -1,8 +1,8 @@
-import config from "@config";
+import config from "@/config";
 import * as utils from "@controllers/utils";
-import DS from "@config/ds/ds.config";
-import { BadgeDossier } from "@models/badgeDemande";
-import { BADGE_REQUEST, BadgeRequest } from "@models/badgeRequests";
+import DS from "@/config/ds/ds.config";
+import { BadgeDossier } from "@/models/badgeDemande";
+import { BADGE_REQUEST } from "@/models/badgeRequests";
 import { getBadgeRequestWithStatus } from "@db/dbBadgeRequests";
 import db from "@db";
 

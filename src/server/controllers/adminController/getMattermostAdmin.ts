@@ -1,5 +1,5 @@
-import config from "@config";
-import { MattermostChannel } from "@lib/mattermost";
+import config from "@/config";
+import { MattermostChannel } from "@/lib/mattermost";
 import {
     MattermostUserWithStatus,
     getMattermostUsersWithStatus,

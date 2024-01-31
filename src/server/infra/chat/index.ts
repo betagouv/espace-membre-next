@@ -1,6 +1,6 @@
-import config from "@config";
+import config from "@/config";
 import { makeSendIntoToChatFromMattermost } from "./mattermost";
-import * as mattermost from "@lib/mattermost";
+import * as mattermost from "@/lib/mattermost";
 
 export const sendInfoToChat = makeSendIntoToChatFromMattermost({
     config: {

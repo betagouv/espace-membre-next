@@ -3,11 +3,11 @@ import chaiHttp from "chai-http";
 import nock from "nock";
 import sinon from "sinon";
 import { Response } from "superagent";
-import config from "@config";
+import config from "@/config";
 import knex from "@db";
 import app from "@/server/index";
 import * as session from "@/server/helpers/session";
-import * as searchCommune from "@lib/searchCommune";
+import * as searchCommune from "@/lib/searchCommune";
 import utils from "./utils";
 import routes from "@/routes/routes";
 

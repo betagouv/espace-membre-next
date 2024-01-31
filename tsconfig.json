@@ -25,10 +25,10 @@
             "./src/*"
         ],
         "@config": [
-            "./src/server/config/index.ts"
+            "src/config/index.ts"
         ],
         "@config/*": [
-            "./src/server/config/*"
+            "src/config/*"
         ],
         "@controllers/*": [
             "./src/server/controllers/*"
@@ -40,7 +40,7 @@
             "./src/server/infra/*"
         ],
         "@lib/*": [
-            "./src/server/lib/*"
+            "src/lib/*"
         ],
         "@models/*": [
             "./src/server/models/*"
@@ -87,10 +87,10 @@
         "target": "es6",
         "paths": {
             "@config": [
-                "./src/server/config/index.ts"
+                "./src/config/index.ts"
             ],
             "@config/*": [
-                "./src/server/config/*"
+                "./src/config/*"
             ],
             "@controllers/*": [
                 "./src/server/controllers/*"
@@ -102,7 +102,7 @@
                 "./src/server/infra/*"
             ],
             "@lib/*": [
-                "./src/server/lib/*"
+                "./src/lib/*"
             ],
             "@models/*": [
                 "./src/server/models/*"
@@ -141,10 +141,10 @@
         "target": "es6",
         "paths": {
             "@config": [
-                "./src/server/config/index.ts"
+                "./src/config/index.ts"
             ],
             "@config/*": [
-                "./src/server/config/*"
+                "./src/config/*"
             ],
             "@controllers/*": [
                 "./src/server/controllers/*"
@@ -156,7 +156,7 @@
                 "./src/server/infra/*"
             ],
             "@lib/*": [
-                "./src/server/lib/*"
+                "./src/lib/*"
             ],
             "@models/*": [
                 "./src/server/models/*"

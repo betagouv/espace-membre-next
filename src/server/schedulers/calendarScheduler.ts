@@ -1,8 +1,8 @@
 import ejs from "ejs";
-import { getEventsForCalendarFromDateToDate } from "../lib/icalhelper";
+import { getEventsForCalendarFromDateToDate } from "@lib/icalhelper";
 import betagouv from "../betagouv";
 import * as utils from "@controllers/utils";
-import { sendCampaignEmail } from "@config/email.config";
+import { sendCampaignEmail } from "@/config/email.config";
 import { EMAIL_TYPES, MAILING_LIST_TYPE } from "@modules/email";
 import { sendInfoToChat } from "@infra/chat";
 

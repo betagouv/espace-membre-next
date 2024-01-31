@@ -1,5 +1,5 @@
 import betagouv from "@betagouv";
-import { addEvent, EventCode } from "@lib/events";
+import { addEvent, EventCode } from "@/lib/events";
 
 export async function deleteEmailResponderApi(req, res) {
     deleteEmailResponderHandler(

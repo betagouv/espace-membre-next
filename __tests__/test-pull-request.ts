@@ -4,7 +4,7 @@ import chaiHttp from "chai-http";
 
 import app from "@/server/index";
 import routes from "@/routes/routes";
-import * as github from "@lib/github";
+import * as github from "@/lib/github";
 chai.use(chaiHttp);
 
 describe("GET pull request watchers", () => {

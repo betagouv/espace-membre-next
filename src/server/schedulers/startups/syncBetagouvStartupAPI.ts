@@ -1,8 +1,8 @@
 import * as Sentry from "@sentry/node";
 
 import betagouv from "@betagouv";
-import config from "@config";
-import { sendEmail } from "@config/email.config";
+import config from "@/config";
+import { sendEmail } from "@/config/email.config";
 import db from "@db";
 import {
     DBStartup,
@@ -12,8 +12,8 @@ import {
 } from "@/models/startup";
 import { EMAIL_TYPES, SendEmailProps } from "@modules/email";
 import { nbOfDaysBetweenDate } from "@controllers/utils";
-import { Domaine, Member } from "@models/member";
-import { getLastCommitFromFile } from "@lib/github";
+import { Domaine, Member } from "@/models/member";
+import { getLastCommitFromFile } from "@/lib/github";
 
 function getCurrentPhase(startup: StartupInfo) {
     return startup.attributes.phases

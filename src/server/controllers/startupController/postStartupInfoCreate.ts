@@ -1,5 +1,5 @@
-import { addEvent, EventCode } from "@lib/events";
-import { PRInfo } from "@lib/github";
+import { addEvent, EventCode } from "@/lib/events";
+import { PRInfo } from "@/lib/github";
 import db from "@db";
 import { PULL_REQUEST_TYPE, PULL_REQUEST_STATE } from "@/models/pullRequests";
 import { isValidDate, requiredError } from "@controllers/validator";

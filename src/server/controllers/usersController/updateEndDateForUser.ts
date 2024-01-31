@@ -1,5 +1,5 @@
-import config from "@config";
-import { addEvent, EventCode } from "@lib/events";
+import config from "@/config";
+import { addEvent, EventCode } from "@/lib/events";
 import { requiredError, isValidDate } from "@controllers/validator";
 
 import betagouv from "@betagouv";

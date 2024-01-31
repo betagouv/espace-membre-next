@@ -2,7 +2,7 @@ import BetaGouv from "../betagouv";
 import * as utils from "@controllers/utils";
 import knex from "@db";
 import { DBUser } from "@/models/dbUser/dbUser";
-import { Member } from "@models/member";
+import { Member } from "@/models/member";
 
 export async function getActiveSecondaryEmailsForUsers() {
     const users: Member[] = await BetaGouv.usersInfos();

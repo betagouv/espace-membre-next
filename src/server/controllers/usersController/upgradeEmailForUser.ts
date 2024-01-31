@@ -1,7 +1,7 @@
-import config from "@config";
+import config from "@/config";
 import BetaGouv from "@betagouv";
 import * as utils from "@controllers/utils";
-import { addEvent, EventCode } from "@lib/events";
+import { addEvent, EventCode } from "@/lib/events";
 import betagouv from "@betagouv";
 
 export async function upgradeEmailForUserApi(req, res) {

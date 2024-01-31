@@ -2,9 +2,9 @@ import nock from "nock";
 import chai from "chai";
 import sinon from "sinon";
 import BetaGouv from "@betagouv";
-import config from "@config";
+import config from "@/config";
 import utils from "./utils";
-import * as email from "@config/email.config";
+import * as email from "@/config/email.config";
 import knex from "@db";
 import {
     sendInfoToSecondaryEmailAfterXDays,
@@ -16,7 +16,7 @@ import {
 import { EmailStatusCode } from "@/models/dbUser/dbUser";
 import { setEmailExpired } from "@schedulers/setEmailExpired";
 import betagouv from "@betagouv";
-import { Domaine } from "@models/member";
+import { Domaine } from "@/models/member";
 
 const should = chai.should();
 const fakeDate = "2020-01-01T09:59:59+01:00";

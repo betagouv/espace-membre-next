@@ -8,7 +8,7 @@ import {
 import htmlBuilder from "../src/server/modules/htmlbuilder/htmlbuilder";
 import testUsers from "./users.json";
 import { Domaine, Member } from "@/models/member";
-import * as mdtohtml from "@lib/mdtohtml";
+import * as mdtohtml from "@/lib/mdtohtml";
 import sinon from "sinon";
 import { Job } from "@/models/job";
 chai.should();

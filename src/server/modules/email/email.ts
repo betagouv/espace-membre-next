@@ -1,4 +1,4 @@
-import { Member } from "@models/member";
+import { Member } from "@/models/member";
 import { Job } from "@/models/job";
 import { StartupPhase } from "@/models/startup";
 

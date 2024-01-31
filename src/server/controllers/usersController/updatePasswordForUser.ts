@@ -1,9 +1,9 @@
-import config from "@config";
+import config from "@/config";
 import BetaGouv from "@betagouv";
 import * as utils from "@controllers/utils";
 import knex from "@db/index";
-import { addEvent, EventCode } from "@lib/events";
-import { DBUser, EmailStatusCode } from "@models/dbUser/dbUser";
+import { addEvent, EventCode } from "@/lib/events";
+import { DBUser, EmailStatusCode } from "@/models/dbUser/dbUser";
 
 export async function updatePasswordForUserApi(req, res) {
     updatePasswordForUserHandler(

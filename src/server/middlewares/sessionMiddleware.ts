@@ -1,6 +1,6 @@
 import session from "express-session";
 import makeSessionStore from "@infra/sessionStore/sessionStore";
-import config from "@config";
+import config from "@/config";
 
 const setupSessionMiddleware = (app) => {
     app.use(

@@ -3,8 +3,8 @@ import chaiHttp from "chai-http";
 import sinon from "sinon";
 
 import Betagouv from "@betagouv";
-import * as Email from "@config/email.config";
-import config from "@config";
+import * as Email from "@/config/email.config";
+import config from "@/config";
 import knex from "@db";
 import { Domaine } from "@/models/member";
 import { SendEmailProps } from "@modules/email";

@@ -1,13 +1,13 @@
-import config from "@config";
+import config from "@/config";
 import {
     addContactsToMailingLists,
     removeContactsFromMailingList,
     updateContactEmail,
-} from "@config/email.config";
+} from "@/config/email.config";
 import knex from "@db";
 import { CommunicationEmailCode, DBUser } from "@/models/dbUser";
 import { Contact, MAILING_LIST_TYPE } from "@modules/email";
-import { addEvent, EventCode } from "@lib/events";
+import { addEvent, EventCode } from "@/lib/events";
 import { capitalizeWords } from "../utils";
 
 async function changeContactEmail(previousEmail, contact: Contact) {
