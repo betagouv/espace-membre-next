@@ -1,4 +1,4 @@
-import { sendEmail } from "@/config/email.config";
+import { sendEmail } from "@/server/config/email.config";
 import db from "@db";
 import {
     ACTIVE_PHASES,

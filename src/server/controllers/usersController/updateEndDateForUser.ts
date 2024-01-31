@@ -1,4 +1,4 @@
-import config from "@/config";
+import config from "@/server/config";
 import { addEvent, EventCode } from "@/lib/events";
 import { requiredError, isValidDate } from "@controllers/validator";
 

@@ -1,5 +1,5 @@
 import betagouv from "@betagouv";
-import config from "@/config";
+import config from "@/server/config";
 import { Startup } from "@/models/startup";
 
 export async function getStartupListApi(req, res) {

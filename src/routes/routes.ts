@@ -1,9 +1,4 @@
-import config from "@/config";
-
 export const computeRoute = (route) => {
-    if (config.API_SERVER) {
-        return `${config.API_SERVER}${route}`;
-    }
     return route;
 };
 

@@ -1,4 +1,4 @@
-import config from "@/config";
+import config from "@/server/config";
 import { makeSendIntoToChatFromMattermost } from "./mattermost";
 import * as mattermost from "@/lib/mattermost";
 

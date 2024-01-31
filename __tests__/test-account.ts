@@ -3,7 +3,7 @@ import chaiHttp from "chai-http";
 import nock from "nock";
 import sinon from "sinon";
 import { Response } from "superagent";
-import config from "@/config";
+import config from "@/server/config";
 import knex from "@db";
 import app from "@/server/index";
 import * as session from "@/server/helpers/session";

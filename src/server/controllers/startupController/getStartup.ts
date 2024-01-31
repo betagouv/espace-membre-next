@@ -1,7 +1,7 @@
 import betagouv from "@betagouv";
 import db from "@db";
 import { PULL_REQUEST_STATE } from "@/models/pullRequests";
-import config from "@/config";
+import config from "@/server/config";
 import { Member } from "@/models/member";
 import { PHASE_READABLE_NAME, Startup, StartupPhase } from "@/models/startup";
 

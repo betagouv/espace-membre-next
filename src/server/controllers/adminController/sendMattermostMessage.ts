@@ -1,4 +1,4 @@
-import config from "@/config";
+import config from "@/server/config";
 import db from "@db";
 import { getUserWithParams, sendInfoToChat } from "@infra/chat";
 import { DBUser, EmailStatusCode } from "@/models/dbUser";

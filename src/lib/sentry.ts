@@ -1,6 +1,6 @@
 import * as Sentry from "@sentry/node";
 import { ErrorRequestHandler } from "express";
-import config from "@/config";
+import config from "@/server/config";
 
 export const initializeSentry = (app) => {
     if (!config.sentryDNS) {

@@ -1,6 +1,6 @@
 import ejs from "ejs";
 import Betagouv from "../betagouv";
-import config from "@/config";
+import config from "@/server/config";
 import knex from "@db";
 import * as github from "@/lib/github";
 import * as mattermost from "@/lib/mattermost";
@@ -11,7 +11,7 @@ import {
 } from "@/models/dbUser/dbUser";
 import { buildBetaEmail, sleep } from "@controllers/utils";
 import { EMAIL_TYPES } from "@modules/email";
-import { sendEmail } from "@/config/email.config";
+import { sendEmail } from "@/server/config/email.config";
 import betagouv from "../betagouv";
 import db from "@db";
 import { DBStartup } from "@/models/startup";

@@ -3,9 +3,9 @@ import chaiHttp from "chai-http";
 import sinon from "sinon";
 
 import app from "@/server/index";
-import config from "@/config";
+import config from "@/server/config";
 import utils from "./utils";
-import * as adminConfig from "@/config/admin.config";
+import * as adminConfig from "@/server/config/admin.config";
 import routes from "@/routes/routes";
 import * as mattermostScheduler from "@schedulers/mattermostScheduler/removeBetaAndParnersUsersFromCommunityTeam";
 import * as chat from "@infra/chat";

@@ -2,9 +2,9 @@ import {
     getAllContactsFromList,
     getAllTransacBlockedContacts,
     unblacklistContactEmail,
-} from "@/config/email.config";
+} from "@/server/config/email.config";
 import betagouv from "@betagouv";
-import config from "@/config";
+import config from "@/server/config";
 
 export async function unblockEmailsThatAreActive() {
     const startDate = new Date();

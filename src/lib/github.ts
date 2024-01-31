@@ -1,5 +1,5 @@
 import { Octokit } from "@octokit/rest";
-import config from "@/config";
+import config from "@/server/config";
 import fm from "front-matter";
 import axios from "axios";
 import { request } from "@octokit/request";

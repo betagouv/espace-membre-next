@@ -3,7 +3,7 @@ import chaiHttp from "chai-http";
 import _ from "lodash";
 import rewire from "rewire";
 import sinon from "sinon";
-import config from "@/config";
+import config from "@/server/config";
 import * as controllerUtils from "@controllers/utils";
 import knex from "@db";
 import app from "@/server/index";

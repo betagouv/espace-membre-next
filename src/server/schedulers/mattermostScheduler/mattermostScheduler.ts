@@ -6,7 +6,7 @@ import knex from "@db";
 import * as utils from "@controllers/utils";
 import * as mattermost from "@/lib/mattermost";
 import { sendInfoToChat } from "@infra/chat";
-import config from "@/config";
+import config from "@/server/config";
 
 const mergedMemberAndDBUser = (user: Member, dbUser: DBUser) => {
     return {

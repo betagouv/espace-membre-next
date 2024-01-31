@@ -1,13 +1,13 @@
 import * as Sentry from "@sentry/node";
 
-import config from "../../config";
+import config from "../config";
 import BetaGouv from "../betagouv";
 import * as utils from "./utils";
 import knex from "../db";
 import betagouv from "../betagouv";
 import { EMAIL_STATUS_READABLE_FORMAT } from "@/models/misc";
 import { MattermostUser, getUserByEmail, searchUsers } from "@/lib/mattermost";
-import { getContactInfo } from "@/config/email.config";
+import { getContactInfo } from "@/server/config/email.config";
 import { DBUser } from "@/models/dbUser";
 
 export async function getCommunityApi(req, res) {

@@ -1,6 +1,6 @@
-import config from "@/config";
+import config from "@/server/config";
 import * as utils from "@controllers/utils";
-import DS from "@/config/ds/ds.config";
+import DS from "@/server/config/ds/ds.config";
 import { BadgeDossier } from "@/models/badgeDemande";
 import { BADGE_REQUEST } from "@/models/badgeRequests";
 import { getBadgeRequestWithStatus } from "@/server/db/dbBadgeRequests";

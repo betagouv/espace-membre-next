@@ -1,4 +1,4 @@
-import config from "@/config";
+import config from "@/server/config";
 import BetaGouv from "@betagouv";
 import * as utils from "@controllers/utils";
 import { addEvent, EventCode } from "@/lib/events";

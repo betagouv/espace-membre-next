@@ -4,7 +4,7 @@ import * as mattermost from "@/lib/mattermost";
 import { addEvent, EventCode } from "@/lib/events";
 import { DBUser } from "@/models/dbUser/dbUser";
 import betagouv from "@betagouv";
-import config from "@/config";
+import config from "@/server/config";
 
 export async function managePrimaryEmailForUserApi(req, res) {
     managePrimaryEmailForUserHandler(

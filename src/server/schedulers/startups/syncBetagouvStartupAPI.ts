@@ -1,8 +1,8 @@
 import * as Sentry from "@sentry/node";
 
 import betagouv from "@betagouv";
-import config from "@/config";
-import { sendEmail } from "@/config/email.config";
+import config from "@/server/config";
+import { sendEmail } from "@/server/config/email.config";
 import db from "@db";
 import {
     DBStartup,

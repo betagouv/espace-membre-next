@@ -2,7 +2,7 @@ import axios from "axios";
 import _ from "lodash";
 import nodemailer from "nodemailer";
 import BetaGouv from "../betagouv";
-import config from "@/config";
+import config from "@/server/config";
 import crypto from "crypto";
 import { EmailInfos, Member } from "@/models/member";
 

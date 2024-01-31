@@ -9,7 +9,7 @@ import utils from "./utils";
 import { EmailStatusCode } from "@/models/dbUser/dbUser";
 import betagouv from "@betagouv";
 import * as searchCommune from "@/lib/searchCommune";
-import * as email from "@/config/email.config";
+import * as email from "@/server/config/email.config";
 import * as mattermost from "@/lib/mattermost";
 import { MattermostUser } from "@/lib/mattermost";
 import * as github from "@/lib/github";

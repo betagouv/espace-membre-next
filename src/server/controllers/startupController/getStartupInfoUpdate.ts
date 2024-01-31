@@ -2,7 +2,7 @@ import betagouv from "@betagouv";
 import { PULL_REQUEST_STATE } from "@/models/pullRequests";
 import db from "@db";
 import { StartupInfo } from "@/models/startup";
-import config from "@/config";
+import config from "@/server/config";
 
 export async function getStartupInfoUpdateApi(req, res) {
     getStartupInfoUpdatePageData(

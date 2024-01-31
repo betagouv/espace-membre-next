@@ -3,7 +3,7 @@ import _ from "lodash/array";
 
 import BetaGouv from "@betagouv";
 import { OvhRedirection } from "@/models/ovh";
-import config from "@/config";
+import config from "@/server/config";
 import {
     setEmailActive,
     setEmailRedirectionActive,
@@ -22,7 +22,7 @@ import { MAILING_LIST_TYPE } from "@modules/email";
 import {
     addContactsToMailingLists,
     smtpBlockedContactsEmailDelete,
-} from "@/config/email.config";
+} from "@/server/config/email.config";
 import betagouv from "../betagouv";
 import { isBetaEmail } from "@controllers/utils";
 import { createEmail } from "../controllers/usersController/createEmailForUser";

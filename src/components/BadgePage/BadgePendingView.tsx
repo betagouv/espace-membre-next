@@ -2,7 +2,7 @@ import { useState } from "react";
 import { BadgeDossier } from "@/models/badgeDemande";
 import Button from "@codegouvfr/react-dsfr/Button";
 import Checkbox from "@codegouvfr/react-dsfr/Checkbox";
-import config from "@/config";
+import config from "@/frontConfig";
 
 const STATUS = {
     "En attente de traitement": {

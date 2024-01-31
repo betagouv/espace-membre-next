@@ -2,7 +2,7 @@ import ejs from "ejs";
 import crypto from "crypto";
 import { Schema } from "express-validator";
 
-import config from "@/config";
+import config from "@/server/config";
 import * as utils from "@controllers/utils";
 import BetaGouv from "@betagouv";
 import knex from "@db";

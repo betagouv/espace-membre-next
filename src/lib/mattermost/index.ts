@@ -1,5 +1,5 @@
-import { getMattermostConfig } from "@/config/mattermost/mattermost.config";
-import config from "@/config";
+import { getMattermostConfig } from "@/server/config/mattermost/mattermost.config";
+import config from "@/server/config";
 import axios from "axios";
 
 export interface MattermostUser {

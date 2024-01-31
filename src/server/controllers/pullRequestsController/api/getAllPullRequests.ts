@@ -1,4 +1,4 @@
-import config from "@/config";
+import config from "@/server/config";
 import * as github from "@/lib/github";
 
 export async function getAllPullRequests(req, res) {

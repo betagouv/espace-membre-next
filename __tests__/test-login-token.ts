@@ -2,7 +2,7 @@ import chai from "chai";
 import chaiHttp from "chai-http";
 import crypto from "crypto";
 import sinon from "sinon";
-import config from "@/config";
+import config from "@/server/config";
 import * as controllerUtils from "@controllers/utils";
 import knex from "@db";
 import db from "@db";

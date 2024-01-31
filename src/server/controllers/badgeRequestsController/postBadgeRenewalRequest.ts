@@ -3,8 +3,8 @@ import {
     getBadgeRequestWithStatus,
 } from "@db/dbBadgeRequests";
 import { BADGE_REQUEST } from "@/models/badgeRequests";
-import DS from "@/config/ds/ds.config";
-import config from "@/config";
+import DS from "@/server/config/ds/ds.config";
+import config from "@/server/config";
 import { MemberWithPermission } from "@/models/member";
 import { capitalizeWords, userInfos } from "../utils";
 

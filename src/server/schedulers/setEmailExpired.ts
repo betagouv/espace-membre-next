@@ -4,7 +4,7 @@ import BetaGouv from "@betagouv";
 import * as utils from "@controllers/utils";
 import knex from "@db";
 import { EmailStatusCode } from "@/models/dbUser/dbUser";
-import config from "@/config";
+import config from "@/server/config";
 
 export async function setEmailExpired(optionalExpiredUsers?: Member[]) {
     let expiredUsers = optionalExpiredUsers;

@@ -1,5 +1,5 @@
 import crypto from "crypto";
-import config from "@/config";
+import config from "@/server/config";
 import {
     EMAIL_PLAN_TYPE,
     OvhExchangeCreationData,

@@ -2,9 +2,9 @@ import nock from "nock";
 import chai from "chai";
 import sinon from "sinon";
 import BetaGouv from "@betagouv";
-import config from "@/config";
+import config from "@/server/config";
 import utils from "./utils";
-import * as email from "@/config/email.config";
+import * as email from "@/server/config/email.config";
 import knex from "@db";
 import {
     sendInfoToSecondaryEmailAfterXDays,

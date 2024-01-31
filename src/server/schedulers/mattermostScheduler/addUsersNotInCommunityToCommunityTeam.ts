@@ -1,5 +1,5 @@
 import { MattermostUser } from "@/lib/mattermost";
-import config from "@/config";
+import config from "@/server/config";
 import * as mattermost from "@/lib/mattermost";
 import { getMattermostUsersActiveGithubUsersInTeam } from ".";
 

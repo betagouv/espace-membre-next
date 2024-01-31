@@ -1,5 +1,5 @@
 import { sendMessageToMattermostUsersWithUnallowedEmails } from "@schedulers/mattermostScheduler/mattermostScheduler";
-import config from "@/config";
+import config from "@/server/config";
 
 sendMessageToMattermostUsersWithUnallowedEmails(config.mattermostTeamId).then(
     () => {

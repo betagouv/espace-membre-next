@@ -1,9 +1,9 @@
-import config from "@/config";
+import config from "@/server/config";
 import * as utils from "@controllers/utils";
 import knex from "@db/index";
 import { DBUser, EmailStatusCode } from "@/models/dbUser/dbUser";
 import { EMAIL_TYPES } from "@modules/email";
-import { sendEmail } from "@/config/email.config";
+import { sendEmail } from "@/server/config/email.config";
 import betagouv from "@betagouv";
 
 export async function setEmailActive(username) {

@@ -2,8 +2,8 @@ import * as Sentry from "@sentry/node";
 
 import * as github from "@/lib/github";
 import db from "@db";
-import config from "@/config";
-import { sendEmail } from "@/config/email.config";
+import config from "@/server/config";
+import { sendEmail } from "@/server/config/email.config";
 import { EMAIL_TYPES } from "@modules/email";
 import { CommunicationEmailCode } from "@/models/dbUser";
 import { sendInfoToChat } from "@infra/chat";

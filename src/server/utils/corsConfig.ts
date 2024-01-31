@@ -1,4 +1,4 @@
-import config from "@/config";
+import config from "@/server/config";
 
 var whitelist = config.CORS_ORIGIN;
 

@@ -1,9 +1,9 @@
-import config from "@/config";
+import config from "@/server/config";
 import {
     addContactsToMailingLists,
     removeContactsFromMailingList,
     updateContactEmail,
-} from "@/config/email.config";
+} from "@/server/config/email.config";
 import knex from "@db";
 import { CommunicationEmailCode, DBUser } from "@/models/dbUser";
 import { Contact, MAILING_LIST_TYPE } from "@modules/email";

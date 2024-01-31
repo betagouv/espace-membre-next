@@ -6,7 +6,7 @@ import * as session from "@/server/helpers/session";
 import knex from "@db";
 import routes from "@/routes/routes";
 import utils from "./utils";
-import config from "@/config";
+import config from "@/server/config";
 import * as mattermost from "@/lib/mattermost";
 import app from "@/server/index";
 

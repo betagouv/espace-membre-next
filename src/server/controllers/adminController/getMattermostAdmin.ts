@@ -1,4 +1,4 @@
-import config from "@/config";
+import config from "@/server/config";
 import { MattermostChannel } from "@/lib/mattermost";
 import {
     MattermostUserWithStatus,

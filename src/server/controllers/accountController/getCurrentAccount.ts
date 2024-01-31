@@ -1,4 +1,4 @@
-import config from "@/config";
+import config from "@/server/config";
 import * as utils from "@controllers/utils";
 import {
     DBUserDetail,

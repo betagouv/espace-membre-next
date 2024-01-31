@@ -18,7 +18,7 @@ import {
     EMAIL_TYPES,
     MAILING_LIST_TYPE,
 } from "@modules/email";
-import { sendEmail } from "@/config/email.config";
+import { sendEmail } from "@/server/config/email.config";
 import htmlBuilder from "@modules/htmlbuilder/htmlbuilder";
 import { removeContactsFromMailingList } from "@infra/email/sendInBlue";
 import db from "@db";

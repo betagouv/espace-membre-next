@@ -1,4 +1,4 @@
-import config from "@/config";
+import config from "@/server/config";
 import db from "@db";
 import * as mattermost from "@/lib/mattermost";
 import { DBUser } from "@/models/dbUser";

@@ -25,10 +25,10 @@
             "./src/*"
         ],
         "@config": [
-            "src/config/index.ts"
+            "src/server/config/index.ts"
         ],
         "@config/*": [
-            "src/config/*"
+            "src/server/config/*"
         ],
         "@controllers/*": [
             "./src/server/controllers/*"

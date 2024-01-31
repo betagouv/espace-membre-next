@@ -1,8 +1,9 @@
-import config from "@/config"
+import config from "@/frontConfig";
 
-export const dynamic = 'force-dynamic' // defaults to auto
+export const dynamic = "force-dynamic"; // defaults to auto
 export async function GET(req) {
-    const response = new Response(`
+    const response = new Response(
+        `
     <!DOCTYPE html>
     <html>
     
@@ -167,10 +168,12 @@ export async function GET(req) {
     
     </html>
     
-    `, {
-        headers: {
-            'content-type': 'text/html'
+    `,
+        {
+            headers: {
+                "content-type": "text/html",
+            },
         }
-    })
-    return response
-  }
+    );
+    return response;
+}

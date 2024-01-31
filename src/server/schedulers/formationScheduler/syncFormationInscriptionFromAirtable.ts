@@ -1,7 +1,7 @@
 import { createUserFormation } from "@db/dbUsersFormations";
 import Airtable from "airtable";
 import * as Sentry from "@sentry/node";
-import config from "@/config";
+import config from "@/server/config";
 import { getFormation } from "@db/dbFormations";
 import { Formation } from "@/models/formation";
 

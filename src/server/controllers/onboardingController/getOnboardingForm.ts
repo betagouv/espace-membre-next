@@ -1,7 +1,7 @@
 import BetaGouv from "@betagouv";
 import { genderOptions, statusOptions } from "@/models/dbUser/dbUser";
 import { DOMAINE_OPTIONS, Member } from "@/models/member";
-import config from "@/config";
+import config from "@/server/config";
 
 export async function getFormApi(req, res) {
     getOnboardingPageData(

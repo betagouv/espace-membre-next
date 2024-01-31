@@ -1,4 +1,4 @@
-import config from "@/config";
+import config from "@/frontConfig";
 import { BadgeDossier } from "@/models/badgeDemande";
 import { BadgeRequest } from "@/models/badgeRequests";
 import routes, { computeRoute } from "@/routes/routes";

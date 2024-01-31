@@ -1,5 +1,5 @@
 import BetaGouv from "../betagouv";
-import config from "@/config";
+import config from "@/server/config";
 import { checkUserIsExpired } from "@controllers/utils";
 import * as github from "@/lib/github";
 

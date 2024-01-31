@@ -1,6 +1,6 @@
 import * as utils from "@controllers/utils";
 import db from "@db";
-import config from "@/config";
+import config from "@/server/config";
 import { EMAIL_STATUS_READABLE_FORMAT } from "@/models/misc";
 import { getUserByEmail, MattermostUser, searchUsers } from "@/lib/mattermost";
 import { DBUser } from "@/models/dbUser";

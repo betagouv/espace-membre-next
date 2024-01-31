@@ -1,4 +1,4 @@
-import config from "@/config";
+import config from "@/server/config";
 import InMemoryEventBus from "../inMemoryEventBus";
 import makeRedisEventBus from "../redis";
 

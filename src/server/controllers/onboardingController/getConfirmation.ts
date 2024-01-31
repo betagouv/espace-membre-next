@@ -1,4 +1,4 @@
-import config from "@/config";
+import config from "@/server/config";
 
 export async function getConfirmation(req, res) {
     try {
