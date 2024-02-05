@@ -72,7 +72,6 @@ const postMemberData = async ({ values, sessionUsername }) => {
 };
 
 export const BaseInfoUpdate = (props: BaseInfoUpdateProps) => {
-    console.log("props.formData", props.formData);
     const defaultValues: MemberSchemaType = { ...props.formData };
 
     const {
