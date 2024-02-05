@@ -5,15 +5,12 @@ import { createModal } from "@codegouvfr/react-dsfr/Modal";
 import SESponsorSelect from "../SESponsorSelect";
 import { SponsorForm } from "../SponsorForm/SponsorForm";
 import { Sponsor } from "@/models/sponsor";
-import Button from "@codegouvfr/react-dsfr/Button";
-import { useIsModalOpen } from "@codegouvfr/react-dsfr/Modal/useIsModalOpen";
 const modal = createModal({
     id: "foo-modal",
     isOpenedByDefault: false,
 });
 
-const Sponsor
-  = ({ addSponsor }) => {
+const SponsorModal = ({ addSponsor }) => {
     const modalContent = (
         <modal.Component title="Ajouter un sponsor">
             <SponsorForm addSponsor={addSponsor} />
