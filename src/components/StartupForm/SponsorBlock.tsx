@@ -1,12 +1,13 @@
 import React from "react";
-import Button from "@codegouvfr/react-dsfr/Button";
-import { createModal } from "@codegouvfr/react-dsfr/Modal";
+import Modal from "react-modal";
 import SESponsorSelect from "../SESponsorSelect";
 import { SponsorForm } from "../SponsorForm/SponsorForm";
 import { Sponsor } from "@/models/sponsor";
-
+import Button from "@codegouvfr/react-dsfr/Button";
+import { createModal } from "@codegouvfr/react-dsfr/Modal";
+import { useIsModalOpen } from "@codegouvfr/react-dsfr/Modal/useIsModalOpen";
 const modal = createModal({
-    id: "sponsor-modal",
+    id: "foo-modal",
     isOpenedByDefault: false,
 });
 
@@ -16,11 +17,9 @@ const SponsorBlock = ({
     setNewSponsors,
     newSponsors,
 }) => {
-    const openModal = (e: React.MouseEvent<HTMLButtonElement>): void => {
-        e.preventDefault();
-        // Assuming 'modal' is a defined object with an 'open' method
+    function openModal() {
         modal.open();
-    };
+    }
 
     function addSponsor(newSponsor: Sponsor) {
         setNewSponsors([...newSponsors, newSponsor]);
