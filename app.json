@@ -2,7 +2,8 @@
   "name": "espace-membre",
   "formation": {
     "web": {
-      "quantity": 1
+      "quantity": 1,
+      "size": "S"
     }
   },
   "addons": [
