@@ -25,9 +25,8 @@ export const SponsorForm = (props: SponsorForm) => {
     const [type, setType] = React.useState("");
     const [domaine, setDomaine] = React.useState("");
 
-    const save = (e: React.MouseEvent<HTMLButtonElement>): void => {
+    const save = async (e) => {
         e.preventDefault();
-        e.stopPropagation();
         props.addSponsor({
             name,
             domaine_ministeriel: domaine as SponsorDomaineMinisteriel,
@@ -54,7 +53,7 @@ export const SponsorForm = (props: SponsorForm) => {
                 />
                 {
                     <>
-                        <div>
+                        <form onSubmit={save}>
                             <Input
                                 label={"Nom du sponsor"}
                                 nativeInputProps={{
@@ -62,7 +61,6 @@ export const SponsorForm = (props: SponsorForm) => {
                                         setName(e.currentTarget.value);
                                     },
                                     value: name,
-                                    required: true,
                                 }}
                             />
                             <Input
@@ -72,7 +70,6 @@ export const SponsorForm = (props: SponsorForm) => {
                                         setAcronym(e.currentTarget.value);
                                     },
                                     value: acronym,
-                                    required: true,
                                 }}
                             />
                             <SponsorTypeSelect
@@ -92,11 +89,11 @@ export const SponsorForm = (props: SponsorForm) => {
                             <Button
                                 children={"Enregistrer"}
                                 nativeButtonProps={{
-                                    onClick: save,
+                                    type: "submit",
                                     disabled: disabled,
                                 }}
                             />
-                        </div>
+                        </form>
                     </>
                 }
             </div>
