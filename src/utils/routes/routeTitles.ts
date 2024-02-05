@@ -25,4 +25,5 @@ export const routeTitles: {
     onboardingSuccess: () => "Fiche membre créée",
     newsletters: () => "Infolettre",
     map: () => "Carte des membres",
+    keskispasse: () => "Qu'est-ce qui se passe ?",
 };
