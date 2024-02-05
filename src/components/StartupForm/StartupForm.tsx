@@ -440,12 +440,7 @@ export const StartupForm = (props: StartupForm) => {
                                 <Button
                                     children={`Ajouter une phase`}
                                     nativeButtonProps={{
-                                        onClick: (
-                                            e: React.MouseEvent<HTMLButtonElement>
-                                        ): void => {
-                                            e.preventDefault();
-                                            addPhase();
-                                        },
+                                        onClick: () => addPhase(),
                                     }}
                                     style={{
                                         marginLeft: `0.5rem`,
