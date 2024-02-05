@@ -112,8 +112,12 @@ export async function updateFileOnBranch(
     branch,
     sha
 ) {
-    return getGithubFile(file.path, branch).then(
-        (res: OctokitResponse<any> | undefined) => {
+    return getGithubFile(file.path, branch)
+        .catch((e) => {
+            console.log("File not found");
+            return;
+        })
+        .then((res: OctokitResponse<any> | undefined) => {
             const yaml = require("js-yaml");
             let fileContent = file["content"] || "";
             const isTextFile = "changes" in file;
@@ -164,8 +168,7 @@ export async function updateFileOnBranch(
                 fileContent,
                 res ? res.data.sha : sha
             );
-        }
-    );
+        });
 }
 
 export async function createMultipleFilesPR(

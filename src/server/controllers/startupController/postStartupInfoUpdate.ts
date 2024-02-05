@@ -162,5 +162,6 @@ export async function postStartupInfoUpdate(req, res) {
                 errors: err.cause,
             };
         }
+        res.status(400).json(message);
     }
 }
