@@ -33,7 +33,7 @@ export default function NewsletterPage({
                 <div className="panel panel-full-width">
                     <h3>Historique des infolettres</h3>
                     <hr />
-                    {newsletters.length && (
+                    {newsletters.length == 0 && (
                         <p>Il n'y a pas d'infolettres dans l'historique</p>
                     )}
                     <table className="sortable">
