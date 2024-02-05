@@ -117,7 +117,7 @@ export async function updateFileOnBranch(
             console.log("File not found");
             return;
         })
-        .then((res: OctokitResponse<any> | undefined) => {
+        .then((res: OctokitResponse<any> | void) => {
             const yaml = require("js-yaml");
             let fileContent = file["content"] || "";
             const isTextFile = "changes" in file;
