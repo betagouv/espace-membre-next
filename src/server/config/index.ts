@@ -12,13 +12,6 @@ const getOrThrowError = (key: string): string => {
     throw new Error(`Environement variable ${key} is required`);
 };
 
-const ignoreForApp = (app: string) => {
-    if (app === APP_TYPE) {
-        return true;
-    }
-    return false;
-};
-
 const userStatusOptions = [
     { name: "Indépendant", key: "independent" },
     {
@@ -121,13 +114,20 @@ const CRON_TASK_ENV_VAR = {
     padPassword: process.env.PAD_PASSWORD,
 };
 
+const REQUIRED_APP_KEY = ["SESSION_SECRET", "REDIS_URL"];
+if (APP_TYPE === "app") {
+    REQUIRED_APP_KEY.forEach((key) => {
+        getOrThrowError(key);
+    });
+}
+
 export default {
     ...CRON_TASK_ENV_VAR,
     AUTH_URL: process.env.AUTH_URL,
     OVH_APP_KEY: process.env.OVH_APP_KEY,
     OVH_APP_SECRET: process.env.OVH_APP_SECRET,
     OVH_CONSUMER_KEY: process.env.OVH_CONSUMER_KEY,
-    secret: getOrThrowError(`SESSION_SECRET`),
+    secret: process.env.SESSION_SECRET,
     secure: isSecure,
     protocol: isSecure ? "https" : "http",
     host: process.env.HOSTNAME,
@@ -235,7 +235,7 @@ export default {
     SIB_APIKEY_TECH_PUBLIC: process.env.SIB_APIKEY_TECH_PUBLIC,
     tchap_api: process.env.TCHAP_API,
     HASH_SALT: process.env.HASH_SALT,
-    REDIS_URL: ignoreForApp("cron") || getOrThrowError("REDIS_URL"),
+    REDIS_URL: process.env.REDIS_URL,
     GITHUB_CLIENT_ID: getOrThrowError("GITHUB_CLIENT_ID"),
     GITHUB_CLIENT_SECRET: getOrThrowError("GITHUB_CLIENT_SECRET"),
     DS_BADGE_FORM_URL: process.env.NEXT_PUBLIC_DS_BADGE_FORM_URL,
