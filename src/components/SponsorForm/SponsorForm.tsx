@@ -75,14 +75,14 @@ export const SponsorForm = (props: SponsorForm) => {
                             <SponsorTypeSelect
                                 isMulti={false}
                                 onChange={(value) => {
-                                    setType(value);
+                                    setType(value.value);
                                 }}
                                 value={type}
                             />
                             <SponsorDomainSelect
                                 isMulti={false}
                                 onChange={(value) => {
-                                    setDomaine(value);
+                                    setDomaine(value.value);
                                 }}
                                 value={domaine}
                             />
