@@ -140,9 +140,7 @@ export async function postLoginApi(req, res) {
     username = dbResponse.username;
 
     try {
-        const secretariatUrl = config.FRONT_APP_URL
-            ? `${config.FRONT_APP_URL}`
-            : `${config.protocol}://${req.get("host")}`;
+        const secretariatUrl = `${config.protocol}://${req.get("host")}`;
         const token = generateToken();
         const loginUrl: URL = new URL(secretariatUrl + "/signin" + `#${token}`);
         if (req.query.anchor) {
