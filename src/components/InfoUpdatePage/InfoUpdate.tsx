@@ -102,10 +102,10 @@ export const InfoUpdate = (props: InfoUpdateProps) => {
     };
 
     const save = (event: { preventDefault: () => void }) => {
+        event.preventDefault();
         if (isSaving) {
             return;
         }
-        event.preventDefault();
         setIsSaving(true);
         axios
             .post(
@@ -177,7 +177,6 @@ export const InfoUpdate = (props: InfoUpdateProps) => {
                             name: "gender",
                             value: state.formData.gender,
                             onChange: handleGenderChange,
-                            placeholder: "Sélectionne une valeur",
                             required: true,
                         }}
                         state={formErrors["gender"] ? "error" : "default"}

@@ -1,15 +1,26 @@
 import React from "react";
-import Modal from "react-modal";
+import ReactDOM from "react-dom";
+import Button from "@codegouvfr/react-dsfr/Button";
+import { createModal } from "@codegouvfr/react-dsfr/Modal";
 import SESponsorSelect from "../SESponsorSelect";
 import { SponsorForm } from "../SponsorForm/SponsorForm";
 import { Sponsor } from "@/models/sponsor";
-import Button from "@codegouvfr/react-dsfr/Button";
-import { createModal } from "@codegouvfr/react-dsfr/Modal";
-import { useIsModalOpen } from "@codegouvfr/react-dsfr/Modal/useIsModalOpen";
 const modal = createModal({
     id: "foo-modal",
     isOpenedByDefault: false,
 });
+
+const SponsorModal = ({ addSponsor }) => {
+    const modalContent = (
+        <modal.Component title="Ajouter un sponsor">
+            <SponsorForm addSponsor={addSponsor} />
+        </modal.Component>
+    );
+    return ReactDOM.createPortal(
+        modalContent,
+        document.getElementById("root-container") as Element
+    );
+};
 
 const SponsorBlock = ({
     setSponsors,
@@ -57,9 +68,7 @@ const SponsorBlock = ({
             >
                 Ajouter un sponsor
             </Button>
-            <modal.Component title="Ajouter un sponsor">
-                <SponsorForm addSponsor={addSponsor} />
-            </modal.Component>
+            <SponsorModal addSponsor={addSponsor}></SponsorModal>
         </div>
     );
 };

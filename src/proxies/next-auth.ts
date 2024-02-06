@@ -1,4 +1,4 @@
-import config from "@/config";
+import config from "@/server/config";
 import { signIn as real_signIn } from "next-auth/react";
 import { signOut as real_signOut } from "next-auth/react";
 import { getSession as real_getSession } from "next-auth/react";

@@ -1,6 +1,6 @@
 import { Metadata } from "next";
 import { routeTitles } from "@/utils/routes/routeTitles";
-import config from "@/config";
+import config from "@/frontConfig";
 
 export const metadata: Metadata = {
     title: `${routeTitles.onboardingSuccess()} / Espace Membre`,

@@ -1,4 +1,4 @@
-import config from "@/config";
+import config from "@/frontConfig";
 import { BadgeRequest } from "@/models/badgeRequests";
 import routes, { computeRoute } from "@/routes/routes";
 import Button from "@codegouvfr/react-dsfr/Button";

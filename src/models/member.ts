@@ -82,6 +82,7 @@ export interface MemberWithEmailsAndMattermostUsername extends Member {
 
 export interface EmailInfos {
     email: string;
+    isBlocked: boolean;
     emailPlan: EMAIL_PLAN_TYPE;
     isPro?: boolean;
     isExchange?: boolean;

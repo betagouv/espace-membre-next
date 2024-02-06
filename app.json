@@ -1,0 +1,22 @@
+{
+  "name": "espace-membre",
+  "formation": {
+    "web": {
+      "quantity": 1,
+      "size": "S"
+    }
+  },
+  "addons": [
+    "postgresql:postgresql-sandbox",
+    "redis:redis-sandbox"
+  ],
+  "buildpacks": [
+    {
+      "url": "heroku/nodejs"
+    }
+  ],
+  "scripts": {
+    "postdeploy": "npm run migrate",
+    "first-deploy": "bash scalingo-dev-seed.sh"
+  }
+}

@@ -1,5 +1,5 @@
 import axios from "axios";
-import config from "@/config";
+import config from "@/frontConfig";
 
 export async function GET() {
     const data = await axios

@@ -12,8 +12,8 @@ export default function SelectAccebilityStatus({ value, onChange }) {
             label="Sélectionne l'accessibilité de votre produit"
             nativeSelectProps={{
                 onChange,
+                required: false,
                 defaultValue: value,
-                required: true,
             }}
         >
             {options.map((option) => {
