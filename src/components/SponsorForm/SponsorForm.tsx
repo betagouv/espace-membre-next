@@ -25,7 +25,7 @@ export const SponsorForm = (props: SponsorForm) => {
     const [type, setType] = React.useState("");
     const [domaine, setDomaine] = React.useState("");
 
-    const save = async (e) => {
+    const save = async (e: React.MouseEvent<HTMLButtonElement>): void => {
         e.preventDefault();
         props.addSponsor({
             name,
@@ -53,7 +53,7 @@ export const SponsorForm = (props: SponsorForm) => {
                 />
                 {
                     <>
-                        <form onSubmit={save}>
+                        <div>
                             <Input
                                 label={"Nom du sponsor"}
                                 nativeInputProps={{
@@ -89,11 +89,11 @@ export const SponsorForm = (props: SponsorForm) => {
                             <Button
                                 children={"Enregistrer"}
                                 nativeButtonProps={{
-                                    type: "submit",
+                                    onClick: save,
                                     disabled: disabled,
                                 }}
                             />
-                        </form>
+                        </div>
                     </>
                 }
             </div>
