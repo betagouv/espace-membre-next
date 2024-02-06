@@ -174,7 +174,7 @@ const mattermostJobs: Job[] = [
     },
     // Post automatic
     {
-        cronTime: process.env.CALENDAR_CRON_TIME || "0 30 17 * * 1", // every week a 10 on monday
+        cronTime: config.CALENDAR_CRON_TIME || "0 30 17 * * 1", // every week a 10 on monday
         onTick: () =>
             postEventsOnMattermost({
                 numberOfDays: 6,

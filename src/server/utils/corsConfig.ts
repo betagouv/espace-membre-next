@@ -1,6 +1,6 @@
 import config from "@/server/config";
 
-var whitelist = config.CORS_ORIGIN;
+var whitelist: string[] = [];
 
 const corsOptions = {
     origin: function (origin, callback) {
