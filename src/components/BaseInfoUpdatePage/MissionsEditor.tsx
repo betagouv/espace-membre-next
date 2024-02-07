@@ -5,16 +5,14 @@ import { Input } from "@codegouvfr/react-dsfr/Input";
 import { Select } from "@codegouvfr/react-dsfr/Select";
 import {
     Control,
-    FieldValues,
     useFieldArray,
     UseFormRegister,
     UseFormSetValue,
 } from "react-hook-form";
+import { addMonths } from "date-fns/addMonths";
+
 import { StartupsPicker } from "./StartupsPicker";
-
 import { MemberSchemaType } from "./BaseInfoUpdate";
-
-const TRIMESTER_DURATION = 1000 * 60 * 60 * 24 * 30 * 3;
 
 export const MissionsEditor = ({
     control,
@@ -43,9 +41,7 @@ export const MissionsEditor = ({
     const addMissionClick = (e) => {
         missionsAppend({
             start: new Date().toISOString().substring(0, 10),
-            end: new Date(new Date().getTime() + TRIMESTER_DURATION)
-                .toISOString()
-                .substring(0, 10), // 6 months,
+            end: addMonths(new Date(), 3).toISOString().substring(0, 10), // 6 months,
             status: "",
             employer: "",
             startups: [],
@@ -123,12 +119,11 @@ export const MissionsEditor = ({
                                                     "fr-text--xs"
                                                 )}
                                                 onClick={() => {
-                                                    const endDate = new Date(
-                                                        new Date(
-                                                            mission.start
-                                                        ).getTime() +
-                                                            TRIMESTER_DURATION
+                                                    const endDate = addMonths(
+                                                        new Date(mission.start),
+                                                        3
                                                     );
+
                                                     setValue(
                                                         `missions.${index}.end`,
                                                         endDate
