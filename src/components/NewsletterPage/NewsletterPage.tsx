@@ -34,7 +34,7 @@ export default function NewsletterPage({
                     <h3>Historique des infolettres</h3>
                     <hr />
                     {newsletters.length == 0 && (
-                        <p>Il n'y a pas d'infolettres dans l'historique</p>
+                        <p>Il n'y a pas d'infolettre dans l'historique</p>
                     )}
                     <table className="sortable">
                         <tbody>
