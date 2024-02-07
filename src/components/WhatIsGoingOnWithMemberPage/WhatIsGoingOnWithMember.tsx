@@ -530,11 +530,11 @@ export const UpdateEndDateScreen = function (props) {
 
     return (
         <ConnectedScreen title={title}>
-            <h2>
+            <h3>
                 Mise à jour de la date de fin pour{" "}
                 {props.user.userInfos.fullname}
-            </h2>
-            <div className="no-margin">
+            </h3>
+            <div>
                 {!!errorMessage && (
                     <p className="text-small text-color-red">{errorMessage}</p>
                 )}
@@ -668,7 +668,9 @@ export const UpdateEndDatePendingScreen = function ({
                 setPRStatus("merged");
                 setSeconds(DEFAULT_TIME);
             }
-        } catch (e) {}
+        } catch (e) {
+            console.log(e);
+        }
     };
 
     const checkPRChangesAreApplied = async () => {
@@ -792,12 +794,10 @@ export const WhichMemberScreen = function ({ setUser, getUser, users }) {
             {
                 <form className="no-margin">
                     <h2>Qu'est-ce qu'il se passe ?</h2>
-                    <p>Sélectionne le membre que tu veux aider :</p>
-                    <div className="form__group">
-                        <label>
-                            <strong>Nom ou prénom du membre</strong>
-                        </label>
+                    <div className="fr-select-group">
                         <MemberSelect
+                            label="Quelle personne veux-tu aider ?"
+                            hint="Cherche et sélectionne la personne que tu veux aider en tapant son nom ou son prénom."
                             name="username"
                             placeholder="Sélectionner un membre"
                             onChange={(e) => search(e.value)}
@@ -808,7 +808,7 @@ export const WhichMemberScreen = function ({ setUser, getUser, users }) {
                             defaultValue={undefined}
                         />
                     </div>
-                    <div className="form__group">
+                    <div>
                         <Button type="submit" disabled={isSearching}>
                             {!isSearching
                                 ? `Voir la fiche`
@@ -866,7 +866,7 @@ export const CreateEmailScreen = function (props) {
                         d'autres outils.
                     </p>
                 )}
-                <div>
+                <div className="fr-input-group">
                     <Input
                         label={"Email personnel ou professionnel"}
                         hintText={`Les informations de connexion seront envoyées à cet
@@ -1241,18 +1241,26 @@ export const WhatIsGoingOnWithMember = function (
         );
     }
     return (
-        <div className="container container-small">
-            <div className="panel margin-top-m" style={{ minHeight: 500 }}>
-                {step !== STEP.whichMember && (
-                    <Button
-                        nativeButtonProps={{
-                            onClick: () => goBack(),
-                        }}
-                    >
-                        Retour
-                    </Button>
-                )}
-                {stepView}
+        <div className="fr-col-12">
+            <div className="fr-container fr-background-alt--grey fr-px-md-0 fr-py-10v fr-py-md-14v">
+                <div className="fr-grid-row fr-grid-row-gutters fr-grid-row--center">
+                    <div className="fr-col-12 fr-col-md-9 fr-col-lg-8">
+                        <div className="fr-mb-6v">
+                            {step !== STEP.whichMember && (
+                                <Button
+                                    nativeButtonProps={{
+                                        onClick: () => goBack(),
+                                    }}
+                                    priority="secondary"
+                                    className="fr-mb-6v"
+                                >
+                                    Retour
+                                </Button>
+                            )}
+                            {stepView}
+                        </div>
+                    </div>
+                </div>
             </div>
         </div>
     );
