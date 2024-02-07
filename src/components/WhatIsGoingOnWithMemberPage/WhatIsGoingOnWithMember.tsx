@@ -1,14 +1,14 @@
 "use client";
+import axios from "axios";
 import React from "react";
 import Input from "@codegouvfr/react-dsfr/Input";
+import Button from "@codegouvfr/react-dsfr/Button";
 
 import { Member, MemberWithPermission } from "@/models/member";
 import { EMAIL_STATUS_READABLE_FORMAT } from "@/models/misc";
 import MemberSelect from "../MemberSelect";
-import axios from "axios";
 import routes from "@/routes/routes";
 import { EmailStatusCode } from "@/models/dbUser";
-import Button from "@codegouvfr/react-dsfr/Button";
 
 enum STEP {
     whichMember = "whichMember",
@@ -253,6 +253,7 @@ const UserInfo = function (props: {
                     <strong>Compte Github :</strong>
                     {props.userInfos.github && (
                         <a
+                            className="fr-link"
                             href={`https://github.com/${props.userInfos.github}`}
                         >
                             {props.userInfos.github}
@@ -428,7 +429,7 @@ const MemberComponent = function ({
                             @beta.gouv.fr/Mon mot de passe ne marche plus.
                             <br />
                             ➡️{" "}
-                            <a
+                            <Button
                                 onClick={() =>
                                     startFix([
                                         STEP.whichMember,
@@ -436,17 +437,17 @@ const MemberComponent = function ({
                                         STEP.shouldChangedPassword,
                                     ])
                                 }
-                                role="button"
+                                priority="tertiary no outline"
                             >
                                 Régler ce problème
-                            </a>
+                            </Button>
                         </li>
                     </ul>
                     <ul>
                         <li>
                             Je n'arrive pas à me connecter à mattermost.
                             <br /> ➡️{" "}
-                            <a
+                            <Button
                                 onClick={() =>
                                     startFix([
                                         STEP.whichMember,
@@ -454,10 +455,10 @@ const MemberComponent = function ({
                                         STEP.hasMattermostProblem,
                                     ])
                                 }
-                                role="button"
+                                priority="tertiary no outline"
                             >
                                 Régler ce problème
-                            </a>
+                            </Button>
                         </li>
                     </ul>
                 </>
@@ -472,7 +473,6 @@ const MemberComponent = function ({
                         }}
                     >
                         <Button
-                            className="button"
                             nativeButtonProps={{
                                 onClick: () => startFix(steps),
                             }}
@@ -526,9 +526,10 @@ export const UpdateEndDateScreen = function (props) {
                 }
             });
     }
+    const title = `Tu peux changer la date de fin pour ${props.user.userInfos.fullname}.`;
 
     return (
-        <>
+        <ConnectedScreen title={title}>
             <h2>
                 Mise à jour de la date de fin pour{" "}
                 {props.user.userInfos.fullname}
@@ -564,7 +565,6 @@ export const UpdateEndDateScreen = function (props) {
                         <Button
                             onClick={updateDate}
                             disabled={isSaving}
-                            className="button no-margin"
                             type="submit"
                         >
                             Valider le changement de date
@@ -572,7 +572,7 @@ export const UpdateEndDateScreen = function (props) {
                     </div>
                 </div>
             </div>
-        </>
+        </ConnectedScreen>
     );
 };
 
@@ -721,9 +721,13 @@ export const UpdateEndDatePendingScreen = function ({
         <>
             {prStatus === "notMerged" && (
                 <>
-                    <div className="notification">
+                    <div>
                         <p>Une pull request en attente : </p>
-                        <a href={pullRequestURL} target="_blank">
+                        <a
+                            className="fr-link"
+                            href={pullRequestURL}
+                            target="_blank"
+                        >
                             {pullRequestURL}
                         </a>
                     </div>
@@ -744,6 +748,13 @@ export const UpdateEndDatePendingScreen = function ({
                         en compte d'ici quelques minutes, il faut encore
                         attendre :)
                     </p>
+                    <a
+                        className="fr-link"
+                        href={pullRequestURL}
+                        target="_blank"
+                    >
+                        {pullRequestURL}
+                    </a>
                 </>
             )}
             {prStatus === "validated" && (
@@ -798,15 +809,11 @@ export const WhichMemberScreen = function ({ setUser, getUser, users }) {
                         />
                     </div>
                     <div className="form__group">
-                        <button
-                            className="button no-margin"
-                            type="submit"
-                            disabled={isSearching}
-                        >
+                        <Button type="submit" disabled={isSearching}>
                             {!isSearching
                                 ? `Voir la fiche`
                                 : `Récupération des informations...`}
-                        </button>
+                        </Button>
                     </div>
                 </form>
             }
@@ -1025,7 +1032,11 @@ export const WhatIsGoingOnWithMember = function (
                 <p>
                     Il faut maintenant que {user.userInfos.fullname} se connecte
                     à{" "}
-                    <a href="/account#password" target="_blank">
+                    <a
+                        className="fr-link"
+                        href="/account#password"
+                        target="_blank"
+                    >
                         l'espace-membre
                     </a>{" "}
                     avec son adresse secondaire.
@@ -1058,7 +1069,11 @@ export const WhatIsGoingOnWithMember = function (
                 </p>
                 <p>
                     Pour le réactiver, iel doit se connecter a{" "}
-                    <a href="/account#password" target="_blank">
+                    <a
+                        className="fr-link"
+                        href="/account#password"
+                        target="_blank"
+                    >
                         l'espace-membre
                     </a>{" "}
                     avec son adresse secondaire. Une fois dans l'espace membre
@@ -1069,9 +1084,9 @@ export const WhatIsGoingOnWithMember = function (
                     Iel aura alors de nouveau accès a son email en utilisant ce
                     mdp dans son client email ou sur mail.ovh.net
                 </p>
-                <button className="button" onClick={() => next()}>
+                <Button onClick={() => next()}>
                     Passer à l'étape suivante
-                </button>
+                </Button>
             </div>
         );
     } else if (step === STEP.emailBlocked) {
@@ -1084,7 +1099,11 @@ export const WhatIsGoingOnWithMember = function (
                 </p>
                 <p>
                     Pour le réactiver, iel doit se connecter a{" "}
-                    <a href="/account#password" target="_blank">
+                    <a
+                        className="fr-link"
+                        href="/account#password"
+                        target="_blank"
+                    >
                         l'espace-membre
                     </a>{" "}
                     avec son adresse secondaire. Une fois dans l'espace membre
@@ -1095,9 +1114,9 @@ export const WhatIsGoingOnWithMember = function (
                     Iel aura alors de nouveau accès a son email en utilisant ce
                     mdp dans son client email ou sur mail.ovh.net
                 </p>
-                <button className="button" onClick={() => next()}>
+                <Button onClick={() => next()}>
                     Passer à l'étape suivante
-                </button>
+                </Button>
             </div>
         );
     } else if (step === STEP.shouldChangedPassword) {
@@ -1110,7 +1129,11 @@ export const WhatIsGoingOnWithMember = function (
                 </p>
                 <p>
                     Il faut que {user.userInfos.fullname} se connecte à{" "}
-                    <a href="/account#password" target="_blank">
+                    <a
+                        className="fr-link"
+                        href="/account#password"
+                        target="_blank"
+                    >
                         l'espace-membre
                     </a>{" "}
                     avec son adresse secondaire.
@@ -1134,6 +1157,7 @@ export const WhatIsGoingOnWithMember = function (
                     <li>
                         Vérifie que tu es bien sur{" "}
                         <a
+                            className="fr-link"
                             href="https://mattermost.incubateur.net"
                             target={"_blank"}
                         >
@@ -1176,6 +1200,7 @@ export const WhatIsGoingOnWithMember = function (
                             <li>
                                 Fais un renouvellement de mot de passe :{" "}
                                 <a
+                                    className="fr-link"
                                     href="https://mattermost.incubateur.net/reset_password"
                                     target={"_blank"}
                                 >
@@ -1219,7 +1244,13 @@ export const WhatIsGoingOnWithMember = function (
         <div className="container container-small">
             <div className="panel margin-top-m" style={{ minHeight: 500 }}>
                 {step !== STEP.whichMember && (
-                    <a onClick={() => goBack()}>Retour</a>
+                    <Button
+                        nativeButtonProps={{
+                            onClick: () => goBack(),
+                        }}
+                    >
+                        Retour
+                    </Button>
                 )}
                 {stepView}
             </div>
