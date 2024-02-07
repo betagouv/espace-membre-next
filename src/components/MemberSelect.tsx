@@ -27,7 +27,26 @@ import { Select } from "@codegouvfr/react-dsfr/Select";
 import Autocomplete from "@mui/material/Autocomplete";
 import TextField from "@mui/material/TextField";
 
-export default function MemberSelect({
+type MemberSelectProps<T extends boolean> = {
+    onChange: T extends true
+        ? (value: string[]) => void
+        : (value: string) => void;
+    isMulti?: T;
+    members: { value: string; label: string }[];
+    defaultValue: T extends true
+        ? { value: string; label: string }[] | undefined
+        : { value: string; label: string } | undefined;
+    name?: string;
+    placeholder?: string;
+    hint?: string;
+    label?: string;
+    required?: boolean;
+    state?: "success" | "default" | "error" | undefined;
+    stateRelatedMessage?: string;
+    multiple?: boolean;
+};
+
+export default function MemberSelect<T extends boolean>({
     members,
     defaultValue,
     onChange,
@@ -39,24 +58,7 @@ export default function MemberSelect({
     state,
     stateRelatedMessage,
     multiple,
-}: {
-    members: { value: string; label: string }[];
-    defaultValue:
-        | { value: string; label: string }
-        | { value: string; label: string }[]
-        | undefined;
-    onChange: (obj: { value: string } | { value: string }[]) => void;
-    name?: string;
-    placeholder?: string;
-    hint?: string;
-    label?: string;
-    required?: boolean;
-    state?: "success" | "default" | "error" | undefined;
-    stateRelatedMessage?: string;
-    multiple?: boolean;
-}) {
-    const [value, setValue] = useState("");
-
+}: MemberSelectProps<T>) {
     const onTagsChange = (event, data) => {
         onChange(
             !!multiple

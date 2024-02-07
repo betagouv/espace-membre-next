@@ -905,8 +905,10 @@ export const WhatIsGoingOnWithMember = function (
         STEP.whichMember,
         STEP.showMember,
     ]);
-    const [user, setUser]: [MemberAllInfo, (user: MemberAllInfo) => void] =
-        React.useState(undefined);
+    const [user, setUser]: [
+        MemberAllInfo | undefined,
+        (user: MemberAllInfo) => void
+    ] = React.useState();
     const [pullRequestURL, setPullRequestURL] = React.useState("");
     const getUser: (string) => Promise<MemberAllInfo> = async (member) => {
         return await axios
@@ -918,14 +920,14 @@ export const WhatIsGoingOnWithMember = function (
     };
 
     React.useEffect(() => {
-        const state: {
-            step: STEP;
-            memberId: string;
-            user: MemberAllInfo;
-            steps: STEP[];
-            pullRequestURL: string;
-        } = JSON.parse(localStorage.getItem("state"));
-        if (state) {
+        if (localStorage.getItem("state")) {
+            const state: {
+                step: STEP;
+                memberId: string;
+                user: MemberAllInfo;
+                steps: STEP[];
+                pullRequestURL: string;
+            } = JSON.parse(localStorage.getItem("state")!);
             history.pushState(
                 {
                     step: state.step || STEP.whichMember,
@@ -964,7 +966,7 @@ export const WhatIsGoingOnWithMember = function (
         setStep(nextStep);
         const state = {
             step: nextStep,
-            memberId: user.userInfos.id,
+            memberId: user?.userInfos?.id,
             user: user,
             steps: fixes,
         };
@@ -981,7 +983,7 @@ export const WhatIsGoingOnWithMember = function (
         setStep(nextStep);
         const state = {
             step: nextStep,
-            memberId: (paramUser || user).userInfos.id,
+            memberId: (paramUser || user)?.userInfos?.id,
             user: paramUser || user,
             steps: steps || fixes,
         };
@@ -1001,7 +1003,9 @@ export const WhatIsGoingOnWithMember = function (
             />
         );
     } else if (step === STEP.showMember) {
-        stepView = <MemberComponent {...user} startFix={startFix} />;
+        stepView = (
+            <MemberComponent {...(user as MemberAllInfo)} startFix={startFix} />
+        );
     } else if (step === STEP.updateEndDate) {
         stepView = (
             <UpdateEndDateScreen
@@ -1013,7 +1017,7 @@ export const WhatIsGoingOnWithMember = function (
     } else if (step === STEP.createEmail) {
         stepView = (
             <CreateEmailScreen
-                secondaryEmail={user.secondaryEmail}
+                secondaryEmail={user?.secondaryEmail}
                 next={next}
                 user={user}
             />
@@ -1022,7 +1026,7 @@ export const WhatIsGoingOnWithMember = function (
         stepView = (
             <AccountPendingCreationScreen
                 next={next}
-                user={user}
+                user={user as MemberAllInfo}
                 getUser={getUser}
             />
         );
@@ -1030,8 +1034,8 @@ export const WhatIsGoingOnWithMember = function (
         stepView = (
             <div>
                 <p>
-                    Il faut maintenant que {user.userInfos.fullname} se connecte
-                    à{" "}
+                    Il faut maintenant que {user?.userInfos.fullname} se
+                    connecte à{" "}
                     <a
                         className="fr-link"
                         href="/account#password"
@@ -1054,7 +1058,7 @@ export const WhatIsGoingOnWithMember = function (
     } else if (step === STEP.everythingIsGood) {
         stepView = (
             <div>
-                <p>Tout semble réglé pour {user.userInfos.fullname}.</p>
+                <p>Tout semble réglé pour {user?.userInfos.fullname}.</p>
                 <button className="button" onClick={resetLocalStorage}>
                     Terminer
                 </button>
@@ -1064,8 +1068,8 @@ export const WhatIsGoingOnWithMember = function (
         stepView = (
             <div>
                 <p>
-                    La date de fin de mission de {user.userInfos.fullname} a été
-                    mise à jour un peu tard, son email a été suspendu.
+                    La date de fin de mission de {user?.userInfos.fullname} a
+                    été mise à jour un peu tard, son email a été suspendu.
                 </p>
                 <p>
                     Pour le réactiver, iel doit se connecter a{" "}
@@ -1093,7 +1097,7 @@ export const WhatIsGoingOnWithMember = function (
         stepView = (
             <div>
                 <p>
-                    {user.userInfos.fullname} a du faire un envoie massif
+                    {user?.userInfos.fullname} a du faire un envoie massif
                     d'email par gmail, ou depuis de nombreuses ips différentes.
                     Son email a été bloqué par OVH.
                 </p>
@@ -1123,12 +1127,12 @@ export const WhatIsGoingOnWithMember = function (
         stepView = (
             <div>
                 <p>
-                    Si {user.userInfos.fullname} n'arrive plus accéder a son
+                    Si {user?.userInfos.fullname} n'arrive plus accéder a son
                     email @beta.gouv.fr, iel peut faire un changement de mot de
                     passe.
                 </p>
                 <p>
-                    Il faut que {user.userInfos.fullname} se connecte à{" "}
+                    Il faut que {user?.userInfos.fullname} se connecte à{" "}
                     <a
                         className="fr-link"
                         href="/account#password"
