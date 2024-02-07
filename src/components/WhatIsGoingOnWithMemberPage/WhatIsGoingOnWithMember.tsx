@@ -1,5 +1,5 @@
 "use client";
-import axios from "axios";
+import axios, { AxiosError } from "axios";
 import React from "react";
 import Input from "@codegouvfr/react-dsfr/Input";
 import Button from "@codegouvfr/react-dsfr/Button";
@@ -110,7 +110,19 @@ const ConnectedScreen = (props) => {
             setLoginSent(true);
             await pingConnection();
         } catch (e) {
-            alert(e.response.data.errors);
+            if (axios.isAxiosError(e)) {
+                // Ici, TypeScript sait que `e` est de type AxiosError
+                if (e.response) {
+                    alert(e.response.data.errors);
+                } else {
+                    // Gérer les cas où la réponse n'est pas disponible
+                    alert(
+                        "Une erreur s'est produite, mais aucune réponse n'a été reçue"
+                    );
+                }
+            } else {
+                alert("Une erreur s'est produite");
+            }
         }
     };
 
