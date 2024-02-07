@@ -317,8 +317,6 @@ export async function userInfos(
             !isExpired &&
             isCurrentUser
         );
-        console.log(id, isCurrentUser, emailInfos, !isExpired, hasUserInfos);
-
         const canChangePassword = !!(
             hasUserInfos &&
             !isExpired &&

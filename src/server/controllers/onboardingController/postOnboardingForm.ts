@@ -13,7 +13,7 @@ import {
     isValidUrl,
     shouldBeOnlyUsername,
     isValidEmail,
-} from "@controllers/validator";
+} from "@/server/controllers/validator";
 import {
     CommunicationEmailCode,
     EmailStatusCode,

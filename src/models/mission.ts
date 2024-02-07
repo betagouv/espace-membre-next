@@ -1,3 +1,6 @@
+import { userStatusOptions } from "@/frontConfig";
+import { z } from "zod";
+
 export type Status = "independant" | "admin" | "service";
 
 export interface Mission {
@@ -26,3 +29,34 @@ export interface GithubMission {
     employer: string;
     startups?: string[];
 }
+
+export const MissionSchema = z.object({
+    start: z
+        .string({
+            errorMap: (issue, ctx) => ({
+                message: "Champ obligatoire",
+            }),
+        })
+        .describe("Date de début de la mission")
+        .min(1),
+    end: z.string().describe("Date de début de la mission").optional(),
+    status: z
+        .enum(
+            userStatusOptions.map((status) => status.key), //?
+            {
+                errorMap: (issue, ctx) => ({
+                    message: "Le statut est requis",
+                }),
+            }
+        )
+        .describe("Type de contrat"),
+    employer: z
+        .string({
+            errorMap: (issue, ctx) => ({
+                message: "Précisez un employeur",
+            }),
+        })
+        .describe("Entité avec qui vous avez contractualisé")
+        .min(3),
+    startups: z.array(z.string()),
+});

@@ -1,6 +1,6 @@
 import betagouv from "@betagouv";
 import { addEvent, EventCode } from "@/lib/events";
-import { requiredError, isValidDate } from "@controllers/validator";
+import { requiredError, isValidDate } from "@/server/controllers/validator";
 
 export async function setEmailResponderApi(req, res) {
     setEmailResponderHandler(

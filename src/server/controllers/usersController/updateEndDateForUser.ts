@@ -1,6 +1,6 @@
 import config from "@/server/config";
 import { addEvent, EventCode } from "@/lib/events";
-import { requiredError, isValidDate } from "@controllers/validator";
+import { requiredError, isValidDate } from "@/server/controllers/validator";
 
 import betagouv from "@betagouv";
 import { updateAuthorGithubFile } from "../helpers/githubHelpers";

@@ -1,3 +1,4 @@
+import { z } from "zod";
 import { OctokitResponse } from "@octokit/types";
 import {
     createGithubBranch,
@@ -18,6 +19,7 @@ import {
     GithubStartupChange,
     GithubStartupFile,
 } from "./githubEntryInterface";
+import { memberSchema } from "@/models/member";
 
 async function createGithubCollectionEntry(
     name: string,
@@ -78,33 +80,6 @@ async function createGithubCollectionEntry(
                 `Erreur Github lors de la mise à jour de la fiche de ${name}`
             );
         });
-}
-
-export async function createFileOnBranch(
-    file: GithubBetagouvFile,
-    branch,
-    sha
-) {
-    const yaml = require("js-yaml");
-    let content = file["content"] || "";
-    if ("changes" in file) {
-        const doc = file.changes;
-        const schema = yaml.DEFAULT_SCHEMA;
-        schema.compiledTypeMap.scalar["tag:yaml.org,2002:timestamp"].represent =
-            function (object) {
-                return object.toISOString().split("T")[0];
-            };
-        content =
-            "---\n" +
-            yaml.dump(doc, {
-                schema: schema,
-            }) +
-            "---";
-        if ("content" in file) {
-            content = content + "\n" + file.content;
-        }
-    }
-    return createGithubFile(file.path, branch, content, sha);
 }
 
 export async function updateFileOnBranch(
@@ -171,44 +146,6 @@ export async function updateFileOnBranch(
         });
 }
 
-export async function createMultipleFilesPR(
-    prName: string,
-    files: GithubBetagouvFile[]
-) {
-    const branch = createBranchName(prName);
-    const {
-        data: {
-            object: { sha },
-        },
-    } = await getGithubMasterSha();
-    console.log("SHA du master obtenu", sha);
-    try {
-        const resp = await createGithubBranch(sha, branch);
-        console.log(`Branche ${branch} créée pour ${prName}`);
-        for (const file of files) {
-            await createFileOnBranch(file, branch, resp.data.object.sha);
-        }
-        const response = await makeGithubPullRequest(
-            branch,
-            `Création de ${prName}`
-        );
-        console.log(
-            `Pull request pour la création de la fiche ${prName} ouverte`
-        );
-        if (response.status !== 201 && response.data.html_url) {
-            throw new Error(
-                "Il y a eu une erreur merci de recommencer plus tard"
-            );
-        }
-        return response.data;
-    } catch (err) {
-        console.log(err);
-        throw new Error(
-            `Erreur Github lors de la mise à jour de la fiche de ${prName}`
-        );
-    }
-}
-
 export function makeGithubSponsorFile(
     name: string,
     changes: GithubSponsorChange
@@ -245,13 +182,13 @@ export function makeImageFile(name: string, content: string): GithubImageFile {
 export function makeGithubAuthorFile(
     name: string,
     changes: GithubAuthorChange,
-    content?: string
+    content: z.infer<typeof memberSchema>["bio"]
 ): GithubAuthorFile {
     return {
         path: `content/_authors/${name}.md`,
         name,
         changes,
-        content: content || "",
+        content: content,
     };
 }
 

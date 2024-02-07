@@ -35,24 +35,7 @@ const getBaseInfo = async (req, res, onSuccess, onError) => {
                 label: startup.attributes.name,
             };
         });
-        const userStartups = (currentUser.userInfos?.startups || []).map(
-            (userStartup) => {
-                const startupInfo = startups.find((s) => s.id === userStartup);
-                return {
-                    value: userStartup,
-                    label: startupInfo?.attributes.name,
-                };
-            }
-        );
-        const userPreviousStartups = (
-            currentUser.userInfos?.previously || []
-        ).map((userStartup) => {
-            const startupInfo = startups.find((s) => s.id === userStartup);
-            return {
-                value: userStartup,
-                label: startupInfo?.attributes.name,
-            };
-        });
+
         const updatePullRequest = await db("pull_requests")
             .where({
                 username: req.auth.id,
@@ -72,12 +55,7 @@ const getBaseInfo = async (req, res, onSuccess, onError) => {
             username: req.auth.id,
             updatePullRequest,
             formData: {
-                startups: userStartups || [],
-                role: currentUser.userInfos?.role,
-                missions: currentUser.userInfos?.missions,
-                end: currentUser.userInfos?.end,
-                start: currentUser.userInfos?.start,
-                previously: userPreviousStartups,
+                ...currentUser.userInfos,
             },
         });
     } catch (err) {

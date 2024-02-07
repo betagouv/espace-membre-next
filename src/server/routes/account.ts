@@ -5,6 +5,8 @@ import * as accountController from "@controllers/accountController";
 import { publicPostRouteRateLimiter } from "../middlewares/rateLimiter";
 import { getBadgePageApi } from "@controllers/accountController/getBadgePage";
 import { getBadgeRenewalPage } from "@controllers/accountController/getBadgeRenewalPage";
+import { validate } from "../middlewares/zodValidator";
+import { memberSchema } from "@/models/member";
 
 const router = express.Router();
 
@@ -30,6 +32,7 @@ router.get(
 router.post(
     routes.ACCOUNT_POST_BASE_INFO_FORM,
     express.json({ type: "*/*" }),
+    validate(memberSchema, "body"),
     usersController.postBaseInfoUpdate
 );
 router.post(

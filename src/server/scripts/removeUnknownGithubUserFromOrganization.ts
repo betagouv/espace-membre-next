@@ -27,7 +27,6 @@ const removeUnknownGithubUserFromOrganization = async () => {
             config.githubOrganizationName
         );
     console.log("List unknown users");
-    console.log(unknownUsersInOrganization);
     if (process.env.featureRemoveUnknownUsers) {
         await Promise.all(
             unknownUsersInOrganization.map(async (member) => {

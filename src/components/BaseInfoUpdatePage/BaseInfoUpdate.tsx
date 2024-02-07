@@ -15,14 +15,12 @@ import { DBPullRequest } from "@/models/pullRequests";
 import { routeTitles } from "@/utils/routes/routeTitles";
 
 import { MissionsEditor } from "./MissionsEditor";
-import { DOMAINE_OPTIONS } from "@/models/member";
+import { DOMAINE_OPTIONS, memberSchema } from "@/models/member";
 import Select from "@codegouvfr/react-dsfr/Select";
 import axios from "axios";
 import routes, { computeRoute } from "@/routes/routes";
 import { useSession } from "@/proxies/next-auth";
 import { FormErrorResponse } from "@/models/misc";
-
-import { MemberSchema } from "./schemas";
 
 import { PullRequestWarning } from "./PullRequestWarning";
 
@@ -31,7 +29,7 @@ interface Option {
     name: string;
 }
 
-export type MemberSchemaType = z.infer<typeof MemberSchema>;
+export type MemberSchemaType = z.infer<typeof memberSchema>;
 
 // data from secretariat API
 export interface BaseInfoUpdateProps {
@@ -81,7 +79,7 @@ export const BaseInfoUpdate = (props: BaseInfoUpdateProps) => {
         setValue,
         control,
     } = useForm<MemberSchemaType>({
-        resolver: zodResolver(MemberSchema),
+        resolver: zodResolver(memberSchema),
         mode: "onChange",
         defaultValues,
     });
@@ -144,6 +142,8 @@ export const BaseInfoUpdate = (props: BaseInfoUpdateProps) => {
         }
         setIsSaving(false);
     };
+
+    // todo: récupérer les labels Zod
 
     return (
         <>
