@@ -3,7 +3,7 @@ import { ErrorRequestHandler } from "express";
 import config from "@/server/config";
 
 export const initializeSentry = (app) => {
-    if (!config.sentryDNS) {
+    if (!config.sentryDSN) {
         console.log("Sentry DSN not found. Sentry is not initialized.");
         return;
     }

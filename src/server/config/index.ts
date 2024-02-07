@@ -185,7 +185,7 @@ export default {
     githubRepository: process.env.GITHUB_REPOSITORY,
     githubFork: getOrThrowError("GITHUB_FORK"),
     defaultLoggedInRedirectUrl: "/account",
-    sentryDNS: process.env.SENTRY_DNS || false,
+    sentryDSN: process.env.SENTRY_DSN || false,
     ESPACE_MEMBRE_ADMIN: process.env.ESPACE_MEMBRE_ADMIN
         ? process.env.ESPACE_MEMBRE_ADMIN.split(",")
         : [],
