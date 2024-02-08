@@ -1,1 +1,7 @@
-if sh -c ': >/dev/tty' >/dev/null 2>/dev/null; then exec </dev/tty; yarn node-talisman --githook pre-commit -i; else yarn node-talisman --githook pre-commit; fi
+# ignore if using some GUI for GIT commits
+if sh -c ': >/dev/tty' >/dev/null 2>/dev/null; then
+  exec </dev/tty; 
+  yarn node-talisman --githook pre-commit -i;
+else 
+  yarn node-talisman --githook pre-commit;
+fi
