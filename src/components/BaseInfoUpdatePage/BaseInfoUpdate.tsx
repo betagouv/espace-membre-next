@@ -33,22 +33,12 @@ export type MemberSchemaType = z.infer<typeof memberSchema>;
 
 // data from secretariat API
 export interface BaseInfoUpdateProps {
-    title: string;
-    currentUserId: string;
-    errors: string[];
-    messages: string[];
-    activeTab: string;
     formData: MemberSchemaType;
-    statusOptions: Option[];
-    genderOptions: Option[];
-    formValidationErrors: any;
     startupOptions: {
         value: string;
         label: string;
     }[];
-    username: string;
     updatePullRequest?: DBPullRequest;
-    isAdmin: boolean;
 }
 
 const postMemberData = async ({ values, sessionUsername }) => {

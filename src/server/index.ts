@@ -5,6 +5,7 @@ import express from "express";
 import next from "next";
 
 import { expressjwt, Request } from "express-jwt";
+
 import expressSanitizer from "express-sanitizer";
 import path from "path";
 import cors from "cors";
@@ -36,7 +37,10 @@ import {
     startupRouter,
 } from "./routes";
 import { errorHandler } from "./middlewares/errorHandler";
-import { setupSessionMiddleware } from "./middlewares/sessionMiddleware";
+import {
+    getAuthTokenIfExist,
+    setupSessionMiddleware,
+} from "./middlewares/sessionMiddleware";
 import { PUBLIC_ROUTES } from "./config/jwt.config";
 import { initializeSentry, sentryErrorHandler } from "@lib/sentry";
 
@@ -45,6 +49,7 @@ const dev = process.env.NODE_ENV !== "production";
 const app = next({ dev });
 const handle = app.getRequestHandler();
 let server = express();
+
 const startServer = () => {
     return app.prepare().then(() => {
         // Define custom routes here, e.g., server.get('/my-route', (req, res) => { ... });
@@ -75,7 +80,7 @@ const startServer = () => {
                     return getToken(req);
                 },
             }).unless({
-                path: PUBLIC_ROUTES,
+                path: [...PUBLIC_ROUTES],
             })
         );
         // Save a token in cookie that expire after 7 days if user is logged
@@ -122,7 +127,7 @@ const startServer = () => {
             hookController.postToHook
         );
         // Default catch-all handler to allow Next.js to handle all other routes
-        server.all("*", (req, res) => {
+        server.all("*", getAuthTokenIfExist, (req, res) => {
             return handle(req, res);
         });
         server.use(sentryErrorHandler);

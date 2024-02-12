@@ -32,14 +32,13 @@ export interface GithubMission {
 
 export const MissionSchema = z.object({
     start: z
-        .string({
+        .date({
             errorMap: (issue, ctx) => ({
                 message: "Champ obligatoire",
             }),
         })
-        .describe("Date de début de la mission")
-        .min(1),
-    end: z.string().describe("Date de début de la mission").optional(),
+        .describe("Date de début de la mission"),
+    end: z.date().describe("Date de début de la mission").optional(),
     status: z
         .enum(
             userStatusOptions.map((status) => status.key), //?
@@ -58,5 +57,5 @@ export const MissionSchema = z.object({
         })
         .describe("Entité avec qui vous avez contractualisé")
         .min(3),
-    startups: z.array(z.string()),
+    startups: z.array(z.string()).optional(),
 });

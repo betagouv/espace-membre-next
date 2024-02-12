@@ -94,7 +94,7 @@ export const memberSchema = z.object({
     missions: z
         .array(MissionSchema)
         .min(1, "Vous devez définir au moins une mission"),
-    startups: z.array(z.string()),
+    startups: z.array(z.string()).optional(),
     previously: z.array(z.string()),
     domaine: z.enum(
         DOMAINE_OPTIONS.map((domaine) => domaine.name), // ??
