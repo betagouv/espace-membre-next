@@ -109,12 +109,6 @@ const startServer = () => {
             routes.PULL_REQUEST_GET_PRS,
             pullRequestsController.getAllPullRequests
         );
-        //
-        server.post(
-            "/notifications/github",
-            githubNotificationController.processNotification
-        );
-
         // INCUBATORS
         server.get(routes.API_PUBLIC_INCUBATORS_GET_ALL, getAllIncubators);
 

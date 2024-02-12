@@ -110,4 +110,10 @@ export const localizedRoutes = {
             fr: (p) => `/map`,
         }
     ),
+    keskispasse: defineLocalizedRoute(
+        {},
+        {
+            fr: (p) => `/keskispasse`,
+        }
+    ),
 };
