@@ -1,6 +1,4 @@
 import type { Metadata } from "next";
-import { NextRequest } from "next/server";
-import { z } from "zod";
 import yaml from "js-yaml";
 
 import { BaseInfoUpdate } from "@/components/BaseInfoUpdatePage";
@@ -10,13 +8,16 @@ import { routeTitles } from "@/utils/routes/routeTitles";
 import { StartupInfo } from "@/models/startup";
 import betagouv from "@/server/betagouv";
 import config from "@/server/config";
+import { getSessionFromStore } from "@/server/middlewares/sessionMiddleware";
+import db from "@/server/db";
+import { PULL_REQUEST_STATE } from "@/models/pullRequests";
 
 export const metadata: Metadata = {
     title: `${routeTitles.accountEditBaseInfo()} / Espace Membre`,
 };
 
-const fetchGithubPageData = (username: string) =>
-    fetch(
+const fetchGithubPageData = (username: string, branch: string) => {
+    return fetch(
         `https://raw.githubusercontent.com/betagouv/beta.gouv.fr/master/content/_authors/${username}.md`
     )
         .then((r) => r.text())
@@ -28,12 +29,23 @@ const fetchGithubPageData = (username: string) =>
                 bio: body,
             });
         });
+};
 
-export default async function Page(req, res) {
+async function getPullRequestForUsername(username: string) {
+    return await db("pull_requests")
+        .where({
+            username: username,
+            status: PULL_REQUEST_STATE.PR_MEMBER_UPDATE_CREATED,
+        })
+        .orderBy("created_at", "desc")
+        .first();
+}
+
+export default async function Page() {
     // todo: updatePullRequest
-    // todo: auth
-    const username = "julien.dauphant"; //todo
-    const formData = await fetchGithubPageData(req.user.id);
+    const session = (await getSessionFromStore()) as { id: string };
+    const pullRequest = await getPullRequestForUsername(session.id);
+    const formData = await fetchGithubPageData(session.id, "master");
     const startups: StartupInfo[] = await betagouv.startupsInfos();
     const startupOptions = startups.map((startup) => {
         return {
@@ -44,6 +56,7 @@ export default async function Page(req, res) {
     const props = {
         formData,
         startupOptions,
+        pullRequest,
     };
 
     return <BaseInfoUpdate {...props} />;

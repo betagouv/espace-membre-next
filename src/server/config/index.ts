@@ -182,7 +182,7 @@ export default {
     githubToken: process.env.GITHUB_TOKEN,
     githubOrganizationName: process.env.GITHUB_ORGANIZATION_NAME || "betagouv",
     githubOrgAdminToken: process.env.GITHUB_ORG_ADMIN_TOKEN,
-    githubRepository: process.env.GITHUB_REPOSITORY!,
+    githubRepository: process.env.GITHUB_REPOSITORY || "beta.gouv.fr",
     githubFork: getOrThrowError("GITHUB_FORK"),
     defaultLoggedInRedirectUrl: "/account",
     sentryDSN: process.env.SENTRY_DSN || false,
