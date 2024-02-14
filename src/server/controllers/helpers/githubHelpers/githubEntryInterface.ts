@@ -1,11 +1,11 @@
-import { z } from "zod";
-import { GithubMission } from "@/models/mission";
 import { SponsorDomaineMinisteriel, SponsorType } from "@/models/sponsor";
 import { AccessibilityStatus, Phase } from "@/models/startup";
-import { memberSchema } from "@/models/member";
+import { MemberSchemaType } from "@/components/BaseInfoUpdatePage";
 
-export interface GithubAuthorChange
-    extends Omit<z.infer<typeof memberSchema>, "bio"> {}
+export interface GithubAuthorChange extends Omit<MemberSchemaType, "bio"> {}
+
+export interface GithubAuthorMissionChange
+    extends Pick<MemberSchemaType, "missions"> {}
 
 export interface GithubFile {
     path: string;
