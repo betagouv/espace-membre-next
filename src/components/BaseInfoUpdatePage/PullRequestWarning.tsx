@@ -1,3 +1,4 @@
+import React from "react";
 import Alert from "@codegouvfr/react-dsfr/Alert";
 
 export const PullRequestWarning = ({ pullRequest }) => {

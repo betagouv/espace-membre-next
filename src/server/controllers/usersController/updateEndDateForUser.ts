@@ -4,7 +4,7 @@ import { requiredError, isValidDate } from "@/server/controllers/validator";
 
 import betagouv from "@betagouv";
 import { updateAuthorGithubFile } from "../helpers/githubHelpers";
-import { GithubAuthorChange } from "../helpers/githubHelpers/githubEntryInterface";
+import { GithubAuthorMissionChange } from "../helpers/githubHelpers/githubEntryInterface";
 import { GithubMission } from "@/models/mission";
 
 export async function updateEndDateForUser(req, res) {
@@ -59,7 +59,7 @@ export async function updateEndDateForUser(req, res) {
         if (missions?.length) {
             missions[missions.length - 1].end = newEndDate;
         }
-        const changes: GithubAuthorChange = {
+        const changes: GithubAuthorMissionChange = {
             missions: missions as GithubMission[],
         };
         await updateAuthorGithubFile(username, changes);
