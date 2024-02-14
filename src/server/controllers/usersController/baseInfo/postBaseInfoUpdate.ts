@@ -46,8 +46,8 @@ export async function postBaseInfoUpdate(
             created_by_username: req.auth?.id,
             action_on_username: username,
             action_metadata: {
-                value: JSON.stringify(req.body),
-                old_value: JSON.stringify(info),
+                value: req.body,
+                old_value: info,
             },
         });
         await db("pull_requests").insert({
