@@ -40,8 +40,8 @@ export const MissionsEditor = ({
 
     const addMissionClick = (e) => {
         missionsAppend({
-            start: new Date().toISOString().substring(0, 10),
-            end: addMonths(new Date(), 3).toISOString().substring(0, 10),
+            start: new Date(),
+            end: addMonths(new Date(), 3),
             status: "",
             employer: "",
             startups: [],
@@ -54,14 +54,10 @@ export const MissionsEditor = ({
             3
         );
 
-        setValue(
-            `missions.${missionIndex}.end`,
-            endDate.toISOString().substring(0, 10),
-            {
-                shouldValidate: true,
-                shouldDirty: true,
-            }
-        );
+        setValue(`missions.${missionIndex}.end`, endDate, {
+            shouldValidate: true,
+            shouldDirty: true,
+        });
     };
 
     return (

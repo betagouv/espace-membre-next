@@ -29,7 +29,7 @@ export async function postBaseInfoUpdate(
     try {
         const info = await betagouv.userInfosById(username);
 
-        const { bio, ...postParams } = req.body;
+        const { bio, ...postParams } = memberSchema.parse(req.body);
         const files: GithubBetagouvFile[] = [
             makeGithubAuthorFile(username, postParams, bio),
         ];
