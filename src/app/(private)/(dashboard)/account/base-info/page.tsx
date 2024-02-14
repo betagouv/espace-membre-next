@@ -10,6 +10,7 @@ import betagouv from "@/server/betagouv";
 import { getSessionFromStore } from "@/server/middlewares/sessionMiddleware";
 import db from "@/server/db";
 import { PULL_REQUEST_STATE } from "@/models/pullRequests";
+import { cookies } from "next/headers";
 
 export const metadata: Metadata = {
     title: `${routeTitles.accountEditBaseInfo()} / Espace Membre`,
@@ -44,7 +45,10 @@ async function getPullRequestForUsername(username: string) {
 
 export default async function Page() {
     // todo: updatePullRequest
-    const session = (await getSessionFromStore()) as { id: string };
+    const cookieStore = cookies();
+    const session = (await getSessionFromStore(
+        cookieStore.get("espaceMembreCookieName")
+    )) as { id: string };
     const pullRequest = await getPullRequestForUsername(session.id);
     const formData = await fetchGithubPageData(session.id, "master");
     const startups: StartupInfo[] = await betagouv.startupsInfos();

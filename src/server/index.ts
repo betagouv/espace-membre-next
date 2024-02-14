@@ -7,8 +7,6 @@ import next from "next";
 import { expressjwt, Request } from "express-jwt";
 
 import expressSanitizer from "express-sanitizer";
-import path from "path";
-import cors from "cors";
 import config from "@/server/config";
 import * as githubNotificationController from "@controllers/githubNotificationController";
 import * as indexController from "@controllers/indexController";
@@ -37,10 +35,7 @@ import {
     startupRouter,
 } from "./routes";
 import { errorHandler } from "./middlewares/errorHandler";
-import {
-    getAuthTokenIfExist,
-    setupSessionMiddleware,
-} from "./middlewares/sessionMiddleware";
+import { setupSessionMiddleware } from "./middlewares/sessionMiddleware";
 import { PUBLIC_ROUTES } from "./config/jwt.config";
 import { initializeSentry, sentryErrorHandler } from "@lib/sentry";
 
@@ -127,7 +122,7 @@ const startServer = () => {
             hookController.postToHook
         );
         // Default catch-all handler to allow Next.js to handle all other routes
-        server.all("*", getAuthTokenIfExist, (req, res) => {
+        server.all("*", (req, res) => {
             return handle(req, res);
         });
         server.use(sentryErrorHandler);

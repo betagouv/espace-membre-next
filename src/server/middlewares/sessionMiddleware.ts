@@ -2,9 +2,8 @@ import session from "express-session";
 import makeSessionStore from "@infra/sessionStore/sessionStore";
 import config from "@/server/config";
 import { getToken } from "../helpers/session";
-import { cookies } from "next/headers";
-
-const jwt = require("jsonwebtoken");
+import jwt from "jsonwebtoken";
+import { RequestCookie } from "next/dist/compiled/@edge-runtime/cookies";
 
 export const sessionStore =
     process.env.NODE_ENV !== "test" ? makeSessionStore() : null;
@@ -28,9 +27,7 @@ const setupSessionMiddleware = (app) => {
     app.use(session(sessionOptions)); // Only used for Flash not safe for others purposes
 };
 
-export const getSessionFromStore = async () => {
-    const cookieStore = cookies();
-    const sid = cookieStore.get("espaceMembreCookieName");
+const getSessionFromStore = async (sid: RequestCookie | undefined) => {
     if (!sid) {
         return null;
     }
@@ -53,21 +50,4 @@ export const getSessionFromStore = async () => {
     });
 };
 
-function getAuthTokenIfExist(req, res, next) {
-    // Essayer de récupérer le token du header 'Authorization'
-    const authHeader = getToken(req);
-    if (authHeader) {
-        const token = authHeader; // Bearer TOKEN_HERE
-
-        jwt.verify(token, config.secret, (err, user) => {
-            if (!err) {
-                req.user = user; // Attacher l'utilisateur à l'objet de la requête
-            }
-            next(); // Passe au prochain middleware / route
-        });
-    } else {
-        next(); // Pas de token, continuer sans erreur
-    }
-}
-
-export { setupSessionMiddleware, getAuthTokenIfExist };
+export { setupSessionMiddleware, getSessionFromStore };
