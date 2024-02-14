@@ -94,13 +94,19 @@ export const memberSchema = z.object({
     ]),
     avatar: z.string().describe("URL ou slug de l'avatar").optional(),
     github: z.string().describe("Login GitHub").optional(),
-    competences: z.array(z.string()).describe("Liste de compétences"),
-    teams: z.array(z.string()).describe("Liste des équipes incubateurs"),
+    competences: z
+        .array(z.string())
+        .describe("Liste de compétences")
+        .optional(),
+    teams: z
+        .array(z.string())
+        .describe("Liste des équipes incubateurs")
+        .optional(),
     missions: z
         .array(MissionSchema)
         .min(1, "Vous devez définir au moins une mission"),
     startups: z.array(z.string()).optional(),
-    previously: z.array(z.string()),
+    previously: z.array(z.string()).optional(),
     domaine: z.nativeEnum(
         Domaine, // ??
         {
@@ -115,7 +121,7 @@ export const memberSchema = z.object({
                 message: "La bio est obligatoire, be creative",
             }),
         })
-        .min(15),
+        .min(15, "La bio doit contenir au moins 15 caractères."),
 });
 
 export interface MemberWithPrimaryEmailInfo extends Member {

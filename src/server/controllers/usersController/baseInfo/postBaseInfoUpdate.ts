@@ -15,7 +15,7 @@ import { memberSchema } from "@/models/member";
 
 interface BaseInfoUpdateRequest extends Request {
     body: z.infer<typeof memberSchema>;
-    auth?: {
+    auth: {
         id: string;
     };
 }
@@ -29,7 +29,7 @@ export async function postBaseInfoUpdate(
     try {
         const info = await betagouv.userInfosById(username);
 
-        const { bio, ...postParams } = memberSchema.parse(req.body);
+        const { bio, ...postParams } = req.body;
         const files: GithubBetagouvFile[] = [
             makeGithubAuthorFile(username, postParams, bio),
         ];
@@ -38,12 +38,12 @@ export async function postBaseInfoUpdate(
         // todo: assign users
         // todo: set labels
         const prInfo: PRInfo = await updateMultipleFilesPR(
-            `Maj de la fiche de ${username} par ${req.auth.id}`,
+            `Maj de la fiche de ${username} par ${req.auth?.id}`,
             files
         );
 
         addEvent(EventCode.MEMBER_BASE_INFO_UPDATED, {
-            created_by_username: req.auth.id,
+            created_by_username: req.auth?.id,
             action_on_username: username,
             action_metadata: {
                 value: JSON.stringify(req.body),
