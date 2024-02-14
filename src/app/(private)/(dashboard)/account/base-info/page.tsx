@@ -7,7 +7,6 @@ import { memberSchema } from "@/models/member";
 import { routeTitles } from "@/utils/routes/routeTitles";
 import { StartupInfo } from "@/models/startup";
 import betagouv from "@/server/betagouv";
-import config from "@/server/config";
 import { getSessionFromStore } from "@/server/middlewares/sessionMiddleware";
 import db from "@/server/db";
 import { PULL_REQUEST_STATE } from "@/models/pullRequests";
@@ -22,7 +21,9 @@ const fetchGithubPageData = (username: string, branch: string) => {
     )
         .then((r) => r.text())
         .then((content) => {
-            const documents = yaml.loadAll(content);
+            const documents = yaml.loadAll(content, null, {
+                schema: yaml.JSON_SCHEMA,
+            });
             const [metadata, body]: any[] = documents;
             return memberSchema.parse({
                 ...metadata,
