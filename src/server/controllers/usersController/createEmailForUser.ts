@@ -10,7 +10,7 @@ import * as utils from "@controllers/utils";
 import knex from "@db/index";
 import { DBUser, EmailStatusCode } from "@/models/dbUser/dbUser";
 import { addEvent, EventCode } from "@/lib/events";
-import { _ } from "lodash";
+import _ from "lodash";
 
 const INCUBATORS_USING_EXCHANGE = ["gip-inclusion"];
 
