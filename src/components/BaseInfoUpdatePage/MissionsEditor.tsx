@@ -14,6 +14,7 @@ import { addMonths } from "date-fns/addMonths";
 import { StartupsPicker } from "./StartupsPicker";
 import { MemberSchemaType } from "./BaseInfoUpdate";
 import { userStatusOptions } from "@/frontConfig";
+import { Status } from "@/models/mission";
 
 const Mission = ({
     index,
@@ -203,7 +204,7 @@ export const MissionsEditor = ({
         missionsAppend({
             start: new Date(),
             end: addMonths(new Date(), 3),
-            status: "",
+            status: Status.independent,
             employer: "",
             startups: [],
         });
