@@ -128,6 +128,7 @@ export default {
     OVH_APP_SECRET: process.env.OVH_APP_SECRET,
     OVH_CONSUMER_KEY: process.env.OVH_CONSUMER_KEY,
     secret: process.env.SESSION_SECRET!,
+    SESSION_COOKIE_NAME: "espaceMembreCookieName",
     secure: isSecure,
     protocol: isSecure ? "https" : "http",
     host: process.env.HOSTNAME,

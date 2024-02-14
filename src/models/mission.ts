@@ -1,7 +1,13 @@
 import { userStatusOptions } from "@/frontConfig";
 import { z } from "zod";
 
-export type Status = "independant" | "admin" | "service";
+// export type Status = "independant" | "admin" | "service";
+
+export enum Status {
+    "independent" = "independent",
+    "admin" = "admin",
+    "service" = "service",
+}
 
 export interface Mission {
     start: string;
@@ -40,8 +46,8 @@ export const MissionSchema = z.object({
         .describe("Date de début de la mission"),
     end: z.string().describe("Date de début de la mission").optional(),
     status: z
-        .enum(
-            userStatusOptions.map((status) => status.key), //?
+        .nativeEnum(
+            Status, // force status options
             {
                 errorMap: (issue, ctx) => ({
                     message: "Le statut est requis",

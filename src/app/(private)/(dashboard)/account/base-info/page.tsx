@@ -11,6 +11,7 @@ import { getSessionFromStore } from "@/server/middlewares/sessionMiddleware";
 import db from "@/server/db";
 import { PULL_REQUEST_STATE } from "@/models/pullRequests";
 import { cookies } from "next/headers";
+import config from "@/server/config";
 
 export const metadata: Metadata = {
     title: `${routeTitles.accountEditBaseInfo()} / Espace Membre`,
@@ -47,7 +48,7 @@ export default async function Page() {
     // todo: updatePullRequest
     const cookieStore = cookies();
     const session = (await getSessionFromStore(
-        cookieStore.get("espaceMembreCookieName")
+        cookieStore.get(config.SESSION_COOKIE_NAME)
     )) as { id: string };
     const pullRequest = await getPullRequestForUsername(session.id);
     const formData = await fetchGithubPageData(session.id, "master");

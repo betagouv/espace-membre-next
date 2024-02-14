@@ -15,38 +15,43 @@ export enum Domaine {
     AUTRE = "Autre",
 }
 
-export const DOMAINE_OPTIONS = [
+type DomaineOption = {
+    key: keyof typeof Domaine;
+    name: Domaine;
+};
+
+export const DOMAINE_OPTIONS: DomaineOption[] = [
     {
         key: "ANIMATION",
-        name: "Animation",
+        name: Domaine.ANIMATION,
     },
     {
         key: "COACHING",
-        name: "Coaching",
+        name: Domaine.COACHING,
     },
     {
         key: "DEPLOIEMENT",
-        name: "Déploiement",
+        name: Domaine.DEPLOIEMENT,
     },
     {
         key: "DESIGN",
-        name: "Design",
+        name: Domaine.DESIGN,
     },
     {
         key: "DEVELOPPEMENT",
-        name: "Développement",
+        name: Domaine.DEVELOPPEMENT,
     },
     {
         key: "INTRAPRENARIAT",
-        name: "Intraprenariat",
+        name: Domaine.INTRAPRENARIAT,
     },
     {
         key: "PRODUIT",
-        name: "Produit",
+        name: Domaine.PRODUIT,
     },
     {
         key: "AUTRE",
-        name: "Autre",
+        name: Domaine.AUTRE,
     },
 ];
 
@@ -96,8 +101,8 @@ export const memberSchema = z.object({
         .min(1, "Vous devez définir au moins une mission"),
     startups: z.array(z.string()).optional(),
     previously: z.array(z.string()),
-    domaine: z.enum(
-        DOMAINE_OPTIONS.map((domaine) => domaine.name), // ??
+    domaine: z.nativeEnum(
+        Domaine, // ??
         {
             errorMap: (issue, ctx) => ({
                 message: "Le domaine est un champ obligatoire",
