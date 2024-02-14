@@ -15,9 +15,6 @@ import { memberSchema } from "@/models/member";
 
 interface BaseInfoUpdateRequest extends Request {
     body: z.infer<typeof memberSchema>;
-    auth: {
-        id: string;
-    };
 }
 
 export async function postBaseInfoUpdate(
@@ -43,7 +40,7 @@ export async function postBaseInfoUpdate(
         );
 
         addEvent(EventCode.MEMBER_BASE_INFO_UPDATED, {
-            created_by_username: req.auth?.id,
+            created_by_username: req.auth?.id as string,
             action_on_username: username,
             action_metadata: {
                 value: req.body,

@@ -24,11 +24,6 @@ import { FormErrorResponse } from "@/models/misc";
 
 import { PullRequestWarning } from "./PullRequestWarning";
 
-interface Option {
-    key: string;
-    name: string;
-}
-
 export type MemberSchemaType = z.infer<typeof memberSchema>;
 
 // data from secretariat API
