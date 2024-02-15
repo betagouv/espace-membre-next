@@ -187,6 +187,8 @@ describe("POST /api/account/base-info when connected", () => {
                 previously: ["a-plus"],
                 end: "2025-09-06",
             });
+        console.log(res.body);
+
         res.should.have.status(200);
     });
     it("should get an error message when field does not validate schema", async () => {
@@ -221,7 +223,6 @@ describe("POST /api/account/base-info when connected", () => {
                 previously: ["a-plus"],
                 end: "2025-09-06",
             });
-        console.log(res.body);
         res.body.fieldErrors.fullname[0].should.equal("Le nom est obligatoire");
         res.body.fieldErrors.missions[0].should.equal("Précisez un employeur");
         res.body.fieldErrors.missions[1].should.equal("Le statut est requis");
