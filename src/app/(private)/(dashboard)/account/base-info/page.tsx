@@ -20,11 +20,7 @@ async function fetchGithubPageData(
     username: string,
     branch: string = "master"
 ) {
-    const mdUrl = `https://raw.githubusercontent.com/${
-        config.githubFork
-    }/${branch}/content/_authors/${username}.md?${
-        Math.random() /*nextjs cache buster*/
-    }`;
+    const mdUrl = `https://raw.githubusercontent.com/${config.githubFork}/${branch}/content/_authors/${username}.md`;
     const mdData = await fetch(mdUrl).then((r) => r.text());
 
     const [metadata, body]: any[] = yaml.loadAll(mdData, null, {
@@ -47,7 +43,11 @@ const fetchGithubOptions = {
 
 async function getPullRequestForAuthor(username) {
     const pullRequests = await fetch(
-        `https://api.github.com/repos/${config.githubRepository}/pulls?state=open&head=secretariat-bot-test:edit-authors-${username}&per_page=1`,
+        `https://api.github.com/repos/${
+            config.githubRepository
+        }/pulls?state=open&head=${
+            config.githubFork.split("/")[0]
+        }:edit-authors-${username}&per_page=1`,
         fetchGithubOptions
     ).then((r) => r.json());
 
