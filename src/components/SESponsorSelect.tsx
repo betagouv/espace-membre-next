@@ -1,6 +1,7 @@
 import React from "react";
 import axios from "axios";
-import { Autocomplete, TextField } from "@mui/material";
+import Autocomplete from "@mui/material/Autocomplete";
+import TextField from "@mui/material/TextField";
 import { Sponsor } from "@/models/sponsor";
 import { computeRoute } from "@/routes/routes";
 

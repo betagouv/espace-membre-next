@@ -116,7 +116,6 @@ const sendEmailToAuthorTeamIfExists = async (pullRequestNumber: number) => {
         }
         if (!userInfo.startups || userInfo.startups.length !== 1) {
             console.log("Authors has no key startups or 0 startups");
-            console.log(userInfo.startups);
             continue;
             // if member doesn't have startup
             // if member has more than 1 startup we don't want to notifiy both startup

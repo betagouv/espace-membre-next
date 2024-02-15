@@ -63,8 +63,6 @@ const formatNewsletter = (newsletter) => ({
 // }
 
 export async function getNewsletterApi(req, res) {
-    console.log("LCS GET NEWSLETTER 1");
-
     getNewsletter(
         req,
         res,
@@ -82,7 +80,6 @@ export async function getNewsletterApi(req, res) {
 }
 
 export async function getNewsletter(req, res, onSuccess, onError) {
-    console.log("LCS GET NEWSLETTER 2");
     try {
         let newsletters = await knex("newsletters")
             .select()

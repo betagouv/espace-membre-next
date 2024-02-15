@@ -72,9 +72,11 @@ const betaGouv = {
                         );
 
                         [author.start] = sortedStartDates;
+                        // todo: voir impact si on supprime (info deja dans les missions)
                         author.end = sortedEndDates.includes("")
                             ? ""
                             : sortedEndDates[0];
+                        // todo: voir impact si on supprime (info deja dans les missions)
                         author.employer = latestMission.status
                             ? `${latestMission.status}/${latestMission.employer}`
                             : latestMission.employer;

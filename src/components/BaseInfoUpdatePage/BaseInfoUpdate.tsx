@@ -1,148 +1,99 @@
 "use client";
-import axios from "axios";
 import React from "react";
-import SESelect from "@/components/SESelect";
-import { Mission } from "@/models/mission";
-import { DBPullRequest } from "@/models/pullRequests";
-import routes, { computeRoute } from "@/routes/routes";
+import { z } from "zod";
+
 import Input from "@codegouvfr/react-dsfr/Input";
 import Alert from "@codegouvfr/react-dsfr/Alert";
 import { Button } from "@codegouvfr/react-dsfr/Button";
-import { useSession } from "@/proxies/next-auth";
+import { fr } from "@codegouvfr/react-dsfr";
+
+import { zodResolver } from "@hookform/resolvers/zod";
+import { useForm } from "react-hook-form";
+import { DevTool } from "@hookform/devtools";
+
+import { DBPullRequest } from "@/models/pullRequests";
 import { routeTitles } from "@/utils/routes/routeTitles";
 
-interface Option {
-    key: string;
-    name: string;
-}
+import { MissionsEditor } from "./MissionsEditor";
+import { DOMAINE_OPTIONS, memberSchema } from "@/models/member";
+import Select from "@codegouvfr/react-dsfr/Select";
+import axios from "axios";
+import routes, { computeRoute } from "@/routes/routes";
+import { useSession } from "@/proxies/next-auth";
+import { FormErrorResponse } from "@/models/misc";
 
-interface BaseInfoFormData {
-    missions: Mission[];
-    end: string;
-    start: string;
-    previously: {
-        value: string;
-        label: string;
-    }[];
-    startups: {
-        value: string;
-        label: string;
-    }[];
-    role: string;
-}
+import { PullRequestWarning } from "./PullRequestWarning";
 
+export type MemberSchemaType = z.infer<typeof memberSchema>;
+
+// data from secretariat API
 export interface BaseInfoUpdateProps {
-    title: string;
-    currentUserId: string;
-    errors: string[];
-    messages: string[];
-    activeTab: string;
-    formData: BaseInfoFormData;
-    statusOptions: Option[];
-    genderOptions: Option[];
-    formValidationErrors: any;
+    formData: MemberSchemaType;
     startupOptions: {
         value: string;
         label: string;
     }[];
-    username: string;
     updatePullRequest?: DBPullRequest;
-    isAdmin: boolean;
 }
 
-interface FormErrorResponse {
-    errors?: Record<string, string>;
-    message: string;
-}
-
-/* Pure component */
-export const BaseInfoUpdate = (props: BaseInfoUpdateProps) => {
-    const [state, setState] = React.useState<any>({
-        selectedName: "",
-        ...props,
-        formData: {
-            ...props.formData,
-            start: props.formData.start ? new Date(props.formData.start) : "",
-            end: props.formData.end ? new Date(props.formData.end) : "",
-        },
-    });
-    const session = useSession();
-    const [formErrors, setFormErrors] = React.useState<Record<string, string>>(
-        {}
+const postMemberData = async ({ values, sessionUsername }) => {
+    const {
+        data: { pr_url, username },
+    }: {
+        data: { pr_url: string; username: string };
+    } = await axios.post(
+        computeRoute(routes.ACCOUNT_POST_BASE_INFO_FORM).replace(
+            ":username",
+            sessionUsername
+        ),
+        values,
+        {
+            withCredentials: true,
+        }
     );
+    return { pr_url, username };
+};
+
+export const BaseInfoUpdate = (props: BaseInfoUpdateProps) => {
+    const defaultValues: MemberSchemaType = { ...props.formData };
+
+    const {
+        register,
+        handleSubmit,
+        formState: { errors, isDirty, isSubmitting, isValid },
+        setValue,
+        control,
+    } = useForm<MemberSchemaType>({
+        resolver: zodResolver(memberSchema),
+        mode: "onChange",
+        defaultValues,
+    });
+
+    const session = useSession();
+
     const [alertMessage, setAlertMessage] = React.useState<{
         title: string;
         message: NonNullable<React.ReactNode>;
         type: "success" | "warning";
-    }>();
+    } | null>();
     const [isSaving, setIsSaving] = React.useState(false);
 
-    const changeFormData = (key, value) => {
-        const formData = state.formData;
-        formData[key] = value;
-        setState({
-            ...state,
-            formData,
-        });
-    };
-
-    const changesExist = () => {
-        let changed = false;
-        if (state.formData.role !== props.formData.role) {
-            changed = true;
-        } else if (state.formData.end !== props.formData.end) {
-            changed = true;
-        } else if (
-            state.formData.startups
-                .map((s) => s.value)
-                .sort()
-                .join(",") !==
-            props.formData.startups
-                .map((s) => s.value)
-                .sort()
-                .join(",")
-        ) {
-            changed = true;
-        } else if (
-            state.formData.previously
-                .map((s) => s.value)
-                .sort()
-                .join(",") !==
-            props.formData.previously
-                .map((s) => s.value)
-                .sort()
-                .join(",")
-        ) {
-            changed = true;
-        }
-        return changed;
-    };
-
-    const save = async (event) => {
-        event.preventDefault();
+    const onSubmit = async (input: MemberSchemaType) => {
+        console.log("onSubmit", input);
         if (isSaving) {
             return;
         }
+        if (!isValid) {
+            console.log("invalid");
+            return;
+        }
         setIsSaving(true);
+        setAlertMessage(null);
         try {
-            const {
-                data: { message, pr_url, username },
-            }: {
-                data: { message: string; pr_url: string; username: string };
-            } = await axios.post(
-                computeRoute(routes.ACCOUNT_POST_BASE_INFO_FORM).replace(
-                    ":username",
-                    session.data?.user?.name as string
-                ),
-                {
-                    ...state.formData,
-                    startups: state.formData.startups.map((s) => s.value),
-                    previously: state.formData.previously.map((s) => s.value),
-                },
-                {
-                    withCredentials: true,
-                }
-            );
+            const { pr_url, username } = await postMemberData({
+                values: input,
+                sessionUsername: session.data?.user?.name as string,
+            });
             setAlertMessage({
                 title: `⚠️ Pull request pour la mise à jour de la fiche de ${username} ouverte.`,
                 message: (
@@ -159,6 +110,7 @@ export const BaseInfoUpdate = (props: BaseInfoUpdateProps) => {
                 type: "success",
             });
         } catch (e) {
+            // todo: sentry
             console.log(e);
             const ErrorResponse: FormErrorResponse = e as FormErrorResponse;
             setAlertMessage({
@@ -168,40 +120,30 @@ export const BaseInfoUpdate = (props: BaseInfoUpdateProps) => {
             });
             setIsSaving(false);
             if (ErrorResponse.errors) {
-                setFormErrors(ErrorResponse.errors);
+                control.setError("root", {
+                    message: Object.values(ErrorResponse.errors).join("\n"),
+                });
             }
         }
         setIsSaving(false);
     };
 
+    // todo: récupérer les labels Zod
+
     return (
         <>
             <div>
                 <h1>{routeTitles.accountEditBaseInfo()}</h1>
+                <p>
+                    Ces informations seront publiées sur le site beta.gouv.fr.
+                </p>
+
                 {!!props.updatePullRequest && (
-                    <Alert
-                        className="fr-mb-8v"
-                        severity="warning"
-                        small={true}
-                        closable={false}
-                        title="Une pull request existe déjà sur cette fiche."
-                        description={
-                            <>
-                                {`Toi ou un membre de ton équipe doit la merger
-                                pour que les changements soient pris en compte : `}
-                                <a
-                                    href={props.updatePullRequest.url}
-                                    target="_blank"
-                                >
-                                    {props.updatePullRequest.url}
-                                </a>
-                                <br />
-                                (la prise en compte peut prendre 10 minutes.)
-                            </>
-                        }
-                    />
+                    <PullRequestWarning pullRequest={props.updatePullRequest} />
                 )}
+
                 {!!alertMessage && (
+                    // todo: sentry
                     <Alert
                         className="fr-mb-8v"
                         severity={alertMessage.type}
@@ -210,81 +152,92 @@ export const BaseInfoUpdate = (props: BaseInfoUpdateProps) => {
                         description={alertMessage.message}
                     />
                 )}
-                <form onSubmit={save}>
+                <form
+                    onSubmit={handleSubmit(onSubmit)}
+                    aria-label="Modifier mes informations"
+                >
+                    <Input
+                        label="Nom complet"
+                        nativeInputProps={{
+                            placeholder: "ex: Grace HOPPER",
+                            ...register("fullname"),
+                        }}
+                        state={errors.fullname ? "error" : "default"}
+                        stateRelatedMessage={errors.fullname?.message}
+                    />
                     <Input
                         label="Rôle chez beta.gouv.fr"
                         nativeInputProps={{
-                            name: "role",
-                            onChange: (e: {
-                                currentTarget: { value: string };
-                            }) => {
-                                changeFormData("role", e.currentTarget.value);
-                            },
-                            value: state.formData.role,
-                            required: true,
+                            placeholder: "ex: Développeuse",
+                            ...register("role"),
                         }}
-                        state={!!formErrors["role"] ? "error" : "default"}
-                        stateRelatedMessage={formErrors["role"]}
+                        state={errors.role ? "error" : "default"}
+                        stateRelatedMessage={errors.role?.message}
                     />
-                    <SESelect
-                        label="Produits actuels :"
-                        hint="Produits auxquels tu participes actuellement."
-                        startups={props.startupOptions}
-                        onChange={(startups) => {
-                            changeFormData("startups", startups);
+                    <Select
+                        label="Domaine"
+                        nativeSelectProps={{
+                            ...register(`domaine`),
                         }}
-                        isMulti={true}
-                        placeholder={"Sélectionne un produit"}
-                        defaultValue={props.formData.startups}
-                        state={!!formErrors["startups"] ? "error" : "default"}
-                        stateMessageRelated={formErrors["startups"]}
-                    />
-                    <SESelect
-                        label="Produits précédents :"
-                        hint="Produits auxquels tu as participé précédemment."
-                        startups={props.startupOptions}
-                        onChange={(startups) => {
-                            changeFormData("previously", startups);
-                        }}
-                        isMulti={true}
-                        placeholder={"Sélectionne un produit"}
-                        defaultValue={props.formData.previously}
-                        state={!!formErrors["startups"] ? "error" : "default"}
-                        stateMessageRelated={formErrors["startups"]}
+                        state={errors.domaine ? "error" : "default"}
+                        stateRelatedMessage={errors.domaine?.message}
+                    >
+                        <option value="">Domaine:</option>
+                        {DOMAINE_OPTIONS.map((domaine) => (
+                            <option
+                                key={domaine.key}
+                                selected={
+                                    domaine.name === props.formData.domaine
+                                }
+                                value={domaine.name}
+                            >
+                                {domaine.name}
+                            </option>
+                        ))}
+                    </Select>
+                    <Input
+                        textArea
+                        label="Courte bio"
+                        nativeTextAreaProps={{ ...register("bio") }}
+                        state={errors.bio ? "error" : "default"}
+                        stateRelatedMessage={errors.bio?.message}
                     />
                     <Input
-                        label={"Fin de la mission (obligatoire) :"}
-                        hintText={
-                            <>
-                                Si tu ne la connais pas, mets une date dans 6
-                                mois, tu pourras la corriger plus tard.
-                                <br />
-                                <i>Au format JJ/MM/YYYY</i>
-                            </>
-                        }
+                        label="Adresse du profil LinkedIn"
                         nativeInputProps={{
-                            type: "date",
-                            name: "endDate",
-                            min: "2020-01-31",
-                            title: "En format YYYY-MM-DD, par exemple : 2020-01-31",
-                            required: true,
-                            defaultValue: props.formData.end,
-                            onChange: (e) =>
-                                changeFormData("end", e.target.value),
+                            placeholder: "ex: https://linkedin.com/in/xxxx",
+                            ...register("link"),
                         }}
+                        state={errors.link ? "error" : "default"}
+                        stateRelatedMessage={errors.link?.message}
+                    />
+                    <h3>Mes missions</h3>
+                    <p>
+                        Précise les dates et employeurs de tes missions, et les
+                        produits concernés.
+                    </p>
+                    <MissionsEditor
+                        control={control}
+                        setValue={setValue}
+                        register={register}
+                        startupOptions={props.startupOptions}
+                        errors={errors.missions || []}
                     />
                     <Button
+                        className={fr.cx("fr-mt-3w")}
                         children={
-                            isSaving
+                            isSubmitting
                                 ? `Enregistrement en cours...`
                                 : `Enregistrer`
                         }
                         nativeButtonProps={{
                             type: "submit",
-                            disabled: isSaving || !changesExist(),
+                            disabled: !isDirty || isSubmitting,
                         }}
                     />
                 </form>
+
+                <DevTool control={control} />
             </div>
         </>
     );

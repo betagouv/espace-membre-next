@@ -84,8 +84,9 @@
     },
     "exclude": [
         "node_modules",
+        "**/*.tsx",
         "static",
-        "**/*.d.ts",
+        // "**/*.d.ts",
         "migrations",
         "src/app",
         "src/components",

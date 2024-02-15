@@ -6,7 +6,7 @@ import {
     requiredError,
     isValidDate,
     isValidPhoneNumber,
-} from "@controllers/validator";
+} from "@/server/controllers/validator";
 
 const getUserInfoForUsername = (usersInfos, username) =>
     usersInfos.find((userInfo) => userInfo.id === username);

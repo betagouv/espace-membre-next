@@ -26,7 +26,7 @@ export enum EventCode {
 }
 
 interface ActionMetadata {
-    old_value?: string;
+    old_value?: any;
     value?: any;
 }
 

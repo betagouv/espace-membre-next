@@ -5,9 +5,8 @@ import express from "express";
 import next from "next";
 
 import { expressjwt, Request } from "express-jwt";
+
 import expressSanitizer from "express-sanitizer";
-import path from "path";
-import cors from "cors";
 import config from "@/server/config";
 import * as githubNotificationController from "@controllers/githubNotificationController";
 import * as indexController from "@controllers/indexController";
@@ -45,6 +44,7 @@ const dev = process.env.NODE_ENV !== "production";
 const app = next({ dev });
 const handle = app.getRequestHandler();
 let server = express();
+
 const startServer = () => {
     return app.prepare().then(() => {
         // Define custom routes here, e.g., server.get('/my-route', (req, res) => { ... });
@@ -75,7 +75,7 @@ const startServer = () => {
                     return getToken(req);
                 },
             }).unless({
-                path: PUBLIC_ROUTES,
+                path: [...PUBLIC_ROUTES],
             })
         );
         // Save a token in cookie that expire after 7 days if user is logged

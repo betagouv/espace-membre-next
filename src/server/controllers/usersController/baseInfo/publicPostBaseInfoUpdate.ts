@@ -3,9 +3,9 @@ import betagouv from "@betagouv";
 import { PRInfo } from "@/lib/github";
 import db from "@db";
 import { PULL_REQUEST_TYPE, PULL_REQUEST_STATE } from "@/models/pullRequests";
-import { requiredError, isValidDate } from "@controllers/validator";
+import { requiredError, isValidDate } from "@/server/controllers/validator";
 import { updateAuthorGithubFile } from "@controllers/helpers/githubHelpers";
-import { GithubAuthorChange } from "@controllers/helpers/githubHelpers/githubEntryInterface";
+import { GithubAuthorMissionChange } from "@controllers/helpers/githubHelpers/githubEntryInterface";
 import { GithubMission } from "@/models/mission";
 
 export async function publicPostBaseInfoUpdate(req, res) {
@@ -53,7 +53,8 @@ export async function publicPostBaseInfoUpdate(req, res) {
         if (missions.length) {
             missions[missions.length - 1].end = newEndDate;
         }
-        const changes: GithubAuthorChange = {
+        const changes: GithubAuthorMissionChange = {
+            // todo: delete all public postBaseInfoUpdate route and use BaseInfoUpdate instead
             missions: missions as GithubMission[],
         };
         const prInfo: PRInfo = await updateAuthorGithubFile(username, changes);

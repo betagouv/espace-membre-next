@@ -9,6 +9,7 @@ import {
 import { createBranchName } from "./createBranchName";
 import {
     GithubAuthorChange,
+    GithubAuthorMissionChange,
     GithubBetagouvFile,
     GithubStartupChange,
 } from "./githubEntryInterface";
@@ -17,7 +18,10 @@ import { updateFileOnBranch } from "./createGithubCollectionEntry";
 async function updateGithubCollectionEntry(
     name: string,
     path: string,
-    changes: GithubAuthorChange | GithubStartupChange,
+    changes:
+        | GithubAuthorChange
+        | GithubStartupChange
+        | GithubAuthorMissionChange,
     mainContent?: string
 ): Promise<PRInfo> {
     const branch = createBranchName(name);
@@ -125,7 +129,7 @@ export async function updateMultipleFilesPR(
 
 export async function updateAuthorGithubFile(
     username: string,
-    changes: GithubAuthorChange
+    changes: GithubAuthorChange | GithubAuthorMissionChange
 ): Promise<PRInfo> {
     const path = `content/_authors/${username}.md`;
     return updateGithubCollectionEntry(username, path, changes);

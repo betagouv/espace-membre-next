@@ -155,7 +155,6 @@ export const CommunityFilterMembers = (props: CommunityProps) => {
                     <div className="fr-col-6">
                         <DomaineSelect
                             label={"Domaines"}
-                            domaines={props.domaineOptions}
                             onChange={(e, domaines) =>
                                 setState({
                                     ...state,
