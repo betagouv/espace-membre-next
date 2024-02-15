@@ -121,7 +121,8 @@ export const memberSchema = z.object({
                 message: "La bio est obligatoire, be creative",
             }),
         })
-        .min(15, "La bio doit contenir au moins 15 caractères."),
+        .min(15, "La bio doit contenir au moins 15 caractères.")
+        .optional(),
 });
 
 export interface MemberWithPrimaryEmailInfo extends Member {
