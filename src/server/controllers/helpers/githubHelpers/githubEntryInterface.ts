@@ -14,7 +14,7 @@ export interface GithubFile {
 
 export interface GithubAuthorFile extends GithubFile {
     changes: GithubAuthorChange;
-    content: string;
+    content?: string;
 }
 
 export interface GithubImageFile extends GithubFile {
