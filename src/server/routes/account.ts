@@ -32,6 +32,7 @@ router.get(
 router.post(
     routes.ACCOUNT_POST_BASE_INFO_FORM,
     express.json({ type: "*/*" }),
+    validate(memberSchema, "body"),
     usersController.postBaseInfoUpdate
 );
 router.post(
