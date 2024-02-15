@@ -32,14 +32,14 @@ export interface BaseInfoUpdateProps {
         value: string;
         label: string;
     }[];
-    updatePullRequest?: DBPullRequest;
+    updatePullRequest?: { url: string };
 }
 
 const postMemberData = async ({ values, sessionUsername }) => {
     const {
-        data: { pr_url, username },
+        data: { username, message },
     }: {
-        data: { pr_url: string; username: string };
+        data: { username: string; message: string };
     } = await axios.post(
         computeRoute(routes.ACCOUNT_POST_BASE_INFO_FORM).replace(
             ":username",
@@ -50,12 +50,11 @@ const postMemberData = async ({ values, sessionUsername }) => {
             withCredentials: true,
         }
     );
-    return { pr_url, username };
+    return { username, message };
 };
 
 export const BaseInfoUpdate = (props: BaseInfoUpdateProps) => {
     const defaultValues: MemberSchemaType = { ...props.formData };
-
     const {
         register,
         handleSubmit,
@@ -90,38 +89,28 @@ export const BaseInfoUpdate = (props: BaseInfoUpdateProps) => {
         setIsSaving(true);
         setAlertMessage(null);
         try {
-            const { pr_url, username } = await postMemberData({
+            const { message } = await postMemberData({
                 values: input,
                 sessionUsername: session.data?.user?.name as string,
             });
             setAlertMessage({
-                title: `⚠️ Pull request pour la mise à jour de la fiche de ${username} ouverte.`,
-                message: (
-                    <>
-                        Demande à un membre de ton équipe de merger ta fiche :{" "}
-                        <a href={pr_url} target="_blank">
-                            {pr_url}
-                        </a>
-                        .
-                        <br />
-                        Une fois mergée, ton profil sera mis à jour.
-                    </>
-                ),
+                title: `Modifications enregistrées`,
+                message,
                 type: "success",
             });
         } catch (e) {
             // todo: sentry
             console.log(e);
-            const ErrorResponse: FormErrorResponse = e as FormErrorResponse;
             setAlertMessage({
                 title: "Erreur",
-                message: <>{ErrorResponse.message}</>,
+                message: e.response?.data?.message || e.message,
                 type: "warning",
             });
+            //e.response.data.fieldErrors;
             setIsSaving(false);
-            if (ErrorResponse.errors) {
+            if (errors.errors) {
                 control.setError("root", {
-                    message: Object.values(ErrorResponse.errors).join("\n"),
+                    message: Object.values(e.errors).join("\n"),
                 });
             }
         }
@@ -139,10 +128,6 @@ export const BaseInfoUpdate = (props: BaseInfoUpdateProps) => {
                     Ces informations seront publiées sur le site beta.gouv.fr.
                 </p>
 
-                {!!props.updatePullRequest && (
-                    <PullRequestWarning pullRequest={props.updatePullRequest} />
-                )}
-
                 {!!alertMessage && (
                     // todo: sentry
                     <Alert
@@ -150,9 +135,20 @@ export const BaseInfoUpdate = (props: BaseInfoUpdateProps) => {
                         severity={alertMessage.type}
                         closable={false}
                         title={alertMessage.title}
-                        description={alertMessage.message}
+                        description={
+                            <div
+                                dangerouslySetInnerHTML={{
+                                    __html: alertMessage.message,
+                                }}
+                            />
+                        }
                     />
                 )}
+
+                {!!props.updatePullRequest && (
+                    <PullRequestWarning pullRequest={props.updatePullRequest} />
+                )}
+
                 <form
                     onSubmit={handleSubmit(onSubmit)}
                     aria-label="Modifier mes informations"

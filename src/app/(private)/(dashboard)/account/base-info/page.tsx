@@ -9,8 +9,6 @@ import { routeTitles } from "@/utils/routes/routeTitles";
 import { StartupInfo } from "@/models/startup";
 import betagouv from "@/server/betagouv";
 import { getSessionFromStore } from "@/server/middlewares/sessionMiddleware";
-import db from "@/server/db";
-import { PULL_REQUEST_STATE } from "@/models/pullRequests";
 import { cookies } from "next/headers";
 import config from "@/server/config";
 
@@ -18,31 +16,42 @@ export const metadata: Metadata = {
     title: `${routeTitles.accountEditBaseInfo()} / Espace Membre`,
 };
 
-const fetchGithubPageData = (username: string, branch: string) => {
-    return fetch(
-        `https://raw.githubusercontent.com/betagouv/beta.gouv.fr/master/content/_authors/${username}.md`
-    )
-        .then((r) => r.text())
-        .then((content) => {
-            const documents = yaml.loadAll(content, null, {
-                schema: yaml.JSON_SCHEMA,
-            });
-            const [metadata, body]: any[] = documents;
-            return memberSchema.parse({
-                ...metadata,
-                bio: body || "", // prevent validation error if bio=null
-            });
-        });
+async function fetchGithubPageData(
+    username: string,
+    branch: string = "master"
+) {
+    const mdUrl = `https://raw.githubusercontent.com/${
+        config.githubFork
+    }/${branch}/content/_authors/${username}.md?${
+        Math.random() /*nextjs cache buster*/
+    }`;
+    const mdData = await fetch(mdUrl).then((r) => r.text());
+
+    const [metadata, body]: any[] = yaml.loadAll(mdData, null, {
+        schema: yaml.JSON_SCHEMA,
+    });
+    const member = {
+        ...metadata,
+        domaine: metadata.domaine || [], // allow some empty fields on input for legacy
+        bio: body,
+    };
+    return memberSchema.parse(member);
+}
+
+// todo
+const fetchGithubOptions = {
+    headers: {
+        Authorization: `token ${config.githubToken}`,
+    },
 };
 
-async function getPullRequestForUsername(username: string) {
-    return await db("pull_requests")
-        .where({
-            username: username,
-            status: PULL_REQUEST_STATE.PR_MEMBER_UPDATE_CREATED,
-        })
-        .orderBy("created_at", "desc")
-        .first();
+async function getPullRequestForAuthor(username) {
+    const pullRequests = await fetch(
+        `https://api.github.com/repos/${config.githubRepository}/pulls?state=open&head=secretariat-bot-test:edit-authors-${username}&per_page=1`,
+        fetchGithubOptions
+    ).then((r) => r.json());
+
+    return pullRequests.length && pullRequests[0];
 }
 
 export default async function Page() {
@@ -53,9 +62,12 @@ export default async function Page() {
     if (!session) {
         redirect("/login");
     }
+
     const username = session.id;
-    const updatePullRequest = await getPullRequestForUsername(username);
-    const formData = await fetchGithubPageData(username, "master");
+    const authorPR = await getPullRequestForAuthor(username);
+
+    const sha = authorPR && authorPR.head.ref;
+    const formData = await fetchGithubPageData(username, sha || "master");
     const startups: StartupInfo[] = await betagouv.startupsInfos();
     const startupOptions = startups.map((startup) => {
         return {
@@ -63,10 +75,13 @@ export default async function Page() {
             label: startup.attributes.name,
         };
     });
+
     const props = {
         formData,
         startupOptions,
-        updatePullRequest,
+        updatePullRequest: authorPR && {
+            url: authorPR.html_url,
+        },
     };
 
     return <BaseInfoUpdate {...props} />;

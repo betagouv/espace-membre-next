@@ -22,7 +22,6 @@ export async function postBaseInfoUpdate(
     res: Response
 ) {
     const { username } = req.params;
-
     try {
         const info = await betagouv.userInfosById(username);
 
@@ -36,7 +35,8 @@ export async function postBaseInfoUpdate(
         // todo: set labels
         const prInfo: PRInfo = await updateMultipleFilesPR(
             `Maj de la fiche de ${username} par ${req.auth?.id}`,
-            files
+            files,
+            `edit-authors-${username}`
         );
 
         addEvent(EventCode.MEMBER_BASE_INFO_UPDATED, {
@@ -47,14 +47,17 @@ export async function postBaseInfoUpdate(
                 old_value: info,
             },
         });
+        /*
         await db("pull_requests").insert({
             url: prInfo.html_url,
+            //  sha: prInfo.head.sha,
             username,
             type: PULL_REQUEST_TYPE.PR_TYPE_MEMBER_UPDATE,
             status: PULL_REQUEST_STATE.PR_MEMBER_UPDATE_CREATED,
             info: JSON.stringify(postParams),
         });
-        const message = `⚠️ Pull request pour la mise à jour de la fiche de ${username} ouverte. 
+        */
+        const message = `Pull request ouverte pour la la fiche de ${username}. 
         \nDemande à un membre de ton équipe de merger ta fiche : <a href="${prInfo.html_url}" target="_blank">${prInfo.html_url}</a>. 
         \nUne fois mergée, ton profil sera mis à jour.`;
         res.json({

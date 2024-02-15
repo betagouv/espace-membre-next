@@ -1,7 +1,9 @@
 import {
     createGithubBranch,
     createGithubFile,
+    getGithubBranch,
     getGithubFile,
+    getPullRequest,
     getGithubMasterSha,
     makeGithubPullRequest,
     PRInfo,
@@ -14,6 +16,8 @@ import {
     GithubStartupChange,
 } from "./githubEntryInterface";
 import { updateFileOnBranch } from "./createGithubCollectionEntry";
+import { ConversationsMessageFile } from "@sendinblue/client";
+import config from "@/server/config";
 
 async function updateGithubCollectionEntry(
     name: string,
@@ -78,9 +82,7 @@ async function updateGithubCollectionEntry(
             return makeGithubPullRequest(branch, `Mise à jour de ${name}`);
         })
         .then((response) => {
-            console.log(
-                `Pull request pour la mise à jour de la fiche de ${name} ouverte`
-            );
+            console.log(`Pull request pour la fiche de ${name} ouverte`);
             if (response.status !== 201 && response.data.html_url) {
                 throw new Error(
                     "Il y a eu une erreur merci de recommencer plus tard"
@@ -98,9 +100,10 @@ async function updateGithubCollectionEntry(
 
 export async function updateMultipleFilesPR(
     prName: string,
-    files: GithubBetagouvFile[]
+    files: GithubBetagouvFile[],
+    branchName?: string
 ) {
-    const branch = createBranchName(prName);
+    const branch = branchName || createBranchName(prName);
     const {
         data: {
             object: { sha },
@@ -108,19 +111,53 @@ export async function updateMultipleFilesPR(
     } = await getGithubMasterSha();
     console.log("SHA du master obtenu");
     try {
-        const resp = await createGithubBranch(sha, branch);
-        console.log(`Branche ${branch} créée pour ${prName}`);
-        for (const file of files) {
-            await updateFileOnBranch(file, branch, resp.data.object.sha);
+        // dont cry if branch already exist
+        await createGithubBranch(sha, branch)
+            .then(() => {
+                console.log(`Branche ${branch} créée pour ${prName}`);
+            })
+            .catch(() => false);
+        const refBranch = await getGithubBranch(branch).catch(() => false);
+
+        // use the branch
+        if (refBranch) {
+            // update files on given branch
+            for (const file of files) {
+                await updateFileOnBranch(
+                    file,
+                    branch,
+                    refBranch.data.commit.sha // || refBranch.data.object.sha
+                );
+            }
+
+            const pr = await getPullRequest({
+                head: `${config.githubFork.split("/")[0]}:${branch}`,
+            }).catch((e) => {
+                console.log("pr doesnt exist", e);
+                return false;
+            });
+
+            if (pr) {
+                console.log("PR found", pr);
+                return pr;
+            } else {
+                console.log("create PR", branch, prName);
+                const response = await makeGithubPullRequest(
+                    branch,
+                    `${prName}`
+                );
+
+                if (response.status !== 201 && response.data.html_url) {
+                    throw new Error(
+                        "Il y a eu une erreur merci de recommencer plus tard"
+                    );
+                }
+                return response.data;
+            }
         }
-        const response = await makeGithubPullRequest(branch, `${prName}`);
-        console.log(`Pull request pour "${prName}" ouverte`);
-        if (response.status !== 201 && response.data.html_url) {
-            throw new Error(
-                "Il y a eu une erreur merci de recommencer plus tard"
-            );
-        }
-        return response.data;
+        throw new Error(
+            "Impossible de trouver la Pull request à mettre à jour"
+        );
     } catch (err) {
         console.log(err);
         throw new Error(`Erreur Github lors de la pull request : ${prName}`);

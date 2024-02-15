@@ -1,7 +1,11 @@
 import React from "react";
 import Alert from "@codegouvfr/react-dsfr/Alert";
 
-export const PullRequestWarning = ({ pullRequest }) => {
+export const PullRequestWarning = ({
+    pullRequest,
+}: {
+    pullRequest: { url: string };
+}) => {
     return (
         pullRequest && (
             <Alert
