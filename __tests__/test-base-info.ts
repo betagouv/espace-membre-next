@@ -4,6 +4,8 @@ import sinon from "sinon";
 
 import * as session from "@/server/helpers/session";
 import * as UpdateGithubFile from "@controllers/helpers/githubHelpers/updateGithubCollectionEntry";
+import * as UpdateGithubCollectionEntry from "@controllers/helpers/githubHelpers/updateGithubCollectionEntry";
+
 import app from "@/server/index";
 import routes from "@/routes/routes";
 import utils from "./utils";
@@ -72,14 +74,14 @@ describe("POST /api/public/account/base-info", () => {
 });
 
 describe("POST /api/account/base-info when not connected", () => {
-    let updateStartupGithubFileStub;
+    let updateGithubCollectionEntryStub;
     // let startupInfosStub
     beforeEach(() => {
-        updateStartupGithubFileStub = sinon.stub(
-            UpdateGithubFile,
-            "updateAuthorGithubFile"
+        updateGithubCollectionEntryStub = sinon.stub(
+            UpdateGithubCollectionEntry,
+            "updateMultipleFilesPR"
         );
-        updateStartupGithubFileStub.returns(
+        updateGithubCollectionEntryStub.returns(
             Promise.resolve({
                 html_url: "https://djkajdlskjad.com",
                 number: 12151,
@@ -88,7 +90,7 @@ describe("POST /api/account/base-info when not connected", () => {
     });
 
     afterEach(() => {
-        updateStartupGithubFileStub.restore();
+        updateGithubCollectionEntryStub.restore();
     });
     it("should not be able to post base info form if not connected", async () => {
         const res = await chai
@@ -129,15 +131,15 @@ describe("POST /api/account/base-info when not connected", () => {
     });
 });
 describe("POST /api/account/base-info when connected", () => {
-    let updateStartupGithubFileStub;
+    let updateGithubCollectionEntryStub;
     let getToken;
     // let startupInfosStub
     beforeEach(() => {
-        updateStartupGithubFileStub = sinon.stub(
-            UpdateGithubFile,
-            "updateAuthorGithubFile"
+        updateGithubCollectionEntryStub = sinon.stub(
+            UpdateGithubCollectionEntry,
+            "updateMultipleFilesPR"
         );
-        updateStartupGithubFileStub.returns(
+        updateGithubCollectionEntryStub.returns(
             Promise.resolve({
                 html_url: "https://djkajdlskjad.com",
                 number: 12151,
@@ -148,7 +150,7 @@ describe("POST /api/account/base-info when connected", () => {
     });
 
     afterEach(() => {
-        updateStartupGithubFileStub.restore();
+        updateGithubCollectionEntryStub.restore();
         getToken.restore();
     });
 
@@ -187,7 +189,6 @@ describe("POST /api/account/base-info when connected", () => {
                 previously: ["a-plus"],
                 end: "2025-09-06",
             });
-        console.log(res.body);
 
         res.should.have.status(200);
     });
