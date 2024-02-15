@@ -1,6 +1,5 @@
 import betagouv from "@betagouv";
 import { Request, Response } from "express";
-import { z } from "zod";
 
 import { PRInfo } from "@/lib/github";
 import { addEvent, EventCode } from "@/lib/events";
@@ -13,20 +12,13 @@ import {
 import { GithubBetagouvFile } from "@controllers/helpers/githubHelpers/githubEntryInterface";
 import { memberSchema } from "@/models/member";
 
-interface BaseInfoUpdateRequest extends Request {
-    body: z.infer<typeof memberSchema>;
-}
-
-export async function postBaseInfoUpdate(
-    req: BaseInfoUpdateRequest,
-    res: Response
-) {
+export async function postBaseInfoUpdate(req: Request, res: Response) {
     const { username } = req.params;
 
     try {
         const info = await betagouv.userInfosById(username);
 
-        const { bio, ...postParams } = req.body;
+        const { bio, ...postParams } = memberSchema.parse(req.body);
         const files: GithubBetagouvFile[] = [
             makeGithubAuthorFile(username, postParams, bio),
         ];
