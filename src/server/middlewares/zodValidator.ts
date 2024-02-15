@@ -9,7 +9,8 @@ export function validate(
         const result = schema.safeParse(req[property]);
         if (!result.success) {
             // Si la validation échoue, retourner une erreur 400 avec les détails de l'erreur
-            return res.status(400).json(result.error.flatten());
+            const errorResult = result as SafeParseError<any>;
+            return res.status(400).json(errorResult.error.flatten());
         }
 
         // Si la validation réussit, remplacer le body, query ou params par le résultat analysé
