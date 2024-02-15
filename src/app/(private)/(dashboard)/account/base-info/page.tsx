@@ -50,7 +50,7 @@ export default async function Page() {
     const session = (await getSessionFromStore(
         cookieStore.get(config.SESSION_COOKIE_NAME)
     )) as { id: string };
-    const pullRequest = await getPullRequestForUsername(session.id);
+    const updatePullRequest = await getPullRequestForUsername(session.id);
     const formData = await fetchGithubPageData(session.id, "master");
     const startups: StartupInfo[] = await betagouv.startupsInfos();
     const startupOptions = startups.map((startup) => {
@@ -62,7 +62,7 @@ export default async function Page() {
     const props = {
         formData,
         startupOptions,
-        pullRequest,
+        updatePullRequest,
     };
 
     return <BaseInfoUpdate {...props} />;
