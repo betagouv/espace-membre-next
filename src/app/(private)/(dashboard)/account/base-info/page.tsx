@@ -29,7 +29,7 @@ const fetchGithubPageData = (username: string, branch: string) => {
             const [metadata, body]: any[] = documents;
             return memberSchema.parse({
                 ...metadata,
-                bio: body,
+                bio: body || "", // prevent validation error if bio=null
             });
         });
 };
