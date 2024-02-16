@@ -1,6 +1,8 @@
 fileignoreconfig:
+- filename: src/components/BaseInfoUpdatePage/BaseInfoUpdate.tsx
+  checksum: 05d97c14f404f68008afc8707f7c0c44883503f71e5c52c1716777482820c3ca
 - filename: src/components/BaseInfoUpdatePage/MissionsEditor.tsx
-  checksum: 869514e864f29a2dfa7178a0754c9857f66b37069939ea16d208c2d76fddf8e4
+  checksum: 42a1e9c44fc1a093ce628b796a51533f640d60cd75205c06ca6cd1d358f7cb02
 scopeconfig:
 - scope: node
 version: "1.0"
