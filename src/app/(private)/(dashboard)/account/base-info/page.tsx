@@ -45,7 +45,6 @@ async function getPullRequestForUsername(username: string) {
 }
 
 export default async function Page() {
-    // todo: updatePullRequest
     const cookieStore = cookies();
     const session = (await getSessionFromStore(
         cookieStore.get(config.SESSION_COOKIE_NAME)

@@ -79,7 +79,8 @@ export const BaseInfoUpdate = (props: BaseInfoUpdateProps) => {
     const [isSaving, setIsSaving] = React.useState(false);
 
     const onSubmit = async (input: MemberSchemaType) => {
-        console.log("onSubmit", input);
+        //console.log("onSubmit", input);
+
         if (isSaving) {
             return;
         }
@@ -125,6 +126,7 @@ export const BaseInfoUpdate = (props: BaseInfoUpdateProps) => {
                 });
             }
         }
+        document.body.scrollIntoView();
         setIsSaving(false);
     };
 
