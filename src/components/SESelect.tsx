@@ -50,6 +50,7 @@ export default function SESelect({
                         ? (defaultValue as { value: string; label: string }[])
                         : undefined
                 }
+                getOptionKey={(opt) => opt.value}
                 getOptionLabel={(opt) => opt.label}
                 isOptionEqualToValue={(option, value) =>
                     option.value === value.value

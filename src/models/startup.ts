@@ -86,6 +86,12 @@ export interface StartupInfo {
     relationships: Relationship;
 }
 
+export interface StartupAPIData extends StartupInfo {}
+
+export interface StartupsAPIResponse {
+    data: StartupAPIData[];
+}
+
 export interface Phase {
     name: StartupPhase;
     start: Date;
