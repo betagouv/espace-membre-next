@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import yaml from "js-yaml";
+import { redirect } from "next/navigation";
 
 import { BaseInfoUpdate } from "@/components/BaseInfoUpdatePage";
 
@@ -49,8 +50,12 @@ export default async function Page() {
     const session = (await getSessionFromStore(
         cookieStore.get(config.SESSION_COOKIE_NAME)
     )) as { id: string };
-    const updatePullRequest = await getPullRequestForUsername(session.id);
-    const formData = await fetchGithubPageData(session.id, "master");
+    if (!session) {
+        redirect("/login");
+    }
+    const username = session.id;
+    const updatePullRequest = await getPullRequestForUsername(username);
+    const formData = await fetchGithubPageData(username, "master");
     const startups: StartupInfo[] = await betagouv.startupsInfos();
     const startupOptions = startups.map((startup) => {
         return {
