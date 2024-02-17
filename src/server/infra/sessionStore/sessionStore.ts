@@ -12,7 +12,7 @@ const makeSessionStore = () => {
     });
 
     redisClient.on("ready", () => {
-        console.log("✅ 💃 redis have ready !");
+        console.log("✅ 💃 redis ready !");
     });
 
     redisClient.on("connect", () => {
