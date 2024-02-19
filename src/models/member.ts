@@ -118,10 +118,9 @@ export const memberSchema = z.object({
     bio: z
         .string({
             errorMap: (issue, ctx) => ({
-                message: "La bio est obligatoire, be creative",
+                message: "La bio est optionnelle mais elle permet d'en dire plus sur toi, be creative",
             }),
         })
-        .min(15, "La bio doit contenir au moins 15 caractères.")
         .optional(),
 });
 
