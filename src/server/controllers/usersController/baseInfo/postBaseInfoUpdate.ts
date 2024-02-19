@@ -47,7 +47,7 @@ export async function postBaseInfoUpdate(
                 old_value: info,
             },
         });
-        /*
+
         await db("pull_requests").insert({
             url: prInfo.html_url,
             //  sha: prInfo.head.sha,
@@ -56,7 +56,7 @@ export async function postBaseInfoUpdate(
             status: PULL_REQUEST_STATE.PR_MEMBER_UPDATE_CREATED,
             info: JSON.stringify(postParams),
         });
-        */
+
         const message = `Pull request ouverte pour la la fiche de ${username}. 
         \nDemande à un membre de ton équipe de merger ta fiche : <a href="${prInfo.html_url}" target="_blank">${prInfo.html_url}</a>. 
         \nUne fois mergée, ton profil sera mis à jour.`;
