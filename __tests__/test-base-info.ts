@@ -225,8 +225,7 @@ describe("POST /api/account/base-info when connected", () => {
                 end: "2025-09-06",
             });
         res.body.fieldErrors.fullname[0].should.equal("Le nom est obligatoire");
-        res.body.fieldErrors.missions[0].should.equal("Précisez un employeur");
-        res.body.fieldErrors.missions[1].should.equal("Le statut est requis");
+        res.body.fieldErrors.missions[0].should.equal("Le statut est requis");
 
         res.should.have.status(400);
     });
