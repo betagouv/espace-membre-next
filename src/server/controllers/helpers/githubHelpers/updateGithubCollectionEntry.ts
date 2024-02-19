@@ -117,7 +117,9 @@ export async function updateMultipleFilesPR(
                 console.log(`Branche ${branch} créée pour ${prName}`);
             })
             .catch(() => false);
-        const refBranch = await getGithubBranch(branch).catch(() => false);
+        const refBranch = await getGithubBranch(branch).catch(
+            () => false as const
+        );
 
         // use the branch
         if (refBranch) {
