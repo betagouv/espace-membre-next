@@ -92,7 +92,7 @@ export const memberSchema = z.object({
         z.literal(""),
         z.string().trim().url({ message: "URL invalide" }).optional(),
     ]),
-    avatar: z.string().describe("URL ou slug de l'avatar").optional(),
+    avatar: z.string().describe("URL ou slug de l'avatar").nullable().optional(),
     github: z.string().describe("Login GitHub").optional(),
     competences: z
         .array(z.string())
@@ -118,7 +118,7 @@ export const memberSchema = z.object({
     bio: z
         .string({
             errorMap: (issue, ctx) => ({
-                message: "La bio est obligatoire, be creative",
+                message: "La bio est optionnelle mais elle permet d'en dire plus sur toi, be creative",
             }),
         })
         .optional(),

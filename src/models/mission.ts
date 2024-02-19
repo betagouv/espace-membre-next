@@ -84,6 +84,7 @@ export const missionSchema = z.object({
                 message: "Précisez un employeur",
             }),
         })
-        .describe("Entité avec qui vous avez contractualisé"),
+        .describe("Entité avec qui vous avez contractualisé")
+        .optional(),
     startups: z.array(z.string()).optional(),
 });
