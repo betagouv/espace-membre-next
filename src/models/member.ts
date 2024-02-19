@@ -92,7 +92,7 @@ export const memberSchema = z.object({
         z.literal(""),
         z.string().trim().url({ message: "URL invalide" }).optional(),
     ]),
-    avatar: z.string().describe("URL ou slug de l'avatar").optional(),
+    avatar: z.string().describe("URL ou slug de l'avatar").nullable().optional(),
     github: z.string().describe("Login GitHub").optional(),
     competences: z
         .array(z.string())
