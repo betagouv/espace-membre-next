@@ -98,18 +98,20 @@ export const BaseInfoUpdate = (props: BaseInfoUpdateProps) => {
                 message,
                 type: "success",
             });
-        } catch (e) {
+        } catch (e: any) {
             // todo: sentry
             console.log(e);
             setAlertMessage({
                 title: "Erreur",
+                //@ts-ignore
                 message: e.response?.data?.message || e.message,
                 type: "warning",
             });
             //e.response.data.fieldErrors;
             setIsSaving(false);
-            if (errors.errors) {
+            if (e.errors) {
                 control.setError("root", {
+                    //@ts-ignore
                     message: Object.values(e.errors).join("\n"),
                 });
             }
