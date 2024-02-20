@@ -46,6 +46,8 @@ const getSessionFromStore = async (sid: RequestCookie | undefined) => {
                             reject(err);
                         }
                     });
+                } else {
+                   reject();
                 }
             }
         });
