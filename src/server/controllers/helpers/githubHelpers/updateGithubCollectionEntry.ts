@@ -16,7 +16,6 @@ import {
     GithubStartupChange,
 } from "./githubEntryInterface";
 import { updateFileOnBranch } from "./createGithubCollectionEntry";
-import { ConversationsMessageFile } from "@sendinblue/client";
 import config from "@/server/config";
 
 async function updateGithubCollectionEntry(
