@@ -36,7 +36,7 @@ export interface GithubMission {
     startups?: string[];
 }
 
-export const MissionSchema = z.object({
+export const missionSchema = z.object({
     start: z.preprocess(
         (val) => {
             if (typeof val === "string") {

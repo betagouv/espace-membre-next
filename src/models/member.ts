@@ -2,7 +2,7 @@ import { z } from "zod";
 
 import { EMAIL_PLAN_TYPE, OvhRedirection, OvhResponder } from "@/models/ovh";
 import { EmailStatusCode } from "./dbUser";
-import { Mission, MissionSchema } from "./mission";
+import { Mission, missionSchema } from "./mission";
 
 export enum Domaine {
     ANIMATION = "Animation",
@@ -103,7 +103,7 @@ export const memberSchema = z.object({
         .describe("Liste des équipes incubateurs")
         .optional(),
     missions: z
-        .array(MissionSchema)
+        .array(missionSchema)
         .min(1, "Vous devez définir au moins une mission"),
     startups: z.array(z.string()).optional(),
     previously: z.array(z.string()).optional(),

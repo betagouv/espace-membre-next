@@ -9,7 +9,6 @@ import { fr } from "@codegouvfr/react-dsfr";
 
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
-import { DevTool } from "@hookform/devtools";
 
 import { DBPullRequest } from "@/models/pullRequests";
 import { routeTitles } from "@/utils/routes/routeTitles";
@@ -79,7 +78,8 @@ export const BaseInfoUpdate = (props: BaseInfoUpdateProps) => {
     const [isSaving, setIsSaving] = React.useState(false);
 
     const onSubmit = async (input: MemberSchemaType) => {
-        console.log("onSubmit", input);
+        //console.log("onSubmit", input);
+
         if (isSaving) {
             return;
         }
@@ -125,6 +125,7 @@ export const BaseInfoUpdate = (props: BaseInfoUpdateProps) => {
                 });
             }
         }
+        document.body.scrollIntoView();
         setIsSaving(false);
     };
 
@@ -178,19 +179,14 @@ export const BaseInfoUpdate = (props: BaseInfoUpdateProps) => {
                         label="Domaine"
                         nativeSelectProps={{
                             ...register(`domaine`),
+                            defaultValue: props.formData.domaine,
                         }}
                         state={errors.domaine ? "error" : "default"}
                         stateRelatedMessage={errors.domaine?.message}
                     >
                         <option value="">Domaine:</option>
                         {DOMAINE_OPTIONS.map((domaine) => (
-                            <option
-                                key={domaine.key}
-                                selected={
-                                    domaine.name === props.formData.domaine
-                                }
-                                value={domaine.name}
-                            >
+                            <option key={domaine.key} value={domaine.name}>
                                 {domaine.name}
                             </option>
                         ))}
@@ -236,8 +232,6 @@ export const BaseInfoUpdate = (props: BaseInfoUpdateProps) => {
                         }}
                     />
                 </form>
-
-                <DevTool control={control} />
             </div>
         </>
     );

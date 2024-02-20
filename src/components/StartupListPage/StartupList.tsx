@@ -12,20 +12,11 @@ interface Option {
 }
 
 export interface StartupListProps {
-    title: string;
-    currentUserId: string;
-    //errors: string[],
-    //messages: string[],
-    activeTab: string;
-    subActiveTab: string;
-    //request: Request,
-    startupOptions: Option[];
-    isAdmin: boolean;
+    startups: Option[];
 }
 
 /* Pure component */
 export const StartupList = (props: StartupListProps) => {
-    const css = ".panel { overflow: hidden; width: auto; min-height: 100vh; }";
     const [startup, setStartup] = React.useState("");
     const router = useRouter();
     const save = (event: { preventDefault: () => void }) => {
@@ -36,7 +27,7 @@ export const StartupList = (props: StartupListProps) => {
         <>
             <form onSubmit={save}>
                 <SESelect
-                    startups={props.startupOptions}
+                    startups={props.startups}
                     onChange={(e: { value: React.SetStateAction<string> }) => {
                         setStartup(e.value);
                     }}

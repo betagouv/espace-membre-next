@@ -5,6 +5,7 @@ import { Input } from "@codegouvfr/react-dsfr/Input";
 import { Select } from "@codegouvfr/react-dsfr/Select";
 import {
     Control,
+    Controller,
     useFieldArray,
     useWatch,
     UseFormRegister,
@@ -12,10 +13,10 @@ import {
 } from "react-hook-form";
 import { addMonths } from "date-fns/addMonths";
 
-import { StartupsPicker } from "./StartupsPicker";
 import { MemberSchemaType } from "./BaseInfoUpdate";
 import { userStatusOptions } from "@/frontConfig";
 import { Status } from "@/models/mission";
+import SESelect from "../SESelect";
 
 const Mission = ({
     index,
@@ -130,16 +131,13 @@ const Mission = ({
                         label="Statut"
                         nativeSelectProps={{
                             ...register(`missions.${index}.status`),
+                            defaultValue: mission.status,
                         }}
                         {...defaultState("status")}
                     >
                         <option value="">Statut:</option>
                         {userStatusOptions.map((option) => (
-                            <option
-                                key={option.key}
-                                selected={option.key === mission.status}
-                                value={option.key}
-                            >
+                            <option key={option.key} value={option.key}>
                                 {option.name}
                             </option>
                         ))}
@@ -148,11 +146,7 @@ const Mission = ({
             </div>
             <div className={fr.cx("fr-grid-row", "fr-grid-row--gutters")}>
                 <div className={fr.cx("fr-col-12")}>
-                    <StartupsPicker
-                        name="startups"
-                        control={control}
-                        startups={startupOptions}
-                        label="Produits concernés par la mission :"
+                    <SESelect
                         defaultValue={startupOptions.filter(
                             (s) =>
                                 mission.startups &&
@@ -168,13 +162,16 @@ const Mission = ({
                                 }
                             );
                         }}
+                        isMulti={true}
+                        placeholder={`Sélectionne un ou plusieurs produits`}
+                        startups={startupOptions}
+                        label="Produits concernés par la mission :"
                         {...defaultState("startups")}
                     />
                 </div>
             </div>
         </div>
     );
-    // La logique de rendu pour chaque mission va ici...
 };
 
 export const MissionsEditor = ({
