@@ -140,7 +140,7 @@ export async function updateMultipleFilesPR(
             });
 
             if (pr) {
-                console.log("PR found", pr);
+                console.log("PR found", pr.html_url);
                 return pr;
             } else {
                 console.log("create PR", branch, prName);

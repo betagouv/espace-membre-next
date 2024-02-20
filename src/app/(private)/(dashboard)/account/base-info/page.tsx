@@ -20,8 +20,13 @@ async function fetchGithubPageData(
     username: string,
     branch: string = "master"
 ) {
-    const mdUrl = `https://raw.githubusercontent.com/${config.githubFork}/${branch}/content/_authors/${username}.md`;
-    const mdData = await fetch(mdUrl).then((r) => r.text());
+    // use source repo when sourcing original file, use fork for branches
+    const repo =
+        branch === "master" ? config.githubRepository : config.githubFork;
+    const mdUrl = `https://raw.githubusercontent.com/${repo}/${branch}/content/_authors/${username}.md`;
+    const mdData = await fetch(mdUrl, { cache: "no-store" }).then((r) =>
+        r.text()
+    );
 
     const [metadata, body]: any[] = yaml.loadAll(mdData, null, {
         schema: yaml.JSON_SCHEMA,
