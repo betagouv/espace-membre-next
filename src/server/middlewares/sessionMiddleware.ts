@@ -37,14 +37,18 @@ const getSessionFromStore = async (sid: RequestCookie | undefined) => {
             if (error) {
                 reject(error); // If there's an error, reject the promise
             } else {
-                const token = JSON.parse(result).token;
-                jwt.verify(token, config.secret, (err, user) => {
-                    if (!err) {
-                        resolve(user); // Otherwise, resolve with the result
-                    } else {
-                        reject(err);
-                    }
-                });
+                const cookie = JSON.parse(result);
+                if (cookie) {
+                    jwt.verify(cookie.token, config.secret, (err, user) => {
+                        if (!err) {
+                            resolve(user); // Otherwise, resolve with the result
+                        } else {
+                            reject(err);
+                        }
+                    });
+                } else {
+                   reject();
+                }
             }
         });
     });

@@ -12,12 +12,14 @@ export const metadata: Metadata = {
 
 async function Login() {
     const cookieStore = cookies();
-    const session = (await getSessionFromStore(
-        cookieStore.get(config.SESSION_COOKIE_NAME)
-    )) as { id: string };
-    if (session && session.id) {
-        return redirect("/account");
-    }
+    try {
+        const session = (await getSessionFromStore(
+            cookieStore.get(config.SESSION_COOKIE_NAME)
+        )) as { id: string };
+        if (session && session.id) {
+            return redirect("/account");
+        }
+    } catch (e) {}
     const errors: any[] = [];
     const messages = "";
     const domain = "";
