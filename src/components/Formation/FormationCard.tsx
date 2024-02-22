@@ -2,7 +2,7 @@ import { Formation } from "@/models/formation";
 import { formatDateToFrenchTextReadableFormat } from "@/utils/date";
 import { Card } from "@codegouvfr/react-dsfr/Card";
 
-export default ({ formation }: { formation: Formation }) => {
+export default function FormationCard({ formation }: { formation: Formation }) {
     return (
         <Card
             background
@@ -28,4 +28,4 @@ export default ({ formation }: { formation: Formation }) => {
             }
         ></Card>
     );
-};
+}
