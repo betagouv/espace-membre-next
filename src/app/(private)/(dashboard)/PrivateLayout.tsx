@@ -166,7 +166,7 @@ export function PrivateLayout({ children }: { children: React.ReactNode }) {
                     linkProps: {
                         href: pathname,
                     },
-                    text: currentPage || pathname,
+                    text: pathname,
                     isActive: hasPathnameThisRoot(pathname, formationLink),
                 },
             ],
