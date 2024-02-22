@@ -1,11 +1,12 @@
 import _ from "lodash";
 
 import betagouv from "@betagouv";
-import { computeHash, nbOfDaysBetweenDate } from "@controllers/utils";
+import { computeHash } from "@controllers/utils";
 import db from "@db";
 import { DBUser } from "@/models/dbUser/dbUser";
 import { Member } from "@/models/member";
 import { DBMission, Mission } from "@/models/mission";
+import { nbOfDaysBetweenDate } from "@/utils/date";
 
 function compareUserAndTriggerOnChange(
     newUserInfo: DBUser,

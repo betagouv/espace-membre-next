@@ -10,6 +10,7 @@ import betagouv from "@betagouv";
 import knex from "@db";
 import * as email from "@/server/config/email.config";
 import { EmailStatusCode } from "@/models/dbUser/dbUser";
+import { formatDateYearMonthDay } from "@/utils/date";
 
 chai.use(chaiHttp);
 
@@ -36,7 +37,7 @@ describe("getUnregisteredOVHUsers", () => {
 describe("Reinit password for expired users", () => {
     const datePassed = new Date();
     datePassed.setDate(datePassed.getDate() - 5);
-    const formatedDate = utils.formatDateYearMonthDay(datePassed);
+    const formatedDate = formatDateYearMonthDay(datePassed);
     const users = [
         {
             id: "membre.actif",

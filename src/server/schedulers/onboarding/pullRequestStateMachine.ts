@@ -15,7 +15,7 @@ import {
     PULL_REQUEST_STATE,
     PULL_REQUEST_TYPE,
 } from "@/models/pullRequests";
-import { nbOfDaysBetweenDate } from "@controllers/utils";
+import { nbOfDaysBetweenDate } from "@/utils/date";
 
 async function sendMessageToReferent({
     prUrl,

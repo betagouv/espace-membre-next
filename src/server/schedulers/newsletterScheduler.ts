@@ -3,19 +3,23 @@ import HedgedocApi from "hedgedoc-api";
 import BetaGouv from "../betagouv";
 import config from "@/server/config";
 import knex from "@db";
-import * as utils from "@controllers/utils";
+import * as dateUtils from "@/utils/date";
 import { getTitle, renderHtmlFromMd } from "@/lib/mdtohtml";
 import { JobWTTJ } from "@/models/job";
 import { sendInfoToChat } from "@infra/chat";
 import { EMAIL_TYPES, MAILING_LIST_TYPE } from "@modules/email";
 import { sendEmail, sendCampaignEmail } from "@/server/config/email.config";
+import {
+    formatDateToFrenchTextReadableFormat,
+    nbOfDaysBetweenDate,
+} from "@/utils/date";
 
 const {
     NUMBER_OF_DAY_IN_A_WEEK,
     NUMBER_OF_DAY_FROM_MONDAY,
     addDays,
     getMonday,
-} = utils;
+} = dateUtils;
 
 const replaceMacroInContent = (newsletterTemplateContent, replaceConfig) => {
     const contentWithReplacement = Object.keys(replaceConfig).reduce(
@@ -48,15 +52,14 @@ const createNewsletter = async () => {
     const replaceConfig = {
         __REMPLACER_PAR_LIEN_DU_PAD__: `${config.padURL}/${newsletterName}`,
         // next stand up is a week after the newsletter date on thursday
-        __REMPLACER_PAR_DATE_STAND_UP__:
-            utils.formatDateToFrenchTextReadableFormat(
-                addDays(
-                    date,
-                    NUMBER_OF_DAY_IN_A_WEEK + NUMBER_OF_DAY_FROM_MONDAY.THURSDAY
-                )
-            ),
+        __REMPLACER_PAR_DATE_STAND_UP__: formatDateToFrenchTextReadableFormat(
+            addDays(
+                date,
+                NUMBER_OF_DAY_IN_A_WEEK + NUMBER_OF_DAY_FROM_MONDAY.THURSDAY
+            )
+        ),
         __REMPLACER_PAR_OFFRES__: await getJobOfferContent(),
-        __REMPLACER_PAR_DATE__: utils.formatDateToFrenchTextReadableFormat(
+        __REMPLACER_PAR_DATE__: formatDateToFrenchTextReadableFormat(
             addDays(date, NUMBER_OF_DAY_FROM_MONDAY[config.newsletterSentDay])
         ),
     };
@@ -139,7 +142,7 @@ export async function newsletterReminder(reminder) {
         .first();
 
     if (lastSentNewsletter) {
-        const nbOfDays = utils.nbOfDaysBetweenDate(
+        const nbOfDays = nbOfDaysBetweenDate(
             new Date(),
             lastSentNewsletter.sent_at
         );
@@ -206,7 +209,7 @@ export async function sendNewsletterAndCreateNewOne(
         .first();
 
     if (lastSentNewsletter) {
-        const nbOfDays = utils.nbOfDaysBetweenDate(
+        const nbOfDays = nbOfDaysBetweenDate(
             new Date(),
             lastSentNewsletter.sent_at
         );

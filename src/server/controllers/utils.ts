@@ -5,6 +5,7 @@ import BetaGouv from "../betagouv";
 import config from "@/server/config";
 import crypto from "crypto";
 import { EmailInfos, Member } from "@/models/member";
+import { formatDateYearMonthDay } from "@/utils/date";
 
 export const computeHash = function (username) {
     const hash = crypto.createHmac(
@@ -160,95 +161,6 @@ export function isValidEmail(formValidationErrors, field, email) {
     }
     formValidationErrors.push(`${field} : l'adresse email n'est pas valide`);
     return null;
-}
-
-export function formatDateYearMonthDay(date) {
-    let day = date.getDate().toString();
-    day = day.length === 1 ? `0${day}` : day;
-    let month = (date.getMonth() + 1).toString();
-    month = month.length === 1 ? `0${month}` : month;
-    return `${date.getFullYear()}-${month}-${day}`;
-}
-
-export function formatDateToReadableFormat(date) {
-    let day = date.getDate().toString();
-    day = day.length === 1 ? `0${day}` : day;
-    let month = (date.getMonth() + 1).toString();
-    month = month.length === 1 ? `0${month}` : month;
-    return `${day}/${month}/${date.getFullYear()}`;
-}
-
-export function formatDateToReadableDateAndTimeFormat(date) {
-    let day = date.getDate().toString();
-    day = day.length === 1 ? `0${day}` : day;
-
-    let month = (date.getMonth() + 1).toString();
-    month = month.length === 1 ? `0${month}` : month;
-
-    let minutes = date.getMinutes().toString();
-    minutes = minutes.length === 1 ? `0${minutes}` : minutes;
-
-    const hour = date.getHours();
-    return `${day}/${month} à ${hour}:${minutes}`;
-}
-
-export function nbOfDaysBetweenDate(date1: Date, date2: Date) {
-    let difference = date1.getTime() - date2.getTime();
-    let totalDays = Math.ceil(difference / (1000 * 3600 * 24));
-    return Math.abs(totalDays);
-}
-
-export function formatDateToFrenchTextReadableFormat(
-    date: Date,
-    withYear: boolean = true
-) {
-    const frenchMonth = [
-        "janvier",
-        "février",
-        "mars",
-        "avril",
-        "mai",
-        "juin",
-        "juillet",
-        "aout",
-        "septembre",
-        "octobre",
-        "novembre",
-        "décembre",
-    ];
-    const day = date.getDate().toString();
-    const month = frenchMonth[date.getMonth()];
-    let res = `${day} ${month}`;
-    if (withYear) {
-        res = `${res} ${date.getFullYear()}`;
-    }
-    return res;
-}
-
-export const NUMBER_OF_DAY_IN_A_WEEK = 7;
-
-export const NUMBER_OF_DAY_FROM_MONDAY = {
-    MONDAY: 0,
-    TUESDAY: 1,
-    WEDNESDAY: 2,
-    THURSDAY: 3,
-    FRIDAY: 4,
-};
-
-export function getMonday(d) {
-    const date = new Date(d);
-    const day = date.getDay();
-    const diff = date.getDate() - day + (day === 0 ? -6 : 1); // adjust when day is sunday
-    const monday = new Date(date.setDate(diff));
-    monday.setHours(0, 0, 0, 0);
-    monday.setSeconds(0, 0);
-    return monday;
-}
-
-export function addDays(date, days, week = null) {
-    const result = new Date(date);
-    result.setDate(result.getDate() + days);
-    return result;
 }
 
 export async function isPublicServiceEmail(email) {

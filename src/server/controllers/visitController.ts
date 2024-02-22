@@ -7,6 +7,7 @@ import {
     isValidDate,
     isValidPhoneNumber,
 } from "@/server/controllers/validator";
+import { formatDateToReadableFormat } from "@/utils/date";
 
 const getUserInfoForUsername = (usersInfos, username) =>
     usersInfos.find((userInfo) => userInfo.id === username);
@@ -18,7 +19,7 @@ const getFuturVisitsList = async function (usersInfos) {
     const visitsInfos = visits.map((visitInfo) => ({
         ...visitInfo,
         fullname: visitInfo.fullname,
-        date: utils.formatDateToReadableFormat(visitInfo.date),
+        date: formatDateToReadableFormat(visitInfo.date),
         referent:
             (getUserInfoForUsername(usersInfos, visitInfo.referent) || {})
                 .fullname || "référent supprimé",
@@ -94,7 +95,7 @@ export async function postForm(req, res) {
         );
 
         const lastVisitorInList = visitors.pop();
-        const dateToDisplay = utils.formatDateToReadableFormat(
+        const dateToDisplay = formatDateToReadableFormat(
             new Date(new Date().setDate(date.getDate() - 1))
         );
         req.flash(

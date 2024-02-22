@@ -9,6 +9,7 @@ import knex from "@db";
 import app from "@/server/index";
 import utils from "./utils";
 import * as session from "@/server/helpers/session";
+import { formatDateToReadableFormat } from "@/utils/date";
 
 chai.use(chaiHttp);
 
@@ -295,7 +296,7 @@ describe.skip("Visit", () => {
             res.text.should.include("<td>Membre Actif</td>");
             res.text.should.include("<td>Jean Dupont</td>");
             res.text.should.include(
-                `<td>${controllerUtils.formatDateToReadableFormat(date)}</td>`
+                `<td>${formatDateToReadableFormat(date)}</td>`
             );
         });
     });

@@ -47,6 +47,7 @@ export function PrivateLayout({ children }: { children: React.ReactNode }) {
         undefined
     );
     const mapLink = linkRegistry.get("map", undefined);
+    const formationLink = linkRegistry.get("formations", undefined);
 
     const accountSubPages: ItemLink[] = [
         {
@@ -153,7 +154,22 @@ export function PrivateLayout({ children }: { children: React.ReactNode }) {
             },
             text: routeTitles.newsletters(),
             isActive: hasPathnameThisMatch(pathname, newsletterLink),
-            items: startupSubPage,
+        },
+        {
+            linkProps: {
+                href: formationLink,
+            },
+            text: routeTitles.formations(),
+            isActive: hasPathnameThisRoot(pathname, formationLink),
+            items: [
+                {
+                    linkProps: {
+                        href: pathname,
+                    },
+                    text: currentPage || pathname,
+                    isActive: hasPathnameThisRoot(pathname, formationLink),
+                },
+            ],
         },
     ];
 
@@ -258,20 +274,28 @@ export function PrivateLayout({ children }: { children: React.ReactNode }) {
                     }))}
             />
             {/* </div> */}
-            <div className="fr-grid-row fr-grid-row-gutters fr-grid-row--center">
-                <div className="fr-col-12 fr-col-md-3 fr-col-lg-3">
-                    <SideMenu
-                        align="left"
-                        burgerMenuButtonText="Dans cette rubrique"
-                        items={
-                            displayMenuForSubPage(
-                                pathname
-                            ) as SideMenuProps.Item[]
-                        }
-                        // title="Espace-Membre"
-                    />
-                </div>
-                <div className="fr-col-12 fr-col-md-9 fr-col-lg-9">
+            <div className="fr-grid-row fr-grid-row-gutters">
+                {!!displayMenuForSubPage(pathname).length && (
+                    <div className="fr-col-12 fr-col-md-3 fr-col-lg-3">
+                        <SideMenu
+                            align="left"
+                            burgerMenuButtonText="Dans cette rubrique"
+                            items={
+                                displayMenuForSubPage(
+                                    pathname
+                                ) as SideMenuProps.Item[]
+                            }
+                            // title="Espace-Membre"
+                        />
+                    </div>
+                )}
+                <div
+                    className={`fr-col-12 ${
+                        !!displayMenuForSubPage(pathname).length
+                            ? "fr-col-md-9 fr-col-lg-9"
+                            : "fr-col-md-12 fr-col-lg-12"
+                    }`}
+                >
                     {children}
                 </div>
             </div>

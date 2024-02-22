@@ -1,6 +1,6 @@
 import { getAllChannels } from "@/lib/mattermost";
 import config from "@/server/config";
-import { formatDateToReadableFormat } from "./utils";
+import { formatDateToReadableFormat } from "@/utils/date";
 
 export async function getResources(req, res) {
     let channels = await getAllChannels(config.mattermostTeamId);
