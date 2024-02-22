@@ -63,7 +63,7 @@ export default async function Page() {
         <div className="fr-container--fluid">
             <div className="fr-grid-row fr-grid-row--gutters">
                 {formations.map((formation) => (
-                    <div className="fr-col-4">
+                    <div key={formation.id} className="fr-col-4">
                         <FormationCard formation={formation} />
                     </div>
                 ))}

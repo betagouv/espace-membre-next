@@ -1,6 +1,6 @@
 fileignoreconfig:
 - filename: src/app/(private)/(dashboard)/formations/page.tsx
-  checksum: 1c2ff2da3cd2c14ef9eb494b96c57d494b5ff0dfae31641eb4e157461f03c830
+  checksum: 2bbe0f4d6807f4238b7d6085d45f8e5582bc8e57326db67a9839ee1aae1f4bdf
 - filename: src/components/BaseInfoUpdatePage/BaseInfoUpdate.tsx
   checksum: 05d97c14f404f68008afc8707f7c0c44883503f71e5c52c1716777482820c3ca
 - filename: src/app/(private)/(dashboard)/account/base-info/page.tsx
