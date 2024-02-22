@@ -2,9 +2,37 @@ import db from ".";
 import { Formation } from "@/models/formation";
 
 interface CreateFormationProps
-    extends Omit<Formation, "id" | "created_at" | "updated_at"> {}
+    extends Omit<
+        Formation,
+        | "id"
+        | "created_at"
+        | "updated_at"
+        | "name"
+        | "description"
+        | "id"
+        | "airtable_id"
+        | "formation_date"
+        | "is_embarquement"
+        | "inscriptionLink"
+        | "availableSeats"
+    > {}
 interface UpdateFormationProps
-    extends Partial<Omit<Formation, "id" | "created_at" | "update_at">> {}
+    extends Partial<
+        Omit<
+            Formation,
+            | "id"
+            | "created_at"
+            | "updated_at"
+            | "name"
+            | "description"
+            | "id"
+            | "airtable_id"
+            | "formation_date"
+            | "is_embarquement"
+            | "inscriptionLink"
+            | "availableSeats"
+        >
+    > {}
 
 export const createFormation = (
     props: CreateFormationProps
