@@ -89,6 +89,7 @@ export const memberSchema = z.object({
         .min(1)
         .describe("Rôle actuel, ex: UX designer"),
     link: z.union([
+        z.null(),
         z.literal(""),
         z.string().trim().url({ message: "URL invalide" }).optional(),
     ]),

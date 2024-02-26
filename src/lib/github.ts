@@ -7,6 +7,11 @@ import { request } from "@octokit/request";
 export interface PRInfo {
     html_url: string;
     number: number;
+    head: {
+        ref: string;
+        label: string;
+        sha: string;
+    };
 }
 
 function getURL(objectID) {
@@ -219,6 +224,13 @@ export function getPullRequestFiles(
     });
 }
 
+export async function getPullRequest({ head }: { head: string }) {
+    const url = `https://api.github.com/repos/${config.githubRepository}/pulls?state=open&head=${head}&per_page=1`;
+    const pulls = await requestWithAuth(url);
+    const pull = (pulls.data.length && pulls.data[0]) || undefined;
+    return pull.head.label === head && pull;
+}
+
 export function getPullRequests(
     owner: string,
     repo: string,
@@ -243,6 +255,11 @@ export function createGithubBranch(sha, branch) {
     return requestWithAuth(`POST ${url}`, { sha, ref });
 }
 
+export function getGithubBranch(branch) {
+    const url = `https://api.github.com/repos/${config.githubFork}/branches/${branch}`;
+    return requestWithAuth(`GET ${url}`);
+}
+
 export function deleteGithubBranch(branch) {
     const url = `https://api.github.com/repos/${config.githubFork}/git/refs/heads/${branch}`;
     return requestWithAuth(`DELETE ${url}`);
@@ -254,7 +271,7 @@ export function getLastCommitFromFile(path, branch) {
 }
 
 export function getGithubFile(path, branch) {
-    const url = `https://api.github.com/repos/${config.githubRepository}/contents/${path}`;
+    const url = `https://api.github.com/repos/${config.githubFork}/contents/${path}?ref=${branch}`;
 
     return requestWithAuth(`GET ${url}`, { branch });
 }
@@ -278,7 +295,7 @@ export function createGithubFile(path, branch, content, sha = undefined) {
     });
 }
 
-export function makeGithubPullRequest(branch, title) {
+export function makeGithubPullRequest(branch: string, title: string) {
     const url = `https://api.github.com/repos/${config.githubRepository}/pulls`;
     const head = `${config.githubFork.split("/")[0]}:${branch}`;
     const base = "master";
