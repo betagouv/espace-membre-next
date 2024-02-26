@@ -95,8 +95,9 @@ export async function postForm(req, res) {
         );
 
         const lastVisitorInList = visitors.pop();
-        const dateToDisplay = formatDateToReadableFormat(
-            new Date(new Date().setDate(date.getDate() - 1))
+        const dateToDisplay = format(
+            new Date(new Date().setDate(date.getDate() - 1)),
+            "dd/MM/yyyy"
         );
         req.flash(
             "message",
