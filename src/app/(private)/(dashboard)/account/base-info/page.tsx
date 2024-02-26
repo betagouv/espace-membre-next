@@ -35,6 +35,7 @@ async function fetchGithubPageData(
         ...metadata,
         domaine: metadata.domaine || [], // allow some empty fields on input for legacy
         bio: body,
+        startups: metadata.startups || [],
     };
     return memberSchema.parse(member);
 }
