@@ -31,6 +31,7 @@ const fetchGithubPageData = (username: string, branch: string) => {
             return memberSchema.parse({
                 ...metadata,
                 bio: body || "", // prevent validation error if bio=null
+                startups: metadata.startups || [],
             });
         });
 };
