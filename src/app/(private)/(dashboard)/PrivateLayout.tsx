@@ -1,3 +1,4 @@
+"use client";
 import { linkRegistry } from "@/utils/routes/registry";
 import { hasPathnameThisMatch, hasPathnameThisRoot } from "@/utils/url";
 import { SideMenu, SideMenuProps } from "@codegouvfr/react-dsfr/SideMenu";
@@ -6,7 +7,13 @@ import { usePathname, useRouter } from "next/navigation";
 import { Breadcrumb } from "@codegouvfr/react-dsfr/Breadcrumb";
 import { routeTitles } from "@/utils/routes/routeTitles";
 
-export function PrivateLayout({ children }: { children: React.ReactNode }) {
+export function PrivateLayout({
+    children,
+    currentPage,
+}: {
+    children: React.ReactNode;
+    currentPage?: string;
+}) {
     const router = useRouter();
 
     const pathname = usePathname();
@@ -166,7 +173,7 @@ export function PrivateLayout({ children }: { children: React.ReactNode }) {
                     linkProps: {
                         href: pathname,
                     },
-                    text: pathname,
+                    text: currentPage || pathname,
                     isActive: hasPathnameThisRoot(pathname, formationLink),
                 },
             ],
@@ -253,7 +260,6 @@ export function PrivateLayout({ children }: { children: React.ReactNode }) {
     const tree = findActiveItem(MenuItems);
     return (
         <>
-            {/* <div className="fr-grid-row"> */}
             <Breadcrumb
                 currentPageLabel={tree[tree.length - 1]?.text}
                 homeLinkProps={{
@@ -273,7 +279,6 @@ export function PrivateLayout({ children }: { children: React.ReactNode }) {
                         },
                     }))}
             />
-            {/* </div> */}
             <div className="fr-grid-row fr-grid-row-gutters">
                 {!!displayMenuForSubPage(pathname).length && (
                     <div className="fr-col-12 fr-col-md-3 fr-col-lg-3">
