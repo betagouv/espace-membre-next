@@ -58,7 +58,7 @@ export default async function Page() {
         redirect("/login");
     }
     const username = session.id;
-    const formations = await fetchAirtableFormation();
+    const formations = await fetchAirtableFormations();
     return (
         <div className="fr-container--fluid">
             <div className="fr-grid-row fr-grid-row--gutters">
