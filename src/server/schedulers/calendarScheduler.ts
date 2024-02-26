@@ -4,10 +4,8 @@ import betagouv from "../betagouv";
 import { sendCampaignEmail } from "@/server/config/email.config";
 import { EMAIL_TYPES, MAILING_LIST_TYPE } from "@modules/email";
 import { sendInfoToChat } from "@infra/chat";
-import {
-    formatDateToFrenchTextReadableFormat,
-    formatDateToReadableDateAndTimeFormat,
-} from "@/utils/date";
+import { formatDateToFrenchTextReadableFormat } from "@/utils/date";
+import { format } from "date-fns/format";
 
 interface ReadableEvents {
     startDate: string;
@@ -22,9 +20,9 @@ const makeReadableEvent = (events) => {
     return events
         .sort((event) => event.startDate)
         .map((event) => ({
-            startDate: formatDateToReadableDateAndTimeFormat(event.startDate),
+            startDate: format(event.startDate, "dd/MM/yyyy à HH:mm"),
             startDateAsDate: event.startDate,
-            endDate: formatDateToReadableDateAndTimeFormat(event.endDate),
+            endDate: format(event.endDate, "dd/MM/yyyy à HH:mm"),
             location: event.location,
             title: event.title,
         }))

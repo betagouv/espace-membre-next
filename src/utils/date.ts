@@ -1,44 +1,5 @@
-export function formatDateYearMonthDay(date) {
-    let day = date.getDate().toString();
-    day = day.length === 1 ? `0${day}` : day;
-    let month = (date.getMonth() + 1).toString();
-    month = month.length === 1 ? `0${month}` : month;
-    return `${date.getFullYear()}-${month}-${day}`;
-}
-
-export function formatDateToReadableFormat(date) {
-    let day = date.getDate().toString();
-    day = day.length === 1 ? `0${day}` : day;
-    let month = (date.getMonth() + 1).toString();
-    month = month.length === 1 ? `0${month}` : month;
-    return `${day}/${month}/${date.getFullYear()}`;
-}
-
-export function formatDateToReadableDateFormat(date) {
-    let day = date.getDate().toString();
-    day = day.length === 1 ? `0${day}` : day;
-
-    let month = (date.getMonth() + 1).toString();
-    month = month.length === 1 ? `0${month}` : month;
-
-    let minutes = date.getMinutes().toString();
-    minutes = minutes.length === 1 ? `0${minutes}` : minutes;
-    return `${day}/${month}`;
-}
-
-export function formatDateToReadableDateAndTimeFormat(date) {
-    return `${formatDateToReadableFormat(
-        date
-    )} à ${formatDateToReadableTimeFormat(date)}`;
-}
-
-export function formatDateToReadableTimeFormat(date, separator = ":") {
-    let minutes = date.getMinutes().toString();
-    minutes = minutes.length === 1 ? `0${minutes}` : minutes;
-
-    const hour = date.getHours();
-    return `${hour}${separator}${minutes}`;
-}
+import { intervalToDuration, format, startOfWeek } from "date-fns";
+import { fr } from "date-fns/locale";
 
 export function nbOfDaysBetweenDate(date1: Date, date2: Date) {
     let difference = date1.getTime() - date2.getTime();
@@ -51,32 +12,18 @@ export function formatDateToFrenchTextReadableFormat(
     withYear: boolean = true,
     withTime: boolean = false
 ) {
-    const frenchMonth = [
-        "janvier",
-        "février",
-        "mars",
-        "avril",
-        "mai",
-        "juin",
-        "juillet",
-        "aout",
-        "septembre",
-        "octobre",
-        "novembre",
-        "décembre",
-    ];
-    const day = date.getDate().toString();
-    const month = frenchMonth[date.getMonth()];
-    let res = `${day} ${month}`;
-    console.log(res);
+    // Format de base pour la date en français
+    let formatStr = "d MMMM";
     if (withYear) {
-        res = `${res} ${date.getFullYear()}`;
+        formatStr += " yyyy";
     }
     if (withTime) {
-        res = `${res} à ${formatDateToReadableTimeFormat(date, "h")}`;
+        // Utilisez 'HH:mm' pour un format 24h ou 'hh:mm a' pour un format 12h avec AM/PM
+        formatStr += " 'à' HH:mm";
     }
-    console.log(res);
-    return res;
+
+    // Formate la date avec le format spécifié et le locale français
+    return format(date, formatStr, { locale: fr });
 }
 
 export const NUMBER_OF_DAY_IN_A_WEEK = 7;
@@ -90,13 +37,11 @@ export const NUMBER_OF_DAY_FROM_MONDAY = {
 };
 
 export function getMonday(d) {
-    const date = new Date(d);
-    const day = date.getDay();
-    const diff = date.getDate() - day + (day === 0 ? -6 : 1); // adjust when day is sunday
-    const monday = new Date(date.setDate(diff));
-    monday.setHours(0, 0, 0, 0);
-    monday.setSeconds(0, 0);
-    return monday;
+    const today = new Date();
+    // Get the start of this week, considering Monday as the first day of the week
+    const startOfThisWeek = startOfWeek(today, { weekStartsOn: 1 });
+
+    return startOfThisWeek;
 }
 
 export function addDays(date, days, week = null) {
@@ -106,16 +51,13 @@ export function addDays(date, days, week = null) {
 }
 
 export function durationBetweenDate(date1: Date, date2: Date) {
-    const differenceMs = date1.getTime() - date2.getTime();
-    const heures = Math.floor(differenceMs / 3600000); // Total d'heures
-    const restantMs = differenceMs % 3600000; // Reste en millisecondes
-    const secondes = Math.floor(restantMs / 1000); // Convertir le reste en secondes
-    const formatHeure = (heure) => heure.toString().padStart(2, "0");
-    const heuresFormat = formatHeure(heures);
-    const secondesFormat = formatHeure(secondes);
-
-    const result = `${
-        heuresFormat[0] === "0" ? heuresFormat[1] : heuresFormat
-    }h${secondesFormat === "00" ? "" : secondesFormat}`;
+    const duration = intervalToDuration({ start: date2, end: date1 });
+    let result = "";
+    if (duration.hours !== undefined) {
+        result += `${duration.hours.toString()}h`;
+    }
+    if (duration.seconds !== undefined && duration.seconds > 0) {
+        result += `${duration.seconds.toString().padStart(2, "0")}`;
+    }
     return result;
 }

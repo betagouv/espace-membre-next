@@ -5,7 +5,7 @@ import BetaGouv from "../betagouv";
 import config from "@/server/config";
 import crypto from "crypto";
 import { EmailInfos, Member } from "@/models/member";
-import { formatDateYearMonthDay } from "@/utils/date";
+import { format } from "date-fns/format";
 
 export const computeHash = function (username) {
     const hash = crypto.createHmac(
@@ -135,7 +135,7 @@ export function getExpiredUsers(users: Member[], minDaysOfExpiration = 0) {
 export function getExpiredUsersForXDays(users: Member[], nbDays) {
     const date = new Date();
     date.setDate(date.getDate() - nbDays);
-    const formatedDate = formatDateYearMonthDay(date);
+    const formatedDate = format(date, "yyyy-MM-dd");
     return users.filter((x) => x.end === formatedDate);
 }
 

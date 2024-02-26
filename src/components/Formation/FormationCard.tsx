@@ -1,6 +1,7 @@
 import { Formation } from "@/models/formation";
-import { formatDateToFrenchTextReadableFormat } from "@/utils/date";
 import { Card } from "@codegouvfr/react-dsfr/Card";
+import { format } from "date-fns/format";
+import { fr } from "date-fns/locale/fr";
 
 export default function FormationCard({ formation }: { formation: Formation }) {
     return (
@@ -19,11 +20,9 @@ export default function FormationCard({ formation }: { formation: Formation }) {
             titleAs="h3"
             endDetail={
                 formation.start
-                    ? formatDateToFrenchTextReadableFormat(
-                          formation.start,
-                          true,
-                          true
-                      )
+                    ? format(formation.start, "d MMMM à HH'h'mm", {
+                          locale: fr,
+                      })
                     : undefined
             }
         ></Card>

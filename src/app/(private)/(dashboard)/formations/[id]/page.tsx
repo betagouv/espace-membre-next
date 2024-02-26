@@ -4,9 +4,6 @@ import { routeTitles } from "@/utils/routes/routeTitles";
 import { getSessionFromStore } from "@/server/middlewares/sessionMiddleware";
 import { cookies } from "next/headers";
 import config from "@/server/config";
-import Airtable from "airtable";
-import { Formation, formationSchema } from "@/models/formation";
-import { airtableRecordToFormation } from "@/utils/airtable";
 import Card from "@codegouvfr/react-dsfr/Card";
 import Button from "@codegouvfr/react-dsfr/Button";
 import {
@@ -14,6 +11,8 @@ import {
     formatDateToFrenchTextReadableFormat,
 } from "@/utils/date";
 import { fetchAirtableFormationById } from "@/lib/airtable";
+import { format } from "date-fns/format";
+import { fr } from "date-fns/locale/fr";
 
 export const metadata: Metadata = {
     title: `${routeTitles.accountEditBaseInfo()} / Espace Membre`,
@@ -80,8 +79,10 @@ export default async function Page({ params }: Props) {
                         }
                         title={
                             formation.startDate
-                                ? formatDateToFrenchTextReadableFormat(
-                                      formation.startDate
+                                ? format(
+                                      formation.startDate,
+                                      "d MMMM à HH'h'mm",
+                                      { locale: fr }
                                   )
                                 : "Formation en ligne"
                         }

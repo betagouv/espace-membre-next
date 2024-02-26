@@ -3,9 +3,9 @@ import knex from "../db";
 import {
     addDays,
     formatDateToFrenchTextReadableFormat,
-    formatDateToReadableDateAndTimeFormat,
     getMonday,
 } from "@/utils/date";
+import { format } from "date-fns/format";
 
 const errorMessage = "Impossible de récupérer les infolettres.";
 
@@ -46,7 +46,7 @@ const formatNewsletter = (newsletter) => ({
               addDays(getMonday(newsletter.created_at), 7)
           ), // get next monday (date + 7 days),
     sent_at: newsletter.sent_at
-        ? formatDateToReadableDateAndTimeFormat(newsletter.sent_at)
+        ? format(newsletter.sent_at, "dd/MM/yyyy à HH:mm")
         : undefined,
 });
 

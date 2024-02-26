@@ -1,13 +1,14 @@
 import { getAllChannels } from "@/lib/mattermost";
 import config from "@/server/config";
-import { formatDateToReadableFormat } from "@/utils/date";
+import { format } from "date-fns/format";
 
 export async function getResources(req, res) {
     let channels = await getAllChannels(config.mattermostTeamId);
     channels = channels.map((channel) => ({
         ...channel,
-        last_post_at: `le ${formatDateToReadableFormat(
-            new Date(channel.last_post_at)
+        last_post_at: `le ${format(
+            new Date(channel.last_post_at),
+            "dd/MM/yyyy"
         )}`,
     }));
     res.render("resource", {
