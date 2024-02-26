@@ -1,30 +1,17 @@
 import db from ".";
 import { Formation } from "@/models/formation";
 
-interface CreateFormationProps
-    extends Omit<
-        Formation,
-        | "id"
-        | "created_at"
-        | "updated_at"
-        | "description"
-        | "id"
-        | "inscriptionLink"
-        | "availableSeats"
-    > {}
-interface UpdateFormationProps
-    extends Partial<
-        Omit<
-            Formation,
-            | "id"
-            | "created_at"
-            | "updated_at"
-            | "description"
-            | "id"
-            | "inscriptionLink"
-            | "availableSeats"
-        >
-    > {}
+type OptionalKeys =
+    | "id"
+    | "created_at"
+    | "updated_at"
+    | "description"
+    | "id"
+    | "inscriptionLink"
+    | "availableSeats";
+
+interface CreateFormationProps extends Omit<Formation, OptionalKeys> {}
+interface UpdateFormationProps extends Partial<Omit<Formation, OptionalKeys>> {}
 
 export const createFormation = (
     props: CreateFormationProps
