@@ -3,16 +3,6 @@ import config from "@/server/config";
 import Airtable from "airtable";
 import { airtableRecordToFormation } from "@/utils/airtable";
 
-// export async function fetchAirtableFormationById(
-//     recordId: string
-// ): Promise<Formation> {
-//     var base = new Airtable({ apiKey: config.AIRTABLE_API_KEY }).base(
-//         config.AIRTABLE_FORMATION_BASE_ID!
-//     );
-//     const record = await base("Formations").find(recordId);
-//     return airtableRecordToFormation(record);
-// }
-
 export async function fetchAirtableFormations(): Promise<Formation[]> {
     const baseUrl = `https://api.airtable.com/v0/${config.AIRTABLE_FORMATION_BASE_ID}/Formations`;
     const token = config.AIRTABLE_API_KEY; // Replace YOUR_TOKEN with your actual Airtable API token
@@ -39,7 +29,6 @@ export async function fetchAirtableFormations(): Promise<Formation[]> {
     }
 
     const data = await response.json();
-    // console.log(data);
     return data.records.map((data) => airtableRecordToFormation(data));
 }
 
