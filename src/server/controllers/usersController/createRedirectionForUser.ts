@@ -2,6 +2,7 @@ import config from "@/server/config";
 import BetaGouv from "@betagouv";
 import * as utils from "@controllers/utils";
 import { addEvent, EventCode } from "@/lib/events";
+import * as Sentry from "@sentry/node";
 
 export async function createRedirectionForUserApi(req, res) {
     createRedirectionForUserHandler(
@@ -85,6 +86,8 @@ export async function createRedirectionForUserHandler(
                 req.body.keep_copy === "true"
             );
         } catch (err) {
+            console.log(err);
+            Sentry.captureException(err);
             throw new Error(`Erreur pour créer la redirection: ${err}`);
         }
         req.flash("message", "La redirection a bien été créé.");
@@ -96,6 +99,8 @@ export async function createRedirectionForUserHandler(
         }
         onSuccess(redirectionUrl);
     } catch (err) {
+        console.log(err);
+        Sentry.captureException(err);
         let redirectionUrl;
         if (isCurrentUser) {
             redirectionUrl = "/account";

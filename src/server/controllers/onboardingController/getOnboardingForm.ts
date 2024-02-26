@@ -2,6 +2,7 @@ import BetaGouv from "@betagouv";
 import { genderOptions, statusOptions } from "@/models/dbUser/dbUser";
 import { DOMAINE_OPTIONS, Member } from "@/models/member";
 import config from "@/server/config";
+import * as Sentry from "@sentry/node";
 
 export async function getFormApi(req, res) {
     getOnboardingPageData(
@@ -13,6 +14,7 @@ export async function getFormApi(req, res) {
             });
         },
         (err) => {
+            Sentry.captureException(err);
             res.status(500).json({
                 error: "Impossible de récupérer vos informations.",
             });
@@ -59,6 +61,7 @@ export async function getOnboardingPageData(req, res, onSuccess, onError) {
             communeInfo: null,
         });
     } catch (err) {
+        Sentry.captureException(err);
         onError(err);
     }
 }

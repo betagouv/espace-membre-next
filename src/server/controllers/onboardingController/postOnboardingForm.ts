@@ -1,6 +1,7 @@
 import ejs from "ejs";
 import crypto from "crypto";
 import { Schema } from "express-validator";
+import * as Sentry from "@sentry/node";
 
 import config from "@/server/config";
 import * as utils from "@controllers/utils";
@@ -75,6 +76,7 @@ async function createNewcomerGithubFile(username, content, referent) {
             return response.data;
         })
         .catch((err) => {
+            Sentry.captureException(err);
             deleteGithubBranch(branch);
             console.log(`Branche ${branch} supprimée`);
             if (err.status === 422) {
@@ -381,6 +383,7 @@ async function postOnboardingData(req, res, onSuccess, onError) {
             prInfo,
         });
     } catch (err) {
+        Sentry.captureException(err);
         if (err instanceof Error) {
             req.flash("error", err.message);
         }

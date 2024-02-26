@@ -197,7 +197,7 @@ export const BaseInfoUpdate = (props: BaseInfoUpdateProps) => {
                         stateRelatedMessage={errors.bio?.message}
                     />
                     <Input
-                        label="Adresse du profil LinkedIn"
+                        label="Adresse du profil LinkedIn ou site web"
                         nativeInputProps={{
                             placeholder: "ex: https://linkedin.com/in/xxxx",
                             ...register("link"),
