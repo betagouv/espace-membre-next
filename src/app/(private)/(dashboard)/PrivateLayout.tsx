@@ -1,19 +1,18 @@
 "use client";
 import { linkRegistry } from "@/utils/routes/registry";
-import { hasPathnameThisMatch, hasPathnameThisRoot } from "@/utils/url";
+import {
+    hasPathnameThisMatch,
+    hasPathnameThisRegex,
+    hasPathnameThisRoot,
+} from "@/utils/url";
 import { SideMenu, SideMenuProps } from "@codegouvfr/react-dsfr/SideMenu";
 import { useSession } from "@/proxies/next-auth";
 import { usePathname, useRouter } from "next/navigation";
 import { Breadcrumb } from "@codegouvfr/react-dsfr/Breadcrumb";
 import { routeTitles } from "@/utils/routes/routeTitles";
+import { useInfoContext } from "@/app/BreadCrumbProvider";
 
-export function PrivateLayout({
-    children,
-    currentPage,
-}: {
-    children: React.ReactNode;
-    currentPage?: string;
-}) {
+export function PrivateLayout({ children }: { children: React.ReactNode }) {
     const router = useRouter();
 
     const pathname = usePathname();
@@ -25,9 +24,10 @@ export function PrivateLayout({
         },
     });
 
+    const { currentPage } = useInfoContext();
     if (status === "loading" || status === "unauthenticated") {
         return (
-            <div className="fr-grid-row fr-grid-row-gutters fr-grid-row--center fr-mb-14v">
+            <div className="fr-grid-row fr-grid-row-gutters fr-grid-row--center fr-mb-14v fr-my-4w">
                 Chargement...
             </div>
         );
@@ -54,7 +54,8 @@ export function PrivateLayout({
         undefined
     );
     const mapLink = linkRegistry.get("map", undefined);
-    const formationLink = linkRegistry.get("formations", undefined);
+    const formationLink = linkRegistry.get("formationList", undefined);
+    const formationDetailLink = linkRegistry.get("formationDetails", undefined);
 
     const accountSubPages: ItemLink[] = [
         {
@@ -166,7 +167,7 @@ export function PrivateLayout({
             linkProps: {
                 href: formationLink,
             },
-            text: routeTitles.formations(),
+            text: routeTitles.formationList(),
             isActive: hasPathnameThisRoot(pathname, formationLink),
             items: [
                 {
@@ -174,7 +175,10 @@ export function PrivateLayout({
                         href: pathname,
                     },
                     text: currentPage || pathname,
-                    isActive: hasPathnameThisRoot(pathname, formationLink),
+                    isActive: hasPathnameThisRegex(
+                        pathname,
+                        formationDetailLink
+                    ),
                 },
             ],
         },
