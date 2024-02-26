@@ -37,11 +37,13 @@ export const NUMBER_OF_DAY_FROM_MONDAY = {
 };
 
 export function getMonday(d) {
-    const today = new Date();
-    // Get the start of this week, considering Monday as the first day of the week
-    const startOfThisWeek = startOfWeek(today, { weekStartsOn: 1 });
-
-    return startOfThisWeek;
+    const date = new Date(d);
+    const day = date.getDay();
+    const diff = date.getDate() - day + (day === 0 ? -6 : 1); // adjust when day is sunday
+    const monday = new Date(date.setDate(diff));
+    monday.setHours(0, 0, 0, 0);
+    monday.setSeconds(0, 0);
+    return monday;
 }
 
 export function addDays(date, days, week = null) {
