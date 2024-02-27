@@ -46,3 +46,16 @@ export const airtableRecordToFormation = (
 
     return formationSchema.parse(item);
 };
+
+export const airtableRecordToFormationInscription = (
+    record: Record<FieldSet>
+): FormationInscription => {
+    return formationInscriptionSchema.parse({
+        username: record.fields["username"],
+        name: record.fields["Nom"],
+        email: record.fields["Email"],
+        formation: record.fields["Formation"]
+            ? record.fields["Formation"][0]
+            : undefined,
+    });
+};
