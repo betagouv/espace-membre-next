@@ -1,20 +1,45 @@
-import { Formation } from "@/models/formation";
+import { Badge } from "@codegouvfr/react-dsfr/Badge";
 import { Card } from "@codegouvfr/react-dsfr/Card";
 import { format } from "date-fns/format";
 import { fr } from "date-fns/locale/fr";
 
-export default function FormationCard({ formation }: { formation: Formation }) {
+import { Formation } from "@/models/formation";
+
+export default function FormationCard({
+    formation,
+    isMemberRegistered,
+}: {
+    formation: Formation;
+    isMemberRegistered: boolean;
+}) {
     return (
         <Card
             background
             border
-            desc={formation.description}
+            desc={
+                <span
+                    style={{
+                        overflowWrap: "break-word",
+                    }}
+                >
+                    {formation.description}
+                </span>
+            }
             enlargeLink
             imageAlt={`${formation.name} image`}
             imageUrl={formation.imageUrl}
             linkProps={{
                 href: `/formations/${formation.airtable_id}`,
             }}
+            start={
+                isMemberRegistered ? (
+                    <ul className="fr-badges-group">
+                        <li>
+                            <Badge severity="success">Inscrit</Badge>
+                        </li>
+                    </ul>
+                ) : undefined
+            }
             size="medium"
             title={formation.name}
             titleAs="h3"

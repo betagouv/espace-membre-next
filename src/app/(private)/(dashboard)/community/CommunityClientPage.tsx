@@ -1,6 +1,5 @@
 "use client";
 import axios from "axios";
-import type { Metadata } from "next";
 import { useEffect, useState } from "react";
 import { Community, CommunityProps } from "@/components/CommunityPage";
 import routes, { computeRoute } from "@/routes/routes";

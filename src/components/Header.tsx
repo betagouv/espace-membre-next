@@ -1,11 +1,11 @@
 "use client";
 import React from "react";
+import axios from "axios";
 import { usePathname, useRouter } from "next/navigation";
 import { Header, HeaderProps } from "@codegouvfr/react-dsfr/Header";
-// import { useSession, signIn, signOut } from "next-auth/react";
+
 import { linkRegistry } from "@/utils/routes/registry";
 import { useSession, signOut } from "@/proxies/next-auth";
-import axios from "axios";
 import routes, { computeRoute } from "@/routes/routes";
 import { hasPathnameThisMatch, hasPathnameThisRoot } from "@/utils/url";
 import { routeTitles } from "@/utils/routes/routeTitles";
@@ -17,19 +17,10 @@ const MainHeader = () => {
     const newsletterLink = linkRegistry.get("newsletters", undefined);
 
     const accountLink = linkRegistry.get("account", undefined);
-    const accountBadgeLink = linkRegistry.get("accountBadge", undefined);
     const communityLink = linkRegistry.get("community", undefined);
     const startupListLink = linkRegistry.get("startupList", undefined);
-    const startupCreateLink = linkRegistry.get("startupCreate", undefined);
     const adminMattermostLink = linkRegistry.get("adminMattermost", undefined);
-    const accountEditBaseInfoLink = linkRegistry.get(
-        "accountEditBaseInfo",
-        undefined
-    );
-    const accountEditPrivateInfoLink = linkRegistry.get(
-        "accountEditPrivateInfo",
-        undefined
-    );
+    const formationListLink = linkRegistry.get("formationList", undefined);
     const quickAccessItems: (React.ReactNode | HeaderProps.QuickAccessItem)[] =
         [];
     if (session) {
@@ -47,7 +38,6 @@ const MainHeader = () => {
                         withCredentials: true,
                     });
                     window.location.href = "/";
-                    //signOut();
                 },
             },
             iconId: "fr-icon-logout-box-r-line",
@@ -69,9 +59,14 @@ const MainHeader = () => {
 
     const nav =
         session?.user &&
-        ["/account", "/community", "/admin", "/startups", "/newsletters"].find(
-            (url) => pathname.startsWith(url)
-        )
+        [
+            "/account",
+            "/community",
+            "/admin",
+            "/startups",
+            "/newsletters",
+            "/formations",
+        ].find((url) => pathname.startsWith(url))
             ? [
                   {
                       linkProps: {
@@ -96,6 +91,17 @@ const MainHeader = () => {
                       },
                       text: "Produit",
                       isActive: hasPathnameThisRoot(pathname, startupListLink),
+                  },
+                  {
+                      linkProps: {
+                          href: "/formations",
+                          target: "_self",
+                      },
+                      text: "Formations",
+                      isActive: hasPathnameThisRoot(
+                          pathname,
+                          formationListLink
+                      ),
                   },
                   {
                       linkProps: {

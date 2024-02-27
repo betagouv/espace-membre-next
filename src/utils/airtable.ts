@@ -1,4 +1,9 @@
-import { Formation, formationSchema } from "@/models/formation";
+import {
+    Formation,
+    FormationInscription,
+    formationInscriptionSchema,
+    formationSchema,
+} from "@/models/formation";
 import { FieldSet, Record } from "airtable";
 
 export const airtableRecordToFormation = (
@@ -28,13 +33,15 @@ export const airtableRecordToFormation = (
         animatorEmail: record.fields["Email organisateur"]
             ? record.fields["Email organisateur"]
             : undefined,
+        animator: record.fields["Animateur"],
         googleAgendaEvent: record.fields["Google Calendar Event ID"],
         startDate: new Date(record.fields["Début"] as string),
         startTime: record.fields["Heure début"],
-        inscriptionLink: record.fields["preselectedInscriptionLink"],
+        inscriptionLink:
+            record.fields["preselectedInscriptionEspaceMembreLink"],
         availableSeats: record.fields["Place restantes en chiffre"],
         maxSeats: record.fields["Max participants"],
-        // Make sure to adjust all other fields similarly
+        registeredMembers: record.fields["registeredMemberUsernames"],
     };
 
     return formationSchema.parse(item);

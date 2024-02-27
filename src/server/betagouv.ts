@@ -55,10 +55,15 @@ const betaGouv = {
     },
 
     usersInfos: async (): Promise<Member[]> => {
-        return axios
-            .get<Member[]>(config.usersAPI)
-            .then((response) =>
-                response.data.map((author: Member) => {
+        return fetch(config.usersAPI)
+            .then((response) => {
+                if (!response.ok) {
+                    throw new Error(`HTTP error! status: ${response.status}`);
+                }
+                return response.json();
+            })
+            .then((data: Member[]) =>
+                data.map((author: Member) => {
                     if (author.missions && author.missions.length > 0) {
                         const sortedStartDates = author.missions
                             .map((x) => x.start)
@@ -72,11 +77,9 @@ const betaGouv = {
                         );
 
                         [author.start] = sortedStartDates;
-                        // todo: voir impact si on supprime (info deja dans les missions)
                         author.end = sortedEndDates.includes("")
                             ? ""
                             : sortedEndDates[0];
-                        // todo: voir impact si on supprime (info deja dans les missions)
                         author.employer = latestMission.status
                             ? `${latestMission.status}/${latestMission.employer}`
                             : latestMission.employer;
