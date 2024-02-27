@@ -34,7 +34,7 @@ async function fetchGithubPageData(
     const member = {
         ...metadata,
         domaine: metadata.domaine || [], // allow some empty fields on input for legacy
-        bio: body,
+        bio: body || "",
         startups: metadata.startups || [],
     };
     return memberSchema.parse(member);
