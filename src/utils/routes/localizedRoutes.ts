@@ -116,4 +116,16 @@ export const localizedRoutes = {
             fr: (p) => `/keskispasse`,
         }
     ),
+    formationList: defineLocalizedRoute(
+        {},
+        {
+            fr: (p) => `/formations`,
+        }
+    ),
+    formationDetails: defineLocalizedRoute(
+        {},
+        {
+            fr: (p) => "/formations/.*",
+        }
+    ),
 };

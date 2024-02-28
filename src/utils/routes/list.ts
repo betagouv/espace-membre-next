@@ -88,5 +88,13 @@ export const routes = {
             localizedRoutes.keskispasse.params,
             localizedRoutes.keskispasse.paths.fr
         ),
+        formationList: defineRoute(
+            localizedRoutes.formationList.params,
+            localizedRoutes.formationList.paths.fr
+        ),
+        formationDetails: defineRoute(
+            localizedRoutes.formationDetails.params,
+            localizedRoutes.formationDetails.paths.fr
+        ),
     }).routes,
 };

@@ -1,5 +1,3 @@
-"use client";
-
 import { PropsWithChildren } from "react";
 
 import { PrivateLayout } from "@/app/(private)/(dashboard)/PrivateLayout";

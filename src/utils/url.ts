@@ -37,3 +37,17 @@ export function hasPathnameThisMatch(
 
     return pathname === rootPathname;
 }
+
+export function hasPathnameThisRegex(
+    pathname: string | null,
+    regexPathname: string
+): boolean {
+    if (!pathname) {
+        return false;
+    }
+    const patternString: string = regexPathname; // Matches one or more digits
+    // Convert the string to a RegExp object
+    const regex: RegExp = new RegExp(patternString);
+
+    return regex.test(pathname);
+}

@@ -6,9 +6,8 @@ import rewire from "rewire";
 import sinon from "sinon";
 import BetaGouv from "@betagouv";
 import config from "@/server/config";
-import * as controllerUtils from "@controllers/utils";
+import * as dateUtils from "@/utils/date";
 import knex from "@db";
-import app from "@/server/index";
 import { renderHtmlFromMd } from "@/lib/mdtohtml";
 import {
     createNewsletter,
@@ -18,7 +17,6 @@ import utils from "./utils";
 import * as chat from "@infra/chat";
 import * as Email from "@/server/config/email.config";
 import * as session from "@/server/helpers/session";
-import routes from "@/routes/routes";
 
 chai.use(chaiHttp);
 
@@ -30,7 +28,7 @@ const {
     addDays,
     getMonday,
     formatDateToFrenchTextReadableFormat,
-} = controllerUtils;
+} = dateUtils;
 
 const NEWSLETTER_TITLE =
     "📰 A ne pas rater chez beta.gouv.fr ! - Infolettre du __REMPLACER_PAR_DATE__";
@@ -241,7 +239,7 @@ describe("Newsletter", () => {
                         ),
                     __REMPLACER_PAR_OFFRES__: await getJobOfferContent(),
                     __REMPLACER_PAR_DATE__:
-                        controllerUtils.formatDateToFrenchTextReadableFormat(
+                        formatDateToFrenchTextReadableFormat(
                             addDays(date, NUMBER_OF_DAY_IN_A_WEEK * 2)
                         ),
                 })
@@ -303,10 +301,9 @@ describe("Newsletter", () => {
 
         it("should send newsletter if validated", async () => {
             const date = new Date("2021-03-05T07:59:59+01:00");
-            const dateAsString =
-                controllerUtils.formatDateToFrenchTextReadableFormat(
-                    addDays(date, NUMBER_OF_DAY_IN_A_WEEK)
-                );
+            const dateAsString = formatDateToFrenchTextReadableFormat(
+                addDays(date, NUMBER_OF_DAY_IN_A_WEEK)
+            );
             const contentWithMacro = replaceMacroInContent(
                 NEWSLETTER_TEMPLATE_CONTENT,
                 {

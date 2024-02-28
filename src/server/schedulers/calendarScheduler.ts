@@ -1,10 +1,11 @@
 import ejs from "ejs";
 import { getEventsForCalendarFromDateToDate } from "@lib/icalhelper";
 import betagouv from "../betagouv";
-import * as utils from "@controllers/utils";
 import { sendCampaignEmail } from "@/server/config/email.config";
 import { EMAIL_TYPES, MAILING_LIST_TYPE } from "@modules/email";
 import { sendInfoToChat } from "@infra/chat";
+import { formatDateToFrenchTextReadableFormat } from "@/utils/date";
+import { format } from "date-fns/format";
 
 interface ReadableEvents {
     startDate: string;
@@ -19,11 +20,9 @@ const makeReadableEvent = (events) => {
     return events
         .sort((event) => event.startDate)
         .map((event) => ({
-            startDate: utils.formatDateToReadableDateAndTimeFormat(
-                event.startDate
-            ),
+            startDate: format(event.startDate, "dd/MM/yyyy à HH:mm"),
             startDateAsDate: event.startDate,
-            endDate: utils.formatDateToReadableDateAndTimeFormat(event.endDate),
+            endDate: format(event.endDate, "dd/MM/yyyy à HH:mm"),
             location: event.location,
             title: event.title,
         }))
@@ -62,7 +61,7 @@ export const sendForumBetaReminder = async (
             "./src/server/views/templates/emails/forumBetaMessage.ejs",
             {
                 event: forumBetaEvent,
-                date: utils.formatDateToFrenchTextReadableFormat(
+                date: formatDateToFrenchTextReadableFormat(
                     forumBetaEvent.startDateAsDate,
                     false
                 ),
@@ -76,7 +75,7 @@ export const sendForumBetaReminder = async (
             mailingListType: MAILING_LIST_TYPE.FORUM_REMINDER,
             type: EMAIL_TYPES.EMAIL_FORUM_REMINDER,
             variables: {
-                date: utils.formatDateToFrenchTextReadableFormat(
+                date: formatDateToFrenchTextReadableFormat(
                     forumBetaEvent.startDateAsDate,
                     false
                 ),

@@ -1,10 +1,16 @@
+"use client";
 import { linkRegistry } from "@/utils/routes/registry";
-import { hasPathnameThisMatch, hasPathnameThisRoot } from "@/utils/url";
+import {
+    hasPathnameThisMatch,
+    hasPathnameThisRegex,
+    hasPathnameThisRoot,
+} from "@/utils/url";
 import { SideMenu, SideMenuProps } from "@codegouvfr/react-dsfr/SideMenu";
 import { useSession } from "@/proxies/next-auth";
 import { usePathname, useRouter } from "next/navigation";
 import { Breadcrumb } from "@codegouvfr/react-dsfr/Breadcrumb";
 import { routeTitles } from "@/utils/routes/routeTitles";
+import { useInfoContext } from "@/app/BreadCrumbProvider";
 
 export function PrivateLayout({ children }: { children: React.ReactNode }) {
     const router = useRouter();
@@ -18,9 +24,10 @@ export function PrivateLayout({ children }: { children: React.ReactNode }) {
         },
     });
 
+    const { currentPage } = useInfoContext();
     if (status === "loading" || status === "unauthenticated") {
         return (
-            <div className="fr-grid-row fr-grid-row-gutters fr-grid-row--center fr-mb-14v">
+            <div className="fr-grid-row fr-grid-row-gutters fr-grid-row--center fr-mb-14v fr-my-4w">
                 Chargement...
             </div>
         );
@@ -47,6 +54,8 @@ export function PrivateLayout({ children }: { children: React.ReactNode }) {
         undefined
     );
     const mapLink = linkRegistry.get("map", undefined);
+    const formationLink = linkRegistry.get("formationList", undefined);
+    const formationDetailLink = linkRegistry.get("formationDetails", undefined);
 
     const accountSubPages: ItemLink[] = [
         {
@@ -153,7 +162,25 @@ export function PrivateLayout({ children }: { children: React.ReactNode }) {
             },
             text: routeTitles.newsletters(),
             isActive: hasPathnameThisMatch(pathname, newsletterLink),
-            items: startupSubPage,
+        },
+        {
+            linkProps: {
+                href: formationLink,
+            },
+            text: routeTitles.formationList(),
+            isActive: hasPathnameThisRoot(pathname, formationLink),
+            items: [
+                {
+                    linkProps: {
+                        href: pathname,
+                    },
+                    text: currentPage || pathname,
+                    isActive: hasPathnameThisRegex(
+                        pathname,
+                        formationDetailLink
+                    ),
+                },
+            ],
         },
     ];
 
@@ -237,7 +264,6 @@ export function PrivateLayout({ children }: { children: React.ReactNode }) {
     const tree = findActiveItem(MenuItems);
     return (
         <>
-            {/* <div className="fr-grid-row"> */}
             <Breadcrumb
                 currentPageLabel={tree[tree.length - 1]?.text}
                 homeLinkProps={{
@@ -257,21 +283,28 @@ export function PrivateLayout({ children }: { children: React.ReactNode }) {
                         },
                     }))}
             />
-            {/* </div> */}
-            <div className="fr-grid-row fr-grid-row-gutters fr-grid-row--center">
-                <div className="fr-col-12 fr-col-md-3 fr-col-lg-3">
-                    <SideMenu
-                        align="left"
-                        burgerMenuButtonText="Dans cette rubrique"
-                        items={
-                            displayMenuForSubPage(
-                                pathname
-                            ) as SideMenuProps.Item[]
-                        }
-                        // title="Espace-Membre"
-                    />
-                </div>
-                <div className="fr-col-12 fr-col-md-9 fr-col-lg-9">
+            <div className="fr-grid-row fr-grid-row-gutters">
+                {!!displayMenuForSubPage(pathname).length && (
+                    <div className="fr-col-12 fr-col-md-3 fr-col-lg-3">
+                        <SideMenu
+                            align="left"
+                            burgerMenuButtonText="Dans cette rubrique"
+                            items={
+                                displayMenuForSubPage(
+                                    pathname
+                                ) as SideMenuProps.Item[]
+                            }
+                            // title="Espace-Membre"
+                        />
+                    </div>
+                )}
+                <div
+                    className={`fr-col-12 ${
+                        !!displayMenuForSubPage(pathname).length
+                            ? "fr-col-md-9 fr-col-lg-9"
+                            : "fr-col-md-12 fr-col-lg-12"
+                    }`}
+                >
                     {children}
                 </div>
             </div>

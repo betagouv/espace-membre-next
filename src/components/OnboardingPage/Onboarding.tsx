@@ -26,14 +26,6 @@ const modal = createModal({
     isOpenedByDefault: false,
 });
 
-function formatDateToReadableFormat(date) {
-    let day = date.getDate().toString();
-    day = day.length === 1 ? `0${day}` : day;
-    let month = (date.getMonth() + 1).toString();
-    month = month.length === 1 ? `0${month}` : month;
-    return `${date.getFullYear()}-${month}-${day}`;
-}
-
 interface CommuneInfo {
     nom: string;
     codesPostaux?: string[];
@@ -191,10 +183,6 @@ export const Onboarding = function (props: OnboardingProps) {
             return JSON.parse(state.formData.osm_city).label;
         }
         return "";
-    };
-
-    const formatDate = (date: Date) => {
-        return formatDateToReadableFormat(date);
     };
 
     const save = async (e) => {

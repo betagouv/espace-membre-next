@@ -6,6 +6,7 @@ import { StartDsfr } from "./StartDsfr";
 import { MuiDsfrThemeProvider } from "./MuiDsfrThemeProvider";
 import Header from "@/components/Header";
 import { defaultColorScheme } from "./defaultColorScheme";
+import { BreadCrumbProvider } from "./BreadCrumbProvider";
 
 export interface RootLayoutProps {
     workaroundForNextJsPages?: boolean;
@@ -25,13 +26,15 @@ function MainStructure(props: PropsWithChildren) {
             <body>
                 <DsfrProvider>
                     <MuiDsfrThemeProvider>
-                        <Header />
-                        <div
-                            className="fr-container fr-container--fluid"
-                            id="root-container"
-                        >
-                            {props.children}
-                        </div>
+                        <BreadCrumbProvider>
+                            <Header />
+                            <div
+                                className="fr-container fr-container--fluid"
+                                id="root-container"
+                            >
+                                {props.children}
+                            </div>
+                        </BreadCrumbProvider>
                     </MuiDsfrThemeProvider>
                 </DsfrProvider>
             </body>

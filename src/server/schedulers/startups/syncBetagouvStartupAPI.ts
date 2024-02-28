@@ -11,9 +11,9 @@ import {
     StartupPhase,
 } from "@/models/startup";
 import { EMAIL_TYPES, SendEmailProps } from "@modules/email";
-import { nbOfDaysBetweenDate } from "@controllers/utils";
 import { Domaine, Member } from "@/models/member";
 import { getLastCommitFromFile } from "@/lib/github";
+import { nbOfDaysBetweenDate } from "@/utils/date";
 
 function getCurrentPhase(startup: StartupInfo) {
     return startup.attributes.phases
