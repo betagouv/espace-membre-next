@@ -1,3 +1,5 @@
+import { FieldSet, Record } from "airtable";
+
 import {
     Formation,
     FormationInscription,
@@ -25,7 +27,8 @@ export const airtableRecordToFormation = (
         formation_type_airtable_id: record.fields["formationType"]
             ? (record.fields["formationType"] as string[])[0]
             : undefined,
-        is_embarquement: record.fields["embarquement"] === "true",
+        is_embarquement: !!record.fields["embarquement"],
+        isELearning: !!record.fields["isELearning"],
         audience: record.fields["Audience"],
         category: record.fields["Catégorie"],
         start: new Date(record.fields["Début"] as string),

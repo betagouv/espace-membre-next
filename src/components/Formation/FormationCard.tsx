@@ -31,6 +31,15 @@ export default function FormationCard({
             linkProps={{
                 href: `/formations/${formation.airtable_id}`,
             }}
+            badges={
+                !!formation.isELearning
+                    ? [
+                          <Badge key={"e-learning"} severity="new">
+                              E-learning
+                          </Badge>,
+                      ]
+                    : undefined
+            }
             start={
                 isMemberRegistered ? (
                     <ul className="fr-badges-group">
