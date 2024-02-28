@@ -9,7 +9,7 @@ export async function fetchAirtableFormations(): Promise<Formation[]> {
     const baseUrl = `https://api.airtable.com/v0/${config.AIRTABLE_FORMATION_BASE_ID}/Formations`;
     const token = config.AIRTABLE_API_KEY; // Replace YOUR_TOKEN with your actual Airtable API token
     const queryParams = {
-        view: "Formations à venir",
+        view: "Formations accessibles à l'inscription",
     };
 
     // Construct query string
