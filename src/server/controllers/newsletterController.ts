@@ -3,6 +3,7 @@ import knex from "../db";
 import { format } from "date-fns/format";
 import { add } from "date-fns/add";
 import { fr } from "date-fns/locale/fr";
+import { getMonday } from "@/utils/date";
 
 const errorMessage = "Impossible de récupérer les infolettres.";
 
