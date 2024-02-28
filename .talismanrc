@@ -1,9 +1,6 @@
 fileignoreconfig:
-- filename: package-lock.json
-  checksum: 81d43ea2d0d9570aab85722b3c2eae8a083a473b6427340104535071199f5355
-version: ""
-name: src/app/(private)/(dashboard)/formations/[id]/page.tsx
-  checksum: fe42a23379cfc9ccbfe46525d53690c15a92f3b03ff99deed0b9092b4c4cad5c
+- filename: src/app/(private)/(dashboard)/formations/[id]/page.tsx
+  checksum: 390ef63c5204d6ab98176e640b371f2e8abca7d760f6003804f73c7f0220b997
 - filename: src/app/(private)/(dashboard)/formations/page.tsx
   checksum: 2bbe0f4d6807f4238b7d6085d45f8e5582bc8e57326db67a9839ee1aae1f4bdf
 - filename: src/components/BaseInfoUpdatePage/BaseInfoUpdate.tsx

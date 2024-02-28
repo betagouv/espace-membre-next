@@ -1,10 +1,11 @@
+import { FieldSet, Record } from "airtable";
+
 import {
     Formation,
     FormationInscription,
     formationInscriptionSchema,
     formationSchema,
 } from "@/models/formation";
-import { FieldSet, Record } from "airtable";
 
 export const airtableRecordToFormation = (
     record: Record<FieldSet>
@@ -18,25 +19,31 @@ export const airtableRecordToFormation = (
         name: record.fields["Formation"],
         imageUrl: image ? image[0].thumbnails.full.url : undefined,
         created_at: new Date(record.fields["Created"] as string), // Make sure this is the correct field for "created_at"
-        formation_date: new Date(record.fields["Début"] as string),
+        formation_date: record.fields["Début"]
+            ? new Date(record.fields["Début"] as string)
+            : undefined,
         formation_type: record.fields["formationTypeName"]
             ? (record.fields["formationTypeName"] as string[])[0]
             : undefined,
         formation_type_airtable_id: record.fields["formationType"]
             ? (record.fields["formationType"] as string[])[0]
             : undefined,
-        is_embarquement: record.fields["embarquement"] === "true",
+        is_embarquement: !!record.fields["embarquement"],
+        isELearning: !!record.fields["isELearning"],
         audience: record.fields["Audience"],
         category: record.fields["Catégorie"],
-        start: new Date(record.fields["Début"] as string),
+        start: record.fields["Début"]
+            ? new Date(record.fields["Début"] as string)
+            : undefined,
         end: new Date(record.fields["Fin"] as string),
         animatorEmail: record.fields["Email organisateur"]
             ? record.fields["Email organisateur"]
             : undefined,
         animator: record.fields["Animateur"],
         googleAgendaEvent: record.fields["Google Calendar Event ID"],
-        startDate: new Date(record.fields["Début"] as string),
-        startTime: record.fields["Heure début"],
+        startDate: record.fields["Début"]
+            ? new Date(record.fields["Début"] as string)
+            : undefined,
         inscriptionLink:
             record.fields["preselectedInscriptionEspaceMembreLink"],
         availableSeats: record.fields["Place restantes en chiffre"],

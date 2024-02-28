@@ -1,20 +1,22 @@
-import type { Metadata, ResolvingMetadata } from "next";
-import { redirect } from "next/navigation";
-import { routeTitles } from "@/utils/routes/routeTitles";
-import { getSessionFromStore } from "@/server/middlewares/sessionMiddleware";
-import { cookies } from "next/headers";
-import config from "@/server/config";
-import Card from "@codegouvfr/react-dsfr/Card";
+import { Badge } from "@codegouvfr/react-dsfr/Badge";
 import Button from "@codegouvfr/react-dsfr/Button";
-import { durationBetweenDate } from "@/utils/date";
-import { fetchAirtableFormationById } from "@/lib/airtable";
+import Card from "@codegouvfr/react-dsfr/Card";
 import { format } from "date-fns/format";
 import { fr } from "date-fns/locale/fr";
+import type { Metadata, ResolvingMetadata } from "next";
+import { cookies } from "next/headers";
+import { redirect } from "next/navigation";
+
 import { BreadCrumbFiller } from "@/app/BreadCrumbProvider";
-import betagouv from "@/server/betagouv";
-import { Domaine, Member } from "@/models/member";
-import db from "@/server/db";
+import { fetchAirtableFormationById } from "@/lib/airtable";
 import { CommunicationEmailCode, DBUser } from "@/models/dbUser";
+import { Domaine, Member } from "@/models/member";
+import betagouv from "@/server/betagouv";
+import config from "@/server/config";
+import db from "@/server/db";
+import { getSessionFromStore } from "@/server/middlewares/sessionMiddleware";
+import { durationBetweenDate } from "@/utils/date";
+import { routeTitles } from "@/utils/routes/routeTitles";
 
 export async function generateMetadata(
     { params }: Props,
@@ -108,6 +110,18 @@ export default async function Page({ params }: Props) {
                         <Card
                             background
                             border
+                            badges={
+                                !!formation.isELearning
+                                    ? [
+                                          <Badge
+                                              key={"e-learning"}
+                                              severity="new"
+                                          >
+                                              E-learning
+                                          </Badge>,
+                                      ]
+                                    : undefined
+                            }
                             imageAlt={`${formation.name} image`}
                             imageUrl={formation.imageUrl}
                             size="medium"

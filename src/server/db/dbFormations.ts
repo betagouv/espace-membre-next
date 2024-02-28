@@ -8,7 +8,8 @@ type OptionalKeys =
     | "description"
     | "id"
     | "inscriptionLink"
-    | "availableSeats";
+    | "availableSeats"
+    | "isELearning";
 
 interface CreateFormationProps extends Omit<Formation, OptionalKeys> {}
 interface UpdateFormationProps extends Partial<Omit<Formation, OptionalKeys>> {}
