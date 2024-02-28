@@ -6,7 +6,6 @@ import {
     formationInscriptionSchema,
     formationSchema,
 } from "@/models/formation";
-import { FieldSet, Record } from "airtable";
 
 export const airtableRecordToFormation = (
     record: Record<FieldSet>
