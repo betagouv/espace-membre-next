@@ -18,14 +18,12 @@ import * as chat from "@infra/chat";
 import * as Email from "@/server/config/email.config";
 import * as session from "@/server/helpers/session";
 import { add } from "date-fns/add";
+import { format } from "date-fns/format";
+import { fr } from "date-fns/locale/fr";
 
 chai.use(chaiHttp);
 
-const {
-    NUMBER_OF_DAY_FROM_MONDAY,
-    getMonday,
-    formatDateToFrenchTextReadableFormat,
-} = dateUtils;
+const { NUMBER_OF_DAY_FROM_MONDAY, getMonday } = dateUtils;
 
 const NEWSLETTER_TITLE =
     "📰 A ne pas rater chez beta.gouv.fr ! - Infolettre du __REMPLACER_PAR_DATE__";
@@ -201,17 +199,19 @@ describe("Newsletter", () => {
             createNewNoteWithContentAndAliasSpy.firstCall.args[0].should.equal(
                 replaceMacroInContent(NEWSLETTER_TEMPLATE_CONTENT, {
                     __REMPLACER_PAR_LIEN_DU_PAD__: `${config.padURL}/${newsletterName}`,
-                    __REMPLACER_PAR_DATE_STAND_UP__:
-                        formatDateToFrenchTextReadableFormat(
-                            add(getMonday(newsletterDate), {
-                                days: 7 + NUMBER_OF_DAY_FROM_MONDAY.THURSDAY,
-                            })
-                        ),
+                    __REMPLACER_PAR_DATE_STAND_UP__: format(
+                        add(getMonday(newsletterDate), {
+                            days: 7 + NUMBER_OF_DAY_FROM_MONDAY.THURSDAY,
+                        }),
+                        "d MMMM yyyy",
+                        { locale: fr }
+                    ),
                     __REMPLACER_PAR_OFFRES__: await getJobOfferContent(),
-                    __REMPLACER_PAR_DATE__:
-                        formatDateToFrenchTextReadableFormat(
-                            add(date, { weeks: 2 })
-                        ),
+                    __REMPLACER_PAR_DATE__: format(
+                        add(date, { weeks: 2 }),
+                        "d MMMM yyyy",
+                        { locale: fr }
+                    ),
                 })
             );
             const newsletter = await knex("newsletters")
@@ -271,20 +271,27 @@ describe("Newsletter", () => {
 
         it("should send newsletter if validated", async () => {
             const date = new Date("2021-03-05T07:59:59+01:00");
-            const dateAsString = formatDateToFrenchTextReadableFormat(
-                add(date, { weeks: 2 })
+            const dateAsString = format(
+                add(date, { weeks: 2 }),
+                "d MMMM yyyy",
+                {
+                    locale: fr,
+                }
             );
             const contentWithMacro = replaceMacroInContent(
                 NEWSLETTER_TEMPLATE_CONTENT,
                 {
                     __REMPLACER_PAR_LIEN_DU_PAD__: `${config.padURL}/jfkdsfljkslfsfs`,
-                    __REMPLACER_PAR_DATE_STAND_UP__:
-                        formatDateToFrenchTextReadableFormat(
-                            add(getMonday(date), {
-                                weeks: 1,
-                                days: NUMBER_OF_DAY_FROM_MONDAY.THURSDAY,
-                            })
-                        ),
+                    __REMPLACER_PAR_DATE_STAND_UP__: format(
+                        add(getMonday(date), {
+                            weeks: 1,
+                            days: NUMBER_OF_DAY_FROM_MONDAY.THURSDAY,
+                        }),
+                        "d MMMM yyyy",
+                        {
+                            locale: fr,
+                        }
+                    ),
                     __REMPLACER_PAR_DATE__: dateAsString,
                 }
             );

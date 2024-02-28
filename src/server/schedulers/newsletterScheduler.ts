@@ -12,7 +12,8 @@ import { JobWTTJ } from "@/models/job";
 import { sendInfoToChat } from "@infra/chat";
 import { EMAIL_TYPES, MAILING_LIST_TYPE } from "@modules/email";
 import { sendEmail, sendCampaignEmail } from "@/server/config/email.config";
-import { formatDateToFrenchTextReadableFormat } from "@/utils/date";
+import { format } from "date-fns/format";
+import { fr } from "date-fns/locale/fr";
 
 const { NUMBER_OF_DAY_IN_A_WEEK, NUMBER_OF_DAY_FROM_MONDAY, getMonday } =
     dateUtils;
@@ -48,14 +49,18 @@ const createNewsletter = async () => {
     const replaceConfig = {
         __REMPLACER_PAR_LIEN_DU_PAD__: `${config.padURL}/${newsletterName}`,
         // next stand up is a week after the newsletter date on thursday
-        __REMPLACER_PAR_DATE_STAND_UP__: formatDateToFrenchTextReadableFormat(
-            add(date, { weeks: 1, days: NUMBER_OF_DAY_FROM_MONDAY.THURSDAY })
+        __REMPLACER_PAR_DATE_STAND_UP__: format(
+            add(date, { weeks: 1, days: NUMBER_OF_DAY_FROM_MONDAY.THURSDAY }),
+            "d MMMM yyyy",
+            { locale: fr }
         ),
         __REMPLACER_PAR_OFFRES__: await getJobOfferContent(),
-        __REMPLACER_PAR_DATE__: formatDateToFrenchTextReadableFormat(
+        __REMPLACER_PAR_DATE__: format(
             add(date, {
                 days: NUMBER_OF_DAY_FROM_MONDAY[config.newsletterSentDay],
-            })
+            }),
+            "d MMMM yyyy",
+            { locale: fr }
         ),
     };
 

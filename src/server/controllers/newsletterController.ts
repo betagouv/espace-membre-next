@@ -1,8 +1,9 @@
 import config from "@/server/config";
 import knex from "../db";
-import { formatDateToFrenchTextReadableFormat, getMonday } from "@/utils/date";
 import { format } from "date-fns/format";
 import { add } from "date-fns/add";
+import { fr } from "date-fns/locale/fr";
+import { getMonday } from "@/utils/date";
 
 const errorMessage = "Impossible de récupérer les infolettres.";
 
@@ -38,9 +39,11 @@ const updateCurrentNewsletterValidator = async (validator) => {
 const formatNewsletter = (newsletter) => ({
     ...newsletter,
     title: newsletter.sent_at
-        ? formatDateToFrenchTextReadableFormat(newsletter.sent_at)
-        : formatDateToFrenchTextReadableFormat(
-              add(getMonday(newsletter.created_at), { weeks: 1 })
+        ? format(newsletter.sent_at, "d MMMM yyyy", { locale: fr })
+        : format(
+              add(getMonday(newsletter.created_at), { weeks: 1 }),
+              "d MMMM yyyy",
+              { locale: fr }
           ), // get next monday (date + 7 days),
     sent_at: newsletter.sent_at
         ? format(newsletter.sent_at, "dd/MM/yyyy à HH:mm")
