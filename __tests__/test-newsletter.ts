@@ -17,15 +17,12 @@ import utils from "./utils";
 import * as chat from "@infra/chat";
 import * as Email from "@/server/config/email.config";
 import * as session from "@/server/helpers/session";
+import { add } from "date-fns/add";
 
 chai.use(chaiHttp);
 
-const should = chai.should();
-
 const {
-    NUMBER_OF_DAY_IN_A_WEEK,
     NUMBER_OF_DAY_FROM_MONDAY,
-    addDays,
     getMonday,
     formatDateToFrenchTextReadableFormat,
 } = dateUtils;
@@ -112,31 +109,6 @@ describe("Newsletter", () => {
             await knex("newsletters").truncate();
             getToken.restore();
         });
-
-        // it("should get previous newsletters and current newsletter", async () => {
-        //     const date = new Date("2021-01-20T07:59:59+01:00");
-        //     clock = sinon.useFakeTimers(date);
-        //     const res = await chai.request(app).get(routes.NEWSLETTERS_API);
-        //     console.log(res);
-
-        //     // res.text.should.include(`${config.padURL}/5456dsadsahjww`);
-        //     // const allNewsletterButMostRecentOne =
-        //     //     mockNewsletters.filter((n) => !n.sent_at);
-        //     // allNewsletterButMostRecentOne.forEach((newsletter) => {
-        //     //     res.text.should.include(
-        //     //         controllerUtils.formatDateToReadableDateAndTimeFormat(
-        //     //             newsletter.sent_at
-        //     //         )
-        //     //     );
-        //     // });
-        //     // const currentNewsletter = mockNewsletter;
-        //     // res.text.should.include(
-        //     //     `<h3>Infolettre de la semaine du ${controllerUtils.formatDateToFrenchTextReadableFormat(
-        //     //         addDays(getMonday(currentNewsletter.created_at), 7)
-        //     //     )}</h3>`
-        //     // );
-        //     // clock.restore();
-        // });
     });
 
     describe("cronjob newsletter", () => {
@@ -180,7 +152,7 @@ describe("Newsletter", () => {
                 "createNewNoteWithContentAndAlias"
             );
             const date = new Date("2021-03-04T07:59:59+01:00");
-            const newsletterDate = addDays(getMonday(date), 14);
+            const newsletterDate = add(getMonday(date), { weeks: 2 });
             clock = sinon.useFakeTimers(date);
             const newsletterName = `infolettre-${computeId(
                 newsletterDate.toISOString().split("T")[0]
@@ -231,16 +203,14 @@ describe("Newsletter", () => {
                     __REMPLACER_PAR_LIEN_DU_PAD__: `${config.padURL}/${newsletterName}`,
                     __REMPLACER_PAR_DATE_STAND_UP__:
                         formatDateToFrenchTextReadableFormat(
-                            addDays(
-                                getMonday(newsletterDate),
-                                NUMBER_OF_DAY_IN_A_WEEK +
-                                    NUMBER_OF_DAY_FROM_MONDAY.THURSDAY
-                            )
+                            add(getMonday(newsletterDate), {
+                                days: 7 + NUMBER_OF_DAY_FROM_MONDAY.THURSDAY,
+                            })
                         ),
                     __REMPLACER_PAR_OFFRES__: await getJobOfferContent(),
                     __REMPLACER_PAR_DATE__:
                         formatDateToFrenchTextReadableFormat(
-                            addDays(date, NUMBER_OF_DAY_IN_A_WEEK * 2)
+                            add(date, { weeks: 2 })
                         ),
                 })
             );
@@ -302,7 +272,7 @@ describe("Newsletter", () => {
         it("should send newsletter if validated", async () => {
             const date = new Date("2021-03-05T07:59:59+01:00");
             const dateAsString = formatDateToFrenchTextReadableFormat(
-                addDays(date, NUMBER_OF_DAY_IN_A_WEEK)
+                add(date, { weeks: 2 })
             );
             const contentWithMacro = replaceMacroInContent(
                 NEWSLETTER_TEMPLATE_CONTENT,
@@ -310,11 +280,10 @@ describe("Newsletter", () => {
                     __REMPLACER_PAR_LIEN_DU_PAD__: `${config.padURL}/jfkdsfljkslfsfs`,
                     __REMPLACER_PAR_DATE_STAND_UP__:
                         formatDateToFrenchTextReadableFormat(
-                            addDays(
-                                getMonday(date),
-                                NUMBER_OF_DAY_IN_A_WEEK +
-                                    NUMBER_OF_DAY_FROM_MONDAY.THURSDAY
-                            )
+                            add(getMonday(date), {
+                                weeks: 1,
+                                days: NUMBER_OF_DAY_FROM_MONDAY.THURSDAY,
+                            })
                         ),
                     __REMPLACER_PAR_DATE__: dateAsString,
                 }
