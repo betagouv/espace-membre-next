@@ -1,31 +1,6 @@
 import { intervalToDuration, format, startOfWeek } from "date-fns";
 import { fr } from "date-fns/locale";
 
-export function nbOfDaysBetweenDate(date1: Date, date2: Date) {
-    let difference = date1.getTime() - date2.getTime();
-    let totalDays = Math.ceil(difference / (1000 * 3600 * 24));
-    return Math.abs(totalDays);
-}
-
-export function formatDateToFrenchTextReadableFormat(
-    date: Date,
-    withYear: boolean = true,
-    withTime: boolean = false
-) {
-    // Format de base pour la date en français
-    let formatStr = "d MMMM";
-    if (withYear) {
-        formatStr += " yyyy";
-    }
-    if (withTime) {
-        // Utilisez 'HH:mm' pour un format 24h ou 'hh:mm a' pour un format 12h avec AM/PM
-        formatStr += " 'à' HH:mm";
-    }
-
-    // Formate la date avec le format spécifié et le locale français
-    return format(date, formatStr, { locale: fr });
-}
-
 export const NUMBER_OF_DAY_IN_A_WEEK = 7;
 
 export const NUMBER_OF_DAY_FROM_MONDAY = {
