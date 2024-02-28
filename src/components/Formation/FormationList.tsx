@@ -79,8 +79,6 @@ export default function FormationList({
     inscriptions: FormationInscription[];
     formations: Formation[];
 }) {
-    const [filteredFormations, setFilteredFormations] =
-        useState<Formation[]>(formations);
     const [selectedFilter, setSelectedFilter] = useState<
         AudienceCategoryType | undefined
     >(undefined);
@@ -91,10 +89,8 @@ export default function FormationList({
             setSelectedFilter(undefined);
         }
     };
-    useEffect(() => {
-        if (selectedFilter) {
-            setFilteredFormations(
-                formations.filter((formation) => {
+    const filteredFormations: Formation[] = selectedFilter ? formations : 
+        formations.filter((formation) => {
                     if (selectedFilter.type === "audience") {
                         return formation.audience?.includes(
                             selectedFilter.value
@@ -105,11 +101,6 @@ export default function FormationList({
                         );
                     }
                 })
-            );
-        } else {
-            setFilteredFormations(formations);
-        }
-    }, [selectedFilter]);
     return (
         <div>
             <ul className="fr-tags-group fr-my-2w">
