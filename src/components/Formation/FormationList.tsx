@@ -89,18 +89,15 @@ export default function FormationList({
             setSelectedFilter(undefined);
         }
     };
-    const filteredFormations: Formation[] = selectedFilter ? formations : 
-        formations.filter((formation) => {
-                    if (selectedFilter.type === "audience") {
-                        return formation.audience?.includes(
-                            selectedFilter.value
-                        );
-                    } else {
-                        return formation.category?.includes(
-                            selectedFilter.value
-                        );
-                    }
-                })
+    const filteredFormations: Formation[] = selectedFilter
+        ? formations.filter((formation) => {
+              if (selectedFilter.type! === "audience") {
+                  return formation.audience?.includes(selectedFilter.value);
+              } else {
+                  return formation.category?.includes(selectedFilter.value);
+              }
+          })
+        : formations;
     return (
         <div>
             <ul className="fr-tags-group fr-my-2w">
