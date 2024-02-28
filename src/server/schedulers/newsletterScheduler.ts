@@ -13,13 +13,10 @@ import {
     formatDateToFrenchTextReadableFormat,
     nbOfDaysBetweenDate,
 } from "@/utils/date";
+import { add } from "date-fns/add";
 
-const {
-    NUMBER_OF_DAY_IN_A_WEEK,
-    NUMBER_OF_DAY_FROM_MONDAY,
-    addDays,
-    getMonday,
-} = dateUtils;
+const { NUMBER_OF_DAY_IN_A_WEEK, NUMBER_OF_DAY_FROM_MONDAY, getMonday } =
+    dateUtils;
 
 const replaceMacroInContent = (newsletterTemplateContent, replaceConfig) => {
     const contentWithReplacement = Object.keys(replaceConfig).reduce(
@@ -40,7 +37,7 @@ const computeId = (dateAsString) => {
 
 const createNewsletter = async () => {
     let date = getMonday(new Date()); // get first day of the current week
-    date = addDays(date, NUMBER_OF_DAY_IN_A_WEEK * 2); // get next monday (date + 14 days)
+    date = add(date, { weeks: 2 }); // get next monday (date + 14 days)
     const pad = new HedgedocApi(
         config.padEmail,
         config.padPassword,
@@ -53,14 +50,13 @@ const createNewsletter = async () => {
         __REMPLACER_PAR_LIEN_DU_PAD__: `${config.padURL}/${newsletterName}`,
         // next stand up is a week after the newsletter date on thursday
         __REMPLACER_PAR_DATE_STAND_UP__: formatDateToFrenchTextReadableFormat(
-            addDays(
-                date,
-                NUMBER_OF_DAY_IN_A_WEEK + NUMBER_OF_DAY_FROM_MONDAY.THURSDAY
-            )
+            add(date, { weeks: 1, days: NUMBER_OF_DAY_FROM_MONDAY.THURSDAY })
         ),
         __REMPLACER_PAR_OFFRES__: await getJobOfferContent(),
         __REMPLACER_PAR_DATE__: formatDateToFrenchTextReadableFormat(
-            addDays(date, NUMBER_OF_DAY_FROM_MONDAY[config.newsletterSentDay])
+            add(date, {
+                days: NUMBER_OF_DAY_FROM_MONDAY[config.newsletterSentDay],
+            })
         ),
     };
 

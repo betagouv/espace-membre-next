@@ -46,12 +46,6 @@ export function getMonday(d) {
     return monday;
 }
 
-export function addDays(date, days, week = null) {
-    const result = new Date(date);
-    result.setDate(result.getDate() + days);
-    return result;
-}
-
 export function durationBetweenDate(date1: Date, date2: Date) {
     const duration = intervalToDuration({ start: date2, end: date1 });
     let result = "";
