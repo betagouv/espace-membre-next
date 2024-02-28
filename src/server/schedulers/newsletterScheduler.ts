@@ -12,7 +12,6 @@ import { JobWTTJ } from "@/models/job";
 import { sendInfoToChat } from "@infra/chat";
 import { EMAIL_TYPES, MAILING_LIST_TYPE } from "@modules/email";
 import { sendEmail, sendCampaignEmail } from "@/server/config/email.config";
-import { formatDateToFrenchTextReadableFormat } from "@/utils/date";
 import { format } from "date-fns/format";
 import { fr } from "date-fns/locale/fr";
 

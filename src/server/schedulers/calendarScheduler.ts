@@ -1,12 +1,12 @@
+import { format } from "date-fns/format";
+import { fr } from "date-fns/locale/fr";
 import ejs from "ejs";
+
 import { getEventsForCalendarFromDateToDate } from "@lib/icalhelper";
 import betagouv from "../betagouv";
 import { sendCampaignEmail } from "@/server/config/email.config";
 import { EMAIL_TYPES, MAILING_LIST_TYPE } from "@modules/email";
 import { sendInfoToChat } from "@infra/chat";
-import { formatDateToFrenchTextReadableFormat } from "@/utils/date";
-import { format } from "date-fns/format";
-import { fr } from "date-fns/locale/fr";
 
 interface ReadableEvents {
     startDate: string;

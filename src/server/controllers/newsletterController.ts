@@ -1,6 +1,5 @@
 import config from "@/server/config";
 import knex from "../db";
-import { formatDateToFrenchTextReadableFormat, getMonday } from "@/utils/date";
 import { format } from "date-fns/format";
 import { add } from "date-fns/add";
 import { fr } from "date-fns/locale/fr";

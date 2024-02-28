@@ -23,11 +23,7 @@ import { fr } from "date-fns/locale/fr";
 
 chai.use(chaiHttp);
 
-const {
-    NUMBER_OF_DAY_FROM_MONDAY,
-    getMonday,
-    formatDateToFrenchTextReadableFormat,
-} = dateUtils;
+const { NUMBER_OF_DAY_FROM_MONDAY, getMonday } = dateUtils;
 
 const NEWSLETTER_TITLE =
     "📰 A ne pas rater chez beta.gouv.fr ! - Infolettre du __REMPLACER_PAR_DATE__";
