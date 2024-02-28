@@ -4,6 +4,11 @@ import HedgedocApi from "hedgedoc-api";
 import nock from "nock";
 import rewire from "rewire";
 import sinon from "sinon";
+import { add } from "date-fns/add";
+import { format } from "date-fns/format";
+import { fr } from "date-fns/locale/fr";
+import { startOfWeek } from "date-fns/startOfWeek";
+
 import BetaGouv from "@betagouv";
 import config from "@/server/config";
 import * as dateUtils from "@/utils/date";
@@ -17,13 +22,10 @@ import utils from "./utils";
 import * as chat from "@infra/chat";
 import * as Email from "@/server/config/email.config";
 import * as session from "@/server/helpers/session";
-import { add } from "date-fns/add";
-import { format } from "date-fns/format";
-import { fr } from "date-fns/locale/fr";
 
 chai.use(chaiHttp);
 
-const { NUMBER_OF_DAY_FROM_MONDAY, getMonday } = dateUtils;
+const { NUMBER_OF_DAY_FROM_MONDAY } = dateUtils;
 
 const NEWSLETTER_TITLE =
     "📰 A ne pas rater chez beta.gouv.fr ! - Infolettre du __REMPLACER_PAR_DATE__";
@@ -150,7 +152,9 @@ describe("Newsletter", () => {
                 "createNewNoteWithContentAndAlias"
             );
             const date = new Date("2021-03-04T07:59:59+01:00");
-            const newsletterDate = add(getMonday(date), { weeks: 2 });
+            const newsletterDate = add(startOfWeek(date, { weekStartsOn: 1 }), {
+                weeks: 2,
+            });
             clock = sinon.useFakeTimers(date);
             const newsletterName = `infolettre-${computeId(
                 newsletterDate.toISOString().split("T")[0]
@@ -200,7 +204,7 @@ describe("Newsletter", () => {
                 replaceMacroInContent(NEWSLETTER_TEMPLATE_CONTENT, {
                     __REMPLACER_PAR_LIEN_DU_PAD__: `${config.padURL}/${newsletterName}`,
                     __REMPLACER_PAR_DATE_STAND_UP__: format(
-                        add(getMonday(newsletterDate), {
+                        add(startOfWeek(newsletterDate, { weekStartsOn: 1 }), {
                             days: 7 + NUMBER_OF_DAY_FROM_MONDAY.THURSDAY,
                         }),
                         "d MMMM yyyy",
@@ -283,7 +287,7 @@ describe("Newsletter", () => {
                 {
                     __REMPLACER_PAR_LIEN_DU_PAD__: `${config.padURL}/jfkdsfljkslfsfs`,
                     __REMPLACER_PAR_DATE_STAND_UP__: format(
-                        add(getMonday(date), {
+                        add(startOfWeek(date, { weekStartsOn: 1 }), {
                             weeks: 1,
                             days: NUMBER_OF_DAY_FROM_MONDAY.THURSDAY,
                         }),
