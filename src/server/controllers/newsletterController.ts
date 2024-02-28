@@ -39,9 +39,11 @@ const updateCurrentNewsletterValidator = async (validator) => {
 const formatNewsletter = (newsletter) => ({
     ...newsletter,
     title: newsletter.sent_at
-        ? formatDateToFrenchTextReadableFormat(newsletter.sent_at)
-        : formatDateToFrenchTextReadableFormat(
-              add(getMonday(newsletter.created_at), { weeks: 1 })
+        ? format(newsletter.sent_at, "d MMMM yyyy", { locale: fr })
+        : format(
+              add(getMonday(newsletter.created_at), { weeks: 1 }),
+              "d MMMM yyyy",
+              { locale: fr }
           ), // get next monday (date + 7 days),
     sent_at: newsletter.sent_at
         ? format(newsletter.sent_at, "dd/MM/yyyy à HH:mm")
