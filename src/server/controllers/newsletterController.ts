@@ -1,9 +1,10 @@
+import { add } from "date-fns/add";
+import { fr } from "date-fns/locale/fr";
+import { startOfWeek } from "date-fns/startOfWeek";
+
 import config from "@/server/config";
 import knex from "../db";
 import { format } from "date-fns/format";
-import { add } from "date-fns/add";
-import { fr } from "date-fns/locale/fr";
-import { getMonday } from "@/utils/date";
 
 const errorMessage = "Impossible de récupérer les infolettres.";
 
@@ -41,7 +42,9 @@ const formatNewsletter = (newsletter) => ({
     title: newsletter.sent_at
         ? format(newsletter.sent_at, "d MMMM yyyy", { locale: fr })
         : format(
-              add(getMonday(newsletter.created_at), { weeks: 1 }),
+              add(startOfWeek(newsletter.created_at, { weekStartsOn: 1 }), {
+                  weeks: 1,
+              }),
               "d MMMM yyyy",
               { locale: fr }
           ), // get next monday (date + 7 days),

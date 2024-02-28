@@ -2,6 +2,9 @@ import crypto from "crypto";
 import { add } from "date-fns/add";
 import { differenceInDays } from "date-fns/differenceInDays";
 import HedgedocApi from "hedgedoc-api";
+import { format } from "date-fns/format";
+import { fr } from "date-fns/locale/fr";
+import { startOfWeek } from "date-fns/startOfWeek";
 
 import BetaGouv from "../betagouv";
 import config from "@/server/config";
@@ -12,11 +15,8 @@ import { JobWTTJ } from "@/models/job";
 import { sendInfoToChat } from "@infra/chat";
 import { EMAIL_TYPES, MAILING_LIST_TYPE } from "@modules/email";
 import { sendEmail, sendCampaignEmail } from "@/server/config/email.config";
-import { format } from "date-fns/format";
-import { fr } from "date-fns/locale/fr";
 
-const { NUMBER_OF_DAY_IN_A_WEEK, NUMBER_OF_DAY_FROM_MONDAY, getMonday } =
-    dateUtils;
+const { NUMBER_OF_DAY_FROM_MONDAY } = dateUtils;
 
 const replaceMacroInContent = (newsletterTemplateContent, replaceConfig) => {
     const contentWithReplacement = Object.keys(replaceConfig).reduce(
@@ -36,7 +36,7 @@ const computeId = (dateAsString) => {
 };
 
 const createNewsletter = async () => {
-    let date = getMonday(new Date()); // get first day of the current week
+    let date = startOfWeek(new Date(), { weekStartsOn: 1 }); // get first day of the current week
     date = add(date, { weeks: 2 }); // get next monday (date + 14 days)
     const pad = new HedgedocApi(
         config.padEmail,
@@ -176,7 +176,7 @@ export async function newsletterReminder(reminder) {
 }
 
 export async function getJobOfferContent() {
-    const monday = getMonday(new Date()); // get first day of the current week
+    const monday = startOfWeek(new Date(), { weekStartsOn: 1 }); // get first day of the current week
     const jobs: JobWTTJ[] = await BetaGouv.getJobsWTTJ();
     const filteredJobs = jobs.filter(
         (job) => new Date(job.published_at) > monday
