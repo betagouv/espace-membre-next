@@ -1,4 +1,5 @@
 import * as Sentry from "@sentry/node";
+import { differenceInDays } from "date-fns/differenceInDays";
 
 import * as github from "@/lib/github";
 import db from "@db";
@@ -15,7 +16,6 @@ import {
     PULL_REQUEST_STATE,
     PULL_REQUEST_TYPE,
 } from "@/models/pullRequests";
-import { nbOfDaysBetweenDate } from "@/utils/date";
 
 async function sendMessageToReferent({
     prUrl,
@@ -157,7 +157,7 @@ const OnboardingStateMachine = async (
         dbPullRequest.status === PULL_REQUEST_STATE.PR_SENT_TO_REFERENT
     ) {
         // sendEmail to team
-        if (nbOfDaysBetweenDate(new Date(), dbPullRequest.created_at) < 7) {
+        if (differenceInDays(new Date(), dbPullRequest.created_at) < 7) {
             // the check on the date should be temporary to fix old PR stucked on previous state that should not triggered email sent
             await sendEmailToTeam({
                 username: dbPullRequest.username,

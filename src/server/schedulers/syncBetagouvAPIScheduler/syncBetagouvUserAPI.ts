@@ -1,4 +1,5 @@
 import _ from "lodash";
+import { differenceInDays } from "date-fns/differenceInDays";
 
 import betagouv from "@betagouv";
 import { computeHash } from "@controllers/utils";
@@ -6,7 +7,6 @@ import db from "@db";
 import { DBUser } from "@/models/dbUser/dbUser";
 import { Member } from "@/models/member";
 import { DBMission, Mission } from "@/models/mission";
-import { nbOfDaysBetweenDate } from "@/utils/date";
 
 function compareUserAndTriggerOnChange(
     newUserInfo: DBUser,
@@ -40,7 +40,7 @@ export async function syncBetagouvUserAPI() {
                 // if date is in the future
                 end = new Date();
             }
-            return acc + nbOfDaysBetweenDate(new Date(mission.start), end);
+            return acc + differenceInDays(new Date(mission.start), end);
         }, 0);
         const [user]: DBUser[] = await db("users")
             .update({

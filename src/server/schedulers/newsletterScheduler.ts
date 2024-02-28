@@ -1,5 +1,8 @@
 import crypto from "crypto";
+import { add } from "date-fns/add";
+import { differenceInDays } from "date-fns/differenceInDays";
 import HedgedocApi from "hedgedoc-api";
+
 import BetaGouv from "../betagouv";
 import config from "@/server/config";
 import knex from "@db";
@@ -9,11 +12,7 @@ import { JobWTTJ } from "@/models/job";
 import { sendInfoToChat } from "@infra/chat";
 import { EMAIL_TYPES, MAILING_LIST_TYPE } from "@modules/email";
 import { sendEmail, sendCampaignEmail } from "@/server/config/email.config";
-import {
-    formatDateToFrenchTextReadableFormat,
-    nbOfDaysBetweenDate,
-} from "@/utils/date";
-import { add } from "date-fns/add";
+import { formatDateToFrenchTextReadableFormat } from "@/utils/date";
 
 const { NUMBER_OF_DAY_IN_A_WEEK, NUMBER_OF_DAY_FROM_MONDAY, getMonday } =
     dateUtils;
@@ -138,7 +137,7 @@ export async function newsletterReminder(reminder) {
         .first();
 
     if (lastSentNewsletter) {
-        const nbOfDays = nbOfDaysBetweenDate(
+        const nbOfDays = differenceInDays(
             new Date(),
             lastSentNewsletter.sent_at
         );
@@ -205,7 +204,7 @@ export async function sendNewsletterAndCreateNewOne(
         .first();
 
     if (lastSentNewsletter) {
-        const nbOfDays = nbOfDaysBetweenDate(
+        const nbOfDays = differenceInDays(
             new Date(),
             lastSentNewsletter.sent_at
         );

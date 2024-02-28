@@ -1,4 +1,5 @@
 import * as Sentry from "@sentry/node";
+import { differenceInDays } from "date-fns";
 
 import betagouv from "@betagouv";
 import config from "@/server/config";
@@ -13,7 +14,6 @@ import {
 import { EMAIL_TYPES, SendEmailProps } from "@modules/email";
 import { Domaine, Member } from "@/models/member";
 import { getLastCommitFromFile } from "@/lib/github";
-import { nbOfDaysBetweenDate } from "@/utils/date";
 
 function getCurrentPhase(startup: StartupInfo) {
     return startup.attributes.phases
@@ -39,7 +39,7 @@ function isRecent(phaseDate: Date) {
         return true;
     }
     const TWO_MONTHS_IN_DAYS = 30 * 2;
-    return nbOfDaysBetweenDate(phaseDate, new Date()) < TWO_MONTHS_IN_DAYS;
+    return differenceInDays(phaseDate, new Date()) < TWO_MONTHS_IN_DAYS;
 }
 
 async function compareAndTriggerChange(
