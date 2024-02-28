@@ -6,7 +6,7 @@
         "react/no-unescaped-entities": "off",
         "react/no-children-prop": "off",
         "import/order": [
-            "warning",
+            "warn",
             {
                 "groups": [
                     ["builtin", "external"],
