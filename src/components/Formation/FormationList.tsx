@@ -1,15 +1,14 @@
 "use client";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 
-import { Formation, FormationInscription } from "@/models/formation";
 import Tag from "@codegouvfr/react-dsfr/Tag";
 
 import FormationCard from "./FormationCard";
+import { Formation, FormationInscription } from "@/models/formation";
 
 type AudienceCategoryType = {
-    key: string;
     label: string;
-    type: "audience" | "category";
+    type: "audience" | "category" | "type";
     value:
         | "Design"
         | "Accessibilité"
@@ -18,59 +17,70 @@ type AudienceCategoryType = {
         | "Marketing"
         | "Tech"
         | "Produit"
-        | "Nouveaux membres";
+        | "Nouveaux membres"
+        | "ELearning";
 };
 const tags: AudienceCategoryType[] = [
     {
-        key: "newcomers",
         label: "Nouveaux arrivants",
         type: "audience",
         value: "Nouveaux membres",
     },
     {
-        key: "design",
         label: "Design",
         type: "category",
         value: "Design",
     },
     {
-        key: "accessibility",
         label: "Accessibilité",
         type: "category",
         value: "Accessibilité",
     },
     {
-        key: "divers",
         label: "Divers",
         type: "category",
         value: "Divers",
     },
     {
-        key: "communication",
         label: "Communication",
         type: "category",
         value: "Communication",
     },
 
     {
-        key: "marketing",
         label: "Marketing",
         type: "category",
         value: "Marketing",
     },
     {
-        key: "tech",
         label: "Tech",
         type: "category",
         value: "Tech",
     },
     {
-        key: "product",
         label: "Produit",
         type: "category",
         value: "Produit",
     },
+    {
+        label: "E-learning",
+        type: "type",
+        value: "ELearning",
+    },
 ];
+
+const applyFilter = (
+    formation: Formation,
+    selectedFilter: AudienceCategoryType
+) => {
+    if (selectedFilter.type === "audience") {
+        return formation.audience?.includes(selectedFilter.value);
+    } else if (selectedFilter.type === "type") {
+        return formation.isELearning;
+    } else {
+        return formation.category?.includes(selectedFilter.value);
+    }
+};
 
 export default function FormationList({
     inscriptions,
@@ -79,23 +89,25 @@ export default function FormationList({
     inscriptions: FormationInscription[];
     formations: Formation[];
 }) {
-    const [selectedFilter, setSelectedFilter] = useState<
-        AudienceCategoryType | undefined
-    >(undefined);
+    const [selectedFilters, setSelectedFilters] = useState<
+        AudienceCategoryType[] | []
+    >([]);
     const filterFormationWithKey = (tag: AudienceCategoryType) => {
-        if (selectedFilter?.value !== tag.value) {
-            setSelectedFilter(tag);
+        if (selectedFilters.find((filter) => filter.value === tag.value)) {
+            setSelectedFilters([
+                ...selectedFilters.filter(
+                    (filter) => filter.value !== tag.value
+                ),
+            ]);
         } else {
-            setSelectedFilter(undefined);
+            setSelectedFilters([...selectedFilters, tag]);
         }
     };
-    const filteredFormations: Formation[] = selectedFilter
+    const filteredFormations: Formation[] = selectedFilters.length
         ? formations.filter((formation) => {
-              if (selectedFilter.type! === "audience") {
-                  return formation.audience?.includes(selectedFilter.value);
-              } else {
-                  return formation.category?.includes(selectedFilter.value);
-              }
+              return selectedFilters.reduce((acc, filter) => {
+                  return !!(applyFilter(formation, filter) && acc);
+              }, true);
           })
         : formations;
     return (
@@ -103,11 +115,15 @@ export default function FormationList({
             <ul className="fr-tags-group fr-my-2w">
                 {tags.map((tag) => (
                     <Tag
-                        key={tag.key}
+                        key={tag.value}
                         nativeButtonProps={{
                             onClick: () => filterFormationWithKey(tag),
                         }}
-                        pressed={selectedFilter?.value === tag.value}
+                        pressed={
+                            !!selectedFilters.find(
+                                (filter) => filter.value === tag.value
+                            )
+                        }
                     >
                         {tag.label}
                     </Tag>
