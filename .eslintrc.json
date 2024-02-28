@@ -1,8 +1,31 @@
 {
-  "extends": "next/core-web-vitals",
-  "rules": {
-    "indent": ["off", 4],
-    "react/no-unescaped-entities": "off",
-    "react/no-children-prop": "off"
-  }
+    "extends": "next/core-web-vitals",
+    "plugins": ["import"],
+    "rules": {
+        "indent": ["off", 4],
+        "react/no-unescaped-entities": "off",
+        "react/no-children-prop": "off",
+        "import/order": [
+            "warn",
+            {
+                "groups": [
+                    ["builtin", "external"],
+                    ["internal", "parent", "sibling", "index"]
+                ],
+                "pathGroups": [
+                    {
+                        "pattern": "react",
+                        "group": "external",
+                        "position": "before"
+                    }
+                ],
+                "pathGroupsExcludedImportTypes": ["builtin"],
+                "newlines-between": "always",
+                "alphabetize": {
+                    "order": "asc",
+                    "caseInsensitive": true
+                }
+            }
+        ]
+    }
 }
