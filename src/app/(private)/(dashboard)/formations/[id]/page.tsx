@@ -106,7 +106,7 @@ export default async function Page({ params }: Props) {
             <div className="fr-container fr-container--fluid">
                 <h1>{formation.name}</h1>
                 <div className="fr-grid-row fr-grid-row--gutters">
-                    <div className="fr-col-4">
+                    <div className="fr-col-md-4 fr-col-lg-4 fr-col-sm-12">
                         <Card
                             background
                             border
@@ -184,7 +184,7 @@ export default async function Page({ params }: Props) {
                             titleAs="h3"
                         ></Card>
                     </div>
-                    <div className="fr-col-8">
+                    <div className="fr-col-md-8 fr-col-lg-8 fr-col-sm-12">
                         <p>{formation.description}</p>
                     </div>
                 </div>

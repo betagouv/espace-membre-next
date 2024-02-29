@@ -132,7 +132,10 @@ export default function FormationList({
             {!!filteredFormations.length && (
                 <div className="fr-grid-row fr-grid-row--gutters">
                     {filteredFormations.map((formation) => (
-                        <div key={formation.id} className="fr-col-4">
+                        <div
+                            key={formation.id}
+                            className="fr-col-md-4 fr-col-lg-4 fr-col-sm-12"
+                        >
                             <FormationCard
                                 formation={formation}
                                 isMemberRegistered={
