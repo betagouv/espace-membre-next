@@ -8,10 +8,32 @@ import { Formation } from "@/models/formation";
 export default function FormationCard({
     formation,
     isMemberRegistered,
+    isMemberOnWaitingList,
 }: {
     formation: Formation;
     isMemberRegistered: boolean;
+    isMemberOnWaitingList: boolean;
 }) {
+    let registeredBadge;
+    if (isMemberRegistered) {
+        if (!isMemberOnWaitingList) {
+            registeredBadge = (
+                <ul className="fr-badges-group">
+                    <li>
+                        <Badge severity="success">Inscrit</Badge>
+                    </li>
+                </ul>
+            );
+        } else {
+            registeredBadge = (
+                <ul className="fr-badges-group">
+                    <li>
+                        <Badge>Inscrit sur liste d'attente</Badge>
+                    </li>
+                </ul>
+            );
+        }
+    }
     return (
         <Card
             background
@@ -40,15 +62,7 @@ export default function FormationCard({
                       ]
                     : undefined
             }
-            start={
-                isMemberRegistered ? (
-                    <ul className="fr-badges-group">
-                        <li>
-                            <Badge severity="success">Inscrit</Badge>
-                        </li>
-                    </ul>
-                ) : undefined
-            }
+            start={registeredBadge}
             size="medium"
             title={formation.name}
             titleAs="h3"

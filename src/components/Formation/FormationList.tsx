@@ -145,6 +145,14 @@ export default function FormationList({
                                             formation.airtable_id
                                     )
                                 }
+                                isMemberOnWaitingList={
+                                    !!inscriptions.find(
+                                        (inscription) =>
+                                            inscription.formation ===
+                                                formation.airtable_id &&
+                                            inscription.isInWaitingList
+                                    )
+                                }
                             />
                         </div>
                     ))}

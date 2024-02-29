@@ -24,6 +24,7 @@ export const formationSchema = z.object({
     inscriptionLink: z.string(),
     availableSeats: z.number(),
     maxSeats: z.number().optional(),
+    waitingListUsernames: z.array(z.string()).optional(),
 });
 
 export type Formation = z.infer<typeof formationSchema>;
@@ -52,6 +53,7 @@ export const formationInscriptionSchema = z.object({
             }),
         })
         .describe("La formation"),
+    isInWaitingList: z.boolean(),
 });
 
 export type FormationInscription = z.infer<typeof formationInscriptionSchema>;

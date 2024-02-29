@@ -100,6 +100,8 @@ export default async function Page({ params }: Props) {
                 : dbUser.secondary_email;
     }
     const isMemberRegistered = formation.registeredMembers?.includes(user.id);
+    const isInWaitingList = formation.waitingListUsernames?.includes(user.id);
+
     return (
         <>
             <BreadCrumbFiller currentPage={formation.name}></BreadCrumbFiller>
@@ -167,8 +169,14 @@ export default async function Page({ params }: Props) {
                                                 ? `M'inscrire sur liste d'attente`
                                                 : `M'inscrire`}
                                         </Button>
+                                    ) : isInWaitingList ? (
+                                        <Badge>
+                                            Inscrit sur liste d'attente
+                                        </Badge>
                                     ) : (
-                                        "Vous êtes déjà inscrit"
+                                        <Badge severity="success">
+                                            Inscrit
+                                        </Badge>
                                     )}
                                 </>
                             }

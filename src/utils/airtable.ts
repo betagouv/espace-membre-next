@@ -49,6 +49,7 @@ export const airtableRecordToFormation = (
         availableSeats: record.fields["Place restantes en chiffre"],
         maxSeats: record.fields["Max participants"],
         registeredMembers: record.fields["registeredMemberUsernames"],
+        waitingListUsernames: record.fields["waitingListUsernames"],
     };
 
     return formationSchema.parse(item);
@@ -64,5 +65,6 @@ export const airtableRecordToFormationInscription = (
         formation: record.fields["Formation"]
             ? record.fields["Formation"][0]
             : undefined,
+        isInWaitingList: !!record.fields["isInWaitingList"],
     });
 };
