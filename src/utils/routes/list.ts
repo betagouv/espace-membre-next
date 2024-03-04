@@ -40,6 +40,10 @@ export const routes = {
             localizedRoutes.community.params,
             localizedRoutes.community.paths.fr
         ),
+        communityCreateMember: defineRoute(
+            localizedRoutes.communityCreateMember.params,
+            localizedRoutes.communityCreateMember.paths.fr
+        ),
         startupCreate: defineRoute(
             localizedRoutes.startupCreate.params,
             localizedRoutes.startupCreate.paths.fr

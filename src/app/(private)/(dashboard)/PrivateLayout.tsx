@@ -1,16 +1,17 @@
 "use client";
+import { Breadcrumb } from "@codegouvfr/react-dsfr/Breadcrumb";
+import { SideMenu, SideMenuProps } from "@codegouvfr/react-dsfr/SideMenu";
+import { usePathname, useRouter } from "next/navigation";
+
+import { useInfoContext } from "@/app/BreadCrumbProvider";
+import { useSession } from "@/proxies/next-auth";
 import { linkRegistry } from "@/utils/routes/registry";
+import { routeTitles } from "@/utils/routes/routeTitles";
 import {
     hasPathnameThisMatch,
     hasPathnameThisRegex,
     hasPathnameThisRoot,
 } from "@/utils/url";
-import { SideMenu, SideMenuProps } from "@codegouvfr/react-dsfr/SideMenu";
-import { useSession } from "@/proxies/next-auth";
-import { usePathname, useRouter } from "next/navigation";
-import { Breadcrumb } from "@codegouvfr/react-dsfr/Breadcrumb";
-import { routeTitles } from "@/utils/routes/routeTitles";
-import { useInfoContext } from "@/app/BreadCrumbProvider";
 
 export function PrivateLayout({ children }: { children: React.ReactNode }) {
     const router = useRouter();
@@ -36,6 +37,10 @@ export function PrivateLayout({ children }: { children: React.ReactNode }) {
     const accountLink = linkRegistry.get("account", undefined);
     const accountBadgeLink = linkRegistry.get("accountBadge", undefined);
     const communityLink = linkRegistry.get("community", undefined);
+    const communityCreateMemberLink = linkRegistry.get(
+        "communityCreateMember",
+        undefined
+    );
     const startupListLink = linkRegistry.get("startupList", undefined);
     const startupCreateLink = linkRegistry.get("startupCreate", undefined);
     const adminMattermostLink = linkRegistry.get("adminMattermost", undefined);
@@ -235,6 +240,16 @@ export function PrivateLayout({ children }: { children: React.ReactNode }) {
                     },
                     text: routeTitles.community(),
                     isActive: hasPathnameThisMatch(pathname, communityLink),
+                },
+                {
+                    linkProps: {
+                        href: communityCreateMemberLink,
+                    },
+                    text: routeTitles.communityCreateMember(),
+                    isActive: hasPathnameThisMatch(
+                        pathname,
+                        communityCreateMemberLink
+                    ),
                 },
                 {
                     linkProps: {
