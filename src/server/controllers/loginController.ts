@@ -4,28 +4,11 @@ import config from "@/server/config";
 import knex from "../db";
 import * as utils from "./utils";
 import { DBUser, EmailStatusCode } from "@/models/dbUser/dbUser";
-// import { HomePage } from "../views";
 import { sendEmail } from "@/server/config/email.config";
 import { EMAIL_TYPES } from "@modules/email";
 import { isValidEmail } from "./validator";
 import { getJwtTokenForUser } from "@/server/helpers/session";
 import { saveToken } from "./loginController/loginUtils";
-
-// function renderLogin(req, res, params) {
-//     res.send(
-//         HomePage({
-//             request: req,
-//             errors: req.flash("error"),
-//             messages: req.flash("message"),
-//             domain: config.domain,
-//             next: req.query.next
-//                 ? `?next=${req.query.next}${
-//                       req.query.anchor ? `&anchor=` + req.query.anchor : ""
-//                   }`
-//                 : "",
-//         })
-//     );
-// }
 
 export function generateToken() {
     return crypto.randomBytes(256).toString("base64");
@@ -63,32 +46,6 @@ async function sendLoginEmail(
     }
 }
 
-// export async function saveToken(
-//     username: string,
-//     token: string,
-//     email: string
-// ) {
-//     try {
-//         const expirationDate = new Date();
-//         expirationDate.setMinutes(expirationDate.getMinutes() + 90); // set duration to 1h30, some users receives emails one hours after
-
-//         await knex("login_tokens").insert({
-//             token,
-//             username,
-//             email,
-//             expires_at: expirationDate,
-//         });
-//         console.log(`Login token créé pour ${email}`);
-//     } catch (err) {
-//         console.error(`Erreur de sauvegarde du token : ${err}`);
-//         throw new Error("Erreur de sauvegarde du token");
-//     }
-// }
-
-// export async function getLogin(req, res) {
-//     renderLogin(req, res, {});
-// }
-
 export async function postLoginApi(req, res) {
     const formValidationErrors = {};
     const errorHandler = (field, message) => {
@@ -109,10 +66,10 @@ export async function postLoginApi(req, res) {
         username = emailSplit[0];
         if (
             username === undefined ||
-            !/^[a-z0-9_-]+\.[a-z0-9_-]+$/.test(username)
+            !/^[a-z0-9_-]+\.[.a-z0-9_-]+$/.test(username)
         ) {
             return res.status(500).json({
-                errors: `Le nom de l'adresse email renseigné n'a pas le bon format. Il doit contenir des caractères alphanumériques en minuscule et un '.' Exemple : charlotte.duret@${config.domain}`,
+                errors: `L'adresse email renseignée n'a pas le bon format. Il doit contenir des caractères alphanumériques en minuscule et un '.' Exemple : charlotte.duret@${config.domain}`,
             });
         }
     }
@@ -124,7 +81,7 @@ export async function postLoginApi(req, res) {
 
     if (!dbResponse) {
         return res.status(404).json({
-            errors: `L'adresse email ${emailInput} n'est pas connue.`,
+            errors: `L'adresse email ${emailInput} est inconnue.`,
         });
     }
 
@@ -133,7 +90,7 @@ export async function postLoginApi(req, res) {
         dbResponse.primary_email === emailInput
     ) {
         return res.status(403).json({
-            errors: `La personne liée à l'adresse ${emailInput} n'a pas un compte actif. Réglez le problème en utilisant l'interface de diagnostic https://espace-membre.incubateur.net/keskispasse`,
+            errors: `La personne liée à l'adresse ${emailInput} n'a pas de compte actif. Réglez le problème en utilisant l'interface de diagnostic https://espace-membre.incubateur.net/keskispasse`,
         });
     }
 
