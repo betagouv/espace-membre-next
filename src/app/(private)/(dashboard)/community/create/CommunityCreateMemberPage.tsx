@@ -13,7 +13,7 @@ import { z } from "zod";
 import SESelect from "@/components/SESelect";
 import { userStatusOptions } from "@/frontConfig";
 import { DOMAINE_OPTIONS, Domaine, memberSchema } from "@/models/member";
-import { missionSchema } from "@/models/mission";
+import { Status, missionSchema } from "@/models/mission";
 import { useSession } from "@/proxies/next-auth";
 import routes, { computeRoute } from "@/routes/routes";
 
@@ -218,7 +218,16 @@ const postMemberData = async ({ values, sessionUsername }) => {
 export type CreateMemberType = z.infer<typeof createMemberSchema>;
 
 export default function CommunityCreateMemberPage(props: BaseInfoUpdateProps) {
-    const defaultValues: CreateMemberType = {};
+    const defaultValues: CreateMemberType = {
+        firstname: "",
+        lastname: "",
+        email: "",
+        mission: {
+            start: new Date(),
+            status: Status.independent,
+        },
+        domaine: Domaine.ANIMATION,
+    };
     const {
         register,
         handleSubmit,
