@@ -11,8 +11,6 @@ fileignoreconfig:
       checksum: 49ba981c5d52542548882b52ec95307299e3b6337689ff1f59fc3ec0d88369e4
     - filename: src/routes/routes.ts
       checksum: 675ba81fc5357f186d2ca4ce446a75016fbbcda42492d414d31ee7ad7fa8f7d5
-    - filename: src/app/(private)/(dashboard)/community/create/CommunityCreateMemberPage.tsx
-      checksum: f7995811dee661a3001b45cca668084ff4bb29ee0e12420147f1c0cbdd95a937
     - filename: src/components/BaseInfoUpdatePage/BaseInfoUpdate.tsx
       checksum: 05d97c14f404f68008afc8707f7c0c44883503f71e5c52c1716777482820c3ca
     - filename: src/app/(private)/(dashboard)/account/base-info/page.tsx
@@ -25,6 +23,8 @@ fileignoreconfig:
       checksum: 073b6fdb5d40706c9c05bdf16def31bfca6f0de2401c78d89b9ef4b3ed2da47d
     - filename: src/server/middlewares/sessionMiddleware.ts
       checksum: 37395239eb8012e5b4c310a6f2e23ef2eafd187abea8bfa1eee02212cba978a8
+    - filename: src/app/(private)/(dashboard)/community/create/CommunityCreateMemberPage.tsx
+      checksum: 61d659a5d6ef2f5abf96791577411bd8647ac4dc74e7a08c68d1ca671e435be6
 scopeconfig:
     - scope: node
 version: "1.0"

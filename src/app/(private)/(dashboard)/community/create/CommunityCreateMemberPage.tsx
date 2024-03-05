@@ -2,6 +2,7 @@
 import React from "react";
 
 import { fr } from "@codegouvfr/react-dsfr";
+import Alert from "@codegouvfr/react-dsfr/Alert";
 import { Button } from "@codegouvfr/react-dsfr/Button";
 import Input from "@codegouvfr/react-dsfr/Input";
 import Select from "@codegouvfr/react-dsfr/Select";
@@ -248,10 +249,9 @@ export default function CommunityCreateMemberPage(props: BaseInfoUpdateProps) {
         type: "success" | "warning";
     } | null>();
     const [isSaving, setIsSaving] = React.useState(false);
+    const [isSaved, setIsSaved] = React.useState(true);
 
     const onSubmit = async (input: CreateMemberType) => {
-        //console.log("onSubmit", input);
-
         if (isSaving) {
             return;
         }
@@ -294,72 +294,103 @@ export default function CommunityCreateMemberPage(props: BaseInfoUpdateProps) {
     };
 
     return (
-        <form
-            onSubmit={handleSubmit(onSubmit)}
-            aria-label="Modifier mes informations"
-        >
-            <Input
-                label="Prénom"
-                nativeInputProps={{
-                    placeholder: "ex: Grace",
-                    ...register("firstname"),
-                }}
-                state={errors.firstname ? "error" : "default"}
-                stateRelatedMessage={errors.firstname?.message}
-            />
-            <Input
-                label="Nom"
-                nativeInputProps={{
-                    placeholder: "ex: HOPPER",
-                    ...register("lastname"),
-                }}
-                state={errors.lastname ? "error" : "default"}
-                stateRelatedMessage={errors.lastname?.message}
-            />
-            <Input
-                label="Email"
-                nativeInputProps={{
-                    placeholder: "ex: grace.hopper@gmail.com",
-                    ...register("email"),
-                }}
-                state={errors.email ? "error" : "default"}
-                stateRelatedMessage={errors.email?.message}
-            />
-            <h3>Mission</h3>
-            <Select
-                label="Domaine"
-                nativeSelectProps={{
-                    ...register(`domaine`),
-                }}
-                state={errors.domaine ? "error" : "default"}
-                stateRelatedMessage={errors.domaine?.message}
-            >
-                <option value="">Domaine:</option>
-                {DOMAINE_OPTIONS.map((domaine) => (
-                    <option key={domaine.key} value={domaine.name}>
-                        {domaine.name}
-                    </option>
-                ))}
-            </Select>
-            <Mission
-                control={control}
-                register={register}
-                setValue={setValue}
-                missionsRemove={() => {}}
-                onMissionAutoEndClick={() => {}}
-                startupOptions={props.startupOptions}
-                errors={undefined}
-            ></Mission>
-            <Button
-                className={fr.cx("fr-mt-3w")}
-                children={
-                    isSubmitting ? `Création en cours...` : `Créer la fiche`
-                }
-                nativeButtonProps={{
-                    type: "submit",
-                    disabled: !isDirty || isSubmitting,
-                }}
-            />
-        </form>
+        <>
+            {!isSaved && (
+                <form
+                    onSubmit={handleSubmit(onSubmit)}
+                    aria-label="Modifier mes informations"
+                >
+                    <Input
+                        label="Prénom"
+                        nativeInputProps={{
+                            placeholder: "ex: Grace",
+                            ...register("firstname"),
+                        }}
+                        state={errors.firstname ? "error" : "default"}
+                        stateRelatedMessage={errors.firstname?.message}
+                    />
+                    <Input
+                        label="Nom"
+                        nativeInputProps={{
+                            placeholder: "ex: HOPPER",
+                            ...register("lastname"),
+                        }}
+                        state={errors.lastname ? "error" : "default"}
+                        stateRelatedMessage={errors.lastname?.message}
+                    />
+                    <Input
+                        label="Email"
+                        nativeInputProps={{
+                            placeholder: "ex: grace.hopper@gmail.com",
+                            ...register("email"),
+                        }}
+                        state={errors.email ? "error" : "default"}
+                        stateRelatedMessage={errors.email?.message}
+                    />
+                    <h3>Mission</h3>
+                    <Select
+                        label="Domaine"
+                        nativeSelectProps={{
+                            ...register(`domaine`),
+                        }}
+                        state={errors.domaine ? "error" : "default"}
+                        stateRelatedMessage={errors.domaine?.message}
+                    >
+                        <option value="">Domaine:</option>
+                        {DOMAINE_OPTIONS.map((domaine) => (
+                            <option key={domaine.key} value={domaine.name}>
+                                {domaine.name}
+                            </option>
+                        ))}
+                    </Select>
+                    <Mission
+                        control={control}
+                        register={register}
+                        setValue={setValue}
+                        missionsRemove={() => {}}
+                        onMissionAutoEndClick={() => {}}
+                        startupOptions={props.startupOptions}
+                        errors={undefined}
+                    ></Mission>
+                    <Button
+                        className={fr.cx("fr-mt-3w")}
+                        children={
+                            isSubmitting
+                                ? `Création en cours...`
+                                : `Créer la fiche`
+                        }
+                        nativeButtonProps={{
+                            type: "submit",
+                            disabled: !isDirty || isSubmitting,
+                        }}
+                    />
+                </form>
+            )}
+            {!!isSaved && (
+                <>
+                    <h1>C'est presque bon !</h1>
+                    <Alert
+                        small={true}
+                        severity="info"
+                        description={`La fiche membre de Nom Prénom doit être validée sur Github (tu peux le faire, ou demander à quelqu'un de la communauté).`}
+                    ></Alert>
+                    <Button
+                        className={fr.cx("fr-my-2w")}
+                        linkProps={{
+                            target: "_blank",
+                            href: "#",
+                        }}
+                        priority="secondary"
+                    >
+                        Voir la fiche github
+                    </Button>
+                    <h2>Et après ?</h2>
+                    <p>
+                        Une fois la fiche validée, Nom Prénom recevra des
+                        informations à l'adresse email@secondaire.fr.
+                    </p>
+                </>
+            )}
+        </>
     );
 }
