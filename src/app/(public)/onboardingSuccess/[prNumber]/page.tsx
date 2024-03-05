@@ -33,7 +33,7 @@ export default function Page({ params, searchParams }: Props) {
                 <>
                     <p>
                         Pour que ton adresse email <em>@beta.gouv.fr</em> soit
-                        créée, la personne référente que tu as désigné (ou un
+                        créée, la personne référente que tu as désignée (ou un
                         autre membre de la communauté) doit merger ta fiche.
                     </p>
 
