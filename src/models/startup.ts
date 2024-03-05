@@ -93,13 +93,33 @@ export interface StartupsAPIResponse {
 }
 
 export const phaseSchema = z.object({
-    name: z.string(),
-    start: z.date(),
-    end: z.date().optional(),
+    // @ts-ignore
+    name: z.enum(Object.keys(PHASE_READABLE_NAME)),
+    start: z.preprocess(
+        (val) => {
+            if (typeof val === "string") {
+                return new Date(val);
+            }
+            return val;
+        },
+        z
+            .date({
+                errorMap: (issue, ctx) => ({
+                    message: "Champ obligatoire",
+                }),
+            })
+            .describe("Date de début de la phase")
+    ),
+    end: z.preprocess((val) => {
+        if (typeof val === "string") {
+            return new Date(val);
+        }
+        return val;
+    }, z.date().describe("Date de début de la phase").optional()),
     comment: z.string().optional(),
 });
 
-//export interface Phase extends z.infer<typeof phaseSchema> {}
+export interface Phase extends z.infer<typeof phaseSchema> {}
 
 export interface DBStartup {
     mailing_list?: string;
@@ -117,20 +137,21 @@ export interface DBStartup {
 }
 
 export const startupSchema = z.object({
+    id: z.string(),
     title: z.string(),
     mission: z.string(),
     sponsors: z.array(z.string()).optional(),
     incubator: z.string(),
     contact: z.string(),
-    link: z.string().optional().nullable(),
-    repository: z.string().optional().nullable(),
+    link: z.string().optional(),
+    repository: z.string().optional(),
     accessibility_status: z.string().optional(),
-    dashlord_url: z.string().optional().nullable(),
-    stats: z.boolean().optional().nullable(),
-    stats_url: z.string().optional().nullable(),
-    budget_url: z.string().optional().nullable(),
-    analyse_risques: z.boolean().optional().nullable(),
-    analyse_risques_url: z.string().optional().nullable(),
+    dashlord_url: z.string().optional(),
+    stats: z.boolean().optional(),
+    stats_url: z.string().optional(),
+    budget_url: z.string().optional(),
+    analyse_risques: z.boolean().optional(),
+    analyse_risques_url: z.string().optional(),
     events: z.array(z.object({ name: z.string(), date: z.date() })).optional(),
     phases: z.array(phaseSchema).optional(),
     techno: z.array(z.string()).optional(),

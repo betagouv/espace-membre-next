@@ -57,8 +57,10 @@ async function fetchGithubPageData(startup: string, branch: string = "master") {
     const startupData = {
         ...attributes,
         markdown: body,
+        id: startup,
     };
 
+    console.log("startupData", startupData);
     return startupSchema.parse(startupData);
 }
 
@@ -95,14 +97,18 @@ export default async function Page(props) {
 
     const sha = startupPR && startupPR.head.ref;
     const formData = await fetchGithubPageData(startup, sha || "master");
-    const startups = await betagouv.startupsInfos();
+    // const startups = await betagouv.startupsInfos();
     // const startupOptions = startups.map((startup) => ({
     //     value: startup.id,
     //     label: startup.attributes.name,
     // }));
 
     const componentProps = {
-        formData,
+        // remove nulls
+        formData: Object.keys(formData).reduce(
+            (a, c) => ({ ...a, [c]: formData[c] || "" }),
+            {}
+        ),
         updatePullRequest: startupPR && {
             url: startupPR.html_url,
         },

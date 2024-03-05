@@ -27,53 +27,39 @@ export interface StartupInfoFormData {
 }
 
 export interface StartupInfoUpdateProps {
-    //title: string;
-    //currentUserId: string;
-    //errors: string[];
-    //messages: string[];
-    //activeTab: string;
-    //subActiveTab: string;
-    //request: Request;
     formData: StartupFrontMatter & { markdown: string };
-    //startup: StartupAPIData;
-    //    formValidationErrors: any;
-    // startupOptions: {
-    //     value: string;
-    //     label: string;
-    // }[];
-    //username: string;
-    updatePullRequest?: DBPullRequest;
-    //isAdmin: boolean;
-}
 
-const save = async (data, image) => {
-    try {
-        const resp = await axios.post(
-            computeRoute(routes.STARTUP_POST_INFO_UPDATE_FORM).replace(
-                ":startup",
-                props.startup.id
-            ),
-            {
-                ...data,
-            },
-            {
-                withCredentials: true,
-            }
-        );
-        window.scrollTo({ top: 20, behavior: "smooth" });
-        return {
-            ...resp,
-            isUpdate: true,
-        };
-    } catch (e) {
-        console.error(e);
-    }
-};
+    updatePullRequest?: DBPullRequest;
+}
 
 /* Pure component */
 export const StartupInfoUpdate = (props: StartupInfoUpdateProps) => {
     const css = ".panel { overflow: hidden; width: auto; min-height: 100vh; }";
 
+    const save = async (data, image) => {
+        try {
+            const resp = await axios.post(
+                computeRoute(routes.STARTUP_POST_INFO_UPDATE_FORM).replace(
+                    ":startup",
+                    props.formData.id
+                ),
+                {
+                    ...data,
+                },
+                {
+                    withCredentials: true,
+                }
+            );
+            window.scrollTo({ top: 20, behavior: "smooth" });
+            return {
+                ...resp,
+                isUpdate: true,
+            };
+        } catch (e) {
+            console.error(e);
+        }
+    };
+    console.log(props);
     return (
         <>
             <div>
@@ -86,16 +72,15 @@ export const StartupInfoUpdate = (props: StartupInfoUpdateProps) => {
                 <div className="beta-banner"></div>
 
                 <StartupForm
-                    content={encodeURIComponent(props.formData.markdown)}
+                    content={props.formData.markdown}
                     save={save}
-                    startup={props.startup}
-                    phases={
-                        props.startup.attributes.phases as unknown as {
-                            start: string;
-                            end?: string | undefined;
-                            name: StartupPhase;
-                        }[]
-                    }
+                    startup={{ attributes: { name: props.formData.title } }}
+                    phases={props.formData.phases?.map((phase) => ({
+                        //...phase,
+                        name: phase.name as StartupPhase, // WTH
+                        start: phase.start.toString(),
+                        end: phase.end && phase.end.toString(),
+                    }))}
                     link={props.formData.link}
                     dashlord_url={props.formData.dashlord_url}
                     stats_url={props.formData.stats_url}
@@ -103,14 +88,10 @@ export const StartupInfoUpdate = (props: StartupInfoUpdateProps) => {
                     repository={props.formData.repository}
                     incubator={props.formData.incubator}
                     sponsors={props.formData.sponsors}
-                    accessibility_status={
-                        props.startup.attributes.accessibility_status
-                    }
-                    analyse_risques={props.startup.attributes.analyse_risques}
-                    analyse_risques_url={
-                        props.startup.attributes.analyse_risques_url
-                    }
-                    contact={props.startup.attributes.contact}
+                    accessibility_status={props.formData.accessibility_status}
+                    analyse_risques={props.formData.analyse_risques}
+                    analyse_risques_url={props.formData.analyse_risques_url}
+                    contact={props.formData.contact}
                 />
             </div>
             <style media="screen">{css}</style>

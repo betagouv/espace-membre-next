@@ -351,9 +351,9 @@ export const StartupForm = (props: StartupForm) => {
                                 </label>
                                 <ClientOnly>
                                     <MdEditor
-                                        defaultValue={decodeURIComponent(
+                                        defaultValue={
                                             props.content || DEFAULT_CONTENT
-                                        )}
+                                        }
                                         style={{
                                             height: "500px",
                                             marginTop: "0.5rem",
