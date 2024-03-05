@@ -83,7 +83,6 @@ async function getPullRequestForStartup(startup) {
         }:edit-startup-${startup}&per_page=1`,
         fetchGithubOptions
     ).then((r) => r.json());
-
     return pullRequests.length && pullRequests[0];
 }
 
@@ -98,7 +97,7 @@ export default async function Page(props) {
     const startup = props.params.id;
     const startupPR = await getPullRequestForStartup(startup);
 
-    const sha = startupPR && startupPR.head.ref;
+    const sha = startupPR && startupPR.head.sha;
     const formData = await fetchGithubPageData(startup, sha || "master");
 
     const componentProps = {
