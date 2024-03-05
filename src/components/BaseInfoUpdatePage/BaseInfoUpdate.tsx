@@ -10,7 +10,6 @@ import { fr } from "@codegouvfr/react-dsfr";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 
-import { DBPullRequest } from "@/models/pullRequests";
 import { routeTitles } from "@/utils/routes/routeTitles";
 
 import { MissionsEditor } from "./MissionsEditor";
@@ -19,9 +18,8 @@ import Select from "@codegouvfr/react-dsfr/Select";
 import axios from "axios";
 import routes, { computeRoute } from "@/routes/routes";
 import { useSession } from "@/proxies/next-auth";
-import { FormErrorResponse } from "@/models/misc";
 
-import { PullRequestWarning } from "./PullRequestWarning";
+import { PullRequestWarning } from "../PullRequestWarning";
 
 export type MemberSchemaType = z.infer<typeof memberSchema>;
 
@@ -148,7 +146,7 @@ export const BaseInfoUpdate = (props: BaseInfoUpdateProps) => {
                 )}
 
                 {!!props.updatePullRequest && (
-                    <PullRequestWarning pullRequest={props.updatePullRequest} />
+                    <PullRequestWarning url={props.updatePullRequest.url} />
                 )}
 
                 <form

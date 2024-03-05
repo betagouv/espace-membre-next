@@ -1,3 +1,5 @@
+import { z } from "zod";
+
 interface Relationship {
     incubator: {
         data: {
@@ -60,7 +62,7 @@ export interface Startup {
     phases: Phase[];
 }
 
-export interface StartupInfo {
+export interface StartupAPIData {
     id: string;
     attributes: {
         sponsors: string[];
@@ -86,17 +88,18 @@ export interface StartupInfo {
     relationships: Relationship;
 }
 
-export interface StartupAPIData extends StartupInfo {}
-
 export interface StartupsAPIResponse {
     data: StartupAPIData[];
 }
 
-export interface Phase {
-    name: StartupPhase;
-    start: Date;
-    end?: Date;
-}
+export const phaseSchema = z.object({
+    name: z.string(),
+    start: z.date(),
+    end: z.date().optional(),
+    comment: z.string().optional(),
+});
+
+//export interface Phase extends z.infer<typeof phaseSchema> {}
 
 export interface DBStartup {
     mailing_list?: string;
@@ -112,3 +115,28 @@ export interface DBStartup {
     current_phase_date: Date;
     incubator: string;
 }
+
+export const startupSchema = z.object({
+    title: z.string(),
+    mission: z.string(),
+    sponsors: z.array(z.string()).optional(),
+    incubator: z.string(),
+    contact: z.string(),
+    link: z.string().optional().nullable(),
+    repository: z.string().optional().nullable(),
+    accessibility_status: z.string().optional(),
+    dashlord_url: z.string().optional().nullable(),
+    stats: z.boolean().optional().nullable(),
+    stats_url: z.string().optional().nullable(),
+    budget_url: z.string().optional().nullable(),
+    analyse_risques: z.boolean().optional().nullable(),
+    analyse_risques_url: z.string().optional().nullable(),
+    events: z.array(z.object({ name: z.string(), date: z.date() })).optional(),
+    phases: z.array(phaseSchema).optional(),
+    techno: z.array(z.string()).optional(),
+    usertypes: z.array(z.string()).optional(),
+    //redirect_from: z.array(z.string()).optional(),
+    fast: z.object({ promotion: z.number(), montant: z.number() }).optional(),
+});
+
+export interface StartupFrontMatter extends z.infer<typeof startupSchema> {}

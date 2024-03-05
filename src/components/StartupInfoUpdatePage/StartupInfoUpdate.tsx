@@ -5,9 +5,14 @@ import axios from "axios";
 import { DBPullRequest } from "@/models/pullRequests";
 import routes, { computeRoute } from "@/routes/routes";
 import { StartupForm } from "../StartupForm/StartupForm";
-import { StartupInfo, StartupPhase } from "@/models/startup";
+import {
+    StartupAPIData,
+    StartupFrontMatter,
+    StartupPhase,
+} from "@/models/startup";
 import Alert from "@codegouvfr/react-dsfr/Alert";
 import { routeTitles } from "@/utils/routes/routeTitles";
+import { PullRequestWarning } from "../PullRequestWarning";
 
 // import style manually
 export interface StartupInfoFormData {
@@ -22,90 +27,66 @@ export interface StartupInfoFormData {
 }
 
 export interface StartupInfoUpdateProps {
-    title: string;
-    currentUserId: string;
-    errors: string[];
-    messages: string[];
-    activeTab: string;
-    subActiveTab: string;
-    request: Request;
-    formData: StartupInfoFormData;
-    startup: StartupInfo;
-    formValidationErrors: any;
-    startupOptions: {
-        value: string;
-        label: string;
-    }[];
-    username: string;
+    //title: string;
+    //currentUserId: string;
+    //errors: string[];
+    //messages: string[];
+    //activeTab: string;
+    //subActiveTab: string;
+    //request: Request;
+    formData: StartupFrontMatter & { markdown: string };
+    //startup: StartupAPIData;
+    //    formValidationErrors: any;
+    // startupOptions: {
+    //     value: string;
+    //     label: string;
+    // }[];
+    //username: string;
     updatePullRequest?: DBPullRequest;
-    isAdmin: boolean;
+    //isAdmin: boolean;
 }
+
+const save = async (data, image) => {
+    try {
+        const resp = await axios.post(
+            computeRoute(routes.STARTUP_POST_INFO_UPDATE_FORM).replace(
+                ":startup",
+                props.startup.id
+            ),
+            {
+                ...data,
+            },
+            {
+                withCredentials: true,
+            }
+        );
+        window.scrollTo({ top: 20, behavior: "smooth" });
+        return {
+            ...resp,
+            isUpdate: true,
+        };
+    } catch (e) {
+        console.error(e);
+    }
+};
 
 /* Pure component */
 export const StartupInfoUpdate = (props: StartupInfoUpdateProps) => {
     const css = ".panel { overflow: hidden; width: auto; min-height: 100vh; }";
 
-    const save = async (data, image) => {
-        try {
-            const resp = await axios.post(
-                computeRoute(routes.STARTUP_POST_INFO_UPDATE_FORM).replace(
-                    ":startup",
-                    props.startup.id
-                ),
-                {
-                    ...data,
-                },
-                {
-                    withCredentials: true,
-                }
-            );
-            window.scrollTo({ top: 20, behavior: "smooth" });
-            return {
-                ...resp,
-                isUpdate: true,
-            };
-        } catch (e) {
-            console.error(e);
-        }
-    };
-
     return (
         <>
             <div>
-                <h1>
-                    {routeTitles.startupDetailsEdit(
-                        props.startup.attributes.name
-                    )}
-                </h1>
+                <h1>{routeTitles.startupDetailsEdit(props.formData.title)}</h1>
+
                 {!!props.updatePullRequest && (
-                    <Alert
-                        className="fr-mb-8v"
-                        severity="warning"
-                        small={true}
-                        closable={false}
-                        title="Une pull request existe déjà sur cette fiche."
-                        description={
-                            <>
-                                {`Toi ou un membre de ton équipe doit la merger
-                                pour que les changements soient pris en compte : `}
-                                <a
-                                    className="fr-link"
-                                    href={props.updatePullRequest.url}
-                                    target="_blank"
-                                >
-                                    {props.updatePullRequest.url}
-                                </a>
-                                <br />
-                                (la prise en compte peut prendre 10 minutes.)
-                            </>
-                        }
-                    />
+                    <PullRequestWarning url={props.updatePullRequest.url} />
                 )}
+
                 <div className="beta-banner"></div>
+
                 <StartupForm
-                    content={
-                        props.startup.attributes.content_url_encoded_markdown
-                    }
+                    content={encodeURIComponent(props.formData.markdown)}
                     save={save}
                     startup={props.startup}
                     phases={
