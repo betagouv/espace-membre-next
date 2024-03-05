@@ -59,7 +59,6 @@ export const StartupInfoUpdate = (props: StartupInfoUpdateProps) => {
             console.error(e);
         }
     };
-    console.log(props);
     return (
         <>
             <div>

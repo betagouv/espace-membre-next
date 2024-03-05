@@ -30,7 +30,6 @@ async function fetchGithubPageData(startup: string, branch: string = "master") {
     const repo =
         branch === "master" ? config.githubRepository : config.githubFork;
     const mdUrl = `https://raw.githubusercontent.com/${repo}/${branch}/content/_startups/${startup}.md`;
-    console.log("mdUrl", mdUrl);
     const mdData = await fetch(mdUrl, { cache: "no-store" }).then((r) =>
         r.text()
     );
