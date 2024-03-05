@@ -78,8 +78,10 @@ export const StartupInfoUpdate = (props: StartupInfoUpdateProps) => {
                     phases={props.formData.phases?.map((phase) => ({
                         //...phase,
                         name: phase.name as StartupPhase, // WTH
-                        start: phase.start.toString(),
-                        end: phase.end && phase.end.toString(),
+                        start: phase.start.toISOString().substring(0, 10),
+                        end:
+                            phase.end &&
+                            phase.end.toISOString().substring(0, 10),
                     }))}
                     link={props.formData.link}
                     dashlord_url={props.formData.dashlord_url}

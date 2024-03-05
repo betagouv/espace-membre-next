@@ -127,7 +127,8 @@ export async function postStartupInfoUpdate(req, res) {
         }
         const prInfo: PRInfo = await updateMultipleFilesPR(
             `Maj de la fiche ${startupId} par ${req.auth.id}`,
-            files
+            files,
+            `edit-startup-${startupId}`
         );
 
         addEvent(EventCode.STARTUP_INFO_UPDATED, {

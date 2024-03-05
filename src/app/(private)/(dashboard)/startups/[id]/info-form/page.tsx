@@ -44,7 +44,7 @@ async function fetchGithubPageData(startup: string, branch: string = "master") {
     const repo =
         branch === "master" ? config.githubRepository : config.githubFork;
     const mdUrl = `https://raw.githubusercontent.com/${repo}/${branch}/content/_startups/${startup}.md`;
-
+    console.log("mdUrl", mdUrl);
     const mdData = await fetch(mdUrl, { cache: "no-store" }).then((r) =>
         r.text()
     );
@@ -56,12 +56,15 @@ async function fetchGithubPageData(startup: string, branch: string = "master") {
 
     const startupData = {
         ...attributes,
-        markdown: body,
         id: startup,
     };
 
-    console.log("startupData", startupData);
-    return startupSchema.parse(startupData);
+    const parsedData = startupSchema.parse(startupData);
+
+    return {
+        ...parsedData,
+        markdown: body,
+    };
 }
 
 // todo
@@ -71,13 +74,13 @@ const fetchGithubOptions = {
     },
 };
 
-async function getPullRequestForStartup(username) {
+async function getPullRequestForStartup(startup) {
     const pullRequests = await fetch(
         `https://api.github.com/repos/${
             config.githubRepository
         }/pulls?state=open&head=${
             config.githubFork.split("/")[0]
-        }:edit-authors-${username}&per_page=1`,
+        }:edit-startup-${startup}&per_page=1`,
         fetchGithubOptions
     ).then((r) => r.json());
 
@@ -97,24 +100,13 @@ export default async function Page(props) {
 
     const sha = startupPR && startupPR.head.ref;
     const formData = await fetchGithubPageData(startup, sha || "master");
-    // const startups = await betagouv.startupsInfos();
-    // const startupOptions = startups.map((startup) => ({
-    //     value: startup.id,
-    //     label: startup.attributes.name,
-    // }));
 
     const componentProps = {
-        // remove nulls
-        formData: Object.keys(formData).reduce(
-            (a, c) => ({ ...a, [c]: formData[c] || "" }),
-            {}
-        ),
+        formData,
         updatePullRequest: startupPR && {
             url: startupPR.html_url,
         },
     };
-
-    //return <BaseInfoUpdate {...props} />;
 
     return <StartupInfoUpdate {...componentProps} />;
 }

@@ -176,7 +176,7 @@ export const StartupForm = (props: StartupForm) => {
                     } de la fiche produit ouverte.`,
                     message: (
                         <>
-                            Tu peux merger cette pull request :
+                            Tu peux merger cette pull request :{" "}
                             <a href={resp.data.pr_url} target="_blank">
                                 {resp.data.pr_url}
                             </a>
