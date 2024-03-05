@@ -27,7 +27,7 @@ export async function postBaseInfoUpdate(
 
         const { bio, ...postParams } = req.body;
         const files: GithubBetagouvFile[] = [
-            makeGithubAuthorFile(username, postParams, bio),
+            makeGithubAuthorFile(username, postParams, bio || ""),
         ];
 
         // todo: check if no existing PR

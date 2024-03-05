@@ -182,13 +182,13 @@ export function makeImageFile(name: string, content: string): GithubImageFile {
 export function makeGithubAuthorFile(
     name: string,
     changes: GithubAuthorChange,
-    content: z.infer<typeof memberSchema>["bio"]
+    content: string
 ): GithubAuthorFile {
     return {
         path: `content/_authors/${name}.md`,
         name,
         changes,
-        content: content,
+        content,
     };
 }
 

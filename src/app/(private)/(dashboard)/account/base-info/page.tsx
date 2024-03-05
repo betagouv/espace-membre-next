@@ -1,15 +1,15 @@
 import type { Metadata } from "next";
 import yaml from "js-yaml";
 import { redirect } from "next/navigation";
+import { cookies } from "next/headers";
+import frontmatter from "front-matter";
 
+import { getSessionFromStore } from "@/server/middlewares/sessionMiddleware";
 import { BaseInfoUpdate } from "@/components/BaseInfoUpdatePage";
-
 import { memberSchema } from "@/models/member";
 import { routeTitles } from "@/utils/routes/routeTitles";
 import { StartupAPIData } from "@/models/startup";
 import betagouv from "@/server/betagouv";
-import { getSessionFromStore } from "@/server/middlewares/sessionMiddleware";
-import { cookies } from "next/headers";
 import config from "@/server/config";
 
 export const metadata: Metadata = {
@@ -28,14 +28,16 @@ async function fetchGithubPageData(
         r.text()
     );
 
-    const [metadata, body]: any[] = yaml.loadAll(mdData, null, {
-        schema: yaml.JSON_SCHEMA,
-    });
+    const {
+        attributes,
+        body,
+    }: { attributes: Record<string, any>; body: string } = frontmatter(mdData);
+
     const member = {
-        ...metadata,
-        domaine: metadata.domaine || [], // allow some empty fields on input for legacy
+        ...attributes,
+        domaine: attributes.domaine || [], // allow some empty fields on input for legacy
         bio: body || "",
-        startups: metadata.startups || [],
+        startups: attributes.startups || [],
     };
     return memberSchema.parse(member);
 }
@@ -72,7 +74,7 @@ export default async function Page() {
     const username = session.id;
     const authorPR = await getPullRequestForAuthor(username);
 
-    const sha = authorPR && authorPR.head.ref;
+    const sha = authorPR && authorPR.head.sha;
     const formData = await fetchGithubPageData(username, sha || "master");
     const startups: StartupAPIData[] = await betagouv.startupsInfos();
     const startupOptions = startups.map((startup) => {

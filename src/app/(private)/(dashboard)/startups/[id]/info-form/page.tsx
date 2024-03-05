@@ -1,27 +1,13 @@
 import { Metadata, ResolvingMetadata } from "next";
-import StartupPage, {
-    StartupPageProps,
-} from "@/components/StartupPage/StartupPage";
-import {
-    StartupInfoUpdate,
-    StartupInfoUpdateProps,
-} from "@/components/StartupInfoUpdatePage";
-
-import yaml from "js-yaml";
 import { redirect } from "next/navigation";
+import { cookies } from "next/headers";
+import frontmatter from "front-matter";
 
-import { BaseInfoUpdate } from "@/components/BaseInfoUpdatePage";
-
+import { getSessionFromStore } from "@/server/middlewares/sessionMiddleware";
+import config from "@/server/config";
+import { StartupInfoUpdate } from "@/components/StartupInfoUpdatePage";
 import { startupSchema } from "@/models/startup";
 import { routeTitles } from "@/utils/routes/routeTitles";
-//import { StartupInfo } from "@/models/startup";
-import betagouv from "@/server/betagouv";
-import { getSessionFromStore } from "@/server/middlewares/sessionMiddleware";
-import { cookies } from "next/headers";
-import config from "@/server/config";
-import StartupInfoFormClientPage from "./StartupInfoFormClientPage";
-import { log } from "console";
-import frontmatter from "front-matter";
 
 type Props = {
     params: { id: string };

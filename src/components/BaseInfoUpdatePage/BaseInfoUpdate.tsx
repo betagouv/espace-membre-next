@@ -122,7 +122,7 @@ export const BaseInfoUpdate = (props: BaseInfoUpdateProps) => {
 
     return (
         <>
-            <div>
+            <div className={fr.cx("fr-mb-5w")}>
                 <h1>{routeTitles.accountEditBaseInfo()}</h1>
                 <p>
                     Ces informations seront publiées sur le site beta.gouv.fr.
