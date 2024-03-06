@@ -11,9 +11,15 @@ import axios from "axios";
 import { useForm, useWatch } from "react-hook-form";
 import { z } from "zod";
 
+import { createMember as createMemberAction } from "@/app/actions/member";
 import SESelect from "@/components/SESelect";
 import { userStatusOptions } from "@/frontConfig";
-import { DOMAINE_OPTIONS, Domaine, memberSchema } from "@/models/member";
+import {
+    DOMAINE_OPTIONS,
+    Domaine,
+    createMemberSchema,
+    memberSchema,
+} from "@/models/member";
 import { Status, missionSchema } from "@/models/mission";
 import { useSession } from "@/proxies/next-auth";
 import routes, { computeRoute } from "@/routes/routes";
@@ -26,51 +32,7 @@ export interface BaseInfoUpdateProps {
     }[];
 }
 
-export const createMemberSchema = z.object({
-    firstname: z
-        .string({
-            errorMap: (issue, ctx) => ({
-                message: "Le prénom est obligatoire",
-            }),
-        })
-        .describe("Prénom")
-        .min(1),
-    lastname: z
-        .string({
-            errorMap: (issue, ctx) => ({
-                message: "Le Nom est obligatoire",
-            }),
-        })
-        .describe("Nom")
-        .min(1),
-    email: z
-        .string({
-            errorMap: (issue, ctx) => ({
-                message: "L'email est obligatoire",
-            }),
-        })
-        .email()
-        .describe("Email"),
-    mission: missionSchema,
-    domaine: z.nativeEnum(
-        Domaine, // ??
-        {
-            errorMap: (issue, ctx) => ({
-                message: "Le domaine est un champ obligatoire",
-            }),
-        }
-    ), // ??
-});
-
-const Mission = ({
-    register,
-    control,
-    setValue,
-    missionsRemove,
-    onMissionAutoEndClick,
-    startupOptions,
-    errors,
-}) => {
+const Mission = ({ register, control, setValue, startupOptions, errors }) => {
     const missionErrors = errors;
     const defaultState = (field) => ({
         state:
@@ -81,7 +43,7 @@ const Mission = ({
     });
     const startDateValue = useWatch({
         control,
-        name: `missions.start`,
+        name: `mission.start`,
     });
     // Convertir la valeur de date en format de chaîne requis par l'input de type date
     const startDateString = startDateValue
@@ -90,12 +52,11 @@ const Mission = ({
 
     const endDateValue = useWatch({
         control,
-        name: `missions.end`,
+        name: `mission.end`,
     });
     const endDateString = endDateValue
         ? new Date(endDateValue).toISOString().substring(0, 10)
         : "";
-
     return (
         <div className={fr.cx("fr-mb-6w")}>
             <div className={fr.cx("fr-text--heavy")}>
@@ -110,7 +71,7 @@ const Mission = ({
                             style: { width: 200 },
                             placeholder: "JJ/MM/YYYY",
                             type: "date",
-                            ...register(`missions.start`),
+                            ...register(`mission.start`),
                             value: startDateString,
                         }}
                         {...defaultState("start")}
@@ -123,7 +84,7 @@ const Mission = ({
                             style: { width: 200 },
                             placeholder: "JJ/MM/YYYY",
                             type: "date",
-                            ...register(`missions.end`),
+                            ...register(`mission.end`),
                             value: endDateString,
                         }}
                         hintText={
@@ -151,7 +112,7 @@ const Mission = ({
                         label="Employeur"
                         nativeInputProps={{
                             placeholder: "ex: Scopyleft",
-                            ...register(`missions.employer`),
+                            ...register(`mission.employer`),
                         }}
                         {...defaultState("employer")}
                     />
@@ -160,7 +121,7 @@ const Mission = ({
                     <Select
                         label="Statut"
                         nativeSelectProps={{
-                            ...register(`missions.status`),
+                            ...register(`mission.status`),
                         }}
                         {...defaultState("status")}
                     >
@@ -178,7 +139,7 @@ const Mission = ({
                     <SESelect
                         onChange={(startups) => {
                             setValue(
-                                `missions.startups`,
+                                `mission.startups`,
                                 startups.map((startup) => startup.value),
                                 {
                                     shouldValidate: true,
@@ -196,24 +157,6 @@ const Mission = ({
             </div>
         </div>
     );
-};
-
-const postMemberData = async ({ values, sessionUsername }) => {
-    const {
-        data: { username, message },
-    }: {
-        data: { username: string; message: string };
-    } = await axios.post(
-        computeRoute(routes.ACCOUNT_POST_BASE_INFO_FORM).replace(
-            ":username",
-            sessionUsername
-        ),
-        values,
-        {
-            withCredentials: true,
-        }
-    );
-    return { username, message };
 };
 
 export type CreateMemberType = z.infer<typeof createMemberSchema>;
@@ -235,13 +178,12 @@ export default function CommunityCreateMemberPage(props: BaseInfoUpdateProps) {
         formState: { errors, isDirty, isSubmitting, isValid },
         setValue,
         control,
+        watch,
     } = useForm<CreateMemberType>({
-        resolver: zodResolver(memberSchema),
+        resolver: zodResolver(createMemberSchema),
         mode: "onChange",
         defaultValues,
     });
-
-    const session = useSession();
 
     const [alertMessage, setAlertMessage] = React.useState<{
         title: string;
@@ -249,7 +191,11 @@ export default function CommunityCreateMemberPage(props: BaseInfoUpdateProps) {
         type: "success" | "warning";
     } | null>();
     const [isSaving, setIsSaving] = React.useState(false);
-    const [isSaved, setIsSaved] = React.useState(true);
+    const [prUrl, setPRURL] = React.useState<string>();
+
+    const firstname = watch("firstname");
+    const lastname = watch("lastname");
+    const email = watch("email");
 
     const onSubmit = async (input: CreateMemberType) => {
         if (isSaving) {
@@ -262,15 +208,13 @@ export default function CommunityCreateMemberPage(props: BaseInfoUpdateProps) {
         setIsSaving(true);
         setAlertMessage(null);
         try {
-            const { message } = await postMemberData({
-                values: input,
-                sessionUsername: session.data?.user?.name as string,
-            });
+            const { message, pr_url } = await createMemberAction(input);
             setAlertMessage({
                 title: `Modifications enregistrées`,
                 message,
                 type: "success",
             });
+            setPRURL(pr_url);
         } catch (e: any) {
             // todo: sentry
             console.log(e);
@@ -280,7 +224,6 @@ export default function CommunityCreateMemberPage(props: BaseInfoUpdateProps) {
                 message: e.response?.data?.message || e.message,
                 type: "warning",
             });
-            //e.response.data.fieldErrors;
             setIsSaving(false);
             if (e.errors) {
                 control.setError("root", {
@@ -295,7 +238,7 @@ export default function CommunityCreateMemberPage(props: BaseInfoUpdateProps) {
 
     return (
         <>
-            {!isSaved && (
+            {!prUrl && (
                 <form
                     onSubmit={handleSubmit(onSubmit)}
                     aria-label="Modifier mes informations"
@@ -347,8 +290,6 @@ export default function CommunityCreateMemberPage(props: BaseInfoUpdateProps) {
                         control={control}
                         register={register}
                         setValue={setValue}
-                        missionsRemove={() => {}}
-                        onMissionAutoEndClick={() => {}}
                         startupOptions={props.startupOptions}
                         errors={undefined}
                     ></Mission>
@@ -366,19 +307,19 @@ export default function CommunityCreateMemberPage(props: BaseInfoUpdateProps) {
                     />
                 </form>
             )}
-            {!!isSaved && (
+            {!!prUrl && (
                 <>
                     <h1>C'est presque bon !</h1>
                     <Alert
                         small={true}
                         severity="info"
-                        description={`La fiche membre de Nom Prénom doit être validée sur Github (tu peux le faire, ou demander à quelqu'un de la communauté).`}
+                        description={`La fiche membre de ${firstname} ${lastname} doit être validée sur Github (tu peux le faire, ou demander à quelqu'un de la communauté).`}
                     ></Alert>
                     <Button
                         className={fr.cx("fr-my-2w")}
                         linkProps={{
                             target: "_blank",
-                            href: "#",
+                            href: prUrl,
                         }}
                         priority="secondary"
                     >
@@ -386,8 +327,8 @@ export default function CommunityCreateMemberPage(props: BaseInfoUpdateProps) {
                     </Button>
                     <h2>Et après ?</h2>
                     <p>
-                        Une fois la fiche validée, Nom Prénom recevra des
-                        informations à l'adresse email@secondaire.fr.
+                        Une fois la fiche validée, {firstname} {lastname}{" "}
+                        recevra des informations à l'adresse {email}.
                     </p>
                 </>
             )}

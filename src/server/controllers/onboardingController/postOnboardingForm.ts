@@ -1,29 +1,9 @@
-import ejs from "ejs";
-import crypto from "crypto";
-import { Schema } from "express-validator";
 import * as Sentry from "@sentry/node";
+import crypto from "crypto";
+import ejs from "ejs";
+import { Schema } from "express-validator";
 
-import config from "@/server/config";
-import * as utils from "@controllers/utils";
-import BetaGouv from "@betagouv";
-import knex from "@db";
-import {
-    requiredError,
-    isValidDomain,
-    isValidDate,
-    isValidUrl,
-    shouldBeOnlyUsername,
-    isValidEmail,
-} from "@/server/controllers/validator";
-import {
-    CommunicationEmailCode,
-    EmailStatusCode,
-    MemberType,
-    genderOptions,
-    statusOptions,
-} from "@/models/dbUser/dbUser";
-import { fetchCommuneDetails } from "@/lib/searchCommune";
-import { DOMAINE_OPTIONS } from "@/models/member";
+import { createUsername } from "../helpers/githubHelpers/createContentName";
 import {
     getGithubMasterSha,
     createGithubBranch,
@@ -32,7 +12,27 @@ import {
     deleteGithubBranch,
     PRInfo,
 } from "@/lib/github";
-import { createUsername } from "../helpers/githubHelpers/createContentName";
+import { fetchCommuneDetails } from "@/lib/searchCommune";
+import {
+    CommunicationEmailCode,
+    EmailStatusCode,
+    MemberType,
+    genderOptions,
+    statusOptions,
+} from "@/models/dbUser/dbUser";
+import { DOMAINE_OPTIONS } from "@/models/member";
+import config from "@/server/config";
+import {
+    requiredError,
+    isValidDomain,
+    isValidDate,
+    isValidUrl,
+    shouldBeOnlyUsername,
+    isValidEmail,
+} from "@/server/controllers/validator";
+import BetaGouv from "@betagouv";
+import * as utils from "@controllers/utils";
+import knex from "@db";
 
 function createBranchName(username) {
     const refRegex = /( |\.|\\|~|^|:|\?|\*|\[)/gm;
@@ -40,7 +40,11 @@ function createBranchName(username) {
     return `author${username.replace(refRegex, "-")}-${randomSuffix}`;
 }
 
-async function createNewcomerGithubFile(username, content, referent) {
+export async function createNewcomerGithubFile(
+    username,
+    content,
+    referent
+): Promise<PrInfo> {
     const branch = createBranchName(username);
     console.log(`Début de la création de fiche pour ${username}...`);
 

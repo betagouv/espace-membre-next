@@ -1,3 +1,11 @@
+import { createBranchName } from "./createBranchName";
+import { updateFileOnBranch } from "./createGithubCollectionEntry";
+import {
+    GithubAuthorChange,
+    GithubAuthorMissionChange,
+    GithubBetagouvFile,
+    GithubStartupChange,
+} from "./githubEntryInterface";
 import {
     createGithubBranch,
     createGithubFile,
@@ -8,14 +16,6 @@ import {
     makeGithubPullRequest,
     PRInfo,
 } from "@/lib/github";
-import { createBranchName } from "./createBranchName";
-import {
-    GithubAuthorChange,
-    GithubAuthorMissionChange,
-    GithubBetagouvFile,
-    GithubStartupChange,
-} from "./githubEntryInterface";
-import { updateFileOnBranch } from "./createGithubCollectionEntry";
 import config from "@/server/config";
 
 async function updateGithubCollectionEntry(
@@ -101,7 +101,7 @@ export async function updateMultipleFilesPR(
     prName: string,
     files: GithubBetagouvFile[],
     branchName?: string
-) {
+): Promise<PRInfo> {
     const branch = branchName || createBranchName(prName);
     const {
         data: {
