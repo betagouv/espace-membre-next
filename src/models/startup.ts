@@ -62,7 +62,7 @@ export interface Startup {
     phases: Phase[];
 }
 
-export interface StartupAPIData {
+export interface StartupInfo {
     id: string;
     attributes: {
         sponsors: string[];
@@ -89,7 +89,7 @@ export interface StartupAPIData {
 }
 
 export interface StartupsAPIResponse {
-    data: StartupAPIData[];
+    data: StartupInfo[];
 }
 
 export const phaseSchema = z.object({

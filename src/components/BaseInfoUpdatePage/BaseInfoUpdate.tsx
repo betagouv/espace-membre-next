@@ -147,7 +147,9 @@ export const BaseInfoUpdate = (props: BaseInfoUpdateProps) => {
                 )}
 
                 {!!props.updatePullRequest && (
-                    <PullRequestWarning url={props.updatePullRequest.url} />
+                    <PullRequestWarning
+                        url={props.updatePullRequest.html_url}
+                    />
                 )}
 
                 <form

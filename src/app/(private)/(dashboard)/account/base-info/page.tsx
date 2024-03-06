@@ -1,14 +1,12 @@
 import type { Metadata } from "next";
-import yaml from "js-yaml";
 import { redirect } from "next/navigation";
 import { cookies } from "next/headers";
-import frontmatter from "front-matter";
 
 import { getSessionFromStore } from "@/server/middlewares/sessionMiddleware";
 import { BaseInfoUpdate } from "@/components/BaseInfoUpdatePage";
 import { memberSchema } from "@/models/member";
 import { routeTitles } from "@/utils/routes/routeTitles";
-import { StartupAPIData } from "@/models/startup";
+import { StartupInfo } from "@/models/startup";
 import betagouv from "@/server/betagouv";
 import config from "@/server/config";
 import { fetchGithubMarkdown, getPullRequestForBranch } from "@/lib/github";
@@ -49,13 +47,11 @@ export default async function Page() {
 
     const sha = authorPR && authorPR.head.sha;
     const formData = await fetchGithubPageData(username, sha || "master");
-    const startups: StartupAPIData[] = await betagouv.startupsInfos();
-    const startupOptions = startups.map((startup) => {
-        return {
-            value: startup.id,
-            label: startup.attributes.name,
-        };
-    });
+    const startups: StartupInfo[] = await betagouv.startupsInfos();
+    const startupOptions = startups.map((startup) => ({
+        value: startup.id,
+        label: startup.attributes.name,
+    }));
 
     const props = {
         formData,

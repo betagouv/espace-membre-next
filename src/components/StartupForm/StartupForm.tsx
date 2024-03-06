@@ -65,7 +65,7 @@ interface StartupForm {
         end?: string;
         name: StartupPhase;
     }[];
-    startup?: StartupInfo;
+    startup?: { attributes: { name: string } };
 }
 
 interface FormErrorResponse {
