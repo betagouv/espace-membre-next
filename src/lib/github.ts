@@ -3,7 +3,7 @@ import config from "@/server/config";
 import fm from "front-matter";
 import axios from "axios";
 import { request } from "@octokit/request";
-import { ZodError, ZodSchema } from "zod";
+import { ZodError, ZodSchema, z } from "zod";
 
 export interface PRInfo {
     html_url: string;
