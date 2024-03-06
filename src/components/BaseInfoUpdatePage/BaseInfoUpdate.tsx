@@ -207,8 +207,13 @@ export const BaseInfoUpdate = (props: BaseInfoUpdateProps) => {
                     />
                     <h3>Mes missions</h3>
                     <p>
-                        Précise les dates et employeurs de tes missions, et les
-                        produits concernés.
+                        Précise les dates, employeurs et produits pour lesquels
+                        tu as mis tes talents à contribution.
+                        <br />
+                        <br />
+                        Ne saute aucun détail pour que la communauté puisse te
+                        repérer facilement dans la foule !
+                        <br />
                     </p>
                     <MissionsEditor
                         control={control}
