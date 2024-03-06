@@ -1,6 +1,8 @@
 "use client";
 import React from "react";
+
 import Autocomplete from "@mui/material/Autocomplete";
+import Chip from "@mui/material/Chip";
 import TextField from "@mui/material/TextField";
 
 import { ClientOnly } from "./ClientOnly";
@@ -50,7 +52,23 @@ export default function SESelect({
                         ? (defaultValue as { value: string; label: string }[])
                         : undefined
                 }
-                getOptionKey={(opt) => opt.value}
+                // getOptionKey={(opt) => opt.value}
+                renderOption={(props, option) => {
+                    return (
+                        <li {...props} key={option.value}>
+                            {option.label}
+                        </li>
+                    );
+                }}
+                renderTags={(tagValue, getTagProps) => {
+                    return tagValue.map((option, index) => (
+                        <Chip
+                            {...getTagProps({ index })}
+                            key={option.value}
+                            label={option.label}
+                        />
+                    ));
+                }}
                 getOptionLabel={(opt) => opt.label}
                 isOptionEqualToValue={(option, value) =>
                     option.value === value.value
