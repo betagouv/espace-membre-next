@@ -20,6 +20,7 @@ import routes, { computeRoute } from "@/routes/routes";
 import { useSession } from "@/proxies/next-auth";
 
 import { PullRequestWarning } from "../PullRequestWarning";
+import { GithubAPIPullRequest } from "@/lib/github";
 
 export type MemberSchemaType = z.infer<typeof memberSchema>;
 
@@ -30,7 +31,7 @@ export interface BaseInfoUpdateProps {
         value: string;
         label: string;
     }[];
-    updatePullRequest?: { url: string };
+    updatePullRequest?: GithubAPIPullRequest;
 }
 
 const postMemberData = async ({ values, sessionUsername }) => {

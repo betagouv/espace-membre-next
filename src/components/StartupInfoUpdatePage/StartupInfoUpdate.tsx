@@ -2,17 +2,13 @@
 import React from "react";
 
 import axios from "axios";
-import { DBPullRequest } from "@/models/pullRequests";
 import routes, { computeRoute } from "@/routes/routes";
-import { StartupForm } from "../StartupForm/StartupForm";
-import {
-    StartupAPIData,
-    StartupFrontMatter,
-    StartupPhase,
-} from "@/models/startup";
-import Alert from "@codegouvfr/react-dsfr/Alert";
 import { routeTitles } from "@/utils/routes/routeTitles";
+import { StartupFrontMatter, StartupPhase } from "@/models/startup";
+import { GithubAPIPullRequest } from "@/lib/github";
+import { StartupForm } from "../StartupForm/StartupForm";
 import { PullRequestWarning } from "../PullRequestWarning";
+import { fr } from "@codegouvfr/react-dsfr";
 
 // import style manually
 export interface StartupInfoFormData {
@@ -28,8 +24,7 @@ export interface StartupInfoFormData {
 
 export interface StartupInfoUpdateProps {
     formData: StartupFrontMatter & { markdown: string };
-
-    updatePullRequest?: DBPullRequest;
+    updatePullRequest?: GithubAPIPullRequest;
 }
 
 /* Pure component */
@@ -61,11 +56,13 @@ export const StartupInfoUpdate = (props: StartupInfoUpdateProps) => {
     };
     return (
         <>
-            <div>
+            <div className={fr.cx("fr-mb-5w")}>
                 <h1>{routeTitles.startupDetailsEdit(props.formData.title)}</h1>
 
                 {!!props.updatePullRequest && (
-                    <PullRequestWarning url={props.updatePullRequest.url} />
+                    <PullRequestWarning
+                        url={props.updatePullRequest.html_url}
+                    />
                 )}
 
                 <div className="beta-banner"></div>
