@@ -37,6 +37,7 @@ const getAccount = async (req, res, onSuccess, onError) => {
             ]);
         const today = new Date();
         const title = "Mon compte";
+        not necessary here ?
         // const updatePullRequest = await db("pull_requests")
         //     .where({
         //         username: req.auth.id,
