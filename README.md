@@ -4,12 +4,12 @@ Frontend de [l'espace membre beta.gouv.fr](https://espace-membre.incubateur.net/
 
 ## Getting Started
 
-First, run the development server:
+First, run `docker-compose up`
 
-```bash
-npm i && npm run dev
-```
+The run the development server: `npm i && npm run dev`
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+Open [http://localhost:8100](http://localhost:8100) with your browser to see the result.
+
+Maildev runs at [http://localhost:1080](http://localhost:1080) to get your magic link.
 
 You can start editing the page by modifying `src/app/page.tsx`. The page auto-updates as you edit the file.
