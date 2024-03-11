@@ -355,6 +355,7 @@ export async function fetchGithubMarkdown<T extends ZodSchema>({
 }): Promise<{ attributes: z.infer<T>; body: string; error?: ZodError }> {
     const repo = ref === "master" ? config.githubRepository : config.githubFork;
     const mdUrl = `https://raw.githubusercontent.com/${repo}/${ref}/${path}`;
+    console.log(`Fetching ${mdUrl}`);
     const mdData = await fetch(mdUrl, { cache: "no-store" }).then((r) =>
         r.text()
     );

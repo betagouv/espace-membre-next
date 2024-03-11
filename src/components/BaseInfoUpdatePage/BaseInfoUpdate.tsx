@@ -1,6 +1,7 @@
 "use client";
 import React from "react";
 import { z } from "zod";
+import * as Sentry from "@sentry/nextjs";
 
 import Input from "@codegouvfr/react-dsfr/Input";
 import Alert from "@codegouvfr/react-dsfr/Alert";
@@ -98,7 +99,6 @@ export const BaseInfoUpdate = (props: BaseInfoUpdateProps) => {
                 type: "success",
             });
         } catch (e: any) {
-            // todo: sentry
             console.log(e);
             setAlertMessage({
                 title: "Erreur",
@@ -108,6 +108,7 @@ export const BaseInfoUpdate = (props: BaseInfoUpdateProps) => {
             });
             //e.response.data.fieldErrors;
             setIsSaving(false);
+            Sentry.captureException(e);
             if (e.errors) {
                 control.setError("root", {
                     //@ts-ignore
@@ -130,7 +131,6 @@ export const BaseInfoUpdate = (props: BaseInfoUpdateProps) => {
                 </p>
 
                 {!!alertMessage && (
-                    // todo: sentry
                     <Alert
                         className="fr-mb-8v"
                         severity={alertMessage.type}

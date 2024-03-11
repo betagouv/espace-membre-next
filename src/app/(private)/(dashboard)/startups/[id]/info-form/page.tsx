@@ -27,6 +27,14 @@ async function fetchGithubPageData(startup: string, ref: string = "master") {
         ref,
         schema: startupSchema,
         path: `content/_startups/${startup}.md`,
+        overrides: (values) => ({
+            ...values,
+            // prevent exceptions with invalid markdown content
+            title: values.title || "",
+            mission: values.mission || "",
+            incubator: values.incubator || "",
+            contact: values.contact || "",
+        }),
     });
 
     return {
