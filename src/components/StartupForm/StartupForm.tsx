@@ -23,6 +23,7 @@ import Table from "@codegouvfr/react-dsfr/Table";
 import { Alert } from "@codegouvfr/react-dsfr/Alert";
 import RadioButtons from "@codegouvfr/react-dsfr/RadioButtons";
 import SelectAccessibilityStatus from "../SelectAccessibilityStatus";
+import * as Sentry from "@sentry/nextjs";
 
 // import style manually
 const mdParser = new MarkdownIt(/* Markdown-it options */);
@@ -83,10 +84,18 @@ const blobToBase64 = async (blob) => {
     });
 };
 
+const safeDecodeURIComponent = (content) => {
+    try {
+        return (content && decodeURIComponent(content)) || "";
+    } catch (e) {
+        Sentry.captureException(e);
+    }
+};
+
 /* Pure component */
 export const StartupForm = (props: StartupForm) => {
     const [text, setText] = React.useState(
-        decodeURIComponent(props.content) || ""
+        safeDecodeURIComponent(props.content) || ""
     );
     const [title, setTitle] = React.useState<string | undefined>(
         props.startup?.attributes.name
@@ -254,7 +263,7 @@ export const StartupForm = (props: StartupForm) => {
             (!phases ||
                 JSON.stringify(phases) === JSON.stringify(props.phases)) &&
             title === props.startup?.attributes.name &&
-            (!text || text === decodeURIComponent(props.content)) &&
+            (!text || text === safeDecodeURIComponent(props.content)) &&
             link === props.link &&
             dashlord_url === props.dashlord_url &&
             stats_url === props.stats_url &&

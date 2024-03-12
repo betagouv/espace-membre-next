@@ -34,6 +34,12 @@ async function fetchGithubPageData(startup: string, ref: string = "master") {
             mission: values.mission || "",
             incubator: values.incubator || "",
             contact: values.contact || "",
+            sponsors:
+                (values.sponsors &&
+                    values.sponsors.map((sponsor) =>
+                        sponsor.replace(/^\/organisations\//, "")
+                    )) ||
+                [],
         }),
     });
 
