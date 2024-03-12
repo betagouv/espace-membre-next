@@ -57,6 +57,8 @@ export const StartupInfoCreate = (props: StartupInfoCreateProps) => {
             <div className="beta-banner"></div>
             <div>
                 <StartupForm content={""} save={save} />
+                <br />
+                <br />
             </div>
         </>
     );
