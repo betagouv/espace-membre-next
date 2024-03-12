@@ -27,17 +27,16 @@ export const CompetencesEditor = ({
     onChange,
     defaultValue,
 }: {
-    onChange: any;
+    onChange: (event: any, competences: string[]) => void;
     defaultValue: string[];
 }) => {
-    // display value
-    const [value, setValue] = React.useState<CompetenceType | null>(null);
+    const [value, setValue] = React.useState<CompetenceType[]>(
+        defaultValue.map((t) => ({ label: t } as CompetenceType))
+    );
 
     return (
         <Autocomplete
-            defaultValue={defaultValue.map(
-                (t) => ({ label: t } as CompetenceType)
-            )}
+            value={value}
             freeSolo
             multiple={true}
             selectOnFocus={true}
@@ -58,29 +57,35 @@ export const CompetencesEditor = ({
                     <ul>{params.children}</ul>
                 </li>
             )}
-            onChange={(event, newValue) => {
+            onChange={(event, newValues) => {
+                const newValue = newValues.length
+                    ? newValues[newValues.length - 1]
+                    : null;
                 if (typeof newValue === "string") {
-                    //  pass
-                    setValue({
-                        label: newValue,
-                    });
-                    //@ts-ignore
+                    // touche entrée
+                    const values = [...value, { label: newValue }];
+                    setValue(values);
+                    onChange(
+                        event,
+                        values.map((v) => v.inputValue || v.label)
+                    );
                 } else if (newValue && newValue.inputValue) {
-                    setValue({
-                        //@ts-ignore
-                        label: newValue.inputValue,
-                    });
-                } else {
-                    //@ts-ignore
-                    setValue(newValue);
+                    // Create a new value from the user input
+                    const values = [...value, { label: newValue.inputValue }];
+                    setValue(values);
+                    onChange(
+                        event,
+                        values.map((v) => v.inputValue || v.label)
+                    );
+                } else if (Array.isArray(newValues)) {
+                    // @ts-ignore
+                    setValue(newValues);
 
                     // send changes upstream
                     onChange(
                         event,
-                        newValue &&
-                            Array.isArray(newValue) &&
-                            //@ts-ignore
-                            newValue.map((v) => v.inputValue || v.label)
+                        // @ts-ignore
+                        newValues.map((v) => v.inputValue || v.label)
                     );
                 }
             }}
@@ -102,6 +107,7 @@ export const CompetencesEditor = ({
             }}
             getOptionLabel={(option) => {
                 if (typeof option === "string") {
+                    // touchée entrée
                     return option;
                 }
                 if (option.inputValue) {
