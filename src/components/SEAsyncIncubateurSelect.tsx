@@ -7,11 +7,13 @@ export default function SEIncubateurSelect({
     value,
     placeholder,
     required,
+    showPlaceHolder = false,
 }: {
     onChange: any;
     value: any;
     placeholder?: any;
     required: boolean;
+    showPlaceHolder?: boolean;
 }) {
     const [options, setOptions] = React.useState<
         { value: string; label: string }[]
@@ -60,7 +62,11 @@ export default function SEIncubateurSelect({
                 required,
             }}
         >
-            <option value="" disabled hidden>
+            <option
+                value=""
+                disabled={!showPlaceHolder}
+                hidden={!showPlaceHolder}
+            >
                 {placeholder || "Selectionnez un incubateur"}
             </option>
             {options.map((incubateur, index) => (

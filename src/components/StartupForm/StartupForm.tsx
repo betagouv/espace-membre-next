@@ -382,6 +382,7 @@ export const StartupForm = (props: StartupForm) => {
                             </div>
                             <SEAsyncIncubateurSelect
                                 value={incubator}
+                                showPlaceHolder={true}
                                 onChange={(e) => {
                                     setIncubator(e.value || undefined);
                                 }}
@@ -516,6 +517,8 @@ export const StartupForm = (props: StartupForm) => {
                             <Input
                                 label="Contact"
                                 nativeInputProps={{
+                                    placeholder:
+                                        "ex: contact@[startup].beta.gouv.fr",
                                     onChange: (e) => {
                                         setContact(
                                             e.currentTarget.value || undefined
