@@ -84,19 +84,9 @@ const blobToBase64 = async (blob) => {
     });
 };
 
-const safeDecodeURIComponent = (content) => {
-    try {
-        return (content && decodeURIComponent(content)) || "";
-    } catch (e) {
-        Sentry.captureException(e);
-    }
-};
-
 /* Pure component */
 export const StartupForm = (props: StartupForm) => {
-    const [text, setText] = React.useState(
-        safeDecodeURIComponent(props.content) || ""
-    );
+    const [text, setText] = React.useState(props.content || "");
     const [title, setTitle] = React.useState<string | undefined>(
         props.startup?.attributes.name
     );
@@ -204,13 +194,21 @@ export const StartupForm = (props: StartupForm) => {
             .catch((e) => {
                 console.error(e);
                 setIsSaving(false);
-                const ErrorResponse: FormErrorResponse = e.response
-                    .data as FormErrorResponse;
-                setAlertMessage({
-                    title: "Une erreur est pas survenue",
-                    message: <>{ErrorResponse.message}</>,
-                    type: "warning",
-                });
+                const ErrorResponse: FormErrorResponse =
+                    e.response && (e.response.data as FormErrorResponse);
+                if (ErrorResponse) {
+                    setAlertMessage({
+                        title: "Une erreur est survenue",
+                        message: <>{ErrorResponse.message}</>,
+                        type: "warning",
+                    });
+                } else {
+                    setAlertMessage({
+                        title: "Une erreur est survenue",
+                        message: <>{e.toString()}</>,
+                        type: "warning",
+                    });
+                }
                 setIsSaving(false);
                 if (ErrorResponse.errors) {
                     setFormErrors(ErrorResponse.errors);
@@ -263,7 +261,7 @@ export const StartupForm = (props: StartupForm) => {
             (!phases ||
                 JSON.stringify(phases) === JSON.stringify(props.phases)) &&
             title === props.startup?.attributes.name &&
-            (!text || text === safeDecodeURIComponent(props.content)) &&
+            (!text || text === props.content) &&
             link === props.link &&
             dashlord_url === props.dashlord_url &&
             stats_url === props.stats_url &&

@@ -52,8 +52,11 @@ export const StartupInfoUpdate = (props: StartupInfoUpdateProps) => {
             };
         } catch (e) {
             console.error(e);
+            window.scrollTo({ top: 20, behavior: "smooth" });
+            throw e;
         }
     };
+
     return (
         <>
             <div className={fr.cx("fr-mb-5w")}>
