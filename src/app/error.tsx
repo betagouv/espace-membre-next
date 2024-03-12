@@ -41,7 +41,17 @@ export default function Error({
                                 Nos équipes ont été notifiées et interviendront
                                 dans les meilleurs délais.
                                 <br />
-                                Ré-essayez en passant par la{" "}
+                                <br />
+                                <Link
+                                    href="#"
+                                    onClick={() => window.history?.go(-1)}
+                                >
+                                    Retour à la page précédente
+                                </Link>
+                                .
+                                <br />
+                                <br />
+                                Ou ré-essayez en passant par la{" "}
                                 <Link href="/">Page d'accueil</Link>.
                             </p>
                         </div>

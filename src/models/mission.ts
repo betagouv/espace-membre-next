@@ -37,37 +37,39 @@ export interface GithubMission {
 }
 
 export const missionSchema = z.object({
-    start: z.preprocess(
-        (val) => {
-            if (typeof val === "string") {
-                return new Date(val);
-            }
-            return val;
-        },
-        z
-            .date({
+    start: z
+        .preprocess(
+            (val) => {
+                if (typeof val === "string") {
+                    return new Date(val);
+                }
+                return val;
+            },
+            z.date({
                 errorMap: (issue, ctx) => ({
                     message: "Champ obligatoire",
                 }),
             })
-            .describe("Date de début de la mission")
-    ),
-    end: z.preprocess(
-        (val) => {
-            if (typeof val === "string") {
-                return new Date(val);
-            }
-            return val;
-        },
-        z
-            .date({
-                errorMap: (issue, ctx) => ({
-                    message: "Champ obligatoire",
-                }),
-            })
-            .describe("Date de début de la mission")
-            .optional()
-    ),
+        )
+        .describe("Date de début de mission"),
+    end: z
+        .preprocess(
+            (val) => {
+                if (typeof val === "string") {
+                    return new Date(val);
+                }
+                return val;
+            },
+            z
+                .date({
+                    errorMap: (issue, ctx) => ({
+                        message: "Champ obligatoire",
+                    }),
+                })
+
+                .optional()
+        )
+        .describe("Date de fin de mission"),
     status: z
         .nativeEnum(
             Status, // force status options

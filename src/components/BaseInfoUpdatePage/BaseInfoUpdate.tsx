@@ -2,10 +2,12 @@
 import React from "react";
 import { z } from "zod";
 import * as Sentry from "@sentry/nextjs";
+import axios from "axios";
 
 import Input from "@codegouvfr/react-dsfr/Input";
 import Alert from "@codegouvfr/react-dsfr/Alert";
 import { Button } from "@codegouvfr/react-dsfr/Button";
+import Select from "@codegouvfr/react-dsfr/Select";
 import { fr } from "@codegouvfr/react-dsfr";
 
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -13,15 +15,13 @@ import { useForm } from "react-hook-form";
 
 import { routeTitles } from "@/utils/routes/routeTitles";
 
-import { MissionsEditor } from "./MissionsEditor";
 import { DOMAINE_OPTIONS, memberSchema } from "@/models/member";
-import Select from "@codegouvfr/react-dsfr/Select";
-import axios from "axios";
 import routes, { computeRoute } from "@/routes/routes";
 import { useSession } from "@/proxies/next-auth";
-
-import { PullRequestWarning } from "../PullRequestWarning";
 import { GithubAPIPullRequest } from "@/lib/github";
+import { CompetencesEditor } from "./CompetencesEditor";
+import { MissionsEditor } from "./MissionsEditor";
+import { PullRequestWarning } from "../PullRequestWarning";
 
 export type MemberSchemaType = z.infer<typeof memberSchema>;
 
@@ -120,8 +120,6 @@ export const BaseInfoUpdate = (props: BaseInfoUpdateProps) => {
         setIsSaving(false);
     };
 
-    // todo: récupérer les labels Zod
-
     return (
         <>
             <div className={fr.cx("fr-mb-5w")}>
@@ -157,7 +155,7 @@ export const BaseInfoUpdate = (props: BaseInfoUpdateProps) => {
                     aria-label="Modifier mes informations"
                 >
                     <Input
-                        label="Nom complet"
+                        label={memberSchema.shape.fullname.description}
                         nativeInputProps={{
                             placeholder: "ex: Grace HOPPER",
                             ...register("fullname"),
@@ -166,7 +164,7 @@ export const BaseInfoUpdate = (props: BaseInfoUpdateProps) => {
                         stateRelatedMessage={errors.fullname?.message}
                     />
                     <Input
-                        label="Rôle chez beta.gouv.fr"
+                        label={memberSchema.shape.role.description}
                         nativeInputProps={{
                             placeholder: "ex: Développeuse",
                             ...register("role"),
@@ -192,13 +190,13 @@ export const BaseInfoUpdate = (props: BaseInfoUpdateProps) => {
                     </Select>
                     <Input
                         textArea
-                        label="Courte bio"
+                        label={memberSchema.shape.bio.description}
                         nativeTextAreaProps={{ ...register("bio") }}
                         state={errors.bio ? "error" : "default"}
                         stateRelatedMessage={errors.bio?.message}
                     />
                     <Input
-                        label="Adresse du profil LinkedIn ou site web"
+                        label={memberSchema.shape.link.description}
                         nativeInputProps={{
                             placeholder: "ex: https://linkedin.com/in/xxxx",
                             ...register("link"),
@@ -206,6 +204,21 @@ export const BaseInfoUpdate = (props: BaseInfoUpdateProps) => {
                         state={errors.link ? "error" : "default"}
                         stateRelatedMessage={errors.link?.message}
                     />
+                    <h3>Mes compétences</h3>
+                    <p>
+                        Tu peux préciser tes compétences, cela permettra à la
+                        communauté de mieux de trouver en cas de besoin :)
+                    </p>
+                    <CompetencesEditor
+                        onChange={(e, values) => {
+                            setValue("competences", values, {
+                                shouldDirty: true,
+                            });
+                        }}
+                        defaultValue={props.formData.competences || []}
+                    />
+                    <br />
+                    <br />
                     <h3>Mes missions</h3>
                     <p>
                         Précise les dates, employeurs et produits pour lesquels
@@ -223,6 +236,7 @@ export const BaseInfoUpdate = (props: BaseInfoUpdateProps) => {
                         startupOptions={props.startupOptions}
                         errors={errors.missions || []}
                     />
+
                     <Button
                         className={fr.cx("fr-mt-3w")}
                         children={
