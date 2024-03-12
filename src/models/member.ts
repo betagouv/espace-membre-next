@@ -221,11 +221,20 @@ export const createMemberSchema = z.object({
     domaine: domaineSchema,
 });
 
-// Extend createMemberSchema with a bio property
-export const completeMemberSchema = createMemberSchema.extend({
-    bio: bioSchema,
-    link: linkSchema,
-    github: githubSchema,
+export type createMemberSchemaType = z.infer<typeof createMemberSchema>;
+
+export const dbMemberSchema = z.object({
+    username: z
+        .string({
+            errorMap: (issue, ctx) => ({
+                message: "Le nom est obligatoire",
+            }),
+        })
+        .describe("Nom complet")
+        .min(1)
+        .readonly(),
+    secondary_email: emailSchema,
+    isEmailBetaAsked: z.boolean(),
     gender: genderSchema,
 });
 
