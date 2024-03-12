@@ -289,7 +289,7 @@ async function postOnboardingData(req, res, onSuccess, onError) {
         if (Object.keys(formValidationErrors).length) {
             req.flash(
                 "error",
-                "Un champs du formulaire est invalide ou manquant."
+                "Un champ du formulaire est invalide ou manquant."
             );
             throw new Error();
         }
@@ -383,7 +383,6 @@ async function postOnboardingData(req, res, onSuccess, onError) {
             prInfo,
         });
     } catch (err) {
-        Sentry.captureException(err);
         if (err instanceof Error) {
             req.flash("error", err.message);
         }

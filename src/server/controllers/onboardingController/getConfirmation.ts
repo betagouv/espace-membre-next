@@ -6,7 +6,8 @@ export async function getConfirmation(req, res) {
         const { prNumber } = req.params;
         const { isEmailBetaAsked } = req.query;
         const prUrl = `https://github.com/${config.githubRepository}/pull/${prNumber}`;
-        res.render("onboardingSuccess", { prUrl, isEmailBetaAsked });
+        //res.render("onboardingSuccess", { prUrl, isEmailBetaAsked });
+        res.redirect("/");
     } catch (err) {
         console.error(err);
         Sentry.captureException(err);
