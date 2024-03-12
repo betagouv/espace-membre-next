@@ -1,6 +1,7 @@
 "use client";
 import React from "react";
 import { z } from "zod";
+import * as Sentry from "@sentry/nextjs";
 
 import Input from "@codegouvfr/react-dsfr/Input";
 import Alert from "@codegouvfr/react-dsfr/Alert";
@@ -10,7 +11,6 @@ import { fr } from "@codegouvfr/react-dsfr";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 
-import { DBPullRequest } from "@/models/pullRequests";
 import { routeTitles } from "@/utils/routes/routeTitles";
 
 import { MissionsEditor } from "./MissionsEditor";
@@ -19,9 +19,9 @@ import Select from "@codegouvfr/react-dsfr/Select";
 import axios from "axios";
 import routes, { computeRoute } from "@/routes/routes";
 import { useSession } from "@/proxies/next-auth";
-import { FormErrorResponse } from "@/models/misc";
 
-import { PullRequestWarning } from "./PullRequestWarning";
+import { PullRequestWarning } from "../PullRequestWarning";
+import { GithubAPIPullRequest } from "@/lib/github";
 
 export type MemberSchemaType = z.infer<typeof memberSchema>;
 
@@ -32,7 +32,7 @@ export interface BaseInfoUpdateProps {
         value: string;
         label: string;
     }[];
-    updatePullRequest?: { url: string };
+    updatePullRequest?: GithubAPIPullRequest;
 }
 
 const postMemberData = async ({ values, sessionUsername }) => {
@@ -99,7 +99,6 @@ export const BaseInfoUpdate = (props: BaseInfoUpdateProps) => {
                 type: "success",
             });
         } catch (e: any) {
-            // todo: sentry
             console.log(e);
             setAlertMessage({
                 title: "Erreur",
@@ -109,6 +108,7 @@ export const BaseInfoUpdate = (props: BaseInfoUpdateProps) => {
             });
             //e.response.data.fieldErrors;
             setIsSaving(false);
+            Sentry.captureException(e);
             if (e.errors) {
                 control.setError("root", {
                     //@ts-ignore
@@ -124,14 +124,13 @@ export const BaseInfoUpdate = (props: BaseInfoUpdateProps) => {
 
     return (
         <>
-            <div>
+            <div className={fr.cx("fr-mb-5w")}>
                 <h1>{routeTitles.accountEditBaseInfo()}</h1>
                 <p>
                     Ces informations seront publiées sur le site beta.gouv.fr.
                 </p>
 
                 {!!alertMessage && (
-                    // todo: sentry
                     <Alert
                         className="fr-mb-8v"
                         severity={alertMessage.type}
@@ -148,7 +147,9 @@ export const BaseInfoUpdate = (props: BaseInfoUpdateProps) => {
                 )}
 
                 {!!props.updatePullRequest && (
-                    <PullRequestWarning pullRequest={props.updatePullRequest} />
+                    <PullRequestWarning
+                        url={props.updatePullRequest.html_url}
+                    />
                 )}
 
                 <form

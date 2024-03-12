@@ -1,6 +1,5 @@
 "use client";
 import { Member } from "@/models/member";
-import { Phase } from "@/models/startup";
 import Accordion from "@codegouvfr/react-dsfr/Accordion";
 import Alert from "@codegouvfr/react-dsfr/Alert";
 import Button from "@codegouvfr/react-dsfr/Button";

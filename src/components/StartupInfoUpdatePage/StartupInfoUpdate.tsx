@@ -2,12 +2,13 @@
 import React from "react";
 
 import axios from "axios";
-import { DBPullRequest } from "@/models/pullRequests";
 import routes, { computeRoute } from "@/routes/routes";
-import { StartupForm } from "../StartupForm/StartupForm";
-import { StartupInfo, StartupPhase } from "@/models/startup";
-import Alert from "@codegouvfr/react-dsfr/Alert";
 import { routeTitles } from "@/utils/routes/routeTitles";
+import { StartupFrontMatter, StartupPhase } from "@/models/startup";
+import { GithubAPIPullRequest } from "@/lib/github";
+import { StartupForm } from "../StartupForm/StartupForm";
+import { PullRequestWarning } from "../PullRequestWarning";
+import { fr } from "@codegouvfr/react-dsfr";
 
 // import style manually
 export interface StartupInfoFormData {
@@ -22,23 +23,8 @@ export interface StartupInfoFormData {
 }
 
 export interface StartupInfoUpdateProps {
-    title: string;
-    currentUserId: string;
-    errors: string[];
-    messages: string[];
-    activeTab: string;
-    subActiveTab: string;
-    request: Request;
-    formData: StartupInfoFormData;
-    startup: StartupInfo;
-    formValidationErrors: any;
-    startupOptions: {
-        value: string;
-        label: string;
-    }[];
-    username: string;
-    updatePullRequest?: DBPullRequest;
-    isAdmin: boolean;
+    formData: StartupFrontMatter & { markdown: string };
+    updatePullRequest?: GithubAPIPullRequest;
 }
 
 /* Pure component */
@@ -50,7 +36,7 @@ export const StartupInfoUpdate = (props: StartupInfoUpdateProps) => {
             const resp = await axios.post(
                 computeRoute(routes.STARTUP_POST_INFO_UPDATE_FORM).replace(
                     ":startup",
-                    props.startup.id
+                    props.formData.id
                 ),
                 {
                     ...data,
@@ -66,55 +52,36 @@ export const StartupInfoUpdate = (props: StartupInfoUpdateProps) => {
             };
         } catch (e) {
             console.error(e);
+            window.scrollTo({ top: 20, behavior: "smooth" });
+            throw e;
         }
     };
 
     return (
         <>
-            <div>
-                <h1>
-                    {routeTitles.startupDetailsEdit(
-                        props.startup.attributes.name
-                    )}
-                </h1>
+            <div className={fr.cx("fr-mb-5w")}>
+                <h1>{routeTitles.startupDetailsEdit(props.formData.title)}</h1>
+
                 {!!props.updatePullRequest && (
-                    <Alert
-                        className="fr-mb-8v"
-                        severity="warning"
-                        small={true}
-                        closable={false}
-                        title="Une pull request existe déjà sur cette fiche."
-                        description={
-                            <>
-                                {`Toi ou un membre de ton équipe doit la merger
-                                pour que les changements soient pris en compte : `}
-                                <a
-                                    className="fr-link"
-                                    href={props.updatePullRequest.url}
-                                    target="_blank"
-                                >
-                                    {props.updatePullRequest.url}
-                                </a>
-                                <br />
-                                (la prise en compte peut prendre 10 minutes.)
-                            </>
-                        }
+                    <PullRequestWarning
+                        url={props.updatePullRequest.html_url}
                     />
                 )}
+
                 <div className="beta-banner"></div>
+
                 <StartupForm
-                    content={
-                        props.startup.attributes.content_url_encoded_markdown
-                    }
+                    content={props.formData.markdown}
                     save={save}
-                    startup={props.startup}
-                    phases={
-                        props.startup.attributes.phases as unknown as {
-                            start: string;
-                            end?: string | undefined;
-                            name: StartupPhase;
-                        }[]
-                    }
+                    startup={{ attributes: { name: props.formData.title } }}
+                    phases={props.formData.phases?.map((phase) => ({
+                        //...phase,
+                        name: phase.name as StartupPhase, // WTH
+                        start: phase.start.toISOString().substring(0, 10),
+                        end:
+                            phase.end &&
+                            phase.end.toISOString().substring(0, 10),
+                    }))}
                     link={props.formData.link}
                     dashlord_url={props.formData.dashlord_url}
                     stats_url={props.formData.stats_url}
@@ -122,14 +89,10 @@ export const StartupInfoUpdate = (props: StartupInfoUpdateProps) => {
                     repository={props.formData.repository}
                     incubator={props.formData.incubator}
                     sponsors={props.formData.sponsors}
-                    accessibility_status={
-                        props.startup.attributes.accessibility_status
-                    }
-                    analyse_risques={props.startup.attributes.analyse_risques}
-                    analyse_risques_url={
-                        props.startup.attributes.analyse_risques_url
-                    }
-                    contact={props.startup.attributes.contact}
+                    accessibility_status={props.formData.accessibility_status}
+                    analyse_risques={props.formData.analyse_risques}
+                    analyse_risques_url={props.formData.analyse_risques_url}
+                    contact={props.formData.contact}
                 />
             </div>
             <style media="screen">{css}</style>

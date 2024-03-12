@@ -37,13 +37,6 @@ const getAccount = async (req, res, onSuccess, onError) => {
             ]);
         const today = new Date();
         const title = "Mon compte";
-        const updatePullRequest = await db("pull_requests")
-            .where({
-                username: req.auth.id,
-                status: PULL_REQUEST_STATE.PR_MEMBER_UPDATE_CREATED,
-            })
-            .orderBy("created_at", "desc")
-            .first();
 
         const hasPublicServiceEmail =
             dbUser?.primary_email &&
@@ -68,7 +61,6 @@ const getAccount = async (req, res, onSuccess, onError) => {
                 req.auth.id
             ),
             availableEmailPros,
-            updatePullRequest,
             canCreateRedirection: currentUser.canCreateRedirection,
             canChangePassword: currentUser.canChangePassword,
             communication_email: dbUser?.communication_email,

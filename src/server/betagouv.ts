@@ -5,7 +5,7 @@ import { checkUserIsExpired } from "@controllers/utils";
 import { Incubator } from "@/models/incubator";
 import { Job, JobWTTJ } from "@/models/job";
 import { Member } from "@/models/member";
-import { Startup } from "@/models/startup";
+import { Startup, StartupInfo } from "@/models/startup";
 import _ from "lodash";
 import {
     EMAIL_PLAN_TYPE,
@@ -142,7 +142,7 @@ const betaGouv = {
         const startups = await betaGouv.startupInfos();
         return startups.find((startup) => startup.id === id);
     },
-    startupsInfos: async () =>
+    startupsInfos: async (): Promise<StartupInfo[]> =>
         axios
             .get(config.startupsAPI)
             .then((x) => x.data.data) // data key

@@ -3,6 +3,7 @@ import config from "@/server/config";
 import fm from "front-matter";
 import axios from "axios";
 import { request } from "@octokit/request";
+import { ZodError, ZodSchema, z } from "zod";
 
 export interface PRInfo {
     html_url: string;
@@ -306,4 +307,72 @@ export function makeGithubPullRequest(branch: string, title: string) {
         base,
         maintainer_can_modify: true,
     });
+}
+
+const fetchGithubOptions = {
+    headers: {
+        Authorization: `token ${config.githubToken}`,
+    },
+};
+
+export type GithubAPIPullRequest = {
+    html_url: string;
+    number: number;
+    created_at: string;
+    udpated_at: string;
+    head: {
+        ref: string;
+        sha: string;
+    };
+};
+
+// get latest open PR for a given branch
+export async function getPullRequestForBranch(
+    branchName: string
+): Promise<GithubAPIPullRequest | undefined> {
+    const pullRequests = await fetch(
+        `https://api.github.com/repos/${
+            config.githubRepository
+        }/pulls?state=open&head=${
+            config.githubFork.split("/")[0]
+        }:${branchName}&per_page=1`,
+        fetchGithubOptions
+    ).then((r) => r.json());
+    return (pullRequests.length && pullRequests[0]) || undefined;
+}
+
+// parse and validate some markdown file from raw.githubcontent.com
+export async function fetchGithubMarkdown<T extends ZodSchema>({
+    ref = "master",
+    schema,
+    path,
+    overrides,
+}: {
+    ref?: string;
+    schema: T;
+    path: string;
+    overrides?: (values: Record<string, any>) => Record<string, any>;
+}): Promise<{ attributes: z.infer<T>; body: string; error?: ZodError }> {
+    const repo = ref === "master" ? config.githubRepository : config.githubFork;
+    const mdUrl = `https://raw.githubusercontent.com/${repo}/${ref}/${path}`;
+    console.log(`Fetching ${mdUrl}`);
+    const mdData = await fetch(mdUrl, { cache: "no-store" }).then((r) =>
+        r.text()
+    );
+
+    const {
+        attributes,
+        body,
+    }: { attributes: Record<string, any>; body: string } = fm(mdData);
+
+    const parsedData = schema.parse({
+        ...attributes,
+        ...(overrides ? overrides(attributes) : {}),
+        id: path.replace(/^.*\/([^/]+)\.md$/, "$1"),
+    });
+
+    return {
+        attributes: parsedData,
+        body,
+    };
 }

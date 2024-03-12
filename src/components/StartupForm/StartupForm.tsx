@@ -23,6 +23,7 @@ import Table from "@codegouvfr/react-dsfr/Table";
 import { Alert } from "@codegouvfr/react-dsfr/Alert";
 import RadioButtons from "@codegouvfr/react-dsfr/RadioButtons";
 import SelectAccessibilityStatus from "../SelectAccessibilityStatus";
+import * as Sentry from "@sentry/nextjs";
 
 // import style manually
 const mdParser = new MarkdownIt(/* Markdown-it options */);
@@ -65,7 +66,7 @@ interface StartupForm {
         end?: string;
         name: StartupPhase;
     }[];
-    startup?: StartupInfo;
+    startup?: { attributes: { name: string } };
 }
 
 interface FormErrorResponse {
@@ -85,9 +86,7 @@ const blobToBase64 = async (blob) => {
 
 /* Pure component */
 export const StartupForm = (props: StartupForm) => {
-    const [text, setText] = React.useState(
-        decodeURIComponent(props.content) || ""
-    );
+    const [text, setText] = React.useState(props.content || "");
     const [title, setTitle] = React.useState<string | undefined>(
         props.startup?.attributes.name
     );
@@ -176,7 +175,7 @@ export const StartupForm = (props: StartupForm) => {
                     } de la fiche produit ouverte.`,
                     message: (
                         <>
-                            Tu peux merger cette pull request :
+                            Tu peux merger cette pull request :{" "}
                             <a href={resp.data.pr_url} target="_blank">
                                 {resp.data.pr_url}
                             </a>
@@ -195,13 +194,21 @@ export const StartupForm = (props: StartupForm) => {
             .catch((e) => {
                 console.error(e);
                 setIsSaving(false);
-                const ErrorResponse: FormErrorResponse = e.response
-                    .data as FormErrorResponse;
-                setAlertMessage({
-                    title: "Une erreur est pas survenue",
-                    message: <>{ErrorResponse.message}</>,
-                    type: "warning",
-                });
+                const ErrorResponse: FormErrorResponse =
+                    e.response && (e.response.data as FormErrorResponse);
+                if (ErrorResponse) {
+                    setAlertMessage({
+                        title: "Une erreur est survenue",
+                        message: <>{ErrorResponse.message}</>,
+                        type: "warning",
+                    });
+                } else {
+                    setAlertMessage({
+                        title: "Une erreur est survenue",
+                        message: <>{e.toString()}</>,
+                        type: "warning",
+                    });
+                }
                 setIsSaving(false);
                 if (ErrorResponse.errors) {
                     setFormErrors(ErrorResponse.errors);
@@ -254,7 +261,7 @@ export const StartupForm = (props: StartupForm) => {
             (!phases ||
                 JSON.stringify(phases) === JSON.stringify(props.phases)) &&
             title === props.startup?.attributes.name &&
-            (!text || text === decodeURIComponent(props.content)) &&
+            (!text || text === props.content) &&
             link === props.link &&
             dashlord_url === props.dashlord_url &&
             stats_url === props.stats_url &&
@@ -351,9 +358,9 @@ export const StartupForm = (props: StartupForm) => {
                                 </label>
                                 <ClientOnly>
                                     <MdEditor
-                                        defaultValue={decodeURIComponent(
+                                        defaultValue={
                                             props.content || DEFAULT_CONTENT
-                                        )}
+                                        }
                                         style={{
                                             height: "500px",
                                             marginTop: "0.5rem",
@@ -375,6 +382,7 @@ export const StartupForm = (props: StartupForm) => {
                             </div>
                             <SEAsyncIncubateurSelect
                                 value={incubator}
+                                showPlaceHolder={true}
                                 onChange={(e) => {
                                     setIncubator(e.value || undefined);
                                 }}
@@ -509,6 +517,8 @@ export const StartupForm = (props: StartupForm) => {
                             <Input
                                 label="Contact"
                                 nativeInputProps={{
+                                    placeholder:
+                                        "ex: contact@[startup].beta.gouv.fr",
                                     onChange: (e) => {
                                         setContact(
                                             e.currentTarget.value || undefined

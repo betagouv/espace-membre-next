@@ -5,6 +5,10 @@ fileignoreconfig:
       checksum: d379d505af1ac3bf76cc4d32fc7b5b2c12e0b776d4bc695ebf0ff8ceec6ea52e
     - filename: src/app/(private)/(dashboard)/formations/page.tsx
       checksum: 2bbe0f4d6807f4238b7d6085d45f8e5582bc8e57326db67a9839ee1aae1f4bdf
+    - filename: src/app/error.tsx
+      checksum: 27b9e96bc30d8d4ebc96320f7fc79d9af807f8c6d9f1796497c60318dd728e47
+    - filename: src/app/not-found.tsx
+      checksum: 29d7b736894451f16680665937d005f2e9912981a2dc42bd0015c1ccb3d0c835
     - filename: src/components/BaseInfoUpdatePage/BaseInfoUpdate.tsx
       checksum: 05d97c14f404f68008afc8707f7c0c44883503f71e5c52c1716777482820c3ca
     - filename: src/components/BaseInfoUpdatePage/MissionsEditor.tsx
@@ -15,6 +19,8 @@ fileignoreconfig:
       checksum: c251dbce68caf5cb85ac395bb400dfedb142737539d3ca0e1779f2a56460c520
     - filename: src/lib/airtable.ts
       checksum: 073b6fdb5d40706c9c05bdf16def31bfca6f0de2401c78d89b9ef4b3ed2da47d
+    - filename: src/routes/routes.ts
+      checksum: 675ba81fc5357f186d2ca4ce446a75016fbbcda42492d414d31ee7ad7fa8f7d5
     - filename: src/server/middlewares/sessionMiddleware.ts
       checksum: 37395239eb8012e5b4c310a6f2e23ef2eafd187abea8bfa1eee02212cba978a8
 scopeconfig:

@@ -6,7 +6,7 @@ import { generateMailingListName } from ".";
 
 function getCurrentPhase(startup: Startup): StartupPhase | undefined {
     return startup.phases
-        ? startup.phases[startup.phases.length - 1].name
+        ? (startup.phases[startup.phases.length - 1].name as StartupPhase)
         : undefined;
 }
 

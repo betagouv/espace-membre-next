@@ -25,11 +25,15 @@ async function getStartupInfoUpdatePageData(req, res, onSuccess, onError) {
     try {
         const title = "Changer une startup de phase";
         const formValidationErrors = {};
-        const startup: StartupInfo = await betagouv
+        const startup: StartupInfo | undefined = await betagouv
             .startupsInfos()
             .then((startups) =>
                 startups.find((s) => s.id === req.params.startup)
             );
+        if (!startup) {
+            onError(new Error(`startup ${req.params.startup} not found`));
+            return;
+        }
         const updatePullRequest = await db("pull_requests")
             .where({
                 status: PULL_REQUEST_STATE.PR_STARTUP_UPDATE_CREATED,
