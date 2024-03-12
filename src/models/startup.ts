@@ -12,7 +12,7 @@ interface Relationship {
 export const PHASE_READABLE_NAME = {
     acceleration: "En Accélération",
     investigation: "En Investigation",
-    transfert: "Transférée",
+    transfer: "Transférée",
     construction: "En Construction",
     alumni: "Partenariat terminé",
     success: "Pérennisé",
