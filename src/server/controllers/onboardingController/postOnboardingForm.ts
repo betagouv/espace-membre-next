@@ -10,7 +10,7 @@ import {
     createGithubFile,
     makeGithubPullRequest,
     deleteGithubBranch,
-    PRInfo,
+    GithubAPIPullRequest,
 } from "@/lib/github";
 import { fetchCommuneDetails } from "@/lib/searchCommune";
 import {
@@ -318,7 +318,7 @@ async function postOnboardingData(req, res, onSuccess, onError) {
                 memberType,
             }
         );
-        const prInfo: PRInfo = await createNewcomerGithubFile(
+        const prInfo = await createNewcomerGithubFile(
             username,
             content,
             referent

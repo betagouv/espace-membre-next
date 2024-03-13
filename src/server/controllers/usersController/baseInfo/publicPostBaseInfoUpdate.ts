@@ -1,12 +1,11 @@
 import { addEvent, EventCode } from "@/lib/events";
-import betagouv from "@betagouv";
-import { PRInfo } from "@/lib/github";
-import db from "@db";
+import { GithubMission } from "@/models/mission";
 import { PULL_REQUEST_TYPE, PULL_REQUEST_STATE } from "@/models/pullRequests";
 import { requiredError, isValidDate } from "@/server/controllers/validator";
+import betagouv from "@betagouv";
 import { updateAuthorGithubFile } from "@controllers/helpers/githubHelpers";
 import { GithubAuthorMissionChange } from "@controllers/helpers/githubHelpers/githubEntryInterface";
-import { GithubMission } from "@/models/mission";
+import db from "@db";
 
 export async function publicPostBaseInfoUpdate(req, res) {
     const { username } = req.params;
@@ -57,7 +56,7 @@ export async function publicPostBaseInfoUpdate(req, res) {
             // todo: delete all public postBaseInfoUpdate route and use BaseInfoUpdate instead
             missions: missions as GithubMission[],
         };
-        const prInfo: PRInfo = await updateAuthorGithubFile(username, changes);
+        const prInfo = await updateAuthorGithubFile(username, changes);
         addEvent(EventCode.MEMBER_BASE_INFO_UPDATED, {
             created_by_username: req.auth
                 ? req.auth.id

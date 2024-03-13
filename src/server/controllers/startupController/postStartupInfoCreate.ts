@@ -1,24 +1,24 @@
-import { addEvent, EventCode } from "@/lib/events";
-import { PRInfo } from "@/lib/github";
-import db from "@db";
-import { PULL_REQUEST_TYPE, PULL_REQUEST_STATE } from "@/models/pullRequests";
-import { isValidDate, requiredError } from "@/server/controllers/validator";
-import { StartupPhase } from "@/models/startup";
-import {
-    makeGithubSponsorFile,
-    makeGithubStartupFile,
-    makeImageFile,
-} from "@controllers/helpers/githubHelpers/createGithubCollectionEntry";
+import { updateMultipleFilesPR } from "../helpers/githubHelpers";
 import {
     GithubBetagouvFile,
     GithubStartupChange,
 } from "../helpers/githubHelpers/githubEntryInterface";
+import { addEvent, EventCode } from "@/lib/events";
+import { GithubAPIPullRequest } from "@/lib/github";
+import { PULL_REQUEST_TYPE, PULL_REQUEST_STATE } from "@/models/pullRequests";
 import {
     Sponsor,
     SponsorDomaineMinisteriel,
     SponsorType,
 } from "@/models/sponsor";
-import { updateMultipleFilesPR } from "../helpers/githubHelpers";
+import { StartupPhase } from "@/models/startup";
+import { isValidDate, requiredError } from "@/server/controllers/validator";
+import {
+    makeGithubSponsorFile,
+    makeGithubStartupFile,
+    makeImageFile,
+} from "@controllers/helpers/githubHelpers/createGithubCollectionEntry";
+import db from "@db";
 
 const isValidPhase = (field, value, callback) => {
     if (!value || Object.values(StartupPhase).includes(value)) {
@@ -119,7 +119,7 @@ export async function postStartupInfoCreate(req, res) {
             const imageFile = makeImageFile(startup, image);
             files.push(imageFile);
         }
-        const prInfo: PRInfo = await updateMultipleFilesPR(
+        const prInfo = await updateMultipleFilesPR(
             `Création de la fiche ${startup} par ${req.auth.id}`,
             files
         );

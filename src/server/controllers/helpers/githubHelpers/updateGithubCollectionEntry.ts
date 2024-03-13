@@ -11,10 +11,9 @@ import {
     createGithubFile,
     getGithubBranch,
     getGithubFile,
-    getPullRequest,
     getGithubMasterSha,
     makeGithubPullRequest,
-    PRInfo,
+    GithubAPIPullRequest,
     getPullRequestForBranch,
 } from "@/lib/github";
 import config from "@/server/config";
@@ -27,7 +26,7 @@ async function updateGithubCollectionEntry(
         | GithubStartupChange
         | GithubAuthorMissionChange,
     mainContent?: string
-): Promise<PRInfo> {
+): Promise<GithubAPIPullRequest> {
     const branch = createBranchName(name);
     console.log(`Début de la mise à jour de la fiche pour ${name}...`);
 
@@ -102,7 +101,7 @@ export async function updateMultipleFilesPR(
     prName: string,
     files: GithubBetagouvFile[],
     branchName?: string
-): Promise<PRInfo> {
+): Promise<GithubAPIPullRequest> {
     const branch = branchName || createBranchName(prName);
     const {
         data: {
@@ -139,7 +138,7 @@ export async function updateMultipleFilesPR(
 
             if (pr) {
                 console.log("PR found", pr.html_url);
-                return pr as PRInfo;
+                return pr;
             } else {
                 console.log("create PR", branch, prName);
                 const response = await makeGithubPullRequest(
@@ -167,7 +166,7 @@ export async function updateMultipleFilesPR(
 export async function updateAuthorGithubFile(
     username: string,
     changes: GithubAuthorChange | GithubAuthorMissionChange
-): Promise<PRInfo> {
+): Promise<GithubAPIPullRequest> {
     const path = `content/_authors/${username}.md`;
     return updateGithubCollectionEntry(username, path, changes);
 }
@@ -176,7 +175,7 @@ export async function updateStartupGithubFile(
     startupname: string,
     changes: GithubStartupChange,
     content: string
-): Promise<PRInfo> {
+): Promise<GithubAPIPullRequest> {
     const path = `content/_startups/${startupname}.md`;
     return updateGithubCollectionEntry(startupname, path, changes, content);
 }

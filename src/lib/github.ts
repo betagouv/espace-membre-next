@@ -32,16 +32,6 @@ export async function fetchGithubPageData(
     return memberSchema.parse(member);
 }
 
-export interface PRInfo {
-    html_url: string;
-    number: number;
-    head: {
-        ref: string;
-        label: string;
-        sha: string;
-    };
-}
-
 function getURL(objectID) {
     return `https://api.github.com/repos/betagouv/beta.gouv.fr/${objectID}`;
 }
@@ -350,6 +340,7 @@ export type GithubAPIPullRequest = {
     head: {
         ref: string;
         sha: string;
+        label: string;
     };
 };
 

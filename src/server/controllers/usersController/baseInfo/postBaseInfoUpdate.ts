@@ -1,17 +1,16 @@
-import betagouv from "@betagouv";
 import { Request, Response } from "express";
 import { z } from "zod";
 
-import { PRInfo } from "@/lib/github";
 import { addEvent, EventCode } from "@/lib/events";
-import db from "@db";
+import { memberSchema } from "@/models/member";
 import { PULL_REQUEST_TYPE, PULL_REQUEST_STATE } from "@/models/pullRequests";
+import betagouv from "@betagouv";
 import {
     makeGithubAuthorFile,
     updateMultipleFilesPR,
 } from "@controllers/helpers/githubHelpers";
 import { GithubBetagouvFile } from "@controllers/helpers/githubHelpers/githubEntryInterface";
-import { memberSchema } from "@/models/member";
+import db from "@db";
 
 interface BaseInfoUpdateRequest extends Request {
     body: z.infer<typeof memberSchema>;
@@ -33,7 +32,7 @@ export async function postBaseInfoUpdate(
         // todo: check if no existing PR
         // todo: assign users
         // todo: set labels
-        const prInfo: PRInfo = await updateMultipleFilesPR(
+        const prInfo = await updateMultipleFilesPR(
             `Maj de la fiche de ${username} par ${req.auth?.id}`,
             files,
             `edit-authors-${username}`
