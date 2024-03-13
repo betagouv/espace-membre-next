@@ -25,6 +25,10 @@ fileignoreconfig:
       checksum: 61d659a5d6ef2f5abf96791577411bd8647ac4dc74e7a08c68d1ca671e435be6
     - filename: src/components/SESelect.tsx
       checksum: c251dbce68caf5cb85ac395bb400dfedb142737539d3ca0e1779f2a56460c520
+    - filename: src/app/(private)/(dashboard)/verify/AccountVerifyClientPage.tsx
+      checksum: ae267f7b99f6fce11d7085a1ce26995e53eca0b86653fcf3f5ed2ec1a11c76e8
+    - filename: src/components/GenderSelect.tsx
+      checksum: 865f2afa081c138aff54ead33343a8b425075236d95bda9ec75e62bfb4eb83c1
 scopeconfig:
     - scope: node
 version: "1.0"
