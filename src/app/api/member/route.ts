@@ -1,5 +1,6 @@
 import { cookies } from "next/headers";
 
+import { EmailStatusCode } from "@/models/dbUser";
 import { createMemberSchema } from "@/models/member";
 import config from "@/server/config";
 import {
@@ -43,6 +44,7 @@ export async function POST(req: Request) {
         .insert({
             username,
             secondary_email: email,
+            primary_email_status: EmailStatusCode.EMAIL_WAITING_FOR_VERIFY,
         })
         .onConflict("username")
         .merge();
