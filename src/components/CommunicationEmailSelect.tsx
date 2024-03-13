@@ -46,6 +46,7 @@
 //         placeholder={placeholder || 'Sélectionne un référent'}  /></ClientOnly>
 //   }
 import { useState } from "react";
+
 import { Select } from "@codegouvfr/react-dsfr/Select";
 export default function CommunicationEmailSelect({
     onChange,
@@ -54,6 +55,8 @@ export default function CommunicationEmailSelect({
     hint,
     label,
     defaultValue,
+    state,
+    stateRelatedMessage,
 }: {
     defaultValue: any;
     onChange: any;
@@ -62,6 +65,8 @@ export default function CommunicationEmailSelect({
     hint?: string;
     label?: string;
     email: string;
+    state?: "default" | "error";
+    stateRelatedMessage?: string;
 }) {
     const [value, setValue] = useState(defaultValue);
 
@@ -88,6 +93,8 @@ export default function CommunicationEmailSelect({
                 value,
                 defaultValue,
             }}
+            state={state}
+            stateRelatedMessage={stateRelatedMessage}
         >
             <option value="" disabled hidden>
                 {placeholder}

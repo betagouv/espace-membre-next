@@ -1,6 +1,11 @@
 import { z } from "zod";
 
-import { EmailStatusCode, GenderCode } from "./dbUser";
+import {
+    CommunicationEmailCode,
+    EmailStatusCode,
+    GenderCode,
+    LegalStatus,
+} from "./dbUser";
 import { Mission, missionSchema } from "./mission";
 import { EMAIL_PLAN_TYPE, OvhRedirection, OvhResponder } from "@/models/ovh";
 
@@ -223,6 +228,31 @@ export const createMemberSchema = z.object({
 
 export type createMemberSchemaType = z.infer<typeof createMemberSchema>;
 
+export const memberStatInfoSchema = z.object({
+    gender: genderSchema,
+    workplace_insee_code: z.string().describe("Ville").optional(),
+    osm_city: z.string().describe("Ville international").optional(),
+    average_nb_of_days: z
+        .number()
+        .describe("Nombre de jour moyen travaillé")
+        .min(1)
+        .max(5)
+        .nullable()
+        .optional(),
+    tjm: z.number().optional().nullable(),
+    legal_status: z
+        .nativeEnum(
+            LegalStatus, // ??
+            {
+                errorMap: (issue, ctx) => ({
+                    message: "Le status legal n'a pas une valeur correcte",
+                }),
+            }
+        )
+        .describe(`Status legal de l'entreprise`)
+        .optional(),
+});
+
 export const dbMemberSchema = z.object({
     username: z
         .string({
@@ -233,10 +263,15 @@ export const dbMemberSchema = z.object({
         .describe("Nom complet")
         .min(1)
         .readonly(),
-    secondary_email: emailSchema,
-    isEmailBetaAsked: z.boolean(),
-    gender: genderSchema,
+    email: emailSchema,
+    isEmailBetaAsked: z.boolean().optional().nullable(),
+    communication_email: z
+        .nativeEnum(CommunicationEmailCode)
+        .optional()
+        .nullable(),
 });
 
-export const completeMemberSchema = memberSchema.merge(dbMemberSchema);
+export const completeMemberSchema = memberSchema
+    .merge(dbMemberSchema)
+    .merge(memberStatInfoSchema);
 export type completeMemberSchemaType = z.infer<typeof completeMemberSchema>;

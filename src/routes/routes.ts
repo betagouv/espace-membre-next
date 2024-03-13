@@ -99,6 +99,7 @@ class routes {
     static API_UPDATE_BADGE_RENEWAL_REQUEST_STATUS =
         "/api/badge/renewal/status" as const;
     static ADMIN_SENDINBLUE = "/api/admin/sendinblue" as const;
+    static ACCOUNT_UPDATE_INFO_API = "/api/member/:username" as const;
 
     // users
     // static USER_DELETE_EMAIL = "/users/:username/email/delete"  as const;
