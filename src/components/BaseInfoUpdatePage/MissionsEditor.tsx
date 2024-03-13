@@ -210,7 +210,7 @@ export const MissionsEditor = ({
 
     const onMissionAutoEndClick = (missionIndex) => {
         const endDate = addMonths(
-            new Date(missionsFields[missionIndex].start),
+            new Date(missionsFields[missionIndex]["start"]),
             3
         );
 
