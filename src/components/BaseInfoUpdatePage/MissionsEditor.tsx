@@ -15,7 +15,7 @@ import { addMonths } from "date-fns/addMonths";
 
 import { MemberSchemaType } from "./BaseInfoUpdate";
 import { userStatusOptions } from "@/frontConfig";
-import { Status } from "@/models/mission";
+import { Status, missionSchema } from "@/models/mission";
 import SESelect from "../SESelect";
 
 const Mission = ({
@@ -74,7 +74,7 @@ const Mission = ({
             <div className={fr.cx("fr-grid-row", "fr-grid-row--gutters")}>
                 <div className={fr.cx("fr-col-3")}>
                     <Input
-                        label="Date de début"
+                        label={missionSchema.shape.start.description}
                         hintText="Début de ta mission"
                         nativeInputProps={{
                             style: { width: 200 },
@@ -88,7 +88,7 @@ const Mission = ({
                 </div>{" "}
                 <div className={fr.cx("fr-col-4")}>
                     <Input
-                        label="Date de fin"
+                        label={missionSchema.shape.end.description}
                         nativeInputProps={{
                             style: { width: 200 },
                             placeholder: "JJ/MM/YYYY",
@@ -118,7 +118,7 @@ const Mission = ({
             <div className={fr.cx("fr-grid-row", "fr-grid-row--gutters")}>
                 <div className={fr.cx("fr-col-6")}>
                     <Input
-                        label="Employeur"
+                        label={missionSchema.shape.employer.description}
                         nativeInputProps={{
                             placeholder: "ex: Scopyleft",
                             ...register(`missions.${index}.employer`),
@@ -128,7 +128,7 @@ const Mission = ({
                 </div>
                 <div className={fr.cx("fr-col-6")}>
                     <Select
-                        label="Statut"
+                        label={missionSchema.shape.status.description}
                         nativeSelectProps={{
                             ...register(`missions.${index}.status`),
                             defaultValue: mission.status,

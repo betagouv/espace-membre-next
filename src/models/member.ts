@@ -77,9 +77,9 @@ export const memberSchema = z.object({
                 message: "Le nom est obligatoire",
             }),
         })
-        .describe("Nom complet")
         .min(1)
-        .readonly(),
+        .readonly()
+        .describe("Nom complet"),
     role: z
         .string({
             errorMap: (issue, ctx) => ({
@@ -88,16 +88,22 @@ export const memberSchema = z.object({
         })
         .min(1)
         .describe("Rôle actuel, ex: UX designer"),
-    link: z.union([
-        z.null(),
-        z.literal(""),
-        z.string().trim().url({ message: "URL invalide" }).optional(),
-    ]),
-    avatar: z.string().describe("URL ou slug de l'avatar").nullable().optional(),
+    link: z
+        .union([
+            z.null(),
+            z.literal(""),
+            z.string().trim().url({ message: "URL invalide" }).optional(),
+        ])
+        .describe("Adresse du profil LinkedIn ou site web"),
+    avatar: z
+        .string()
+        .describe("URL ou slug de l'avatar")
+        .nullable()
+        .optional(),
     github: z.string().describe("Login GitHub").optional(),
     competences: z
         .array(z.string())
-        .describe("Liste de compétences")
+        .describe("Liste des compétences")
         .optional(),
     teams: z
         .array(z.string())
@@ -118,8 +124,10 @@ export const memberSchema = z.object({
     ), // ??
     bio: z
         .string({
+            description: "Courte bio",
             errorMap: (issue, ctx) => ({
-                message: "La bio est optionnelle mais elle permet d'en dire plus sur toi, be creative",
+                message:
+                    "La bio est optionnelle mais elle permet d'en dire plus sur toi, be creative",
             }),
         })
         .optional(),
