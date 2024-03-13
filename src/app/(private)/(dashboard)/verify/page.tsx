@@ -6,7 +6,7 @@ import { redirect } from "next/navigation";
 import AccountVerifyClientPage, {
     AccountVerifyClientPageProps,
 } from "./AccountVerifyClientPage";
-import { fetchGithubPageData, getPullRequestForAuthor } from "@/lib/github";
+import { fetchGithubPageData } from "@/lib/github";
 import { StartupInfo } from "@/models/startup";
 import betagouv from "@/server/betagouv";
 import config from "@/server/config";
