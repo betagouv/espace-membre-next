@@ -7,7 +7,6 @@ import { Select } from "@codegouvfr/react-dsfr/Select";
 import { addMonths } from "date-fns/addMonths";
 import {
     Control,
-    Controller,
     useFieldArray,
     useWatch,
     UseFormRegister,
@@ -16,6 +15,7 @@ import {
 
 import SESelect from "../SESelect";
 import { userStatusOptions } from "@/frontConfig";
+import { memberSchemaType } from "@/models/member";
 import { Status, missionSchema } from "@/models/mission";
 
 const Mission = ({
@@ -181,10 +181,10 @@ export const MissionsEditor = ({
     setValue,
     startupOptions,
 }: {
-    control: Control<MemberSchemaType>;
+    control: Control<memberSchemaType>;
     errors?: Record<string, any>;
-    register: UseFormRegister<MemberSchemaType>;
-    setValue: UseFormSetValue<MemberSchemaType>;
+    register: UseFormRegister<memberSchemaType>;
+    setValue: UseFormSetValue<memberSchemaType>;
     startupOptions: any;
 }) => {
     const {
