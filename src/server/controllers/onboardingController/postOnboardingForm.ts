@@ -44,7 +44,7 @@ export async function createNewcomerGithubFile(
     username,
     content,
     referent
-): Promise<PrInfo> {
+): Promise<GithubAPIPullRequest> {
     const branch = createBranchName(username);
     console.log(`Début de la création de fiche pour ${username}...`);
 
