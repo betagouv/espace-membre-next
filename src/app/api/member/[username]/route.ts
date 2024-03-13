@@ -27,6 +27,7 @@ export async function PUT(req: Request) {
         // isEmailBetaAsked,
         average_nb_of_days,
         tjm,
+        bio,
         ...postParams
     } = completeMemberSchema.parse(data);
     const files = [
@@ -35,7 +36,7 @@ export async function PUT(req: Request) {
             {
                 ...postParams,
             },
-            ""
+            bio || ""
         ),
     ];
     const prInfo = await updateMultipleFilesPR(

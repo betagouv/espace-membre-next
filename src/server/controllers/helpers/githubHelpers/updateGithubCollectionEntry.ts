@@ -15,6 +15,7 @@ import {
     getGithubMasterSha,
     makeGithubPullRequest,
     PRInfo,
+    getPullRequestForBranch,
 } from "@/lib/github";
 import config from "@/server/config";
 
@@ -131,16 +132,14 @@ export async function updateMultipleFilesPR(
                 );
             }
 
-            const pr = await getPullRequest({
-                head: `${config.githubFork.split("/")[0]}:${branch}`,
-            }).catch((e) => {
+            const pr = await getPullRequestForBranch(branch).catch((e) => {
                 console.log("pr doesnt exist", e);
-                return false;
+                return undefined;
             });
 
             if (pr) {
                 console.log("PR found", pr.html_url);
-                return pr;
+                return pr as PRInfo;
             } else {
                 console.log("create PR", branch, prName);
                 const response = await makeGithubPullRequest(

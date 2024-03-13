@@ -2,6 +2,7 @@
 import React from "react";
 
 import { fr } from "@codegouvfr/react-dsfr";
+import Alert from "@codegouvfr/react-dsfr/Alert";
 import { Button } from "@codegouvfr/react-dsfr/Button";
 import Checkbox from "@codegouvfr/react-dsfr/Checkbox";
 import Input from "@codegouvfr/react-dsfr/Input";
@@ -9,6 +10,7 @@ import RadioButtons from "@codegouvfr/react-dsfr/RadioButtons";
 import Select from "@codegouvfr/react-dsfr/Select";
 import { zodResolver } from "@hookform/resolvers/zod";
 import axios from "axios";
+import { useRouter } from "next/navigation";
 import { useForm, useWatch } from "react-hook-form";
 
 import { CreateMemberType } from "../community/create/CommunityCreateMemberPage";
@@ -72,6 +74,8 @@ const postMemberData = async ({ values, sessionUsername }) => {
 export default function AccountVerifyClientPage(
     props: AccountVerifyClientPageProps
 ) {
+    const router = useRouter();
+
     const defaultValues: completeMemberSchemaType = {
         ...props.formData,
     };
@@ -97,7 +101,6 @@ export default function AccountVerifyClientPage(
     const [isSaving, setIsSaving] = React.useState(false);
 
     const onSubmit = async (input: completeMemberSchemaType) => {
-        console.log("LCS HANDLE SUBMIT 0");
         if (isSaving) {
             return;
         }
@@ -117,6 +120,7 @@ export default function AccountVerifyClientPage(
                 message,
                 type: "success",
             });
+            router.push("/account", { scroll: false });
         } catch (e: any) {
             // todo: sentry
             console.log(e);
@@ -161,24 +165,23 @@ export default function AccountVerifyClientPage(
         }
     };
 
-    // const email = useWatch({
-    //     control,
-    //     name: `email`,
-    // });
-    // // Convertir la valeur de date en format de chaîne requis par l'input de type date
-
-    // const isEmailBetaAsked = useWatch({
-    //     control,
-    //     name: `isEmailBetaAsked`,
-    // });
-
-    // const communication_email = useWatch({
-    //     control,
-    //     name: `communication_email`,
-    // });
-    console.log(errors);
     return (
         <>
+            {!!alertMessage && (
+                <Alert
+                    className="fr-mb-8v"
+                    severity={alertMessage.type}
+                    closable={false}
+                    title={alertMessage.title}
+                    description={
+                        <div
+                            dangerouslySetInnerHTML={{
+                                __html: alertMessage.message,
+                            }}
+                        />
+                    }
+                />
+            )}
             <form
                 onSubmit={handleSubmit(onSubmit)}
                 aria-label="Modifier mes informations"
@@ -201,40 +204,6 @@ export default function AccountVerifyClientPage(
                     state={errors.email ? "error" : "default"}
                     stateRelatedMessage={errors.email?.message}
                 />
-                {/* <Checkbox
-                    hintText="L'adresse @beta.gouv.fr est obligatoire si
-                                tu ne possédes pas déjà une adresse d'une
-                                structure publique (@pole-emploi.fr,
-                                @culture.gouv.fr...)"
-                    options={[
-                        {
-                            label: "Je souhaite une adresse @beta.gouv.fr",
-                            nativeInputProps: {
-                                ...register("isEmailBetaAsked"),
-                            },
-                        },
-                    ]}
-                    state={errors["isEmailBetaAsked"] ? "error" : "default"}
-                    stateRelatedMessage={errors.isEmailBetaAsked?.message}
-                /> */}
-                {/* {!!isEmailBetaAsked && (
-                    <CommunicationEmailSelect
-                        label="Tes préférences de communication"
-                        hint="Sur quel email préfères-tu recevoir les
-                                        communications beta.gouv.fr ? (Newsletter,
-                                        Rappel de mise-à-jour de tes info, ...) Tu
-                                        pourras changer ultérieurement."
-                        email={email}
-                        defaultValue={communication_email}
-                        state={errors.communication_email ? "error" : "default"}
-                        stateRelatedMessage={
-                            errors.communication_email?.message
-                        }
-                        onChange={(e) => {
-                            setValue("communication_email", e.value);
-                        }}
-                    />
-                )} */}
                 <h3>Mission</h3>
                 <Select
                     label="Domaine"
@@ -309,36 +278,15 @@ export default function AccountVerifyClientPage(
                     stateRelatedMessage={errors.workplace_insee_code?.message}
                     defaultValue={""}
                 />
-                {/* <RadioButtons
-                    legend="Statut legal de ton entreprise (obligatoire)"
-                    options={statusOptions.map((legal_status) => ({
-                        label: legal_status.name,
-                        nativeInputProps: {
-                            type: "radio",
-                            // name: "legal_status",
-                            value: legal_status.key,
-                            // onChange: handleLegalStatusChange,
-                            // checked:
-                            //     legal_status.key ===
-                            //     state.formData.legal_status,
-                            // required: true,
-                            ...register("legal_status"),
-                            onChange: (e) => {
-                                console.log(e.currentTarget.value)
-                                setValue("leval_status", e.currentTarget.value)
-                            }
-                        },
-                    }))}
-                    state={errors.legal_status ? "error" : "default"}
-                    stateRelatedMessage={errors.legal_status?.message}
-                /> */}
                 <Select
                     label="Statut"
                     nativeSelectProps={{
                         ...register(`legal_status`),
                     }}
                 >
-                    <option value="">Statut:</option>
+                    <option value="" disabled hidden>
+                        Selectionnez une option
+                    </option>
                     {statusOptions.map((option) => (
                         <option key={option.key} value={option.key}>
                             {option.name}
@@ -352,13 +300,6 @@ export default function AccountVerifyClientPage(
                     nativeInputProps={{
                         ...register("tjm", { valueAsNumber: true }),
                         type: "number",
-                        // onChange: (e) => {
-                        //     console.log(
-                        //         typeof e.currentTarget.value,
-                        //         parseInt(e.currentTarget.value)
-                        //     );
-                        //     setValue("tjm", parseInt(e.currentTarget.value));
-                        // },
                     }}
                     state={errors.tjm ? "error" : "default"}
                     stateRelatedMessage={errors.tjm?.message}
@@ -372,14 +313,6 @@ export default function AccountVerifyClientPage(
                         }),
 
                         type: "number",
-                        // defaultValue: state.formData.average_nb_of_days || 0,
-                        // id: "averageNbOfDays",
-                        // name: "average_nb_of_days",
-                        // type: "number",
-                        // step: "0.5",
-                        // placeholder: "Nombre de jours moyen",
-                        // min: 0,
-                        // max: 5,
                     }}
                     state={errors.average_nb_of_days ? "error" : "default"}
                     stateRelatedMessage={errors.average_nb_of_days?.message}

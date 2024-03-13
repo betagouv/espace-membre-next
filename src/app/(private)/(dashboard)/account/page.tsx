@@ -21,7 +21,9 @@ export default async function Page() {
     const dbUser: DBUser = await db("users")
         .where({ username: session.id })
         .first();
-    if (true) {
+    if (
+        dbUser.primary_email_status === EmailStatusCode.EMAIL_WAITING_FOR_VERIFY
+    ) {
         return redirect("/verify");
     }
     return <AccountClientPage />;

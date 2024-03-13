@@ -1,11 +1,12 @@
 import axios from "axios";
+import crypto from "crypto";
+import { format } from "date-fns/format";
 import _ from "lodash";
 import nodemailer from "nodemailer";
+
 import BetaGouv from "../betagouv";
-import config from "@/server/config";
-import crypto from "crypto";
 import { EmailInfos, Member } from "@/models/member";
-import { format } from "date-fns/format";
+import config from "@/server/config";
 
 export const computeHash = function (username) {
     const hash = crypto.createHmac(
@@ -164,6 +165,9 @@ export function isValidEmail(formValidationErrors, field, email) {
 }
 
 export async function isPublicServiceEmail(email) {
+    if (process.env.NODE_ENV === "development") {
+        return true;
+    }
     if (/@pole-emploi.fr\s*$/.test(email.toLowerCase())) {
         return true;
     }
