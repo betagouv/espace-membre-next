@@ -167,6 +167,9 @@ export const memberSchema = z.object({
 
 export type memberSchemaType = z.infer<typeof memberSchema>;
 
+export type HasMissions<T = any> = T & {
+    missions: z.infer<typeof missionSchema>[];
+};
 export interface MemberWithPrimaryEmailInfo extends Member {
     primary_email: string;
     primary_email_status: EmailStatusCode;

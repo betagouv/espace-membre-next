@@ -15,7 +15,7 @@ import {
 
 import SESelect from "../SESelect";
 import { userStatusOptions } from "@/frontConfig";
-import { memberSchemaType } from "@/models/member";
+import { HasMissions } from "@/models/member";
 import { Status, missionSchema } from "@/models/mission";
 
 const Mission = ({
@@ -181,10 +181,10 @@ export const MissionsEditor = ({
     setValue,
     startupOptions,
 }: {
-    control: Control<memberSchemaType>;
+    control: Control<HasMissions>;
     errors?: Record<string, any>;
-    register: UseFormRegister<memberSchemaType>;
-    setValue: UseFormSetValue<memberSchemaType>;
+    register: UseFormRegister<HasMissions>;
+    setValue: UseFormSetValue<HasMissions>;
     startupOptions: any;
 }) => {
     const {
