@@ -114,14 +114,17 @@ const roleSchema = z
     .min(1)
     .describe("Rôle actuel, ex: UX designer");
 
-const genderSchema = z.nativeEnum(
-    GenderCode, // ??
-    {
-        errorMap: (issue, ctx) => ({
-            message: "Le champs gender est obligatoire",
-        }),
-    }
-);
+const genderSchema = z
+    .nativeEnum(
+        GenderCode, // ??
+        {
+            errorMap: (issue, ctx) => ({
+                message: "Le champs gender est obligatoire",
+            }),
+        }
+    )
+    .optional()
+    .nullable();
 
 export const memberSchema = z.object({
     fullname: z
@@ -156,6 +159,8 @@ export const memberSchema = z.object({
     domaine: domaineSchema, // ??
     bio: bioSchema,
 });
+
+export type memberSchemaType = z.infer<typeof memberSchema>;
 
 export interface MemberWithPrimaryEmailInfo extends Member {
     primary_email: string;
@@ -222,5 +227,7 @@ export const completeMemberSchema = createMemberSchema.extend({
     link: linkSchema,
     github: githubSchema,
     gender: genderSchema,
-    role: roleSchema,
 });
+
+export const completeMemberSchema = memberSchema.merge(dbMemberSchema);
+export type completeMemberSchemaType = z.infer<typeof completeMemberSchema>;

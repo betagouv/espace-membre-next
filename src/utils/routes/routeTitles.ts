@@ -31,4 +31,7 @@ export const routeTitles: {
     formationDetails: (id?: string) => {
         return `Formation ${id}`;
     },
+    verifyMember: () => {
+        return `Vérifie les informations de ton compte`;
+    },
 };

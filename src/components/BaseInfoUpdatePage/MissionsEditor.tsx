@@ -14,7 +14,6 @@ import {
     UseFormSetValue,
 } from "react-hook-form";
 
-import { MemberSchemaType } from "./BaseInfoUpdate";
 import SESelect from "../SESelect";
 import { userStatusOptions } from "@/frontConfig";
 import { Status, missionSchema } from "@/models/mission";

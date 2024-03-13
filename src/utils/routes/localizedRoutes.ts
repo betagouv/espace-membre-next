@@ -135,4 +135,10 @@ export const localizedRoutes = {
             fr: (p) => "/formations/.*",
         }
     ),
+    verifyMember: defineLocalizedRoute(
+        {},
+        {
+            fr: (p) => "/verify",
+        }
+    ),
 };
