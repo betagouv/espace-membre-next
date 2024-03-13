@@ -1,10 +1,11 @@
 "use client";
 import React from "react";
 
+import { fr } from "@codegouvfr/react-dsfr";
 import Autocomplete, { createFilterOptions } from "@mui/material/Autocomplete";
 import TextField from "@mui/material/TextField";
+
 import { competences } from "@/models/competences";
-import { fr } from "@codegouvfr/react-dsfr";
 
 interface CompetenceType {
     inputValue?: string;
@@ -78,14 +79,23 @@ export const CompetencesEditor = ({
                         values.map((v) => v.inputValue || v.label)
                     );
                 } else if (Array.isArray(newValues)) {
-                    // @ts-ignore
-                    setValue(newValues);
+                    const convertedValues: CompetenceType[] = newValues.map(
+                        (newValue) => {
+                            if (typeof newValue === "string") {
+                                // Convert string to CompetenceType
+                                return { label: newValue };
+                            } else {
+                                // Already in the correct format
+                                return newValue;
+                            }
+                        }
+                    );
+                    setValue(convertedValues);
 
-                    // send changes upstream
+                    // Send changes upstream
                     onChange(
                         event,
-                        // @ts-ignore
-                        newValues.map((v) => v.inputValue || v.label)
+                        convertedValues.map((v) => v.inputValue || v.label)
                     );
                 }
             }}
