@@ -139,7 +139,8 @@ export const memberSchema = z.object({
             }),
         })
         .min(1)
-        .readonly(),
+        .readonly()
+        .describe("Nom complet"),
     role: roleSchema,
     link: linkSchema,
     avatar: z
