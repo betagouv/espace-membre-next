@@ -61,6 +61,7 @@ export function PrivateLayout({ children }: { children: React.ReactNode }) {
     const mapLink = linkRegistry.get("map", undefined);
     const formationLink = linkRegistry.get("formationList", undefined);
     const formationDetailLink = linkRegistry.get("formationDetails", undefined);
+    const verifyLink = linkRegistry.get("verifyMember", undefined);
 
     const accountSubPages: ItemLink[] = [
         {
@@ -279,25 +280,28 @@ export function PrivateLayout({ children }: { children: React.ReactNode }) {
     const tree = findActiveItem(MenuItems);
     return (
         <>
-            <Breadcrumb
-                currentPageLabel={tree[tree.length - 1]?.text}
-                homeLinkProps={{
-                    href: "/",
-                }}
-                segments={tree
-                    .slice(0, tree.length - 1)
-                    .filter(
-                        (segment) =>
-                            segment.linkProps?.href || segment.breadcrumb?.href
-                    )
-                    .map((segment) => ({
-                        label: segment.text,
-                        linkProps: {
-                            href: (segment.linkProps?.href ||
-                                segment.breadcrumb?.href) as string,
-                        },
-                    }))}
-            />
+            {!hasPathnameThisMatch(pathname, verifyLink) && (
+                <Breadcrumb
+                    currentPageLabel={tree[tree.length - 1]?.text}
+                    homeLinkProps={{
+                        href: "/",
+                    }}
+                    segments={tree
+                        .slice(0, tree.length - 1)
+                        .filter(
+                            (segment) =>
+                                segment.linkProps?.href ||
+                                segment.breadcrumb?.href
+                        )
+                        .map((segment) => ({
+                            label: segment.text,
+                            linkProps: {
+                                href: (segment.linkProps?.href ||
+                                    segment.breadcrumb?.href) as string,
+                            },
+                        }))}
+                />
+            )}
             <div className="fr-grid-row fr-grid-row-gutters">
                 {!!displayMenuForSubPage(pathname).length && (
                     <div className="fr-col-12 fr-col-md-3 fr-col-lg-3">
