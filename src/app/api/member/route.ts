@@ -53,7 +53,10 @@ export async function POST(req: Request) {
         username,
         url: prInfo.html_url,
         info: JSON.stringify({
-            startup: mission?.startups ? mission.startups[0] : undefined,
+            startup:
+                missions.length && missions[0].startups
+                    ? missions[0].startups[0]
+                    : undefined,
             username,
             referent,
         }),
