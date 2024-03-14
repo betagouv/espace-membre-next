@@ -1,4 +1,3 @@
-import yaml from "js-yaml";
 import type { Metadata } from "next";
 import { cookies } from "next/headers";
 import { redirect } from "next/navigation";
@@ -7,7 +6,6 @@ import AccountVerifyClientPage, {
     AccountVerifyClientPageProps,
 } from "./AccountVerifyClientPage";
 import { fetchGithubPageData } from "@/lib/github";
-import { StartupInfo } from "@/models/startup";
 import betagouv from "@/server/betagouv";
 import config from "@/server/config";
 import { getDBUser } from "@/server/db/dbUser";
