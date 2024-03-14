@@ -1,29 +1,32 @@
 import React from "react";
+
 import {
     AccessibilityStatus,
     PHASES_ORDERED_LIST,
     StartupInfo,
     StartupPhase,
 } from "@/models/startup";
-import { ClientOnly } from "../ClientOnly";
-import MdEditor from "react-markdown-editor-lite";
+
+import "react-markdown-editor-lite/lib/index.css";
+import { Alert } from "@codegouvfr/react-dsfr/Alert";
+import Button from "@codegouvfr/react-dsfr/Button";
+import Input from "@codegouvfr/react-dsfr/Input";
+import RadioButtons from "@codegouvfr/react-dsfr/RadioButtons";
+import Table from "@codegouvfr/react-dsfr/Table";
+import * as Sentry from "@sentry/nextjs";
 import MarkdownIt from "markdown-it";
-import SEAsyncIncubateurSelect from "../SEAsyncIncubateurSelect";
-import SponsorBlock from "./SponsorBlock";
+import MdEditor from "react-markdown-editor-lite";
+
 import {
     PhaseActionCell,
     PhaseDatePickerCell,
     PhaseSelectionCell,
 } from "./PhaseItem";
+import SponsorBlock from "./SponsorBlock";
+import { ClientOnly } from "../ClientOnly";
 import FileUpload from "../FileUpload";
-import "react-markdown-editor-lite/lib/index.css";
-import Button from "@codegouvfr/react-dsfr/Button";
-import Input from "@codegouvfr/react-dsfr/Input";
-import Table from "@codegouvfr/react-dsfr/Table";
-import { Alert } from "@codegouvfr/react-dsfr/Alert";
-import RadioButtons from "@codegouvfr/react-dsfr/RadioButtons";
+import SEAsyncIncubateurSelect from "../SEAsyncIncubateurSelect";
 import SelectAccessibilityStatus from "../SelectAccessibilityStatus";
-import * as Sentry from "@sentry/nextjs";
 
 // import style manually
 const mdParser = new MarkdownIt(/* Markdown-it options */);

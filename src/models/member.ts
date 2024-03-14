@@ -227,7 +227,9 @@ export const createMemberSchema = z.object({
         .describe("Nom")
         .min(1),
     email: emailSchema,
-    mission: missionSchema,
+    missions: z
+        .array(missionSchema)
+        .min(1, "Vous devez définir au moins une mission"),
     domaine: domaineSchema,
 });
 

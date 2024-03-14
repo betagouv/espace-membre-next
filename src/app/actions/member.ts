@@ -20,7 +20,7 @@ export async function createMember(
         cookieStore.get(config.SESSION_COOKIE_NAME)
     )) as { id: string };
     const referent = session.id;
-    const { firstname, lastname, email, mission, ...postParams } =
+    const { firstname, lastname, email, missions, ...postParams } =
         createMemberSchema.parse(data);
     const username = createUsername(firstname, lastname);
     const files = [
@@ -30,7 +30,7 @@ export async function createMember(
                 ...postParams,
                 fullname: `${firstname} ${lastname}`,
                 role: "",
-                missions: mission ? [mission] : [],
+                missions,
             },
             ""
         ),
@@ -54,7 +54,10 @@ export async function createMember(
         username,
         url: prInfo.html_url,
         info: JSON.stringify({
-            startup: mission?.startups ? mission.startups[0] : undefined,
+            startup:
+                missions.length && missions[0].startups
+                    ? missions[0].startups[0]
+                    : undefined,
             username,
             referent,
         }),

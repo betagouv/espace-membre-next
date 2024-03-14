@@ -18,7 +18,7 @@ import { userStatusOptions } from "@/frontConfig";
 import { HasMissions } from "@/models/member";
 import { Status, missionSchema } from "@/models/mission";
 
-const Mission = ({
+export const Mission = ({
     index,
     register,
     control,
@@ -28,6 +28,7 @@ const Mission = ({
     onMissionAutoEndClick,
     startupOptions,
     errors,
+    isMulti,
 }) => {
     const missionErrors = errors;
     const defaultState = (field) => ({
@@ -56,21 +57,23 @@ const Mission = ({
 
     return (
         <div key={index} className={fr.cx("fr-mb-6w")}>
-            <div className={fr.cx("fr-text--heavy")}>
-                Mission {index + 1}
-                {index > 0 && (
-                    <button
-                        className={fr.cx("fr-icon-delete-bin-line")}
-                        style={{
-                            cursor: "pointer",
-                            float: "right",
-                        }}
-                        onClick={() => missionsRemove(index)}
-                        title={`Supprimer la mission ${index + 1}`}
-                    />
-                )}
-                <hr className={fr.cx("fr-mt-1w")} />
-            </div>
+            {!!isMulti && (
+                <div className={fr.cx("fr-text--heavy")}>
+                    Mission {index + 1}
+                    {index > 0 && (
+                        <button
+                            className={fr.cx("fr-icon-delete-bin-line")}
+                            style={{
+                                cursor: "pointer",
+                                float: "right",
+                            }}
+                            onClick={() => missionsRemove(index)}
+                            title={`Supprimer la mission ${index + 1}`}
+                        />
+                    )}
+                    <hr className={fr.cx("fr-mt-1w")} />
+                </div>
+            )}
             <div className={fr.cx("fr-grid-row", "fr-grid-row--gutters")}>
                 <div className={fr.cx("fr-col-3")}>
                     <Input
@@ -229,6 +232,7 @@ export const MissionsEditor = ({
             )}
             {missionsFields.map((mission, index, all) => (
                 <Mission
+                    isMulti={true}
                     key={mission.id}
                     index={index}
                     mission={mission}

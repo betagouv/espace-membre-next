@@ -35,6 +35,7 @@ export async function PUT(req: Request) {
             username,
             {
                 ...postParams,
+                role: `${postParams.domaine}`,
             },
             bio || ""
         ),

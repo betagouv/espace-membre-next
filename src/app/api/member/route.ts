@@ -19,7 +19,7 @@ export async function POST(req: Request) {
     const referent = session.id;
     const data = await req.json();
 
-    const { firstname, lastname, email, mission, ...postParams } =
+    const { firstname, lastname, email, missions, ...postParams } =
         createMemberSchema.parse(data);
     const username = createUsername(firstname, lastname);
     const files = [
@@ -29,7 +29,7 @@ export async function POST(req: Request) {
                 ...postParams,
                 fullname: `${firstname} ${lastname}`,
                 role: "",
-                missions: mission ? [mission] : [],
+                missions,
             },
             ""
         ),

@@ -8,25 +8,18 @@ import Input from "@codegouvfr/react-dsfr/Input";
 import Select from "@codegouvfr/react-dsfr/Select";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useRouter } from "next/navigation";
-import { useForm, useWatch } from "react-hook-form";
+import { useForm } from "react-hook-form";
 
-import { CreateMemberType } from "../community/create/CommunityCreateMemberPage";
 import { MissionsEditor } from "@/components/BaseInfoUpdatePage/MissionsEditor";
 import CitySelect from "@/components/CitySelect";
-import CommunicationEmailSelect from "@/components/CommunicationEmailSelect";
 import GenderSelect from "@/components/GenderSelect";
-import SESelect from "@/components/SESelect";
-import { userStatusOptions } from "@/frontConfig";
-import { GenderCode, statusOptions } from "@/models/dbUser";
+import { statusOptions } from "@/models/dbUser";
 import {
     DOMAINE_OPTIONS,
-    Domaine,
     completeMemberSchema,
     completeMemberSchemaType,
     memberSchema,
-    memberSchemaType,
 } from "@/models/member";
-import { Status, missionSchema } from "@/models/mission";
 import { useSession } from "@/proxies/next-auth";
 import routes, { computeRoute } from "@/routes/routes";
 
@@ -327,6 +320,7 @@ export default function AccountVerifyClientPage(
                                             </div>
                                             <div className="fr-fieldset__element">
                                                 <MissionsEditor
+                                                    isMulti={true}
                                                     control={control}
                                                     setValue={setValue}
                                                     register={register}
