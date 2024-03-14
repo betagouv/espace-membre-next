@@ -320,7 +320,6 @@ export default function AccountVerifyClientPage(
                                             </div>
                                             <div className="fr-fieldset__element">
                                                 <MissionsEditor
-                                                    isMulti={true}
                                                     control={control}
                                                     setValue={setValue}
                                                     register={register}
