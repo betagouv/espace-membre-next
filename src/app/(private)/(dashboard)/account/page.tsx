@@ -22,7 +22,8 @@ export default async function Page() {
         .where({ username: session.id })
         .first();
     if (
-        dbUser.primary_email_status === EmailStatusCode.EMAIL_WAITING_FOR_VERIFY
+        dbUser.primary_email_status ===
+        EmailStatusCode.EMAIL_WAITING_VERIFICATION
     ) {
         return redirect("/verify");
     }

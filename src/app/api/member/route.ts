@@ -44,7 +44,7 @@ export async function POST(req: Request) {
         .insert({
             username,
             secondary_email: email,
-            primary_email_status: EmailStatusCode.EMAIL_WAITING_FOR_VERIFY,
+            primary_email_status: EmailStatusCode.EMAIL_WAITING_VERIFICATION,
         })
         .onConflict("username")
         .merge();
