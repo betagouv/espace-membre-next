@@ -28,7 +28,7 @@ export async function POST(req: Request) {
             {
                 ...postParams,
                 fullname: `${firstname} ${lastname}`,
-                role: "",
+                role: `${postParams.domaine}`,
                 missions,
             },
             ""
