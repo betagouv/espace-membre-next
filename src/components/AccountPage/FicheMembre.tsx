@@ -61,7 +61,9 @@ export default function FicheMembre({ userInfos, updatePullRequest }) {
                                     <span>
                                         {`Compte Github : `}
                                         {userInfos.github && (
-                                            <a href="https://github.com/<%= userInfos.github %>">
+                                            <a
+                                                href={`https://github.com/${userInfos.github}`}
+                                            >
                                                 {userInfos.github}
                                             </a>
                                         )}
