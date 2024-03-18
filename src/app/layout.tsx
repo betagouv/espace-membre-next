@@ -1,12 +1,15 @@
+import { PropsWithChildren } from "react";
+
+import { Footer } from "@codegouvfr/react-dsfr/Footer";
 import { DsfrHead } from "@codegouvfr/react-dsfr/next-appdir/DsfrHead";
 import { DsfrProvider } from "@codegouvfr/react-dsfr/next-appdir/DsfrProvider";
 import { getHtmlAttributes } from "@codegouvfr/react-dsfr/next-appdir/getHtmlAttributes";
-import { PropsWithChildren } from "react";
-import { StartDsfr } from "./StartDsfr";
-import { MuiDsfrThemeProvider } from "./MuiDsfrThemeProvider";
-import Header from "@/components/Header";
-import { defaultColorScheme } from "./defaultColorScheme";
+
 import { BreadCrumbProvider } from "./BreadCrumbProvider";
+import { defaultColorScheme } from "./defaultColorScheme";
+import { MuiDsfrThemeProvider } from "./MuiDsfrThemeProvider";
+import { StartDsfr } from "./StartDsfr";
+import Header from "@/components/Header";
 
 export interface RootLayoutProps {
     workaroundForNextJsPages?: boolean;
@@ -34,6 +37,27 @@ function MainStructure(props: PropsWithChildren) {
                             >
                                 {props.children}
                             </div>
+                            <Footer
+                                accessibility="partially compliant"
+                                contentDescription="Le site officiel pour les membres de la communauté beta.gouv.fr"
+                                termsLinkProps={{
+                                    href: "#",
+                                }}
+                                brandTop={
+                                    <>
+                                        République
+                                        <br />
+                                        Française
+                                    </>
+                                }
+                                homeLinkProps={{
+                                    href: "/",
+                                    title: "Accueil - Espace Membre @beta.gouv.fr",
+                                }}
+                                websiteMapLinkProps={{
+                                    href: "#",
+                                }}
+                            />
                         </BreadCrumbProvider>
                     </MuiDsfrThemeProvider>
                 </DsfrProvider>
