@@ -1,5 +1,6 @@
 import { PropsWithChildren } from "react";
 
+import { fr } from "@codegouvfr/react-dsfr";
 import { Footer } from "@codegouvfr/react-dsfr/Footer";
 import { DsfrHead } from "@codegouvfr/react-dsfr/next-appdir/DsfrHead";
 import { DsfrProvider } from "@codegouvfr/react-dsfr/next-appdir/DsfrProvider";
@@ -32,14 +33,16 @@ function MainStructure(props: PropsWithChildren) {
                         <BreadCrumbProvider>
                             <Header />
                             <div
-                                className="fr-container fr-container--fluid"
+                                className={`fr-container fr-container--fluid ${fr.cx(
+                                    "fr-mb-10v"
+                                )}`}
                                 id="root-container"
                             >
                                 {props.children}
                             </div>
                             <Footer
                                 accessibility="partially compliant"
-                                contentDescription="Le site officiel pour les membres de la communauté beta.gouv.fr"
+                                contentDescription="Espace Membre est une application permettant aux membres de la communauté beta.gouv.fr d'accéder aux espaces dédiés à la communauté."
                                 termsLinkProps={{
                                     href: "#",
                                 }}

@@ -1,5 +1,5 @@
 "use client";
-import { useState, useEffect, useCallback } from "react";
+import { useState, useEffect, useCallback, useRef } from "react";
 
 import Tag from "@codegouvfr/react-dsfr/Tag";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
@@ -90,13 +90,14 @@ export default function FormationList({
     inscriptions: FormationInscription[];
     formations: Formation[];
 }) {
-    const [selectedFilters, setSelectedFilters] = useState<
-        AudienceCategoryType[] | []
-    >([]);
-
     const router = useRouter();
     const pathname = usePathname();
     const searchParams = useSearchParams();
+    const filterQuery = searchParams.get("filter") || "";
+    let filtersFromQuery: string[] = filterQuery.split(",");
+    const [selectedFilters, setSelectedFilters] = useState<
+        AudienceCategoryType[] | []
+    >(tags.filter((tag) => filtersFromQuery.includes(tag.value)));
 
     const createQueryString = useCallback(
         (name: string, value: string) => {
@@ -109,27 +110,18 @@ export default function FormationList({
     );
 
     useEffect(() => {
-        // Parse the query string on component mount or when the query changes
         const filterQuery = searchParams.get("filter");
-        let filtersFromQuery: string[] = [];
-        if (typeof filterQuery === "string") {
-            filtersFromQuery = filterQuery.split(",");
-        } else if (Array.isArray(filterQuery)) {
-            filtersFromQuery = filterQuery;
+        if (selectedFilters.map((f) => f.value).join(",") !== filterQuery) {
+            // Update the query string whenever selectedFilters changes
+            const filterValues = selectedFilters
+                .map((filter) => filter.value)
+                .join(",");
+            router.push(
+                pathname + "?" + createQueryString("filter", filterValues)
+            );
+            sessionStorage.setItem("filter", filterValues);
         }
-        const filtersToApply = tags.filter((tag) =>
-            filtersFromQuery.includes(tag.value)
-        );
-        setSelectedFilters(filtersToApply);
-    }, [searchParams]);
-
-    useEffect(() => {
-        // Update the query string whenever selectedFilters changes
-        const filterValues = selectedFilters.map((filter) => filter.value);
-        router.push(
-            pathname + "?" + createQueryString("filter", filterValues.join(","))
-        );
-    }, [createQueryString, pathname, router, selectedFilters]);
+    }, [createQueryString, pathname, router, searchParams, selectedFilters]);
 
     const filterFormationWithKey = (tag: AudienceCategoryType) => {
         if (selectedFilters.find((filter) => filter.value === tag.value)) {
