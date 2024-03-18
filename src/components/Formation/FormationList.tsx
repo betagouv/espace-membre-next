@@ -1,7 +1,8 @@
 "use client";
-import { useState } from "react";
+import { useState, useEffect, useCallback } from "react";
 
 import Tag from "@codegouvfr/react-dsfr/Tag";
+import { usePathname, useRouter, useSearchParams } from "next/navigation";
 
 import FormationCard from "./FormationCard";
 import { Formation, FormationInscription } from "@/models/formation";
@@ -92,6 +93,44 @@ export default function FormationList({
     const [selectedFilters, setSelectedFilters] = useState<
         AudienceCategoryType[] | []
     >([]);
+
+    const router = useRouter();
+    const pathname = usePathname();
+    const searchParams = useSearchParams();
+
+    const createQueryString = useCallback(
+        (name: string, value: string) => {
+            const params = new URLSearchParams(searchParams.toString());
+            params.set(name, value);
+
+            return params.toString();
+        },
+        [searchParams]
+    );
+
+    useEffect(() => {
+        // Parse the query string on component mount or when the query changes
+        const filterQuery = searchParams.get("filter");
+        let filtersFromQuery: string[] = [];
+        if (typeof filterQuery === "string") {
+            filtersFromQuery = filterQuery.split(",");
+        } else if (Array.isArray(filterQuery)) {
+            filtersFromQuery = filterQuery;
+        }
+        const filtersToApply = tags.filter((tag) =>
+            filtersFromQuery.includes(tag.value)
+        );
+        setSelectedFilters(filtersToApply);
+    }, [searchParams]);
+
+    useEffect(() => {
+        // Update the query string whenever selectedFilters changes
+        const filterValues = selectedFilters.map((filter) => filter.value);
+        router.push(
+            pathname + "?" + createQueryString("filter", filterValues.join(","))
+        );
+    }, [createQueryString, pathname, router, selectedFilters]);
+
     const filterFormationWithKey = (tag: AudienceCategoryType) => {
         if (selectedFilters.find((filter) => filter.value === tag.value)) {
             setSelectedFilters([
