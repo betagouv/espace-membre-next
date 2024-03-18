@@ -124,7 +124,7 @@ const genderSchema = z
         GenderCode, // ??
         {
             errorMap: (issue, ctx) => ({
-                message: "Le champs gender est obligatoire",
+                message: "Le champ gender est obligatoire",
             }),
         }
     )
