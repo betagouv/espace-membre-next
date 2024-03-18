@@ -27,7 +27,7 @@
     "@sentry/nextjs": "^7.101.1",
     "@sentry/node": "^7.101.1",
     "airtable": "^0.12.2",
-    "axios": "^1.6.7",
+    "axios": "^1.6.8",
     "compression": "^1.7.4",
     "connect-flash": "^0.1.1",
     "connect-redis": "^6.1.3",
