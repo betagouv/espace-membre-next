@@ -48,9 +48,6 @@ export default async function Page() {
 
     const sha = authorPR && authorPR.head.sha;
     const formData = await fetchGithubPageData(username, sha || "master");
-    const dbUser = await db("users").where({
-        username,
-    });
     const startups: StartupInfo[] = await betagouv.startupsInfos();
     const startupOptions = startups.map((startup) => ({
         value: startup.id,

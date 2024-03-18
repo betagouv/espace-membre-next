@@ -7,6 +7,7 @@ import { Button } from "@codegouvfr/react-dsfr/Button";
 import Input from "@codegouvfr/react-dsfr/Input";
 import Select from "@codegouvfr/react-dsfr/Select";
 import { zodResolver } from "@hookform/resolvers/zod";
+import * as Sentry from "@sentry/nextjs";
 import { useFieldArray, useForm, useWatch } from "react-hook-form";
 import { z } from "zod";
 
@@ -89,6 +90,7 @@ export default function CommunityCreateMemberPage(props: BaseInfoUpdateProps) {
         } catch (e: any) {
             // todo: sentry
             console.log(e);
+            Sentry.captureException(e);
             setAlertMessage({
                 title: "Erreur",
                 //@ts-ignore
@@ -141,7 +143,10 @@ export default function CommunityCreateMemberPage(props: BaseInfoUpdateProps) {
                                         )}
                                     >
                                         <Input
-                                            label="Prénom"
+                                            label={
+                                                createMemberSchema.shape
+                                                    .firstname.description
+                                            }
                                             nativeInputProps={{
                                                 placeholder: "ex: Grace",
                                                 ...register("firstname"),
@@ -167,7 +172,10 @@ export default function CommunityCreateMemberPage(props: BaseInfoUpdateProps) {
                                         )}
                                     >
                                         <Input
-                                            label="Nom"
+                                            label={
+                                                createMemberSchema.shape
+                                                    .lastname.description
+                                            }
                                             nativeInputProps={{
                                                 placeholder: "ex: HOPPER",
                                                 ...register("lastname"),
@@ -193,7 +201,8 @@ export default function CommunityCreateMemberPage(props: BaseInfoUpdateProps) {
                                         )}
                                     >
                                         <Input
-                                            label="Email"
+                                            label="Email pro"
+                                            hintText="Un email professionel qui nous servira pour t'envoyer les informations relatives à ton compte"
                                             nativeInputProps={{
                                                 placeholder:
                                                     "ex: grace.hopper@gmail.com",
@@ -302,7 +311,7 @@ export default function CommunityCreateMemberPage(props: BaseInfoUpdateProps) {
                     <Alert
                         small={true}
                         severity="info"
-                        description={`La fiche membre de ${firstname} ${lastname} doit être validée sur Github (tu peux le faire, ou demander à quelqu'un de la communauté).`}
+                        description={`La fiche membre de ${firstname} ${lastname} doit être validée et mergée sur Github (tu peux le faire, ou demander à quelqu'un de la communauté).`}
                     ></Alert>
                     <Button
                         className={fr.cx("fr-my-2w")}
@@ -316,8 +325,8 @@ export default function CommunityCreateMemberPage(props: BaseInfoUpdateProps) {
                     </Button>
                     <h2>Et après ?</h2>
                     <p>
-                        Une fois la fiche validée, {firstname} {lastname}{" "}
-                        recevra des informations à l'adresse {email}.
+                        Une fois la fiche validée et mergée, {firstname}{" "}
+                        {lastname} recevra des informations à l'adresse {email}.
                     </p>
                 </>
             )}
