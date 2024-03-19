@@ -5,7 +5,8 @@ import { redirect } from "next/navigation";
 import AccountVerifyClientPage, {
     AccountVerifyClientPageProps,
 } from "./AccountVerifyClientPage";
-import { fetchGithubPageData } from "@/lib/github";
+import { fetchGithubMarkdown } from "@/lib/github";
+import { memberSchema } from "@/models/member";
 import betagouv from "@/server/betagouv";
 import config from "@/server/config";
 import { getDBUser } from "@/server/db/dbUser";
@@ -15,6 +16,24 @@ import { routeTitles } from "@/utils/routes/routeTitles";
 export const metadata: Metadata = {
     title: `${routeTitles.verifyMember()} / Espace Membre`,
 };
+
+async function fetchGithubPageData(username: string, ref: string = "master") {
+    const { attributes, body } = await fetchGithubMarkdown({
+        ref,
+        schema: memberSchema,
+        path: `content/_authors/${username}.md`,
+        // allow some empty fields on input for legacy. todo: move to zod preprocess ?
+        overrides: (values) => ({
+            domaine: values.domaine || [],
+            bio: values.body || "",
+            startups: values.startups || [],
+        }),
+    });
+
+    return {
+        ...attributes,
+    };
+}
 
 export default async function CreateMemberPage() {
     const cookieStore = cookies();
