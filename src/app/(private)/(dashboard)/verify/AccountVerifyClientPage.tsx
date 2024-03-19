@@ -242,12 +242,13 @@ export default function AccountVerifyClientPage(
                                                         ),
                                                     }}
                                                     state={
-                                                        errors.email
+                                                        errors.secondary_email
                                                             ? "error"
                                                             : "default"
                                                     }
                                                     stateRelatedMessage={
-                                                        errors.email?.message
+                                                        errors.secondary_email
+                                                            ?.message
                                                     }
                                                 />
                                             </div>
