@@ -48,7 +48,7 @@ export default function FormationCard({
                 </span>
             }
             enlargeLink
-            imageAlt={`${formation.name} image`}
+            imageAlt={``}
             imageUrl={formation.imageUrl}
             linkProps={{
                 href: `/formations/${formation.airtable_id}`,
@@ -65,7 +65,7 @@ export default function FormationCard({
             start={registeredBadge}
             size="medium"
             title={formation.name}
-            titleAs="h3"
+            titleAs="h2"
             endDetail={
                 formation.start
                     ? format(formation.start, "d MMMM à HH'h'mm", {

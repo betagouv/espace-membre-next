@@ -124,7 +124,7 @@ export default async function Page({ params }: Props) {
                                       ]
                                     : undefined
                             }
-                            imageAlt={`${formation.name} image`}
+                            imageAlt={``}
                             imageUrl={formation.imageUrl}
                             size="medium"
                             desc={
@@ -189,7 +189,7 @@ export default async function Page({ params }: Props) {
                                       )
                                     : "Formation en ligne"
                             }
-                            titleAs="h3"
+                            titleAs="h2"
                         ></Card>
                     </div>
                     <div className="fr-col-md-8 fr-col-lg-8 fr-col-sm-12">
