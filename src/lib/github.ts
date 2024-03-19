@@ -1,9 +1,36 @@
-import { Octokit } from "@octokit/rest";
-import config from "@/server/config";
-import fm from "front-matter";
-import axios from "axios";
 import { request } from "@octokit/request";
+import { Octokit } from "@octokit/rest";
+import axios from "axios";
+import fm from "front-matter";
+import yaml from "js-yaml";
 import { ZodError, ZodSchema, z } from "zod";
+
+import { memberSchema } from "@/models/member";
+import config from "@/server/config";
+
+export async function fetchGithubPageData(
+    username: string,
+    branch: string = "master"
+) {
+    // use source repo when sourcing original file, use fork for branches
+    const repo =
+        branch === "master" ? config.githubRepository : config.githubFork;
+    const mdUrl = `https://raw.githubusercontent.com/${repo}/${branch}/content/_authors/${username}.md`;
+    const mdData = await fetch(mdUrl, { cache: "no-store" }).then((r) =>
+        r.text()
+    );
+
+    const [metadata, body]: any[] = yaml.loadAll(mdData, null, {
+        schema: yaml.JSON_SCHEMA,
+    });
+    const member = {
+        ...metadata,
+        domaine: metadata.domaine || [], // allow some empty fields on input for legacy
+        bio: body || "",
+        startups: metadata.startups || [],
+    };
+    return memberSchema.parse(member);
+}
 
 export interface PRInfo {
     html_url: string;

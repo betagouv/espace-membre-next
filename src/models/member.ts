@@ -1,8 +1,8 @@
 import { z } from "zod";
 
-import { EMAIL_PLAN_TYPE, OvhRedirection, OvhResponder } from "@/models/ovh";
-import { EmailStatusCode } from "./dbUser";
+import { EmailStatusCode, GenderCode } from "./dbUser";
 import { Mission, missionSchema } from "./mission";
+import { EMAIL_PLAN_TYPE, OvhRedirection, OvhResponder } from "@/models/ovh";
 
 export enum Domaine {
     ANIMATION = "Animation",
@@ -70,6 +70,59 @@ export interface Member {
     role: string;
 }
 
+const bioSchema = z
+    .string({
+        errorMap: (issue, ctx) => ({
+            message:
+                "La bio est optionnelle mais elle permet d'en dire plus sur toi, be creative",
+        }),
+    })
+    .optional();
+
+const emailSchema = z
+    .string({
+        errorMap: (issue, ctx) => ({
+            message: "L'email est obligatoire",
+        }),
+    })
+    .email()
+    .describe("Email");
+
+const githubSchema = z.string().describe("Login GitHub").optional();
+
+const domaineSchema = z.nativeEnum(
+    Domaine, // ??
+    {
+        errorMap: (issue, ctx) => ({
+            message: "Le domaine est un champ obligatoire",
+        }),
+    }
+);
+
+const linkSchema = z.union([
+    z.null(),
+    z.literal(""),
+    z.string().trim().url({ message: "URL invalide" }).optional(),
+]);
+
+const roleSchema = z
+    .string({
+        errorMap: (issue, ctx) => ({
+            message: "Le rôle est un champ obligatoire",
+        }),
+    })
+    .min(1)
+    .describe("Rôle actuel, ex: UX designer");
+
+const genderSchema = z.nativeEnum(
+    GenderCode, // ??
+    {
+        errorMap: (issue, ctx) => ({
+            message: "Le champs gender est obligatoire",
+        }),
+    }
+);
+
 export const memberSchema = z.object({
     fullname: z
         .string({
@@ -78,29 +131,15 @@ export const memberSchema = z.object({
             }),
         })
         .min(1)
-        .readonly()
-        .describe("Nom complet"),
-    role: z
-        .string({
-            errorMap: (issue, ctx) => ({
-                message: "Le rôle est un champ obligatoire",
-            }),
-        })
-        .min(1)
-        .describe("Rôle actuel, ex: UX designer"),
-    link: z
-        .union([
-            z.null(),
-            z.literal(""),
-            z.string().trim().url({ message: "URL invalide" }).optional(),
-        ])
-        .describe("Adresse du profil LinkedIn ou site web"),
+        .readonly(),
+    role: roleSchema,
+    link: linkSchema,
     avatar: z
         .string()
         .describe("URL ou slug de l'avatar")
         .nullable()
         .optional(),
-    github: z.string().describe("Login GitHub").optional(),
+    github: githubSchema,
     competences: z
         .array(z.string())
         .describe("Liste des compétences")
@@ -114,23 +153,8 @@ export const memberSchema = z.object({
         .min(1, "Vous devez définir au moins une mission"),
     startups: z.array(z.string()).optional(),
     previously: z.array(z.string()).optional(),
-    domaine: z.nativeEnum(
-        Domaine, // ??
-        {
-            errorMap: (issue, ctx) => ({
-                message: "Le domaine est un champ obligatoire",
-            }),
-        }
-    ), // ??
-    bio: z
-        .string({
-            description: "Courte bio",
-            errorMap: (issue, ctx) => ({
-                message:
-                    "La bio est optionnelle mais elle permet d'en dire plus sur toi, be creative",
-            }),
-        })
-        .optional(),
+    domaine: domaineSchema, // ??
+    bio: bioSchema,
 });
 
 export interface MemberWithPrimaryEmailInfo extends Member {
@@ -169,3 +193,34 @@ export interface MemberWithPermission {
     canCreateRedirection;
     canChangePassword;
 }
+
+export const createMemberSchema = z.object({
+    firstname: z
+        .string({
+            errorMap: (issue, ctx) => ({
+                message: "Le prénom est obligatoire",
+            }),
+        })
+        .describe("Prénom")
+        .min(1),
+    lastname: z
+        .string({
+            errorMap: (issue, ctx) => ({
+                message: "Le Nom est obligatoire",
+            }),
+        })
+        .describe("Nom")
+        .min(1),
+    email: emailSchema,
+    mission: missionSchema,
+    domaine: domaineSchema,
+});
+
+// Extend createMemberSchema with a bio property
+export const completeMemberSchema = createMemberSchema.extend({
+    bio: bioSchema,
+    link: linkSchema,
+    github: githubSchema,
+    gender: genderSchema,
+    role: roleSchema,
+});

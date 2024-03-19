@@ -1,15 +1,16 @@
 import type { Metadata } from "next";
-import { redirect } from "next/navigation";
 import { cookies } from "next/headers";
+import { redirect } from "next/navigation";
 
-import { getSessionFromStore } from "@/server/middlewares/sessionMiddleware";
 import { BaseInfoUpdate } from "@/components/BaseInfoUpdatePage";
+import { fetchGithubMarkdown, getPullRequestForBranch } from "@/lib/github";
 import { memberSchema } from "@/models/member";
-import { routeTitles } from "@/utils/routes/routeTitles";
 import { StartupInfo } from "@/models/startup";
 import betagouv from "@/server/betagouv";
 import config from "@/server/config";
-import { fetchGithubMarkdown, getPullRequestForBranch } from "@/lib/github";
+import db from "@/server/db";
+import { getSessionFromStore } from "@/server/middlewares/sessionMiddleware";
+import { routeTitles } from "@/utils/routes/routeTitles";
 
 export const metadata: Metadata = {
     title: `${routeTitles.accountEditBaseInfo()} / Espace Membre`,
@@ -47,6 +48,9 @@ export default async function Page() {
 
     const sha = authorPR && authorPR.head.sha;
     const formData = await fetchGithubPageData(username, sha || "master");
+    const dbUser = await db("users").where({
+        username,
+    });
     const startups: StartupInfo[] = await betagouv.startupsInfos();
     const startupOptions = startups.map((startup) => ({
         value: startup.id,
