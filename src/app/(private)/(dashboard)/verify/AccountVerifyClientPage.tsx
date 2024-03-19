@@ -237,7 +237,9 @@ export default function AccountVerifyClientPage(
                                                     nativeInputProps={{
                                                         placeholder:
                                                             "ex: grace.hopper@gmail.com",
-                                                        ...register("email"),
+                                                        ...register(
+                                                            "secondary_email"
+                                                        ),
                                                     }}
                                                     state={
                                                         errors.email

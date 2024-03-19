@@ -206,7 +206,7 @@ export default function CommunityCreateMemberPage(props: BaseInfoUpdateProps) {
                                             nativeInputProps={{
                                                 placeholder:
                                                     "ex: grace.hopper@gmail.com",
-                                                ...register("secondary_email"),
+                                                ...register("email"),
                                             }}
                                             state={
                                                 errors.email
