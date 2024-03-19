@@ -35,7 +35,12 @@ export interface AccountVerifyClientPageProps {
 const postMemberData = async ({ values, sessionUsername }) => {
     try {
         const response = await fetch(
-            computeRoute(routes.ACCOUNT_UPDATE_INFO_API),
+            computeRoute(
+                routes.ACCOUNT_UPDATE_INFO_API.replace(
+                    ":username",
+                    sessionUsername
+                )
+            ),
             {
                 method: "PUT", // Specify the method
                 body: JSON.stringify(values), // Convert the values object to JSON
@@ -230,7 +235,8 @@ export default function AccountVerifyClientPage(
                                             </div>
                                             <div className="fr-fieldset__element fr-col-12 fr-col-lg-8 fr-col-md-8">
                                                 <Input
-                                                    label="Email"
+                                                    label="Email pro"
+                                                    hintText="Un email professionel qui nous servira pour t'envoyer les informations relatives à ton compte"
                                                     nativeInputProps={{
                                                         placeholder:
                                                             "ex: grace.hopper@gmail.com",

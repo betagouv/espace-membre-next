@@ -8,8 +8,8 @@ import {
     makeGithubAuthorFile,
     updateMultipleFilesPR,
 } from "@/server/controllers/helpers/githubHelpers";
-import { computeHash } from "@/server/controllers/utils";
 import db from "@/server/db";
+import { computeHash } from "@/utils/member";
 
 export const createOrUpdateMemberData = async (
     action: {

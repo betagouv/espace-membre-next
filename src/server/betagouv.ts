@@ -664,4 +664,5 @@ const betaOVH = {
     },
 };
 
-export default { ...betaGouv, ...betaOVH };
+const beta = { ...betaGouv, ...betaOVH };
+export default beta;

@@ -82,6 +82,7 @@ const bioSchema = z
                 "La bio est optionnelle mais elle permet d'en dire plus sur toi, be creative",
         }),
     })
+    .describe("Courte bio")
     .optional();
 
 const emailSchema = z
@@ -104,12 +105,13 @@ const domaineSchema = z.nativeEnum(
     }
 );
 
-const linkSchema = z.union([
-    z.null(),
-    z.literal(""),
-    z.string().trim().url({ message: "URL invalide" }).optional(),
-]);
-
+const linkSchema = z
+    .union([
+        z.null(),
+        z.literal(""),
+        z.string().trim().url({ message: "URL invalide" }).optional(),
+    ])
+    .describe("Adresse du profil LinkedIn ou site web");
 const roleSchema = z
     .string({
         errorMap: (issue, ctx) => ({

@@ -4,9 +4,9 @@ import { format } from "date-fns/format";
 import _ from "lodash";
 import nodemailer from "nodemailer";
 
-import BetaGouv from "../betagouv";
 import { EmailInfos, Member } from "@/models/member";
 import config from "@/server/config";
+import BetaGouv from "@betagouv";
 
 export const computeHash = function (username) {
     const hash = crypto.createHmac(

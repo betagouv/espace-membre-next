@@ -11,10 +11,10 @@ import * as Sentry from "@sentry/nextjs";
 import { useFieldArray, useForm, useWatch } from "react-hook-form";
 import { z } from "zod";
 
-import { createMember as createMemberAction } from "@/app/actions/member";
 import { Mission } from "@/components/BaseInfoUpdatePage/MissionsEditor";
 import { DOMAINE_OPTIONS, Domaine, createMemberSchema } from "@/models/member";
 import { Status } from "@/models/mission";
+import routes, { computeRoute } from "@/routes/routes";
 
 // data from secretariat API
 export interface BaseInfoUpdateProps {
@@ -23,6 +23,32 @@ export interface BaseInfoUpdateProps {
         label: string;
     }[];
 }
+
+const postMemberData = async ({ values }) => {
+    try {
+        const response = await fetch(
+            computeRoute(routes.ACCOUNT_POST_INFO_API),
+            {
+                method: "POST", // Specify the method
+                body: JSON.stringify(values), // Convert the values object to JSON
+                headers: {
+                    "Content-Type": "application/json", // Specify the content type
+                },
+            }
+        );
+
+        if (!response.ok) {
+            throw new Error("Network response was not ok");
+        }
+
+        const { message, pr_url } = await response.json(); // Destructure the data from the response
+
+        return { message, pr_url }; // Return the username and message
+    } catch (error) {
+        console.error("There was a problem with the fetch operation:", error);
+        throw error; // Rethrow the error to be handled by the caller
+    }
+};
 
 export type CreateMemberType = z.infer<typeof createMemberSchema>;
 
@@ -80,7 +106,9 @@ export default function CommunityCreateMemberPage(props: BaseInfoUpdateProps) {
         setIsSaving(true);
         setAlertMessage(null);
         try {
-            const { message, pr_url } = await createMemberAction(input);
+            const { message, pr_url } = await postMemberData({
+                values: input,
+            });
             setAlertMessage({
                 title: `Modifications enregistrées`,
                 message,
@@ -202,7 +230,7 @@ export default function CommunityCreateMemberPage(props: BaseInfoUpdateProps) {
                                     >
                                         <Input
                                             label="Email pro"
-                                            hintText="Un email professionel qui nous servira pour t'envoyer les informations relatives à ton compte"
+                                            hintText="Un email professionel qui nous servira pour lui envoyer les informations relatives à son compte"
                                             nativeInputProps={{
                                                 placeholder:
                                                     "ex: grace.hopper@gmail.com",
