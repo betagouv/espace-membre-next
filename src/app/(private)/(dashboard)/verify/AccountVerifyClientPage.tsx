@@ -35,10 +35,7 @@ export interface AccountVerifyClientPageProps {
 const postMemberData = async ({ values, sessionUsername }) => {
     try {
         const response = await fetch(
-            computeRoute(routes.ACCOUNT_UPDATE_INFO_API).replace(
-                ":username",
-                sessionUsername
-            ),
+            computeRoute(routes.ACCOUNT_UPDATE_INFO_API),
             {
                 method: "PUT", // Specify the method
                 body: JSON.stringify(values), // Convert the values object to JSON
