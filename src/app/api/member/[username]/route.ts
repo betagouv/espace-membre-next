@@ -1,7 +1,12 @@
 import { cookies } from "next/headers";
 
+import { createOrUpdateMemberData } from "../createOrUpdateMemberData";
 import { EmailStatusCode } from "@/models/dbUser";
-import { completeMemberSchema, createMemberSchema } from "@/models/member";
+import {
+    completeMemberSchema,
+    createMemberSchema,
+    memberSchemaType,
+} from "@/models/member";
 import config from "@/server/config";
 import {
     makeGithubAuthorFile,
@@ -17,91 +22,65 @@ export async function PUT(req: Request) {
         cookieStore.get(config.SESSION_COOKIE_NAME)
     )) as { id: string };
     const data = await req.json();
-    const {
+    let {
         username,
         osm_city,
         workplace_insee_code,
         gender,
-        email,
+        secondary_email,
         legal_status,
-        // isEmailBetaAsked,
         average_nb_of_days,
         tjm,
         bio,
         ...postParams
     } = completeMemberSchema.parse(data);
-    const files = [
-        makeGithubAuthorFile(
-            username,
-            {
-                ...postParams,
-                role: `${postParams.domaine}`,
-            },
-            bio || ""
-        ),
-    ];
-    const prInfo = await updateMultipleFilesPR(
-        `Maj de la fiche de ${username} par ${session.id}`,
-        files,
-        `edit-authors-${username}`
-    );
 
-    await db("pull_requests").insert({
-        username,
-        url: prInfo.html_url,
-        info: JSON.stringify({
-            ...postParams,
-        }),
-    });
-
-    let secondary_email, primary_email;
-    const hasPublicServiceEmail = await isPublicServiceEmail(email);
-    const isEmailBetaAsked = !hasPublicServiceEmail; //req.body.isEmailBetaAsked === 'true' || false;
-    if (isEmailBetaAsked) {
-        // primaryEmail sera l'email beta qui sera créé en asynchrone
-        secondary_email = email;
-    } else {
-        primary_email = email;
+    let primary_email;
+    const hasPublicServiceEmail = await isPublicServiceEmail(secondary_email);
+    if (hasPublicServiceEmail) {
+        primary_email = secondary_email;
+        secondary_email = undefined;
     }
 
-    await db("users")
-        .insert({
-            username,
-            primary_email,
-            tjm,
-            gender,
-            workplace_insee_code,
-            legal_status,
-            secondary_email,
-            primary_email_status: isEmailBetaAsked
-                ? EmailStatusCode.EMAIL_UNSET
-                : EmailStatusCode.EMAIL_ACTIVE,
-            primary_email_status_updated_at: new Date(),
-            should_create_marrainage: false,
-            osm_city,
-            average_nb_of_days,
-        })
-        .onConflict("username")
-        .merge();
+    const primary_email_status = primary_email
+        ? EmailStatusCode.EMAIL_UNSET
+        : EmailStatusCode.EMAIL_ACTIVE;
 
-    const hash = computeHash(username);
-    await db("user_details")
-        .insert({
-            tjm,
-            gender,
-            hash,
-            average_nb_of_days,
-        })
-        .onConflict("hash")
-        .merge();
+    const privateData = {
+        tjm,
+        gender,
+        average_nb_of_days,
+    };
 
-    await db("pull_requests").insert({
+    const dbData = {
         username,
-        url: prInfo.html_url,
-        info: JSON.stringify({
-            ...postParams,
-        }),
-    });
+        primary_email,
+        workplace_insee_code,
+        legal_status,
+        secondary_email,
+        primary_email_status,
+        primary_email_status_updated_at: new Date(),
+        should_create_marrainage: false,
+        osm_city,
+    };
+
+    const githubData: memberSchemaType = {
+        ...postParams,
+        bio,
+        role: `${postParams.domaine}`,
+    };
+
+    const prInfo = await createOrUpdateMemberData(
+        {
+            author: session.id,
+            method: "update",
+            username,
+        },
+        githubData,
+        dbData,
+        privateData
+    );
+
     return Response.json({
         message: `Success`,
         pr_url: prInfo.html_url,

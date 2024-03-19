@@ -62,7 +62,7 @@ export default async function CreateMemberPage() {
         formData: {
             ...formData,
             username,
-            email: dbUser?.secondary_email || "",
+            secondary_email: dbUser?.secondary_email || "",
             gender: dbUser?.gender,
         },
     };

@@ -1,13 +1,9 @@
 import { cookies } from "next/headers";
 
+import { createOrUpdateMemberData } from "./createOrUpdateMemberData";
 import { EmailStatusCode } from "@/models/dbUser";
 import { createMemberSchema } from "@/models/member";
 import config from "@/server/config";
-import {
-    makeGithubAuthorFile,
-    updateMultipleFilesPR,
-} from "@/server/controllers/helpers/githubHelpers";
-import db from "@/server/db";
 import { getSessionFromStore } from "@/server/middlewares/sessionMiddleware";
 import { createUsername } from "@/utils/github";
 
@@ -16,51 +12,35 @@ export async function POST(req: Request) {
     const session = (await getSessionFromStore(
         cookieStore.get(config.SESSION_COOKIE_NAME)
     )) as { id: string };
-    const referent = session.id;
     const data = await req.json();
 
     const { firstname, lastname, email, missions, ...postParams } =
         createMemberSchema.parse(data);
     const username = createUsername(firstname, lastname);
-    const files = [
-        makeGithubAuthorFile(
-            username,
-            {
-                ...postParams,
-                fullname: `${firstname} ${lastname}`,
-                role: `${postParams.domaine}`,
-                missions,
-            },
-            ""
-        ),
-    ];
-    const prInfo = await updateMultipleFilesPR(
-        `Création de la fiche de ${username} par ${session?.id}`,
-        files,
-        `edit-authors-${username}`
-    );
+    const githubData = {
+        ...postParams,
+        fullname: `${firstname} ${lastname}`,
+        role: `${postParams.domaine}`,
+        missions,
+        bio: "",
+    };
 
-    await db("users")
-        .insert({
-            username,
-            secondary_email: email,
-            primary_email_status: EmailStatusCode.EMAIL_WAITING_VERIFICATION,
-        })
-        .onConflict("username")
-        .merge();
-
-    await db("pull_requests").insert({
+    const dbData = {
         username,
-        url: prInfo.html_url,
-        info: JSON.stringify({
-            startup:
-                missions.length && missions[0].startups
-                    ? missions[0].startups[0]
-                    : undefined,
+        secondary_email: email,
+        primary_email_status: EmailStatusCode.EMAIL_WAITING_VERIFICATION,
+    };
+
+    const prInfo = await createOrUpdateMemberData(
+        {
             username,
-            referent,
-        }),
-    });
+            method: `create`,
+            author: session.id,
+        },
+        githubData,
+        dbData,
+        undefined
+    );
 
     return Response.json({
         message: `Success`,

@@ -237,8 +237,6 @@ export type createMemberSchemaType = z.infer<typeof createMemberSchema>;
 
 export const memberStatInfoSchema = z.object({
     gender: genderSchema,
-    workplace_insee_code: z.string().describe("Ville").optional(),
-    osm_city: z.string().describe("Ville international").optional(),
     average_nb_of_days: z
         .number()
         .describe("Nombre de jour moyen travaillé")
@@ -247,18 +245,9 @@ export const memberStatInfoSchema = z.object({
         .nullable()
         .optional(),
     tjm: z.number().optional().nullable(),
-    legal_status: z
-        .nativeEnum(
-            LegalStatus, // ??
-            {
-                errorMap: (issue, ctx) => ({
-                    message: "Le status legal n'a pas une valeur correcte",
-                }),
-            }
-        )
-        .describe(`Status legal de l'entreprise`)
-        .optional(),
 });
+
+export type memberStatInfoSchemaType = z.infer<typeof memberStatInfoSchema>;
 
 export const dbMemberSchema = z.object({
     username: z
@@ -270,13 +259,28 @@ export const dbMemberSchema = z.object({
         .describe("Nom complet")
         .min(1)
         .readonly(),
-    email: emailSchema,
+    secondary_email: emailSchema.optional(),
     isEmailBetaAsked: z.boolean().optional().nullable(),
     communication_email: z
         .nativeEnum(CommunicationEmailCode)
         .optional()
         .nullable(),
+    legal_status: z
+        .nativeEnum(
+            LegalStatus, // ??
+            {
+                errorMap: (issue, ctx) => ({
+                    message: "Le status legal n'a pas une valeur correcte",
+                }),
+            }
+        )
+        .describe(`Status legal de l'entreprise`)
+        .optional(),
+    workplace_insee_code: z.string().describe("Ville").optional(),
+    osm_city: z.string().describe("Ville international").optional(),
 });
+
+export type dbMemberSchemaType = z.infer<typeof dbMemberSchema>;
 
 export const completeMemberSchema = memberSchema
     .merge(dbMemberSchema)
