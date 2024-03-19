@@ -2,18 +2,9 @@ import { cookies } from "next/headers";
 
 import { createOrUpdateMemberData } from "../createOrUpdateMemberData";
 import { EmailStatusCode } from "@/models/dbUser";
-import {
-    completeMemberSchema,
-    createMemberSchema,
-    memberSchemaType,
-} from "@/models/member";
+import { completeMemberSchema, memberSchemaType } from "@/models/member";
 import config from "@/server/config";
-import {
-    makeGithubAuthorFile,
-    updateMultipleFilesPR,
-} from "@/server/controllers/helpers/githubHelpers";
-import { computeHash, isPublicServiceEmail } from "@/server/controllers/utils";
-import db from "@/server/db";
+import { isPublicServiceEmail } from "@/server/controllers/utils";
 import { getSessionFromStore } from "@/server/middlewares/sessionMiddleware";
 
 export async function PUT(req: Request) {
@@ -21,6 +12,7 @@ export async function PUT(req: Request) {
     const session = (await getSessionFromStore(
         cookieStore.get(config.SESSION_COOKIE_NAME)
     )) as { id: string };
+
     const data = await req.json();
     let {
         username,
@@ -34,6 +26,10 @@ export async function PUT(req: Request) {
         bio,
         ...postParams
     } = completeMemberSchema.parse(data);
+
+    if (!session || session.id !== username) {
+        throw new Error(`You don't have the right to access this function`);
+    }
 
     let primary_email;
     const hasPublicServiceEmail = await isPublicServiceEmail(secondary_email);
