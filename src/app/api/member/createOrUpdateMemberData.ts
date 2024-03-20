@@ -4,6 +4,7 @@ import {
     memberSchemaType,
     memberStatInfoSchemaType,
 } from "@/models/member";
+import { PULL_REQUEST_TYPE } from "@/models/pullRequests";
 import {
     makeGithubAuthorFile,
     updateMultipleFilesPR,
@@ -60,8 +61,12 @@ export const createOrUpdateMemberData = async (
 
     await db("pull_requests").insert({
         username: action.username,
+        type:
+            action.method === "create"
+                ? PULL_REQUEST_TYPE.PR_TYPE_ONBOARDING
+                : PULL_REQUEST_TYPE.PR_TYPE_MEMBER_UPDATE,
         url: prInfo.html_url,
-        info: prInfo,
+        info: dbPrInfo,
     });
 
     return prInfo;
