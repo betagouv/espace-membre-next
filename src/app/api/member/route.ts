@@ -35,7 +35,7 @@ export async function POST(req: Request) {
     const dbData = {
         username,
         secondary_email: email,
-        primary_email_status: EmailStatusCode.EMAIL_WAITING_VERIFICATION,
+        primary_email_status: EmailStatusCode.EMAIL_VERIFICATION_WAITING,
     };
 
     const prInfo = await createOrUpdateMemberData(

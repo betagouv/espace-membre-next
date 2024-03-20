@@ -1,16 +1,9 @@
 import crypto from "crypto";
 import _ from "lodash/array";
 
-import BetaGouv from "@betagouv";
-import { OvhRedirection } from "@/models/ovh";
-import config from "@/server/config";
-import {
-    setEmailActive,
-    setEmailRedirectionActive,
-    setEmailSuspended,
-} from "@controllers/usersController";
-import * as utils from "@controllers/utils";
-import knex from "@db";
+import betagouv from "../betagouv";
+import { createEmail } from "../controllers/usersController/createEmailForUser";
+import { EventCode, addEvent, Event, EventParam } from "@/lib/events";
 import {
     CommunicationEmailCode,
     DBUser,
@@ -18,14 +11,23 @@ import {
     MemberType,
 } from "@/models/dbUser/dbUser";
 import { Member } from "@/models/member";
-import { MAILING_LIST_TYPE } from "@modules/email";
+import { OvhRedirection } from "@/models/ovh";
+import config from "@/server/config";
 import {
     addContactsToMailingLists,
+    sendEmail,
     smtpBlockedContactsEmailDelete,
 } from "@/server/config/email.config";
-import betagouv from "../betagouv";
+import BetaGouv from "@betagouv";
+import {
+    setEmailActive,
+    setEmailRedirectionActive,
+    setEmailSuspended,
+} from "@controllers/usersController";
+import * as utils from "@controllers/utils";
 import { isBetaEmail } from "@controllers/utils";
-import { createEmail } from "../controllers/usersController/createEmailForUser";
+import knex from "@db";
+import { EMAIL_TYPES, MAILING_LIST_TYPE } from "@modules/email";
 
 const differenceGithubOVH = function differenceGithubOVH(user, ovhAccountName) {
     return user.id === ovhAccountName;
@@ -152,7 +154,9 @@ export async function setCreatedEmailRedirectionsActive() {
 export async function createRedirectionEmailAdresses() {
     const dbUsers: DBUser[] = await knex("users")
         .whereNull("primary_email")
-        .whereIn("primary_email_status", [EmailStatusCode.EMAIL_UNSET])
+        .whereIn("primary_email_status", [
+            EmailStatusCode.EMAIL_CREATION_WAITING,
+        ])
         .where("email_is_redirection", true)
         .whereNotNull("secondary_email");
     const githubUsers: Member[] = await getValidUsers();
@@ -223,7 +227,9 @@ export async function createRedirectionEmailAdresses() {
 export async function createEmailAddresses() {
     const dbUsers: DBUser[] = await knex("users")
         .whereNull("primary_email")
-        .whereIn("primary_email_status", [EmailStatusCode.EMAIL_UNSET])
+        .whereIn("primary_email_status", [
+            EmailStatusCode.EMAIL_CREATION_WAITING,
+        ])
         .where("email_is_redirection", false)
         .whereNotNull("secondary_email");
     const githubUsers: Member[] = await getValidUsers();
@@ -404,4 +410,42 @@ export async function setEmailStatusActiveForUsers() {
             // once email created we create marrainage
         })
     );
+}
+
+export async function sendOnboardingVerificationPendingEmail() {
+    const dbUsers: DBUser[] = await knex("users").whereIn(
+        "primary_email_status",
+        [EmailStatusCode.EMAIL_VERIFICATION_WAITING]
+    );
+
+    const githubUsers: Member[] = await getValidUsers();
+    const concernedUsers: DBUser[] = dbUsers.filter((user) => {
+        return githubUsers.find((x) => user.username === x.id);
+    });
+    concernedUsers.map(async (user) => {
+        const secretariatUrl = `${config.protocol}://${config.host}`;
+        const event: Event = await knex("events")
+            .where({
+                action_code: EventCode.EMAIL_VERIFICATION_WAITING_SENT,
+                action_on_username: user.username,
+            })
+            .first();
+        if (!event) {
+            await sendEmail({
+                type: EMAIL_TYPES.EMAIL_VERIFICATION_WAITING,
+                toEmail: [user.secondary_email],
+                variables: {
+                    secondaryEmail: user.secondary_email,
+                    secretariatUrl,
+                },
+            });
+            const event: EventParam = {
+                created_by_username: "system",
+                action_on_username: user.username,
+                action_metadata: undefined,
+            };
+            await addEvent(EventCode.EMAIL_VERIFICATION_WAITING_SENT, event);
+            console.log(`LCS SEND EMAIL TO ${user.username}`);
+        }
+    });
 }

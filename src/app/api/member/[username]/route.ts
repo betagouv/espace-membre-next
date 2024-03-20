@@ -1,7 +1,7 @@
 import { cookies } from "next/headers";
 
 import { createOrUpdateMemberData } from "../createOrUpdateMemberData";
-import { EmailStatusCode } from "@/models/dbUser";
+import { EmailStatusCode, MemberType } from "@/models/dbUser";
 import { completeMemberSchema, memberSchemaType } from "@/models/member";
 import config from "@/server/config";
 import { isPublicServiceEmail } from "@/server/controllers/utils";
@@ -28,6 +28,7 @@ export async function PUT(
         average_nb_of_days,
         tjm,
         bio,
+        memberType,
         ...postParams
     } = completeMemberSchema.parse({
         ...data,
@@ -42,7 +43,7 @@ export async function PUT(
     }
 
     const primary_email_status = primary_email
-        ? EmailStatusCode.EMAIL_UNSET
+        ? EmailStatusCode.EMAIL_CREATION_WAITING
         : EmailStatusCode.EMAIL_ACTIVE;
 
     const privateData = {
@@ -60,12 +61,14 @@ export async function PUT(
         primary_email_status,
         primary_email_status_updated_at: new Date(),
         should_create_marrainage: false,
+        email_is_redirection: memberType === MemberType.ATTRIBUTAIRE,
         osm_city,
     };
 
     const githubData: memberSchemaType = {
         ...postParams,
         bio,
+        memberType,
         role: `${postParams.domaine}`,
     };
 

@@ -23,7 +23,7 @@ export default async function Page() {
         .first();
     if (
         dbUser.primary_email_status ===
-        EmailStatusCode.EMAIL_WAITING_VERIFICATION
+        EmailStatusCode.EMAIL_VERIFICATION_WAITING
     ) {
         return redirect("/verify");
     }

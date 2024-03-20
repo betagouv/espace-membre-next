@@ -5,6 +5,7 @@ import {
     EmailStatusCode,
     GenderCode,
     LegalStatus,
+    MemberType,
 } from "./dbUser";
 import { Mission, missionSchema } from "./mission";
 import { EMAIL_PLAN_TYPE, OvhRedirection, OvhResponder } from "@/models/ovh";
@@ -166,6 +167,7 @@ export const memberSchema = z.object({
     previously: z.array(z.string()).optional(),
     domaine: domaineSchema, // ??
     bio: bioSchema,
+    memberType: z.nativeEnum(MemberType).optional().nullable(),
 });
 
 export type memberSchemaType = z.infer<typeof memberSchema>;

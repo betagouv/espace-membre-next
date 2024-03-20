@@ -1,5 +1,4 @@
-import config from "@/server/config";
-import * as utils from "@controllers/utils";
+import { fetchCommuneDetails } from "@/lib/searchCommune";
 import {
     DBUserDetail,
     DBUser,
@@ -7,9 +6,10 @@ import {
     genderOptions,
 } from "@/models/dbUser/dbUser";
 import { EmailStatusCode } from "@/models/dbUser/dbUser";
-import { fetchCommuneDetails } from "@/lib/searchCommune";
-import betagouv from "@betagouv";
 import { PULL_REQUEST_STATE } from "@/models/pullRequests";
+import config from "@/server/config";
+import betagouv from "@betagouv";
+import * as utils from "@controllers/utils";
 import db from "@db";
 
 const getAccount = async (req, res, onSuccess, onError) => {
@@ -67,6 +67,7 @@ const getAccount = async (req, res, onSuccess, onError) => {
             emailSuspended:
                 dbUser?.primary_email_status ===
                 EmailStatusCode.EMAIL_SUSPENDED,
+            status: dbUser?.primary_email_status,
             canChangeEmails: currentUser.canChangeEmails,
             redirections: currentUser.redirections,
             secondaryEmail: dbUser?.secondary_email,

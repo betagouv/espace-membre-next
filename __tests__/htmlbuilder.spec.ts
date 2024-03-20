@@ -1,16 +1,17 @@
 import chai from "chai";
+import sinon from "sinon";
+
+import testUsers from "./users.json";
+import htmlBuilder from "../src/server/modules/htmlbuilder/htmlbuilder";
+import * as mdtohtml from "@/lib/mdtohtml";
+import { Job } from "@/models/job";
+import { Domaine, Member } from "@/models/member";
 import {
     EmailMarrainageNewcomer,
     EmailMarrainageOnboarder,
     EmailUserShouldUpdateInfo,
     EMAIL_TYPES,
 } from "@modules/email";
-import htmlBuilder from "../src/server/modules/htmlbuilder/htmlbuilder";
-import testUsers from "./users.json";
-import { Domaine, Member } from "@/models/member";
-import * as mdtohtml from "@/lib/mdtohtml";
-import sinon from "sinon";
-import { Job } from "@/models/job";
 chai.should();
 
 describe("Test MARRAINAGE_REQUEST_EMAIL", async () => {
@@ -566,5 +567,20 @@ Vous avez raté les infolettres précédentes ? [vous pouvez les lire sur le sec
         emailTitle.should.include(`A ne pas rater chez beta.gouv.fr`);
         renderHtmlFromMd.called.should.be.true;
         renderHtmlFromMd.restore();
+    });
+});
+
+describe(`Test EMAIL_VERIFICATION_WAITING`, () => {
+    it(`email EMAIL_VERIFICATION_WAITING`, async () => {
+        const secretariatUrl: string = "http://secretariat-url";
+
+        const emailBody: string = await htmlBuilder.renderContentForType({
+            type: EMAIL_TYPES.EMAIL_VERIFICATION_WAITING,
+            variables: {
+                secretariatUrl,
+                secondaryEmail: "toto@gmail.com",
+            },
+        });
+        emailBody.should.include(secretariatUrl);
     });
 });

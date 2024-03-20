@@ -2,18 +2,19 @@ import chai from "chai";
 import chaiHttp from "chai-http";
 import nock from "nock";
 import sinon from "sinon";
-import * as controllerUtils from "@controllers/utils";
-import knex from "@db";
-import app from "@/server/index";
+
 import utils from "./utils";
-import { EmailStatusCode } from "@/models/dbUser/dbUser";
-import betagouv from "@betagouv";
-import * as searchCommune from "@/lib/searchCommune";
-import * as email from "@/server/config/email.config";
+import * as github from "@/lib/github";
 import * as mattermost from "@/lib/mattermost";
 import { MattermostUser } from "@/lib/mattermost";
-import * as github from "@/lib/github";
+import * as searchCommune from "@/lib/searchCommune";
+import { EmailStatusCode } from "@/models/dbUser/dbUser";
 import routes from "@/routes/routes";
+import * as email from "@/server/config/email.config";
+import app from "@/server/index";
+import betagouv from "@betagouv";
+import * as controllerUtils from "@controllers/utils";
+import knex from "@db";
 
 chai.use(chaiHttp);
 
@@ -501,7 +502,6 @@ describe("Onboarding", () => {
                     isEmailBetaAsked: false,
                 })
                 .end((err, res) => {
-                    console.log("Github api email", getGithubMasterSha.args);
                     getGithubMasterSha.calledOnce.should.be.true;
                     createGithubBranch.calledOnce.should.be.true;
                     createGithubFile.calledOnce.should.be.true;

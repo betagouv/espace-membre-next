@@ -1,9 +1,11 @@
-import routes, { computeRoute } from "@/routes/routes";
+import React from "react";
+
 import Accordion from "@codegouvfr/react-dsfr/Accordion";
 import Button from "@codegouvfr/react-dsfr/Button";
 import Input from "@codegouvfr/react-dsfr/Input";
 import axios from "axios";
-import React from "react";
+
+import routes, { computeRoute } from "@/routes/routes";
 
 export default function BlocCreateEmail({
     hasPublicServiceEmail = false,

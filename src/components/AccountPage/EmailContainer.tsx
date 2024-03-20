@@ -1,19 +1,23 @@
 import React from "react";
+
+import { fr } from "@codegouvfr/react-dsfr";
 import Accordion from "@codegouvfr/react-dsfr/Accordion";
+import Alert from "@codegouvfr/react-dsfr/Alert";
+import Input from "@codegouvfr/react-dsfr/Input";
+import Table from "@codegouvfr/react-dsfr/Table";
+import axios from "axios";
+
 import BlocAccederAuWebmail from "./BlocAccederAuWebmail";
 import BlocChangerMotDePasse from "./BlocChangerMotDePasse";
 import BlocConfigurerCommunicationEmail from "./BlocConfigurerCommunicationEmail";
 import BlocConfigurerEmailPrincipal from "./BlocConfigurerEmailPrincipal";
 import BlocConfigurerEmailSecondaire from "./BlocConfigurerEmailSecondaire";
-import BlocRedirection from "./BlocRedirection";
-import BlocEmailResponder from "./BlocEmailResponder";
-import { fr } from "@codegouvfr/react-dsfr";
-import axios from "axios";
-import routes, { computeRoute } from "@/routes/routes";
-import Input from "@codegouvfr/react-dsfr/Input";
-import { EmailInfos } from "@/models/member";
-import Table from "@codegouvfr/react-dsfr/Table";
 import BlocCreateEmail from "./BlocCreateEmail";
+import BlocEmailResponder from "./BlocEmailResponder";
+import BlocRedirection from "./BlocRedirection";
+import { EmailStatusCode } from "@/models/dbUser";
+import { EmailInfos } from "@/models/member";
+import routes, { computeRoute } from "@/routes/routes";
 
 function BlocEmailConfiguration({ emailInfos }: { emailInfos: EmailInfos }) {
     interface ServerConf {
@@ -134,6 +138,7 @@ export default function EmailContainer({
     redirections,
     isExpired,
     responderFormData,
+    status,
 }) {
     return (
         <div className="fr-mb-14v">
@@ -169,6 +174,17 @@ export default function EmailContainer({
                 {secondaryEmail || "Non renseigné"}
             </p>
             <div className={fr.cx("fr-accordions-group")}>
+                {[
+                    EmailStatusCode.EMAIL_CREATION_WAITING,
+                    EmailStatusCode.EMAIL_CREATION_PENDING,
+                ].includes(status) && (
+                    <Alert
+                        description="Ton email @beta.gouv.fr est en train d'être créé, tu recevras un email dès que celui-ci est actif."
+                        severity="info"
+                        className={fr.cx("fr-mb-4w")}
+                        small
+                    />
+                )}
                 {canCreateEmail && (
                     <BlocCreateEmail
                         secondaryEmail={secondaryEmail}

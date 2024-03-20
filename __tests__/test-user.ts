@@ -2,27 +2,28 @@ import chai from "chai";
 import chaiHttp from "chai-http";
 import nock from "nock";
 import sinon from "sinon";
-import Betagouv from "@betagouv";
-import config from "@/server/config";
-import * as controllerUtils from "@controllers/utils";
+
+import testUsers from "./users.json";
+import utils from "./utils";
 import * as mattermost from "@/lib/mattermost";
-import knex from "@db";
+import { EmailStatusCode } from "@/models/dbUser/dbUser";
+import { Member } from "@/models/member";
+import { EMAIL_PLAN_TYPE } from "@/models/ovh";
+import routes from "@/routes/routes";
+import config from "@/server/config";
+import { createEmail } from "@/server/controllers/usersController/createEmailForUser";
+import * as session from "@/server/helpers/session";
 import app from "@/server/index";
+import betagouv from "@betagouv";
+import Betagouv from "@betagouv";
+import * as controllerUtils from "@controllers/utils";
+import knex from "@db";
 import {
     createEmailAddresses,
     createRedirectionEmailAdresses,
     subscribeEmailAddresses,
     unsubscribeEmailAddresses,
 } from "@schedulers/emailScheduler";
-import testUsers from "./users.json";
-import utils from "./utils";
-import { EmailStatusCode } from "@/models/dbUser/dbUser";
-import * as session from "@/server/helpers/session";
-import betagouv from "@betagouv";
-import { Member } from "@/models/member";
-import { EMAIL_PLAN_TYPE } from "@/models/ovh";
-import routes from "@/routes/routes";
-import { createEmail } from "@/server/controllers/usersController/createEmailForUser";
 
 chai.use(chaiHttp);
 
@@ -1182,7 +1183,8 @@ describe("User", () => {
                 })
                 .update({
                     primary_email: null,
-                    primary_email_status: EmailStatusCode.EMAIL_UNSET,
+                    primary_email_status:
+                        EmailStatusCode.EMAIL_CREATION_WAITING,
                     secondary_email: "membre.nouveau.perso@example.com",
                 });
             const val = await knex("users").where({
@@ -1401,7 +1403,8 @@ describe("User", () => {
                 })
                 .update({
                     primary_email: null,
-                    primary_email_status: EmailStatusCode.EMAIL_UNSET,
+                    primary_email_status:
+                        EmailStatusCode.EMAIL_CREATION_WAITING,
                     secondary_email: "membre.nouveau.perso@example.com",
                     email_is_redirection: true,
                 });

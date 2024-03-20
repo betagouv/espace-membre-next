@@ -13,6 +13,7 @@ import { useForm } from "react-hook-form";
 import { MissionsEditor } from "@/components/BaseInfoUpdatePage/MissionsEditor";
 import CitySelect from "@/components/CitySelect";
 import GenderSelect from "@/components/GenderSelect";
+import { memberTypeOptions } from "@/frontConfig";
 import { statusOptions } from "@/models/dbUser";
 import {
     DOMAINE_OPTIONS,
@@ -371,26 +372,64 @@ export default function AccountVerifyClientPage(
                                                     }
                                                 />
                                             </div>
-                                            <div className="fr-fieldset__element fr-col-12 fr-col-lg-6 fr-col-md-6">
-                                                <Input
-                                                    label={
-                                                        memberSchema.shape.link
-                                                            .description
-                                                    }
-                                                    nativeInputProps={{
-                                                        placeholder:
-                                                            "ex: https://linkedin.com/in/xxxx",
-                                                        ...register("link"),
-                                                    }}
-                                                    state={
-                                                        errors.link
-                                                            ? "error"
-                                                            : "default"
-                                                    }
-                                                    stateRelatedMessage={
-                                                        errors.link?.message
-                                                    }
-                                                />
+                                            <div className="fr-col-12 fr-col-lg-6 fr-col-md-6">
+                                                <div className="fr-fieldset__element">
+                                                    <Input
+                                                        label={
+                                                            memberSchema.shape
+                                                                .link
+                                                                .description
+                                                        }
+                                                        nativeInputProps={{
+                                                            placeholder:
+                                                                "ex: https://linkedin.com/in/xxxx",
+                                                            ...register("link"),
+                                                        }}
+                                                        state={
+                                                            errors.link
+                                                                ? "error"
+                                                                : "default"
+                                                        }
+                                                        stateRelatedMessage={
+                                                            errors.link?.message
+                                                        }
+                                                    />
+                                                </div>
+                                                <div className="fr-fieldset__element">
+                                                    <Select
+                                                        label="Type de membre"
+                                                        nativeSelectProps={{
+                                                            ...register(
+                                                                `memberType`
+                                                            ),
+                                                        }}
+                                                    >
+                                                        <option
+                                                            value=""
+                                                            disabled
+                                                            hidden
+                                                        >
+                                                            Selectionnez une
+                                                            option
+                                                        </option>
+                                                        {memberTypeOptions.map(
+                                                            (option) => (
+                                                                <option
+                                                                    key={
+                                                                        option.key
+                                                                    }
+                                                                    value={
+                                                                        option.key
+                                                                    }
+                                                                >
+                                                                    {
+                                                                        option.name
+                                                                    }
+                                                                </option>
+                                                            )
+                                                        )}
+                                                    </Select>
+                                                </div>
                                             </div>
                                         </fieldset>
                                         <fieldset
@@ -406,7 +445,7 @@ export default function AccountVerifyClientPage(
                                                     Droits Github
                                                 </h2>
                                             </legend>
-                                            <div className="fr-fieldset__element fr-col-12 fr-col-lg-6 fr-col-md-6">
+                                            <div className="fr-fieldset__element">
                                                 <Input
                                                     label="Github"
                                                     hintText="Indispensable pour les devs"

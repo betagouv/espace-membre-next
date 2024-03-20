@@ -1,5 +1,6 @@
-import { MemberType } from "@/models/dbUser";
 import { config } from "dotenv";
+
+import { MemberType } from "@/models/dbUser";
 
 config();
 
@@ -14,9 +15,12 @@ export const userStatusOptions = [
     { name: "Société de service", key: "service" },
 ];
 
-const memberTypeOptions = [
+export const memberTypeOptions = [
     { name: `Membre d'une startup ou d'un incubateur`, key: MemberType.BETA },
-    { name: "Attributaire", key: MemberType.ATTRIBUTAIRE },
+    {
+        name: "Responsable de compte chez un attributaire",
+        key: MemberType.ATTRIBUTAIRE,
+    },
     {
         name: `Membre d'un autre service DINUM (etalab, ...)`,
         key: MemberType.DINUM,

@@ -1,12 +1,14 @@
 "use client";
 import React from "react";
-import routes, { computeRoute } from "@/routes/routes";
-import axios from "axios";
-import ButtonsGroup from "@codegouvfr/react-dsfr/ButtonsGroup";
-import FicheMembre from "./FicheMembre";
-import EmailContainer from "./EmailContainer";
-import Observatoire from "./Observatoire";
+
 import Button from "@codegouvfr/react-dsfr/Button";
+import ButtonsGroup from "@codegouvfr/react-dsfr/ButtonsGroup";
+import axios from "axios";
+
+import EmailContainer from "./EmailContainer";
+import FicheMembre from "./FicheMembre";
+import Observatoire from "./Observatoire";
+import routes, { computeRoute } from "@/routes/routes";
 import { routeTitles } from "@/utils/routes/routeTitles";
 
 export default function AccountPage(props: any) {
@@ -21,6 +23,7 @@ export default function AccountPage(props: any) {
         tjm,
         average_nb_of_days,
         redirections,
+        status,
     } = props;
     return (
         <div>
