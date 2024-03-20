@@ -445,7 +445,6 @@ export async function sendOnboardingVerificationPendingEmail() {
                 action_metadata: undefined,
             };
             await addEvent(EventCode.EMAIL_VERIFICATION_WAITING_SENT, event);
-            console.log(`LCS SEND EMAIL TO ${user.username}`);
         }
     });
 }
