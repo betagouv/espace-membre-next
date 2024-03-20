@@ -120,7 +120,7 @@ const roleSchema = z
         }),
     })
     .min(1)
-    .describe("Rôle actuel, ex: UX designer");
+    .describe("Rôle actuel");
 
 const genderSchema = z
     .nativeEnum(

@@ -29,6 +29,23 @@ export const Mission = ({
     startupOptions,
     errors,
     isMulti,
+    labels = {},
+}: {
+    index: number;
+    register: any;
+    control: any;
+    setValue: any;
+    mission: any;
+    missionsRemove: any;
+    onMissionAutoEndClick: any;
+    startupOptions: any;
+    errors: any;
+    isMulti: boolean;
+    labels?: {
+        employer?: string;
+        start?: string;
+        end?: string;
+    };
 }) => {
     const missionErrors = errors;
     const defaultState = (field) => ({
@@ -77,8 +94,11 @@ export const Mission = ({
             <div className={fr.cx("fr-grid-row", "fr-grid-row--gutters")}>
                 <div className={fr.cx("fr-col-3")}>
                     <Input
-                        label={missionSchema.shape.start.description}
-                        hintText="Début de ta mission"
+                        label={
+                            labels.start ||
+                            missionSchema.shape.start.description
+                        }
+                        hintText="Date de début"
                         nativeInputProps={{
                             style: { width: 200 },
                             placeholder: "JJ/MM/YYYY",
@@ -91,7 +111,9 @@ export const Mission = ({
                 </div>{" "}
                 <div className={fr.cx("fr-col-4")}>
                     <Input
-                        label={missionSchema.shape.end.description}
+                        label={
+                            labels.end || missionSchema.shape.end.description
+                        }
                         nativeInputProps={{
                             style: { width: 200 },
                             placeholder: "JJ/MM/YYYY",
@@ -121,7 +143,10 @@ export const Mission = ({
             <div className={fr.cx("fr-grid-row", "fr-grid-row--gutters")}>
                 <div className={fr.cx("fr-col-6")}>
                     <Input
-                        label={missionSchema.shape.employer.description}
+                        label={
+                            labels.employer ||
+                            missionSchema.shape.employer.description
+                        }
                         nativeInputProps={{
                             placeholder: "ex: Scopyleft",
                             ...register(`missions.${index}.employer`),

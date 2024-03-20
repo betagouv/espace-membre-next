@@ -8,9 +8,9 @@ import Input from "@codegouvfr/react-dsfr/Input";
 import Select from "@codegouvfr/react-dsfr/Select";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useRouter } from "next/navigation";
-import { useForm } from "react-hook-form";
+import { useFieldArray, useForm } from "react-hook-form";
 
-import { MissionsEditor } from "@/components/BaseInfoUpdatePage/MissionsEditor";
+import { Mission } from "@/components/BaseInfoUpdatePage/MissionsEditor";
 import CitySelect from "@/components/CitySelect";
 import GenderSelect from "@/components/GenderSelect";
 import { memberTypeOptions } from "@/frontConfig";
@@ -82,6 +82,11 @@ export default function AccountVerifyClientPage(
         resolver: zodResolver(completeMemberSchema),
         mode: "onChange",
         defaultValues,
+    });
+    const { fields: missionsFields } = useFieldArray({
+        rules: { minLength: 1 },
+        control,
+        name: "missions",
     });
 
     const session = useSession();
@@ -276,6 +281,7 @@ export default function AccountVerifyClientPage(
                                                         memberSchema.shape.role
                                                             .description
                                                     }
+                                                    hintText="ex: Développeuse à MonSuperProduit"
                                                     nativeInputProps={{
                                                         placeholder:
                                                             "ex: Développeuse",
@@ -326,17 +332,26 @@ export default function AccountVerifyClientPage(
                                                 </Select>
                                             </div>
                                             <div className="fr-fieldset__element">
-                                                <MissionsEditor
+                                                <Mission
+                                                    isMulti={false}
                                                     control={control}
-                                                    setValue={setValue}
                                                     register={register}
+                                                    setValue={setValue}
                                                     startupOptions={
                                                         props.startupOptions
                                                     }
                                                     errors={
-                                                        errors.missions || []
+                                                        errors.missions
+                                                            ? errors.missions[0]
+                                                            : undefined
                                                     }
-                                                />
+                                                    index={0}
+                                                    mission={missionsFields[0]}
+                                                    missionsRemove={undefined}
+                                                    onMissionAutoEndClick={
+                                                        undefined
+                                                    }
+                                                ></Mission>
                                             </div>
                                         </fieldset>
                                         <fieldset
@@ -625,8 +640,7 @@ export default function AccountVerifyClientPage(
                                             }
                                             nativeButtonProps={{
                                                 type: "submit",
-                                                disabled:
-                                                    !isDirty || isSubmitting,
+                                                disabled: isSubmitting,
                                             }}
                                         />
                                     </form>

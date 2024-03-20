@@ -230,7 +230,7 @@ export default function CommunityCreateMemberPage(props: BaseInfoUpdateProps) {
                                     >
                                         <Input
                                             label="Email pro"
-                                            hintText="Un email professionel qui nous servira pour lui envoyer les informations relatives à son compte"
+                                            hintText="Nous enverrons les informations relatives au compte à cet email"
                                             nativeInputProps={{
                                                 placeholder:
                                                     "ex: grace.hopper@gmail.com",
@@ -310,6 +310,12 @@ export default function CommunityCreateMemberPage(props: BaseInfoUpdateProps) {
                                                     : undefined
                                             }
                                             index={0}
+                                            labels={{
+                                                start: "Début de la mission",
+                                                end: "Fin de la mission",
+                                                employer:
+                                                    "Entité qui gère la contractualisation",
+                                            }}
                                             mission={missionsFields[0]}
                                             missionsRemove={undefined}
                                             onMissionAutoEndClick={undefined}
