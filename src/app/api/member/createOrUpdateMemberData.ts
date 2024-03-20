@@ -4,7 +4,7 @@ import {
     memberSchemaType,
     memberStatInfoSchemaType,
 } from "@/models/member";
-import { PULL_REQUEST_TYPE } from "@/models/pullRequests";
+import { PULL_REQUEST_STATE, PULL_REQUEST_TYPE } from "@/models/pullRequests";
 import {
     makeGithubAuthorFile,
     updateMultipleFilesPR,
@@ -65,6 +65,10 @@ export const createOrUpdateMemberData = async (
             action.method === "create"
                 ? PULL_REQUEST_TYPE.PR_TYPE_ONBOARDING
                 : PULL_REQUEST_TYPE.PR_TYPE_MEMBER_UPDATE,
+        status:
+            action.method === "create"
+                ? PULL_REQUEST_STATE.PR_CREATED
+                : PULL_REQUEST_STATE.PR_MEMBER_UPDATE_CREATED,
         url: prInfo.html_url,
         info: dbPrInfo,
     });

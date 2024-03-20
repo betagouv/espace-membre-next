@@ -46,6 +46,15 @@ const getAccount = async (req, res, onSuccess, onError) => {
         if (config.ESPACE_MEMBRE_ADMIN.includes(req.auth.id)) {
             availableEmailPros = await betagouv.getAvailableProEmailInfos();
         }
+
+        const updatePullRequest = await db("pull_requests")
+            .where({
+                username: req.auth.id,
+                status: PULL_REQUEST_STATE.PR_MEMBER_UPDATE_CREATED,
+            })
+            .orderBy("created_at", "desc")
+            .first();
+
         return onSuccess({
             title,
             currentUserId: req.auth.id,
@@ -53,6 +62,7 @@ const getAccount = async (req, res, onSuccess, onError) => {
             userInfos: currentUser.userInfos,
             domain: config.domain,
             isExpired: currentUser.isExpired,
+            updatePullRequest,
             isAdmin: config.ESPACE_MEMBRE_ADMIN.includes(req.auth.id),
             // can create email if email is not set, or if email is not @beta.gouv.fr email
             canCreateEmail: currentUser.canCreateEmail,
