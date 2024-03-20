@@ -17,7 +17,7 @@ export default function BlocChangerMotDePasse({
 }: {
     canChangePassword: boolean;
     status: EmailStatusCode;
-    userInfos: UserInfos;
+    userInfos: any;
 }) {
     const [password, setPassword] = React.useState<string>("");
     const [isSaving, setIsSaving] = React.useState<boolean>(false);
