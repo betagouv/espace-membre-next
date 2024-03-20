@@ -1,8 +1,8 @@
+import { MattermostUser } from "@/lib/mattermost";
+import { DBUser, EmailStatusCode } from "@/models/dbUser";
 import config from "@/server/config";
 import db from "@db";
 import { getUserWithParams, sendInfoToChat } from "@infra/chat";
-import { DBUser, EmailStatusCode } from "@/models/dbUser";
-import { MattermostUser } from "@/lib/mattermost";
 
 export const getMattermostUsers = async ({
     fromBeta,
@@ -30,9 +30,13 @@ export const getMattermostUsers = async ({
         );
     }
     if (fromBeta) {
-        const dbUsers: DBUser[] = await db("users").where({
-            primary_email_status: EmailStatusCode.EMAIL_ACTIVE,
-        });
+        const dbUsers: DBUser[] = await db("users").whereIn(
+            "primary_email_status",
+            [
+                EmailStatusCode.EMAIL_ACTIVE,
+                EmailStatusCode.EMAIL_ACTIVE_AND_PASSWORD_DEFINITION_PENDING,
+            ]
+        );
         const primaryEmails = dbUsers
             .map((user) => user.primary_email)
             .filter((email) => email);

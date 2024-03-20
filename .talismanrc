@@ -3,6 +3,8 @@ fileignoreconfig:
   checksum: 81570c2f0395a7e443a156f22ffd0d3202f461311c05871a360b02e2148e9035
 - filename: __tests__/htmlbuilder.spec.ts
   checksum: 59bb880710465666eb47a0d8dc220c693a25412a8112043f8ad9812b50f7896e
+- filename: __tests__/test-email.ts
+  checksum: 4192baa86c9c611168e394237bcc8586f71d186ef41a4d9747a91603fdddb3a2
 - filename: src/app/(private)/(dashboard)/account/base-info/page.tsx
   checksum: d379d505af1ac3bf76cc4d32fc7b5b2c12e0b776d4bc695ebf0ff8ceec6ea52e
 - filename: src/app/(private)/(dashboard)/community/create/CommunityCreateMemberPage.tsx
@@ -15,6 +17,12 @@ fileignoreconfig:
   checksum: 27b9e96bc30d8d4ebc96320f7fc79d9af807f8c6d9f1796497c60318dd728e47
 - filename: src/app/not-found.tsx
   checksum: 29d7b736894451f16680665937d005f2e9912981a2dc42bd0015c1ccb3d0c835
+- filename: src/components/AccountPage/AccountPage.tsx
+  checksum: 8c41f6f6f8766a47a10a87b822ba90c667dfbe4a5bf204e5566e45d0fa6b23b8
+- filename: src/components/AccountPage/BlocChangerMotDePasse.tsx
+  checksum: 57f6bceb79e20cb6815ec0c78b3320d0da8ce99d1d99aebb96d97359ba80d900
+- filename: src/components/AccountPage/EmailContainer.tsx
+  checksum: ff757ee916228a004ac0fa9ab3b3d93a29cf7525654f2d2004399a094c8dd55a
 - filename: src/components/BaseInfoUpdatePage/BaseInfoUpdate.tsx
   checksum: 05d97c14f404f68008afc8707f7c0c44883503f71e5c52c1716777482820c3ca
 - filename: src/components/BaseInfoUpdatePage/MissionsEditor.tsx
@@ -29,8 +37,12 @@ fileignoreconfig:
   checksum: dfa7fcba549f3059c547970b66d918c32d7ca97d9506c57ef982510c64562282
 - filename: src/lib/airtable.ts
   checksum: 073b6fdb5d40706c9c05bdf16def31bfca6f0de2401c78d89b9ef4b3ed2da47d
+- filename: src/models/dbUser/dbUser.ts
+  checksum: 796e5668df837d35d981c24c33436a21f3363c3b746cf3ee47d4a85cfb538d0d
 - filename: src/routes/routes.ts
   checksum: 675ba81fc5357f186d2ca4ce446a75016fbbcda42492d414d31ee7ad7fa8f7d5
+- filename: src/server/controllers/usersController/usersControllerUtils.ts
+  checksum: afb73b3143023c22e51461c9dfaf870daff6c0e2689571c3a7500f784aa76346
 - filename: src/server/middlewares/sessionMiddleware.ts
   checksum: 37395239eb8012e5b4c310a6f2e23ef2eafd187abea8bfa1eee02212cba978a8
 - filename: src/server/schedulers/emailScheduler.ts

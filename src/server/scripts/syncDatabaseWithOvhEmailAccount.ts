@@ -12,9 +12,10 @@ const syncDatabaseWithOvhEmailAccount = async () => {
     );
     const dbUsers: DBUser[] = await knex("users")
         .whereIn("username", usernamesWithoutOvhEmailAccount)
-        .andWhere({
-            primary_email_status: EmailStatusCode.EMAIL_ACTIVE,
-        });
+        .whereIn("primary_email_status", [
+            EmailStatusCode.EMAIL_ACTIVE,
+            EmailStatusCode.EMAIL_ACTIVE_AND_PASSWORD_DEFINITION_PENDING,
+        ]);
     console.log(
         "Will set primary_email_status to deleted for users :",
         dbUsers.map((user) => user.username)
@@ -25,9 +26,10 @@ const syncDatabaseWithOvhEmailAccount = async () => {
                 "username",
                 dbUsers.map((user) => user.username)
             )
-            .andWhere({
-                primary_email_status: EmailStatusCode.EMAIL_ACTIVE,
-            })
+            .whereIn("primary_email_status", [
+                EmailStatusCode.EMAIL_ACTIVE,
+                EmailStatusCode.EMAIL_ACTIVE_AND_PASSWORD_DEFINITION_PENDING,
+            ])
             .update({
                 primary_email_status: EmailStatusCode.EMAIL_DELETED,
             });

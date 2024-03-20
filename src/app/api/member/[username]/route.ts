@@ -43,8 +43,8 @@ export async function PUT(
     }
 
     const primary_email_status = primary_email
-        ? EmailStatusCode.EMAIL_CREATION_WAITING
-        : EmailStatusCode.EMAIL_ACTIVE;
+        ? EmailStatusCode.EMAIL_ACTIVE
+        : EmailStatusCode.EMAIL_CREATION_WAITING;
 
     const privateData = {
         tjm,
