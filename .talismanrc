@@ -35,6 +35,8 @@ fileignoreconfig:
   checksum: 37395239eb8012e5b4c310a6f2e23ef2eafd187abea8bfa1eee02212cba978a8
 - filename: src/server/schedulers/emailScheduler.ts
   checksum: a97b144c7af4f55b0f85c16effaca351f821a044ce32dd3c5cc6b89e44805bf7
+- filename: src/server/views/templates/emails/verificationWaiting.ejs
+  checksum: ba761c51315e4882a69e38228bf57f7495608ac3c9680027ded3d2bb5d6c714d
 scopeconfig:
 - scope: node
 version: "1.0"
