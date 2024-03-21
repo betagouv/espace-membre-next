@@ -54,8 +54,8 @@ export default function AccountPage(props: any) {
                             <p>
                                 Tu pourras alors définir ton mot de passe dans
                                 cette page plus bas, et tu recevras les
-                                informations pour te connecter à matermost notre
-                                outils de chat.
+                                informations pour te connecter à mattermost
+                                notre outil de chat.
                             </p>
                         </>
                     }
