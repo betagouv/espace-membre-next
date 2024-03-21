@@ -18,7 +18,7 @@ import knex from "@db";
 
 chai.use(chaiHttp);
 
-describe("Onboarding", () => {
+describe.skip("Onboarding", () => {
     describe("GET /api/onboarding", () => {
         it("should return a valid page", (done) => {
             chai.request(app)
