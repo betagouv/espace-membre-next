@@ -41,6 +41,8 @@ fileignoreconfig:
   checksum: 796e5668df837d35d981c24c33436a21f3363c3b746cf3ee47d4a85cfb538d0d
 - filename: src/routes/routes.ts
   checksum: 675ba81fc5357f186d2ca4ce446a75016fbbcda42492d414d31ee7ad7fa8f7d5
+- filename: src/server/controllers/usersController/createEmailForUser.ts
+  checksum: fecf58ca9f7d8c7ff5aaadaa998ee3bf86e386027e14d6f2e0d1ab6b9693b27b
 - filename: src/server/controllers/usersController/usersControllerUtils.ts
   checksum: afb73b3143023c22e51461c9dfaf870daff6c0e2689571c3a7500f784aa76346
 - filename: src/server/middlewares/sessionMiddleware.ts
