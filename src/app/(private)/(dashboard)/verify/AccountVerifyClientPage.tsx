@@ -586,8 +586,15 @@ export default function AccountVerifyClientPage(
                                     faire des statistiques. Elle n'est pas affichée."
                                                         nativeInputProps={{
                                                             ...register("tjm", {
-                                                                valueAsNumber:
-                                                                    true,
+                                                                setValueAs: (
+                                                                    // use this instead of valueAsNumber to handle undefined value
+                                                                    v
+                                                                ) =>
+                                                                    v === ""
+                                                                        ? null
+                                                                        : parseInt(
+                                                                              v
+                                                                          ),
                                                             }),
                                                             type: "number",
                                                         }}
@@ -609,8 +616,17 @@ export default function AccountVerifyClientPage(
                                                             ...register(
                                                                 "average_nb_of_days",
                                                                 {
-                                                                    valueAsNumber:
-                                                                        true,
+                                                                    setValueAs:
+                                                                        (
+                                                                            // use this instead of valueAsNumber to handle undefined value
+                                                                            v
+                                                                        ) =>
+                                                                            v ===
+                                                                            ""
+                                                                                ? null
+                                                                                : parseInt(
+                                                                                      v
+                                                                                  ),
                                                                 }
                                                             ),
 
