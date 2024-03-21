@@ -2,7 +2,12 @@ import { cookies } from "next/headers";
 
 import { createOrUpdateMemberData } from "../createOrUpdateMemberData";
 import { EmailStatusCode, MemberType } from "@/models/dbUser";
-import { completeMemberSchema, memberSchemaType } from "@/models/member";
+import {
+    completeMemberSchema,
+    completeMemberSchemaType,
+    memberSchema,
+    memberSchemaType,
+} from "@/models/member";
 import config from "@/server/config";
 import { isPublicServiceEmail } from "@/server/controllers/utils";
 import { getSessionFromStore } from "@/server/middlewares/sessionMiddleware";
@@ -30,7 +35,7 @@ export async function PUT(
         bio,
         memberType,
         ...postParams
-    } = completeMemberSchema.parse({
+    }: completeMemberSchemaType = completeMemberSchema.parse({
         ...data,
         username,
     });
@@ -64,13 +69,12 @@ export async function PUT(
         email_is_redirection: memberType === MemberType.ATTRIBUTAIRE,
         osm_city,
     };
-
-    const githubData: memberSchemaType = {
+    const githubData = memberSchema.parse({
         ...postParams,
         bio,
         memberType,
         role: `${postParams.domaine}`,
-    };
+    });
 
     const prInfo = await createOrUpdateMemberData(
         {

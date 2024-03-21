@@ -61,7 +61,6 @@ export default async function CreateMemberPage() {
         startupOptions,
         formData: {
             ...formData,
-            username,
             secondary_email: dbUser?.secondary_email || "",
             gender: dbUser?.gender,
         },

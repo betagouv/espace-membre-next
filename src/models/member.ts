@@ -254,15 +254,6 @@ export const memberStatInfoSchema = z.object({
 export type memberStatInfoSchemaType = z.infer<typeof memberStatInfoSchema>;
 
 export const dbMemberSchema = z.object({
-    username: z
-        .string({
-            errorMap: (issue, ctx) => ({
-                message: "Le nom est obligatoire",
-            }),
-        })
-        .describe("Nom complet")
-        .min(1)
-        .readonly(),
     secondary_email: emailSchema.optional(),
     isEmailBetaAsked: z.boolean().optional().nullable(),
     communication_email: z
