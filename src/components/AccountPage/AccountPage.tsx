@@ -65,7 +65,6 @@ export default function AccountPage(props: any) {
             )}
             {[
                 EmailStatusCode.EMAIL_ACTIVE_AND_PASSWORD_DEFINITION_PENDING,
-                EmailStatusCode.EMAIL_CREATION_PENDING,
             ].includes(status) && (
                 <Alert
                     title={"Bienvenue"}
