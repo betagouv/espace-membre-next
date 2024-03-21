@@ -10,6 +10,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { useRouter } from "next/navigation";
 import { useFieldArray, useForm } from "react-hook-form";
 
+import { CompetencesEditor } from "@/components/BaseInfoUpdatePage/CompetencesEditor";
 import { Mission } from "@/components/BaseInfoUpdatePage/MissionsEditor";
 import CitySelect from "@/components/CitySelect";
 import GenderSelect from "@/components/GenderSelect";
@@ -260,6 +261,32 @@ export default function AccountVerifyClientPage(
                                                             ?.message
                                                     }
                                                 />
+                                            </div>
+                                            <div className="fr-fieldset__element fr-col-12 fr-mt-4w">
+                                                <h3>Mes compétences</h3>
+                                                <p>
+                                                    Tu peux préciser tes
+                                                    compétences, cela permettra
+                                                    à la communauté de mieux de
+                                                    trouver en cas de besoin :)
+                                                </p>
+                                                <CompetencesEditor
+                                                    onChange={(e, values) => {
+                                                        setValue(
+                                                            "competences",
+                                                            values,
+                                                            {
+                                                                shouldDirty:
+                                                                    true,
+                                                            }
+                                                        );
+                                                    }}
+                                                    defaultValue={
+                                                        props.formData
+                                                            .competences || []
+                                                    }
+                                                />
+                                                <br />
                                             </div>
                                         </fieldset>
                                         <fieldset
