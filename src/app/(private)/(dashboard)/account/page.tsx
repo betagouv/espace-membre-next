@@ -3,6 +3,7 @@ import { cookies } from "next/headers";
 import { redirect } from "next/navigation";
 
 import AccountClientPage from "./AccountClientPage";
+
 import { DBUser, EmailStatusCode } from "@/models/dbUser";
 import config from "@/server/config";
 import db from "@/server/db";
@@ -18,6 +19,9 @@ export default async function Page() {
     const session = (await getSessionFromStore(
         cookieStore.get(config.SESSION_COOKIE_NAME)
     )) as { id: string };
+    if (!session || !session.id) {
+        redirect("/login");
+    }
     const dbUser: DBUser = await db("users")
         .where({ username: session.id })
         .first();
