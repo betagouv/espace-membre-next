@@ -345,7 +345,10 @@ export async function fetchGithubMarkdown<T extends ZodSchema>({
     ref?: string;
     schema: T;
     path: string;
-    overrides?: (values: Record<string, any>) => Record<string, any>;
+    overrides?: (
+        values: Record<string, any>,
+        body: string
+    ) => Record<string, any>;
 }): Promise<{ attributes: z.infer<T>; body: string; error?: ZodError }> {
     const repo = ref === "master" ? config.githubRepository : config.githubFork;
     const mdUrl = `https://raw.githubusercontent.com/${repo}/${ref}/${path}`;
@@ -361,7 +364,7 @@ export async function fetchGithubMarkdown<T extends ZodSchema>({
 
     const parsedData = schema.parse({
         ...attributes,
-        ...(overrides ? overrides(attributes) : {}),
+        ...(overrides ? overrides(attributes, body) : {}),
         id: path.replace(/^.*\/([^/]+)\.md$/, "$1"),
     });
 

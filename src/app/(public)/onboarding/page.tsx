@@ -7,5 +7,13 @@ export const metadata: Metadata = {
 };
 
 export default function Page() {
-    return <OnboardingClientPage />;
+    return (
+        <div className="fr-mt-10w">
+            <h1>Onboarding</h1>
+            <p>
+                Une personne de la communauté doit vous inviter pour que vous
+                puissiez nous rejoindre.
+            </p>
+        </div>
+    );
 }

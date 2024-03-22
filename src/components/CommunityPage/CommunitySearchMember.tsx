@@ -1,10 +1,13 @@
 "use client";
 import React from "react";
 
-import MemberSelect from "../MemberSelect";
-import { CommunityProps } from ".";
 import Button from "@codegouvfr/react-dsfr/Button";
+import Link from "next/link";
 import { useRouter } from "next/navigation";
+
+import { CommunityProps } from ".";
+import MemberSelect from "../MemberSelect";
+
 import { routeTitles } from "@/utils/routes/routeTitles";
 
 /* Pure component */
@@ -50,9 +53,12 @@ export const CommunitySearchMember = (props: CommunityProps) => {
                 </form>
                 <br />
                 <p>
-                    Le membre que vous cherchez n'existe pas ? Vous pouvez lui
-                    donner le lien du{" "}
-                    <a href="/onboarding">formulaire de création de fiche</a>.
+                    Le membre que vous cherchez n'existe pas ? Vous pouvez
+                    l'inviter via le{" "}
+                    <Link href="/community/create">
+                        formulaire de création de fiche
+                    </Link>
+                    .
                 </p>
             </div>
         </>
