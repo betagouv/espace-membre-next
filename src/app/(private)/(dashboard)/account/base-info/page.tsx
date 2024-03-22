@@ -22,9 +22,9 @@ async function fetchGithubPageData(username: string, ref: string = "master") {
         schema: memberSchema,
         path: `content/_authors/${username}.md`,
         // allow some empty fields on input for legacy. todo: move to zod preprocess ?
-        overrides: (values) => ({
+        overrides: (values, body) => ({
             domaine: values.domaine || [],
-            bio: values.body || "",
+            bio: body || "",
             startups: values.startups || [],
         }),
     });
