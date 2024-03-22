@@ -8,7 +8,8 @@ import Input from "@codegouvfr/react-dsfr/Input";
 import Select from "@codegouvfr/react-dsfr/Select";
 import { zodResolver } from "@hookform/resolvers/zod";
 import * as Sentry from "@sentry/nextjs";
-import { useFieldArray, useForm, useWatch } from "react-hook-form";
+import { add } from "date-fns";
+import { useFieldArray, useForm } from "react-hook-form";
 import { z } from "zod";
 
 import { Mission } from "@/components/BaseInfoUpdatePage/MissionsEditor";
@@ -60,6 +61,7 @@ export default function CommunityCreateMemberPage(props: BaseInfoUpdateProps) {
         missions: [
             {
                 start: new Date(),
+                end: add(new Date(), { months: 3 }),
                 status: Status.independent,
             },
         ],
@@ -70,6 +72,7 @@ export default function CommunityCreateMemberPage(props: BaseInfoUpdateProps) {
         handleSubmit,
         formState: { errors, isDirty, isSubmitting, isValid },
         setValue,
+        getValues,
         control,
         watch,
     } = useForm<CreateMemberType>({
@@ -318,7 +321,17 @@ export default function CommunityCreateMemberPage(props: BaseInfoUpdateProps) {
                                             }}
                                             mission={missionsFields[0]}
                                             missionsRemove={undefined}
-                                            onMissionAutoEndClick={undefined}
+                                            onMissionAutoEndClick={(index) => {
+                                                const values = getValues();
+                                                setValue(
+                                                    `missions.${index}.end`,
+                                                    add(
+                                                        values.missions[0]
+                                                            .start,
+                                                        { months: 3 }
+                                                    )
+                                                );
+                                            }}
                                         ></Mission>
                                     </div>
                                 </fieldset>
