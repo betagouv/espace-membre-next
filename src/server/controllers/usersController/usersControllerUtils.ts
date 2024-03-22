@@ -1,10 +1,10 @@
-import config from "@/server/config";
-import * as utils from "@controllers/utils";
-import knex from "@db/index";
 import { DBUser, EmailStatusCode } from "@/models/dbUser/dbUser";
-import { EMAIL_TYPES } from "@modules/email";
+import config from "@/server/config";
 import { sendEmail } from "@/server/config/email.config";
 import betagouv from "@betagouv";
+import * as utils from "@controllers/utils";
+import knex from "@db/index";
+import { EMAIL_TYPES } from "@modules/email";
 
 export async function setEmailActive(username) {
     const [user]: DBUser[] = await knex("users").where({
@@ -18,7 +18,8 @@ export async function setEmailActive(username) {
             username,
         })
         .update({
-            primary_email_status: EmailStatusCode.EMAIL_ACTIVE,
+            primary_email_status:
+                EmailStatusCode.EMAIL_ACTIVE_AND_PASSWORD_DEFINITION_PENDING, // email active but password must be define
             primary_email_status_updated_at: new Date(),
         });
     await knex("user_details")

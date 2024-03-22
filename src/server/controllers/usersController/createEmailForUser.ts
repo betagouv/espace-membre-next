@@ -1,16 +1,17 @@
 import crypto from "crypto";
-import config from "@/server/config";
+import _ from "lodash";
+
+import { addEvent, EventCode } from "@/lib/events";
+import { DBUser, EmailStatusCode } from "@/models/dbUser/dbUser";
 import {
     EMAIL_PLAN_TYPE,
     OvhExchangeCreationData,
     OvhProCreationData,
 } from "@/models/ovh";
+import config from "@/server/config";
 import BetaGouv from "@betagouv";
 import * as utils from "@controllers/utils";
 import knex from "@db/index";
-import { DBUser, EmailStatusCode } from "@/models/dbUser/dbUser";
-import { addEvent, EventCode } from "@/lib/events";
-import _ from "lodash";
 
 const INCUBATORS_USING_EXCHANGE = ["gip-inclusion"];
 
@@ -157,10 +158,6 @@ export async function createEmail(
 
     const secretariatUrl = `${config.protocol}://${config.host}`;
 
-    const message = `À la demande de ${creator} sur <${secretariatUrl}>, je lance la création d'un compte mail pour ${username}`;
-
-    await BetaGouv.sendInfoToChat(message);
-
     const emailCreationParams = await getEmailCreationParams(username);
 
     switch (emailCreationParams.planType) {
@@ -205,6 +202,9 @@ export async function createEmail(
             },
         }
     );
+    const message = `À la demande de ${creator} sur <${secretariatUrl}>, je lance la création d'un compte mail pour ${username}`;
+
+    await BetaGouv.sendInfoToChat(message);
     console.log(`Création de compte by=${creator}&email=${email}`);
 }
 

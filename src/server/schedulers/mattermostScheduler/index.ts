@@ -1,10 +1,10 @@
-import betagouv from "@betagouv";
 import { MattermostUser } from "@/lib/mattermost";
+import * as mattermost from "@/lib/mattermost";
 import { DBUser, EmailStatusCode } from "@/models/dbUser/dbUser";
 import { MemberWithPrimaryEmailInfo, Member } from "@/models/member";
-import knex from "@db";
+import betagouv from "@betagouv";
 import * as utils from "@controllers/utils";
-import * as mattermost from "@/lib/mattermost";
+import knex from "@db";
 
 const mergedMemberAndDBUser = (user: Member, dbUser: DBUser) => {
     return {
@@ -29,6 +29,7 @@ const filterActiveUser = (user) => {
         [
             EmailStatusCode.EMAIL_ACTIVE,
             EmailStatusCode.EMAIL_REDIRECTION_ACTIVE,
+            EmailStatusCode.EMAIL_ACTIVE_AND_PASSWORD_DEFINITION_PENDING,
         ].includes(user.primary_email_status) &&
         user.primary_email_status_updated_at < nowLessFiveMinutes
     );

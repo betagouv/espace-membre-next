@@ -1,14 +1,16 @@
 "use client";
 import React from "react";
-import axios from "axios";
-import routes, { computeRoute } from "@/routes/routes";
-import { Input } from "@codegouvfr/react-dsfr/Input";
-import { useRouter } from "next/navigation";
-import { CallOut } from "@codegouvfr/react-dsfr/CallOut";
-import { ButtonsGroup } from "@codegouvfr/react-dsfr/ButtonsGroup";
-import { Alert } from "@codegouvfr/react-dsfr/Alert";
-import { getSession } from "next-auth/react";
+
 import { fr } from "@codegouvfr/react-dsfr";
+import { Alert } from "@codegouvfr/react-dsfr/Alert";
+import { ButtonsGroup } from "@codegouvfr/react-dsfr/ButtonsGroup";
+import { CallOut } from "@codegouvfr/react-dsfr/CallOut";
+import { Input } from "@codegouvfr/react-dsfr/Input";
+import axios from "axios";
+import { useRouter } from "next/navigation";
+import { getSession } from "next-auth/react";
+
+import routes, { computeRoute } from "@/routes/routes";
 
 interface Props {
     errors: any[];
@@ -174,21 +176,11 @@ export const LoginPage = function (props: Props) {
                             <div className="fr-mb-6v">
                                 <h2>👋&nbsp;Tu viens d'arriver ?</h2>
                                 <p className="fr-text--sm">
-                                    Crée ta fiche Github pour rejoindre la
-                                    communauté. Tu pourras obtenir une adresse
-                                    email @{props.domain}.
+                                    Un membre de la communauté doit créer ta
+                                    fiche depuis l'espace-membre. Tu recevras un
+                                    lien de connexion quand celle-ci sera
+                                    validée.
                                 </p>
-                                <ButtonsGroup
-                                    buttons={[
-                                        {
-                                            children: "Créer ma fiche Github",
-                                            linkProps: {
-                                                href: "/onboarding",
-                                            },
-                                            priority: "secondary",
-                                        },
-                                    ]}
-                                />
                             </div>
                             <div id="forgot">
                                 <CallOut

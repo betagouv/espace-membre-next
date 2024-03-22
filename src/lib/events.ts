@@ -1,5 +1,5 @@
-import knex from "@db";
 import hstore from "@/lib/hstore";
+import knex from "@db";
 
 export enum EventCode {
     MEMBER_REDIRECTION_CREATED = "MEMBER_REDIRECTION_CREATED",
@@ -23,6 +23,7 @@ export enum EventCode {
     STARTUP_PHASE_UPDATED = "STARTUP_PHASE_UPDATED",
     STARTUP_INFO_UPDATED = "STARTUP_INFO_UPDATED",
     STARTUP_INFO_CREATED = "STARTUP_INFO_CREATED",
+    EMAIL_VERIFICATION_WAITING_SENT = "EMAIL_VERIFICATION_WAITING_SENT",
 }
 
 interface ActionMetadata {
@@ -30,7 +31,7 @@ interface ActionMetadata {
     value?: any;
 }
 
-interface Event {
+export interface Event {
     action_code: EventCode;
     action_metadata: ActionMetadata | undefined;
     action_on_username: string | undefined;

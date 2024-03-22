@@ -1,9 +1,9 @@
+import { addEvent, EventCode } from "@/lib/events";
+import { DBUser, EmailStatusCode } from "@/models/dbUser/dbUser";
 import config from "@/server/config";
 import BetaGouv from "@betagouv";
 import * as utils from "@controllers/utils";
 import knex from "@db/index";
-import { addEvent, EventCode } from "@/lib/events";
-import { DBUser, EmailStatusCode } from "@/models/dbUser/dbUser";
 
 export async function updatePasswordForUserApi(req, res) {
     updatePasswordForUserHandler(
@@ -91,7 +91,13 @@ export async function updatePasswordForUserHandler(
             created_by_username: req.auth.id,
             action_on_username: username,
         });
-        if (dbUser.primary_email_status === EmailStatusCode.EMAIL_SUSPENDED) {
+        console.log("LCS DB USER", dbUser.primary_email_status);
+        if (
+            [
+                EmailStatusCode.EMAIL_SUSPENDED,
+                EmailStatusCode.EMAIL_ACTIVE_AND_PASSWORD_DEFINITION_PENDING,
+            ].includes(dbUser.primary_email_status)
+        ) {
             await knex("users").where({ username }).update({
                 primary_email_status: EmailStatusCode.EMAIL_ACTIVE,
                 primary_email_status_updated_at: new Date(),

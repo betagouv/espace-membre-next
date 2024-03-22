@@ -1,13 +1,6 @@
-import { z } from "zod";
 import { OctokitResponse } from "@octokit/types";
-import {
-    createGithubBranch,
-    createGithubFile,
-    getGithubFile,
-    getGithubMasterSha,
-    makeGithubPullRequest,
-    PRInfo,
-} from "@/lib/github";
+import { z } from "zod";
+
 import { createBranchName } from "./createBranchName";
 import {
     GithubAuthorChange,
@@ -19,6 +12,14 @@ import {
     GithubStartupChange,
     GithubStartupFile,
 } from "./githubEntryInterface";
+import {
+    createGithubBranch,
+    createGithubFile,
+    getGithubFile,
+    getGithubMasterSha,
+    makeGithubPullRequest,
+    GithubAPIPullRequest,
+} from "@/lib/github";
 import { memberSchema } from "@/models/member";
 
 async function createGithubCollectionEntry(
@@ -26,7 +27,7 @@ async function createGithubCollectionEntry(
     path: string,
     changes: GithubAuthorChange | GithubStartupChange | GithubSponsorChange,
     mainContent?: string
-): Promise<PRInfo> {
+): Promise<GithubAPIPullRequest> {
     const branch = createBranchName(name);
     console.log(`Début de la création de fiche pour ${name}...`);
 
@@ -195,7 +196,7 @@ export function makeGithubAuthorFile(
 export async function createSponsorsGithubFile(
     sponsorName: string,
     changes: GithubSponsorChange
-): Promise<PRInfo> {
+): Promise<GithubAPIPullRequest> {
     const path = `content/_organisations/${sponsorName}.md`;
     return createGithubCollectionEntry(sponsorName, path, changes);
 }
@@ -203,7 +204,7 @@ export async function createSponsorsGithubFile(
 export async function createAuthorGithubFile(
     username: string,
     changes: GithubAuthorChange
-): Promise<PRInfo> {
+): Promise<GithubAPIPullRequest> {
     const path = `content/_authors/${username}.md`;
     return createGithubCollectionEntry(username, path, changes);
 }
@@ -212,7 +213,7 @@ export async function createStartupGithubFile(
     startupname: string,
     changes: GithubStartupChange,
     content: string
-): Promise<PRInfo> {
+): Promise<GithubAPIPullRequest> {
     const path = `content/_startups/${startupname}.md`;
     return createGithubCollectionEntry(startupname, path, changes, content);
 }

@@ -2,16 +2,17 @@
 
 import React from "react";
 
-import CitySelect from "../CitySelect";
-import { CommuneInfo } from "@/models/communeInfo";
-import { FormErrorResponse, Option } from "@/models/misc";
-import routes, { computeRoute } from "@/routes/routes";
+import Alert from "@codegouvfr/react-dsfr/Alert";
+import Button from "@codegouvfr/react-dsfr/Button";
 import Input from "@codegouvfr/react-dsfr/Input";
 import RadioButtons from "@codegouvfr/react-dsfr/RadioButtons";
 import Select from "@codegouvfr/react-dsfr/Select";
 import axios from "axios";
-import Button from "@codegouvfr/react-dsfr/Button";
-import Alert from "@codegouvfr/react-dsfr/Alert";
+
+import CitySelect from "../CitySelect";
+import { CommuneInfo } from "@/models/communeInfo";
+import { FormErrorResponse, Option } from "@/models/misc";
+import routes, { computeRoute } from "@/routes/routes";
 import { routeTitles } from "@/utils/routes/routeTitles";
 
 interface FormData {

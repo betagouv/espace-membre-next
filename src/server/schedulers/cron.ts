@@ -1,7 +1,7 @@
-import { CronJob } from "cron";
 import * as Sentry from "@sentry/node";
+import { CronJob } from "cron";
 
-import config from "@/server/config";
+import { postEventsOnMattermost } from "./calendarScheduler";
 import {
     createEmailAddresses,
     reinitPasswordEmail,
@@ -10,7 +10,10 @@ import {
     setEmailAddressesActive,
     setCreatedEmailRedirectionsActive,
     createRedirectionEmailAdresses,
+    sendOnboardingVerificationPendingEmail,
 } from "./emailScheduler";
+import { syncFormationFromAirtable } from "./formationScheduler/syncFormationFromAirtable";
+import { syncFormationInscriptionFromAirtable } from "./formationScheduler/syncFormationInscriptionFromAirtable";
 import {
     addGithubUserToOrganization,
     removeGithubUserFromOrganization,
@@ -26,9 +29,28 @@ import {
     sendGroupDeSoutienReminder,
 } from "./mattermostScheduler";
 import {
+    removeBetaAndParnersUsersFromCommunityTeam,
+    sendReminderToUserAtDays,
+} from "./mattermostScheduler/removeBetaAndParnersUsersFromCommunityTeam";
+import {
     newsletterReminder,
     sendNewsletterAndCreateNewOne,
 } from "./newsletterScheduler";
+import { pullRequestStateMachine } from "./onboarding/pullRequestStateMachine";
+import {
+    pullRequestWatcher,
+    pullRequestWatcherSendEmailToTeam,
+} from "./pullRequestWatcher";
+import { recreateEmailIfUserActive } from "./recreateEmailIfUserActive";
+import { createMailingListForStartups } from "./startups/createMailingListForStartups";
+import { sendEmailToStartupToUpdatePhase } from "./startups/sendEmailToStartupToUpdatePhase";
+import {
+    buildCommunityBDD,
+    syncBetagouvStartupAPI,
+    syncBetagouvUserAPI,
+} from "./syncBetagouvAPIScheduler";
+import { unblockEmailsThatAreActive } from "./unblockEmailsThatAreActive";
+import { sendMessageToActiveUsersWithoutSecondaryEmail } from "./updateProfileScheduler";
 import {
     deleteSecondaryEmailsForUsers,
     sendContractEndingMessageToUsers,
@@ -38,30 +60,9 @@ import {
     deleteRedirectionsAfterQuitting,
     removeEmailsFromMailingList,
 } from "./userContractEndingScheduler";
-import {
-    pullRequestWatcher,
-    pullRequestWatcherSendEmailToTeam,
-} from "./pullRequestWatcher";
-import { setEmailExpired } from "@schedulers/setEmailExpired";
-import { sendMessageToActiveUsersWithoutSecondaryEmail } from "./updateProfileScheduler";
-import {
-    buildCommunityBDD,
-    syncBetagouvStartupAPI,
-    syncBetagouvUserAPI,
-} from "./syncBetagouvAPIScheduler";
-import { postEventsOnMattermost } from "./calendarScheduler";
-import {
-    removeBetaAndParnersUsersFromCommunityTeam,
-    sendReminderToUserAtDays,
-} from "./mattermostScheduler/removeBetaAndParnersUsersFromCommunityTeam";
-import { createMailingListForStartups } from "./startups/createMailingListForStartups";
-import { pullRequestStateMachine } from "./onboarding/pullRequestStateMachine";
-import { unblockEmailsThatAreActive } from "./unblockEmailsThatAreActive";
-import { recreateEmailIfUserActive } from "./recreateEmailIfUserActive";
-import { sendEmailToStartupToUpdatePhase } from "./startups/sendEmailToStartupToUpdatePhase";
+import config from "@/server/config";
 import db from "@db";
-import { syncFormationFromAirtable } from "./formationScheduler/syncFormationFromAirtable";
-import { syncFormationInscriptionFromAirtable } from "./formationScheduler/syncFormationInscriptionFromAirtable";
+import { setEmailExpired } from "@schedulers/setEmailExpired";
 
 interface Job {
     cronTime: string;
@@ -340,10 +341,16 @@ const jobs: Job[] = [
         description: "Recreate email for user active again",
     },
     {
-        cronTime: "0 */4 * * * *",
+        cronTime: "0 */8 * * * *",
         onTick: setEmailAddressesActive,
         isActive: true,
         name: "setEmailAddressesActive",
+    },
+    {
+        cronTime: "0 */8 * * * *",
+        onTick: sendOnboardingVerificationPendingEmail,
+        isActive: true,
+        name: "sendOnboardingVerificationPendingEmail",
     },
     {
         cronTime: "0 */4 * * * *",

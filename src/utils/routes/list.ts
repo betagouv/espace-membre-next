@@ -1,4 +1,5 @@
 import { createRouter, defineRoute } from "type-route";
+
 import { localizedRoutes } from "./localizedRoutes";
 
 // `ts-import` paths as `compilerOptions` are not working, we modified the import below to use a relative one
@@ -39,6 +40,10 @@ export const routes = {
         community: defineRoute(
             localizedRoutes.community.params,
             localizedRoutes.community.paths.fr
+        ),
+        communityCreateMember: defineRoute(
+            localizedRoutes.communityCreateMember.params,
+            localizedRoutes.communityCreateMember.paths.fr
         ),
         startupCreate: defineRoute(
             localizedRoutes.startupCreate.params,
@@ -95,6 +100,10 @@ export const routes = {
         formationDetails: defineRoute(
             localizedRoutes.formationDetails.params,
             localizedRoutes.formationDetails.paths.fr
+        ),
+        verifyMember: defineRoute(
+            localizedRoutes.verifyMember.params,
+            localizedRoutes.verifyMember.paths.fr
         ),
     }).routes,
 };

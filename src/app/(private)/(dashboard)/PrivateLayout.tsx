@@ -1,16 +1,17 @@
 "use client";
+import { Breadcrumb } from "@codegouvfr/react-dsfr/Breadcrumb";
+import { SideMenu, SideMenuProps } from "@codegouvfr/react-dsfr/SideMenu";
+import { usePathname, useRouter } from "next/navigation";
+
+import { useInfoContext } from "@/app/BreadCrumbProvider";
+import { useSession } from "@/proxies/next-auth";
 import { linkRegistry } from "@/utils/routes/registry";
+import { routeTitles } from "@/utils/routes/routeTitles";
 import {
     hasPathnameThisMatch,
     hasPathnameThisRegex,
     hasPathnameThisRoot,
 } from "@/utils/url";
-import { SideMenu, SideMenuProps } from "@codegouvfr/react-dsfr/SideMenu";
-import { useSession } from "@/proxies/next-auth";
-import { usePathname, useRouter } from "next/navigation";
-import { Breadcrumb } from "@codegouvfr/react-dsfr/Breadcrumb";
-import { routeTitles } from "@/utils/routes/routeTitles";
-import { useInfoContext } from "@/app/BreadCrumbProvider";
 
 export function PrivateLayout({ children }: { children: React.ReactNode }) {
     const router = useRouter();
@@ -36,6 +37,10 @@ export function PrivateLayout({ children }: { children: React.ReactNode }) {
     const accountLink = linkRegistry.get("account", undefined);
     const accountBadgeLink = linkRegistry.get("accountBadge", undefined);
     const communityLink = linkRegistry.get("community", undefined);
+    const communityCreateMemberLink = linkRegistry.get(
+        "communityCreateMember",
+        undefined
+    );
     const startupListLink = linkRegistry.get("startupList", undefined);
     const startupCreateLink = linkRegistry.get("startupCreate", undefined);
     const adminMattermostLink = linkRegistry.get("adminMattermost", undefined);
@@ -56,6 +61,7 @@ export function PrivateLayout({ children }: { children: React.ReactNode }) {
     const mapLink = linkRegistry.get("map", undefined);
     const formationLink = linkRegistry.get("formationList", undefined);
     const formationDetailLink = linkRegistry.get("formationDetails", undefined);
+    const verifyLink = linkRegistry.get("verifyMember", undefined);
 
     const accountSubPages: ItemLink[] = [
         {
@@ -238,6 +244,16 @@ export function PrivateLayout({ children }: { children: React.ReactNode }) {
                 },
                 {
                     linkProps: {
+                        href: communityCreateMemberLink,
+                    },
+                    text: routeTitles.communityCreateMember(),
+                    isActive: hasPathnameThisMatch(
+                        pathname,
+                        communityCreateMemberLink
+                    ),
+                },
+                {
+                    linkProps: {
                         href: mapLink,
                     },
                     text: routeTitles.map(),
@@ -264,25 +280,28 @@ export function PrivateLayout({ children }: { children: React.ReactNode }) {
     const tree = findActiveItem(MenuItems);
     return (
         <>
-            <Breadcrumb
-                currentPageLabel={tree[tree.length - 1]?.text}
-                homeLinkProps={{
-                    href: "/",
-                }}
-                segments={tree
-                    .slice(0, tree.length - 1)
-                    .filter(
-                        (segment) =>
-                            segment.linkProps?.href || segment.breadcrumb?.href
-                    )
-                    .map((segment) => ({
-                        label: segment.text,
-                        linkProps: {
-                            href: (segment.linkProps?.href ||
-                                segment.breadcrumb?.href) as string,
-                        },
-                    }))}
-            />
+            {!hasPathnameThisMatch(pathname, verifyLink) && (
+                <Breadcrumb
+                    currentPageLabel={tree[tree.length - 1]?.text}
+                    homeLinkProps={{
+                        href: "/",
+                    }}
+                    segments={tree
+                        .slice(0, tree.length - 1)
+                        .filter(
+                            (segment) =>
+                                segment.linkProps?.href ||
+                                segment.breadcrumb?.href
+                        )
+                        .map((segment) => ({
+                            label: segment.text,
+                            linkProps: {
+                                href: (segment.linkProps?.href ||
+                                    segment.breadcrumb?.href) as string,
+                            },
+                        }))}
+                />
+            )}
             <div className="fr-grid-row fr-grid-row-gutters">
                 {!!displayMenuForSubPage(pathname).length && (
                     <div className="fr-col-12 fr-col-md-3 fr-col-lg-3">

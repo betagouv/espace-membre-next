@@ -1,4 +1,5 @@
 import { param } from "type-route";
+
 import { defineLocalizedRoute } from "./common";
 
 export const localizedRoutes = {
@@ -42,6 +43,12 @@ export const localizedRoutes = {
         {},
         {
             fr: (p) => `/community`,
+        }
+    ),
+    communityCreateMember: defineLocalizedRoute(
+        {},
+        {
+            fr: (p) => `/community/create`,
         }
     ),
     startupList: defineLocalizedRoute(
@@ -126,6 +133,12 @@ export const localizedRoutes = {
         {},
         {
             fr: (p) => "/formations/.*",
+        }
+    ),
+    verifyMember: defineLocalizedRoute(
+        {},
+        {
+            fr: (p) => "/verify",
         }
     ),
 };

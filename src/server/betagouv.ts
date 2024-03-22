@@ -1,12 +1,11 @@
 import axios from "axios";
+import _ from "lodash";
 import ovh0 from "ovh";
-import config from "@/server/config";
-import { checkUserIsExpired } from "@controllers/utils";
+
 import { Incubator } from "@/models/incubator";
 import { Job, JobWTTJ } from "@/models/job";
 import { Member } from "@/models/member";
-import { Startup, StartupInfo } from "@/models/startup";
-import _ from "lodash";
+import { EmailInfos } from "@/models/member";
 import {
     EMAIL_PLAN_TYPE,
     OvhExchangeCreationData,
@@ -15,7 +14,9 @@ import {
     OvhResponder,
     OvhRedirection,
 } from "@/models/ovh";
-import { EmailInfos } from "@/models/member";
+import { Startup, StartupInfo } from "@/models/startup";
+import config from "@/server/config";
+import { checkUserIsExpired } from "@controllers/utils";
 
 const ovh = ovh0({
     appKey: config.OVH_APP_KEY,
@@ -663,4 +664,5 @@ const betaOVH = {
     },
 };
 
-export default { ...betaGouv, ...betaOVH };
+const beta = { ...betaGouv, ...betaOVH };
+export default beta;

@@ -1,11 +1,13 @@
 "use client";
 import React from "react";
-import axios from "axios";
-import Button from "@codegouvfr/react-dsfr/Button";
-import routes, { computeRoute } from "@/routes/routes";
+
 import { fr } from "@codegouvfr/react-dsfr";
 import Alert from "@codegouvfr/react-dsfr/Alert";
+import Button from "@codegouvfr/react-dsfr/Button";
+import axios from "axios";
+
 import { useSession } from "@/proxies/next-auth";
+import routes, { computeRoute } from "@/routes/routes";
 
 export default function SignClientPage() {
     const [error, setError] = React.useState<string>("");

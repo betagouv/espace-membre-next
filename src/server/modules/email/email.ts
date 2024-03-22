@@ -1,5 +1,5 @@
-import { Member } from "@/models/member";
 import { Job } from "@/models/job";
+import { Member } from "@/models/member";
 import { StartupPhase } from "@/models/startup";
 
 export enum EMAIL_TYPES {
@@ -30,6 +30,7 @@ export enum EMAIL_TYPES {
     EMAIL_STARTUP_ASK_PHASE = "EMAIL_STARTUP_ASK_PHASE",
     EMAIL_FORUM_REMINDER = "EMAIL_FORUM_REMINDER",
     EMAIL_TEST = "EMAIL_TEST",
+    EMAIL_VERIFICATION_WAITING = "EMAIL_VERIFICATION_WAITING",
 }
 
 export type SubjectFunction = {
@@ -260,6 +261,14 @@ export type EmailPRPendingToTeam = {
     };
 };
 
+export type EmailVerificationWaiting = {
+    type: EMAIL_TYPES.EMAIL_VERIFICATION_WAITING;
+    variables: {
+        secondaryEmail: string;
+        secretariatUrl: string;
+    };
+};
+
 export type EmailVariants =
     | EmailMarrainageNewcomer
     | EmailMarrainageOnboarder
@@ -283,7 +292,8 @@ export type EmailVariants =
     | EmailStartupAskPhase
     | EmailForumReminder
     | EmailTest
-    | EmailPRPendingToTeam;
+    | EmailPRPendingToTeam
+    | EmailVerificationWaiting;
 
 export type EmailProps = BaseEmail & EmailVariants;
 

@@ -1,5 +1,6 @@
 import ejs from "ejs";
 
+import * as mdtohtml from "@/lib/mdtohtml";
 import {
     EmailOnboardingReferent,
     EmailNewsletter,
@@ -11,7 +12,6 @@ import {
     EmailStartupEnterAccelerationPhase,
     EmailPRPendingToTeam,
 } from "@modules/email";
-import * as mdtohtml from "@/lib/mdtohtml";
 
 const TEMPLATES_BY_TYPE: Record<EmailProps["type"], string | null> = {
     MARRAINAGE_NEWCOMER_EMAIL:
@@ -56,6 +56,8 @@ const TEMPLATES_BY_TYPE: Record<EmailProps["type"], string | null> = {
     EMAIL_TEST: null,
     EMAIL_PR_PENDING_TO_TEAM:
         "./src/server/views/templates/emails/prPendingToTeam.ejs",
+    EMAIL_VERIFICATION_WAITING:
+        "./src/server/views/templates/emails/verificationWaiting.ejs",
 };
 
 const SUBJECTS_BY_TYPE: Record<EmailProps["type"], string | SubjectFunction> = {
@@ -69,7 +71,7 @@ const SUBJECTS_BY_TYPE: Record<EmailProps["type"], string | SubjectFunction> = {
     ONBOARDING_REFERENT_EMAIL: ({ name }: EmailProps["variables"]) => {
         return `${name} vient de créer sa fiche Github`;
     },
-    EMAIL_CREATED_EMAIL: "Bienvenue chez BetaGouv 🙂",
+    EMAIL_CREATED_EMAIL: "Ton email betagouv est prêt 🙂",
     EMAIL_MATTERMOST_ACCOUNT_CREATED: "Inscription à mattermost",
     EMAIL_PR_PENDING: `PR en attente`,
     EMAIL_PR_PENDING_TO_TEAM: ({ username }: EmailProps["variables"]) => {
@@ -101,6 +103,7 @@ const SUBJECTS_BY_TYPE: Record<EmailProps["type"], string | SubjectFunction> = {
     EMAIL_STARTUP_ASK_PHASE: "",
     EMAIL_FORUM_REMINDER: "",
     EMAIL_TEST: "",
+    EMAIL_VERIFICATION_WAITING: "Bienvenue chez BetaGouv 🙂",
 };
 
 const MARKDOWN_BY_TYPE: Record<EmailProps["type"], boolean> = {
@@ -130,6 +133,7 @@ const MARKDOWN_BY_TYPE: Record<EmailProps["type"], boolean> = {
     EMAIL_STARTUP_ASK_PHASE: false,
     EMAIL_FORUM_REMINDER: false,
     EMAIL_TEST: false,
+    EMAIL_VERIFICATION_WAITING: false,
 };
 
 const htmlBuilder: HtmlBuilderType = {

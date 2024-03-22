@@ -1,15 +1,23 @@
 import React from "react";
-import routes, { computeRoute } from "@/routes/routes";
+
 import Accordion from "@codegouvfr/react-dsfr/Accordion";
-import Button from "@codegouvfr/react-dsfr/Button";
-import { PasswordInput } from "@codegouvfr/react-dsfr/blocks/PasswordInput";
-import axios from "axios";
 import Alert from "@codegouvfr/react-dsfr/Alert";
+import { PasswordInput } from "@codegouvfr/react-dsfr/blocks/PasswordInput";
+import Button from "@codegouvfr/react-dsfr/Button";
+import axios from "axios";
+
+import { EmailStatusCode } from "@/models/dbUser";
+import routes, { computeRoute } from "@/routes/routes";
+import { UserInfos } from "@/server/controllers/utils";
 
 export default function BlocChangerMotDePasse({
     canChangePassword,
-    emailSuspended,
     userInfos,
+    status,
+}: {
+    canChangePassword: boolean;
+    status: EmailStatusCode;
+    userInfos: any;
 }) {
     const [password, setPassword] = React.useState<string>("");
     const [isSaving, setIsSaving] = React.useState<boolean>(false);
@@ -19,7 +27,16 @@ export default function BlocChangerMotDePasse({
         type: "success" | "warning";
     }>();
     return (
-        <Accordion label="Changer mon mot de passe">
+        <Accordion
+            label={
+                <span id="password">
+                    {status ===
+                    EmailStatusCode.EMAIL_ACTIVE_AND_PASSWORD_DEFINITION_PENDING
+                        ? "Définir mon mot de passe"
+                        : "Changer mon mot de passe"}
+                </span>
+            }
+        >
             {!!alertMessage && (
                 <Alert
                     className="fr-mb-8v"
@@ -96,18 +113,21 @@ export default function BlocChangerMotDePasse({
                     </form>
                 </>
             )}
-            {!canChangePassword && emailSuspended && (
-                <p>
-                    Il faut mettre à jour votre date de fin de mission et merger
-                    la pull request avant de pouvoir changer votre mot de passe
-                </p>
-            )}
-            {!canChangePassword && !emailSuspended && (
-                <p>
-                    Sans compte email, vous n'avez pas la possibilité de changer
-                    de mot de passe.
-                </p>
-            )}
+            {!canChangePassword &&
+                status === EmailStatusCode.EMAIL_SUSPENDED && (
+                    <p>
+                        Il faut mettre à jour votre date de fin de mission et
+                        merger la pull request avant de pouvoir changer votre
+                        mot de passe
+                    </p>
+                )}
+            {!canChangePassword &&
+                status !== EmailStatusCode.EMAIL_SUSPENDED && (
+                    <p>
+                        Sans compte email, vous n'avez pas la possibilité de
+                        changer de mot de passe.
+                    </p>
+                )}
         </Accordion>
     );
 }

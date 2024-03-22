@@ -1,5 +1,4 @@
-import config from "@/server/config";
-import * as utils from "@controllers/utils";
+import { fetchCommuneDetails } from "@/lib/searchCommune";
 import {
     DBUserDetail,
     DBUser,
@@ -7,9 +6,10 @@ import {
     genderOptions,
 } from "@/models/dbUser/dbUser";
 import { EmailStatusCode } from "@/models/dbUser/dbUser";
-import { fetchCommuneDetails } from "@/lib/searchCommune";
-import betagouv from "@betagouv";
 import { PULL_REQUEST_STATE } from "@/models/pullRequests";
+import config from "@/server/config";
+import betagouv from "@betagouv";
+import * as utils from "@controllers/utils";
 import db from "@db";
 
 const getAccount = async (req, res, onSuccess, onError) => {
@@ -46,6 +46,15 @@ const getAccount = async (req, res, onSuccess, onError) => {
         if (config.ESPACE_MEMBRE_ADMIN.includes(req.auth.id)) {
             availableEmailPros = await betagouv.getAvailableProEmailInfos();
         }
+
+        const updatePullRequest = await db("pull_requests")
+            .where({
+                username: req.auth.id,
+                status: PULL_REQUEST_STATE.PR_MEMBER_UPDATE_CREATED,
+            })
+            .orderBy("created_at", "desc")
+            .first();
+
         return onSuccess({
             title,
             currentUserId: req.auth.id,
@@ -53,6 +62,7 @@ const getAccount = async (req, res, onSuccess, onError) => {
             userInfos: currentUser.userInfos,
             domain: config.domain,
             isExpired: currentUser.isExpired,
+            updatePullRequest,
             isAdmin: config.ESPACE_MEMBRE_ADMIN.includes(req.auth.id),
             // can create email if email is not set, or if email is not @beta.gouv.fr email
             canCreateEmail: currentUser.canCreateEmail,
@@ -67,6 +77,7 @@ const getAccount = async (req, res, onSuccess, onError) => {
             emailSuspended:
                 dbUser?.primary_email_status ===
                 EmailStatusCode.EMAIL_SUSPENDED,
+            status: dbUser?.primary_email_status,
             canChangeEmails: currentUser.canChangeEmails,
             redirections: currentUser.redirections,
             secondaryEmail: dbUser?.secondary_email,

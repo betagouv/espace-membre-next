@@ -1,19 +1,12 @@
-import { Octokit } from "@octokit/rest";
-import config from "@/server/config";
-import fm from "front-matter";
-import axios from "axios";
 import { request } from "@octokit/request";
+import { Octokit } from "@octokit/rest";
+import axios from "axios";
+import fm from "front-matter";
+import yaml from "js-yaml";
 import { ZodError, ZodSchema, z } from "zod";
 
-export interface PRInfo {
-    html_url: string;
-    number: number;
-    head: {
-        ref: string;
-        label: string;
-        sha: string;
-    };
-}
+import { memberSchema } from "@/models/member";
+import config from "@/server/config";
 
 function getURL(objectID) {
     return `https://api.github.com/repos/betagouv/beta.gouv.fr/${objectID}`;
@@ -323,6 +316,7 @@ export type GithubAPIPullRequest = {
     head: {
         ref: string;
         sha: string;
+        label: string;
     };
 };
 

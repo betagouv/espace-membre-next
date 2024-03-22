@@ -1,5 +1,6 @@
-import { userStatusOptions } from "@/frontConfig";
 import { z } from "zod";
+
+import { userStatusOptions } from "@/frontConfig";
 
 // export type Status = "independant" | "admin" | "service";
 
@@ -86,7 +87,7 @@ export const missionSchema = z.object({
                 message: "Précisez un employeur",
             }),
         })
-        .describe("Entité avec qui vous avez contractualisé")
+        .describe("Entité avec qui tu as contractualisé")
         .optional(),
     startups: z.array(z.string()).optional(),
 });

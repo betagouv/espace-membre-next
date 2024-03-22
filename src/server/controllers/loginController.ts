@@ -1,14 +1,15 @@
 import crypto from "crypto";
-import BetaGouv from "../betagouv";
-import config from "@/server/config";
-import knex from "../db";
-import * as utils from "./utils";
-import { DBUser, EmailStatusCode } from "@/models/dbUser/dbUser";
-import { sendEmail } from "@/server/config/email.config";
-import { EMAIL_TYPES } from "@modules/email";
-import { isValidEmail } from "./validator";
-import { getJwtTokenForUser } from "@/server/helpers/session";
+
 import { saveToken } from "./loginController/loginUtils";
+import * as utils from "./utils";
+import { isValidEmail } from "./validator";
+import BetaGouv from "../betagouv";
+import knex from "../db";
+import { DBUser, EmailStatusCode } from "@/models/dbUser/dbUser";
+import config from "@/server/config";
+import { sendEmail } from "@/server/config/email.config";
+import { getJwtTokenForUser } from "@/server/helpers/session";
+import { EMAIL_TYPES } from "@modules/email";
 
 export function generateToken() {
     return crypto.randomBytes(256).toString("base64");
@@ -86,7 +87,10 @@ export async function postLoginApi(req, res) {
     }
 
     if (
-        dbResponse.primary_email_status !== EmailStatusCode.EMAIL_ACTIVE &&
+        ![
+            EmailStatusCode.EMAIL_ACTIVE,
+            EmailStatusCode.EMAIL_ACTIVE_AND_PASSWORD_DEFINITION_PENDING,
+        ].includes(dbResponse.primary_email_status) &&
         dbResponse.primary_email === emailInput
     ) {
         return res.status(403).json({

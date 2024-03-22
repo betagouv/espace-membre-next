@@ -1,12 +1,17 @@
 "use client";
 import React from "react";
-import routes, { computeRoute } from "@/routes/routes";
-import axios from "axios";
-import ButtonsGroup from "@codegouvfr/react-dsfr/ButtonsGroup";
-import FicheMembre from "./FicheMembre";
-import EmailContainer from "./EmailContainer";
-import Observatoire from "./Observatoire";
+
+import { fr } from "@codegouvfr/react-dsfr";
+import Alert from "@codegouvfr/react-dsfr/Alert";
 import Button from "@codegouvfr/react-dsfr/Button";
+import ButtonsGroup from "@codegouvfr/react-dsfr/ButtonsGroup";
+import axios from "axios";
+
+import EmailContainer from "./EmailContainer";
+import FicheMembre from "./FicheMembre";
+import Observatoire from "./Observatoire";
+import { EmailStatusCode } from "@/models/dbUser";
+import routes, { computeRoute } from "@/routes/routes";
 import { routeTitles } from "@/utils/routes/routeTitles";
 
 export default function AccountPage(props: any) {
@@ -21,6 +26,7 @@ export default function AccountPage(props: any) {
         tjm,
         average_nb_of_days,
         redirections,
+        status,
     } = props;
     return (
         <div>
@@ -30,6 +36,52 @@ export default function AccountPage(props: any) {
                     <a href="/account#responder">Désactiver maintenant</a>
                     <a href="/account#responder">Configurer la réponse</a>
                 </div>
+            )}
+            {[
+                EmailStatusCode.EMAIL_CREATION_WAITING,
+                EmailStatusCode.EMAIL_CREATION_PENDING,
+            ].includes(status) && (
+                <Alert
+                    title={"Bienvenue"}
+                    closable={true}
+                    description={
+                        <>
+                            <p>
+                                Ton email @beta.gouv.fr est en train d'être
+                                créé, tu recevras un email dans quelques
+                                instants t'informant qu'il est désormais actif.
+                            </p>
+                            <p>
+                                Tu pourras alors définir ton mot de passe dans
+                                cette page plus bas, et tu recevras les
+                                informations pour te connecter à mattermost
+                                notre outil de chat.
+                            </p>
+                        </>
+                    }
+                    severity="info"
+                    className={fr.cx("fr-mb-4w")}
+                />
+            )}
+            {[
+                EmailStatusCode.EMAIL_ACTIVE_AND_PASSWORD_DEFINITION_PENDING,
+            ].includes(status) && (
+                <Alert
+                    title={"Bienvenue"}
+                    closable={true}
+                    description={
+                        <>
+                            <p>
+                                Ton email @beta.gouv.fr est créé, il faut
+                                maintenant définir le mot de passe dans la
+                                section :{" "}
+                                <a href="#password">Définir mon mot de passe</a>
+                            </p>
+                        </>
+                    }
+                    severity="success"
+                    className={fr.cx("fr-mb-4w")}
+                />
             )}
             <h1>{routeTitles.account()}</h1>
             {userInfos && (

@@ -1,12 +1,12 @@
-import betagouv from "@betagouv";
 import { MattermostUser } from "@/lib/mattermost";
+import * as mattermost from "@/lib/mattermost";
 import { DBUser, EmailStatusCode } from "@/models/dbUser/dbUser";
 import { MemberWithPrimaryEmailInfo, Member } from "@/models/member";
-import knex from "@db";
-import * as utils from "@controllers/utils";
-import * as mattermost from "@/lib/mattermost";
-import { sendInfoToChat } from "@infra/chat";
 import config from "@/server/config";
+import betagouv from "@betagouv";
+import * as utils from "@controllers/utils";
+import knex from "@db";
+import { sendInfoToChat } from "@infra/chat";
 
 const mergedMemberAndDBUser = (user: Member, dbUser: DBUser) => {
     return {
@@ -26,7 +26,10 @@ const findDBUser = (dbUsers: DBUser[], user: Member) => {
 const filterActiveUser = (user) => {
     return (
         user.primary_email &&
-        user.primary_email_status === EmailStatusCode.EMAIL_ACTIVE
+        [
+            EmailStatusCode.EMAIL_ACTIVE,
+            EmailStatusCode.EMAIL_ACTIVE_AND_PASSWORD_DEFINITION_PENDING,
+        ].includes(user.primary_email_status)
     );
 };
 

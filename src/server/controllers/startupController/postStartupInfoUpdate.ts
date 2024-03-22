@@ -1,25 +1,25 @@
-import { addEvent, EventCode } from "@/lib/events";
-import { PRInfo } from "@/lib/github";
-import db from "@db";
-import { PULL_REQUEST_TYPE, PULL_REQUEST_STATE } from "@/models/pullRequests";
-import { isValidDate, requiredError } from "@/server/controllers/validator";
-import { StartupPhase } from "@/models/startup";
-import { updateMultipleFilesPR } from "@controllers/helpers/githubHelpers/updateGithubCollectionEntry";
-import {
-    GithubBetagouvFile,
-    GithubStartupChange,
-} from "../helpers/githubHelpers/githubEntryInterface";
 import {
     makeGithubSponsorFile,
     makeGithubStartupFile,
     makeImageFile,
 } from "../helpers/githubHelpers";
+import { createStartupId } from "../helpers/githubHelpers/createContentName";
+import {
+    GithubBetagouvFile,
+    GithubStartupChange,
+} from "../helpers/githubHelpers/githubEntryInterface";
+import { addEvent, EventCode } from "@/lib/events";
+import { GithubAPIPullRequest } from "@/lib/github";
+import { PULL_REQUEST_TYPE, PULL_REQUEST_STATE } from "@/models/pullRequests";
 import {
     Sponsor,
     SponsorDomaineMinisteriel,
     SponsorType,
 } from "@/models/sponsor";
-import { createStartupId } from "../helpers/githubHelpers/createContentName";
+import { StartupPhase } from "@/models/startup";
+import { isValidDate, requiredError } from "@/server/controllers/validator";
+import { updateMultipleFilesPR } from "@controllers/helpers/githubHelpers/updateGithubCollectionEntry";
+import db from "@db";
 
 const isValidPhase = (field, value, callback) => {
     if (!value || Object.values(StartupPhase).includes(value)) {
@@ -125,7 +125,7 @@ export async function postStartupInfoUpdate(req, res) {
             const imageFile = makeImageFile(startupId, image);
             files.push(imageFile);
         }
-        const prInfo: PRInfo = await updateMultipleFilesPR(
+        const prInfo = await updateMultipleFilesPR(
             `Maj de la fiche ${startupId} par ${req.auth.id}`,
             files,
             `edit-startup-${startupId}`

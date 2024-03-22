@@ -1,24 +1,24 @@
 import React from "react";
+
 import { fr } from "@codegouvfr/react-dsfr";
 import { Button } from "@codegouvfr/react-dsfr/Button";
 import { Input } from "@codegouvfr/react-dsfr/Input";
 import { Select } from "@codegouvfr/react-dsfr/Select";
+import { addMonths } from "date-fns/addMonths";
 import {
     Control,
-    Controller,
     useFieldArray,
     useWatch,
     UseFormRegister,
     UseFormSetValue,
 } from "react-hook-form";
-import { addMonths } from "date-fns/addMonths";
 
-import { MemberSchemaType } from "./BaseInfoUpdate";
-import { userStatusOptions } from "@/frontConfig";
-import { Status, missionSchema } from "@/models/mission";
 import SESelect from "../SESelect";
+import { userStatusOptions } from "@/frontConfig";
+import { HasMissions } from "@/models/member";
+import { Status, missionSchema } from "@/models/mission";
 
-const Mission = ({
+export const Mission = ({
     index,
     register,
     control,
@@ -28,6 +28,24 @@ const Mission = ({
     onMissionAutoEndClick,
     startupOptions,
     errors,
+    isMulti,
+    labels = {},
+}: {
+    index: number;
+    register: any;
+    control: any;
+    setValue: any;
+    mission: any;
+    missionsRemove: any;
+    onMissionAutoEndClick: any;
+    startupOptions: any;
+    errors: any;
+    isMulti: boolean;
+    labels?: {
+        employer?: string;
+        start?: string;
+        end?: string;
+    };
 }) => {
     const missionErrors = errors;
     const defaultState = (field) => ({
@@ -56,26 +74,31 @@ const Mission = ({
 
     return (
         <div key={index} className={fr.cx("fr-mb-6w")}>
-            <div className={fr.cx("fr-text--heavy")}>
-                Mission {index + 1}
-                {index > 0 && (
-                    <button
-                        className={fr.cx("fr-icon-delete-bin-line")}
-                        style={{
-                            cursor: "pointer",
-                            float: "right",
-                        }}
-                        onClick={() => missionsRemove(index)}
-                        title={`Supprimer la mission ${index + 1}`}
-                    />
-                )}
-                <hr className={fr.cx("fr-mt-1w")} />
-            </div>
+            {!!isMulti && (
+                <div className={fr.cx("fr-text--heavy")}>
+                    Mission {index + 1}
+                    {index > 0 && (
+                        <button
+                            className={fr.cx("fr-icon-delete-bin-line")}
+                            style={{
+                                cursor: "pointer",
+                                float: "right",
+                            }}
+                            onClick={() => missionsRemove(index)}
+                            title={`Supprimer la mission ${index + 1}`}
+                        />
+                    )}
+                    <hr className={fr.cx("fr-mt-1w")} />
+                </div>
+            )}
             <div className={fr.cx("fr-grid-row", "fr-grid-row--gutters")}>
                 <div className={fr.cx("fr-col-3")}>
                     <Input
-                        label={missionSchema.shape.start.description}
-                        hintText="Début de ta mission"
+                        label={
+                            labels.start ||
+                            missionSchema.shape.start.description
+                        }
+                        hintText="Date de début"
                         nativeInputProps={{
                             style: { width: 200 },
                             placeholder: "JJ/MM/YYYY",
@@ -88,7 +111,9 @@ const Mission = ({
                 </div>{" "}
                 <div className={fr.cx("fr-col-4")}>
                     <Input
-                        label={missionSchema.shape.end.description}
+                        label={
+                            labels.end || missionSchema.shape.end.description
+                        }
                         nativeInputProps={{
                             style: { width: 200 },
                             placeholder: "JJ/MM/YYYY",
@@ -118,7 +143,10 @@ const Mission = ({
             <div className={fr.cx("fr-grid-row", "fr-grid-row--gutters")}>
                 <div className={fr.cx("fr-col-6")}>
                     <Input
-                        label={missionSchema.shape.employer.description}
+                        label={
+                            labels.employer ||
+                            missionSchema.shape.employer.description
+                        }
                         nativeInputProps={{
                             placeholder: "ex: Scopyleft",
                             ...register(`missions.${index}.employer`),
@@ -181,10 +209,10 @@ export const MissionsEditor = ({
     setValue,
     startupOptions,
 }: {
-    control: Control<MemberSchemaType>;
+    control: Control<HasMissions>;
     errors?: Record<string, any>;
-    register: UseFormRegister<MemberSchemaType>;
-    setValue: UseFormSetValue<MemberSchemaType>;
+    register: UseFormRegister<HasMissions>;
+    setValue: UseFormSetValue<HasMissions>;
     startupOptions: any;
 }) => {
     const {
@@ -210,7 +238,7 @@ export const MissionsEditor = ({
 
     const onMissionAutoEndClick = (missionIndex) => {
         const endDate = addMonths(
-            new Date(missionsFields[missionIndex].start),
+            new Date(missionsFields[missionIndex]["start"]),
             3
         );
 
@@ -229,6 +257,7 @@ export const MissionsEditor = ({
             )}
             {missionsFields.map((mission, index, all) => (
                 <Mission
+                    isMulti={true}
                     key={mission.id}
                     index={index}
                     mission={mission}

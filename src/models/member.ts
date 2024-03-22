@@ -1,8 +1,14 @@
 import { z } from "zod";
 
-import { EMAIL_PLAN_TYPE, OvhRedirection, OvhResponder } from "@/models/ovh";
-import { EmailStatusCode } from "./dbUser";
+import {
+    CommunicationEmailCode,
+    EmailStatusCode,
+    GenderCode,
+    LegalStatus,
+    MemberType,
+} from "./dbUser";
 import { Mission, missionSchema } from "./mission";
+import { EMAIL_PLAN_TYPE, OvhRedirection, OvhResponder } from "@/models/ovh";
 
 export enum Domaine {
     ANIMATION = "Animation",
@@ -70,6 +76,64 @@ export interface Member {
     role: string;
 }
 
+const bioSchema = z
+    .string({
+        errorMap: (issue, ctx) => ({
+            message:
+                "La bio est optionnelle mais elle permet d'en dire plus sur toi, be creative",
+        }),
+    })
+    .describe("Courte bio")
+    .optional();
+
+const emailSchema = z
+    .string({
+        errorMap: (issue, ctx) => ({
+            message: "L'email est obligatoire",
+        }),
+    })
+    .email()
+    .describe("Email");
+
+const githubSchema = z.string().describe("Login GitHub").optional();
+
+const domaineSchema = z.nativeEnum(
+    Domaine, // ??
+    {
+        errorMap: (issue, ctx) => ({
+            message: "Le domaine est un champ obligatoire",
+        }),
+    }
+);
+
+const linkSchema = z
+    .union([
+        z.null(),
+        z.literal(""),
+        z.string().trim().url({ message: "URL invalide" }).optional(),
+    ])
+    .describe("Adresse du profil LinkedIn ou site web");
+const roleSchema = z
+    .string({
+        errorMap: (issue, ctx) => ({
+            message: "Le rôle est un champ obligatoire",
+        }),
+    })
+    .min(1)
+    .describe("Rôle actuel");
+
+const genderSchema = z
+    .nativeEnum(
+        GenderCode, // ??
+        {
+            errorMap: (issue, ctx) => ({
+                message: "Le champ gender est obligatoire",
+            }),
+        }
+    )
+    .optional()
+    .nullable();
+
 export const memberSchema = z.object({
     fullname: z
         .string({
@@ -80,27 +144,14 @@ export const memberSchema = z.object({
         .min(1)
         .readonly()
         .describe("Nom complet"),
-    role: z
-        .string({
-            errorMap: (issue, ctx) => ({
-                message: "Le rôle est un champ obligatoire",
-            }),
-        })
-        .min(1)
-        .describe("Rôle actuel, ex: UX designer"),
-    link: z
-        .union([
-            z.null(),
-            z.literal(""),
-            z.string().trim().url({ message: "URL invalide" }).optional(),
-        ])
-        .describe("Adresse du profil LinkedIn ou site web"),
+    role: roleSchema,
+    link: linkSchema,
     avatar: z
         .string()
         .describe("URL ou slug de l'avatar")
         .nullable()
         .optional(),
-    github: z.string().describe("Login GitHub").optional(),
+    github: githubSchema,
     competences: z
         .array(z.string())
         .describe("Liste des compétences")
@@ -114,25 +165,17 @@ export const memberSchema = z.object({
         .min(1, "Vous devez définir au moins une mission"),
     startups: z.array(z.string()).optional(),
     previously: z.array(z.string()).optional(),
-    domaine: z.nativeEnum(
-        Domaine, // ??
-        {
-            errorMap: (issue, ctx) => ({
-                message: "Le domaine est un champ obligatoire",
-            }),
-        }
-    ), // ??
-    bio: z
-        .string({
-            description: "Courte bio",
-            errorMap: (issue, ctx) => ({
-                message:
-                    "La bio est optionnelle mais elle permet d'en dire plus sur toi, be creative",
-            }),
-        })
-        .optional(),
+    domaine: domaineSchema, // ??
+    bio: bioSchema,
+    memberType: z.nativeEnum(MemberType).optional().nullable(),
 });
 
+export type memberSchemaType = z.infer<typeof memberSchema>;
+const missionsArraySchema = z.array(missionSchema);
+
+export type HasMissions<T = any> = T & {
+    missions: z.infer<typeof missionsArraySchema>;
+};
 export interface MemberWithPrimaryEmailInfo extends Member {
     primary_email: string;
     primary_email_status: EmailStatusCode;
@@ -169,3 +212,72 @@ export interface MemberWithPermission {
     canCreateRedirection;
     canChangePassword;
 }
+
+export const createMemberSchema = z.object({
+    firstname: z
+        .string({
+            errorMap: (issue, ctx) => ({
+                message: "Le prénom est obligatoire",
+            }),
+        })
+        .describe("Prénom")
+        .min(1),
+    lastname: z
+        .string({
+            errorMap: (issue, ctx) => ({
+                message: "Le Nom est obligatoire",
+            }),
+        })
+        .describe("Nom")
+        .min(1),
+    email: emailSchema,
+    missions: z
+        .array(missionSchema)
+        .min(1, "Vous devez définir au moins une mission"),
+    domaine: domaineSchema,
+});
+
+export type createMemberSchemaType = z.infer<typeof createMemberSchema>;
+
+export const memberStatInfoSchema = z.object({
+    gender: genderSchema,
+    average_nb_of_days: z
+        .number()
+        .describe("Nombre de jour moyen travaillé")
+        .min(1)
+        .max(5)
+        .nullable()
+        .optional(),
+    tjm: z.number().optional().nullable(),
+});
+
+export type memberStatInfoSchemaType = z.infer<typeof memberStatInfoSchema>;
+
+export const dbMemberSchema = z.object({
+    secondary_email: emailSchema.optional(),
+    isEmailBetaAsked: z.boolean().optional().nullable(),
+    communication_email: z
+        .nativeEnum(CommunicationEmailCode)
+        .optional()
+        .nullable(),
+    legal_status: z
+        .nativeEnum(
+            LegalStatus, // ??
+            {
+                errorMap: (issue, ctx) => ({
+                    message: "Le status legal n'a pas une valeur correcte",
+                }),
+            }
+        )
+        .describe(`Status legal de l'entreprise`)
+        .optional(),
+    workplace_insee_code: z.string().describe("Ville").optional(),
+    osm_city: z.string().describe("Ville international").optional(),
+});
+
+export type dbMemberSchemaType = z.infer<typeof dbMemberSchema>;
+
+export const completeMemberSchema = memberSchema
+    .merge(dbMemberSchema)
+    .merge(memberStatInfoSchema);
+export type completeMemberSchemaType = z.infer<typeof completeMemberSchema>;

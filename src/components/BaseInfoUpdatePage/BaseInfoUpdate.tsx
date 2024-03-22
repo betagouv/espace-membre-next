@@ -1,33 +1,35 @@
 "use client";
 import React from "react";
-import { z } from "zod";
-import * as Sentry from "@sentry/nextjs";
-import axios from "axios";
 
-import Input from "@codegouvfr/react-dsfr/Input";
+import { fr } from "@codegouvfr/react-dsfr";
 import Alert from "@codegouvfr/react-dsfr/Alert";
 import { Button } from "@codegouvfr/react-dsfr/Button";
+import Input from "@codegouvfr/react-dsfr/Input";
 import Select from "@codegouvfr/react-dsfr/Select";
-import { fr } from "@codegouvfr/react-dsfr";
-
 import { zodResolver } from "@hookform/resolvers/zod";
+import * as Sentry from "@sentry/nextjs";
+import axios from "axios";
 import { useForm } from "react-hook-form";
+import { z } from "zod";
 
-import { routeTitles } from "@/utils/routes/routeTitles";
-
-import { DOMAINE_OPTIONS, memberSchema } from "@/models/member";
-import routes, { computeRoute } from "@/routes/routes";
-import { useSession } from "@/proxies/next-auth";
-import { GithubAPIPullRequest } from "@/lib/github";
 import { CompetencesEditor } from "./CompetencesEditor";
 import { MissionsEditor } from "./MissionsEditor";
 import { PullRequestWarning } from "../PullRequestWarning";
+import { GithubAPIPullRequest } from "@/lib/github";
+import {
+    DOMAINE_OPTIONS,
+    memberSchema,
+    memberSchemaType,
+} from "@/models/member";
+import { useSession } from "@/proxies/next-auth";
+import routes, { computeRoute } from "@/routes/routes";
+import { routeTitles } from "@/utils/routes/routeTitles";
 
 export type MemberSchemaType = z.infer<typeof memberSchema>;
 
 // data from secretariat API
 export interface BaseInfoUpdateProps {
-    formData: MemberSchemaType;
+    formData: memberSchemaType;
     startupOptions: {
         value: string;
         label: string;
@@ -54,14 +56,14 @@ const postMemberData = async ({ values, sessionUsername }) => {
 };
 
 export const BaseInfoUpdate = (props: BaseInfoUpdateProps) => {
-    const defaultValues: MemberSchemaType = { ...props.formData };
+    const defaultValues: memberSchemaType = { ...props.formData };
     const {
         register,
         handleSubmit,
         formState: { errors, isDirty, isSubmitting, isValid },
         setValue,
         control,
-    } = useForm<MemberSchemaType>({
+    } = useForm<memberSchemaType>({
         resolver: zodResolver(memberSchema),
         mode: "onChange",
         defaultValues,
@@ -76,7 +78,7 @@ export const BaseInfoUpdate = (props: BaseInfoUpdateProps) => {
     } | null>();
     const [isSaving, setIsSaving] = React.useState(false);
 
-    const onSubmit = async (input: MemberSchemaType) => {
+    const onSubmit = async (input: memberSchemaType) => {
         //console.log("onSubmit", input);
 
         if (isSaving) {

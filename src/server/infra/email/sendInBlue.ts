@@ -1,3 +1,5 @@
+import SibApiV3Sdk from "sib-api-v3-sdk";
+
 import config from "@/server/config";
 import { objectArrayToCSV } from "@controllers/utils";
 import {
@@ -14,7 +16,6 @@ import {
     Contact,
     EmailVariants,
 } from "@modules/email";
-import SibApiV3Sdk from "sib-api-v3-sdk";
 
 const TEMPLATE_ID_BY_TYPE: Record<EmailProps["type"], number> = {
     MARRAINAGE_NEWCOMER_EMAIL: 0,
@@ -43,6 +44,7 @@ const TEMPLATE_ID_BY_TYPE: Record<EmailProps["type"], number> = {
     EMAIL_FORUM_REMINDER: 16,
     EMAIL_TEST: 0,
     EMAIL_PR_PENDING_TO_TEAM: 0,
+    EMAIL_VERIFICATION_WAITING: 0,
 };
 
 type SendEmailFromSendinblueDeps = {
