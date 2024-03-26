@@ -1,10 +1,14 @@
 "use client"; // Error components must be Client Components
-import Link from "next/link";
-import Head from "next/head";
-import type { Metadata } from "next";
-
 import { useEffect } from "react";
+
+import { fr } from "@codegouvfr/react-dsfr";
+import Button from "@codegouvfr/react-dsfr/Button";
 import * as Sentry from "@sentry/nextjs";
+import type { Metadata } from "next";
+import Head from "next/head";
+import Link from "next/link";
+
+import { useLiveChat } from "@/components/live-chat/useLiveChat";
 
 export const metadata: Metadata = {
     title: `Erreur sur la page`,
@@ -22,6 +26,8 @@ export default function Error({
         console.error(error);
         Sentry.captureException(error);
     }, [error]);
+    const { showLiveChat, isLiveChatLoading } = useLiveChat();
+
     return (
         <div>
             <Head>
@@ -42,6 +48,18 @@ export default function Error({
                                 dans les meilleurs délais.
                                 <br />
                                 <br />
+                                <Button
+                                    onClick={() => showLiveChat()}
+                                    disabled={isLiveChatLoading}
+                                    iconId={
+                                        isLiveChatLoading
+                                            ? "ri-loader-2-fill"
+                                            : undefined
+                                    }
+                                    size="large"
+                                >
+                                    Contactez-nous
+                                </Button>
                                 <Link
                                     href="#"
                                     onClick={() => window.history?.go(-1)}

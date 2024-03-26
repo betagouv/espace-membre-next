@@ -1,18 +1,21 @@
 "use client";
 import React from "react";
+
+import { Header, HeaderProps } from "@codegouvfr/react-dsfr/Header";
 import axios from "axios";
 import { usePathname, useRouter } from "next/navigation";
-import { Header, HeaderProps } from "@codegouvfr/react-dsfr/Header";
 
-import { linkRegistry } from "@/utils/routes/registry";
+import { useLiveChat } from "@/components/live-chat/useLiveChat";
 import { useSession, signOut } from "@/proxies/next-auth";
 import routes, { computeRoute } from "@/routes/routes";
-import { hasPathnameThisMatch, hasPathnameThisRoot } from "@/utils/url";
+import { linkRegistry } from "@/utils/routes/registry";
 import { routeTitles } from "@/utils/routes/routeTitles";
+import { hasPathnameThisMatch, hasPathnameThisRoot } from "@/utils/url";
 
 const MainHeader = () => {
     const router = useRouter();
     const { data: session, status } = useSession();
+    const { showLiveChat, isLiveChatLoading } = useLiveChat();
     const pathname = usePathname();
     const newsletterLink = linkRegistry.get("newsletters", undefined);
 
@@ -56,7 +59,15 @@ const MainHeader = () => {
             });
         }
     }
-
+    quickAccessItems.push({
+        iconId: "fr-icon-questionnaire-line",
+        buttonProps: {
+            onClick: () => {
+                showLiveChat();
+            },
+        },
+        text: isLiveChatLoading ? "Chargement..." : "Support",
+    });
     const nav =
         session?.user &&
         [

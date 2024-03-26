@@ -1,14 +1,16 @@
 "use client";
-import axios, { AxiosError } from "axios";
 import React from "react";
-import Input from "@codegouvfr/react-dsfr/Input";
-import Button from "@codegouvfr/react-dsfr/Button";
 
+import Button from "@codegouvfr/react-dsfr/Button";
+import Input from "@codegouvfr/react-dsfr/Input";
+import axios, { AxiosError } from "axios";
+
+import { useLiveChat } from "../live-chat/useLiveChat";
+import MemberSelect from "../MemberSelect";
+import { EmailStatusCode } from "@/models/dbUser";
 import { Member, MemberWithPermission } from "@/models/member";
 import { EMAIL_STATUS_READABLE_FORMAT } from "@/models/misc";
-import MemberSelect from "../MemberSelect";
 import routes from "@/routes/routes";
-import { EmailStatusCode } from "@/models/dbUser";
 
 enum STEP {
     whichMember = "whichMember",
@@ -24,6 +26,7 @@ enum STEP {
     emailBlocked = "emailBlocked",
     shouldChangedPassword = "shouldChangedPassword",
     hasMattermostProblem = "hasMattermostProblem",
+    doNotReceivedEmail = "doNotReceivedEmail",
 }
 
 type MemberAllInfo = MemberWithPermission & {
@@ -454,8 +457,6 @@ const MemberComponent = function ({
                                 Régler ce problème
                             </Button>
                         </li>
-                    </ul>
-                    <ul>
                         <li>
                             Je n'arrive pas à me connecter à mattermost.
                             <br /> ➡️{" "}
@@ -465,6 +466,22 @@ const MemberComponent = function ({
                                         STEP.whichMember,
                                         STEP.showMember,
                                         STEP.hasMattermostProblem,
+                                    ])
+                                }
+                                priority="tertiary no outline"
+                            >
+                                Régler ce problème
+                            </Button>
+                        </li>
+                        <li>
+                            Je ne reçois pas mon email de connexion
+                            <br /> ➡️{" "}
+                            <Button
+                                onClick={() =>
+                                    startFix([
+                                        STEP.whichMember,
+                                        STEP.showMember,
+                                        STEP.doNotReceivedEmail,
                                     ])
                                 }
                                 priority="tertiary no outline"
@@ -808,7 +825,7 @@ export const WhichMemberScreen = function ({ setUser, getUser, users }) {
                     <h2>Qu'est-ce qu'il se passe ?</h2>
                     <div className="fr-select-group">
                         <MemberSelect
-                            label="Quelle personne veux-tu aider ?"
+                            label="Quelle personne veux-tu aider ? (ça peut être toi même)"
                             hint="Cherche et sélectionne la personne que tu veux aider en tapant son nom ou son prénom."
                             name="username"
                             placeholder="Sélectionner un membre"
@@ -912,6 +929,8 @@ export const CreateEmailScreen = function (props) {
 export const WhatIsGoingOnWithMember = function (
     props: WhatIsGoingOnWithMemberProps
 ) {
+    const { showLiveChat, isLiveChatLoading } = useLiveChat();
+
     const [step, setStep] = React.useState(STEP.whichMember);
     const [fixes, setFixes] = React.useState([
         STEP.whichMember,
@@ -1254,6 +1273,44 @@ export const WhatIsGoingOnWithMember = function (
                 getUser={getUser}
                 pullRequestURL={pullRequestURL}
             />
+        );
+    } else if (step === STEP.doNotReceivedEmail) {
+        stepView = (
+            <div>
+                <p></p>
+                <p>
+                    1. ⚠️ Verifier si l'email n'est pas dans les les spams.
+                    <br />
+                    2. ⚠️ Si {user?.userInfos.fullname} utilises gmail, les
+                    emails peuvent arriver avec un délai. Pour les récupérer
+                    instantanément aller dans Paramètres ⚙️ → comptes et
+                    importation → Consulter d'autres comptes de messagerie →
+                    Consulter votre messagerie maintenant.
+                    <br />
+                    3. Il peut y avoir un délai de latence entre l'envoie et la
+                    réception de l'email, si il s'est passé moins de 20 minutes
+                    depuis votre tentative de connexion, attendre 20 minutes et
+                    revérifier l'étape 1 et 2.
+                </p>
+                <p>
+                    Si toujours pas d'email, l'email de{" "}
+                    {user?.userInfos.fullname} est probablement bloqué par brevo
+                    notre service d'email. Merci de nous faire part du soucis
+                    dans le chat :
+                    <br />
+                    <br />
+                    <Button
+                        onClick={() => showLiveChat("doNotReceivedEmail")}
+                        disabled={isLiveChatLoading}
+                        iconId={
+                            isLiveChatLoading ? "ri-loader-2-fill" : undefined
+                        }
+                        size="large"
+                    >
+                        Contactez-nous
+                    </Button>
+                </p>
+            </div>
         );
     }
     return (
