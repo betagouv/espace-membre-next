@@ -188,7 +188,22 @@ export const LoginPage = function (props: Props) {
                                     title="Besoin d'aide ?"
                                 >
                                     <>
-                                        <div>
+                                        <div className={fr.cx("fr-mt-2v")}>
+                                            <b>
+                                                Si tu n'arrives pas à te
+                                                connecter consulte cette page
+                                                pour savoir ce qu'il se passe :
+                                            </b>{" "}
+                                            <a
+                                                className="fr-link"
+                                                href="/keskispasse"
+                                                title="lien vers la page de diagnostic"
+                                            >
+                                                Keskispasse
+                                            </a>
+                                            .
+                                        </div>
+                                        {/* <div>
                                             <b>
                                                 J'ai oublié mon email pour me
                                                 connecter :
@@ -233,7 +248,7 @@ export const LoginPage = function (props: Props) {
                                             >
                                                 questions fréquentes
                                             </a>
-                                        </div>
+                                        </div> */}
                                     </>
                                 </CallOut>
                             </div>
