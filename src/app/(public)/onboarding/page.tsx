@@ -14,6 +14,7 @@ export default function Page() {
                 Une personne de la communauté doit vous inviter pour que vous
                 puissiez nous rejoindre.
             </p>
+            <p>Elle peut le faire depuis l'espace-membre : <a href="/community/create">https://espace-membre.incubateur.net/community/create</a></p>
         </div>
     );
 }
