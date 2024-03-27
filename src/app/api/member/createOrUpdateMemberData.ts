@@ -54,6 +54,7 @@ export const createOrUpdateMemberData = async (
                 githubData.missions.length && githubData.missions[0].startups
                     ? githubData.missions[0].startups[0]
                     : undefined,
+            name: githubData.fullname,
             username: action.author,
             referent: action.author,
         });
