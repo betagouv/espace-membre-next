@@ -69,6 +69,7 @@
     "sib-api-v3-sdk": "^8.5.0",
     "tss-react": "^4.9.4",
     "type-route": "^1.1.0",
+    "unescape": "^1.0.1",
     "uuid": "^9.0.1",
     "zod": "^3.22.4"
   },

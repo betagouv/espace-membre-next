@@ -1,6 +1,7 @@
 import axios from "axios";
 import _ from "lodash";
 import ovh0 from "ovh";
+import unescape from "unescape";
 
 import { Incubator } from "@/models/incubator";
 import { Job, JobWTTJ } from "@/models/job";
@@ -82,7 +83,10 @@ const betaGouv = {
                             ? `${latestMission.status}/${latestMission.employer}`
                             : latestMission.employer;
                     }
-                    return author;
+                    return {
+                        ...author,
+                        role: unescape(author.role),
+                    };
                 })
             )
             .catch((err) => {
