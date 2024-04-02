@@ -3,14 +3,29 @@ import nock from "nock";
 import { Client } from "pg";
 import { parse } from "pg-connection-string";
 import { v4 as uuidv4 } from "uuid";
-import config from "@/server/config";
-import knex from "@db";
+
 import testStartups from "./startups.json";
 import testUsers from "./users.json";
+import config from "@/server/config";
+import knex from "@db";
 
 export default {
     getJWT(id) {
-        return jwt.sign({ id }, config.secret, { expiresIn: "1 hours" });
+        const token = jwt.sign(
+            {
+                id,
+                user: {
+                    id,
+                },
+            },
+            config.secret,
+            {
+                algorithm: "HS512", // Assurez-vous que l'algorithme correspond à celui utilisé pour signer le token
+                expiresIn: "7 days",
+            }
+        );
+        console.log(token);
+        return token;
     },
     mockUsers() {
         const url = process.env.USERS_API || "https://beta.gouv.fr"; // can't replace with config.usersApi ?

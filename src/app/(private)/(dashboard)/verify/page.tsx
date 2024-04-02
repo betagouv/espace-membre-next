@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
-import { cookies } from "next/headers";
 import { redirect } from "next/navigation";
+import { getServerSession } from "next-auth";
 
 import AccountVerifyClientPage, {
     AccountVerifyClientPageProps,
@@ -8,9 +8,8 @@ import AccountVerifyClientPage, {
 import { fetchGithubMarkdown } from "@/lib/github";
 import { memberSchema } from "@/models/member";
 import betagouv from "@/server/betagouv";
-import config from "@/server/config";
 import { getDBUser } from "@/server/db/dbUser";
-import { getSessionFromStore } from "@/server/middlewares/sessionMiddleware";
+import { authOptions } from "@/utils/authoptions";
 import { routeTitles } from "@/utils/routes/routeTitles";
 
 export const metadata: Metadata = {
@@ -36,15 +35,13 @@ async function fetchGithubPageData(username: string, ref: string = "master") {
 }
 
 export default async function CreateMemberPage() {
-    const cookieStore = cookies();
-    const session = (await getSessionFromStore(
-        cookieStore.get(config.SESSION_COOKIE_NAME)
-    )) as { id: string };
+    const session = await getServerSession(authOptions);
+
     if (!session) {
         redirect("/login");
     }
 
-    const username = session.id;
+    const username = session.user.id;
 
     const formData = await fetchGithubPageData(username, "master");
 

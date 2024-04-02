@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { cookies } from "next/headers";
 import { redirect } from "next/navigation";
+import { getServerSession } from "next-auth";
 
 import { BaseInfoUpdate } from "@/components/BaseInfoUpdatePage";
 import { fetchGithubMarkdown, getPullRequestForBranch } from "@/lib/github";
@@ -9,7 +10,7 @@ import { StartupInfo } from "@/models/startup";
 import betagouv from "@/server/betagouv";
 import config from "@/server/config";
 import db from "@/server/db";
-import { getSessionFromStore } from "@/server/middlewares/sessionMiddleware";
+import { authOptions } from "@/utils/authoptions";
 import { routeTitles } from "@/utils/routes/routeTitles";
 
 export const metadata: Metadata = {
@@ -35,15 +36,13 @@ async function fetchGithubPageData(username: string, ref: string = "master") {
 }
 
 export default async function Page() {
-    const cookieStore = cookies();
-    const session = (await getSessionFromStore(
-        cookieStore.get(config.SESSION_COOKIE_NAME)
-    )) as { id: string };
+    const session = await getServerSession(authOptions);
+
     if (!session) {
         redirect("/login");
     }
 
-    const username = session.id;
+    const username = session.user.id;
     const authorPR = await getPullRequestForBranch(`edit-authors-${username}`);
 
     const sha = authorPR && authorPR.head.sha;

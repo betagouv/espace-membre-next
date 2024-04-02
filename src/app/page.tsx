@@ -1,7 +1,7 @@
 "use client";
 
-import { useSession } from "@/proxies/next-auth";
 import { useRouter } from "next/navigation";
+import { useSession } from "next-auth/react";
 
 export default function Home() {
     const router = useRouter();
@@ -10,11 +10,6 @@ export default function Home() {
         required: true,
         onUnauthenticated() {
             router.push("/login");
-        },
-        onAuthenticated() {
-            if (window.location.pathname === "/") {
-                router.push("/account");
-            }
         },
     });
     return <div></div>;

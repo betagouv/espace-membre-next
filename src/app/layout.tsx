@@ -5,13 +5,16 @@ import { Footer } from "@codegouvfr/react-dsfr/Footer";
 import { DsfrHead } from "@codegouvfr/react-dsfr/next-appdir/DsfrHead";
 import { DsfrProvider } from "@codegouvfr/react-dsfr/next-appdir/DsfrProvider";
 import { getHtmlAttributes } from "@codegouvfr/react-dsfr/next-appdir/getHtmlAttributes";
+import { getServerSession } from "next-auth/next";
 
 import { BreadCrumbProvider } from "./BreadCrumbProvider";
+import ClientSessionProvider from "./context/ClientContextProvider";
 import { defaultColorScheme } from "./defaultColorScheme";
 import { MuiDsfrThemeProvider } from "./MuiDsfrThemeProvider";
 import { StartDsfr } from "./StartDsfr";
 import Header from "@/components/Header";
 import { LiveChatProvider } from "@/components/live-chat/LiveChatProvider";
+import { authOptions } from "@/utils/authoptions";
 
 export interface RootLayoutProps {
     workaroundForNextJsPages?: boolean;
@@ -20,7 +23,9 @@ export interface RootLayoutProps {
 // [WORKAROUND] Since `react-dsfr` no longer passes the color scheme through `DsfrProvider` and `DsfrHead` we call this function to avoid an assert error in case of `workaroundForNextJsPages: true` usage
 getHtmlAttributes({ defaultColorScheme });
 
-function MainStructure(props: PropsWithChildren) {
+async function MainStructure(props: PropsWithChildren) {
+    const session = await getServerSession(authOptions);
+
     return (
         <>
             {/* eslint-disable-next-line @next/next/no-head-element */}
@@ -29,45 +34,47 @@ function MainStructure(props: PropsWithChildren) {
                 <DsfrHead />
             </head>
             <body>
-                <DsfrProvider>
-                    <MuiDsfrThemeProvider>
-                        <BreadCrumbProvider>
-                            <LiveChatProvider>
-                                <Header />
+                <ClientSessionProvider session={session}>
+                    <DsfrProvider>
+                        <MuiDsfrThemeProvider>
+                            <BreadCrumbProvider>
+                                <LiveChatProvider>
+                                    <Header />
 
-                                <div
-                                    className={`fr-container fr-container--fluid ${fr.cx(
-                                        "fr-mb-10v"
-                                    )}`}
-                                    id="root-container"
-                                >
-                                    {props.children}
-                                </div>
-                                <Footer
-                                    accessibility="partially compliant"
-                                    contentDescription="Espace Membre est une application permettant aux membres de la communauté beta.gouv.fr d'accéder aux espaces dédiés à la communauté."
-                                    termsLinkProps={{
-                                        href: "#",
-                                    }}
-                                    brandTop={
-                                        <>
-                                            République
-                                            <br />
-                                            Française
-                                        </>
-                                    }
-                                    homeLinkProps={{
-                                        href: "/",
-                                        title: "Accueil - Espace Membre @beta.gouv.fr",
-                                    }}
-                                    websiteMapLinkProps={{
-                                        href: "#",
-                                    }}
-                                />
-                            </LiveChatProvider>
-                        </BreadCrumbProvider>
-                    </MuiDsfrThemeProvider>
-                </DsfrProvider>
+                                    <div
+                                        className={`fr-container fr-container--fluid ${fr.cx(
+                                            "fr-mb-10v"
+                                        )}`}
+                                        id="root-container"
+                                    >
+                                        {props.children}
+                                    </div>
+                                    <Footer
+                                        accessibility="partially compliant"
+                                        contentDescription="Espace Membre est une application permettant aux membres de la communauté beta.gouv.fr d'accéder aux espaces dédiés à la communauté."
+                                        termsLinkProps={{
+                                            href: "#",
+                                        }}
+                                        brandTop={
+                                            <>
+                                                République
+                                                <br />
+                                                Française
+                                            </>
+                                        }
+                                        homeLinkProps={{
+                                            href: "/",
+                                            title: "Accueil - Espace Membre @beta.gouv.fr",
+                                        }}
+                                        websiteMapLinkProps={{
+                                            href: "#",
+                                        }}
+                                    />
+                                </LiveChatProvider>
+                            </BreadCrumbProvider>
+                        </MuiDsfrThemeProvider>
+                    </DsfrProvider>
+                </ClientSessionProvider>
             </body>
         </>
     );

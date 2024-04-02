@@ -1,7 +1,9 @@
 import React from "react";
-import ReactDOM from "react-dom";
+
 import Button from "@codegouvfr/react-dsfr/Button";
 import { createModal } from "@codegouvfr/react-dsfr/Modal";
+import ReactDOM from "react-dom";
+
 import SESponsorSelect from "../SESponsorSelect";
 import { SponsorForm } from "../SponsorForm/SponsorForm";
 import { Sponsor } from "@/models/sponsor";
@@ -16,9 +18,12 @@ const SponsorModal = ({ addSponsor }) => {
             <SponsorForm addSponsor={addSponsor} />
         </modal.Component>
     );
+    if (typeof window !== "undefined") {
+        return;
+    }
     return ReactDOM.createPortal(
         modalContent,
-        document.getElementById("root-container") as Element
+        window.document.getElementById("root-container") as Element
     );
 };
 

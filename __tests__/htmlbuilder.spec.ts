@@ -396,7 +396,6 @@ describe(`Test MARRAINAGE_ONBOARDER_EMAIL`, () => {
                 newcomers,
             },
         });
-        console.log(emailBody);
         emailBody.should.include(`Jean Paul`);
         emailBody.should.include(`Arnaud Lagarde`);
         renderHtmlFromMd.called.should.be.true;

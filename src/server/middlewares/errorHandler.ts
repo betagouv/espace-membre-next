@@ -3,6 +3,7 @@ const errorHandler = (err, req, res, next) => {
         // redirect to login and keep the requested url in the '?next=' query param
         if (req.method === "GET") {
             //   req.flash(
+            console.log(err);
             //     'message',
             //     'Pour accéder à cette page vous devez vous identifier, vous pouvez le faire en renseignant votre email juste en dessous.'
             //   );

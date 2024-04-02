@@ -56,6 +56,7 @@ export const createOrUpdateMemberData = async (
                     : undefined,
             name: githubData.fullname,
             username: action.author,
+            name: githubData.fullname,
             referent: action.author,
         });
     }

@@ -1,23 +1,18 @@
 import bodyParser from "body-parser";
 import compression from "compression";
 import flash from "connect-flash";
+import cookieParser from "cookie-parser";
 import express from "express";
+import { expressjwt, Request } from "express-jwt";
+import expressSanitizer from "express-sanitizer";
 import next from "next";
 
-import { expressjwt, Request } from "express-jwt";
-
-import expressSanitizer from "express-sanitizer";
-import config from "@/server/config";
-import * as githubNotificationController from "@controllers/githubNotificationController";
-import * as indexController from "@controllers/indexController";
-import * as resourceController from "@controllers/resourceController";
-import * as hookController from "@controllers/hookController";
-import * as pullRequestsController from "@controllers/pullRequestsController";
-import routes from "@/routes/routes";
-import { rateLimiter } from "./middlewares/rateLimiter";
-import { getJwtTokenForUser, getToken } from "@/server/helpers/session";
+import { PUBLIC_ROUTES } from "./config/jwt.config";
 import getAllIncubators from "./controllers/incubatorController/api/getAllIncubators";
 import getAllSponsors from "./controllers/sponsorController/api/getAllSponsors";
+import { errorHandler } from "./middlewares/errorHandler";
+import { rateLimiter } from "./middlewares/rateLimiter";
+import { setupSessionMiddleware } from "./middlewares/sessionMiddleware";
 import {
     accountRouter,
     adminRouter,
@@ -34,9 +29,13 @@ import {
     setupStaticFiles,
     startupRouter,
 } from "./routes";
-import { errorHandler } from "./middlewares/errorHandler";
-import { setupSessionMiddleware } from "./middlewares/sessionMiddleware";
-import { PUBLIC_ROUTES } from "./config/jwt.config";
+import routes from "@/routes/routes";
+import config from "@/server/config";
+import { getToken } from "@/server/helpers/session";
+import * as hookController from "@controllers/hookController";
+import * as indexController from "@controllers/indexController";
+import * as pullRequestsController from "@controllers/pullRequestsController";
+import * as resourceController from "@controllers/resourceController";
 import { initializeSentry, sentryErrorHandler } from "@lib/sentry";
 
 const port = parseInt(process.env.PORT || "8100", 10);
@@ -44,6 +43,17 @@ const dev = process.env.NODE_ENV !== "production";
 const app = next({ dev });
 const handle = app.getRequestHandler();
 let server = express();
+
+function excludeApiAuthMiddleware(middleware) {
+    return function (req, res, next) {
+        // Check if the request starts with /api/auth
+        if (req.path.startsWith("/auth/")) {
+            return next(); // Skip the middleware if the path starts with /api/auth
+        } else {
+        }
+        return middleware(req, res, next); // Apply the middleware otherwise
+    };
+}
 
 const startServer = () => {
     return app.prepare().then(() => {
@@ -59,34 +69,33 @@ const startServer = () => {
 
         // MIDDLEWARES
         initializeSentry(server);
-        server.use("/api", compression());
         setupStaticFiles(server);
         setupSessionMiddleware(server);
-        server.use("/api", flash());
-        server.use("/api", expressSanitizer());
-        server.use("/api", bodyParser.urlencoded({ extended: false }));
-        server.use("/api", rateLimiter);
+        server.use("/api", excludeApiAuthMiddleware(compression()));
+        server.use("/api", excludeApiAuthMiddleware(flash()));
+        server.use("/api", excludeApiAuthMiddleware(expressSanitizer()));
+        server.use("/api", excludeApiAuthMiddleware(cookieParser()));
         server.use(
             "/api",
-            expressjwt({
-                secret: config.secret,
-                algorithms: ["HS256"],
-                getToken: (req) => {
-                    return getToken(req);
-                },
-            }).unless({
-                path: [...PUBLIC_ROUTES],
-            })
+            excludeApiAuthMiddleware(bodyParser.urlencoded({ extended: false }))
         );
-        // Save a token in cookie that expire after 7 days if user is logged
-        server.use("/api", (req: Request, res, nextCall) => {
-            if (req.auth && req.auth.id) {
-                // @ts-expect-error
-                (req.session.token = getJwtTokenForUser(req.auth.id)),
-                    { sameSite: "lax" };
-            }
-            nextCall();
-        });
+        server.use("/api", excludeApiAuthMiddleware(rateLimiter));
+        server.use(
+            "/api",
+            excludeApiAuthMiddleware(
+                expressjwt({
+                    secret: config.secret,
+                    algorithms: ["HS512"],
+                    getToken: (req) => {
+                        // in test stub does not work if we asign getToken directly
+                        const token = getToken(req);
+                        return token;
+                    },
+                }).unless({
+                    path: [...PUBLIC_ROUTES],
+                })
+            )
+        );
         server.use("/api", errorHandler);
 
         //ROUTES

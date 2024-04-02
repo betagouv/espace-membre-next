@@ -1,13 +1,12 @@
 import type { Metadata } from "next";
 import { cookies } from "next/headers";
 import { redirect } from "next/navigation";
+import { getServerSession } from "next-auth";
 
 import AccountClientPage from "./AccountClientPage";
-
 import { DBUser, EmailStatusCode } from "@/models/dbUser";
-import config from "@/server/config";
 import db from "@/server/db";
-import { getSessionFromStore } from "@/server/middlewares/sessionMiddleware";
+import { authOptions } from "@/utils/authoptions";
 import { routeTitles } from "@/utils/routes/routeTitles";
 
 export const metadata: Metadata = {
@@ -15,15 +14,12 @@ export const metadata: Metadata = {
 };
 
 export default async function Page() {
-    const cookieStore = cookies();
-    const session = (await getSessionFromStore(
-        cookieStore.get(config.SESSION_COOKIE_NAME)
-    )) as { id: string };
-    if (!session || !session.id) {
+    const session = await getServerSession(authOptions);
+    if (!session) {
         redirect("/login");
     }
     const dbUser: DBUser = await db("users")
-        .where({ username: session.id })
+        .where({ username: session?.user?.id })
         .first();
     if (
         dbUser.primary_email_status ===

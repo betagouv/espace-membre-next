@@ -4,9 +4,9 @@ import React from "react";
 import { Header, HeaderProps } from "@codegouvfr/react-dsfr/Header";
 import axios from "axios";
 import { usePathname, useRouter } from "next/navigation";
+import { useSession } from "next-auth/react";
 
 import { useLiveChat } from "@/components/live-chat/useLiveChat";
-import { useSession, signOut } from "@/proxies/next-auth";
 import routes, { computeRoute } from "@/routes/routes";
 import { linkRegistry } from "@/utils/routes/registry";
 import { routeTitles } from "@/utils/routes/routeTitles";
