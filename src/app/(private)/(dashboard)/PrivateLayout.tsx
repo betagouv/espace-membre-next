@@ -2,9 +2,10 @@
 import { Breadcrumb } from "@codegouvfr/react-dsfr/Breadcrumb";
 import { SideMenu, SideMenuProps } from "@codegouvfr/react-dsfr/SideMenu";
 import { usePathname, useRouter } from "next/navigation";
+import { useSession } from "next-auth/react";
 
 import { useInfoContext } from "@/app/BreadCrumbProvider";
-import { useSession } from "@/proxies/next-auth";
+// import { useSession } from "@/proxies/next-auth";
 import { linkRegistry } from "@/utils/routes/registry";
 import { routeTitles } from "@/utils/routes/routeTitles";
 import {
@@ -26,7 +27,7 @@ export function PrivateLayout({ children }: { children: React.ReactNode }) {
     });
 
     const { currentPage } = useInfoContext();
-    if (status === "loading" || status === "unauthenticated") {
+    if (status === "loading") {
         return (
             <div className="fr-grid-row fr-grid-row-gutters fr-grid-row--center fr-mb-14v fr-my-4w">
                 Chargement...

@@ -91,7 +91,6 @@ export async function updatePasswordForUserHandler(
             created_by_username: req.auth.id,
             action_on_username: username,
         });
-        console.log("LCS DB USER", dbUser.primary_email_status);
         if (
             [
                 EmailStatusCode.EMAIL_SUSPENDED,

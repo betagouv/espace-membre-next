@@ -8,6 +8,7 @@ import Input from "@codegouvfr/react-dsfr/Input";
 import Select from "@codegouvfr/react-dsfr/Select";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useRouter } from "next/navigation";
+import { useSession } from "next-auth/react";
 import { useFieldArray, useForm } from "react-hook-form";
 
 import { CompetencesEditor } from "@/components/BaseInfoUpdatePage/CompetencesEditor";
@@ -22,7 +23,6 @@ import {
     completeMemberSchemaType,
     memberSchema,
 } from "@/models/member";
-import { useSession } from "@/proxies/next-auth";
 import routes, { computeRoute } from "@/routes/routes";
 
 // data from secretariat API

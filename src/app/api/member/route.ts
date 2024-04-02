@@ -1,4 +1,5 @@
 import { cookies } from "next/headers";
+import { getServerSession } from "next-auth";
 
 import { createOrUpdateMemberData } from "./createOrUpdateMemberData";
 import { EmailStatusCode } from "@/models/dbUser";
@@ -9,15 +10,13 @@ import {
 } from "@/models/member";
 import config from "@/server/config";
 import { isPublicServiceEmail } from "@/server/controllers/utils";
-import { getSessionFromStore } from "@/server/middlewares/sessionMiddleware";
+import { authOptions } from "@/utils/authoptions";
 import { createUsername } from "@/utils/github";
 
 export async function POST(req: Request) {
-    const cookieStore = cookies();
-    const session = (await getSessionFromStore(
-        cookieStore.get(config.SESSION_COOKIE_NAME)
-    )) as { id: string };
-    if (!session || !session.id) {
+    const session = await getServerSession(authOptions);
+
+    if (!session || !session.user.id) {
         throw new Error(`You don't have the right to access this function`);
     }
     const data = await req.json();

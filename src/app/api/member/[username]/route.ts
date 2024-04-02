@@ -1,4 +1,4 @@
-import { cookies } from "next/headers";
+import { getServerSession } from "next-auth";
 
 import { createOrUpdateMemberData } from "../createOrUpdateMemberData";
 import { EmailStatusCode, MemberType } from "@/models/dbUser";
@@ -6,21 +6,17 @@ import {
     completeMemberSchema,
     completeMemberSchemaType,
     memberSchema,
-    memberSchemaType,
 } from "@/models/member";
-import config from "@/server/config";
 import { isPublicServiceEmail } from "@/server/controllers/utils";
-import { getSessionFromStore } from "@/server/middlewares/sessionMiddleware";
+import { authOptions } from "@/utils/authoptions";
 
 export async function PUT(
     req: Request,
     { params: { username } }: { params: { username: string } }
 ) {
-    const cookieStore = cookies();
-    const session = (await getSessionFromStore(
-        cookieStore.get(config.SESSION_COOKIE_NAME)
-    )) as { id: string };
-    if (!session || session.id !== username) {
+    const session = await getServerSession(authOptions);
+
+    if (!session || session.user.id !== username) {
         throw new Error(`You don't have the right to access this function`);
     }
     const data = await req.json();

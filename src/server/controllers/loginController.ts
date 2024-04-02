@@ -8,7 +8,6 @@ import knex from "../db";
 import { DBUser, EmailStatusCode } from "@/models/dbUser/dbUser";
 import config from "@/server/config";
 import { sendEmail } from "@/server/config/email.config";
-import { getJwtTokenForUser } from "@/server/helpers/session";
 import { EMAIL_TYPES } from "@modules/email";
 
 export function generateToken() {
@@ -303,7 +302,6 @@ export async function postSignInApi(req, res) {
 
         await knex("login_tokens").where({ email: dbToken.email }).del();
 
-        req.session.token = getJwtTokenForUser(dbToken.username);
         return res.json({
             url:
                 `${decodeURIComponent(req.body.next) || "/account"}` +

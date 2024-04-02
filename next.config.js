@@ -3,7 +3,7 @@ const { withSentryConfig } = require("@sentry/nextjs");
 /** @type {import('next').NextConfig} */
 const nextConfig = {
     experimental: {
-        serverComponentsExternalPackages: ["knex"],
+        serverComponentsExternalPackages: ["knex", "sib-api-v3-sdk"],
     },
     sentry: {
         disableServerWebpackPlugin: true,

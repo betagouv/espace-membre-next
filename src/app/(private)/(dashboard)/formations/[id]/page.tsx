@@ -4,8 +4,8 @@ import Card from "@codegouvfr/react-dsfr/Card";
 import { format } from "date-fns/format";
 import { fr } from "date-fns/locale/fr";
 import type { Metadata, ResolvingMetadata } from "next";
-import { cookies } from "next/headers";
 import { redirect } from "next/navigation";
+import { getServerSession } from "next-auth";
 
 import { BreadCrumbFiller } from "@/app/BreadCrumbProvider";
 import { fetchAirtableFormationById } from "@/lib/airtable";
@@ -14,7 +14,7 @@ import { Domaine, Member } from "@/models/member";
 import betagouv from "@/server/betagouv";
 import config from "@/server/config";
 import db from "@/server/db";
-import { getSessionFromStore } from "@/server/middlewares/sessionMiddleware";
+import { authOptions } from "@/utils/authoptions";
 import { durationBetweenDate } from "@/utils/date";
 import { routeTitles } from "@/utils/routes/routeTitles";
 
@@ -57,10 +57,8 @@ const DomaineToAirtableDomaine: Record<Domaine, AirtableDomaine> = {
 };
 
 export default async function Page({ params }: Props) {
-    const cookieStore = cookies();
-    const session = (await getSessionFromStore(
-        cookieStore.get(config.SESSION_COOKIE_NAME)
-    )) as { id: string };
+    const session = await getServerSession(authOptions);
+
     if (!session) {
         redirect("/login");
     }
@@ -87,10 +85,10 @@ export default async function Page({ params }: Props) {
     };
     const formation = await fetchAirtableFormationById(params.id);
 
-    const user = (await betagouv.userInfosById(session.id)) as Member;
+    const user = (await betagouv.userInfosById(session.user.id)) as Member;
     const dbUser: DBUser = await db("users")
         .where({
-            username: session.id,
+            username: session.user.id,
         })
         .first();
     if (user) {

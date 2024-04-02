@@ -5,8 +5,8 @@ import { fr } from "@codegouvfr/react-dsfr";
 import Alert from "@codegouvfr/react-dsfr/Alert";
 import Button from "@codegouvfr/react-dsfr/Button";
 import axios from "axios";
+import { useSession } from "next-auth/react";
 
-import { useSession } from "@/proxies/next-auth";
 import routes, { computeRoute } from "@/routes/routes";
 
 export default function SignClientPage() {

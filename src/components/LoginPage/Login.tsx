@@ -8,7 +8,7 @@ import { CallOut } from "@codegouvfr/react-dsfr/CallOut";
 import { Input } from "@codegouvfr/react-dsfr/Input";
 import axios from "axios";
 import { useRouter } from "next/navigation";
-import { getSession } from "next-auth/react";
+import { getSession, signIn, useSession } from "next-auth/react";
 
 import routes, { computeRoute } from "@/routes/routes";
 
@@ -26,6 +26,7 @@ interface FormErrorResponse {
 
 /* Pure component */
 export const LoginPage = function (props: Props) {
+    const { data: session, status } = useSession();
     const [errorMessage, setErrorMessage] = React.useState("");
     const [formErrors, setFormErrors] = React.useState<string>();
     const [email, setEmail] = React.useState("");
@@ -39,11 +40,13 @@ export const LoginPage = function (props: Props) {
     const pingConnection = async () => {
         const user = await getSession();
     };
-    const sendLogin = (event: { preventDefault: () => void }) => {
+    const sendLogin = async (event: { preventDefault: () => void }) => {
         if (isSaving) {
             return;
         }
         event.preventDefault();
+        await signIn("email", { email });
+        return;
         setFormErrors("");
         setErrorMessage("");
         setIsSaving(true);

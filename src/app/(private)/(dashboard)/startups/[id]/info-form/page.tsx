@@ -1,14 +1,13 @@
 import { Metadata, ResolvingMetadata } from "next";
-import { redirect } from "next/navigation";
 import { cookies } from "next/headers";
-import * as Sentry from "@sentry/node";
+import { redirect } from "next/navigation";
+import { getServerSession } from "next-auth";
 
-import { getSessionFromStore } from "@/server/middlewares/sessionMiddleware";
-import config from "@/server/config";
 import { StartupInfoUpdate } from "@/components/StartupInfoUpdatePage";
-import { startupSchema } from "@/models/startup";
-import { routeTitles } from "@/utils/routes/routeTitles";
 import { getPullRequestForBranch, fetchGithubMarkdown } from "@/lib/github";
+import { startupSchema } from "@/models/startup";
+import { authOptions } from "@/utils/authoptions";
+import { routeTitles } from "@/utils/routes/routeTitles";
 
 type Props = {
     params: { id: string };
@@ -50,10 +49,8 @@ async function fetchGithubPageData(startup: string, ref: string = "master") {
 }
 
 export default async function Page(props) {
-    const cookieStore = cookies();
-    const session = (await getSessionFromStore(
-        cookieStore.get(config.SESSION_COOKIE_NAME)
-    )) as { id: string };
+    const session = await getServerSession(authOptions);
+
     if (!session) {
         redirect("/login");
     }

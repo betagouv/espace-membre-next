@@ -11,6 +11,8 @@ export const PUBLIC_ROUTES = [
     routes.ONBOARDING,
     routes.ONBOARDING_API,
     routes.ONBOARDING_ACTION,
+    // /api\/auth\/*/,
+    /api\/auth(?:\/|$)/,
     /api\/public\/users\/*/,
     /hook\/*/,
     /onboardingSuccess\/*/,
