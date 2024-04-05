@@ -41,7 +41,7 @@ export async function POST(req: Request) {
         {
             username,
             method: `create`,
-            author: session.id,
+            author: session.user.id,
         },
         githubData,
         dbData,
