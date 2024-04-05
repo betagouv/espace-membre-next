@@ -74,7 +74,7 @@ export async function PUT(
 
     const prInfo = await createOrUpdateMemberData(
         {
-            author: session.id,
+            author: session.user.id,
             method: "update",
             username,
         },
