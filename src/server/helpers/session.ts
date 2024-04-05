@@ -12,6 +12,6 @@ export const getToken = (req) => {
 export const getJwtTokenForUser = (token) => {
     return jwt.sign(token, config.secret, {
         algorithm: "HS512", // Assurez-vous que l'algorithme correspond à celui utilisé pour signer le token
-        expiresIn: "7 days",
+        // expiresIn: "7 days",
     });
 };

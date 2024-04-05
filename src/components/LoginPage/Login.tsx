@@ -45,55 +45,75 @@ export const LoginPage = function (props: Props) {
             return;
         }
         event.preventDefault();
-        await signIn("email", { email });
-        return;
         setFormErrors("");
         setErrorMessage("");
         setIsSaving(true);
         setAlertMessage(null);
-        axios
-            .post(computeRoute(`${routes.LOGIN_API}${props.next}#test`), {
-                emailInput: email,
-            })
-            .then(async (resp) => {
-                setIsSaving(false);
-                if (resp.data && resp.data.errors) {
-                    const message = resp.data.errors;
-                    setErrorMessage(message);
-                    setFormErrors(message);
-                } else {
-                    setAlertMessage({
-                        message:
-                            "Un email avec un lien de connexion a été envoyé à ton adresse.",
-                        type: "success",
-                    });
-                }
-                await pingConnection();
-            })
-            .catch(
-                ({
-                    response: { data },
-                }: {
-                    response: { data: FormErrorResponse };
-                }) => {
-                    setIsSaving(false);
-                    const ErrorResponse: FormErrorResponse = data;
-                    setErrorMessage(ErrorResponse.message);
-                    if (ErrorResponse.errors) {
-                        setFormErrors(ErrorResponse.errors);
-                    }
-                }
-            )
-            .catch((e) => {
-                // arrive quand il n'y a pas de "data"
-                console.log("Error no data", e);
-                setIsSaving(false);
-                const ErrorResponse: FormErrorResponse = e;
-                setErrorMessage(ErrorResponse.message);
-                if (ErrorResponse.errors) {
-                    setFormErrors(ErrorResponse.errors);
-                }
-            });
+        try {
+            const data = await signIn("email", { email, redirect: false });
+            console.log(data);
+            setIsSaving(false);
+
+            if (data && data.ok) {
+                setAlertMessage({
+                    message:
+                        "Un email avec un lien de connexion a été envoyé à ton adresse.",
+                    type: "success",
+                });
+            }
+        } catch (e) {
+            setIsSaving(false);
+            // const ErrorResponse: FormErrorResponse = e;
+            // setErrorMessage(ErrorResponse.message);
+            // if (ErrorResponse.errors) {
+            //     setFormErrors(ErrorResponse.errors);
+            // }
+            console.log("LCS ERROR", e);
+        }
+
+        // axios
+        //     .post(computeRoute(`${routes.LOGIN_API}${props.next}#test`), {
+        //         emailInput: email,
+        //     })
+        //     .then(async (resp) => {
+        //         setIsSaving(false);
+        //         if (resp.data && resp.data.errors) {
+        //             const message = resp.data.errors;
+        //             setErrorMessage(message);
+        //             setFormErrors(message);
+        //         } else {
+        //             setAlertMessage({
+        //                 message:
+        //                     "Un email avec un lien de connexion a été envoyé à ton adresse.",
+        //                 type: "success",
+        //             });
+        //         }
+        //         await pingConnection();
+        //     })
+        //     .catch(
+        //         ({
+        //             response: { data },
+        //         }: {
+        //             response: { data: FormErrorResponse };
+        //         }) => {
+        //             setIsSaving(false);
+        //             const ErrorResponse: FormErrorResponse = data;
+        //             setErrorMessage(ErrorResponse.message);
+        //             if (ErrorResponse.errors) {
+        //                 setFormErrors(ErrorResponse.errors);
+        //             }
+        //         }
+        //     )
+        //     .catch((e) => {
+        //         // arrive quand il n'y a pas de "data"
+        //         console.log("Error no data", e);
+        //         setIsSaving(false);
+        //         const ErrorResponse: FormErrorResponse = e;
+        //         setErrorMessage(ErrorResponse.message);
+        //         if (ErrorResponse.errors) {
+        //             setFormErrors(ErrorResponse.errors);
+        //         }
+        //     });
     };
 
     return (
