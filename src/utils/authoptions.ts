@@ -4,6 +4,7 @@ import EmailProvider from "next-auth/providers/email";
 
 import customPostgresAdapter from "./pgAdpter";
 import config from "@/server/config";
+import { getAdmin } from "@/server/config/admin.config";
 import { sendEmail } from "@/server/config/email.config";
 import db from "@/server/db";
 import { getJwtTokenForUser } from "@/server/helpers/session";
@@ -67,6 +68,7 @@ export const authOptions: NextAuthOptions = {
                     user: {
                         ...session.user,
                         id: token.sub,
+                        isAdmin: getAdmin().includes(token.sub || ""),
                     },
                 };
             }
