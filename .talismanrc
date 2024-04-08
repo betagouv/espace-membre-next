@@ -54,7 +54,7 @@ fileignoreconfig:
 - filename: src/server/views/templates/emails/verificationWaiting.ejs
   checksum: ba761c51315e4882a69e38228bf57f7495608ac3c9680027ded3d2bb5d6c714d
 - filename: src/utils/authoptions.ts
-  checksum: 901b60f414da17a5db44ee7883485109255c9f867898afdb79eded59d3b14831
+  checksum: a2ae546d82a86dcb1485d4d4a17a19cc7a028fd30cf35d945b370a6c96846d93
 scopeconfig:
 - scope: node
 version: "1.0"
