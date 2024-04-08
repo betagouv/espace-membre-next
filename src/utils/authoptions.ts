@@ -1,4 +1,4 @@
-import jwt, { JwtPayload } from "jsonwebtoken";
+import jwt, { JwtPayload, VerifyOptions } from "jsonwebtoken";
 import { NextAuthOptions } from "next-auth";
 import EmailProvider from "next-auth/providers/email";
 
@@ -47,9 +47,9 @@ export const authOptions: NextAuthOptions = {
         async decode({ secret, token }) {
             if (token) {
                 try {
-                    const decoded = await jwt.verify(token, config.secret, {
-                        algorithms: ["HS512"], // Assurez-vous que l'algorithme correspond à celui utilisé pour signer le token
-                    });
+                    const decoded = jwt.verify(token, config.secret, {
+                        algorithm: "HS512", // Assurez-vous que l'algorithme correspond à celui utilisé pour signer le token
+                    } as VerifyOptions);
                     return decoded as JwtPayload; // Assurez-vous que cette conversion est sûre.
                 } catch (error) {
                     // Gérer l'erreur, par exemple en retournant `null` ou en relançant l'erreur.
