@@ -72,6 +72,7 @@ export interface DBUser {
     average_nb_of_days: number;
     startups: string[];
     email_is_redirection: boolean;
+    email_verified: Date | null;
 }
 
 export interface DBUserDetail {

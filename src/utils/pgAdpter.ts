@@ -1,4 +1,4 @@
-import { Account } from "next-auth";
+import { Account, Awaitable } from "next-auth";
 import {
     Adapter,
     AdapterAccount,
@@ -13,40 +13,47 @@ import db from "@/server/db";
 
 export default function customPostgresAdapter(): Adapter {
     try {
-        const createUser = async (
+        const createUser = (
             user: Omit<AdapterUser, "id">
-        ): Promise<AdapterUser | null> => {
+        ): Promise<AdapterUser> => {
             console.log(
                 "Unimplemented function! createUser in BetagouvAdapter. Session:"
             );
-            return null;
+            return Promise.resolve(null as unknown as AdapterUser);
         };
 
-        const getUser = async (id: string) => {
+        const getUser = async (id: string): Promise<AdapterUser | null> => {
             const user: DBUser = await db("users")
                 .where({
                     username: id,
                 })
                 .first();
+            if (!user.primary_email && !user.secondary_email) {
+                throw new Error(`User ${user.username} has no em`);
+            }
             return {
                 id: user.username,
-                emailVerified: true,
-                email: user.primary_email,
+                emailVerified: user.email_verified,
+                email: user.primary_email || user.secondary_email,
             };
         };
 
-        const getUserByEmail = async (email: string) => {
-            const user: DBUser = await db("users")
+        const getUserByEmail = async (
+            email: string
+        ): Promise<AdapterUser | null> => {
+            const dbUser: DBUser = await db("users")
                 .whereRaw(`LOWER(secondary_email) = ?`, email)
                 .orWhereRaw(`LOWER(primary_email) = ?`, email)
                 .first();
-
-            return user
+            if (!dbUser.primary_email && !dbUser.secondary_email) {
+                return null;
+            }
+            return dbUser
                 ? {
-                      ...user,
-                      id: user.username,
-                      emailVerified: true,
-                      email: user.primary_email,
+                      ...dbUser,
+                      id: dbUser.username,
+                      emailVerified: dbUser.email_verified,
+                      email: dbUser.primary_email || dbUser.secondary_email,
                   }
                 : null;
         };
@@ -57,8 +64,8 @@ export default function customPostgresAdapter(): Adapter {
         }: {
             provider: string;
             providerAccountId: string;
-        }) => {
-            const user: DBUser = await db("users as u")
+        }): Promise<AdapterUser | null> => {
+            const dbUser: DBUser = await db("users as u")
                 .join("accounts as a", "u.username", "=", "a.userId")
                 .select("u.*")
                 .where({
@@ -66,25 +73,28 @@ export default function customPostgresAdapter(): Adapter {
                     "a.providerAccountId": providerAccountId,
                 })
                 .first();
-            return user
+            if (!dbUser.primary_email && !dbUser.secondary_email) {
+                return null;
+            }
+            return dbUser
                 ? {
-                      ...user,
-                      id: user.username,
-                      emailVerified: true,
-                      email: user.primary_email,
+                      ...dbUser,
+                      id: dbUser.username,
+                      emailVerified: dbUser.email_verified,
+                      email: dbUser.primary_email || dbUser.secondary_email,
                   }
                 : null;
         };
 
         const updateUser = async (
             user: Partial<AdapterUser> & Pick<AdapterUser, "id">
-        ): Promise<AdapterUser | null> => {
+        ): Promise<AdapterUser> => {
             const [dbUser]: DBUser[] = await db("users")
                 .where({
                     username: user.id,
                 })
                 .update({
-                    emailVerified: user.emailVerified,
+                    email_verified: user.emailVerified,
                 })
                 .returning("*");
 
@@ -92,7 +102,7 @@ export default function customPostgresAdapter(): Adapter {
             return {
                 name: member?.fullname,
                 email: dbUser.primary_email || dbUser.secondary_email,
-                emailVerified: dbUser.emailVerified,
+                emailVerified: dbUser.email_verified,
                 id: dbUser.username,
             };
         };
