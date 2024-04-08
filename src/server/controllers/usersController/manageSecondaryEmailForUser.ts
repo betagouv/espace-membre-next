@@ -1,7 +1,8 @@
+import { addEvent } from "@/lib/events";
+import { EventCode } from "@/models/actionEvent";
+import config from "@/server/config";
 import * as utils from "@controllers/utils";
 import knex from "@db/index";
-import { addEvent, EventCode } from "@/lib/events";
-import config from "@/server/config";
 
 export async function manageSecondaryEmailForUserApi(req, res) {
     manageSecondaryEmailForUserHandler(

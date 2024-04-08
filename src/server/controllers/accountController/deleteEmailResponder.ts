@@ -1,5 +1,6 @@
+import { addEvent } from "@/lib/events";
+import { EventCode } from "@/models/actionEvent";
 import betagouv from "@betagouv";
-import { addEvent, EventCode } from "@/lib/events";
 
 export async function deleteEmailResponderApi(req, res) {
     deleteEmailResponderHandler(

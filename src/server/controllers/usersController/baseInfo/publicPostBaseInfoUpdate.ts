@@ -1,4 +1,5 @@
-import { addEvent, EventCode } from "@/lib/events";
+import { addEvent } from "@/lib/events";
+import { EventCode } from "@/models/actionEvent";
 import { GithubMission } from "@/models/mission";
 import { PULL_REQUEST_TYPE, PULL_REQUEST_STATE } from "@/models/pullRequests";
 import { requiredError, isValidDate } from "@/server/controllers/validator";

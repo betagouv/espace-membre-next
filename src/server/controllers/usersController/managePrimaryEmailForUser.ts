@@ -1,10 +1,11 @@
+import { addEvent } from "@/lib/events";
+import * as mattermost from "@/lib/mattermost";
+import { EventCode } from "@/models/actionEvent";
+import { DBUser } from "@/models/dbUser/dbUser";
+import config from "@/server/config";
+import betagouv from "@betagouv";
 import * as utils from "@controllers/utils";
 import knex from "@db/index";
-import * as mattermost from "@/lib/mattermost";
-import { addEvent, EventCode } from "@/lib/events";
-import { DBUser } from "@/models/dbUser/dbUser";
-import betagouv from "@betagouv";
-import config from "@/server/config";
 
 export async function managePrimaryEmailForUserApi(req, res) {
     managePrimaryEmailForUserHandler(

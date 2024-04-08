@@ -1,11 +1,11 @@
-import config from "@/server/config";
-import { addEvent, EventCode } from "@/lib/events";
-import { requiredError, isValidDate } from "@/server/controllers/validator";
-
-import betagouv from "@betagouv";
 import { updateAuthorGithubFile } from "../helpers/githubHelpers";
 import { GithubAuthorMissionChange } from "../helpers/githubHelpers/githubEntryInterface";
+import { addEvent } from "@/lib/events";
+import { EventCode } from "@/models/actionEvent";
 import { GithubMission } from "@/models/mission";
+import config from "@/server/config";
+import { requiredError, isValidDate } from "@/server/controllers/validator";
+import betagouv from "@betagouv";
 
 export async function updateEndDateForUser(req, res) {
     const { username } = req.params;

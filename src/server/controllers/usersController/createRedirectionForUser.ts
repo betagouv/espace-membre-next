@@ -1,8 +1,10 @@
+import * as Sentry from "@sentry/node";
+
+import { addEvent } from "@/lib/events";
+import { EventCode } from "@/models/actionEvent";
 import config from "@/server/config";
 import BetaGouv from "@betagouv";
 import * as utils from "@controllers/utils";
-import { addEvent, EventCode } from "@/lib/events";
-import * as Sentry from "@sentry/node";
 
 export async function createRedirectionForUserApi(req, res) {
     createRedirectionForUserHandler(

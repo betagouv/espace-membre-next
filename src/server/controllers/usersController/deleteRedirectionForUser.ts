@@ -1,7 +1,8 @@
+import { addEvent } from "@/lib/events";
+import { EventCode } from "@/models/actionEvent";
 import config from "@/server/config";
 import BetaGouv from "@betagouv";
 import * as utils from "@controllers/utils";
-import { addEvent, EventCode } from "@/lib/events";
 
 export async function deleteRedirectionForUserApi(req, res) {
     deleteRedirectionForUserHandler(

@@ -1,7 +1,8 @@
 import crypto from "crypto";
 import _ from "lodash";
 
-import { addEvent, EventCode } from "@/lib/events";
+import { addEvent } from "@/lib/events";
+import { EventCode } from "@/models/actionEvent";
 import { DBUser, EmailStatusCode } from "@/models/dbUser/dbUser";
 import {
     EMAIL_PLAN_TYPE,

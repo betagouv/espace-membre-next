@@ -1,4 +1,5 @@
-import { addEvent, EventCode } from "@/lib/events";
+import { addEvent } from "@/lib/events";
+import { EventCode } from "@/models/actionEvent";
 import { DBUser, EmailStatusCode } from "@/models/dbUser/dbUser";
 import config from "@/server/config";
 import BetaGouv from "@betagouv";
