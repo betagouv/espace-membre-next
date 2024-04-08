@@ -23,7 +23,7 @@ const SponsorModal = ({ addSponsor }) => {
     }
     return ReactDOM.createPortal(
         modalContent,
-        window.document.getElementById("root-container") as Element
+        document.getElementById("root-container") as Element
     );
 };
 
