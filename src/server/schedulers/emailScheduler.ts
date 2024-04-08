@@ -3,7 +3,8 @@ import _ from "lodash/array";
 
 import betagouv from "../betagouv";
 import { createEmail } from "../controllers/usersController/createEmailForUser";
-import { EventCode, addEvent, Event, EventParam } from "@/lib/events";
+import { addEvent } from "@/lib/events";
+import { ActionEvent, EventCode, EventParam } from "@/models/actionEvent";
 import {
     CommunicationEmailCode,
     DBUser,
@@ -424,7 +425,7 @@ export async function sendOnboardingVerificationPendingEmail() {
     });
     concernedUsers.map(async (user) => {
         const secretariatUrl = `${config.protocol}://${config.host}`;
-        const event: Event = await knex("events")
+        const event: ActionEvent = await knex("events")
             .where({
                 action_code: EventCode.EMAIL_VERIFICATION_WAITING_SENT,
                 action_on_username: user.username,
