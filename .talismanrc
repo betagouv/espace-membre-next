@@ -37,6 +37,8 @@ fileignoreconfig:
   checksum: dfa7fcba549f3059c547970b66d918c32d7ca97d9506c57ef982510c64562282
 - filename: src/lib/airtable.ts
   checksum: 073b6fdb5d40706c9c05bdf16def31bfca6f0de2401c78d89b9ef4b3ed2da47d
+- filename: src/models/actionEvent.ts
+  checksum: 474a9fea734674194da606d521cd62e8d86bf5e0f5a04e0615469ea538c8bc09
 - filename: src/models/dbUser/dbUser.ts
   checksum: 796e5668df837d35d981c24c33436a21f3363c3b746cf3ee47d4a85cfb538d0d
 - filename: src/routes/routes.ts
