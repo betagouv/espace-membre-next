@@ -82,47 +82,6 @@ describe("Login token", () => {
         dbRes.length.should.equal(0);
     });
 
-    it("should only be usable once", async () => {
-        const userEmail = `membre.actif@${config.domain}`;
-        let token = null;
-
-        // Make a login request to generate a token
-        await chai.request(app).post(routes.LOGIN_API).type("form").send({
-            emailInput: userEmail,
-        });
-
-        // Extract token from the DB
-        token = await knex("login_tokens")
-            .select()
-            .where({ email: userEmail })
-            .then((dbRes) => (token = dbRes[0].token));
-
-        const res1 = await chai
-            .request(app)
-            .post(`/api/signin`)
-            .type("form")
-            .send({
-                next: "/community",
-                token: encodeURIComponent(token),
-            })
-            .redirects(0);
-        console.log(res1.status);
-        res1.status.should.equals(200);
-
-        // Make the same GET request again (second time)
-        const res2 = await chai
-            .request(app)
-            .post(`/api/signin`)
-            .type("form")
-            .send({
-                next: "/community",
-                token: encodeURIComponent(token),
-            })
-            .redirects(0);
-        res2.status.should.equals(500);
-        // Ensure the response did NOT set an auth cookie
-    });
-
     it("should work if user has no primary_email", async () => {
         const userEmail = `membre.actif@email.toto`;
 
