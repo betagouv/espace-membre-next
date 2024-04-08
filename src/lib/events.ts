@@ -1,54 +1,12 @@
 import hstore from "@/lib/hstore";
+import { ActionEvent, EventCode, EventParam } from "@/models/actionEvent";
 import knex from "@db";
-
-export enum EventCode {
-    MEMBER_REDIRECTION_CREATED = "MEMBER_REDIRECTION_CREATED",
-    MEMBER_REDIRECTION_DELETED = "MEMBER_REDIRECTION_DELETED",
-    MEMBER_EMAIL_CREATED = "MEMBER_EMAIL_CREATED",
-    MEMBER_EMAIL_DELETED = "MEMBER_EMAIL_DELETED",
-    MEMBER_PASSWORD_UPDATED = "MEMBER_PASSWORD_UPDATED",
-    MEMBER_RESPONDER_CREATED = "MEMBER_RESPONDER_CREATED",
-    MEMBER_RESPONDER_UPDATED = "MEMBER_RESPONDER_UPDATED",
-    MEMBER_RESPONDER_DELETED = "MEMBER_RESPONDER_DELETED",
-    MARRAINAGE_CREATED = "MARRAINAGE_CREATED",
-    MARRAINAGE_ACCEPTED = "MARRAINAGE_ACCEPTED",
-    MEMBER_MARRAINAGE_DECLINED = "MEMBER_MARRAINAGE_DECLINED",
-    MEMBER_SECONDARY_EMAIL_UPDATED = "MEMBER_SECONDARY_EMAIL_UPDATED",
-    MEMBER_PRIMARY_EMAIL_UPDATED = "MEMBER_PRIMARY_EMAIL_UPDATED",
-    MEMBER_END_DATE_UPDATED = "MEMBER_END_DATE_UPDATED",
-    MEMBER_COMMUNICATION_EMAIL_UPDATE = "MEMBER_COMMUNICATION_EMAIL_UPDATE",
-    MEMBER_EMAIL_RECREATED = "MEMBER_EMAIL_RECREATED",
-    MEMBER_EMAIL_UPGRADED = "MEMBER_EMAIL_UPGRADED",
-    MEMBER_BASE_INFO_UPDATED = "MEMBER_BASE_INFO_UPDATED",
-    STARTUP_PHASE_UPDATED = "STARTUP_PHASE_UPDATED",
-    STARTUP_INFO_UPDATED = "STARTUP_INFO_UPDATED",
-    STARTUP_INFO_CREATED = "STARTUP_INFO_CREATED",
-    EMAIL_VERIFICATION_WAITING_SENT = "EMAIL_VERIFICATION_WAITING_SENT",
-}
-
-interface ActionMetadata {
-    old_value?: any;
-    value?: any;
-}
-
-export interface Event {
-    action_code: EventCode;
-    action_metadata: ActionMetadata | undefined;
-    action_on_username: string | undefined;
-    created_by_username: string;
-}
-
-export type EventParam = {
-    action_on_username?: string;
-    created_by_username: string;
-    action_metadata?: ActionMetadata;
-};
 
 export async function addEvent(
     eventCode: EventCode,
     param: EventParam
 ): Promise<void> {
-    const event: Event = {
+    const event: ActionEvent = {
         action_code: eventCode,
         action_metadata: param.action_metadata,
         action_on_username: param.action_on_username,
@@ -60,4 +18,18 @@ export async function addEvent(
             ? hstore.stringify(param.action_metadata)
             : undefined,
     });
+}
+
+export async function getEventListByUsername(
+    username: string
+): Promise<ActionEvent[]> {
+    const eventList = await knex("events").where({
+        action_on_username: username,
+    });
+    return eventList.map((event) => ({
+        ...event,
+        action_metadata: event.action_metadata
+            ? hstore.parse(event.action_metadata)
+            : {},
+    }));
 }

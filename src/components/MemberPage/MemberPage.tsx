@@ -1,9 +1,4 @@
 "use client";
-import routes, { computeRoute } from "@/routes/routes";
-import Accordion from "@codegouvfr/react-dsfr/Accordion";
-import Button from "@codegouvfr/react-dsfr/Button";
-import Input from "@codegouvfr/react-dsfr/Input";
-import axios from "axios";
 import {
     ReactElement,
     JSXElementConstructor,
@@ -12,6 +7,14 @@ import {
     PromiseLikeOfReactNode,
     useState,
 } from "react";
+
+import Accordion from "@codegouvfr/react-dsfr/Accordion";
+import Button from "@codegouvfr/react-dsfr/Button";
+import Input from "@codegouvfr/react-dsfr/Input";
+import axios from "axios";
+
+import MemberEventList from "./MemberEventList";
+import routes, { computeRoute } from "@/routes/routes";
 
 export interface MemberPageProps {
     isExpired: boolean;
@@ -467,6 +470,7 @@ export default function MemberPage({
                     </ul>
                 )}
             </div>
+            {isAdmin && <MemberEventList userId={username} />}
             {isAdmin && (
                 <div className="fr-mb-8v">
                     <h2>Actions admin</h2>
