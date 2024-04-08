@@ -10,6 +10,7 @@ import {
 } from "../helpers/githubHelpers/githubEntryInterface";
 import { addEvent } from "@/lib/events";
 import { GithubAPIPullRequest } from "@/lib/github";
+import { EventCode } from "@/models/actionEvent";
 import { PULL_REQUEST_TYPE, PULL_REQUEST_STATE } from "@/models/pullRequests";
 import {
     Sponsor,
