@@ -1,4 +1,5 @@
-import { addEvent, EventCode } from "@/lib/events";
+import { addEvent } from "@/lib/events";
+import { EventCode } from "@/models/actionEvent";
 import knex from "@db";
 
 describe("Add events", () => {

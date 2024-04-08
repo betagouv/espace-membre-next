@@ -1,8 +1,9 @@
+import { addEvent } from "@/lib/events";
+import { EventCode } from "@/models/actionEvent";
 import config from "@/server/config";
 import BetaGouv from "@betagouv";
-import * as utils from "@controllers/utils";
-import { addEvent, EventCode } from "@/lib/events";
 import betagouv from "@betagouv";
+import * as utils from "@controllers/utils";
 
 export async function upgradeEmailForUserApi(req, res) {
     upgradeEmailForUserHandler(

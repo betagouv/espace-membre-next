@@ -1,3 +1,7 @@
+import { capitalizeWords } from "../utils";
+import { addEvent } from "@/lib/events";
+import { EventCode } from "@/models/actionEvent";
+import { CommunicationEmailCode, DBUser } from "@/models/dbUser";
 import config from "@/server/config";
 import {
     addContactsToMailingLists,
@@ -5,10 +9,7 @@ import {
     updateContactEmail,
 } from "@/server/config/email.config";
 import knex from "@db";
-import { CommunicationEmailCode, DBUser } from "@/models/dbUser";
 import { Contact, MAILING_LIST_TYPE } from "@modules/email";
-import { addEvent, EventCode } from "@/lib/events";
-import { capitalizeWords } from "../utils";
 
 async function changeContactEmail(previousEmail, contact: Contact) {
     if (config.FEATURE_SIB_USE_UPDATE_CONTACT_EMAIL) {

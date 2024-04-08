@@ -1,7 +1,8 @@
 import { Request, Response } from "express";
 import { z } from "zod";
 
-import { addEvent, EventCode } from "@/lib/events";
+import { addEvent } from "@/lib/events";
+import { EventCode } from "@/models/actionEvent";
 import { memberSchema } from "@/models/member";
 import { PULL_REQUEST_TYPE, PULL_REQUEST_STATE } from "@/models/pullRequests";
 import betagouv from "@betagouv";
