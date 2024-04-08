@@ -2,12 +2,10 @@
 import React from "react";
 
 import { Header, HeaderProps } from "@codegouvfr/react-dsfr/Header";
-import axios from "axios";
 import { usePathname, useRouter } from "next/navigation";
-import { useSession } from "next-auth/react";
+import { signOut, useSession } from "next-auth/react";
 
 import { useLiveChat } from "@/components/live-chat/useLiveChat";
-import routes, { computeRoute } from "@/routes/routes";
 import { linkRegistry } from "@/utils/routes/registry";
 import { routeTitles } from "@/utils/routes/routeTitles";
 import { hasPathnameThisMatch, hasPathnameThisRoot } from "@/utils/url";
@@ -37,10 +35,9 @@ const MainHeader = () => {
         quickAccessItems.push({
             buttonProps: {
                 onClick: async () => {
-                    await axios.get(computeRoute(routes.LOGOUT_API), {
-                        withCredentials: true,
+                    await signOut({
+                        callbackUrl: "/",
                     });
-                    window.location.href = "/";
                 },
             },
             iconId: "fr-icon-logout-box-r-line",

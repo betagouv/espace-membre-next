@@ -4,7 +4,10 @@ import config from "@/server/config";
 
 export const getToken = (req) => {
     if (req.cookies) {
-        return req.cookies["next-auth.session-token"];
+        return (
+            req.cookies["next-auth.session-token"] ||
+            req.cookies["__Secure-next-auth.session-token"]
+        );
     }
     return null;
 };
