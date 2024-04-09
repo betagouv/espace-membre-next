@@ -288,16 +288,7 @@ export async function getSendEventForUser(email: string) {
     let apiInstance = new SibApiV3Sdk.TransactionalEmailsApi();
 
     let opts = {
-        // limit: 50,
-        // offset: 0,
-        // startDate: "2021-01-01",
-        // endDate: "2021-01-01",
-        // days: 50,
         email,
-        // event: "event_example",
-        // tags: "tags_example",
-        // messageId: "messageId_example",
-        // templateId: 1,
     };
 
     return apiInstance.getEmailEventReport(opts).then(
