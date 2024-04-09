@@ -45,7 +45,11 @@ export async function createEmailAndUpdateSecondaryEmail(
 
     if (!isCurrentUser) {
         const loggedUserInfo = await BetaGouv.userInfosById(currentUser);
-        if (loggedUserInfo && utils.checkUserIsExpired(loggedUserInfo)) {
+        if (!loggedUserInfo) {
+            throw new Error(
+                "Vous ne pouvez pas créer de compte email car votre compte  n'a pas de fiche github."
+            );
+        } else if (utils.checkUserIsExpired(loggedUserInfo)) {
             throw new Error(
                 "Vous ne pouvez pas créer le compte email car votre compte a une date de fin expiré sur Github."
             );
