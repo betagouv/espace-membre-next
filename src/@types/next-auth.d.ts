@@ -12,3 +12,12 @@ declare module "next-auth" {
         };
     }
 }
+
+declare module "next-auth" {
+    interface AdapterUser {
+        id: string;
+        email: string;
+        emailVerified: Date | null;
+        id?: string;
+    }
+}

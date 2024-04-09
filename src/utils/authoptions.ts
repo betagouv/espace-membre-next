@@ -3,9 +3,11 @@ import { NextAuthOptions } from "next-auth";
 import EmailProvider from "next-auth/providers/email";
 
 import customPostgresAdapter from "./pgAdpter";
+import betagouv from "@/server/betagouv";
 import config from "@/server/config";
 import { getAdmin } from "@/server/config/admin.config";
 import { sendEmail } from "@/server/config/email.config";
+import { checkUserIsExpired } from "@/server/controllers/utils";
 import db from "@/server/db";
 import { getJwtTokenForUser } from "@/server/helpers/session";
 import { EMAIL_TYPES } from "@/server/modules/email";
@@ -64,14 +66,22 @@ export const authOptions: NextAuthOptions = {
         },
     },
     callbacks: {
-        async signIn({ user, account, email }) {
-            const userExists = await db("users").where({
-                primary_email: user.email, //the user object has an email property, which contains the email the user entered.
-            });
-            if (userExists) {
+        async signIn({ user }) {
+            if (user.id) {
+                const member = await betagouv.userInfosById(user.id);
+                if (!member) {
+                    throw new Error(
+                        `Le membre ${user.id} n'a pas de fiche github.`
+                    );
+                }
+                if (checkUserIsExpired(user, 5)) {
+                    throw new Error(
+                        `Membre ${member.fullname} a une date de fin expirée sur Github.`
+                    );
+                }
                 return true; //if the email exists in the User collection, email them a magic login link
             } else {
-                return "/register";
+                return false;
             }
         },
         async session({ session, token }) {

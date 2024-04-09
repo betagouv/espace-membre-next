@@ -54,7 +54,10 @@ export const LoginPage = function (props: Props) {
             console.log(data);
             setIsSaving(false);
 
-            if (data && data.ok) {
+            if (data && data.error) {
+                setIsSaving(false);
+                setFormErrors(data.error);
+            } else if (data && data.ok && !data.error) {
                 setAlertMessage({
                     message:
                         "Un email avec un lien de connexion a été envoyé à ton adresse.",

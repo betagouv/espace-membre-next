@@ -45,7 +45,8 @@ export default function customPostgresAdapter(): Adapter {
                 .whereRaw(`LOWER(secondary_email) = ?`, email)
                 .orWhereRaw(`LOWER(primary_email) = ?`, email)
                 .first();
-            if (!dbUser.primary_email && !dbUser.secondary_email) {
+            if (!dbUser || (!dbUser.primary_email && !dbUser.secondary_email)) {
+                console.log(`db user does not exists`);
                 return null;
             }
             return dbUser
