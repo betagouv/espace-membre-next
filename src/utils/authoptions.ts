@@ -74,7 +74,7 @@ export const authOptions: NextAuthOptions = {
                         `Le membre ${user.id} n'a pas de fiche github.`
                     );
                 }
-                if (checkUserIsExpired(user, 5)) {
+                if (checkUserIsExpired(member, 5)) {
                     throw new Error(
                         `Membre ${member.fullname} a une date de fin expirée sur Github.`
                     );
