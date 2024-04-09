@@ -219,7 +219,7 @@ export async function userInfos(
             ]);
         const hasUserInfos = userInfos !== undefined;
 
-        const isExpired = checkUserIsExpired(userInfos);
+        const isExpired = !userInfos || checkUserIsExpired(userInfos);
 
         // On ne peut créé un compte que si:
         // - la page fiche Github existe
