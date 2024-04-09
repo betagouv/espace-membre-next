@@ -302,10 +302,6 @@ export async function getSendEventForUser(email: string) {
 
     return apiInstance.getEmailEventReport(opts).then(
         function (data) {
-            console.log(
-                "API called successfully. Returned data: " +
-                    JSON.stringify(data)
-            );
             return data.events;
         },
         function (error) {
