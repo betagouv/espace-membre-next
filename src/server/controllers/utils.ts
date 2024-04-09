@@ -104,7 +104,10 @@ export function objectArrayToCSV<T extends Record<string, any>>(
     return csv;
 }
 
-export function checkUserIsExpired(user, minDaysOfExpiration = 1) {
+export function checkUserIsExpired(
+    user: Member,
+    minDaysOfExpiration: number = 1
+) {
     // Le membre est considéré comme expiré si:
     // - il/elle existe
     // - il/elle a une date de fin
