@@ -125,7 +125,7 @@ export type EmailOnboardingReferent = {
         prUrl: string;
         name: string;
         isEmailBetaAsked: boolean;
-        isSentViaEmail?: boolean;
+        isSentViaEmail: boolean;
     };
 };
 
