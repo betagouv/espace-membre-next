@@ -112,7 +112,7 @@ export default function AccountVerifyClientPage(
         try {
             const { message } = await postMemberData({
                 values: input,
-                sessionUsername: session.data?.user?.name as string,
+                sessionUsername: session.data?.user.id as string,
             });
             setAlertMessage({
                 title: `Modifications enregistrées`,
