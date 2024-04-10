@@ -103,7 +103,7 @@
     "nock": "^13.5.1",
     "node-mocks-http": "^1.14.1",
     "node-talisman": "^1.29.11",
-    "postcss": "^8.4.35",
+    "postcss": "^8.4.38",
     "rewire": "^7.0.0",
     "sass": "^1.71.0",
     "sinon": "^17.0.1",
