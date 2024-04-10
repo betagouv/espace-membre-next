@@ -2,20 +2,20 @@ import * as Sentry from "@sentry/node";
 import { differenceInDays } from "date-fns/differenceInDays";
 
 import * as github from "@/lib/github";
-import db from "@db";
-import config from "@/server/config";
-import { sendEmail } from "@/server/config/email.config";
-import { EMAIL_TYPES } from "@modules/email";
-import { CommunicationEmailCode } from "@/models/dbUser";
-import { sendInfoToChat } from "@infra/chat";
-import htmlBuilder from "@modules/htmlbuilder/htmlbuilder";
 import * as mattermost from "@/lib/mattermost";
-import { DBStartup } from "@/models/startup";
+import { CommunicationEmailCode } from "@/models/dbUser";
 import {
     DBPullRequest,
     PULL_REQUEST_STATE,
     PULL_REQUEST_TYPE,
 } from "@/models/pullRequests";
+import { DBStartup } from "@/models/startup";
+import config from "@/server/config";
+import { sendEmail } from "@/server/config/email.config";
+import db from "@db";
+import { sendInfoToChat } from "@infra/chat";
+import { EMAIL_TYPES } from "@modules/email";
+import htmlBuilder from "@modules/htmlbuilder/htmlbuilder";
 
 async function sendMessageToReferent({
     prUrl,
@@ -48,6 +48,7 @@ async function sendMessageToReferent({
                 prUrl,
                 name,
                 isEmailBetaAsked,
+                isSentViaEmail: true,
             },
         });
     } catch (e) {
@@ -67,6 +68,7 @@ async function sendMessageToReferent({
                     prUrl,
                     name,
                     isEmailBetaAsked,
+                    isSentViaEmail: false,
                 },
             }
         );
