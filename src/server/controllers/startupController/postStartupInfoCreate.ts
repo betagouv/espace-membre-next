@@ -124,7 +124,8 @@ export async function postStartupInfoCreate(req, res) {
             files
         );
 
-        addEvent(EventCode.STARTUP_INFO_CREATED, {
+        addEvent({
+            action_code: EventCode.STARTUP_INFO_CREATED,
             created_by_username: req.auth.id,
             action_metadata: {
                 value: {

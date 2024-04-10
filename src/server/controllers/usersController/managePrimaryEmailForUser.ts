@@ -94,7 +94,8 @@ export async function managePrimaryEmailForUserHandler(
                 primary_email: primaryEmail,
                 username,
             });
-        addEvent(EventCode.MEMBER_PRIMARY_EMAIL_UPDATED, {
+        addEvent({
+            action_code: EventCode.MEMBER_PRIMARY_EMAIL_UPDATED,
             created_by_username: req.auth.id,
             action_on_username: username,
             action_metadata: {

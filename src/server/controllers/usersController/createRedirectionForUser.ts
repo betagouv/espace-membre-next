@@ -74,7 +74,8 @@ export async function createRedirectionForUserHandler(
         const message = `À la demande de ${req.auth.id} sur <${secretariatUrl}>, je crée une redirection mail pour ${username}`;
 
         try {
-            addEvent(EventCode.MEMBER_REDIRECTION_CREATED, {
+            addEvent({
+                action_code: EventCode.MEMBER_REDIRECTION_CREATED,
                 created_by_username: req.auth.id,
                 action_on_username: username,
                 action_metadata: {

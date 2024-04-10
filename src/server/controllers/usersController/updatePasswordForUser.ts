@@ -88,7 +88,8 @@ export async function updatePasswordForUserHandler(
             password,
             user.emailInfos?.emailPlan
         );
-        await addEvent(EventCode.MEMBER_PASSWORD_UPDATED, {
+        await addEvent({
+            action_code: EventCode.MEMBER_PASSWORD_UPDATED,
             created_by_username: req.auth.id,
             action_on_username: username,
         });

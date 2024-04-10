@@ -86,14 +86,13 @@ export async function updateCommunicationEmailHandler(
                 .where({
                     username,
                 });
-            addEvent(EventCode.MEMBER_COMMUNICATION_EMAIL_UPDATE, {
+            addEvent({
+                action_code: EventCode.MEMBER_COMMUNICATION_EMAIL_UPDATE,
                 created_by_username: req.auth.id,
                 action_on_username: username,
                 action_metadata: {
                     value: communication_email,
-                    old_value: dbUser
-                        ? (dbUser.communication_email as string)
-                        : undefined,
+                    old_value: dbUser ? dbUser.communication_email : undefined,
                 },
             });
             const newEmail =

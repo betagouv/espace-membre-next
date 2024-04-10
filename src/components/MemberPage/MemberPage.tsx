@@ -491,8 +491,8 @@ export default function MemberPage({
                     </ul>
                 )}
             </div>
-            {isAdmin && <MemberEventList userId={username} />}
             {isAdmin && <MemberBrevoEventList userId={username} />}
+            {isAdmin && <MemberEventList userId={username} />}
             {isAdmin && (
                 <div className="fr-mb-8v">
                     <h2>Actions admin</h2>

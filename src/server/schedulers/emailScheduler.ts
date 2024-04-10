@@ -440,12 +440,11 @@ export async function sendOnboardingVerificationPendingEmail() {
                     secretariatUrl,
                 },
             });
-            const event: EventParam = {
+            await addEvent({
+                action_code: EventCode.EMAIL_VERIFICATION_WAITING_SENT,
                 created_by_username: "system",
                 action_on_username: user.username,
-                action_metadata: undefined,
-            };
-            await addEvent(EventCode.EMAIL_VERIFICATION_WAITING_SENT, event);
+            });
         }
     });
 }

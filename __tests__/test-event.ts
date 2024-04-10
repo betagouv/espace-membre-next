@@ -4,7 +4,8 @@ import knex from "@db";
 
 describe("Add events", () => {
     it("should add event to db properly", async () => {
-        const event = await addEvent(EventCode.MEMBER_REDIRECTION_CREATED, {
+        const event = await addEvent({
+            action_code: EventCode.MEMBER_REDIRECTION_CREATED,
             created_by_username: "membre.actif",
             action_on_username: "membre.expire",
             action_metadata: {
