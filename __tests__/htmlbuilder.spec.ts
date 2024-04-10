@@ -168,6 +168,7 @@ describe("Test ONBOARDING_REFERENT_EMAIL", () => {
                 prUrl,
                 name,
                 isEmailBetaAsked,
+                isSentViaEmail: true,
             },
         });
         const emailSubject: string = await htmlBuilder.renderSubjectForType({
@@ -177,6 +178,7 @@ describe("Test ONBOARDING_REFERENT_EMAIL", () => {
                 prUrl,
                 name,
                 isEmailBetaAsked,
+                isSentViaEmail: true,
             },
         });
 
