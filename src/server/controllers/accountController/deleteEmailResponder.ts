@@ -39,7 +39,8 @@ export async function deleteEmailResponderHandler(
 ) {
     try {
         await betagouv.deleteResponder(req.auth.id);
-        addEvent(EventCode.MEMBER_RESPONDER_DELETED, {
+        addEvent({
+            action_code: EventCode.MEMBER_RESPONDER_DELETED,
             created_by_username: req.auth.id,
             action_on_username: req.auth.id,
         });

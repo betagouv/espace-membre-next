@@ -1,28 +1,35 @@
-import hstore from "@/lib/hstore";
-import { ActionEvent, EventCode, EventParam } from "@/models/actionEvent";
+import * as hstore from "@/lib/hstore";
+import {
+    BaseEventAction,
+    EventAction,
+    EventActionFromDB,
+    EventCode,
+} from "@/models/actionEvent";
 import knex from "@db";
 
-export async function addEvent(
-    eventCode: EventCode,
-    param: EventParam
-): Promise<void> {
-    const event: ActionEvent = {
-        action_code: eventCode,
-        action_metadata: param.action_metadata,
-        action_on_username: param.action_on_username,
-        created_by_username: param.created_by_username,
-    };
+export async function addEvent(event: EventAction): Promise<void> {
     return knex("events").insert({
         ...event,
-        action_metadata: param.action_metadata
-            ? hstore.stringify(param.action_metadata)
+        action_metadata: event["action_metadata"]
+            ? hstore.stringify(event["action_metadata"])
+            : undefined,
+    });
+}
+
+export async function addActionEvent<T extends EventCode>(
+    event: BaseEventAction<T>
+): Promise<void> {
+    return knex("events").insert({
+        ...event,
+        action_metadata: event["action_metadata"]
+            ? hstore.stringify(event["action_metadata"])
             : undefined,
     });
 }
 
 export async function getEventListByUsername(
     username: string
-): Promise<ActionEvent[]> {
+): Promise<EventActionFromDB[]> {
     const eventList = await knex("events").where({
         action_on_username: username,
     });

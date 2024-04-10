@@ -66,7 +66,8 @@ export async function manageSecondaryEmailForUserHandler(
                     secondary_email: secondaryEmail,
                     username,
                 });
-            addEvent(EventCode.MEMBER_SECONDARY_EMAIL_UPDATED, {
+            addEvent({
+                action_code: EventCode.MEMBER_SECONDARY_EMAIL_UPDATED,
                 created_by_username: req.auth.id,
                 action_on_username: username,
                 action_metadata: {

@@ -132,7 +132,8 @@ export async function postStartupInfoUpdate(req, res) {
             `edit-startup-${startupId}`
         );
 
-        addEvent(EventCode.STARTUP_INFO_UPDATED, {
+        addEvent({
+            action_code: EventCode.STARTUP_INFO_UPDATED,
             created_by_username: req.auth.id,
             action_metadata: {
                 value: {

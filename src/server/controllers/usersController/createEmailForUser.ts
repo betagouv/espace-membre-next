@@ -195,18 +195,16 @@ export async function createEmail(
             primary_email_status_updated_at: new Date(),
         });
 
-    addEvent(
-        emailIsRecreated
+    addEvent({
+        action_code: emailIsRecreated
             ? EventCode.MEMBER_EMAIL_RECREATED
             : EventCode.MEMBER_EMAIL_CREATED,
-        {
-            created_by_username: creator,
-            action_on_username: username,
-            action_metadata: {
-                value: email,
-            },
-        }
-    );
+        created_by_username: creator,
+        action_on_username: username,
+        action_metadata: {
+            value: email,
+        },
+    });
     const message = `À la demande de ${creator} sur <${secretariatUrl}>, je lance la création d'un compte mail pour ${username}`;
 
     await BetaGouv.sendInfoToChat(message);

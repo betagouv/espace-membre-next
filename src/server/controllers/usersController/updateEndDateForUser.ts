@@ -63,7 +63,8 @@ export async function updateEndDateForUser(req, res) {
             missions: missions as GithubMission[],
         };
         await updateAuthorGithubFile(username, changes);
-        addEvent(EventCode.MEMBER_END_DATE_UPDATED, {
+        addEvent({
+            action_code: EventCode.MEMBER_END_DATE_UPDATED,
             created_by_username: req.auth.id,
             action_on_username: username,
             action_metadata: {

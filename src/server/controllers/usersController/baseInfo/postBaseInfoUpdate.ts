@@ -3,7 +3,7 @@ import { z } from "zod";
 
 import { addEvent } from "@/lib/events";
 import { EventCode } from "@/models/actionEvent";
-import { memberSchema } from "@/models/member";
+import { Member, memberSchema, memberSchemaType } from "@/models/member";
 import { PULL_REQUEST_TYPE, PULL_REQUEST_STATE } from "@/models/pullRequests";
 import betagouv from "@betagouv";
 import {
@@ -39,12 +39,13 @@ export async function postBaseInfoUpdate(
             `edit-authors-${username}`
         );
 
-        addEvent(EventCode.MEMBER_BASE_INFO_UPDATED, {
+        addEvent({
+            action_code: EventCode.MEMBER_BASE_INFO_UPDATED,
             created_by_username: req.auth?.id as string,
             action_on_username: username,
             action_metadata: {
                 value: req.body,
-                old_value: info,
+                old_value: info as unknown as memberSchemaType,
             },
         });
 

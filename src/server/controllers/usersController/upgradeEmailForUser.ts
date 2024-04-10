@@ -83,7 +83,8 @@ export async function upgradeEmailForUserHandler(req, res, onSuccess, onError) {
         await BetaGouv.sendInfoToChat(
             `Upgrade de compte de ${username} (à la demande de ${req.auth.id})`
         );
-        addEvent(EventCode.MEMBER_EMAIL_UPGRADED, {
+        addEvent({
+            action_code: EventCode.MEMBER_EMAIL_UPGRADED,
             created_by_username: req.auth.id,
             action_on_username: username,
         });

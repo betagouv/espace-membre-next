@@ -1,6 +1,8 @@
 import React, { useState, useEffect } from "react";
 
 import { Table } from "@codegouvfr/react-dsfr/Table";
+import { format } from "date-fns";
+import { fr } from "date-fns/locale";
 import { z } from "zod";
 
 const emailEventSchema = z.object({
@@ -28,7 +30,7 @@ const EmailEventsTable = ({ data }) => {
             .map((event, index) => {
                 return [
                     event.email,
-                    event._date,
+                    format(event._date, "dd/MM/yyyy 'à' HH:mm", { locale: fr }),
                     event.event,
                     event.subject,
                     event.tag,
@@ -84,7 +86,6 @@ const MemberBrevoEventList = ({ userId }) => {
 
     return (
         <div>
-            <h2>User Events</h2>
             <EmailEventsTable data={eventData} />
         </div>
     );

@@ -71,7 +71,8 @@ export async function setEmailResponderHandler(req, res, onSuccess, onError) {
                 to: endDate,
                 content,
             });
-            addEvent(EventCode.MEMBER_RESPONDER_CREATED, {
+            addEvent({
+                action_code: EventCode.MEMBER_RESPONDER_CREATED,
                 created_by_username: req.auth.id,
                 action_on_username: req.auth.id,
                 action_metadata: {
@@ -84,7 +85,8 @@ export async function setEmailResponderHandler(req, res, onSuccess, onError) {
                 to: endDate,
                 content,
             });
-            addEvent(EventCode.MEMBER_RESPONDER_UPDATED, {
+            addEvent({
+                action_code: EventCode.MEMBER_RESPONDER_UPDATED,
                 created_by_username: req.auth.id,
                 action_on_username: req.auth.id,
                 action_metadata: {

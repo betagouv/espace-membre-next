@@ -50,7 +50,8 @@ export async function deleteEmailForUserHandler(req, res, onSuccess, onError) {
         await BetaGouv.sendInfoToChat(
             `Suppression de compte de ${username} (à la demande de ${req.auth.id})`
         );
-        addEvent(EventCode.MEMBER_EMAIL_DELETED, {
+        addEvent({
+            action_code: EventCode.MEMBER_EMAIL_DELETED,
             created_by_username: req.auth.id,
             action_on_username: username,
         });
