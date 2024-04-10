@@ -1,9 +1,9 @@
+import { getUserByEmail, MattermostUser, searchUsers } from "@/lib/mattermost";
+import { DBUser, EmailStatusCode } from "@/models/dbUser";
+import { EMAIL_STATUS_READABLE_FORMAT } from "@/models/misc";
+import config from "@/server/config";
 import * as utils from "@controllers/utils";
 import db from "@db";
-import config from "@/server/config";
-import { EMAIL_STATUS_READABLE_FORMAT } from "@/models/misc";
-import { getUserByEmail, MattermostUser, searchUsers } from "@/lib/mattermost";
-import { DBUser } from "@/models/dbUser";
 
 export async function getUserInfo(req, res) {
     const { username } = req.params;
@@ -44,8 +44,8 @@ export async function getUserInfo(req, res) {
                 isInactiveOrNotInTeam: !mattermostUserInTeamAndActive,
             },
             primaryEmailStatus: dbUser
-                ? EMAIL_STATUS_READABLE_FORMAT[dbUser.primary_email_status]
-                : "",
+                ? dbUser.primary_email_status
+                : EmailStatusCode.EMAIL_UNSET,
             username,
             // info filled if connected users
             currentUserId: req.auth ? req.auth.id : undefined,

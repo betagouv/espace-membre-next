@@ -1,14 +1,14 @@
 import * as Sentry from "@sentry/node";
 
-import config from "../config";
-import BetaGouv from "../betagouv";
 import * as utils from "./utils";
-import knex from "../db";
+import BetaGouv from "../betagouv";
 import betagouv from "../betagouv";
-import { EMAIL_STATUS_READABLE_FORMAT } from "@/models/misc";
+import config from "../config";
+import knex from "../db";
 import { MattermostUser, getUserByEmail, searchUsers } from "@/lib/mattermost";
+import { DBUser, EmailStatusCode } from "@/models/dbUser";
+import { EMAIL_STATUS_READABLE_FORMAT } from "@/models/misc";
 import { getContactInfo } from "@/server/config/email.config";
-import { DBUser } from "@/models/dbUser";
 
 export async function getCommunityApi(req, res) {
     getCommunityPageData(
@@ -215,8 +215,8 @@ async function getUserPageData(req, res, onSuccess, onError) {
             emailServiceInfo,
             primaryEmail: dbUser ? dbUser.primary_email : "",
             primaryEmailStatus: dbUser
-                ? EMAIL_STATUS_READABLE_FORMAT[dbUser.primary_email_status]
-                : "",
+                ? dbUser.primary_email_status
+                : EmailStatusCode.EMAIL_UNSET,
             canCreateEmail: user.canCreateEmail,
             hasPublicServiceEmail:
                 dbUser &&

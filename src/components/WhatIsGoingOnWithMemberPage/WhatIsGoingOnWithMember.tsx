@@ -205,7 +205,7 @@ const EmailInfo = function ({ emailInfos, primaryEmailStatus }) {
             </p>
             <p>
                 <span className="font-weight-bold">Statut de l'email</span> :{" "}
-                {primaryEmailStatus}
+                {EMAIL_STATUS_READABLE_FORMAT[primaryEmailStatus]}
             </p>
             <p>
                 <span className="font-weight-bold">
@@ -312,8 +312,7 @@ const MemberComponent = function ({
     const showSteps =
         !!isExpired ||
         !hasEmailInfos ||
-        primaryEmailStatus ===
-            EMAIL_STATUS_READABLE_FORMAT[EmailStatusCode.EMAIL_SUSPENDED] ||
+        primaryEmailStatus === EmailStatusCode.EMAIL_SUSPENDED ||
         !!isEmailBlocked;
     if (!!isExpired) {
         steps.push(STEP.updateEndDate);
@@ -325,15 +324,13 @@ const MemberComponent = function ({
         steps.push(STEP.accountCreated);
     }
     if (
-        primaryEmailStatus ===
-            EMAIL_STATUS_READABLE_FORMAT[EmailStatusCode.EMAIL_SUSPENDED] &&
+        primaryEmailStatus === EmailStatusCode.EMAIL_SUSPENDED &&
         !isEmailBlocked
     ) {
         steps.push(STEP.emailSuspended);
     }
     if (
-        primaryEmailStatus !==
-            EMAIL_STATUS_READABLE_FORMAT[EmailStatusCode.EMAIL_SUSPENDED] &&
+        primaryEmailStatus !== EmailStatusCode.EMAIL_SUSPENDED &&
         isEmailBlocked
     ) {
         steps.push(STEP.emailBlocked);
@@ -366,9 +363,7 @@ const MemberComponent = function ({
                             </li>
                         )}
                         {primaryEmailStatus ===
-                            EMAIL_STATUS_READABLE_FORMAT[
-                                EmailStatusCode.EMAIL_SUSPENDED
-                            ] && (
+                            EmailStatusCode.EMAIL_SUSPENDED && (
                             <li>
                                 Son email @beta.gouv.fr est suspendu car sa date
                                 de fin a été mise à jour en retard
@@ -388,9 +383,7 @@ const MemberComponent = function ({
                             )}
                             {!hasEmailInfos && <li>Re-créer son email beta</li>}
                             {primaryEmailStatus ===
-                                EMAIL_STATUS_READABLE_FORMAT[
-                                    EmailStatusCode.EMAIL_SUSPENDED
-                                ] && (
+                                EmailStatusCode.EMAIL_SUSPENDED && (
                                 <li>
                                     changer son mot de passe pour réactiver son
                                     email
@@ -638,10 +631,7 @@ const AccountPendingCreationScreen = function ({
         <div>
             <h2>Création du compte de {user.userInfos.id}</h2>
             {user &&
-                user.primaryEmailStatus !==
-                    EMAIL_STATUS_READABLE_FORMAT[
-                        EmailStatusCode.EMAIL_ACTIVE
-                    ] && (
+                user.primaryEmailStatus !== EmailStatusCode.EMAIL_ACTIVE && (
                     <>
                         <p>Création en cours ...</p>
                         <p>
@@ -656,10 +646,7 @@ const AccountPendingCreationScreen = function ({
                     </>
                 )}
             {user &&
-                user.primaryEmailStatus ===
-                    EMAIL_STATUS_READABLE_FORMAT[
-                        EmailStatusCode.EMAIL_ACTIVE
-                    ] && (
+                user.primaryEmailStatus === EmailStatusCode.EMAIL_ACTIVE && (
                     <>
                         <p className="notification">
                             C'est bon le compte de {user.userInfos.fullname} est

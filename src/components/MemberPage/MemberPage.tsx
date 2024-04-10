@@ -15,6 +15,8 @@ import axios from "axios";
 
 import MemberBrevoEventList from "./MemberBrevoEventList";
 import MemberEventList from "./MemberEventList";
+import { EmailStatusCode } from "@/models/dbUser";
+import { EMAIL_STATUS_READABLE_FORMAT } from "@/models/misc";
 import routes, { computeRoute } from "@/routes/routes";
 
 export interface MemberPageProps {
@@ -27,7 +29,7 @@ export interface MemberPageProps {
     hasPublicServiceEmail: boolean;
     isAdmin: boolean;
     availableEmailPros: any;
-    primaryEmailStatus: string;
+    primaryEmailStatus: EmailStatusCode;
     username: string;
     mattermostInfo: {
         hasMattermostAccount: boolean;
@@ -380,7 +382,14 @@ export default function MemberPage({
                             {emailInfos.isExchange && `(offre OVH Exchange)`}
                         </p>
                         <ul>
-                            <li>statut de l'email : {primaryEmailStatus}</li>
+                            <li>
+                                statut de l'email :{" "}
+                                {
+                                    EMAIL_STATUS_READABLE_FORMAT[
+                                        primaryEmailStatus
+                                    ]
+                                }
+                            </li>
                             <li>
                                 compte bloqué pour cause de spam :{" "}
                                 {emailInfos.isBlocked
@@ -414,14 +423,25 @@ export default function MemberPage({
                         </ul>
                     </>
                 )}
-                {!emailInfos && canCreateEmail && (
-                    <CreateEmailForm
-                        userInfos={userInfos}
-                        secondaryEmail={secondaryEmail}
-                        username={username}
-                        hasPublicServiceEmail={hasPublicServiceEmail}
-                    />
+                {[
+                    EmailStatusCode.EMAIL_CREATION_WAITING,
+                    EmailStatusCode.EMAIL_VERIFICATION_WAITING,
+                ].includes(primaryEmailStatus) && (
+                    <p>{EMAIL_STATUS_READABLE_FORMAT[primaryEmailStatus]}</p>
                 )}
+                {!emailInfos &&
+                    ![
+                        EmailStatusCode.EMAIL_CREATION_WAITING,
+                        EmailStatusCode.EMAIL_VERIFICATION_WAITING,
+                    ].includes(primaryEmailStatus) &&
+                    canCreateEmail && (
+                        <CreateEmailForm
+                            userInfos={userInfos}
+                            secondaryEmail={secondaryEmail}
+                            username={username}
+                            hasPublicServiceEmail={hasPublicServiceEmail}
+                        />
+                    )}
                 {isExpired && (
                     <>
                         <div className="notification error">
