@@ -4,7 +4,7 @@ import _ from "lodash/array";
 import betagouv from "../betagouv";
 import { createEmail } from "../controllers/usersController/createEmailForUser";
 import { addEvent } from "@/lib/events";
-import { ActionEvent, EventCode, EventParam } from "@/models/actionEvent";
+import { ActionEvent, EventCode } from "@/models/actionEvent";
 import {
     CommunicationEmailCode,
     DBUser,
