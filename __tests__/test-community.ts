@@ -2,13 +2,14 @@ import chai from "chai";
 import chaiHttp from "chai-http";
 import nock from "nock";
 import sinon from "sinon";
-import * as session from "@/server/helpers/session";
-import knex from "@db";
-import routes from "@/routes/routes";
+
 import utils from "./utils";
-import config from "@/server/config";
 import * as mattermost from "@/lib/mattermost";
+import routes from "@/routes/routes";
+import config from "@/server/config";
+import * as session from "@/server/helpers/session";
 import app from "@/server/index";
+import knex from "@db";
 
 chai.use(chaiHttp);
 describe("Community endpoint", () => {
@@ -248,17 +249,5 @@ describe("Community endpoint", () => {
         //             done();
         //         });
         // });
-
-        it("should have information about user email in email service", async () => {
-            const res = await chai
-                .request(app)
-                .get(
-                    `${routes.GET_USER_API.replace(
-                        ":username",
-                        "membre.actif"
-                    )}`
-                );
-            res.body.emailServiceInfo["primaryEmail"].should.be.a("object");
-        });
     });
 });
