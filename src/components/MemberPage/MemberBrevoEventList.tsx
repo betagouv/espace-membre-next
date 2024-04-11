@@ -1,27 +1,22 @@
 import React, { useState, useEffect } from "react";
 
+import { fr } from "@codegouvfr/react-dsfr";
+import Accordion from "@codegouvfr/react-dsfr/Accordion";
 import { Table } from "@codegouvfr/react-dsfr/Table";
 import { format } from "date-fns";
-import { fr } from "date-fns/locale";
+import { fr as frFns } from "date-fns/locale";
 import { z } from "zod";
 
-const emailEventSchema = z.object({
-    email: z.string().email(),
-    _date: z.string(),
-    messageId: z.string(),
-    event: z.string(),
-    subject: z.string(),
-    tag: z.string().optional(), // Assuming tag can be an empty string or optional
-    ip: z.string(),
-    from: z.string(),
-});
-
-type emailEventSchemaType = z.infer<typeof emailEventSchema>;
+import {
+    brevoEmailEventDataSchema,
+    brevoEmailEventDataSchemaType,
+    brevoEmailEventSchemaType,
+} from "@/models/brevoEvent";
 
 const EmailEventsTable = ({ data }) => {
     // Helper function to render table rows for each event
 
-    const eventRows = (events: emailEventSchemaType[]) => {
+    const eventRows = (events: brevoEmailEventSchemaType[]) => {
         return events
             .sort(
                 (a, b) =>
@@ -30,7 +25,9 @@ const EmailEventsTable = ({ data }) => {
             .map((event, index) => {
                 return [
                     event.email,
-                    format(event._date, "dd/MM/yyyy 'à' HH:mm", { locale: fr }),
+                    format(event._date, "dd/MM/yyyy 'à' HH:mm", {
+                        locale: frFns,
+                    }),
                     event.event,
                     event.subject,
                     event.tag,
@@ -40,22 +37,19 @@ const EmailEventsTable = ({ data }) => {
     };
 
     return (
-        <div>
-            <h2>Brevo Events</h2>
-            <Table
-                headers={["Email", "Date", "Event", "Subject", "Tag", "From"]}
-                data={eventRows([
-                    ...(data.secondary_email.events || []),
-                    ...(data.primary_email.events || []),
-                ])}
-            ></Table>
-        </div>
+        <Table
+            headers={["Email", "Date", "Event", "Subject", "Tag", "From"]}
+            data={eventRows([
+                ...(data.secondary_email.events || []),
+                ...(data.primary_email.events || []),
+            ])}
+        ></Table>
     );
 };
 
 const MemberBrevoEventList = ({ userId }) => {
-    const [eventData, setEventData] = useState();
-    const [loading, setLoading] = useState(false);
+    const [eventData, setEventData] = useState<brevoEmailEventDataSchemaType>();
+    const [loading, setLoading] = useState(true);
 
     useEffect(() => {
         const fetchEvents = async () => {
@@ -70,7 +64,7 @@ const MemberBrevoEventList = ({ userId }) => {
                     throw new Error("Network response was not ok");
                 }
                 const data = await response.json();
-                setEventData(data);
+                setEventData(brevoEmailEventDataSchema.parse(data));
             } catch (error) {
                 console.error("Failed to fetch events:", error);
             } finally {
@@ -80,15 +74,17 @@ const MemberBrevoEventList = ({ userId }) => {
 
         fetchEvents();
     }, [userId]);
-
-    if (loading) return <div>Loading...</div>;
-    if (!eventData) return <div>No events found for this user.</div>;
-
-    return (
-        <div>
-            <EmailEventsTable data={eventData} />
-        </div>
-    );
+    let content;
+    if (loading) {
+        content = <div>Loading...</div>;
+    } else {
+        content = (
+            <div>
+                <EmailEventsTable data={eventData} />
+            </div>
+        );
+    }
+    return <Accordion label="Événements Brevo">{content}</Accordion>;
 };
 
 export default MemberBrevoEventList;

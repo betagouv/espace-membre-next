@@ -1,5 +1,6 @@
 import { getServerSession } from "next-auth";
 
+import { brevoEmailEventDataSchema } from "@/models/brevoEvent";
 import db from "@/server/db";
 import { getSendEventForUser } from "@/server/infra/email/sendInBlue";
 import { authOptions } from "@/utils/authoptions";
@@ -60,5 +61,5 @@ export async function GET(
             resp.secondary_email["error"] = e;
         }
     }
-    return Response.json(resp);
+    return Response.json(brevoEmailEventDataSchema.parse(resp));
 }
