@@ -14,6 +14,7 @@ import Input from "@codegouvfr/react-dsfr/Input";
 import axios from "axios";
 
 import MemberBrevoEventList from "./MemberBrevoEventList";
+import MemberEmailServiceInfo from "./MemberEmailServiceInfo";
 import MemberEventList from "./MemberEventList";
 import { EmailStatusCode } from "@/models/dbUser";
 import { EMAIL_STATUS_READABLE_FORMAT } from "@/models/misc";
@@ -228,8 +229,8 @@ export default function MemberPage({
     primaryEmailStatus,
     username,
     mattermostInfo,
-    emailServiceInfo,
-}: MemberPageProps) {
+}: // emailServiceInfo,
+MemberPageProps) {
     const shouldDisplayUpgrade = Boolean(
         isAdmin &&
             availableEmailPros.length &&
@@ -396,33 +397,10 @@ export default function MemberPage({
                                     ? "oui (contactez un.e administrat.eur.rice)"
                                     : "non"}
                             </li>
-                            {!!emailServiceInfo && (
-                                <>
-                                    {emailServiceInfo.primaryEmail && (
-                                        <li>
-                                            Email primaire blacklisté sur brevo
-                                            :{" "}
-                                            {emailServiceInfo.primaryEmail
-                                                .emailBlacklisted
-                                                ? "oui"
-                                                : "non"}
-                                        </li>
-                                    )}
-                                    {emailServiceInfo.secondaryEmail && (
-                                        <li>
-                                            Email secondaire blacklisté sur
-                                            brevo :{" "}
-                                            {emailServiceInfo.secondaryEmail
-                                                .emailBlacklisted
-                                                ? "oui"
-                                                : "non"}
-                                        </li>
-                                    )}
-                                </>
-                            )}
                         </ul>
                     </>
                 )}
+                <MemberEmailServiceInfo userId={username} />
                 {[
                     EmailStatusCode.EMAIL_CREATION_WAITING,
                     EmailStatusCode.EMAIL_VERIFICATION_WAITING,
@@ -491,8 +469,6 @@ export default function MemberPage({
                     </ul>
                 )}
             </div>
-            {isAdmin && <MemberBrevoEventList userId={username} />}
-            {isAdmin && <MemberEventList userId={username} />}
             {isAdmin && (
                 <div className="fr-mb-8v">
                     <h2>Actions admin</h2>
@@ -500,6 +476,8 @@ export default function MemberPage({
                         userInfos={userInfos}
                         secondaryEmail={secondaryEmail}
                     ></ChangeSecondaryEmailBloc>
+                    <MemberBrevoEventList userId={username} />
+                    <MemberEventList userId={username} />
                     {shouldDisplayUpgrade && (
                         <Accordion label="Passer en compte pro">
                             {shouldDisplayUpgrade && (

@@ -458,7 +458,7 @@ export async function getContactInfo({ email }: { email: string }) {
             return data;
         },
         function (error) {
-            console.error(error);
+            // console.error(error);
         }
     );
     return data;

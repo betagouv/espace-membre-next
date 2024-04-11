@@ -186,17 +186,6 @@ async function getUserPageData(req, res, onSuccess, onError) {
         }
         let { mattermostUser, mattermostUserInTeamAndActive } =
             await getMattermostUserInfo(dbUser);
-        let emailServiceInfo = {};
-        if (dbUser?.primary_email) {
-            emailServiceInfo["primaryEmail"] = await getContactInfo({
-                email: dbUser.primary_email,
-            });
-        }
-        if (dbUser?.secondary_email) {
-            emailServiceInfo["secondaryEmail"] = await getContactInfo({
-                email: dbUser.secondary_email,
-            });
-        }
         const title = user.userInfos ? user.userInfos.fullname : null;
         onSuccess({
             title,
@@ -212,7 +201,6 @@ async function getUserPageData(req, res, onSuccess, onError) {
                 hasMattermostAccount: !!mattermostUser,
                 isInactiveOrNotInTeam: !mattermostUserInTeamAndActive,
             },
-            emailServiceInfo,
             primaryEmail: dbUser ? dbUser.primary_email : "",
             primaryEmailStatus: dbUser
                 ? dbUser.primary_email_status

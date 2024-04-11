@@ -34,13 +34,13 @@ const MemberEventList = ({ userId }) => {
 
         fetchEvents();
     }, [userId]);
-
-    if (loading) return <div>Loading...</div>;
-    if (!events.length) return <div>No events found for this user.</div>;
-    console.log(events);
-    return (
-        <div>
-            <h2>User Events</h2>
+    let content;
+    if (loading || !events) {
+        content = <div>Loading...</div>;
+    } else if (!events.length) {
+        content = <div>No events found for this user.</div>;
+    } else {
+        content = (
             <Table
                 data={events.map((event) => [
                     EventCodeToReadable[event.action_code],
@@ -85,8 +85,9 @@ const MemberEventList = ({ userId }) => {
                     `Données`,
                 ]}
             ></Table>
-        </div>
-    );
+        );
+    }
+    return <Accordion label="Événements Espace-Membre">{content}</Accordion>;
 };
 
 export default MemberEventList;
