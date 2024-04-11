@@ -1,9 +1,6 @@
 import { getServerSession } from "next-auth";
 
-import {
-    brevoEmailEventDataSchema,
-    emailEventSchema,
-} from "@/models/brevoEvent";
+import { brevoEmailEventDataSchema } from "@/models/brevoEvent";
 import db from "@/server/db";
 import { getSendEventForUser } from "@/server/infra/email/sendInBlue";
 import { authOptions } from "@/utils/authoptions";
