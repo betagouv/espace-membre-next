@@ -101,6 +101,7 @@ type StartupSchemaType = z.infer<typeof startupSchemaWithMarkdown>;
 export interface StartupFormProps {
     formData: StartupSchemaType;
     incubators: Incubator[];
+    sponsors: string[];
     save: (data: string) => any;
     updatePullRequest?: GithubAPIPullRequest;
 }
@@ -375,7 +376,16 @@ export function StartupForm(props: StartupFormProps) {
                             )
                         )}
                     </Select>
-                    [SPONSOR EDITOR ]<hr />
+                    <SponsorBlock
+                        sponsors={props.formData.sponsors}
+                        allSponsors={props.sponsors}
+                        setSponsors={(e, data) => {
+                            console.log("setSponsors", e, data);
+                        }}
+                        setNewSponsors={(e, data) => {
+                            console.log("setNewSponsors", e, data);
+                        }}
+                    />
                     <div
                         className={`fr-input-group ${
                             errors.phases ? "fr-input-group--error" : ""

@@ -61,9 +61,11 @@ export default async function Page(props) {
     const sha = startupPR && startupPR.head.sha;
     const formData = await fetchGithubPageData(startup, sha || "master");
     const incubators = await betagouv.incubators();
+    const sponsors = await betagouv.sponsors();
     const componentProps = {
         formData,
         incubators,
+        sponsors,
         updatePullRequest: startupPR,
     };
 

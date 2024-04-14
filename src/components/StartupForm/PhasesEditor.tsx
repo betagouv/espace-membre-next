@@ -152,12 +152,7 @@ export function PhasesEditor({
                               .toISOString()
                               .substring(0, 10)
                         : "";
-                    // console.log(
-                    //     "startDateString",
-                    //     index,
-                    //     startDateString,
-                    //     getValues(`phases.${index}.start`)
-                    // );
+
                     return [
                         <Select
                             key={phase.id + "-name"}

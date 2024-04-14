@@ -8,8 +8,8 @@ import expressSanitizer from "express-sanitizer";
 import next from "next";
 
 import { PUBLIC_ROUTES } from "./config/jwt.config";
-import getAllIncubators from "./controllers/incubatorController/api/getAllIncubators";
-import getAllSponsors from "./controllers/sponsorController/api/getAllSponsors";
+//import getAllIncubators from "./controllers/incubatorController/api/getAllIncubators";
+//import getAllSponsors from "./controllers/sponsorController/api/getAllSponsors";
 import { errorHandler } from "./middlewares/errorHandler";
 import { rateLimiter } from "./middlewares/rateLimiter";
 import { setupSessionMiddleware } from "./middlewares/sessionMiddleware";
@@ -122,7 +122,7 @@ const startServer = () => {
         //server.get(routes.API_PUBLIC_INCUBATORS_GET_ALL, getAllIncubators);
 
         //sponsors
-        server.get(routes.API_PUBLIC_SPONSORS_GET_ALL, getAllSponsors);
+        // server.get(routes.API_PUBLIC_SPONSORS_GET_ALL, getAllSponsors);
 
         server.get("/resources", resourceController.getResources);
         server.post(

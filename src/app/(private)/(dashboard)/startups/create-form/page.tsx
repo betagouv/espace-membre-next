@@ -13,11 +13,16 @@ export const metadata: Metadata = {
 
 export default async function Page(props) {
     const incubators = await betagouv.incubators();
+    const sponsors = await betagouv.sponsors();
 
     return (
         <>
             <h1>{routeTitles.startupCreate()}</h1>
-            <StartupInfoCreate incubators={incubators} {...props} />
+            <StartupInfoCreate
+                sponsors={sponsors}
+                incubators={incubators}
+                {...props}
+            />
         </>
     );
 }

@@ -28,6 +28,7 @@ export interface StartupInfoFormData {
 export interface StartupInfoUpdateProps {
     formData: StartupFrontMatter & { markdown: string };
     incubators: Incubator[];
+    sponsors: string[];
     updatePullRequest?: GithubAPIPullRequest;
 }
 
@@ -73,6 +74,7 @@ export const StartupInfoUpdate = (props: StartupInfoUpdateProps) => {
                         save={save}
                         formData={props.formData}
                         incubators={props.incubators}
+                        sponsors={props.sponsors}
                         updatePullRequest={props.updatePullRequest}
                         //startup={{ attributes: { name: props.formData.title } }}
                         // phases={props.formData.phases

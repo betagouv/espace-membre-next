@@ -9,6 +9,7 @@ import { Incubator } from "@/models/incubator";
 import { DBPullRequest } from "@/models/pullRequests";
 import { StartupInfo } from "@/models/startup";
 import routes, { computeRoute } from "@/routes/routes";
+import { Sponsor } from "@/models/sponsor";
 
 export interface StartupInfoCreateProps {
     //title: string;
@@ -24,6 +25,7 @@ export interface StartupInfoCreateProps {
     //username: string;
     updatePullRequest?: DBPullRequest;
     incubators: Incubator[];
+    sponsors: string[];
     //isAdmin: boolean;
 }
 
@@ -73,6 +75,7 @@ export const StartupInfoCreate = (props: StartupInfoCreateProps) => {
                     save={save}
                     formData={NEW_PRODUCT_DATA}
                     incubators={props.incubators}
+                    sponsors={props.sponsors}
                 />
                 <br />
                 <br />

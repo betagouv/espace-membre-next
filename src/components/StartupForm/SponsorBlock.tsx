@@ -6,13 +6,15 @@ import ReactDOM from "react-dom";
 
 import SESponsorSelect from "../SESponsorSelect";
 import { SponsorForm } from "../SponsorForm/SponsorForm";
+
 import { Sponsor } from "@/models/sponsor";
+
 const modal = createModal({
     id: "foo-modal",
     isOpenedByDefault: false,
 });
 
-const SponsorModal = ({ addSponsor }) => {
+export const SponsorModal = ({ addSponsor }) => {
     const modalContent = (
         <modal.Component title="Ajouter un sponsor">
             <SponsorForm addSponsor={addSponsor} />
@@ -30,6 +32,7 @@ const SponsorModal = ({ addSponsor }) => {
 const SponsorBlock = ({
     setSponsors,
     sponsors,
+    allSponsors,
     setNewSponsors,
     newSponsors,
 }) => {
@@ -46,8 +49,8 @@ const SponsorBlock = ({
     return (
         <div className="fr-input-group">
             <SESponsorSelect
-                value={sponsors}
-                newSponsors={newSponsors}
+                value={sponsors.map((s) => s.replace(/^\/organisations\//, ""))}
+                allSponsors={allSponsors}
                 onChange={(newSponsors) => {
                     setSponsors(newSponsors);
                 }}
