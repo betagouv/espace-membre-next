@@ -435,55 +435,7 @@ export function StartupForm(props: StartupFormProps) {
                     <>
                      
 
-                        <div
-                            className={`fr-input-group ${
-                                formErrors["description du produit"]
-                                    ? "fr-input-group--error"
-                                    : ""
-                            }`}
-                        >
-                            <label className="fr-label">
-                                Description du produit :
-                                <span className="fr-hint-text">
-                                    Décrivez votre produit
-                                </span>
-                            </label>
-                            <ClientOnly>
-                                <MdEditor
-                                    defaultValue={
-                                        props.content || DEFAULT_CONTENT
-                                    }
-                                    style={{
-                                        height: "500px",
-                                        marginTop: "0.5rem",
-                                    }}
-                                    renderHTML={(text) => mdParser.render(text)}
-                                    onChange={handleEditorChange}
-                                />
-                            </ClientOnly>
-                            {!!formErrors["description du produit"] && (
-                                <p
-                                    id="text-input-error-desc-error"
-                                    className="fr-error-text"
-                                >
-                                    {formErrors["description du produit"]}
-                                </p>
-                            )}
-                        </div>
-                        <SEAsyncIncubateurSelect
-                            value={incubator}
-                            showPlaceHolder={true}
-                            onChange={(e) => {
-                                setIncubator(e.value || undefined);
-                            }}
-                            required={true}
-                        />
-                        <SponsorBlock
-                            newSponsors={newSponsors}
-                            setNewSponsors={setNewSponsors}
-                            sponsors={sponsors}
-                            setSponsors={(sponsors) => setSponsors(sponsors)}
-                        />
+                       
                         <div
                             className={`fr-input-group ${
                                 formErrors["phases"] || formErrors["date"]
