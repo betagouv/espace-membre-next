@@ -379,8 +379,13 @@ export function StartupForm(props: StartupFormProps) {
                     <SponsorBlock
                         sponsors={props.formData.sponsors}
                         allSponsors={props.sponsors}
+                        newSponsors={[]}
                         setSponsors={(e, data) => {
                             console.log("setSponsors", e, data);
+                            setValue(
+                                "sponsors",
+                                (data || []).map((id) => `/organisations/${id}`)
+                            );
                         }}
                         setNewSponsors={(e, data) => {
                             console.log("setNewSponsors", e, data);

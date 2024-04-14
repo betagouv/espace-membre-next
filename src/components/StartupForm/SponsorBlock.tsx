@@ -58,6 +58,9 @@ const SponsorBlock = ({
                 containerStyle={{
                     marginBottom: `0.5rem`,
                 }}
+                hint={
+                    "Indiquez la ou les administrations qui sponsorisent votre produit"
+                }
             />
             <span className="fr-text fr-text--sm">
                 Le sponsor n'est pas encore dans la base de donnée ?

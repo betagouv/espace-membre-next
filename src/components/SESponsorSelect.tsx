@@ -68,7 +68,7 @@ export default function SESponsorSelect({
         })
     );
 
-    console.log("allOptions", allOptions);
+    //console.log("allOptions", allOptions);
     // const allOptions = [...options, ...newSponsorsOptions];
     return (
         <div className="fr-select-group" style={containerStyle}>
