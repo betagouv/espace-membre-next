@@ -96,6 +96,7 @@ import { PullRequestWarning } from "../PullRequestWarning";
 import { fr } from "@codegouvfr/react-dsfr";
 import { Incubator } from "@/models/incubator";
 import Select from "@codegouvfr/react-dsfr/Select";
+import Checkbox from "@codegouvfr/react-dsfr/Checkbox";
 
 type StartupSchemaType = z.infer<typeof startupSchemaWithMarkdown>;
 
@@ -142,6 +143,7 @@ export function StartupForm(props: StartupFormProps) {
         formState: { errors, isDirty, isSubmitting, isValid },
         setValue,
         getValues,
+        watch,
         control,
     } = useForm<StartupSchemaType>({
         resolver: zodResolver(startupSchemaWithMarkdown),
@@ -261,6 +263,13 @@ export function StartupForm(props: StartupFormProps) {
             setIsSaving(false);
         }, 3000);
     };
+
+    watch("analyse_risques");
+
+    const hasAnalyseDeRisque =
+        !!props.formData.analyse_risques ||
+        !!props.formData.analyse_risques_url ||
+        !!getValues("analyse_risques");
 
     return (
         <>
@@ -385,39 +394,28 @@ export function StartupForm(props: StartupFormProps) {
                             )
                         }
                     />
-                    {/*
-                    <RadioButtons
-                        legend="Indique si ta startup à déjà réalisé un atelier d'analyse de risque agile."
+                    <Checkbox
                         options={[
                             {
-                                label: "Oui",
+                                label: "Nous avons réalisé une analyse de risque",
+                                hintText:
+                                    "Cochez cette case si l'équipe a produit une analyse de risque",
                                 nativeInputProps: {
-                                    defaultChecked: analyse_risques === true,
-                                    checked: analyse_risques === true,
-                                    onChange: () => setAnalyseRisques(true),
-                                },
-                            },
-                            {
-                                label: "Non",
-                                nativeInputProps: {
-                                    defaultChecked:
-                                        analyse_risques === false ||
-                                        !analyse_risques,
-                                    checked:
-                                        analyse_risques === false ||
-                                        !analyse_risques,
-                                    onChange: () => setAnalyseRisques(false),
+                                    ...register("analyse_risques"),
+                                    checked: hasAnalyseDeRisque,
                                 },
                             },
                         ]}
-                    /> */}
-                    <BasicInput
-                        id="analyse_risques_url"
-                        hintText="Si vous avez rendu une analyse de risques publique, tu peux indiquer le lien vers ce document ici."
                     />
+                    {hasAnalyseDeRisque && (
+                        <BasicInput
+                            id="analyse_risques_url"
+                            hintText="Si vous avez rendu une analyse de risques publique, tu peux indiquer le lien vers ce document ici."
+                        />
+                    )}
                     <BasicInput
                         id="stats_url"
-                        hintText="Si vous avez rendu une analyse de risques publique, tu peux indiquer le lien vers ce document ici."
+                        hintText="Si vous avez rendu une page de statistiques publique, tu peux indiquer le lien vers ce document ici."
                     />
                     <Button
                         className={fr.cx("fr-mt-3w")}
