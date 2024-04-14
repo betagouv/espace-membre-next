@@ -2,26 +2,39 @@
 import React from "react";
 
 import axios from "axios";
+
+import { StartupForm } from "../StartupForm/StartupForm";
+
+import { Incubator } from "@/models/incubator";
 import { DBPullRequest } from "@/models/pullRequests";
 import { StartupInfo } from "@/models/startup";
 import routes, { computeRoute } from "@/routes/routes";
-import { StartupForm } from "../StartupForm/StartupForm";
 
 export interface StartupInfoCreateProps {
-    title: string;
-    currentUserId: string;
-    activeTab: string;
-    subActiveTab: string;
-    startup: StartupInfo;
-    formValidationErrors: any;
-    startupOptions: {
-        value: string;
-        label: string;
-    }[];
-    username: string;
+    //title: string;
+    //currentUserId: string;
+    //activeTab: string;
+    //subActiveTab: string;
+    //startup: StartupInfo;
+    //formValidationErrors: any;
+    // startupOptions: {
+    //     value: string;
+    //     label: string;
+    // }[];
+    //username: string;
     updatePullRequest?: DBPullRequest;
-    isAdmin: boolean;
+    incubators: Incubator[];
+    //isAdmin: boolean;
 }
+
+const NEW_PRODUCT_DATA = {
+    id: "",
+    title: "",
+    mission: "",
+    markdown: "",
+    contact: "",
+    incubator: "",
+};
 
 /* Pure component */
 export const StartupInfoCreate = (props: StartupInfoCreateProps) => {
@@ -56,7 +69,11 @@ export const StartupInfoCreate = (props: StartupInfoCreateProps) => {
             )}
             <div className="beta-banner"></div>
             <div>
-                <StartupForm content={""} save={save} />
+                <StartupForm
+                    save={save}
+                    formData={NEW_PRODUCT_DATA}
+                    incubators={props.incubators}
+                />
                 <br />
                 <br />
             </div>

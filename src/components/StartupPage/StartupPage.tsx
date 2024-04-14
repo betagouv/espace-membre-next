@@ -48,7 +48,7 @@ export default function StartupPage({
                 <h1>{startupInfos.name}</h1>
                 <p>
                     <span>
-                        Fiche github :{" "}
+                        Fiche GitHub :{" "}
                         <a
                             className="fr-link"
                             target="_blank"
@@ -82,7 +82,7 @@ export default function StartupPage({
                     <br />
                 </p>
                 <p className="fr-text--sm" style={{ fontStyle: "italic" }}>
-                    Une informations n'est à jour ?
+                    Une informations n'est pas à jour ?
                 </p>
                 {updatePullRequest && (
                     <>

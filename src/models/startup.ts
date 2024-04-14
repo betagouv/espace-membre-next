@@ -9,6 +9,8 @@ interface Relationship {
     };
 }
 
+// todo: extract types from single "phases" array ?
+
 export const PHASE_READABLE_NAME = {
     acceleration: "En Accélération",
     investigation: "En Investigation",
@@ -175,8 +177,7 @@ export const startupSchema = z.object({
     repository: z.string().optional().describe("URL du repository GitHub"),
     accessibility_status: z.string().optional(),
     dashlord_url: z.string().optional().describe("URL du rapport DashLord"),
-    stats: z.boolean().optional().describe("URL de la page de statistiques"),
-    stats_url: z.string().optional(),
+    stats_url: z.string().optional().describe("URL de la page de statistiques"),
     budget_url: z.string().optional(),
     analyse_risques: z.boolean().optional(),
     analyse_risques_url: z

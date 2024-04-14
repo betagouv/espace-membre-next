@@ -182,6 +182,7 @@ const missionsArraySchema = z.array(missionSchema);
 export type HasMissions<T = any> = T & {
     missions: z.infer<typeof missionsArraySchema>;
 };
+
 export interface MemberWithPrimaryEmailInfo extends Member {
     primary_email: string;
     primary_email_status: EmailStatusCode;

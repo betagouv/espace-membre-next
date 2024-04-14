@@ -9,11 +9,32 @@ import {
 } from "@/models/startup";
 
 import "react-markdown-editor-lite/lib/index.css";
+
+import { fr } from "@codegouvfr/react-dsfr";
 import { Alert } from "@codegouvfr/react-dsfr/Alert";
 import Button from "@codegouvfr/react-dsfr/Button";
+import Checkbox from "@codegouvfr/react-dsfr/Checkbox";
 import Input, { InputProps } from "@codegouvfr/react-dsfr/Input";
 import RadioButtons from "@codegouvfr/react-dsfr/RadioButtons";
+import Select from "@codegouvfr/react-dsfr/Select";
 import Table from "@codegouvfr/react-dsfr/Table";
+import { zodResolver } from "@hookform/resolvers/zod";
+import * as Sentry from "@sentry/nextjs";
+import MarkdownIt from "markdown-it";
+import { useForm } from "react-hook-form";
+import MdEditor from "react-markdown-editor-lite";
+import { z } from "zod";
+
+import { PhasesEditor } from "./PhasesEditor";
+import SponsorBlock from "./SponsorBlock";
+import { ClientOnly } from "../ClientOnly";
+import FileUpload from "../FileUpload";
+import { PullRequestWarning } from "../PullRequestWarning";
+import SelectAccessibilityStatus from "../SelectAccessibilityStatus";
+
+import { GithubAPIPullRequest } from "@/lib/github";
+import { Incubator } from "@/models/incubator";
+import { startupSchemaWithMarkdown } from "@/models/startup";
 
 // import style manually
 const mdParser = new MarkdownIt(/* Markdown-it options */);
@@ -37,66 +58,42 @@ Décrit ta solution en quelques lignes? qui seront/sont les bénéficiaires ?
 Comment vous vous y prenez pour atteindre votre usagers ? quel impact chiffré visez-vous ?
 `;
 
-interface StartupForm {
-    sponsors?: string[];
-    incubator?: string;
-    mission?: string;
-    stats_url?: string;
-    link?: string;
-    dashlord_url?: string;
-    analyse_risques_url?: string;
-    analyse_risques?: boolean;
-    repository?: string;
-    content: string;
-    accessibility_status?: any;
-    save: any;
-    contact?: string;
-    phases?: {
-        start: string;
-        end?: string;
-        name: StartupPhase;
-    }[];
-    startup?: { attributes: { name: string } };
-}
+// interface StartupForm {
+//     sponsors?: string[];
+//     incubator?: string;
+//     mission?: string;
+//     stats_url?: string;
+//     link?: string;
+//     dashlord_url?: string;
+//     analyse_risques_url?: string;
+//     analyse_risques?: boolean;
+//     repository?: string;
+//     content: string;
+//     accessibility_status?: any;
+//     save: any;
+//     contact?: string;
+//     phases?: {
+//         start: string;
+//         end?: string;
+//         name: StartupPhase;
+//     }[];
+//     startup?: { attributes: { name: string } };
+// }
 
-interface FormErrorResponse {
-    errors?: Record<string, string[]>;
-    message: string;
-}
+// interface FormErrorResponse {
+//     errors?: Record<string, string[]>;
+//     message: string;
+// }
 
-const blobToBase64 = async (blob) => {
-    const reader = new FileReader();
-    reader.readAsDataURL(blob);
-    return new Promise((resolve) => {
-        reader.onloadend = () => {
-            resolve(reader.result);
-        };
-    });
-};
-
-import { startupSchemaWithMarkdown } from "@/models/startup";
-import { z } from "zod";
-import { zodResolver } from "@hookform/resolvers/zod";
-import * as Sentry from "@sentry/nextjs";
-import MarkdownIt from "markdown-it";
-import { useForm } from "react-hook-form";
-import MdEditor from "react-markdown-editor-lite";
-import {
-    PhaseActionCell,
-    PhaseDatePickerCell,
-    PhaseSelectionCell,
-} from "./PhaseItem";
-import SponsorBlock from "./SponsorBlock";
-import { ClientOnly } from "../ClientOnly";
-import FileUpload from "../FileUpload";
-import SEAsyncIncubateurSelect from "../SEAsyncIncubateurSelect";
-import SelectAccessibilityStatus from "../SelectAccessibilityStatus";
-import { GithubAPIPullRequest } from "@/lib/github";
-import { PullRequestWarning } from "../PullRequestWarning";
-import { fr } from "@codegouvfr/react-dsfr";
-import { Incubator } from "@/models/incubator";
-import Select from "@codegouvfr/react-dsfr/Select";
-import Checkbox from "@codegouvfr/react-dsfr/Checkbox";
+// const blobToBase64 = async (blob) => {
+//     const reader = new FileReader();
+//     reader.readAsDataURL(blob);
+//     return new Promise((resolve) => {
+//         reader.onloadend = () => {
+//             resolve(reader.result);
+//         };
+//     });
+// };
 
 type StartupSchemaType = z.infer<typeof startupSchemaWithMarkdown>;
 
@@ -108,6 +105,7 @@ export interface StartupFormProps {
     updatePullRequest?: GithubAPIPullRequest;
 }
 
+// boilerplate for text inputs
 function BasicFormInput({
     register,
     errors,
@@ -264,12 +262,14 @@ export function StartupForm(props: StartupFormProps) {
         }, 3000);
     };
 
-    watch("analyse_risques");
+    watch("analyse_risques"); // allow checkbox interaction
 
     const hasAnalyseDeRisque =
         !!props.formData.analyse_risques ||
         !!props.formData.analyse_risques_url ||
         !!getValues("analyse_risques");
+
+    console.log("formData", props.formData);
 
     return (
         <>
@@ -376,7 +376,34 @@ export function StartupForm(props: StartupFormProps) {
                         )}
                     </Select>
                     [SPONSOR EDITOR ]<hr />
-                    [PHASES EDITOR ]<hr />
+                    <div
+                        className={`fr-input-group ${
+                            errors.phases ? "fr-input-group--error" : ""
+                        }`}
+                    >
+                        <label className="fr-label">
+                            Phase
+                            <span className="fr-hint-text">
+                                Voici l'historique des phases dans lesquelles a
+                                été ce produit.
+                            </span>
+                        </label>
+                        <PhasesEditor
+                            control={control}
+                            register={register}
+                            setValue={setValue}
+                            getValues={getValues}
+                            errors={errors.phases || []}
+                        />
+                        {!!errors.phases && (
+                            <p
+                                id="text-input-error-desc-error"
+                                className="fr-error-text"
+                            >
+                                {errors.phases.message}
+                            </p>
+                        )}
+                    </div>
                     [FILE UPLOAD ]<hr />
                     <BasicInput id="link" />
                     <BasicInput id="repository" />
@@ -410,12 +437,12 @@ export function StartupForm(props: StartupFormProps) {
                     {hasAnalyseDeRisque && (
                         <BasicInput
                             id="analyse_risques_url"
-                            hintText="Si vous avez rendu une analyse de risques publique, tu peux indiquer le lien vers ce document ici."
+                            hintText="Si l'analyse de risques est publique, tu peux indiquer le lien vers ce document ici."
                         />
                     )}
                     <BasicInput
                         id="stats_url"
-                        hintText="Si vous avez rendu une page de statistiques publique, tu peux indiquer le lien vers ce document ici."
+                        hintText="Si la page de stastiques est publique, tu peux indiquer le lien vers ce document ici."
                     />
                     <Button
                         className={fr.cx("fr-mt-3w")}

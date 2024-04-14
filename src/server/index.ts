@@ -119,7 +119,7 @@ const startServer = () => {
             pullRequestsController.getAllPullRequests
         );
         // INCUBATORS
-        server.get(routes.API_PUBLIC_INCUBATORS_GET_ALL, getAllIncubators);
+        //server.get(routes.API_PUBLIC_INCUBATORS_GET_ALL, getAllIncubators);
 
         //sponsors
         server.get(routes.API_PUBLIC_SPONSORS_GET_ALL, getAllSponsors);
