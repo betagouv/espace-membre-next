@@ -137,9 +137,9 @@ export interface DBStartup {
 }
 
 export const startupSchema = z.object({
-    id: z.string(),
-    title: z.string(),
-    mission: z.string(),
+    id: z.string().describe("identifiant de la startup"),
+    title: z.string().describe("nom de la startup"),
+    mission: z.string().describe("mission de la startup"),
     sponsors: z.array(z.string()).optional(),
     incubator: z.string(),
     contact: z.string(),
@@ -161,3 +161,5 @@ export const startupSchema = z.object({
 });
 
 export interface StartupFrontMatter extends z.infer<typeof startupSchema> {}
+
+export type startupSchemaType = z.infer<typeof startupSchema>;

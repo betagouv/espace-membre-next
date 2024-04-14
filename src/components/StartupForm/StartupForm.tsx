@@ -13,20 +13,6 @@ import Button from "@codegouvfr/react-dsfr/Button";
 import Input from "@codegouvfr/react-dsfr/Input";
 import RadioButtons from "@codegouvfr/react-dsfr/RadioButtons";
 import Table from "@codegouvfr/react-dsfr/Table";
-import * as Sentry from "@sentry/nextjs";
-import MarkdownIt from "markdown-it";
-import MdEditor from "react-markdown-editor-lite";
-
-import {
-    PhaseActionCell,
-    PhaseDatePickerCell,
-    PhaseSelectionCell,
-} from "./PhaseItem";
-import SponsorBlock from "./SponsorBlock";
-import { ClientOnly } from "../ClientOnly";
-import FileUpload from "../FileUpload";
-import SEAsyncIncubateurSelect from "../SEAsyncIncubateurSelect";
-import SelectAccessibilityStatus from "../SelectAccessibilityStatus";
 
 // import style manually
 const mdParser = new MarkdownIt(/* Markdown-it options */);
@@ -87,203 +73,245 @@ const blobToBase64 = async (blob) => {
     });
 };
 
+import { startupSchema, startupSchemaType } from "@/models/startup";
+import { z } from "zod";
+import { zodResolver } from "@hookform/resolvers/zod";
+import * as Sentry from "@sentry/nextjs";
+import MarkdownIt from "markdown-it";
+import { useForm } from "react-hook-form";
+import MdEditor from "react-markdown-editor-lite";
+import {
+    PhaseActionCell,
+    PhaseDatePickerCell,
+    PhaseSelectionCell,
+} from "./PhaseItem";
+import SponsorBlock from "./SponsorBlock";
+import { ClientOnly } from "../ClientOnly";
+import FileUpload from "../FileUpload";
+import SEAsyncIncubateurSelect from "../SEAsyncIncubateurSelect";
+import SelectAccessibilityStatus from "../SelectAccessibilityStatus";
+import { GithubAPIPullRequest } from "@/lib/github";
+
+export type StartupSchemaType = z.infer<typeof startupSchema>;
+
+// data from secretariat API
+export interface StartupFormProps {
+    formData: startupSchemaType;
+    content?: string;
+    save: (data: string) => any;
+    updatePullRequest?: GithubAPIPullRequest;
+}
+
 /* Pure component */
-export const StartupForm = (props: StartupForm) => {
-    const [text, setText] = React.useState(props.content || "");
-    const [title, setTitle] = React.useState<string | undefined>(
-        props.startup?.attributes.name
-    );
+export const StartupForm = (props: StartupFormProps) => {
+    const defaultValues: startupSchemaType = { ...props.formData };
+    const {
+        register,
+        handleSubmit,
+        formState: { errors, isDirty, isSubmitting, isValid },
+        setValue,
+        control,
+    } = useForm<startupSchemaType>({
+        resolver: zodResolver(startupSchema),
+        mode: "onChange",
+        defaultValues,
+    });
+
+    // const [text, setText] = React.useState(props.content || "");
+    // const [title, setTitle] = React.useState<string | undefined>(
+    //     props.startup?.attributes.name
+    // );
     const [alertMessage, setAlertMessage] = React.useState<{
         title: string;
         message: NonNullable<React.ReactNode>;
         type: "success" | "warning";
     }>();
-    const [link, setLink] = React.useState<string | undefined>(props.link);
-    const [repository, setRepository] = React.useState<string | undefined>(
-        props.repository
-    );
-    const [mission, setMission] = React.useState(props.mission);
-    const [sponsors, setSponsors] = React.useState(props.sponsors || []);
-    const [newSponsors, setNewSponsors] = React.useState([]);
-    const [contact, setContact] = React.useState(props.contact);
+    // const [link, setLink] = React.useState<string | undefined>(props.link);
+    // const [repository, setRepository] = React.useState<string | undefined>(
+    //     props.repository
+    // );
+    // const [mission, setMission] = React.useState(props.mission);
+    // const [sponsors, setSponsors] = React.useState(props.sponsors || []);
+    // const [newSponsors, setNewSponsors] = React.useState([]);
+    // const [contact, setContact] = React.useState(props.contact);
 
-    const [incubator, setIncubator] = React.useState(props.incubator);
-    const [stats_url, setStatsUrl] = React.useState<string | undefined>(
-        props.stats_url
-    );
-    const [analyse_risques_url, setAnalyseRisquesUrl] = React.useState<
-        string | undefined
-    >(props.analyse_risques_url);
-    const [analyse_risques, setAnalyseRisques] = React.useState<
-        boolean | undefined
-    >(props.analyse_risques || undefined);
-    const [dashlord_url, setDashlord] = React.useState<string | undefined>(
-        props.dashlord_url
-    );
-    const [accessibility_status, setAccessibilityStatus] = React.useState(
-        props.accessibility_status || AccessibilityStatus.NON_CONFORME
-    );
-    const [selectedFile, setSelectedFile]: [undefined | File, (File) => void] =
-        React.useState();
-    const [phases, setPhases] = React.useState(
-        props.phases || [
-            {
-                name: StartupPhase.PHASE_INVESTIGATION,
-                start: "",
-            },
-        ]
-    );
-    const [errorMessage, setErrorMessage] = React.useState("");
-    const [formErrors, setFormErrors] = React.useState({});
-    const [isSaving, setIsSaving] = React.useState(false);
+    // const [incubator, setIncubator] = React.useState(props.incubator);
+    // const [stats_url, setStatsUrl] = React.useState<string | undefined>(
+    //     props.stats_url
+    // );
+    // const [analyse_risques_url, setAnalyseRisquesUrl] = React.useState<
+    //     string | undefined
+    // >(props.analyse_risques_url);
+    // const [analyse_risques, setAnalyseRisques] = React.useState<
+    //     boolean | undefined
+    // >(props.analyse_risques || undefined);
+    // const [dashlord_url, setDashlord] = React.useState<string | undefined>(
+    //     props.dashlord_url
+    // );
+    // const [accessibility_status, setAccessibilityStatus] = React.useState(
+    //     props.accessibility_status || AccessibilityStatus.NON_CONFORME
+    // );
+    // const [selectedFile, setSelectedFile]: [undefined | File, (File) => void] =
+    //     React.useState();
+    // const [phases, setPhases] = React.useState(
+    //     props.phases || [
+    //         {
+    //             name: StartupPhase.PHASE_INVESTIGATION,
+    //             start: "",
+    //         },
+    //     ]
+    // );
+    //const [errorMessage, setErrorMessage] = React.useState("");
+    //const [formErrors, setFormErrors] = React.useState({});
+    //const [isSaving, setIsSaving] = React.useState(false);
 
-    const save = async (event) => {
-        event.preventDefault();
-        if (isSaving) {
-            return;
-        }
-        setIsSaving(true);
-        let data = {
-            phases,
-            text,
-            link,
-            dashlord_url,
-            mission,
-            title,
-            incubator,
-            newSponsors: newSponsors,
-            sponsors: sponsors,
-            stats_url,
-            repository,
-            image: "",
-            contact,
-            analyse_risques,
-            analyse_risques_url,
-            accessibility_status,
-        };
-        if (selectedFile) {
-            const imageAsBase64 = await blobToBase64(selectedFile);
-            data = {
-                ...data,
-                image: imageAsBase64 as string,
-            };
-        }
-        props
-            .save(data)
-            .then((resp) => {
-                setIsSaving(false);
-                setAlertMessage({
-                    title: `⚠️ Pull request pour ${
-                        resp.isUpdate ? "la mise à jour" : "la création"
-                    } de la fiche produit ouverte.`,
-                    message: (
-                        <>
-                            Tu peux merger cette pull request :{" "}
-                            <a href={resp.data.pr_url} target="_blank">
-                                {resp.data.pr_url}
-                            </a>
-                            <br />
-                            Une fois mergée,{" "}
-                            {resp.isUpdate
-                                ? `les changements apparaitront`
-                                : `la fiche apparaitra`}{" "}
-                            sur le site beta.
-                        </>
-                    ),
-                    type: "success",
-                });
-                return resp;
-            })
-            .catch((e) => {
-                console.error(e);
-                setIsSaving(false);
-                const ErrorResponse: FormErrorResponse =
-                    e.response && (e.response.data as FormErrorResponse);
-                if (ErrorResponse) {
-                    setAlertMessage({
-                        title: "Une erreur est survenue",
-                        message: <>{ErrorResponse.message}</>,
-                        type: "warning",
-                    });
-                } else {
-                    setAlertMessage({
-                        title: "Une erreur est survenue",
-                        message: <>{e.toString()}</>,
-                        type: "warning",
-                    });
-                }
-                setIsSaving(false);
-                if (ErrorResponse.errors) {
-                    setFormErrors(ErrorResponse.errors);
-                }
-            });
-    };
+    // const save = async (event) => {
+    //     event.preventDefault();
+    //     if (isSaving) {
+    //         return;
+    //     }
+    //     setIsSaving(true);
+    //     let data = {
+    //         phases,
+    //         text,
+    //         link,
+    //         dashlord_url,
+    //         mission,
+    //         title,
+    //         incubator,
+    //         newSponsors: newSponsors,
+    //         sponsors: sponsors,
+    //         stats_url,
+    //         repository,
+    //         image: "",
+    //         contact,
+    //         analyse_risques,
+    //         analyse_risques_url,
+    //         accessibility_status,
+    //     };
+    //     if (selectedFile) {
+    //         const imageAsBase64 = await blobToBase64(selectedFile);
+    //         data = {
+    //             ...data,
+    //             image: imageAsBase64 as string,
+    //         };
+    //     }
+    //     props
+    //         .save(data)
+    //         .then((resp) => {
+    //             setIsSaving(false);
+    //             setAlertMessage({
+    //                 title: `⚠️ Pull request pour ${
+    //                     resp.isUpdate ? "la mise à jour" : "la création"
+    //                 } de la fiche produit ouverte.`,
+    //                 message: (
+    //                     <>
+    //                         Tu peux merger cette pull request :{" "}
+    //                         <a href={resp.data.pr_url} target="_blank">
+    //                             {resp.data.pr_url}
+    //                         </a>
+    //                         <br />
+    //                         Une fois mergée,{" "}
+    //                         {resp.isUpdate
+    //                             ? `les changements apparaitront`
+    //                             : `la fiche apparaitra`}{" "}
+    //                         sur le site beta.
+    //                     </>
+    //                 ),
+    //                 type: "success",
+    //             });
+    //             return resp;
+    //         })
+    //         .catch((e) => {
+    //             console.error(e);
+    //             setIsSaving(false);
+    //             const ErrorResponse: FormErrorResponse =
+    //                 e.response && (e.response.data as FormErrorResponse);
+    //             if (ErrorResponse) {
+    //                 setAlertMessage({
+    //                     title: "Une erreur est survenue",
+    //                     message: <>{ErrorResponse.message}</>,
+    //                     type: "warning",
+    //                 });
+    //             } else {
+    //                 setAlertMessage({
+    //                     title: "Une erreur est survenue",
+    //                     message: <>{e.toString()}</>,
+    //                     type: "warning",
+    //                 });
+    //             }
+    //             setIsSaving(false);
+    //             if (ErrorResponse.errors) {
+    //                 setFormErrors(ErrorResponse.errors);
+    //             }
+    //         });
+    // };
 
-    function addPhase() {
-        let nextPhase = StartupPhase.PHASE_INVESTIGATION;
-        let nextDate = new Date().toISOString().split("T")[0];
-        if (phases.length) {
-            const previousPhase: StartupPhase = phases[phases.length - 1].name;
-            const previousPhaseIndex = PHASES_ORDERED_LIST.findIndex(
-                (value) => value === previousPhase
-            );
-            nextDate =
-                phases[phases.length - 1].end ||
-                new Date().toISOString().split("T")[0];
-            nextPhase = PHASES_ORDERED_LIST[previousPhaseIndex + 1];
-        }
+    // function addPhase() {
+    //     let nextPhase = StartupPhase.PHASE_INVESTIGATION;
+    //     let nextDate = new Date().toISOString().split("T")[0];
+    //     if (phases.length) {
+    //         const previousPhase: StartupPhase = phases[phases.length - 1].name;
+    //         const previousPhaseIndex = PHASES_ORDERED_LIST.findIndex(
+    //             (value) => value === previousPhase
+    //         );
+    //         nextDate =
+    //             phases[phases.length - 1].end ||
+    //             new Date().toISOString().split("T")[0];
+    //         nextPhase = PHASES_ORDERED_LIST[previousPhaseIndex + 1];
+    //     }
 
-        setPhases([...phases, { start: nextDate, name: nextPhase }]);
-    }
+    //     setPhases([...phases, { start: nextDate, name: nextPhase }]);
+    // }
 
-    function deletePhase(index: number) {
-        const newPhases = [...phases];
-        newPhases.splice(index, 1);
-        setPhases([...newPhases]);
-    }
+    // function deletePhase(index: number) {
+    //     const newPhases = [...phases];
+    //     newPhases.splice(index, 1);
+    //     setPhases([...newPhases]);
+    // }
 
-    function changePhase(index: number, phase: StartupPhase) {
-        const newPhases = [...phases];
-        newPhases[index].name = phase;
-        setPhases([...newPhases]);
-    }
+    // function changePhase(index: number, phase: StartupPhase) {
+    //     const newPhases = [...phases];
+    //     newPhases[index].name = phase;
+    //     setPhases([...newPhases]);
+    // }
 
-    function changePhaseDate(index: number, date: string) {
-        const newPhases = [...phases];
-        newPhases[index].start = date;
-        setPhases([...newPhases]);
-    }
+    // function changePhaseDate(index: number, date: string) {
+    //     const newPhases = [...phases];
+    //     newPhases[index].start = date;
+    //     setPhases([...newPhases]);
+    // }
 
-    function handleEditorChange({ html, text }) {
-        setText(text);
-    }
+    // function handleEditorChange({ html, text }) {
+    //     setText(text);
+    // }
 
-    function hasChanged() {
-        return (
-            !!props.startup &&
-            (!phases ||
-                JSON.stringify(phases) === JSON.stringify(props.phases)) &&
-            title === props.startup?.attributes.name &&
-            (!text || text === props.content) &&
-            link === props.link &&
-            dashlord_url === props.dashlord_url &&
-            stats_url === props.stats_url &&
-            mission === props.mission &&
-            contact === props.contact &&
-            analyse_risques === props.analyse_risques &&
-            analyse_risques_url === props.analyse_risques_url &&
-            accessibility_status === props.accessibility_status &&
-            repository === props.repository &&
-            incubator === props.incubator &&
-            !selectedFile &&
-            JSON.stringify(sponsors) === JSON.stringify(props.sponsors)
-        );
-    }
-    let disabled = false;
+    // function hasChanged() {
+    //     return (
+    //         !!props.startup &&
+    //         (!phases ||
+    //             JSON.stringify(phases) === JSON.stringify(props.phases)) &&
+    //         title === props.startup?.attributes.name &&
+    //         (!text || text === props.content) &&
+    //         link === props.link &&
+    //         dashlord_url === props.dashlord_url &&
+    //         stats_url === props.stats_url &&
+    //         mission === props.mission &&
+    //         contact === props.contact &&
+    //         analyse_risques === props.analyse_risques &&
+    //         analyse_risques_url === props.analyse_risques_url &&
+    //         accessibility_status === props.accessibility_status &&
+    //         repository === props.repository &&
+    //         incubator === props.incubator &&
+    //         !selectedFile &&
+    //         JSON.stringify(sponsors) === JSON.stringify(props.sponsors)
+    //     );
+    // }
+    // let disabled = false;
 
-    if (hasChanged()) {
-        disabled = true;
-    }
+    // if (hasChanged()) {
+    //     disabled = true;
+    // }
     return (
         <>
             <div>

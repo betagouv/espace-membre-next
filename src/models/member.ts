@@ -8,6 +8,7 @@ import {
     MemberType,
 } from "./dbUser";
 import { Mission, missionSchema } from "./mission";
+
 import { EMAIL_PLAN_TYPE, OvhRedirection, OvhResponder } from "@/models/ovh";
 
 export enum Domaine {

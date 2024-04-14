@@ -69,7 +69,14 @@ export default function StartupPage({
                         </a>
                     </span>
                     <br />
-                    <span>Contact : {startupInfos.contact}</span>
+                    <span>
+                        Contact :{" "}
+                        {startupInfos.contact && (
+                            <a href={`mailto:${startupInfos.contact}`}>
+                                {startupInfos.contact}
+                            </a>
+                        )}
+                    </span>
                     <br />
                     <span>Phase : {currentPhase}</span>
                     <br />
