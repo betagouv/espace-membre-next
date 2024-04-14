@@ -2,6 +2,7 @@ import { Metadata, ResolvingMetadata } from "next";
 import { cookies } from "next/headers";
 import { redirect } from "next/navigation";
 import { getServerSession } from "next-auth";
+import betagouv from "@/server/betagouv";
 
 import { StartupInfoUpdate } from "@/components/StartupInfoUpdatePage";
 import { getPullRequestForBranch, fetchGithubMarkdown } from "@/lib/github";
@@ -59,9 +60,10 @@ export default async function Page(props) {
 
     const sha = startupPR && startupPR.head.sha;
     const formData = await fetchGithubPageData(startup, sha || "master");
-
+    const incubators = await betagouv.incubators();
     const componentProps = {
         formData,
+        incubators,
         updatePullRequest: startupPR,
     };
 

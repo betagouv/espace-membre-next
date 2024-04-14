@@ -60,6 +60,8 @@ export default function Error({
                                 >
                                     Contactez-nous
                                 </Button>
+                                <br />
+                                <br />
                                 <Link
                                     href="#"
                                     onClick={() => window.history?.go(-1)}

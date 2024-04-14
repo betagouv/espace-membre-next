@@ -1,29 +1,32 @@
 import React, { useState } from "react";
 import axios from "axios";
 import Select from "@codegouvfr/react-dsfr/Select";
+import routes from "@/routes/routes";
 
 export default function SEIncubateurSelect({
     onChange,
     value,
+    defaultValue,
     placeholder,
     required,
     showPlaceHolder = false,
 }: {
     onChange: any;
-    value: any;
-    placeholder?: any;
+    value: string;
+    defaultValue: string;
+    placeholder?: string;
     required: boolean;
     showPlaceHolder?: boolean;
 }) {
     const [options, setOptions] = React.useState<
         { value: string; label: string }[]
     >([]);
-    const [incubator, setIncubator] = useState(value);
+    const [incubator, setIncubator] = useState(defaultValue);
 
     React.useEffect(() => {
         // React advises to declare the async function directly inside useEffect
         const getOptions = async () => {
-            const incubators = await axios
+            const incubators = await fetch
                 .get<any[]>("/api/incubators")
                 .then((response) => response.data)
                 .catch((err) => {

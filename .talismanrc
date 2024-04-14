@@ -37,6 +37,8 @@ fileignoreconfig:
   checksum: 2f825890548de8336fdec8a140bd55339de67c7bd428baf90e9621b094f08714
 - filename: src/components/SESelect.tsx
   checksum: c251dbce68caf5cb85ac395bb400dfedb142737539d3ca0e1779f2a56460c520
+- filename: src/components/StartupForm/StartupForm.tsx
+  checksum: 50d4ff8c6a5940f063e600f62afc8ed8a572ac9f96214b4773f62011b326d316
 - filename: src/frontConfig/index.ts
   checksum: dfa7fcba549f3059c547970b66d918c32d7ca97d9506c57ef982510c64562282
 - filename: src/lib/airtable.ts

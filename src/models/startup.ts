@@ -137,21 +137,52 @@ export interface DBStartup {
 }
 
 export const startupSchema = z.object({
-    id: z.string().describe("identifiant de la startup"),
-    title: z.string().describe("nom de la startup"),
-    mission: z.string().describe("mission de la startup"),
+    id: z
+        .string({
+            errorMap: (issue, ctx) => ({
+                message: "L'ID est obligatoire",
+            }),
+        })
+        .min(1)
+        .describe("identifiant du produit"),
+    title: z
+        .string({
+            errorMap: (issue, ctx) => ({
+                message: "Le nom est obligatoire",
+            }),
+        })
+        .min(1)
+        .describe("Nom du produit"),
+    mission: z
+        .string({
+            errorMap: (issue, ctx) => ({
+                message: "La mission est obligatoire",
+            }),
+        })
+        .min(1)
+        .describe("Objectif du produit"),
     sponsors: z.array(z.string()).optional(),
-    incubator: z.string(),
+    incubator: z
+        .string({
+            errorMap: (issue, ctx) => ({
+                message: "L'incubateur est obligatoire",
+            }),
+        })
+        .min(1)
+        .describe("Incubateur ou fabrique numérique"),
     contact: z.string(),
-    link: z.string().optional(),
-    repository: z.string().optional(),
+    link: z.string().optional().describe("URL du site web"),
+    repository: z.string().optional().describe("URL du repository GitHub"),
     accessibility_status: z.string().optional(),
-    dashlord_url: z.string().optional(),
-    stats: z.boolean().optional(),
+    dashlord_url: z.string().optional().describe("URL du rapport DashLord"),
+    stats: z.boolean().optional().describe("URL de la page de statistiques"),
     stats_url: z.string().optional(),
     budget_url: z.string().optional(),
     analyse_risques: z.boolean().optional(),
-    analyse_risques_url: z.string().optional(),
+    analyse_risques_url: z
+        .string()
+        .optional()
+        .describe("Url de l'analyse de risque"),
     events: z.array(z.object({ name: z.string(), date: z.date() })).optional(),
     phases: z.array(phaseSchema).optional(),
     techno: z.array(z.string()).optional(),
@@ -163,3 +194,14 @@ export const startupSchema = z.object({
 export interface StartupFrontMatter extends z.infer<typeof startupSchema> {}
 
 export type startupSchemaType = z.infer<typeof startupSchema>;
+
+export const startupSchemaWithMarkdown = startupSchema.extend({
+    markdown: z
+        .string({
+            errorMap: (issue, ctx) => ({
+                message: "La description doit faire minimum 30 caractères",
+            }),
+        })
+        .min(30)
+        .describe("Décrivez votre produit, son public, ses objectifs"),
+});
