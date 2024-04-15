@@ -264,13 +264,14 @@ export function StartupForm(props: StartupFormProps) {
     };
 
     watch("analyse_risques"); // allow checkbox interaction
+    watch("sponsors"); // enable autocomplete update
 
     const hasAnalyseDeRisque =
         !!props.formData.analyse_risques ||
         !!props.formData.analyse_risques_url ||
         !!getValues("analyse_risques");
 
-    console.log("formData", props.formData);
+    //console.log("formData", props.formData, getValues("sponsors"));
 
     return (
         <>
@@ -377,11 +378,10 @@ export function StartupForm(props: StartupFormProps) {
                         )}
                     </Select>
                     <SponsorBlock
-                        sponsors={props.formData.sponsors}
+                        sponsors={getValues("sponsors") || []}
                         allSponsors={props.sponsors}
                         newSponsors={[]}
-                        setSponsors={(e, data) => {
-                            console.log("setSponsors", e, data);
+                        setSponsors={(data) => {
                             setValue(
                                 "sponsors",
                                 (data || []).map((id) => `/organisations/${id}`)

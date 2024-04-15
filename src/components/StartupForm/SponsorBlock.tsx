@@ -1,3 +1,4 @@
+"use client";
 import React from "react";
 
 import Button from "@codegouvfr/react-dsfr/Button";
@@ -20,13 +21,12 @@ export const SponsorModal = ({ addSponsor }) => {
             <SponsorForm addSponsor={addSponsor} />
         </modal.Component>
     );
-    if (typeof window !== "undefined") {
-        return;
-    }
-    return ReactDOM.createPortal(
+
+    return modalContent;
+    /*ReactDOM.createPortal(
         modalContent,
-        document.getElementById("root-container") as Element
-    );
+        document.getElementById("foo-modal") as Element
+    );*/
 };
 
 const SponsorBlock = ({
