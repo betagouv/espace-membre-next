@@ -16,6 +16,7 @@ import axios from "axios";
 import MemberBrevoEventList from "./MemberBrevoEventList";
 import MemberEmailServiceInfo from "./MemberEmailServiceInfo";
 import MemberEventList from "./MemberEventList";
+import MemberMatomo from "./MemberMatomo";
 import { EmailStatusCode } from "@/models/dbUser";
 import { EMAIL_STATUS_READABLE_FORMAT } from "@/models/misc";
 import routes, { computeRoute } from "@/routes/routes";
@@ -401,6 +402,7 @@ MemberPageProps) {
                     </>
                 )}
                 <MemberEmailServiceInfo userId={username} />
+                <MemberMatomo userId={username} />
                 {[
                     EmailStatusCode.EMAIL_CREATION_WAITING,
                     EmailStatusCode.EMAIL_VERIFICATION_WAITING,
