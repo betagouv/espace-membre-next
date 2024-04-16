@@ -73,10 +73,9 @@ export const UsertypesEditor = ({
                         values.map((v) => v.inputValue || v.label)
                     );
                 } else if (Array.isArray(newValues)) {
-                    const convertedValues: ThematiqueType[] = newValues.map(
+                    const convertedValues: UsertypeType[] = newValues.map(
                         (newValue) => {
                             if (typeof newValue === "string") {
-                                // Convert string to ThematiqueType
                                 return { label: newValue };
                             } else {
                                 // Already in the correct format
