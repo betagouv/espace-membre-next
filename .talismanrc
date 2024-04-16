@@ -45,6 +45,8 @@ fileignoreconfig:
   checksum: 50d4ff8c6a5940f063e600f62afc8ed8a572ac9f96214b4773f62011b326d316
 - filename: src/components/StartupForm/ThematiquesEditor.tsx
   checksum: dcaa8a0e4f7fac866160ef2422014f2ad118701d18ba177c162dc1bbd1b86be3
+- filename: src/components/StartupForm/UsertypesEditor.tsx
+  checksum: 776745d3054dbb7ca1a51f3f12a97905ab783c0226aee41c5d38bd42afd6a626
 - filename: src/frontConfig/index.ts
   checksum: dfa7fcba549f3059c547970b66d918c32d7ca97d9506c57ef982510c64562282
 - filename: src/lib/airtable.ts

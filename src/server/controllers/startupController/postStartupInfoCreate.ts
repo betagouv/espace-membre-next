@@ -58,6 +58,8 @@ export async function postStartupInfoCreate(req, res) {
         const repository = req.body.repository;
         const incubator = req.body.incubator;
         const contact = req.body.contact;
+        const thematiques = req.body.thematiques;
+        const usertypes = req.body.usertypes;
         const sponsors = req.body.sponsors || [];
         const accessibility_status = req.body.accessibility_status;
         const analyse_risques_url = req.body.analyse_risques_url;
@@ -101,6 +103,8 @@ export async function postStartupInfoCreate(req, res) {
             stats_url,
             budget_url,
             repository,
+            thematiques,
+            usertypes,
             incubator,
             sponsors: sponsors.map((sponsor) => `/organisations/${sponsor}`),
         };

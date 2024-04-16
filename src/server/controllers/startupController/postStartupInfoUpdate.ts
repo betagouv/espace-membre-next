@@ -62,6 +62,8 @@ export async function postStartupInfoUpdate(req, res) {
         const stats_url = req.body.stats_url;
         const budget_url = req.body.budget_url;
         const repository = req.body.repository;
+        const thematiques = req.body.thematiques;
+        const usertypes = req.body.usertypes;
         const incubator = req.body.incubator;
         const sponsors = req.body.sponsors || [];
         const contact = req.body.contact;
@@ -110,6 +112,8 @@ export async function postStartupInfoUpdate(req, res) {
             accessibility_status,
             analyse_risques_url,
             analyse_risques,
+            thematiques,
+            usertypes,
             sponsors: sponsors.map((sponsor) => `/organisations/${sponsor}`),
         };
         const newPhases = phases.map((phase) => ({

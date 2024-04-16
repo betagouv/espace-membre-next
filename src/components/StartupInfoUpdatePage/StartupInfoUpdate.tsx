@@ -2,33 +2,22 @@
 import React from "react";
 
 import { fr } from "@codegouvfr/react-dsfr";
+import * as Sentry from "@sentry/nextjs";
 import axios from "axios";
 
-import { PullRequestWarning } from "../PullRequestWarning";
 import { StartupForm } from "../StartupForm/StartupForm";
 
 import { GithubAPIPullRequest } from "@/lib/github";
 import { Incubator } from "@/models/incubator";
-import { StartupFrontMatter, StartupPhase } from "@/models/startup";
+import { Sponsor } from "@/models/sponsor";
+import { StartupFrontMatter } from "@/models/startup";
 import routes, { computeRoute } from "@/routes/routes";
 import { routeTitles } from "@/utils/routes/routeTitles";
-
-// import style manually
-export interface StartupInfoFormData {
-    sponsors?: string[];
-    incubator?: string;
-    mission?: string;
-    stats_url?: string;
-    link?: string;
-    dashlord_url?: string;
-    repository?: string;
-    image?: string;
-}
 
 export interface StartupInfoUpdateProps {
     formData: StartupFrontMatter & { markdown: string };
     incubators: Incubator[];
-    sponsors: string[];
+    sponsors: Sponsor[];
     updatePullRequest?: GithubAPIPullRequest;
 }
 
@@ -56,7 +45,7 @@ export const StartupInfoUpdate = (props: StartupInfoUpdateProps) => {
                 isUpdate: true,
             };
         } catch (e) {
-            //todo: sentry
+            Sentry.captureException(e);
             console.error(e);
             window.scrollTo({ top: 20, behavior: "smooth" });
             throw e;

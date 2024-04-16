@@ -187,7 +187,10 @@ export const startupSchema = z.object({
     events: z.array(z.object({ name: z.string(), date: z.date() })).optional(),
     phases: z.array(phaseSchema).optional(),
     techno: z.array(z.string()).optional(),
-    usertypes: z.array(z.string()).optional(),
+    usertypes: z
+        .array(z.string())
+        .optional()
+        .describe("Utilisateurs cibles du service"),
     //redirect_from: z.array(z.string()).optional(),
     fast: z.object({ promotion: z.number(), montant: z.number() }).optional(),
     thematiques: z

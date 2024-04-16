@@ -18,12 +18,14 @@ import { z } from "zod";
 import { PhasesEditor } from "./PhasesEditor";
 import SponsorBlock from "./SponsorBlock";
 import { ThematiquesEditor } from "./ThematiquesEditor";
+import { UsertypesEditor } from "./UsertypesEditor";
 import { ClientOnly } from "../ClientOnly";
 import { PullRequestWarning } from "../PullRequestWarning";
 import SelectAccessibilityStatus from "../SelectAccessibilityStatus";
 
 import { GithubAPIPullRequest } from "@/lib/github";
 import { Incubator } from "@/models/incubator";
+import { Sponsor } from "@/models/sponsor";
 import { startupSchemaWithMarkdown } from "@/models/startup";
 
 // import style manually
@@ -54,7 +56,7 @@ type StartupSchemaType = z.infer<typeof startupSchemaWithMarkdown>;
 export interface StartupFormProps {
     formData: StartupSchemaType;
     incubators: Incubator[];
-    sponsors: string[];
+    sponsors: Sponsor[];
     save: (data: string) => any;
     updatePullRequest?: GithubAPIPullRequest;
 }
@@ -219,6 +221,55 @@ export function StartupForm(props: StartupFormProps) {
                                     fiche produit". Pas besoin de faire plus
                                     long.`}
                     />
+                    <BasicInput
+                        id="contact"
+                        placeholder="ex: contact@[startup].beta.gouv.fr"
+                    />
+
+                    <div
+                        className={`fr-input-group ${
+                            errors.thematiques ? "fr-input-group--error" : ""
+                        }`}
+                    >
+                        <label className="fr-label">
+                            Thématiques{" "}
+                            <span className="fr-hint-text">
+                                Indiquez toutes les thématiques adressées par la
+                                startup
+                            </span>
+                        </label>
+
+                        <ThematiquesEditor
+                            defaultValue={getValues("thematiques") || []}
+                            onChange={(e, data) => {
+                                setValue("thematiques", data, {
+                                    shouldDirty: true,
+                                });
+                            }}
+                        />
+                    </div>
+                    <div
+                        className={`fr-input-group ${
+                            errors.usertypes ? "fr-input-group--error" : ""
+                        }`}
+                    >
+                        <label className="fr-label">
+                            Utilisateurs cible{" "}
+                            <span className="fr-hint-text">
+                                Indiquez toutes les utilisateurs qui
+                                bénéficieront du produit
+                            </span>
+                        </label>
+
+                        <UsertypesEditor
+                            defaultValue={getValues("usertypes") || []}
+                            onChange={(e, data) => {
+                                setValue("usertypes", data, {
+                                    shouldDirty: true,
+                                });
+                            }}
+                        />
+                    </div>
                     <hr />
                     <div
                         className={`fr-input-group ${
@@ -337,10 +388,7 @@ export function StartupForm(props: StartupFormProps) {
                     <BasicInput id="link" />
                     <BasicInput id="repository" />
                     <BasicInput id="dashlord_url" />
-                    <BasicInput
-                        id="contact"
-                        placeholder="ex: contact@[startup].beta.gouv.fr"
-                    />
+
                     <SelectAccessibilityStatus
                         value={props.formData.accessibility_status}
                         onChange={(e) =>
@@ -377,28 +425,7 @@ export function StartupForm(props: StartupFormProps) {
                         id="budget_url"
                         hintText="Si le budget est public, tu peux indiquer le lien vers ce document ici."
                     />
-                    <div
-                        className={`fr-input-group ${
-                            errors.thematiques ? "fr-input-group--error" : ""
-                        }`}
-                    >
-                        <label className="fr-label">
-                            Thématiques{" "}
-                            <span className="fr-hint-text">
-                                Indiquez toutes les thématiques adressées par la
-                                startup
-                            </span>
-                        </label>
 
-                        <ThematiquesEditor
-                            defaultValue={getValues("thematiques") || []}
-                            onChange={(e, data) => {
-                                setValue("thematiques", data, {
-                                    shouldDirty: true,
-                                });
-                            }}
-                        />
-                    </div>
                     <Button
                         className={fr.cx("fr-mt-3w")}
                         children={
@@ -412,208 +439,6 @@ export function StartupForm(props: StartupFormProps) {
                         }}
                     />
                 </form>
-
-                {/*
-                    <>
-                     
-
-                       
-                        <div
-                            className={`fr-input-group ${
-                                formErrors["phases"] || formErrors["date"]
-                                    ? "fr-input-group--error"
-                                    : ""
-                            }`}
-                        >
-                            <label className="fr-label">
-                                Phase
-                                <span className="fr-hint-text">
-                                    Voici l'historique des phases dans
-                                    lesquelles a été ce produit.
-                                </span>
-                            </label>
-                            <Table
-                                style={{ marginBottom: "0.5rem" }}
-                                data={phases.map((phase, index) => {
-                                    return [
-                                        <PhaseSelectionCell
-                                            name={phase.name}
-                                            index={index}
-                                            changePhase={changePhase}
-                                            key={index}
-                                        />,
-                                        <PhaseDatePickerCell
-                                            start={phase.start}
-                                            name={phase.name}
-                                            index={index}
-                                            changePhaseDate={changePhaseDate}
-                                            key={index}
-                                        />,
-                                        <PhaseActionCell
-                                            index={index}
-                                            deletePhase={deletePhase}
-                                            key={index}
-                                        />,
-                                    ];
-                                })}
-                                headers={["Phase", "Date de début", "Action"]}
-                            />
-                            <span className="fr-text fr-text--sm">
-                                Il manque une phase ?
-                            </span>
-                            <Button
-                                children={`Ajouter une phase`}
-                                nativeButtonProps={{
-                                    onClick: () => addPhase(),
-                                }}
-                                style={{
-                                    marginLeft: `0.5rem`,
-                                    transform: `translateY(0.25rem)`,
-                                }}
-                                iconId="fr-icon-add-circle-fill"
-                                size="small"
-                                priority="tertiary no outline"
-                            />
-                            {!!formErrors["phases"] && (
-                                <p
-                                    id="text-input-error-desc-error"
-                                    className="fr-error-text"
-                                >
-                                    {formErrors["phases"]}
-                                </p>
-                            )}
-                            {!!formErrors["date"] && (
-                                <p
-                                    id="text-input-error-desc-error"
-                                    className="fr-error-text"
-                                >
-                                    Une des dates n'est pas valide
-                                </p>
-                            )}
-                        </div>
-                        <FileUpload
-                            selectedFile={selectedFile}
-                            setSelectedFile={setSelectedFile}
-                        />
-                        <Input
-                            label="URL du site"
-                            nativeInputProps={{
-                                onChange: (e) => {
-                                    setLink(e.currentTarget.value || undefined);
-                                },
-                                value: link,
-                            }}
-                        />
-                        <Input
-                            label="Lien du repository github"
-                            nativeInputProps={{
-                                name: "Lien du repository github",
-                                onChange: (e) => {
-                                    setRepository(
-                                        e.currentTarget.value || undefined
-                                    );
-                                },
-                                value: repository,
-                            }}
-                        />
-                        <Input
-                            label="Lien du dashlord"
-                            nativeInputProps={{
-                                name: "dashlord",
-                                onChange: (e) => {
-                                    setDashlord(
-                                        e.currentTarget.value || undefined
-                                    );
-                                },
-                                value: dashlord_url,
-                            }}
-                        />
-                        <Input
-                            label="Contact"
-                            nativeInputProps={{
-                                placeholder:
-                                    "ex: contact@[startup].beta.gouv.fr",
-                                onChange: (e) => {
-                                    setContact(
-                                        e.currentTarget.value || undefined
-                                    );
-                                },
-                                value: contact,
-                                required: true,
-                            }}
-                        />
-                        <SelectAccessibilityStatus
-                            value={accessibility_status}
-                            onChange={(e) =>
-                                setAccessibilityStatus(
-                                    e.currentTarget.value || undefined
-                                )
-                            }
-                        />
-                        <RadioButtons
-                            legend="Indique si ta startup à déjà réalisé un atelier d'analyse de risque agile."
-                            options={[
-                                {
-                                    label: "Oui",
-                                    nativeInputProps: {
-                                        defaultChecked:
-                                            analyse_risques === true,
-                                        checked: analyse_risques === true,
-                                        onChange: () => setAnalyseRisques(true),
-                                    },
-                                },
-                                {
-                                    label: "Non",
-                                    nativeInputProps: {
-                                        defaultChecked:
-                                            analyse_risques === false ||
-                                            !analyse_risques,
-                                        checked:
-                                            analyse_risques === false ||
-                                            !analyse_risques,
-                                        onChange: () =>
-                                            setAnalyseRisques(false),
-                                    },
-                                },
-                            ]}
-                        />
-                        <Input
-                            label="Url de l'analyse de risque"
-                            hintText="Si vous avez rendu une analyse de risques publique, tu peux indiquer le lien vers ce document ici."
-                            nativeInputProps={{
-                                onChange: (e) => {
-                                    setAnalyseRisquesUrl(
-                                        e.currentTarget.value || undefined
-                                    );
-                                },
-                                defaultValue: analyse_risques_url,
-                            }}
-                        />
-                        <Input
-                            label="Lien de la page stats"
-                            nativeInputProps={{
-                                name: "stats_url",
-                                onChange: (e) => {
-                                    setStatsUrl(
-                                        e.currentTarget.value || undefined
-                                    );
-                                },
-                                value: stats_url,
-                            }}
-                        />
-                        <Button
-                            nativeButtonProps={{
-                                type: "submit",
-                                disabled: isSaving || disabled,
-                            }}
-                            children={
-                                isSaving
-                                    ? `Enregistrement en cours...`
-                                    : `Enregistrer`
-                            }
-                        />
-                    </>
-                        */}
             </div>
         </>
     );
