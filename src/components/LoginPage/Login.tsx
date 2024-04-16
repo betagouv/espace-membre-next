@@ -3,7 +3,6 @@ import React from "react";
 
 import { fr } from "@codegouvfr/react-dsfr";
 import { Alert } from "@codegouvfr/react-dsfr/Alert";
-import Button from "@codegouvfr/react-dsfr/Button";
 import { ButtonsGroup } from "@codegouvfr/react-dsfr/ButtonsGroup";
 import { Input } from "@codegouvfr/react-dsfr/Input";
 import Link from "next/link";
@@ -207,9 +206,6 @@ export const LoginPage = function (props: Props) {
                         initiée <strong>par une personne déjà membre</strong> de
                         la communauté beta.gouv.fr.
                     </p>
-                    <Button disabled={false} priority="secondary">
-                        Créer une nouvelle fiche
-                    </Button>
                 </div>
             </div>
         </>
