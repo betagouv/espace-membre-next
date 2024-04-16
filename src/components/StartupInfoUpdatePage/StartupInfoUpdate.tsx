@@ -56,6 +56,7 @@ export const StartupInfoUpdate = (props: StartupInfoUpdateProps) => {
                 isUpdate: true,
             };
         } catch (e) {
+            //todo: sentry
             console.error(e);
             window.scrollTo({ top: 20, behavior: "smooth" });
             throw e;
@@ -76,28 +77,6 @@ export const StartupInfoUpdate = (props: StartupInfoUpdateProps) => {
                         incubators={props.incubators}
                         sponsors={props.sponsors}
                         updatePullRequest={props.updatePullRequest}
-                        //startup={{ attributes: { name: props.formData.title } }}
-                        // phases={props.formData.phases
-                        //     ?.sort((a, b) => a.start.getTime() - b.start.getTime())
-                        //     .map((phase) => ({
-                        //         //...phase,
-                        //         name: phase.name as StartupPhase, // WTH
-                        //         start: phase.start.toISOString().substring(0, 10),
-                        //         end:
-                        //             phase.end &&
-                        //             phase.end.toISOString().substring(0, 10),
-                        //     }))}
-                        // link={props.formData.link}
-                        // dashlord_url={props.formData.dashlord_url}
-                        // stats_url={props.formData.stats_url}
-                        // mission={props.formData.mission}
-                        // repository={props.formData.repository}
-                        // incubator={props.formData.incubator}
-                        // sponsors={props.formData.sponsors}
-                        // accessibility_status={props.formData.accessibility_status}
-                        // analyse_risques={props.formData.analyse_risques}
-                        // analyse_risques_url={props.formData.analyse_risques_url}
-                        // contact={props.formData.contact}
                     />
                 )) || <>Loading...</>}
             </div>

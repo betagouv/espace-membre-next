@@ -172,7 +172,7 @@ export const startupSchema = z.object({
         })
         .min(1)
         .describe("Incubateur ou fabrique numérique"),
-    contact: z.string(),
+    contact: z.string().describe("Email de contact du produit"),
     link: z.string().optional().describe("URL du site web"),
     repository: z.string().optional().describe("URL du repository GitHub"),
     accessibility_status: z.string().optional(),

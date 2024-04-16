@@ -33,6 +33,7 @@ export interface GithubSponsorFile extends GithubFile {
 }
 
 export interface GithubSponsorChange {
+    id: string; // slug
     name: string;
     acronym: string;
     domaine_ministeriel: SponsorDomaineMinisteriel;

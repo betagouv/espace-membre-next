@@ -1,3 +1,6 @@
+import { updateMultipleFilesPR } from "@controllers/helpers/githubHelpers/updateGithubCollectionEntry";
+import db from "@db";
+
 import {
     makeGithubSponsorFile,
     makeGithubStartupFile,
@@ -8,8 +11,8 @@ import {
     GithubBetagouvFile,
     GithubStartupChange,
 } from "../helpers/githubHelpers/githubEntryInterface";
+
 import { addEvent } from "@/lib/events";
-import { GithubAPIPullRequest } from "@/lib/github";
 import { EventCode } from "@/models/actionEvent";
 import { PULL_REQUEST_TYPE, PULL_REQUEST_STATE } from "@/models/pullRequests";
 import {
@@ -19,8 +22,6 @@ import {
 } from "@/models/sponsor";
 import { StartupPhase } from "@/models/startup";
 import { isValidDate, requiredError } from "@/server/controllers/validator";
-import { updateMultipleFilesPR } from "@controllers/helpers/githubHelpers/updateGithubCollectionEntry";
-import db from "@db";
 
 const isValidPhase = (field, value, callback) => {
     if (!value || Object.values(StartupPhase).includes(value)) {
@@ -85,7 +86,7 @@ export async function postStartupInfoUpdate(req, res) {
         }
 
         const content =
-            req.body.text ||
+            req.body.markdown ||
             requiredError("description du produit", errorHandler);
         phases[0] || requiredError("phases", errorHandler);
 

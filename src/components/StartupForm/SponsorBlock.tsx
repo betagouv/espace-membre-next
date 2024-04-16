@@ -3,7 +3,7 @@ import React from "react";
 
 import Button from "@codegouvfr/react-dsfr/Button";
 import { createModal } from "@codegouvfr/react-dsfr/Modal";
-import ReactDOM from "react-dom";
+import slugify from "@sindresorhus/slugify";
 
 import SESponsorSelect from "../SESponsorSelect";
 import { SponsorForm } from "../SponsorForm/SponsorForm";
@@ -23,10 +23,6 @@ export const SponsorModal = ({ addSponsor }) => {
     );
 
     return modalContent;
-    /*ReactDOM.createPortal(
-        modalContent,
-        document.getElementById("foo-modal") as Element
-    );*/
 };
 
 const SponsorBlock = ({
@@ -34,15 +30,14 @@ const SponsorBlock = ({
     sponsors,
     allSponsors,
     setNewSponsors,
-    newSponsors,
 }) => {
     function openModal() {
         modal.open();
     }
 
     function addSponsor(newSponsor: Sponsor) {
-        setNewSponsors([...newSponsors, newSponsor]);
-        setSponsors([...sponsors, newSponsor.acronym]);
+        // add the generated slug
+        setNewSponsors([{ ...newSponsor, id: slugify(newSponsor.name) }]);
         modal.close();
     }
 

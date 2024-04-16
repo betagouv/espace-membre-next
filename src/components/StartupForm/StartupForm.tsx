@@ -1,12 +1,5 @@
 "use client";
-import React, { useCallback } from "react";
-
-import {
-    AccessibilityStatus,
-    PHASES_ORDERED_LIST,
-    StartupInfo,
-    StartupPhase,
-} from "@/models/startup";
+import React, { useCallback, useState } from "react";
 
 import "react-markdown-editor-lite/lib/index.css";
 
@@ -14,12 +7,9 @@ import { fr } from "@codegouvfr/react-dsfr";
 import { Alert } from "@codegouvfr/react-dsfr/Alert";
 import Button from "@codegouvfr/react-dsfr/Button";
 import Checkbox from "@codegouvfr/react-dsfr/Checkbox";
-import Input, { InputProps } from "@codegouvfr/react-dsfr/Input";
-import RadioButtons from "@codegouvfr/react-dsfr/RadioButtons";
+import Input from "@codegouvfr/react-dsfr/Input";
 import Select from "@codegouvfr/react-dsfr/Select";
-import Table from "@codegouvfr/react-dsfr/Table";
 import { zodResolver } from "@hookform/resolvers/zod";
-import * as Sentry from "@sentry/nextjs";
 import MarkdownIt from "markdown-it";
 import { useForm } from "react-hook-form";
 import MdEditor from "react-markdown-editor-lite";
@@ -28,7 +18,6 @@ import { z } from "zod";
 import { PhasesEditor } from "./PhasesEditor";
 import SponsorBlock from "./SponsorBlock";
 import { ClientOnly } from "../ClientOnly";
-import FileUpload from "../FileUpload";
 import { PullRequestWarning } from "../PullRequestWarning";
 import SelectAccessibilityStatus from "../SelectAccessibilityStatus";
 
@@ -57,43 +46,6 @@ Décrit ta solution en quelques lignes? qui seront/sont les bénéficiaires ?
 
 Comment vous vous y prenez pour atteindre votre usagers ? quel impact chiffré visez-vous ?
 `;
-
-// interface StartupForm {
-//     sponsors?: string[];
-//     incubator?: string;
-//     mission?: string;
-//     stats_url?: string;
-//     link?: string;
-//     dashlord_url?: string;
-//     analyse_risques_url?: string;
-//     analyse_risques?: boolean;
-//     repository?: string;
-//     content: string;
-//     accessibility_status?: any;
-//     save: any;
-//     contact?: string;
-//     phases?: {
-//         start: string;
-//         end?: string;
-//         name: StartupPhase;
-//     }[];
-//     startup?: { attributes: { name: string } };
-// }
-
-// interface FormErrorResponse {
-//     errors?: Record<string, string[]>;
-//     message: string;
-// }
-
-// const blobToBase64 = async (blob) => {
-//     const reader = new FileReader();
-//     reader.readAsDataURL(blob);
-//     return new Promise((resolve) => {
-//         reader.onloadend = () => {
-//             resolve(reader.result);
-//         };
-//     });
-// };
 
 type StartupSchemaType = z.infer<typeof startupSchemaWithMarkdown>;
 
@@ -150,6 +102,8 @@ export function StartupForm(props: StartupFormProps) {
         defaultValues: props.formData,
     });
 
+    const [newSponsors, setNewSponsors] = useState<any[]>([]);
+
     const [alertMessage, setAlertMessage] = React.useState<{
         title: string;
         message: NonNullable<React.ReactNode>;
@@ -163,89 +117,6 @@ export function StartupForm(props: StartupFormProps) {
         ),
         [register, errors]
     );
-
-    // const save = async (event) => {
-    //     event.preventDefault();
-    //     if (isSaving) {
-    //         return;
-    //     }
-    //     setIsSaving(true);
-    //     let data = {
-    //         phases,
-    //         text,
-    //         link,
-    //         dashlord_url,
-    //         mission,
-    //         title,
-    //         incubator,
-    //         newSponsors: newSponsors,
-    //         sponsors: sponsors,
-    //         stats_url,
-    //         repository,
-    //         image: "",
-    //         contact,
-    //         analyse_risques,
-    //         analyse_risques_url,
-    //         accessibility_status,
-    //     };
-    //     if (selectedFile) {
-    //         const imageAsBase64 = await blobToBase64(selectedFile);
-    //         data = {
-    //             ...data,
-    //             image: imageAsBase64 as string,
-    //         };
-    //     }
-    //     props
-    //         .save(data)
-    //         .then((resp) => {
-    //             setIsSaving(false);
-    //             setAlertMessage({
-    //                 title: `⚠️ Pull request pour ${
-    //                     resp.isUpdate ? "la mise à jour" : "la création"
-    //                 } de la fiche produit ouverte.`,
-    //                 message: (
-    //                     <>
-    //                         Tu peux merger cette pull request :{" "}
-    //                         <a href={resp.data.pr_url} target="_blank">
-    //                             {resp.data.pr_url}
-    //                         </a>
-    //                         <br />
-    //                         Une fois mergée,{" "}
-    //                         {resp.isUpdate
-    //                             ? `les changements apparaitront`
-    //                             : `la fiche apparaitra`}{" "}
-    //                         sur le site beta.
-    //                     </>
-    //                 ),
-    //                 type: "success",
-    //             });
-    //             return resp;
-    //         })
-    //         .catch((e) => {
-    //             console.error(e);
-    //             setIsSaving(false);
-    //             const ErrorResponse: FormErrorResponse =
-    //                 e.response && (e.response.data as FormErrorResponse);
-    //             if (ErrorResponse) {
-    //                 setAlertMessage({
-    //                     title: "Une erreur est survenue",
-    //                     message: <>{ErrorResponse.message}</>,
-    //                     type: "warning",
-    //                 });
-    //             } else {
-    //                 setAlertMessage({
-    //                     title: "Une erreur est survenue",
-    //                     message: <>{e.toString()}</>,
-    //                     type: "warning",
-    //                 });
-    //             }
-    //             setIsSaving(false);
-    //             if (ErrorResponse.errors) {
-    //                 setFormErrors(ErrorResponse.errors);
-    //             }
-    //         });
-    // };
-
     const onSubmit = (data, e) => {
         console.log("onSubmit", { e, data, isDirty, errors });
 
@@ -258,9 +129,51 @@ export function StartupForm(props: StartupFormProps) {
         }
         setIsSaving(true);
         setAlertMessage(null);
-        setTimeout(() => {
-            setIsSaving(false);
-        }, 3000);
+
+        props
+            .save({ ...data, newSponsors })
+            .then((resp) => {
+                setIsSaving(false);
+                setAlertMessage({
+                    title: `⚠️ Pull request pour ${
+                        resp.isUpdate ? "la mise à jour" : "la création"
+                    } de la fiche produit ouverte.`,
+                    message: (
+                        <>
+                            Tu peux merger cette pull request :{" "}
+                            <a href={resp.data.pr_url} target="_blank">
+                                {resp.data.pr_url}
+                            </a>
+                            <br />
+                            Une fois mergée,{" "}
+                            {resp.isUpdate
+                                ? `les changements apparaitront`
+                                : `la fiche apparaitra`}{" "}
+                            sur le site beta.
+                        </>
+                    ),
+                    type: "success",
+                });
+                return resp;
+            })
+            .catch((e) => {
+                console.error("xxx", e.message);
+                setIsSaving(false);
+                if (e) {
+                    setAlertMessage({
+                        title: "Une erreur est survenue",
+                        message: e.message,
+                        type: "warning",
+                    });
+                } else {
+                    setAlertMessage({
+                        title: "Une erreur est survenue 2",
+                        message: "Merci de vérifier les champs du formulaire",
+                        type: "warning",
+                    });
+                }
+                setIsSaving(false);
+            });
     };
 
     watch("analyse_risques"); // allow checkbox interaction
@@ -271,8 +184,6 @@ export function StartupForm(props: StartupFormProps) {
         !!props.formData.analyse_risques_url ||
         !!getValues("analyse_risques");
 
-    //console.log("formData", props.formData, getValues("sponsors"));
-
     return (
         <>
             <div>
@@ -282,13 +193,7 @@ export function StartupForm(props: StartupFormProps) {
                         severity={alertMessage.type}
                         closable={false}
                         title={alertMessage.title}
-                        description={
-                            <div
-                                dangerouslySetInnerHTML={{
-                                    __html: alertMessage.message,
-                                }}
-                            />
-                        }
+                        description={<div>{alertMessage.message}</div>}
                     />
                 )}
 
@@ -378,17 +283,27 @@ export function StartupForm(props: StartupFormProps) {
                         )}
                     </Select>
                     <SponsorBlock
-                        sponsors={getValues("sponsors") || []}
-                        allSponsors={props.sponsors}
-                        newSponsors={[]}
+                        sponsors={[...(getValues("sponsors") || [])]}
+                        allSponsors={{
+                            ...props.sponsors,
+                            ...newSponsors.reduce(
+                                (a, c) => ({ ...a, [c.id]: c }),
+                                {}
+                            ),
+                        }}
                         setSponsors={(data) => {
+                            setValue("sponsors", data);
+                        }}
+                        setNewSponsors={(data) => {
+                            setNewSponsors([...newSponsors, ...data]);
                             setValue(
                                 "sponsors",
-                                (data || []).map((id) => `/organisations/${id}`)
+                                [
+                                    ...(getValues("sponsors") || []),
+                                    ...data.map((s) => s.id),
+                                ],
+                                { shouldDirty: true }
                             );
-                        }}
-                        setNewSponsors={(e, data) => {
-                            console.log("setNewSponsors", e, data);
                         }}
                     />
                     <div
@@ -419,7 +334,7 @@ export function StartupForm(props: StartupFormProps) {
                             </p>
                         )}
                     </div>
-                    [FILE UPLOAD ]<hr />
+                    {/*[FILE UPLOAD ]<hr />*/}
                     <BasicInput id="link" />
                     <BasicInput id="repository" />
                     <BasicInput id="dashlord_url" />

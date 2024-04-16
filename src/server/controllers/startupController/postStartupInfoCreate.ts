@@ -79,7 +79,7 @@ export async function postStartupInfoCreate(req, res) {
         }
 
         const content =
-            req.body.text ||
+            req.body.markdown ||
             requiredError("description du produit", errorHandler);
         phases[0] || requiredError("phases", errorHandler);
 
