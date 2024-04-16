@@ -60,6 +60,7 @@ export async function postStartupInfoUpdate(req, res) {
         const mission =
             req.body.mission || requiredError("mission", errorHandler);
         const stats_url = req.body.stats_url;
+        const budget_url = req.body.budget_url;
         const repository = req.body.repository;
         const incubator = req.body.incubator;
         const sponsors = req.body.sponsors || [];
@@ -101,6 +102,7 @@ export async function postStartupInfoUpdate(req, res) {
             dashlord_url,
             mission,
             stats_url,
+            budget_url,
             repository,
             incubator,
             title,

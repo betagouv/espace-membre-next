@@ -47,6 +47,7 @@ export const GithubStartupChangeSchema = z.object({
     dashlord_url: z.string(), // Required string
     mission: z.string(), // Required string
     stats_url: z.string(), // Required string
+    budget_url: z.string(), // Required string
     repository: z.string(), // Required string
     contact: z.string(), // Required string
     sponsors: z.tuple([z.string()]), // Tuple with one string element

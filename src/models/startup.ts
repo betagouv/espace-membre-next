@@ -178,7 +178,7 @@ export const startupSchema = z.object({
     accessibility_status: z.string().optional(),
     dashlord_url: z.string().optional().describe("URL du rapport DashLord"),
     stats_url: z.string().optional().describe("URL de la page de statistiques"),
-    budget_url: z.string().optional(),
+    budget_url: z.string().optional().describe("URL de la page de budget"),
     analyse_risques: z.boolean().optional(),
     analyse_risques_url: z
         .string()
@@ -190,6 +190,10 @@ export const startupSchema = z.object({
     usertypes: z.array(z.string()).optional(),
     //redirect_from: z.array(z.string()).optional(),
     fast: z.object({ promotion: z.number(), montant: z.number() }).optional(),
+    thematiques: z
+        .array(z.string())
+        .optional()
+        .describe("Thématiques addressées par la startup"),
 });
 
 export interface StartupFrontMatter extends z.infer<typeof startupSchema> {}

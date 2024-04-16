@@ -17,6 +17,7 @@ import { z } from "zod";
 
 import { PhasesEditor } from "./PhasesEditor";
 import SponsorBlock from "./SponsorBlock";
+import { ThematiquesEditor } from "./ThematiquesEditor";
 import { ClientOnly } from "../ClientOnly";
 import { PullRequestWarning } from "../PullRequestWarning";
 import SelectAccessibilityStatus from "../SelectAccessibilityStatus";
@@ -124,7 +125,6 @@ export function StartupForm(props: StartupFormProps) {
             return;
         }
         if (!isValid) {
-            console.log("invalid");
             return;
         }
         setIsSaving(true);
@@ -157,7 +157,6 @@ export function StartupForm(props: StartupFormProps) {
                 return resp;
             })
             .catch((e) => {
-                console.error("xxx", e.message);
                 setIsSaving(false);
                 if (e) {
                     setAlertMessage({
@@ -374,6 +373,32 @@ export function StartupForm(props: StartupFormProps) {
                         id="stats_url"
                         hintText="Si la page de stastiques est publique, tu peux indiquer le lien vers ce document ici."
                     />
+                    <BasicInput
+                        id="budget_url"
+                        hintText="Si le budget est public, tu peux indiquer le lien vers ce document ici."
+                    />
+                    <div
+                        className={`fr-input-group ${
+                            errors.thematiques ? "fr-input-group--error" : ""
+                        }`}
+                    >
+                        <label className="fr-label">
+                            Thématiques{" "}
+                            <span className="fr-hint-text">
+                                Indiquez toutes les thématiques adressées par la
+                                startup
+                            </span>
+                        </label>
+
+                        <ThematiquesEditor
+                            defaultValue={getValues("thematiques") || []}
+                            onChange={(e, data) => {
+                                setValue("thematiques", data, {
+                                    shouldDirty: true,
+                                });
+                            }}
+                        />
+                    </div>
                     <Button
                         className={fr.cx("fr-mt-3w")}
                         children={

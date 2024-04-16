@@ -54,6 +54,7 @@ export async function postStartupInfoCreate(req, res) {
         const mission =
             req.body.mission || requiredError("mission", errorHandler);
         const stats_url = req.body.stats_url;
+        const budget_url = req.body.budget_url;
         const repository = req.body.repository;
         const incubator = req.body.incubator;
         const contact = req.body.contact;
@@ -98,6 +99,7 @@ export async function postStartupInfoCreate(req, res) {
             mission,
             contact,
             stats_url,
+            budget_url,
             repository,
             incubator,
             sponsors: sponsors.map((sponsor) => `/organisations/${sponsor}`),
