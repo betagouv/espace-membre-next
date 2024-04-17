@@ -124,7 +124,7 @@ export const LoginPage = function (props: Props) {
                         </li>
                     </ul>
                     <img
-                        src="/static/images/home-illustration.jpg"
+                        src="/static/images/home-illustration.png"
                         alt=""
                         width={300}
                     />
@@ -137,8 +137,8 @@ export const LoginPage = function (props: Props) {
                         style={{
                             padding: "4rem",
                             backgroundColor:
-                                fr.colors.decisions.background.actionLow
-                                    .blueCumulus.default,
+                                fr.colors.decisions.background.alt.blueFrance
+                                    .default,
                         }}
                     >
                         <fieldset
