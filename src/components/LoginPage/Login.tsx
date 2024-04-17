@@ -119,8 +119,18 @@ export const LoginPage = function (props: Props) {
                             >
                                 ✔
                             </span>{" "}
-                            pour <strong>se former</strong> et accéder aux{" "}
-                            <strong>actualités</strong>
+                            pour <strong>se former</strong>
+                        </li>
+                        <li>
+                            <span
+                                style={{
+                                    color: "var(--text-action-high-blue-france)",
+                                    marginRight: "1rem",
+                                }}
+                            >
+                                ✔
+                            </span>{" "}
+                            pour accéder <strong>aux actualités</strong>
                         </li>
                     </ul>
                     <img
