@@ -1,7 +1,8 @@
 import type { Metadata } from "next";
-import { routeTitles } from "@/utils/routes/routeTitles";
-import betagouv from "@/server/betagouv";
+
 import { WhatIsGoingOnWithMember } from "@/components/WhatIsGoingOnWithMemberPage";
+import betagouv from "@/server/betagouv";
+import { routeTitles } from "@/utils/routes/routeTitles";
 
 export const metadata: Metadata = {
     title: `${routeTitles.keskispasse()} / Espace Membre`,
