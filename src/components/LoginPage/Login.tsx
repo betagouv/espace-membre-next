@@ -76,7 +76,7 @@ export const LoginPage = function (props: Props) {
                             color: "var(--text-action-high-blue-france)",
                         }}
                     >
-                        Espace communauté
+                        Espace membre
                     </h1>
                     <p
                         className={fr.cx("fr-text--bold", "fr-text--bold")}
@@ -84,7 +84,7 @@ export const LoginPage = function (props: Props) {
                             color: "var(--text-action-high-blue-france)",
                         }}
                     >
-                        du réseau beta.gouv.fr
+                        de la communauté beta.gouv.fr
                     </p>
                     <ul style={{ listStyleType: "none" }}>
                         <li>
