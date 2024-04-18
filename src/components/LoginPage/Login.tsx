@@ -210,7 +210,7 @@ export const LoginPage = function (props: Props) {
                 style={{ border: "1px solid #ccc", width: "100%" }}
             >
                 <div className={fr.cx("fr-col-md-12", "fr-p-2w")}>
-                    <h3>Accueillir une nouvelle recrue ?&nbsp;👋</h3>
+                    <h2 class=fr-h3">Accueillir une nouvelle recrue ?&nbsp;👋</h2>
                     <p className="fr-text--sm">
                         La création d'une nouvelle fiche membre doit être
                         initiée <strong>par une personne déjà membre</strong> de
