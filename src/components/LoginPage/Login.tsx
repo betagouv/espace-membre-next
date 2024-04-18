@@ -196,7 +196,7 @@ export const LoginPage = function (props: Props) {
                             ]}
                         />
                         <hr />
-                        <h4 className={fr.cx("fr-mb-1w")}>Besoin d'aide ?</h4>
+                        <h3 className={fr.cx("fr-mb-1w, fr-h4")}>Besoin d'aide ?</h3>
                         <p className={fr.cx("fr-text--xs")}>
                             Si tu n'arrives pas à te connecter, consulte cette
                             page pour savoir ce qu'il se passe :{" "}
