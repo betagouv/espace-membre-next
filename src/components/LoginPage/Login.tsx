@@ -160,7 +160,7 @@ export const LoginPage = function (props: Props) {
                                 className="fr-fieldset__legend"
                                 id="login-1760-fieldset-legend"
                             >
-                                <h3>Me connecter</h3>
+                                <h2 class="fr-h3">Me connecter</h2>
                             </legend>
                             {!!props.messages.length && (
                                 <div
