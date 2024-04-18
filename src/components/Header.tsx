@@ -146,7 +146,8 @@ const MainHeader = () => {
             navigation={nav}
             id="fr-header-header-with-quick-access-items"
             quickAccessItems={[...quickAccessItems]}
-            serviceTitle="Espace Membre @beta.gouv.fr"
+            serviceTitle="Espace Membre"
+            serviceTagline="Communauté @beta.gouv.fr"
         />
     );
 };

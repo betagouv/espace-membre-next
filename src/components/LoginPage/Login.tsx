@@ -196,7 +196,9 @@ export const LoginPage = function (props: Props) {
                             ]}
                         />
                         <hr />
-                        <h3 className={fr.cx("fr-mb-1w, fr-h4")}>Besoin d'aide ?</h3>
+                        <h3 className={fr.cx("fr-mb-1w", "fr-h4")}>
+                            Besoin d'aide ?
+                        </h3>
                         <p className={fr.cx("fr-text--xs")}>
                             Si tu n'arrives pas à te connecter, consulte cette
                             page pour savoir ce qu'il se passe :{" "}
@@ -210,7 +212,9 @@ export const LoginPage = function (props: Props) {
                 style={{ border: "1px solid #ccc", width: "100%" }}
             >
                 <div className={fr.cx("fr-col-md-12", "fr-p-2w")}>
-                    <h2 class=fr-h3">Accueillir une nouvelle recrue ?&nbsp;👋</h2>
+                    <h2 className="fr-h3">
+                        Accueillir une nouvelle recrue ?&nbsp;👋
+                    </h2>
                     <p className="fr-text--sm">
                         La création d'une nouvelle fiche membre doit être
                         initiée <strong>par une personne déjà membre</strong> de
