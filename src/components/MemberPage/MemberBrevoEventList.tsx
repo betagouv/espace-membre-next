@@ -37,14 +37,17 @@ const EmailEventsTable = ({ data }) => {
     };
 
     return (
-        <Table
-            headers={["Email", "Date", "Event", "Subject", "Tag", "From"]}
-            data={eventRows([
-                ...((data.secondary_email && data.secondary_email.events) ||
-                    []),
-                ...((data.primary_email && data.primary_email.events) || []),
-            ])}
-        ></Table>
+        data && (
+            <Table
+                headers={["Email", "Date", "Event", "Subject", "Tag", "From"]}
+                data={eventRows([
+                    ...((data.secondary_email && data.secondary_email.events) ||
+                        []),
+                    ...((data.primary_email && data.primary_email.events) ||
+                        []),
+                ])}
+            ></Table>
+        )
     );
 };
 
