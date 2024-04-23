@@ -1,3 +1,4 @@
+import { DBUser, DBUserWithEmailsAndMattermostUsername } from "@/models/dbUser";
 import { Job } from "@/models/job";
 import { Member } from "@/models/member";
 import { StartupPhase } from "@/models/startup";
@@ -160,7 +161,7 @@ export type EmailEndingContract = {
         | EMAIL_TYPES.EMAIL_ENDING_CONTRACT_15_DAYS
         | EMAIL_TYPES.EMAIL_ENDING_CONTRACT_2_DAYS;
     variables: {
-        user: Member;
+        user: DBUserWithEmailsAndMattermostUsername;
         jobs: Job[];
     };
 };
@@ -170,21 +171,14 @@ export type EmailNoMoreContract = {
         | EMAIL_TYPES.EMAIL_NO_MORE_CONTRACT_1_DAY
         | EMAIL_TYPES.EMAIL_NO_MORE_CONTRACT_30_DAY;
     variables: {
-        user: Member;
+        user: DBUserWithEmailsAndMattermostUsername;
     };
 };
 
 export type EmailUserShouldUpdateInfo = {
     type: EMAIL_TYPES.EMAIL_USER_SHOULD_UPDATE_INFO;
     variables: {
-        user: Member & {
-            startups: string[];
-            tjm: string;
-            gender: string;
-            legal_status: string;
-            workplace_insee_code: string;
-            secondary_email: string;
-        };
+        user: DBUser;
         secretariatUrl: string;
     };
 };

@@ -1,5 +1,6 @@
 import { z } from "zod";
 
+import { DBStartup } from "./startup";
 import { userStatusOptions } from "@/frontConfig";
 
 // export type Status = "independant" | "admin" | "service";
@@ -20,13 +21,15 @@ export interface Mission {
 
 export interface DBMission {
     id: number;
-    startup: string;
+    uuid: string;
+    // startup: string;
     status: string;
     role?: string;
-    employer: string;
+    employer?: string;
     username: string;
     start: Date;
     end?: Date;
+    startups: DBStartup[];
 }
 
 export interface GithubMission {
@@ -38,6 +41,7 @@ export interface GithubMission {
 }
 
 export const missionSchema = z.object({
+    uuid: z.string().readonly().optional(),
     start: z
         .preprocess(
             (val) => {
@@ -91,3 +95,13 @@ export const missionSchema = z.object({
         .optional(),
     startups: z.array(z.string()).optional(),
 });
+
+export interface createDBMission extends Omit<DBMission, "uuid" | "id"> {
+    startups: string[];
+    user_id: string;
+}
+
+export interface updateDBMission extends DBMission {
+    startups: string[];
+    user_id: string;
+}

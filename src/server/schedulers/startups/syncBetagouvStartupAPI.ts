@@ -1,27 +1,42 @@
 import * as Sentry from "@sentry/node";
 import { differenceInDays } from "date-fns";
+import { start } from "repl";
 
-import betagouv from "@betagouv";
-import config from "@/server/config";
-import { sendEmail } from "@/server/config/email.config";
-import db from "@db";
+import { getLastCommitFromFile } from "@/lib/github";
+import { Incubator, dbIncubator } from "@/models/incubator";
+import { Domaine, Member } from "@/models/member";
+import { Sponsor, dbSponsorSchemaType } from "@/models/sponsor";
 import {
     DBStartup,
+    Phase,
     Startup,
     StartupInfo,
     StartupPhase,
+    dbStartupSchema,
+    dbStartupSchemaType,
+    phaseSchema,
 } from "@/models/startup";
+import config from "@/server/config";
+import { sendEmail } from "@/server/config/email.config";
+import {
+    getDBIncubator,
+    getOrCreateDBIncubator,
+} from "@/server/db/dbIncubator";
+import { getDBSponsor, getOrCreateSponsor } from "@/server/db/dbSponsor";
+import { createOrUpdateStartup, getDBStartup } from "@/server/db/dbStartup";
+import { getAllUsersPublicInfo } from "@/server/db/dbUser";
+import betagouv from "@betagouv";
+import db from "@db";
 import { EMAIL_TYPES, SendEmailProps } from "@modules/email";
-import { Domaine, Member } from "@/models/member";
-import { getLastCommitFromFile } from "@/lib/github";
 
-function getCurrentPhase(startup: StartupInfo) {
+function getCurrentPhase(startup: StartupInfo): StartupPhase {
     return startup.attributes.phases
-        ? startup.attributes.phases[startup.attributes.phases.length - 1].name
-        : undefined;
+        ? (startup.attributes.phases[startup.attributes.phases.length - 1]
+              .name as StartupPhase)
+        : StartupPhase.PHASE_INVESTIGATION;
 }
 
-function getCurrentPhaseDate(startup: StartupInfo): Date | null {
+function getCurrentPhaseDate(startup: StartupInfo): Date | undefined {
     let date;
     if (startup.attributes.phases) {
         date =
@@ -50,7 +65,7 @@ async function compareAndTriggerChange(
         previousStartupInfo &&
         newStartupInfo.current_phase !== previousStartupInfo.current_phase
     ) {
-        const startupInfos = await betagouv.startupInfosById(newStartupInfo.id);
+        const startupInfos = await getDBStartup({ id: newStartupInfo.id });
         if (!startupInfos) {
             return;
         }
@@ -102,12 +117,69 @@ async function compareAndTriggerChange(
     }
 }
 
+async function getOrCreateSponsors(
+    sponsors: Sponsor[],
+    startup: StartupInfo
+): Promise<dbSponsorSchemaType[]> {
+    const dbSponsors: dbSponsorSchemaType[] = [];
+    for (const sponsorId of startup.attributes.sponsors) {
+        const sponsor = sponsors.find((s) => s.ghid === sponsorId);
+        if (sponsor) {
+            dbSponsors.push(
+                await getOrCreateSponsor({
+                    ghid: sponsor.ghid,
+                    name: sponsor.name,
+                    acronym: sponsor.acronym,
+                    domaine_ministeriel: sponsor.domaine_ministeriel,
+                    type: sponsor.type,
+                })
+            );
+        }
+    }
+    return dbSponsors;
+}
+
+async function getOrCreateIncubator(
+    incubators: Omit<Incubator, "id">[],
+    startup: StartupInfo
+): Promise<dbIncubator | undefined> {
+    try {
+        const incubator = incubators.find(
+            (i) => i.ghid === startup.relationships.incubator.data.id
+        );
+        if (incubator) {
+            return getOrCreateDBIncubator({
+                ghid: incubator.ghid,
+                owner_id: (
+                    await getDBSponsor({
+                        ghid: (incubator.owner || "").replace(
+                            "/organisations/",
+                            ""
+                        ),
+                    })
+                )?.id,
+                title: incubator.title,
+                contact: incubator.contact,
+                address: incubator.address,
+                website: incubator.website,
+                github: incubator.github,
+            });
+        }
+    } catch (e) {
+        console.error(e);
+    }
+    return;
+}
+
 export async function syncBetagouvStartupAPI() {
     const startups: StartupInfo[] = await betagouv.startupsInfos();
     const startupDetailsInfo: Startup[] = await betagouv.startupInfos();
-    const members: Member[] = await betagouv.usersInfos();
+    const allSponsors = await betagouv.sponsors();
+    const allIncubators = await betagouv.incubators();
+    const members = await getAllUsersPublicInfo();
 
     for (const startup of startups) {
+        console.log(`working on startup : ${startup.id}`);
         const previousStartupInfo: DBStartup = await db("startups")
             .where({ id: startup.id })
             .first();
@@ -123,14 +195,16 @@ export async function syncBetagouvStartupAPI() {
             if (
                 members.find(
                     (m) =>
-                        m.id === member && m.domaine === Domaine.INTRAPRENARIAT
+                        m.username === member &&
+                        m.domaine === Domaine.INTRAPRENARIAT
                 )
             ) {
                 has_intra = true;
             }
             if (
                 members.find(
-                    (m) => m.id === member && m.domaine === Domaine.COACHING
+                    (m) =>
+                        m.username === member && m.domaine === Domaine.COACHING
                 )
             ) {
                 has_coach = true;
@@ -146,15 +220,33 @@ export async function syncBetagouvStartupAPI() {
             `content/_startups/${startup.id}.md`,
             "master"
         );
-        const newStartupInfo = {
+        const sponsors = await getOrCreateSponsors(allSponsors, startup);
+        const incubator = await getOrCreateIncubator(allIncubators, startup);
+        const newStartupInfo: dbStartupSchemaType = {
             id: startup.id,
             name: startup.attributes.name,
             pitch: startup.attributes.pitch,
             stats_url: startup.attributes.stats_url,
+            stats: startup.attributes.stats,
             link: startup.attributes.link,
             repository: startup.attributes.repository,
             contact: startup.attributes.contact,
-            phases: JSON.stringify(startup.attributes.phases),
+            website: startup.attributes.website,
+            incubator_id: incubator ? incubator.uuid : undefined,
+            analyse_risques: startup.attributes.analyse_risques,
+            analyse_risques_url: startup.attributes.analyse_risques_url,
+            content_url_encoded_markdown:
+                startup.attributes.content_url_encoded_markdown,
+            accessibility_status: startup.attributes.accessibility_status,
+            dashlord_url: startup.attributes.dashlord_url,
+            github: startup.attributes.github,
+            phases: startup.attributes.phases.map((phase: Phase) =>
+                phaseSchema.parse({
+                    ...phase,
+                    end: phase.end ? new Date(phase.end) : undefined,
+                    start: phase.start ? new Date(phase.start) : undefined,
+                })
+            ),
             current_phase: getCurrentPhase(startup),
             current_phase_date: getCurrentPhaseDate(startup),
             mailing_list: previousStartupInfo
@@ -164,31 +256,47 @@ export async function syncBetagouvStartupAPI() {
                 ? startup.relationships.incubator.data.id
                 : undefined,
             nb_active_members: startupDetailInfo.active_members.length,
-            last_github_update: res.data
-                ? new Date(res.data[0].commit.committer.date)
-                : undefined,
+            last_github_update:
+                res.data && res.data.length
+                    ? new Date(res.data[0].commit.committer.date)
+                    : undefined,
             nb_total_members: Array.from(nb_total_members).length,
             has_intra,
             has_coach,
+            // sponsors: [],
+            budget_url: startup.attributes.budget_url,
         };
-        if (previousStartupInfo) {
-            await db("startups").update(newStartupInfo).where({
-                id: startup.id,
-            });
-        } else {
-            await db("startups").insert(newStartupInfo);
-        }
-        try {
-            await compareAndTriggerChange(
-                {
-                    ...newStartupInfo,
-                    phases: startup.attributes.phases,
-                } as DBStartup,
-                previousStartupInfo
-            );
-        } catch (e) {
-            Sentry.captureException(e);
-            console.error(e);
-        }
+        createOrUpdateStartup({
+            ...newStartupInfo,
+            organization_ids: sponsors.map((s) => s.uuid),
+        });
+        // if (previousStartupInfo) {
+        //     await db("startups")
+        //         .update({
+        //             ...newStartupInfo,
+        //             phases: JSON.stringify(newStartupInfo.phases),
+        //         })
+        //         .where({
+        //             id: startup.id,
+        //         });
+        // } else {
+        //     await db("startups").insert({
+        //         ...newStartupInfo,
+        //         phases: JSON.stringify(newStartupInfo.phases),
+        //     });
+        // }
+        // try {
+        //     await compareAndTriggerChange(
+        //         {
+        //             ...newStartupInfo,
+        //             phases: startup.attributes.phases,
+        //         } as unknown as DBStartup,
+        //         previousStartupInfo
+        //     );
+        // } catch (e) {
+        //     Sentry.captureException(e);
+        //     console.error(e);
+        // }
     }
+    console.log("LCS SYNC FINISHED");
 }

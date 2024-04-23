@@ -2,14 +2,14 @@ import chai from "chai";
 import chaiHttp from "chai-http";
 import sinon from "sinon";
 
-import Betagouv from "@betagouv";
-import * as Email from "@/server/config/email.config";
-import config from "@/server/config";
-import knex from "@db";
 import { Domaine } from "@/models/member";
-import { SendEmailProps } from "@modules/email";
-import app from "@/server/index";
 import routes from "@/routes/routes";
+import config from "@/server/config";
+import * as Email from "@/server/config/email.config";
+import dbUser from "@/server/db/dbUser";
+import app from "@/server/index";
+import knex from "@db";
+import { SendEmailProps } from "@modules/email";
 
 chai.use(chaiHttp);
 
@@ -137,21 +137,19 @@ describe("Login", () => {
             const today = new Date();
             const todayLess4days = new Date();
             todayLess4days.setDate(today.getDate() - 4);
-            const userInfosByIdStub = sinon
-                .stub(Betagouv, "userInfosById")
-                .returns(
-                    Promise.resolve({
-                        id: "membre.expiredfourdays",
-                        fullname: "",
-                        github: "",
-                        employer: "",
-                        domaine: Domaine.ANIMATION,
-                        missions: [],
-                        start: "",
-                        startups: [],
-                        end: todayLess4days.toUTCString(),
-                    })
-                );
+            const getDBUserStub = sinon.stub(dbUser, "getDBUser").returns(
+                Promise.resolve({
+                    id: "membre.expiredfourdays",
+                    fullname: "",
+                    github: "",
+                    employer: "",
+                    domaine: Domaine.ANIMATION,
+                    missions: [],
+                    start: "",
+                    startups: [],
+                    end: todayLess4days.toUTCString(),
+                })
+            );
             await knex("users").insert({
                 username: "membre.expiredfourdays",
                 primary_email: "membre.expiredfourdays@beta.gouv.fr",
@@ -170,7 +168,7 @@ describe("Login", () => {
                     username: "membre.expiredfourdays",
                 })
                 .delete();
-            userInfosByIdStub.restore();
+            getDBUserStub.restore();
         });
     });
 

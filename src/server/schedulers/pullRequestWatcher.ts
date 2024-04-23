@@ -1,7 +1,8 @@
 import ejs from "ejs";
+
 import Betagouv from "../betagouv";
-import config from "@/server/config";
-import knex from "@db";
+import betagouv from "../betagouv";
+import { getDBUser } from "../db/dbUser";
 import * as github from "@/lib/github";
 import * as mattermost from "@/lib/mattermost";
 import {
@@ -9,12 +10,13 @@ import {
     DBUser,
     EmailStatusCode,
 } from "@/models/dbUser/dbUser";
-import { buildBetaEmail, sleep } from "@controllers/utils";
-import { EMAIL_TYPES } from "@modules/email";
-import { sendEmail } from "@/server/config/email.config";
-import betagouv from "../betagouv";
-import db from "@db";
 import { DBStartup } from "@/models/startup";
+import config from "@/server/config";
+import { sendEmail } from "@/server/config/email.config";
+import { buildBetaEmail, sleep } from "@controllers/utils";
+import knex from "@db";
+import db from "@db";
+import { EMAIL_TYPES } from "@modules/email";
 
 const findAuthorsInFiles = async (files) => {
     const authors: string[] = [];
@@ -46,7 +48,7 @@ const sendEmailToAuthorsIfExists = async (author, pullRequestNumber) => {
             `L'utilisateur n'existe pas, ou n'a ni email actif, ni d'email secondaire`
         );
     } else {
-        const member = await Betagouv.userInfosById(author);
+        const member = await getDBUser(author);
         const primary_email_active =
             user.primary_email_status === EmailStatusCode.EMAIL_ACTIVE;
 
@@ -110,7 +112,7 @@ const sendEmailToAuthorTeamIfExists = async (pullRequestNumber: number) => {
     const authors = await findAuthorsInFiles(files);
     for (const author of authors) {
         console.log("Should send message to author team", author);
-        const userInfo = await betagouv.userInfosById(author);
+        const userInfo = await getDBUser(author);
         if (!userInfo) {
             continue;
         }
@@ -137,9 +139,7 @@ const sendEmailToAuthorTeamIfExists = async (pullRequestNumber: number) => {
                     variables: {
                         startup: startup.name,
                         pr_link: `https://github.com/${config.githubRepository}/pull/${pullRequestNumber}`,
-                        username: (
-                            await betagouv.userInfosById(author)
-                        )?.fullname,
+                        username: (await getDBUser(author))?.fullname,
                     },
                 });
             } catch (e) {

@@ -3,6 +3,7 @@ import { EventCode } from "@/models/actionEvent";
 import { GithubMission } from "@/models/mission";
 import { PULL_REQUEST_TYPE, PULL_REQUEST_STATE } from "@/models/pullRequests";
 import { requiredError, isValidDate } from "@/server/controllers/validator";
+import { getDBUser, getDBUserAndMission } from "@/server/db/dbUser";
 import betagouv from "@betagouv";
 import { updateAuthorGithubFile } from "@controllers/helpers/githubHelpers";
 import { GithubAuthorMissionChange } from "@controllers/helpers/githubHelpers/githubEntryInterface";
@@ -27,10 +28,10 @@ export async function publicPostBaseInfoUpdate(req, res) {
             });
         }
 
-        const info = await betagouv.userInfosById(username);
+        const info = await getDBUserAndMission(username);
         const newEnd =
             req.body.end || requiredError("nouvelle date de fin", errorHandler);
-        const startDate = info?.start ? new Date(info?.start) : new Date();
+        const startDate = new Date(); //info?.start ? new Date(info?.start) : new Date(); todo
         const newEndDate = isValidDate(
             "nouvelle date de fin",
             new Date(end),
@@ -57,7 +58,7 @@ export async function publicPostBaseInfoUpdate(req, res) {
             // todo: delete all public postBaseInfoUpdate route and use BaseInfoUpdate instead
             missions: missions as GithubMission[],
         };
-        const prInfo = await updateAuthorGithubFile(username, changes);
+        // const prInfo = await updateAuthorGithubFile(username, changes);
         addEvent({
             action_code: EventCode.MEMBER_BASE_INFO_UPDATED,
             created_by_username: req.auth
@@ -69,21 +70,21 @@ export async function publicPostBaseInfoUpdate(req, res) {
                 old_value: end,
             },
         });
-        await db("pull_requests").insert({
-            url: prInfo.html_url,
-            username,
-            type: PULL_REQUEST_TYPE.PR_TYPE_MEMBER_UPDATE,
-            status: PULL_REQUEST_STATE.PR_MEMBER_UPDATE_CREATED,
-            info: JSON.stringify(changes),
-        });
-        const message = `⚠️ Pull request pour la mise à jour de la fiche de ${username} ouverte. 
-        \nDemande à un membre de ton équipe de merger ta fiche : <a href="${prInfo.html_url}" target="_blank">${prInfo.html_url}</a>. 
-        \nUne fois mergée, ton profil sera mis à jour.`;
-        req.flash("message", message);
+        // await db("pull_requests").insert({
+        //     url: prInfo.html_url,
+        //     username,
+        //     type: PULL_REQUEST_TYPE.PR_TYPE_MEMBER_UPDATE,
+        //     status: PULL_REQUEST_STATE.PR_MEMBER_UPDATE_CREATED,
+        //     info: JSON.stringify(changes),
+        // });
+        // const message = `⚠️ Pull request pour la mise à jour de la fiche de ${username} ouverte.
+        // \nDemande à un membre de ton équipe de merger ta fiche : <a href="${prInfo.html_url}" target="_blank">${prInfo.html_url}</a>.
+        // \nUne fois mergée, ton profil sera mis à jour.`;
+        // req.flash("message", message);
         res.json({
-            message,
+            // message,
             username: username,
-            pr_url: prInfo.html_url,
+            // pr_url: prInfo.html_url,
         });
     } catch (err) {
         let message;

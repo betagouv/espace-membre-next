@@ -72,7 +72,7 @@ export async function PUT(
         role: `${postParams.domaine}`,
     });
 
-    const prInfo = await createOrUpdateMemberData(
+    const dbUser = await createOrUpdateMemberData(
         {
             author: session.user.id,
             method: "update",
@@ -82,9 +82,13 @@ export async function PUT(
         dbData,
         privateData
     );
-
     return Response.json({
         message: `Success`,
-        pr_url: prInfo.html_url,
+        data: dbUser,
     });
+
+    // return Response.json({
+    //     message: `Success`,
+    //     pr_url: prInfo.html_url,
+    // });
 }

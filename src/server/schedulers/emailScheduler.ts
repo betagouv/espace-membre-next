@@ -3,11 +3,15 @@ import _ from "lodash/array";
 
 import betagouv from "../betagouv";
 import { createEmail } from "../controllers/usersController/createEmailForUser";
+import { getAllDBUsersAndMission, getAllUsersPublicInfo } from "../db/dbUser";
 import { addEvent } from "@/lib/events";
 import { ActionEvent, EventCode } from "@/models/actionEvent";
 import {
     CommunicationEmailCode,
     DBUser,
+    DBUserAndMission,
+    DBUserPublic,
+    DBUserPublicAndMission,
     EmailStatusCode,
     MemberType,
 } from "@/models/dbUser/dbUser";
@@ -42,7 +46,7 @@ const differenceGithubRedirectionOVH = function differenceGithubOVH(
 };
 
 const getValidUsers = async () => {
-    const githubUsers = await BetaGouv.usersInfos();
+    const githubUsers = await getAllDBUsersAndMission();
     return githubUsers.filter((x) => !utils.checkUserIsExpired(x));
 };
 
@@ -55,9 +59,9 @@ export async function setEmailAddressesActive() {
             EmailStatusCode.EMAIL_RECREATION_PENDING,
         ])
         .where("primary_email_status_updated_at", "<", nowLessFiveMinutes);
-    const githubUsers: Member[] = await getValidUsers();
+    const githubUsers = await getValidUsers();
     const concernedUsers: DBUser[] = dbUsers.filter((user) => {
-        return githubUsers.find((x) => user.username === x.id);
+        return githubUsers.find((x) => user.username === x.username);
     });
     return Promise.all(
         concernedUsers.map(async (user) => {
@@ -83,8 +87,9 @@ export async function setEmailAddressesActive() {
                         lastname: utils.capitalizeWords(
                             user.username.split(".")[1]
                         ),
-                        domaine: githubUsers.find((x) => user.username === x.id)
-                            ?.domaine,
+                        domaine: githubUsers.find(
+                            (x) => user.username === x.username
+                        )?.domaine,
                     },
                 ],
             });
@@ -107,9 +112,9 @@ export async function setCreatedEmailRedirectionsActive() {
         .where("primary_email_status_updated_at", "<", nowLessFiveMinutes)
         .where("email_is_redirection", true);
 
-    const githubUsers: Member[] = await getValidUsers();
+    const githubUsers = await getValidUsers();
     const concernedUsers: DBUser[] = dbUsers.filter((user) => {
-        return githubUsers.find((x) => user.username === x.id);
+        return githubUsers.find((x) => user.username === x.username);
     });
     return Promise.all(
         concernedUsers.map(async (user) => {
@@ -137,7 +142,7 @@ export async function setCreatedEmailRedirectionsActive() {
                                 user.username.split(".")[1]
                             ),
                             domaine: githubUsers.find(
-                                (x) => user.username === x.id
+                                (x) => user.username === x.username
                             )?.domaine,
                         },
                     ],
@@ -160,9 +165,9 @@ export async function createRedirectionEmailAdresses() {
         ])
         .where("email_is_redirection", true)
         .whereNotNull("secondary_email");
-    const githubUsers: Member[] = await getValidUsers();
-    const concernedUsers: Member[] = githubUsers.filter((user) => {
-        return dbUsers.find((x) => x.username === user.id);
+    const githubUsers = await getValidUsers();
+    const concernedUsers = githubUsers.filter((user) => {
+        return dbUsers.find((x) => x.username === user.username);
     });
 
     const redirections: OvhRedirection[] = await BetaGouv.redirections();
@@ -176,7 +181,7 @@ export async function createRedirectionEmailAdresses() {
             ) as []),
         ])
     ).sort();
-    let unregisteredMembers: Member[] = _.differenceWith(
+    let unregisteredMembers: DBUserAndMission[] = _.differenceWith(
         concernedUsers,
         allOvhRedirectionEmails,
         differenceGithubRedirectionOVH
@@ -185,16 +190,18 @@ export async function createRedirectionEmailAdresses() {
         `Email creation : ${unregisteredMembers.length} unregistered user(s) in OVH (${allOvhRedirectionEmails.length} accounts in OVH. ${githubUsers.length} accounts in Github).`
     );
     unregisteredMembers = unregisteredMembers.map((member) => {
-        const dbUser = dbUsers.find((dbUser) => dbUser.username === member.id);
+        const dbUser = dbUsers.find(
+            (dbUser) => dbUser.username === member.username
+        );
 
-        if (dbUser) {
-            member.email = dbUser.secondary_email;
-        }
+        // if (dbUser) {
+        //     member.email = dbUser.secondary_email;
+        // }
         return member;
     });
     console.log(
         "User that should have redirection",
-        unregisteredMembers.map((u) => u.id)
+        unregisteredMembers.map((u) => u.username)
     );
     // create email and marrainage
     return Promise.all(
@@ -204,13 +211,17 @@ export async function createRedirectionEmailAdresses() {
                 process.env.NODE_ENV === "test"
             ) {
                 const email = utils.buildBetaRedirectionEmail(
-                    member.id,
+                    member.username,
                     "attr"
                 );
-                await betagouv.createRedirection(email, member.email, false);
+                await betagouv.createRedirection(
+                    email,
+                    member.secondary_email,
+                    false
+                );
                 const [user]: DBUser[] = await knex("users")
                     .where({
-                        username: member.id,
+                        username: member.username,
                     })
                     .update({
                         primary_email: email,
@@ -233,14 +244,14 @@ export async function createEmailAddresses() {
         ])
         .where("email_is_redirection", false)
         .whereNotNull("secondary_email");
-    const githubUsers: Member[] = await getValidUsers();
+    const githubUsers = await getValidUsers();
 
-    const concernedUsers: Member[] = githubUsers.filter((user) => {
-        return dbUsers.find((x) => x.username === user.id);
+    const concernedUsers = githubUsers.filter((user) => {
+        return dbUsers.find((x) => x.username === user.username);
     });
 
     const allOvhEmails: string[] = await BetaGouv.getAllEmailInfos();
-    const unregisteredUsers: Member[] = _.differenceWith(
+    const unregisteredUsers: DBUserPublic[] = _.differenceWith(
         concernedUsers,
         allOvhEmails,
         differenceGithubOVH
@@ -252,19 +263,19 @@ export async function createEmailAddresses() {
     // create email and marrainage
     return Promise.all(
         unregisteredUsers.map(async (user) => {
-            await createEmail(user.id, "Secretariat cron");
+            await createEmail(user.username, "Secretariat cron");
             // once email created we create marrainage
         })
     );
 }
 
 export async function reinitPasswordEmail() {
-    const users: Member[] = await BetaGouv.usersInfos();
-    const expiredUsers: Member[] = utils.getExpiredUsers(users, 5);
+    const users = await getAllDBUsersAndMission();
+    const expiredUsers = utils.getExpiredUsers(users, 5);
     const dbUsers: DBUser[] = await knex("users")
         .whereIn(
             "username",
-            expiredUsers.map((user) => user.id)
+            expiredUsers.map((user) => user.username)
         )
         .andWhere({
             primary_email_status: EmailStatusCode.EMAIL_ACTIVE,
@@ -298,22 +309,23 @@ export async function reinitPasswordEmail() {
 }
 
 export async function subscribeEmailAddresses() {
-    const dbUsers: DBUser[] = await knex("users").whereNotNull("primary_email");
+    // const dbUsers: DBUser[] = await knex("users").whereNotNull("primary_email");
 
     const githubUsers = await getValidUsers();
-    const concernedUsers = githubUsers.reduce(
-        (acc: (Member & { primary_email: string | undefined })[], user) => {
-            const dbUser = dbUsers.find((x) => x.username === user.id);
-            if (dbUser) {
-                acc.push({
-                    ...user,
-                    ...{ primary_email: dbUser.primary_email },
-                });
-            }
-            return acc;
-        },
-        []
-    );
+    const concernedUsers = githubUsers.filter((u) => u.primary_email);
+    // const concernedUsers = githubUsers.reduce(
+    //     (acc: (Member & { primary_email: string | undefined })[], user) => {
+    //         const dbUser = dbUsers.find((x) => x.username === user.username);
+    //         if (dbUser) {
+    //             acc.push({
+    //                 ...user,
+    //                 ...{ primary_email: dbUser.primary_email },
+    //             });
+    //         }
+    //         return acc;
+    //     },
+    //     []
+    // );
 
     const allIncubateurSubscribers = await BetaGouv.getMailingListSubscribers(
         config.incubateurMailingListName
@@ -346,24 +358,24 @@ export async function subscribeEmailAddresses() {
 }
 
 export async function unsubscribeEmailAddresses() {
-    const dbUsers: DBUser[] = await knex("users").whereNotNull("primary_email");
-    const githubUsers = await BetaGouv.usersInfos().then((users) =>
-        users.filter((x) => utils.checkUserIsExpired(x))
+    // const dbUsers: DBUser[] = await knex("users").whereNotNull("primary_email");
+    const concernedUsers = await getAllDBUsersAndMission().then((users) =>
+        users.filter((x) => utils.checkUserIsExpired(x) && x.primary_email)
     );
 
-    const concernedUsers = githubUsers.reduce(
-        (acc: (Member & { primary_email: string | undefined })[], user) => {
-            const dbUser = dbUsers.find((x) => x.username === user.id);
-            if (dbUser) {
-                acc.push({
-                    ...user,
-                    ...{ primary_email: dbUser.primary_email },
-                });
-            }
-            return acc;
-        },
-        []
-    );
+    // const concernedUsers = githubUsers.reduce(
+    //     (acc: (Member & { primary_email: string | undefined })[], user) => {
+    //         const dbUser = dbUsers.find((x) => x.username === user.username);
+    //         if (dbUser) {
+    //             acc.push({
+    //                 ...user,
+    //                 ...{ primary_email: dbUser.primary_email },
+    //             });
+    //         }
+    //         return acc;
+    //     },
+    //     []
+    // );
 
     const allIncubateurSubscribers: string[] =
         await BetaGouv.getMailingListSubscribers(
@@ -398,16 +410,16 @@ export async function setEmailStatusActiveForUsers() {
         .whereNull("primary_email")
         .whereIn("primary_email_status", [EmailStatusCode.EMAIL_UNSET])
         .whereNotNull("secondary_email");
-    const activeUsers: Member[] = await BetaGouv.getActiveRegisteredOVHUsers();
+    const activeUsers = await BetaGouv.getActiveRegisteredOVHUsers();
 
-    const concernedUsers: Member[] = activeUsers.filter((user) => {
-        return dbUsers.find((x) => x.username === user.id);
+    const concernedUsers: DBUserPublic[] = activeUsers.filter((user) => {
+        return dbUsers.find((x) => x.username === user.username);
     });
 
     // create email and marrainage
     return Promise.all(
         concernedUsers.map(async (user) => {
-            console.log("This user has active email", user.id);
+            console.log("This user has active email", user.username);
             // once email created we create marrainage
         })
     );
@@ -419,9 +431,9 @@ export async function sendOnboardingVerificationPendingEmail() {
         [EmailStatusCode.EMAIL_VERIFICATION_WAITING]
     );
 
-    const githubUsers: Member[] = await getValidUsers();
+    const githubUsers = await getValidUsers();
     const concernedUsers: DBUser[] = dbUsers.filter((user) => {
-        return githubUsers.find((x) => user.username === x.id);
+        return githubUsers.find((x) => user.username === x.username);
     });
     concernedUsers.map(async (user) => {
         const secretariatUrl = `${config.protocol}://${config.host}`;

@@ -7,7 +7,6 @@ import { useRouter } from "next/navigation";
 
 import { CommunityProps } from ".";
 import MemberSelect from "../MemberSelect";
-
 import { routeTitles } from "@/utils/routes/routeTitles";
 
 /* Pure component */
@@ -35,8 +34,8 @@ export const CommunitySearchMember = (props: CommunityProps) => {
                                 );
                             }}
                             members={props.users.map((u) => ({
-                                value: u.id,
-                                label: u.fullname,
+                                value: u.username,
+                                label: u.fullname || u.username,
                             }))}
                             defaultValue={undefined}
                         ></MemberSelect>

@@ -85,20 +85,24 @@ export default async function Page({ params }: Props) {
     };
     const formation = await fetchAirtableFormationById(params.id);
 
-    const user = (await betagouv.userInfosById(session.user.id)) as Member;
     const dbUser: DBUser = await db("users")
         .where({
             username: session.user.id,
         })
         .first();
-    if (user) {
-        user.email =
+    let email;
+    if (dbUser) {
+        email =
             dbUser.communication_email === CommunicationEmailCode.PRIMARY
                 ? dbUser.primary_email
                 : dbUser.secondary_email;
     }
-    const isMemberRegistered = formation.registeredMembers?.includes(user.id);
-    const isInWaitingList = formation.waitingListUsernames?.includes(user.id);
+    const isMemberRegistered = formation.registeredMembers?.includes(
+        dbUser.username
+    );
+    const isInWaitingList = formation.waitingListUsernames?.includes(
+        dbUser.username
+    );
 
     return (
         <>
@@ -158,7 +162,7 @@ export default async function Page({ params }: Props) {
                                             linkProps={{
                                                 href: buildInscriptionLink(
                                                     formation.inscriptionLink,
-                                                    user
+                                                    email
                                                 ),
                                                 target: "_blank",
                                             }}

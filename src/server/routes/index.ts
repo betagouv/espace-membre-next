@@ -1,4 +1,4 @@
-export { authRouter } from "./auth";
+// export { authRouter } from "./auth";
 export { userRouter, userApiRouter, userPublicApiRouter } from "./users";
 export { accountRouter } from "./account";
 export { adminRouter } from "./admin";

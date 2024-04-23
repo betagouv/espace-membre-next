@@ -1,16 +1,23 @@
+import {
+    getAllDBUsersAndMission,
+    getAllUsersPublicInfo,
+    getDBUserAndMission,
+} from "../db/dbUser";
+import { DBUser, DBUserAndMission, DBUserPublic } from "@/models/dbUser/dbUser";
+import { EmailStatusCode } from "@/models/dbUser/dbUser";
 import { Member } from "@/models/member";
-import { DBUser } from "@/models/dbUser/dbUser";
+import config from "@/server/config";
 import BetaGouv from "@betagouv";
 import * as utils from "@controllers/utils";
 import knex from "@db";
-import { EmailStatusCode } from "@/models/dbUser/dbUser";
-import config from "@/server/config";
 
-export async function setEmailExpired(optionalExpiredUsers?: Member[]) {
+export async function setEmailExpired(
+    optionalExpiredUsers?: DBUserAndMission[]
+) {
     let expiredUsers = optionalExpiredUsers;
-    let dbUsers: DBUser[] = [];
+    let dbUsers: DBUserAndMission[] = [];
     if (!expiredUsers) {
-        const users: Member[] = await BetaGouv.usersInfos();
+        const users = await getAllDBUsersAndMission();
         expiredUsers = users.filter((user) => {
             return utils.checkUserIsExpired(user, 30);
         });
@@ -20,7 +27,7 @@ export async function setEmailExpired(optionalExpiredUsers?: Member[]) {
         dbUsers = await knex("users")
             .whereIn(
                 "username",
-                expiredUsers.map((user) => user.id)
+                expiredUsers.map((user) => user.username)
             )
             .andWhere({ primary_email_status: EmailStatusCode.EMAIL_SUSPENDED })
             .andWhere("primary_email_status_updated_at", "<", todayLess30days)
