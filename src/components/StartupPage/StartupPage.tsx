@@ -20,7 +20,7 @@ function MemberTable({ members }: { members: DBUserPublic[] }) {
                     {member.fullname}
                 </a>,
                 member.role,
-                `member.end`, //todo set member.end
+                member.end,
             ])}
             headers={["Nom", "Role", "Date de fin"]}
         />

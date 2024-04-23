@@ -60,9 +60,13 @@ export const getDBUserAndMission = async (
     return { ...user, missions };
 };
 
+interface DBUserPublicWithMission extends DBUserPublic {
+    end: Date;
+}
+
 export const getDBUsersForStartup = (
     startup: string
-): Promise<DBUserPublic[]> => {
+): Promise<DBUserPublicWithMission[]> => {
     return db("missions_startups")
         .distinct(
             "users.username",
