@@ -1,4 +1,4 @@
-import { DBUser } from "@/models/dbUser";
+import { DBUser, DBUserPublic } from "@/models/dbUser";
 import { Member } from "@/models/member";
 import { PULL_REQUEST_STATE } from "@/models/pullRequests";
 import { PHASE_READABLE_NAME, Startup, StartupPhase } from "@/models/startup";
@@ -72,7 +72,13 @@ async function getStartupPageData(req, res, onSuccess, onError) {
         //     .groupBy("users.uuid");
         // console.log(usersInfos);
         // try {
-        const members = {
+        interface Members {
+            expired_members: DBUserPublic[];
+            active_members: DBUserPublic[];
+            previous_members: DBUserPublic[];
+        }
+
+        const members: Members = {
             expired_members: [],
             active_members: [],
             previous_members: [],
@@ -84,10 +90,12 @@ async function getStartupPageData(req, res, onSuccess, onError) {
         ];
         try {
             const usersInfos = await getDBUsersForStartup(startup);
-            memberTypes.forEach((memberType) => {
-                members[memberType] = startupInfos[memberType].map((member) =>
-                    usersInfos.find((user) => user.username === member)
-                );
+            usersInfos.forEach((user) => {
+                if (user.end > new Date()) {
+                    members["active_members"].push(user);
+                } else {
+                    members["previous_members"].push(user);
+                }
             });
             console.log(usersInfos);
         } catch (e) {
