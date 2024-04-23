@@ -1,9 +1,9 @@
 import { PULL_REQUEST_STATE } from "@/models/pullRequests";
 import { StartupInfo } from "@/models/startup";
 import config from "@/server/config";
+import { getDBStartup } from "@/server/db/dbStartup";
 import betagouv from "@betagouv";
 import db from "@db";
-import { getDBStartup } from "dist/src/server/db/dbStartup";
 
 export async function getStartupInfoUpdateApi(req, res) {
     getStartupInfoUpdatePageData(
