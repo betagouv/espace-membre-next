@@ -1,61 +1,66 @@
 import PromiseMemoize from "promise-memoize";
-import config from "@/server/config";
+
 import BetaGouv from "../../betagouv";
-import * as utils from "../utils";
 import betagouv from "../../betagouv";
-import { Domaine, Member } from "@/models/member";
 import db from "../../db";
-import { CommunicationEmailCode, DBUser } from "@/models/dbUser/dbUser";
+import * as utils from "../utils";
 import { getBetaEmailId, isBetaEmail } from "../utils";
-import { makeSendinblue } from "@infra/email/sendInBlue";
+import { CommunicationEmailCode, DBUser } from "@/models/dbUser/dbUser";
+import { Domaine, Member } from "@/models/member";
 import { OvhRedirection } from "@/models/ovh";
+import config from "@/server/config";
+import {
+    getAllDBUsersAndMission,
+    getAllUsersPublicInfo,
+} from "@/server/db/dbUser";
+import { makeSendinblue } from "@infra/email/sendInBlue";
 
-const emailWithMetadataMemoized = PromiseMemoize(
-    async () => {
-        const [accounts, redirections, users] = await Promise.all([
-            BetaGouv.accounts(),
-            BetaGouv.redirections(),
-            BetaGouv.usersInfos(),
-        ]);
-        const emails = Array.from(
-            new Set([
-                // Process redirections
-                ...redirections.reduce<string[]>((acc, r) => {
-                    if (!isBetaEmail(r.to)) {
-                        acc.push(r.from);
-                    }
-                    return acc;
-                }, []),
-                // Process accounts
-                ...accounts.map(utils.buildBetaEmail),
-            ])
-        ).sort();
+// const emailWithMetadataMemoized = PromiseMemoize(
+//     async () => {
+//         const [accounts, redirections, users] = await Promise.all([
+//             BetaGouv.accounts(),
+//             BetaGouv.redirections(),
+//             getAllUsersPublicInfo(),
+//         ]);
+//         const emails = Array.from(
+//             new Set([
+//                 // Process redirections
+//                 ...redirections.reduce<string[]>((acc, r) => {
+//                     if (!isBetaEmail(r.to)) {
+//                         acc.push(r.from);
+//                     }
+//                     return acc;
+//                 }, []),
+//                 // Process accounts
+//                 ...accounts.map(utils.buildBetaEmail),
+//             ])
+//         ).sort();
 
-        return emails.map((email) => {
-            const id = getBetaEmailId(email);
-            const user = users.find((ui) => ui.id === id);
+//         return emails.map((email) => {
+//             const id = getBetaEmailId(email);
+//             const user = users.find((ui) => ui.username === id);
 
-            return {
-                id,
-                email,
-                github: user !== undefined,
-                redirections: redirections.reduce(
-                    (acc, r) => (r.from === email ? [...acc, r.to] : acc),
-                    [] as string[]
-                ),
-                account: accounts.includes(id),
-                endDate: user ? user.end : undefined,
-                expired:
-                    user &&
-                    user.end &&
-                    new Date(user.end).getTime() < new Date().getTime(),
-            };
-        });
-    },
-    {
-        maxAge: 120000,
-    }
-);
+//             return {
+//                 id,
+//                 email,
+//                 github: user !== undefined,
+//                 redirections: redirections.reduce(
+//                     (acc, r) => (r.from === email ? [...acc, r.to] : acc),
+//                     [] as string[]
+//                 ),
+//                 account: accounts.includes(id),
+//                 endDate: user ? user.end : undefined,
+//                 expired:
+//                     user &&
+//                     user.end &&
+//                     new Date(user.end).getTime() < new Date().getTime(),
+//             };
+//         });
+//     },
+//     {
+//         maxAge: 120000,
+//     }
+// );
 
 export async function getSendinblueInfo(req, res) {
     const sendInBlueTech = makeSendinblue({
@@ -103,33 +108,6 @@ export async function getSendinblueInfo(req, res) {
     });
 }
 
-// export async function getEmailLists(req, res) {
-//     try {
-//         const emails = await emailWithMetadataMemoized();
-//         const expiredEmails = emails.filter((user) => user.expired);
-//         const users = await betagouv.usersInfos();
-//         const title = "Administration";
-//         res.send(
-//             AdminPage({
-//                 request: req,
-//                 title,
-//                 currentUserId: req.auth.id,
-//                 users: users.splice(0, 100),
-//                 emails,
-//                 isAdmin: config.ESPACE_MEMBRE_ADMIN.includes(req.auth.id),
-//                 expiredEmails,
-//                 activeTab: "admin",
-//                 errors: req.flash("error"),
-//                 messages: req.flash("message"),
-//             })
-//         );
-//     } catch (err) {
-//         console.error(err);
-//         req.flash("error", "Erreur interne");
-//         res.redirect("/account");
-//     }
-// }
-
 export async function getUsers(req, res) {
     const domaines = req.query.domaines
         ? req.query.domaines.split(",").map((domaine) => Domaine[domaine])
@@ -146,7 +124,7 @@ export async function getUsers(req, res) {
     const memberStatus = req.query.memberStatus;
     let startups = req.query.startups ? req.query.startups.split(",") : [];
     // const activeMembers = req.params.activeMembers
-    let users: Member[] = await betagouv.usersInfos();
+    let users = await getAllDBUsersAndMission();
     if (memberStatus === "unactive") {
         users = utils.getExpiredUsers(users);
     } else if (memberStatus === "active") {
@@ -181,27 +159,28 @@ export async function getUsers(req, res) {
         const usersStartupsByPhase: UserStartup[] = await db("users_startups")
             .whereIn(
                 "user_id",
-                users.map((user) => user.id)
+                users.map((user) => user.username)
             )
             .join("startups", "users_startups.startup_id", "startups.id")
             .whereIn("startups.current_phase", startupPhases);
         const usersByPhaseIds = usersStartupsByPhase.map(
             (item) => item.user_id
         );
-        users = users.filter((user) => usersByPhaseIds.includes(user.id));
+        users = users.filter((user) => usersByPhaseIds.includes(user.username));
     }
-    if (startups.length) {
-        users = users.filter((user) => {
-            return Boolean(
-                startups.filter(function (n) {
-                    return (user.startups || []).indexOf(n) !== -1;
-                }).length
-            );
-        });
-    }
+    // todo fix
+    // if (startups.length) {
+    //     users = users.filter((user) => {
+    //         return Boolean(
+    //             startups.filter(function (n) {
+    //                 return (user.startups || []).indexOf(n) !== -1;
+    //             }).length
+    //         );
+    //     });
+    // }
     const dbUsers: DBUser[] = await db("users").whereIn(
         "username",
-        users.map((user) => user.id)
+        users.map((user) => user.username)
     );
     if (
         process.env.ESPACE_MEMBRE_ADMIN &&
@@ -209,7 +188,7 @@ export async function getUsers(req, res) {
     ) {
         users = users.map((user) => {
             const dbUser = dbUsers.find(
-                (dbUser) => dbUser.username === user.id
+                (dbUser) => dbUser.username === user.username
             );
             return {
                 ...user,

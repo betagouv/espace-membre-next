@@ -1,8 +1,9 @@
-import betagouv from "@betagouv";
 import { PULL_REQUEST_STATE } from "@/models/pullRequests";
-import db from "@db";
 import { StartupInfo } from "@/models/startup";
 import config from "@/server/config";
+import betagouv from "@betagouv";
+import db from "@db";
+import { getDBStartup } from "dist/src/server/db/dbStartup";
 
 export async function getStartupInfoUpdateApi(req, res) {
     getStartupInfoUpdatePageData(
@@ -25,11 +26,12 @@ async function getStartupInfoUpdatePageData(req, res, onSuccess, onError) {
     try {
         const title = "Changer une startup de phase";
         const formValidationErrors = {};
-        const startup: StartupInfo | undefined = await betagouv
-            .startupsInfos()
-            .then((startups) =>
-                startups.find((s) => s.id === req.params.startup)
-            );
+        // const startup: StartupInfo | undefined = await betagouv
+        //     .startupsInfos()
+        //     .then((startups) =>
+        //         startups.find((s) => s.id === req.params.startup)
+        //     );
+        const startup = getDBStartup({ id: req.params.startup });
         if (!startup) {
             onError(new Error(`startup ${req.params.startup} not found`));
             return;

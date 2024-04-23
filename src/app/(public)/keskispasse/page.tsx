@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 
 import { WhatIsGoingOnWithMember } from "@/components/WhatIsGoingOnWithMemberPage";
-import betagouv from "@/server/betagouv";
+import { getAllUsersPublicInfo } from "@/server/db/dbUser";
 import { routeTitles } from "@/utils/routes/routeTitles";
 
 export const metadata: Metadata = {
@@ -9,6 +9,6 @@ export const metadata: Metadata = {
 };
 
 export default async function Page() {
-    const usersInfos = await betagouv.usersInfos();
+    const usersInfos = await getAllUsersPublicInfo();
     return <WhatIsGoingOnWithMember users={usersInfos} />;
 }

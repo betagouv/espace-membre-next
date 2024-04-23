@@ -1,25 +1,24 @@
 import crypto from "crypto";
-import { MemberWithPrimaryEmailInfo } from "@/models/member";
-import { EMAIL_TYPES } from "@modules/email";
-import * as mattermost from "@/lib/mattermost";
-import { sendEmail } from "@/server/config/email.config";
+
 import { getActiveGithubUsersUnregisteredOnMattermost } from ".";
+import * as mattermost from "@/lib/mattermost";
+import { MemberWithPrimaryEmailInfo } from "@/models/member";
 import config from "@/server/config";
+import { sendEmail } from "@/server/config/email.config";
+import { EMAIL_TYPES } from "@modules/email";
 
 export async function createUsersByEmail() {
-    let activeGithubUsersUnregisteredOnMattermost: MemberWithPrimaryEmailInfo[] =
+    let activeGithubUsersUnregisteredOnMattermost =
         await getActiveGithubUsersUnregisteredOnMattermost();
-    activeGithubUsersUnregisteredOnMattermost =
-        activeGithubUsersUnregisteredOnMattermost.filter((user) => {
-            const userStartDate = new Date(user.start).getTime();
-            // filter user that have have been created after implementation of this function
-            return userStartDate >= new Date("2021-07-08").getTime();
-        });
+    //todo check how many account will be created
     const mattermostTeam: { invite_id: string } = await mattermost.getTeam(
         config.mattermostTeamId
     );
     const results = await Promise.all(
         activeGithubUsersUnregisteredOnMattermost.map(async (user) => {
+            if (!user.primary_email) {
+                return;
+            }
             const email = user.primary_email;
             const password = crypto
                 .randomBytes(20)
@@ -29,7 +28,7 @@ export async function createUsersByEmail() {
                 await mattermost.createUser(
                     {
                         email,
-                        username: user.id,
+                        username: user.username,
                         position: `${user.role} @${(user.startups || []).join(
                             ","
                         )}`,

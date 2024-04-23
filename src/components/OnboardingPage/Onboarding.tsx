@@ -1,24 +1,26 @@
 "use client";
 import React from "react";
-import _ from "lodash";
-import axios from "axios";
 
+import Alert from "@codegouvfr/react-dsfr/Alert";
+import Button from "@codegouvfr/react-dsfr/Button";
+import Checkbox from "@codegouvfr/react-dsfr/Checkbox";
+import Input from "@codegouvfr/react-dsfr/Input";
+import { createModal } from "@codegouvfr/react-dsfr/Modal";
+import { RadioButtons } from "@codegouvfr/react-dsfr/RadioButtons";
+import Select from "@codegouvfr/react-dsfr/Select";
+import axios from "axios";
+import _ from "lodash";
+
+import ModalOnboarding from "./ModalOnboarding";
 import CitySelect from "../CitySelect";
-import { Member } from "@/models/member";
-import { StartupInfo } from "@/models/startup";
+import CommunicationEmailSelect from "../CommunicationEmailSelect";
 import MemberSelect from "../MemberSelect";
 import SESelect from "../SESelect";
-import CommunicationEmailSelect from "../CommunicationEmailSelect";
-import routes, { computeRoute } from "@/routes/routes";
-import Input from "@codegouvfr/react-dsfr/Input";
-import Select from "@codegouvfr/react-dsfr/Select";
-import { RadioButtons } from "@codegouvfr/react-dsfr/RadioButtons";
-import Checkbox from "@codegouvfr/react-dsfr/Checkbox";
-import Button from "@codegouvfr/react-dsfr/Button";
-import { createModal } from "@codegouvfr/react-dsfr/Modal";
-import ModalOnboarding from "./ModalOnboarding";
-import Alert from "@codegouvfr/react-dsfr/Alert";
+import { DBUserPublic } from "@/models/dbUser";
+import { Member } from "@/models/member";
 import { FormErrorResponse } from "@/models/misc";
+import { StartupInfo } from "@/models/startup";
+import routes, { computeRoute } from "@/routes/routes";
 import { createUsername } from "@/utils/github";
 
 const modal = createModal({
@@ -58,8 +60,8 @@ export interface OnboardingProps {
     errors?: string[];
     messages?: string[];
     formData: FormData;
-    users: Member[];
-    allUsers: Member[];
+    users: DBUserPublic[];
+    allUsers: DBUserPublic[];
     domaineOptions: Option[];
     statusOptions: Option[];
     genderOptions: Option[];
@@ -162,8 +164,8 @@ export const Onboarding = function (props: OnboardingProps) {
                     state.formData.firstName,
                     state.formData.lastName
                 );
-                const userExists: Member | undefined = props.allUsers.find(
-                    (user) => user.id === username
+                const userExists = props.allUsers.find(
+                    (user) => user.username === username
                 );
                 if (userExists) {
                     openModal();
@@ -612,13 +614,13 @@ export const Onboarding = function (props: OnboardingProps) {
                                         )
                                     }
                                     members={props.users.map((u) => ({
-                                        value: u.id,
+                                        value: u.username,
                                         label: u.fullname,
                                     }))}
                                     required={true}
                                     defaultValue={props.users
                                         .map((u) => ({
-                                            value: u.id,
+                                            value: u.username,
                                             label: u.fullname,
                                         }))
                                         .find(

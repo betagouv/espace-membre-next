@@ -37,7 +37,7 @@ export async function POST(req: Request) {
         primary_email_status: EmailStatusCode.EMAIL_VERIFICATION_WAITING,
     };
 
-    const prInfo = await createOrUpdateMemberData(
+    const dbUser = await createOrUpdateMemberData(
         {
             username,
             method: `create`,
@@ -50,6 +50,11 @@ export async function POST(req: Request) {
 
     return Response.json({
         message: "success",
-        pr_url: prInfo.html_url,
+        data: dbUser,
     });
+
+    // return Response.json({
+    //     message: "success",
+    //     pr_url: prInfo.html_url,
+    // });
 }

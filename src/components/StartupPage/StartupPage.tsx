@@ -1,24 +1,26 @@
 "use client";
-import { Member } from "@/models/member";
 import Accordion from "@codegouvfr/react-dsfr/Accordion";
 import Alert from "@codegouvfr/react-dsfr/Alert";
 import Button from "@codegouvfr/react-dsfr/Button";
 import { Table } from "@codegouvfr/react-dsfr/Table";
 
-function MemberTable({ members }: { members: Member[] }) {
+import { DBUserPublic } from "@/models/dbUser";
+import { Member } from "@/models/member";
+
+function MemberTable({ members }: { members: DBUserPublic[] }) {
     return (
         <Table
-            data={members.map((member: Member, index: number) => [
+            data={members.map((member: DBUserPublic, index: number) => [
                 <a
                     key={index}
                     className="fr-link"
                     target="_blank"
-                    href={`https://github.com/betagouv/beta.gouv.fr/edit/master/content/_authors/${member.id}.md`}
+                    href={`https://github.com/betagouv/beta.gouv.fr/edit/master/content/_authors/${member.username}.md`}
                 >
                     {member.fullname}
                 </a>,
                 member.role,
-                member.end,
+                `member.end`, //todo set member.end
             ])}
             headers={["Nom", "Role", "Date de fin"]}
         />
@@ -30,9 +32,9 @@ export interface StartupPageProps {
     currentPhase: string;
     updatePullRequest: any;
     members: {
-        expired_members: Member[];
-        active_members: Member[];
-        previous_members: Member[];
+        expired_members: DBUserPublic[];
+        active_members: DBUserPublic[];
+        previous_members: DBUserPublic[];
     };
 }
 

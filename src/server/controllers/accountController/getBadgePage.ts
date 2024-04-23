@@ -1,10 +1,12 @@
-import config from "@/server/config";
-import * as utils from "@controllers/utils";
-import DS from "@/server/config/ds/ds.config";
 import { BadgeDossier } from "@/models/badgeDemande";
 import { BADGE_REQUEST } from "@/models/badgeRequests";
-import { getBadgeRequestWithStatus } from "@db/dbBadgeRequests";
+import { DBMission } from "@/models/mission";
+import config from "@/server/config";
+import DS from "@/server/config/ds/ds.config";
+import { getDBUserAndMission } from "@/server/db/dbUser";
+import * as utils from "@controllers/utils";
 import db from "@db";
+import { getBadgeRequestWithStatus } from "@db/dbBadgeRequests";
 
 export async function getBadgePageApi(req, res) {
     getBadge(
@@ -27,7 +29,7 @@ export async function getBadge(req, res, onSuccess, onError) {
     try {
         const [currentUser, dbUser] = await Promise.all([
             (async () => utils.userInfos(req.auth.id, true))(),
-            db("users").where({ username: req.auth.id }).first(),
+            getDBUserAndMission(req.auth.id),
         ]);
         // const dossiers = await DS.getAllDossiersForDemarche(config.DS_DEMARCHE_NUMBER)
         let badgeRequest = await getBadgeRequestWithStatus(
@@ -45,17 +47,35 @@ export async function getBadge(req, res, onSuccess, onError) {
             }
         }
         const title = "Demande de badge";
+        const getLastMission = (
+            missions: DBMission[] | undefined
+        ): DBMission | undefined => {
+            if (missions && missions.length) {
+                return missions
+                    .filter((m) => m.end)
+                    .sort(
+                        (a, b) =>
+                            (a.end as Date).getTime() -
+                            (b.end as Date).getTime()
+                    )[0];
+            }
+        };
+        const lastMission = dbUser?.missions
+            ? getLastMission(dbUser?.missions)
+            : undefined;
         onSuccess({
             title,
             dossier,
             currentUserId: req.auth.id,
-            primaryEmail: dbUser.primary_email,
+            primaryEmail: dbUser && dbUser.primary_email,
             firstName: currentUser.userInfos?.fullname.split(" ")[0],
             lastName: currentUser.userInfos?.fullname
                 .split(" ")[1]
                 .toUpperCase(),
-            attributaire: currentUser.userInfos?.employer.split("/")[1],
-            endDate: currentUser.userInfos?.end,
+            attributaire: lastMission
+                ? lastMission.employer.split("/")[1]
+                : undefined,
+            endDate: lastMission ? lastMission.end : undefined,
             domain: config.domain,
             isExpired: currentUser.isExpired,
             badgeRequest,

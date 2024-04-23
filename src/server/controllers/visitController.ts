@@ -1,13 +1,15 @@
-import BetaGouv from "../betagouv";
-import config from "@/server/config";
-import knex from "../db";
+import { format } from "date-fns/format";
+
 import * as utils from "./utils";
+import BetaGouv from "../betagouv";
+import knex from "../db";
+import { getAllUsersPublicInfo } from "../db/dbUser";
+import config from "@/server/config";
 import {
     requiredError,
     isValidDate,
     isValidPhoneNumber,
 } from "@/server/controllers/validator";
-import { format } from "date-fns/format";
 
 const getUserInfoForUsername = (usersInfos, username) =>
     usersInfos.find((userInfo) => userInfo.id === username);
@@ -29,7 +31,7 @@ const getFuturVisitsList = async function (usersInfos) {
 
 export async function getForm(req, res) {
     try {
-        const users = await BetaGouv.usersInfos();
+        const users = await getAllUsersPublicInfo();
 
         const title = "Prévoir une visite";
         return res.render("visit", {
@@ -109,7 +111,7 @@ export async function postForm(req, res) {
 
         res.redirect("/visit");
     } catch (err) {
-        const users = await BetaGouv.usersInfos();
+        const users = await getAllUsersPublicInfo();
         res.render("visit", {
             errors: req.flash("error"),
             messages: req.flash("message"),

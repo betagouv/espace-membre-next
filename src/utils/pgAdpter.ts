@@ -10,6 +10,7 @@ import {
 import { DBUser, EmailStatusCode } from "@/models/dbUser";
 import betagouv from "@/server/betagouv";
 import db from "@/server/db";
+import { getDBUser } from "@/server/db/dbUser";
 
 export default function customPostgresAdapter(): Adapter {
     try {
@@ -99,9 +100,8 @@ export default function customPostgresAdapter(): Adapter {
                 })
                 .returning("*");
 
-            const member = await betagouv.userInfosById(user.id);
             return {
-                name: member?.fullname,
+                name: dbUser?.fullname,
                 email: dbUser.primary_email || dbUser.secondary_email,
                 emailVerified: dbUser.email_verified,
                 id: dbUser.username,
@@ -152,7 +152,7 @@ export default function customPostgresAdapter(): Adapter {
                     username: session.userId,
                 })
                 .first();
-            const member = await betagouv.userInfosById(user.username);
+            const member = await getDBUser(user.username);
             const expiresDate = new Date(session.expires);
             const sessionAndUser: {
                 session: AdapterSession;

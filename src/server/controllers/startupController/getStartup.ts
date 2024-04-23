@@ -1,9 +1,15 @@
+import { DBUser } from "@/models/dbUser";
+import { Member } from "@/models/member";
+import { PULL_REQUEST_STATE } from "@/models/pullRequests";
+import { PHASE_READABLE_NAME, Startup, StartupPhase } from "@/models/startup";
+import config from "@/server/config";
+import { getDBStartup } from "@/server/db/dbStartup";
+import {
+    getAllUsersPublicInfo,
+    getDBUsersForStartup,
+} from "@/server/db/dbUser";
 import betagouv from "@betagouv";
 import db from "@db";
-import { PULL_REQUEST_STATE } from "@/models/pullRequests";
-import config from "@/server/config";
-import { Member } from "@/models/member";
-import { PHASE_READABLE_NAME, Startup, StartupPhase } from "@/models/startup";
 
 function getCurrentPhase(startup: Startup) {
     return startup.phases
@@ -50,22 +56,44 @@ export async function getStartupApi(req, res) {
 async function getStartupPageData(req, res, onSuccess, onError) {
     try {
         const { startup } = req.params;
-        const startupInfos = await betagouv.startupInfosById(startup);
+        const startupInfos = await getDBStartup({ uuid: startup });
+        console.log("LCS GET STARTUP", startupInfos);
         if (!startupInfos) {
             throw new Error("Not found");
         }
-        const usersInfos: Member[] = await betagouv.usersInfos();
-        const members = {};
+        console.log("LCS GET STARTUP 2");
+
+        // const usersInfos = await db("missions_startups")
+        //     .where({
+        //         startup_id: startup,
+        //     })
+        //     .rightJoin("missions", "missions.uuid", "mission_id")
+        //     .rightJoin("users", "user_id", "users.uuid")
+        //     .groupBy("users.uuid");
+        // console.log(usersInfos);
+        // try {
+        const members = {
+            expired_members: [],
+            active_members: [],
+            previous_members: [],
+        };
         const memberTypes = [
             "expired_members",
             "active_members",
             "previous_members",
         ];
-        memberTypes.forEach((memberType) => {
-            members[memberType] = startupInfos[memberType].map((member) =>
-                usersInfos.find((user) => user.id === member)
-            );
-        });
+        try {
+            const usersInfos = await getDBUsersForStartup(startup);
+            memberTypes.forEach((memberType) => {
+                members[memberType] = startupInfos[memberType].map((member) =>
+                    usersInfos.find((user) => user.username === member)
+                );
+            });
+            console.log(usersInfos);
+        } catch (e) {
+            console.log("LCS GET SE ERORS", e);
+        }
+        // } catch (e) {}
         const updatePullRequest = await db("pull_requests")
             .where({
                 username: req.auth.id,
@@ -78,10 +106,8 @@ async function getStartupPageData(req, res, onSuccess, onError) {
             title,
             currentUserId: req.auth.id,
             startupInfos: startupInfos,
-            currentPhase: getCurrentPhase(startupInfos)
-                ? PHASE_READABLE_NAME[
-                      getCurrentPhase(startupInfos) as StartupPhase
-                  ]
+            currentPhase: startupInfos.current_phase
+                ? PHASE_READABLE_NAME[startupInfos.current_phase]
                 : undefined,
             members,
             isAdmin: config.ESPACE_MEMBRE_ADMIN.includes(req.auth.id),

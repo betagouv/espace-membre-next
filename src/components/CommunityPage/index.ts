@@ -1,3 +1,4 @@
+import { DBUserPublic } from "@/models/dbUser";
 import { Member } from "@/models/member";
 
 export interface Option {
@@ -6,7 +7,7 @@ export interface Option {
 }
 
 export interface CommunityProps {
-    users: Member[];
+    users: DBUserPublic[];
     incubatorOptions: Option[];
     startupOptions: Option[];
     domaineOptions: Option[];

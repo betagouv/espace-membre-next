@@ -1,30 +1,39 @@
 import ejs from "ejs";
+
+import {
+    getAllDBUsersAndMission,
+    getAllUsersPublicInfo,
+    getDBUserAndMission,
+} from "../db/dbUser";
+import * as mattermost from "@/lib/mattermost";
+import {
+    DBUser,
+    DBUserPublic,
+    DBUserWithEmailsAndMattermostUsername,
+} from "@/models/dbUser/dbUser";
 import BetaGouv from "@betagouv";
 import * as utils from "@controllers/utils";
-import knex from "@db";
-import { DBUser } from "@/models/dbUser/dbUser";
-import { Member, MemberWithEmailsAndMattermostUsername } from "@/models/member";
-import * as mattermost from "@/lib/mattermost";
 import { sleep } from "@controllers/utils";
+import knex from "@db";
 
 export async function sendMessageToActiveUsersWithoutSecondaryEmail() {
     const allMattermostUsers = await mattermost.getUserWithParams();
     const allMattermostUsersEmails = allMattermostUsers.map(
         (mattermostUser) => mattermostUser.email
     );
-    const users: Member[] = await BetaGouv.usersInfos();
+    const users = await getAllDBUsersAndMission();
     const activeUsers = users.filter((user) => !utils.checkUserIsExpired(user));
     const concernedUsers: DBUser[] = await knex("users")
         .whereNull("secondary_email")
         .whereIn(
             "username",
-            activeUsers.map((user) => user.id)
+            activeUsers.map((user) => user.username)
         );
 
     const concernedUserWithMattermostUsers = concernedUsers.map((user) => {
         const index = allMattermostUsersEmails.indexOf(user.primary_email);
         const githubUser = activeUsers.find(
-            (ghUser) => ghUser.id === user.username
+            (ghUser) => ghUser.username === user.username
         );
         return {
             ...githubUser,
@@ -34,7 +43,7 @@ export async function sendMessageToActiveUsersWithoutSecondaryEmail() {
             mattermostUsername:
                 index > -1 ? allMattermostUsers[index].username : undefined,
         };
-    }) as MemberWithEmailsAndMattermostUsername[];
+    }) as DBUserWithEmailsAndMattermostUsername[];
 
     for (const user of concernedUserWithMattermostUsers) {
         if (user.mattermostUsername) {

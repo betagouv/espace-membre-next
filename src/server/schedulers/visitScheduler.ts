@@ -1,9 +1,11 @@
 import { CronJob } from "cron";
 import ejs from "ejs";
+
+import { getAllUsersPublicInfo } from "../db/dbUser";
 import config from "@/server/config";
 import BetaGouv from "@betagouv";
-import knex from "@db";
 import * as utils from "@controllers/utils";
+import knex from "@db";
 
 const getUserInfoForUsername = (usersInfos, username) =>
     usersInfos.find((userInfo) => userInfo.id === username);
@@ -30,7 +32,7 @@ const sendVisitEmail = async function () {
         return;
     }
 
-    const usersInfos = await BetaGouv.usersInfos();
+    const usersInfos = await getAllUsersPublicInfo();
     const visitsInfos = visits.map((visitInfo) => ({
         ...visitInfo,
         fullname: visitInfo.fullname,

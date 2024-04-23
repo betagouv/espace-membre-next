@@ -35,8 +35,8 @@ export const CommunitySearchMember = ({ users }: { users: Member[] }) => {
                                 );
                             }}
                             members={users.map((u) => ({
-                                value: u.id,
-                                label: u.fullname,
+                                value: u.username,
+                                label: u.fullname || u.username,
                             }))}
                             defaultValue={undefined}
                         ></MemberSelect>
