@@ -31,6 +31,8 @@ fileignoreconfig:
   checksum: 49ba981c5d52542548882b52ec95307299e3b6337689ff1f59fc3ec0d88369e4
 - filename: src/components/GenderSelect.tsx
   checksum: 865f2afa081c138aff54ead33343a8b425075236d95bda9ec75e62bfb4eb83c1
+- filename: src/components/LoginPage/Login.tsx
+  checksum: 78a4519fee63dc7932c0a335762bde95a88516d2323e40fa92f071b8eb59d6fc
 - filename: src/components/MemberPage/MemberEventList.tsx
   checksum: 2f825890548de8336fdec8a140bd55339de67c7bd428baf90e9621b094f08714
 - filename: src/components/SESelect.tsx
