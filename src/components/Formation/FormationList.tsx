@@ -141,6 +141,11 @@ export default function FormationList({
               }, true);
           })
         : formations;
+    filteredFormations.sort((a, b) => {
+        return (
+            (a.start && b.start && a.start.getTime() - b.start.getTime()) || 0
+        );
+    });
     return (
         <div>
             <ul className="fr-tags-group fr-my-2w">
