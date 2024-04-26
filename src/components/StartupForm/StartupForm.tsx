@@ -401,7 +401,22 @@ export function StartupForm(props: StartupFormProps) {
                     <Checkbox
                         options={[
                             {
-                                label: "Nous avons réalisé une analyse de risque",
+                                label: startupSchemaWithMarkdown.shape
+                                    .mon_service_securise.description,
+                                hintText:
+                                    "Cochez cette case si votre produit est inscrit sur Mon Service Sécurisé",
+                                nativeInputProps: {
+                                    ...register("mon_service_securise"),
+                                    checked: hasAnalyseDeRisque,
+                                },
+                            },
+                        ]}
+                    />
+                    <Checkbox
+                        options={[
+                            {
+                                label: startupSchemaWithMarkdown.shape
+                                    .analyse_risques.description,
                                 hintText:
                                     "Cochez cette case si l'équipe a produit une analyse de risque",
                                 nativeInputProps: {

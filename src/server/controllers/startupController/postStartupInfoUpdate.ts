@@ -74,7 +74,11 @@ export async function postStartupInfoUpdate(req, res) {
             req.body.analyse_risques === true
                 ? true
                 : false;
-
+        const mon_service_securise =
+            req.body.mon_service_securise === "true" ||
+            req.body.mon_service_securise === true
+                ? true
+                : false;
         const newSponsors: Sponsor[] = req.body.newSponsors || [];
         const image: string = req.body.image;
 
@@ -112,6 +116,7 @@ export async function postStartupInfoUpdate(req, res) {
             accessibility_status,
             analyse_risques_url,
             analyse_risques,
+            mon_service_securise,
             thematiques,
             usertypes,
             sponsors: sponsors.map((sponsor) => `/organisations/${sponsor}`),

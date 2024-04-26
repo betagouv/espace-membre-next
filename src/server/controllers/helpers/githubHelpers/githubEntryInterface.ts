@@ -55,6 +55,7 @@ export const GithubStartupChangeSchema = z.object({
     accessibility_status: z.nativeEnum(AccessibilityStatus), // Use the defined 'AccessibilityStatus' schema
     analyse_risques_url: z.string(), // Required string
     analyse_risques: z.boolean(), // Required boolean
+    mon_service_securise: z.boolean(), // Required boolean
     thematiques: z.array(z.string()).optional(),
     usertypes: z.array(z.string()).optional(),
 });

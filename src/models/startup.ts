@@ -179,7 +179,16 @@ export const startupSchema = z.object({
     dashlord_url: z.string().optional().describe("URL du rapport DashLord"),
     stats_url: z.string().optional().describe("URL de la page de statistiques"),
     budget_url: z.string().optional().describe("URL de la page de budget"),
-    analyse_risques: z.boolean().optional(),
+    mon_service_securise: z
+        .boolean()
+        .optional()
+        .describe(
+            "L'équipe a mené une démarche de sécurité sur Mon Service Sécurisé"
+        ),
+    analyse_risques: z
+        .boolean()
+        .optional()
+        .describe("Nous avons réalisé une analyse de risque"),
     analyse_risques_url: z
         .string()
         .optional()
