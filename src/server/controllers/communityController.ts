@@ -5,6 +5,8 @@ import BetaGouv from "../betagouv";
 import betagouv from "../betagouv";
 import config from "../config";
 import knex from "../db";
+import { getAllStartups, getDBStartup } from "../db/dbStartup";
+import { getAllUsersPublicInfo } from "../db/dbUser";
 import { MattermostUser, getUserByEmail, searchUsers } from "@/lib/mattermost";
 import { DBUser, EmailStatusCode } from "@/models/dbUser";
 import { EMAIL_STATUS_READABLE_FORMAT } from "@/models/misc";
@@ -33,9 +35,9 @@ export async function getCommunityPageData(req, res, onSuccess, onError) {
     }
 
     try {
-        const users = await BetaGouv.usersInfos();
+        const users = await getAllUsersPublicInfo();
         const incubators = await BetaGouv.incubators();
-        const startups = await BetaGouv.startupsInfos();
+        const startups = await getAllStartups();
         const title = "Communauté";
         return onSuccess({
             title,
@@ -49,7 +51,7 @@ export async function getCommunityPageData(req, res, onSuccess, onError) {
             startupOptions: startups.map((startup) => {
                 return {
                     value: startup.id,
-                    label: startup.attributes.name,
+                    label: startup.name,
                 };
             }),
             isAdmin: config.ESPACE_MEMBRE_ADMIN.includes(req.auth.id),
@@ -87,7 +89,10 @@ export async function getCommunityPageData(req, res, onSuccess, onError) {
                     label: "Autre",
                 },
             ],
-            users,
+            users: users.map((user) => ({
+                ...user,
+                id: user.username,
+            })),
             activeTab: "community",
         });
     } catch (err) {

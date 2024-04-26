@@ -79,6 +79,7 @@ export interface Member {
     employer: string;
     domaine: Domaine;
     role: string;
+    memberType: MemberType;
 }
 
 const bioSchema = z
@@ -189,13 +190,6 @@ export interface MemberWithPrimaryEmailInfo extends Member {
 
 export interface MemberWithEmail extends Member {
     email: string | undefined;
-}
-
-export interface MemberWithEmailsAndMattermostUsername extends Member {
-    primary_email: string;
-    secondary_email?: string;
-    communication_email: string;
-    mattermostUsername: string;
 }
 
 export interface EmailInfos {

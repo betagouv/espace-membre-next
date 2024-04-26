@@ -10,9 +10,11 @@ import {
     OvhProCreationData,
 } from "@/models/ovh";
 import config from "@/server/config";
+import { getAllUsers, getDBUserAndMission } from "@/server/db/dbUser";
 import BetaGouv from "@betagouv";
 import * as utils from "@controllers/utils";
 import knex from "@db/index";
+import db from "@db/index";
 
 const INCUBATORS_USING_EXCHANGE = ["gip-inclusion"];
 
@@ -44,7 +46,7 @@ export async function createEmailAndUpdateSecondaryEmail(
     }
 
     if (!isCurrentUser) {
-        const loggedUserInfo = await BetaGouv.userInfosById(currentUser);
+        const loggedUserInfo = await getDBUserAndMission(currentUser);
         if (!loggedUserInfo) {
             throw new Error(
                 "Vous ne pouvez pas créer de compte email car votre compte  n'a pas de fiche github."
@@ -105,14 +107,20 @@ async function getEmailCreationParams(username: string): Promise<
           creationData: OvhProCreationData;
       }
 > {
-    const [usersInfos, startupsInfos] = await Promise.all([
-        BetaGouv.usersInfos(),
+    const [userInfo, startupsInfos] = await Promise.all([
+        getDBUserAndMission(username),
         BetaGouv.startupsInfos(),
     ]);
 
-    const userInfo = _.find(usersInfos, { id: username });
+    if (!userInfo?.missions) {
+        throw new Error(`User ${userInfo?.username} has no mission`);
+    }
 
-    const needsExchange = _.some(userInfo?.startups, (id) => {
+    const latestMission = userInfo.missions.reduce((a, v) =>
+        !v.end || v.end > a.end ? v : a
+    );
+    // todo see what to do with startups
+    const needsExchange = _.some(latestMission?.startup, (id) => {
         const startup = _.find(startupsInfos, { id });
         const incubator = startup?.relationships?.incubator?.data?.id;
         return _.includes(INCUBATORS_USING_EXCHANGE, incubator);

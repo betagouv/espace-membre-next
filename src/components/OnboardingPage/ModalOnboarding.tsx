@@ -1,9 +1,12 @@
 "use client";
 import React from "react";
+
+import Input from "@codegouvfr/react-dsfr/Input";
 import _ from "lodash";
+
+import { DBUserPublic } from "@/models/dbUser";
 import { Member } from "@/models/member";
 import { StartupInfo } from "@/models/startup";
-import Input from "@codegouvfr/react-dsfr/Input";
 
 interface CommuneInfo {
     nom: string;
@@ -38,8 +41,8 @@ interface Props {
     messages?: string[];
     request: Request;
     formData: FormData;
-    users: Member[];
-    allUsers: Member[];
+    users: DBUserPublic[];
+    allUsers: DBUserPublic[];
     domaineOptions?: Option[];
     statusOptions?: Option[];
     genderOptions?: Option[];

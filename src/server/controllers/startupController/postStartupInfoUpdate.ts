@@ -17,7 +17,7 @@ import {
     SponsorDomaineMinisteriel,
     SponsorType,
 } from "@/models/sponsor";
-import { StartupPhase } from "@/models/startup";
+import { DBStartup, StartupPhase } from "@/models/startup";
 import { isValidDate, requiredError } from "@/server/controllers/validator";
 import { updateMultipleFilesPR } from "@controllers/helpers/githubHelpers/updateGithubCollectionEntry";
 import db from "@db";
@@ -115,22 +115,31 @@ export async function postStartupInfoUpdate(req, res) {
             start: phase.start ? new Date(phase.start) : undefined,
         }));
         changes["phases"] = newPhases;
-        const files: GithubBetagouvFile[] = [
-            makeGithubStartupFile(startupId, changes, content),
-            ...newSponsors.map((sponsor) =>
-                makeGithubSponsorFile(sponsor.acronym, sponsor)
-            ),
-        ];
-        if (image) {
-            console.log("Added image file");
-            const imageFile = makeImageFile(startupId, image);
-            files.push(imageFile);
-        }
-        const prInfo = await updateMultipleFilesPR(
-            `Maj de la fiche ${startupId} par ${req.auth.id}`,
-            files,
-            `edit-startup-${startupId}`
-        );
+        const [dbStartup]: DBStartup[] = await db("startups")
+            .insert({
+                ...changes,
+                content,
+                id: startupId,
+            })
+            .onConflict("id")
+            .merge()
+            .returning("*");
+        // const files: GithubBetagouvFile[] = [
+        //     makeGithubStartupFile(startupId, changes, content),
+        //     ...newSponsors.map((sponsor) =>
+        //         makeGithubSponsorFile(sponsor.acronym, sponsor)
+        //     ),
+        // ];
+        // if (image) {
+        //     console.log("Added image file");
+        //     const imageFile = makeImageFile(startupId, image);
+        //     files.push(imageFile);
+        // }
+        // const prInfo = await updateMultipleFilesPR(
+        //     `Maj de la fiche ${startupId} par ${req.auth.id}`,
+        //     files,
+        //     `edit-startup-${startupId}`
+        // );
 
         addEvent({
             action_code: EventCode.STARTUP_INFO_UPDATED,
@@ -141,21 +150,22 @@ export async function postStartupInfoUpdate(req, res) {
                 },
             },
         });
-        await db("pull_requests").insert({
-            url: prInfo.html_url,
-            startup: startupId,
-            type: PULL_REQUEST_TYPE.PR_TYPE_STARTUP_UPDATE,
-            status: PULL_REQUEST_STATE.PR_STARTUP_UPDATE_CREATED,
-            info: JSON.stringify(changes),
-        });
-        const message = `⚠️ Pull request pour la mise à jour de la fiche de ${startupId} ouverte. 
-        \nUn membre de l'equipe doit merger la fiche : <a href="${prInfo.html_url}" target="_blank">${prInfo.html_url}</a>. 
-        \nUne fois mergée, la fiche sera mis à jour dans les 10 minutes.`;
-        req.flash("message", message);
-        res.json({
-            message,
-            pr_url: prInfo.html_url,
-        });
+        // await db("pull_requests").insert({
+        //     url: prInfo.html_url,
+        //     startup: startupId,
+        //     type: PULL_REQUEST_TYPE.PR_TYPE_STARTUP_UPDATE,
+        //     status: PULL_REQUEST_STATE.PR_STARTUP_UPDATE_CREATED,
+        //     info: JSON.stringify(changes),
+        // });
+        // const message = `⚠️ Pull request pour la mise à jour de la fiche de ${startupId} ouverte.
+        // \nUn membre de l'equipe doit merger la fiche : <a href="${prInfo.html_url}" target="_blank">${prInfo.html_url}</a>.
+        // \nUne fois mergée, la fiche sera mis à jour dans les 10 minutes.`;
+        // req.flash("message", message);
+        // res.json({
+        //     message,
+        //     pr_url: prInfo.html_url,
+        // });
+        return dbStartup;
     } catch (err) {
         console.error(err);
         let message;

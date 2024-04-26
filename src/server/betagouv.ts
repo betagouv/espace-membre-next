@@ -3,6 +3,12 @@ import _ from "lodash";
 import ovh0 from "ovh";
 import unescape from "unescape";
 
+import {
+    getAllDBUsersAndMission,
+    getAllUsersPublicInfo,
+    getDBUser,
+    getDBUserAndMission,
+} from "./db/dbUser";
 import { Incubator } from "@/models/incubator";
 import { Job, JobWTTJ } from "@/models/job";
 import { Member } from "@/models/member";
@@ -15,6 +21,7 @@ import {
     OvhResponder,
     OvhRedirection,
 } from "@/models/ovh";
+import { Sponsor } from "@/models/sponsor";
 import { Startup, StartupInfo } from "@/models/startup";
 import config from "@/server/config";
 import { checkUserIsExpired } from "@controllers/utils";
@@ -98,15 +105,25 @@ const betaGouv = {
     incubators: async (): Promise<Incubator[]> => {
         return axios
             .get<any[]>(config.incubatorAPI)
-            .then((response) => response.data)
+            .then((response) => {
+                return Object.keys(response.data).map((key) => ({
+                    ghid: key,
+                    ...response.data[key],
+                }));
+            })
             .catch((err) => {
                 throw new Error(`Error to get incubators infos : ${err}`);
             });
     },
-    sponsors: async (): Promise<Incubator[]> => {
+    sponsors: async (): Promise<Sponsor[]> => {
         return axios
             .get<any[]>(config.SPONSOR_API)
-            .then((response) => response.data)
+            .then((response) => {
+                return Object.keys(response.data).map((key) => ({
+                    ghid: key,
+                    ...response.data[key],
+                }));
+            })
             .catch((err) => {
                 throw new Error(`Error to get incubators infos : ${err}`);
             });
@@ -355,17 +372,18 @@ const betaOVH = {
         }
     },
     // get active users with email registered on ovh
-    getActiveUsers: async () => {
-        const users = await betaGouv.usersInfos();
-        const activeUsers = users.filter((user) => !checkUserIsExpired(user));
-        return activeUsers;
-    },
+    // getActiveUsers: async () => {
+    //     const users = await betaGouv.usersInfos();
+    //     const activeUsers = users.filter((user) => !checkUserIsExpired(user));
+    //     return activeUsers;
+    // },
     getActiveRegisteredOVHUsers: async () => {
-        const users = await betaGouv.usersInfos();
+        const users = await getAllDBUsersAndMission();
         const allOvhEmails = await betaOVH.getAllEmailInfos();
         const activeUsers = users.filter(
             (user) =>
-                !checkUserIsExpired(user) && allOvhEmails.includes(user.id)
+                !checkUserIsExpired(user) &&
+                allOvhEmails.includes(user.username)
         );
         return activeUsers;
     },

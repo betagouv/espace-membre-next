@@ -1,12 +1,15 @@
-import _ from "lodash";
 import { differenceInDays } from "date-fns/differenceInDays";
+import _ from "lodash";
 
+import { DBUser, createDBUserAndMission } from "@/models/dbUser/dbUser";
+import { Member } from "@/models/member";
+import { DBMission, Mission } from "@/models/mission";
+import { DBStartup } from "@/models/startup";
+import { createMission } from "@/server/db/dbMission";
+import { getAllUsersPublicInfo } from "@/server/db/dbUser";
 import betagouv from "@betagouv";
 import { computeHash } from "@controllers/utils";
 import db from "@db";
-import { DBUser } from "@/models/dbUser/dbUser";
-import { Member } from "@/models/member";
-import { DBMission, Mission } from "@/models/mission";
 
 function compareUserAndTriggerOnChange(
     newUserInfo: DBUser,
@@ -24,10 +27,13 @@ function compareUserAndTriggerOnChange(
 }
 
 export async function syncBetagouvUserAPI() {
-    const members: Member[] = await betagouv.usersInfos();
-    await db("users_startups").truncate();
-    await db("missions").truncate();
+    const members = await betagouv.usersInfos();
+    const allStartups: DBStartup[] = await db("startups");
+    // Truncate multiple dependent tables with CASCADE
+    await db.raw("TRUNCATE TABLE users_startups, missions, missions_startups");
+
     for (const member of members) {
+        console.log(member);
         const previousUserInfo: DBUser = await db("users")
             .where({
                 username: member.id,
@@ -42,48 +48,77 @@ export async function syncBetagouvUserAPI() {
             }
             return acc + differenceInDays(new Date(mission.start), end);
         }, 0);
+
         const [user]: DBUser[] = await db("users")
-            .update({
+            .insert({
                 domaine: member.domaine,
-                missions: JSON.stringify(member.missions),
+                github: member.github,
+                // missions: JSON.stringify(member.missions),
                 startups: member.startups,
-                nb_days_at_beta,
-            })
-            .where({
+                // nb_days_at_beta,
+                bio: member.bio,
                 username: member.id,
+                member_type: member.memberType,
+                fullname: member.fullname,
+                role: member.role,
             })
+            .onConflict("username")
+            .merge()
+            // .where({
+            //     username: member.id,
+            // })
             .returning("*");
         const startups = member.startups || [];
         for (const startup of startups) {
             await db("users_startups").insert({
                 startup_id: startup,
-                user_id: member.id,
+                user_id: user.uuid,
             });
         }
         const missions: Mission[] = member.missions;
         for (const mission of missions) {
-            if (member.startups && member.startups.length) {
-                for (const startup of startups) {
-                    const memberMission: Omit<DBMission, "id"> = {
-                        username: member.id,
-                        startup: startup,
-                        status: mission.status,
-                        employer: mission.employer,
-                        start: new Date(mission.start),
-                        end: new Date(mission.end),
-                    };
-                    await db("missions").insert(memberMission);
+            let startup_ids: string[] = [];
+            if (mission.startups) {
+                for (const startupId of mission.startups) {
+                    const se = allStartups.find((s) => s.id === startupId);
+                    if (se) {
+                        startup_ids.push(se.uuid);
+                    }
                 }
-            } else {
-                const memberMission: Omit<DBMission, "id" | "startup"> = {
-                    username: member.id,
-                    status: mission.status,
-                    employer: mission.employer,
-                    start: new Date(mission.start),
-                    end: new Date(mission.end),
-                };
-                await db("missions").insert(memberMission);
             }
+
+            createMission({
+                startup_ids: startup_ids,
+                username: member.id,
+                status: mission.status,
+                employer: mission.employer,
+                start: new Date(mission.start),
+                end: new Date(mission.end),
+                user_id: user.uuid,
+            });
+
+            // if (member.startups && member.startups.length) {
+            //     for (const startup of startups) {
+            //         const memberMission: Omit<DBMission, "id"> = {
+            //             username: member.id,
+            //             startup: startup,
+            //             status: mission.status,
+            //             employer: mission.employer,
+            //             start: new Date(mission.start),
+            //             end: new Date(mission.end),
+            //         };
+            //         await db("missions").insert(memberMission);
+            //     }
+            // } else {
+            //     const memberMission: Omit<DBMission, "id" | "startup"> = {
+            //         username: member.id,
+            //         status: mission.status,
+            //         employer: mission.employer,
+            //         start: new Date(mission.start),
+            //         end: new Date(mission.end),
+            //     };
+            //     await db("missions").insert(memberMission);
+            // }
         }
         if (user) {
             await db("user_details")
@@ -96,6 +131,6 @@ export async function syncBetagouvUserAPI() {
                 .onConflict("hash")
                 .merge();
         }
-        compareUserAndTriggerOnChange(previousUserInfo, user);
+        //compareUserAndTriggerOnChange(previousUserInfo, user);
     }
 }

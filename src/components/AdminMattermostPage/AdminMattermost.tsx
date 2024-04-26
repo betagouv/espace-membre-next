@@ -1,15 +1,17 @@
 "use client";
 import React, { useEffect, useState } from "react";
-import axios from "axios";
 
-import { Member } from "@/models/member";
-import routes, { computeRoute } from "@/routes/routes";
-import { AdminMattermostUser } from "./AdminMattermostUser";
-import RadioButtons from "@codegouvfr/react-dsfr/RadioButtons";
+import ButtonsGroup from "@codegouvfr/react-dsfr/ButtonsGroup";
 import { Checkbox } from "@codegouvfr/react-dsfr/Checkbox";
 import Input from "@codegouvfr/react-dsfr/Input";
+import RadioButtons from "@codegouvfr/react-dsfr/RadioButtons";
 import Select from "@codegouvfr/react-dsfr/Select";
-import ButtonsGroup from "@codegouvfr/react-dsfr/ButtonsGroup";
+import axios from "axios";
+
+import { AdminMattermostUser } from "./AdminMattermostUser";
+import { DBUserPublic } from "@/models/dbUser";
+import { Member } from "@/models/member";
+import routes, { computeRoute } from "@/routes/routes";
 
 interface Option {
     value: string;
@@ -21,7 +23,7 @@ export interface AdminMattermostProps {
     currentUserId: string;
     errors: string[];
     messages: string[];
-    users: Member[];
+    users: DBUserPublic[];
     activeTab: string;
     isAdmin: boolean;
     channelOptions: Option[];

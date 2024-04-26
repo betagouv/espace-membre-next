@@ -1,4 +1,5 @@
 import { GithubAPIPullRequest } from "@/lib/github";
+import { DBUser } from "@/models/dbUser";
 import {
     dbMemberSchemaType,
     memberSchemaType,
@@ -21,20 +22,27 @@ export const createOrUpdateMemberData = async (
     githubData: memberSchemaType,
     dbData: dbMemberSchemaType,
     privateData?: memberStatInfoSchemaType
-): Promise<GithubAPIPullRequest> => {
-    const { bio, ...authorFileData } = githubData;
-    const files = [
-        makeGithubAuthorFile(action.username, authorFileData, bio || ""),
-    ];
-    const prInfo = await updateMultipleFilesPR(
-        action.method === "create"
-            ? `Création de la fiche de ${action.username} par ${action.author}`
-            : `Mise à jour de la fiche de ${action.username} par ${action.author}`,
-        files,
-        `edit-authors-${action.username}`
-    );
+): Promise<DBUser> => {
+    // const { bio, ...authorFileData } = githubData;
+    // const files = [
+    //     makeGithubAuthorFile(action.username, authorFileData, bio || ""),
+    // ];
+    // const prInfo = await updateMultipleFilesPR(
+    //     action.method === "create"
+    //         ? `Création de la fiche de ${action.username} par ${action.author}`
+    //         : `Mise à jour de la fiche de ${action.username} par ${action.author}`,
+    //     files,
+    //     `edit-authors-${action.username}`
+    // );
 
-    await db("users").insert(dbData).onConflict("username").merge();
+    const [dbUser]: DBUser[] = await db("users")
+        .insert({
+            ...githubData,
+            ...dbData,
+        })
+        .onConflict("username")
+        .merge()
+        .returning("*");
 
     if (privateData) {
         const hash = computeHash(action.username);
@@ -60,19 +68,19 @@ export const createOrUpdateMemberData = async (
         });
     }
 
-    await db("pull_requests").insert({
-        username: action.username,
-        type:
-            action.method === "create"
-                ? PULL_REQUEST_TYPE.PR_TYPE_ONBOARDING
-                : PULL_REQUEST_TYPE.PR_TYPE_MEMBER_UPDATE,
-        status:
-            action.method === "create"
-                ? PULL_REQUEST_STATE.PR_CREATED
-                : PULL_REQUEST_STATE.PR_MEMBER_UPDATE_CREATED,
-        url: prInfo.html_url,
-        info: dbPrInfo,
-    });
-
-    return prInfo;
+    // await db("pull_requests").insert({
+    //     username: action.username,
+    //     type:
+    //         action.method === "create"
+    //             ? PULL_REQUEST_TYPE.PR_TYPE_ONBOARDING
+    //             : PULL_REQUEST_TYPE.PR_TYPE_MEMBER_UPDATE,
+    //     status:
+    //         action.method === "create"
+    //             ? PULL_REQUEST_STATE.PR_CREATED
+    //             : PULL_REQUEST_STATE.PR_MEMBER_UPDATE_CREATED,
+    //     url: prInfo.html_url,
+    //     info: dbPrInfo,
+    // });
+    return dbUser;
+    // return prInfo;
 };

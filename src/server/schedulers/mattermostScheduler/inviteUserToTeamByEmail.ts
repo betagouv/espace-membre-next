@@ -1,10 +1,10 @@
-import config from "@/server/config";
-import { MemberWithPrimaryEmailInfo } from "@/models/member";
-import * as mattermost from "@/lib/mattermost";
 import { getActiveGithubUsersUnregisteredOnMattermost } from ".";
+import * as mattermost from "@/lib/mattermost";
+import { MemberWithPrimaryEmailInfo } from "@/models/member";
+import config from "@/server/config";
 
 export async function inviteUsersToTeamByEmail() {
-    const activeGithubUsersNotInCommunityTeam: MemberWithPrimaryEmailInfo[] =
+    const activeGithubUsersNotInCommunityTeam =
         await getActiveGithubUsersUnregisteredOnMattermost();
     const results = await mattermost.inviteUsersToTeamByEmail(
         activeGithubUsersNotInCommunityTeam

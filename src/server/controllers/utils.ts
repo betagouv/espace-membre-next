@@ -4,7 +4,16 @@ import { format } from "date-fns/format";
 import _ from "lodash";
 import nodemailer from "nodemailer";
 
+import db from "../db";
+import { getDBUser, getDBUserAndMission } from "../db/dbUser";
+import {
+    DBUser,
+    DBUserAndMission,
+    DBUserPublic,
+    DBUserPublicAndMission,
+} from "@/models/dbUser";
 import { EmailInfos, Member } from "@/models/member";
+import { DBMission, Mission } from "@/models/mission";
 import config from "@/server/config";
 import BetaGouv from "@betagouv";
 
@@ -105,20 +114,23 @@ export function objectArrayToCSV<T extends Record<string, any>>(
 }
 
 export function checkUserIsExpired(
-    user: Member,
+    user: DBUserPublicAndMission | DBUserAndMission,
     minDaysOfExpiration: number = 1
 ) {
     // Le membre est considéré comme expiré si:
     // - il/elle existe
     // - il/elle a une date de fin
     // - son/sa date de fin est passée
+    // todo what to do with user.end
 
-    if (!user || user.end === undefined) return false;
-
+    if (!user || !user.missions || !user.missions.length) return false;
+    const latestMission = user.missions.reduce((a, v) =>
+        !v.end || v.end > a.end ? v : a
+    );
     const today = new Date();
     today.setHours(0, 0, 0, 0);
 
-    const userEndDate = new Date(user.end);
+    const userEndDate = new Date(latestMission.end);
     if (userEndDate.toString() === "Invalid Date") return false;
     userEndDate.setHours(0, 0, 0, 0);
 
@@ -128,19 +140,52 @@ export function checkUserIsExpired(
     );
 }
 
-export function getActiveUsers(users, minDaysOfExpiration = 0) {
-    return users.filter((u) => !checkUserIsExpired(u, minDaysOfExpiration - 1));
+export function getActiveUsers<
+    T extends DBUserPublicAndMission[] | DBUserAndMission[]
+>(users: T, minDaysOfExpiration = 0): T {
+    return users.filter(
+        (u) => !checkUserIsExpired(u, minDaysOfExpiration - 1)
+    ) as T;
 }
 
-export function getExpiredUsers(users: Member[], minDaysOfExpiration = 0) {
-    return users.filter((u) => checkUserIsExpired(u, minDaysOfExpiration - 1));
+export function getExpiredUsers<
+    T extends DBUserPublicAndMission[] | DBUserAndMission[]
+>(users: T, minDaysOfExpiration = 0): T {
+    return users.filter((u) =>
+        checkUserIsExpired(u, minDaysOfExpiration - 1)
+    ) as T;
 }
 
-export function getExpiredUsersForXDays(users: Member[], nbDays) {
+// export function getExpiredUsersForXDays(
+//     users: DBUserPublicAndMission[] | DBUserAndMission[],
+//     nbDays
+// ) {
+//     const date = new Date();
+//     date.setDate(date.getDate() - nbDays);
+//     // const formatedDate = format(date, "yyyy-MM-dd");
+//     return users.filter((user) => {
+//         const latestMission = user.missions.reduce((a, v) =>
+//             !v.end || v.end > a.end ? v : a
+//         );
+//         latestMission.end === date;
+//     });
+// }
+
+export function getExpiredUsersForXDays<
+    T extends DBUserPublicAndMission[] | DBUserAndMission[]
+>(users: T, nbDays: number): T {
     const date = new Date();
     date.setDate(date.getDate() - nbDays);
-    const formatedDate = format(date, "yyyy-MM-dd");
-    return users.filter((x) => x.end === formatedDate);
+    // Assuming you need to compare dates, convert to YYYY-MM-DD format.
+    // const formattedDate = date.toISOString().slice(0, 10);
+
+    return users.filter((user) => {
+        const latestMission = user.missions.reduce((a, v) =>
+            !v.end || new Date(v.end) > new Date(a.end) ? v : a
+        );
+        // Assuming `latestMission.end` is a date string, compare against `formattedDate`.
+        return latestMission.end === date;
+    }) as T;
 }
 
 export function isMobileFirefox(req) {
@@ -195,7 +240,7 @@ export const asyncFilter = async (arr: Array<any>, predicate) => {
 
 export interface UserInfos {
     emailInfos: EmailInfos | null;
-    userInfos: Member | undefined;
+    userInfos: DBUserPublicAndMission | undefined;
     redirections: any[];
     isExpired: boolean;
     canCreateEmail: boolean;
@@ -212,7 +257,7 @@ export async function userInfos(
     try {
         const [userInfos, emailInfos, redirections, responder] =
             await Promise.all([
-                BetaGouv.userInfosById(id),
+                getDBUserAndMission(id),
                 BetaGouv.emailInfos(id),
                 BetaGouv.redirectionsForId({ from: id }),
                 BetaGouv.getResponder(id),

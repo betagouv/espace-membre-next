@@ -6,12 +6,15 @@ import { getServerSession } from "next-auth";
 import { BaseInfoUpdate } from "@/components/BaseInfoUpdatePage";
 import { fetchGithubMarkdown, getPullRequestForBranch } from "@/lib/github";
 import { memberSchema } from "@/models/member";
-import { StartupInfo } from "@/models/startup";
+import { DBStartup, StartupInfo } from "@/models/startup";
 import betagouv from "@/server/betagouv";
 import config from "@/server/config";
 import db from "@/server/db";
+import { getAllStartups } from "@/server/db/dbStartup";
+import { getDBUserAndMission } from "@/server/db/dbUser";
 import { authOptions } from "@/utils/authoptions";
 import { routeTitles } from "@/utils/routes/routeTitles";
+import { getDBStartup } from "dist/src/server/db/dbStartup";
 
 export const metadata: Metadata = {
     title: `${routeTitles.accountEditBaseInfo()} / Espace Membre`,
@@ -46,18 +49,28 @@ export default async function Page() {
     const authorPR = await getPullRequestForBranch(`edit-authors-${username}`);
 
     const sha = authorPR && authorPR.head.sha;
-    const formData = await fetchGithubPageData(username, sha || "master");
-    const startups: StartupInfo[] = await betagouv.startupsInfos();
+    const formData = await getDBUserAndMission(username); // fetchGithubPageData(username, sha || "master");
+    const startups: DBStartup[] = await getAllStartups();
     const startupOptions = startups.map((startup) => ({
-        value: startup.id,
-        label: startup.attributes.name,
+        value: startup.uuid,
+        label: startup.name,
     }));
-
+    if (!formData) {
+        redirect("/errors");
+    }
     const props = {
-        formData,
+        formData: {
+            ...formData,
+            missions: formData.missions.map((m) => ({
+                ...m,
+                startups: m.startups.map((s) => s.uuid),
+            })),
+            startups: formData.startups || [],
+        },
         startupOptions,
         updatePullRequest: authorPR,
     };
+    console.log(props.formData);
 
     return <BaseInfoUpdate {...props} />;
 }

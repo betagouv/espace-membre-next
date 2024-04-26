@@ -1,14 +1,16 @@
 import React from "react";
 
-import { Member } from "@/models/member";
 import { ReactTabulator, ColumnDefinition } from "react-tabulator";
+
+import { DBUserPublic } from "@/models/dbUser";
+import { Member } from "@/models/member";
 
 interface CommunityProps {
     title: string;
     currentUserId: string;
     errors: string[];
     messages: string[];
-    users: Member[];
+    users: DBUserPublic[];
     activeTab: string;
     isAdmin: boolean;
 }

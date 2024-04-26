@@ -77,6 +77,7 @@ export interface StartupInfo {
         previous_members: string[];
         pitch: string;
         stats_url: string;
+        stats: boolean;
         link: string;
         incubator: string;
         phases: Phase[];
@@ -84,6 +85,7 @@ export interface StartupInfo {
         analyse_risques_url?: string;
         analyse_risques?: boolean;
         content_url_encoded_markdown: string;
+        budget_url?: string;
     };
     relationships: Relationship;
 }
@@ -124,6 +126,7 @@ export interface Phase extends z.infer<typeof phaseSchema> {}
 export interface DBStartup {
     mailing_list?: string;
     id: string;
+    uuid: string;
     name: string;
     pitch: string;
     stats_url: string;
@@ -133,7 +136,18 @@ export interface DBStartup {
     phases: Phase[];
     current_phase: StartupPhase;
     current_phase_date: Date;
+    sponsors: string[];
+    github: string;
+    dashlord_url: string;
+    website: any;
+    expired_members: string[];
+    active_members: string[];
+    previous_members: string[];
     incubator: string;
+    accessibility_status?: AccessibilityStatus;
+    analyse_risques_url?: string;
+    analyse_risques?: boolean;
+    content_url_encoded_markdown: string;
 }
 
 export const startupSchema = z.object({
@@ -161,3 +175,44 @@ export const startupSchema = z.object({
 });
 
 export interface StartupFrontMatter extends z.infer<typeof startupSchema> {}
+
+export const dbStartupSchema = z.object({
+    mailing_list: z.string().optional(),
+    id: z.string(),
+    name: z.string(),
+    pitch: z.string(),
+    stats_url: z.string(),
+    stats: z.boolean(),
+    link: z.string(),
+    repository: z.string(),
+    contact: z.string(),
+    phases: z.array(phaseSchema),
+    current_phase: z.nativeEnum(StartupPhase),
+    current_phase_date: z.date().optional(),
+    // sponsors: z.array(z.string()),
+    github: z.string(), // todo: delete, it does not seem to be used
+    dashlord_url: z.string(),
+    website: z.string(), // todo: delete, it does not seem to be used
+    budget_url: z.string().optional(),
+    usertypes: z.array(z.string()).optional(),
+    thematiques: z.array(z.string()).optional(),
+    incubator_id: z.string().optional(),
+    nb_active_members: z.number(),
+    last_github_update: z.date().optional(),
+    nb_total_members: z.number(),
+    has_intra: z.boolean(),
+    has_coach: z.boolean(),
+    accessibility_status: z.nativeEnum(AccessibilityStatus).optional(),
+    analyse_risques_url: z.string().optional(),
+    analyse_risques: z.boolean().optional(),
+    content_url_encoded_markdown: z.string(),
+});
+
+export type dbStartupSchemaType = z.infer<typeof dbStartupSchema>;
+
+export const createDBStartupSchema = dbStartupSchema.extend({
+    organization_ids: z.array(z.string()).optional(),
+    incubator_id: z.string().optional(),
+});
+
+export type createDBStartup = z.infer<typeof createDBStartupSchema>;

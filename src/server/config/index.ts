@@ -1,6 +1,7 @@
+import { config } from "dotenv";
+
 import { MemberType } from "@/models/dbUser";
 import { EMAIL_PLAN_TYPE } from "@/models/ovh";
-import { config } from "dotenv";
 
 config();
 const isSecure = (process.env.SECURE || "true") === "true";
@@ -168,18 +169,18 @@ export default {
     CHAT_WEBHOOK_URL_GIP: getOrThrowError("CHAT_WEBHOOK_URL_GIP"),
     SPONSOR_API:
         process.env.SPONSOR_API ||
-        "https://beta.gouv.fr/api/v2.5/sponsors.json",
+        "https://beta.gouv.fr/api/v2.6/sponsors.json",
     usersAPI:
-        process.env.USERS_API || "https://beta.gouv.fr/api/v2.3/authors.json",
+        process.env.USERS_API || "https://beta.gouv.fr/api/v2.6/authors.json",
     incubatorAPI:
         process.env.INCUBATOR_API ||
-        "https://beta.gouv.fr/api/v2.5/incubators.json",
+        "https://beta.gouv.fr/api/v2.6/incubators.json",
     startupsAPI:
         process.env.STARTUPS_API ||
-        "https://beta.gouv.fr/api/v2.5/startups.json",
+        "https://beta.gouv.fr/api/v2.6/startups.json",
     startupsDetailsAPI:
         process.env.STARTUPS_DETAILS_API ||
-        "https://beta.gouv.fr/api/v2.3/startups_details.json",
+        "https://beta.gouv.fr/api/v2.6/startups_details.json",
     githubToken: process.env.GITHUB_TOKEN,
     githubOrganizationName: process.env.GITHUB_ORGANIZATION_NAME || "betagouv",
     githubOrgAdminToken: process.env.GITHUB_ORG_ADMIN_TOKEN,

@@ -30,6 +30,7 @@ import {
     shouldBeOnlyUsername,
     isValidEmail,
 } from "@/server/controllers/validator";
+import { getActiveUsers, getAllUsersPublicInfo } from "@/server/db/dbUser";
 import BetaGouv from "@betagouv";
 import * as utils from "@controllers/utils";
 import knex from "@db";
@@ -397,8 +398,8 @@ async function postOnboardingData(req, res, onSuccess, onError) {
                 label: startup.attributes.name,
             };
         });
-        const allUsers = await BetaGouv.usersInfos();
-        const users = await BetaGouv.getActiveUsers();
+        const allUsers = await getAllUsersPublicInfo();
+        const users = await getActiveUsers();
         onError({
             errors: req.flash("error"),
             formValidationErrors,

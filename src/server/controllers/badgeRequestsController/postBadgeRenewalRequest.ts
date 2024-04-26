@@ -1,12 +1,12 @@
+import { capitalizeWords, userInfos } from "../utils";
+import { BADGE_REQUEST } from "@/models/badgeRequests";
+import { MemberWithPermission } from "@/models/member";
+import config from "@/server/config";
+import DS from "@/server/config/ds/ds.config";
 import {
     createBadgeRequest,
     getBadgeRequestWithStatus,
 } from "@db/dbBadgeRequests";
-import { BADGE_REQUEST } from "@/models/badgeRequests";
-import DS from "@/server/config/ds/ds.config";
-import config from "@/server/config";
-import { MemberWithPermission } from "@/models/member";
-import { capitalizeWords, userInfos } from "../utils";
 
 const buildRequestId = () => {
     return "";
@@ -38,12 +38,14 @@ export async function postBadgeRenewalRequest(req, res) {
         }
     }
     if (!isRequestPendingToBeFilled) {
-        if (!currentUser.userInfos?.end) {
-            endDate = startDate;
-            endDate.setMonth(endDate.getMonth() + 6);
-        } else {
-            endDate = new Date(currentUser.userInfos?.end);
-        }
+        // todo
+        // if (!currentUser.userInfos?.end) {
+        //     endDate = startDate;
+        //     endDate.setMonth(endDate.getMonth() + 6);
+        // } else {
+        //     endDate = new Date(currentUser.userInfos?.end);
+        // }
+        endDate = new Date();
         try {
             const names = req.auth.id.split(".");
             const firstname = capitalizeWords(names.shift());
@@ -55,7 +57,7 @@ export async function postBadgeRenewalRequest(req, res) {
                 {
                     identite_prenom: firstname,
                     identite_nom: lastname,
-                    champ_Q2hhbXAtMzcwOTI5Mw: endDate,
+                    champ_Q2hhbXAtMzcwOTI5Mw: "", //endDate,
                 }
             )) as unknown as {
                 dossier_number: number;

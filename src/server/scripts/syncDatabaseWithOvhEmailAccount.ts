@@ -1,11 +1,12 @@
 import betagouv from "../betagouv";
 import knex from "../db";
+import { getAllUsersPublicInfo } from "../db/dbUser";
 import { DBUser, EmailStatusCode } from "@/models/dbUser/dbUser";
 import { Member } from "@/models/member";
 
 const syncDatabaseWithOvhEmailAccount = async () => {
-    const users: Member[] = await betagouv.usersInfos();
-    const usernames: string[] = users.map((user) => user.id);
+    const users = await getAllUsersPublicInfo();
+    const usernames: string[] = users.map((user) => user.username);
     const ovhAccounts: string[] = await betagouv.accounts();
     const usernamesWithoutOvhEmailAccount = usernames.filter(
         (username) => !ovhAccounts.includes(username)

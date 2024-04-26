@@ -1,8 +1,10 @@
-import BetaGouv from "@betagouv";
+import * as Sentry from "@sentry/node";
+
 import { genderOptions, statusOptions } from "@/models/dbUser/dbUser";
 import { DOMAINE_OPTIONS, Member } from "@/models/member";
 import config from "@/server/config";
-import * as Sentry from "@sentry/node";
+import { getActiveUsers, getAllUsersPublicInfo } from "@/server/db/dbUser";
+import BetaGouv from "@betagouv";
 
 export async function getFormApi(req, res) {
     getOnboardingPageData(
@@ -27,8 +29,8 @@ export async function getOnboardingPageData(req, res, onSuccess, onError) {
         const title = "Mon compte";
         const formValidationErrors = {};
         const startups = await BetaGouv.startupsInfos();
-        const users: Member[] = await BetaGouv.getActiveUsers();
-        const allUsers: Member[] = await BetaGouv.usersInfos();
+        const users = await getActiveUsers();
+        const allUsers = await getAllUsersPublicInfo();
         const startupOptions = startups.map((startup) => {
             return {
                 value: startup.id,

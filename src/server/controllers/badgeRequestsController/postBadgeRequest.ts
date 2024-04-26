@@ -1,11 +1,11 @@
+import { capitalizeWords, userInfos } from "../utils";
+import { BADGE_REQUEST } from "@/models/badgeRequests";
+import config from "@/server/config";
+import DS from "@/server/config/ds/ds.config";
 import {
     createBadgeRequest,
     getBadgeRequestWithStatus,
 } from "@db/dbBadgeRequests";
-import { BADGE_REQUEST } from "@/models/badgeRequests";
-import DS from "@/server/config/ds/ds.config";
-import config from "@/server/config";
-import { capitalizeWords, userInfos } from "../utils";
 
 const buildRequestId = () => {
     return "";
@@ -39,12 +39,14 @@ export async function postBadgeRequest(req, res) {
     }
     if (!isRequestPendingToBeFilled) {
         try {
-            if (!currentUser.userInfos?.end) {
-                endDate = startDate;
-                endDate.setMonth(endDate.getMonth() + 6);
-            } else {
-                endDate = new Date(currentUser.userInfos?.end);
-            }
+            // todo
+            // if (!currentUser.userInfos?.end) {
+            //     endDate = startDate;
+            //     endDate.setMonth(endDate.getMonth() + 6);
+            // } else {
+            //     endDate = new Date(currentUser.userInfos?.end);
+            // }
+            endDate = new Date();
             const names = req.auth.id.split(".");
             const firstname = capitalizeWords(names.shift());
             const lastname = names
@@ -57,10 +59,8 @@ export async function postBadgeRequest(req, res) {
                     champ_Q2hhbXAtNjYxNzM3: lastname,
                     identite_prenom: firstname,
                     identite_nom: lastname,
-                    champ_Q2hhbXAtNjYxNzM4: currentUser.userInfos?.employer
-                        ? currentUser.userInfos.employer.split("/")[1]
-                        : "",
-                    champ_Q2hhbXAtNjcxODAy: endDate,
+                    champ_Q2hhbXAtNjYxNzM4: "", // todo
+                    champ_Q2hhbXAtNjcxODAy: "", // todo endDate,
                     champ_Q2hhbXAtMzE0MzkxNA: [
                         "Locaux SEGUR 5.413, 5.416, 5.420, 5.425, 5.424, 5.428 et cantine",
                     ],

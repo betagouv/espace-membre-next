@@ -1,18 +1,23 @@
 import { MattermostUser } from "@/lib/mattermost";
+import * as mattermost from "@/lib/mattermost";
+import { DBUserAndMission } from "@/models/dbUser";
 import { Member } from "@/models/member";
 import config from "@/server/config";
-import * as utils from "@controllers/utils";
-import * as mattermost from "@/lib/mattermost";
+import {
+    getAllDBUsersAndMission,
+    getAllUsersPublicInfo,
+} from "@/server/db/dbUser";
 import betagouv from "@betagouv";
+import * as utils from "@controllers/utils";
 
 export async function moveUsersToAlumniTeam(
-    optionalUsers?: Member[],
+    optionalUsers?: DBUserAndMission[],
     checkAll = false
 ) {
     let users = optionalUsers;
     console.log("Start function move users to team alumni");
     if (!users) {
-        users = await betagouv.usersInfos();
+        users = await getAllDBUsersAndMission();
         users = checkAll
             ? utils.getExpiredUsers(users, 3)
             : utils.getExpiredUsersForXDays(users, 3);
@@ -23,11 +28,11 @@ export async function moveUsersToAlumniTeam(
             try {
                 const mattermostUsers: MattermostUser[] =
                     await mattermost.searchUsers({
-                        term: user.id,
+                        term: user.username,
                     });
                 if (!mattermostUsers.length || mattermostUsers.length > 1) {
                     console.error(
-                        `Cannot find mattermost user for ${user.id} : ${mattermostUsers.length} found`
+                        `Cannot find mattermost user for ${user.username} : ${mattermostUsers.length} found`
                     );
                     return;
                 }
@@ -36,12 +41,12 @@ export async function moveUsersToAlumniTeam(
                     config.mattermostAlumniTeamId
                 );
                 console.log(
-                    `User ${user.id} with mattermost username ${mattermostUsers[0].username} has been moved to alumni`
+                    `User ${user.username} with mattermost username ${mattermostUsers[0].username} has been moved to alumni`
                 );
                 return res;
             } catch (err) {
                 throw new Error(
-                    `Error while moving user ${user.id} to alumni team : ${err}`
+                    `Error while moving user ${user.username} to alumni team : ${err}`
                 );
             }
         })

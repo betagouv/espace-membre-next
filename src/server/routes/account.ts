@@ -1,12 +1,13 @@
 import express from "express";
-import routes from "@/routes/routes";
-import * as usersController from "@controllers/usersController";
-import * as accountController from "@controllers/accountController";
+
 import { publicPostRouteRateLimiter } from "../middlewares/rateLimiter";
-import { getBadgePageApi } from "@controllers/accountController/getBadgePage";
-import { getBadgeRenewalPage } from "@controllers/accountController/getBadgeRenewalPage";
 import { validate } from "../middlewares/zodValidator";
 import { memberSchema } from "@/models/member";
+import routes from "@/routes/routes";
+import * as accountController from "@controllers/accountController";
+import { getBadgePageApi } from "@controllers/accountController/getBadgePage";
+import { getBadgeRenewalPage } from "@controllers/accountController/getBadgeRenewalPage";
+import * as usersController from "@controllers/usersController";
 
 const router = express.Router();
 
@@ -35,12 +36,12 @@ router.post(
     validate(memberSchema, "body"),
     usersController.postBaseInfoUpdate
 );
-router.post(
-    routes.API_PUBLIC_POST_BASE_INFO_FORM,
-    publicPostRouteRateLimiter,
-    express.json({ type: "*/*" }),
-    usersController.publicPostBaseInfoUpdate
-);
+// router.post(
+//     routes.API_PUBLIC_POST_BASE_INFO_FORM,
+//     publicPostRouteRateLimiter,
+//     express.json({ type: "*/*" }),
+//     usersController.publicPostBaseInfoUpdate
+// );
 router.get(
     routes.ACCOUNT_GET_BADGE_RENEWAL_REQUEST_PAGE_API,
     getBadgeRenewalPage

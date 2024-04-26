@@ -16,7 +16,6 @@ import { setupSessionMiddleware } from "./middlewares/sessionMiddleware";
 import {
     accountRouter,
     adminRouter,
-    authRouter,
     badgeRouter,
     communityRouter,
     diagnosticRouter,
@@ -107,7 +106,7 @@ const startServer = () => {
         server.use(startupRouter);
         server.use(communityRouter);
         server.use(adminRouter);
-        server.use(authRouter);
+        // server.use(authRouter);
         server.use(diagnosticRouter);
         server.use(badgeRouter);
         server.use(newsletterRouter);

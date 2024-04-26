@@ -7,7 +7,7 @@ import axios, { AxiosError } from "axios";
 
 import { useLiveChat } from "../live-chat/useLiveChat";
 import MemberSelect from "../MemberSelect";
-import { EmailStatusCode } from "@/models/dbUser";
+import { DBUserPublic, EmailStatusCode } from "@/models/dbUser";
 import { Member, MemberWithPermission } from "@/models/member";
 import { EMAIL_STATUS_READABLE_FORMAT } from "@/models/misc";
 import routes from "@/routes/routes";
@@ -49,7 +49,7 @@ interface FormErrorResponse {
 }
 
 export interface WhatIsGoingOnWithMemberProps {
-    users: Member[];
+    users: DBUserPublic[];
 }
 
 const ConnectedScreen = (props) => {
