@@ -1,9 +1,6 @@
 import { Metadata } from "next";
 
-import {
-    StartupInfoCreate,
-    StartupInfoCreateProps,
-} from "@/components/StartupInfoCreatePage";
+import { StartupInfoCreate } from "@/components/StartupInfoCreatePage";
 import betagouv from "@/server/betagouv";
 import { routeTitles } from "@/utils/routes/routeTitles";
 

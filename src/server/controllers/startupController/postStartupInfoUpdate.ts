@@ -32,6 +32,7 @@ const isValidPhase = (field, value, callback) => {
 };
 
 export async function postStartupInfoUpdate(req, res) {
+    // TODO: use Zod
     try {
         const formValidationErrors = {};
         const errorHandler = (field, message) => {
@@ -49,7 +50,7 @@ export async function postStartupInfoUpdate(req, res) {
             !phase.end ||
                 isValidDate("date", new Date(phase.end), errorHandler);
         });
-        let startupId = req.params.startup;
+        let startupId = req.params.startup || req.body.startup;
         let title =
             req.body.title || requiredError("nom du produit", errorHandler);
         if (!startupId) {

@@ -30,7 +30,7 @@ export const StartupInfoUpdate = (props: StartupInfoUpdateProps) => {
             const resp = await axios.post(
                 computeRoute(routes.STARTUP_POST_INFO_UPDATE_FORM).replace(
                     ":startup",
-                    props.formData.id
+                    props.formData.startup
                 ),
                 {
                     ...data,
@@ -51,6 +51,8 @@ export const StartupInfoUpdate = (props: StartupInfoUpdateProps) => {
             throw e;
         }
     };
+
+    // console.log("formData", props.formData);
 
     return (
         <>

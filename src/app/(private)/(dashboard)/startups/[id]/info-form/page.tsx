@@ -28,7 +28,8 @@ async function fetchGithubPageData(startup: string, ref: string = "master") {
         path: `content/_startups/${startup}.md`,
         overrides: (values) => ({
             ...values,
-            // prevent exceptions with invalid markdown content
+            // prevent some exceptions with invalid content
+            startup,
             title: values.title || "",
             mission: values.mission || "",
             incubator: values.incubator || "",
@@ -61,6 +62,7 @@ export default async function Page(props) {
     const formData = await fetchGithubPageData(startup, sha || "master");
     const incubators = await betagouv.incubators();
     const sponsors = await betagouv.sponsors();
+
     const componentProps = {
         formData,
         incubators,

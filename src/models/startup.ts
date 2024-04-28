@@ -139,10 +139,10 @@ export interface DBStartup {
 }
 
 export const startupSchema = z.object({
-    id: z
+    startup: z
         .string({
             errorMap: (issue, ctx) => ({
-                message: "L'ID est obligatoire",
+                message: "L'ID de startup est obligatoire",
             }),
         })
         .min(1)
@@ -172,7 +172,14 @@ export const startupSchema = z.object({
         })
         .min(1)
         .describe("Incubateur ou fabrique numérique"),
-    contact: z.string().describe("Email de contact du produit"),
+    contact: z
+        .string({
+            errorMap: () => ({
+                message: "Un email de contact est obligatoire",
+            }),
+        })
+        .min(1)
+        .describe("Email de contact du produit"),
     link: z.string().optional().describe("URL du site web"),
     repository: z.string().optional().describe("URL du repository GitHub"),
     accessibility_status: z.string().optional(),
@@ -194,7 +201,9 @@ export const startupSchema = z.object({
         .optional()
         .describe("Url de l'analyse de risque"),
     events: z.array(z.object({ name: z.string(), date: z.date() })).optional(),
-    phases: z.array(phaseSchema).optional(),
+    phases: z
+        .array(phaseSchema)
+        .min(1, "Vous devez définir au moins une phase (ex: investigation)"),
     techno: z.array(z.string()).optional(),
     usertypes: z
         .array(z.string())

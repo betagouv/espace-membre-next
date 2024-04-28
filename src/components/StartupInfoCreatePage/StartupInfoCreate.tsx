@@ -2,6 +2,7 @@
 import React from "react";
 
 import * as Sentry from "@sentry/nextjs";
+import slugify from "@sindresorhus/slugify";
 import axios from "axios";
 
 import { StartupForm } from "../StartupForm/StartupForm";
@@ -20,30 +21,40 @@ export interface StartupInfoCreateProps {
 }
 
 const NEW_PRODUCT_DATA = {
-    id: "",
+    startup: "new-product",
     title: "",
     mission: "",
     markdown: "",
     contact: "",
     incubator: "",
+    phases: [
+        {
+            name: "investigation",
+            start: new Date(),
+        },
+    ],
 };
 
 /* Pure component */
 export const StartupInfoCreate = (props: StartupInfoCreateProps) => {
     const save = async (data) => {
+        const postData = {
+            ...data,
+            startup: slugify(data.title),
+        };
         return axios
             .post(
                 computeRoute(routes.STARTUP_POST_INFO_CREATE_FORM),
                 {
-                    ...data,
+                    ...postData,
                 },
                 {
                     withCredentials: true,
                 }
             )
-            .then((data) => {
+            .then((result) => {
                 window.scrollTo({ top: 20, behavior: "smooth" });
-                return data;
+                return result;
             })
             .catch((e) => {
                 Sentry.captureException(e);

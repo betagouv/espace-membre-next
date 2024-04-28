@@ -5,10 +5,10 @@ import "react-markdown-editor-lite/lib/index.css";
 
 import { fr } from "@codegouvfr/react-dsfr";
 import { Alert } from "@codegouvfr/react-dsfr/Alert";
-import Button from "@codegouvfr/react-dsfr/Button";
-import Checkbox from "@codegouvfr/react-dsfr/Checkbox";
-import Input from "@codegouvfr/react-dsfr/Input";
-import Select from "@codegouvfr/react-dsfr/Select";
+import { Button } from "@codegouvfr/react-dsfr/Button";
+import { Checkbox } from "@codegouvfr/react-dsfr/Checkbox";
+import { Input } from "@codegouvfr/react-dsfr/Input";
+import { Select } from "@codegouvfr/react-dsfr/Select";
 import { zodResolver } from "@hookform/resolvers/zod";
 import MarkdownIt from "markdown-it";
 import { useForm } from "react-hook-form";
@@ -121,7 +121,7 @@ export function StartupForm(props: StartupFormProps) {
         [register, errors]
     );
     const onSubmit = (data, e) => {
-        console.log("onSubmit", { e, data, isDirty, errors });
+        console.log("onSubmit", { e, data, isDirty, isValid, errors });
 
         if (isSaving) {
             return;
@@ -185,6 +185,7 @@ export function StartupForm(props: StartupFormProps) {
         !!props.formData.analyse_risques_url ||
         !!getValues("analyse_risques");
 
+    //console.log({ isDirty, isValid, isSaving, isSubmitting, errors });
     return (
         <>
             <div>
@@ -375,14 +376,6 @@ export function StartupForm(props: StartupFormProps) {
                             getValues={getValues}
                             errors={errors.phases || []}
                         />
-                        {!!errors.phases && (
-                            <p
-                                id="text-input-error-desc-error"
-                                className="fr-error-text"
-                            >
-                                {errors.phases.message}
-                            </p>
-                        )}
                     </div>
                     {/*[FILE UPLOAD ]<hr />*/}
                     <BasicInput id="link" />
@@ -407,7 +400,6 @@ export function StartupForm(props: StartupFormProps) {
                                     "Cochez cette case si votre produit est inscrit sur Mon Service Sécurisé",
                                 nativeInputProps: {
                                     ...register("mon_service_securise"),
-                                    checked: hasAnalyseDeRisque,
                                 },
                             },
                         ]}
@@ -443,6 +435,7 @@ export function StartupForm(props: StartupFormProps) {
 
                     <Button
                         className={fr.cx("fr-mt-3w")}
+                        disabled={!isValid || isSaving}
                         children={
                             isSubmitting
                                 ? `Enregistrement en cours...`
