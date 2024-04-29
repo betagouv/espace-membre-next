@@ -15,7 +15,7 @@ import routes, { computeRoute } from "@/routes/routes";
 import { routeTitles } from "@/utils/routes/routeTitles";
 
 export interface StartupInfoUpdateProps {
-    formData: StartupFrontMatter & { markdown: string };
+    formData: StartupFrontMatter & { markdown: string } & { startup: string };
     incubators: Incubator[];
     sponsors: Sponsor[];
     updatePullRequest?: GithubAPIPullRequest;

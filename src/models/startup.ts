@@ -139,14 +139,6 @@ export interface DBStartup {
 }
 
 export const startupSchema = z.object({
-    startup: z
-        .string({
-            errorMap: (issue, ctx) => ({
-                message: "L'ID de startup est obligatoire",
-            }),
-        })
-        .min(1)
-        .describe("identifiant du produit"),
     title: z
         .string({
             errorMap: (issue, ctx) => ({
@@ -180,26 +172,42 @@ export const startupSchema = z.object({
         })
         .min(1)
         .describe("Email de contact du produit"),
-    link: z.string().optional().describe("URL du site web"),
-    repository: z.string().optional().describe("URL du repository GitHub"),
+    link: z.string().describe("URL du site web").optional().nullable(),
+    repository: z
+        .string()
+        .describe("URL du repository GitHub")
+        .optional()
+        .nullable(),
     accessibility_status: z.string().optional(),
-    dashlord_url: z.string().optional().describe("URL du rapport DashLord"),
-    stats_url: z.string().optional().describe("URL de la page de statistiques"),
-    budget_url: z.string().optional().describe("URL de la page de budget"),
+    dashlord_url: z
+        .string()
+        .describe("URL du rapport DashLord")
+        .optional()
+        .nullable(),
+    stats_url: z
+        .string()
+        .describe("URL de la page de statistiques")
+        .optional()
+        .nullable(),
+    budget_url: z
+        .string()
+        .describe("URL de la page de budget")
+        .optional()
+        .nullable(),
     mon_service_securise: z
         .boolean()
-        .optional()
         .describe(
             "L'équipe a mené une démarche de sécurité sur Mon Service Sécurisé"
-        ),
+        )
+        .optional(),
     analyse_risques: z
         .boolean()
-        .optional()
-        .describe("Nous avons réalisé une analyse de risque"),
+        .describe("Nous avons réalisé une analyse de risque")
+        .optional(),
     analyse_risques_url: z
         .string()
-        .optional()
-        .describe("Url de l'analyse de risque"),
+        .describe("Url de l'analyse de risque")
+        .optional(),
     events: z.array(z.object({ name: z.string(), date: z.date() })).optional(),
     phases: z
         .array(phaseSchema)

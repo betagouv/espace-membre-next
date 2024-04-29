@@ -38,15 +38,11 @@ const NEW_PRODUCT_DATA = {
 /* Pure component */
 export const StartupInfoCreate = (props: StartupInfoCreateProps) => {
     const save = async (data) => {
-        const postData = {
-            ...data,
-            startup: slugify(data.title),
-        };
         return axios
             .post(
                 computeRoute(routes.STARTUP_POST_INFO_CREATE_FORM),
                 {
-                    ...postData,
+                    ...data,
                 },
                 {
                     withCredentials: true,
@@ -57,6 +53,7 @@ export const StartupInfoCreate = (props: StartupInfoCreateProps) => {
                 return result;
             })
             .catch((e) => {
+                window.scrollTo({ top: 20, behavior: "smooth" });
                 Sentry.captureException(e);
                 throw e;
             });

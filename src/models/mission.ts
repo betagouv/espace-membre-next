@@ -88,6 +88,7 @@ export const missionSchema = z.object({
             }),
         })
         .describe("Entité avec qui tu as contractualisé")
-        .optional(),
+        .optional()
+        .nullable(),
     startups: z.array(z.string()).optional(),
 });

@@ -29,7 +29,6 @@ async function fetchGithubPageData(startup: string, ref: string = "master") {
         overrides: (values) => ({
             ...values,
             // prevent some exceptions with invalid content
-            startup,
             title: values.title || "",
             mission: values.mission || "",
             incubator: values.incubator || "",
@@ -64,7 +63,10 @@ export default async function Page(props) {
     const sponsors = await betagouv.sponsors();
 
     const componentProps = {
-        formData,
+        formData: {
+            ...formData,
+            startup,
+        },
         incubators,
         sponsors,
         updatePullRequest: startupPR,
