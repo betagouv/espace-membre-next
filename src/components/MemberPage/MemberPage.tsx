@@ -19,6 +19,8 @@ import MemberEventList from "./MemberEventList";
 import { EmailStatusCode } from "@/models/dbUser";
 import { EMAIL_STATUS_READABLE_FORMAT } from "@/models/misc";
 import routes, { computeRoute } from "@/routes/routes";
+import Badge from "@codegouvfr/react-dsfr/Badge";
+import { fr } from "@codegouvfr/react-dsfr";
 
 export interface MemberPageProps {
     isExpired: boolean;
@@ -323,7 +325,7 @@ MemberPageProps) {
                                             userInfos.start
                                         ).toLocaleDateString("fr-FR")}
                                         {userInfos.end &&
-                                            `au ${new Date(
+                                            ` au ${new Date(
                                                 userInfos.end
                                             ).toLocaleDateString("fr-FR")}`}
                                         <br />
@@ -356,7 +358,13 @@ MemberPageProps) {
                         </div>
                         <p>
                             <span>Email secondaire : </span>{" "}
-                            {secondaryEmail || "Non renseigné"}
+                            {secondaryEmail ? (
+                                <a href={`mailto:${secondaryEmail}`}>
+                                    {secondaryEmail}
+                                </a>
+                            ) : (
+                                "Non renseigné"
+                            )}
                         </p>
                     </div>
                 )}
@@ -378,9 +386,27 @@ MemberPageProps) {
                 {!!emailInfos && (
                     <>
                         <p className="text-color-blue font-weight-bold">
-                            {emailInfos.email}
-                            {emailInfos.isPro && `(offre OVH Pro)`}
-                            {emailInfos.isExchange && `(offre OVH Exchange)`}
+                            <a href={`mailto:${emailInfos.email}`}>
+                                {emailInfos.email}
+                            </a>
+                            {emailInfos.isPro && (
+                                <Badge
+                                    small
+                                    className={fr.cx("fr-ml-1w")}
+                                    severity="success"
+                                >
+                                    OVH Pro
+                                </Badge>
+                            )}
+                            {emailInfos.isExchange && (
+                                <Badge
+                                    small
+                                    className={fr.cx("fr-ml-1w")}
+                                    severity="success"
+                                >
+                                    OVH Exchange
+                                </Badge>
+                            )}
                         </p>
                         <ul>
                             <li>
