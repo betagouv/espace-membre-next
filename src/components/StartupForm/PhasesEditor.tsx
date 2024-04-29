@@ -1,11 +1,10 @@
-import React, { ReactNode } from "react";
+import React from "react";
 
 import { fr } from "@codegouvfr/react-dsfr";
 import { Button } from "@codegouvfr/react-dsfr/Button";
 import { Input } from "@codegouvfr/react-dsfr/Input";
 import { Select } from "@codegouvfr/react-dsfr/Select";
 import Table from "@codegouvfr/react-dsfr/Table";
-import { addMonths } from "date-fns/addMonths";
 import {
     Control,
     useFieldArray,
@@ -13,17 +12,13 @@ import {
     UseFormRegister,
     UseFormSetValue,
 } from "react-hook-form";
+import { z } from "zod";
 
-import { userStatusOptions } from "@/frontConfig";
-import { Status, missionSchema } from "@/models/mission";
 import {
-    Phase,
     phaseSchema,
     PHASE_READABLE_NAME,
-    startupSchema,
     PHASES_ORDERED_LIST,
 } from "@/models/startup";
-import { infer, z } from "zod";
 
 const phasesArraySchema = z.array(phaseSchema);
 
@@ -55,16 +50,10 @@ export function PhasesEditor({
         name: "phases",
     });
 
-    //const phases = getValues()
-
     const addMissionClick = (e) => {
         phasesAppend({
             start: new Date(),
             name: "",
-            //end: addMonths(new Date(), 3),
-            //status: Status.independent,
-            //employer: "",
-            //startups: [],
         });
     };
 
@@ -109,10 +98,8 @@ export function PhasesEditor({
                             key={phase.id + "-start"}
                             nativeInputProps={{
                                 type: "date",
-                                //                defailtvalue: phase.start.toISOString().substring(0, 10),
                                 ...register(`phases.${index}.start`),
                                 value: startDateString,
-                                //
                             }}
                         />,
                         (index > 0 && (

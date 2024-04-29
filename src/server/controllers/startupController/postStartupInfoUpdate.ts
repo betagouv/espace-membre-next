@@ -1,12 +1,12 @@
 import { updateMultipleFilesPR } from "@controllers/helpers/githubHelpers/updateGithubCollectionEntry";
 import db from "@db";
+import slugify from "@sindresorhus/slugify";
 
 import {
     makeGithubSponsorFile,
     makeGithubStartupFile,
     makeImageFile,
 } from "../helpers/githubHelpers";
-import { createStartupId } from "../helpers/githubHelpers/createContentName";
 import {
     GithubBetagouvFile,
     GithubStartupChange,
@@ -50,11 +50,11 @@ export async function postStartupInfoUpdate(req, res) {
             !phase.end ||
                 isValidDate("date", new Date(phase.end), errorHandler);
         });
-        let startupId = req.params.startup || req.body.startup;
+        let startupId = req.params.startup;
         let title =
             req.body.title || requiredError("nom du produit", errorHandler);
         if (!startupId) {
-            startupId = createStartupId(req.body.title);
+            startupId = slugify(req.body.title);
         }
         const link = req.body.link;
         const dashlord_url = req.body.dashlord_url;
