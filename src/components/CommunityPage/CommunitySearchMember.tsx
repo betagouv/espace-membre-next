@@ -5,13 +5,13 @@ import Button from "@codegouvfr/react-dsfr/Button";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 
-import { CommunityProps } from ".";
 import MemberSelect from "../MemberSelect";
 
+import { Member } from "@/models/member";
 import { routeTitles } from "@/utils/routes/routeTitles";
 
 /* Pure component */
-export const CommunitySearchMember = (props: CommunityProps) => {
+export const CommunitySearchMember = ({ users }: { users: Member[] }) => {
     const router = useRouter();
     const [username, setUsername] = React.useState<string | undefined>();
 
@@ -34,7 +34,7 @@ export const CommunitySearchMember = (props: CommunityProps) => {
                                     (member as { value: string }).value
                                 );
                             }}
-                            members={props.users.map((u) => ({
+                            members={users.map((u) => ({
                                 value: u.id,
                                 label: u.fullname,
                             }))}

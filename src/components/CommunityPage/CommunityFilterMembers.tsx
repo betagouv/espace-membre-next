@@ -1,26 +1,28 @@
 "use client";
 
 import React from "react";
-import axios from "axios";
 
+import ButtonsGroup from "@codegouvfr/react-dsfr/ButtonsGroup";
+import axios from "axios";
 import {
     ReactTabulator,
     ColumnDefinition,
     reactFormatter,
 } from "react-tabulator";
-import SEIncubateurSelect from "../SEIncubateurSelect";
-import SESelect from "../SESelect";
+
+import { CommunityProps } from ".";
+import { CompetencesEditor } from "../BaseInfoUpdatePage/CompetencesEditor";
 import DomaineSelect from "../DomaineSelect";
 import MemberStatusSelect from "../MemberStatusSelect";
+import SEIncubateurSelect from "../SEIncubateurSelect";
 import SEPhaseSelect from "../SEPhaseSelect";
-import { CommunityProps } from ".";
-import ButtonsGroup from "@codegouvfr/react-dsfr/ButtonsGroup";
+import SESelect from "../SESelect";
+
 import "react-tabulator/lib/styles.css"; // required styles
 import "react-tabulator/lib/css/tabulator.min.css"; // theme
 import { computeRoute } from "@/routes/routes";
 
 function Link(props: any) {
-    // props.cell._cell.row.data;
     const cellValue = props.cell._cell.value || "Edit | Show";
     return <a href={`/community/${cellValue}`}>{cellValue}@beta.gouv.fr</a>;
 }
@@ -48,6 +50,7 @@ export const CommunityFilterMembers = (props: CommunityProps) => {
 
     const onClickSearch = async () => {
         const domaines = (state.domaines || []).map((d) => d.id).join(",");
+        const competences = (state.competences || []).join(",");
         const incubators = (state.incubators || []).map((d) => d.id).join(",");
         const startups = (state.startups || []).map((d) => d.value).join(",");
         const memberStatus = (state.memberStatus || [])
@@ -62,9 +65,10 @@ export const CommunityFilterMembers = (props: CommunityProps) => {
             startups,
             memberStatus,
             startupPhases,
+            competences,
         };
         const queryParamsString = Object.keys(params)
-            .map((key) => key + "=" + params[key])
+            .map((key) => key + "=" + encodeURIComponent(params[key]))
             .join("&");
         const data = await axios
             .get(computeRoute(`/api/get-users?${queryParamsString}`), {
@@ -186,6 +190,20 @@ export const CommunityFilterMembers = (props: CommunityProps) => {
                                     startupPhases,
                                 })
                             }
+                        />
+                    </div>
+                    <div className="fr-col-6">
+                        <label className="fr-label">Compétences</label>
+                        <CompetencesEditor
+                            placeholder="Sélectionne une ou plusieurs compétences"
+                            defaultValue={[]}
+                            onChange={(e, competences) => {
+                                console.log("competences", competences);
+                                setState({
+                                    ...state,
+                                    competences,
+                                });
+                            }}
                         />
                     </div>
                 </div>

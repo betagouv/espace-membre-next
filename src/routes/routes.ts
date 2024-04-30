@@ -90,7 +90,7 @@ class routes {
     static GET_USER: string = "/community/:username" as const;
     static GET_USER_API: string = "/api/community/:username" as const;
     static GET_COMMUNITY: string = "/community" as const;
-    static GET_COMMUNITY_API: string = "/api/community" as const;
+    //static GET_COMMUNITY_API: string = "/api/community" as const;
 
     static LOGOUT: string = "/logout" as const;
     static LOGOUT_API: string = "/api/logout" as const;

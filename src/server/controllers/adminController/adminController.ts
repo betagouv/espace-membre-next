@@ -134,6 +134,9 @@ export async function getUsers(req, res) {
     const domaines = req.query.domaines
         ? req.query.domaines.split(",").map((domaine) => Domaine[domaine])
         : [];
+    const competences = req.query.competences
+        ? req.query.competences.split(",")
+        : [];
     const incubators = req.query.incubators
         ? req.query.incubators.split(",")
         : [];
@@ -161,6 +164,13 @@ export async function getUsers(req, res) {
     }
     if (domaines.length) {
         users = users.filter((user) => domaines.includes(user.domaine));
+    }
+    if (competences.length) {
+        users = users.filter((user) =>
+            competences.filter((competence) =>
+                user.competences ? user.competences.includes(competence) : true
+            )
+        );
     }
     if (startupPhases.length) {
         const usersStartupsByPhase: UserStartup[] = await db("users_startups")
