@@ -15,6 +15,7 @@ import BlocEmailResponder from "./BlocEmailResponder";
 import BlocRedirection from "./BlocRedirection";
 import { EmailStatusCode } from "@/models/dbUser";
 import { EmailInfos } from "@/models/member";
+import Badge from "@codegouvfr/react-dsfr/Badge";
 
 function BlocEmailConfiguration({ emailInfos }: { emailInfos: EmailInfos }) {
     interface ServerConf {
@@ -140,9 +141,27 @@ export default function EmailContainer({
                             Email principal :{" "}
                         </span>
                         <span className="font-weight-bold text-color-blue">
-                            {emailInfos.email}
-                            {emailInfos.isPro && `(offre OVH Pro)`}
-                            {emailInfos.isExchange && `(offre OVH Exchange)`}
+                            <a href={`mailto:${emailInfos.email}`}>
+                                {emailInfos.email}
+                            </a>
+                            {emailInfos.isPro && (
+                                <Badge
+                                    small
+                                    className={fr.cx("fr-ml-1w")}
+                                    severity="success"
+                                >
+                                    OVH Pro
+                                </Badge>
+                            )}
+                            {emailInfos.isExchange && (
+                                <Badge
+                                    small
+                                    className={fr.cx("fr-ml-1w")}
+                                    severity="success"
+                                >
+                                    OVH Exchange
+                                </Badge>
+                            )}
                         </span>
                         <br />
                     </>

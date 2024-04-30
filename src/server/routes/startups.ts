@@ -7,7 +7,7 @@ import { getStartupInfoUpdateApi } from "@controllers/startupController";
 const router = express.Router();
 // STARTUP
 // router.get(routes.STARTUP_GET_INFO_CREATE_FORM, getStartupInfoCreate);
-router.get(routes.STARTUP_GET_INFO_CREATE_FORM_API, getStartupInfoCreateApi);
+//router.get(routes.STARTUP_GET_INFO_CREATE_FORM_API, getStartupInfoCreateApi);
 
 router.get(routes.STARTUP_GET_ALL_API, startupController.getStartupListApi);
 

@@ -1,5 +1,6 @@
-import Select from "@codegouvfr/react-dsfr/Select";
 import React from "react";
+
+import Select from "@codegouvfr/react-dsfr/Select";
 
 const options = [
     { value: "non conforme", label: "non conforme" },
@@ -16,6 +17,7 @@ export default function SelectAccebilityStatus({ value, onChange }) {
                 defaultValue: value,
             }}
         >
+            <option value="">---</option>
             {options.map((option) => {
                 return (
                     <option key={option.value} value={option.value}>

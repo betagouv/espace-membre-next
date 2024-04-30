@@ -33,6 +33,7 @@ export interface GithubSponsorFile extends GithubFile {
 }
 
 export interface GithubSponsorChange {
+    id: string; // slug
     name: string;
     acronym: string;
     domaine_ministeriel: SponsorDomaineMinisteriel;
@@ -46,6 +47,7 @@ export const GithubStartupChangeSchema = z.object({
     dashlord_url: z.string(), // Required string
     mission: z.string(), // Required string
     stats_url: z.string(), // Required string
+    budget_url: z.string(), // Required string
     repository: z.string(), // Required string
     contact: z.string(), // Required string
     sponsors: z.tuple([z.string()]), // Tuple with one string element
@@ -53,6 +55,9 @@ export const GithubStartupChangeSchema = z.object({
     accessibility_status: z.nativeEnum(AccessibilityStatus), // Use the defined 'AccessibilityStatus' schema
     analyse_risques_url: z.string(), // Required string
     analyse_risques: z.boolean(), // Required boolean
+    mon_service_securise: z.boolean(), // Required boolean
+    thematiques: z.array(z.string()).optional(),
+    usertypes: z.array(z.string()).optional(),
 });
 
 export interface GithubStartupChange
