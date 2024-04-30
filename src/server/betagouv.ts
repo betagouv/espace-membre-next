@@ -18,6 +18,7 @@ import {
 import { Startup, StartupInfo } from "@/models/startup";
 import config from "@/server/config";
 import { checkUserIsExpired } from "@controllers/utils";
+import { Sponsor } from "@/models/sponsor";
 
 const ovh = ovh0({
     appKey: config.OVH_APP_KEY,
@@ -103,7 +104,7 @@ const betaGouv = {
                 throw new Error(`Error to get incubators infos : ${err}`);
             });
     },
-    sponsors: async (): Promise<Incubator[]> => {
+    sponsors: async (): Promise<Sponsor[]> => {
         return axios
             .get<any[]>(config.SPONSOR_API)
             .then((response) => response.data)

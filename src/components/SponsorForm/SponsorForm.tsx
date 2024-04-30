@@ -1,16 +1,20 @@
 "use client";
 
 import React from "react";
+
+import Alert from "@codegouvfr/react-dsfr/Alert";
+import Button from "@codegouvfr/react-dsfr/Button";
+import Input from "@codegouvfr/react-dsfr/Input";
+import slugify from "@sindresorhus/slugify";
+
 import SponsorDomainSelect from "./SponsorDomainSelect";
+import SponsorTypeSelect from "./SponsorTypeSelect";
+
 import {
     Sponsor,
     SponsorDomaineMinisteriel,
     SponsorType,
 } from "@/models/sponsor";
-import SponsorTypeSelect from "./SponsorTypeSelect";
-import Input from "@codegouvfr/react-dsfr/Input";
-import Button from "@codegouvfr/react-dsfr/Button";
-import Alert from "@codegouvfr/react-dsfr/Alert";
 
 // import style manually
 
@@ -30,6 +34,7 @@ export const SponsorForm = (props: SponsorForm) => {
     ): Promise<void> => {
         e.preventDefault();
         props.addSponsor({
+            id: slugify(name),
             name,
             domaine_ministeriel: domaine as SponsorDomaineMinisteriel,
             type: type as SponsorType,

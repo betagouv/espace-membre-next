@@ -9,6 +9,8 @@ interface Relationship {
     };
 }
 
+// todo: extract types from single "phases" array ?
+
 export const PHASE_READABLE_NAME = {
     acceleration: "En Accélération",
     investigation: "En Investigation",
@@ -137,27 +139,103 @@ export interface DBStartup {
 }
 
 export const startupSchema = z.object({
-    id: z.string(),
-    title: z.string(),
-    mission: z.string(),
+    title: z
+        .string({
+            errorMap: (issue, ctx) => ({
+                message: "Le nom est obligatoire",
+            }),
+        })
+        .min(1)
+        .describe("Nom du produit"),
+    mission: z
+        .string({
+            errorMap: (issue, ctx) => ({
+                message: "La mission est obligatoire",
+            }),
+        })
+        .min(1)
+        .describe("Objectif du produit"),
     sponsors: z.array(z.string()).optional(),
-    incubator: z.string(),
-    contact: z.string(),
-    link: z.string().optional(),
-    repository: z.string().optional(),
+    incubator: z
+        .string({
+            errorMap: (issue, ctx) => ({
+                message: "L'incubateur est obligatoire",
+            }),
+        })
+        .min(1)
+        .describe("Incubateur ou fabrique numérique"),
+    contact: z
+        .string({
+            errorMap: () => ({
+                message: "Un email de contact est obligatoire",
+            }),
+        })
+        .min(1)
+        .describe("Email de contact du produit"),
+    link: z.string().describe("URL du site web").optional().nullable(),
+    repository: z
+        .string()
+        .describe("URL du repository GitHub")
+        .optional()
+        .nullable(),
     accessibility_status: z.string().optional(),
-    dashlord_url: z.string().optional(),
-    stats: z.boolean().optional(),
-    stats_url: z.string().optional(),
-    budget_url: z.string().optional(),
-    analyse_risques: z.boolean().optional(),
-    analyse_risques_url: z.string().optional(),
+    dashlord_url: z
+        .string()
+        .describe("URL du rapport DashLord")
+        .optional()
+        .nullable(),
+    stats_url: z
+        .string()
+        .describe("URL de la page de statistiques")
+        .optional()
+        .nullable(),
+    budget_url: z
+        .string()
+        .describe("URL de la page de budget")
+        .optional()
+        .nullable(),
+    mon_service_securise: z
+        .boolean()
+        .describe(
+            "L'équipe a mené une démarche de sécurité sur Mon Service Sécurisé"
+        )
+        .optional(),
+    analyse_risques: z
+        .boolean()
+        .describe("Nous avons réalisé une analyse de risque")
+        .optional(),
+    analyse_risques_url: z
+        .string()
+        .describe("Url de l'analyse de risque")
+        .optional(),
     events: z.array(z.object({ name: z.string(), date: z.date() })).optional(),
-    phases: z.array(phaseSchema).optional(),
+    phases: z
+        .array(phaseSchema)
+        .min(1, "Vous devez définir au moins une phase (ex: investigation)"),
     techno: z.array(z.string()).optional(),
-    usertypes: z.array(z.string()).optional(),
+    usertypes: z
+        .array(z.string())
+        .optional()
+        .describe("Utilisateurs cibles du service"),
     //redirect_from: z.array(z.string()).optional(),
     fast: z.object({ promotion: z.number(), montant: z.number() }).optional(),
+    thematiques: z
+        .array(z.string())
+        .optional()
+        .describe("Thématiques addressées par la startup"),
 });
 
 export interface StartupFrontMatter extends z.infer<typeof startupSchema> {}
+
+export type startupSchemaType = z.infer<typeof startupSchema>;
+
+export const startupSchemaWithMarkdown = startupSchema.extend({
+    markdown: z
+        .string({
+            errorMap: (issue, ctx) => ({
+                message: "La description doit faire minimum 30 caractères",
+            }),
+        })
+        .min(30)
+        .describe("Décrivez votre produit, son public, ses objectifs"),
+});

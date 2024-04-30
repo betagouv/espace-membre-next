@@ -1,11 +1,11 @@
-import { Metadata, ResolvingMetadata } from "next";
-import { cookies } from "next/headers";
+import { Metadata } from "next";
 import { redirect } from "next/navigation";
 import { getServerSession } from "next-auth";
 
 import { StartupInfoUpdate } from "@/components/StartupInfoUpdatePage";
 import { getPullRequestForBranch, fetchGithubMarkdown } from "@/lib/github";
 import { startupSchema } from "@/models/startup";
+import betagouv from "@/server/betagouv";
 import { authOptions } from "@/utils/authoptions";
 import { routeTitles } from "@/utils/routes/routeTitles";
 
@@ -28,7 +28,7 @@ async function fetchGithubPageData(startup: string, ref: string = "master") {
         path: `content/_startups/${startup}.md`,
         overrides: (values) => ({
             ...values,
-            // prevent exceptions with invalid markdown content
+            // prevent some exceptions with invalid content
             title: values.title || "",
             mission: values.mission || "",
             incubator: values.incubator || "",
@@ -54,14 +54,21 @@ export default async function Page(props) {
     if (!session) {
         redirect("/login");
     }
-    const startup = props.params.id;
-    const startupPR = await getPullRequestForBranch(`edit-startup-${startup}`);
+    const id = props.params.id;
+    const startupPR = await getPullRequestForBranch(`edit-startup-${id}`);
 
     const sha = startupPR && startupPR.head.sha;
-    const formData = await fetchGithubPageData(startup, sha || "master");
+    const formData = await fetchGithubPageData(id, sha || "master");
+    const incubators = await betagouv.incubators();
+    const sponsors = await betagouv.sponsors();
 
     const componentProps = {
-        formData,
+        formData: {
+            ...formData,
+            id,
+        },
+        incubators,
+        sponsors,
         updatePullRequest: startupPR,
     };
 

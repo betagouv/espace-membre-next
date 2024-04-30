@@ -8,6 +8,7 @@ import {
     MemberType,
 } from "./dbUser";
 import { Mission, missionSchema } from "./mission";
+
 import { EMAIL_PLAN_TYPE, OvhRedirection, OvhResponder } from "@/models/ovh";
 
 export enum Domaine {
@@ -100,7 +101,7 @@ const emailSchema = z
     .email()
     .describe("Email");
 
-const githubSchema = z.string().describe("Login GitHub").optional();
+const githubSchema = z.string().describe("Login GitHub").optional().nullable();
 
 const domaineSchema = z.nativeEnum(
     Domaine, // ??
@@ -164,12 +165,13 @@ export const memberSchema = z.object({
     teams: z
         .array(z.string())
         .describe("Liste des équipes incubateurs")
-        .optional(),
+        .optional()
+        .nullable(),
     missions: z
         .array(missionSchema)
         .min(1, "Vous devez définir au moins une mission"),
-    startups: z.array(z.string()).optional(),
-    previously: z.array(z.string()).optional(),
+    startups: z.array(z.string()).optional().nullable(),
+    previously: z.array(z.string()).optional().nullable(),
     domaine: domaineSchema, // ??
     bio: bioSchema,
     memberType: z.nativeEnum(MemberType).optional().nullable(),
@@ -181,6 +183,7 @@ const missionsArraySchema = z.array(missionSchema);
 export type HasMissions<T = any> = T & {
     missions: z.infer<typeof missionsArraySchema>;
 };
+
 export interface MemberWithPrimaryEmailInfo extends Member {
     primary_email: string;
     primary_email_status: EmailStatusCode;

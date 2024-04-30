@@ -152,7 +152,7 @@ export function makeGithubSponsorFile(
     changes: GithubSponsorChange
 ): GithubSponsorFile {
     return {
-        path: `content/_organisations/${name}.md`,
+        path: `content/_organisations/${changes.id}.md`,
         name: name,
         changes,
     };

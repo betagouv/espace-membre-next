@@ -1,15 +1,18 @@
+import { updateMultipleFilesPR } from "@controllers/helpers/githubHelpers/updateGithubCollectionEntry";
+import db from "@db";
+import slugify from "@sindresorhus/slugify";
+
 import {
     makeGithubSponsorFile,
     makeGithubStartupFile,
     makeImageFile,
 } from "../helpers/githubHelpers";
-import { createStartupId } from "../helpers/githubHelpers/createContentName";
 import {
     GithubBetagouvFile,
     GithubStartupChange,
 } from "../helpers/githubHelpers/githubEntryInterface";
+
 import { addEvent } from "@/lib/events";
-import { GithubAPIPullRequest } from "@/lib/github";
 import { EventCode } from "@/models/actionEvent";
 import { PULL_REQUEST_TYPE, PULL_REQUEST_STATE } from "@/models/pullRequests";
 import {
@@ -19,8 +22,6 @@ import {
 } from "@/models/sponsor";
 import { StartupPhase } from "@/models/startup";
 import { isValidDate, requiredError } from "@/server/controllers/validator";
-import { updateMultipleFilesPR } from "@controllers/helpers/githubHelpers/updateGithubCollectionEntry";
-import db from "@db";
 
 const isValidPhase = (field, value, callback) => {
     if (!value || Object.values(StartupPhase).includes(value)) {
@@ -31,6 +32,7 @@ const isValidPhase = (field, value, callback) => {
 };
 
 export async function postStartupInfoUpdate(req, res) {
+    // TODO: use Zod
     try {
         const formValidationErrors = {};
         const errorHandler = (field, message) => {
@@ -52,14 +54,17 @@ export async function postStartupInfoUpdate(req, res) {
         let title =
             req.body.title || requiredError("nom du produit", errorHandler);
         if (!startupId) {
-            startupId = createStartupId(req.body.title);
+            startupId = slugify(req.body.title);
         }
         const link = req.body.link;
         const dashlord_url = req.body.dashlord_url;
         const mission =
             req.body.mission || requiredError("mission", errorHandler);
         const stats_url = req.body.stats_url;
+        const budget_url = req.body.budget_url;
         const repository = req.body.repository;
+        const thematiques = req.body.thematiques;
+        const usertypes = req.body.usertypes;
         const incubator = req.body.incubator;
         const sponsors = req.body.sponsors || [];
         const contact = req.body.contact;
@@ -70,7 +75,11 @@ export async function postStartupInfoUpdate(req, res) {
             req.body.analyse_risques === true
                 ? true
                 : false;
-
+        const mon_service_securise =
+            req.body.mon_service_securise === "true" ||
+            req.body.mon_service_securise === true
+                ? true
+                : false;
         const newSponsors: Sponsor[] = req.body.newSponsors || [];
         const image: string = req.body.image;
 
@@ -85,7 +94,7 @@ export async function postStartupInfoUpdate(req, res) {
         }
 
         const content =
-            req.body.text ||
+            req.body.markdown ||
             requiredError("description du produit", errorHandler);
         phases[0] || requiredError("phases", errorHandler);
 
@@ -100,6 +109,7 @@ export async function postStartupInfoUpdate(req, res) {
             dashlord_url,
             mission,
             stats_url,
+            budget_url,
             repository,
             incubator,
             title,
@@ -107,6 +117,9 @@ export async function postStartupInfoUpdate(req, res) {
             accessibility_status,
             analyse_risques_url,
             analyse_risques,
+            mon_service_securise,
+            thematiques,
+            usertypes,
             sponsors: sponsors.map((sponsor) => `/organisations/${sponsor}`),
         };
         const newPhases = phases.map((phase) => ({
