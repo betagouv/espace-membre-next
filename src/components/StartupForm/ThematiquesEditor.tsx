@@ -19,6 +19,8 @@ const thematiquesMap: readonly ThematiqueType[] = thematiques.map(
 
 const filter = createFilterOptions<ThematiqueType>();
 
+// todo: should be merged with UsertypesEditor and others
+
 //  from https://mui.com/material-ui/react-autocomplete/#creatable
 export const ThematiquesEditor = ({
     onChange,
