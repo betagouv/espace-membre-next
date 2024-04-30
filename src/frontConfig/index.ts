@@ -61,4 +61,6 @@ export default {
     SUPPORT_EMAIL: process.env.NEXT_SUPPORT_EMAIL,
     tchap_api: process.env.TCHAP_API,
     HASH_SALT: process.env.HASH_SALT,
+    matomoUrl: process.env.NEXT_PUBLIC_MATOMO_URL,
+    matomoSiteId: process.env.NEXT_PUBLIC_MATOMO_SITE_ID,
 };
