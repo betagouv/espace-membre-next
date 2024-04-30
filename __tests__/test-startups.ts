@@ -137,7 +137,7 @@ describe("Startup page", () => {
                 )
                 .send({
                     mission: "lamissiondelastartup",
-                    text: "la description de la startup",
+                    markdown: "la description de la startup",
                     title: "title de la se",
                     phases: [
                         {
@@ -176,7 +176,7 @@ describe("Startup page", () => {
                         },
                     ],
                     image: base64Image,
-                    text: "test",
+                    markdown: "test",
                 });
             updateStartupGithubFileStub.args[0][1][0].content.should.equals(
                 "test"
@@ -260,7 +260,7 @@ describe("Startup page", () => {
                     JSON.stringify({
                         startup: "nomdestartup",
                         mission: "lamissiondelastartup",
-                        text: "la description de la startup",
+                        markdown: "la description de la startup",
                         title: "title de la se",
                         contact: "lamissiondelastartup@beta.gouv.fr",
                         phases: [

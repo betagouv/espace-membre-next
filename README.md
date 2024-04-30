@@ -36,6 +36,8 @@ L'espace membre de l’incubateur
     -   `MATTERMOST_INVITE_ID` - ID secret de l'invitation qui permet de se créer un compte sur l'espace mattermost https://mattermost.incubateur.net/signup_user_complete/?id=[ID]
     -   `MATTERMOST_TEAM_ID` - ID de la team `Communauté`
     -   `MATTERMOST_BOT_TOKEN` - Token du bot mattermost qui permet de faire les requêtes à l'api
+    -   `NEXT_PUBLIC_MATOMO_URL` - URL de l'instance Matomo _(format `https://xxx.yyy.zzz/`)_
+    -   `NEXT_PUBLIC_MATOMO_SITE_ID`: - ID du site sur l'instance Matomo
 
 ### Lancer en mode développement
 

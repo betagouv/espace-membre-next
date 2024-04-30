@@ -1,13 +1,13 @@
 import React from "react";
-import axios from "axios";
+
 import Autocomplete from "@mui/material/Autocomplete";
 import TextField from "@mui/material/TextField";
+
 import { Sponsor } from "@/models/sponsor";
-import { computeRoute } from "@/routes/routes";
 
 interface SESponsorSelectProps {
     value: string[];
-    newSponsors: Sponsor[];
+    allSponsors: Sponsor[];
     label?: string;
     hint?: string;
     state?: string;
@@ -19,7 +19,7 @@ interface SESponsorSelectProps {
 
 export default function SESponsorSelect({
     value,
-    newSponsors,
+    allSponsors,
     label,
     hint,
     state,
@@ -28,49 +28,17 @@ export default function SESponsorSelect({
     stateMessageRelated,
     containerStyle,
 }: SESponsorSelectProps) {
-    const [options, setOptions] = React.useState<
-        { value: string; label: string }[]
-    >([]);
+    const allOptions = Object.entries(allSponsors).map(
+        ([key, sponsor], index) => ({
+            value: key,
+            label: sponsor.name,
+        })
+    );
 
-    React.useEffect(() => {
-        // React advises to declare the async function directly inside useEffect
-        const getOptions = async () => {
-            const sponsors = await axios
-                .get<any[]>("/api/sponsors")
-                .then((response) => response.data)
-                .catch((err) => {
-                    throw new Error(`Error to get incubators infos : ${err}`);
-                });
-            const optionValues = Object.keys(sponsors).map((sponsor) => {
-                return {
-                    value: sponsor,
-                    label: sponsors[sponsor].name,
-                };
-            });
-            setOptions(optionValues);
-        };
-
-        // You need to restrict it at some point
-        // This is just dummy code and should be replaced by actual
-        if (!options.length) {
-            getOptions();
-        }
-    }, []);
-
-    if (!options.length) {
-        return null;
-    }
-
-    const newSponsorsOptions = newSponsors.map((newSponsor) => ({
-        value: newSponsor.acronym,
-        label: newSponsor.name,
-    }));
-
-    const allOptions = [...options, ...newSponsorsOptions];
     return (
         <div className="fr-select-group" style={containerStyle}>
             <label className="fr-label">
-                {label || `Sponsor`}
+                {label || `Sponsors`}
                 {!!hint && <span className="fr-hint-text">{hint}</span>}
             </label>
             <Autocomplete

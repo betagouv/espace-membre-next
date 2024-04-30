@@ -43,6 +43,7 @@ enum AirtableDomaine {
     "Animateur.ice" = "Animateur.ice",
     "Product Owner" = "Product Owner",
     "Growth Hacker" = "Growth Hacker",
+    "Data" = "Data",
 }
 
 const DomaineToAirtableDomaine: Record<Domaine, AirtableDomaine> = {
@@ -54,6 +55,7 @@ const DomaineToAirtableDomaine: Record<Domaine, AirtableDomaine> = {
     [Domaine.DEVELOPPEMENT]: AirtableDomaine["Développpeur.euse"],
     [Domaine.PRODUIT]: AirtableDomaine["Product Owner"],
     [Domaine.AUTRE]: AirtableDomaine[""],
+    [Domaine.DATA]: AirtableDomaine["Data"],
 };
 
 export default async function Page({ params }: Props) {

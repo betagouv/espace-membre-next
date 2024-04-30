@@ -12,9 +12,11 @@ import ClientSessionProvider from "./context/ClientContextProvider";
 import { defaultColorScheme } from "./defaultColorScheme";
 import { MuiDsfrThemeProvider } from "./MuiDsfrThemeProvider";
 import { StartDsfr } from "./StartDsfr";
+
 import Header from "@/components/Header";
 import { LiveChatProvider } from "@/components/live-chat/LiveChatProvider";
 import { authOptions } from "@/utils/authoptions";
+import { Matomo } from "@/app/Matomo";
 
 export interface RootLayoutProps {
     workaroundForNextJsPages?: boolean;
@@ -74,6 +76,7 @@ async function MainStructure(props: PropsWithChildren) {
                             </BreadCrumbProvider>
                         </MuiDsfrThemeProvider>
                     </DsfrProvider>
+                    <Matomo />
                 </ClientSessionProvider>
             </body>
         </>

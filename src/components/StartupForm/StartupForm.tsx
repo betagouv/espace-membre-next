@@ -1,32 +1,32 @@
-import React from "react";
-
-import {
-    AccessibilityStatus,
-    PHASES_ORDERED_LIST,
-    StartupInfo,
-    StartupPhase,
-} from "@/models/startup";
+"use client";
+import React, { useCallback, useState } from "react";
 
 import "react-markdown-editor-lite/lib/index.css";
-import { Alert } from "@codegouvfr/react-dsfr/Alert";
-import Button from "@codegouvfr/react-dsfr/Button";
-import Input from "@codegouvfr/react-dsfr/Input";
-import RadioButtons from "@codegouvfr/react-dsfr/RadioButtons";
-import Table from "@codegouvfr/react-dsfr/Table";
-import * as Sentry from "@sentry/nextjs";
-import MarkdownIt from "markdown-it";
-import MdEditor from "react-markdown-editor-lite";
 
-import {
-    PhaseActionCell,
-    PhaseDatePickerCell,
-    PhaseSelectionCell,
-} from "./PhaseItem";
+import { fr } from "@codegouvfr/react-dsfr";
+import { Alert } from "@codegouvfr/react-dsfr/Alert";
+import { Button } from "@codegouvfr/react-dsfr/Button";
+import { Checkbox } from "@codegouvfr/react-dsfr/Checkbox";
+import { Input } from "@codegouvfr/react-dsfr/Input";
+import { Select } from "@codegouvfr/react-dsfr/Select";
+import { zodResolver } from "@hookform/resolvers/zod";
+import MarkdownIt from "markdown-it";
+import { useForm } from "react-hook-form";
+import MdEditor from "react-markdown-editor-lite";
+import { z } from "zod";
+
+import { PhasesEditor } from "./PhasesEditor";
 import SponsorBlock from "./SponsorBlock";
+import { ThematiquesEditor } from "./ThematiquesEditor";
+import { UsertypesEditor } from "./UsertypesEditor";
 import { ClientOnly } from "../ClientOnly";
-import FileUpload from "../FileUpload";
-import SEAsyncIncubateurSelect from "../SEAsyncIncubateurSelect";
+import { PullRequestWarning } from "../PullRequestWarning";
 import SelectAccessibilityStatus from "../SelectAccessibilityStatus";
+
+import { GithubAPIPullRequest } from "@/lib/github";
+import { Incubator } from "@/models/incubator";
+import { Sponsor } from "@/models/sponsor";
+import { startupSchemaWithMarkdown } from "@/models/startup";
 
 // import style manually
 const mdParser = new MarkdownIt(/* Markdown-it options */);
@@ -50,126 +50,90 @@ Décrit ta solution en quelques lignes? qui seront/sont les bénéficiaires ?
 Comment vous vous y prenez pour atteindre votre usagers ? quel impact chiffré visez-vous ?
 `;
 
-interface StartupForm {
-    sponsors?: string[];
-    incubator?: string;
-    mission?: string;
-    stats_url?: string;
-    link?: string;
-    dashlord_url?: string;
-    analyse_risques_url?: string;
-    analyse_risques?: boolean;
-    repository?: string;
-    content: string;
-    accessibility_status?: any;
-    save: any;
-    contact?: string;
-    phases?: {
-        start: string;
-        end?: string;
-        name: StartupPhase;
-    }[];
-    startup?: { attributes: { name: string } };
+type StartupSchemaType = z.infer<typeof startupSchemaWithMarkdown>;
+
+// data from secretariat API
+export interface StartupFormProps {
+    formData: StartupSchemaType;
+    incubators: Incubator[];
+    sponsors: Sponsor[];
+    save: (data: string) => any;
+    updatePullRequest?: GithubAPIPullRequest;
 }
 
-interface FormErrorResponse {
-    errors?: Record<string, string[]>;
-    message: string;
-}
-
-const blobToBase64 = async (blob) => {
-    const reader = new FileReader();
-    reader.readAsDataURL(blob);
-    return new Promise((resolve) => {
-        reader.onloadend = () => {
-            resolve(reader.result);
-        };
-    });
-};
-
-/* Pure component */
-export const StartupForm = (props: StartupForm) => {
-    const [text, setText] = React.useState(props.content || "");
-    const [title, setTitle] = React.useState<string | undefined>(
-        props.startup?.attributes.name
+// boilerplate for text inputs
+function BasicFormInput({
+    register,
+    errors,
+    id,
+    placeholder,
+    ...props
+}: {
+    id: keyof StartupSchemaType;
+    placeholder?: string;
+    [some: string]: any;
+}) {
+    const fieldShape = startupSchemaWithMarkdown.shape[id];
+    return (
+        (fieldShape && (
+            <Input
+                label={fieldShape.description}
+                nativeInputProps={{
+                    placeholder,
+                    ...register(id),
+                }}
+                state={errors[id] ? "error" : "default"}
+                stateRelatedMessage={errors[id]?.message}
+                {...(props ? props : {})}
+            />
+        )) || <>Not found in schema: {id}</>
     );
+}
+
+export function StartupForm(props: StartupFormProps) {
+    const {
+        register,
+        handleSubmit,
+        formState: { errors, isDirty, isSubmitting, isValid },
+        setValue,
+        getValues,
+        watch,
+        control,
+    } = useForm<StartupSchemaType>({
+        resolver: zodResolver(startupSchemaWithMarkdown),
+        mode: "onChange",
+        defaultValues: props.formData,
+    });
+
+    const [newSponsors, setNewSponsors] = useState<any[]>([]);
+
     const [alertMessage, setAlertMessage] = React.useState<{
         title: string;
         message: NonNullable<React.ReactNode>;
         type: "success" | "warning";
-    }>();
-    const [link, setLink] = React.useState<string | undefined>(props.link);
-    const [repository, setRepository] = React.useState<string | undefined>(
-        props.repository
-    );
-    const [mission, setMission] = React.useState(props.mission);
-    const [sponsors, setSponsors] = React.useState(props.sponsors || []);
-    const [newSponsors, setNewSponsors] = React.useState([]);
-    const [contact, setContact] = React.useState(props.contact);
-
-    const [incubator, setIncubator] = React.useState(props.incubator);
-    const [stats_url, setStatsUrl] = React.useState<string | undefined>(
-        props.stats_url
-    );
-    const [analyse_risques_url, setAnalyseRisquesUrl] = React.useState<
-        string | undefined
-    >(props.analyse_risques_url);
-    const [analyse_risques, setAnalyseRisques] = React.useState<
-        boolean | undefined
-    >(props.analyse_risques || undefined);
-    const [dashlord_url, setDashlord] = React.useState<string | undefined>(
-        props.dashlord_url
-    );
-    const [accessibility_status, setAccessibilityStatus] = React.useState(
-        props.accessibility_status || AccessibilityStatus.NON_CONFORME
-    );
-    const [selectedFile, setSelectedFile]: [undefined | File, (File) => void] =
-        React.useState();
-    const [phases, setPhases] = React.useState(
-        props.phases || [
-            {
-                name: StartupPhase.PHASE_INVESTIGATION,
-                start: "",
-            },
-        ]
-    );
-    const [errorMessage, setErrorMessage] = React.useState("");
-    const [formErrors, setFormErrors] = React.useState({});
+    } | null>();
     const [isSaving, setIsSaving] = React.useState(false);
 
-    const save = async (event) => {
-        event.preventDefault();
+    const BasicInput = useCallback(
+        (props) => (
+            <BasicFormInput register={register} errors={errors} {...props} />
+        ),
+        [register, errors]
+    );
+    const onSubmit = (data, e) => {
+        console.log("onSubmit", { e, data, isDirty, isValid, errors });
+
         if (isSaving) {
             return;
         }
-        setIsSaving(true);
-        let data = {
-            phases,
-            text,
-            link,
-            dashlord_url,
-            mission,
-            title,
-            incubator,
-            newSponsors: newSponsors,
-            sponsors: sponsors,
-            stats_url,
-            repository,
-            image: "",
-            contact,
-            analyse_risques,
-            analyse_risques_url,
-            accessibility_status,
-        };
-        if (selectedFile) {
-            const imageAsBase64 = await blobToBase64(selectedFile);
-            data = {
-                ...data,
-                image: imageAsBase64 as string,
-            };
+        if (!isValid) {
+            return;
         }
+        setIsSaving(true);
+        setAlertMessage(null);
+
         props
-            .save(data)
+            .save({ ...data, newSponsors })
             .then((resp) => {
                 setIsSaving(false);
                 setAlertMessage({
@@ -195,95 +159,33 @@ export const StartupForm = (props: StartupForm) => {
                 return resp;
             })
             .catch((e) => {
-                console.error(e);
                 setIsSaving(false);
-                const ErrorResponse: FormErrorResponse =
-                    e.response && (e.response.data as FormErrorResponse);
-                if (ErrorResponse) {
+                if (e) {
                     setAlertMessage({
                         title: "Une erreur est survenue",
-                        message: <>{ErrorResponse.message}</>,
+                        message: e.message,
                         type: "warning",
                     });
                 } else {
                     setAlertMessage({
-                        title: "Une erreur est survenue",
-                        message: <>{e.toString()}</>,
+                        title: "Une erreur est survenue 2",
+                        message: "Merci de vérifier les champs du formulaire",
                         type: "warning",
                     });
                 }
                 setIsSaving(false);
-                if (ErrorResponse.errors) {
-                    setFormErrors(ErrorResponse.errors);
-                }
             });
     };
 
-    function addPhase() {
-        let nextPhase = StartupPhase.PHASE_INVESTIGATION;
-        let nextDate = new Date().toISOString().split("T")[0];
-        if (phases.length) {
-            const previousPhase: StartupPhase = phases[phases.length - 1].name;
-            const previousPhaseIndex = PHASES_ORDERED_LIST.findIndex(
-                (value) => value === previousPhase
-            );
-            nextDate =
-                phases[phases.length - 1].end ||
-                new Date().toISOString().split("T")[0];
-            nextPhase = PHASES_ORDERED_LIST[previousPhaseIndex + 1];
-        }
+    watch("analyse_risques"); // allow checkbox interaction
+    watch("sponsors"); // enable autocomplete update
 
-        setPhases([...phases, { start: nextDate, name: nextPhase }]);
-    }
+    const hasAnalyseDeRisque =
+        !!props.formData.analyse_risques ||
+        !!props.formData.analyse_risques_url ||
+        !!getValues("analyse_risques");
 
-    function deletePhase(index: number) {
-        const newPhases = [...phases];
-        newPhases.splice(index, 1);
-        setPhases([...newPhases]);
-    }
-
-    function changePhase(index: number, phase: StartupPhase) {
-        const newPhases = [...phases];
-        newPhases[index].name = phase;
-        setPhases([...newPhases]);
-    }
-
-    function changePhaseDate(index: number, date: string) {
-        const newPhases = [...phases];
-        newPhases[index].start = date;
-        setPhases([...newPhases]);
-    }
-
-    function handleEditorChange({ html, text }) {
-        setText(text);
-    }
-
-    function hasChanged() {
-        return (
-            !!props.startup &&
-            (!phases ||
-                JSON.stringify(phases) === JSON.stringify(props.phases)) &&
-            title === props.startup?.attributes.name &&
-            (!text || text === props.content) &&
-            link === props.link &&
-            dashlord_url === props.dashlord_url &&
-            stats_url === props.stats_url &&
-            mission === props.mission &&
-            contact === props.contact &&
-            analyse_risques === props.analyse_risques &&
-            analyse_risques_url === props.analyse_risques_url &&
-            accessibility_status === props.accessibility_status &&
-            repository === props.repository &&
-            incubator === props.incubator &&
-            !selectedFile &&
-            JSON.stringify(sponsors) === JSON.stringify(props.sponsors)
-        );
-    }
-    let disabled = false;
-
-    if (hasChanged()) {
-        disabled = true;
-    }
+    //console.log({ isDirty, isValid, isSaving, isSubmitting, errors });
     return (
         <>
             <div>
@@ -293,319 +195,259 @@ export const StartupForm = (props: StartupForm) => {
                         severity={alertMessage.type}
                         closable={false}
                         title={alertMessage.title}
-                        description={alertMessage.message}
+                        description={<div>{alertMessage.message}</div>}
                     />
                 )}
-                {
-                    <>
-                        <form onSubmit={save}>
-                            <Input
-                                label="Nom du produit"
-                                hintText={`Ce nom sert d'identifiant pour la startup et
+
+                {!!props.updatePullRequest && (
+                    <PullRequestWarning
+                        url={props.updatePullRequest.html_url}
+                    />
+                )}
+
+                <form
+                    onSubmit={handleSubmit(onSubmit)}
+                    aria-label="Modifier mes informations"
+                >
+                    <BasicInput
+                        id="title"
+                        placeholder="ex: Démarches simplifiées"
+                        hintText={`Ce nom sert d'identifiant pour la startup et
                                 ne doit pas dépasser 30 caractères.`}
-                                stateRelatedMessage={
-                                    formErrors && formErrors["startup"]
-                                }
-                                state={
-                                    !!(formErrors && formErrors["startup"])
-                                        ? "error"
-                                        : "default"
-                                }
-                                nativeInputProps={{
-                                    onChange: (e) => {
-                                        setTitle(
-                                            e.currentTarget.value || undefined
-                                        );
-                                    },
-                                    defaultValue: title,
-                                    required: true,
-                                }}
-                            />
-                            <Input
-                                label="Quel est son objectif principal ?"
-                                hintText={`Par exemple : "Faciliter la création d'une
+                    />
+                    <BasicInput
+                        id="mission"
+                        label="Quel est son objectif principal ?"
+                        hintText={`Par exemple : "Faciliter la création d'une
                                     fiche produit". Pas besoin de faire plus
                                     long.`}
-                                textArea={true}
-                                nativeTextAreaProps={{
-                                    onChange: (e) => {
-                                        setMission(
-                                            e.currentTarget.value || undefined
-                                        );
-                                    },
-                                    value: mission,
-                                    required: true,
-                                }}
-                                stateRelatedMessage={
-                                    formErrors && formErrors["mission"]
-                                }
-                                state={
-                                    !!(formErrors && formErrors["mission"])
-                                        ? "error"
-                                        : "default"
-                                }
-                            />
+                    />
+                    <BasicInput
+                        id="contact"
+                        placeholder="ex: contact@[startup].beta.gouv.fr"
+                    />
 
-                            <div
-                                className={`fr-input-group ${
-                                    formErrors["description du produit"]
-                                        ? "fr-input-group--error"
-                                        : ""
-                                }`}
+                    <div
+                        className={`fr-input-group ${
+                            errors.thematiques ? "fr-input-group--error" : ""
+                        }`}
+                    >
+                        <label className="fr-label">
+                            Thématiques{" "}
+                            <span className="fr-hint-text">
+                                Indiquez toutes les thématiques adressées par la
+                                startup
+                            </span>
+                        </label>
+
+                        <ThematiquesEditor
+                            defaultValue={getValues("thematiques") || []}
+                            onChange={(e, data) => {
+                                setValue("thematiques", data, {
+                                    shouldDirty: true,
+                                });
+                            }}
+                        />
+                    </div>
+                    <div
+                        className={`fr-input-group ${
+                            errors.usertypes ? "fr-input-group--error" : ""
+                        }`}
+                    >
+                        <label className="fr-label">
+                            Utilisateurs cible{" "}
+                            <span className="fr-hint-text">
+                                Indiquez toutes les utilisateurs qui
+                                bénéficieront du produit
+                            </span>
+                        </label>
+
+                        <UsertypesEditor
+                            defaultValue={getValues("usertypes") || []}
+                            onChange={(e, data) => {
+                                setValue("usertypes", data, {
+                                    shouldDirty: true,
+                                });
+                            }}
+                        />
+                    </div>
+                    <hr />
+                    <div
+                        className={`fr-input-group ${
+                            errors.markdown ? "fr-input-group--error" : ""
+                        }`}
+                    >
+                        <label className="fr-label">
+                            Description du produit :
+                            <span className="fr-hint-text">
+                                {
+                                    startupSchemaWithMarkdown.shape.markdown
+                                        .description
+                                }
+                            </span>
+                        </label>
+                        <ClientOnly>
+                            <MdEditor
+                                defaultValue={
+                                    props.formData.markdown || DEFAULT_CONTENT
+                                }
+                                style={{
+                                    height: "500px",
+                                    marginTop: "0.5rem",
+                                }}
+                                renderHTML={(text) => mdParser.render(text)}
+                                onChange={(data, e) => {
+                                    setValue("markdown", data.text, {
+                                        shouldValidate: true,
+                                        shouldDirty: true,
+                                    });
+                                }}
+                            />
+                        </ClientOnly>
+                        {!!errors.markdown && (
+                            <p
+                                id="text-input-error-desc-error"
+                                className="fr-error-text"
                             >
-                                <label className="fr-label">
-                                    Description du produit :
-                                    <span className="fr-hint-text">
-                                        Décrivez votre produit
-                                    </span>
-                                </label>
-                                <ClientOnly>
-                                    <MdEditor
-                                        defaultValue={
-                                            props.content || DEFAULT_CONTENT
-                                        }
-                                        style={{
-                                            height: "500px",
-                                            marginTop: "0.5rem",
-                                        }}
-                                        renderHTML={(text) =>
-                                            mdParser.render(text)
-                                        }
-                                        onChange={handleEditorChange}
-                                    />
-                                </ClientOnly>
-                                {!!formErrors["description du produit"] && (
-                                    <p
-                                        id="text-input-error-desc-error"
-                                        className="fr-error-text"
-                                    >
-                                        {formErrors["description du produit"]}
-                                    </p>
-                                )}
-                            </div>
-                            <SEAsyncIncubateurSelect
-                                value={incubator}
-                                showPlaceHolder={true}
-                                onChange={(e) => {
-                                    setIncubator(e.value || undefined);
-                                }}
-                                required={true}
-                            />
-                            <SponsorBlock
-                                newSponsors={newSponsors}
-                                setNewSponsors={setNewSponsors}
-                                sponsors={sponsors}
-                                setSponsors={(sponsors) =>
-                                    setSponsors(sponsors)
-                                }
-                            />
-                            <div
-                                className={`fr-input-group ${
-                                    formErrors["phases"] || formErrors["date"]
-                                        ? "fr-input-group--error"
-                                        : ""
-                                }`}
-                            >
-                                <label className="fr-label">
-                                    Phase
-                                    <span className="fr-hint-text">
-                                        Voici l'historique des phases dans
-                                        lesquelles a été ce produit.
-                                    </span>
-                                </label>
-                                <Table
-                                    style={{ marginBottom: "0.5rem" }}
-                                    data={phases.map((phase, index) => {
-                                        return [
-                                            <PhaseSelectionCell
-                                                name={phase.name}
-                                                index={index}
-                                                changePhase={changePhase}
-                                                key={index}
-                                            />,
-                                            <PhaseDatePickerCell
-                                                start={phase.start}
-                                                name={phase.name}
-                                                index={index}
-                                                changePhaseDate={
-                                                    changePhaseDate
-                                                }
-                                                key={index}
-                                            />,
-                                            <PhaseActionCell
-                                                index={index}
-                                                deletePhase={deletePhase}
-                                                key={index}
-                                            />,
-                                        ];
-                                    })}
-                                    headers={[
-                                        "Phase",
-                                        "Date de début",
-                                        "Action",
-                                    ]}
-                                />
-                                <span className="fr-text fr-text--sm">
-                                    Il manque une phase ?
-                                </span>
-                                <Button
-                                    children={`Ajouter une phase`}
-                                    nativeButtonProps={{
-                                        onClick: () => addPhase(),
-                                    }}
-                                    style={{
-                                        marginLeft: `0.5rem`,
-                                        transform: `translateY(0.25rem)`,
-                                    }}
-                                    iconId="fr-icon-add-circle-fill"
-                                    size="small"
-                                    priority="tertiary no outline"
-                                />
-                                {!!formErrors["phases"] && (
-                                    <p
-                                        id="text-input-error-desc-error"
-                                        className="fr-error-text"
-                                    >
-                                        {formErrors["phases"]}
-                                    </p>
-                                )}
-                                {!!formErrors["date"] && (
-                                    <p
-                                        id="text-input-error-desc-error"
-                                        className="fr-error-text"
-                                    >
-                                        Une des dates n'est pas valide
-                                    </p>
-                                )}
-                            </div>
-                            <FileUpload
-                                selectedFile={selectedFile}
-                                setSelectedFile={setSelectedFile}
-                            />
-                            <Input
-                                label="URL du site"
-                                nativeInputProps={{
-                                    onChange: (e) => {
-                                        setLink(
-                                            e.currentTarget.value || undefined
-                                        );
-                                    },
-                                    value: link,
-                                }}
-                            />
-                            <Input
-                                label="Lien du repository github"
-                                nativeInputProps={{
-                                    name: "Lien du repository github",
-                                    onChange: (e) => {
-                                        setRepository(
-                                            e.currentTarget.value || undefined
-                                        );
-                                    },
-                                    value: repository,
-                                }}
-                            />
-                            <Input
-                                label="Lien du dashlord"
-                                nativeInputProps={{
-                                    name: "dashlord",
-                                    onChange: (e) => {
-                                        setDashlord(
-                                            e.currentTarget.value || undefined
-                                        );
-                                    },
-                                    value: dashlord_url,
-                                }}
-                            />
-                            <Input
-                                label="Contact"
-                                nativeInputProps={{
-                                    placeholder:
-                                        "ex: contact@[startup].beta.gouv.fr",
-                                    onChange: (e) => {
-                                        setContact(
-                                            e.currentTarget.value || undefined
-                                        );
-                                    },
-                                    value: contact,
-                                    required: true,
-                                }}
-                            />
-                            <SelectAccessibilityStatus
-                                value={accessibility_status}
-                                onChange={(e) =>
-                                    setAccessibilityStatus(
-                                        e.currentTarget.value || undefined
-                                    )
-                                }
-                            />
-                            <RadioButtons
-                                legend="Indique si ta startup à déjà réalisé un atelier d'analyse de risque agile."
-                                options={[
-                                    {
-                                        label: "Oui",
-                                        nativeInputProps: {
-                                            defaultChecked:
-                                                analyse_risques === true,
-                                            checked: analyse_risques === true,
-                                            onChange: () =>
-                                                setAnalyseRisques(true),
-                                        },
-                                    },
-                                    {
-                                        label: "Non",
-                                        nativeInputProps: {
-                                            defaultChecked:
-                                                analyse_risques === false ||
-                                                !analyse_risques,
-                                            checked:
-                                                analyse_risques === false ||
-                                                !analyse_risques,
-                                            onChange: () =>
-                                                setAnalyseRisques(false),
-                                        },
-                                    },
-                                ]}
-                            />
-                            <Input
-                                label="Url de l'analyse de risque"
-                                hintText="Si vous avez rendu une analyse de risques publique, tu peux indiquer le lien vers ce document ici."
-                                nativeInputProps={{
-                                    onChange: (e) => {
-                                        setAnalyseRisquesUrl(
-                                            e.currentTarget.value || undefined
-                                        );
-                                    },
-                                    defaultValue: analyse_risques_url,
-                                }}
-                            />
-                            <Input
-                                label="Lien de la page stats"
-                                nativeInputProps={{
-                                    name: "stats_url",
-                                    onChange: (e) => {
-                                        setStatsUrl(
-                                            e.currentTarget.value || undefined
-                                        );
-                                    },
-                                    value: stats_url,
-                                }}
-                            />
-                            <Button
-                                nativeButtonProps={{
-                                    type: "submit",
-                                    disabled: isSaving || disabled,
-                                }}
-                                children={
-                                    isSaving
-                                        ? `Enregistrement en cours...`
-                                        : `Enregistrer`
-                                }
-                            />
-                        </form>
-                    </>
-                }
+                                {errors.markdown.message}
+                            </p>
+                        )}
+                    </div>
+                    <hr />
+                    <Select
+                        label={
+                            startupSchemaWithMarkdown.shape.incubator
+                                .description
+                        }
+                        nativeSelectProps={register("incubator")}
+                        hint="Indiquez la structure dans laquelle est portée votre produit"
+                        state={errors.incubator ? "error" : "default"}
+                        stateRelatedMessage={errors.incubator?.message}
+                    >
+                        <option value="">Séléctionnez un incubateur</option>
+                        {Object.entries(props.incubators).map(
+                            ([key, value]) => (
+                                <option value={key} key={key}>
+                                    {value.title}
+                                </option>
+                            )
+                        )}
+                    </Select>
+                    <SponsorBlock
+                        sponsors={[...(getValues("sponsors") || [])]}
+                        allSponsors={{
+                            ...props.sponsors,
+                            ...newSponsors.reduce(
+                                (a, c) => ({ ...a, [c.id]: c }),
+                                {}
+                            ),
+                        }}
+                        setSponsors={(data) => {
+                            setValue("sponsors", data);
+                        }}
+                        setNewSponsors={(data) => {
+                            setNewSponsors([...newSponsors, ...data]);
+                            setValue(
+                                "sponsors",
+                                [
+                                    ...(getValues("sponsors") || []),
+                                    ...data.map((s) => s.id),
+                                ],
+                                { shouldDirty: true }
+                            );
+                        }}
+                    />
+                    <div
+                        className={`fr-input-group ${
+                            errors.phases ? "fr-input-group--error" : ""
+                        }`}
+                    >
+                        <label className="fr-label">
+                            Phase
+                            <span className="fr-hint-text">
+                                Voici l'historique des phases dans lesquelles a
+                                été ce produit.
+                            </span>
+                        </label>
+                        <PhasesEditor
+                            control={control}
+                            register={register}
+                            setValue={setValue}
+                            getValues={getValues}
+                            errors={errors.phases || []}
+                        />
+                    </div>
+                    {/*[FILE UPLOAD ]<hr />*/}
+                    <BasicInput id="link" />
+                    <BasicInput id="repository" />
+                    <BasicInput id="dashlord_url" />
+
+                    <SelectAccessibilityStatus
+                        value={props.formData.accessibility_status}
+                        onChange={(e) =>
+                            setValue(
+                                "accessibility_status",
+                                e.currentTarget.value || undefined
+                            )
+                        }
+                    />
+                    <Checkbox
+                        options={[
+                            {
+                                label: startupSchemaWithMarkdown.shape
+                                    .mon_service_securise.description,
+                                hintText:
+                                    "Cochez cette case si votre produit est inscrit sur Mon Service Sécurisé",
+                                nativeInputProps: {
+                                    ...register("mon_service_securise"),
+                                },
+                            },
+                        ]}
+                    />
+                    <Checkbox
+                        options={[
+                            {
+                                label: startupSchemaWithMarkdown.shape
+                                    .analyse_risques.description,
+                                hintText:
+                                    "Cochez cette case si l'équipe a produit une analyse de risque",
+                                nativeInputProps: {
+                                    ...register("analyse_risques"),
+                                    checked: hasAnalyseDeRisque,
+                                },
+                            },
+                        ]}
+                    />
+                    {hasAnalyseDeRisque && (
+                        <BasicInput
+                            id="analyse_risques_url"
+                            hintText="Si l'analyse de risques est publique, tu peux indiquer le lien vers ce document ici."
+                        />
+                    )}
+                    <BasicInput
+                        id="stats_url"
+                        hintText="Si la page de stastiques est publique, tu peux indiquer le lien vers ce document ici."
+                    />
+                    <BasicInput
+                        id="budget_url"
+                        hintText="Si le budget est public, tu peux indiquer le lien vers ce document ici."
+                    />
+
+                    <Button
+                        className={fr.cx("fr-mt-3w")}
+                        disabled={!isValid || isSaving}
+                        children={
+                            isSubmitting
+                                ? `Enregistrement en cours...`
+                                : `Enregistrer`
+                        }
+                        nativeButtonProps={{
+                            type: "submit",
+                            disabled: !isDirty || isSubmitting,
+                        }}
+                    />
+                </form>
             </div>
         </>
     );
-};
+}

@@ -1,27 +1,38 @@
 "use client";
 import React from "react";
 
+import * as Sentry from "@sentry/nextjs";
 import axios from "axios";
-import { DBPullRequest } from "@/models/pullRequests";
-import { StartupInfo } from "@/models/startup";
-import routes, { computeRoute } from "@/routes/routes";
+
 import { StartupForm } from "../StartupForm/StartupForm";
 
+import { GithubAPIPullRequest } from "@/lib/github";
+import { Incubator } from "@/models/incubator";
+import { Sponsor } from "@/models/sponsor";
+import { StartupFrontMatter } from "@/models/startup";
+import routes, { computeRoute } from "@/routes/routes";
+
 export interface StartupInfoCreateProps {
-    title: string;
-    currentUserId: string;
-    activeTab: string;
-    subActiveTab: string;
-    startup: StartupInfo;
-    formValidationErrors: any;
-    startupOptions: {
-        value: string;
-        label: string;
-    }[];
-    username: string;
-    updatePullRequest?: DBPullRequest;
-    isAdmin: boolean;
+    formData: StartupFrontMatter & { markdown: string };
+    incubators: Incubator[];
+    sponsors: Sponsor[];
+    updatePullRequest?: GithubAPIPullRequest;
 }
+
+const NEW_PRODUCT_DATA = {
+    id: "new-product",
+    title: "",
+    mission: "",
+    markdown: "",
+    contact: "",
+    incubator: "",
+    phases: [
+        {
+            name: "investigation",
+            start: new Date(),
+        },
+    ],
+};
 
 /* Pure component */
 export const StartupInfoCreate = (props: StartupInfoCreateProps) => {
@@ -36,9 +47,14 @@ export const StartupInfoCreate = (props: StartupInfoCreateProps) => {
                     withCredentials: true,
                 }
             )
-            .then((data) => {
+            .then((result) => {
                 window.scrollTo({ top: 20, behavior: "smooth" });
-                return data;
+                return result;
+            })
+            .catch((e) => {
+                window.scrollTo({ top: 20, behavior: "smooth" });
+                Sentry.captureException(e);
+                throw e;
             });
     };
     return (
@@ -47,8 +63,8 @@ export const StartupInfoCreate = (props: StartupInfoCreateProps) => {
                 <div className="notification">
                     ⚠️ Une pull request existe déjà sur cette startup. Quelqu'un
                     doit la merger pour que le changement soit pris en compte.
-                    <a href={props.updatePullRequest.url} target="_blank">
-                        {props.updatePullRequest.url}
+                    <a href={props.updatePullRequest.html_url} target="_blank">
+                        {props.updatePullRequest.html_url}
                     </a>
                     <br />
                     (la prise en compte peut prendre 10 minutes.)
@@ -56,7 +72,12 @@ export const StartupInfoCreate = (props: StartupInfoCreateProps) => {
             )}
             <div className="beta-banner"></div>
             <div>
-                <StartupForm content={""} save={save} />
+                <StartupForm
+                    save={save}
+                    formData={NEW_PRODUCT_DATA}
+                    incubators={props.incubators}
+                    sponsors={props.sponsors}
+                />
                 <br />
                 <br />
             </div>

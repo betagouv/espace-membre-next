@@ -812,7 +812,7 @@ export const WhichMemberScreen = function ({ setUser, getUser, users }) {
                     <h2>Qu'est-ce qu'il se passe ?</h2>
                     <div className="fr-select-group">
                         <MemberSelect
-                            label="Quelle personne veux-tu aider ? (ça peut être toi même)"
+                            label="Quelle personne veux-tu aider ? (ça peut être toi-même)"
                             hint="Cherche et sélectionne la personne que tu veux aider en tapant son nom ou son prénom."
                             name="username"
                             placeholder="Sélectionner un membre"
