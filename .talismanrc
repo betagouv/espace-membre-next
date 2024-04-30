@@ -27,6 +27,8 @@ fileignoreconfig:
   checksum: 05d97c14f404f68008afc8707f7c0c44883503f71e5c52c1716777482820c3ca
 - filename: src/components/BaseInfoUpdatePage/MissionsEditor.tsx
   checksum: 42a1e9c44fc1a093ce628b796a51533f640d60cd75205c06ca6cd1d358f7cb02
+- filename: src/components/EventsList.tsx
+  checksum: 4860b2efb049d277f74fe1f84a795b53d00082dc74b0c33a02ebc4cc7079dbef
 - filename: src/components/Formation/FormationList.tsx
   checksum: 49ba981c5d52542548882b52ec95307299e3b6337689ff1f59fc3ec0d88369e4
 - filename: src/components/GenderSelect.tsx

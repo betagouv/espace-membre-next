@@ -27,6 +27,7 @@ export const routeTitles: {
     newsletters: () => "Infolettre",
     map: () => "Carte des membres",
     keskispasse: () => "Qu'est-ce qui se passe ?",
+    eventsList: () => "Évenements à venir",
     formationList: () => "Catalogue des formations",
     formationDetails: (id?: string) => {
         return `Formation ${id}`;
