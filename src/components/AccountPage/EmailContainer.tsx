@@ -174,13 +174,19 @@ export default function EmailContainer({
                                 Email principal :{" "}
                             </span>
                             <span className="font-weight-bold text-color-blue">
-                                {primaryEmail}
+                                <a href={`mailto:${primaryEmail}`}>
+                                    {primaryEmail}
+                                </a>
                             </span>
                             <br />
                         </>
                     )}
                 <span className="font-weight-bold">Email secondaire : </span>{" "}
-                {secondaryEmail || "Non renseigné"}
+                {secondaryEmail ? (
+                    <a href={`mailto:${secondaryEmail}`}>{secondaryEmail}</a>
+                ) : (
+                    "Non renseigné"
+                )}
             </p>
             {!!emailIsBeignCreated && (
                 <Alert
