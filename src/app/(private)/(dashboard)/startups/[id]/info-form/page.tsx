@@ -54,18 +54,18 @@ export default async function Page(props) {
     if (!session) {
         redirect("/login");
     }
-    const startup = props.params.id;
-    const startupPR = await getPullRequestForBranch(`edit-startup-${startup}`);
+    const id = props.params.id;
+    const startupPR = await getPullRequestForBranch(`edit-startup-${id}`);
 
     const sha = startupPR && startupPR.head.sha;
-    const formData = await fetchGithubPageData(startup, sha || "master");
+    const formData = await fetchGithubPageData(id, sha || "master");
     const incubators = await betagouv.incubators();
     const sponsors = await betagouv.sponsors();
 
     const componentProps = {
         formData: {
             ...formData,
-            startup,
+            id,
         },
         incubators,
         sponsors,

@@ -50,7 +50,7 @@ export async function postStartupInfoUpdate(req, res) {
             !phase.end ||
                 isValidDate("date", new Date(phase.end), errorHandler);
         });
-        let startupId = req.params.startup;
+        let startupId = req.params.id;
         let title =
             req.body.title || requiredError("nom du produit", errorHandler);
         if (!startupId) {

@@ -15,7 +15,7 @@ import routes, { computeRoute } from "@/routes/routes";
 import { routeTitles } from "@/utils/routes/routeTitles";
 
 export interface StartupInfoUpdateProps {
-    formData: StartupFrontMatter & { markdown: string } & { startup: string };
+    formData: StartupFrontMatter & { markdown: string } & { id: string };
     incubators: Incubator[];
     sponsors: Sponsor[];
     updatePullRequest?: GithubAPIPullRequest;
@@ -30,7 +30,7 @@ export const StartupInfoUpdate = (props: StartupInfoUpdateProps) => {
             const resp = await axios.post(
                 computeRoute(routes.STARTUP_POST_INFO_UPDATE_FORM).replace(
                     ":startup",
-                    props.formData.startup
+                    props.formData.id
                 ),
                 {
                     ...data,

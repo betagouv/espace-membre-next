@@ -2,7 +2,6 @@
 import React from "react";
 
 import * as Sentry from "@sentry/nextjs";
-import slugify from "@sindresorhus/slugify";
 import axios from "axios";
 
 import { StartupForm } from "../StartupForm/StartupForm";
@@ -21,7 +20,7 @@ export interface StartupInfoCreateProps {
 }
 
 const NEW_PRODUCT_DATA = {
-    startup: "new-product",
+    id: "new-product",
     title: "",
     mission: "",
     markdown: "",
