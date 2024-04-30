@@ -17,7 +17,7 @@ export const competencesTechniques = [
     "Ruby",
     "Sécurité informatique",
     "UI",
-];
+] as const;
 
 export const competencesProduit = [
     "Communication",
