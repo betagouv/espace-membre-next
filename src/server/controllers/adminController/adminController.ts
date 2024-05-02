@@ -166,11 +166,14 @@ export async function getUsers(req, res) {
         users = users.filter((user) => domaines.includes(user.domaine));
     }
     if (competences.length) {
-        users = users.filter((user) =>
-            competences.filter((competence) =>
-                user.competences ? user.competences.includes(competence) : true
-            )
-        );
+        users = users.filter((user) => {
+            return (
+                user.competences?.length === 0 ||
+                competences.find((competence) =>
+                    user.competences?.includes(competence)
+                )
+            );
+        });
     }
     if (startupPhases.length) {
         const usersStartupsByPhase: UserStartup[] = await db("users_startups")

@@ -198,7 +198,6 @@ export const CommunityFilterMembers = (props: CommunityProps) => {
                             placeholder="Sélectionne une ou plusieurs compétences"
                             defaultValue={[]}
                             onChange={(e, competences) => {
-                                console.log("competences", competences);
                                 setState({
                                     ...state,
                                     competences,
