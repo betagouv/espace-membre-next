@@ -179,6 +179,7 @@ async function getUserPageData(req, res, onSuccess, onError) {
         const dbUser: DBUser | undefined = await knex("users")
             .where({ username })
             .first();
+        const primaryEmail = dbUser ? dbUser.primary_email : "";
         const secondaryEmail = dbUser ? dbUser.secondary_email : "";
         let availableEmailPros: string[] = [];
         if (config.ESPACE_MEMBRE_ADMIN.includes(req.auth.id)) {
@@ -201,7 +202,7 @@ async function getUserPageData(req, res, onSuccess, onError) {
                 hasMattermostAccount: !!mattermostUser,
                 isInactiveOrNotInTeam: !mattermostUserInTeamAndActive,
             },
-            primaryEmail: dbUser ? dbUser.primary_email : "",
+            primaryEmail,
             primaryEmailStatus: dbUser
                 ? dbUser.primary_email_status
                 : EmailStatusCode.EMAIL_UNSET,

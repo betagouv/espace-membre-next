@@ -27,6 +27,7 @@ export interface MemberPageProps {
     emailInfos: any;
     redirections: any;
     userInfos: any;
+    primaryEmail: string;
     secondaryEmail: string;
     canCreateEmail: boolean;
     hasPublicServiceEmail: boolean;
@@ -223,6 +224,7 @@ export default function MemberPage({
     emailInfos,
     redirections,
     userInfos,
+    primaryEmail,
     secondaryEmail,
     canCreateEmail,
     hasPublicServiceEmail,
@@ -349,30 +351,12 @@ MemberPageProps) {
                                 {!userInfos.github && `Non renseigné`}
                                 <br />
                                 <span>Email principal : </span>{" "}
-                                {emailInfos && emailInfos.email ? (
-                                    <a href={`mailto:${emailInfos.email}`}>
-                                        {emailInfos.email}
+                                {primaryEmail ? (
+                                    <a href={`mailto:${primaryEmail}`}>
+                                        {primaryEmail}
                                     </a>
                                 ) : (
                                     "Non renseigné"
-                                )}
-                                {emailInfos && emailInfos.isPro && (
-                                    <Badge
-                                        small
-                                        className={fr.cx("fr-ml-1w")}
-                                        severity="success"
-                                    >
-                                        OVH Pro
-                                    </Badge>
-                                )}
-                                {emailInfos && emailInfos.isExchange && (
-                                    <Badge
-                                        small
-                                        className={fr.cx("fr-ml-1w")}
-                                        severity="success"
-                                    >
-                                        OVH Exchange
-                                    </Badge>
                                 )}
                                 <br />
                                 <span>Email secondaire : </span>{" "}
