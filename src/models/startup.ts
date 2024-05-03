@@ -197,7 +197,7 @@ export const startupSchema = z.object({
     mon_service_securise: z
         .boolean()
         .describe(
-            "L'équipe a mené une démarche de sécurité sur Mon Service Sécurisé"
+            "L'équipe a mené une démarche de sécurité sur MonServiceSécurisé"
         )
         .optional(),
     analyse_risques: z

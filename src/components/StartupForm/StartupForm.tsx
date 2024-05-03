@@ -397,7 +397,7 @@ export function StartupForm(props: StartupFormProps) {
                                 label: startupSchemaWithMarkdown.shape
                                     .mon_service_securise.description,
                                 hintText:
-                                    "Cochez cette case si votre produit est inscrit sur Mon Service Sécurisé",
+                                    "Cochez cette case si votre produit est inscrit sur MonServiceSécurisé",
                                 nativeInputProps: {
                                     ...register("mon_service_securise"),
                                 },
