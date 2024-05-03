@@ -319,7 +319,7 @@ MemberPageProps) {
                                 <br />
                                 {userInfos.start && (
                                     <>
-                                        <span>Mission :</span>
+                                        <span>Mission : </span>
                                         du{" "}
                                         {new Date(
                                             userInfos.start
@@ -356,6 +356,16 @@ MemberPageProps) {
                                 Modifier sur Github
                             </a>
                         </div>
+                        <p>
+                            <span>Email principal : </span>{" "}
+                            {emailInfos && emailInfos.email ? (
+                                <a href={`mailto:${emailInfos.email}`}>
+                                    {emailInfos.email}
+                                </a>
+                            ) : (
+                                "Non renseigné"
+                            )}
+                        </p>
                         <p>
                             <span>Email secondaire : </span>{" "}
                             {secondaryEmail ? (
