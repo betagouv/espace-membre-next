@@ -125,11 +125,13 @@ export function checkUserIsExpired(
 
     if (!user || !user.missions || !user.missions.length) return false;
     const latestMission = user.missions.reduce((a, v) =>
+        //@ts-ignore todo
         !v.end || v.end > a.end ? v : a
     );
     const today = new Date();
     today.setHours(0, 0, 0, 0);
 
+    //@ts-ignore todo
     const userEndDate = new Date(latestMission.end);
     if (userEndDate.toString() === "Invalid Date") return false;
     userEndDate.setHours(0, 0, 0, 0);

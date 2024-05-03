@@ -41,8 +41,10 @@ const getRegisteredUsersWithEndingContractInXDays = async (
         // filter user that have have been created after implementation of this function
         const stillActive = !utils.checkUserIsExpired(user);
         const latestMission = user.missions.reduce((a, v) =>
+            //@ts-ignore todo
             v.end > a.end || !v.end ? v : a
         );
+        //@ts-ignore todo
         const userEndDate = new Date(latestMission.end);
         userEndDate.setHours(0, 0, 0, 0);
         return (

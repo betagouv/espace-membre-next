@@ -16,7 +16,7 @@ export async function syncBetagouvIncubatorAPI() {
                         ""
                     ),
                 })
-            )?.id,
+            )?.uuid,
             title: incubator.title,
             contact: incubator.contact,
             address: incubator.address,

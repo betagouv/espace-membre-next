@@ -14,7 +14,7 @@ export const getAllIncubators = (): Promise<dbIncubator[]> => {
 };
 
 export const getOrCreateDBIncubator = async (
-    params: Omit<dbIncubator, "id">
+    params: Omit<dbIncubator, "uuid">
 ): Promise<dbIncubator> => {
     const [dbIncubator] = await db("incubators")
         .insert({

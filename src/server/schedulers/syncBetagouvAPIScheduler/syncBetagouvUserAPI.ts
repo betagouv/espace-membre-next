@@ -88,7 +88,7 @@ export async function syncBetagouvUserAPI() {
             }
 
             createMission({
-                startup_ids: startup_ids,
+                startups: startup_ids,
                 username: member.id,
                 status: mission.status,
                 employer: mission.employer,

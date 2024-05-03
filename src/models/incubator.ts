@@ -17,7 +17,7 @@ export const dbIncubatorSchema = z.object({
     uuid: z.string(),
     // id: z.number(),
     title: z.string(),
-    owner_id: z.number().optional(),
+    owner_id: z.string().optional(),
     contact: z.string(),
     ghid: z.string(),
     address: z.string(),

@@ -31,7 +31,7 @@ async function getStartupInfoUpdatePageData(req, res, onSuccess, onError) {
         //     .then((startups) =>
         //         startups.find((s) => s.id === req.params.startup)
         //     );
-        const startup = getDBStartup({ id: req.params.startup });
+        const startup = await getDBStartup({ id: req.params.startup });
         if (!startup) {
             onError(new Error(`startup ${req.params.startup} not found`));
             return;
@@ -52,14 +52,14 @@ async function getStartupInfoUpdatePageData(req, res, onSuccess, onError) {
             subActiveTab: "udpate-phase",
             username: req.auth.id,
             formData: {
-                link: startup.attributes.link,
-                dashlord_url: startup.attributes.dashlord_url,
-                repository: startup.attributes.repository,
-                mission: startup.attributes.pitch,
-                stats_url: startup.attributes.stats_url,
-                incubator: startup.relationships.incubator.data.id,
-                sponsors: startup.attributes.sponsors,
-                contact: startup.attributes.contact,
+                link: startup.link,
+                dashlord_url: startup.dashlord_url,
+                repository: startup.repository,
+                mission: startup.pitch,
+                stats_url: startup.stats_url,
+                incubator: startup.incubator,
+                sponsors: startup.sponsors,
+                contact: startup.contact,
             },
             updatePullRequest,
             startup,

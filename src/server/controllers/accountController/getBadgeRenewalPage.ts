@@ -55,9 +55,10 @@ export async function getBadgeRenewalPage(req, res) {
             lastName: currentUser.userInfos?.fullname
                 .split(" ")[1]
                 .toUpperCase(),
-            attributaire: lastMission
-                ? lastMission.employer.split("/")[1]
-                : undefined,
+            attributaire:
+                lastMission && lastMission.employer
+                    ? lastMission.employer.split("/")[1]
+                    : undefined,
             endDate: lastMission ? lastMission.end : undefined,
             domain: config.domain,
             isExpired: currentUser.isExpired,

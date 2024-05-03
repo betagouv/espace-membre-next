@@ -28,7 +28,9 @@ export function createOrUpdateMission(
     mission: createDBMission | updateDBMission,
     trx = db
 ) {
+    //@ts-ignore todo
     if (mission.uuid) {
+        //@ts-ignore todo
         return updateMission(mission, trx);
     } else {
         return createMission(mission, trx);

@@ -68,6 +68,7 @@ export async function postBaseInfoUpdate(
                         ...previousInfo,
                         ...req.body,
                         username,
+                        // @ts-ignore todo
                         missions: req.body.missions.map((m) => ({
                             ...m,
                             user_id: previousInfo.uuid,

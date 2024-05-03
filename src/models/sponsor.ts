@@ -30,7 +30,6 @@ export enum SponsorDomaineMinisteriel {
 }
 
 export interface Sponsor {
-    id: string;
     ghid: string;
     name: string;
     acronym: string;

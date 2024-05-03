@@ -117,10 +117,11 @@ async function getEmailCreationParams(username: string): Promise<
     }
 
     const latestMission = userInfo.missions.reduce((a, v) =>
+        //@ts-ignore
         !v.end || v.end > a.end ? v : a
     );
     // todo see what to do with startups
-    const needsExchange = _.some(latestMission?.startup, (id) => {
+    const needsExchange = _.some(latestMission?.startups, (id) => {
         const startup = _.find(startupsInfos, { id });
         const incubator = startup?.relationships?.incubator?.data?.id;
         return _.includes(INCUBATORS_USING_EXCHANGE, incubator);

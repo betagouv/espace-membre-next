@@ -5,7 +5,6 @@ import Button from "@codegouvfr/react-dsfr/Button";
 import { Table } from "@codegouvfr/react-dsfr/Table";
 
 import { DBUserPublic } from "@/models/dbUser";
-import { Member } from "@/models/member";
 
 function MemberTable({ members }: { members: DBUserPublic[] }) {
     return (
@@ -13,14 +12,14 @@ function MemberTable({ members }: { members: DBUserPublic[] }) {
             data={members.map((member: DBUserPublic, index: number) => [
                 <a
                     key={index}
-                    className="fr-link"
                     target="_blank"
                     href={`https://github.com/betagouv/beta.gouv.fr/edit/master/content/_authors/${member.username}.md`}
                 >
                     {member.fullname}
                 </a>,
                 member.role,
-                member.end,
+                "xx",
+                //member.end,
             ])}
             headers={["Nom", "Role", "Date de fin"]}
         />

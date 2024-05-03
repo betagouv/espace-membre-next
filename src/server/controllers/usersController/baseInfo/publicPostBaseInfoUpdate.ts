@@ -56,6 +56,7 @@ export async function publicPostBaseInfoUpdate(req, res) {
         }
         const changes: GithubAuthorMissionChange = {
             // todo: delete all public postBaseInfoUpdate route and use BaseInfoUpdate instead
+            // @ts-ignore todo
             missions: missions as GithubMission[],
         };
         // const prInfo = await updateAuthorGithubFile(username, changes);

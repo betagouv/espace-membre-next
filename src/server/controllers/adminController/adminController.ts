@@ -135,7 +135,11 @@ export async function getUsers(req, res) {
         const incubatorStartups = incubators.reduce((acc, incubator) => {
             return [
                 ...acc,
-                ...incubatorsDict[incubator].startups.map((s) => s.id),
+                //@ts-ignore
+                ...((incubatorsDict[incubator].startups &&
+                    //@ts-ignore
+                    incubatorsDict[incubator].startups.map((s) => s.id)) ||
+                    []),
             ];
         }, []);
         startups = [...startups, ...incubatorStartups];

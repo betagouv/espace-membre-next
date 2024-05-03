@@ -23,7 +23,7 @@ export interface DBMission {
     id: number;
     uuid: string;
     // startup: string;
-    status: string;
+    status: Status;
     role?: string;
     employer?: string;
     username: string;
@@ -98,11 +98,11 @@ export const missionSchema = z.object({
 });
 
 export interface createDBMission extends Omit<DBMission, "uuid" | "id"> {
-    startups: string[];
+    startups: DBStartup[];
     user_id: string;
 }
 
 export interface updateDBMission extends DBMission {
-    startups: string[];
+    startups: DBStartup[];
     user_id: string;
 }

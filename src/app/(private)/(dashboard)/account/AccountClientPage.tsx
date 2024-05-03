@@ -28,6 +28,5 @@ export default function Page() {
     //     auth: { id: session?.user?.name },
     // });
     // let props = {};
-
     return <AccountPage {...data} />;
 }

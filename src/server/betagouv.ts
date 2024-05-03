@@ -25,7 +25,6 @@ import { Sponsor } from "@/models/sponsor";
 import { Startup, StartupInfo } from "@/models/startup";
 import config from "@/server/config";
 import { checkUserIsExpired } from "@controllers/utils";
-import { Sponsor } from "@/models/sponsor";
 
 const ovh = ovh0({
     appKey: config.OVH_APP_KEY,
