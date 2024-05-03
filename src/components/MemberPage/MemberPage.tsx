@@ -347,35 +347,51 @@ MemberPageProps) {
                                     </a>
                                 )}
                                 {!userInfos.github && `Non renseigné`}
+                                <br />
+                                <span>Email principal : </span>{" "}
+                                {emailInfos && emailInfos.email ? (
+                                    <a href={`mailto:${emailInfos.email}`}>
+                                        {emailInfos.email}
+                                    </a>
+                                ) : (
+                                    "Non renseigné"
+                                )}
+                                {!emailInfos.isPro && (
+                                    <Badge
+                                        small
+                                        className={fr.cx("fr-ml-1w")}
+                                        severity="success"
+                                    >
+                                        OVH Pro
+                                    </Badge>
+                                )}
+                                {emailInfos.isExchange && (
+                                    <Badge
+                                        small
+                                        className={fr.cx("fr-ml-1w")}
+                                        severity="success"
+                                    >
+                                        OVH Exchange
+                                    </Badge>
+                                )}
+                                <br />
+                                <span>Email secondaire : </span>{" "}
+                                {secondaryEmail ? (
+                                    <a href={`mailto:${secondaryEmail}`}>
+                                        {secondaryEmail}
+                                    </a>
+                                ) : (
+                                    "Non renseigné"
+                                )}
                             </p>
                             <a
-                                className="fr-link"
+                                className={fr.cx("fr-btn")}
                                 href={`https://github.com/betagouv/beta.gouv.fr/edit/master/content/_authors/${username}.md`}
                                 target="_blank"
                             >
                                 Modifier sur Github
                             </a>
                         </div>
-                        <p>
-                            <span>Email principal : </span>{" "}
-                            {emailInfos && emailInfos.email ? (
-                                <a href={`mailto:${emailInfos.email}`}>
-                                    {emailInfos.email}
-                                </a>
-                            ) : (
-                                "Non renseigné"
-                            )}
-                        </p>
-                        <p>
-                            <span>Email secondaire : </span>{" "}
-                            {secondaryEmail ? (
-                                <a href={`mailto:${secondaryEmail}`}>
-                                    {secondaryEmail}
-                                </a>
-                            ) : (
-                                "Non renseigné"
-                            )}
-                        </p>
                     </div>
                 )}
                 {!userInfos && (
