@@ -356,7 +356,7 @@ MemberPageProps) {
                                 ) : (
                                     "Non renseigné"
                                 )}
-                                {!emailInfos.isPro && (
+                                {emailInfos && emailInfos.isPro && (
                                     <Badge
                                         small
                                         className={fr.cx("fr-ml-1w")}
@@ -365,7 +365,7 @@ MemberPageProps) {
                                         OVH Pro
                                     </Badge>
                                 )}
-                                {emailInfos.isExchange && (
+                                {emailInfos && emailInfos.isExchange && (
                                     <Badge
                                         small
                                         className={fr.cx("fr-ml-1w")}
