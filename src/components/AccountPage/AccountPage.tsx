@@ -28,6 +28,7 @@ export default function AccountPage(props: any) {
         redirections,
         status,
     } = props;
+    console.log("props", props);
     return (
         <div>
             {hasActiveResponder && (

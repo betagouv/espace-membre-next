@@ -2,6 +2,7 @@ import Alert from "@codegouvfr/react-dsfr/Alert";
 import Button from "@codegouvfr/react-dsfr/Button";
 
 export default function FicheMembre({ userInfos, updatePullRequest }) {
+    console.log("userInfos", userInfos);
     return (
         <div className="fr-mb-14v">
             <h2>Fiche Membre</h2>

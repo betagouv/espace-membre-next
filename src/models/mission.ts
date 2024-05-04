@@ -24,7 +24,7 @@ export interface DBMission {
     uuid: string;
     // startup: string;
     status: Status;
-    role?: string;
+    role?: string | null;
     employer?: string;
     username: string;
     start: Date;
@@ -74,17 +74,21 @@ export const missionSchema = z.object({
 
                 .optional()
         )
-        .describe("Date de fin de mission"),
+        .describe("Date de fin de mission")
+        .optional()
+        .nullable(),
     status: z
-        .nativeEnum(
-            Status, // force status options
+        .enum(
+            ["independant", "admin", "service"], // force status options
             {
                 errorMap: (issue, ctx) => ({
                     message: "Le statut est requis",
                 }),
             }
         )
-        .describe("Type de contrat"),
+        .describe("Type de contrat")
+        .optional()
+        .nullable(),
     employer: z
         .string({
             errorMap: (issue, ctx) => ({
