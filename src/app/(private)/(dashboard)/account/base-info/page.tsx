@@ -5,7 +5,7 @@ import { getServerSession } from "next-auth";
 import { ExpressionBuilder } from "kysely";
 import { BaseInfoUpdate } from "@/components/BaseInfoUpdatePage";
 import { db, sql, jsonArrayFrom } from "@/lib/kysely";
-import { memberSchema } from "@/models/member";
+import { memberSchema, memberSchemaType } from "@/models/member";
 import { DBStartup } from "@/models/startup";
 import { getAllStartups } from "@/server/db/dbStartup";
 import { getDBUserAndMission } from "@/server/db/dbUser";
@@ -94,7 +94,7 @@ async function getUserBaseInfo(username: string) {
 
     console.log(query);
     const userInfos = await db.executeQuery(query);
-    return userInfos.rows.length && userInfos.rows[0];
+    return (userInfos.rows.length && userInfos.rows[0]) || undefined;
 }
 
 export default async function Page() {
@@ -123,13 +123,14 @@ export default async function Page() {
     const props = {
         formData: {
             ...formData,
-            // missions:
-            //     formData.missions &&
-            //     formData.missions.length &&
-            //     formData.missions.map((m) => ({
-            //         ...m,
-            //         startups: m.startups.map((s) => s.uuid),
-            //     })),
+            missions:
+                (formData.missions &&
+                    formData.missions.length &&
+                    formData.missions.map((m) => ({
+                        ...m,
+                        startups: m.startups.map((s) => s.uuid),
+                    }))) ||
+                [],
             //startups: formData.startups || [],
         },
         startupOptions,

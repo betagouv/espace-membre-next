@@ -22,6 +22,8 @@ export type MissionsStatusEnum = "admin" | "independant" | "service";
 
 export type Timestamp = ColumnType<Date, Date | string, Date | string>;
 
+export type UsersDomaineEnum = "Animation" | "Autre" | "Coaching" | "Data" | "Déploiement" | "Design" | "Développement" | "Intraprenariat" | "Produit";
+
 export interface Accounts {
   access_token: string | null;
   expires_at: Int8 | null;
@@ -266,7 +268,7 @@ export interface Users {
   bio: string | null;
   communication_email: Generated<string | null>;
   created_at: Generated<Timestamp>;
-  domaine: string | null;
+  domaine: UsersDomaineEnum;
   email_is_redirection: Generated<boolean | null>;
   email_verified: Timestamp | null;
   fullname: string;

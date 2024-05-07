@@ -10,6 +10,7 @@ import {
 import { Mission, missionSchema } from "./mission";
 
 import { EMAIL_PLAN_TYPE, OvhRedirection, OvhResponder } from "@/models/ovh";
+import { UsersDomaineEnum } from "@/@types/db";
 
 export enum Domaine {
     ANIMATION = "Animation",
@@ -78,7 +79,7 @@ export interface Member {
     start: string;
     end: string;
     employer: string;
-    domaine: Domaine;
+    domaine: UsersDomaineEnum;
     role: string;
     competences?: string[];
     memberType: MemberType;
