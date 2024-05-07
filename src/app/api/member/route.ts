@@ -1,15 +1,9 @@
-import { cookies } from "next/headers";
 import { getServerSession } from "next-auth";
 
 import { createOrUpdateMemberData } from "./createOrUpdateMemberData";
+
 import { EmailStatusCode } from "@/models/dbUser";
-import {
-    completeMemberSchema,
-    createMemberSchema,
-    memberSchemaType,
-} from "@/models/member";
-import config from "@/server/config";
-import { isPublicServiceEmail } from "@/server/controllers/utils";
+import { createMemberSchema } from "@/models/member";
 import { authOptions } from "@/utils/authoptions";
 import { createUsername } from "@/utils/github";
 

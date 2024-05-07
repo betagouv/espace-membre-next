@@ -20,17 +20,15 @@ import { GithubAPIPullRequest } from "@/lib/github";
 import {
     DOMAINE_OPTIONS,
     memberSchema,
-    memberSchemaType,
+    MemberSchemaType,
 } from "@/models/member";
 import { useSession } from "@/proxies/next-auth";
 import routes, { computeRoute } from "@/routes/routes";
 import { routeTitles } from "@/utils/routes/routeTitles";
 
-export type MemberSchemaType = z.infer<typeof memberSchema>;
-
 // data from secretariat API
 export interface BaseInfoUpdateProps {
-    formData: memberSchemaType;
+    formData: MemberSchemaType;
     startupOptions: {
         value: string;
         label: string;
@@ -57,14 +55,14 @@ const postMemberData = async ({ values, sessionUsername }) => {
 };
 
 export const BaseInfoUpdate = (props: BaseInfoUpdateProps) => {
-    const defaultValues: memberSchemaType = { ...props.formData };
+    const defaultValues: MemberSchemaType = { ...props.formData };
     const {
         register,
         handleSubmit,
         formState: { errors, isDirty, isSubmitting, isValid },
         setValue,
         control,
-    } = useForm<memberSchemaType>({
+    } = useForm<MemberSchemaType>({
         resolver: zodResolver(memberSchema),
         mode: "onChange",
         defaultValues,
@@ -79,7 +77,7 @@ export const BaseInfoUpdate = (props: BaseInfoUpdateProps) => {
     } | null>();
     const [isSaving, setIsSaving] = React.useState(false);
 
-    const onSubmit = async (input: memberSchemaType) => {
+    const onSubmit = async (input: MemberSchemaType) => {
         //console.log("onSubmit", input);
 
         if (isSaving) {

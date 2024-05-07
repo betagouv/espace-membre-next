@@ -27,6 +27,10 @@ export function jsonArrayFrom<O>(
     return sql`(select coalesce(json_agg(agg), '[]') from ${expr} as agg)`;
 }
 
+export function arrayFrom<O>(expr: Expression<O>): RawBuilder<Simplify<O>[]> {
+    return sql`(select array_agg(agg) from ${expr} as agg)`;
+}
+
 export function jsonObjectFrom<O>(
     expr: Expression<O>
 ): RawBuilder<Simplify<O>> {

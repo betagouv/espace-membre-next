@@ -1,11 +1,10 @@
 import type { Metadata } from "next";
-import { cookies } from "next/headers";
 import { redirect } from "next/navigation";
 import { getServerSession } from "next-auth";
 
-import AccountClientPage from "./AccountClientPage";
-import { DBUser, EmailStatusCode } from "@/models/dbUser";
-import db from "@/server/db";
+import AccountPage from "@/components/AccountPage/AccountPage";
+import { getUserInfo } from "@/lib/kysely/queries";
+import { EmailStatusCode } from "@/models/dbUser";
 import { authOptions } from "@/utils/authoptions";
 import { routeTitles } from "@/utils/routes/routeTitles";
 
@@ -18,14 +17,14 @@ export default async function Page() {
     if (!session) {
         redirect("/login");
     }
-    const dbUser: DBUser = await db("users")
-        .where({ username: session?.user?.id })
-        .first();
+    const userInfos = await getUserInfo(session?.user?.id);
+
     if (
-        dbUser.primary_email_status ===
-        EmailStatusCode.EMAIL_VERIFICATION_WAITING
+        !userInfos ||
+        userInfos.primary_email_status ===
+            EmailStatusCode.EMAIL_VERIFICATION_WAITING
     ) {
         return redirect("/verify");
     }
-    return <AccountClientPage />;
+    return <AccountPage id={session?.user?.id} userInfos={userInfos} />;
 }

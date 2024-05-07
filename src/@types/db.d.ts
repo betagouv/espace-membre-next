@@ -218,13 +218,13 @@ export interface Startups {
   github: string | null;
   has_coach: boolean | null;
   has_intra: boolean | null;
-  id: string | null;
+  id: string;
   incubator: string | null;
   incubator_id: string | null;
   last_github_update: Timestamp | null;
   link: string | null;
   mailing_list: string | null;
-  name: string | null;
+  name: string;
   nb_active_members: number | null;
   nb_total_members: number | null;
   phases: Json | null;

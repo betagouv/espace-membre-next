@@ -6,6 +6,12 @@ export default function Observatoire({
     tjm,
     legal_status,
     average_nb_of_days,
+}: {
+    workplace: string;
+    gender: string;
+    tjm: number;
+    legal_status: string;
+    average_nb_of_days: number;
 }) {
     return (
         <div className="fr-mb-14v">

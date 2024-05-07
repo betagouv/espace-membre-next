@@ -2,7 +2,7 @@ import { GithubAPIPullRequest } from "@/lib/github";
 import { DBUser } from "@/models/dbUser";
 import {
     dbMemberSchemaType,
-    memberSchemaType,
+    MemberSchemaType,
     memberStatInfoSchemaType,
 } from "@/models/member";
 import { PULL_REQUEST_STATE, PULL_REQUEST_TYPE } from "@/models/pullRequests";
@@ -19,7 +19,7 @@ export const createOrUpdateMemberData = async (
         method: "create" | "update";
         username: string;
     },
-    githubData: memberSchemaType,
+    githubData: MemberSchemaType,
     dbData: dbMemberSchemaType,
     privateData?: memberStatInfoSchemaType
 ): Promise<DBUser> => {

@@ -106,7 +106,7 @@ const emailSchema = z
 
 const githubSchema = z.string().describe("Login GitHub").optional().nullable();
 
-const domaineSchema = z.nativeEnum(
+export const domaineSchema = z.nativeEnum(
     Domaine, // ??
     {
         errorMap: (issue, ctx) => ({
@@ -114,6 +114,8 @@ const domaineSchema = z.nativeEnum(
         }),
     }
 );
+
+export type DomaineSchemaType = z.infer<typeof domaineSchema>;
 
 const linkSchema = z
     .union([
@@ -180,7 +182,7 @@ export const memberSchema = z.object({
     memberType: z.nativeEnum(MemberType).optional().nullable(),
 });
 
-export type memberSchemaType = z.infer<typeof memberSchema>;
+export type MemberSchemaType = z.infer<typeof memberSchema>;
 const missionsArraySchema = z.array(missionSchema);
 
 export type HasMissions<T = any> = T & {

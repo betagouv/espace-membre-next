@@ -10,13 +10,29 @@ import axios from "axios";
 import EmailContainer from "./EmailContainer";
 import FicheMembre from "./FicheMembre";
 import Observatoire from "./Observatoire";
+
 import { EmailStatusCode } from "@/models/dbUser";
+import { MemberSchemaType, memberSchema } from "@/models/member";
 import routes, { computeRoute } from "@/routes/routes";
 import { routeTitles } from "@/utils/routes/routeTitles";
 
-export default function AccountPage(props: any) {
+type AccountPageProps = {
+    id: string;
+    hasActiveResponder: boolean;
+    userInfos: MemberSchemaType;
+    workplace: string;
+    gender: string;
+    emailInfos: {};
+    legal_status: string;
+    tjm: number;
+    average_nb_of_days: number;
+    redirections: any[];
+    status: EmailStatusCode;
+};
+
+export default function AccountPage(props: AccountPageProps) {
     const {
-        updatePullRequest,
+        id,
         hasActiveResponder,
         userInfos,
         workplace,
@@ -87,10 +103,7 @@ export default function AccountPage(props: any) {
             <h1>{routeTitles.account()}</h1>
             {userInfos && (
                 <>
-                    <FicheMembre
-                        userInfos={userInfos}
-                        updatePullRequest={updatePullRequest}
-                    ></FicheMembre>
+                    <FicheMembre userInfos={userInfos}></FicheMembre>
                     <EmailContainer {...props}></EmailContainer>
                     <Observatoire
                         average_nb_of_days={average_nb_of_days}
@@ -134,18 +147,24 @@ export default function AccountPage(props: any) {
                     </ul>
                     <form
                         onSubmit={() => {
-                            axios.post(
-                                computeRoute(
-                                    routes.USER_DELETE_EMAIL_API.replace(
-                                        ":username",
-                                        userInfos.id
-                                    )
-                                ),
-                                undefined,
-                                {
-                                    withCredentials: true,
-                                }
-                            );
+                            if (
+                                confirm(
+                                    "Es-tu sûr de vouloir supprimer ton compte email et toutes ses redirections ? "
+                                )
+                            ) {
+                                axios.post(
+                                    computeRoute(
+                                        routes.USER_DELETE_EMAIL_API.replace(
+                                            ":username",
+                                            id
+                                        )
+                                    ),
+                                    undefined,
+                                    {
+                                        withCredentials: true,
+                                    }
+                                );
+                            }
                         }}
                     >
                         <div>
