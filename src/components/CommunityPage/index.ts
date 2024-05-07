@@ -1,22 +1,16 @@
-import { Member } from '@/models/member';
+import { Member } from "@/models/member";
 
 export interface Option {
-    value: string,
-    label: string
+    value: string;
+    label: string;
 }
 
 export interface CommunityProps {
-    title: string,
-    currentUserId: string,
-    errors: string[],
-    messages: string[],
-    users: Member[],
-    activeTab: string,
-    incubatorOptions: Option[],
-    startupOptions: Option[],
-    domaineOptions: Option[],
-    isAdmin: boolean
+    users: Member[];
+    incubatorOptions: Option[];
+    startupOptions: Option[];
+    domaineOptions: Option[];
+    competenceOptions: Option[];
 }
 
-export * from './Community';
-
+export * from "./Community";

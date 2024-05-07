@@ -80,6 +80,7 @@ export interface Member {
     employer: string;
     domaine: Domaine;
     role: string;
+    competences?: string[];
 }
 
 const bioSchema = z

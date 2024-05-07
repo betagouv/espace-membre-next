@@ -43,3 +43,5 @@ export const competences = {
     Technique: competencesTechniques,
     Autres: competencesAutres,
 };
+
+export const competencesList = Object.values(competences).flatMap((c) => c);
