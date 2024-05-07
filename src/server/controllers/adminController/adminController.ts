@@ -167,11 +167,13 @@ export async function getUsers(req, res) {
     }
     if (competences.length) {
         users = users.filter((user) => {
+            // AND filter. check if user has all required competences
             return (
-                user.competences?.length === 0 ||
-                competences.find((competence) =>
+                user.competences &&
+                user.competences.length &&
+                competences.filter((competence) =>
                     user.competences?.includes(competence)
-                )
+                ).length === competences.length
             );
         });
     }

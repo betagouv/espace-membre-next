@@ -319,6 +319,15 @@ MemberPageProps) {
                                 {userInfos.role}
                                 <br />
                                 <br />
+                                {(userInfos.competences &&
+                                    userInfos.competences.length && (
+                                        <>
+                                            Compétences:{" "}
+                                            {userInfos.competences.join(", ")}
+                                        </>
+                                    )) ||
+                                    null}
+                                <br />
                                 {userInfos.start && (
                                     <>
                                         <span>Mission : </span>

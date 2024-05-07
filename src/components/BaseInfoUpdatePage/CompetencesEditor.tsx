@@ -40,7 +40,6 @@ export const CompetencesEditor = ({
     return (
         <Autocomplete
             value={value}
-            freeSolo
             multiple={true}
             selectOnFocus={true}
             clearOnBlur={true}
