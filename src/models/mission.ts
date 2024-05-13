@@ -79,7 +79,7 @@ export const missionSchema = z.object({
         .nullable(),
     status: z
         .enum(
-            ["independant", "admin", "service"], // force status options
+            ["independent", "admin", "service"], // force status options
             {
                 errorMap: (issue, ctx) => ({
                     message: "Le statut est requis",

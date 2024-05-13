@@ -18,7 +18,7 @@ export type JsonPrimitive = boolean | number | string | null;
 
 export type JsonValue = JsonArray | JsonObject | JsonPrimitive;
 
-export type MissionsStatusEnum = "admin" | "independant" | "service";
+export type MissionsStatusEnum = "admin" | "independent" | "service";
 
 export type Timestamp = ColumnType<Date, Date | string, Date | string>;
 
@@ -155,12 +155,9 @@ export interface Missions {
   employer: string | null;
   end: Timestamp | null;
   id: Generated<number>;
-  role: string | null;
   start: Timestamp;
-  startup: string | null;
   status: MissionsStatusEnum | null;
   user_id: string | null;
-  username: string | null;
   uuid: Generated<string>;
 }
 

@@ -93,7 +93,8 @@ const bioSchema = z
         }),
     })
     .describe("Courte bio")
-    .optional();
+    .optional()
+    .nullable();
 
 const emailSchema = z
     .string({

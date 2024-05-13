@@ -1,7 +1,7 @@
 export async function up(knex) {
     return knex.schema.table("missions", function (table) {
         table
-            .enu("status", ["independant", "admin", "service"], {
+            .enu("status", ["independent", "admin", "service"], {
                 useNative: true,
                 enumName: "missions_status_enum",
             })

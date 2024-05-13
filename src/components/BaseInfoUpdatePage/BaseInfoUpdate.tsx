@@ -121,6 +121,8 @@ export const BaseInfoUpdate = (props: BaseInfoUpdateProps) => {
         setIsSaving(false);
     };
 
+    console.log(props.formData);
+
     return (
         <>
             <div className={fr.cx("fr-mb-5w")}>

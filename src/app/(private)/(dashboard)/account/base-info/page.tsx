@@ -3,7 +3,7 @@ import { redirect } from "next/navigation";
 import { getServerSession } from "next-auth";
 
 import { BaseInfoUpdate } from "@/components/BaseInfoUpdatePage";
-import { getUserInfo, getAllStartups } from "@/lib/kysely/queries";
+import { getUserDetails, getAllStartups } from "@/lib/kysely/queries";
 import { DomaineSchemaType } from "@/models/member";
 import { authOptions } from "@/utils/authoptions";
 import { routeTitles } from "@/utils/routes/routeTitles";
@@ -19,33 +19,24 @@ export default async function Page() {
         redirect("/login");
     }
     const username = session.user.id;
-    const formData = await getUserInfo(username);
+    const userDetails = await getUserDetails(username);
 
     const startups = await getAllStartups();
     const startupOptions = startups.map((startup) => ({
         value: startup.uuid,
         label: startup.name || "",
     }));
-    if (!formData) {
+    if (!userDetails) {
         redirect("/errors");
     }
 
     // todo: to make TS happy
-    const domaine = formData.domaine as DomaineSchemaType;
+    const domaine = userDetails.domaine as DomaineSchemaType;
 
-    console.log("formData", JSON.stringify(formData));
     const props = {
         formData: {
-            ...formData,
+            ...userDetails,
             domaine,
-            missions:
-                (formData.missions &&
-                    formData.missions.length &&
-                    formData.missions.map((m) => ({
-                        ...m,
-                        startups: m.startups.map((s) => s.id),
-                    }))) ||
-                [],
         },
         startupOptions,
     };
