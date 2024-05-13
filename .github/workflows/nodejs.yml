@@ -12,6 +12,7 @@ jobs:
 
         steps:
             - uses: nev7n/wait_for_response@v1
+              id: wait
               with:
                 url: "${{format('https://${0}-pr{1}.osc-fr1.scalingo.io', github.repository, github.event.pull_request.number)}}"
                 responseCode: 200
@@ -23,7 +24,7 @@ jobs:
               run: |
                 echo $URL
             - name: Create artifact of test coverage
-              if: steps.build.outcome == 'success'
+              if: steps.wait.outcome == 'success'
               run: |
                 echo "success!"
             - uses: actions/checkout@v2
