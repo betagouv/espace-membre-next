@@ -1,6 +1,6 @@
 name: Node.js CI
 
-on: [push, pull_request]
+on: [push]
 
 jobs:
     build:
@@ -11,22 +11,6 @@ jobs:
                 node-version: [18.x]
 
         steps:
-            - uses: nev7n/wait_for_response@v1
-              id: wait
-              with:
-                url: "${{format('https://${0}-pr{1}.osc-fr1.scalingo.io', github.repository, github.event.pull_request.number)}}"
-                responseCode: 200
-                timeout: 1200000 # ms = 20mins
-                interval: 30000 # ms = 30secs
-            - name: output
-              env:
-                URL: "${{format('https://${0}-pr{1}.osc-fr1.scalingo.io', github.repository, github.event.pull_request.number)}}"
-              run: |
-                echo $URL
-            - name: Create artifact of test coverage
-              if: steps.wait.outcome == 'success'
-              run: |
-                echo "success!"
             - uses: actions/checkout@v2
             - name: Use Node.js ${{ matrix.node-version }}
               uses: actions/setup-node@v1
