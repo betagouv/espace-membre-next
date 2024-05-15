@@ -5,7 +5,7 @@ import { PropsWithChildren, useCallback, useEffect, useState } from "react";
 import { Crisp } from "crisp-sdk-web";
 
 import { LiveChatContext } from "@/components/live-chat/LiveChatContext";
-import config from "@/server/config";
+import frontConfig from "@/frontConfig";
 
 const crispWebsiteId: string =
     process.env.NEXT_PUBLIC_CRISP_WEBSITE_ID ||
@@ -19,7 +19,7 @@ const typeForms = {
 const ChatwootScript = () => {
     useEffect(() => {
         (function (d, t) {
-            if (!config.CHATWOOT_WEBSITE_TOKEN) {
+            if (!frontConfig.CHATWOOT_WEBSITE_TOKEN) {
                 throw new Error("Chatwoot website token not defined");
             }
             const BASE_URL = "https://chatwoot.incubateur.net";
@@ -32,7 +32,7 @@ const ChatwootScript = () => {
             g.onload = function () {
                 if (window.chatwootSDK) {
                     window.chatwootSDK.run({
-                        websiteToken: config.CHATWOOT_WEBSITE_TOKEN as string,
+                        websiteToken: frontConfig.CHATWOOT_WEBSITE_TOKEN as string,
                         baseUrl: BASE_URL,
                     });
                 }
