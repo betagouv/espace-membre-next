@@ -166,6 +166,8 @@ export default {
     CHAT_WEBHOOK_URL_GENERAL: getOrThrowError("CHAT_WEBHOOK_URL_GENERAL"),
     CHAT_WEBHOOK_URL_DINUM: getOrThrowError("CHAT_WEBHOOK_URL_DINUM"),
     CHAT_WEBHOOK_URL_GIP: getOrThrowError("CHAT_WEBHOOK_URL_GIP"),
+    CHAT_SUPPORT_SERVICE: process.env.CHAT_SUPPORT_SERVICE,
+    CHATWOOT_WEBSITE_TOKEN: process.env.CHATWOOT_WEBSITE_TOKEN,
     SPONSOR_API:
         process.env.SPONSOR_API ||
         "https://beta.gouv.fr/api/v2.5/sponsors.json",
