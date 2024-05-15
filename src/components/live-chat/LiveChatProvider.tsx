@@ -20,17 +20,19 @@ const ChatwootScript = () => {
     useEffect(() => {
         (function (d, t) {
             var BASE_URL = "https://chatwoot.incubateur.net";
-            var g = d.createElement(t),
+            var g = d.createElement(t) as HTMLScriptElement,
                 s = d.getElementsByTagName(t)[0];
             g.src = BASE_URL + "/packs/js/sdk.js";
             g.defer = true;
             g.async = true;
-            s.parentNode.insertBefore(g, s);
+            if (s.parentNode) s.parentNode.insertBefore(g, s);
             g.onload = function () {
-                window.chatwootSDK.run({
-                    websiteToken: "nX9CkMWPVH2msT8rWSrdAc2Y",
-                    baseUrl: BASE_URL,
-                });
+                if (window.chatwootSDK) {
+                    window.chatwootSDK.run({
+                        websiteToken: config.CHATWOOT_WEBSITE_TOKEN,
+                        baseUrl: BASE_URL,
+                    });
+                }
             };
         })(document, "script");
     }, []); // Empty dependency array ensures this runs only once
@@ -45,8 +47,7 @@ export const LiveChatProvider = ({ children }: PropsWithChildren) => {
     // Just using more below a vanilla frontend look up on search params
     // const searchParams = useSearchParams();
 
-    const chatName: "chatwoot" | "crisp" =
-        config.CHAT_SUPPORT_SERVICE || "chatwoot";
+    const chatName: string = config.CHAT_SUPPORT_SERVICE || "chatwoot";
     const [isLoading, setIsLoading] = useState<boolean>(false);
 
     const showLiveChat = useCallback(async (type) => {
@@ -119,6 +120,9 @@ export const LiveChatProvider = ({ children }: PropsWithChildren) => {
     }, []);
 
     useEffect(() => {
+        if (chatName === "chatwoot") {
+            return;
+        }
         // This `sessionIdToResume` definition is a workaround, see at the top of the component for the reason
         let sessionIdToResume = null;
         // if (window) {
