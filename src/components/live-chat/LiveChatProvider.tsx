@@ -32,7 +32,8 @@ const ChatwootScript = () => {
             g.onload = function () {
                 if (window.chatwootSDK) {
                     window.chatwootSDK.run({
-                        websiteToken: frontConfig.CHATWOOT_WEBSITE_TOKEN as string,
+                        websiteToken:
+                            frontConfig.CHATWOOT_WEBSITE_TOKEN as string,
                         baseUrl: BASE_URL,
                     });
                 }
@@ -50,7 +51,7 @@ export const LiveChatProvider = ({ children }: PropsWithChildren) => {
     // Just using more below a vanilla frontend look up on search params
     // const searchParams = useSearchParams();
 
-    const chatName: string = config.CHAT_SUPPORT_SERVICE || "chatwoot";
+    const chatName: string = frontConfig.CHAT_SUPPORT_SERVICE || "chatwoot";
     const [isLoading, setIsLoading] = useState<boolean>(false);
 
     const showLiveChat = useCallback(async (type) => {
