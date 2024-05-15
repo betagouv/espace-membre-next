@@ -21,10 +21,9 @@ const ChatwootScript = () => {
         (function (d, t) {
             if (!config.CHATWOOT_WEBSITE_TOKEN) {
                 throw new Error("Chatwoot website token not defined");
-                return;
             }
-            var BASE_URL = "https://chatwoot.incubateur.net";
-            var g = d.createElement(t) as HTMLScriptElement,
+            const BASE_URL = "https://chatwoot.incubateur.net";
+            const g = d.createElement(t) as HTMLScriptElement,
                 s = d.getElementsByTagName(t)[0];
             g.src = BASE_URL + "/packs/js/sdk.js";
             g.defer = true;
