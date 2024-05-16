@@ -160,7 +160,7 @@ export const LiveChatProvider = ({ children }: PropsWithChildren) => {
                 }}
             >
                 {children}
-                <ChatwootScript />
+                {chatName === "chatwoot" && <ChatwootScript />}
             </LiveChatContext.Provider>
         </>
     );
