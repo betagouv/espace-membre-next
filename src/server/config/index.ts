@@ -217,6 +217,13 @@ export default {
         : [],
     MATTERMOST_EMAIL_REGEX_EXCEPTION:
         process.env.MATTERMOST_EMAIL_REGEX_EXCEPTION,
+    NEWSLETTER_NUMBER_OF_DAYS_WITH_LAST_NEWSLETTER: process.env
+        .NEWSLETTER_NUMBER_OF_DAYS_WITH_LAST_NEWSLETTER
+        ? parseInt(
+              process.env.NEWSLETTER_NUMBER_OF_DAYS_WITH_LAST_NEWSLETTER,
+              10
+          )
+        : 10,
     OVH_EMAIL_PRO_NAME: process.env.OVH_EMAIL_PRO_NAME,
     OVH_EMAIL_EXCHANGE_NAME: process.env.OVH_EMAIL_EXCHANGE_NAME,
     investigationReportsIframeURL:
