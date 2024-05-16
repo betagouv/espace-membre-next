@@ -1,20 +1,20 @@
 import crypto from "crypto";
 import { add } from "date-fns/add";
 import { differenceInDays } from "date-fns/differenceInDays";
-import HedgedocApi from "hedgedoc-api";
 import { format } from "date-fns/format";
 import { fr } from "date-fns/locale/fr";
 import { startOfWeek } from "date-fns/startOfWeek";
+import HedgedocApi from "hedgedoc-api";
 
 import BetaGouv from "../betagouv";
-import config from "@/server/config";
-import knex from "@db";
-import * as dateUtils from "@/utils/date";
 import { getTitle, renderHtmlFromMd } from "@/lib/mdtohtml";
 import { JobWTTJ } from "@/models/job";
+import config from "@/server/config";
+import { sendEmail, sendCampaignEmail } from "@/server/config/email.config";
+import * as dateUtils from "@/utils/date";
+import knex from "@db";
 import { sendInfoToChat } from "@infra/chat";
 import { EMAIL_TYPES, MAILING_LIST_TYPE } from "@modules/email";
-import { sendEmail, sendCampaignEmail } from "@/server/config/email.config";
 
 const { NUMBER_OF_DAY_FROM_MONDAY } = dateUtils;
 
@@ -146,7 +146,7 @@ export async function newsletterReminder(reminder) {
             new Date(),
             lastSentNewsletter.sent_at
         );
-        if (nbOfDays < 10) {
+        if (nbOfDays < config.NEWSLETTER_NUMBER_OF_DAYS_WITH_LAST_NEWSLETTER) {
             console.log(
                 `Will not sent newsletter : number of days between last newsletter ${nbOfDays}`
             );
@@ -213,7 +213,7 @@ export async function sendNewsletterAndCreateNewOne(
             new Date(),
             lastSentNewsletter.sent_at
         );
-        if (nbOfDays < 10) {
+        if (nbOfDays < config.NEWSLETTER_NUMBER_OF_DAYS_WITH_LAST_NEWSLETTER) {
             return;
         }
     }
