@@ -12,9 +12,9 @@ export enum Status {
 }
 
 export interface Mission {
-    start: string;
-    end: string;
-    status: Status;
+    start: Date;
+    end?: Date | null;
+    status: Status | null;
     employer: string;
     startups: string[];
 }
@@ -87,7 +87,6 @@ export const missionSchema = z.object({
             }
         )
         .describe("Type de contrat")
-        .optional()
         .nullable(),
     employer: z
         .string({
@@ -96,7 +95,6 @@ export const missionSchema = z.object({
             }),
         })
         .describe("Entité avec qui tu as contractualisé")
-        .optional()
         .nullable(),
     startups: z.array(z.string()).optional(),
 });

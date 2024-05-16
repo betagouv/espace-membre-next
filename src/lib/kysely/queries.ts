@@ -1,33 +1,42 @@
 import { sql, ExpressionBuilder } from "kysely";
 
-import { DB } from "@/@types/db"; // generated with `npm run kysely-codegen`
+import { DB, MissionsStatusEnum } from "@/@types/db"; // generated with `npm run kysely-codegen`
 import { db, jsonArrayFrom } from "@/lib/kysely";
+
+import { computeHash } from "@/utils/member";
+import { Mission } from "@/models/mission";
+import { DomaineSchemaType } from "@/models/member";
 
 /** Return all startups */
 export function getAllStartups() {
     return db.selectFrom("startups").selectAll().execute();
 }
 
+type GetUserInfosParams = {
+    username: string;
+    options?: { withDetails: boolean };
+};
+
 /** Return member informations */
-export async function getUserDetails(username: string) {
+export async function getUserInfos(params: GetUserInfosParams) {
     const query = db
         .selectFrom("users")
-        .select((eb) => [
-            "users.username",
-            "users.fullname",
-            "users.role",
-            "users.domaine",
-            "users.bio",
-            "users.link",
-            "users.primary_email",
-            "users.secondary_email",
-            "users.primary_email_status",
-            // aggregate missions and startups
-            withMissions(eb),
-            // compute end date
-            withEndDate(eb),
-        ])
-        .where("users.username", "=", username)
+        // .leftJoin(
+        //     "user_details",
+        //     "user_details.hash",
+        //     computeHash(params.username)
+        // )
+        .selectAll("users")
+        .select((eb) => [withEndDate, withMissions])
+        // .$if(!!params.options?.withDetails, (qb) =>
+        //     qb.leftJoin(
+        //         "user_details",
+        //         "user_details.hash",
+        //         computeHash(params.username)
+        //     ).
+        // )
+
+        .where("users.username", "=", params.username)
         .compile();
 
     //console.log(query.sql);
@@ -38,6 +47,14 @@ export async function getUserDetails(username: string) {
 }
 
 /* UTILS */
+
+function withUserDetails(eb: ExpressionBuilder<DB, "user_details">) {
+    return eb
+        .selectFrom("user_details")
+        .selectAll()
+        .whereRef("user_details.hash", "=", sql.val<string>("xx"))
+        .as("details");
+}
 
 function withMissions(eb: ExpressionBuilder<DB, "users">) {
     return jsonArrayFrom(
@@ -74,7 +91,7 @@ function withEndDate(eb: ExpressionBuilder<DB, "users">) {
     return eb
         .selectFrom("missions")
         .select((eb2) => [
-            sql`(SELECT CASE 
+            sql<null | Date>`(SELECT CASE 
                     WHEN max(missions.start) > MAX(missions.end) THEN 
                         NULL
                     ELSE
