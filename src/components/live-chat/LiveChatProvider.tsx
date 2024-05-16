@@ -51,7 +51,7 @@ export const LiveChatProvider = ({ children }: PropsWithChildren) => {
     // Just using more below a vanilla frontend look up on search params
     // const searchParams = useSearchParams();
 
-    const chatName: string = frontConfig.CHAT_SUPPORT_SERVICE || "chatwoot";
+    const chatName: string = frontConfig.CHAT_SUPPORT_SERVICE || "crisp";
     const [isLoading, setIsLoading] = useState<boolean>(false);
 
     const showLiveChat = useCallback(async (type) => {
