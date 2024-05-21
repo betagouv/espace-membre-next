@@ -62,10 +62,16 @@ const populatePrimaryEmail = async(knex) => {
   const allOvhEmails = await ovh.requestPromised('GET', url, {});
   const workplace_insee_codes = ['74236', '75056', '75119', '75111', '75118', '93051', '93051', '78368', '94043']
   for (const emailId of allOvhEmails) {
-      await knex('users').insert({
+      await knex("users").insert({
           username: emailId,
+          fullname: emailId,
           primary_email: `${emailId}@${process.env.SECRETARIAT_DOMAIN}`,
-          workplace_insee_code: workplace_insee_codes[Math.floor(Math.random() * workplace_insee_codes.length)]
-      })
+          workplace_insee_code:
+              workplace_insee_codes[
+                  Math.floor(Math.random() * workplace_insee_codes.length)
+              ],
+          domaine: "Autre",
+          role: "Développement"
+      });
   }
 }
