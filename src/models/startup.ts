@@ -136,8 +136,6 @@ export interface DBStartup {
     repository: string;
     contact: string;
     phases: Phase[];
-    current_phase: StartupPhase;
-    current_phase_date: Date;
     sponsors: string[];
     github: string;
     dashlord_url: string;
@@ -153,7 +151,7 @@ export interface DBStartup {
 }
 
 export const startupSchema = z.object({
-    title: z
+    name: z
         .string({
             errorMap: (issue, ctx) => ({
                 message: "Le nom est obligatoire",
@@ -161,10 +159,10 @@ export const startupSchema = z.object({
         })
         .min(1)
         .describe("Nom du produit"),
-    mission: z
+    pitch: z
         .string({
             errorMap: (issue, ctx) => ({
-                message: "La mission est obligatoire",
+                message: "L'objectif du produit est obligatoire",
             }),
         })
         .min(1)
@@ -237,14 +235,7 @@ export const startupSchema = z.object({
         .array(z.string())
         .optional()
         .describe("Thématiques addressées par la startup"),
-});
-
-export interface StartupFrontMatter extends z.infer<typeof startupSchema> {}
-
-export type startupSchemaType = z.infer<typeof startupSchema>;
-
-export const startupSchemaWithMarkdown = startupSchema.extend({
-    markdown: z
+    description: z
         .string({
             errorMap: (issue, ctx) => ({
                 message: "La description doit faire minimum 30 caractères",
@@ -253,6 +244,21 @@ export const startupSchemaWithMarkdown = startupSchema.extend({
         .min(30)
         .describe("Décrivez votre produit, son public, ses objectifs"),
 });
+
+export interface StartupFrontMatter extends z.infer<typeof startupSchema> {}
+
+export type startupSchemaType = z.infer<typeof startupSchema>;
+
+// export const startupSchemaWithMarkdown = startupSchema.extend({
+//     description: z
+//         .string({
+//             errorMap: (issue, ctx) => ({
+//                 message: "La description doit faire minimum 30 caractères",
+//             }),
+//         })
+//         .min(30)
+//         .describe("Décrivez votre produit, son public, ses objectifs"),
+// });
 
 export const dbStartupSchema = z.object({
     mailing_list: z.string().optional(),
@@ -268,22 +274,16 @@ export const dbStartupSchema = z.object({
     current_phase: z.nativeEnum(StartupPhase),
     current_phase_date: z.date().optional(),
     // sponsors: z.array(z.string()),
-    github: z.string(), // todo: delete, it does not seem to be used
     dashlord_url: z.string(),
     website: z.string(), // todo: delete, it does not seem to be used
     budget_url: z.string().optional(),
     usertypes: z.array(z.string()).optional(),
     thematiques: z.array(z.string()).optional(),
     incubator_id: z.string().optional(),
-    nb_active_members: z.number(),
-    last_github_update: z.date().optional(),
-    nb_total_members: z.number(),
-    has_intra: z.boolean(),
-    has_coach: z.boolean(),
     accessibility_status: z.nativeEnum(AccessibilityStatus).optional(),
     analyse_risques_url: z.string().optional(),
     analyse_risques: z.boolean().optional(),
-    content_url_encoded_markdown: z.string(),
+    description: z.string(),
 });
 
 export type dbStartupSchemaType = z.infer<typeof dbStartupSchema>;
