@@ -20,6 +20,8 @@ export type JsonValue = JsonArray | JsonObject | JsonPrimitive;
 
 export type MissionsStatusEnum = "admin" | "independent" | "service";
 
+export type StartupsPhaseEnum = "acceleration" | "alumni" | "construction" | "investigation" | "success" | "transfer";
+
 export type Timestamp = ColumnType<Date, Date | string, Date | string>;
 
 export type UsersDomaineEnum = "Animation" | "Autre" | "Coaching" | "Data" | "Déploiement" | "Design" | "Développement" | "Intraprenariat" | "Produit";
@@ -185,6 +187,15 @@ export interface Organizations {
   uuid: Generated<string>;
 }
 
+export interface Phases {
+  comment: string | null;
+  end: Timestamp | null;
+  name: StartupsPhaseEnum;
+  start: Timestamp;
+  startup_id: string;
+  uuid: Generated<string>;
+}
+
 export interface PullRequests {
   created_at: Generated<Timestamp>;
   info: Json | null;
@@ -207,28 +218,24 @@ export interface Startups {
   accessibility_status: string | null;
   analyse_risques: boolean | null;
   analyse_risques_url: string | null;
+  budget_url: string | null;
   contact: string | null;
-  content_url_encoded_markdown: string | null;
-  current_phase: string | null;
-  current_phase_date: Timestamp | null;
   dashlord_url: string | null;
+  description: string | null;
   github: string | null;
-  has_coach: boolean | null;
-  has_intra: boolean | null;
   id: string;
-  incubator: string | null;
   incubator_id: string | null;
-  last_github_update: Timestamp | null;
   link: string | null;
   mailing_list: string | null;
+  mon_service_securise: boolean | null;
   name: string;
-  nb_active_members: number | null;
-  nb_total_members: number | null;
-  phases: Json | null;
   pitch: string | null;
   repository: string | null;
   stats: boolean | null;
   stats_url: string | null;
+  techno: Json | null;
+  thematiques: Json | null;
+  usertypes: Json | null;
   uuid: Generated<string>;
   website: string | null;
 }
@@ -271,20 +278,17 @@ export interface Users {
   fullname: string;
   gender: Generated<string | null>;
   github: string | null;
+  incubator_id: string | null;
   legal_status: string | null;
   link: string | null;
   member_type: string | null;
-  memberType: string | null;
-  missions: Json | null;
-  nb_days_at_beta: number | null;
   osm_city: string | null;
   primary_email: string | null;
   primary_email_status: Generated<string | null>;
   primary_email_status_updated_at: Generated<Timestamp | null>;
   role: string;
   secondary_email: string | null;
-  should_create_marrainage: Generated<boolean | null>;
-  startups: string[] | null;
+  skills: Json | null;
   tjm: number | null;
   username: string;
   uuid: Generated<string>;
@@ -335,6 +339,7 @@ export interface DB {
   missions_startups: MissionsStartups;
   newsletters: Newsletters;
   organizations: Organizations;
+  phases: Phases;
   pull_requests: PullRequests;
   sessions: Sessions;
   startups: Startups;
