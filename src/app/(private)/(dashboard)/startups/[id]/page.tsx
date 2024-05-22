@@ -1,5 +1,10 @@
 import { Metadata, ResolvingMetadata } from "next";
+
 import StartupIdClientPage from "./StartupIdClientPage";
+import StartupPage, {
+    StartupPageProps,
+} from "@/components/StartupPage/StartupPage";
+import { getStartup, getStartupDetails } from "@/lib/kysely/queries";
 
 type Props = {
     params: { id: string };
@@ -12,11 +17,14 @@ export async function generateMetadata(
     // read route params
     const id = params.id;
 
+    const produit = await getStartup(id);
     return {
-        title: `Produit ${id} / Espace Membre`,
+        title: produit ? `Produit ${produit.id} / Espace Membre` : "",
     };
 }
 
-export default function Page(props) {
-    return <StartupIdClientPage {...props} />;
+export default async function Page({ params }: Props) {
+    const produit = await getStartupDetails(params.id);
+    console.log(produit);
+    return <StartupPage {...(produit as StartupPageProps)} />;
 }

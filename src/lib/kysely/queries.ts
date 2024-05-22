@@ -1,11 +1,7 @@
 import { sql, ExpressionBuilder } from "kysely";
 
-import { DB, MissionsStatusEnum } from "@/@types/db"; // generated with `npm run kysely-codegen`
+import { DB } from "@/@types/db"; // generated with `npm run kysely-codegen`
 import { db, jsonArrayFrom } from "@/lib/kysely";
-
-import { computeHash } from "@/utils/member";
-import { Mission } from "@/models/mission";
-import { DomaineSchemaType } from "@/models/member";
 
 /** Return all startups */
 export function getAllStartups() {
@@ -16,6 +12,84 @@ type GetUserInfosParams = {
     username: string;
     options?: { withDetails: boolean };
 };
+/** Return all startups */
+export async function getStartup(uuid: string) {
+    const startups = await db
+        .selectFrom("startups")
+        .selectAll()
+        .where("startups.uuid", "=", uuid)
+        .execute();
+    return (startups.length && startups[0]) || undefined;
+}
+
+/** Return all startups */
+export async function getStartupDetails(uuid: string) {
+    const startups = await db
+        .selectFrom("startups")
+        .select((eb) => [
+            "startups.accessibility_status",
+            "startups.analyse_risques",
+            "startups.analyse_risques_url",
+            "startups.contact",
+            "startups.content_url_encoded_markdown",
+            "startups.current_phase",
+            "startups.current_phase_date",
+            "startups.dashlord_url",
+            "startups.github",
+            "startups.has_coach",
+            "startups.has_intra",
+            "startups.id",
+            "startups.incubator",
+            "startups.incubator_id",
+            "startups.last_github_update",
+            "startups.last_github_update",
+            "startups.link",
+            "startups.mailing_list",
+            "startups.stats_url",
+            "startups.stats",
+            "startups.name",
+            "startups.nb_total_members",
+            "startups.nb_active_members",
+            "startups.phases",
+            "startups.pitch",
+            "startups.repository",
+            "startups.uuid",
+            "startups.website",
+            withMembers(eb),
+        ])
+        .where("startups.uuid", "=", uuid)
+        .execute();
+    return (startups.length && startups[0]) || undefined;
+}
+
+/* UTILS */
+
+function withMembers(eb: ExpressionBuilder<DB, "startups">) {
+    return jsonArrayFrom(
+        eb
+            .selectFrom(["missions"])
+            .leftJoin(
+                "missions_startups",
+                "missions_startups.startup_id",
+                "startups.uuid"
+            )
+            .leftJoin("users", "missions.user_id", "users.uuid")
+            .select((eb2) => [
+                "users.username",
+                "users.domaine",
+                "missions.end",
+                "missions.start",
+                // sql<
+                //     Array<string>
+                // >`array_agg(users.uuid order by users.username)`.as("users"),
+            ])
+            .whereRef("missions_startups.startup_id", "=", "startups.uuid")
+            .whereRef("missions.uuid", "=", "missions_startups.mission_id")
+        // .orderBy("missions.start", "asc")
+        // .groupBy("missions.uuid")
+        // .groupBy("users.username")
+    ).as("members");
+}
 
 /** Return member informations */
 export async function getUserInfos(params: GetUserInfosParams) {
@@ -37,6 +111,31 @@ export async function getUserInfos(params: GetUserInfosParams) {
         // )
 
         .where("users.username", "=", params.username)
+        .compile();
+
+    //console.log(query.sql);
+
+    const userInfos = await db.executeQuery(query);
+
+    return (userInfos.rows.length && userInfos.rows[0]) || undefined;
+}
+
+/** Return member informations */
+export async function getUserInfo(username: string) {
+    const query = db
+        .selectFrom("users")
+        .select((eb) => [
+            "users.username",
+            "users.fullname",
+            "users.role",
+            "users.domaine",
+            "users.bio",
+            "users.link",
+            "users.primary_email",
+            "users.secondary_email",
+            "users.primary_email_status",
+        ])
+        .where("users.username", "=", username)
         .compile();
 
     //console.log(query.sql);
