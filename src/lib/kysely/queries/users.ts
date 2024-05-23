@@ -9,6 +9,7 @@ type GetUserInfosParams = {
     options?: { withDetails: boolean };
 };
 /** Return member informations */
+
 export async function getUserInfos(
     params: GetUserInfosParams,
     db: Kysely<DB> = database

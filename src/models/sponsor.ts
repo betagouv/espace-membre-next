@@ -41,7 +41,7 @@ const SponsorDomaineMinisterielSchema = z.nativeEnum(SponsorDomaineMinisteriel);
 const SponsorTypeSchema = z.nativeEnum(SponsorType);
 
 // Define the Sponsor schema
-export const dbSponsorSchema = z.object({
+export const sponsorSchema = z.object({
     uuid: z.string(),
     ghid: z.string(),
     name: z.string(),
@@ -51,4 +51,4 @@ export const dbSponsorSchema = z.object({
 });
 
 // Example TypeScript type extraction from Zod schema
-export type dbSponsorSchemaType = z.infer<typeof dbSponsorSchema>;
+export type sponsorSchemaType = z.infer<typeof sponsorSchema>;

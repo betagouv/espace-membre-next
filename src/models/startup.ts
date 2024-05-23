@@ -123,32 +123,32 @@ export const phaseSchema = z.object({
     comment: z.string().optional(),
 });
 
-export interface Phase extends z.infer<typeof phaseSchema> {}
+export type phaseSchemaType = z.infer<typeof phaseSchema>;
 
-export interface DBStartup {
-    mailing_list?: string;
-    id: string;
-    uuid: string;
-    name: string;
-    pitch: string;
-    stats_url: string;
-    link: string;
-    repository: string;
-    contact: string;
-    phases: Phase[];
-    sponsors: string[];
-    github: string;
-    dashlord_url: string;
-    website: any;
-    expired_members: string[];
-    active_members: string[];
-    previous_members: string[];
-    incubator: string;
-    accessibility_status?: AccessibilityStatus;
-    analyse_risques_url?: string;
-    analyse_risques?: boolean;
-    content_url_encoded_markdown: string;
-}
+// export interface DBStartup {
+//     mailing_list?: string;
+//     id: string;
+//     uuid: string;
+//     name: string;
+//     pitch: string;
+//     stats_url: string;
+//     link: string;
+//     repository: string;
+//     contact: string;
+//     phases: Phase[];
+//     sponsors: string[];
+//     github: string;
+//     dashlord_url: string;
+//     website: any;
+//     expired_members: string[];
+//     active_members: string[];
+//     previous_members: string[];
+//     incubator: string;
+//     accessibility_status?: AccessibilityStatus;
+//     analyse_risques_url?: string;
+//     analyse_risques?: boolean;
+//     content_url_encoded_markdown: string;
+// }
 
 export const startupSchema = z.object({
     uuid: z.string(),
@@ -176,7 +176,6 @@ export const startupSchema = z.object({
                 message: "L'incubateur est obligatoire",
             }),
         })
-        .min(1)
         .describe("Incubateur ou fabrique numérique"),
     // incubator: z
     //     .string({
@@ -265,7 +264,7 @@ export const startupSchema = z.object({
         .describe("Décrivez votre produit, son public, ses objectifs"),
 });
 
-export interface StartupFrontMatter extends z.infer<typeof startupSchema> {}
+// export interface StartupFrontMatter extends z.infer<typeof startupSchema> {}
 
 export type startupSchemaType = z.infer<typeof startupSchema>;
 

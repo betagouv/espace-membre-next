@@ -5,7 +5,6 @@ import * as Sentry from "@sentry/nextjs";
 import axios from "axios";
 
 import { StartupForm } from "../StartupForm/StartupForm";
-
 import { GithubAPIPullRequest } from "@/lib/github";
 import { Incubator } from "@/models/incubator";
 import { Sponsor } from "@/models/sponsor";

@@ -6,7 +6,7 @@ import { createModal } from "@codegouvfr/react-dsfr/Modal";
 
 import SESponsorSelect from "../SESponsorSelect";
 import { SponsorForm } from "../SponsorForm/SponsorForm";
-
+import { startupInfoUpdateSchemaType } from "@/models/actions/startup";
 import { Sponsor } from "@/models/sponsor";
 
 const modal = createModal({
@@ -34,7 +34,9 @@ const SponsorBlock = ({
         modal.open();
     }
 
-    function addSponsor(newSponsor: Sponsor) {
+    function addSponsor(
+        newSponsor: startupInfoUpdateSchemaType["newSponsors"]
+    ) {
         setNewSponsors([newSponsor]);
         modal.close();
     }
@@ -42,7 +44,7 @@ const SponsorBlock = ({
     return (
         <div className="fr-input-group">
             <SESponsorSelect
-                value={sponsors.map((s) => s.replace(/^\/organisations\//, ""))}
+                value={sponsors}
                 allSponsors={allSponsors}
                 onChange={(newSponsors) => {
                     setSponsors(newSponsors);

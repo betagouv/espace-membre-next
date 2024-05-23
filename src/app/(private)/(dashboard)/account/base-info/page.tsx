@@ -22,8 +22,8 @@ export default async function Page() {
     }
     const username = session.user.id;
     const dbData = await getUserInfos({ username });
-    console.log(dbData?.missions);
     const userInfos = memberSchema.parse(dbData);
+
     const startups = await getAllStartups();
     const startupOptions = startups.map((startup) => ({
         value: startup.uuid,
@@ -40,8 +40,6 @@ export default async function Page() {
     const props = {
         formData: {
             ...userInfos,
-            // memberType,
-            // domaine,
         },
         startupOptions,
     };

@@ -36,11 +36,9 @@ export async function PUT(
             const missionsToDelete = previousInfo.missions.filter(
                 (m) => !actualMissions.includes(m.uuid)
             );
-            console.log("MISSION To delete", missionsToDelete);
             for (let mission of missionsToDelete) {
                 await deleteMission(mission.uuid, trx);
             }
-            console.log("MISSION To create", missions);
             for (const mission of missions) {
                 // Now, use the same transaction to link to an organization
                 if (mission.uuid) {
