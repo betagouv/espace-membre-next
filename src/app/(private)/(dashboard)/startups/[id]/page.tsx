@@ -1,10 +1,12 @@
 import { Metadata, ResolvingMetadata } from "next";
 
-import StartupIdClientPage from "./StartupIdClientPage";
 import StartupPage, {
     StartupPageProps,
 } from "@/components/StartupPage/StartupPage";
-import { getStartup, getStartupDetails } from "@/lib/kysely/queries";
+import { getStartup } from "@/lib/kysely/queries";
+import { getUserByStartup } from "@/lib/kysely/queries/users";
+import { memberPublicInfoSchema, memberSchema } from "@/models/member";
+import { startupSchema } from "@/models/startup";
 
 type Props = {
     params: { id: string };
@@ -24,7 +26,12 @@ export async function generateMetadata(
 }
 
 export default async function Page({ params }: Props) {
-    const produit = await getStartupDetails(params.id);
-    console.log(produit);
-    return <StartupPage {...(produit as StartupPageProps)} />;
+    const dbSe = await getStartup(params.id);
+    const startup = startupSchema.parse(dbSe);
+    const startupMembers = (await getUserByStartup(params.id)).map((user) => {
+        return memberPublicInfoSchema.parse(user);
+    });
+    console.log(startupMembers);
+
+    return <StartupPage startupInfos={startup} members={startupMembers} />;
 }

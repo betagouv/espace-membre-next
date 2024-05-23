@@ -14,21 +14,23 @@ import { z } from "zod";
 
 import { CompetencesEditor } from "./CompetencesEditor";
 import { MissionsEditor } from "./MissionsEditor";
+import CitySelect from "../CitySelect";
+import GenderSelect from "../GenderSelect";
 import { PullRequestWarning } from "../PullRequestWarning";
-
 import { GithubAPIPullRequest } from "@/lib/github";
 import {
-    DOMAINE_OPTIONS,
-    memberSchema,
-    MemberSchemaType,
-} from "@/models/member";
+    baseInfoUpdateSchemaType,
+    baseInfoUpdateSchema,
+} from "@/models/actions/member";
+import { GenderCode, statusOptions } from "@/models/dbUser";
+import { DOMAINE_OPTIONS, memberSchema } from "@/models/member";
 import { useSession } from "@/proxies/next-auth";
 import routes, { computeRoute } from "@/routes/routes";
 import { routeTitles } from "@/utils/routes/routeTitles";
 
 // data from secretariat API
 export interface BaseInfoUpdateProps {
-    formData: MemberSchemaType;
+    formData: baseInfoUpdateSchemaType;
     startupOptions: {
         value: string;
         label: string;
@@ -41,7 +43,7 @@ const postMemberData = async ({ values, sessionUsername }) => {
         data: { username, message },
     }: {
         data: { username: string; message: string };
-    } = await axios.post(
+    } = await axios.put(
         computeRoute(routes.ACCOUNT_POST_BASE_INFO_FORM).replace(
             ":username",
             sessionUsername
@@ -55,15 +57,15 @@ const postMemberData = async ({ values, sessionUsername }) => {
 };
 
 export const BaseInfoUpdate = (props: BaseInfoUpdateProps) => {
-    const defaultValues: MemberSchemaType = { ...props.formData };
+    const defaultValues: baseInfoUpdateSchemaType = { ...props.formData };
     const {
         register,
         handleSubmit,
         formState: { errors, isDirty, isSubmitting, isValid },
         setValue,
         control,
-    } = useForm<MemberSchemaType>({
-        resolver: zodResolver(memberSchema),
+    } = useForm<baseInfoUpdateSchemaType>({
+        resolver: zodResolver(baseInfoUpdateSchema),
         mode: "onChange",
         defaultValues,
     });
@@ -77,7 +79,7 @@ export const BaseInfoUpdate = (props: BaseInfoUpdateProps) => {
     } | null>();
     const [isSaving, setIsSaving] = React.useState(false);
 
-    const onSubmit = async (input: MemberSchemaType) => {
+    const onSubmit = async (input: baseInfoUpdateSchemaType) => {
         //console.log("onSubmit", input);
 
         if (isSaving) {
@@ -121,7 +123,27 @@ export const BaseInfoUpdate = (props: BaseInfoUpdateProps) => {
         setIsSaving(false);
     };
 
-    console.log(props.formData);
+    const handleCitySelect = (newValue) => {
+        if (newValue.isOSM) {
+            setValue(`osm_city`, JSON.stringify(newValue), {
+                shouldValidate: true,
+                shouldDirty: true,
+            });
+            setValue(`workplace_insee_code`, "", {
+                shouldValidate: true,
+                shouldDirty: true,
+            });
+        } else {
+            setValue(`workplace_insee_code`, newValue.value, {
+                shouldValidate: true,
+                shouldDirty: true,
+            });
+            setValue(`osm_city`, "", {
+                shouldValidate: true,
+                shouldDirty: true,
+            });
+        }
+    };
 
     return (
         <>
@@ -210,7 +232,7 @@ export const BaseInfoUpdate = (props: BaseInfoUpdateProps) => {
                     <h3>Mes compétences</h3>
                     <p>
                         Tu peux préciser tes compétences, cela permettra à la
-                        communauté de mieux de trouver en cas de besoin :)
+                        communauté de mieux de trouver en cas de besoin {`:)`}
                     </p>
                     <CompetencesEditor
                         onChange={(e, values) => {
@@ -239,7 +261,67 @@ export const BaseInfoUpdate = (props: BaseInfoUpdateProps) => {
                         startupOptions={props.startupOptions}
                         errors={errors.missions || []}
                     />
-
+                    <h4>Participez à notre observatoire statistique </h4>
+                    ⚠️ Ces valeurs servent à alimenter l'
+                    <a
+                        href="https://metabase.incubateur.net/public/dashboard/554ff353-6104-4c25-a261-d8bdc40f75d5"
+                        target="_blank"
+                    >
+                        observatoire de la communauté
+                    </a>
+                    . Elles sont confidentielles et anonymisées mis à part le
+                    lieu de travail.<br></br>
+                    <GenderSelect
+                        label="Genre"
+                        nativeSelectProps={{
+                            ...register("gender"),
+                        }}
+                        state={errors.gender ? "error" : "default"}
+                        stateRelatedMessage={errors.gender?.message}
+                    />
+                    <Select
+                        label="Statut"
+                        nativeSelectProps={{
+                            ...register(`legal_status`),
+                        }}
+                    >
+                        <option value="" disabled hidden>
+                            Selectionnez une option
+                        </option>
+                        {statusOptions.map((option) => (
+                            <option key={option.key} value={option.key}>
+                                {option.name}
+                            </option>
+                        ))}
+                    </Select>
+                    <Input
+                        label="TJM moyen HT (si tu es indépendant)"
+                        hintText="Cette information est utilisée uniquement pour
+                                    faire des statistiques. Elle n'est pas affichée."
+                        nativeInputProps={{
+                            ...register("tjm", {
+                                setValueAs: (
+                                    // use this instead of valueAsNumber to handle undefined value
+                                    v
+                                ) => (v === "" ? null : parseInt(v)),
+                            }),
+                            type: "number",
+                        }}
+                        state={errors.tjm ? "error" : "default"}
+                        stateRelatedMessage={errors.tjm?.message}
+                    />
+                    <h4>Participe à la carte des membres (non anonyme)</h4>
+                    <CitySelect
+                        onChange={handleCitySelect}
+                        placeholder={"Commune ou code postal"}
+                        state={
+                            errors.workplace_insee_code ? "error" : "default"
+                        }
+                        stateRelatedMessage={
+                            errors.workplace_insee_code?.message
+                        }
+                        defaultValue={""}
+                    />
                     <Button
                         className={fr.cx("fr-mt-3w")}
                         children={

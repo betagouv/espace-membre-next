@@ -79,16 +79,16 @@ export function PrivateLayout({ children }: { children: React.ReactNode }) {
             text: routeTitles.accountEditBaseInfo(),
             isActive: hasPathnameThisMatch(pathname, accountEditBaseInfoLink),
         },
-        {
-            linkProps: {
-                href: accountEditPrivateInfoLink,
-            },
-            text: routeTitles.accountEditPrivateInfo(),
-            isActive: hasPathnameThisMatch(
-                pathname,
-                accountEditPrivateInfoLink
-            ),
-        },
+        // {
+        //     linkProps: {
+        //         href: accountEditPrivateInfoLink,
+        //     },
+        //     text: routeTitles.accountEditPrivateInfo(),
+        //     isActive: hasPathnameThisMatch(
+        //         pathname,
+        //         accountEditPrivateInfoLink
+        //     ),
+        // },
         {
             linkProps: {
                 href: "#",

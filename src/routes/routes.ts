@@ -65,7 +65,7 @@ class routes {
     static ACCOUNT_GET_BASE_INFO_FORM_API = "/api/account/base-info" as const;
 
     static ACCOUNT_POST_BASE_INFO_FORM =
-        "/api/account/base-info/:username" as const;
+        "/api/member/:username/info-update" as const;
     static ACCOUNT_GET_DETAIL_INFO_FORM_API = "/api/account/info" as const;
     static ACCOUNT_POST_DETAIL_INFO_FORM = "/api/account/info" as const;
     static API_PUBLIC_POST_BASE_INFO_FORM =

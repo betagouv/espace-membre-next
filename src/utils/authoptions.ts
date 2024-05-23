@@ -3,6 +3,7 @@ import { NextAuthOptions } from "next-auth";
 import EmailProvider from "next-auth/providers/email";
 
 import customPostgresAdapter from "./pgAdpter";
+import { getUserInfo, getUserInfos } from "@/lib/kysely/queries/users";
 import { DBUser } from "@/models/dbUser";
 import betagouv from "@/server/betagouv";
 import config from "@/server/config";
@@ -71,7 +72,12 @@ export const authOptions: NextAuthOptions = {
         async signIn({ user }) {
             if (user.id) {
                 // todo : this can be done in the call where user is fetch from db
-                const dbUser = await getDBUserAndMission(user.id);
+                const dbUser = await getUserInfos({
+                    username: user.id,
+                    options: {
+                        withDetails: true,
+                    },
+                });
                 if (!dbUser) {
                     throw new Error(
                         `Le membre ${user.id} n'a pas de fiche github.`
@@ -87,7 +93,7 @@ export const authOptions: NextAuthOptions = {
                 return false;
             }
         },
-        async session({ session, token }) {
+        async session({ session, token, user }) {
             let sessionWithId;
             if (session && session.user) {
                 sessionWithId = {
@@ -95,6 +101,7 @@ export const authOptions: NextAuthOptions = {
                     user: {
                         ...session.user,
                         id: token.sub,
+                        uuid: token.uuid,
                         isAdmin: getAdmin().includes(token.sub || ""),
                     },
                 };
@@ -102,8 +109,10 @@ export const authOptions: NextAuthOptions = {
             return sessionWithId || session;
         },
         async jwt({ token, user, account, profile, isNewUser }) {
+            console.log(user);
             if (account) {
                 token.id = user?.id;
+                token.uuid = user?.uuid;
             }
             return token;
         },

@@ -96,7 +96,7 @@ export const missionSchema = z.object({
         })
         .describe("Entité avec qui tu as contractualisé")
         .nullable(),
-    startups: z.array(z.string()).optional(),
+    startups: z.array(z.string()).optional().nullable(),
 });
 
 export interface createDBMission extends Omit<DBMission, "uuid" | "id"> {

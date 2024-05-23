@@ -5,44 +5,56 @@ import Button from "@codegouvfr/react-dsfr/Button";
 import { Table } from "@codegouvfr/react-dsfr/Table";
 
 import { DBUserPublic } from "@/models/dbUser";
+import { memberPublicInfoSchemaType } from "@/models/member";
+import { startupSchemaType } from "@/models/startup";
 
-function MemberTable({ members }: { members: DBUserPublic[] }) {
+function MemberTable({ members }: { members: memberPublicInfoSchemaType[] }) {
     return (
         <Table
-            data={members.map((member: DBUserPublic, index: number) => [
-                <a
-                    key={index}
-                    target="_blank"
-                    href={`https://github.com/betagouv/beta.gouv.fr/edit/master/content/_authors/${member.username}.md`}
-                >
-                    {member.fullname}
-                </a>,
-                member.role,
-                "xx",
-                //member.end,
-            ])}
+            data={members.map(
+                (member: memberPublicInfoSchemaType, index: number) => [
+                    <a
+                        key={index}
+                        target="_blank"
+                        href={`https://github.com/betagouv/beta.gouv.fr/edit/master/content/_authors/${member.username}.md`}
+                    >
+                        {member.fullname}
+                    </a>,
+                    member.role,
+                    "xx",
+                    //member.end,
+                ]
+            )}
             headers={["Nom", "Role", "Date de fin"]}
         />
     );
 }
 
 export interface StartupPageProps {
-    startupInfos: any;
-    currentPhase: string;
-    updatePullRequest: any;
-    members: {
-        expired_members: DBUserPublic[];
-        active_members: DBUserPublic[];
-        previous_members: DBUserPublic[];
-    };
+    startupInfos: startupSchemaType;
+    members: memberPublicInfoSchemaType[];
 }
 
 export default function StartupPage({
     startupInfos,
-    currentPhase,
-    updatePullRequest,
     members,
 }: StartupPageProps) {
+    const currentPhase = "todo get current phase"; // todo get current phase
+    const activeMembers = members.filter((member) =>
+        member.missions.find(
+            (m) =>
+                m.startups?.includes(startupInfos.uuid) &&
+                (!m.end || m.end >= new Date())
+        )
+    );
+    const previousMembers = members.filter((member) =>
+        member.missions.find(
+            (m) =>
+                m.startups?.includes(startupInfos.uuid) &&
+                m.end &&
+                m.end < new Date()
+        )
+    );
     return (
         <>
             <div className="fr-mb-8v">
@@ -85,33 +97,6 @@ export default function StartupPage({
                 <p className="fr-text--sm" style={{ fontStyle: "italic" }}>
                     Une informations n'est pas à jour ?
                 </p>
-                {updatePullRequest && (
-                    <>
-                        <br />
-                        <Alert
-                            severity="warning"
-                            small={true}
-                            closable={false}
-                            title="Une pull request existe déjà sur cette fiche."
-                            description={
-                                <>
-                                    {`Toi ou un membre de ton équipe doit la
-                                    merger pour que les changements soient pris en
-                                    compte : `}
-                                    <a
-                                        href={updatePullRequest.url}
-                                        target="_blank"
-                                    >
-                                        {updatePullRequest.url}
-                                    </a>
-                                    <br />
-                                    (la prise en compte peut prendre 10
-                                    minutes.)
-                                </>
-                            }
-                        />
-                    </>
-                )}
                 <Button
                     linkProps={{
                         href: `/startups/${startupInfos.id}/info-form`,
@@ -128,13 +113,13 @@ export default function StartupPage({
                     expanded={true}
                     onExpandedChange={(expanded, e) => {}}
                 >
-                    <MemberTable members={members.active_members} />
+                    <MemberTable members={activeMembers} />
                 </Accordion>
-                <Accordion label="Membres expirés">
+                {/* <Accordion label="Membres expirés">
                     <MemberTable members={members.expired_members} />
-                </Accordion>
+                </Accordion> */}
                 <Accordion label="Membres précédents">
-                    <MemberTable members={members.previous_members} />
+                    <MemberTable members={previousMembers} />
                 </Accordion>
             </div>
         </>

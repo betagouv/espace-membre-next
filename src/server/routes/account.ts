@@ -30,12 +30,12 @@ router.get(
     usersController.getBaseInfoUpdateApi
 );
 
-router.post(
-    routes.ACCOUNT_POST_BASE_INFO_FORM,
-    express.json({ type: "*/*" }),
-    validate(memberSchema, "body"),
-    usersController.postBaseInfoUpdate
-);
+// router.post(
+//     routes.ACCOUNT_POST_BASE_INFO_FORM,
+//     express.json({ type: "*/*" }),
+//     validate(memberSchema, "body"),
+//     usersController.postBaseInfoUpdate
+// );
 // router.post(
 //     routes.API_PUBLIC_POST_BASE_INFO_FORM,
 //     publicPostRouteRateLimiter,

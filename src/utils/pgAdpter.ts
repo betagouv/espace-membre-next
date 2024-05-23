@@ -34,6 +34,7 @@ export default function customPostgresAdapter(): Adapter {
             }
             return {
                 id: user.username,
+                uuid: user.uuid,
                 emailVerified: user.email_verified,
                 email: user.primary_email || user.secondary_email,
             };
@@ -101,6 +102,7 @@ export default function customPostgresAdapter(): Adapter {
                 .returning("*");
 
             return {
+                uuid: dbUser.uuid,
                 name: dbUser?.fullname,
                 email: dbUser.primary_email || dbUser.secondary_email,
                 emailVerified: dbUser.email_verified,
@@ -169,6 +171,7 @@ export default function customPostgresAdapter(): Adapter {
                     email: user.primary_email!,
                     name: member?.fullname,
                     image: null,
+                    uuid: user.uuid,
                 },
             };
 

@@ -10,7 +10,6 @@ import axios from "axios";
 import EmailContainer from "./EmailContainer";
 import FicheMembre from "./FicheMembre";
 import Observatoire from "./Observatoire";
-
 import { EmailStatusCode } from "@/models/dbUser";
 import { MemberSchemaType, memberSchema } from "@/models/member";
 import routes, { computeRoute } from "@/routes/routes";
@@ -44,7 +43,6 @@ export default function AccountPage(props: AccountPageProps) {
         redirections,
         status,
     } = props;
-    console.log("props", props);
     return (
         <div>
             {hasActiveResponder && (

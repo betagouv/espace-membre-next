@@ -26,7 +26,7 @@ fileignoreconfig:
 - filename: src/components/AccountPage/EmailContainer.tsx
   checksum: ff757ee916228a004ac0fa9ab3b3d93a29cf7525654f2d2004399a094c8dd55a
 - filename: src/components/BaseInfoUpdatePage/BaseInfoUpdate.tsx
-  checksum: 05d97c14f404f68008afc8707f7c0c44883503f71e5c52c1716777482820c3ca
+  checksum: d2565fbfe06ac2e626c09e5451e673753c827551829a98c239dea593aedbcb0a
 - filename: src/components/BaseInfoUpdatePage/MissionsEditor.tsx
   checksum: 42a1e9c44fc1a093ce628b796a51533f640d60cd75205c06ca6cd1d358f7cb02
 - filename: src/components/CommunityPage/CommunityFilterMembers.tsx

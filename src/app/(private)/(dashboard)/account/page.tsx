@@ -3,11 +3,11 @@ import { redirect } from "next/navigation";
 import { getServerSession } from "next-auth";
 
 import AccountPage from "@/components/AccountPage/AccountPage";
-import { getUserInfos } from "@/lib/kysely/queries";
+import { getUserInfos } from "@/lib/kysely/queries/users";
 import { EmailStatusCode } from "@/models/dbUser";
+import { DomaineSchemaType } from "@/models/member";
 import { authOptions } from "@/utils/authoptions";
 import { routeTitles } from "@/utils/routes/routeTitles";
-import { DomaineSchemaType } from "@/models/member";
 
 export const metadata: Metadata = {
     title: `${routeTitles.account()} / Espace Membre`,

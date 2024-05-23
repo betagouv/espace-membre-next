@@ -151,6 +151,8 @@ export interface DBStartup {
 }
 
 export const startupSchema = z.object({
+    uuid: z.string(),
+    id: z.string(),
     name: z
         .string({
             errorMap: (issue, ctx) => ({
@@ -168,7 +170,7 @@ export const startupSchema = z.object({
         .min(1)
         .describe("Objectif du produit"),
     sponsors: z.array(z.string()).optional(),
-    incubator: z
+    incubator_id: z
         .string({
             errorMap: (issue, ctx) => ({
                 message: "L'incubateur est obligatoire",
@@ -176,6 +178,14 @@ export const startupSchema = z.object({
         })
         .min(1)
         .describe("Incubateur ou fabrique numérique"),
+    // incubator: z
+    //     .string({
+    //         errorMap: (issue, ctx) => ({
+    //             message: "L'incubateur est obligatoire",
+    //         }),
+    //     })
+    //     .min(1)
+    //     .describe("Incubateur ou fabrique numérique"),
     contact: z
         .string({
             errorMap: () => ({
@@ -211,30 +221,40 @@ export const startupSchema = z.object({
         .describe(
             "L'équipe a mené une démarche de sécurité sur MonServiceSécurisé"
         )
-        .optional(),
+        .optional()
+        .nullable(),
     analyse_risques: z
         .boolean()
         .describe("Nous avons réalisé une analyse de risque")
-        .optional(),
+        .optional()
+        .nullable(),
     analyse_risques_url: z
         .string()
         .describe("Url de l'analyse de risque")
-        .optional(),
-    events: z.array(z.object({ name: z.string(), date: z.date() })).optional(),
+        .optional()
+        .nullable(),
+    events: z
+        .array(z.object({ name: z.string(), date: z.date() }))
+        .optional()
+        .nullable(),
     phases: z
         .array(phaseSchema)
-        .min(1, "Vous devez définir au moins une phase (ex: investigation)"),
-    techno: z.array(z.string()).optional(),
+        .min(1, "Vous devez définir au moins une phase (ex: investigation)")
+        .optional()
+        .nullable(),
+    techno: z.array(z.string()).optional().nullable(),
     usertypes: z
         .array(z.string())
         .optional()
-        .describe("Utilisateurs cibles du service"),
+        .describe("Utilisateurs cibles du service")
+        .nullable(),
     //redirect_from: z.array(z.string()).optional(),
     fast: z.object({ promotion: z.number(), montant: z.number() }).optional(),
     thematiques: z
         .array(z.string())
         .optional()
-        .describe("Thématiques addressées par la startup"),
+        .describe("Thématiques addressées par la startup")
+        .nullable(),
     description: z
         .string({
             errorMap: (issue, ctx) => ({
@@ -260,37 +280,37 @@ export type startupSchemaType = z.infer<typeof startupSchema>;
 //         .describe("Décrivez votre produit, son public, ses objectifs"),
 // });
 
-export const dbStartupSchema = z.object({
-    mailing_list: z.string().optional(),
-    id: z.string(),
-    name: z.string(),
-    pitch: z.string(),
-    stats_url: z.string(),
-    stats: z.boolean(),
-    link: z.string(),
-    repository: z.string(),
-    contact: z.string(),
-    phases: z.array(phaseSchema),
-    current_phase: z.nativeEnum(StartupPhase),
-    current_phase_date: z.date().optional(),
-    // sponsors: z.array(z.string()),
-    dashlord_url: z.string(),
-    website: z.string(), // todo: delete, it does not seem to be used
-    budget_url: z.string().optional(),
-    usertypes: z.array(z.string()).optional(),
-    thematiques: z.array(z.string()).optional(),
-    incubator_id: z.string().optional(),
-    accessibility_status: z.nativeEnum(AccessibilityStatus).optional(),
-    analyse_risques_url: z.string().optional(),
-    analyse_risques: z.boolean().optional(),
-    description: z.string(),
-});
+// export const dbStartupSchema = z.object({
+//     mailing_list: z.string().optional(),
+//     id: z.string(),
+//     name: z.string(),
+//     pitch: z.string(),
+//     stats_url: z.string(),
+//     stats: z.boolean(),
+//     link: z.string(),
+//     repository: z.string(),
+//     contact: z.string(),
+//     phases: z.array(phaseSchema),
+//     current_phase: z.nativeEnum(StartupPhase),
+//     current_phase_date: z.date().optional(),
+//     // sponsors: z.array(z.string()),
+//     dashlord_url: z.string(),
+//     website: z.string(), // todo: delete, it does not seem to be used
+//     budget_url: z.string().optional(),
+//     usertypes: z.array(z.string()).optional(),
+//     thematiques: z.array(z.string()).optional(),
+//     incubator_id: z.string().optional(),
+//     accessibility_status: z.nativeEnum(AccessibilityStatus).optional(),
+//     analyse_risques_url: z.string().optional(),
+//     analyse_risques: z.boolean().optional(),
+//     description: z.string(),
+// });
 
-export type dbStartupSchemaType = z.infer<typeof dbStartupSchema>;
+// export type dbStartupSchemaType = z.infer<typeof dbStartupSchema>;
 
-export const createDBStartupSchema = dbStartupSchema.extend({
-    organization_ids: z.array(z.string()).optional(),
-    incubator_id: z.string().optional(),
-});
+// export const createDBStartupSchema = dbStartupSchema.extend({
+//     organization_ids: z.array(z.string()).optional(),
+//     incubator_id: z.string().optional(),
+// });
 
-export type createDBStartup = z.infer<typeof createDBStartupSchema>;
+// export type createDBStartup = z.infer<typeof createDBStartupSchema>;

@@ -4,7 +4,7 @@ import { z } from "zod";
 import { addEvent } from "@/lib/events";
 import { EventCode } from "@/models/actionEvent";
 import { DBUser } from "@/models/dbUser";
-import { Member, memberSchema, memberSchemaType } from "@/models/member";
+import { memberSchema } from "@/models/member";
 import { DBMission, createDBMission } from "@/models/mission";
 import { PULL_REQUEST_TYPE, PULL_REQUEST_STATE } from "@/models/pullRequests";
 import { deleteMission } from "@/server/db/dbMission";
@@ -21,8 +21,32 @@ import {
 import { GithubBetagouvFile } from "@controllers/helpers/githubHelpers/githubEntryInterface";
 import db from "@db";
 
+export const updateMemberSchema = memberSchema.pick({
+    fullname: true,
+    role: true,
+    link: true,
+    avatar: true,
+    github: true,
+    competences: true,
+    teams: true,
+    missions: true,
+    startups: true,
+    previously: true,
+    domaine: true,
+    bio: true,
+    memberType: true,
+    gender: true,
+    average_nb_of_days: true,
+    tjm: true,
+    legal_status: true,
+    workplace_insee_code: true,
+    osm_city: true,
+});
+
+export type updateMemberSchemaType = z.infer<typeof updateMemberSchema>;
+
 interface BaseInfoUpdateRequest extends Request {
-    body: z.infer<typeof memberSchema>;
+    body: updateMemberSchemaType;
 }
 
 export async function postBaseInfoUpdate(
