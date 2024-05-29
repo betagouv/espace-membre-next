@@ -98,7 +98,8 @@ export interface StartupsAPIResponse {
 
 export const phaseSchema = z.object({
     // @ts-ignore
-    name: z.enum(Object.keys(PHASE_READABLE_NAME)),
+    uuid: z.string(),
+    name: z.nativeEnum(StartupPhase),
     start: z.preprocess(
         (val) => {
             if (typeof val === "string") {
@@ -114,13 +115,15 @@ export const phaseSchema = z.object({
             })
             .describe("Date de début de la phase")
     ),
-    end: z.preprocess((val) => {
-        if (typeof val === "string") {
-            return new Date(val);
-        }
-        return val;
-    }, z.date().describe("Date de début de la phase").optional()),
-    comment: z.string().optional(),
+    end: z
+        .preprocess((val) => {
+            if (typeof val === "string") {
+                return new Date(val);
+            }
+            return val;
+        }, z.date().describe("Date de fin de la phase").optional())
+        .nullable(),
+    comment: z.string().optional().nullable(),
 });
 
 export type phaseSchemaType = z.infer<typeof phaseSchema>;
@@ -199,7 +202,7 @@ export const startupSchema = z.object({
         .describe("URL du repository GitHub")
         .optional()
         .nullable(),
-    accessibility_status: z.string().optional(),
+    accessibility_status: z.string().optional().nullable(),
     dashlord_url: z
         .string()
         .describe("URL du rapport DashLord")

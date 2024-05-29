@@ -13,7 +13,7 @@ export default function SelectAccebilityStatus({ value, onChange }) {
             label="Sélectionne l'accessibilité de votre produit"
             nativeSelectProps={{
                 onChange,
-                required: false,
+                required: true,
                 defaultValue: value,
             }}
         >

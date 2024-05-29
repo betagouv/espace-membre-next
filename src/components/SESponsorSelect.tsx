@@ -34,7 +34,6 @@ export default function SESponsorSelect({
             label: sponsor.name,
         })
     );
-
     return (
         <div className="fr-select-group" style={containerStyle}>
             <label className="fr-label">

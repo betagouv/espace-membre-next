@@ -10,12 +10,21 @@ import { updateStartup } from "@/app/api/startups/actions";
 import { startupInfoUpdateSchemaType } from "@/models/actions/startup";
 import { incubatorSchemaType } from "@/models/incubator";
 import { sponsorSchemaType } from "@/models/sponsor";
-import { startupSchemaType } from "@/models/startup";
+import { phaseSchemaType, startupSchemaType } from "@/models/startup";
 import routes, { computeRoute } from "@/routes/routes";
 import { routeTitles } from "@/utils/routes/routeTitles";
 
+interface StartupInfoUpdateProps {
+    startup: startupSchemaType;
+    startupSponsors: sponsorSchemaType[];
+    startupPhases: phaseSchemaType[];
+    incubators: incubatorSchemaType[];
+    sponsors: sponsorSchemaType[];
+    save: (data: startupInfoUpdateSchemaType) => any;
+}
+
 /* Pure component */
-export const StartupInfoUpdate = (props: Omit<StartupFormProps, "save">) => {
+export const StartupInfoUpdate = (props: StartupInfoUpdateProps) => {
     const css = ".panel { overflow: hidden; width: auto; min-height: 100vh; }";
 
     const save = async (data: startupInfoUpdateSchemaType) => {

@@ -1,6 +1,7 @@
 import { Metadata } from "next";
 
 import { StartupInfoCreate } from "@/components/StartupInfoCreatePage";
+import { db } from "@/lib/kysely";
 import betagouv from "@/server/betagouv";
 import { routeTitles } from "@/utils/routes/routeTitles";
 
@@ -9,8 +10,8 @@ export const metadata: Metadata = {
 };
 
 export default async function Page(props) {
-    const incubators = await betagouv.incubators();
-    const sponsors = await betagouv.sponsors();
+    const incubators = await db.selectFrom("incubators").selectAll().execute(); //await betagouv.incubators();
+    const sponsors = await db.selectFrom("organizations").selectAll().execute(); //await betagouv.sponsors();
 
     return (
         <>

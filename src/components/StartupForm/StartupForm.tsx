@@ -26,7 +26,11 @@ import {
 } from "@/models/actions/startup";
 import { incubatorSchemaType } from "@/models/incubator";
 import { sponsorSchemaType } from "@/models/sponsor";
-import { phaseSchemaType, startupSchemaType } from "@/models/startup";
+import {
+    StartupPhase,
+    phaseSchemaType,
+    startupSchemaType,
+} from "@/models/startup";
 
 // import style manually
 const mdParser = new MarkdownIt(/* Markdown-it options */);
@@ -50,11 +54,18 @@ Décrit ta solution en quelques lignes? qui seront/sont les bénéficiaires ?
 Comment vous vous y prenez pour atteindre votre usagers ? quel impact chiffré visez-vous ?
 `;
 
+const NEW_PRODUCT_DATA: startupInfoUpdateSchemaType["startup"] = {
+    name: "",
+    pitch: "",
+    description: "",
+    contact: "",
+};
+
 // data from secretariat API
 export interface StartupFormProps {
-    startup: startupSchemaType;
-    startupSponsors: sponsorSchemaType[];
-    startupPhases: phaseSchemaType[];
+    startup?: startupSchemaType;
+    startupSponsors?: sponsorSchemaType[];
+    startupPhases?: phaseSchemaType[];
     incubators: incubatorSchemaType[];
     sponsors: sponsorSchemaType[];
     save: (data: startupInfoUpdateSchemaType) => any;
@@ -81,8 +92,14 @@ function BasicFormInput({
                     placeholder,
                     ...register(`startup.${id}`),
                 }}
-                state={errors[id] ? "error" : "default"}
-                stateRelatedMessage={errors[id]?.message}
+                state={
+                    errors["startup"] && errors["startup"][id]
+                        ? "error"
+                        : "default"
+                }
+                stateRelatedMessage={
+                    errors["startup"] && errors["startup"]?.message
+                }
                 {...(props ? props : {})}
             />
         )) || <>Not found in schema: {id}</>
@@ -102,10 +119,16 @@ export function StartupForm(props: StartupFormProps) {
         resolver: zodResolver(startupInfoUpdateSchema),
         mode: "onChange",
         defaultValues: {
-            startup: props.startup,
-            startupSponsors: props.startupSponsors.map((s) => s.uuid),
-            startupPhases: props.startupPhases,
+            startup: props.startup || NEW_PRODUCT_DATA,
+            startupSponsors: (props.startupSponsors || []).map((s) => s.uuid),
+            startupPhases: props.startupPhases || [
+                {
+                    name: StartupPhase.PHASE_INVESTIGATION,
+                    start: new Date(),
+                },
+            ],
             newSponsors: [],
+            newPhases: [],
         },
     });
 
@@ -170,8 +193,8 @@ export function StartupForm(props: StartupFormProps) {
     watch("startupSponsors"); // enable autocomplete update
 
     const hasAnalyseDeRisque =
-        !!props.startup.analyse_risques ||
-        !!props.startup.analyse_risques_url ||
+        !!props.startup?.analyse_risques ||
+        !!props.startup?.analyse_risques_url ||
         !!getValues("startup.analyse_risques");
 
     ]);
@@ -279,7 +302,8 @@ export function StartupForm(props: StartupFormProps) {
                         <ClientOnly>
                             <MdEditor
                                 defaultValue={
-                                    props.startup.description || DEFAULT_CONTENT
+                                    props.startup?.description ||
+                                    DEFAULT_CONTENT
                                 }
                                 style={{
                                     height: "500px",
@@ -319,13 +343,11 @@ export function StartupForm(props: StartupFormProps) {
                         }
                     >
                         <option value="">Séléctionnez un incubateur</option>
-                        {Object.entries(props.incubators).map(
-                            ([key, value]) => (
-                                <option value={key} key={key}>
-                                    {value.title}
-                                </option>
-                            )
-                        )}
+                        {props.incubators.map((incubator) => (
+                            <option value={incubator.uuid} key={incubator.uuid}>
+                                {incubator.title}
+                            </option>
+                        ))}
                     </Select>
 
                     <SponsorBlock
@@ -365,7 +387,7 @@ export function StartupForm(props: StartupFormProps) {
                     />
                     <div
                         className={`fr-input-group ${
-                            errors.phases ? "fr-input-group--error" : ""
+                            errors.startupPhases ? "fr-input-group--error" : ""
                         }`}
                     >
                         <label className="fr-label">
@@ -380,7 +402,7 @@ export function StartupForm(props: StartupFormProps) {
                             register={register}
                             setValue={setValue}
                             getValues={getValues}
-                            errors={errors.phases || []}
+                            errors={errors.startupPhases || []}
                         />
                     </div>
                     {/*[FILE UPLOAD ]<hr />*/}
@@ -389,7 +411,7 @@ export function StartupForm(props: StartupFormProps) {
                     <BasicInput id="dashlord_url" />
 
                     <SelectAccessibilityStatus
-                        value={props.startup.accessibility_status}
+                        value={props.startup?.accessibility_status}
                         onChange={(e) =>
                             setValue(
                                 "startup.accessibility_status",

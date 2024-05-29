@@ -102,7 +102,6 @@ export default async function Page(props) {
                 .selectAll()
                 .execute()
         );
-
     const componentProps = {
         startup,
         startupSponsors,

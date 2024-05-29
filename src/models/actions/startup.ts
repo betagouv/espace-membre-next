@@ -19,7 +19,6 @@ export const startupInfoUpdateSchema = z.object({
         analyse_risques: startupSchema.shape.analyse_risques,
         analyse_risques_url: startupSchema.shape.analyse_risques_url,
         events: startupSchema.shape.events,
-        phases: startupSchema.shape.phases,
         techno: startupSchema.shape.techno,
         usertypes: startupSchema.shape.usertypes,
         //redirect_from: z.array(z.string()).optional(),
@@ -28,9 +27,18 @@ export const startupInfoUpdateSchema = z.object({
         description: startupSchema.shape.description,
     }),
     startupSponsors: z.array(z.string()),
-    startupPhases: z.array(phaseSchema),
     newSponsors: z.array(
         sponsorSchema.omit({
+            uuid: true,
+        })
+    ),
+    startupPhases: z.array(
+        phaseSchema.omit({
+            uuid: true,
+        })
+    ),
+    newPhases: z.array(
+        phaseSchema.omit({
             uuid: true,
         })
     ),
