@@ -7,11 +7,12 @@ export default function Observatoire({
     legal_status,
     average_nb_of_days,
 }: {
-    workplace: string;
-    gender: string;
-    tjm: number;
-    legal_status: string;
-    average_nb_of_days: number;
+    osm_city: any;
+    gender: string | null | undefined;
+    tjm: number | null | undefined;
+    legal_status: string | null | undefined;
+    average_nb_of_days: number | null | undefined;
+    workplace_insee_code: string | null | undefined;
 }) {
     return (
         <div className="fr-mb-14v">

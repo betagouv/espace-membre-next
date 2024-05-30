@@ -5,8 +5,7 @@ import { getServerSession } from "next-auth";
 import { BaseInfoUpdate } from "@/components/BaseInfoUpdatePage";
 import { getAllStartups } from "@/lib/kysely/queries";
 import { getUserInfos } from "@/lib/kysely/queries/users";
-import { MemberType } from "@/models/dbUser";
-import { DomaineSchemaType, memberSchema } from "@/models/member";
+import { memberSchema } from "@/models/member";
 import { authOptions } from "@/utils/authoptions";
 import { routeTitles } from "@/utils/routes/routeTitles";
 

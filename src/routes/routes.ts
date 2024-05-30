@@ -88,7 +88,7 @@ class routes {
     static API_PUBLIC_SPONSORS_GET_ALL: string = "/api/sponsors" as const;
 
     static GET_USER: string = "/community/:username" as const;
-    static GET_USER_API: string = "/api/community/:username" as const;
+    static GET_USER_API: string = "/api/member/:username" as const;
     static GET_COMMUNITY: string = "/community" as const;
     //static GET_COMMUNITY_API: string = "/api/community" as const;
 

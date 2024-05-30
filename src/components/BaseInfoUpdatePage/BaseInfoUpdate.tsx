@@ -19,8 +19,8 @@ import GenderSelect from "../GenderSelect";
 import { PullRequestWarning } from "../PullRequestWarning";
 import { GithubAPIPullRequest } from "@/lib/github";
 import {
-    baseInfoUpdateSchemaType,
-    baseInfoUpdateSchema,
+    memberInfoUpdateSchemaType,
+    memberInfoUpdateSchema,
 } from "@/models/actions/member";
 import { GenderCode, statusOptions } from "@/models/dbUser";
 import { DOMAINE_OPTIONS, memberSchema } from "@/models/member";
@@ -30,7 +30,7 @@ import { routeTitles } from "@/utils/routes/routeTitles";
 
 // data from secretariat API
 export interface BaseInfoUpdateProps {
-    formData: baseInfoUpdateSchemaType;
+    formData: memberInfoUpdateSchemaType;
     startupOptions: {
         value: string;
         label: string;
@@ -57,15 +57,15 @@ const postMemberData = async ({ values, sessionUsername }) => {
 };
 
 export const BaseInfoUpdate = (props: BaseInfoUpdateProps) => {
-    const defaultValues: baseInfoUpdateSchemaType = { ...props.formData };
+    const defaultValues: memberInfoUpdateSchemaType = { ...props.formData };
     const {
         register,
         handleSubmit,
         formState: { errors, isDirty, isSubmitting, isValid },
         setValue,
         control,
-    } = useForm<baseInfoUpdateSchemaType>({
-        resolver: zodResolver(baseInfoUpdateSchema),
+    } = useForm<memberInfoUpdateSchemaType>({
+        resolver: zodResolver(memberInfoUpdateSchema),
         mode: "onChange",
         defaultValues,
     });
@@ -79,7 +79,7 @@ export const BaseInfoUpdate = (props: BaseInfoUpdateProps) => {
     } | null>();
     const [isSaving, setIsSaving] = React.useState(false);
 
-    const onSubmit = async (input: baseInfoUpdateSchemaType) => {
+    const onSubmit = async (input: memberInfoUpdateSchemaType) => {
         //console.log("onSubmit", input);
 
         if (isSaving) {

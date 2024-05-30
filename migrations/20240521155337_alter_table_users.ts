@@ -7,14 +7,14 @@ export async function up(knex) {
         table.dropColumn("memberType");
         table.uuid("incubator_id");
         table.foreign("incubator_id").references("uuid").inTable("incubators");
-        table.jsonb("skills");
+        table.jsonb("competences");
     });
 }
 
 export async function down(knex) {
     return knex.schema.alterTable("users", (table) => {
         table.dropColumn("incubator_id");
-        table.dropColumn("skills");
+        table.dropColumn("competences");
 
         // Re-add the previously dropped columns
         table.json("startups");

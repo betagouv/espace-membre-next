@@ -3,6 +3,7 @@ import React from "react";
 import { fr } from "@codegouvfr/react-dsfr";
 import Accordion from "@codegouvfr/react-dsfr/Accordion";
 import Alert from "@codegouvfr/react-dsfr/Alert";
+import Badge from "@codegouvfr/react-dsfr/Badge";
 import Table from "@codegouvfr/react-dsfr/Table";
 
 import BlocAccederAuWebmail from "./BlocAccederAuWebmail";
@@ -13,9 +14,14 @@ import BlocConfigurerEmailSecondaire from "./BlocConfigurerEmailSecondaire";
 import BlocCreateEmail from "./BlocCreateEmail";
 import BlocEmailResponder from "./BlocEmailResponder";
 import BlocRedirection from "./BlocRedirection";
+import frontConfig from "@/frontConfig";
 import { EmailStatusCode } from "@/models/dbUser";
-import { EmailInfos } from "@/models/member";
-import Badge from "@codegouvfr/react-dsfr/Badge";
+import {
+    EmailInfos,
+    memberSchemaType,
+    memberWrapperSchemaType,
+} from "@/models/member";
+import { OvhRedirection, OvhResponder } from "@/models/ovh";
 
 function BlocEmailConfiguration({ emailInfos }: { emailInfos: EmailInfos }) {
     interface ServerConf {
@@ -112,25 +118,28 @@ function BlocEmailConfiguration({ emailInfos }: { emailInfos: EmailInfos }) {
 export default function EmailContainer({
     userInfos,
     emailInfos,
-    primaryEmail,
-    canCreateEmail,
-    canCreateRedirection,
-    hasPublicServiceEmail,
-    communication_email,
-    secondaryEmail,
-    domain,
-    hasResponder,
-    canChangeEmails,
-    canChangePassword,
-    redirections,
+    emailResponder,
+    emailRedirections,
+    authorizations: {
+        canCreateEmail,
+        canChangeEmails,
+        canChangePassword,
+        canCreateRedirection,
+        hasPublicServiceEmail,
+    },
     isExpired,
-    responderFormData,
-    status,
+}: {
+    userInfos: memberSchemaType;
+    isExpired: boolean;
+    emailInfos: EmailInfos | null;
+    emailRedirections: OvhRedirection[];
+    emailResponder: OvhResponder | null;
+    authorizations: memberWrapperSchemaType["authorizations"];
 }) {
     const emailIsBeignCreated = [
         EmailStatusCode.EMAIL_CREATION_WAITING,
         EmailStatusCode.EMAIL_CREATION_PENDING,
-    ].includes(status);
+    ].includes(userInfos.primary_email_status);
     return (
         <div className="fr-mb-14v">
             <h2>Email</h2>
@@ -167,23 +176,25 @@ export default function EmailContainer({
                     </>
                 )}
                 {!emailInfos &&
-                    primaryEmail &&
-                    !primaryEmail.includes(domain) && (
+                    userInfos.primary_email &&
+                    !userInfos.primary_email.includes(frontConfig.domain) && (
                         <>
                             <span className="font-weight-bold">
                                 Email principal :{" "}
                             </span>
                             <span className="font-weight-bold text-color-blue">
-                                <a href={`mailto:${primaryEmail}`}>
-                                    {primaryEmail}
+                                <a href={`mailto:${userInfos.primary_email}`}>
+                                    {userInfos.primary_email}
                                 </a>
                             </span>
                             <br />
                         </>
                     )}
                 <span className="font-weight-bold">Email secondaire : </span>{" "}
-                {secondaryEmail ? (
-                    <a href={`mailto:${secondaryEmail}`}>{secondaryEmail}</a>
+                {userInfos.secondary_email ? (
+                    <a href={`mailto:${userInfos.secondary_email}`}>
+                        {userInfos.secondary_email}
+                    </a>
                 ) : (
                     "Non renseigné"
                 )}
@@ -202,9 +213,9 @@ export default function EmailContainer({
                         ![
                             EmailStatusCode.EMAIL_CREATION_WAITING,
                             EmailStatusCode.EMAIL_CREATION_PENDING,
-                        ].includes(status) && (
+                        ].includes(userInfos.primary_email_status) && (
                             <BlocCreateEmail
-                                secondaryEmail={secondaryEmail}
+                                secondaryEmail={userInfos.secondary_email}
                                 hasPublicServiceEmail={hasPublicServiceEmail}
                                 userInfos={userInfos}
                             />
@@ -214,43 +225,42 @@ export default function EmailContainer({
                     )}
                     {!!emailInfos && !emailInfos.isExchange && (
                         <BlocEmailResponder
-                            username={userInfos.id}
-                            hasResponder={hasResponder}
-                            responderFormData={responderFormData}
+                            username={userInfos.username}
+                            emailResponder={emailResponder}
                         />
                     )}
                     <BlocChangerMotDePasse
                         canChangePassword={canChangePassword}
-                        status={status}
+                        status={userInfos.primary_email_status}
                         userInfos={userInfos}
                     />
                     {!!emailInfos && (
                         <BlocAccederAuWebmail
-                            isExchange={emailInfos.isExchange}
+                            isExchange={emailInfos.isExchange || false}
                         />
                     )}
                     {!!emailInfos && !emailInfos.isExchange && (
                         <BlocRedirection
-                            redirections={redirections}
+                            redirections={emailRedirections}
                             canCreateRedirection={canCreateRedirection}
                             userInfos={userInfos}
                             isExpired={isExpired}
-                            domain={domain}
+                            domain={frontConfig.domain}
                         />
                     )}
                     <BlocConfigurerEmailPrincipal
                         canChangeEmails={canChangeEmails}
                         userInfos={userInfos}
-                        primaryEmail={primaryEmail}
+                        primaryEmail={userInfos.primary_email}
                     />
                     <BlocConfigurerEmailSecondaire
                         canChangeEmails={canChangeEmails}
-                        secondaryEmail={secondaryEmail}
+                        secondaryEmail={userInfos.secondary_email}
                     />
                     <BlocConfigurerCommunicationEmail
-                        primaryEmail={primaryEmail}
-                        secondaryEmail={secondaryEmail}
-                        communication_email={communication_email}
+                        primaryEmail={userInfos.primary_email}
+                        secondaryEmail={userInfos.secondary_email}
+                        communication_email={userInfos.communication_email}
                     />
                 </div>
             )}

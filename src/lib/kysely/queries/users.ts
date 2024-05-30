@@ -4,17 +4,22 @@ import { UpdateObjectExpression } from "kysely/dist/cjs/parser/update-set-parser
 import { DB } from "@/@types/db"; // generated with `npm run kysely-codegen`
 import { db as database, jsonArrayFrom } from "@/lib/kysely";
 
-type GetUserInfosParams = {
-    username: string;
-    options?: { withDetails: boolean };
-};
+type GetUserInfosParams =
+    | {
+          username: string;
+          options?: { withDetails: boolean };
+      }
+    | {
+          uuid: string;
+          options?: { withDetails: boolean };
+      };
 /** Return member informations */
 
 export async function getUserInfos(
     params: GetUserInfosParams,
     db: Kysely<DB> = database
 ) {
-    const query = db
+    let query = db
         .selectFrom("users")
         // .leftJoin(
         //     "user_details",
@@ -22,17 +27,19 @@ export async function getUserInfos(
         //     computeHash(params.username)
         // )
         .selectAll("users")
-        .select((eb) => [withEndDate, withMissions])
-        // .$if(!!params.options?.withDetails, (qb) =>
-        //     qb.leftJoin(
-        //         "user_details",
-        //         "user_details.hash",
-        //         computeHash(params.username)
-        //     ).
-        // )
-
-        .where("users.username", "=", params.username)
-        .compile();
+        .select((eb) => [withEndDate, withMissions]);
+    // .$if(!!params.options?.withDetails, (qb) =>
+    //     qb.leftJoin(
+    //         "user_details",
+    //         "user_details.hash",
+    //         computeHash(params.username)
+    //     ).
+    // )
+    if ("username" in params) {
+        query = query.where("users.username", "=", params.username);
+    } else {
+        query = query.where("users.uuid", "=", params.uuid);
+    }
 
     //console.log(query.sql);
 
@@ -64,7 +71,10 @@ export async function getUserByStartup(
 }
 
 /** Return member informations */
-export async function getUserInfo(username: string, db: Kysely<DB> = database) {
+export async function getUserBasicInfo(
+    username: string,
+    db: Kysely<DB> = database
+) {
     const query = db
         .selectFrom("users")
         .select((eb) => [
@@ -86,6 +96,30 @@ export async function getUserInfo(username: string, db: Kysely<DB> = database) {
     const userInfos = await db.executeQuery(query);
 
     return (userInfos.rows.length && userInfos.rows[0]) || undefined;
+}
+
+/** Return member informations */
+export async function getAllUsersInfo(db: Kysely<DB> = database) {
+    const query = db
+        .selectFrom("users")
+        .select((eb) => [
+            "users.username",
+            "users.fullname",
+            "users.role",
+            "users.domaine",
+            "users.bio",
+            "users.link",
+            "users.primary_email",
+            "users.secondary_email",
+            "users.primary_email_status",
+        ])
+        .compile();
+
+    //console.log(query.sql);
+
+    const userInfos = await db.executeQuery(query);
+
+    return userInfos.rows;
 }
 
 /* UTILS */

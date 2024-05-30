@@ -9,7 +9,13 @@ import {
 } from "./dbUser";
 import { Mission, missionSchema } from "./mission";
 import { UsersDomaineEnum } from "@/@types/db";
-import { EMAIL_PLAN_TYPE, OvhRedirection, OvhResponder } from "@/models/ovh";
+import {
+    EMAIL_PLAN_TYPE,
+    OvhRedirection,
+    OvhRedirectionSchema,
+    OvhResponder,
+    OvhResponderSchema,
+} from "@/models/ovh";
 
 export enum Domaine {
     ANIMATION = "Animation",
@@ -86,6 +92,8 @@ export interface Member {
 
 export const memberSchema = z.object({
     // modify info schema
+    uuid: z.string({}).readonly(),
+    username: z.string({}).readonly(),
     fullname: z
         .string({
             errorMap: (issue, ctx) => ({
@@ -119,7 +127,8 @@ export const memberSchema = z.object({
     competences: z
         .array(z.string())
         .describe("Liste des compétences")
-        .optional(),
+        .optional()
+        .nullable(),
     teams: z
         .array(z.string())
         .describe("Liste des équipes incubateurs")
@@ -197,11 +206,36 @@ export const memberSchema = z.object({
     workplace_insee_code: z.string().describe("Ville").nullable().optional(),
     osm_city: z.string().describe("Ville international").nullable().optional(),
     primary_email: z.string().email().nullable(),
-    primary_email_status: z.nativeEnum(EmailStatusCode).optional().nullable(),
-    primary_email_status_updated_at: z.date(),
+    primary_email_status: z.nativeEnum(EmailStatusCode).readonly(),
+    primary_email_status_updated_at: z.date().readonly(),
+});
+export type memberSchemaType = z.infer<typeof memberSchema>;
+
+export const EmailInfosSchema = z.object({
+    email: z.string().email(), // Validation supplémentaire pour vérifier le format de l'email
+    isBlocked: z.boolean(),
+    emailPlan: EMAIL_PLAN_TYPE,
+    isPro: z.boolean().optional(),
+    isExchange: z.boolean().optional(),
+});
+export type EmailInfos = z.infer<typeof EmailInfosSchema>;
+
+export const memberWrapperSchema = z.object({
+    member: memberSchema,
+    isExpired: z.boolean(),
+    emailInfos: EmailInfosSchema,
+    emailRedirections: z.array(OvhRedirectionSchema),
+    emailResponder: OvhResponderSchema,
+    authorizations: z.object({
+        canCreateEmail: z.boolean(),
+        canCreateRedirection: z.boolean(),
+        canChangePassword: z.boolean(),
+        canChangeEmails: z.boolean(),
+        hasPublicServiceEmail: z.boolean(),
+    }),
 });
 
-export type memberSchemaType = z.infer<typeof memberSchema>;
+export type memberWrapperSchemaType = z.infer<typeof memberWrapperSchema>;
 
 export const memberPublicInfoSchema = memberSchema.pick({
     username: true,
@@ -229,14 +263,6 @@ export interface MemberWithPrimaryEmailInfo extends Member {
 
 export interface MemberWithEmail extends Member {
     email: string | undefined;
-}
-
-export interface EmailInfos {
-    email: string;
-    isBlocked: boolean;
-    emailPlan: EMAIL_PLAN_TYPE;
-    isPro?: boolean;
-    isExchange?: boolean;
 }
 
 export interface MemberWithPermission {

@@ -6,6 +6,9 @@ import AccountVerifyClientPage, {
     AccountVerifyClientPageProps,
 } from "./AccountVerifyClientPage";
 import { fetchGithubMarkdown } from "@/lib/github";
+import { db } from "@/lib/kysely";
+import { getAllStartups } from "@/lib/kysely/queries";
+import { getUserInfos } from "@/lib/kysely/queries/users";
 import { memberSchema } from "@/models/member";
 import betagouv from "@/server/betagouv";
 import { getDBUser } from "@/server/db/dbUser";
@@ -16,23 +19,23 @@ export const metadata: Metadata = {
     title: `${routeTitles.verifyMember()} / Espace Membre`,
 };
 
-async function fetchGithubPageData(username: string, ref: string = "master") {
-    const { attributes, body } = await fetchGithubMarkdown({
-        ref,
-        schema: memberSchema,
-        path: `content/_authors/${username}.md`,
-        // allow some empty fields on input for legacy. todo: move to zod preprocess ?
-        overrides: (values) => ({
-            domaine: values.domaine || [],
-            bio: values.body || "",
-            startups: values.startups || [],
-        }),
-    });
+// async function fetchGithubPageData(username: string, ref: string = "master") {
+//     const { attributes, body } = await fetchGithubMarkdown({
+//         ref,
+//         schema: memberSchema,
+//         path: `content/_authors/${username}.md`,
+//         // allow some empty fields on input for legacy. todo: move to zod preprocess ?
+//         overrides: (values) => ({
+//             domaine: values.domaine || [],
+//             bio: values.body || "",
+//             startups: values.startups || [],
+//         }),
+//     });
 
-    return {
-        ...attributes,
-    };
-}
+//     return {
+//         ...attributes,
+//     };
+// }
 
 export default async function CreateMemberPage() {
     const session = await getServerSession(authOptions);
@@ -43,25 +46,23 @@ export default async function CreateMemberPage() {
 
     const username = session.user.id;
 
-    const formData = await fetchGithubPageData(username, "master");
+    // const formData = await fetchGithubPageData(username, "master");
 
-    const startups = await betagouv.startupsInfos();
-    const dbUser = await getDBUser(username);
+    // const startups = await betagouv.startupsInfos();
+    const startups = await getAllStartups();
+    const member = memberSchema.parse(await getUserInfos({ username }));
+    // const missions = await db.selectFrom("missions").selectAll().execute();
     const startupOptions = startups.map((startup) => {
         return {
-            value: startup.id,
-            label: startup.attributes.name,
+            value: startup.uuid,
+            label: startup.name,
         };
     });
 
-    const props: AccountVerifyClientPageProps = {
-        startupOptions,
-        formData: {
-            ...formData,
-            secondary_email: dbUser?.secondary_email || "",
-            gender: dbUser?.gender,
-        },
-    };
-
-    return <AccountVerifyClientPage {...props} />;
+    return (
+        <AccountVerifyClientPage
+            member={member}
+            startupOptions={startupOptions}
+        />
+    );
 }

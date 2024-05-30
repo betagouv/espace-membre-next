@@ -16,12 +16,15 @@ import { Mission } from "@/components/BaseInfoUpdatePage/MissionsEditor";
 import CitySelect from "@/components/CitySelect";
 import GenderSelect from "@/components/GenderSelect";
 import { memberTypeOptions } from "@/frontConfig";
+import {
+    memberValidateInfoSchema,
+    memberValidateInfoSchemaType,
+} from "@/models/actions/member";
 import { statusOptions } from "@/models/dbUser";
 import {
     DOMAINE_OPTIONS,
-    completeMemberSchema,
-    completeMemberSchemaType,
     memberSchema,
+    memberSchemaType,
 } from "@/models/member";
 import routes, { computeRoute } from "@/routes/routes";
 
@@ -31,7 +34,7 @@ export interface AccountVerifyClientPageProps {
         value: string;
         label: string;
     }[];
-    formData: completeMemberSchemaType;
+    member: memberSchemaType;
 }
 
 const postMemberData = async ({ values, sessionUsername }) => {
@@ -65,24 +68,24 @@ const postMemberData = async ({ values, sessionUsername }) => {
     }
 };
 
-export default function AccountVerifyClientPage(
-    props: AccountVerifyClientPageProps
-) {
+export default function AccountVerifyClientPage({
+    member,
+    startupOptions,
+}: AccountVerifyClientPageProps) {
     const router = useRouter();
 
-    const defaultValues: completeMemberSchemaType = {
-        ...props.formData,
-    };
     const {
         register,
         handleSubmit,
         formState: { errors, isDirty, isSubmitting, isValid },
         setValue,
         control,
-    } = useForm<completeMemberSchemaType>({
-        resolver: zodResolver(completeMemberSchema),
+    } = useForm<memberValidateInfoSchemaType>({
+        resolver: zodResolver(memberValidateInfoSchema),
         mode: "onChange",
-        defaultValues,
+        defaultValues: {
+            ...member,
+        },
     });
     const { fields: missionsFields } = useFieldArray({
         rules: { minLength: 1 },
@@ -99,7 +102,7 @@ export default function AccountVerifyClientPage(
     } | null>();
     const [isSaving, setIsSaving] = React.useState(false);
 
-    const onSubmit = async (input: completeMemberSchemaType) => {
+    const onSubmit = async (input: memberValidateInfoSchemaType) => {
         if (isSaving) {
             return;
         }
@@ -282,8 +285,7 @@ export default function AccountVerifyClientPage(
                                                         );
                                                     }}
                                                     defaultValue={
-                                                        props.formData
-                                                            .competences || []
+                                                        member.competences || []
                                                     }
                                                 />
                                                 <br />
@@ -365,7 +367,7 @@ export default function AccountVerifyClientPage(
                                                     register={register}
                                                     setValue={setValue}
                                                     startupOptions={
-                                                        props.startupOptions
+                                                        startupOptions
                                                     }
                                                     errors={
                                                         errors.missions

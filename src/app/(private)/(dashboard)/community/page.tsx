@@ -1,9 +1,12 @@
 import type { Metadata } from "next";
 
+import { Incubators } from "@/@types/db";
 import { Community } from "@/components/CommunityPage";
+import { db } from "@/lib/kysely";
+import { getAllStartups } from "@/lib/kysely/queries";
+import { getAllUsersInfo } from "@/lib/kysely/queries/users";
 import { competencesList } from "@/models/competences";
 import { DOMAINE_OPTIONS } from "@/models/member";
-import betagouv from "@/server/betagouv";
 import { routeTitles } from "@/utils/routes/routeTitles";
 
 export const metadata: Metadata = {
@@ -11,23 +14,23 @@ export const metadata: Metadata = {
 };
 
 export default async function Page() {
-    const users = await betagouv.usersInfos();
-    const incubators = await betagouv.incubators();
-    const startups = await betagouv.startupsInfos();
+    const users = await getAllUsersInfo();
+    const incubators = await db.selectFrom("incubators").selectAll().execute();
+    const startups = await getAllStartups();
     const title = routeTitles.community();
 
     const props = {
         title,
-        incubatorOptions: Object.keys(incubators).map((incubator) => {
+        incubatorOptions: incubators.map((incubator) => {
             return {
-                value: incubator,
-                label: incubators[incubator].title,
+                value: incubator.uuid,
+                label: incubator.title,
             };
         }),
         startupOptions: startups.map((startup) => {
             return {
-                value: startup.id,
-                label: startup.attributes.name,
+                value: startup.uuid,
+                label: startup.name,
             };
         }),
         domaineOptions: DOMAINE_OPTIONS.map(({ key, name }) => ({

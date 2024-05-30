@@ -7,6 +7,7 @@ import config from "../config";
 import knex from "../db";
 import { getAllStartups, getDBStartup } from "../db/dbStartup";
 import { getAllUsersPublicInfo } from "../db/dbUser";
+import { db } from "@/lib/kysely";
 import { MattermostUser, getUserByEmail, searchUsers } from "@/lib/mattermost";
 import { DBUser, EmailStatusCode } from "@/models/dbUser";
 import { EMAIL_STATUS_READABLE_FORMAT } from "@/models/misc";
@@ -36,7 +37,10 @@ export async function getCommunityPageData(req, res, onSuccess, onError) {
 
     try {
         const users = await getAllUsersPublicInfo();
-        const incubators = await BetaGouv.incubators();
+        const incubators = await db
+            .selectFrom("incubators")
+            .selectAll()
+            .execute();
         const startups = await getAllStartups();
         const title = "Communauté";
         return onSuccess({
@@ -176,10 +180,6 @@ async function getUserPageData(req, res, onSuccess, onError) {
             );
             return;
         }
-        const marrainageStateResponse = await knex("marrainage")
-            .select()
-            .where({ username });
-        const marrainageState = marrainageStateResponse[0];
 
         const dbUser: DBUser | undefined = await knex("users")
             .where({ username })
@@ -219,7 +219,6 @@ async function getUserPageData(req, res, onSuccess, onError) {
             errors: req.flash("error"),
             messages: req.flash("message"),
             domain: config.domain,
-            marrainageState,
             activeTab: "community",
             secondaryEmail,
         });

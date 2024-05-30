@@ -11,7 +11,7 @@ import * as usersController from "@controllers/usersController";
 
 const router = express.Router();
 
-router.get(routes.ACCOUNT_GET_API, accountController.getCurrentAccountApi);
+// router.get(routes.ACCOUNT_GET_API, accountController.getCurrentAccountApi);
 router.get(
     routes.ACCOUNT_GET_DETAIL_INFO_FORM_API,
     accountController.getDetailInfoUpdateApi

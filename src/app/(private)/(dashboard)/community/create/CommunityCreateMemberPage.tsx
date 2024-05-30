@@ -13,7 +13,11 @@ import { useFieldArray, useForm } from "react-hook-form";
 import { z } from "zod";
 
 import { Mission } from "@/components/BaseInfoUpdatePage/MissionsEditor";
-import { DOMAINE_OPTIONS, Domaine, createMemberSchema } from "@/models/member";
+import {
+    createMemberSchema,
+    createMemberSchemaType,
+} from "@/models/actions/member";
+import { DOMAINE_OPTIONS, Domaine } from "@/models/member";
 import { Status } from "@/models/mission";
 import routes, { computeRoute } from "@/routes/routes";
 
@@ -51,21 +55,23 @@ const postMemberData = async ({ values }) => {
     }
 };
 
-export type CreateMemberType = z.infer<typeof createMemberSchema>;
-
 export default function CommunityCreateMemberPage(props: BaseInfoUpdateProps) {
-    const defaultValues: CreateMemberType = {
-        firstname: "",
-        lastname: "",
-        email: "",
+    const defaultValues: createMemberSchemaType = {
+        member: {
+            firstname: "",
+            lastname: "",
+            email: "",
+            // missions: ,
+            domaine: Domaine.ANIMATION,
+        },
         missions: [
             {
                 start: new Date(),
                 end: add(new Date(), { months: 3 }),
                 status: Status.independent,
+                employer: null,
             },
         ],
-        domaine: Domaine.ANIMATION,
     };
     const {
         register,
@@ -75,7 +81,7 @@ export default function CommunityCreateMemberPage(props: BaseInfoUpdateProps) {
         getValues,
         control,
         watch,
-    } = useForm<CreateMemberType>({
+    } = useForm<createMemberSchemaType>({
         resolver: zodResolver(createMemberSchema),
         mode: "onChange",
         defaultValues,
@@ -94,11 +100,11 @@ export default function CommunityCreateMemberPage(props: BaseInfoUpdateProps) {
     const [isSaving, setIsSaving] = React.useState(false);
     const [prUrl, setPRURL] = React.useState<string>();
 
-    const firstname = watch("firstname");
-    const lastname = watch("lastname");
-    const email = watch("email");
-
-    const onSubmit = async (input: CreateMemberType) => {
+    const firstname = watch("member.firstname");
+    const lastname = watch("member.lastname");
+    const email = watch("member.email");
+    console.log(errors, isDirty, isSubmitting, isValid);
+    const onSubmit = async (input: createMemberSchemaType) => {
         if (isSaving) {
             return;
         }
@@ -175,20 +181,23 @@ export default function CommunityCreateMemberPage(props: BaseInfoUpdateProps) {
                                     >
                                         <Input
                                             label={
-                                                createMemberSchema.shape
-                                                    .firstname.description
+                                                createMemberSchema.shape.member
+                                                    .shape.firstname.description
                                             }
                                             nativeInputProps={{
                                                 placeholder: "ex: Grace",
-                                                ...register("firstname"),
+                                                ...register("member.firstname"),
                                             }}
                                             state={
-                                                errors.firstname
+                                                errors.member &&
+                                                errors.member.firstname
                                                     ? "error"
                                                     : "default"
                                             }
                                             stateRelatedMessage={
-                                                errors.firstname?.message
+                                                errors.member &&
+                                                errors.member?.firstname
+                                                    ?.message
                                             }
                                         />
                                     </div>
@@ -204,20 +213,22 @@ export default function CommunityCreateMemberPage(props: BaseInfoUpdateProps) {
                                     >
                                         <Input
                                             label={
-                                                createMemberSchema.shape
-                                                    .lastname.description
+                                                createMemberSchema.shape.member
+                                                    .shape.lastname.description
                                             }
                                             nativeInputProps={{
                                                 placeholder: "ex: HOPPER",
-                                                ...register("lastname"),
+                                                ...register("member.lastname"),
                                             }}
                                             state={
-                                                errors.lastname
+                                                errors.member &&
+                                                errors.member.lastname
                                                     ? "error"
                                                     : "default"
                                             }
                                             stateRelatedMessage={
-                                                errors.lastname?.message
+                                                errors.member &&
+                                                errors.member.lastname?.message
                                             }
                                         />
                                     </div>
@@ -237,15 +248,17 @@ export default function CommunityCreateMemberPage(props: BaseInfoUpdateProps) {
                                             nativeInputProps={{
                                                 placeholder:
                                                     "ex: grace.hopper@gmail.com",
-                                                ...register("email"),
+                                                ...register("member.email"),
                                             }}
                                             state={
-                                                errors.email
+                                                errors.member &&
+                                                errors.member.email
                                                     ? "error"
                                                     : "default"
                                             }
                                             stateRelatedMessage={
-                                                errors.email?.message
+                                                errors.member &&
+                                                errors.member.email?.message
                                             }
                                         />
                                     </div>
@@ -274,15 +287,17 @@ export default function CommunityCreateMemberPage(props: BaseInfoUpdateProps) {
                                         <Select
                                             label="Domaine"
                                             nativeSelectProps={{
-                                                ...register(`domaine`),
+                                                ...register(`member.domaine`),
                                             }}
                                             state={
-                                                errors.domaine
+                                                errors.member &&
+                                                errors.member.domaine
                                                     ? "error"
                                                     : "default"
                                             }
                                             stateRelatedMessage={
-                                                errors.domaine?.message
+                                                errors.member &&
+                                                errors.member.domaine?.message
                                             }
                                         >
                                             <option value="" hidden={true}>
