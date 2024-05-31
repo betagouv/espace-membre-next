@@ -91,6 +91,7 @@ export default function MemberSelect<T extends boolean>({
                 {!!hint && <span className="fr-hint-text">{hint}</span>}
             </label>
             <Autocomplete
+                getOptionKey={(x) => x + Math.random()} // make ui usable when duplicate entries on input
                 multiple={!!multiple}
                 options={members.map((se) => ({
                     id: se.value,
