@@ -27,6 +27,7 @@ export interface MemberPageProps {
     emailInfos: any;
     redirections: any;
     userInfos: any;
+    primaryEmail: string;
     secondaryEmail: string;
     canCreateEmail: boolean;
     hasPublicServiceEmail: boolean;
@@ -223,6 +224,7 @@ export default function MemberPage({
     emailInfos,
     redirections,
     userInfos,
+    primaryEmail,
     secondaryEmail,
     canCreateEmail,
     hasPublicServiceEmail,
@@ -317,9 +319,18 @@ MemberPageProps) {
                                 {userInfos.role}
                                 <br />
                                 <br />
+                                {(userInfos.competences &&
+                                    userInfos.competences.length && (
+                                        <>
+                                            Compétences:{" "}
+                                            {userInfos.competences.join(", ")}
+                                        </>
+                                    )) ||
+                                    null}
+                                <br />
                                 {userInfos.start && (
                                     <>
-                                        <span>Mission :</span>
+                                        <span>Mission : </span>
                                         du{" "}
                                         {new Date(
                                             userInfos.start
@@ -347,25 +358,33 @@ MemberPageProps) {
                                     </a>
                                 )}
                                 {!userInfos.github && `Non renseigné`}
+                                <br />
+                                <span>Email principal : </span>{" "}
+                                {primaryEmail ? (
+                                    <a href={`mailto:${primaryEmail}`}>
+                                        {primaryEmail}
+                                    </a>
+                                ) : (
+                                    "Non renseigné"
+                                )}
+                                <br />
+                                <span>Email secondaire : </span>{" "}
+                                {secondaryEmail ? (
+                                    <a href={`mailto:${secondaryEmail}`}>
+                                        {secondaryEmail}
+                                    </a>
+                                ) : (
+                                    "Non renseigné"
+                                )}
                             </p>
                             <a
-                                className="fr-link"
+                                className={fr.cx("fr-btn")}
                                 href={`https://github.com/betagouv/beta.gouv.fr/edit/master/content/_authors/${username}.md`}
                                 target="_blank"
                             >
                                 Modifier sur Github
                             </a>
                         </div>
-                        <p>
-                            <span>Email secondaire : </span>{" "}
-                            {secondaryEmail ? (
-                                <a href={`mailto:${secondaryEmail}`}>
-                                    {secondaryEmail}
-                                </a>
-                            ) : (
-                                "Non renseigné"
-                            )}
-                        </p>
                     </div>
                 )}
                 {!userInfos && (

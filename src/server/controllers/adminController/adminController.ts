@@ -134,6 +134,9 @@ export async function getUsers(req, res) {
     const domaines = req.query.domaines
         ? req.query.domaines.split(",").map((domaine) => Domaine[domaine])
         : [];
+    const competences = req.query.competences
+        ? req.query.competences.split(",")
+        : [];
     const incubators = req.query.incubators
         ? req.query.incubators.split(",")
         : [];
@@ -161,6 +164,18 @@ export async function getUsers(req, res) {
     }
     if (domaines.length) {
         users = users.filter((user) => domaines.includes(user.domaine));
+    }
+    if (competences.length) {
+        users = users.filter((user) => {
+            // AND filter. check if user has all required competences
+            return (
+                user.competences &&
+                user.competences.length &&
+                competences.filter((competence) =>
+                    user.competences?.includes(competence)
+                ).length === competences.length
+            );
+        });
     }
     if (startupPhases.length) {
         const usersStartupsByPhase: UserStartup[] = await db("users_startups")

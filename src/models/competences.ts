@@ -1,11 +1,20 @@
 export const competencesTechniques = [
     "Accessibilité",
     "Administration Système",
-    "Développement",
+    "Data Science",
     "Développement Backend",
     "Développement Frontend",
     "Développement Full-stack",
     "DevOps",
+    "ElasticSearch",
+    "JavaScript/TypeScript",
+    "Machine learning",
+    "Matomo",
+    "Metabase",
+    "PHP",
+    "PostgreSQL",
+    "Python",
+    "Ruby",
     "Sécurité informatique",
     "UI",
 ] as const;
@@ -18,6 +27,8 @@ export const competencesProduit = [
     "Product design",
     "Product strategy",
     "UX",
+    "SEO",
+    "SEM",
 ] as const;
 
 export const competencesAutres = [
@@ -29,6 +40,8 @@ export const competencesAutres = [
 
 export const competences = {
     Produit: competencesProduit,
-    Développement: competencesTechniques,
+    Technique: competencesTechniques,
     Autres: competencesAutres,
 };
+
+export const competencesList = Object.values(competences).flatMap((c) => c);

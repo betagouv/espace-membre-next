@@ -166,11 +166,12 @@ export default {
     CHAT_WEBHOOK_URL_GENERAL: getOrThrowError("CHAT_WEBHOOK_URL_GENERAL"),
     CHAT_WEBHOOK_URL_DINUM: getOrThrowError("CHAT_WEBHOOK_URL_DINUM"),
     CHAT_WEBHOOK_URL_GIP: getOrThrowError("CHAT_WEBHOOK_URL_GIP"),
+    CHATWOOT_WEBSITE_TOKEN: process.env.CHATWOOT_WEBSITE_TOKEN,
     SPONSOR_API:
         process.env.SPONSOR_API ||
         "https://beta.gouv.fr/api/v2.5/sponsors.json",
     usersAPI:
-        process.env.USERS_API || "https://beta.gouv.fr/api/v2.3/authors.json",
+        process.env.USERS_API || "https://beta.gouv.fr/api/v2.6/authors.json",
     incubatorAPI:
         process.env.INCUBATOR_API ||
         "https://beta.gouv.fr/api/v2.5/incubators.json",
@@ -215,6 +216,13 @@ export default {
         : [],
     MATTERMOST_EMAIL_REGEX_EXCEPTION:
         process.env.MATTERMOST_EMAIL_REGEX_EXCEPTION,
+    NEWSLETTER_NUMBER_OF_DAYS_WITH_LAST_NEWSLETTER: process.env
+        .NEWSLETTER_NUMBER_OF_DAYS_WITH_LAST_NEWSLETTER
+        ? parseInt(
+              process.env.NEWSLETTER_NUMBER_OF_DAYS_WITH_LAST_NEWSLETTER,
+              10
+          )
+        : 10,
     OVH_EMAIL_PRO_NAME: process.env.OVH_EMAIL_PRO_NAME,
     OVH_EMAIL_EXCHANGE_NAME: process.env.OVH_EMAIL_EXCHANGE_NAME,
     investigationReportsIframeURL:

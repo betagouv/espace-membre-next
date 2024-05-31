@@ -8,7 +8,6 @@ import {
     MemberType,
 } from "./dbUser";
 import { Mission, missionSchema } from "./mission";
-
 import { EMAIL_PLAN_TYPE, OvhRedirection, OvhResponder } from "@/models/ovh";
 
 export enum Domaine {
@@ -80,6 +79,7 @@ export interface Member {
     employer: string;
     domaine: Domaine;
     role: string;
+    competences?: string[];
 }
 
 const bioSchema = z
@@ -99,6 +99,10 @@ const emailSchema = z
         }),
     })
     .email()
+    .transform((val) => val.toLowerCase())
+    .refine((val) => val === val.toLowerCase(), {
+        message: "L'email doit être en minuscule",
+    })
     .describe("Email");
 
 const githubSchema = z.string().describe("Login GitHub").optional().nullable();

@@ -27,9 +27,11 @@ const filter = createFilterOptions<CompetenceType>();
 export const CompetencesEditor = ({
     onChange,
     defaultValue,
+    placeholder = "Choisissez ou ajoutez vos compétences",
 }: {
     onChange: (event: any, competences: string[]) => void;
     defaultValue: string[];
+    placeholder?: string;
 }) => {
     const [value, setValue] = React.useState<CompetenceType[]>(
         defaultValue.map((t) => ({ label: t } as CompetenceType))
@@ -38,7 +40,6 @@ export const CompetencesEditor = ({
     return (
         <Autocomplete
             value={value}
-            freeSolo
             multiple={true}
             selectOnFocus={true}
             clearOnBlur={true}
@@ -141,7 +142,7 @@ export const CompetencesEditor = ({
                         backgroundColor: `var(--background-contrast-grey)`,
                         boxShadow: `inset 0 -2px 0 0 var(--border-plain-grey)`,
                     }}
-                    placeholder="Choisissez ou ajoutez vos compétences"
+                    placeholder={placeholder}
                 />
             )}
         />

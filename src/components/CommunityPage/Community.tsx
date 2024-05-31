@@ -1,9 +1,9 @@
 "use client";
 import React from "react";
 
-import { CommunitySearchMember } from "./CommunitySearchMember";
-import { CommunityFilterMembers } from "./CommunityFilterMembers";
 import { CommunityProps } from ".";
+import { CommunityFilterMembers } from "./CommunityFilterMembers";
+import { CommunitySearchMember } from "./CommunitySearchMember";
 
 /* Pure component */
 export const Community = (props: CommunityProps) => {
