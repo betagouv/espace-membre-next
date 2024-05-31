@@ -1,7 +1,6 @@
 import * as Sentry from "@sentry/node";
 import { getServerSession } from "next-auth";
 
-import { createOrUpdateMemberData } from "../createOrUpdateMemberData";
 import { updateMember } from "../updateMember";
 import { db } from "@/lib/kysely";
 import {

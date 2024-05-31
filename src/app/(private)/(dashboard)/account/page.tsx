@@ -11,6 +11,7 @@ import {
     GenderCode,
     LegalStatus,
 } from "@/models/dbUser";
+import { userInfosToModel } from "@/models/mapper";
 import { Domaine, memberSchemaType } from "@/models/member";
 import { missionSchemaType } from "@/models/mission";
 import betagouv from "@/server/betagouv";
@@ -24,32 +25,6 @@ import { routeTitles } from "@/utils/routes/routeTitles";
 export const metadata: Metadata = {
     title: `${routeTitles.account()} / Espace Membre`,
 };
-
-function userInfosToModel(
-    user: Awaited<ReturnType<typeof getUserInfos>>
-): memberSchemaType {
-    if (!user) {
-        throw new Error("No users");
-    }
-    return {
-        ...user,
-        username: user?.username || "",
-        domaine: user.domaine as Domaine,
-        primary_email_status: user.primary_email_status as EmailStatusCode,
-        secondary_email: user.secondary_email || "",
-        gender: user.gender as GenderCode,
-        legal_status: user.legal_status as LegalStatus,
-        communication_email:
-            user.communication_email === CommunicationEmailCode.SECONDARY
-                ? CommunicationEmailCode.SECONDARY
-                : CommunicationEmailCode.PRIMARY,
-        primary_email_status_updated_at:
-            user.primary_email_status_updated_at || new Date(),
-        missions: (user?.missions || []).map((mission) => ({
-            ...mission,
-        })),
-    };
-}
 
 export default async function Page() {
     const session = await getServerSession(authOptions);

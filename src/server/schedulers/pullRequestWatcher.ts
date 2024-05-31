@@ -3,6 +3,7 @@ import ejs from "ejs";
 import Betagouv from "../betagouv";
 import betagouv from "../betagouv";
 import { getDBUser } from "../db/dbUser";
+import { Startups } from "@/@types/db";
 import * as github from "@/lib/github";
 import * as mattermost from "@/lib/mattermost";
 import {
@@ -10,7 +11,6 @@ import {
     DBUser,
     EmailStatusCode,
 } from "@/models/dbUser/dbUser";
-import { DBStartup } from "@/models/startup";
 import config from "@/server/config";
 import { sendEmail } from "@/server/config/email.config";
 import { buildBetaEmail, sleep } from "@controllers/utils";
@@ -122,12 +122,12 @@ const sendEmailToAuthorTeamIfExists = async (pullRequestNumber: number) => {
             // if member doesn't have startup
             // if member has more than 1 startup we don't want to notifiy both startup
         }
-        const startup: DBStartup | undefined = (await db("startups")
+        const startup: Startups | undefined = (await db("startups")
             .where({
                 id: userInfo.startups[0],
             })
             .select()
-            .first()) as DBStartup;
+            .first()) as Startups;
         if (startup && startup.mailing_list) {
             console.log(`Will send un email to ${startup.mailing_list}`);
             try {

@@ -214,14 +214,14 @@ export async function updateStartup({
             }
 
             // delete old phase
-            const phasesUuidToRemove = _.difference(
-                previousStartupPhases.map((s) => s.uuid),
-                startupPhases.filter((s) => s.uuid).map((s) => s.uuid)
+            const phasesNameToRemove = _.difference(
+                previousStartupPhases.map((s) => s.name),
+                startupPhases.filter((s) => s.name).map((s) => s.name)
             );
-            for (const phaseUuid of phasesUuidToRemove) {
+            for (const phaseName of phasesNameToRemove) {
                 await trx
                     .deleteFrom("phases")
-                    .where("uuid", "=", phaseUuid)
+                    .where("name", "=", phaseName)
                     .where("startup_id", "=", startupUuid)
                     .execute();
             }

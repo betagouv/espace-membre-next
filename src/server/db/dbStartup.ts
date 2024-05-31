@@ -1,20 +1,20 @@
 import db from ".";
-import { DBStartup, createDBStartup } from "@/models/startup";
+import { Startups } from "@/@types/db";
 
 export const getDBStartup = (
     params: { uuid: string } | { id: string }
-): Promise<DBStartup | undefined> => {
+): Promise<Startups | undefined> => {
     return db("startups").where(params).first();
 };
 
-export const getAllStartups = (): Promise<DBStartup[]> => {
+export const getAllStartups = (): Promise<Startups[]> => {
     return db("startups");
 };
 
 // Assuming knex is already configured and required
 
 // Insert a new startup and link it to an organization within a transaction
-export function createOrUpdateStartup(startupData: createDBStartup) {
+export function createOrUpdateStartup(startupData: any) {
     let { organization_ids, ...data } = startupData;
     return db
         .transaction((trx) => {

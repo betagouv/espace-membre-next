@@ -205,5 +205,5 @@ export async function updateUser(
         throw new Error("Failed to insert or update mission");
     }
 
-    return result.id;
+    return result.length;
 }

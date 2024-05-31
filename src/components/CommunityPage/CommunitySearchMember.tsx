@@ -6,12 +6,15 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 
 import MemberSelect from "../MemberSelect";
-
-import { Member } from "@/models/member";
+import { Member, memberPublicInfoSchemaType } from "@/models/member";
 import { routeTitles } from "@/utils/routes/routeTitles";
 
 /* Pure component */
-export const CommunitySearchMember = ({ users }: { users: Member[] }) => {
+export const CommunitySearchMember = ({
+    users,
+}: {
+    users: memberPublicInfoSchemaType[];
+}) => {
     const router = useRouter();
     const [username, setUsername] = React.useState<string | undefined>();
 

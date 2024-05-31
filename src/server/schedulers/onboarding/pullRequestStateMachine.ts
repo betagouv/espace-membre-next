@@ -1,6 +1,7 @@
 import * as Sentry from "@sentry/node";
 import { differenceInDays } from "date-fns/differenceInDays";
 
+import { Startups } from "@/@types/db";
 import * as github from "@/lib/github";
 import * as mattermost from "@/lib/mattermost";
 import { CommunicationEmailCode } from "@/models/dbUser";
@@ -9,7 +10,6 @@ import {
     PULL_REQUEST_STATE,
     PULL_REQUEST_TYPE,
 } from "@/models/pullRequests";
-import { DBStartup } from "@/models/startup";
 import config from "@/server/config";
 import { sendEmail } from "@/server/config/email.config";
 import db from "@db";
@@ -103,7 +103,7 @@ const sendEmailToTeam = async ({
     if (!startup) {
         return;
     }
-    const dbStartup: DBStartup = await db("startups")
+    const dbStartup: Startups = await db("startups")
         .where({
             id: startup,
         })

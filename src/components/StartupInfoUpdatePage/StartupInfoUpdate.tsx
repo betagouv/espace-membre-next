@@ -5,6 +5,7 @@ import { fr } from "@codegouvfr/react-dsfr";
 import * as Sentry from "@sentry/nextjs";
 import axios from "axios";
 
+import { Option } from "../CommunityPage";
 import { StartupForm, StartupFormProps } from "../StartupForm/StartupForm";
 import { updateStartup } from "@/app/api/startups/actions";
 import { startupInfoUpdateSchemaType } from "@/models/actions/startup";
@@ -18,9 +19,8 @@ interface StartupInfoUpdateProps {
     startup: startupSchemaType;
     startupSponsors: sponsorSchemaType[];
     startupPhases: phaseSchemaType[];
-    incubators: incubatorSchemaType[];
-    sponsors: sponsorSchemaType[];
-    save: (data: startupInfoUpdateSchemaType) => any;
+    incubatorOptions: Option[];
+    sponsorOptions: Option[];
 }
 
 /* Pure component */
@@ -73,8 +73,8 @@ export const StartupInfoUpdate = (props: StartupInfoUpdateProps) => {
                         startupSponsors={props.startupSponsors}
                         startupPhases={props.startupPhases}
                         startup={props.startup}
-                        incubators={props.incubators}
-                        sponsors={props.sponsors}
+                        incubatorOptions={props.incubatorOptions}
+                        sponsorOptions={props.sponsorOptions}
                     />
                 )) || <>Loading...</>}
             </div>

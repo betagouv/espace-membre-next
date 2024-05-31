@@ -226,7 +226,7 @@ export default function EmailContainer({
                     {!!emailInfos && !emailInfos.isExchange && (
                         <BlocEmailResponder
                             username={userInfos.username}
-                            emailResponder={emailResponder}
+                            responder={emailResponder}
                         />
                     )}
                     <BlocChangerMotDePasse

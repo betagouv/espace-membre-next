@@ -17,8 +17,18 @@ export default async function Page(props) {
         <>
             <h1>{routeTitles.startupCreate()}</h1>
             <StartupInfoCreate
-                sponsors={sponsors}
-                incubators={incubators}
+                incubatorOptions={incubators.map((incubator) => {
+                    return {
+                        value: incubator.uuid,
+                        label: incubator.title,
+                    };
+                })}
+                sponsorOptions={sponsors.map((incubator) => {
+                    return {
+                        value: incubator.uuid,
+                        label: incubator.name,
+                    };
+                })}
                 {...props}
             />
         </>

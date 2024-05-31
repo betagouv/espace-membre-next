@@ -35,6 +35,7 @@ export default function AccountPage(props: AccountPageProps) {
         emailResponder,
         isExpired,
         userInfos: {
+            username,
             workplace_insee_code,
             osm_city,
             gender,
@@ -172,7 +173,7 @@ export default function AccountPage(props: AccountPageProps) {
                                     computeRoute(
                                         routes.USER_DELETE_EMAIL_API.replace(
                                             ":username",
-                                            id
+                                            username
                                         )
                                     ),
                                     undefined,

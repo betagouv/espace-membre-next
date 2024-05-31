@@ -13,6 +13,7 @@ import {
     UpdateOvhResponderSchema,
 } from "@/models/actions/ovh";
 import { memberWrapperSchema } from "@/models/member";
+import { OvhResponder } from "@/models/ovh";
 import routes, { computeRoute } from "@/routes/routes";
 
 export default function BlocEmailResponder({

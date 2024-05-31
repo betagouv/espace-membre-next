@@ -19,6 +19,7 @@ import SponsorBlock from "./SponsorBlock";
 import { ThematiquesEditor } from "./ThematiquesEditor";
 import { UsertypesEditor } from "./UsertypesEditor";
 import { ClientOnly } from "../ClientOnly";
+import { Option } from "../CommunityPage";
 import SelectAccessibilityStatus from "../SelectAccessibilityStatus";
 import {
     startupInfoUpdateSchema,
@@ -59,6 +60,7 @@ const NEW_PRODUCT_DATA: startupInfoUpdateSchemaType["startup"] = {
     pitch: "",
     description: "",
     contact: "",
+    incubator_id: "",
 };
 
 // data from secretariat API
@@ -66,8 +68,8 @@ export interface StartupFormProps {
     startup?: startupSchemaType;
     startupSponsors?: sponsorSchemaType[];
     startupPhases?: phaseSchemaType[];
-    incubators: incubatorSchemaType[];
-    sponsors: sponsorSchemaType[];
+    incubatorOptions: Option[];
+    sponsorOptions: Option[];
     save: (data: startupInfoUpdateSchemaType) => any;
 }
 
@@ -197,7 +199,6 @@ export function StartupForm(props: StartupFormProps) {
         !!props.startup?.analyse_risques_url ||
         !!getValues("startup.analyse_risques");
 
-    ]);
     return (
         <>
             <div>
@@ -343,9 +344,12 @@ export function StartupForm(props: StartupFormProps) {
                         }
                     >
                         <option value="">Séléctionnez un incubateur</option>
-                        {props.incubators.map((incubator) => (
-                            <option value={incubator.uuid} key={incubator.uuid}>
-                                {incubator.title}
+                        {props.incubatorOptions.map((incubator) => (
+                            <option
+                                value={incubator.value}
+                                key={incubator.value}
+                            >
+                                {incubator.label}
                             </option>
                         ))}
                     </Select>
@@ -356,8 +360,8 @@ export function StartupForm(props: StartupFormProps) {
                             ...getValues("newSponsors").map((s) => s.ghid),
                         ]}
                         allSponsors={{
-                            ...props.sponsors.reduce(
-                                (a, c) => ({ ...a, [c.uuid]: c }),
+                            ...props.sponsorOptions.reduce(
+                                (a, c) => ({ ...a, [c.value]: c }),
                                 {}
                             ),
                             ...getValues("newSponsors").reduce(

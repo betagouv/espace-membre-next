@@ -1,17 +1,13 @@
+import { ACTIVE_PHASES, PHASE_READABLE_NAME } from "@/models/startup";
+import routes from "@/routes/routes";
 import { sendEmail } from "@/server/config/email.config";
 import db from "@db";
-import {
-    ACTIVE_PHASES,
-    DBStartup,
-    PHASE_READABLE_NAME,
-} from "@/models/startup";
 import { EMAIL_TYPES } from "@modules/email";
-import routes from "@/routes/routes";
 
 export const sendEmailToStartupToUpdatePhase = async (
-    startupsArg?: DBStartup[]
+    startupsArg?: Startups[]
 ) => {
-    const startups: DBStartup[] =
+    const startups: Startups[] =
         startupsArg ||
         (await db("startups")
             .whereIn("current_phase", ACTIVE_PHASES)

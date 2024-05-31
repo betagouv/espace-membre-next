@@ -2,18 +2,17 @@ import * as Sentry from "@sentry/node";
 import { differenceInDays } from "date-fns";
 import { start } from "repl";
 
+import { Startups } from "@/@types/db";
 import { getLastCommitFromFile } from "@/lib/github";
 import { Incubator, dbIncubator } from "@/models/incubator";
 import { Domaine, Member } from "@/models/member";
 import { Sponsor, dbSponsorSchemaType } from "@/models/sponsor";
 import {
-    DBStartup,
-    Phase,
     Startup,
     StartupInfo,
     StartupPhase,
-    dbStartupSchema,
-    dbStartupSchemaType,
+    startupSchema,
+    startupSchemaType,
     phaseSchema,
 } from "@/models/startup";
 import config from "@/server/config";
@@ -58,8 +57,8 @@ function isRecent(phaseDate: Date) {
 }
 
 async function compareAndTriggerChange(
-    newStartupInfo: DBStartup,
-    previousStartupInfo: DBStartup
+    newStartupInfo: Startups,
+    previousStartupInfo: Startups
 ) {
     if (
         previousStartupInfo &&
@@ -180,7 +179,7 @@ export async function syncBetagouvStartupAPI() {
 
     for (const startup of startups) {
         console.log(`working on startup : ${startup.id}`);
-        const previousStartupInfo: DBStartup = await db("startups")
+        const previousStartupInfo: Startups = await db("startups")
             .where({ id: startup.id })
             .first();
         const startupDetailInfo = startupDetailsInfo.find(

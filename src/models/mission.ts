@@ -1,6 +1,6 @@
 import { z } from "zod";
 
-import { DBStartup } from "./startup";
+import { Startups } from "@/@types/db";
 import { userStatusOptions } from "@/frontConfig";
 
 // export type Status = "independant" | "admin" | "service";
@@ -29,7 +29,7 @@ export interface DBMission {
     username: string;
     start: Date;
     end?: Date;
-    startups: DBStartup[];
+    startups: Startups[];
 }
 
 export interface GithubMission {
@@ -102,11 +102,11 @@ export const missionSchema = z.object({
 export type missionSchemaType = z.infer<typeof missionSchema>;
 
 export interface createDBMission extends Omit<DBMission, "uuid" | "id"> {
-    startups: DBStartup[];
+    startups: Startups[];
     user_id: string;
 }
 
 export interface updateDBMission extends DBMission {
-    startups: DBStartup[];
+    startups: Startups[];
     user_id: string;
 }

@@ -197,11 +197,7 @@ export const startupSchema = z.object({
         .min(1)
         .describe("Email de contact du produit"),
     link: z.string().describe("URL du site web").optional().nullable(),
-    repository: z
-        .string()
-        .describe("URL du repository GitHub")
-        .optional()
-        .nullable(),
+    repository: z.string().describe("URL du repository GitHub").optional(),
     accessibility_status: z.string().optional().nullable(),
     dashlord_url: z
         .string()

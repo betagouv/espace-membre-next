@@ -5,7 +5,7 @@ import BetaGouv from "../betagouv";
 import betagouv from "../betagouv";
 import config from "../config";
 import knex from "../db";
-import { getAllStartups, getDBStartup } from "../db/dbStartup";
+import { getAllStartups } from "../db/dbStartup";
 import { getAllUsersPublicInfo } from "../db/dbUser";
 import { db } from "@/lib/kysely";
 import { MattermostUser, getUserByEmail, searchUsers } from "@/lib/mattermost";

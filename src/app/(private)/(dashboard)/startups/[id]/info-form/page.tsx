@@ -8,6 +8,8 @@ import { getPullRequestForBranch, fetchGithubMarkdown } from "@/lib/github";
 import { db } from "@/lib/kysely";
 import { sponsorSchema } from "@/models/sponsor";
 import { phaseSchema, startupSchema } from "@/models/startup";
+import { thematiques } from "@/models/thematiques";
+import { usertypes } from "@/models/usertypes";
 import betagouv from "@/server/betagouv";
 import { authOptions } from "@/utils/authoptions";
 import { routeTitles } from "@/utils/routes/routeTitles";
@@ -103,11 +105,31 @@ export default async function Page(props) {
                 .execute()
         );
     const componentProps = {
-        startup,
+        startup: {
+            ...startup,
+            description: startup.description || "",
+            contact: startup.contact || "",
+            incubator_id: startup.incubator_id || "",
+            pitch: startup.pitch || "",
+            repository: startup.repository || undefined,
+            techno: [JSON.stringify(startup.techno)],
+            usertypes: [JSON.stringify(startup.usertypes)],
+            thematiques: [JSON.stringify(startup.thematiques)],
+        },
         startupSponsors,
         startupPhases,
-        incubators,
-        sponsors,
+        incubatorOptions: incubators.map((incubator) => {
+            return {
+                value: incubator.uuid,
+                label: incubator.title,
+            };
+        }),
+        sponsorOptions: sponsors.map((incubator) => {
+            return {
+                value: incubator.uuid,
+                label: incubator.name,
+            };
+        }),
     };
 
     return <StartupInfoUpdate {...componentProps} />;

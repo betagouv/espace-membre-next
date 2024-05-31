@@ -4,6 +4,7 @@ import React from "react";
 import * as Sentry from "@sentry/nextjs";
 import axios from "axios";
 
+import { Option } from "../CommunityPage";
 import { StartupForm, StartupFormProps } from "../StartupForm/StartupForm";
 import { createStartup } from "@/app/api/startups/actions";
 import { incubatorSchemaType } from "@/models/incubator";
@@ -12,8 +13,8 @@ import { StartupPhase } from "@/models/startup";
 import routes, { computeRoute } from "@/routes/routes";
 
 interface StartupInfoCreateProps {
-    incubators: incubatorSchemaType[];
-    sponsors: sponsorSchemaType[];
+    incubatorOptions: Option[];
+    sponsorOptions: Option[];
 }
 
 /* Pure component */
@@ -38,8 +39,8 @@ export const StartupInfoCreate = (props: StartupInfoCreateProps) => {
             <div>
                 <StartupForm
                     save={save}
-                    incubators={props.incubators}
-                    sponsors={props.sponsors}
+                    incubatorOptions={props.incubatorOptions}
+                    sponsorOptions={props.sponsorOptions}
                 />
                 <br />
                 <br />

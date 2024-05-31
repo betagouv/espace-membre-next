@@ -50,7 +50,7 @@ fileignoreconfig:
 - filename: src/components/StartupForm/PhasesEditor.tsx
   checksum: c5fd9bbfffa9cde5c80cfccbff17f8dc5536b465c539534aa553c22179b31367
 - filename: src/components/StartupForm/StartupForm.tsx
-  checksum: cba7dc47f45cc21075defcff27e00bec56bc9fe4c1df004fa63d86df41f90874
+  checksum: 52534440fddd23754ba648f2687a5cad2353ff6414a4d72d3909c08263acdabe
 - filename: src/components/StartupForm/ThematiquesEditor.tsx
   checksum: dcaa8a0e4f7fac866160ef2422014f2ad118701d18ba177c162dc1bbd1b86be3
 - filename: src/components/StartupForm/UsertypesEditor.tsx

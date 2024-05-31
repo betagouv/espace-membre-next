@@ -1,7 +1,8 @@
 import ButtonsGroup from "@codegouvfr/react-dsfr/ButtonsGroup";
 
 export default function Observatoire({
-    workplace,
+    workplace_insee_code,
+    osm_city,
     gender,
     tjm,
     legal_status,
@@ -22,7 +23,7 @@ export default function Observatoire({
                 <span className="font-weight-bold">
                     Lieu de travail principal :{" "}
                 </span>{" "}
-                {workplace || "Non renseigné"}
+                {/* {workplace || "Non renseigné"} */}
                 <br />
                 <span className="font-weight-bold">Genre : </span>{" "}
                 <span className="hide-info-detail">

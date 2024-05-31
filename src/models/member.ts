@@ -245,6 +245,7 @@ export const memberPublicInfoSchema = memberSchema.pick({
     bio: true,
     link: true,
     missions: true,
+    primary_email: true,
 });
 
 export type memberPublicInfoSchemaType = z.infer<typeof memberPublicInfoSchema>;

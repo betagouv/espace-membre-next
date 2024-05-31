@@ -1,10 +1,10 @@
 import { differenceInDays } from "date-fns/differenceInDays";
 import _ from "lodash";
 
+import { Startups } from "@/@types/db";
 import { DBUser, createDBUserAndMission } from "@/models/dbUser/dbUser";
 import { Member } from "@/models/member";
 import { DBMission, Mission } from "@/models/mission";
-import { DBStartup } from "@/models/startup";
 import { createMission } from "@/server/db/dbMission";
 import { getAllUsersPublicInfo } from "@/server/db/dbUser";
 import betagouv from "@betagouv";
@@ -28,7 +28,7 @@ function compareUserAndTriggerOnChange(
 
 export async function syncBetagouvUserAPI() {
     const members = await betagouv.usersInfos();
-    const allStartups: DBStartup[] = await db("startups");
+    const allStartups: Startups[] = await db("startups");
     // Truncate multiple dependent tables with CASCADE
     await db.raw("TRUNCATE TABLE users_startups, missions, missions_startups");
 

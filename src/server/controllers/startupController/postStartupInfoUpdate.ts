@@ -1,5 +1,3 @@
-import { updateMultipleFilesPR } from "@controllers/helpers/githubHelpers/updateGithubCollectionEntry";
-import db from "@db";
 import slugify from "@sindresorhus/slugify";
 
 import {
@@ -11,7 +9,7 @@ import {
     GithubBetagouvFile,
     GithubStartupChange,
 } from "../helpers/githubHelpers/githubEntryInterface";
-
+import { Startups } from "@/@types/db";
 import { addEvent } from "@/lib/events";
 import { EventCode } from "@/models/actionEvent";
 import { PULL_REQUEST_TYPE, PULL_REQUEST_STATE } from "@/models/pullRequests";
@@ -20,8 +18,10 @@ import {
     SponsorDomaineMinisteriel,
     SponsorType,
 } from "@/models/sponsor";
-import { DBStartup, StartupPhase } from "@/models/startup";
+import { StartupPhase } from "@/models/startup";
 import { isValidDate, requiredError } from "@/server/controllers/validator";
+import { updateMultipleFilesPR } from "@controllers/helpers/githubHelpers/updateGithubCollectionEntry";
+import db from "@db";
 
 const isValidPhase = (field, value, callback) => {
     if (!value || Object.values(StartupPhase).includes(value)) {
@@ -128,7 +128,7 @@ export async function postStartupInfoUpdate(req, res) {
             start: phase.start ? new Date(phase.start) : undefined,
         }));
         changes["phases"] = newPhases;
-        const [dbStartup]: DBStartup[] = await db("startups")
+        const [dbStartup]: Startups[] = await db("startups")
             .insert({
                 ...changes,
                 content,
