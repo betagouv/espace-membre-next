@@ -99,10 +99,7 @@ const emailSchema = z
         }),
     })
     .email()
-    .transform((val) => val.toLowerCase())
-    .refine((val) => val === val.toLowerCase(), {
-        message: "L'email doit être en minuscule",
-    })
+    .transform((val) => val ? val.toLowerCase() : val)
     .describe("Email");
 
 const githubSchema = z.string().describe("Login GitHub").optional().nullable();
