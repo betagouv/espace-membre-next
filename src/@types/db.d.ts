@@ -271,6 +271,7 @@ export interface Users {
   average_nb_of_days: number | null;
   bio: string | null;
   communication_email: Generated<string | null>;
+  competences: Json | null;
   created_at: Generated<Timestamp>;
   domaine: UsersDomaineEnum;
   email_is_redirection: Generated<boolean | null>;
@@ -288,7 +289,6 @@ export interface Users {
   primary_email_status_updated_at: Generated<Timestamp | null>;
   role: string;
   secondary_email: string | null;
-  skills: Json | null;
   tjm: number | null;
   username: string;
   uuid: Generated<string>;

@@ -1,27 +1,45 @@
-import { number } from "zod";
+import { InsertObject } from "kysely/dist/cjs/parser/insert-values-parser";
 
-import db from ".";
-import { dbIncubator } from "@/models/incubator";
+import { DB } from "@/@types/db";
+import { db } from "@/lib/kysely";
 
-export const getDBIncubator = (
-    params: { id: number } | { ghid: string }
-): Promise<dbIncubator | undefined> => {
-    return db("incubators").where(params).first();
+export const getDBIncubator = (params: { id: string } | { ghid: string }) => {
+    if ("id" in params) {
+        return db
+            .selectFrom("incubators")
+            .selectAll()
+            .where("uuid", "=", params.id)
+            .execute();
+    } else if (params.ghid) {
+        return db
+            .selectFrom("incubators")
+            .selectAll()
+            .where("ghid", "=", params.ghid)
+            .execute();
+    }
 };
 
-export const getAllIncubators = (): Promise<dbIncubator[]> => {
-    return db("incubators");
+export const getAllIncubators = () => {
+    return db.selectFrom("incubators").selectAll();
 };
 
 export const getOrCreateDBIncubator = async (
-    params: Omit<dbIncubator, "uuid">
-): Promise<dbIncubator> => {
-    const [dbIncubator] = await db("incubators")
-        .insert({
-            ...params,
-        })
-        .onConflict("ghid")
-        .merge()
-        .returning("*");
-    return dbIncubator;
+    incubator: InsertObject<DB, "incubators">
+) => {
+    let existingIncubator;
+    if (incubator.ghid) {
+        existingIncubator = db
+            .selectFrom("incubators")
+            .where("ghid", "=", incubator.ghid)
+            .selectAll().execute;
+    }
+    if (existingIncubator) {
+        return existingIncubator;
+    } else {
+        return db
+            .insertInto("incubators")
+            .values(incubator)
+            .returningAll()
+            .executeTakeFirst();
+    }
 };

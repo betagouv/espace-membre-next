@@ -73,10 +73,14 @@ fileignoreconfig:
   checksum: 675ba81fc5357f186d2ca4ce446a75016fbbcda42492d414d31ee7ad7fa8f7d5
 - filename: src/server/betagouv.ts
   checksum: 3fea239f6476881245b6607b4f7013b1ed769a66c1c56ef21e0a0fddca005689
+- filename: src/server/controllers/accountController/getCurrentAccount.ts
+  checksum: f84d46040125fc1488d319afd0e832a0db0f7bcafd53d8b312f3193a02f28ed8
 - filename: src/server/controllers/usersController/createEmailForUser.ts
   checksum: fecf58ca9f7d8c7ff5aaadaa998ee3bf86e386027e14d6f2e0d1ab6b9693b27b
 - filename: src/server/controllers/usersController/usersControllerUtils.ts
   checksum: afb73b3143023c22e51461c9dfaf870daff6c0e2689571c3a7500f784aa76346
+- filename: src/server/controllers/utils.ts
+  checksum: 6a6f3aac127977f76cb5639f9a5e09c69dac2642120937566c8999f8f7a3a036
 - filename: src/server/index.ts
   checksum: d15e0bf95fa87a6dd7bd87b84a84b4e934c31d63d2bc987d281bfb42cce13439
 - filename: src/server/middlewares/sessionMiddleware.ts

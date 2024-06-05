@@ -2,8 +2,10 @@ import { Request, Response } from "express";
 import { z } from "zod";
 
 import { addEvent } from "@/lib/events";
+import { getUserInfos } from "@/lib/kysely/queries/users";
 import { EventCode } from "@/models/actionEvent";
 import { DBUser } from "@/models/dbUser";
+import { userInfosToModel } from "@/models/mapper";
 import { memberSchema } from "@/models/member";
 import { DBMission, createDBMission } from "@/models/mission";
 import { PULL_REQUEST_TYPE, PULL_REQUEST_STATE } from "@/models/pullRequests";
@@ -55,7 +57,7 @@ export async function postBaseInfoUpdate(
 ) {
     const { username } = req.params;
     try {
-        const previousInfo = await getDBUserAndMission(username);
+        const previousInfo = userInfosToModel(await getUserInfos({ username }));
         if (!previousInfo) {
             throw new Error("User does not exists");
         }
@@ -120,7 +122,7 @@ export async function postBaseInfoUpdate(
             created_by_username: req.auth?.id as string,
             action_on_username: username,
             action_metadata: {
-                value: req.body,
+                value: previousInfo,
                 // old_value: previousInfo, todo
             },
         });

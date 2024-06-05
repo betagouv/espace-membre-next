@@ -3,8 +3,9 @@ import { NextAuthOptions } from "next-auth";
 import EmailProvider from "next-auth/providers/email";
 
 import customPostgresAdapter from "./pgAdpter";
-import { getUserInfo, getUserInfos } from "@/lib/kysely/queries/users";
+import { getUserInfos } from "@/lib/kysely/queries/users";
 import { DBUser } from "@/models/dbUser";
+import { publicUserInfosToModel } from "@/models/mapper";
 import betagouv from "@/server/betagouv";
 import config from "@/server/config";
 import { getAdmin } from "@/server/config/admin.config";
@@ -83,7 +84,7 @@ export const authOptions: NextAuthOptions = {
                         `Le membre ${user.id} n'a pas de fiche github.`
                     );
                 }
-                if (checkUserIsExpired(dbUser, 5)) {
+                if (checkUserIsExpired(publicUserInfosToModel(dbUser), 5)) {
                     throw new Error(
                         `Membre ${dbUser.fullname} a une date de fin expirée sur Github.`
                     );

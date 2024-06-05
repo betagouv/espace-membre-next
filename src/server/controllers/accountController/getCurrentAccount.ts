@@ -65,21 +65,22 @@ const getAccount = async (req, res, onSuccess, onError) => {
             updatePullRequest,
             isAdmin: config.ESPACE_MEMBRE_ADMIN.includes(req.auth.id),
             // can create email if email is not set, or if email is not @beta.gouv.fr email
-            canCreateEmail: currentUser.canCreateEmail,
+            canCreateEmail: currentUser.authorizations.canCreateEmail,
             hasPublicServiceEmail,
             canCreateProAccount: config.ESPACE_MEMBRE_ADMIN.includes(
                 req.auth.id
             ),
             availableEmailPros,
-            canCreateRedirection: currentUser.canCreateRedirection,
-            canChangePassword: currentUser.canChangePassword,
+            canCreateRedirection:
+                currentUser.authorizations.canCreateRedirection,
+            canChangePassword: currentUser.authorizations.canChangePassword,
             communication_email: dbUser?.communication_email,
             emailSuspended:
                 dbUser?.primary_email_status ===
                 EmailStatusCode.EMAIL_SUSPENDED,
             status: dbUser?.primary_email_status,
-            canChangeEmails: currentUser.canChangeEmails,
-            redirections: currentUser.redirections,
+            canChangeEmails: currentUser.authorizations.canChangeEmails,
+            redirections: currentUser.emailRedirections,
             secondaryEmail: dbUser?.secondary_email,
             primaryEmail: dbUser?.primary_email,
             activeTab: "account",
@@ -103,19 +104,19 @@ const getAccount = async (req, res, onSuccess, onError) => {
                 : "Non renseigné",
             formData: {},
             hasActiveResponder:
-                currentUser.responder &&
-                new Date(currentUser.responder.to) >= today &&
-                new Date(currentUser.responder.from) <= today,
-            hasResponder: Boolean(currentUser.responder),
-            responderFormData: currentUser.responder
+                currentUser.emailResponder &&
+                new Date(currentUser.emailResponder.to) >= today &&
+                new Date(currentUser.emailResponder.from) <= today,
+            hasResponder: Boolean(currentUser.emailResponder),
+            responderFormData: currentUser.emailResponder
                 ? {
-                      from: new Date(currentUser.responder.from)
+                      from: new Date(currentUser.emailResponder.from)
                           .toISOString()
                           .split("T")[0],
-                      to: new Date(currentUser.responder.to)
+                      to: new Date(currentUser.emailResponder.to)
                           .toISOString()
                           .split("T")[0],
-                      content: currentUser.responder.content,
+                      content: currentUser.emailResponder.content,
                   }
                 : {
                       from: new Date().toISOString().split("T")[0],

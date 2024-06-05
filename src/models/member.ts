@@ -214,18 +214,18 @@ export type memberSchemaType = z.infer<typeof memberSchema>;
 export const EmailInfosSchema = z.object({
     email: z.string().email(), // Validation supplémentaire pour vérifier le format de l'email
     isBlocked: z.boolean(),
-    emailPlan: EMAIL_PLAN_TYPE,
+    emailPlan: z.nativeEnum(EMAIL_PLAN_TYPE),
     isPro: z.boolean().optional(),
     isExchange: z.boolean().optional(),
 });
 export type EmailInfos = z.infer<typeof EmailInfosSchema>;
 
 export const memberWrapperSchema = z.object({
-    member: memberSchema,
+    userInfos: memberSchema,
     isExpired: z.boolean(),
-    emailInfos: EmailInfosSchema,
+    emailInfos: EmailInfosSchema.nullable(),
     emailRedirections: z.array(OvhRedirectionSchema),
-    emailResponder: OvhResponderSchema,
+    emailResponder: OvhResponderSchema.nullable(),
     authorizations: z.object({
         canCreateEmail: z.boolean(),
         canCreateRedirection: z.boolean(),
@@ -237,6 +237,7 @@ export const memberWrapperSchema = z.object({
 
 export type memberWrapperSchemaType = z.infer<typeof memberWrapperSchema>;
 
+// member info that other member can get
 export const memberPublicInfoSchema = memberSchema.pick({
     username: true,
     fullname: true,
@@ -244,8 +245,12 @@ export const memberPublicInfoSchema = memberSchema.pick({
     domaine: true,
     bio: true,
     link: true,
+    github: true,
     missions: true,
     primary_email: true,
+    primary_email_status: true,
+    communication_email: true,
+    secondary_email: true,
 });
 
 export type memberPublicInfoSchemaType = z.infer<typeof memberPublicInfoSchema>;

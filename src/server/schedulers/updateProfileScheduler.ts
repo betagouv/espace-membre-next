@@ -1,16 +1,14 @@
 import ejs from "ejs";
 
-import {
-    getAllDBUsersAndMission,
-    getAllUsersPublicInfo,
-    getDBUserAndMission,
-} from "../db/dbUser";
+import { getAllUsersPublicInfo, getDBUserAndMission } from "../db/dbUser";
+import { getAllUsersInfo } from "@/lib/kysely/queries/users";
 import * as mattermost from "@/lib/mattermost";
 import {
     DBUser,
     DBUserPublic,
     DBUserWithEmailsAndMattermostUsername,
 } from "@/models/dbUser/dbUser";
+import { publicUserInfosToModel } from "@/models/mapper";
 import BetaGouv from "@betagouv";
 import * as utils from "@controllers/utils";
 import { sleep } from "@controllers/utils";
@@ -21,7 +19,9 @@ export async function sendMessageToActiveUsersWithoutSecondaryEmail() {
     const allMattermostUsersEmails = allMattermostUsers.map(
         (mattermostUser) => mattermostUser.email
     );
-    const users = await getAllDBUsersAndMission();
+    const users = (await getAllUsersInfo()).map((user) =>
+        publicUserInfosToModel(user)
+    );
     const activeUsers = users.filter((user) => !utils.checkUserIsExpired(user));
     const concernedUsers: DBUser[] = await knex("users")
         .whereNull("secondary_email")

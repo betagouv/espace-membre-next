@@ -11,6 +11,18 @@ import { z } from "zod";
 //     // startups: Startup[];
 // }
 
+// model just for migration
+export const githubIncubatorSchema = z.object({
+    title: z.string(),
+    owner_id: z.string().optional(),
+    contact: z.string(),
+    id: z.string(),
+    address: z.string(),
+    website: z.string().url(),
+    github: z.string().url(),
+});
+export type githubIncubatorSchemaType = z.infer<typeof githubIncubatorSchema>;
+
 export const incubatorSchema = z.object({
     uuid: z.string(),
     // id: z.number(),
@@ -22,5 +34,4 @@ export const incubatorSchema = z.object({
     website: z.string().url(),
     github: z.string().url(),
 });
-// Example TypeScript type extraction from Zod schema
 export type incubatorSchemaType = z.infer<typeof incubatorSchema>;

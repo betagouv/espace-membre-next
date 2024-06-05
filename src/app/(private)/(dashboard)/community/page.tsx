@@ -1,6 +1,5 @@
 import type { Metadata } from "next";
 
-import { Incubators } from "@/@types/db";
 import { Community } from "@/components/CommunityPage";
 import { db } from "@/lib/kysely";
 import { getAllStartups } from "@/lib/kysely/queries";

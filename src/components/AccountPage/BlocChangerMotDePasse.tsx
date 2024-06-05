@@ -8,7 +8,6 @@ import axios from "axios";
 
 import { EmailStatusCode } from "@/models/dbUser";
 import routes, { computeRoute } from "@/routes/routes";
-import { UserInfos } from "@/server/controllers/utils";
 
 export default function BlocChangerMotDePasse({
     canChangePassword,

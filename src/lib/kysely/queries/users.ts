@@ -109,11 +109,40 @@ export async function getAllUsersInfo(db: Kysely<DB> = database) {
             "users.domaine",
             "users.bio",
             "users.link",
+            "users.github",
             "users.primary_email",
             "users.secondary_email",
             "users.primary_email_status",
+            "users.communication_email",
+            withMissions(eb),
         ])
         .compile();
+
+    //console.log(query.sql);
+
+    const userInfos = await db.executeQuery(query);
+
+    return userInfos.rows;
+}
+
+// get all data even private info
+export async function adminGetAllUsersInfos(db: Kysely<DB> = database) {
+    let query = db
+        .selectFrom("users")
+        // .leftJoin(
+        //     "user_details",
+        //     "user_details.hash",
+        //     computeHash(params.username)
+        // )
+        .selectAll("users")
+        .select((eb) => [withEndDate, withMissions]);
+    // .$if(!!params.options?.withDetails, (qb) =>
+    //     qb.leftJoin(
+    //         "user_details",
+    //         "user_details.hash",
+    //         computeHash(params.username)
+    //     ).
+    // )
 
     //console.log(query.sql);
 

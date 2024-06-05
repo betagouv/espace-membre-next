@@ -13,7 +13,8 @@ export async function getUserInfo(req, res) {
         const user = await utils.userInfos(username, isCurrentUser);
 
         const hasGithubFile = user.userInfos;
-        const hasEmailAddress = user.emailInfos || user.redirections.length > 0;
+        const hasEmailAddress =
+            user.emailInfos || user.emailRedirections.length > 0;
         if (!hasGithubFile && !hasEmailAddress) {
             res.status(500).json({
                 error: 'Il n\'y a pas de membres avec ce compte mail. Vous pouvez commencez par créer une fiche sur Github pour la personne <a href="/onboarding">en cliquant ici</a>.',
@@ -51,7 +52,7 @@ export async function getUserInfo(req, res) {
             currentUserId: req.auth ? req.auth.id : undefined,
             emailInfos: req.auth?.id ? user.emailInfos : undefined,
             primaryEmail: req.auth?.id && dbUser ? dbUser.primary_email : "",
-            canCreateEmail: user.canCreateEmail,
+            canCreateEmail: user.authorizations.canCreateEmail,
             hasPublicServiceEmail: !dbUser?.primary_email?.includes(
                 config.domain
             ),

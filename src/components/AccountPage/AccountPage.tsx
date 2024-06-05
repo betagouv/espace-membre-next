@@ -23,7 +23,7 @@ import { routeTitles } from "@/utils/routes/routeTitles";
 
 type AccountPageProps = {
     isExpired: memberWrapperSchemaType["isExpired"];
-    userInfos: memberWrapperSchemaType["member"];
+    userInfos: memberWrapperSchemaType["userInfos"];
     emailInfos: memberWrapperSchemaType["emailInfos"] | null;
     emailRedirections: memberWrapperSchemaType["emailRedirections"];
     emailResponder: memberWrapperSchemaType["emailResponder"] | null;

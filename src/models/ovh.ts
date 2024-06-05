@@ -9,13 +9,11 @@ export const OvhRedirectionSchema = z.object({
 export type OvhRedirection = z.infer<typeof OvhRedirectionSchema>;
 
 // Enum EMAIL_PLAN_TYPE
-export const EMAIL_PLAN_TYPE = z.enum([
-    "EMAIL_PLAN_PRO",
-    "EMAIL_PLAN_EXCHANGE",
-    "EMAIL_PLAN_BASIC",
-]);
-export type EMAIL_PLAN_TYPE = z.infer<typeof EMAIL_PLAN_TYPE>;
-
+export enum EMAIL_PLAN_TYPE {
+    EMAIL_PLAN_PRO = "EMAIL_PLAN_PRO",
+    EMAIL_PLAN_EXCHANGE = "EMAIL_PLAN_EXCHANGE",
+    EMAIL_PLAN_BASIC = "EMAIL_PLAN_BASIC",
+}
 // Interface OvhMailingList
 export const OvhMailingListSchema = z.object({
     id: z.string(),
@@ -27,8 +25,24 @@ export const OvhResponderSchema = z.object({
     account: z.string(),
     content: z.string(),
     copy: z.boolean(),
-    from: z.date(),
-    to: z.date(),
+    from: z.preprocess((val) => {
+        if (typeof val === "string" || val instanceof Date) {
+            const date = new Date(val);
+            if (!isNaN(date.getTime())) {
+                return date;
+            }
+        }
+        throw new Error("Invalid date format");
+    }, z.date()),
+    to: z.preprocess((val) => {
+        if (typeof val === "string" || val instanceof Date) {
+            const date = new Date(val);
+            if (!isNaN(date.getTime())) {
+                return date;
+            }
+        }
+        throw new Error("Invalid date format");
+    }, z.date()),
 });
 export type OvhResponder = z.infer<typeof OvhResponderSchema>;
 

@@ -49,7 +49,7 @@ export async function managePrimaryEmailForUserHandler(
     const { primaryEmail } = req.body;
     const user = await utils.userInfos(username, isCurrentUser);
     try {
-        if (!user.canChangeEmails) {
+        if (!user.authorizations.canChangeEmails) {
             throw new Error(
                 `L'utilisateur n'est pas autorisé à changer l'email primaire`
             );

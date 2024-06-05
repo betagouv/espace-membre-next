@@ -3,8 +3,8 @@ import _ from "lodash/array";
 
 import betagouv from "../betagouv";
 import { createEmail } from "../controllers/usersController/createEmailForUser";
-import { getAllDBUsersAndMission, getAllUsersPublicInfo } from "../db/dbUser";
 import { addEvent } from "@/lib/events";
+import { getAllUsersInfo } from "@/lib/kysely/queries/users";
 import { ActionEvent, EventCode } from "@/models/actionEvent";
 import {
     CommunicationEmailCode,
@@ -15,6 +15,7 @@ import {
     EmailStatusCode,
     MemberType,
 } from "@/models/dbUser/dbUser";
+import { publicUserInfosToModel, userInfosToModel } from "@/models/mapper";
 import { Member } from "@/models/member";
 import { OvhRedirection } from "@/models/ovh";
 import config from "@/server/config";
@@ -46,7 +47,9 @@ const differenceGithubRedirectionOVH = function differenceGithubOVH(
 };
 
 const getValidUsers = async () => {
-    const githubUsers = await getAllDBUsersAndMission();
+    const githubUsers = (await getAllUsersInfo()).map((user) =>
+        publicUserInfosToModel(user)
+    );
     return githubUsers.filter((x) => !utils.checkUserIsExpired(x));
 };
 
@@ -270,7 +273,9 @@ export async function createEmailAddresses() {
 }
 
 export async function reinitPasswordEmail() {
-    const users = await getAllDBUsersAndMission();
+    const users = (await getAllUsersInfo()).map((user) =>
+        publicUserInfosToModel(user)
+    );
     const expiredUsers = utils.getExpiredUsers(users, 5);
     const dbUsers: DBUser[] = await knex("users")
         .whereIn(
@@ -359,9 +364,9 @@ export async function subscribeEmailAddresses() {
 
 export async function unsubscribeEmailAddresses() {
     // const dbUsers: DBUser[] = await knex("users").whereNotNull("primary_email");
-    const concernedUsers = await getAllDBUsersAndMission().then((users) =>
-        users.filter((x) => utils.checkUserIsExpired(x) && x.primary_email)
-    );
+    const concernedUsers = (await getAllUsersInfo())
+        .map((user) => publicUserInfosToModel(user))
+        .filter((x) => utils.checkUserIsExpired(x) && x.primary_email);
 
     // const concernedUsers = githubUsers.reduce(
     //     (acc: (Member & { primary_email: string | undefined })[], user) => {
@@ -412,7 +417,7 @@ export async function setEmailStatusActiveForUsers() {
         .whereNotNull("secondary_email");
     const activeUsers = await BetaGouv.getActiveRegisteredOVHUsers();
 
-    const concernedUsers: DBUserPublic[] = activeUsers.filter((user) => {
+    const concernedUsers = activeUsers.filter((user) => {
         return dbUsers.find((x) => x.username === user.username);
     });
 

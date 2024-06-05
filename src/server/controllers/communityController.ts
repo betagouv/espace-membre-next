@@ -172,7 +172,8 @@ async function getUserPageData(req, res, onSuccess, onError) {
         const user = await utils.userInfos(username, isCurrentUser);
 
         const hasGithubFile = user.userInfos;
-        const hasEmailAddress = user.emailInfos || user.redirections.length > 0;
+        const hasEmailAddress =
+            user.emailInfos || user.emailRedirections.length > 0;
         if (!hasGithubFile && !hasEmailAddress) {
             req.flash("error");
             onError(
@@ -198,7 +199,7 @@ async function getUserPageData(req, res, onSuccess, onError) {
             username,
             currentUserId: req.auth.id,
             emailInfos: user.emailInfos,
-            redirections: user.redirections,
+            redirections: user.emailRedirections,
             userInfos: user.userInfos,
             isExpired: user.isExpired,
             isAdmin: config.ESPACE_MEMBRE_ADMIN.includes(req.auth.id),
@@ -211,7 +212,7 @@ async function getUserPageData(req, res, onSuccess, onError) {
             primaryEmailStatus: dbUser
                 ? dbUser.primary_email_status
                 : EmailStatusCode.EMAIL_UNSET,
-            canCreateEmail: user.canCreateEmail,
+            canCreateEmail: user.authorizations.canCreateEmail,
             hasPublicServiceEmail:
                 dbUser &&
                 dbUser.primary_email &&

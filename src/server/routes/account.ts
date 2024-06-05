@@ -12,10 +12,10 @@ import * as usersController from "@controllers/usersController";
 const router = express.Router();
 
 // router.get(routes.ACCOUNT_GET_API, accountController.getCurrentAccountApi);
-router.get(
-    routes.ACCOUNT_GET_DETAIL_INFO_FORM_API,
-    accountController.getDetailInfoUpdateApi
-);
+// router.get(
+//     routes.ACCOUNT_GET_DETAIL_INFO_FORM_API,
+//     accountController.getDetailInfoUpdateApi
+// );
 // router.post(
 //   routes.ACCOUNT_POST_DETAIL_INFO_FORM,
 //   accountController.postCurrentInfo

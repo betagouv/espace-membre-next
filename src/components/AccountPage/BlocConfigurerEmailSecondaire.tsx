@@ -1,10 +1,13 @@
-import { useSession } from "@/proxies/next-auth";
-import routes, { computeRoute } from "@/routes/routes";
+import React from "react";
+
 import Accordion from "@codegouvfr/react-dsfr/Accordion";
 import Button from "@codegouvfr/react-dsfr/Button";
 import Input from "@codegouvfr/react-dsfr/Input";
 import axios from "axios";
-import React from "react";
+
+import { changeSecondaryEmailForUser } from "@/app/api/member/actions";
+import { useSession } from "@/proxies/next-auth";
+import routes, { computeRoute } from "@/routes/routes";
 
 export default function BlocConfigurerEmailSecondaire({
     canChangeEmails,
@@ -24,21 +27,10 @@ export default function BlocConfigurerEmailSecondaire({
                     onSubmit={(e) => {
                         e.preventDefault();
                         setIsSaving(true);
-                        axios
-                            .post(
-                                computeRoute(
-                                    routes.USER_UPDATE_SECONDARY_EMAIL_API
-                                ).replace(
-                                    ":username",
-                                    sessionWrapper.data?.user?.name
-                                ),
-                                {
-                                    secondaryEmail: value,
-                                },
-                                {
-                                    withCredentials: true,
-                                }
-                            )
+                        changeSecondaryEmailForUser(
+                            value,
+                            sessionWrapper.data?.user?.name!
+                        )
                             .then((data) => {
                                 setIsSaving(false);
                             })

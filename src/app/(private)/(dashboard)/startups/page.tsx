@@ -1,8 +1,9 @@
 import { Metadata } from "next";
 
 import { StartupList } from "@/components/StartupListPage";
+import { getAllStartups } from "@/lib/kysely/queries";
 import { StartupsAPIResponse } from "@/models/startup";
-import { getAllStartups } from "@/server/db/dbStartup";
+// import { getAllStartups } from "@/server/db/dbStartup";
 import { routeTitles } from "@/utils/routes/routeTitles";
 
 export const metadata: Metadata = {

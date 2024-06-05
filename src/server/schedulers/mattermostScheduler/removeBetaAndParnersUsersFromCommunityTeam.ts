@@ -1,5 +1,6 @@
 import axios from "axios";
 
+import { getAllUsersInfo } from "@/lib/kysely/queries/users";
 import { MattermostUser } from "@/lib/mattermost";
 import * as mattermost from "@/lib/mattermost";
 import {
@@ -8,12 +9,10 @@ import {
     DBUserPublic,
     EmailStatusCode,
 } from "@/models/dbUser/dbUser";
-import { Member } from "@/models/member";
+import { publicUserInfosToModel } from "@/models/mapper";
+import { Member, memberPublicInfoSchemaType } from "@/models/member";
 import config from "@/server/config";
-import {
-    getAllDBUsersAndMission,
-    getAllUsersPublicInfo,
-} from "@/server/db/dbUser";
+import { getAllUsersPublicInfo } from "@/server/db/dbUser";
 import betagouv from "@betagouv";
 import * as utils from "@controllers/utils";
 import knex from "@db";
@@ -57,7 +56,7 @@ enum MattermostUserStatus {
 export type MattermostUserWithStatus = MattermostUser & {
     status: MattermostUserStatus;
     // memberInfo?: Member;
-    dbUser?: DBUserAndMission;
+    dbUser?: memberPublicInfoSchemaType;
 };
 
 const MESSAGE_FOR_TYPE: Record<
@@ -215,7 +214,9 @@ export async function getMattermostUsersWithStatus({
     // Members in authors.json
     // let users = await getAllDBUsersAndMission();
     // Member in db
-    const dbUsers = await getAllDBUsersAndMission();
+    const dbUsers = (await getAllUsersInfo()).map((user) =>
+        publicUserInfosToModel(user)
+    );
     const dbuser_primary_emails = dbUsers
         .map((dbUser) => dbUser.primary_email)
         .filter((email) => email);

@@ -6,6 +6,7 @@ import { z } from "zod";
 import { StartupInfoUpdate } from "@/components/StartupInfoUpdatePage";
 import { getPullRequestForBranch, fetchGithubMarkdown } from "@/lib/github";
 import { db } from "@/lib/kysely";
+import { startupToModel } from "@/models/mapper";
 import { sponsorSchema } from "@/models/sponsor";
 import { phaseSchema, startupSchema } from "@/models/startup";
 import { thematiques } from "@/models/thematiques";
@@ -66,11 +67,13 @@ export default async function Page(props) {
     // const formData = await fetchGithubPageData(id, sha || "master");
     const incubators = await db.selectFrom("incubators").selectAll().execute(); //await betagouv.incubators();
     const sponsors = await db.selectFrom("organizations").selectAll().execute(); //await betagouv.sponsors();
-    const startup = await db
-        .selectFrom("startups")
-        .selectAll()
-        .where("id", "=", id)
-        .executeTakeFirst();
+    const startup = startupToModel(
+        await db
+            .selectFrom("startups")
+            .selectAll()
+            .where("id", "=", id)
+            .executeTakeFirst()
+    );
     if (!startup) {
         redirect("/startups");
     }

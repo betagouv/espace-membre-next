@@ -55,10 +55,10 @@ export async function deleteEmailForUserHandler(req, res, onSuccess, onError) {
             created_by_username: req.auth.id,
             action_on_username: username,
         });
-        if (user.redirections && user.redirections.length > 0) {
+        if (user.emailRedirections && user.emailRedirections.length > 0) {
             await BetaGouv.requestRedirections(
                 "DELETE",
-                user.redirections.map((x) => x.id)
+                user.emailRedirections.map((x) => x.id)
             );
             console.log(
                 `Suppression des redirections de l'email de ${username} (à la demande de ${req.auth.id})`

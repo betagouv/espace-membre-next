@@ -2,17 +2,16 @@ import PromiseMemoize from "promise-memoize";
 
 import BetaGouv from "../../betagouv";
 import betagouv from "../../betagouv";
-import db from "../../db";
+// import db from "../../db";
 import * as utils from "../utils";
 import { getBetaEmailId, isBetaEmail } from "../utils";
+import { db } from "@/lib/kysely";
+import { adminGetAllUsersInfos } from "@/lib/kysely/queries/users";
 import { CommunicationEmailCode, DBUser } from "@/models/dbUser/dbUser";
+import { userInfosToModel } from "@/models/mapper";
 import { Domaine, Member } from "@/models/member";
 import { OvhRedirection } from "@/models/ovh";
 import config from "@/server/config";
-import {
-    getAllDBUsersAndMission,
-    getAllUsersPublicInfo,
-} from "@/server/db/dbUser";
 import { makeSendinblue } from "@infra/email/sendInBlue";
 
 // const emailWithMetadataMemoized = PromiseMemoize(
@@ -124,24 +123,32 @@ export async function getUsers(req, res) {
     const memberStatus = req.query.memberStatus;
     let startups = req.query.startups ? req.query.startups.split(",") : [];
     // const activeMembers = req.params.activeMembers
-    let users = await getAllDBUsersAndMission();
+    let users = (await adminGetAllUsersInfos()).map((user) =>
+        userInfosToModel(user)
+    );
     if (memberStatus === "unactive") {
         users = utils.getExpiredUsers(users);
     } else if (memberStatus === "active") {
         users = utils.getActiveUsers(users);
     }
     if (incubators.length) {
-        const incubatorsDict = await betagouv.incubators();
-        const incubatorStartups = incubators.reduce((acc, incubator) => {
-            return [
-                ...acc,
-                //@ts-ignore
-                ...((incubatorsDict[incubator].startups &&
+        const incubatorsDict = await db
+            .selectFrom("incubators")
+            .selectAll()
+            .execute();
+        const incubatorStartups: string[] = incubators.reduce(
+            (acc, incubator) => {
+                return [
+                    ...acc,
                     //@ts-ignore
-                    incubatorsDict[incubator].startups.map((s) => s.id)) ||
-                    []),
-            ];
-        }, []);
+                    ...((incubatorsDict[incubator].startups &&
+                        //@ts-ignore
+                        incubatorsDict[incubator].startups.map((s) => s.id)) ||
+                        []),
+                ];
+            },
+            []
+        );
         startups = [...startups, ...incubatorStartups];
     }
     if (domaines.length) {
@@ -160,13 +167,20 @@ export async function getUsers(req, res) {
         });
     }
     if (startupPhases.length) {
-        const usersStartupsByPhase: UserStartup[] = await db("users_startups")
-            .whereIn(
-                "user_id",
-                users.map((user) => user.username)
+        const usersStartupsByPhase = await db
+            .selectFrom("users_startups")
+            .where(
+                "users_startups.user_id",
+                "in",
+                users.map((user) => user.uuid)
             )
-            .join("startups", "users_startups.startup_id", "startups.id")
-            .whereIn("startups.current_phase", startupPhases);
+            .leftJoin("startups", "users_startups.startup_id", "startups.id")
+            .leftJoin("phases", "phases.startup_id", "startups.id")
+            .where("phases.end", ">", new Date())
+            .where("phases.name", "in", startupPhases)
+            .select("users_startups.user_id")
+            .execute();
+
         const usersByPhaseIds = usersStartupsByPhase.map(
             (item) => item.user_id
         );
@@ -182,10 +196,7 @@ export async function getUsers(req, res) {
     //         );
     //     });
     // }
-    const dbUsers: DBUser[] = await db("users").whereIn(
-        "username",
-        users.map((user) => user.username)
-    );
+    const dbUsers = await adminGetAllUsersInfos();
     if (
         process.env.ESPACE_MEMBRE_ADMIN &&
         process.env.ESPACE_MEMBRE_ADMIN.includes(req.auth.id)

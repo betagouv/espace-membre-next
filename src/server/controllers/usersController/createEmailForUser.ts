@@ -2,8 +2,11 @@ import crypto from "crypto";
 import _ from "lodash";
 
 import { addEvent } from "@/lib/events";
+import { getAllStartups } from "@/lib/kysely/queries";
+import { getUserBasicInfo, getUserInfos } from "@/lib/kysely/queries/users";
 import { EventCode } from "@/models/actionEvent";
 import { DBUser, EmailStatusCode } from "@/models/dbUser/dbUser";
+import { userInfosToModel } from "@/models/mapper";
 import {
     EMAIL_PLAN_TYPE,
     OvhExchangeCreationData,
@@ -39,14 +42,16 @@ export async function createEmailAndUpdateSecondaryEmail(
         throw new Error(`Le compte du membre ${username} est expiré.`);
     }
 
-    if (!user.canCreateEmail) {
+    if (!user.authorizations.canCreateEmail) {
         throw new Error(
             "Vous n'avez pas le droit de créer le compte email du membre."
         );
     }
 
     if (!isCurrentUser) {
-        const loggedUserInfo = await getDBUserAndMission(currentUser);
+        const loggedUserInfo = userInfosToModel(
+            await getUserInfos({ username: currentUser })
+        );
         if (!loggedUserInfo) {
             throw new Error(
                 "Vous ne pouvez pas créer de compte email car votre compte  n'a pas de fiche github."
@@ -108,8 +113,8 @@ async function getEmailCreationParams(username: string): Promise<
       }
 > {
     const [userInfo, startupsInfos] = await Promise.all([
-        getDBUserAndMission(username),
-        BetaGouv.startupsInfos(),
+        getUserInfos({ username }),
+        getAllStartups(),
     ]);
 
     if (!userInfo?.missions) {
@@ -123,7 +128,8 @@ async function getEmailCreationParams(username: string): Promise<
     // todo see what to do with startups
     const needsExchange = _.some(latestMission?.startups, (id) => {
         const startup = _.find(startupsInfos, { id });
-        const incubator = startup?.relationships?.incubator?.data?.id;
+        const incubator = startup?.incubator_id;
+        // todo change incubator_using_exchange to add uuid
         return _.includes(INCUBATORS_USING_EXCHANGE, incubator);
     });
 

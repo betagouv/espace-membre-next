@@ -31,7 +31,6 @@ export default async function Page({ params }: Props) {
     const startupMembers = (await getUserByStartup(params.id)).map((user) => {
         return memberPublicInfoSchema.parse(user);
     });
-    console.log(startupMembers);
 
     return <StartupPage startupInfos={startup} members={startupMembers} />;
 }

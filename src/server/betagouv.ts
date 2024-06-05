@@ -3,15 +3,10 @@ import _ from "lodash";
 import ovh0 from "ovh";
 import unescape from "unescape";
 
-import {
-    getAllDBUsersAndMission,
-    getAllUsersPublicInfo,
-    getDBUser,
-    getDBUserAndMission,
-} from "./db/dbUser";
-import { Incubator } from "@/models/incubator";
+import { getAllUsersInfo } from "@/lib/kysely/queries/users";
 import { Job, JobWTTJ } from "@/models/job";
-import { Member } from "@/models/member";
+import { publicUserInfosToModel, userInfosToModel } from "@/models/mapper";
+import { Member, memberPublicInfoSchemaType } from "@/models/member";
 import { EmailInfos } from "@/models/member";
 import {
     EMAIL_PLAN_TYPE,
@@ -20,9 +15,8 @@ import {
     OvhProCreationData,
     OvhResponder,
     OvhRedirection,
+    OvhResponderSchema,
 } from "@/models/ovh";
-import { Sponsor } from "@/models/sponsor";
-import { Startup, StartupInfo } from "@/models/startup";
 import config from "@/server/config";
 import { checkUserIsExpired } from "@controllers/utils";
 
@@ -317,7 +311,7 @@ const betaOVH = {
             );
         }
     },
-    getAllMailingList: async () => {
+    getAllMailingList: async (): Promise<string[] | null> => {
         const url = `/email/domain/${config.domain}/mailingList/`;
         try {
             return await ovh.requestPromised("GET", url, {});
@@ -377,8 +371,12 @@ const betaOVH = {
     //     const activeUsers = users.filter((user) => !checkUserIsExpired(user));
     //     return activeUsers;
     // },
-    getActiveRegisteredOVHUsers: async () => {
-        const users = await getAllDBUsersAndMission();
+    getActiveRegisteredOVHUsers: async (): Promise<
+        memberPublicInfoSchemaType[]
+    > => {
+        const users = (await getAllUsersInfo()).map((user) =>
+            publicUserInfosToModel(user)
+        );
         const allOvhEmails = await betaOVH.getAllEmailInfos();
         const activeUsers = users.filter(
             (user) =>
@@ -391,7 +389,9 @@ const betaOVH = {
         const url = `/email/domain/${config.domain}/responder/${id}`;
 
         try {
-            return await ovh.requestPromised("GET", url);
+            return OvhResponderSchema.parse(
+                await ovh.requestPromised("GET", url)
+            );
         } catch (err) {
             console.log(typeof err);
             if ((err as { error: number }).error === 404) return null;

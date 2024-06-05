@@ -1,6 +1,9 @@
-import { UpdateObjectExpression } from "kysely/dist/cjs/parser/update-set-parser";
+import {
+    UpdateObject,
+    UpdateObjectExpression,
+} from "kysely/dist/cjs/parser/update-set-parser";
 
-import { DB } from "@/@types/db";
+import { DB, Users } from "@/@types/db";
 import { db } from "@/lib/kysely";
 import {
     createMission,
@@ -30,7 +33,28 @@ export async function updateMember(
             await trx
                 .updateTable("users")
                 .where("uuid", "=", memberUuid)
-                .set(memberData)
+                .set({
+                    fullname: memberData.fullname,
+                    role: memberData.role,
+                    link: memberData.link,
+                    avatar: memberData.avatar,
+                    github: memberData.github,
+                    competences: memberData.competences,
+                    // teams: memberData.teams,
+                    secondary_email:
+                        "secondary_email" in memberData
+                            ? memberData.secondary_email
+                            : undefined,
+                    domaine: memberData.domaine,
+                    bio: memberData.bio,
+                    gender: memberData.gender,
+                    average_nb_of_days: memberData.average_nb_of_days,
+                    tjm: memberData.tjm,
+                    legal_status: memberData.legal_status,
+                    workplace_insee_code: memberData.workplace_insee_code,
+                    osm_city: memberData.osm_city,
+                    member_type: memberData.memberType,
+                })
                 .execute();
             const actualMissions = missions
                 ? missions.filter((m) => m.uuid).map((m) => m.uuid)

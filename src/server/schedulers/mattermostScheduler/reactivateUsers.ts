@@ -1,9 +1,7 @@
+import { getAllUsersInfo } from "@/lib/kysely/queries/users";
 import * as mattermost from "@/lib/mattermost";
+import { publicUserInfosToModel } from "@/models/mapper";
 import config from "@/server/config";
-import {
-    getAllDBUsersAndMission,
-    getAllUsersPublicInfo,
-} from "@/server/db/dbUser";
 import betagouv from "@betagouv";
 import * as utils from "@controllers/utils";
 
@@ -11,7 +9,9 @@ export async function reactivateUsers() {
     const inactiveMattermostUsers =
         await mattermost.getInactiveMattermostUsers();
 
-    const users = await getAllDBUsersAndMission();
+    const users = (await getAllUsersInfo()).map((user) =>
+        publicUserInfosToModel(user)
+    );
     const currentUsers = users.filter((x) => !utils.checkUserIsExpired(x));
 
     const currentUsersEmails = currentUsers.map(

@@ -1,3 +1,4 @@
+import { getAllUsersInfo } from "@/lib/kysely/queries/users";
 import { MattermostUser } from "@/lib/mattermost";
 import * as mattermost from "@/lib/mattermost";
 import {
@@ -6,12 +7,14 @@ import {
     DBUserPublic,
     EmailStatusCode,
 } from "@/models/dbUser/dbUser";
-import { MemberWithPrimaryEmailInfo, Member } from "@/models/member";
-import config from "@/server/config";
+import { publicUserInfosToModel } from "@/models/mapper";
 import {
-    getAllDBUsersAndMission,
-    getAllUsersPublicInfo,
-} from "@/server/db/dbUser";
+    MemberWithPrimaryEmailInfo,
+    Member,
+    memberPublicInfoSchemaType,
+} from "@/models/member";
+import config from "@/server/config";
+import { getAllUsersPublicInfo } from "@/server/db/dbUser";
 import betagouv from "@betagouv";
 import * as utils from "@controllers/utils";
 import knex from "@db";
@@ -80,12 +83,14 @@ export const deactivateMattermostUsersWithUnallowedEmails = async (
 };
 
 export const getActiveGithubUsersUnregisteredOnMattermost = async (): Promise<
-    DBUserAndMission[]
+    memberPublicInfoSchemaType[]
 > => {
     const allMattermostUsers: MattermostUser[] =
         await mattermost.getUserWithParams();
     const dbUsers: DBUser[] = await knex("users").select();
-    const githubUsers = await getAllDBUsersAndMission();
+    const githubUsers = (await getAllUsersInfo()).map((user) =>
+        publicUserInfosToModel(user)
+    );
     const activeGithubUsers = githubUsers.filter(
         (x) => !utils.checkUserIsExpired(x)
     );
@@ -110,7 +115,9 @@ export const getMattermostUsersActiveGithubUsersNotInTeam = async (
     const allMattermostUsers: MattermostUser[] =
         await mattermost.getUserWithParams({ not_in_team: teamId });
     const dbUsers: DBUser[] = await knex("users").select();
-    const githubUsers = await getAllDBUsersAndMission();
+    const githubUsers = (await getAllUsersInfo()).map((user) =>
+        publicUserInfosToModel(user)
+    );
     const activeGithubUsers = githubUsers.filter(
         (x) => !utils.checkUserIsExpired(x)
     );

@@ -1,27 +1,39 @@
+import { generateMailingListName } from ".";
+import { getAllStartups } from "@/lib/kysely/queries";
+import { getUserByStartup } from "@/lib/kysely/queries/users";
+import { CommunicationEmailCode, DBUser } from "@/models/dbUser";
+import { startupToModel } from "@/models/mapper";
+import { memberPublicInfoSchema } from "@/models/member";
+import {
+    ACTIVE_PHASES,
+    StartupPhase,
+    phaseSchemaType,
+    startupSchemaType,
+} from "@/models/startup";
 import betagouv from "@betagouv";
 import db from "@db";
-import { CommunicationEmailCode, DBUser } from "@/models/dbUser";
-import { ACTIVE_PHASES, Startup, StartupPhase } from "@/models/startup";
-import { generateMailingListName } from ".";
 
-function getCurrentPhase(startup: Startup): StartupPhase | undefined {
+function getCurrentPhase(startup: startupSchemaType): StartupPhase | undefined {
     return startup.phases
-        ? (startup.phases[startup.phases.length - 1].name as StartupPhase)
+        ? startup.phases[startup.phases.length - 1].name
         : undefined;
 }
 
-const createMailingListForStartup = async (startup: Startup) => {
+const createMailingListForStartup = async (startup: startupSchemaType) => {
     const mailingListName = generateMailingListName(startup);
     return betagouv.createMailingList(mailingListName);
 };
 
-const addAndRemoveMemberToMailingListForStartup = async (startup: Startup) => {
+const addAndRemoveMemberToMailingListForStartup = async (
+    startup: startupSchemaType
+) => {
     const mailingListName = generateMailingListName(startup);
-    const dbUsers: DBUser[] = await db("users").whereIn(
-        "username",
-        startup.active_members
+    const startupMembers = (await getUserByStartup(startup.uuid)).map(
+        (user) => {
+            return memberPublicInfoSchema.parse(user);
+        }
     );
-    const emails = dbUsers
+    const emails = startupMembers
         .map((dbUser) => {
             let email = dbUser.primary_email;
             if (
@@ -51,8 +63,10 @@ const addAndRemoveMemberToMailingListForStartup = async (startup: Startup) => {
 };
 
 export const createMailingListForStartups = async () => {
-    const mailingLists: string[] = await betagouv.getAllMailingList();
-    const startupDetails: Startup[] = await betagouv.startupInfos();
+    const mailingLists = (await betagouv.getAllMailingList()) || [];
+    const startupDetails = (await getAllStartups()).map((startup) =>
+        startupToModel(startup)
+    );
     console.log(`Will create ${startupDetails.length} mailing lists`);
     for (const startup of startupDetails) {
         const phase = getCurrentPhase(startup);

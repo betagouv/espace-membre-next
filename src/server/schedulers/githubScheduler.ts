@@ -1,6 +1,7 @@
 import BetaGouv from "../betagouv";
-import { getAllDBUsersAndMission, getAllUsersPublicInfo } from "../db/dbUser";
 import * as github from "@/lib/github";
+import { getAllUsersInfo } from "@/lib/kysely/queries/users";
+import { publicUserInfosToModel } from "@/models/mapper";
 import config from "@/server/config";
 import { checkUserIsExpired } from "@controllers/utils";
 
@@ -9,7 +10,9 @@ const getGithubUsersNotInOrganization = async (org) => {
     const allGithubOrganizationMembers = await github.getAllOrganizationMembers(
         org
     );
-    const users = await getAllDBUsersAndMission();
+    const users = (await getAllUsersInfo()).map((user) =>
+        publicUserInfosToModel(user)
+    );
 
     const activeGithubUsers = users.filter((x) => {
         const stillActive = !checkUserIsExpired(x);
@@ -45,7 +48,9 @@ const getExpiredGithubUsersInOrganization = async (
     const allGithubOrganizationMembers = await github.getAllOrganizationMembers(
         org
     );
-    const users = await getAllDBUsersAndMission();
+    const users = (await getAllUsersInfo()).map((user) =>
+        publicUserInfosToModel(user)
+    );
 
     const expiredGithubUsers = users.filter((x) => {
         const stillActive = checkUserIsExpired(x, numberOfExpirationDays);

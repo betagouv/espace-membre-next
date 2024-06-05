@@ -1,3 +1,3 @@
-import { syncBetagouvOrganizationAPI } from "../schedulers/syncBetagouvAPIScheduler/syncBetagouvOrganizationAPI";
+// import { syncBetagouvOrganizationAPI } from "../schedulers/syncBetagouvAPIScheduler/syncBetagouvOrganizationAPI";
 
-syncBetagouvOrganizationAPI();
+// syncBetagouvOrganizationAPI();

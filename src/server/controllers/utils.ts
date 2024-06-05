@@ -7,13 +7,23 @@ import nodemailer from "nodemailer";
 import db from "../db";
 import { getDBUser, getDBUserAndMission } from "../db/dbUser";
 import { Users } from "@/@types/db";
+import { getUserInfos } from "@/lib/kysely/queries/users";
 import {
     DBUser,
     DBUserAndMission,
     DBUserPublic,
     DBUserPublicAndMission,
+    EmailStatusCode,
 } from "@/models/dbUser";
-import { EmailInfos, HasMissions, Member } from "@/models/member";
+import { userInfosToModel } from "@/models/mapper";
+import {
+    EmailInfos,
+    HasMissions,
+    Member,
+    memberPublicInfoSchemaType,
+    memberSchemaType,
+    memberWrapperSchemaType,
+} from "@/models/member";
 import { DBMission, Mission } from "@/models/mission";
 import config from "@/server/config";
 import BetaGouv from "@betagouv";
@@ -115,7 +125,7 @@ export function objectArrayToCSV<T extends Record<string, any>>(
 }
 
 export function checkUserIsExpired(
-    user: Users & HasMissions,
+    user: memberSchemaType | memberPublicInfoSchemaType,
     minDaysOfExpiration: number = 1
 ) {
     // Le membre est considéré comme expiré si:
@@ -146,7 +156,7 @@ export function checkUserIsExpired(
 }
 
 export function getActiveUsers<
-    T extends DBUserPublicAndMission[] | DBUserAndMission[]
+    T extends memberSchemaType[] | memberPublicInfoSchemaType[]
 >(users: T, minDaysOfExpiration = 0): T {
     return users.filter(
         (u) => !checkUserIsExpired(u, minDaysOfExpiration - 1)
@@ -154,7 +164,7 @@ export function getActiveUsers<
 }
 
 export function getExpiredUsers<
-    T extends DBUserPublicAndMission[] | DBUserAndMission[]
+    T extends memberSchemaType[] | memberPublicInfoSchemaType[]
 >(users: T, minDaysOfExpiration = 0): T {
     return users.filter((u) =>
         checkUserIsExpired(u, minDaysOfExpiration - 1)
@@ -177,7 +187,7 @@ export function getExpiredUsers<
 // }
 
 export function getExpiredUsersForXDays<
-    T extends DBUserPublicAndMission[] | DBUserAndMission[]
+    T extends memberSchemaType[] | memberPublicInfoSchemaType[]
 >(users: T, nbDays: number): T {
     const date = new Date();
     date.setDate(date.getDate() - nbDays);
@@ -186,7 +196,9 @@ export function getExpiredUsersForXDays<
 
     return users.filter((user) => {
         const latestMission = user.missions.reduce((a, v) =>
-            !v.end || new Date(v.end) > new Date(a.end) ? v : a
+            !v.end || (a.end ? new Date(v.end) > new Date(a.end) : false)
+                ? v
+                : a
         );
         // Assuming `latestMission.end` is a date string, compare against `formattedDate`.
         return latestMission.end === date;
@@ -243,68 +255,53 @@ export const asyncFilter = async (arr: Array<any>, predicate) => {
     return arr.filter((_v, index) => results[index]);
 };
 
-export interface UserInfos {
-    emailInfos: EmailInfos | null;
-    userInfos: DBUserPublicAndMission | undefined;
-    redirections: any[];
-    isExpired: boolean;
-    canCreateEmail: boolean;
-    canCreateRedirection: boolean;
-    canChangePassword: boolean;
-    canChangeEmails: boolean;
-    responder: any;
-}
-
 export async function userInfos(
     id: string,
     isCurrentUser: boolean
-): Promise<UserInfos> {
+): Promise<memberWrapperSchemaType> {
     try {
-        const [userInfos, emailInfos, redirections, responder] =
-            await Promise.all([
-                getDBUserAndMission(id),
-                BetaGouv.emailInfos(id),
-                BetaGouv.redirectionsForId({ from: id }),
-                BetaGouv.getResponder(id),
-            ]);
-        const hasUserInfos = userInfos !== undefined;
+        const userInfos = userInfosToModel(
+            await getUserInfos({
+                username: id,
+                options: { withDetails: true },
+            })
+        );
+        const emailInfos = await BetaGouv.emailInfos(userInfos.username);
 
-        const isExpired = !userInfos || checkUserIsExpired(userInfos);
+        const emailRedirections = await BetaGouv.redirectionsForId({
+            from: userInfos.username,
+        });
+        const emailResponder = await BetaGouv.getResponder(userInfos.username);
 
+        const isExpired = checkUserIsExpired(userInfos);
         // On ne peut créé un compte que si:
         // - la page fiche Github existe
         // - le membre n'est pas expiré·e
         // - et le compte n'existe pas
-        const canCreateEmail =
-            hasUserInfos && !isExpired && emailInfos === null;
+        const canCreateEmail = !isExpired && emailInfos === null;
         // On peut créer une redirection & changer un password si:
         // - la page fiche Github existe
         // - le membre n'est pas expiré·e (le membre ne devrait de toute façon pas pouvoir se connecter)
         // - et que l'on est le membre connecté·e pour créer ces propres redirections.
-        const canCreateRedirection = !!(
-            hasUserInfos &&
-            !isExpired &&
-            isCurrentUser
+        const canCreateRedirection = !!(!isExpired && isCurrentUser);
+        const canChangePassword = !!(!isExpired && isCurrentUser && emailInfos);
+        const canChangeEmails = !!(!isExpired && isCurrentUser);
+        const hasPublicServiceEmail = await isPublicServiceEmail(
+            userInfos.primary_email
         );
-        const canChangePassword = !!(
-            hasUserInfos &&
-            !isExpired &&
-            isCurrentUser &&
-            emailInfos
-        );
-
-        const canChangeEmails = !!(hasUserInfos && !isExpired && isCurrentUser);
-
         return {
-            emailInfos,
-            redirections,
-            userInfos,
             isExpired,
-            canCreateEmail,
-            canCreateRedirection,
-            canChangePassword,
-            canChangeEmails,
-            responder,
+            userInfos: userInfos,
+            emailResponder,
+            authorizations: {
+                canCreateEmail,
+                canCreateRedirection,
+                canChangePassword,
+                canChangeEmails,
+                hasPublicServiceEmail,
+            },
+            emailInfos,
+            emailRedirections,
         };
     } catch (err) {
         console.error(err);

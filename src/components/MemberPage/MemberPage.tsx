@@ -8,7 +8,9 @@ import {
     useState,
 } from "react";
 
+import { fr } from "@codegouvfr/react-dsfr";
 import Accordion from "@codegouvfr/react-dsfr/Accordion";
+import Badge from "@codegouvfr/react-dsfr/Badge";
 import Button from "@codegouvfr/react-dsfr/Button";
 import Input from "@codegouvfr/react-dsfr/Input";
 import axios from "axios";
@@ -16,11 +18,11 @@ import axios from "axios";
 import MemberBrevoEventList from "./MemberBrevoEventList";
 import MemberEmailServiceInfo from "./MemberEmailServiceInfo";
 import MemberEventList from "./MemberEventList";
+import { changeSecondaryEmailForUser } from "@/app/api/member/actions";
 import { EmailStatusCode } from "@/models/dbUser";
+import { memberPublicInfoSchemaType } from "@/models/member";
 import { EMAIL_STATUS_READABLE_FORMAT } from "@/models/misc";
 import routes, { computeRoute } from "@/routes/routes";
-import Badge from "@codegouvfr/react-dsfr/Badge";
-import { fr } from "@codegouvfr/react-dsfr";
 
 export interface MemberPageProps {
     isExpired: boolean;
@@ -51,9 +53,14 @@ export interface MemberPageProps {
     };
 }
 
-const ChangeSecondaryEmailBloc = ({ secondaryEmail, userInfos }) => {
-    const [newSecondaryEmail, setNewSecondaryEmail] =
-        useState<string>(secondaryEmail);
+const ChangeSecondaryEmailBloc = ({
+    userInfos,
+}: {
+    userInfos: memberPublicInfoSchemaType;
+}) => {
+    const [newSecondaryEmail, setNewSecondaryEmail] = useState<string>(
+        userInfos.secondary_email
+    );
     const [isSaving, setIsSaving] = useState<boolean>(false);
 
     return (
@@ -62,18 +69,10 @@ const ChangeSecondaryEmailBloc = ({ secondaryEmail, userInfos }) => {
                 onSubmit={async (e) => {
                     e.preventDefault();
                     setIsSaving(true);
-                    axios
-                        .post(
-                            computeRoute(
-                                routes.USER_UPDATE_SECONDARY_EMAIL_API
-                            ).replace(":username", userInfos.id),
-                            {
-                                secondaryEmail: newSecondaryEmail,
-                            },
-                            {
-                                withCredentials: true,
-                            }
-                        )
+                    changeSecondaryEmailForUser(
+                        newSecondaryEmail,
+                        userInfos.username
+                    )
                         .then((data) => {
                             setIsSaving(false);
                         })

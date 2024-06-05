@@ -1,11 +1,12 @@
-import betagouv from "@betagouv";
-import * as utils from "@controllers/utils";
+import { getAllStartups } from "@/lib/kysely/queries";
 import { DBUser, statusOptions, genderOptions } from "@/models/dbUser/dbUser";
 import { MemberWithPermission } from "@/models/member";
 import { PULL_REQUEST_STATE } from "@/models/pullRequests";
-import db from "@db";
 import { StartupInfo } from "@/models/startup";
 import config from "@/server/config";
+import betagouv from "@betagouv";
+import * as utils from "@controllers/utils";
+import db from "@db";
 
 export async function getBaseInfoUpdateApi(req, res) {
     getBaseInfo(
@@ -28,11 +29,11 @@ const getBaseInfo = async (req, res, onSuccess, onError) => {
         const currentUser = await utils.userInfos(req.auth.id, true);
         const title = "Mon compte";
         const formValidationErrors = {};
-        const startups: StartupInfo[] = await betagouv.startupsInfos();
+        const startups = await getAllStartups();
         const startupOptions = startups.map((startup) => {
             return {
                 value: startup.id,
-                label: startup.attributes.name,
+                label: startup.name,
             };
         });
 

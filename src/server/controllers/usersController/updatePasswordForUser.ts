@@ -57,7 +57,7 @@ export async function updatePasswordForUserHandler(
             throw new Error(`Le compte du membre ${username} est expiré.`);
         }
 
-        if (!user.canChangePassword) {
+        if (!user.authorizations.canChangePassword) {
             throw new Error(
                 "Vous n'avez pas le droit de changer le mot de passe."
             );

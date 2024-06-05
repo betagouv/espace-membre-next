@@ -46,8 +46,8 @@ import { createMailingListForStartups } from "./startups/createMailingListForSta
 import { sendEmailToStartupToUpdatePhase } from "./startups/sendEmailToStartupToUpdatePhase";
 import {
     buildCommunityBDD,
-    syncBetagouvStartupAPI,
-    syncBetagouvUserAPI,
+    // syncBetagouvStartupAPI,
+    // syncBetagouvUserAPI,
 } from "./syncBetagouvAPIScheduler";
 import { unblockEmailsThatAreActive } from "./unblockEmailsThatAreActive";
 import { sendMessageToActiveUsersWithoutSecondaryEmail } from "./updateProfileScheduler";
@@ -301,24 +301,24 @@ const newsletterJobs = [
 ];
 
 const synchronizationJobs = [
-    {
-        cronTime: "0 10 * * *", // every day at 10,
-        onTick: syncBetagouvUserAPI,
-        start: true,
-        timeZone: "Europe/Paris",
-        isActive: !!config.FEATURE_SYNC_BETAGOUV_USER_API,
-        name: "syncBetagouvUserAPI",
-        description: "Synchronize user info from beta.gouv.fr api with bdd",
-    },
-    {
-        cronTime: "5 10 * * *", // every day at 10,
-        onTick: syncBetagouvStartupAPI,
-        start: true,
-        timeZone: "Europe/Paris",
-        isActive: true,
-        name: "syncBetagouvStartupAPI",
-        description: "Synchronize startup info from beta.gouv.fr api with bdd",
-    },
+    // {
+    //     cronTime: "0 10 * * *", // every day at 10,
+    //     onTick: syncBetagouvUserAPI,
+    //     start: true,
+    //     timeZone: "Europe/Paris",
+    //     isActive: !!config.FEATURE_SYNC_BETAGOUV_USER_API,
+    //     name: "syncBetagouvUserAPI",
+    //     description: "Synchronize user info from beta.gouv.fr api with bdd",
+    // },
+    // {
+    //     cronTime: "5 10 * * *", // every day at 10,
+    //     onTick: syncBetagouvStartupAPI,
+    //     start: true,
+    //     timeZone: "Europe/Paris",
+    //     isActive: true,
+    //     name: "syncBetagouvStartupAPI",
+    //     description: "Synchronize startup info from beta.gouv.fr api with bdd",
+    // },
     {
         cronTime: "0 10 10 * * *",
         onTick: syncMattermostUserWithMattermostMemberInfosTable,

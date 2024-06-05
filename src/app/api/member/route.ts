@@ -6,6 +6,7 @@ import { getUserInfos } from "@/lib/kysely/queries/users";
 import { createMemberSchema } from "@/models/actions/member";
 import { authOptions } from "@/utils/authoptions";
 import { createUsername } from "@/utils/github";
+import { EmailStatusCode } from "@/models/dbUser";
 
 export async function POST(req: Request) {
     console.log("Create user");
@@ -27,6 +28,8 @@ export async function POST(req: Request) {
                     fullname: `${member.firstname} ${member.lastname}`,
                     username: createUsername(member.firstname, member.lastname),
                     role: "",
+                    primary_email_status:
+                        EmailStatusCode.EMAIL_VERIFICATION_WAITING,
                 })
                 .execute();
             for (const mission of missions) {

@@ -29,9 +29,8 @@ export async function createUsersByEmail() {
                     {
                         email,
                         username: user.username,
-                        position: `${user.role} @${(user.startups || []).join(
-                            ","
-                        )}`,
+                        //todo add startup in the position
+                        position: `${user.role}`,
                         // mattermost spec : password must contain at least 20 characters
                         password,
                     },

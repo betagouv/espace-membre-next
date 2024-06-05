@@ -1,3 +1,4 @@
+import { getAllUsersInfo } from "@/lib/kysely/queries/users";
 import { MattermostUser } from "@/lib/mattermost";
 import * as mattermost from "@/lib/mattermost";
 import {
@@ -5,25 +6,24 @@ import {
     DBUserPublic,
     DBUserPublicAndMission,
 } from "@/models/dbUser/dbUser";
-import { Member } from "@/models/member";
+import { publicUserInfosToModel } from "@/models/mapper";
+import { Member, memberPublicInfoSchemaType } from "@/models/member";
 import config from "@/server/config";
-import {
-    getAllDBUsersAndMission,
-    getAllUsersPublicInfo,
-} from "@/server/db/dbUser";
 import betagouv from "@betagouv";
 import * as utils from "@controllers/utils";
 import knex from "@db";
 
 export async function removeUsersFromCommunityTeam(
-    optionalUsers?: DBUserPublicAndMission[],
+    optionalUsers?: memberPublicInfoSchemaType[],
     checkAll = true
 ) {
     // Removed users referenced on github but expired for more than 3 months
     let users = optionalUsers;
     console.log("Start function remove users from community team");
     if (!users) {
-        users = await getAllDBUsersAndMission();
+        users = (await getAllUsersInfo()).map((user) =>
+            publicUserInfosToModel(user)
+        );
         users = checkAll
             ? utils.getExpiredUsers(users, 3 * 30)
             : utils.getExpiredUsersForXDays(users, 3 * 30);

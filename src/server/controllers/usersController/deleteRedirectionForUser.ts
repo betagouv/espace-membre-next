@@ -48,7 +48,7 @@ export async function deleteRedirectionForUserHandler(
         const user = await utils.userInfos(username, isCurrentUser);
         // TODO: vérifier si le membre existe sur Github ?
 
-        if (!user.canCreateRedirection) {
+        if (!user.authorizations.canCreateRedirection) {
             throw new Error(
                 "Vous n'avez pas le droit de supprimer cette redirection."
             );

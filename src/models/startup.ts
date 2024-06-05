@@ -50,20 +50,21 @@ export enum AccessibilityStatus {
     TOTALEMENT_CONFORME = "totalement conforme",
 }
 
-export interface Startup {
-    github?: string;
-    website?: string;
-    dashlord_url?: string;
-    id: string;
-    name: string;
-    repository: string;
-    contact: string;
-    expired_members: string[];
-    active_members: string[];
-    previous_members: string[];
-    phases: Phase[];
-}
+// export interface Startup {
+//     github?: string;
+//     website?: string;
+//     dashlord_url?: string;
+//     id: string;
+//     name: string;
+//     repository: string;
+//     contact: string;
+//     expired_members: string[];
+//     active_members: string[];
+//     previous_members: string[];
+//     phases: Phase[];
+// }
 
+// we keep this interface just for the migration
 export interface StartupInfo {
     id: string;
     attributes: {
@@ -82,7 +83,11 @@ export interface StartupInfo {
         stats: boolean;
         link: string;
         incubator: string;
-        phases: Phase[];
+        phases: {
+            start: string;
+            end?: string;
+            name: StartupPhase;
+        }[];
         accessibility_status?: AccessibilityStatus;
         analyse_risques_url?: string;
         analyse_risques?: boolean;
@@ -241,6 +246,7 @@ export const startupSchema = z.object({
         .optional()
         .nullable(),
     techno: z.array(z.string()).optional().nullable(),
+    mailing_list: z.string().optional(),
     usertypes: z
         .array(z.string())
         .optional()

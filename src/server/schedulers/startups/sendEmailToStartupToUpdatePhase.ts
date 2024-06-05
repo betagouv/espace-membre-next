@@ -1,21 +1,50 @@
-import { ACTIVE_PHASES, PHASE_READABLE_NAME } from "@/models/startup";
+import { Startups } from "@/@types/db";
+import { db } from "@/lib/kysely";
+import { startupToModel } from "@/models/mapper";
+import {
+    ACTIVE_PHASES,
+    PHASE_READABLE_NAME,
+    startupSchemaType,
+} from "@/models/startup";
 import routes from "@/routes/routes";
 import { sendEmail } from "@/server/config/email.config";
-import db from "@db";
 import { EMAIL_TYPES } from "@modules/email";
 
 export const sendEmailToStartupToUpdatePhase = async (
-    startupsArg?: Startups[]
+    startupsArg?: startupSchemaType[]
 ) => {
-    const startups: Startups[] =
+    const startups =
         startupsArg ||
-        (await db("startups")
-            .whereIn("current_phase", ACTIVE_PHASES)
-            .whereNotNull("mailing_list"));
+        (
+            await db
+                .selectFrom("startups")
+                .selectAll()
+                .where("mailing_list", "is not", "null")
+                .execute()
+        ).map((startup) => startupToModel(startup));
+    // .whereIn("current_phase", ACTIVE_PHASES)
+    // .whereNotNull("mailing_list"));
+    const startupPhases = await db
+        .selectFrom("phases")
+        .where(
+            "startup_id",
+            "in",
+            startups.map((s) => s.uuid)
+        )
+        .where("end", "is", null)
+        .where("name", "in", ACTIVE_PHASES)
+        .groupBy("startup_id")
+        .selectAll()
+        .execute();
     console.log(`Will send email to ${startups.length} mailing lists`);
 
     for (const startup of startups) {
-        const phase = startup.current_phase;
+        const phase = startupPhases
+            .filter((phase) => phase.startup_id === startup.uuid)
+            .sort((a, b) => {
+                return b.start.getTime() - a.start.getTime();
+            })
+            .map((phase) => phase.name)[0];
         try {
             await sendEmail({
                 type: EMAIL_TYPES.EMAIL_STARTUP_ASK_PHASE,

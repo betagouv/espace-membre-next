@@ -59,7 +59,7 @@ export async function createRedirectionForUserHandler(
             throw new Error(`Le compte du membre ${username} est expiré.`);
         }
 
-        if (!user.canCreateRedirection) {
+        if (!user.authorizations.canCreateRedirection) {
             throw new Error(
                 "Vous n'avez pas le droit de créer de redirection."
             );
