@@ -518,7 +518,6 @@ MemberPageProps) {
                     <h2>Actions admin</h2>
                     <ChangeSecondaryEmailBloc
                         userInfos={userInfos}
-                        secondaryEmail={secondaryEmail}
                     ></ChangeSecondaryEmailBloc>
                     <MemberBrevoEventList userId={username} />
                     <MemberEventList userId={username} />
