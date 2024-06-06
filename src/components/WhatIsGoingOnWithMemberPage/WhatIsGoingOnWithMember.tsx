@@ -7,8 +7,12 @@ import axios, { AxiosError } from "axios";
 
 import { useLiveChat } from "../live-chat/useLiveChat";
 import MemberSelect from "../MemberSelect";
-import { DBUserPublic, EmailStatusCode } from "@/models/dbUser";
-import { Member, MemberWithPermission } from "@/models/member";
+import { EmailStatusCode } from "@/models/dbUser";
+import {
+    memberBaseInfoSchemaType,
+    memberPublicInfoSchemaType,
+    memberWrapperPublicInfoSchemaType,
+} from "@/models/member";
 import { EMAIL_STATUS_READABLE_FORMAT } from "@/models/misc";
 import routes from "@/routes/routes";
 
@@ -29,27 +33,13 @@ enum STEP {
     doNotReceivedEmail = "doNotReceivedEmail",
 }
 
-type MemberAllInfo = MemberWithPermission & {
-    secondaryEmail?: string;
-    emailInfos;
-    isExpired?: boolean;
-    isEmailBlocked: boolean;
-    hasEmailInfos: boolean;
-    mattermostInfo: {
-        hasMattermostAccount: boolean;
-        isInactiveOrNotInTeam: boolean;
-    };
-    hasSecondaryEmail: boolean;
-    primaryEmailStatus: string;
-};
-
 interface FormErrorResponse {
     errors?: Record<string, string[]>;
     message: string;
 }
 
 export interface WhatIsGoingOnWithMemberProps {
-    users: DBUserPublic[];
+    users: memberPublicInfoSchemaType[];
 }
 
 const ConnectedScreen = (props) => {
@@ -194,7 +184,7 @@ const ConnectedScreen = (props) => {
     );
 };
 
-const EmailInfo = function ({ emailInfos, primaryEmailStatus }) {
+const EmailInfo = function ({ emailInfos, primary_email_status }) {
     return (
         <>
             <p>
@@ -205,7 +195,7 @@ const EmailInfo = function ({ emailInfos, primaryEmailStatus }) {
             </p>
             <p>
                 <span className="font-weight-bold">Statut de l'email</span> :{" "}
-                {EMAIL_STATUS_READABLE_FORMAT[primaryEmailStatus]}
+                {EMAIL_STATUS_READABLE_FORMAT[primary_email_status]}
             </p>
             <p>
                 <span className="font-weight-bold">
@@ -218,9 +208,9 @@ const EmailInfo = function ({ emailInfos, primaryEmailStatus }) {
 };
 
 const UserInfo = function (props: {
-    userInfos: MemberAllInfo["userInfos"];
-    hasSecondaryEmail: MemberAllInfo["hasSecondaryEmail"];
-    mattermostInfo: MemberAllInfo["mattermostInfo"];
+    userInfos: memberWrapperPublicInfoSchemaType["userPublicInfos"];
+    hasSecondaryEmail: memberWrapperPublicInfoSchemaType["hasSecondaryEmail"];
+    mattermostInfo: memberWrapperPublicInfoSchemaType["mattermostInfo"];
 }) {
     return (
         <>
@@ -232,13 +222,13 @@ const UserInfo = function (props: {
                 <span className="font-weight-bold">Rôle:</span>{" "}
                 {props.userInfos.role}
             </p>
-            {props.userInfos.startups && (
+            {props.userInfos.missions && (
                 <p>
                     <span className="font-weight-bold">
                         Startups actuelles:
                     </span>
                     <br />
-                    {props.userInfos.startups.map(function (startup) {
+                    {props.userInfos.missions.map(function (startup) {
                         return (
                             <>
                                 - {startup}
@@ -248,7 +238,7 @@ const UserInfo = function (props: {
                     })}
                 </p>
             )}
-            {props.userInfos.end && (
+            {/* {props.userInfos.end && (
                 <p>
                     <span className="font-weight-bold">Fin de mission :</span>
                     {props.userInfos.end &&
@@ -262,7 +252,7 @@ const UserInfo = function (props: {
                     <strong>Employeur : </strong>
                     {props.userInfos.employer.replace("admin/", "")}
                 </p>
-            )}
+            )} */}
             {props.userInfos.github && (
                 <p>
                     <strong>Compte Github :</strong>
@@ -298,21 +288,25 @@ const UserInfo = function (props: {
 };
 
 const MemberComponent = function ({
-    emailInfos,
-    isEmailBlocked,
-    hasEmailInfos,
-    hasSecondaryEmail,
-    mattermostInfo,
-    isExpired,
-    userInfos,
-    primaryEmailStatus,
+    memberWrapper: {
+        isExpired,
+        hasEmailInfos,
+        userPublicInfos,
+        isEmailBlocked,
+        hasSecondaryEmail,
+        mattermostInfo,
+    },
     startFix,
+}: {
+    memberWrapper: memberWrapperPublicInfoSchemaType;
+    startFix: (step: any) => void;
 }) {
     const steps = [STEP.whichMember, STEP.showMember];
     const showSteps =
         !!isExpired ||
         !hasEmailInfos ||
-        primaryEmailStatus === EmailStatusCode.EMAIL_SUSPENDED ||
+        userPublicInfos.primary_email_status ===
+            EmailStatusCode.EMAIL_SUSPENDED ||
         !!isEmailBlocked;
     if (!!isExpired) {
         steps.push(STEP.updateEndDate);
@@ -324,13 +318,15 @@ const MemberComponent = function ({
         steps.push(STEP.accountCreated);
     }
     if (
-        primaryEmailStatus === EmailStatusCode.EMAIL_SUSPENDED &&
+        userPublicInfos.primary_email_status ===
+            EmailStatusCode.EMAIL_SUSPENDED &&
         !isEmailBlocked
     ) {
         steps.push(STEP.emailSuspended);
     }
     if (
-        primaryEmailStatus !== EmailStatusCode.EMAIL_SUSPENDED &&
+        userPublicInfos.primary_email_status !==
+            EmailStatusCode.EMAIL_SUSPENDED &&
         isEmailBlocked
     ) {
         steps.push(STEP.emailBlocked);
@@ -338,31 +334,30 @@ const MemberComponent = function ({
     steps.push(STEP.everythingIsGood);
     return (
         <div>
-            <h2>{userInfos.fullname}</h2>
-            {!!userInfos && (
-                <UserInfo
-                    userInfos={userInfos}
-                    mattermostInfo={mattermostInfo}
-                    hasSecondaryEmail={hasSecondaryEmail}
-                />
-            )}
-            {!!emailInfos && (
+            <h2>{userPublicInfos.fullname}</h2>
+            <UserInfo
+                userInfos={userPublicInfos}
+                mattermostInfo={mattermostInfo}
+                hasSecondaryEmail={hasSecondaryEmail}
+            />
+            {/* {!!emailInfos && (
                 <EmailInfo
                     emailInfos={emailInfos}
-                    primaryEmailStatus={primaryEmailStatus}
+                    primary_email_status={primary_email_status}
                 />
-            )}
+            )} */}
             {showSteps && (
                 <>
                     <h3>Quels sont les problèmes ?</h3>
                     <ul>
                         {!!isExpired && (
                             <li>
-                                Le contrat de {userInfos.fullname} est arrivé à
-                                terme le <strong>{userInfos.end}</strong>.
+                                Le contrat de {userPublicInfos.fullname} est
+                                arrivé à terme le{" "}
+                                {/* <strong>{userPublicInfos.end}</strong>. */}
                             </li>
                         )}
-                        {primaryEmailStatus ===
+                        {userPublicInfos.primary_email_status ===
                             EmailStatusCode.EMAIL_SUSPENDED && (
                             <li>
                                 Son email @beta.gouv.fr est suspendu car sa date
@@ -382,7 +377,7 @@ const MemberComponent = function ({
                                 <li>changer sa date de fin et merger la PR</li>
                             )}
                             {!hasEmailInfos && <li>Re-créer son email beta</li>}
-                            {primaryEmailStatus ===
+                            {userPublicInfos.primary_email_status ===
                                 EmailStatusCode.EMAIL_SUSPENDED && (
                                 <li>
                                     changer son mot de passe pour réactiver son
@@ -399,21 +394,24 @@ const MemberComponent = function ({
                         </ol>
                         {!hasEmailInfos && !!hasSecondaryEmail && (
                             <p>
-                                Si tu es un collègue de {userInfos.fullname} tu
-                                pourras recréer l'email pour lui/elle :).
+                                Si tu es un collègue de{" "}
+                                {userPublicInfos.fullname} tu pourras recréer
+                                l'email pour lui/elle :).
                             </p>
                         )}
                         {!hasEmailInfos && !!hasSecondaryEmail && (
                             <p>
-                                Si tu es {userInfos.fullname} tu pourras recréer
-                                l'email toi même une fois ta date de fin à jour.
+                                Si tu es {userPublicInfos.fullname} tu pourras
+                                recréer l'email toi même une fois ta date de fin
+                                à jour.
                             </p>
                         )}
                         {!hasEmailInfos && !hasSecondaryEmail && (
                             <p>
-                                {userInfos.fullname} n'a pas d'email secondaire,
-                                si tu es toi même {userInfos.fullname} il va
-                                falloir qu'un collègue le fasse à ta place.
+                                {userPublicInfos.fullname} n'a pas d'email
+                                secondaire, si tu es toi même{" "}
+                                {userPublicInfos.fullname} il va falloir qu'un
+                                collègue le fasse à ta place.
                             </p>
                         )}
                     </div>
@@ -428,8 +426,8 @@ const MemberComponent = function ({
                         </p>
                     </div>
                     <p>
-                        Cependant {userInfos.fullname} rencontre peut être un
-                        des problèmes <span>suivants :</span>
+                        Cependant {userPublicInfos.fullname} rencontre peut être
+                        un des problèmes <span>suivants :</span>
                     </p>
                     <ul>
                         <li>
@@ -605,7 +603,7 @@ const AccountPendingCreationScreen = function ({
 }: {
     getUser;
     next;
-    user: MemberAllInfo;
+    user: memberWrapperPublicInfoSchemaType;
 }) {
     const INITIAL_TIME = 60;
     const [seconds, setSeconds] = React.useState(INITIAL_TIME);
@@ -616,7 +614,7 @@ const AccountPendingCreationScreen = function ({
         const intervalId = setInterval(() => {
             const prev = seconds;
             if (seconds === INITIAL_TIME) {
-                getUser(user.userInfos.id).catch(console.error);
+                getUser(user.userPublicInfos.username).catch(console.error);
             }
             if (prev - 1 === 0) {
                 setSeconds(INITIAL_TIME);
@@ -629,9 +627,10 @@ const AccountPendingCreationScreen = function ({
 
     return (
         <div>
-            <h2>Création du compte de {user.userInfos.id}</h2>
+            <h2>Création du compte de {user.userPublicInfos.username}</h2>
             {user &&
-                user.primaryEmailStatus !== EmailStatusCode.EMAIL_ACTIVE && (
+                user.userPublicInfos.primary_email_status !==
+                    EmailStatusCode.EMAIL_ACTIVE && (
                     <>
                         <p>Création en cours ...</p>
                         <p>
@@ -640,17 +639,18 @@ const AccountPendingCreationScreen = function ({
                         </p>
                         <p>Recheck automatique d'ici {seconds}s</p>
                         <button className="button" onClick={() => next()}>
-                            C'est bon {user.userInfos.fullname} a bien reçu
-                            l'email
+                            C'est bon {user.userPublicInfos.fullname} a bien
+                            reçu l'email
                         </button>
                     </>
                 )}
             {user &&
-                user.primaryEmailStatus === EmailStatusCode.EMAIL_ACTIVE && (
+                user.userPublicInfos.primary_email_status ===
+                    EmailStatusCode.EMAIL_ACTIVE && (
                     <>
                         <p className="notification">
-                            C'est bon le compte de {user.userInfos.fullname} est
-                            actif.
+                            C'est bon le compte de{" "}
+                            {user.userPublicInfos.fullname} est actif.
                         </p>
                         <button className="button" onClick={() => next()}>
                             Passer à l'étape suivante
@@ -916,6 +916,7 @@ export const CreateEmailScreen = function (props) {
 export const WhatIsGoingOnWithMember = function (
     props: WhatIsGoingOnWithMemberProps
 ) {
+    const { users } = props;
     const { showLiveChat, isLiveChatLoading } = useLiveChat();
 
     const [step, setStep] = React.useState(STEP.whichMember);
@@ -924,11 +925,13 @@ export const WhatIsGoingOnWithMember = function (
         STEP.showMember,
     ]);
     const [user, setUser]: [
-        MemberAllInfo | undefined,
-        (user: MemberAllInfo) => void
+        memberWrapperPublicInfoSchemaType | undefined,
+        (user: memberWrapperPublicInfoSchemaType) => void
     ] = React.useState();
     const [pullRequestURL, setPullRequestURL] = React.useState("");
-    const getUser: (string) => Promise<MemberAllInfo> = async (member) => {
+    const getUser: (
+        string
+    ) => Promise<memberWrapperPublicInfoSchemaType> = async (member) => {
         return await axios
             .get(routes.API_GET_PUBLIC_USER_INFO.replace(":username", member))
             .then((resp) => {
@@ -942,7 +945,7 @@ export const WhatIsGoingOnWithMember = function (
             const state: {
                 step: STEP;
                 memberId: string;
-                user: MemberAllInfo;
+                user: memberWrapperPublicInfoSchemaType;
                 steps: STEP[];
                 pullRequestURL: string;
             } = JSON.parse(localStorage.getItem("state")!);
@@ -963,7 +966,7 @@ export const WhatIsGoingOnWithMember = function (
             }
             if (state.user) {
                 setUser(state.user);
-                getUser(state.user.userInfos.id).catch((e) => {
+                getUser(state.user.userPublicInfos.username).catch((e) => {
                     console.error(e);
                 });
             }
@@ -984,7 +987,7 @@ export const WhatIsGoingOnWithMember = function (
         setStep(nextStep);
         const state = {
             step: nextStep,
-            memberId: user?.userInfos?.id,
+            memberId: user?.userPublicInfos.username,
             user: user,
             steps: fixes,
         };
@@ -995,13 +998,16 @@ export const WhatIsGoingOnWithMember = function (
         localStorage.removeItem("state");
     }
 
-    function next(steps?: STEP[], paramUser?: MemberWithPermission) {
+    function next(
+        steps?: STEP[],
+        paramUser?: memberWrapperPublicInfoSchemaType
+    ) {
         const currentStepIndex = (steps || fixes).findIndex((s) => s === step);
         const nextStep = (steps || fixes)[currentStepIndex + 1];
         setStep(nextStep);
         const state = {
             step: nextStep,
-            memberId: (paramUser || user)?.userInfos?.id,
+            memberId: (paramUser || user)?.userPublicInfos?.username,
             user: paramUser || user,
             steps: steps || fixes,
         };
@@ -1020,39 +1026,37 @@ export const WhatIsGoingOnWithMember = function (
                 getUser={getUser}
             />
         );
-    } else if (step === STEP.showMember) {
-        stepView = (
-            <MemberComponent {...(user as MemberAllInfo)} startFix={startFix} />
-        );
-    } else if (step === STEP.updateEndDate) {
-        stepView = (
-            <UpdateEndDateScreen
-                setPullRequestURL={setPullRequestURL}
-                user={user}
-                next={next}
-            />
-        );
-    } else if (step === STEP.createEmail) {
-        stepView = (
-            <CreateEmailScreen
-                secondaryEmail={user?.secondaryEmail}
-                next={next}
-                user={user}
-            />
-        );
-    } else if (step === STEP.accountPendingCreation) {
-        stepView = (
-            <AccountPendingCreationScreen
-                next={next}
-                user={user as MemberAllInfo}
-                getUser={getUser}
-            />
-        );
-    } else if (step === STEP.accountCreated) {
+    } else if (step === STEP.showMember && user) {
+        stepView = <MemberComponent memberWrapper={user} startFix={startFix} />;
+        // } else if (step === STEP.updateEndDate && user) {
+        //     stepView = (
+        //         <UpdateEndDateScreen
+        //             setPullRequestURL={setPullRequestURL}
+        //             user={user}
+        //             next={next}
+        //         />
+        //     );
+        // } else if (step === STEP.createEmail && user) {
+        //     stepView = (
+        //         <CreateEmailScreen
+        //             secondaryEmail={user.userPublicInfos.secondary_email}
+        //             next={next}
+        //             user={user}
+        //         />
+        //     );
+        // } else if (step === STEP.accountPendingCreation && user) {
+        //     stepView = (
+        //         <AccountPendingCreationScreen
+        //             next={next}
+        //             user={user}
+        //             getUser={getUser}
+        //         />
+        //     );
+        // } else if (step === STEP.accountCreated && user) {
         stepView = (
             <div>
                 <p>
-                    Il faut maintenant que {user?.userInfos.fullname} se
+                    Il faut maintenant que {user.userPublicInfos.fullname} se
                     connecte à{" "}
                     <a
                         className="fr-link"
@@ -1073,21 +1077,21 @@ export const WhatIsGoingOnWithMember = function (
                 </button>
             </div>
         );
-    } else if (step === STEP.everythingIsGood) {
+    } else if (step === STEP.everythingIsGood && user) {
         stepView = (
             <div>
-                <p>Tout semble réglé pour {user?.userInfos.fullname}.</p>
+                <p>Tout semble réglé pour {user.userPublicInfos.fullname}.</p>
                 <button className="button" onClick={resetLocalStorage}>
                     Terminer
                 </button>
             </div>
         );
-    } else if (step === STEP.emailSuspended) {
+    } else if (step === STEP.emailSuspended && user) {
         stepView = (
             <div>
                 <p>
-                    La date de fin de mission de {user?.userInfos.fullname} a
-                    été mise à jour un peu tard, son email a été suspendu.
+                    La date de fin de mission de {user.userPublicInfos.fullname}{" "}
+                    a été mise à jour un peu tard, son email a été suspendu.
                 </p>
                 <p>
                     Pour le réactiver, iel doit se connecter a{" "}
@@ -1111,11 +1115,11 @@ export const WhatIsGoingOnWithMember = function (
                 </Button>
             </div>
         );
-    } else if (step === STEP.emailBlocked) {
+    } else if (step === STEP.emailBlocked && user) {
         stepView = (
             <div>
                 <p>
-                    {user?.userInfos.fullname} a du faire un envoie massif
+                    {user.userPublicInfos.fullname} a du faire un envoie massif
                     d'email par gmail, ou depuis de nombreuses ips différentes.
                     Son email a été bloqué par OVH.
                 </p>
@@ -1141,16 +1145,16 @@ export const WhatIsGoingOnWithMember = function (
                 </Button>
             </div>
         );
-    } else if (step === STEP.shouldChangedPassword) {
+    } else if (step === STEP.shouldChangedPassword && user) {
         stepView = (
             <div>
                 <p>
-                    Si {user?.userInfos.fullname} n'arrive plus accéder a son
-                    email @beta.gouv.fr, iel peut faire un changement de mot de
-                    passe.
+                    Si {user.userPublicInfos.fullname} n'arrive plus accéder a
+                    son email @beta.gouv.fr, iel peut faire un changement de mot
+                    de passe.
                 </p>
                 <p>
-                    Il faut que {user?.userInfos.fullname} se connecte à{" "}
+                    Il faut que {user.userPublicInfos.fullname} se connecte à{" "}
                     <a
                         className="fr-link"
                         href="/account#password"
@@ -1261,14 +1265,14 @@ export const WhatIsGoingOnWithMember = function (
                 pullRequestURL={pullRequestURL}
             />
         );
-    } else if (step === STEP.doNotReceivedEmail) {
+    } else if (step === STEP.doNotReceivedEmail && user) {
         stepView = (
             <div>
                 <p></p>
                 <p>
                     1. ⚠️ Verifier si l'email n'est pas dans les les spams.
                     <br />
-                    2. ⚠️ Si {user?.userInfos.fullname} utilises gmail, les
+                    2. ⚠️ Si {user.userPublicInfos.fullname} utilises gmail, les
                     emails peuvent arriver avec un délai. Pour les récupérer
                     instantanément aller dans Paramètres ⚙️ → comptes et
                     importation → Consulter d'autres comptes de messagerie →
@@ -1281,9 +1285,9 @@ export const WhatIsGoingOnWithMember = function (
                 </p>
                 <p>
                     Si toujours pas d'email, l'email de{" "}
-                    {user?.userInfos.fullname} est probablement bloqué par brevo
-                    notre service d'email. Merci de nous faire part du soucis
-                    dans le chat :
+                    {user.userPublicInfos.fullname} est probablement bloqué par
+                    brevo notre service d'email. Merci de nous faire part du
+                    soucis dans le chat :
                     <br />
                     <br />
                     <Button

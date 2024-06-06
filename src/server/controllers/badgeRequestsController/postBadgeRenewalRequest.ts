@@ -1,6 +1,5 @@
 import { capitalizeWords, userInfos } from "../utils";
 import { BADGE_REQUEST } from "@/models/badgeRequests";
-import { MemberWithPermission } from "@/models/member";
 import config from "@/server/config";
 import DS from "@/server/config/ds/ds.config";
 import {

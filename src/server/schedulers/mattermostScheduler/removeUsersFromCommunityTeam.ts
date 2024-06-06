@@ -1,20 +1,14 @@
+import { db } from "@/lib/kysely";
 import { getAllUsersInfo } from "@/lib/kysely/queries/users";
 import { MattermostUser } from "@/lib/mattermost";
 import * as mattermost from "@/lib/mattermost";
-import {
-    DBUser,
-    DBUserPublic,
-    DBUserPublicAndMission,
-} from "@/models/dbUser/dbUser";
-import { publicUserInfosToModel } from "@/models/mapper";
-import { Member, memberPublicInfoSchemaType } from "@/models/member";
+import { memberBaseInfoToModel } from "@/models/mapper";
+import { memberBaseInfoSchemaType } from "@/models/member";
 import config from "@/server/config";
-import betagouv from "@betagouv";
 import * as utils from "@controllers/utils";
-import knex from "@db";
 
 export async function removeUsersFromCommunityTeam(
-    optionalUsers?: memberPublicInfoSchemaType[],
+    optionalUsers?: memberBaseInfoSchemaType[],
     checkAll = true
 ) {
     // Removed users referenced on github but expired for more than 3 months
@@ -22,15 +16,17 @@ export async function removeUsersFromCommunityTeam(
     console.log("Start function remove users from community team");
     if (!users) {
         users = (await getAllUsersInfo()).map((user) =>
-            publicUserInfosToModel(user)
+            memberBaseInfoToModel(user)
         );
         users = checkAll
             ? utils.getExpiredUsers(users, 3 * 30)
             : utils.getExpiredUsersForXDays(users, 3 * 30);
     }
-    const dbUsers: DBUser[] = await knex("users").whereNotNull(
-        "secondary_email"
-    );
+    const dbUsers = await db
+        .selectFrom("users")
+        .selectAll()
+        .where("secondary_email", "is not", "null")
+        .execute();
     const concernedUsers = users.map((user) => {
         const dbUser = dbUsers.find((x) => x.username === user.username);
         if (dbUser) {

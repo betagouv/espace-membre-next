@@ -1,9 +1,3 @@
-import {
-    UpdateObject,
-    UpdateObjectExpression,
-} from "kysely/dist/cjs/parser/update-set-parser";
-
-import { DB, Users } from "@/@types/db";
 import { db } from "@/lib/kysely";
 import {
     createMission,

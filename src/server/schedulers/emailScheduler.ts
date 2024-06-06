@@ -15,7 +15,7 @@ import {
     EmailStatusCode,
     MemberType,
 } from "@/models/dbUser/dbUser";
-import { publicUserInfosToModel, userInfosToModel } from "@/models/mapper";
+import { memberBaseInfoToModel, userInfosToModel } from "@/models/mapper";
 import { Member } from "@/models/member";
 import { OvhRedirection } from "@/models/ovh";
 import config from "@/server/config";
@@ -48,7 +48,7 @@ const differenceGithubRedirectionOVH = function differenceGithubOVH(
 
 const getValidUsers = async () => {
     const githubUsers = (await getAllUsersInfo()).map((user) =>
-        publicUserInfosToModel(user)
+        memberBaseInfoToModel(user)
     );
     return githubUsers.filter((x) => !utils.checkUserIsExpired(x));
 };
@@ -274,7 +274,7 @@ export async function createEmailAddresses() {
 
 export async function reinitPasswordEmail() {
     const users = (await getAllUsersInfo()).map((user) =>
-        publicUserInfosToModel(user)
+        memberBaseInfoToModel(user)
     );
     const expiredUsers = utils.getExpiredUsers(users, 5);
     const dbUsers: DBUser[] = await knex("users")
@@ -365,7 +365,7 @@ export async function subscribeEmailAddresses() {
 export async function unsubscribeEmailAddresses() {
     // const dbUsers: DBUser[] = await knex("users").whereNotNull("primary_email");
     const concernedUsers = (await getAllUsersInfo())
-        .map((user) => publicUserInfosToModel(user))
+        .map((user) => memberBaseInfoToModel(user))
         .filter((x) => utils.checkUserIsExpired(x) && x.primary_email);
 
     // const concernedUsers = githubUsers.reduce(

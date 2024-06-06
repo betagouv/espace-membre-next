@@ -4,23 +4,10 @@ import { z } from "zod";
 import { addEvent } from "@/lib/events";
 import { getUserInfos } from "@/lib/kysely/queries/users";
 import { EventCode } from "@/models/actionEvent";
-import { DBUser } from "@/models/dbUser";
 import { userInfosToModel } from "@/models/mapper";
 import { memberSchema } from "@/models/member";
-import { DBMission, createDBMission } from "@/models/mission";
-import { PULL_REQUEST_TYPE, PULL_REQUEST_STATE } from "@/models/pullRequests";
 import { deleteMission } from "@/server/db/dbMission";
-import {
-    createOrUpdateDBUser,
-    getDBUser,
-    getDBUserAndMission,
-} from "@/server/db/dbUser";
-import betagouv from "@betagouv";
-import {
-    makeGithubAuthorFile,
-    updateMultipleFilesPR,
-} from "@controllers/helpers/githubHelpers";
-import { GithubBetagouvFile } from "@controllers/helpers/githubHelpers/githubEntryInterface";
+import { createOrUpdateDBUser } from "@/server/db/dbUser";
 import db from "@db";
 
 export const updateMemberSchema = memberSchema.pick({
@@ -139,7 +126,7 @@ export async function postBaseInfoUpdate(
         // const message = `Pull request ouverte pour la la fiche de ${username}.
         // \nDemande à un membre de ton équipe de merger ta fiche : <a href="${prInfo.html_url}" target="_blank">${prInfo.html_url}</a>.
         // \nUne fois mergée, ton profil sera mis à jour.`;
-        const dbUser = await getDBUserAndMission(username);
+        const dbUser = await getUserInfos({ username });
         res.json(dbUser);
     } catch (err) {
         let message;

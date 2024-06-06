@@ -8,11 +8,11 @@ import {
     DBUserPublicAndMission,
     EmailStatusCode,
 } from "@/models/dbUser/dbUser";
-import { publicUserInfosToModel } from "@/models/mapper";
+import { memberBaseInfoToModel } from "@/models/mapper";
 import {
     MemberWithPrimaryEmailInfo,
     Member,
-    memberPublicInfoSchemaType,
+    memberBaseInfoSchemaType,
 } from "@/models/member";
 import { getAllUsersPublicInfo } from "@/server/db/dbUser";
 import betagouv from "@betagouv";
@@ -49,13 +49,13 @@ const filterActiveUser = (user) => {
 };
 
 export const getActiveGithubUsersUnregisteredOnMattermost = async (): Promise<
-    memberPublicInfoSchemaType[]
+    memberBaseInfoSchemaType[]
 > => {
     const allMattermostUsers: MattermostUser[] =
         await mattermost.getUserWithParams();
     const dbUsers: DBUser[] = await knex("users").select();
     const githubUsers = (await getAllUsersInfo()).map((user) =>
-        publicUserInfosToModel(user)
+        memberBaseInfoToModel(user)
     );
     const concernedUsers = githubUsers
         .filter((x) => !utils.checkUserIsExpired(x))
@@ -82,7 +82,7 @@ export const getMattermostUsersActiveGithubUsersNotInTeam = async (
     const allMattermostUsers: MattermostUser[] =
         await mattermost.getUserWithParams({ not_in_team: teamId });
     const githubUsers = (await getAllUsersInfo()).map((user) =>
-        publicUserInfosToModel(user)
+        memberBaseInfoToModel(user)
     );
     const activeGithubUsers = githubUsers.filter(
         (x) => !utils.checkUserIsExpired(x)
@@ -110,7 +110,7 @@ export const getMattermostUsersActiveGithubUsersInTeam = async (
         await mattermost.getUserWithParams({ in_team: teamId });
     // const dbUsers: DBUser[] = await knex("users").select();
     const githubUsers = (await getAllUsersInfo()).map((user) =>
-        publicUserInfosToModel(user)
+        memberBaseInfoToModel(user)
     );
     const activeGithubUsers = githubUsers.filter(
         (x) => !utils.checkUserIsExpired(x)

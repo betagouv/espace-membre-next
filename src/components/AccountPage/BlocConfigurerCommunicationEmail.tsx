@@ -1,9 +1,12 @@
-import axios from "axios";
 import React from "react";
-import routes, { computeRoute } from "@/routes/routes";
+
 import Accordion from "@codegouvfr/react-dsfr/Accordion";
-import { RadioButtons } from "@codegouvfr/react-dsfr/RadioButtons";
 import Button from "@codegouvfr/react-dsfr/Button";
+import { RadioButtons } from "@codegouvfr/react-dsfr/RadioButtons";
+import axios from "axios";
+
+import { updateCommunicationEmail } from "@/app/api/member/actions";
+import routes, { computeRoute } from "@/routes/routes";
 
 export default function BlocConfigurerCommunicationEmail({
     primaryEmail,
@@ -26,17 +29,7 @@ export default function BlocConfigurerCommunicationEmail({
                         e.preventDefault();
                         setIsSaving(true);
                         try {
-                            await axios.put(
-                                computeRoute(
-                                    routes.USER_UPDATE_COMMUNICATION_EMAIL_API
-                                ),
-                                {
-                                    communication_email,
-                                },
-                                {
-                                    withCredentials: true,
-                                }
-                            );
+                            await updateCommunicationEmail(communication_email);
                         } catch (e) {
                             setIsSaving(false);
                             console.error(e);

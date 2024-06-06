@@ -1,6 +1,3 @@
-import { Domaine } from "../member";
-import { DBMission, createDBMission } from "../mission";
-
 export enum USER_EVENT {
     USER_EMAIL_ACTIVATED = "USER_EMAIL_ACTIVATED",
     ADD_USER_TO_ONBOARDING_MAILING_LIST = "ADD_USER_TO_ONBOARDING_MAILING_LIST",
@@ -52,69 +49,6 @@ export enum MemberType {
     ATTRIBUTAIRE = "attributaire",
     DINUM = "dinum",
     OTHER = "autre",
-}
-
-export interface DBUserPublic {
-    username: string;
-    // id: string;
-    fullname: string;
-    github?: string;
-    // email?: string;
-    //todo remove missions
-    // missions: Mission[];
-    //startups: string[]; duplicate
-    // info in missions
-    // previously?: string[];
-    // start: string;
-    // end: string;
-    // employer: string;
-    domaine: Domaine; //duplicate
-    role: string;
-}
-
-export interface DBUser extends DBUserPublic {
-    uuid: string;
-    secondary_email: string;
-    primary_email?: string;
-    member_type: MemberType;
-    created_at: Date;
-    primary_email_status: EmailStatusCode;
-    primary_email_status_updated_at: Date;
-    workplace_insee_code: string;
-    tjm: number;
-    domaine: Domaine;
-    gender: GenderCode;
-    legal_status: LegalStatus;
-    communication_email: CommunicationEmailCode;
-    osm_city: string;
-    average_nb_of_days: number;
-    startups: string[];
-    email_is_redirection: boolean;
-    email_verified: Date | null;
-}
-
-export interface DBUserPublicAndMission extends DBUserPublic {
-    missions: DBMission[];
-}
-
-export interface DBUserAndMission extends DBUser {
-    missions: DBMission[];
-}
-
-export interface createDBUserAndMission
-    extends Omit<DBUser, "id" | "created_at" | "uuid"> {
-    missions: createDBMission[];
-}
-
-export interface DBUserDetail {
-    average_nb_of_days: number;
-    hash: string;
-    tjm: number;
-    gender: GenderCode;
-}
-
-export interface DBUserWithEmailsAndMattermostUsername extends DBUser {
-    mattermostUsername: string;
 }
 
 export const genderOptions = [

@@ -1,30 +1,15 @@
 import axios from "axios";
 import crypto from "crypto";
-import { format } from "date-fns/format";
 import _ from "lodash";
 import nodemailer from "nodemailer";
 
-import db from "../db";
-import { getDBUser, getDBUserAndMission } from "../db/dbUser";
-import { Users } from "@/@types/db";
 import { getUserInfos } from "@/lib/kysely/queries/users";
-import {
-    DBUser,
-    DBUserAndMission,
-    DBUserPublic,
-    DBUserPublicAndMission,
-    EmailStatusCode,
-} from "@/models/dbUser";
 import { userInfosToModel } from "@/models/mapper";
 import {
-    EmailInfos,
-    HasMissions,
-    Member,
-    memberPublicInfoSchemaType,
+    memberBaseInfoSchemaType,
     memberSchemaType,
     memberWrapperSchemaType,
 } from "@/models/member";
-import { DBMission, Mission } from "@/models/mission";
 import config from "@/server/config";
 import BetaGouv from "@betagouv";
 
@@ -125,7 +110,7 @@ export function objectArrayToCSV<T extends Record<string, any>>(
 }
 
 export function checkUserIsExpired(
-    user: memberSchemaType | memberPublicInfoSchemaType,
+    user: memberSchemaType | memberBaseInfoSchemaType,
     minDaysOfExpiration: number = 1
 ) {
     // Le membre est considéré comme expiré si:
@@ -156,7 +141,7 @@ export function checkUserIsExpired(
 }
 
 export function getActiveUsers<
-    T extends memberSchemaType[] | memberPublicInfoSchemaType[]
+    T extends memberSchemaType[] | memberBaseInfoSchemaType[]
 >(users: T, minDaysOfExpiration = 0): T {
     return users.filter(
         (u) => !checkUserIsExpired(u, minDaysOfExpiration - 1)
@@ -164,30 +149,15 @@ export function getActiveUsers<
 }
 
 export function getExpiredUsers<
-    T extends memberSchemaType[] | memberPublicInfoSchemaType[]
+    T extends memberSchemaType[] | memberBaseInfoSchemaType[]
 >(users: T, minDaysOfExpiration = 0): T {
     return users.filter((u) =>
         checkUserIsExpired(u, minDaysOfExpiration - 1)
     ) as T;
 }
 
-// export function getExpiredUsersForXDays(
-//     users: DBUserPublicAndMission[] | DBUserAndMission[],
-//     nbDays
-// ) {
-//     const date = new Date();
-//     date.setDate(date.getDate() - nbDays);
-//     // const formatedDate = format(date, "yyyy-MM-dd");
-//     return users.filter((user) => {
-//         const latestMission = user.missions.reduce((a, v) =>
-//             !v.end || v.end > a.end ? v : a
-//         );
-//         latestMission.end === date;
-//     });
-// }
-
 export function getExpiredUsersForXDays<
-    T extends memberSchemaType[] | memberPublicInfoSchemaType[]
+    T extends memberSchemaType[] | memberBaseInfoSchemaType[]
 >(users: T, nbDays: number): T {
     const date = new Date();
     date.setDate(date.getDate() - nbDays);

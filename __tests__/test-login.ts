@@ -6,7 +6,6 @@ import { Domaine } from "@/models/member";
 import routes from "@/routes/routes";
 import config from "@/server/config";
 import * as Email from "@/server/config/email.config";
-import dbUser from "@/server/db/dbUser";
 import app from "@/server/index";
 import knex from "@db";
 import { SendEmailProps } from "@modules/email";

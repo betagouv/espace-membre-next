@@ -20,7 +20,7 @@ import MemberEmailServiceInfo from "./MemberEmailServiceInfo";
 import MemberEventList from "./MemberEventList";
 import { changeSecondaryEmailForUser } from "@/app/api/member/actions";
 import { EmailStatusCode } from "@/models/dbUser";
-import { memberPublicInfoSchemaType } from "@/models/member";
+import { memberBaseInfoSchemaType } from "@/models/member";
 import { EMAIL_STATUS_READABLE_FORMAT } from "@/models/misc";
 import routes, { computeRoute } from "@/routes/routes";
 
@@ -56,7 +56,7 @@ export interface MemberPageProps {
 const ChangeSecondaryEmailBloc = ({
     userInfos,
 }: {
-    userInfos: memberPublicInfoSchemaType;
+    userInfos: memberBaseInfoSchemaType;
 }) => {
     const [newSecondaryEmail, setNewSecondaryEmail] = useState<string>(
         userInfos.secondary_email

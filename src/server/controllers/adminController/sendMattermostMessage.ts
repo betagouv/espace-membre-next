@@ -1,7 +1,7 @@
+import { db } from "@/lib/kysely";
 import { MattermostUser } from "@/lib/mattermost";
-import { DBUser, EmailStatusCode } from "@/models/dbUser";
+import { EmailStatusCode } from "@/models/dbUser";
 import config from "@/server/config";
-import db from "@db";
 import { getUserWithParams, sendInfoToChat } from "@infra/chat";
 
 export const getMattermostUsers = async ({
@@ -13,7 +13,7 @@ export const getMattermostUsers = async ({
     includeEmails: string[];
     excludeEmails: string[];
 }) => {
-    let activeUsers: MattermostUser[] = await getUserWithParams({
+    let activeUsers = await getUserWithParams({
         params: {
             in_team: config.mattermostTeamId,
             active: true,
@@ -30,13 +30,14 @@ export const getMattermostUsers = async ({
         );
     }
     if (fromBeta) {
-        const dbUsers: DBUser[] = await db("users").whereIn(
-            "primary_email_status",
-            [
+        const dbUsers = await db
+            .selectFrom("users")
+            .selectAll()
+            .where("primary_email_status", "in", [
                 EmailStatusCode.EMAIL_ACTIVE,
                 EmailStatusCode.EMAIL_ACTIVE_AND_PASSWORD_DEFINITION_PENDING,
-            ]
-        );
+            ])
+            .execute();
         const primaryEmails = dbUsers
             .map((user) => user.primary_email)
             .filter((email) => email);

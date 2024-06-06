@@ -1,12 +1,12 @@
 import { getAllUsersInfo } from "@/lib/kysely/queries/users";
-import { publicUserInfosToModel } from "@/models/mapper";
+import { memberBaseInfoToModel } from "@/models/mapper";
 import betagouv from "@betagouv";
 import { checkUserIsExpired } from "@controllers/utils";
 import knex from "@db";
 
 const getIntraUsersEmails = async () => {
     const users = (await getAllUsersInfo()).map((user) =>
-        publicUserInfosToModel(user)
+        memberBaseInfoToModel(user)
     );
     const members = users.filter((user) => !checkUserIsExpired(user));
     const intras = members.filter(

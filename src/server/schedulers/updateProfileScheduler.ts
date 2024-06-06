@@ -8,7 +8,7 @@ import {
     DBUserPublic,
     DBUserWithEmailsAndMattermostUsername,
 } from "@/models/dbUser/dbUser";
-import { publicUserInfosToModel } from "@/models/mapper";
+import { memberBaseInfoToModel } from "@/models/mapper";
 import BetaGouv from "@betagouv";
 import * as utils from "@controllers/utils";
 import { sleep } from "@controllers/utils";
@@ -20,7 +20,7 @@ export async function sendMessageToActiveUsersWithoutSecondaryEmail() {
         (mattermostUser) => mattermostUser.email
     );
     const users = (await getAllUsersInfo()).map((user) =>
-        publicUserInfosToModel(user)
+        memberBaseInfoToModel(user)
     );
     const activeUsers = users.filter((user) => !utils.checkUserIsExpired(user));
     const concernedUsers: DBUser[] = await knex("users")

@@ -10,8 +10,8 @@ import {
     EmailStatusCode,
 } from "@/models/dbUser/dbUser";
 import { Job } from "@/models/job";
-import { publicUserInfosToModel } from "@/models/mapper";
-import { memberPublicInfoSchemaType } from "@/models/member";
+import { memberBaseInfoToModel } from "@/models/mapper";
+import { memberBaseInfoSchemaType } from "@/models/member";
 import { OvhRedirection } from "@/models/ovh";
 import { sendEmail } from "@/server/config/email.config";
 import BetaGouv from "@betagouv";
@@ -35,7 +35,7 @@ const getRegisteredUsersWithEndingContractInXDays = async (
 ): Promise<DBUserWithEmailsAndMattermostUsername[]> => {
     const allMattermostUsers = await mattermost.getUserWithParams();
     const users = (await getAllUsersInfo()).map((user) =>
-        publicUserInfosToModel(user)
+        memberBaseInfoToModel(user)
     );
     const activeGithubUsers = users.filter((user) => {
         const today = new Date();
@@ -203,12 +203,12 @@ export async function sendContractEndingMessageToUsers(
 
 export async function sendInfoToSecondaryEmailAfterXDays(
     nbDays,
-    optionalExpiredUsers?: memberPublicInfoSchemaType[]
+    optionalExpiredUsers?: memberBaseInfoSchemaType[]
 ) {
     let expiredUsers = optionalExpiredUsers;
     if (!expiredUsers) {
         const users = (await getAllUsersInfo()).map((user) =>
-            publicUserInfosToModel(user)
+            memberBaseInfoToModel(user)
         );
         expiredUsers = utils.getExpiredUsersForXDays(users, nbDays);
     }
@@ -253,13 +253,13 @@ export async function sendJ30Email(users) {
 }
 
 export async function deleteOVHEmailAcounts(
-    optionalExpiredUsers?: memberPublicInfoSchemaType[]
+    optionalExpiredUsers?: memberBaseInfoSchemaType[]
 ) {
     let expiredUsers = optionalExpiredUsers;
     let dbUsers: DBUser[] = [];
     if (!expiredUsers) {
         const users = (await getAllUsersInfo()).map((user) =>
-            publicUserInfosToModel(user)
+            memberBaseInfoToModel(user)
         );
         const allOvhEmails = await BetaGouv.getAllEmailInfos();
         expiredUsers = users.filter((user) => {
@@ -304,12 +304,12 @@ export async function deleteOVHEmailAcounts(
 }
 
 export async function deleteSecondaryEmailsForUsers(
-    optionalExpiredUsers?: memberPublicInfoSchemaType[]
+    optionalExpiredUsers?: memberBaseInfoSchemaType[]
 ) {
     let expiredUsers = optionalExpiredUsers;
     if (!expiredUsers) {
         const users = (await getAllUsersInfo()).map((user) =>
-            publicUserInfosToModel(user)
+            memberBaseInfoToModel(user)
         );
         expiredUsers = users.filter((user) =>
             utils.checkUserIsExpired(user, 30)
@@ -351,7 +351,7 @@ export async function deleteRedirectionsAfterQuitting(
     check_all = false
 ): Promise<unknown[]> {
     const users = (await getAllUsersInfo()).map((user) =>
-        publicUserInfosToModel(user)
+        memberBaseInfoToModel(user)
     );
     const expiredUsers = check_all
         ? utils.getExpiredUsers(users, 1)
@@ -411,13 +411,13 @@ const removeEmailFromMailingList = async (
 };
 
 export async function removeEmailsFromMailingList(
-    optionalExpiredUsers?: memberPublicInfoSchemaType[],
+    optionalExpiredUsers?: memberBaseInfoSchemaType[],
     nbDays = 30
 ) {
     let expiredUsers = optionalExpiredUsers;
     if (!expiredUsers) {
         const users = (await getAllUsersInfo()).map((user) =>
-            publicUserInfosToModel(user)
+            memberBaseInfoToModel(user)
         );
         expiredUsers = utils.getExpiredUsersForXDays(users, nbDays);
     }

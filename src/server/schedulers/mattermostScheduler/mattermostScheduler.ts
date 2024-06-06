@@ -7,11 +7,11 @@ import {
     DBUserPublic,
     EmailStatusCode,
 } from "@/models/dbUser/dbUser";
-import { publicUserInfosToModel } from "@/models/mapper";
+import { memberBaseInfoToModel } from "@/models/mapper";
 import {
     MemberWithPrimaryEmailInfo,
     Member,
-    memberPublicInfoSchemaType,
+    memberBaseInfoSchemaType,
 } from "@/models/member";
 import config from "@/server/config";
 import { getAllUsersPublicInfo } from "@/server/db/dbUser";
@@ -83,13 +83,13 @@ export const deactivateMattermostUsersWithUnallowedEmails = async (
 };
 
 export const getActiveGithubUsersUnregisteredOnMattermost = async (): Promise<
-    memberPublicInfoSchemaType[]
+    memberBaseInfoSchemaType[]
 > => {
     const allMattermostUsers: MattermostUser[] =
         await mattermost.getUserWithParams();
     const dbUsers: DBUser[] = await knex("users").select();
     const githubUsers = (await getAllUsersInfo()).map((user) =>
-        publicUserInfosToModel(user)
+        memberBaseInfoToModel(user)
     );
     const activeGithubUsers = githubUsers.filter(
         (x) => !utils.checkUserIsExpired(x)
@@ -116,7 +116,7 @@ export const getMattermostUsersActiveGithubUsersNotInTeam = async (
         await mattermost.getUserWithParams({ not_in_team: teamId });
     const dbUsers: DBUser[] = await knex("users").select();
     const githubUsers = (await getAllUsersInfo()).map((user) =>
-        publicUserInfosToModel(user)
+        memberBaseInfoToModel(user)
     );
     const activeGithubUsers = githubUsers.filter(
         (x) => !utils.checkUserIsExpired(x)

@@ -1,3 +1,5 @@
+import { z } from "zod";
+
 export enum BADGE_REQUEST {
     BADGE_REQUEST_PENDING = "BADGE_REQUEST_PENDING",
     BADGE_REQUEST_SENT = "BADGE_REQUEST_SENT",
@@ -5,15 +7,19 @@ export enum BADGE_REQUEST {
     BADGE_RENEWAL_REQUEST_SENT = "BADGE_RENEWAL_REQUEST_SENT",
 }
 
-export interface BadgeRequest {
-    id: number;
-    status: BADGE_REQUEST;
-    start_date: Date;
-    end_date: Date;
-    created_at: Date;
-    updated_at: Date;
-    request_id: string;
-    username: string;
-    dossier_number: number;
-    ds_token: string;
-}
+const badgeRequestSchema = z.object({
+    id: z.number(),
+    status: z.nativeEnum(BADGE_REQUEST),
+    start_date: z.date(),
+    end_date: z.date(),
+    created_at: z.date(),
+    updated_at: z.date(),
+    request_id: z.string(),
+    username: z.string(),
+    dossier_number: z.number(),
+    ds_token: z.string(),
+});
+
+export type badgeRequestSchemaType = z.infer<typeof badgeRequestSchema>;
+
+export { badgeRequestSchema };

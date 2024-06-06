@@ -1,5 +1,4 @@
-import { DBUserPublic } from "@/models/dbUser";
-import { Member, memberPublicInfoSchemaType } from "@/models/member";
+import { memberBaseInfoSchemaType } from "@/models/member";
 
 export interface Option {
     value: string;
@@ -7,7 +6,7 @@ export interface Option {
 }
 
 export interface CommunityProps {
-    users: memberPublicInfoSchemaType[];
+    users: memberBaseInfoSchemaType[];
     incubatorOptions: Option[];
     startupOptions: Option[];
     domaineOptions: Option[];

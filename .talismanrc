@@ -65,6 +65,8 @@ fileignoreconfig:
   checksum: fb334bc9463fc981ae71bd7b3fa47a5c5f60f24547face356804ff032ff95a0a
 - filename: src/models/actionEvent.ts
   checksum: 1414841edac62430cc18218059f68098ec84ad54782c57c42703b3827b00b667
+- filename: src/models/badgeDemande.ts
+  checksum: db93bb8bad9c445c0f7747d256f02ec015c3e8c45f3c158a58751f1105c15a6e
 - filename: src/models/dbUser/dbUser.ts
   checksum: 796e5668df837d35d981c24c33436a21f3363c3b746cf3ee47d4a85cfb538d0d
 - filename: src/models/member.ts

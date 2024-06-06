@@ -11,7 +11,6 @@ import { getAllStartups } from "@/lib/kysely/queries";
 import { getUserInfos } from "@/lib/kysely/queries/users";
 import { memberSchema } from "@/models/member";
 import betagouv from "@/server/betagouv";
-import { getDBUser } from "@/server/db/dbUser";
 import { authOptions } from "@/utils/authoptions";
 import { routeTitles } from "@/utils/routes/routeTitles";
 

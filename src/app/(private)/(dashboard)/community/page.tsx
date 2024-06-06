@@ -5,7 +5,7 @@ import { db } from "@/lib/kysely";
 import { getAllStartups } from "@/lib/kysely/queries";
 import { getAllUsersInfo } from "@/lib/kysely/queries/users";
 import { competencesList } from "@/models/competences";
-import { publicUserInfosToModel } from "@/models/mapper";
+import { memberBaseInfoToModel } from "@/models/mapper";
 import { DOMAINE_OPTIONS } from "@/models/member";
 import { routeTitles } from "@/utils/routes/routeTitles";
 
@@ -15,7 +15,7 @@ export const metadata: Metadata = {
 
 export default async function Page() {
     const users = (await getAllUsersInfo()).map((member) =>
-        publicUserInfosToModel(member)
+        memberBaseInfoToModel(member)
     );
     const incubators = await db.selectFrom("incubators").selectAll().execute();
     const startups = await getAllStartups();

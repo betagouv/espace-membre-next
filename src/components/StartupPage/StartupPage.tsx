@@ -4,15 +4,14 @@ import Alert from "@codegouvfr/react-dsfr/Alert";
 import Button from "@codegouvfr/react-dsfr/Button";
 import { Table } from "@codegouvfr/react-dsfr/Table";
 
-import { DBUserPublic } from "@/models/dbUser";
-import { memberPublicInfoSchemaType } from "@/models/member";
+import { memberBaseInfoSchemaType } from "@/models/member";
 import { startupSchemaType } from "@/models/startup";
 
-function MemberTable({ members }: { members: memberPublicInfoSchemaType[] }) {
+function MemberTable({ members }: { members: memberBaseInfoSchemaType[] }) {
     return (
         <Table
             data={members.map(
-                (member: memberPublicInfoSchemaType, index: number) => [
+                (member: memberBaseInfoSchemaType, index: number) => [
                     <a
                         key={index}
                         target="_blank"
@@ -32,7 +31,7 @@ function MemberTable({ members }: { members: memberPublicInfoSchemaType[] }) {
 
 export interface StartupPageProps {
     startupInfos: startupSchemaType;
-    members: memberPublicInfoSchemaType[];
+    members: memberBaseInfoSchemaType[];
 }
 
 export default function StartupPage({

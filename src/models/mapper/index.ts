@@ -1,3 +1,6 @@
+import { Selectable } from "kysely";
+
+import { BADGE_REQUEST, badgeRequestSchemaType } from "../badgeRequests";
 import {
     CommunicationEmailCode,
     EmailStatusCode,
@@ -6,17 +9,51 @@ import {
 } from "../dbUser";
 import {
     Domaine,
-    memberPublicInfoSchema,
+    memberBaseInfoSchema,
+    memberBaseInfoSchemaType,
     memberPublicInfoSchemaType,
     memberSchemaType,
 } from "../member";
 import { startupSchemaType } from "../startup";
+import { BadgeRequests } from "@/@types/db";
 import { getStartup } from "@/lib/kysely/queries";
 import { getAllUsersInfo, getUserInfos } from "@/lib/kysely/queries/users";
 
-export function publicUserInfosToModel(
+export function memberPublicInfoToModel(user: any): memberPublicInfoSchemaType {
+    if (!user) {
+        throw new Error("No users");
+    }
+    return {
+        // ...user,
+        // communication_email:
+        //     user.communication_email === CommunicationEmailCode.SECONDARY
+        //         ? CommunicationEmailCode.SECONDARY
+        //         : CommunicationEmailCode.PRIMARY,
+        // secondary_email: user.secondary_email || "",
+        // primary_email_status:
+        //     memberBaseInfoSchema.shape.primary_email_status.parse(
+        //         user.primary_email_status
+        //     ),
+        // username: user?.username || "",
+        // domaine: user.domaine as Domaine,
+        // missions: user.missions,
+        //
+        username: user.username,
+        fullname: user.fullname,
+        role: user.role,
+        domaine: user.domaine as Domaine,
+        bio: user.bio,
+        link: user.link,
+        github: user.github,
+        missions: user.missions,
+        // primary_email: true,
+        primary_email_status: user.primary_email_status,
+    };
+}
+
+export function memberBaseInfoToModel(
     user: Awaited<ReturnType<typeof getAllUsersInfo>>[0]
-): memberPublicInfoSchemaType {
+): memberBaseInfoSchemaType {
     if (!user) {
         throw new Error("No users");
     }
@@ -28,7 +65,7 @@ export function publicUserInfosToModel(
                 : CommunicationEmailCode.PRIMARY,
         secondary_email: user.secondary_email || "",
         primary_email_status:
-            memberPublicInfoSchema.shape.primary_email_status.parse(
+            memberBaseInfoSchema.shape.primary_email_status.parse(
                 user.primary_email_status
             ),
         username: user?.username || "",
@@ -83,5 +120,21 @@ export function startupToModel(
             : [],
         usertypes: startup.usertypes ? [startup.usertypes?.toString()] : [],
         repository: startup.repository || undefined,
+    };
+}
+
+export function badgeRequestToModel(
+    badgeRequest: Selectable<BadgeRequests>
+): badgeRequestSchemaType {
+    return {
+        ...badgeRequest,
+        dossier_number: badgeRequest.dossier_number as unknown as number,
+        ds_token: badgeRequest.ds_token!,
+        status: badgeRequest.status as BADGE_REQUEST,
+        id: badgeRequest.id as unknown as number,
+        end_date: badgeRequest.end_date as unknown as Date,
+        start_date: badgeRequest.start_date as unknown as Date,
+        updated_at: badgeRequest.updated_at as unknown as Date,
+        created_at: badgeRequest.created_at as unknown as Date,
     };
 }

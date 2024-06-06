@@ -2,15 +2,14 @@ import React from "react";
 
 import { ReactTabulator, ColumnDefinition } from "react-tabulator";
 
-import { DBUserPublic } from "@/models/dbUser";
-import { Member } from "@/models/member";
+import { memberBaseInfoSchemaType } from "@/models/member";
 
 interface CommunityProps {
     title: string;
     currentUserId: string;
     errors: string[];
     messages: string[];
-    users: DBUserPublic[];
+    users: memberBaseInfoSchemaType[];
     activeTab: string;
     isAdmin: boolean;
 }

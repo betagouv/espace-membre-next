@@ -1,16 +1,9 @@
-import PromiseMemoize from "promise-memoize";
-
-import BetaGouv from "../../betagouv";
-import betagouv from "../../betagouv";
-// import db from "../../db";
 import * as utils from "../utils";
-import { getBetaEmailId, isBetaEmail } from "../utils";
 import { db } from "@/lib/kysely";
 import { adminGetAllUsersInfos } from "@/lib/kysely/queries/users";
-import { CommunicationEmailCode, DBUser } from "@/models/dbUser/dbUser";
+import { CommunicationEmailCode } from "@/models/dbUser/dbUser";
 import { userInfosToModel } from "@/models/mapper";
-import { Domaine, Member } from "@/models/member";
-import { OvhRedirection } from "@/models/ovh";
+import { Domaine } from "@/models/member";
 import config from "@/server/config";
 import { makeSendinblue } from "@infra/email/sendInBlue";
 

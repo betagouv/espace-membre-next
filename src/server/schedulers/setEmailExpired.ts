@@ -2,21 +2,21 @@ import { getAllUsersPublicInfo, getDBUserAndMission } from "../db/dbUser";
 import { getAllUsersInfo } from "@/lib/kysely/queries/users";
 import { DBUser, DBUserAndMission, DBUserPublic } from "@/models/dbUser/dbUser";
 import { EmailStatusCode } from "@/models/dbUser/dbUser";
-import { publicUserInfosToModel } from "@/models/mapper";
-import { Member, memberPublicInfoSchemaType } from "@/models/member";
+import { memberBaseInfoToModel } from "@/models/mapper";
+import { Member, memberBaseInfoSchemaType } from "@/models/member";
 import config from "@/server/config";
 import BetaGouv from "@betagouv";
 import * as utils from "@controllers/utils";
 import knex from "@db";
 
 export async function setEmailExpired(
-    optionalExpiredUsers?: memberPublicInfoSchemaType[]
+    optionalExpiredUsers?: memberBaseInfoSchemaType[]
 ) {
     let expiredUsers = optionalExpiredUsers;
-    let dbUsers: memberPublicInfoSchemaType[] = [];
+    let dbUsers: memberBaseInfoSchemaType[] = [];
     if (!expiredUsers) {
         const users = (await getAllUsersInfo()).map((user) =>
-            publicUserInfosToModel(user)
+            memberBaseInfoToModel(user)
         );
         expiredUsers = users.filter((user) => {
             return utils.checkUserIsExpired(user, 30);

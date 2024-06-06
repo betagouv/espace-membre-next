@@ -1,9 +1,9 @@
 import { z } from "zod";
 
 export const UpdateOvhResponderSchema = z.object({
-    account: z.string(),
+    // account: z.string(),
     content: z.string(),
-    copy: z.boolean(),
+    // copy: z.boolean(),
     from: z
         .string({
             errorMap: (issue, ctx) => ({
@@ -17,8 +17,7 @@ export const UpdateOvhResponderSchema = z.object({
                 message: "Champ obligatoire",
             }),
         })
-        .describe("Date de fin du message")
-        .optional(),
+        .describe("Date de fin du message"),
 });
 
 export type UpdateOvhResponder = z.infer<typeof UpdateOvhResponderSchema>;

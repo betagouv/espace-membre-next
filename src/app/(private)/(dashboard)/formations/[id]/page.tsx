@@ -9,14 +9,13 @@ import { getServerSession } from "next-auth";
 
 import { BreadCrumbFiller } from "@/app/BreadCrumbProvider";
 import { fetchAirtableFormationById } from "@/lib/airtable";
-import { CommunicationEmailCode, DBUser } from "@/models/dbUser";
+import { db } from "@/lib/kysely";
+import { getUserInfos } from "@/lib/kysely/queries/users";
+import { CommunicationEmailCode } from "@/models/dbUser";
+import { userInfosToModel } from "@/models/mapper";
 import { Domaine, Member } from "@/models/member";
-import betagouv from "@/server/betagouv";
-import config from "@/server/config";
-import db from "@/server/db";
 import { authOptions } from "@/utils/authoptions";
 import { durationBetweenDate } from "@/utils/date";
-import { routeTitles } from "@/utils/routes/routeTitles";
 
 export async function generateMetadata(
     { params }: Props,
@@ -87,11 +86,11 @@ export default async function Page({ params }: Props) {
     };
     const formation = await fetchAirtableFormationById(params.id);
 
-    const dbUser: DBUser = await db("users")
-        .where({
-            username: session.user.id,
+    const dbUser = userInfosToModel(
+        await getUserInfos({
+            uuid: session.user.uuid,
         })
-        .first();
+    );
     let email;
     if (dbUser) {
         email =

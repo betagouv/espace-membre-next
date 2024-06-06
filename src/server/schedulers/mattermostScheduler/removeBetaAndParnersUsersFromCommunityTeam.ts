@@ -9,8 +9,8 @@ import {
     DBUserPublic,
     EmailStatusCode,
 } from "@/models/dbUser/dbUser";
-import { publicUserInfosToModel } from "@/models/mapper";
-import { Member, memberPublicInfoSchemaType } from "@/models/member";
+import { memberBaseInfoToModel } from "@/models/mapper";
+import { Member, memberBaseInfoSchemaType } from "@/models/member";
 import config from "@/server/config";
 import { getAllUsersPublicInfo } from "@/server/db/dbUser";
 import betagouv from "@betagouv";
@@ -56,7 +56,7 @@ enum MattermostUserStatus {
 export type MattermostUserWithStatus = MattermostUser & {
     status: MattermostUserStatus;
     // memberInfo?: Member;
-    dbUser?: memberPublicInfoSchemaType;
+    dbUser?: memberBaseInfoSchemaType;
 };
 
 const MESSAGE_FOR_TYPE: Record<
@@ -215,7 +215,7 @@ export async function getMattermostUsersWithStatus({
     // let users = await getAllDBUsersAndMission();
     // Member in db
     const dbUsers = (await getAllUsersInfo()).map((user) =>
-        publicUserInfosToModel(user)
+        memberBaseInfoToModel(user)
     );
     const dbuser_primary_emails = dbUsers
         .map((dbUser) => dbUser.primary_email)

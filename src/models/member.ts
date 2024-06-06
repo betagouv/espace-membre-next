@@ -238,7 +238,7 @@ export const memberWrapperSchema = z.object({
 export type memberWrapperSchemaType = z.infer<typeof memberWrapperSchema>;
 
 // member info that other member can get
-export const memberPublicInfoSchema = memberSchema.pick({
+export const memberBaseInfoSchema = memberSchema.pick({
     username: true,
     fullname: true,
     role: true,
@@ -253,7 +253,40 @@ export const memberPublicInfoSchema = memberSchema.pick({
     secondary_email: true,
 });
 
+export type memberBaseInfoSchemaType = z.infer<typeof memberBaseInfoSchema>;
+
+export const memberPublicInfoSchema = memberSchema.pick({
+    username: true,
+    fullname: true,
+    role: true,
+    domaine: true,
+    bio: true,
+    link: true,
+    github: true,
+    missions: true,
+    // primary_email: true,
+    primary_email_status: true,
+    // communication_email: true,
+    // secondary_email: true,
+});
+
 export type memberPublicInfoSchemaType = z.infer<typeof memberPublicInfoSchema>;
+
+export const memberWrapperPublicInfoSchema = z.object({
+    userPublicInfos: memberPublicInfoSchema,
+    isExpired: z.boolean(),
+    isEmailBlocked: z.boolean(),
+    hasEmailInfos: z.boolean(),
+    mattermostInfo: z.object({
+        hasMattermostAccount: z.boolean(),
+        isInactiveOrNotInTeam: z.boolean(),
+    }),
+    hasSecondaryEmail: z.boolean(),
+});
+
+export type memberWrapperPublicInfoSchemaType = z.infer<
+    typeof memberWrapperPublicInfoSchema
+>;
 
 const missionsArraySchema = z.array(missionSchema);
 
@@ -269,18 +302,6 @@ export interface MemberWithPrimaryEmailInfo extends Member {
 
 export interface MemberWithEmail extends Member {
     email: string | undefined;
-}
-
-export interface MemberWithPermission {
-    userInfos: Member;
-    emailInfos: any;
-    redirections: OvhRedirection[];
-    canChangeEmails: boolean;
-    isExpired: boolean;
-    responder: OvhResponder;
-    canCreateEmail;
-    canCreateRedirection;
-    canChangePassword;
 }
 
 // const memberStatInfoSchema = z.object({

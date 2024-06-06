@@ -3,7 +3,7 @@ import _ from "lodash";
 
 import { addEvent } from "@/lib/events";
 import { getAllStartups } from "@/lib/kysely/queries";
-import { getUserBasicInfo, getUserInfos } from "@/lib/kysely/queries/users";
+import { getUserInfos } from "@/lib/kysely/queries/users";
 import { EventCode } from "@/models/actionEvent";
 import { DBUser, EmailStatusCode } from "@/models/dbUser/dbUser";
 import { userInfosToModel } from "@/models/mapper";
@@ -13,7 +13,6 @@ import {
     OvhProCreationData,
 } from "@/models/ovh";
 import config from "@/server/config";
-import { getAllUsers, getDBUserAndMission } from "@/server/db/dbUser";
 import BetaGouv from "@betagouv";
 import * as utils from "@controllers/utils";
 import knex from "@db/index";
