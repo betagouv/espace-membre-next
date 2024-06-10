@@ -9,7 +9,7 @@ import { authOptions } from "@/utils/authoptions";
 import { routeTitles } from "@/utils/routes/routeTitles";
 
 export const metadata: Metadata = {
-    title: `${routeTitles.account()} / Espace Membre`,
+    title: `${routeTitles.dashboard()} / Espace Membre`,
 };
 
 export default async function Page(props: DashboardPageProps) {
