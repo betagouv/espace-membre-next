@@ -9,9 +9,7 @@ import mailSend from "@gouvfr/dsfr/dist/artwork/pictograms/digital/mail-send.svg
 import school from "@gouvfr/dsfr/dist/artwork/pictograms/buildings/school.svg";
 import { linkRegistry } from "@/utils/routes/registry";
 
-export interface DashboardPageProps {
-    params: {};
-}
+export interface DashboardPageProps {}
 
 export function DashboardPage(props: DashboardPageProps) {
     return (
