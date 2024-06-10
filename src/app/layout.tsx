@@ -6,6 +6,7 @@ import { DsfrHead } from "@codegouvfr/react-dsfr/next-appdir/DsfrHead";
 import { DsfrProvider } from "@codegouvfr/react-dsfr/next-appdir/DsfrProvider";
 import { getHtmlAttributes } from "@codegouvfr/react-dsfr/next-appdir/getHtmlAttributes";
 import { getServerSession } from "next-auth/next";
+import "./layout.scss";
 
 import { BreadCrumbProvider } from "./BreadCrumbProvider";
 import ClientSessionProvider from "./context/ClientContextProvider";
@@ -44,10 +45,12 @@ async function MainStructure(props: PropsWithChildren) {
                                     <Header />
 
                                     <div
-                                        className={`fr-container fr-container--fluid ${fr.cx(
-                                            "fr-mb-10v"
-                                        )}`}
                                         id="root-container"
+                                        style={{
+                                            display: "flex",
+                                            flex: "1 1 auto",
+                                            flexDirection: "column",
+                                        }}
                                     >
                                         {props.children}
                                     </div>

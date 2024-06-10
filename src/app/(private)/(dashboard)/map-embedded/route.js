@@ -4,7 +4,7 @@ export async function GET(req) {
         `
     <!DOCTYPE html>
     <html>
-    
+
     <head>
       <meta charset="utf-8" />
       <title>Carte des membres beta.gouv</title>
@@ -23,7 +23,7 @@ export async function GET(req) {
           margin: 0;
           padding: 0;
         }
-    
+
         #mapcontainer {
           position: absolute;
           top: 0;
@@ -53,7 +53,7 @@ export async function GET(req) {
           position: absolute;
           bottom: 10px;
           text-align: center;
-          /* right: 0px; */ */
+          right: 0px;
         }
         .button {
           background: #fff;
@@ -77,18 +77,18 @@ export async function GET(req) {
         background-color: #f8f8f8;
         color: #404040;
         }
-        
+
         .button.active {
         background-color: #3887be;
         color: #ffffff;
         }
-        
+
         button.active:hover {
         background: #3074a4;
         }
       </style>
     </head>
-    
+
     <body>
         <div id="mapcontainer"></div>
         <div id="helptext"><span>Chargement des données en cours ....</span></div>
@@ -102,9 +102,15 @@ export async function GET(req) {
               <div style="position: absolute; top:0px; right: 0px;"><a href="#hide"><< cacher </a></div>
               <ul class="hidden-mobile margin-bottom-5" id="drawer">
                   <li>
-                      <a href="/account" id="account" 
+                      <a href="/dashboard" id="home"
+                          class="nav-item <% if(activeTab === 'home') { %> active <% } %>">
+                          Accueil
+                      </a>
+                  </li>
+                  <li>
+                      <a href="/account" id="account"
                           class="nav-item <% if(activeTab === 'account') { %> active <% } %>">
-                          Mon compte
+                          Compte
                       </a>
                   </li>
                   <li>
@@ -120,13 +126,13 @@ export async function GET(req) {
                       </a>
                   </li>
                   <li>
-                      <a href="/admin" id="admin" 
+                      <a href="/admin" id="admin"
                           class="nav-item <% if(activeTab === 'admin') { %> active <% } %>">
                           Administration
                       </a>
                   </li> -->
                   <!-- <li>
-                      <a href="/newsletters" id="newsletter" 
+                      <a href="/newsletters" id="newsletter"
                           class="nav-item <% if(activeTab === 'newsletter') { %> active <% } %>">
                           Infolettres internes
                       </a>
@@ -163,9 +169,9 @@ export async function GET(req) {
         </div>
         <script src="/static/scripts/buildmap.js"></script>
     </body>
-    
+
     </html>
-    
+
     `,
         {
             headers: {
