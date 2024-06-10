@@ -5,13 +5,14 @@ export const routeTitles: {
         | (() => string)
         | ((id?: string) => string);
 } = {
-    account: () => "Mon compte",
+    account: () => "Compte",
     accountEditBaseInfo: () => "Mise à jour de mes informations",
     accountEditPrivateInfo: () => "Mise à jour de mes informations privées",
     accountBadge: () => "Demande de badge",
     accountBadgeRenewal: () => "Renouvellement de badge",
     community: () => "Rechercher un ou une membre",
     communityCreateMember: () => "Créer une fiche membre",
+    dashboard: () => "Accueil",
     startupList: () => "Rechercher un produit",
     startupDetails: () => "",
     startupDetailsEdit: (id?: string) => {

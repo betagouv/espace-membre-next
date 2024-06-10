@@ -108,7 +108,7 @@ Ceci est un message automatique envoyé par l'app Espace Membre.
         return `Bonjour ${user.first_name},
 Tu reçois ce message car ta fiche membre beta.gouv.fr à une date de fin à jour, mais l'email lié a ton compte mattermost semble supprimé.
 Tu peux le recréer dans l'[espace membre](https://espace-membre.incubateur.net/) auquel tu peux te connecter avec ton adresse secondaire : ${user?.dbUser?.secondary_email}.
-Dans Mon compte > Mon email.
+Dans Compte > Mon email.
 Si tu as des questions tu peux les poser dans [~incubateur-help](https://mattermost.incubateur.net/betagouv/channels/incubateur-help). S'il y a une erreur tu peux écrire à espace-membre@incubateur.net.
         
 Ceci est un message automatique envoyé par l'app Espace Membre
@@ -119,7 +119,7 @@ Ceci est un message automatique envoyé par l'app Espace Membre
     ): string {
         return `Bonjour ${user.first_name},
 Tu reçois ce message car ta fiche membre beta.gouv.fr à une date de fin à jour, mais l'email lié a ton compte mattermost semble supprimé.
-Tu peux le recréer dans l'[espace membre](https://espace-membre.incubateur.net/account) sur la page Mon compte > Mon Email.
+Tu peux le recréer dans l'[espace membre](https://espace-membre.incubateur.net/account) sur la page Compte > Mon Email.
 Tu peux te connecter à l'espace membre avec ton adresse secondaire : ${user?.dbUser?.secondary_email}.
 
 Si tu as des questions tu peux les poser dans [~incubateur-help](https://mattermost.incubateur.net/betagouv/channels/incubateur-help). S'il y a une erreur tu peux écrire à espace-membre@incubateur.net.

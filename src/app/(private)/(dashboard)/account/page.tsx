@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { redirect } from "next/navigation";
 import { getServerSession } from "next-auth";
 
+import AccountClientPage from "./AccountClientPage";
 import { Missions } from "@/@types/db";
 import AccountPage from "@/components/AccountPage/AccountPage";
 import { getUserInfos } from "@/lib/kysely/queries/users";
