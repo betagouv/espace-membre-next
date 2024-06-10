@@ -1,11 +1,9 @@
 import { getAllUsersInfo } from "@/lib/kysely/queries/users";
 import { MattermostUser } from "@/lib/mattermost";
 import * as mattermost from "@/lib/mattermost";
-import { DBUserAndMission } from "@/models/dbUser";
 import { memberBaseInfoToModel } from "@/models/mapper";
-import { Member, memberBaseInfoSchemaType } from "@/models/member";
+import { memberBaseInfoSchemaType } from "@/models/member";
 import config from "@/server/config";
-import { getAllUsersPublicInfo } from "@/server/db/dbUser";
 import betagouv from "@betagouv";
 import * as utils from "@controllers/utils";
 

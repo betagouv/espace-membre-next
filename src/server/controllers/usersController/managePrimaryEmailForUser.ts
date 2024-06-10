@@ -1,7 +1,6 @@
 import { addEvent } from "@/lib/events";
 import * as mattermost from "@/lib/mattermost";
 import { EventCode } from "@/models/actionEvent";
-import { DBUser } from "@/models/dbUser/dbUser";
 import config from "@/server/config";
 import betagouv from "@betagouv";
 import * as utils from "@controllers/utils";
@@ -63,18 +62,15 @@ export async function managePrimaryEmailForUserHandler(
             );
         }
 
-        const dbUser: DBUser = await knex("users")
-            .where({
-                username,
-            })
-            .then((db) => db[0]);
-        if (dbUser.primary_email?.includes(config.domain)) {
+        if (user.userInfos.primary_email?.includes(config.domain)) {
             await betagouv.createRedirection(
-                dbUser.primary_email,
+                user.userInfos.primary_email,
                 primaryEmail,
                 false
             );
-            await betagouv.deleteEmail(dbUser.primary_email.split("@")[0]);
+            await betagouv.deleteEmail(
+                user.userInfos.primary_email.split("@")[0]
+            );
         } else {
             try {
                 await mattermost.getUserByEmail(primaryEmail);
@@ -100,7 +96,9 @@ export async function managePrimaryEmailForUserHandler(
             action_on_username: username,
             action_metadata: {
                 value: primaryEmail,
-                old_value: dbUser ? dbUser.primary_email : undefined,
+                old_value: user
+                    ? user.userInfos.primary_email || undefined
+                    : undefined,
             },
         });
         req.flash(

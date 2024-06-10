@@ -44,24 +44,24 @@ router.post(
 // );
 // router.get(routes.ACCOUNT_GET_BADGE_REQUEST_PAGE_API, getBadgePageApi);
 
-router.post(
-    "/account/delete_email_responder",
-    accountController.deleteEmailResponder
-);
-router.post(
-    "/api/account/delete_email_responder",
-    express.json({ type: "*/*" }),
-    accountController.deleteEmailResponderApi
-);
+// router.post(
+//     "/account/delete_email_responder",
+//     accountController.deleteEmailResponder
+// );
+// router.post(
+//     "/api/account/delete_email_responder",
+//     express.json({ type: "*/*" }),
+//     accountController.deleteEmailResponderApi
+// );
 // router.post(
 //     "/account/set_email_responder",
 //     accountController.setEmailResponder
 // );
-router.post(
-    routes.USER_SET_EMAIL_RESPONDER_API,
-    express.json({ type: "*/*" }),
-    accountController.setEmailResponderApi
-);
+// router.post(
+//     routes.USER_SET_EMAIL_RESPONDER_API,
+//     express.json({ type: "*/*" }),
+//     accountController.setEmailResponderApi
+// );
 
 // router.post(
 //     routes.USER_UPDATE_COMMUNICATION_EMAIL,

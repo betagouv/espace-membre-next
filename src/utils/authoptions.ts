@@ -4,15 +4,11 @@ import EmailProvider from "next-auth/providers/email";
 
 import customPostgresAdapter from "./pgAdpter";
 import { getUserInfos } from "@/lib/kysely/queries/users";
-import { DBUser } from "@/models/dbUser";
 import { memberBaseInfoToModel } from "@/models/mapper";
-import betagouv from "@/server/betagouv";
 import config from "@/server/config";
 import { getAdmin } from "@/server/config/admin.config";
 import { sendEmail } from "@/server/config/email.config";
 import { checkUserIsExpired } from "@/server/controllers/utils";
-import db from "@/server/db";
-import { getDBUserAndMission } from "@/server/db/dbUser";
 import { getJwtTokenForUser } from "@/server/helpers/session";
 import { EMAIL_TYPES } from "@/server/modules/email";
 

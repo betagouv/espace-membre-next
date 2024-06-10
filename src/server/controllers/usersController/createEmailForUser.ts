@@ -5,7 +5,7 @@ import { addEvent } from "@/lib/events";
 import { getAllStartups } from "@/lib/kysely/queries";
 import { getUserInfos } from "@/lib/kysely/queries/users";
 import { EventCode } from "@/models/actionEvent";
-import { DBUser, EmailStatusCode } from "@/models/dbUser/dbUser";
+import { EmailStatusCode } from "@/models/dbUser/dbUser";
 import { userInfosToModel } from "@/models/mapper";
 import {
     EMAIL_PLAN_TYPE,
@@ -25,11 +25,8 @@ export async function createEmailAndUpdateSecondaryEmail(
     currentUser: string
 ) {
     const isCurrentUser = currentUser === username;
-    const [user, dbUser] = await Promise.all([
+    const [user] = await Promise.all([
         utils.userInfos(username, isCurrentUser),
-        ((): Promise<DBUser> => {
-            return knex("users").where({ username }).first();
-        })(),
     ]);
     if (!user.userInfos) {
         throw new Error(
@@ -62,14 +59,15 @@ export async function createEmailAndUpdateSecondaryEmail(
         }
     }
     let emailIsRecreated = false;
-    if (dbUser) {
-        if (dbUser.email_is_redirection) {
+    if (user) {
+        if (user.userInfos.email_is_redirection) {
             throw new Error(
                 `Le membre ${username} ne peut pas avoir d'email beta.gouv.fr, iel utilise une adresse de redirection.`
             );
         }
         emailIsRecreated =
-            dbUser.primary_email_status === EmailStatusCode.EMAIL_DELETED;
+            user.userInfos.primary_email_status ===
+            EmailStatusCode.EMAIL_DELETED;
         await updateSecondaryEmail(username, email);
     } else {
         await knex("users").insert({

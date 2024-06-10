@@ -1,30 +1,30 @@
-import { differenceInDays } from "date-fns/differenceInDays";
-import _ from "lodash";
+// import { differenceInDays } from "date-fns/differenceInDays";
+// import _ from "lodash";
 
-import { Startups } from "@/@types/db";
-import { DBUser, createDBUserAndMission } from "@/models/dbUser/dbUser";
-import { Member } from "@/models/member";
-import { DBMission, Mission } from "@/models/mission";
-import { createMission } from "@/server/db/dbMission";
-import { getAllUsersPublicInfo } from "@/server/db/dbUser";
-import betagouv from "@betagouv";
-import { computeHash } from "@controllers/utils";
-import db from "@db";
+// import { Startups } from "@/@types/db";
+// import { DBUser, createDBUserAndMission } from "@/models/dbUser/dbUser";
+// import { Member } from "@/models/member";
+// import { DBMission, Mission } from "@/models/mission";
+// import { createMission } from "@/server/db/dbMission";
+// import { getAllUsersPublicInfo } from "@/server/db/dbUser";
+// import betagouv from "@betagouv";
+// import { computeHash } from "@controllers/utils";
+// import db from "@db";
 
-function compareUserAndTriggerOnChange(
-    newUserInfo: DBUser,
-    previousUserInfo: DBUser
-) {
-    if (
-        previousUserInfo &&
-        !_.isEqual(
-            (newUserInfo.startups || []).sort(),
-            (previousUserInfo.startups || []).sort()
-        )
-    ) {
-        console.info(`Changement de startups pour ${newUserInfo.username}`);
-    }
-}
+// function compareUserAndTriggerOnChange(
+//     newUserInfo: DBUser,
+//     previousUserInfo: DBUser
+// ) {
+//     if (
+//         previousUserInfo &&
+//         !_.isEqual(
+//             (newUserInfo.startups || []).sort(),
+//             (previousUserInfo.startups || []).sort()
+//         )
+//     ) {
+//         console.info(`Changement de startups pour ${newUserInfo.username}`);
+//     }
+// }
 
 // export async function syncBetagouvUserAPI() {
 //     const members = await betagouv.usersInfos();

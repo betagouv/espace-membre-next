@@ -1,3 +1,4 @@
+import { sql } from "kysely";
 import { Account, Awaitable } from "next-auth";
 import {
     Adapter,
@@ -7,10 +8,8 @@ import {
     VerificationToken,
 } from "next-auth/adapters";
 
-import { DBUser, EmailStatusCode } from "@/models/dbUser";
+import { db } from "@/lib/kysely";
 import betagouv from "@/server/betagouv";
-import db from "@/server/db";
-import { getDBUser } from "@/server/db/dbUser";
 
 export default function customPostgresAdapter(): Adapter {
     try {
@@ -24,11 +23,14 @@ export default function customPostgresAdapter(): Adapter {
         };
 
         const getUser = async (id: string): Promise<AdapterUser | null> => {
-            const user: DBUser = await db("users")
-                .where({
-                    username: id,
-                })
-                .first();
+            const user = await db
+                .selectFrom("users")
+                .selectAll()
+                .where("username", "=", id)
+                .executeTakeFirst();
+            if (!user) {
+                return null;
+            }
             if (!user.primary_email && !user.secondary_email) {
                 throw new Error(`User ${user.username} has no em`);
             }
@@ -36,29 +38,33 @@ export default function customPostgresAdapter(): Adapter {
                 id: user.username,
                 uuid: user.uuid,
                 emailVerified: user.email_verified,
-                email: user.primary_email || user.secondary_email,
+                email: (user.primary_email || user.secondary_email)!,
             };
         };
 
         const getUserByEmail = async (
             email: string
         ): Promise<AdapterUser | null> => {
-            const dbUser: DBUser = await db("users")
-                .whereRaw(`LOWER(secondary_email) = ?`, email)
-                .orWhereRaw(`LOWER(primary_email) = ?`, email)
-                .first();
+            const dbUser = await db
+                .selectFrom("users")
+                .selectAll()
+                .where((eb) =>
+                    eb.or([
+                        eb(sql`LOWER(users.secondary_email)`, "=", email),
+                        eb(sql`LOWER(users.primary_email)`, "=", email),
+                    ])
+                )
+                .executeTakeFirst();
             if (!dbUser || (!dbUser.primary_email && !dbUser.secondary_email)) {
                 console.log(`db user does not exists`);
                 return null;
             }
-            return dbUser
-                ? {
-                      ...dbUser,
-                      id: dbUser.username,
-                      emailVerified: dbUser.email_verified,
-                      email: dbUser.primary_email || dbUser.secondary_email,
-                  }
-                : null;
+            return {
+                ...dbUser,
+                id: dbUser.username,
+                emailVerified: dbUser.email_verified,
+                email: (dbUser.primary_email || dbUser.secondary_email)!,
+            };
         };
 
         const getUserByAccount = async ({
@@ -68,43 +74,46 @@ export default function customPostgresAdapter(): Adapter {
             provider: string;
             providerAccountId: string;
         }): Promise<AdapterUser | null> => {
-            const dbUser: DBUser = await db("users as u")
-                .join("accounts as a", "u.username", "=", "a.userId")
-                .select("u.*")
-                .where({
-                    "a.providerId": provider,
-                    "a.providerAccountId": providerAccountId,
-                })
-                .first();
+            const dbUser = await db
+                .selectFrom("users as u")
+                .innerJoin("accounts as a", "u.username", "a.userId")
+                .selectAll()
+                .where("a.provider", "=", provider)
+                .where("a.providerAccountId", "=", providerAccountId)
+                .executeTakeFirst();
+            if (!dbUser) {
+                return null;
+            }
             if (!dbUser.primary_email && !dbUser.secondary_email) {
                 return null;
             }
-            return dbUser
-                ? {
-                      ...dbUser,
-                      id: dbUser.username,
-                      emailVerified: dbUser.email_verified,
-                      email: dbUser.primary_email || dbUser.secondary_email,
-                  }
-                : null;
+            return {
+                ...dbUser,
+                id: dbUser.username,
+                emailVerified: dbUser.email_verified,
+                email: (dbUser.primary_email || dbUser.secondary_email)!,
+            };
         };
 
         const updateUser = async (
             user: Partial<AdapterUser> & Pick<AdapterUser, "id">
         ): Promise<AdapterUser> => {
-            const [dbUser]: DBUser[] = await db("users")
-                .where({
-                    username: user.id,
-                })
-                .update({
+            const dbUser = await db
+                .updateTable("users")
+                .where("username", "=", user.id)
+                .set({
                     email_verified: user.emailVerified,
                 })
-                .returning("*");
+                .returningAll()
+                .executeTakeFirst();
+            if (!dbUser) {
+                throw new Error("Cannot update user");
+            }
 
             return {
                 uuid: dbUser.uuid,
                 name: dbUser?.fullname,
-                email: dbUser.primary_email || dbUser.secondary_email,
+                email: (dbUser.primary_email || dbUser.secondary_email)!,
                 emailVerified: dbUser.email_verified,
                 id: dbUser.username,
             };
@@ -128,7 +137,7 @@ export default function customPostgresAdapter(): Adapter {
             expires: Date;
         }): Promise<AdapterSession> => {
             const expiresString = expires.toDateString();
-            await db("sessions").insert({
+            await db.insertInto("sessions").values({
                 userId: userId,
                 expires: expiresString,
                 sessionToken: sessionToken,
@@ -144,17 +153,22 @@ export default function customPostgresAdapter(): Adapter {
         const getSessionAndUser = async (
             sessionToken: string
         ): Promise<{ session: AdapterSession; user: AdapterUser } | null> => {
-            const session = await db("sessions")
-                .where({
-                    sessionToken,
-                })
-                .first();
-            const user: DBUser = await db("users")
-                .where({
-                    username: session.userId,
-                })
-                .first();
-            const member = await getDBUser(user.username);
+            const session = await db
+                .selectFrom("sessions")
+                .selectAll()
+                .where("sessionToken", "=", sessionToken)
+                .executeTakeFirst();
+            if (!session) {
+                throw new Error("Cannot retrieve session");
+            }
+            const user = await db
+                .selectFrom("users")
+                .selectAll()
+                .where("username", "=", session.userId)
+                .executeTakeFirst();
+            if (!user) {
+                throw new Error("Cannot retrieve user");
+            }
             const expiresDate = new Date(session.expires);
             const sessionAndUser: {
                 session: AdapterSession;
@@ -168,8 +182,8 @@ export default function customPostgresAdapter(): Adapter {
                 user: {
                     id: user.username,
                     emailVerified: new Date(),
-                    email: user.primary_email!,
-                    name: member?.fullname,
+                    email: user?.primary_email!,
+                    name: user.fullname,
                     image: null,
                     uuid: user.uuid,
                 },
@@ -190,21 +204,24 @@ export default function customPostgresAdapter(): Adapter {
         };
 
         const deleteSession = async (sessionToken: string) => {
-            await db("sessions").where({ sessionToken }).delete();
+            await db
+                .deleteFrom("sessions")
+                .where("sessionToken", "=", sessionToken)
+                .execute();
             return;
         };
 
         const linkAccount = async (
             account: AdapterAccount
         ): Promise<AdapterAccount | null | undefined> => {
-            await db("accounts").insert({
+            await db.insertInto("accounts").values({
                 userId: account.userId,
                 type: account.type,
                 provider: account.provider,
                 providerAccountId: account.providerAccountId,
                 refresh_token: account.refresh_token,
                 access_token: account.access_token,
-                expires_at: db.raw("to_timestamp(?)", [account.expires_at]),
+                expires_at: sql`to_timestamp(${account.expires_at})`,
                 id_token: account.id_token,
                 scope: account.scope,
                 session_state: account.session_state,
@@ -220,12 +237,11 @@ export default function customPostgresAdapter(): Adapter {
             providerAccountId: Account["providerAccountId"];
             provider: Account["provider"];
         }) => {
-            await db("account")
-                .where({
-                    providerAccountId,
-                    provider,
-                })
-                .delete();
+            await db
+                .deleteFrom("accounts")
+                .where("providerAccountId", "=", providerAccountId)
+                .where("provider", "=", provider)
+                .execute();
             return;
         };
 
@@ -236,14 +252,18 @@ export default function customPostgresAdapter(): Adapter {
         }: VerificationToken): Promise<
             VerificationToken | null | undefined
         > => {
-            const [insertedRow] = await db("verification_tokens")
-                .insert({
+            const insertedRow = await db
+                .insertInto("verification_tokens")
+                .values({
                     identifier: identifier,
                     token: token,
                     expires: expires,
                 })
-                .returning("*"); // This will return all columns of the inserted row
-
+                .returningAll()
+                .executeTakeFirst(); // This will return all columns of the inserted row
+            if (!insertedRow) {
+                throw new Error("Row not created");
+            }
             const createdToken: VerificationToken = {
                 identifier: insertedRow.identifier,
                 token: insertedRow.token,
@@ -260,13 +280,13 @@ export default function customPostgresAdapter(): Adapter {
             identifier: string;
             token: string;
         }) => {
-            const rows = await db("verification_tokens")
-                .select("*")
-                .where({
-                    identifier: identifier,
-                    token: token,
-                })
-                .andWhere("expires", ">", db.fn.now())
+            const rows = await db
+                .selectFrom("verification_tokens")
+                .selectAll()
+                .where("identifier", "=", identifier)
+                .where("token", "=", token)
+                .where("expires", ">", new Date())
+                .execute()
                 .then((rows) => rows)
                 .catch((err) => {
                     console.error(err);
@@ -275,12 +295,11 @@ export default function customPostgresAdapter(): Adapter {
 
             // If a token is found, delete it
             if (rows.length > 0) {
-                await db("verification_tokens")
-                    .where({
-                        identifier: identifier,
-                        token: token,
-                    })
-                    .del()
+                await db
+                    .deleteFrom("verification_tokens")
+                    .where("identifier", "=", identifier)
+                    .where("token", "=", token)
+                    .execute()
                     .catch((err) => {
                         console.error(err);
                         throw new Error("Error deleting verification token");

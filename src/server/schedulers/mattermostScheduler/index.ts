@@ -1,38 +1,10 @@
 import { getAllUsersInfo } from "@/lib/kysely/queries/users";
 import { MattermostUser } from "@/lib/mattermost";
 import * as mattermost from "@/lib/mattermost";
-import {
-    DBUser,
-    DBUserAndMission,
-    DBUserPublic,
-    DBUserPublicAndMission,
-    EmailStatusCode,
-} from "@/models/dbUser/dbUser";
+import { EmailStatusCode } from "@/models/dbUser/dbUser";
 import { memberBaseInfoToModel } from "@/models/mapper";
-import {
-    MemberWithPrimaryEmailInfo,
-    Member,
-    memberBaseInfoSchemaType,
-} from "@/models/member";
-import { getAllUsersPublicInfo } from "@/server/db/dbUser";
-import betagouv from "@betagouv";
+import { memberBaseInfoSchemaType } from "@/models/member";
 import * as utils from "@controllers/utils";
-import knex from "@db";
-
-const mergedMemberAndDBUser = (user: Member, dbUser: DBUser) => {
-    return {
-        ...user,
-        primary_email: dbUser ? dbUser.primary_email : undefined,
-        primary_email_status: dbUser ? dbUser.primary_email_status : undefined,
-        primary_email_status_updated_at: dbUser
-            ? dbUser.primary_email_status_updated_at
-            : undefined,
-    };
-};
-
-const findDBUser = (dbUsers: DBUser[], user: Member) => {
-    return dbUsers.find((x) => x.username === user.id);
-};
 
 const filterActiveUser = (user) => {
     const fiveMinutesInMs: number = 5 * 1000 * 60;
@@ -53,7 +25,6 @@ export const getActiveGithubUsersUnregisteredOnMattermost = async (): Promise<
 > => {
     const allMattermostUsers: MattermostUser[] =
         await mattermost.getUserWithParams();
-    const dbUsers: DBUser[] = await knex("users").select();
     const githubUsers = (await getAllUsersInfo()).map((user) =>
         memberBaseInfoToModel(user)
     );

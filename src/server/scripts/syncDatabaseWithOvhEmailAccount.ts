@@ -1,22 +1,27 @@
 import betagouv from "../betagouv";
 import knex from "../db";
-import { getAllUsersPublicInfo } from "../db/dbUser";
-import { DBUser, EmailStatusCode } from "@/models/dbUser/dbUser";
+import { getAllUsersInfo } from "@/lib/kysely/queries/users";
+import { EmailStatusCode } from "@/models/dbUser/dbUser";
+import { memberBaseInfoToModel, userInfosToModel } from "@/models/mapper";
 import { Member } from "@/models/member";
 
 const syncDatabaseWithOvhEmailAccount = async () => {
-    const users = await getAllUsersPublicInfo();
+    const users = (await getAllUsersInfo()).map((user) =>
+        memberBaseInfoToModel(user)
+    );
     const usernames: string[] = users.map((user) => user.username);
     const ovhAccounts: string[] = await betagouv.accounts();
     const usernamesWithoutOvhEmailAccount = usernames.filter(
         (username) => !ovhAccounts.includes(username)
     );
-    const dbUsers: DBUser[] = await knex("users")
-        .whereIn("username", usernamesWithoutOvhEmailAccount)
-        .whereIn("primary_email_status", [
-            EmailStatusCode.EMAIL_ACTIVE,
-            EmailStatusCode.EMAIL_ACTIVE_AND_PASSWORD_DEFINITION_PENDING,
-        ]);
+    const dbUsers = users.filter(
+        (user) =>
+            [
+                EmailStatusCode.EMAIL_ACTIVE,
+                EmailStatusCode.EMAIL_ACTIVE_AND_PASSWORD_DEFINITION_PENDING,
+            ].includes(user.primary_email_status) &&
+            usernamesWithoutOvhEmailAccount.includes(user.username)
+    );
     console.log(
         "Will set primary_email_status to deleted for users :",
         dbUsers.map((user) => user.username)

@@ -168,6 +168,7 @@ export const memberSchema = z.object({
         .email()
         .describe("Email"),
     isEmailBetaAsked: z.boolean().optional().nullable(),
+    email_is_redirection: z.boolean().optional(),
     communication_email: z
         .nativeEnum(CommunicationEmailCode)
         .optional()
@@ -249,8 +250,11 @@ export const memberBaseInfoSchema = memberSchema.pick({
     missions: true,
     primary_email: true,
     primary_email_status: true,
+    memberType: true,
+    primary_email_status_updated_at: true,
     communication_email: true,
     secondary_email: true,
+    email_is_redirection: true,
 });
 
 export type memberBaseInfoSchemaType = z.infer<typeof memberBaseInfoSchema>;
@@ -294,15 +298,24 @@ export type HasMissions<T = any> = T & {
     missions: z.infer<typeof missionsArraySchema>;
 };
 
-export interface MemberWithPrimaryEmailInfo extends Member {
-    primary_email: string;
-    primary_email_status: EmailStatusCode;
-    primary_email_status_updated_at: Date;
-}
+const memberBaseInfoAndMattermostWrapper = z.object({
+    userInfos: memberBaseInfoSchema,
+    mattermostUsername: z.string(),
+});
 
-export interface MemberWithEmail extends Member {
-    email: string | undefined;
-}
+export type memberBaseInfoAndMattermostWrapperType = z.infer<
+    typeof memberBaseInfoAndMattermostWrapper
+>;
+
+// export interface MemberWithPrimaryEmailInfo extends Member {
+//     primary_email: string;
+//     primary_email_status: EmailStatusCode;
+//     primary_email_status_updated_at: Date;
+// }
+
+// export interface MemberWithEmail extends Member {
+//     email: string | undefined;
+// }
 
 // const memberStatInfoSchema = z.object({
 //     gender: genderSchema,

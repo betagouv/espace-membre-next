@@ -6,6 +6,7 @@ import {
     EmailStatusCode,
     GenderCode,
     LegalStatus,
+    MemberType,
 } from "../dbUser";
 import {
     Domaine,
@@ -68,6 +69,11 @@ export function memberBaseInfoToModel(
             memberBaseInfoSchema.shape.primary_email_status.parse(
                 user.primary_email_status
             ),
+        memberType: user.member_type
+            ? (user.member_type as MemberType)
+            : undefined,
+        primary_email_status_updated_at: user.primary_email_status_updated_at!,
+        email_is_redirection: user.email_is_redirection || false,
         username: user?.username || "",
         domaine: user.domaine as Domaine,
         missions: user.missions,
@@ -89,6 +95,7 @@ export function userInfosToModel(
         gender: user.gender as GenderCode,
         legal_status: user.legal_status as LegalStatus,
         competences: user.competences ? [user.competences.toString()] : [],
+        email_is_redirection: user.email_is_redirection || false,
         communication_email:
             user.communication_email === CommunicationEmailCode.SECONDARY
                 ? CommunicationEmailCode.SECONDARY

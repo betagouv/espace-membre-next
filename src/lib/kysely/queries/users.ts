@@ -110,10 +110,13 @@ export async function getAllUsersInfo(db: Kysely<DB> = database) {
             "users.bio",
             "users.link",
             "users.github",
+            "users.member_type",
             "users.primary_email",
             "users.secondary_email",
             "users.primary_email_status",
+            "primary_email_status_updated_at",
             "users.communication_email",
+            "users.email_is_redirection",
             withMissions(eb),
         ])
         .compile();

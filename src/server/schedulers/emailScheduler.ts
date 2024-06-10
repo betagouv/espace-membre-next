@@ -4,19 +4,16 @@ import _ from "lodash/array";
 import betagouv from "../betagouv";
 import { createEmail } from "../controllers/usersController/createEmailForUser";
 import { addEvent } from "@/lib/events";
+import { db } from "@/lib/kysely";
 import { getAllUsersInfo } from "@/lib/kysely/queries/users";
 import { ActionEvent, EventCode } from "@/models/actionEvent";
 import {
     CommunicationEmailCode,
-    DBUser,
-    DBUserAndMission,
-    DBUserPublic,
-    DBUserPublicAndMission,
     EmailStatusCode,
     MemberType,
 } from "@/models/dbUser/dbUser";
 import { memberBaseInfoToModel, userInfosToModel } from "@/models/mapper";
-import { Member } from "@/models/member";
+import { memberBaseInfoSchemaType } from "@/models/member";
 import { OvhRedirection } from "@/models/ovh";
 import config from "@/server/config";
 import {
@@ -35,15 +32,18 @@ import { isBetaEmail } from "@controllers/utils";
 import knex from "@db";
 import { EMAIL_TYPES, MAILING_LIST_TYPE } from "@modules/email";
 
-const differenceGithubOVH = function differenceGithubOVH(user, ovhAccountName) {
-    return user.id === ovhAccountName;
+const differenceGithubOVH = function differenceGithubOVH(
+    user: memberBaseInfoSchemaType,
+    ovhAccountName: string
+) {
+    return user.username === ovhAccountName;
 };
 
 const differenceGithubRedirectionOVH = function differenceGithubOVH(
-    user,
-    ovhAccountName
+    user: memberBaseInfoSchemaType,
+    ovhAccountName: string
 ) {
-    return utils.buildBetaRedirectionEmail(user.id) === ovhAccountName;
+    return utils.buildBetaRedirectionEmail(user.username) === ovhAccountName;
 };
 
 const getValidUsers = async () => {
@@ -56,16 +56,19 @@ const getValidUsers = async () => {
 export async function setEmailAddressesActive() {
     const fiveMinutesInMs: number = 5 * 1000 * 60;
     const nowLessFiveMinutes: Date = new Date(Date.now() - fiveMinutesInMs);
-    const dbUsers: DBUser[] = await knex("users")
-        .whereIn("primary_email_status", [
-            EmailStatusCode.EMAIL_CREATION_PENDING,
-            EmailStatusCode.EMAIL_RECREATION_PENDING,
-        ])
-        .where("primary_email_status_updated_at", "<", nowLessFiveMinutes);
-    const githubUsers = await getValidUsers();
-    const concernedUsers: DBUser[] = dbUsers.filter((user) => {
-        return githubUsers.find((x) => user.username === x.username);
-    });
+    const dbUsers = (await getAllUsersInfo()).map((user) =>
+        memberBaseInfoToModel(user)
+    );
+    const concernedUsers = dbUsers.filter(
+        (user) =>
+            !utils.checkUserIsExpired(user) &&
+            [
+                EmailStatusCode.EMAIL_CREATION_PENDING,
+                EmailStatusCode.EMAIL_RECREATION_PENDING,
+            ].includes(user.primary_email_status) &&
+            user.primary_email_status_updated_at < nowLessFiveMinutes
+    );
+
     return Promise.all(
         concernedUsers.map(async (user) => {
             const listTypes = [MAILING_LIST_TYPE.NEWSLETTER];
@@ -90,9 +93,7 @@ export async function setEmailAddressesActive() {
                         lastname: utils.capitalizeWords(
                             user.username.split(".")[1]
                         ),
-                        domaine: githubUsers.find(
-                            (x) => user.username === x.username
-                        )?.domaine,
+                        domaine: user.domaine,
                     },
                 ],
             });
@@ -108,20 +109,21 @@ export async function setEmailAddressesActive() {
 export async function setCreatedEmailRedirectionsActive() {
     const fiveMinutesInMs: number = 5 * 1000 * 60;
     const nowLessFiveMinutes: Date = new Date(Date.now() - fiveMinutesInMs);
-    const dbUsers: DBUser[] = await knex("users")
-        .whereIn("primary_email_status", [
-            EmailStatusCode.EMAIL_REDIRECTION_PENDING,
-        ])
-        .where("primary_email_status_updated_at", "<", nowLessFiveMinutes)
-        .where("email_is_redirection", true);
+    const dbUsers = (await getAllUsersInfo()).map((user) =>
+        memberBaseInfoToModel(user)
+    );
+    const concernedUsers = dbUsers.filter(
+        (user) =>
+            !utils.checkUserIsExpired(user) &&
+            user.primary_email_status ===
+                EmailStatusCode.EMAIL_REDIRECTION_PENDING &&
+            user.primary_email_status_updated_at < nowLessFiveMinutes &&
+            user.email_is_redirection === true
+    );
 
-    const githubUsers = await getValidUsers();
-    const concernedUsers: DBUser[] = dbUsers.filter((user) => {
-        return githubUsers.find((x) => user.username === x.username);
-    });
     return Promise.all(
         concernedUsers.map(async (user) => {
-            if (user.member_type === MemberType.ATTRIBUTAIRE) {
+            if (user.memberType === MemberType.ATTRIBUTAIRE) {
                 const listTypes = [MAILING_LIST_TYPE.NEWSLETTER];
                 if (
                     user.primary_email_status ===
@@ -144,9 +146,7 @@ export async function setCreatedEmailRedirectionsActive() {
                             lastname: utils.capitalizeWords(
                                 user.username.split(".")[1]
                             ),
-                            domaine: githubUsers.find(
-                                (x) => user.username === x.username
-                            )?.domaine,
+                            domaine: user.domaine,
                         },
                     ],
                 });
@@ -161,17 +161,17 @@ export async function setCreatedEmailRedirectionsActive() {
 }
 
 export async function createRedirectionEmailAdresses() {
-    const dbUsers: DBUser[] = await knex("users")
-        .whereNull("primary_email")
-        .whereIn("primary_email_status", [
-            EmailStatusCode.EMAIL_CREATION_WAITING,
-        ])
-        .where("email_is_redirection", true)
-        .whereNotNull("secondary_email");
-    const githubUsers = await getValidUsers();
-    const concernedUsers = githubUsers.filter((user) => {
-        return dbUsers.find((x) => x.username === user.username);
-    });
+    const dbUsers = (await getAllUsersInfo()).map((user) =>
+        memberBaseInfoToModel(user)
+    );
+    const concernedUsers = dbUsers.filter(
+        (user) =>
+            !user.primary_email &&
+            user.primary_email_status ===
+                EmailStatusCode.EMAIL_CREATION_WAITING &&
+            user.email_is_redirection &&
+            user.secondary_email
+    );
 
     const redirections: OvhRedirection[] = await BetaGouv.redirections();
 
@@ -184,13 +184,13 @@ export async function createRedirectionEmailAdresses() {
             ) as []),
         ])
     ).sort();
-    let unregisteredMembers: DBUserAndMission[] = _.differenceWith(
+    let unregisteredMembers = _.differenceWith(
         concernedUsers,
         allOvhRedirectionEmails,
         differenceGithubRedirectionOVH
     );
     console.log(
-        `Email creation : ${unregisteredMembers.length} unregistered user(s) in OVH (${allOvhRedirectionEmails.length} accounts in OVH. ${githubUsers.length} accounts in Github).`
+        `Email creation : ${unregisteredMembers.length} unregistered user(s) in OVH (${allOvhRedirectionEmails.length} accounts in OVH. ${concernedUsers.length} accounts in Github).`
     );
     unregisteredMembers = unregisteredMembers.map((member) => {
         const dbUser = dbUsers.find(
@@ -222,45 +222,49 @@ export async function createRedirectionEmailAdresses() {
                     member.secondary_email,
                     false
                 );
-                const [user]: DBUser[] = await knex("users")
-                    .where({
-                        username: member.username,
-                    })
-                    .update({
+                const user = await db
+                    .updateTable("users")
+                    .where("username", "=", member.username)
+                    .set({
                         primary_email: email,
                         primary_email_status:
                             EmailStatusCode.EMAIL_REDIRECTION_PENDING,
                         primary_email_status_updated_at: new Date(),
                     })
-                    .returning("*");
-                console.log(`Email redirection créée pour ${user.username}`);
+                    .returningAll()
+                    .executeTakeFirst();
+                if (user) {
+                    console.log(
+                        `Email redirection créée pour ${user.username}`
+                    );
+                }
             }
         })
     );
 }
 
 export async function createEmailAddresses() {
-    const dbUsers: DBUser[] = await knex("users")
-        .whereNull("primary_email")
-        .whereIn("primary_email_status", [
-            EmailStatusCode.EMAIL_CREATION_WAITING,
-        ])
-        .where("email_is_redirection", false)
-        .whereNotNull("secondary_email");
-    const githubUsers = await getValidUsers();
-
-    const concernedUsers = githubUsers.filter((user) => {
-        return dbUsers.find((x) => x.username === user.username);
-    });
+    const dbUsers = (await getAllUsersInfo()).map((user) =>
+        memberBaseInfoToModel(user)
+    );
+    const concernedUsers = dbUsers.filter(
+        (user) =>
+            !utils.checkUserIsExpired(user) &&
+            !user.primary_email &&
+            user.primary_email_status ===
+                EmailStatusCode.EMAIL_CREATION_WAITING &&
+            !user.email_is_redirection &&
+            user.secondary_email
+    );
 
     const allOvhEmails: string[] = await BetaGouv.getAllEmailInfos();
-    const unregisteredUsers: DBUserPublic[] = _.differenceWith(
+    const unregisteredUsers = _.differenceWith(
         concernedUsers,
         allOvhEmails,
         differenceGithubOVH
     );
     console.log(
-        `Email creation : ${unregisteredUsers.length} unregistered user(s) in OVH (${allOvhEmails.length} accounts in OVH. ${githubUsers.length} accounts in Github).`
+        `Email creation : ${unregisteredUsers.length} unregistered user(s) in OVH (${allOvhEmails.length} accounts in OVH. ${concernedUsers.length} accounts in Github).`
     );
 
     // create email and marrainage
@@ -276,17 +280,13 @@ export async function reinitPasswordEmail() {
     const users = (await getAllUsersInfo()).map((user) =>
         memberBaseInfoToModel(user)
     );
-    const expiredUsers = utils.getExpiredUsers(users, 5);
-    const dbUsers: DBUser[] = await knex("users")
-        .whereIn(
-            "username",
-            expiredUsers.map((user) => user.username)
-        )
-        .andWhere({
-            primary_email_status: EmailStatusCode.EMAIL_ACTIVE,
-        });
+    const expiredUsers = utils
+        .getExpiredUsers(users, 5)
+        .filter(
+            (user) => user.primary_email_status === EmailStatusCode.EMAIL_ACTIVE
+        );
     return Promise.all(
-        dbUsers.map(async (user) => {
+        expiredUsers.map(async (user) => {
             const { emailInfos } = await utils.userInfos(user.username, false);
             const newPassword = crypto
                 .randomBytes(16)
@@ -410,36 +410,37 @@ export async function unsubscribeEmailAddresses() {
     );
 }
 
-export async function setEmailStatusActiveForUsers() {
-    const dbUsers: DBUser[] = await knex("users")
-        .whereNull("primary_email")
-        .whereIn("primary_email_status", [EmailStatusCode.EMAIL_UNSET])
-        .whereNotNull("secondary_email");
-    const activeUsers = await BetaGouv.getActiveRegisteredOVHUsers();
+// export async function setEmailStatusActiveForUsers() {
+//     const dbUsers: DBUser[] = await knex("users")
+//         .whereNull("primary_email")
+//         .whereIn("primary_email_status", [EmailStatusCode.EMAIL_UNSET])
+//         .whereNotNull("secondary_email");
+//     const activeUsers = await BetaGouv.getActiveRegisteredOVHUsers();
 
-    const concernedUsers = activeUsers.filter((user) => {
-        return dbUsers.find((x) => x.username === user.username);
-    });
+//     const concernedUsers = activeUsers.filter((user) => {
+//         return dbUsers.find((x) => x.username === user.username);
+//     });
 
-    // create email and marrainage
-    return Promise.all(
-        concernedUsers.map(async (user) => {
-            console.log("This user has active email", user.username);
-            // once email created we create marrainage
-        })
-    );
-}
+//     // create email and marrainage
+//     return Promise.all(
+//         concernedUsers.map(async (user) => {
+//             console.log("This user has active email", user.username);
+//             // once email created we create marrainage
+//         })
+//     );
+// }
 
 export async function sendOnboardingVerificationPendingEmail() {
-    const dbUsers: DBUser[] = await knex("users").whereIn(
-        "primary_email_status",
-        [EmailStatusCode.EMAIL_VERIFICATION_WAITING]
+    const dbUsers = (await getAllUsersInfo()).map((user) =>
+        memberBaseInfoToModel(user)
+    );
+    const concernedUsers = dbUsers.filter(
+        (user) =>
+            !utils.checkUserIsExpired(user) &&
+            user.primary_email_status ===
+                EmailStatusCode.EMAIL_VERIFICATION_WAITING
     );
 
-    const githubUsers = await getValidUsers();
-    const concernedUsers: DBUser[] = dbUsers.filter((user) => {
-        return githubUsers.find((x) => user.username === x.username);
-    });
     concernedUsers.map(async (user) => {
         const secretariatUrl = `${config.protocol}://${config.host}`;
         const event: ActionEvent = await knex("events")

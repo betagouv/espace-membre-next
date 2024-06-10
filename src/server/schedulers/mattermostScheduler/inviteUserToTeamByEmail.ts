@@ -1,6 +1,5 @@
 import { getActiveGithubUsersUnregisteredOnMattermost } from ".";
 import * as mattermost from "@/lib/mattermost";
-import { MemberWithPrimaryEmailInfo } from "@/models/member";
 import config from "@/server/config";
 
 export async function inviteUsersToTeamByEmail() {

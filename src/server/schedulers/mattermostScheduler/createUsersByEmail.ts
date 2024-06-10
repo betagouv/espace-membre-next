@@ -2,7 +2,6 @@ import crypto from "crypto";
 
 import { getActiveGithubUsersUnregisteredOnMattermost } from ".";
 import * as mattermost from "@/lib/mattermost";
-import { MemberWithPrimaryEmailInfo } from "@/models/member";
 import config from "@/server/config";
 import { sendEmail } from "@/server/config/email.config";
 import { EMAIL_TYPES } from "@modules/email";

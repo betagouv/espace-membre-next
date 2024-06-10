@@ -1,6 +1,6 @@
 import { addEvent } from "@/lib/events";
 import { EventCode } from "@/models/actionEvent";
-import { DBUser, EmailStatusCode } from "@/models/dbUser/dbUser";
+import { EmailStatusCode } from "@/models/dbUser/dbUser";
 import config from "@/server/config";
 import BetaGouv from "@betagouv";
 import * as utils from "@controllers/utils";
@@ -75,7 +75,6 @@ export async function updatePasswordForUserHandler(
                 "Le mot de passe doit comporter de 9 à 30 caractères, ne pas contenir d'accents ni d'espace au début ou à la fin."
             );
         }
-        const dbUser: DBUser = await knex("users").where({ username }).first();
         const email = utils.buildBetaEmail(username);
 
         console.log(
@@ -97,7 +96,7 @@ export async function updatePasswordForUserHandler(
             [
                 EmailStatusCode.EMAIL_SUSPENDED,
                 EmailStatusCode.EMAIL_ACTIVE_AND_PASSWORD_DEFINITION_PENDING,
-            ].includes(dbUser.primary_email_status)
+            ].includes(user.userInfos.primary_email_status)
         ) {
             await knex("users").where({ username }).update({
                 primary_email_status: EmailStatusCode.EMAIL_ACTIVE,
