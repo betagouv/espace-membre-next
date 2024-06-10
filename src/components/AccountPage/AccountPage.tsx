@@ -1,5 +1,6 @@
 "use client";
-import React from "react";
+
+import React, { useEffect, useRef } from "react";
 
 import { fr } from "@codegouvfr/react-dsfr";
 import Alert from "@codegouvfr/react-dsfr/Alert";
@@ -53,6 +54,25 @@ export default function AccountPage(props: AccountPageProps) {
         emailResponder &&
         emailResponder?.from > new Date() &&
         emailResponder?.to < new Date();
+    // This is used to scroll according to the hash
+    const emailSettingsContainerRef = useRef<HTMLDivElement | null>(null);
+    const observatoryContainerRef = useRef<HTMLDivElement | null>(null);
+
+    useEffect(() => {
+        switch (window.location.hash.slice(1)) {
+            case "email-settings":
+                emailSettingsContainerRef.current?.scrollIntoView({
+                    behavior: "smooth",
+                });
+                break;
+            case "observatory":
+                observatoryContainerRef.current?.scrollIntoView({
+                    behavior: "smooth",
+                });
+                break;
+        }
+    }, []);
+
     return (
         <div>
             {hasActiveResponder && (
@@ -112,22 +132,27 @@ export default function AccountPage(props: AccountPageProps) {
             {props.userInfos && (
                 <>
                     <FicheMembre userInfos={props.userInfos}></FicheMembre>
-                    <EmailContainer
-                        isExpired={isExpired}
-                        emailInfos={emailInfos}
-                        emailResponder={emailResponder}
-                        emailRedirections={emailRedirections}
-                        userInfos={props.userInfos}
-                        authorizations={authorizations}
-                    ></EmailContainer>
-                    <Observatoire
-                        average_nb_of_days={average_nb_of_days}
-                        workplace_insee_code={workplace_insee_code}
-                        osm_city={osm_city}
-                        gender={gender}
-                        tjm={tjm}
-                        legal_status={legal_status}
-                    />
+
+                    <div ref={emailSettingsContainerRef}>
+                        <EmailContainer
+                            isExpired={isExpired}
+                            emailInfos={emailInfos}
+                            emailResponder={emailResponder}
+                            emailRedirections={emailRedirections}
+                            userInfos={props.userInfos}
+                            authorizations={authorizations}
+                        ></EmailContainer>
+                    </div>
+                    <div ref={observatoryContainerRef}>
+                        <Observatoire
+                            average_nb_of_days={average_nb_of_days}
+                            workplace_insee_code={workplace_insee_code}
+                            osm_city={osm_city}
+                            gender={gender}
+                            tjm={tjm}
+                            legal_status={legal_status}
+                        />
+                    </div>
                 </>
             )}
             <div className="fr-mb-14v">

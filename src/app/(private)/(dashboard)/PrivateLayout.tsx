@@ -41,6 +41,7 @@ export function PrivateLayout({ children }: { children: React.ReactNode }) {
         "communityCreateMember",
         undefined
     );
+    const dashboardLink = linkRegistry.get("dashboard", undefined);
     const startupListLink = linkRegistry.get("startupList", undefined);
     const startupCreateLink = linkRegistry.get("startupCreate", undefined);
     const adminMattermostLink = linkRegistry.get("adminMattermost", undefined);
@@ -135,6 +136,13 @@ export function PrivateLayout({ children }: { children: React.ReactNode }) {
     ];
 
     const MenuItems: ItemLink[] = [
+        {
+            linkProps: {
+                href: dashboardLink,
+            },
+            text: "Accueil",
+            isActive: hasPathnameThisMatch(pathname, dashboardLink),
+        },
         {
             isActive: hasPathnameThisMatch(pathname, accountLink),
             breadcrumb: {
