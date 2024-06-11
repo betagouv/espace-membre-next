@@ -36,7 +36,7 @@ import {
     newsletterReminder,
     sendNewsletterAndCreateNewOne,
 } from "./newsletterScheduler";
-import { pullRequestStateMachine } from "./onboarding/pullRequestStateMachine";
+// import { pullRequestStateMachine } from "./onboarding/pullRequestStateMachine";
 // import {
 //     pullRequestWatcher,
 //     pullRequestWatcherSendEmailToTeam,
@@ -59,8 +59,8 @@ import {
     deleteRedirectionsAfterQuitting,
     removeEmailsFromMailingList,
 } from "./userContractEndingScheduler";
+import { db } from "@/lib/kysely";
 import config from "@/server/config";
-import db from "@db";
 import { setEmailExpired } from "@schedulers/setEmailExpired";
 
 interface Job {
@@ -256,16 +256,16 @@ const formationJobs: Job[] = [
 //     },
 // ];
 
-const pullRequestJobs: Job[] = [
-    {
-        cronTime: "0 */4 * * * *",
-        onTick: pullRequestStateMachine,
-        isActive: true,
-        name: "pullRequestStateMachine",
-        description:
-            "Verifie les pulls requests sur GitHub et envoie un email de rappel à l'équipe ou au référent",
-    },
-];
+// const pullRequestJobs: Job[] = [
+//     {
+//         cronTime: "0 */4 * * * *",
+//         onTick: pullRequestStateMachine,
+//         isActive: true,
+//         name: "pullRequestStateMachine",
+//         description:
+//             "Verifie les pulls requests sur GitHub et envoie un email de rappel à l'équipe ou au référent",
+//     },
+// ];
 
 const newsletterJobs = [
     {
@@ -344,7 +344,7 @@ export const jobs: Job[] = [
     ...mattermostJobs,
     ...startupJobs,
     // ...metricJobs,
-    ...pullRequestJobs,
+    // ...pullRequestJobs,
     ...synchronizationJobs,
     ...formationJobs,
     {
@@ -560,10 +560,15 @@ function startJobs() {
                             updated_at: new Date(),
                             last_completed: new Date(),
                         };
-                        await db("tasks")
-                            .insert(dbTaskSucceed)
-                            .onConflict("name")
-                            .merge();
+                        await db
+                            .insertInto("tasks")
+                            .values(dbTaskSucceed)
+                            .onConflict((eb) =>
+                                eb.column("name").doUpdateSet({
+                                    ...dbTaskSucceed,
+                                })
+                            )
+                            .execute();
                         return;
                     },
                     async function (error) {
@@ -574,10 +579,15 @@ function startJobs() {
                             last_failed: new Date(),
                             error_message: error.message,
                         };
-                        await db("tasks")
-                            .insert(dbTaskFailed)
-                            .onConflict("name")
-                            .merge();
+                        await db
+                            .insertInto("tasks")
+                            .values(dbTaskFailed)
+                            .onConflict((eb) =>
+                                eb.column("name").doUpdateSet({
+                                    ...dbTaskFailed,
+                                })
+                            )
+                            .execute();
                         return;
                     }
                 ),

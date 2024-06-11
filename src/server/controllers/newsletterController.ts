@@ -1,10 +1,10 @@
 import { add } from "date-fns/add";
+import { format } from "date-fns/format";
 import { fr } from "date-fns/locale/fr";
 import { startOfWeek } from "date-fns/startOfWeek";
 
+import { db } from "@/lib/kysely";
 import config from "@/server/config";
-import knex from "../db";
-import { format } from "date-fns/format";
 
 const errorMessage = "Impossible de récupérer les infolettres.";
 
@@ -21,18 +21,20 @@ const formatNewsletterPageData = (req, newsletters, currentNewsletter) => ({
 });
 
 const updateCurrentNewsletterValidator = async (validator) => {
-    let lastNewsletter = await knex("newsletters")
+    let lastNewsletter = await db
+        .selectFrom("newsletters")
+        .selectAll()
         .orderBy("created_at", "desc")
-        .first();
+        .executeTakeFirst();
     if (lastNewsletter && !lastNewsletter.sent_at) {
-        lastNewsletter = await knex("newsletters")
-            .where({
-                id: lastNewsletter.id,
-            })
-            .update({
+        lastNewsletter = await db
+            .updateTable("newsletters")
+            .where("id", "=", lastNewsletter.id)
+            .set({
                 validator,
             })
-            .returning("*");
+            .returningAll()
+            .executeTakeFirst();
     }
     return lastNewsletter;
 };
@@ -89,9 +91,10 @@ export async function getNewsletterApi(req, res) {
 
 export async function getNewsletter(req, res, onSuccess, onError) {
     try {
-        let newsletters = await knex("newsletters")
-            .select()
-            .orderBy("created_at", "desc");
+        let newsletters = await db
+            .selectFrom("newsletters")
+            .orderBy("created_at", "desc")
+            .execute();
         newsletters = newsletters.map((newsletter) =>
             formatNewsletter(newsletter)
         );

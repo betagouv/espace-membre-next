@@ -6,7 +6,7 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 
 import MemberSelect from "../MemberSelect";
-import { Member, memberBaseInfoSchemaType } from "@/models/member";
+import { memberBaseInfoSchemaType } from "@/models/member";
 import { routeTitles } from "@/utils/routes/routeTitles";
 
 /* Pure component */

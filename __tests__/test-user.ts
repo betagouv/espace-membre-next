@@ -5,8 +5,9 @@ import sinon from "sinon";
 
 import testUsers from "./users.json";
 import utils from "./utils";
+import { db } from "@/lib/kysely";
 import * as mattermost from "@/lib/mattermost";
-import { EmailStatusCode } from "@/models/dbUser/dbUser";
+import { EmailStatusCode } from "@/models/member";
 import { Member } from "@/models/member";
 import { EMAIL_PLAN_TYPE } from "@/models/ovh";
 import routes from "@/routes/routes";
@@ -17,7 +18,6 @@ import app from "@/server/index";
 import betagouv from "@betagouv";
 import Betagouv from "@betagouv";
 import * as controllerUtils from "@controllers/utils";
-import knex from "@db";
 import {
     createEmailAddresses,
     createRedirectionEmailAdresses,
@@ -72,9 +72,13 @@ describe("User", () => {
             const ovhEmailCreation = nock(/.*ovh.com/)
                 .post(/^.*email\/domain\/.*\/account/)
                 .reply(200);
-            await knex("users").where({ username: "membre.nouveau" }).update({
-                primary_email: null,
-            });
+            await db
+                .updateTable("users")
+                .where("username", "=", "membre.nouveau")
+                .set({
+                    primary_email: null,
+                })
+                .execute();
             await chai
                 .request(app)
                 .post(
@@ -1177,28 +1181,34 @@ describe("User", () => {
                 .post(/^.*email\/domain\/.*\/account/)
                 .reply(200);
             await knex("login_tokens").truncate();
-            await knex("users")
-                .where({
-                    username: newMember.id,
-                })
-                .update({
+            await db
+                .selectFrom("users")
+                .where("username", "=", newMember.id)
+                .set({
                     primary_email: null,
                     primary_email_status:
                         EmailStatusCode.EMAIL_CREATION_WAITING,
                     secondary_email: "membre.nouveau.perso@example.com",
-                });
-            const val = await knex("users").where({
-                username: newMember.id,
-            });
+                })
+                .execute();
+            const val = await db
+                .selectFrom("users")
+                .selectAll()
+                .set({
+                    username: newMember.id,
+                })
+                .execute();
             await createEmailAddresses();
             ovhEmailCreation.isDone().should.be.true;
             betagouvCreateEmail.firstCall.args[0].should.equal(newMember.id);
-            await knex("users")
-                .where({ username: newMember.id })
-                .update({
+            await db
+                .updateTable("users")
+                .where("username", "=", newMember.id)
+                .set({
                     secondary_email: null,
                     primary_email: `${newMember.id}@${config.domain}`,
-                });
+                })
+                .execute();
         });
 
         it("should not create email accounts if already created", async () => {
@@ -1397,20 +1407,22 @@ describe("User", () => {
                 .reply(200);
 
             await knex("login_tokens").truncate();
-            await knex("users")
-                .where({
-                    username: newMember.id,
-                })
-                .update({
+            await db
+                .updateTable("users")
+                .where("username", "=", newMember.id)
+                .set({
                     primary_email: null,
                     primary_email_status:
                         EmailStatusCode.EMAIL_CREATION_WAITING,
                     secondary_email: "membre.nouveau.perso@example.com",
                     email_is_redirection: true,
-                });
-            const val = await knex("users").where({
-                username: newMember.id,
-            });
+                })
+                .execute();
+            const val = await db
+                .selectFrom("users")
+                .selectAll()
+                .where("username", "=", newMember.id)
+                .execute();
             await createEmailAddresses();
             ovhRedirectionCreation.isDone().should.be.false;
             await createRedirectionEmailAdresses();
@@ -1419,13 +1431,15 @@ describe("User", () => {
                 `${newMember.id}-attr@${config.domain}`
             );
             createRedirection.calledOnce.should.be.true;
-            await knex("users")
-                .where({ username: newMember.id })
-                .update({
+            await db
+                .updateTable("users")
+                .where("username", "=", newMember.id)
+                .set({
                     secondary_email: null,
                     primary_email: `${newMember.id}@${config.domain}`,
                     email_is_redirection: false,
-                });
+                })
+                .execute();
         });
     });
 

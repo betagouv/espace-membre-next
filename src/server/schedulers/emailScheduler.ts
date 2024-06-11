@@ -7,12 +7,12 @@ import { addEvent } from "@/lib/events";
 import { db } from "@/lib/kysely";
 import { getAllUsersInfo } from "@/lib/kysely/queries/users";
 import { ActionEvent, EventCode } from "@/models/actionEvent";
+import { memberBaseInfoToModel, userInfosToModel } from "@/models/mapper";
 import {
     CommunicationEmailCode,
     EmailStatusCode,
     MemberType,
-} from "@/models/dbUser/dbUser";
-import { memberBaseInfoToModel, userInfosToModel } from "@/models/mapper";
+} from "@/models/member";
 import { memberBaseInfoSchemaType } from "@/models/member";
 import { OvhRedirection } from "@/models/ovh";
 import config from "@/server/config";
@@ -29,7 +29,6 @@ import {
 } from "@controllers/usersController";
 import * as utils from "@controllers/utils";
 import { isBetaEmail } from "@controllers/utils";
-import knex from "@db";
 import { EMAIL_TYPES, MAILING_LIST_TYPE } from "@modules/email";
 
 const differenceGithubOVH = function differenceGithubOVH(
@@ -314,8 +313,6 @@ export async function reinitPasswordEmail() {
 }
 
 export async function subscribeEmailAddresses() {
-    // const dbUsers: DBUser[] = await knex("users").whereNotNull("primary_email");
-
     const githubUsers = await getValidUsers();
     const concernedUsers = githubUsers.filter((u) => u.primary_email);
     // const concernedUsers = githubUsers.reduce(
@@ -363,7 +360,6 @@ export async function subscribeEmailAddresses() {
 }
 
 export async function unsubscribeEmailAddresses() {
-    // const dbUsers: DBUser[] = await knex("users").whereNotNull("primary_email");
     const concernedUsers = (await getAllUsersInfo())
         .map((user) => memberBaseInfoToModel(user))
         .filter((x) => utils.checkUserIsExpired(x) && x.primary_email);
@@ -411,7 +407,6 @@ export async function unsubscribeEmailAddresses() {
 }
 
 // export async function setEmailStatusActiveForUsers() {
-//     const dbUsers: DBUser[] = await knex("users")
 //         .whereNull("primary_email")
 //         .whereIn("primary_email_status", [EmailStatusCode.EMAIL_UNSET])
 //         .whereNotNull("secondary_email");
@@ -443,12 +438,16 @@ export async function sendOnboardingVerificationPendingEmail() {
 
     concernedUsers.map(async (user) => {
         const secretariatUrl = `${config.protocol}://${config.host}`;
-        const event: ActionEvent = await knex("events")
-            .where({
-                action_code: EventCode.EMAIL_VERIFICATION_WAITING_SENT,
-                action_on_username: user.username,
-            })
-            .first();
+        const event = await db
+            .selectFrom("events")
+            .selectAll()
+            .where(
+                "action_code",
+                "=",
+                EventCode.EMAIL_VERIFICATION_WAITING_SENT
+            )
+            .where("action_on_username", "=", user.username)
+            .executeTakeFirst();
         if (!event) {
             await sendEmail({
                 type: EMAIL_TYPES.EMAIL_VERIFICATION_WAITING,

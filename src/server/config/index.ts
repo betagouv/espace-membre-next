@@ -1,6 +1,6 @@
 import { config } from "dotenv";
 
-import { MemberType } from "@/models/dbUser";
+import { MemberType } from "@/models/member";
 import { EMAIL_PLAN_TYPE } from "@/models/ovh";
 
 config();

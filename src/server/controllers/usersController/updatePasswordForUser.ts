@@ -1,10 +1,10 @@
 import { addEvent } from "@/lib/events";
+import { db } from "@/lib/kysely";
 import { EventCode } from "@/models/actionEvent";
-import { EmailStatusCode } from "@/models/dbUser/dbUser";
+import { EmailStatusCode } from "@/models/member";
 import config from "@/server/config";
 import BetaGouv from "@betagouv";
 import * as utils from "@controllers/utils";
-import knex from "@db/index";
 
 export async function updatePasswordForUserApi(req, res) {
     updatePasswordForUserHandler(
@@ -98,15 +98,21 @@ export async function updatePasswordForUserHandler(
                 EmailStatusCode.EMAIL_ACTIVE_AND_PASSWORD_DEFINITION_PENDING,
             ].includes(user.userInfos.primary_email_status)
         ) {
-            await knex("users").where({ username }).update({
-                primary_email_status: EmailStatusCode.EMAIL_ACTIVE,
-                primary_email_status_updated_at: new Date(),
-            });
-            await knex("user_details")
-                .where({ hash: utils.computeHash(username) })
-                .update({
+            await db
+                .updateTable("users")
+                .where("username", "=", username)
+                .set({
+                    primary_email_status: EmailStatusCode.EMAIL_ACTIVE,
+                    primary_email_status_updated_at: new Date(),
+                })
+                .execute();
+            await db
+                .updateTable("user_details")
+                .where("hash", "=", utils.computeHash(username))
+                .set({
                     active: true,
-                });
+                })
+                .execute();
         }
         const message = `À la demande de ${req.auth.id} sur <${secretariatUrl}>, je change le mot de passe pour ${username}.`;
         await BetaGouv.sendInfoToChat(message);

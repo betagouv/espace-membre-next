@@ -11,9 +11,9 @@ import { BreadCrumbFiller } from "@/app/BreadCrumbProvider";
 import { fetchAirtableFormationById } from "@/lib/airtable";
 import { db } from "@/lib/kysely";
 import { getUserInfos } from "@/lib/kysely/queries/users";
-import { CommunicationEmailCode } from "@/models/dbUser";
 import { userInfosToModel } from "@/models/mapper";
-import { Domaine, Member } from "@/models/member";
+import { CommunicationEmailCode } from "@/models/member";
+import { Domaine } from "@/models/member";
 import { authOptions } from "@/utils/authoptions";
 import { durationBetweenDate } from "@/utils/date";
 
@@ -63,13 +63,21 @@ export default async function Page({ params }: Props) {
     if (!session) {
         redirect("/login");
     }
-    const buildInscriptionLink = (originalUrl: string, user: Member) => {
+    const buildInscriptionLink = (
+        originalUrl: string,
+        user: {
+            fullname: string;
+            email: string;
+            username: string;
+            domaine: Domaine;
+        }
+    ) => {
         const url = new URL(originalUrl);
         const newParams = {
             prefill_Nom: user.fullname,
             prefill_Email: user.email,
             prefill_Domaine: DomaineToAirtableDomaine[user.domaine],
-            prefill_username: user.id,
+            prefill_username: user.username,
         };
         // Access the current search parameters
         const searchParams = new URLSearchParams(url.search);
@@ -91,6 +99,10 @@ export default async function Page({ params }: Props) {
             uuid: session.user.uuid,
         })
     );
+    if (!dbUser) {
+        redirect("/");
+        return;
+    }
     let email;
     if (dbUser) {
         email =
@@ -163,7 +175,14 @@ export default async function Page({ params }: Props) {
                                             linkProps={{
                                                 href: buildInscriptionLink(
                                                     formation.inscriptionLink,
-                                                    email
+                                                    {
+                                                        fullname:
+                                                            dbUser.fullname,
+                                                        email,
+                                                        username:
+                                                            dbUser.username,
+                                                        domaine: dbUser.domaine,
+                                                    }
                                                 ),
                                                 target: "_blank",
                                             }}

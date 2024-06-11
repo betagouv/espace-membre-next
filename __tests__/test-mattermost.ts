@@ -1,13 +1,14 @@
 import nock from "nock";
 import rewire from "rewire";
 import sinon from "sinon";
-import config from "@/server/config";
+
 import testUsers from "./users.json";
 import utils from "./utils";
+import { db } from "@/lib/kysely";
 import * as mattermost from "@/lib/mattermost";
+import { EmailStatusCode } from "@/models/member";
+import config from "@/server/config";
 import * as email from "@/server/config/email.config";
-import knex from "@db";
-import { EmailStatusCode } from "@/models/dbUser/dbUser";
 import { removeBetaAndParnersUsersFromCommunityTeam } from "@schedulers/mattermostScheduler/removeBetaAndParnersUsersFromCommunityTeam";
 
 const mattermostUsers = [
@@ -111,14 +112,14 @@ describe("invite users to mattermost", () => {
     });
 
     it("does not create users to team by emails if email pending", async () => {
-        await knex("users")
-            .where({
-                username: "mattermost.newuser",
-            })
-            .update({
+        await db
+            .updateTable("users")
+            .where("username", "=", "mattermost.newuser")
+            .set({
                 primary_email_status: EmailStatusCode.EMAIL_CREATION_PENDING,
                 primary_email_status_updated_at: new Date(),
-            });
+            })
+            .execute();
 
         nock(/.*mattermost.incubateur.net/)
             .get(/^.*api\/v4\/teams.*/)
@@ -158,14 +159,14 @@ describe("invite users to mattermost", () => {
     it("create users to team by emails", async () => {
         const tenMinutesInMs: number = 10 * 1000 * 60;
         const nowLessTenMinutes: Date = new Date(Date.now() - tenMinutesInMs);
-        await knex("users")
-            .where({
-                username: "mattermost.newuser",
-            })
-            .update({
+        await db
+            .updateTable("users")
+            .where("username", "=", "mattermost.newuser")
+            .set({
                 primary_email_status: EmailStatusCode.EMAIL_ACTIVE,
                 primary_email_status_updated_at: nowLessTenMinutes,
-            });
+            })
+            .execute();
         nock(/.*ovh.com/)
             .get(/^.*email\/domain\/.*\/account/)
             .reply(

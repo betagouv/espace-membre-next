@@ -20,7 +20,7 @@ import {
     memberValidateInfoSchema,
     memberValidateInfoSchemaType,
 } from "@/models/actions/member";
-import { statusOptions } from "@/models/dbUser";
+import { statusOptions } from "@/models/member";
 import {
     DOMAINE_OPTIONS,
     memberSchema,

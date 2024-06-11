@@ -20,11 +20,11 @@ const router = express.Router();
 //   routes.ACCOUNT_POST_DETAIL_INFO_FORM,
 //   accountController.postCurrentInfo
 // );
-router.post(
-    routes.ACCOUNT_POST_DETAIL_INFO_FORM_API,
-    express.json({ type: "*/*" }),
-    accountController.postCurrentInfoApi
-);
+// router.post(
+//     routes.ACCOUNT_POST_DETAIL_INFO_FORM_API,
+//     express.json({ type: "*/*" }),
+//     accountController.postCurrentInfoApi
+// );
 
 // router.post(
 //     routes.ACCOUNT_POST_BASE_INFO_FORM,

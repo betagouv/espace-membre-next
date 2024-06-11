@@ -5,16 +5,16 @@ import sinon from "sinon";
 
 import utils from "./utils";
 import * as github from "@/lib/github";
+import { db, db } from "@/lib/kysely";
 import * as mattermost from "@/lib/mattermost";
 import { MattermostUser } from "@/lib/mattermost";
 import * as searchCommune from "@/lib/searchCommune";
-import { EmailStatusCode } from "@/models/dbUser/dbUser";
+import { EmailStatusCode } from "@/models/member";
 import routes from "@/routes/routes";
 import * as email from "@/server/config/email.config";
 import app from "@/server/index";
 import betagouv from "@betagouv";
 import * as controllerUtils from "@controllers/utils";
-import knex from "@db";
 
 chai.use(chaiHttp);
 
@@ -92,11 +92,14 @@ describe.skip("Onboarding", () => {
                 .returns(Promise.resolve(mattermostUsers));
 
             // reset the test user to avoid duplicates in db
-            knex("users")
-                .where("secondary_email", "test@example.com")
-                .orWhere("primary_email", "test@example.com")
-                .del()
-                .then();
+            db.deleteFrom("users")
+                .where((eb) =>
+                    eb.or([
+                        eb("secondary_email", "=", "test@example.com"),
+                        eb("primary_email", "=", "test@example.com"),
+                    ])
+                )
+                .execute();
 
             done();
         });
@@ -411,15 +414,16 @@ describe.skip("Onboarding", () => {
             createGithubBranch.called.should.be.true;
             createGithubFile.called.should.be.true;
             makeGithubPullRequest.called.should.be.true;
-            const users = await knex("users").where({
-                secondary_email: "test@example.com",
-            });
+            const users = await db
+                .selectFrom("users")
+                .where("secondary_email", "=", "test@example.com")
+                .execute();
             users.length.should.equals(1);
         });
 
         it("should fail if the user is already registered", (done) => {
-            knex("users")
-                .insert({
+            db.insertInto("users")
+                .values({
                     firstName: "Férnàndáô",
                     lastName: "Úñíbe",
                     role: "Dev",
@@ -432,6 +436,7 @@ describe.skip("Onboarding", () => {
                     github: "github.com/betagouv",
                     memberType: "beta",
                 })
+                .execute()
                 .then();
 
             chai.request(app)
@@ -714,7 +719,13 @@ describe.skip("Onboarding", () => {
                     memberType: "beta",
                     isEmailBetaAsked: true,
                 })
-                .then(() => knex("users").where({ username: "john.doe" }))
+                .then(() =>
+                    db
+                        .selectFrom("users")
+                        .selectAll()
+                        .where("username", "=", "john.doe")
+                        .execute()
+                )
                 .then((dbRes) => {
                     dbRes.length.should.equal(1);
                     dbRes[0].secondary_email.should.equal(
@@ -746,7 +757,12 @@ describe.skip("Onboarding", () => {
                     memberType: "beta",
                     isEmailBetaAsked: false,
                 })
-                .then(() => knex("users").where({ username: "john.doe" }))
+                .then(() =>
+                    db
+                        .selectFrom("users")
+                        .set("username", "=", "john.doe")
+                        .execute()
+                )
                 .then((dbRes) => {
                     dbRes.length.should.equal(1);
                     dbRes[0].primary_email.should.equal(`test@example.com`);
@@ -759,13 +775,13 @@ describe.skip("Onboarding", () => {
         });
 
         it("DB conflicts in newcomer secondary email should be treated as an update", async () => {
-            await knex("users")
-                .where({
-                    username: "john.doe",
-                })
-                .update({
+            await db
+                .updateTable("users")
+                .where("username", "=", "john.doe")
+                .set({
                     secondary_email: "test@example.com",
-                });
+                })
+                .execute();
             await chai
                 .request(app)
                 .post(routes.ONBOARDING_API)
@@ -783,16 +799,19 @@ describe.skip("Onboarding", () => {
                     memberType: "beta",
                     isEmailBetaAsked: true,
                 });
-            const dbRes = await knex("users").where({ username: "john.doe" });
+            const dbRes = await db
+                .selectFrom("users")
+                .where("username", "=", "john.doe")
+                .execute();
             dbRes.length.should.equal(1);
             dbRes[0].secondary_email.should.equal("updated@example.com");
-            await knex("users")
-                .where({
-                    username: "john.doe",
-                })
-                .update({
+            await db
+                .updateTable("users")
+                .where("username", "=", "john.doe")
+                .set({
                     secondary_email: null,
-                });
+                })
+                .execute();
         });
 
         it("Field should be sanitized", async () => {
@@ -815,9 +834,10 @@ describe.skip("Onboarding", () => {
                     memberType: "beta",
                     isEmailBetaAsked: true,
                 });
-            const dbRes = await knex("users")
-                .where({ secondary_email: "xssinjection@example.com" })
-                .first();
+            const dbRes = await db
+                .updateTable("users")
+                .where("secondary_email", "=", "xssinjection@example.com")
+                .executeTakeFirst();
             dbRes.username.should.equal(
                 "scripscripttimg.src.q.onerrorprompt.scripscripttimg.src.q.onerrorprompt"
             );

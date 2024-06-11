@@ -7,6 +7,8 @@ fileignoreconfig:
   checksum: da7f9933e9d15538def749e8e58bdccb8a52e2a2a1de7c7e4a327108e4dd05e9
 - filename: __tests__/test-email.ts
   checksum: 4192baa86c9c611168e394237bcc8586f71d186ef41a4d9747a91603fdddb3a2
+- filename: __tests__/test-visit.ts
+  checksum: 8a605ffb247bede59135ac4407259921beabf8a2a59b7c64f085bf882409013c
 - filename: src/app/(private)/(dashboard)/account/base-info/page.tsx
   checksum: d379d505af1ac3bf76cc4d32fc7b5b2c12e0b776d4bc695ebf0ff8ceec6ea52e
 - filename: src/app/(private)/(dashboard)/account/page.tsx
@@ -70,7 +72,7 @@ fileignoreconfig:
 - filename: src/models/dbUser/dbUser.ts
   checksum: 796e5668df837d35d981c24c33436a21f3363c3b746cf3ee47d4a85cfb538d0d
 - filename: src/models/member.ts
-  checksum: 7f6c99dc74080a36698b6f3eea7f27089060cf6b9a92b7d16e92e153b8cef3a0
+  checksum: 3c421d5c592882181ce37fe6b1ab9982122e6a43d362b332500d79e0b65d9efe
 - filename: src/routes/routes.ts
   checksum: 675ba81fc5357f186d2ca4ce446a75016fbbcda42492d414d31ee7ad7fa8f7d5
 - filename: src/server/betagouv.ts

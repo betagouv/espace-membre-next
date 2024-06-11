@@ -2,12 +2,6 @@ import * as Sentry from "@sentry/node";
 import { getServerSession } from "next-auth";
 
 import { updateMember } from "../updateMember";
-import { db } from "@/lib/kysely";
-import {
-    createMission,
-    deleteMission,
-    updateMission,
-} from "@/lib/kysely/queries/missions";
 import {
     getUserBasicInfo,
     getUserInfos,
@@ -19,8 +13,7 @@ import {
     memberInfoUpdateSchema,
     memberValidateInfoSchema,
 } from "@/models/actions/member";
-import { EmailStatusCode, MemberType } from "@/models/dbUser";
-import { memberSchema } from "@/models/member";
+import { EmailStatusCode } from "@/models/member";
 import betagouv from "@/server/betagouv";
 import config from "@/server/config";
 import { isPublicServiceEmail, userInfos } from "@/server/controllers/utils";

@@ -4,12 +4,12 @@ import nock from "nock";
 import sinon from "sinon";
 
 import utils from "./utils";
+import { db } from "@/lib/kysely";
 import * as mattermost from "@/lib/mattermost";
 import routes from "@/routes/routes";
 import config from "@/server/config";
 import * as session from "@/server/helpers/session";
 import app from "@/server/index";
-import knex from "@db";
 
 chai.use(chaiHttp);
 describe("Community endpoint", () => {
@@ -106,11 +106,10 @@ describe("Community endpoint", () => {
         });
 
         it("should show the secondary email if it exists", async () => {
-            await knex("users")
-                .where({
-                    username: "membre.parti",
-                })
-                .update({
+            await db
+                .updateTable("users")
+                .where("username", "=", "membre.parti")
+                .set({
                     secondary_email: "perso@example.com",
                 });
 
@@ -123,11 +122,10 @@ describe("Community endpoint", () => {
                     )}`
                 );
             res.body.secondaryEmail.should.include("perso@example.com");
-            await knex("users")
-                .where({
-                    username: "membre.parti",
-                })
-                .update({
+            await db
+                .updateTable("users")
+                .where("username", "=", "membre.parti")
+                .set({
                     secondary_email: null,
                 });
         });

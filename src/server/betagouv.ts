@@ -6,7 +6,7 @@ import unescape from "unescape";
 import { getAllUsersInfo } from "@/lib/kysely/queries/users";
 import { Job, JobWTTJ } from "@/models/job";
 import { memberBaseInfoToModel, userInfosToModel } from "@/models/mapper";
-import { Member, memberBaseInfoSchemaType } from "@/models/member";
+import { memberBaseInfoSchemaType } from "@/models/member";
 import { EmailInfos } from "@/models/member";
 import {
     EMAIL_PLAN_TYPE,

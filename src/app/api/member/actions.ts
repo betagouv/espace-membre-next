@@ -6,7 +6,7 @@ import { addEvent } from "@/lib/events";
 import { db } from "@/lib/kysely";
 import { EventCode } from "@/models/actionEvent";
 import { UpdateOvhResponder } from "@/models/actions/ovh";
-import { CommunicationEmailCode } from "@/models/dbUser";
+import { CommunicationEmailCode } from "@/models/member";
 import betagouv from "@/server/betagouv";
 import config from "@/server/config";
 import {

@@ -2,9 +2,7 @@ import BetaGouv from "../betagouv";
 import { db } from "@/lib/kysely";
 import { getAllUsersInfo } from "@/lib/kysely/queries/users";
 import { memberBaseInfoToModel } from "@/models/mapper";
-import { Member } from "@/models/member";
 import * as utils from "@controllers/utils";
-import knex from "@db";
 
 export async function getActiveSecondaryEmailsForUsers() {
     const users = (await getAllUsersInfo()).map((user) =>

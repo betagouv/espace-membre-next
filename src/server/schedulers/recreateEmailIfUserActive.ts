@@ -2,7 +2,7 @@ import * as Sentry from "@sentry/node";
 
 import { createEmail } from "../controllers/usersController/createEmailForUser";
 import { db } from "@/lib/kysely";
-import { EmailStatusCode } from "@/models/dbUser";
+import { EmailStatusCode } from "@/models/member";
 
 export async function recreateEmailIfUserActive() {
     const missions = await db

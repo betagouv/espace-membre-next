@@ -6,7 +6,7 @@ import { PasswordInput } from "@codegouvfr/react-dsfr/blocks/PasswordInput";
 import Button from "@codegouvfr/react-dsfr/Button";
 import axios from "axios";
 
-import { EmailStatusCode } from "@/models/dbUser";
+import { EmailStatusCode } from "@/models/member";
 import routes, { computeRoute } from "@/routes/routes";
 
 export default function BlocChangerMotDePasse({

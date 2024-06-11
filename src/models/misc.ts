@@ -1,4 +1,4 @@
-import { EmailStatusCode } from "./dbUser";
+import { EmailStatusCode } from "./member";
 
 export interface Option {
     key: string;

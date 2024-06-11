@@ -19,7 +19,7 @@ import MemberBrevoEventList from "./MemberBrevoEventList";
 import MemberEmailServiceInfo from "./MemberEmailServiceInfo";
 import MemberEventList from "./MemberEventList";
 import { changeSecondaryEmailForUser } from "@/app/api/member/actions";
-import { EmailStatusCode } from "@/models/dbUser";
+import { EmailStatusCode } from "@/models/member";
 import { memberBaseInfoSchemaType } from "@/models/member";
 import { EMAIL_STATUS_READABLE_FORMAT } from "@/models/misc";
 import routes, { computeRoute } from "@/routes/routes";

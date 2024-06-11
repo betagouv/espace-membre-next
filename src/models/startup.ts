@@ -133,31 +133,6 @@ export const phaseSchema = z.object({
 
 export type phaseSchemaType = z.infer<typeof phaseSchema>;
 
-// export interface DBStartup {
-//     mailing_list?: string;
-//     id: string;
-//     uuid: string;
-//     name: string;
-//     pitch: string;
-//     stats_url: string;
-//     link: string;
-//     repository: string;
-//     contact: string;
-//     phases: Phase[];
-//     sponsors: string[];
-//     github: string;
-//     dashlord_url: string;
-//     website: any;
-//     expired_members: string[];
-//     active_members: string[];
-//     previous_members: string[];
-//     incubator: string;
-//     accessibility_status?: AccessibilityStatus;
-//     analyse_risques_url?: string;
-//     analyse_risques?: boolean;
-//     content_url_encoded_markdown: string;
-// }
-
 export const startupSchema = z.object({
     uuid: z.string(),
     id: z.string(),
@@ -185,14 +160,6 @@ export const startupSchema = z.object({
             }),
         })
         .describe("Incubateur ou fabrique numérique"),
-    // incubator: z
-    //     .string({
-    //         errorMap: (issue, ctx) => ({
-    //             message: "L'incubateur est obligatoire",
-    //         }),
-    //     })
-    //     .min(1)
-    //     .describe("Incubateur ou fabrique numérique"),
     contact: z
         .string({
             errorMap: () => ({
@@ -269,52 +236,4 @@ export const startupSchema = z.object({
         .describe("Décrivez votre produit, son public, ses objectifs"),
 });
 
-// export interface StartupFrontMatter extends z.infer<typeof startupSchema> {}
-
 export type startupSchemaType = z.infer<typeof startupSchema>;
-
-// export const startupSchemaWithMarkdown = startupSchema.extend({
-//     description: z
-//         .string({
-//             errorMap: (issue, ctx) => ({
-//                 message: "La description doit faire minimum 30 caractères",
-//             }),
-//         })
-//         .min(30)
-//         .describe("Décrivez votre produit, son public, ses objectifs"),
-// });
-
-// export const dbStartupSchema = z.object({
-//     mailing_list: z.string().optional(),
-//     id: z.string(),
-//     name: z.string(),
-//     pitch: z.string(),
-//     stats_url: z.string(),
-//     stats: z.boolean(),
-//     link: z.string(),
-//     repository: z.string(),
-//     contact: z.string(),
-//     phases: z.array(phaseSchema),
-//     current_phase: z.nativeEnum(StartupPhase),
-//     current_phase_date: z.date().optional(),
-//     // sponsors: z.array(z.string()),
-//     dashlord_url: z.string(),
-//     website: z.string(), // todo: delete, it does not seem to be used
-//     budget_url: z.string().optional(),
-//     usertypes: z.array(z.string()).optional(),
-//     thematiques: z.array(z.string()).optional(),
-//     incubator_id: z.string().optional(),
-//     accessibility_status: z.nativeEnum(AccessibilityStatus).optional(),
-//     analyse_risques_url: z.string().optional(),
-//     analyse_risques: z.boolean().optional(),
-//     description: z.string(),
-// });
-
-// export type dbStartupSchemaType = z.infer<typeof dbStartupSchema>;
-
-// export const createDBStartupSchema = dbStartupSchema.extend({
-//     organization_ids: z.array(z.string()).optional(),
-//     incubator_id: z.string().optional(),
-// });
-
-// export type createDBStartup = z.infer<typeof createDBStartupSchema>;

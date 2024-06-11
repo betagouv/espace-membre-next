@@ -1,6 +1,6 @@
 // import { DBUser, DBUserWithEmailsAndMattermostUsername } from "@/models/dbUser";
 import { Job } from "@/models/job";
-import { Member, memberBaseInfoSchemaType } from "@/models/member";
+import { memberBaseInfoSchemaType } from "@/models/member";
 import { StartupPhase } from "@/models/startup";
 
 export enum EMAIL_TYPES {
@@ -58,7 +58,7 @@ type BaseEmail = {
 export type EmailMarrainageOnboarder = {
     type: EMAIL_TYPES.MARRAINAGE_ONBOARDER_EMAIL;
     variables: {
-        member: Member;
+        member: memberBaseInfoSchemaType;
         newcomers: {
             fullname: string;
             email: string;
@@ -70,7 +70,7 @@ export type EmailMarrainageOnboarder = {
 export type EmailMarrainageNewcomer = {
     type: EMAIL_TYPES.MARRAINAGE_NEWCOMER_EMAIL;
     variables: {
-        member: Member;
+        member: memberBaseInfoSchemaType;
         onboarder: {
             fullname: string;
         };
@@ -80,8 +80,8 @@ export type EmailMarrainageNewcomer = {
 export type MarrainageRequestEmail = {
     type: EMAIL_TYPES.MARRAINAGE_REQUEST_EMAIL;
     variables: {
-        newcomer: Member;
-        onboarder: Member;
+        newcomer: memberBaseInfoSchemaType;
+        onboarder: memberBaseInfoSchemaType;
         marrainageAcceptUrl: string;
         marrainageDeclineUrl: string;
         startup: string;
@@ -98,16 +98,16 @@ export type LoginEmail = {
 export type MarrainageAcceptNewcomerEmail = {
     type: EMAIL_TYPES.MARRAINAGE_ACCEPT_NEWCOMER_EMAIL;
     variables: {
-        newcomer: Member;
-        onboarder: Member;
+        newcomer: memberBaseInfoSchemaType;
+        onboarder: memberBaseInfoSchemaType;
     };
 };
 
 export type MarrainageAcceptOnboarderEmail = {
     type: EMAIL_TYPES.MARRAINAGE_ACCEPT_ONBOARDER_EMAIL;
     variables: {
-        newcomer: Member;
-        onboarder: Member;
+        newcomer: memberBaseInfoSchemaType;
+        onboarder: memberBaseInfoSchemaType;
     };
 };
 

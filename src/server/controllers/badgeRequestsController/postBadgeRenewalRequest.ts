@@ -1,4 +1,5 @@
 import { capitalizeWords, userInfos } from "../utils";
+import { db } from "@/lib/kysely";
 import { BADGE_REQUEST } from "@/models/badgeRequests";
 import config from "@/server/config";
 import DS from "@/server/config/ds/ds.config";
@@ -65,15 +66,19 @@ export async function postBadgeRenewalRequest(req, res) {
             };
             if (dossier && typeof dossier.dossier_number) {
                 let dossier_number = dossier.dossier_number;
-                badgeRequest = await createBadgeRequest({
-                    username: req.auth.id,
-                    status: BADGE_REQUEST.BADGE_RENEWAL_REQUEST_PENDING,
-                    start_date: startDate,
-                    end_date: endDate,
-                    dossier_number,
-                    request_id: buildRequestId(),
-                    ds_token: dossier.dossier_prefill_token,
-                });
+                badgeRequest = await db
+                    .insertInto("badge_requests")
+                    .values({
+                        username: req.auth.id,
+                        status: BADGE_REQUEST.BADGE_RENEWAL_REQUEST_PENDING,
+                        start_date: startDate,
+                        end_date: endDate,
+                        dossier_number,
+                        request_id: buildRequestId(),
+                        ds_token: dossier.dossier_prefill_token,
+                    })
+                    .returningAll()
+                    .executeTakeFirst();
             }
         } catch (e) {
             console.error(e);

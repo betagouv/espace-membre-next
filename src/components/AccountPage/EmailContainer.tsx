@@ -15,7 +15,7 @@ import BlocCreateEmail from "./BlocCreateEmail";
 import BlocEmailResponder from "./BlocEmailResponder";
 import BlocRedirection from "./BlocRedirection";
 import frontConfig from "@/frontConfig";
-import { EmailStatusCode } from "@/models/dbUser";
+import { EmailStatusCode } from "@/models/member";
 import {
     EmailInfos,
     memberSchemaType,

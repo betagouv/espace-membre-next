@@ -3,16 +3,11 @@ import { differenceInDays } from "date-fns/differenceInDays";
 
 import { Startups } from "@/@types/db";
 import * as github from "@/lib/github";
+import { db } from "@/lib/kysely";
 import * as mattermost from "@/lib/mattermost";
-import { CommunicationEmailCode } from "@/models/dbUser";
-import {
-    DBPullRequest,
-    PULL_REQUEST_STATE,
-    PULL_REQUEST_TYPE,
-} from "@/models/pullRequests";
+import { CommunicationEmailCode } from "@/models/member";
 import config from "@/server/config";
 import { sendEmail } from "@/server/config/email.config";
-import db from "@db";
 import { sendInfoToChat } from "@infra/chat";
 import { EMAIL_TYPES } from "@modules/email";
 import htmlBuilder from "@modules/htmlbuilder/htmlbuilder";
@@ -32,25 +27,29 @@ async function sendMessageToReferent({
     const name = prInfo.name;
     const isEmailBetaAsked = prInfo.isEmailBetaAsked;
     try {
-        const dbReferent = await db("users")
-            .where({ username: prInfo.referent })
-            .first();
+        const dbReferent = await db
+            .selectFrom("users")
+            .selectAll()
+            .where("username", "=", prInfo.referent)
+            .executeTakeFirstOrThrow();
         const email =
             dbReferent.communication_email ===
                 CommunicationEmailCode.SECONDARY && dbReferent.secondary_email
                 ? dbReferent.secondary_email
                 : dbReferent.primary_email;
-        await sendEmail({
-            toEmail: [email],
-            type: EMAIL_TYPES.ONBOARDING_REFERENT_EMAIL,
-            variables: {
-                referent,
-                prUrl,
-                name,
-                isEmailBetaAsked,
-                isSentViaEmail: true,
-            },
-        });
+        if (email) {
+            await sendEmail({
+                toEmail: [email],
+                type: EMAIL_TYPES.ONBOARDING_REFERENT_EMAIL,
+                variables: {
+                    referent,
+                    prUrl,
+                    name,
+                    isEmailBetaAsked,
+                    isSentViaEmail: true,
+                },
+            });
+        }
     } catch (e) {
         Sentry.captureException(e);
         // user has a github card but is not in database
@@ -103,15 +102,15 @@ const sendEmailToTeam = async ({
     if (!startup) {
         return;
     }
-    const dbStartup: Startups = await db("startups")
-        .where({
-            id: startup,
-        })
-        .whereNotNull("mailing_list")
-        .first();
+    const dbStartup = await db
+        .selectFrom("startups")
+        .selectAll()
+        .where("id", "=", startup)
+        .where("mailing_list", "is not", null)
+        .executeTakeFirst();
     if (dbStartup) {
         await sendEmail({
-            toEmail: [`${dbStartup.mailing_list}@${config.domain}`],
+            toEmail: [`${dbStartup.mailing_list!}@${config.domain}`],
             type: EMAIL_TYPES.EMAIL_NEW_MEMBER_PR,
             variables: {
                 prUrl,
@@ -122,96 +121,3 @@ const sendEmailToTeam = async ({
         });
     }
 };
-
-const MemberUpdateStateMachine = async (dbPullRequest, pullRequestURLs) => {
-    const url = dbPullRequest.url;
-    if (!pullRequestURLs.includes(dbPullRequest.url)) {
-        await db("pull_requests").where({ url }).update({
-            status: PULL_REQUEST_STATE.PR_CLOSED,
-        });
-    }
-};
-
-const StartupUpdateStateMachine = async (dbPullRequest, pullRequestURLs) => {
-    const url = dbPullRequest.url;
-    if (!pullRequestURLs.includes(dbPullRequest.url)) {
-        await db("pull_requests").where({ url }).update({
-            status: PULL_REQUEST_STATE.PR_CLOSED,
-        });
-    }
-};
-
-const OnboardingStateMachine = async (
-    dbPullRequest: DBPullRequest,
-    pullRequestURLs: string[]
-) => {
-    const url = dbPullRequest.url;
-    if (dbPullRequest.status === PULL_REQUEST_STATE.PR_CREATED) {
-        // sendEmail to referent
-        await sendMessageToReferent({
-            prUrl: url,
-            prInfo: dbPullRequest.info,
-        });
-        await db("pull_requests").where({ url }).update({
-            status: PULL_REQUEST_STATE.PR_SENT_TO_REFERENT,
-        });
-    } else if (
-        dbPullRequest.status === PULL_REQUEST_STATE.PR_SENT_TO_REFERENT
-    ) {
-        // sendEmail to team
-        if (differenceInDays(new Date(), dbPullRequest.created_at) < 7) {
-            // the check on the date should be temporary to fix old PR stucked on previous state that should not triggered email sent
-            await sendEmailToTeam({
-                username: dbPullRequest.username,
-                prUrl: url,
-                prInfo: dbPullRequest.info,
-            });
-        }
-        await db("pull_requests").where({ url }).update({
-            status: PULL_REQUEST_STATE.PR_SENT_TO_TEAM,
-        });
-    } else if (dbPullRequest.status === PULL_REQUEST_STATE.PR_SENT_TO_TEAM) {
-        // set pull request as ready to be closed
-        await db("pull_requests").where({ url }).update({
-            status: PULL_REQUEST_STATE.PR_READY_TO_BE_CLOSED,
-        });
-    } else if (
-        dbPullRequest.status === PULL_REQUEST_STATE.PR_READY_TO_BE_CLOSED &&
-        !pullRequestURLs.includes(dbPullRequest.url)
-    ) {
-        // clsoe pr
-        await db("pull_requests").where({ url }).update({
-            status: PULL_REQUEST_STATE.PR_CLOSED,
-        });
-    }
-};
-
-export async function pullRequestStateMachine() {
-    const dbPullRequests: DBPullRequest[] = await db("pull_requests").whereNot({
-        status: PULL_REQUEST_STATE.PR_CLOSED,
-    });
-    const { data: pullRequests } = await github.getPullRequests(
-        config.githubOrganizationName,
-        "beta.gouv.fr",
-        "open"
-    );
-    const pullRequestURLs = pullRequests.map((pr) => pr.html_url);
-    for (const dbPullRequest of dbPullRequests) {
-        try {
-            if (dbPullRequest.type === PULL_REQUEST_TYPE.PR_TYPE_ONBOARDING) {
-                await OnboardingStateMachine(dbPullRequest, pullRequestURLs);
-            } else if (
-                dbPullRequest.type === PULL_REQUEST_TYPE.PR_TYPE_MEMBER_UPDATE
-            ) {
-                await MemberUpdateStateMachine(dbPullRequest, pullRequestURLs);
-            } else if (
-                dbPullRequest.type === PULL_REQUEST_TYPE.PR_TYPE_STARTUP_UPDATE
-            ) {
-                await StartupUpdateStateMachine(dbPullRequest, pullRequestURLs);
-            }
-        } catch (e) {
-            console.error(e);
-            Sentry.captureException(e);
-        }
-    }
-}

@@ -7,11 +7,10 @@ import sinon from "sinon";
 
 import testUsers from "./users.json";
 import utilsTest from "./utils";
-import { EmailStatusCode } from "@/models/dbUser/dbUser";
+import { db } from "@/lib/kysely";
+import { EmailStatusCode } from "@/models/member";
 import * as email from "@/server/config/email.config";
 import betagouv from "@betagouv";
-import * as utils from "@controllers/utils";
-import knex from "@db";
 
 chai.use(chaiHttp);
 
@@ -79,15 +78,21 @@ describe("Reinit password for expired users", () => {
                 accountName: "membre.expire",
                 email: `membre.expire@betagouv.ovh`,
             });
-        await knex("users").where({ username: "membre.expire" }).update({
-            primary_email_status: EmailStatusCode.EMAIL_ACTIVE,
-        });
+        await db
+            .updateTable("users")
+            .where("username", "=", "membre.expire")
+            .set({
+                primary_email_status: EmailStatusCode.EMAIL_ACTIVE,
+            })
+            .execute();
         const funcCalled = sinon.spy(betagouv, "changePassword");
         utilsTest.mockOvhChangePassword();
         await emailScheduler.reinitPasswordEmail();
-        const dbUsers = await knex("users").where({
-            username: "membre.expire",
-        });
+        const dbUsers = await db
+            .selectFrom("users")
+            .selectAll()
+            .where("username", "=", "membre.expire")
+            .execute();
         dbUsers.length.should.be.equal(1);
         dbUsers[0].primary_email_status.should.be.equal(
             EmailStatusCode.EMAIL_SUSPENDED
@@ -135,50 +140,55 @@ describe("Set email active", () => {
 
         const now = new Date();
         const nowLess10Minutes = now.getTime() - 11 * 60 * 1000;
-        await knex("users")
-            .where({
-                username: "membre.nouveau",
-            })
-            .update({
+        await db
+            .updateTable("users")
+            .where("username", "=", "membre.nouveau")
+            .set({
                 primary_email_status: EmailStatusCode.EMAIL_UNSET,
                 primary_email_status_updated_at: new Date(now),
             });
         await emailScheduler.setEmailAddressesActive();
-        let users = await knex("users")
-            .where({
-                username: "membre.nouveau",
-                primary_email_status:
-                    EmailStatusCode.EMAIL_ACTIVE_AND_PASSWORD_DEFINITION_PENDING,
-            })
-            .returning("*");
+        let users = await db
+            .selectFrom("users")
+            .selectAll()
+            .where("username", "=", "membre.nouveau")
+            .where(
+                "primary_email_status",
+                "=",
+                EmailStatusCode.EMAIL_ACTIVE_AND_PASSWORD_DEFINITION_PENDING
+            )
+            .execute();
         users.length.should.be.equal(0);
-        await knex("users")
-            .where({
-                username: "membre.nouveau",
-            })
-            .update({
+        await db
+            .updateTable("users")
+            .where("username", "=", "membre.nouveau")
+            .set({
                 primary_email_status: EmailStatusCode.EMAIL_CREATION_PENDING,
                 primary_email_status_updated_at: new Date(nowLess10Minutes),
-            });
-        await emailScheduler.setEmailAddressesActive();
-        users = await knex("users")
-            .where({
-                username: "membre.nouveau",
-                primary_email_status:
-                    EmailStatusCode.EMAIL_ACTIVE_AND_PASSWORD_DEFINITION_PENDING,
             })
-            .returning("*");
+            .execute();
+        await emailScheduler.setEmailAddressesActive();
+        users = await db
+            .selectFrom("users")
+            .selectAll()
+            .where("username", "=", "membre.nouveau")
+            .where(
+                "primary_email_status",
+                "=",
+                EmailStatusCode.EMAIL_ACTIVE_AND_PASSWORD_DEFINITION_PENDING
+            )
+            .execute();
         users[0].username.should.be.equal("membre.nouveau");
         sendEmailStub.calledOnce.should.be.true;
         smtpBlockedContactsEmailDelete.calledOnce.should.be.true;
-        await knex("users")
-            .where({
-                username: "membre.nouveau",
-            })
-            .update({
+        await db
+            .updateTable("users")
+            .where("username", "=", "membre.nouveau")
+            .set({
                 primary_email_status: EmailStatusCode.EMAIL_UNSET,
                 primary_email_status_updated_at: new Date(now),
-            });
+            })
+            .execute();
     });
 
     // it("should set status to EMAIL_ACTIVE_AND_PASSWORD_DEFINITION_PENDING and if status is EMAIL_RECREATION_PENDING", async () => {
@@ -279,48 +289,56 @@ describe("Set email redirection active", () => {
 
         const now = new Date();
         const nowLess10Minutes = now.getTime() - 11 * 60 * 1000;
-        await knex("users")
-            .where({
-                username: "membre.nouveau",
-            })
-            .update({
+        await db
+            .updateTable("users")
+            .where("username", "=", "membre.nouveau")
+            .set({
                 primary_email_status: EmailStatusCode.EMAIL_UNSET,
                 primary_email_status_updated_at: new Date(now),
-            });
+            })
+            .execute();
         await emailScheduler.setCreatedEmailRedirectionsActive();
-        let users = await knex("users")
-            .where({
-                username: "membre.nouveau",
-                primary_email_status: EmailStatusCode.EMAIL_REDIRECTION_ACTIVE,
-            })
-            .returning("*");
+        let users = await db
+            .selectFrom("users")
+            .where("username", "=", "membre.nouveau")
+            .where(
+                "primary_email_status",
+                "=",
+                EmailStatusCode.EMAIL_REDIRECTION_ACTIVE
+            )
+            .selectAll()
+            .execute();
         users.length.should.be.equal(0);
-        await knex("users")
-            .where({
-                username: "membre.nouveau",
-            })
-            .update({
+        await db
+            .updateTable("users")
+            .where("username", "=", "membre.nouveau")
+            .set({
                 primary_email_status: EmailStatusCode.EMAIL_REDIRECTION_PENDING,
                 email_is_redirection: true,
                 primary_email_status_updated_at: new Date(nowLess10Minutes),
-            });
-        await emailScheduler.setCreatedEmailRedirectionsActive();
-        users = await knex("users")
-            .where({
-                username: "membre.nouveau",
-                primary_email_status: EmailStatusCode.EMAIL_REDIRECTION_ACTIVE,
             })
-            .returning("*");
+            .execute();
+        await emailScheduler.setCreatedEmailRedirectionsActive();
+        users = await db
+            .selectFrom("users")
+            .selectAll()
+            .where("username", "=", "membre.nouveau")
+            .where(
+                "primary_email_status",
+                "=",
+                EmailStatusCode.EMAIL_REDIRECTION_ACTIVE
+            )
+            .execute();
         users[0].username.should.be.equal("membre.nouveau");
         smtpBlockedContactsEmailDelete.calledOnce.should.be.true;
-        await knex("users")
-            .where({
-                username: "membre.nouveau",
-            })
-            .update({
+        await db
+            .updateTable("users")
+            .where("username", "=", "membre.nouveau")
+            .set({
                 email_is_redirection: false,
                 primary_email_status: EmailStatusCode.EMAIL_UNSET,
                 primary_email_status_updated_at: new Date(now),
-            });
+            })
+            .execute();
     });
 });

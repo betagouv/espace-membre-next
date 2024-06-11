@@ -1,13 +1,12 @@
 import { getAllUsersInfo } from "@/lib/kysely/queries/users";
 import { MattermostUser } from "@/lib/mattermost";
 import * as mattermost from "@/lib/mattermost";
-import { EmailStatusCode } from "@/models/dbUser/dbUser";
 import { memberBaseInfoToModel } from "@/models/mapper";
+import { EmailStatusCode } from "@/models/member";
 import { memberBaseInfoSchemaType } from "@/models/member";
 import config from "@/server/config";
 import betagouv from "@betagouv";
 import * as utils from "@controllers/utils";
-import knex from "@db";
 import { sendInfoToChat } from "@infra/chat";
 
 const filterActiveUser = (user) => {

@@ -1,11 +1,16 @@
-import nock from "nock";
 import chai from "chai";
+import nock from "nock";
 import sinon from "sinon";
-import BetaGouv from "@betagouv";
-import config from "@/server/config";
+
 import utils from "./utils";
+import { db } from "@/lib/kysely";
+import { EmailStatusCode } from "@/models/member";
+import { Domaine } from "@/models/member";
+import config from "@/server/config";
 import * as email from "@/server/config/email.config";
-import knex from "@db";
+import BetaGouv from "@betagouv";
+import betagouv from "@betagouv";
+import { setEmailExpired } from "@schedulers/setEmailExpired";
 import {
     sendInfoToSecondaryEmailAfterXDays,
     deleteSecondaryEmailsForUsers,
@@ -13,10 +18,6 @@ import {
     removeEmailsFromMailingList,
     deleteRedirectionsAfterQuitting,
 } from "@schedulers/userContractEndingScheduler";
-import { EmailStatusCode } from "@/models/dbUser/dbUser";
-import { setEmailExpired } from "@schedulers/setEmailExpired";
-import betagouv from "@betagouv";
-import { Domaine } from "@/models/member";
 
 const should = chai.should();
 const fakeDate = "2020-01-01T09:59:59+01:00";
@@ -157,11 +158,14 @@ describe("send message on contract end to user", () => {
     });
 
     it("should send message to users", async () => {
-        await knex("users").insert({
-            username: "membre.quipart",
-            primary_email: "membre.quipart@modernisation.gouv.fr",
-            secondary_email: "membre.emailsecondary@gmail.com",
-        });
+        await db
+            .insertInto("users")
+            .values({
+                username: "membre.quipart",
+                primary_email: "membre.quipart@modernisation.gouv.fr",
+                secondary_email: "membre.emailsecondary@gmail.com",
+            })
+            .execute();
         const url = process.env.USERS_API || "https://beta.gouv.fr";
         nock(url)
             .get((uri) => uri.includes("authors.json"))

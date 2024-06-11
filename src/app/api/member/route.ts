@@ -4,9 +4,9 @@ import { db } from "@/lib/kysely";
 import { createMission } from "@/lib/kysely/queries/missions";
 import { getUserInfos } from "@/lib/kysely/queries/users";
 import { createMemberSchema } from "@/models/actions/member";
+import { EmailStatusCode } from "@/models/member";
 import { authOptions } from "@/utils/authoptions";
 import { createUsername } from "@/utils/github";
-import { EmailStatusCode } from "@/models/dbUser";
 
 export async function POST(req: Request) {
     console.log("Create user");

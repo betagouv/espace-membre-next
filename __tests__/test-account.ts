@@ -10,7 +10,6 @@ import routes from "@/routes/routes";
 import config from "@/server/config";
 import * as session from "@/server/helpers/session";
 import app from "@/server/index";
-import knex from "@db";
 
 chai.use(chaiHttp);
 

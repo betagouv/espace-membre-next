@@ -1,8 +1,9 @@
 import { generateMailingListName } from ".";
+import { db } from "@/lib/kysely";
 import { getAllStartups } from "@/lib/kysely/queries";
 import { getUserByStartup } from "@/lib/kysely/queries/users";
-import { CommunicationEmailCode } from "@/models/dbUser";
 import { startupToModel } from "@/models/mapper";
+import { CommunicationEmailCode } from "@/models/member";
 import { memberBaseInfoSchema } from "@/models/member";
 import {
     ACTIVE_PHASES,
@@ -11,7 +12,6 @@ import {
     startupSchemaType,
 } from "@/models/startup";
 import betagouv from "@betagouv";
-import db from "@db";
 
 function getCurrentPhase(startup: startupSchemaType): StartupPhase | undefined {
     return startup.phases
@@ -75,13 +75,13 @@ export const createMailingListForStartups = async () => {
                 if (!mailingLists.includes(generateMailingListName(startup))) {
                     await createMailingListForStartup(startup);
                 }
-                await db("startups")
-                    .where({
-                        id: startup.id,
-                    })
-                    .update({
+                await db
+                    .updateTable("startups")
+                    .where("id", "=", startup.id)
+                    .set({
                         mailing_list: generateMailingListName(startup),
-                    });
+                    })
+                    .execute();
                 await addAndRemoveMemberToMailingListForStartup(startup);
                 console.log(
                     `Create mailing list for : ${generateMailingListName(

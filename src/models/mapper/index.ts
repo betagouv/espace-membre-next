@@ -2,13 +2,6 @@ import { Selectable } from "kysely";
 
 import { BADGE_REQUEST, badgeRequestSchemaType } from "../badgeRequests";
 import {
-    CommunicationEmailCode,
-    EmailStatusCode,
-    GenderCode,
-    LegalStatus,
-    MemberType,
-} from "../dbUser";
-import {
     Domaine,
     memberBaseInfoSchema,
     memberBaseInfoSchemaType,
@@ -19,6 +12,13 @@ import { startupSchemaType } from "../startup";
 import { BadgeRequests } from "@/@types/db";
 import { getStartup } from "@/lib/kysely/queries";
 import { getAllUsersInfo, getUserInfos } from "@/lib/kysely/queries/users";
+import {
+    CommunicationEmailCode,
+    EmailStatusCode,
+    GenderCode,
+    LegalStatus,
+    MemberType,
+} from "@/models/member";
 
 export function memberPublicInfoToModel(user: any): memberPublicInfoSchemaType {
     if (!user) {

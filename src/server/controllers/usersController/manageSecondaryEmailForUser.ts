@@ -3,7 +3,6 @@ import { db } from "@/lib/kysely";
 import { EventCode } from "@/models/actionEvent";
 import config from "@/server/config";
 import * as utils from "@controllers/utils";
-import knex from "@db/index";
 
 export async function manageSecondaryEmailForUserApi(req, res) {
     manageSecondaryEmailForUserHandler(

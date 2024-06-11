@@ -1,10 +1,10 @@
 import { addEvent } from "@/lib/events";
+import { db } from "@/lib/kysely";
 import * as mattermost from "@/lib/mattermost";
 import { EventCode } from "@/models/actionEvent";
 import config from "@/server/config";
 import betagouv from "@betagouv";
 import * as utils from "@controllers/utils";
-import knex from "@db/index";
 
 export async function managePrimaryEmailForUserApi(req, res) {
     managePrimaryEmailForUserHandler(
@@ -80,16 +80,15 @@ export async function managePrimaryEmailForUserHandler(
                 );
             }
         }
-        await knex("users")
-            .insert({
+        await db
+            .updateTable("users")
+            .where("username", "=", username)
+            .set({
                 primary_email: primaryEmail,
                 username,
             })
-            .onConflict("username")
-            .merge({
-                primary_email: primaryEmail,
-                username,
-            });
+            .execute();
+
         addEvent({
             action_code: EventCode.MEMBER_PRIMARY_EMAIL_UPDATED,
             created_by_username: req.auth.id,

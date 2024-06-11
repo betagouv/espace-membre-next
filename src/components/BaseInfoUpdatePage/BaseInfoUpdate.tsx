@@ -22,7 +22,7 @@ import {
     memberInfoUpdateSchemaType,
     memberInfoUpdateSchema,
 } from "@/models/actions/member";
-import { GenderCode, statusOptions } from "@/models/dbUser";
+import { GenderCode, statusOptions } from "@/models/member";
 import { DOMAINE_OPTIONS, memberSchema } from "@/models/member";
 import { useSession } from "@/proxies/next-auth";
 import routes, { computeRoute } from "@/routes/routes";

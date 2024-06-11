@@ -9,7 +9,7 @@ import Select from "@codegouvfr/react-dsfr/Select";
 import axios from "axios";
 
 import { AdminMattermostUser } from "./AdminMattermostUser";
-import { Member, memberBaseInfoSchemaType } from "@/models/member";
+import { memberBaseInfoSchemaType } from "@/models/member";
 import routes, { computeRoute } from "@/routes/routes";
 
 interface Option {

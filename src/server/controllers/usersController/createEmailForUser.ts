@@ -2,11 +2,12 @@ import crypto from "crypto";
 import _ from "lodash";
 
 import { addEvent } from "@/lib/events";
+import { db } from "@/lib/kysely";
 import { getAllStartups } from "@/lib/kysely/queries";
 import { getUserInfos } from "@/lib/kysely/queries/users";
 import { EventCode } from "@/models/actionEvent";
-import { EmailStatusCode } from "@/models/dbUser/dbUser";
 import { userInfosToModel } from "@/models/mapper";
+import { Domaine, EmailStatusCode } from "@/models/member";
 import {
     EMAIL_PLAN_TYPE,
     OvhExchangeCreationData,
@@ -15,8 +16,6 @@ import {
 import config from "@/server/config";
 import BetaGouv from "@betagouv";
 import * as utils from "@controllers/utils";
-import knex from "@db/index";
-import db from "@db/index";
 
 const INCUBATORS_USING_EXCHANGE = ["gip-inclusion"];
 
@@ -70,11 +69,17 @@ export async function createEmailAndUpdateSecondaryEmail(
             EmailStatusCode.EMAIL_DELETED;
         await updateSecondaryEmail(username, email);
     } else {
-        await knex("users").insert({
-            username,
-            primary_email_status: EmailStatusCode.EMAIL_UNSET,
-            secondary_email: email,
-        });
+        await db
+            .insertInto("users")
+            .values({
+                username,
+                fullname: username,
+                domaine: Domaine.AUTRE,
+                primary_email_status: EmailStatusCode.EMAIL_UNSET,
+                role: "",
+                secondary_email: email,
+            })
+            .execute();
     }
     await createEmail(username, currentUser, emailIsRecreated);
 }
@@ -195,17 +200,17 @@ export async function createEmail(
             break;
     }
 
-    await knex("users")
-        .where({
-            username,
-        })
-        .update({
+    await db
+        .updateTable("users")
+        .where("username", "=", username)
+        .set({
             primary_email: email,
             primary_email_status: emailIsRecreated
                 ? EmailStatusCode.EMAIL_RECREATION_PENDING
                 : EmailStatusCode.EMAIL_CREATION_PENDING,
             primary_email_status_updated_at: new Date(),
-        });
+        })
+        .execute();
 
     addEvent({
         action_code: emailIsRecreated
@@ -224,11 +229,11 @@ export async function createEmail(
 }
 
 export async function updateSecondaryEmail(username, secondary_email) {
-    return knex("users")
-        .where({
-            username,
-        })
-        .update({
+    return db
+        .updateTable("users")
+        .where("username", "=", username)
+        .set({
             secondary_email,
-        });
+        })
+        .execute();
 }

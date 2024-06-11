@@ -7,7 +7,7 @@ import axios, { AxiosError } from "axios";
 
 import { useLiveChat } from "../live-chat/useLiveChat";
 import MemberSelect from "../MemberSelect";
-import { EmailStatusCode } from "@/models/dbUser";
+import { EmailStatusCode } from "@/models/member";
 import {
     memberBaseInfoSchemaType,
     memberPublicInfoSchemaType,

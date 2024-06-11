@@ -1,12 +1,11 @@
 import { db } from "@/lib/kysely";
 import { getUserInfos } from "@/lib/kysely/queries/users";
-import { EmailStatusCode } from "@/models/dbUser/dbUser";
 import { userInfosToModel } from "@/models/mapper";
+import { EmailStatusCode } from "@/models/member";
 import config from "@/server/config";
 import { sendEmail } from "@/server/config/email.config";
 import betagouv from "@betagouv";
 import * as utils from "@controllers/utils";
-import knex from "@db/index";
 import { EMAIL_TYPES } from "@modules/email";
 
 export async function setEmailActive(username) {
@@ -19,20 +18,19 @@ export async function setEmailActive(username) {
     const shouldSendEmailCreatedEmail =
         user.primary_email_status === EmailStatusCode.EMAIL_CREATION_PENDING ||
         user.primary_email_status === EmailStatusCode.EMAIL_RECREATION_PENDING;
-    await knex("users")
-        .where({
-            username,
-        })
-        .update({
+    await db
+        .updateTable("users")
+        .where("username", "=", "username")
+        .set({
             primary_email_status:
                 EmailStatusCode.EMAIL_ACTIVE_AND_PASSWORD_DEFINITION_PENDING, // email active but password must be define
             primary_email_status_updated_at: new Date(),
-        });
-    await knex("user_details")
-        .where({
-            hash: utils.computeHash(username),
         })
-        .update({
+        .execute();
+    await db
+        .updateTable("user_details")
+        .where("hash", "=", utils.computeHash(username))
+        .set({
             active: true,
         });
     console.log(`Email actif pour ${user.username}`);

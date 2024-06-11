@@ -1,8 +1,8 @@
 import * as utils from "../utils";
 import { db } from "@/lib/kysely";
 import { adminGetAllUsersInfos } from "@/lib/kysely/queries/users";
-import { CommunicationEmailCode } from "@/models/dbUser/dbUser";
 import { userInfosToModel } from "@/models/mapper";
+import { CommunicationEmailCode } from "@/models/member";
 import { Domaine } from "@/models/member";
 import config from "@/server/config";
 import { makeSendinblue } from "@infra/email/sendInBlue";

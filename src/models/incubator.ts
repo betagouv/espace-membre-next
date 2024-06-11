@@ -1,16 +1,5 @@
 import { z } from "zod";
 
-// export interface Incubator {
-//     title: string;
-//     owner: string;
-//     contact: string;
-//     address: string;
-//     website: string;
-//     github: string;
-//     ghid: string;
-//     // startups: Startup[];
-// }
-
 // model just for migration
 export const githubIncubatorSchema = z.object({
     title: z.string(),

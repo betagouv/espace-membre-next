@@ -10,7 +10,7 @@ import axios from "axios";
 import EmailContainer from "./EmailContainer";
 import FicheMembre from "./FicheMembre";
 import Observatoire from "./Observatoire";
-import { EmailStatusCode } from "@/models/dbUser";
+import { EmailStatusCode } from "@/models/member";
 import {
     memberSchemaType,
     memberSchema,

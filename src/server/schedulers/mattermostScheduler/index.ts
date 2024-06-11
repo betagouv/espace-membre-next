@@ -1,8 +1,8 @@
 import { getAllUsersInfo } from "@/lib/kysely/queries/users";
 import { MattermostUser } from "@/lib/mattermost";
 import * as mattermost from "@/lib/mattermost";
-import { EmailStatusCode } from "@/models/dbUser/dbUser";
 import { memberBaseInfoToModel } from "@/models/mapper";
+import { EmailStatusCode } from "@/models/member";
 import { memberBaseInfoSchemaType } from "@/models/member";
 import * as utils from "@controllers/utils";
 
@@ -79,7 +79,6 @@ export const getMattermostUsersActiveGithubUsersInTeam = async (
 ): Promise<MattermostUser[]> => {
     const allMattermostUsers: MattermostUser[] =
         await mattermost.getUserWithParams({ in_team: teamId });
-    // const dbUsers: DBUser[] = await knex("users").select();
     const githubUsers = (await getAllUsersInfo()).map((user) =>
         memberBaseInfoToModel(user)
     );

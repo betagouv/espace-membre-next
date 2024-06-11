@@ -1,9 +1,9 @@
 import { addEvent } from "@/lib/events";
+import { db } from "@/lib/kysely";
 import { EventCode } from "@/models/actionEvent";
 import config from "@/server/config";
 import BetaGouv from "@betagouv";
 import * as utils from "@controllers/utils";
-import knex from "@db/index";
 export async function deleteEmailForUserApi(req, res) {
     deleteEmailForUserHandler(
         req,
@@ -70,9 +70,10 @@ export async function deleteEmailForUserHandler(req, res, onSuccess, onError) {
             config.leavesEmail,
             false
         );
-        await knex("users")
-            .update({ secondary_email: null })
-            .where({ username });
+        await db
+            .updateTable("users")
+            .set({ secondary_email: null })
+            .where("username", "=", username);
         console.log(
             `Redirection des emails de ${username} vers ${config.leavesEmail} (à la demande de ${req.auth.id})`
         );

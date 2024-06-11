@@ -1,6 +1,6 @@
 import { db } from "@/lib/kysely";
 import { MattermostUser } from "@/lib/mattermost";
-import { EmailStatusCode } from "@/models/dbUser";
+import { EmailStatusCode } from "@/models/member";
 import config from "@/server/config";
 import { getUserWithParams, sendInfoToChat } from "@infra/chat";
 

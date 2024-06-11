@@ -5,13 +5,8 @@ import { getServerSession } from "next-auth";
 import { Missions } from "@/@types/db";
 import AccountPage from "@/components/AccountPage/AccountPage";
 import { getUserInfos } from "@/lib/kysely/queries/users";
-import {
-    CommunicationEmailCode,
-    EmailStatusCode,
-    GenderCode,
-    LegalStatus,
-} from "@/models/dbUser";
 import { userInfosToModel } from "@/models/mapper";
+import { EmailStatusCode } from "@/models/member";
 import { Domaine, memberSchemaType } from "@/models/member";
 import { missionSchemaType } from "@/models/mission";
 import betagouv from "@/server/betagouv";

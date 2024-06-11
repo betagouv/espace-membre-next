@@ -1,12 +1,9 @@
 import { db } from "@/lib/kysely";
 import { getAllUsersInfo } from "@/lib/kysely/queries/users";
 import * as mattermost from "@/lib/mattermost";
-import {
-    CommunicationEmailCode,
-    EmailStatusCode,
-} from "@/models/dbUser/dbUser";
 import { Job } from "@/models/job";
 import { memberBaseInfoToModel } from "@/models/mapper";
+import { CommunicationEmailCode, EmailStatusCode } from "@/models/member";
 import {
     memberBaseInfoAndMattermostWrapperType,
     memberBaseInfoSchemaType,
@@ -55,10 +52,6 @@ const getRegisteredUsersWithEndingContractInXDays = async (
     const allMattermostUsersEmails = allMattermostUsers.map(
         (mattermostUser) => mattermostUser.email
     );
-    // const dbUsers: DBUser[] = await knex("users").whereIn(
-    //     "username",
-    //     activeGithubUsers.map((user) => user.username)
-    // );
 
     const registeredUsersWithEndingContractInXDays: memberBaseInfoAndMattermostWrapperType[] =
         [];

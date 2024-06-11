@@ -1,18 +1,8 @@
 import slugify from "@sindresorhus/slugify";
 
-import {
-    makeGithubSponsorFile,
-    makeGithubStartupFile,
-    makeImageFile,
-} from "../helpers/githubHelpers";
-import {
-    GithubBetagouvFile,
-    GithubStartupChange,
-} from "../helpers/githubHelpers/githubEntryInterface";
-import { Startups } from "@/@types/db";
 import { addEvent } from "@/lib/events";
+import { db } from "@/lib/kysely";
 import { EventCode } from "@/models/actionEvent";
-import { PULL_REQUEST_TYPE, PULL_REQUEST_STATE } from "@/models/pullRequests";
 import {
     Sponsor,
     SponsorDomaineMinisteriel,
@@ -20,8 +10,6 @@ import {
 } from "@/models/sponsor";
 import { StartupPhase } from "@/models/startup";
 import { isValidDate, requiredError } from "@/server/controllers/validator";
-import { updateMultipleFilesPR } from "@controllers/helpers/githubHelpers/updateGithubCollectionEntry";
-import db from "@db";
 
 const isValidPhase = (field, value, callback) => {
     if (!value || Object.values(StartupPhase).includes(value)) {
@@ -104,7 +92,7 @@ export async function postStartupInfoUpdate(req, res) {
                 cause: formValidationErrors,
             });
         }
-        let changes: GithubStartupChange = {
+        let changes = {
             link,
             dashlord_url,
             mission,
@@ -112,7 +100,7 @@ export async function postStartupInfoUpdate(req, res) {
             budget_url,
             repository,
             incubator,
-            title,
+            name: title,
             contact,
             accessibility_status,
             analyse_risques_url,
@@ -128,15 +116,20 @@ export async function postStartupInfoUpdate(req, res) {
             start: phase.start ? new Date(phase.start) : undefined,
         }));
         changes["phases"] = newPhases;
-        const [dbStartup]: Startups[] = await db("startups")
-            .insert({
+        const [dbStartup] = await db
+            .insertInto("startups")
+            .values({
                 ...changes,
-                content,
+                description: content,
                 id: startupId,
             })
-            .onConflict("id")
-            .merge()
-            .returning("*");
+            .onConflict((oc) =>
+                oc
+                    .column("id")
+                    .doUpdateSet({ ...changes, description: content })
+            )
+            .returningAll()
+            .execute();
         // const files: GithubBetagouvFile[] = [
         //     makeGithubStartupFile(startupId, changes, content),
         //     ...newSponsors.map((sponsor) =>
