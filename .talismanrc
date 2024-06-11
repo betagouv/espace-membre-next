@@ -77,6 +77,12 @@ fileignoreconfig:
   checksum: 3c421d5c592882181ce37fe6b1ab9982122e6a43d362b332500d79e0b65d9efe
 - filename: src/routes/routes.ts
   checksum: 675ba81fc5357f186d2ca4ce446a75016fbbcda42492d414d31ee7ad7fa8f7d5
+- filename: src/scripts/export-to-www.ts
+  checksum: c4f5ee74a16556022b05975b4d6981eb74b62f123b6317c239232ef841e9f029
+- filename: src/scripts/import-from-www.ts
+  checksum: 1cf2db2b010fa9d7508a4ce7d918aac94b2d35faea6934a457fca0fdd1609df3
+- filename: src/scripts/utils.ts
+  checksum: d67aa04034f438f2a05ffd1b29f24c930908b05aaad4b6deaa933da42e56d786
 - filename: src/server/betagouv.ts
   checksum: 3fea239f6476881245b6607b4f7013b1ed769a66c1c56ef21e0a0fddca005689
 - filename: src/server/controllers/accountController/getCurrentAccount.ts

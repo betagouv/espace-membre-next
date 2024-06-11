@@ -18,7 +18,9 @@
     "predev": "only-include-used-icons",
     "prebuild": "only-include-used-icons",
     "postinstall": "is-ci || husky install",
-    "kysely-codegen": "./node_modules/.bin/kysely-codegen --include-pattern=\"public.*\" --out-file ./src/@types/db.d.ts"
+    "kysely-codegen": "./node_modules/.bin/kysely-codegen --include-pattern=\"public.*\" --out-file ./src/@types/db.d.ts",
+    "import-from-www": "ts-node src/scripts/import-from-www",
+    "export-to-www": "ts-node src/scripts/export-to-www"
   },
   "dependencies": {
     "@codegouvfr/react-dsfr": "^0.76.4",
@@ -40,6 +42,7 @@
     "crisp-sdk-web": "^1.0.22",
     "cron": "^2.4.4",
     "date-fns": "^3.3.1",
+    "deep-object-diff": "^1.1.9",
     "ejs": "^3.1.9",
     "express": "^4.18.2",
     "express-jwt": "^8.4.1",
@@ -62,6 +65,7 @@
     "next-auth": "^4.24.6",
     "nodemailer": "^6.9.9",
     "ovh": "^2.0.3",
+    "p-all": "^3.0.0",
     "pg": "^8.11.5",
     "pg-query-stream": "^4.5.3",
     "promise-memoize": "^1.2.1",
@@ -79,6 +83,7 @@
     "tss-react": "^4.9.4",
     "type-route": "^1.1.0",
     "unescape": "^1.0.1",
+    "unzipper": "^0.12.1",
     "uuid": "^9.0.1",
     "zod": "^3.22.4"
   },
