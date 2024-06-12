@@ -75,7 +75,7 @@ export function withMissions(eb: ExpressionBuilder<DB, "users">) {
                 // aggregate startups names
                 sql<
                     Array<string>
-                >`coalesce(array_agg(startups.id order by startups.name) filter (where startups.id is not null), '{}')`.as(
+                >`coalesce(array_agg(startups.id order by startups.id) filter (where startups.id is not null), '{}')`.as(
                     "startups"
                 ),
             ])
