@@ -25,7 +25,7 @@ export async function removeUsersFromCommunityTeam(
     const dbUsers = await db
         .selectFrom("users")
         .selectAll()
-        .where("secondary_email", "is not", "null")
+        .where("secondary_email", "is not", null)
         .execute();
     const concernedUsers = users.map((user) => {
         const dbUser = dbUsers.find((x) => x.username === user.username);

@@ -67,7 +67,6 @@ export async function setEmailAddressesActive() {
             ].includes(user.primary_email_status) &&
             user.primary_email_status_updated_at < nowLessFiveMinutes
     );
-
     return Promise.all(
         concernedUsers.map(async (user) => {
             const listTypes = [MAILING_LIST_TYPE.NEWSLETTER];

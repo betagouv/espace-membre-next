@@ -2,6 +2,7 @@ import chai from "chai";
 import chaiHttp from "chai-http";
 import sinon from "sinon";
 
+import testUsers from "./users.json";
 import utils from "./utils";
 import routes from "@/routes/routes";
 import config from "@/server/config";
@@ -51,13 +52,15 @@ describe("Test Admin", () => {
     describe("GET /admin/mattermost authenticated", () => {
         let getToken;
 
-        beforeEach(() => {
+        beforeEach(async () => {
             getToken = sinon.stub(session, "getToken");
             getToken.returns(utils.getJWT("membre.actif"));
+            await utils.createUsers(testUsers);
         });
 
-        afterEach(() => {
+        afterEach(async () => {
             getToken.restore();
+            await utils.deleteUsers(testUsers);
         });
         it("should return a forbidden error if user not in admin", async () => {
             const res = await chai

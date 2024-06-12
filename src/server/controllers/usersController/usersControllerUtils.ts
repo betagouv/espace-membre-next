@@ -18,9 +18,11 @@ export async function setEmailActive(username) {
     const shouldSendEmailCreatedEmail =
         user.primary_email_status === EmailStatusCode.EMAIL_CREATION_PENDING ||
         user.primary_email_status === EmailStatusCode.EMAIL_RECREATION_PENDING;
+    console.log("should send email", shouldSendEmailCreatedEmail);
+
     await db
         .updateTable("users")
-        .where("username", "=", "username")
+        .where("username", "=", username)
         .set({
             primary_email_status:
                 EmailStatusCode.EMAIL_ACTIVE_AND_PASSWORD_DEFINITION_PENDING, // email active but password must be define
@@ -32,7 +34,8 @@ export async function setEmailActive(username) {
         .where("hash", "=", utils.computeHash(username))
         .set({
             active: true,
-        });
+        })
+        .execute();
     console.log(`Email actif pour ${user.username}`);
     if (shouldSendEmailCreatedEmail) {
         await sendEmailCreatedEmail(username);

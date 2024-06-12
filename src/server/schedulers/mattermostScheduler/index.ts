@@ -92,7 +92,6 @@ export const getMattermostUsersActiveGithubUsersInTeam = async (
         //     return mergedMemberAndDBUser(user, dbUser as DBUser);
         // })
         .filter(filterActiveUser);
-    console.log(`Active github users ${activeGithubUsers.length}`);
     const concernedUsersEmails = concernedUsers.map(
         (user) => user.primary_email
     );

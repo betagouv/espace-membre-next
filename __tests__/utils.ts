@@ -145,42 +145,42 @@ const testUtils = {
             .then(() => client.end())
             .then(() => knex.migrate.latest())
             .then(async () => {
-                const sixMinutesInMs: number = 6 * 1000 * 60;
-                const dbUsers = testUsers.map((user) => ({
-                    username: user.id,
-                    fullname: user.fullname,
-                    primary_email: `${user.id}@${config.domain}`,
-                    primary_email_status_updated_at: new Date(
-                        Date.now() - sixMinutesInMs
-                    ),
-                    domaine: (user.domaine ||
-                        Domaine.ANIMATION) as UsersDomaineEnum,
-                    role: user.role || "",
-                }));
-                const createdUsers = await db
-                    .insertInto("users")
-                    .values(dbUsers)
-                    .returningAll()
-                    .execute();
-                for (const createdUser of createdUsers) {
-                    const missions =
-                        testUsers.find(
-                            (user) => user.id === createdUser.username
-                        )?.missions || [];
-                    for (const mission of missions) {
-                        await db
-                            .insertInto("missions")
-                            .values({
-                                ...mission,
-                                user_id: createdUser.uuid,
-                            })
-                            .returningAll()
-                            .executeTakeFirstOrThrow();
-                        // await db.insertInto("missions_startups").values({
-                        //     mission_id: createdMission.uuid,
-                        // });
-                    }
-                }
+                // const sixMinutesInMs: number = 6 * 1000 * 60;
+                // const dbUsers = testUsers.map((user) => ({
+                //     username: user.id,
+                //     fullname: user.fullname,
+                //     primary_email: `${user.id}@${config.domain}`,
+                //     primary_email_status_updated_at: new Date(
+                //         Date.now() - sixMinutesInMs
+                //     ),
+                //     domaine: (user.domaine ||
+                //         Domaine.ANIMATION) as UsersDomaineEnum,
+                //     role: user.role || "",
+                // }));
+                // const createdUsers = await db
+                //     .insertInto("users")
+                //     .values(dbUsers)
+                //     .returningAll()
+                //     .execute();
+                // for (const createdUser of createdUsers) {
+                //     const missions =
+                //         testUsers.find(
+                //             (user) => user.id === createdUser.username
+                //         )?.missions || [];
+                //     for (const mission of missions) {
+                //         await db
+                //             .insertInto("missions")
+                //             .values({
+                //                 ...mission,
+                //                 user_id: createdUser.uuid,
+                //             })
+                //             .returningAll()
+                //             .executeTakeFirstOrThrow();
+                //         // await db.insertInto("missions_startups").values({
+                //         //     mission_id: createdMission.uuid,
+                //         // });
+                //     }
+                // }
             })
             .then(() =>
                 console.log(`Test database ${testDbName} created successfully`)
@@ -218,6 +218,112 @@ const testUtils = {
     },
     randomUuid: function randomUuid() {
         return uuidv4();
+    },
+    createUsers: async (
+        users: {
+            star?: string;
+            end?: string;
+            id: string;
+            fullname: string;
+            role: string;
+            employer?: string;
+            domaine?: Domaine;
+            secondary_email?: string;
+            github?: string;
+            missions?: {
+                start: string;
+                end: string;
+                status: string;
+                employer: string;
+            }[];
+        }[]
+    ) => {
+        const sixMinutesInMs: number = 6 * 1000 * 60;
+        const dbUsers = users.map((user) => ({
+            username: user.id,
+            fullname: user.fullname,
+            primary_email: `${user.id}@${config.domain}`,
+            primary_email_status_updated_at: new Date(
+                Date.now() - sixMinutesInMs
+            ),
+            github: user.github,
+            secondary_email: user.secondary_email,
+            domaine: (user.domaine || Domaine.ANIMATION) as UsersDomaineEnum,
+            role: user.role || "",
+        }));
+        const createdUsers = await db
+            .insertInto("users")
+            .values(dbUsers)
+            .returningAll()
+            .execute();
+        for (const createdUser of createdUsers) {
+            const missionUser = users.find(
+                (user) => user.id === createdUser.username
+            );
+            if (missionUser?.missions) {
+                const missions =
+                    users.find((user) => user.id === createdUser.username)
+                        ?.missions || [];
+                for (const mission of missions) {
+                    await db
+                        .insertInto("missions")
+                        .values({
+                            start: mission.start,
+                            end: mission.end,
+                            employer: mission.employer,
+                            user_id: createdUser.uuid,
+                        })
+                        .returningAll()
+                        .executeTakeFirstOrThrow();
+                }
+            } else {
+                await db
+                    .insertInto("missions")
+                    .values({
+                        start: missionUser?.start!,
+                        end: missionUser?.end,
+                        user_id: createdUser.uuid,
+                    })
+                    .execute();
+            }
+        }
+    },
+    deleteUsers: async (
+        users: {
+            star?: string;
+            end?: string;
+            id: string;
+            fullname: string;
+            role?: string;
+            employer?: string;
+            domaine?: Domaine | string;
+            secondary_email?: string;
+            github?: string;
+            missions?: {
+                start: string;
+                end: string;
+                status: string;
+                employer: string;
+            }[];
+        }[]
+    ) => {
+        const createdUsers = await db
+            .deleteFrom("users")
+            .where(
+                "username",
+                "in",
+                users.map((user) => user.id)
+            )
+            .returningAll()
+            .execute();
+        const deletedRows = await db
+            .deleteFrom("missions")
+            .where(
+                "user_id",
+                "in",
+                createdUsers.map((u) => u.uuid)
+            )
+            .execute();
     },
 };
 
