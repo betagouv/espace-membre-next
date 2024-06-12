@@ -12,7 +12,7 @@
     "migrate": "knex migrate:latest --esm",
     "rolldown": "knex migrate:down --esm",
     "makeMigration": "knex migrate:make -x ts --esm",
-    "e2e": "start-server-and-test dev http://localhost:3000 \"cypress open --e2e\"",
+    "e2e": "npx playwright test",
     "test": "NODE_ENV=test ts-mocha --paths -p tsconfig.json src/**/*.spec.ts __tests__/*.ts --exit --require ts-node/register --icu-data-dir=./node_modules/full-icu --require ./__tests__/env-setup.ts --timeout 30000",
     "seed": "knex seed:run --esm",
     "predev": "only-include-used-icons",
@@ -90,7 +90,7 @@
   "devDependencies": {
     "@babel/preset-env": "^7.23.9",
     "@hookform/devtools": "^4.3.1",
-    "@playwright/test": "^1.41.2",
+    "@playwright/test": "^1.44.1",
     "@testing-library/jest-dom": "^6.4.2",
     "@testing-library/react": "^14.2.1",
     "@types/express": "^4.17.21",
