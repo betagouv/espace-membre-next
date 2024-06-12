@@ -75,7 +75,7 @@ export function withMissions(eb: ExpressionBuilder<DB, "users">) {
                 // aggregate startups names
                 sql<
                     Array<string>
-                >`coalesce(array_agg(startups.id order by startups.id) filter (where startups.id is not null), '{}')`.as(
+                >`coalesce(array_agg(startups.ghid order by startups.ghid) filter (where startups.ghid is not null), '{}')`.as(
                     "startups"
                 ),
             ])
@@ -101,18 +101,32 @@ export function withPhases(eb: ExpressionBuilder<DB, "startups">) {
     ).as("phases");
 }
 
+export function withEvents(eb: ExpressionBuilder<DB, "startups">) {
+    return jsonArrayFrom(
+        eb
+            .selectFrom("startup_events")
+            .select([
+                "startup_events.name",
+                "startup_events.comment",
+                "startup_events.date",
+            ])
+            .whereRef("startup_events.startup_id", "=", "startups.uuid")
+            .orderBy("startup_events.date", "asc")
+    ).as("events");
+}
+
 const zipUrl = `https://github.com/betagouv/beta.gouv.fr/archive/refs/heads/master.zip`;
 
+export type MarkdownData = {
+    incubators: FmReturn<z.infer<typeof incubator> & { ghid: string }>[];
+    organisations: FmReturn<z.infer<typeof organisation> & { ghid: string }>[];
+    startups: FmReturn<z.infer<typeof startup> & { ghid: string }>[];
+    authors: FmReturn<z.infer<typeof author> & { ghid: string }>[];
+};
+
 // load ZIP and parse markdowns
-export const importFromZip = () => {
-    const markdownData: {
-        incubators: FmReturn<z.infer<typeof incubator> & { ghid: string }>[];
-        organisations: FmReturn<
-            z.infer<typeof organisation> & { ghid: string }
-        >[];
-        startups: FmReturn<z.infer<typeof startup> & { ghid: string }>[];
-        authors: FmReturn<z.infer<typeof author> & { ghid: string }>[];
-    } = {
+export const importFromZip = (): Promise<MarkdownData> => {
+    const markdownData: MarkdownData = {
         incubators: [],
         organisations: [],
         startups: [],

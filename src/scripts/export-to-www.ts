@@ -5,6 +5,7 @@ import yaml from "js-yaml";
 import { detailedDiff } from "deep-object-diff";
 import { writeFile } from "fs/promises";
 import {
+    withEvents,
     withPhases,
     withMissions,
     extractValidValues,
@@ -24,6 +25,8 @@ const getChanges = async (markdownData) => {
         .select((eb) => [
             "address",
             "contact",
+            "description",
+            "short_description",
             "github",
             "title",
             "website",
@@ -34,7 +37,7 @@ const getChanges = async (markdownData) => {
         ])
         .execute();
     const startupColumns = [
-        "startups.id",
+        "startups.ghid",
         "startups.description",
         "startups.accessibility_status",
         "startups.analyse_risques",
@@ -42,13 +45,12 @@ const getChanges = async (markdownData) => {
         "startups.mon_service_securise",
         "startups.budget_url",
         "startups.contact",
+        "startups.repository",
         "startups.link",
         "startups.stats",
         "startups.stats_url",
-        "startups.github",
         "startups.name",
         "startups.pitch",
-        "startups.website",
         "startups.thematiques",
         "startups.usertypes",
         "startups.techno",
@@ -67,16 +69,15 @@ const getChanges = async (markdownData) => {
         )
         .select((eb) => [
             ...startupColumns,
-            eb.ref("startups.github").as("repository"),
             eb.ref("startups.name").as("title"),
             eb.ref("startups.pitch").as("mission"),
-            eb.ref("startups.website").as("link"),
             sql<
                 Array<string>
             >`COALESCE(NULLIF(ARRAY_AGG(CONCAT('/organisations/', organizations.ghid)), '{/organisations/}'), '{}')`.as(
                 "sponsors"
             ),
             withPhases(eb),
+            withEvents(eb),
         ])
         .groupBy([...startupColumns, "startups.uuid"])
         .execute();
@@ -104,15 +105,15 @@ const getChanges = async (markdownData) => {
         const ghOrga = markdownData.organisations.find(
             (o) => o.attributes.ghid === dbOrga.ghid
         );
+        const dbOrga2 = extractValidValues(dbOrga, ["ghid", "username"]);
         if (!ghOrga) {
             // create gh orga
             updates.push({
                 file: `content/_organisations/${dbOrga.ghid}.md`,
-                content: "---\n" + yaml.dump(dbOrga) + "---\n",
+                content: "---\n" + yaml.dump(dbOrga2) + "---\n",
             });
         } else {
             const { ghid: ghid2, ...ghOrga2 } = ghOrga.attributes;
-            const dbOrga2 = extractValidValues(dbOrga, ["ghid", "username"]);
             const diffed = detailedDiff(ghOrga2, dbOrga2);
             if (
                 Object.keys(diffed.added).length ||
@@ -133,15 +134,15 @@ const getChanges = async (markdownData) => {
         const ghIncub = markdownData.incubators.find(
             (o) => o.attributes.ghid === dbIncub.ghid
         );
+        const dbIncub2 = extractValidValues(dbIncub, ["ghid", "description"]);
         if (!ghIncub) {
             // create gh orga
             updates.push({
                 file: `content/_incubators/${dbIncub.ghid}.md`,
-                content: dumpYaml(dbIncub),
+                content: dumpYaml(dbIncub2, dbIncub.description || ""),
             });
         } else {
             // dont update null values from DB
-            const dbIncub2 = extractValidValues(dbIncub, ["ghid"]);
             const { ghid: ghid2, ...ghIncub2 } = ghIncub.attributes;
             const diffed = detailedDiff(ghIncub2, dbIncub2);
             if (
@@ -152,7 +153,7 @@ const getChanges = async (markdownData) => {
                 incubator.parse(updated);
                 updates.push({
                     file: `content/_incubators/${dbIncub.ghid}.md`,
-                    content: dumpYaml(updated),
+                    content: dumpYaml(updated, dbIncub.description || ""),
                 });
             }
         }
@@ -161,25 +162,22 @@ const getChanges = async (markdownData) => {
     // update startups
     startups.forEach((dbStartup) => {
         const ghStartup = markdownData.startups.find(
-            (o) => o.attributes.ghid === dbStartup.id
+            (o) => o.attributes.ghid === dbStartup.ghid
         );
+
+        const dbStartup2 = extractValidValues(dbStartup, [
+            "ghid",
+            "description",
+            "name",
+            "pitch",
+        ]);
         if (!ghStartup) {
             // create gh startup
             updates.push({
-                file: `content/_startups/${dbStartup.id}.md`,
-                content: dumpYaml(dbStartup, dbStartup.description || ""),
+                file: `content/_startups/${dbStartup.ghid}.md`,
+                content: dumpYaml(dbStartup2, dbStartup.description || ""),
             });
         } else {
-            const dbStartup2 = extractValidValues(dbStartup, [
-                "ghid",
-                "id",
-                "description",
-                "name",
-                "pitch",
-                "github",
-                "website",
-            ]);
-
             const { ghid: ghid2, ...ghStartup2 } = ghStartup.attributes;
             const diffed = detailedDiff(ghStartup2, dbStartup2);
             if (
@@ -206,6 +204,7 @@ const getChanges = async (markdownData) => {
                     ...ghStartup2,
                     ...dbStartup2,
                 });
+
                 // hack for validation
                 updated.phases =
                     updated.phases &&
@@ -218,38 +217,50 @@ const getChanges = async (markdownData) => {
                         if (p.end) phase.end = new Date(p.end);
                         return phase;
                     });
+
+                updated.events =
+                    updated.events &&
+                    updated.events.map((p) => {
+                        const event = {
+                            name: p.name,
+                            date: new Date(p.date),
+                            comment: p.comment || undefined,
+                        };
+                        return event;
+                    });
+
                 if (updated.sponsors.length === 0) delete updated.sponsors;
+                if (updated.events.length === 0) delete updated.events;
 
                 startup.parse(updated);
 
                 updates.push({
-                    file: `content/_startups/${dbStartup.id}.md`,
+                    file: `content/_startups/${dbStartup.ghid}.md`,
                     content: dumpYaml(updated, dbStartup.description || ""),
                 });
             }
         }
     });
 
-    // update startups
+    // update users
     users.forEach((dbAuthor) => {
         const ghAuthor = markdownData.authors.find(
             (o) => o.attributes.ghid === dbAuthor.username
         );
+        const dbAuthor2 = extractValidValues(dbAuthor, [
+            "ghid",
+            "id",
+            "uuid",
+            "username",
+            "bio",
+        ]);
         if (!ghAuthor) {
             // create gh startup
             updates.push({
                 file: `content/_authors/${dbAuthor.username}.md`,
-                content: dumpYaml(dbAuthor, dbAuthor.bio || ""),
+                content: dumpYaml(dbAuthor2, dbAuthor.bio || ""),
             });
         } else {
-            const dbAuthor2 = extractValidValues(dbAuthor, [
-                "ghid",
-                "id",
-                "uuid",
-                "username",
-                "bio",
-            ]);
-
             const { ghid: ghid2, ...ghAuthor2 } = ghAuthor.attributes;
             const diffed = detailedDiff(ghAuthor2, dbAuthor2);
             if (
