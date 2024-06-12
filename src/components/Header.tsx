@@ -19,6 +19,7 @@ const MainHeader = () => {
 
     const accountLink = linkRegistry.get("account", undefined);
     const communityLink = linkRegistry.get("community", undefined);
+    const mapLink = linkRegistry.get("map", undefined);
     const startupListLink = linkRegistry.get("startupList", undefined);
     const adminMattermostLink = linkRegistry.get("adminMattermost", undefined);
     const formationListLink = linkRegistry.get("formationList", undefined);
@@ -70,6 +71,7 @@ const MainHeader = () => {
         [
             "/account",
             "/community",
+            "/map",
             "/admin",
             "/startups",
             "/newsletters",
@@ -85,7 +87,9 @@ const MainHeader = () => {
                       isActive: hasPathnameThisRoot(pathname, accountLink),
                   },
                   {
-                      isActive: hasPathnameThisRoot(pathname, communityLink),
+                      isActive:
+                          hasPathnameThisRoot(pathname, communityLink) ||
+                          hasPathnameThisRoot(pathname, mapLink),
                       linkProps: {
                           href: "/community",
                           target: "_self",
