@@ -73,8 +73,8 @@ class routes {
     static ACCOUNT_GET_BADGE_REQUEST_PAGE = "/account/badge-demande" as const;
     static ACCOUNT_GET_BADGE_REQUEST_PAGE_API =
         "/api/account/badge-demande" as const;
-    static ACCOUNT_GET_BADGE_RENEWAL_REQUEST_PAGE_API =
-        "/api/account/badge-demande/renewal" as const;
+    // static ACCOUNT_GET_BADGE_RENEWAL_REQUEST_PAGE_API =
+    //     "/api/account/badge-demande/renewal" as const;
     static API_POST_BADGE_REQUEST = "/api/badge" as const;
     static API_POST_BADGE_RENEWAL_REQUEST = "/api/badge/renewal" as const;
     static API_UPDATE_BADGE_REQUEST_STATUS = "/api/badge/status" as const;

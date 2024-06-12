@@ -2,15 +2,15 @@ import chai from "chai";
 import chaiHttp from "chai-http";
 import sinon from "sinon";
 
-import app from "@/server/index";
-import config from "@/server/config";
 import utils from "./utils";
-import * as adminConfig from "@/server/config/admin.config";
 import routes from "@/routes/routes";
-import * as mattermostScheduler from "@schedulers/mattermostScheduler/removeBetaAndParnersUsersFromCommunityTeam";
-import * as chat from "@infra/chat";
-import * as sendMattermostMessage from "@controllers/adminController/sendMattermostMessage";
+import config from "@/server/config";
+import * as adminConfig from "@/server/config/admin.config";
 import * as session from "@/server/helpers/session";
+import app from "@/server/index";
+import * as sendMattermostMessage from "@controllers/adminController/sendMattermostMessage";
+import * as chat from "@infra/chat";
+import * as mattermostScheduler from "@schedulers/mattermostScheduler/removeBetaAndParnersUsersFromCommunityTeam";
 
 chai.use(chaiHttp);
 

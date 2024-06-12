@@ -64,16 +64,16 @@ describe("Reinit password for expired users", () => {
 
     it("should call once ovh api to change password", async () => {
         const url = process.env.USERS_API || "https://beta.gouv.fr"; // can't replace with config.usersApi ?
-        nock(url)
-            .get((uri) => uri.includes("authors.json"))
-            .reply(200, users)
-            .persist();
+        // nock(url)
+        //     .get((uri) => uri.includes("authors.json"))
+        //     .reply(200, users)
+        //     .persist();
         utilsTest.mockUsers();
         utilsTest.mockOvhTime();
         utilsTest.mockOvhRedirections();
         utilsTest.mockOvhUserResponder();
         nock(/.*ovh.com/)
-            .get(/^.*email\/domain\/.*\/account\/.*/)
+            .get(/^.*email\/domain\/.*\/account\/(.*)/)
             .reply(200, {
                 accountName: "membre.expire",
                 email: `membre.expire@betagouv.ovh`,

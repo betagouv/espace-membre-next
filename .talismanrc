@@ -5,6 +5,8 @@ fileignoreconfig:
   checksum: 59bb880710465666eb47a0d8dc220c693a25412a8112043f8ad9812b50f7896e
 - filename: __tests__/test-account.ts
   checksum: da7f9933e9d15538def749e8e58bdccb8a52e2a2a1de7c7e4a327108e4dd05e9
+- filename: __tests__/test-community.ts
+  checksum: 7b34d7e039233d20430b5b0be9f05400606c94b69ce17c593dbe9340c9c26a62
 - filename: __tests__/test-email.ts
   checksum: 4192baa86c9c611168e394237bcc8586f71d186ef41a4d9747a91603fdddb3a2
 - filename: __tests__/test-visit.ts

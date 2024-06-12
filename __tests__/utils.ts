@@ -6,11 +6,14 @@ import { v4 as uuidv4 } from "uuid";
 
 import testStartups from "./startups.json";
 import testUsers from "./users.json";
+import { UsersDomaineEnum } from "@/@types/db";
+import { db } from "@/lib/kysely";
+import { Domaine } from "@/models/member";
 import config from "@/server/config";
 import knex from "@db";
 
-export default {
-    getJWT(id) {
+const testUtils = {
+    getJWT(id: string) {
         const token = jwt.sign(
             {
                 id,
@@ -118,7 +121,7 @@ export default {
     },
     setupTestDatabase() {
         console.log("Setup test database");
-        const dbConfig = parse(process.env.DATABASE_URL);
+        const dbConfig = parse(process.env.DATABASE_URL || "");
         const testDbName = dbConfig.database;
         if (!testDbName)
             return new Error("DATABASE_URL environment variable not set");
@@ -128,10 +131,10 @@ export default {
         // we need to connect to the default database to create it.
         console.log(`Creating test database ${testDbName}...`);
         const temporaryConnection = `postgres://${encodeURIComponent(
-            dbConfig.user
-        )}:${encodeURIComponent(dbConfig.password)}@${encodeURIComponent(
-            dbConfig.host
-        )}:${encodeURIComponent(dbConfig.port)}/postgres`;
+            dbConfig.user || ""
+        )}:${encodeURIComponent(dbConfig.password || "")}@${encodeURIComponent(
+            dbConfig.host || ""
+        )}:${encodeURIComponent(dbConfig.port || "")}/postgres`;
         const client = new Client({ connectionString: temporaryConnection });
         return client
             .connect()
@@ -141,16 +144,43 @@ export default {
             .then(() => client.query(`CREATE DATABASE ${testDbName}`, []))
             .then(() => client.end())
             .then(() => knex.migrate.latest())
-            .then(() => {
+            .then(async () => {
                 const sixMinutesInMs: number = 6 * 1000 * 60;
                 const dbUsers = testUsers.map((user) => ({
                     username: user.id,
+                    fullname: user.fullname,
                     primary_email: `${user.id}@${config.domain}`,
                     primary_email_status_updated_at: new Date(
                         Date.now() - sixMinutesInMs
                     ),
+                    domaine: (user.domaine ||
+                        Domaine.ANIMATION) as UsersDomaineEnum,
+                    role: user.role || "",
                 }));
-                return knex("users").insert(dbUsers);
+                const createdUsers = await db
+                    .insertInto("users")
+                    .values(dbUsers)
+                    .returningAll()
+                    .execute();
+                for (const createdUser of createdUsers) {
+                    const missions =
+                        testUsers.find(
+                            (user) => user.id === createdUser.username
+                        )?.missions || [];
+                    for (const mission of missions) {
+                        await db
+                            .insertInto("missions")
+                            .values({
+                                ...mission,
+                                user_id: createdUser.uuid,
+                            })
+                            .returningAll()
+                            .executeTakeFirstOrThrow();
+                        // await db.insertInto("missions_startups").values({
+                        //     mission_id: createdMission.uuid,
+                        // });
+                    }
+                }
             })
             .then(() =>
                 console.log(`Test database ${testDbName} created successfully`)
@@ -160,7 +190,7 @@ export default {
             });
     },
     cleanUpTestDatabase() {
-        const dbConfig = parse(process.env.DATABASE_URL);
+        const dbConfig = parse(process.env.DATABASE_URL || "");
         const testDbName = dbConfig.database;
         if (!testDbName)
             return new Error("DATABASE_URL environment variable not set");
@@ -169,10 +199,10 @@ export default {
         // connect to the default database to clean up.
         console.log(`Cleaning up test database ${testDbName}...`);
         const temporaryConnection = `postgres://${encodeURIComponent(
-            dbConfig.user
-        )}:${encodeURIComponent(dbConfig.password)}@${encodeURIComponent(
-            dbConfig.host
-        )}:${encodeURIComponent(dbConfig.port)}/postgres`;
+            dbConfig.user || ""
+        )}:${encodeURIComponent(dbConfig.password || "")}@${encodeURIComponent(
+            dbConfig.host || ""
+        )}:${encodeURIComponent(dbConfig.port || "")}/postgres`;
         const client = new Client({ connectionString: temporaryConnection });
 
         return knex
@@ -190,3 +220,5 @@ export default {
         return uuidv4();
     },
 };
+
+export default testUtils;

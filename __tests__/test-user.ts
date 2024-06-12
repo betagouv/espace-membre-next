@@ -7,8 +7,7 @@ import testUsers from "./users.json";
 import utils from "./utils";
 import { db } from "@/lib/kysely";
 import * as mattermost from "@/lib/mattermost";
-import { EmailStatusCode } from "@/models/member";
-import { Member } from "@/models/member";
+import { Domaine, EmailStatusCode } from "@/models/member";
 import { EMAIL_PLAN_TYPE } from "@/models/ovh";
 import routes from "@/routes/routes";
 import config from "@/server/config";
@@ -18,6 +17,7 @@ import app from "@/server/index";
 import betagouv from "@betagouv";
 import Betagouv from "@betagouv";
 import * as controllerUtils from "@controllers/utils";
+import knex from "@db";
 import {
     createEmailAddresses,
     createRedirectionEmailAdresses,
@@ -92,9 +92,11 @@ describe("User", () => {
                     to_email: "test@example.com",
                 });
 
-            const res = await knex("users")
-                .where({ username: "membre.nouveau" })
-                .first();
+            const res = await db
+                .selectFrom("users")
+                .selectAll()
+                .where("username", "=", "membre.nouveau")
+                .executeTakeFirst();
             res.primary_email.should.equal(`membre.nouveau@${config.domain}`);
             ovhEmailCreation.isDone().should.be.true;
         });
@@ -210,9 +212,13 @@ describe("User", () => {
             const ovhEmailCreation = nock(/.*ovh.com/)
                 .post(/^.*email\/domain\/.*\/account/)
                 .reply(200);
-            await knex("users").where({ username: "membre.actif" }).update({
-                primary_email: null,
-            });
+            await db
+                .updateTable("users")
+                .where("username", "=", "membre.actif")
+                .set({
+                    primary_email: null,
+                })
+                .execute();
             getToken.returns(utils.getJWT("julien.dauphant"));
             await chai
                 .request(app)
@@ -227,9 +233,10 @@ describe("User", () => {
                     to_email: "test@example.com",
                 });
             ovhEmailCreation.isDone().should.be.true;
-            const user = await knex("users")
-                .where({ username: "membre.actif" })
-                .first();
+            const user = await db
+                .selectFrom("users")
+                .where("username", "=", "membre.actif")
+                .executeTakeFirstOrThrow();
             user.secondary_email.should.equal("test@example.com");
         });
 
@@ -237,7 +244,7 @@ describe("User", () => {
             const ovhEmailCreation = nock(/.*ovh.com/)
                 .post(/^.*email\/domain\/.*\/account/)
                 .reply(200);
-            await knex("users").where({ username: "membre.actif" }).delete();
+            await db.deleteFrom("users").where("username", "=", "membre.actif");
             getToken.returns(utils.getJWT("julien.dauphant"));
             await chai
                 .request(app)
@@ -252,9 +259,10 @@ describe("User", () => {
                     to_email: "test@example.com",
                 });
             ovhEmailCreation.isDone().should.be.true;
-            const user = await knex("users")
-                .where({ username: "membre.actif" })
-                .first();
+            const user = await db
+                .selectFrom("users")
+                .where("username", "=", "membre.actif")
+                .executeTakeFirstOrThrow();
             user.secondary_email.should.equal("test@example.com");
         });
     });
@@ -295,9 +303,13 @@ describe("User", () => {
             const ovhEmailCreation = nock(/.*ovh.com/)
                 .post(/^.*email\/domain\/.*\/account/)
                 .reply(200);
-            await knex("users").where({ username: "membre.nouveau" }).update({
-                primary_email: null,
-            });
+            await db
+                .updateTable("users")
+                .where("username", "=", "membre.nouveau")
+                .set({
+                    primary_email: null,
+                })
+                .execute();
             await chai
                 .request(app)
                 .post("/api/users/membre.nouveau/create-email")
@@ -305,9 +317,11 @@ describe("User", () => {
                     to_email: "test@example.com",
                 });
 
-            const res = await knex("users")
-                .where({ username: "membre.nouveau" })
-                .first();
+            const res = await db
+                .selectFrom("users")
+                .selectAll()
+                .where("username", "=", "membre.nouveau")
+                .executeTakeFirstOrThrow();
             res.primary_email.should.equal(`membre.nouveau@${config.domain}`);
             ovhEmailCreation.isDone().should.be.true;
         });
@@ -574,9 +588,11 @@ describe("User", () => {
             utils.mockOvhTime();
             utils.mockOvhRedirections();
             const username = "membre.nouveau";
-            await knex("users")
-                .where({ username })
-                .update({ primary_email_status: EmailStatusCode.EMAIL_ACTIVE });
+            await db
+                .updateTable("users")
+                .where("username", "=", username)
+                .set({ primary_email_status: EmailStatusCode.EMAIL_ACTIVE })
+                .execute();
             nock(/.*ovh.com/)
                 .get(/^.*email\/domain\/.*\/account\/.*/)
                 .reply(200, {
@@ -597,7 +613,6 @@ describe("User", () => {
                     new_password: "Test_Password_1234",
                 });
             ovhPasswordNock.isDone().should.be.true;
-            const user = await knex("users").where({ username }).first();
         });
         it("should perform a password change and pass status to active if status was suspended", async () => {
             utils.cleanMocks();
@@ -608,9 +623,13 @@ describe("User", () => {
             utils.mockOvhTime();
             utils.mockOvhRedirections();
             const username = "membre.nouveau";
-            await knex("users").where({ username }).update({
-                primary_email_status: EmailStatusCode.EMAIL_SUSPENDED,
-            });
+            await db
+                .updateTable("users")
+                .where("username", "=", username)
+                .set({
+                    primary_email_status: EmailStatusCode.EMAIL_SUSPENDED,
+                })
+                .execute();
             nock(/.*ovh.com/)
                 .get(/^.*email\/domain\/.*\/account\/.*/)
                 .reply(200, {
@@ -631,7 +650,11 @@ describe("User", () => {
                     new_password: "Test_Password_1234",
                 });
             ovhPasswordNock.isDone().should.be.true;
-            const user = await knex("users").where({ username }).first();
+            const user = await db
+                .selectFrom("users")
+                .selectAll()
+                .where("username", "=", username)
+                .executeTakeFirst();
             user.primary_email_status.should.be.equal(
                 EmailStatusCode.EMAIL_ACTIVE
             );
@@ -731,16 +754,20 @@ describe("User", () => {
                 .post(/^.*email\/domain\/.*\/redirection/)
                 .reply(200);
 
-            const dbRes = await knex("users")
-                .select()
-                .where({ username: "membre.actif" });
+            const dbRes = await db
+                .selectFrom("users")
+                .selectAll()
+                .where("username", "=", "membre.actif")
+                .execute();
             dbRes.length.should.equal(1);
             await chai
                 .request(app)
                 .post("/api/users/membre.actif/email/delete");
-            const dbNewRes = await knex("users").where({
-                username: "membre.actif",
-            });
+            const dbNewRes = await db
+                .selectFrom("users")
+                .selectAll()
+                .where("username", "=", "membre.actif")
+                .execute();
             dbNewRes.length.should.equal(1);
             addRedirection.isDone().should.be.true;
         });
@@ -800,10 +827,11 @@ describe("User", () => {
             const username = "membre.nouveau";
             const secondaryEmail = "membre.nouveau.perso@example.com";
 
-            await knex("users")
-                .select()
-                .where({ username: "membre.nouveau" })
-                .first();
+            await db
+                .selectFrom("users")
+                .selectAll()
+                .where("username", "=", "membre.nouveau")
+                .execute();
             await chai
                 .request(app)
                 .post(`/api/users/${username}/secondary_email`)
@@ -812,9 +840,11 @@ describe("User", () => {
                     username,
                     secondaryEmail,
                 });
-            const dbNewRes = await knex("users")
-                .select()
-                .where({ username: "membre.nouveau" });
+            const dbNewRes = await db
+                .selectFrom("users")
+                .selectAll()
+                .where("username", "=", "membre.nouveau")
+                .execute();
             dbNewRes.length.should.equal(1);
             dbNewRes[0].secondary_email.should.equal(secondaryEmail);
         });
@@ -824,13 +854,13 @@ describe("User", () => {
             const secondaryEmail = "membre.nouveau.perso@example.com";
             const newSecondaryEmail = "membre.nouveau.new@example.com";
 
-            await knex("users")
-                .where({
-                    username,
-                })
-                .update({
+            await db
+                .updateTable("users")
+                .where("username", "=", username)
+                .set({
                     secondary_email: secondaryEmail,
-                });
+                })
+                .execute();
             await chai
                 .request(app)
                 .post(`/api/users/${username}/secondary_email/`)
@@ -839,14 +869,20 @@ describe("User", () => {
                     username,
                     secondaryEmail: newSecondaryEmail,
                 });
-            const dbNewRes = await knex("users")
-                .select()
-                .where({ username: "membre.nouveau" });
+            const dbNewRes = await db
+                .selectFrom("users")
+                .selectAll()
+                .where("username", "=", "membre.nouveau")
+                .execute();
             dbNewRes.length.should.equal(1);
             dbNewRes[0].secondary_email.should.equal(newSecondaryEmail);
-            await knex("users").where({ username: "membre.nouveau" }).update({
-                secondary_email: null,
-            });
+            await db
+                .updateTable("users")
+                .where("username", "=", "membre.nouveau")
+                .set({
+                    secondary_email: null,
+                })
+                .execute();
         });
     });
 
@@ -902,9 +938,11 @@ describe("User", () => {
                     username,
                     primaryEmail: primaryEmail,
                 });
-            const dbNewRes = await knex("users")
-                .select()
-                .where({ username: "membre.nouveau" });
+            const dbNewRes = await db
+                .selectFrom("users")
+                .selectAll()
+                .where("username", "=", "membre.nouveau")
+                .execute();
             dbNewRes.length.should.equal(1);
             dbNewRes[0].primary_email.should.not.equal(primaryEmail);
             isPublicServiceEmailStub.called.should.be.true;
@@ -917,9 +955,13 @@ describe("User", () => {
             const username = "membre.nouveau";
             const primaryEmail = "membre.nouveau.new@example.com";
             getToken.returns(utils.getJWT("membre.nouveau"));
-            await knex("users").where({ username: "membre.nouveau" }).update({
-                primary_email: `membre.nouveau@otherdomaine.gouv.fr`,
-            });
+            await db
+                .updateTable("users")
+                .where("username", "=", "membre.nouveau")
+                .set({
+                    primary_email: `membre.nouveau@otherdomaine.gouv.fr`,
+                })
+                .execute();
 
             const res = await chai
                 .request(app)
@@ -929,19 +971,23 @@ describe("User", () => {
                     username,
                     primaryEmail: primaryEmail,
                 });
-            const dbNewRes = await knex("users")
-                .select()
-                .where({ username: "membre.nouveau" });
+            const dbNewRes = await db
+                .selectFrom("users")
+                .selectAll()
+                .where("username", "=", "membre.nouveau")
+                .execute();
             dbNewRes.length.should.equal(1);
             dbNewRes[0].primary_email.should.not.equal(primaryEmail);
 
             mattermostGetUserByEmailStub.calledOnce.should.be.true;
 
-            await knex("users")
-                .where({ username: "membre.nouveau" })
-                .update({
+            await db
+                .updateTable("users")
+                .where("username", "=", "membre.nouveau")
+                .set({
                     primary_email: `membre.nouveau@${config.domain}`,
-                });
+                })
+                .execute();
         });
 
         it("should update primary email", async () => {
@@ -965,16 +1011,20 @@ describe("User", () => {
                     username,
                     primaryEmail: primaryEmail,
                 });
-            const dbNewRes = await knex("users")
-                .select()
-                .where({ username: "membre.nouveau" });
+            const dbNewRes = await db
+                .selectFrom("users")
+                .selectAll()
+                .where("username", "=", "membre.nouveau")
+                .execute();
             dbNewRes.length.should.equal(1);
             dbNewRes[0].primary_email.should.equal(primaryEmail);
-            await knex("users")
-                .where({ username: "membre.nouveau" })
-                .update({
+            await db
+                .updateTable("users")
+                .where("username", "=", "membre.nouveau")
+                .set({
                     primary_email: `${username}@${config.domain}`,
-                });
+                })
+                .execute();
             createRedirectionStub.called.should.be.true;
             deleteEmailStub.called.should.be.true;
             isPublicServiceEmailStub.called.should.be.true;
@@ -1455,19 +1505,27 @@ describe("User", () => {
 
         afterEach(async () => {
             sandbox.restore();
-            await knex("users")
-                .where({ username: "membre.nouveau-email" })
-                .delete();
+            await db
+                .deleteFrom("users")
+                .where("username", "=", "membre.nouveau-email")
+                .execute();
         });
 
         context("when the user needs an MX PLAN account", () => {
             it("should create an OVH MX Plam account", async () => {
-                await knex("users").insert({
-                    username: "membre.nouveau-email",
-                    primary_email: null,
-                    primary_email_status: EmailStatusCode.EMAIL_UNSET,
-                    secondary_email: "membre.nouveau-email.perso@example.com",
-                });
+                await db
+                    .insertInto("users")
+                    .values({
+                        username: "membre.nouveau-email",
+                        domaine: Domaine.ANIMATION,
+                        role: "",
+                        fullname: "Membre Nouveau-email",
+                        primary_email: null,
+                        primary_email_status: EmailStatusCode.EMAIL_UNSET,
+                        secondary_email:
+                            "membre.nouveau-email.perso@example.com",
+                    })
+                    .execute();
                 await createEmail("membre.nouveau-email", "Test");
                 Betagouv.createEmail.calledWith("membre.nouveau-email").should
                     .be.true;
@@ -1481,19 +1539,26 @@ describe("User", () => {
                         id: "membre.nouveau-email",
                         fullname: "Membre Nouveau test email",
                         startups: ["itou", "missing-startup"],
-                    } as Member,
+                    },
                 ]);
                 sandbox
                     .stub(config, "EMAIL_DEFAULT_PLAN")
                     .value(EMAIL_PLAN_TYPE.EMAIL_PLAN_PRO);
             });
             it("should create an OVH Pro email account", async () => {
-                await knex("users").insert({
-                    username: "membre.nouveau-email",
-                    primary_email: null,
-                    primary_email_status: EmailStatusCode.EMAIL_UNSET,
-                    secondary_email: "membre.nouveau-email.perso@example.com",
-                });
+                await db
+                    .insertInto("users")
+                    .values({
+                        username: "membre.nouveau-email",
+                        primary_email: null,
+                        primary_email_status: EmailStatusCode.EMAIL_UNSET,
+                        secondary_email:
+                            "membre.nouveau-email.perso@example.com",
+                        domaine: Domaine.ANIMATION,
+                        role: "",
+                        fullname: "Membre Nouveau-email",
+                    })
+                    .execute();
 
                 await createEmail("membre.nouveau-email", "Test");
                 Betagouv.createEmailPro.firstCall.args.should.deep.equal([
@@ -1532,17 +1597,24 @@ describe("User", () => {
                         id: "membre.nouveau-email",
                         fullname: "Membre Nouveau test email",
                         startups: ["itou", "missing-startup"],
-                    } as Member,
+                    },
                 ]);
             });
 
             it("should create an Exchange email account", async () => {
-                await knex("users").insert({
-                    username: "membre.nouveau-email",
-                    primary_email: null,
-                    primary_email_status: EmailStatusCode.EMAIL_UNSET,
-                    secondary_email: "membre.nouveau-email.perso@example.com",
-                });
+                await db
+                    .insertInto("users")
+                    .values({
+                        username: "membre.nouveau-email",
+                        primary_email: null,
+                        primary_email_status: EmailStatusCode.EMAIL_UNSET,
+                        secondary_email:
+                            "membre.nouveau-email.perso@example.com",
+                        domaine: Domaine.ANIMATION,
+                        role: "",
+                        fullname: "Membre Nouveau-email",
+                    })
+                    .execute();
 
                 await createEmail("membre.nouveau-email", "Test");
 

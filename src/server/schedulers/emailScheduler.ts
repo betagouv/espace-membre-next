@@ -284,9 +284,11 @@ export async function reinitPasswordEmail() {
         .filter(
             (user) => user.primary_email_status === EmailStatusCode.EMAIL_ACTIVE
         );
+
     return Promise.all(
         expiredUsers.map(async (user) => {
-            const { emailInfos } = await utils.userInfos(user.username, false);
+            const emailInfos = await BetaGouv.emailInfos(user.username);
+
             const newPassword = crypto
                 .randomBytes(16)
                 .toString("base64")
