@@ -82,7 +82,7 @@ export default function StartupPage({
                     <br />
                 </p>
                 <p className="fr-text--sm" style={{ fontStyle: "italic" }}>
-                    Une informations n'est pas à jour ?
+                    Une information n'est pas à jour ?
                 </p>
                 {updatePullRequest && (
                     <>
