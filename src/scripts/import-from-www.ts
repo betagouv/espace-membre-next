@@ -39,30 +39,33 @@ const insertData = async (markdownData: MarkdownData) => {
         .insertInto("incubators")
         .values(({ selectFrom }) =>
             markdownData.incubators
-                .filter((incub) => {
-                    if (!incub.attributes.owner) {
-                        console.error(
-                            `IncubatorError: invalid owner for ${incub.attributes.ghid}`
-                        );
-                        return false;
-                    }
-                    return true;
-                })
+                // .filter((incub) => {
+                //     if (!incub.attributes.owner) {
+                //         console.error(
+                //             `IncubatorError: invalid owner for ${incub.attributes.ghid}`
+                //         );
+                //         return false;
+                //     }
+                //     return true;
+                // })
                 .map((incub) => ({
                     title: incub.attributes.title,
                     address: incub.attributes.address,
                     contact: incub.attributes.contact,
                     github: incub.attributes.github,
-                    owner_id: selectFrom("organizations")
-                        .where(
-                            "ghid",
-                            "=",
-                            incub.attributes.owner.replace(
-                                "/organisations/",
-                                ""
-                            )
-                        )
-                        .select("uuid"),
+                    owner_id:
+                        (incub.attributes.owner &&
+                            selectFrom("organizations")
+                                .where(
+                                    "ghid",
+                                    "=",
+                                    incub.attributes.owner.replace(
+                                        "/organisations/",
+                                        ""
+                                    )
+                                )
+                                .select("uuid")) ||
+                        null,
                     website: incub.attributes.website,
                     ghid: incub.attributes.ghid,
                     description: incub.body,
