@@ -15,7 +15,10 @@ exports.up = function (knex) {
                 .notNullable();
         })
         .createTable("startup_events", function (table) {
-            table.uuid("uuid").primary();
+            table
+                .uuid("uuid")
+                .defaultTo(knex.raw("uuid_generate_v4()"))
+                .primary();
             table.date("date").notNullable();
             table.string("name").notNullable();
             table.text("comment");
