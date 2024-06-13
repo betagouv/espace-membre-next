@@ -221,20 +221,22 @@ const testUtils = {
     },
     createUsers: async (
         users: {
-            star?: string;
+            start?: string;
             end?: string;
             id: string;
             fullname: string;
-            role: string;
+            role?: string;
             employer?: string;
-            domaine?: Domaine;
+            domaine?: Domaine | string;
             secondary_email?: string;
             github?: string;
+            primary_email?: string | null;
             missions?: {
                 start: string;
-                end: string;
-                status: string;
-                employer: string;
+                end?: string;
+                status?: string;
+                startups: [];
+                employer?: string;
             }[];
         }[]
     ) => {
@@ -242,7 +244,10 @@ const testUtils = {
         const dbUsers = users.map((user) => ({
             username: user.id,
             fullname: user.fullname,
-            primary_email: `${user.id}@${config.domain}`,
+            primary_email:
+                user.primary_email || user.primary_email === null
+                    ? user.primary_email
+                    : `${user.id}@${config.domain}`,
             primary_email_status_updated_at: new Date(
                 Date.now() - sixMinutesInMs
             ),
@@ -275,6 +280,8 @@ const testUtils = {
                         })
                         .returningAll()
                         .executeTakeFirstOrThrow();
+                    if (mission.startups) {
+                    }
                 }
             } else {
                 await db
@@ -301,9 +308,9 @@ const testUtils = {
             github?: string;
             missions?: {
                 start: string;
-                end: string;
-                status: string;
-                employer: string;
+                end?: string;
+                status?: string;
+                employer?: string;
             }[];
         }[]
     ) => {

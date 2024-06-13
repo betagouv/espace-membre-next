@@ -1,5 +1,6 @@
 import axios from "axios";
 import crypto from "crypto";
+import { compareAsc, startOfDay } from "date-fns";
 import _ from "lodash";
 import nodemailer from "nodemailer";
 
@@ -124,6 +125,9 @@ export function checkUserIsExpired(
         //@ts-ignore todo
         !v.end || v.end > a.end ? v : a
     );
+    if (!latestMission.end) {
+        return false;
+    }
     const today = new Date();
     today.setHours(0, 0, 0, 0);
 
@@ -160,15 +164,16 @@ export function getExpiredUsersForXDays<
     date.setDate(date.getDate() - nbDays);
     // Assuming you need to compare dates, convert to YYYY-MM-DD format.
     // const formattedDate = date.toISOString().slice(0, 10);
-
     return users.filter((user) => {
         const latestMission = user.missions.reduce((a, v) =>
             !v.end || (a.end ? new Date(v.end) > new Date(a.end) : false)
                 ? v
                 : a
         );
-        // Assuming `latestMission.end` is a date string, compare against `formattedDate`.
-        return latestMission.end === date;
+        // Compare the normalized dates
+        return latestMission.end
+            ? compareAsc(startOfDay(latestMission.end), startOfDay(date)) === 0
+            : false;
     }) as T;
 }
 
@@ -196,7 +201,8 @@ export function isValidEmail(formValidationErrors, field, email) {
     return null;
 }
 
-export async function isPublicServiceEmail(email) {
+export async function isPublicServiceEmail(email: string) {
+    console.log(email);
     if (process.env.NODE_ENV === "development") {
         return true;
     }
@@ -234,12 +240,10 @@ export async function userInfos(
             })
         );
         const emailInfos = await BetaGouv.emailInfos(userInfos.username);
-
         const emailRedirections = await BetaGouv.redirectionsForId({
             from: userInfos.username,
         });
         const emailResponder = await BetaGouv.getResponder(userInfos.username);
-
         const isExpired = checkUserIsExpired(userInfos);
         // On ne peut créé un compte que si:
         // - la page fiche Github existe
@@ -253,9 +257,10 @@ export async function userInfos(
         const canCreateRedirection = !!(!isExpired && isCurrentUser);
         const canChangePassword = !!(!isExpired && isCurrentUser && emailInfos);
         const canChangeEmails = !!(!isExpired && isCurrentUser);
-        const hasPublicServiceEmail = await isPublicServiceEmail(
-            userInfos.primary_email
-        );
+        const hasPublicServiceEmail = userInfos.primary_email
+            ? await isPublicServiceEmail(userInfos.primary_email)
+            : false;
+
         return {
             isExpired,
             userInfos: userInfos,

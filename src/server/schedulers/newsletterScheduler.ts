@@ -79,9 +79,12 @@ const createNewsletter = async () => {
     );
     const padUrl = result.request.res.responseUrl;
     const message = `Nouveau pad pour l'infolettre : ${padUrl}`;
-    await db.insertInto("newsletters").values({
-        url: padUrl,
-    });
+    await db
+        .insertInto("newsletters")
+        .values({
+            url: padUrl,
+        })
+        .execute();
     await sendInfoToChat({
         text: message,
     });
@@ -202,9 +205,8 @@ export async function sendNewsletterAndCreateNewOne(
     const currentNewsletter = await db
         .selectFrom("newsletters")
         .selectAll()
-        .where("sent_at", "=", null)
+        .where("sent_at", "is", null)
         .executeTakeFirst();
-
     const lastSentNewsletter = await db
         .selectFrom("newsletters")
         .selectAll()
@@ -262,7 +264,8 @@ export async function sendNewsletterAndCreateNewOne(
             .where("id", "=", currentNewsletter.id)
             .set({
                 sent_at: date,
-            });
+            })
+            .execute();
         if (shouldCreatedNewone) {
             await createNewsletter();
         }

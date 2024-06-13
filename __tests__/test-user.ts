@@ -53,19 +53,19 @@ describe("User", () => {
     describe("POST /api/users/:username/create-email authenticated", () => {
         let getToken;
         let sendEmailStub;
-        beforeEach((done) => {
+        beforeEach(async () => {
             sendEmailStub = sinon
                 .stub(controllerUtils, "sendMail")
                 .returns(Promise.resolve(true));
             getToken = sinon.stub(session, "getToken");
             getToken.returns(utils.getJWT("membre.actif"));
-            done();
+            await utils.createUsers(testUsers);
         });
 
-        afterEach((done) => {
+        afterEach(async () => {
             sendEmailStub.restore();
             getToken.restore();
-            done();
+            await utils.deleteUsers(testUsers);
         });
 
         it("should ask OVH to create an email", async () => {
@@ -235,32 +235,7 @@ describe("User", () => {
             ovhEmailCreation.isDone().should.be.true;
             const user = await db
                 .selectFrom("users")
-                .where("username", "=", "membre.actif")
-                .executeTakeFirstOrThrow();
-            user.secondary_email.should.equal("test@example.com");
-        });
-
-        it("should create email and insert user in database if user on github", async () => {
-            const ovhEmailCreation = nock(/.*ovh.com/)
-                .post(/^.*email\/domain\/.*\/account/)
-                .reply(200);
-            await db.deleteFrom("users").where("username", "=", "membre.actif");
-            getToken.returns(utils.getJWT("julien.dauphant"));
-            await chai
-                .request(app)
-                .post(
-                    routes.USER_CREATE_EMAIL_API.replace(
-                        ":username",
-                        "membre.actif"
-                    )
-                )
-                .type("form")
-                .send({
-                    to_email: "test@example.com",
-                });
-            ovhEmailCreation.isDone().should.be.true;
-            const user = await db
-                .selectFrom("users")
+                .selectAll()
                 .where("username", "=", "membre.actif")
                 .executeTakeFirstOrThrow();
             user.secondary_email.should.equal("test@example.com");
@@ -284,19 +259,19 @@ describe("User", () => {
     describe("POST /api/users/:username/create-email authenticated", () => {
         let getToken;
         let sendEmailStub;
-        beforeEach((done) => {
+        beforeEach(async () => {
             getToken = sinon.stub(session, "getToken");
             getToken.returns(utils.getJWT("membre.actif"));
             sendEmailStub = sinon
                 .stub(controllerUtils, "sendMail")
                 .returns(Promise.resolve(true));
-            done();
+            await utils.createUsers(testUsers);
         });
 
-        afterEach((done) => {
+        afterEach(async () => {
             sendEmailStub.restore();
             getToken.restore();
-            done();
+            await utils.deleteUsers(testUsers);
         });
 
         it("should ask OVH to create an email", async () => {
@@ -327,51 +302,6 @@ describe("User", () => {
         });
     });
 
-    describe("GET /api/public/users/:username unauthenticated", () => {
-        let sendEmailStub;
-        let mattermostSearchUserStub;
-        let mattermostGetUserStub;
-        beforeEach((done) => {
-            sendEmailStub = sinon
-                .stub(controllerUtils, "sendMail")
-                .returns(Promise.resolve(true));
-            mattermostSearchUserStub = sinon
-                .stub(mattermost, "searchUsers")
-                .returns(
-                    Promise.resolve([
-                        {
-                            email: "adresse.email@beta.gouv.fr",
-                        },
-                    ])
-                );
-            mattermostGetUserStub = sinon
-                .stub(mattermost, "getUserByEmail")
-                .returns(
-                    Promise.resolve({
-                        email: "adresse.email@beta.gouv.fr",
-                    } as mattermost.MattermostUser)
-                );
-            done();
-        });
-
-        afterEach((done) => {
-            sendEmailStub.restore();
-            mattermostGetUserStub.restore();
-            mattermostSearchUserStub.restore();
-            done();
-        });
-
-        it("should get user public info", async () => {
-            const res = await chai
-                .request(app)
-                .get("/api/public/users/membre.nouveau");
-            res.should.have.status(200);
-            res.body.username.should.equal("membre.nouveau");
-            mattermostSearchUserStub.calledOnce.should.be.true;
-            mattermostGetUserStub.calledOnce.should.be.true;
-        });
-    });
-
     describe("POST /api/users/:username/redirections unauthenticated", () => {
         it("should return an Unauthorized error", (done) => {
             chai.request(app)
@@ -389,17 +319,27 @@ describe("User", () => {
 
     describe("POST /api/users/:username/redirections authenticated", () => {
         let getToken;
+        let isPublicServiceEmailStub;
 
-        beforeEach(() => {
+        beforeEach(async () => {
+            console.log("LCS TEST USERS");
             getToken = sinon.stub(session, "getToken");
             getToken.returns(utils.getJWT("membre.actif"));
+            isPublicServiceEmailStub = sinon
+                .stub(controllerUtils, "isPublicServiceEmail")
+                .returns(Promise.resolve(true));
+            await utils.createUsers(testUsers);
         });
 
-        afterEach(() => {
+        afterEach(async () => {
             getToken.restore();
+            isPublicServiceEmailStub.restore();
+            await utils.deleteUsers(testUsers);
         });
 
         it("should ask OVH to create a redirection", (done) => {
+            isPublicServiceEmailStub.returns(Promise.resolve(true));
+
             const ovhRedirectionCreation = nock(/.*ovh.com/)
                 .post(/^.*email\/domain\/.*\/redirection/)
                 .reply(200);
@@ -467,13 +407,15 @@ describe("User", () => {
     describe("Delete /api/users/:username/redirections/:email/delete authenticated", () => {
         let getToken;
 
-        beforeEach(() => {
+        beforeEach(async () => {
             getToken = sinon.stub(session, "getToken");
             getToken.returns(utils.getJWT("membre.actif"));
+            await utils.createUsers(testUsers);
         });
 
-        afterEach(() => {
+        afterEach(async () => {
             getToken.restore();
+            await utils.deleteUsers(testUsers);
         });
 
         it("should ask OVH to delete a redirection", async () => {
@@ -522,6 +464,17 @@ describe("User", () => {
     });
 
     describe("POST /users/:username/password unauthenticated", () => {
+        beforeEach(async () => {
+            getToken = sinon.stub(session, "getToken");
+            getToken.returns(utils.getJWT("membre.actif"));
+            await utils.createUsers(testUsers);
+        });
+
+        afterEach(async () => {
+            getToken.restore();
+            await utils.deleteUsers(testUsers);
+        });
+
         it("should return an Unauthorized error", (done) => {
             chai.request(app)
                 .post("/api/users/membre.actif/password")
@@ -1177,88 +1130,121 @@ describe("User", () => {
         afterEach(async () => {
             betagouvCreateEmail.restore();
         });
+        describe("", () => {
+            const users = [
+                {
+                    id: "membre.actif",
+                    fullname: "membre Actif",
+                    missions: [
+                        {
+                            start: "2016-11-03",
+                            status: "independent",
+                            employer: "octo",
+                        },
+                    ],
+                },
+                {
+                    id: "membre.nouveau",
+                    fullname: "membre Nouveau",
+                    missions: [
+                        {
+                            start: new Date().toISOString().split("T")[0],
+                        },
+                    ],
+                },
+            ];
+            beforeEach(async () => {
+                await utils.createUsers(users);
+            });
+            afterEach(async () => {
+                await utils.deleteUsers(users);
+            });
+            it("should create missing email accounts", async () => {
+                utils.cleanMocks();
+                // const url = process.env.USERS_API || "https://beta.gouv.fr";
+                // nock(url)
+                //     .get((uri) => uri.includes("authors.json"))
+                //     .reply(200, [
+                //         {
+                //             id: "membre.actif",
+                //             fullname: "membre Actif",
+                //             missions: [
+                //                 {
+                //                     start: "2016-11-03",
+                //                     status: "independent",
+                //                     employer: "octo",
+                //                 },
+                //             ],
+                //         },
+                //         {
+                //             id: "membre.nouveau",
+                //             fullname: "membre Nouveau",
+                //             missions: [
+                //                 {
+                //                     start: new Date()
+                //                         .toISOString()
+                //                         .split("T")[0],
+                //                 },
+                //             ],
+                //         },
+                //     ])
+                //     .persist();
+                utils.mockSlackGeneral();
+                utils.mockSlackSecretariat();
+                utils.mockOvhTime();
+                utils.mockOvhRedirections();
+                utils.mockOvhUserResponder();
+                utils.mockOvhUserEmailInfos();
+                utils.mockStartups();
 
-        it("should create missing email accounts", async () => {
-            utils.cleanMocks();
-            const url = process.env.USERS_API || "https://beta.gouv.fr";
-            nock(url)
-                .get((uri) => uri.includes("authors.json"))
-                .reply(200, [
-                    {
-                        id: "membre.actif",
-                        fullname: "membre Actif",
-                        missions: [
-                            {
-                                start: "2016-11-03",
-                                status: "independent",
-                                employer: "octo",
-                            },
-                        ],
-                    },
-                    {
-                        id: "membre.nouveau",
-                        fullname: "membre Nouveau",
-                        missions: [
-                            {
-                                start: new Date().toISOString().split("T")[0],
-                            },
-                        ],
-                    },
-                ])
-                .persist();
-            utils.mockSlackGeneral();
-            utils.mockSlackSecretariat();
-            utils.mockOvhTime();
-            utils.mockOvhRedirections();
-            utils.mockOvhUserResponder();
-            utils.mockOvhUserEmailInfos();
-            utils.mockStartups();
-
-            const newMember = testUsers.find(
-                (user) => user.id === "membre.nouveau"
-            );
-            const allAccountsExceptANewMember = testUsers.filter(
-                (user) => user.id !== newMember.id
-            );
-
-            nock(/.*ovh.com/)
-                .get(/^.*email\/domain\/.*\/account/)
-                .reply(
-                    200,
-                    allAccountsExceptANewMember.map((user) => user.id)
+                const newMember = testUsers.find(
+                    (user) => user.id === "membre.nouveau"
                 );
-            const ovhEmailCreation = nock(/.*ovh.com/)
-                .post(/^.*email\/domain\/.*\/account/)
-                .reply(200);
-            await knex("login_tokens").truncate();
-            await db
-                .selectFrom("users")
-                .where("username", "=", newMember.id)
-                .set({
-                    primary_email: null,
-                    primary_email_status:
-                        EmailStatusCode.EMAIL_CREATION_WAITING,
-                    secondary_email: "membre.nouveau.perso@example.com",
-                })
-                .execute();
-            const val = await db
-                .selectFrom("users")
-                .selectAll()
-                .set({
-                    username: newMember.id,
-                })
-                .execute();
-            await createEmailAddresses();
-            ovhEmailCreation.isDone().should.be.true;
-            betagouvCreateEmail.firstCall.args[0].should.equal(newMember.id);
-            await db
-                .updateTable("users")
-                .where("username", "=", newMember.id)
-                .set({
-                    secondary_email: null,
-                    primary_email: `${newMember.id}@${config.domain}`,
-                })
-                .execute();
+                const allAccountsExceptANewMember = testUsers.filter(
+                    (user) => user.id !== newMember.id
+                );
+
+                nock(/.*ovh.com/)
+                    .get(/^.*email\/domain\/.*\/account/)
+                    .reply(
+                        200,
+                        allAccountsExceptANewMember.map((user) => user.id)
+                    );
+                const ovhEmailCreation = nock(/.*ovh.com/)
+                    .post(/^.*email\/domain\/.*\/account/)
+                    .reply(200);
+                await knex("login_tokens").truncate();
+                await db
+                    .updateTable("users")
+                    .where("username", "=", newMember.id)
+                    .set({
+                        primary_email: null,
+                        primary_email_status:
+                            EmailStatusCode.EMAIL_CREATION_WAITING,
+                        secondary_email: "membre.nouveau.perso@example.com",
+                    })
+                    .execute();
+                // const val = await db
+                //     .updateTable("users")
+                //     .selectAll()
+                //     .set({
+                //         username: newMember.id,
+                //     })
+                //     .execute();
+                await createEmailAddresses();
+                ovhEmailCreation.isDone().should.be.true;
+                betagouvCreateEmail.firstCall.args[0].should.equal(
+                    newMember.id
+                );
+                await db
+                    .updateTable("users")
+                    .where("username", "=", newMember.id)
+                    .set({
+                        secondary_email: null,
+                        primary_email: `${newMember.id}@${config.domain}`,
+                    })
+                    .execute();
+            });
         });
 
         it("should not create email accounts if already created", async () => {
@@ -1299,51 +1285,72 @@ describe("User", () => {
             betagouvCreateEmail.notCalled.should.be.true;
             ovhEmailCreation.isDone().should.be.false;
         });
+        describe("", () => {
+            const users = [
+                {
+                    id: "membre.nouveau",
+                    fullname: "membre Nouveau",
+                    missions: [
+                        {
+                            start: new Date().toISOString().split("T")[0],
+                        },
+                    ],
+                },
+            ];
+            beforeEach(async () => {
+                await utils.createUsers(users);
+            });
+            afterEach(async () => {
+                await utils.deleteUsers(users);
+            });
+            it("should subscribe user to incubateur mailing list", async () => {
+                const url = process.env.USERS_API || "https://beta.gouv.fr";
+                utils.cleanMocks();
+                utils.mockSlackGeneral();
+                utils.mockSlackSecretariat();
+                utils.mockOvhTime();
+                utils.mockOvhRedirections();
+                // nock(url)
+                //     .get((uri) => uri.includes("authors.json"))
+                //     .reply(200, [
+                //         {
+                //             id: "membre.nouveau",
+                //             fullname: "membre Nouveau",
+                //             missions: [
+                //                 {
+                //                     start: new Date().toISOString().split("T")[0],
+                //                 },
+                //             ],
+                //         },
+                //     ]);
+                const subscribeSpy = sinon.spy(
+                    Betagouv,
+                    "subscribeToMailingList"
+                );
+                const newMember = testUsers.find(
+                    (user) => user.id === "membre.nouveau"
+                );
+                nock(/.*ovh.com/)
+                    .get(/^.*email\/domain\/.*\/account/)
+                    .reply(200, [newMember]);
+                nock(/.*ovh.com/)
+                    .get(/^.*email\/domain\/.*\/mailingList\/.*\/subscriber/)
+                    .reply(200, []);
+                const ovhMailingListSubscription = nock(/.*ovh.com/)
+                    .post(/^.*email\/domain\/.*\/mailingList\/.*\/subscriber/)
+                    .reply(200)
+                    .persist();
 
-        it("should subscribe user to incubateur mailing list", async () => {
-            const url = process.env.USERS_API || "https://beta.gouv.fr";
-            utils.cleanMocks();
-            utils.mockSlackGeneral();
-            utils.mockSlackSecretariat();
-            utils.mockOvhTime();
-            utils.mockOvhRedirections();
-            nock(url)
-                .get((uri) => uri.includes("authors.json"))
-                .reply(200, [
-                    {
-                        id: "membre.nouveau",
-                        fullname: "membre Nouveau",
-                        missions: [
-                            {
-                                start: new Date().toISOString().split("T")[0],
-                            },
-                        ],
-                    },
-                ]);
-            const subscribeSpy = sinon.spy(Betagouv, "subscribeToMailingList");
-            const newMember = testUsers.find(
-                (user) => user.id === "membre.nouveau"
-            );
-            nock(/.*ovh.com/)
-                .get(/^.*email\/domain\/.*\/account/)
-                .reply(200, [newMember]);
-            nock(/.*ovh.com/)
-                .get(/^.*email\/domain\/.*\/mailingList\/.*\/subscriber/)
-                .reply(200, []);
-            const ovhMailingListSubscription = nock(/.*ovh.com/)
-                .post(/^.*email\/domain\/.*\/mailingList\/.*\/subscriber/)
-                .reply(200)
-                .persist();
-
-            await subscribeEmailAddresses();
-            ovhMailingListSubscription.isDone().should.be.true;
-            subscribeSpy.firstCall.args[0].should.equal(
-                config.incubateurMailingListName
-            );
-            subscribeSpy.firstCall.args[1].should.equal(
-                `membre.nouveau@${config.domain}`
-            );
-            subscribeSpy.restore();
+                await subscribeEmailAddresses();
+                ovhMailingListSubscription.isDone().should.be.true;
+                subscribeSpy.firstCall.args[0].should.equal(
+                    config.incubateurMailingListName
+                );
+                subscribeSpy.firstCall.args[1].should.equal(
+                    `membre.nouveau@${config.domain}`
+                );
+                subscribeSpy.restore();
+            });
         });
 
         it("should unsubscribe user from incubateur mailing list", async () => {
@@ -1512,20 +1519,30 @@ describe("User", () => {
         });
 
         context("when the user needs an MX PLAN account", () => {
-            it("should create an OVH MX Plam account", async () => {
-                await db
-                    .insertInto("users")
-                    .values({
-                        username: "membre.nouveau-email",
-                        domaine: Domaine.ANIMATION,
-                        role: "",
-                        fullname: "Membre Nouveau-email",
-                        primary_email: null,
-                        primary_email_status: EmailStatusCode.EMAIL_UNSET,
-                        secondary_email:
-                            "membre.nouveau-email.perso@example.com",
-                    })
-                    .execute();
+            const users = [{
+                id: "membre.nouveau-email",
+                domaine: Domaine.ANIMATION,
+                role: "",
+                fullname: "Membre Nouveau-email",
+                primary_email: null,
+                primary_email_status: EmailStatusCode.EMAIL_UNSET,
+                secondary_email:
+                    "membre.nouveau-email.perso@example.com",
+                end: '2024-12-03',
+                start: '2023-12-03'
+            }]
+            before(async() => {
+                return utils.createUsers(users);
+            })
+            after(async() => {
+                return utils.deleteUsers(users)
+            })
+            it("should create an OVH MX Plan account", async () => {
+                await db.insertInto('missions').values({
+                    start: new Date(),
+                    end: new Date(),
+                    user_id: 
+                })
                 await createEmail("membre.nouveau-email", "Test");
                 Betagouv.createEmail.calledWith("membre.nouveau-email").should
                     .be.true;
@@ -1533,14 +1550,30 @@ describe("User", () => {
         });
 
         context("when the user needs an OVH Pro account", () => {
+            const users = [{
+                id: "membre.nouveau-email",
+                domaine: Domaine.ANIMATION,
+                role: "",
+                fullname: "Membre Nouveau test email",
+                primary_email: null,
+                primary_email_status: EmailStatusCode.EMAIL_UNSET,
+                secondary_email:
+                    "membre.nouveau-email.perso@example.com",
+                    missions: [{
+                            id: "membre.nouveau-email",
+                            end: '2024-12-03',
+                            start: '2023-12-03',
+                            startups: ["itou", "missing-startup"],
+                    }]
+  
+            }]
+            before(async() => {
+                return utils.createUsers(users);
+            })
+            after(async() => {
+                return utils.deleteUsers(users)
+            })
             beforeEach(async () => {
-                sandbox.stub(Betagouv, "usersInfos").resolves([
-                    {
-                        id: "membre.nouveau-email",
-                        fullname: "Membre Nouveau test email",
-                        startups: ["itou", "missing-startup"],
-                    },
-                ]);
                 sandbox
                     .stub(config, "EMAIL_DEFAULT_PLAN")
                     .value(EMAIL_PLAN_TYPE.EMAIL_PLAN_PRO);

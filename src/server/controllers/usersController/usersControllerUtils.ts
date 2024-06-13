@@ -51,16 +51,21 @@ export async function setEmailRedirectionActive(username) {
     if (!user) {
         throw new Error(`L'utilisateur n'a pas été trouvé`);
     }
-    await db.updateTable("users").where("username", "=", username).set({
-        primary_email_status: EmailStatusCode.EMAIL_REDIRECTION_ACTIVE,
-        primary_email_status_updated_at: new Date(),
-    });
+    await db
+        .updateTable("users")
+        .where("username", "=", username)
+        .set({
+            primary_email_status: EmailStatusCode.EMAIL_REDIRECTION_ACTIVE,
+            primary_email_status_updated_at: new Date(),
+        })
+        .execute();
     await db
         .updateTable("user_details")
         .where("hash", "=", utils.computeHash(username))
         .set({
             active: true,
-        });
+        })
+        .execute();
     console.log(`Email actif pour ${user.username}`);
 }
 

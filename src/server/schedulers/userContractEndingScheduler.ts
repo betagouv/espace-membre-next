@@ -1,3 +1,5 @@
+import { differenceInDays, startOfDay } from "date-fns";
+
 import { db } from "@/lib/kysely";
 import { getAllUsersInfo } from "@/lib/kysely/queries/users";
 import * as mattermost from "@/lib/mattermost";
@@ -25,17 +27,14 @@ import htmlBuilder from "@modules/htmlbuilder/htmlbuilder";
 
 // get users that are member (got a github card) and mattermost account that is not in the team
 const getRegisteredUsersWithEndingContractInXDays = async (
-    days
+    days: number
 ): Promise<memberBaseInfoAndMattermostWrapperType[]> => {
     const allMattermostUsers = await mattermost.getUserWithParams();
-    const users = (await getAllUsersInfo()).map((user) =>
-        memberBaseInfoToModel(user)
+    const users: memberBaseInfoSchemaType[] = (await getAllUsersInfo()).map(
+        (user) => memberBaseInfoToModel(user)
     );
     const activeGithubUsers = users.filter((user) => {
         const today = new Date();
-        const todayMoreXDays = new Date();
-        todayMoreXDays.setDate(today.getDate() + days);
-        todayMoreXDays.setHours(0, 0, 0, 0);
         // filter user that have have been created after implementation of this function
         const stillActive = !utils.checkUserIsExpired(user);
         const latestMission = user.missions.reduce((a, v) =>
@@ -43,23 +42,31 @@ const getRegisteredUsersWithEndingContractInXDays = async (
             v.end > a.end || !v.end ? v : a
         );
         //@ts-ignore todo
-        const userEndDate = new Date(latestMission.end);
-        userEndDate.setHours(0, 0, 0, 0);
+        // const userEndDate = new Date(latestMission.end);
+        // userEndDate.setHours(0, 0, 0, 0);
+        if (!latestMission.end) {
+            return false;
+        }
         return (
-            stillActive && userEndDate.getTime() === todayMoreXDays.getTime()
+            stillActive &&
+            differenceInDays(
+                startOfDay(latestMission.end),
+                startOfDay(today)
+            ) === days
         );
     });
+
     const allMattermostUsersEmails = allMattermostUsers.map(
         (mattermostUser) => mattermostUser.email
     );
 
     const registeredUsersWithEndingContractInXDays: memberBaseInfoAndMattermostWrapperType[] =
         [];
-
     activeGithubUsers.forEach((user) => {
         const index = user.primary_email
             ? allMattermostUsersEmails.indexOf(user.primary_email)
             : -1;
+
         // const githubUser = activeGithubUsers.find(
         //     (ghUser) => ghUser.username === user.username
         // );
@@ -269,12 +276,7 @@ export async function deleteOVHEmailAcounts(
             );
         });
     }
-    console.log(
-        `Liste d'utilisateur à supprimer`,
-        dbUsers.map((user) => user.username),
-        expiredUsers.map((user) => user.username)
-    );
-    for (const user of dbUsers) {
+    for (const user of expiredUsers) {
         try {
             await BetaGouv.deleteEmail(user.username);
             await db
@@ -282,7 +284,8 @@ export async function deleteOVHEmailAcounts(
                 .where("username", "=", user.username)
                 .set({
                     primary_email_status: EmailStatusCode.EMAIL_DELETED,
-                });
+                })
+                .execute();
             console.log(`Suppression de l'email ovh pour ${user.username}`);
         } catch {
             console.log(
@@ -323,7 +326,8 @@ export async function deleteSecondaryEmailsForUsers(
                 .set({
                     secondary_email: null,
                 })
-                .where("username", "=", user.username);
+                .where("username", "=", user.username)
+                .execute();
             console.log(`Suppression de secondary_email pour ${user.username}`);
         } catch {
             console.log(

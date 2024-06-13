@@ -76,7 +76,11 @@ export function memberBaseInfoToModel(
         email_is_redirection: user.email_is_redirection || false,
         username: user?.username || "",
         domaine: user.domaine as Domaine,
-        missions: user.missions,
+        missions: user.missions.map((m) => ({
+            ...m,
+            start: typeof m.start === "string" ? new Date(m.start) : m.start,
+            end: typeof m.end === "string" ? new Date(m.end) : m.end,
+        })),
     };
 }
 

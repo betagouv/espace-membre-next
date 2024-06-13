@@ -223,14 +223,17 @@ describe("Newsletter", () => {
                 .selectFrom("newsletters")
                 .selectAll()
                 .orderBy("created_at")
-                .executeTakeFirst();
+                .executeTakeFirstOrThrow();
             newsletter.url.should.equal(`${config.padURL}/${newsletterName}`);
             clock.restore();
             await knex("newsletters").truncate();
         });
 
         it("should send remind on monday at 8am", async () => {
-            await db.insertInto("newsletters").values({ ...mockNewsletter });
+            await db
+                .insertInto("newsletters")
+                .values({ ...mockNewsletter })
+                .execute();
             clock = sinon.useFakeTimers(new Date("2021-03-01T07:59:59+01:00"));
             await newsletterReminder("FIRST_REMINDER");
             slack.firstCall.args[0].text.should.equal(
@@ -259,8 +262,10 @@ describe("Newsletter", () => {
         });
 
         it("should send remind on thursday at 6pm", async () => {
-            await db.insertInto("newsletters").values({ ...mockNewsletter })
-                .execute;
+            await db
+                .insertInto("newsletters")
+                .values({ ...mockNewsletter })
+                .execute();
             clock = sinon.useFakeTimers(new Date("2021-03-04T17:59:59+01:00"));
             await newsletterReminder("THIRD_REMINDER");
             slack.firstCall.args[0].text.should.equal(

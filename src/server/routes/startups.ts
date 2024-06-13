@@ -20,10 +20,10 @@ const router = express.Router();
 //     express.json({ type: "*/*" }),
 //     startupController.postStartupInfoUpdate
 // );
-router.post(
-    routes.STARTUP_POST_INFO_CREATE_FORM,
-    express.json({ type: "*/*" }),
-    startupController.postStartupInfoUpdate
-);
+// router.post(
+//     routes.STARTUP_POST_INFO_CREATE_FORM,
+//     express.json({ type: "*/*" }),
+//     startupController.postStartupInfoUpdate
+// );
 
 export { router as startupRouter };
