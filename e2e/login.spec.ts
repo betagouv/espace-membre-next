@@ -13,14 +13,14 @@ test("submit invalid login returns error message", async ({ page }) => {
 
     await expect(
         page.getByText(
-            "Error: Le membre expired.member n'a pas de fiche github."
+            "Error: Le membre pouet.pouet@betagouv.ovh n'a pas de fiche github."
         )
     ).toBeVisible();
 });
 
 test("submit expired login returns error message", async ({ page }) => {
     await page.goto("/");
-    await page.getByLabel("Mon email").fill("lery.jicquel@betagouv.ovh");
+    await page.getByLabel("Mon email").fill("expired.member@betagouv.ovh");
     await page.getByText("Recevoir le lien de connexion").click();
     await page.waitForTimeout(2000);
 

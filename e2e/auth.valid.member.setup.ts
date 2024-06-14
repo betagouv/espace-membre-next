@@ -1,34 +1,34 @@
 import { test as setup, expect } from "@playwright/test";
 
-const adminFile = "./playwright-admin-auth.json";
+const adminFile = "./playwright-auth-valid.member.json";
 
-setup("authenticate as admin", async ({ page }) => {
+setup("authenticate as valid.member", async ({ page }) => {
+    // fill login form
     await page.goto("/");
-    await page.getByLabel("Mon email").fill("lucas.charrier@betagouv.ovh");
+    await page.getByLabel("Mon email").fill("valid.member@betagouv.ovh");
     await page.getByText("Recevoir le lien de connexion").click();
+
+    // wait a while to get the latest email
     await page.waitForTimeout(1000);
 
-    // maildev
+    // open maildev and click first invitation link
     await page.goto("http://127.0.0.1:1080");
-
     await page
         .getByText("Connexion à l'espace membre BetaGouv")
         .first()
         .click();
 
+    // get the magic link from the email
     const iframe = await page.frameLocator(".preview-iframe").first();
-
     await iframe.getByText("Me connecter", { exact: true }).click();
-
     const href =
         (await iframe
             .getByText("Me connecter", { exact: true })
             .getAttribute("href")) || "/";
 
+    // open magic link
     await page.goto(href);
-
-    await page.waitForURL("http://127.0.0.1:8100/account");
-
+    await page.waitForURL("/account");
     await expect(
         page.getByText("Mon compte", { exact: true }).first()
     ).toBeVisible();
