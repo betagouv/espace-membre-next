@@ -15,6 +15,14 @@ jobs:
                   node-version: lts/*
             - name: Install dependencies
               run: npm ci
+            - name: Start local environment with Docker Compose
+              run: |
+                  docker compose up -d
+                  yarn dev &
+            - name: init DB
+              run: |
+                  yarn migrate
+                  yarn seed
             - name: Install Playwright Browsers
               run: npx playwright install --with-deps
             - name: Run Playwright tests
