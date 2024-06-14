@@ -1,4 +1,6 @@
 fileignoreconfig:
+- filename: .env.test
+  checksum: 2b64612faef63a30e7f5c02109d1e2f21edf95a4db1d2120f328fe6834bf0122
 - filename: README.md
   checksum: 81570c2f0395a7e443a156f22ffd0d3202f461311c05871a360b02e2148e9035
 - filename: __tests__/htmlbuilder.spec.ts
