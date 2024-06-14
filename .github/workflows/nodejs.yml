@@ -90,6 +90,7 @@ jobs:
               run: npm ci
             - name: Start local environment with Docker Compose
               run: |
+                  cp .env.test .env
                   docker compose up -d
                   yarn dev &
             - name: init DB
