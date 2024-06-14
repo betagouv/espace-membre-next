@@ -85,9 +85,9 @@ const populateUsers = async (knex) => {
         },
         {
             uuid: "df843689-1eba-42d6-9f64-3806d8306cab",
-            username: "lery.jicquel",
+            username: "expired.member",
             fullname: "Expired member",
-            primary_email: "lery.jicquel@betagouv.ovh",
+            primary_email: "expired.member@betagouv.ovh",
             domaine: "Autre",
             role: "Développement",
         },
