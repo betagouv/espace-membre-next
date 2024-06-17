@@ -2,8 +2,6 @@ import type { Metadata } from "next";
 
 import CommunityCreateMemberPage from "./CommunityCreateMemberPage";
 import { getAllStartups } from "@/lib/kysely/queries";
-import { StartupInfo } from "@/models/startup";
-import betagouv from "@/server/betagouv";
 import { routeTitles } from "@/utils/routes/routeTitles";
 
 export const metadata: Metadata = {

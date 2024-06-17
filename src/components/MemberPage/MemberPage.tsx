@@ -23,6 +23,7 @@ import { changeSecondaryEmailForUser } from "@/app/api/member/actions";
 import { EmailStatusCode } from "@/models/member";
 import { memberBaseInfoSchemaType } from "@/models/member";
 import { EMAIL_STATUS_READABLE_FORMAT } from "@/models/misc";
+import { missionSchemaType } from "@/models/mission";
 import routes, { computeRoute } from "@/routes/routes";
 import { getLastMission, getLastMissionDate } from "@/utils/member";
 
@@ -223,7 +224,7 @@ function BlocMission({ mission }: { mission: missionSchemaType }) {
             {mission.employer && (
                 <>
                     <span>Employeur : </span>
-                    {userInfos.employer}
+                    {mission.employer}
                     <br />
                 </>
             )}
@@ -313,13 +314,6 @@ MemberPageProps) {
                                     >
                                         Clôturer le compte
                                     </Button>
-                                    <a
-                                        className="fr-link"
-                                        href={`https://github.com/betagouv/beta.gouv.fr/blob/master/content/_authors/${userInfos.id}.md`}
-                                        target="_blank"
-                                    >
-                                        Mettre à jour le contrat
-                                    </a>
                                 </div>
                             </form>
                         </div>
@@ -344,9 +338,9 @@ MemberPageProps) {
                                 <br />
                                 {getLastMission(userInfos.missions) && (
                                     <BlocMission
-                                        mission={getLastMission(
-                                            userInfos.missions
-                                        )}
+                                        mission={
+                                            getLastMission(userInfos.missions)!
+                                        }
                                     ></BlocMission>
                                 )}
                                 <span>Compte Github : </span>

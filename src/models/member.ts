@@ -346,6 +346,7 @@ export const memberBaseInfoSchema = memberSchema.pick({
     secondary_email: true,
     email_is_redirection: true,
     updated_at: true,
+    competences: true,
 });
 
 export type memberBaseInfoSchemaType = z.infer<typeof memberBaseInfoSchema>;
