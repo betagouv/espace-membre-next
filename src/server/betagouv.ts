@@ -225,8 +225,7 @@ const betaOVH = {
         } catch (err) {
             // Check if err is an instance of Error and has the property 'error'
             if ((err as { error: number }).error === 404) return null;
-            console.error(`OVH Error GET on ${url} : ${JSON.stringify(err)}`);
-            return null;
+            throw new Error(`OVH Error GET on ${url} : ${JSON.stringify(err)}`);
         }
     },
     getAllEmailInfos: async (): Promise<string[]> => {
