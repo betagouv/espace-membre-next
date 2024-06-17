@@ -40,6 +40,7 @@ export default defineConfig({
         // contextOptions: {
         //   ignoreHTTPSErrors: true,
         // },
+        screenshot: "only-on-failure",
     },
 
     projects: [
