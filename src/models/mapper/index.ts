@@ -11,7 +11,11 @@ import {
 import { StartupPhase, phaseSchemaType, startupSchemaType } from "../startup";
 import { BadgeRequests, Phases } from "@/@types/db";
 import { getStartup } from "@/lib/kysely/queries";
-import { getAllUsersInfo, getUserInfos } from "@/lib/kysely/queries/users";
+import {
+    getAllUsersInfo,
+    getUserByStartup,
+    getUserInfos,
+} from "@/lib/kysely/queries/users";
 import {
     CommunicationEmailCode,
     EmailStatusCode,

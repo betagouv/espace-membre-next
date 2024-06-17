@@ -75,30 +75,34 @@ export async function getUserByStartup(
     startupUuid: string,
     db: Kysely<DB> = database
 ) {
-    return db
-        .selectFrom("missions_startups")
-        .where("missions_startups.startup_id", "=", startupUuid)
-        .leftJoin("missions", "missions.uuid", "mission_id")
-        .leftJoin("users", "missions.user_id", "users.uuid")
-        .select((eb) => [
-            ...MEMBER_PROTECTED_INFO,
-            // "users.username",
-            // "users.fullname",
-            // "users.role",
-            // "users.domaine",
-            // "users.bio",
-            // "users.link",
-            // "users.github",
-            // "users.member_type",
-            // "users.primary_email",
-            // "users.secondary_email",
-            // "users.primary_email_status",
-            // "primary_email_status_updated_at",
-            // "users.communication_email",
-            // "users.email_is_redirection",
-            withMissions(eb),
-        ])
-        .execute();
+    return (
+        db
+            .selectFrom("users")
+            .select((eb) => [...MEMBER_PROTECTED_INFO, withMissions(eb)])
+            .leftJoin("missions", "missions.user_id", "users.uuid")
+            .leftJoin("missions_startups", "missions.uuid", "mission_id")
+            .where("missions_startups.startup_id", "=", startupUuid)
+            // .select((eb) => [
+            //     "users.uuid",
+            //     ...MEMBER_PROTECTED_INFO,
+            //     // "users.username",
+            //     // "users.fullname",
+            //     // "users.role",
+            //     // "users.domaine",
+            //     // "users.bio",
+            //     // "users.link",
+            //     // "users.github",
+            //     // "users.member_type",
+            //     // "users.primary_email",
+            //     // "users.secondary_email",
+            //     // "users.primary_email_status",
+            //     // "primary_email_status_updated_at",
+            //     // "users.communication_email",
+            //     // "users.email_is_redirection",
+            //     withMissions(eb),
+            // ])
+            .execute()
+    );
 }
 
 /** Return member informations */
@@ -109,7 +113,6 @@ export async function getUserBasicInfo(
     const query = db
         .selectFrom("users")
         .select((eb) => [
-            "users.uuid",
             "users.username",
             "users.fullname",
             "users.role",
