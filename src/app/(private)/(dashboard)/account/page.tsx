@@ -60,9 +60,9 @@ export default async function Page() {
     const canCreateRedirection = !!(!isExpired && isCurrentUser);
     const canChangePassword = !!(!isExpired && isCurrentUser && emailInfo);
     const canChangeEmails = !!(!isExpired && isCurrentUser);
-    const hasPublicServiceEmail = await isPublicServiceEmail(
-        userInfos.primary_email || ""
-    );
+    const hasPublicServiceEmail = userInfos.primary_email
+        ? await isPublicServiceEmail(userInfos.primary_email)
+        : false;
     return (
         <AccountPage
             isExpired={isExpired}
