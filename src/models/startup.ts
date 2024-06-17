@@ -64,38 +64,38 @@ export enum AccessibilityStatus {
 //     phases: Phase[];
 // }
 
-// we keep this interface just for the migration
-export interface StartupInfo {
-    id: string;
-    attributes: {
-        sponsors: string[];
-        github: string;
-        dashlord_url: string;
-        website: any;
-        name: string;
-        repository: string;
-        contact: string;
-        expired_members: string[];
-        active_members: string[];
-        previous_members: string[];
-        pitch: string;
-        stats_url: string;
-        stats: boolean;
-        link: string;
-        incubator: string;
-        phases: {
-            start: string;
-            end?: string;
-            name: StartupPhase;
-        }[];
-        accessibility_status?: AccessibilityStatus;
-        analyse_risques_url?: string;
-        analyse_risques?: boolean;
-        content_url_encoded_markdown: string;
-        budget_url?: string;
-    };
-    relationships: Relationship;
-}
+// // we keep this interface just for the migration
+// export interface StartupInfo {
+//     id: string;
+//     attributes: {
+//         sponsors: string[];
+//         github: string;
+//         dashlord_url: string;
+//         website: any;
+//         name: string;
+//         repository: string;
+//         contact: string;
+//         expired_members: string[];
+//         active_members: string[];
+//         previous_members: string[];
+//         pitch: string;
+//         stats_url: string;
+//         stats: boolean;
+//         link: string;
+//         incubator: string;
+//         phases: {
+//             start: string;
+//             end?: string;
+//             name: StartupPhase;
+//         }[];
+//         accessibility_status?: AccessibilityStatus;
+//         analyse_risques_url?: string;
+//         analyse_risques?: boolean;
+//         content_url_encoded_markdown: string;
+//         budget_url?: string;
+//     };
+//     relationships: Relationship;
+// }
 
 export const phaseSchema = z.object({
     // @ts-ignore
@@ -207,11 +207,11 @@ export const startupSchema = z.object({
         .array(z.object({ name: z.string(), date: z.date() }))
         .optional()
         .nullable(),
-    phases: z
-        .array(phaseSchema)
-        .min(1, "Vous devez définir au moins une phase (ex: investigation)")
-        .optional()
-        .nullable(),
+    // phases: z
+    //     .array(phaseSchema)
+    //     .min(1, "Vous devez définir au moins une phase (ex: investigation)")
+    //     .optional()
+    //     .nullable(),
     techno: z.array(z.string()).optional().nullable(),
     mailing_list: z.string().optional().nullable(),
     usertypes: z

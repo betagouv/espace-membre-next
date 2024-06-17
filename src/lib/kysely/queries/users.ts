@@ -11,6 +11,8 @@ import { DB } from "@/@types/db"; // generated with `npm run kysely-codegen`
 import { db as database, jsonArrayFrom } from "@/lib/kysely";
 
 const MEMBER_PROTECTED_INFO: SelectExpression<DB, "users">[] = [
+    "users.uuid",
+    "users.updated_at",
     "users.username",
     "users.fullname",
     "users.role",
@@ -107,6 +109,7 @@ export async function getUserBasicInfo(
     const query = db
         .selectFrom("users")
         .select((eb) => [
+            "users.uuid",
             "users.username",
             "users.fullname",
             "users.role",

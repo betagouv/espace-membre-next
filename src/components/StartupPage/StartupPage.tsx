@@ -7,7 +7,11 @@ import { fr } from "date-fns/locale/fr";
 
 import { memberBaseInfoSchemaType } from "@/models/member";
 import { missionSchemaType } from "@/models/mission";
-import { startupSchemaType } from "@/models/startup";
+import {
+    PHASES_ORDERED_LIST,
+    phaseSchemaType,
+    startupSchemaType,
+} from "@/models/startup";
 
 const getLastMissionDate = (missions: missionSchemaType[]): string | null => {
     const latestMission = missions.reduce((a, v) =>
@@ -18,6 +22,19 @@ const getLastMissionDate = (missions: missionSchemaType[]): string | null => {
         return format(latestMission.end, "d MMMM yyyy", { locale: fr });
     }
     return null;
+};
+
+const getCurrentPhase = (phases: phaseSchemaType[]): string | null => {
+    if (!phases.length) {
+        return `Il n'y a pas de phase renseignée`;
+    }
+    const sorted = phases.sort(
+        (phaseA, phaseB) =>
+            PHASES_ORDERED_LIST.indexOf(phaseB.name) -
+            PHASES_ORDERED_LIST.indexOf(phaseA.name)
+    );
+
+    return sorted[0].name;
 };
 
 function MemberTable({
@@ -54,13 +71,15 @@ function MemberTable({
 export interface StartupPageProps {
     startupInfos: startupSchemaType;
     members: memberBaseInfoSchemaType[];
+    phases: phaseSchemaType[];
 }
 
 export default function StartupPage({
     startupInfos,
     members,
+    phases,
 }: StartupPageProps) {
-    const currentPhase = "todo get current phase"; // todo get current phase
+    const currentPhase = getCurrentPhase(phases); // todo get current phase
     const activeMembers = members.filter((member) =>
         member.missions.find(
             (m) =>

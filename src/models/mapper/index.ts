@@ -8,8 +8,8 @@ import {
     memberPublicInfoSchemaType,
     memberSchemaType,
 } from "../member";
-import { startupSchemaType } from "../startup";
-import { BadgeRequests } from "@/@types/db";
+import { StartupPhase, phaseSchemaType, startupSchemaType } from "../startup";
+import { BadgeRequests, Phases } from "@/@types/db";
 import { getStartup } from "@/lib/kysely/queries";
 import { getAllUsersInfo, getUserInfos } from "@/lib/kysely/queries/users";
 import {
@@ -52,6 +52,16 @@ export function memberPublicInfoToModel(user: any): memberPublicInfoSchemaType {
     };
 }
 
+export function phaseToModel(phase: Selectable<Phases>): phaseSchemaType {
+    return {
+        uuid: phase.uuid,
+        end: phase.end,
+        start: phase.start,
+        comment: phase.comment,
+        name: phase.name as StartupPhase,
+    };
+}
+
 export function memberBaseInfoToModel(
     user: Awaited<ReturnType<typeof getAllUsersInfo>>[0]
 ): memberBaseInfoSchemaType {
@@ -59,6 +69,7 @@ export function memberBaseInfoToModel(
         throw new Error("No users");
     }
     return {
+        uuid: user.uuid,
         username: user.username,
         fullname: user.fullname,
         role: user.role,
@@ -67,6 +78,7 @@ export function memberBaseInfoToModel(
         link: user.link,
         github: user.github,
         primary_email: user.primary_email,
+        updated_at: user.updated_at,
         communication_email:
             user.communication_email === CommunicationEmailCode.SECONDARY
                 ? CommunicationEmailCode.SECONDARY
