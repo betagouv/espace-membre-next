@@ -96,7 +96,7 @@ jobs:
                   yarn migrate
                   yarn seed
                   yarn dev &
-                  npx playwright install --with-deps chrome
+                  npx playwright install --with-deps
                   npx playwright test
             - uses: actions/upload-artifact@v4
               if: always()
