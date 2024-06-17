@@ -92,6 +92,12 @@ jobs:
               run: |
                   cp .env.test .env
                   docker compose up -d
+            - name: init DB
+              run: |
+                  yarn migrate
+                  yarn seed
+            - name: start server
+              run: |
                   yarn dev &
             - uses: cygnetdigital/wait_for_response@v2.0.0
               with:
@@ -99,12 +105,8 @@ jobs:
                   responseCode: "200"
                   timeout: 60000
                   interval: 1000
-            - name: init DB
-              run: |
-                  yarn migrate
-                  yarn seed
             - name: Install Playwright Browsers
-              run: npx playwright install --with-deps
+              run: npx playwright install --with-deps chrome
             - name: Run Playwright tests
               run: npx playwright test
             - uses: actions/upload-artifact@v4
