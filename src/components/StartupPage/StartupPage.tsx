@@ -1,13 +1,32 @@
 "use client";
 import Accordion from "@codegouvfr/react-dsfr/Accordion";
-import Alert from "@codegouvfr/react-dsfr/Alert";
 import Button from "@codegouvfr/react-dsfr/Button";
 import { Table } from "@codegouvfr/react-dsfr/Table";
+import { format } from "date-fns";
+import { fr } from "date-fns/locale/fr";
 
 import { memberBaseInfoSchemaType } from "@/models/member";
+import { missionSchemaType } from "@/models/mission";
 import { startupSchemaType } from "@/models/startup";
 
-function MemberTable({ members }: { members: memberBaseInfoSchemaType[] }) {
+const getLastMissionDate = (missions: missionSchemaType[]): string | null => {
+    const latestMission = missions.reduce((a, v) =>
+        //@ts-ignore todo
+        !v.end || v.end > a.end ? v : a
+    );
+    if (latestMission && latestMission.end) {
+        return format(latestMission.end, "d MMMM yyyy", { locale: fr });
+    }
+    return null;
+};
+
+function MemberTable({
+    members,
+    startup_id,
+}: {
+    members: memberBaseInfoSchemaType[];
+    startup_id: string;
+}) {
     return (
         <Table
             data={members.map(
@@ -20,8 +39,11 @@ function MemberTable({ members }: { members: memberBaseInfoSchemaType[] }) {
                         {member.fullname}
                     </a>,
                     member.role,
-                    "xx",
-                    //member.end,
+                    getLastMissionDate(
+                        member.missions.filter((mission) =>
+                            (mission.startups || []).includes(startup_id)
+                        )
+                    ) || "",
                 ]
             )}
             headers={["Nom", "Role", "Date de fin"]}
@@ -112,13 +134,19 @@ export default function StartupPage({
                     expanded={true}
                     onExpandedChange={(expanded, e) => {}}
                 >
-                    <MemberTable members={activeMembers} />
+                    <MemberTable
+                        members={activeMembers}
+                        startup_id={startupInfos.uuid}
+                    />
                 </Accordion>
                 {/* <Accordion label="Membres expirés">
                     <MemberTable members={members.expired_members} />
                 </Accordion> */}
                 <Accordion label="Membres précédents">
-                    <MemberTable members={previousMembers} />
+                    <MemberTable
+                        members={previousMembers}
+                        startup_id={startupInfos.uuid}
+                    />
                 </Accordion>
             </div>
         </>

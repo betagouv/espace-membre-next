@@ -5,6 +5,7 @@ import StartupPage, {
 } from "@/components/StartupPage/StartupPage";
 import { getStartup } from "@/lib/kysely/queries";
 import { getUserByStartup } from "@/lib/kysely/queries/users";
+import { memberBaseInfoToModel } from "@/models/mapper";
 import { memberBaseInfoSchema, memberSchema } from "@/models/member";
 import { startupSchema } from "@/models/startup";
 
@@ -29,7 +30,7 @@ export default async function Page({ params }: Props) {
     const dbSe = await getStartup(params.id);
     const startup = startupSchema.parse(dbSe);
     const startupMembers = (await getUserByStartup(params.id)).map((user) => {
-        return memberBaseInfoSchema.parse(user);
+        return memberBaseInfoToModel(user);
     });
 
     return <StartupPage startupInfos={startup} members={startupMembers} />;

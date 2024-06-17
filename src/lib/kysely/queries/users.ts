@@ -1,8 +1,31 @@
-import { sql, ExpressionBuilder, Kysely } from "kysely";
+import {
+    sql,
+    ExpressionBuilder,
+    Kysely,
+    SelectQueryBuilder,
+    SelectExpression,
+} from "kysely";
 import { UpdateObjectExpression } from "kysely/dist/cjs/parser/update-set-parser";
 
 import { DB } from "@/@types/db"; // generated with `npm run kysely-codegen`
 import { db as database, jsonArrayFrom } from "@/lib/kysely";
+
+const MEMBER_PROTECTED_INFO: SelectExpression<DB, "users">[] = [
+    "users.username",
+    "users.fullname",
+    "users.role",
+    "users.domaine",
+    "users.bio",
+    "users.link",
+    "users.github",
+    "users.member_type",
+    "users.primary_email",
+    "users.secondary_email",
+    "users.primary_email_status",
+    "primary_email_status_updated_at",
+    "users.communication_email",
+    "users.email_is_redirection",
+];
 
 type GetUserInfosParams =
     | {
@@ -56,13 +79,21 @@ export async function getUserByStartup(
         .leftJoin("missions", "missions.uuid", "mission_id")
         .leftJoin("users", "missions.user_id", "users.uuid")
         .select((eb) => [
-            "users.username",
-            "users.fullname",
-            "users.role",
-            "users.domaine",
-            "users.bio",
-            "users.link",
-            "users.uuid",
+            ...MEMBER_PROTECTED_INFO,
+            // "users.username",
+            // "users.fullname",
+            // "users.role",
+            // "users.domaine",
+            // "users.bio",
+            // "users.link",
+            // "users.github",
+            // "users.member_type",
+            // "users.primary_email",
+            // "users.secondary_email",
+            // "users.primary_email_status",
+            // "primary_email_status_updated_at",
+            // "users.communication_email",
+            // "users.email_is_redirection",
             withMissions(eb),
         ])
         .execute();
@@ -98,23 +129,7 @@ export async function getUserBasicInfo(
 export async function getAllUsersInfo(db: Kysely<DB> = database) {
     const query = db
         .selectFrom("users")
-        .select((eb) => [
-            "users.username",
-            "users.fullname",
-            "users.role",
-            "users.domaine",
-            "users.bio",
-            "users.link",
-            "users.github",
-            "users.member_type",
-            "users.primary_email",
-            "users.secondary_email",
-            "users.primary_email_status",
-            "primary_email_status_updated_at",
-            "users.communication_email",
-            "users.email_is_redirection",
-            withMissions(eb),
-        ])
+        .select((eb) => [...MEMBER_PROTECTED_INFO, withMissions(eb)])
         .compile();
 
     const userInfos = await db.executeQuery(query);

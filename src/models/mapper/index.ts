@@ -59,7 +59,14 @@ export function memberBaseInfoToModel(
         throw new Error("No users");
     }
     return {
-        ...user,
+        username: user.username,
+        fullname: user.fullname,
+        role: user.role,
+        domaine: user.domaine as Domaine,
+        bio: user.bio,
+        link: user.link,
+        github: user.github,
+        primary_email: user.primary_email,
         communication_email:
             user.communication_email === CommunicationEmailCode.SECONDARY
                 ? CommunicationEmailCode.SECONDARY
@@ -67,15 +74,13 @@ export function memberBaseInfoToModel(
         secondary_email: user.secondary_email || "",
         primary_email_status:
             memberBaseInfoSchema.shape.primary_email_status.parse(
-                user.primary_email_status
+                user.primary_email_status || EmailStatusCode.EMAIL_UNSET
             ),
         memberType: user.member_type
             ? (user.member_type as MemberType)
             : undefined,
         primary_email_status_updated_at: user.primary_email_status_updated_at!,
         email_is_redirection: user.email_is_redirection || false,
-        username: user?.username || "",
-        domaine: user.domaine as Domaine,
         missions: user.missions.map((m) => ({
             ...m,
             start: typeof m.start === "string" ? new Date(m.start) : m.start,

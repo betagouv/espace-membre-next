@@ -97,10 +97,6 @@ export interface StartupInfo {
     relationships: Relationship;
 }
 
-export interface StartupsAPIResponse {
-    data: StartupInfo[];
-}
-
 export const phaseSchema = z.object({
     // @ts-ignore
     uuid: z.string(),
