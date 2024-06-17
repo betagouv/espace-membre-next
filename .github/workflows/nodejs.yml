@@ -93,6 +93,12 @@ jobs:
                   cp .env.test .env
                   docker compose up -d
                   yarn dev &
+            - uses: cygnetdigital/wait_for_response@v2.0.0
+              with:
+                  url: "http://localhost:8100"
+                  responseCode: "200"
+                  timeout: 60000
+                  interval: 1000
             - name: init DB
               run: |
                   yarn migrate
