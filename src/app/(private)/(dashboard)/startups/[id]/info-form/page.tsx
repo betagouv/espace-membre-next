@@ -60,7 +60,7 @@ export default async function Page(props) {
     if (!session) {
         redirect("/login");
     }
-    const id = props.params.id;
+    const uuid = props.params.id;
     // const startupPR = await getPullRequestForBranch(`edit-startup-${id}`);
 
     // const sha = startupPR && startupPR.head.sha;
@@ -71,7 +71,7 @@ export default async function Page(props) {
         await db
             .selectFrom("startups")
             .selectAll()
-            .where("ghid", "=", id)
+            .where("uuid", "=", uuid)
             .executeTakeFirst()
     );
     if (!startup) {

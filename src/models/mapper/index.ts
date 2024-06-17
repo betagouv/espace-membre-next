@@ -116,7 +116,7 @@ export function startupToModel(
     startup: Awaited<ReturnType<typeof getStartup>>
 ): startupSchemaType {
     if (!startup) {
-        throw new Error("No users");
+        throw new Error("No startups");
     }
     return {
         ...startup,
