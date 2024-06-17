@@ -108,17 +108,7 @@ export default async function Page(props) {
                 .execute()
         );
     const componentProps = {
-        startup: {
-            ...startup,
-            description: startup.description || "",
-            contact: startup.contact || "",
-            incubator_id: startup.incubator_id || "",
-            pitch: startup.pitch || "",
-            repository: startup.repository || undefined,
-            techno: [JSON.stringify(startup.techno)],
-            usertypes: [JSON.stringify(startup.usertypes)],
-            thematiques: [JSON.stringify(startup.thematiques)],
-        },
+        startup,
         startupSponsors,
         startupPhases,
         incubatorOptions: incubators.map((incubator) => {
