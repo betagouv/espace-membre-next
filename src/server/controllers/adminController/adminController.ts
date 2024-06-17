@@ -167,8 +167,8 @@ export async function getUsers(req, res) {
                 "in",
                 users.map((user) => user.uuid)
             )
-            .leftJoin("startups", "users_startups.startup_id", "startups.id")
-            .leftJoin("phases", "phases.startup_id", "startups.id")
+            .leftJoin("startups", "users_startups.startup_id", "startups.uuid")
+            .leftJoin("phases", "phases.startup_id", "startups.uuid")
             .where("phases.end", ">", new Date())
             .where("phases.name", "in", startupPhases)
             .select("users_startups.user_id")

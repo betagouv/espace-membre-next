@@ -34,7 +34,7 @@ export async function createStartup({
             const res = await trx
                 .insertInto("startups")
                 .values({
-                    id: slugify(startup.name),
+                    ghid: slugify(startup.name),
                     ...startup,
                     usertypes: JSON.stringify(startup.usertypes),
                     thematiques: JSON.stringify(startup.thematiques),

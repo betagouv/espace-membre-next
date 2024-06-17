@@ -105,7 +105,7 @@ const sendEmailToTeam = async ({
     const dbStartup = await db
         .selectFrom("startups")
         .selectAll()
-        .where("id", "=", startup)
+        .where("ghid", "=", startup)
         .where("mailing_list", "is not", null)
         .executeTakeFirst();
     if (dbStartup) {

@@ -121,11 +121,11 @@ export async function postStartupInfoUpdate(req, res) {
             .values({
                 ...changes,
                 description: content,
-                id: startupId,
+                ghid: startupId,
             })
             .onConflict((oc) =>
                 oc
-                    .column("id")
+                    .column("ghid")
                     .doUpdateSet({ ...changes, description: content })
             )
             .returningAll()

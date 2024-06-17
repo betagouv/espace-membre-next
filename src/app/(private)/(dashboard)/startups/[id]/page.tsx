@@ -21,7 +21,7 @@ export async function generateMetadata(
 
     const produit = await getStartup(id);
     return {
-        title: produit ? `Produit ${produit.id} / Espace Membre` : "",
+        title: produit ? `Produit ${produit.ghid} / Espace Membre` : "",
     };
 }
 

@@ -71,7 +71,7 @@ export default async function Page(props) {
         await db
             .selectFrom("startups")
             .selectAll()
-            .where("id", "=", id)
+            .where("ghid", "=", id)
             .executeTakeFirst()
     );
     if (!startup) {

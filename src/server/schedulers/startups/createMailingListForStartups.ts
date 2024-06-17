@@ -77,7 +77,7 @@ export const createMailingListForStartups = async () => {
                 }
                 await db
                     .updateTable("startups")
-                    .where("id", "=", startup.id)
+                    .where("ghid", "=", startup.ghid)
                     .set({
                         mailing_list: generateMailingListName(startup),
                     })

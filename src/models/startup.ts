@@ -135,7 +135,7 @@ export type phaseSchemaType = z.infer<typeof phaseSchema>;
 
 export const startupSchema = z.object({
     uuid: z.string(),
-    id: z.string(),
+    ghid: z.string(),
     name: z
         .string({
             errorMap: (issue, ctx) => ({

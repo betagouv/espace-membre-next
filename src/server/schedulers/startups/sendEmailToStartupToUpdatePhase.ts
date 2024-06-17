@@ -54,7 +54,7 @@ export const sendEmailToStartupToUpdatePhase = async (
                     startup: startup.name,
                     link: `https://espace-membre.incubateur.net/${routes.STARTUP_GET_INFO_UPDATE_FORM.replace(
                         ":startup",
-                        startup.id
+                        startup.uuid
                     )}`,
                 },
                 forceTemplate: true,

@@ -64,7 +64,7 @@ export default function StartupPage({
                         <a
                             className="fr-link"
                             target="_blank"
-                            href={`https://github.com/betagouv/beta.gouv.fr/edit/master/content/_startups/${startupInfos.id}.md`}
+                            href={`https://github.com/betagouv/beta.gouv.fr/edit/master/content/_startups/${startupInfos.ghid}.md`}
                         >
                             {startupInfos.name}
                         </a>
@@ -98,7 +98,7 @@ export default function StartupPage({
                 </p>
                 <Button
                     linkProps={{
-                        href: `/startups/${startupInfos.id}/info-form`,
+                        href: `/startups/${startupInfos.uuid}/info-form`,
                     }}
                 >
                     ✏️ Mettre à jour les infos
