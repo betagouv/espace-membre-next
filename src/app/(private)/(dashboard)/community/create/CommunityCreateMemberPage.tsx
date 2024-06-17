@@ -103,7 +103,6 @@ export default function CommunityCreateMemberPage(props: BaseInfoUpdateProps) {
     const firstname = watch("member.firstname");
     const lastname = watch("member.lastname");
     const email = watch("member.email");
-    console.log(errors, isDirty, isSubmitting, isValid);
     const onSubmit = async (input: createMemberSchemaType) => {
         if (isSaving) {
             return;

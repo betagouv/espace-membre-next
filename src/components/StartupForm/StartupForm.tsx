@@ -150,8 +150,6 @@ export function StartupForm(props: StartupFormProps) {
         [register, errors]
     );
     const onSubmit = (data: startupInfoUpdateSchemaType, e) => {
-        console.log("onSubmit", { e, data, isDirty, isValid, errors });
-
         if (isSaving) {
             return;
         }

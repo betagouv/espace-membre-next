@@ -106,7 +106,6 @@ export const authOptions: NextAuthOptions = {
             return sessionWithId || session;
         },
         async jwt({ token, user, account, profile, isNewUser }) {
-            console.log(user);
             if (account) {
                 token.id = user?.id;
                 token.uuid = user?.uuid;

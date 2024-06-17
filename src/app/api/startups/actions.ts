@@ -31,8 +31,6 @@ export async function createStartup({
     try {
         await db.transaction().execute(async (trx) => {
             // update startup data
-            console.log("LCS NEW se", startup);
-
             const res = await trx
                 .insertInto("startups")
                 .values({
@@ -43,13 +41,10 @@ export async function createStartup({
                 })
                 .returning("uuid")
                 .executeTakeFirst();
-            console.log("LCS NEW se 2", res);
-
             if (!res) {
                 throw new Error("Startup data could not be inserted into db");
             }
             const startupUuid = res.uuid;
-            console.log("LCS NEW UUID", res.uuid);
             // create new sponsors
             for (const newSponsor of newSponsors) {
                 const sponsor = await trx
@@ -227,7 +222,6 @@ export async function updateStartup({
             }
 
             // create/update phases
-            console.log(startupPhases);
             for (const startupPhase of startupPhases) {
                 const args = {
                     ...startupPhase,

@@ -19,7 +19,6 @@ const MemberEventList = ({ userId }) => {
             setLoading(true);
             try {
                 const response = await fetch(`/api/member/${userId}/events`);
-                console.log(response);
                 if (!response.ok) {
                     throw new Error("Network response was not ok");
                 }

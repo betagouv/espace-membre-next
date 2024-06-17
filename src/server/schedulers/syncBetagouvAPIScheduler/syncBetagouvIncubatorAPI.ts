@@ -24,5 +24,4 @@
 //             github: incubator.github,
 //         });
 //     }
-//     console.log("LCS SYNC FINISHED");
 // }

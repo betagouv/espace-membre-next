@@ -309,5 +309,4 @@
 //         //     console.error(e);
 //         // }
 //     }
-//     console.log("LCS SYNC FINISHED");
 // }

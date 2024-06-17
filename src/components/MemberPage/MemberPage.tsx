@@ -151,7 +151,6 @@ celle à utiliser pour mattermost, et d'autres outils.`}
                         type: "email",
                         required: true,
                         onChange: (e) => {
-                            console.log(e.target.value);
                             setValue(e.target.value);
                         },
                     }}

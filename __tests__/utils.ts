@@ -28,7 +28,6 @@ const testUtils = {
                 expiresIn: "7 days",
             }
         );
-        console.log(token);
         return token;
     },
     mockUsers() {

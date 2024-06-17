@@ -41,8 +41,6 @@ export async function getUserInfos(
         query = query.where("users.uuid", "=", params.uuid);
     }
 
-    //console.log(query.sql);
-
     const userInfos = await db.executeQuery(query);
 
     return (userInfos.rows.length && userInfos.rows[0]) || undefined;
@@ -91,8 +89,6 @@ export async function getUserBasicInfo(
         .where("users.username", "=", username)
         .compile();
 
-    //console.log(query.sql);
-
     const userInfos = await db.executeQuery(query);
 
     return (userInfos.rows.length && userInfos.rows[0]) || undefined;
@@ -121,8 +117,6 @@ export async function getAllUsersInfo(db: Kysely<DB> = database) {
         ])
         .compile();
 
-    //console.log(query.sql);
-
     const userInfos = await db.executeQuery(query);
 
     return userInfos.rows;
@@ -146,8 +140,6 @@ export async function adminGetAllUsersInfos(db: Kysely<DB> = database) {
     //         computeHash(params.username)
     //     ).
     // )
-
-    //console.log(query.sql);
 
     const userInfos = await db.executeQuery(query);
 

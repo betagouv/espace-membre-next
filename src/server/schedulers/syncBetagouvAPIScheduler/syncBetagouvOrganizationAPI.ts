@@ -14,5 +14,4 @@
 //             type: organization.type,
 //         });
 //     }
-//     console.log("LCS SYNC FINISHED");
 // }
