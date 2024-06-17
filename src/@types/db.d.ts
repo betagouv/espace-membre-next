@@ -96,10 +96,11 @@ export interface Formations {
 export interface Incubators {
   address: string | null;
   contact: string | null;
+  description: string | null;
   ghid: string | null;
   github: string | null;
-  owner: string | null;
   owner_id: string | null;
+  short_description: string | null;
   title: string;
   uuid: Generated<string>;
   website: string | null;
@@ -214,6 +215,14 @@ export interface Sessions {
   userId: string;
 }
 
+export interface StartupEvents {
+  comment: string | null;
+  date: Timestamp;
+  name: string;
+  startup_id: string | null;
+  uuid: string;
+}
+
 export interface Startups {
   accessibility_status: string | null;
   analyse_risques: boolean | null;
@@ -222,8 +231,7 @@ export interface Startups {
   contact: string | null;
   dashlord_url: string | null;
   description: string | null;
-  github: string | null;
-  id: string;
+  ghid: string;
   incubator_id: string | null;
   link: string | null;
   mailing_list: string | null;
@@ -235,9 +243,9 @@ export interface Startups {
   stats_url: string | null;
   techno: Json | null;
   thematiques: Json | null;
+  updated_at: Generated<Timestamp>;
   usertypes: Json | null;
   uuid: Generated<string>;
-  website: string | null;
 }
 
 export interface StartupsOrganizations {
@@ -279,7 +287,6 @@ export interface Users {
   fullname: string;
   gender: Generated<string | null>;
   github: string | null;
-  incubator_id: string | null;
   legal_status: string | null;
   link: string | null;
   member_type: string | null;
@@ -290,6 +297,7 @@ export interface Users {
   role: string;
   secondary_email: string | null;
   tjm: number | null;
+  updated_at: Generated<Timestamp>;
   username: string;
   uuid: Generated<string>;
   workplace_insee_code: string | null;
@@ -342,6 +350,7 @@ export interface DB {
   phases: Phases;
   pull_requests: PullRequests;
   sessions: Sessions;
+  startup_events: StartupEvents;
   startups: Startups;
   startups_organizations: StartupsOrganizations;
   tasks: Tasks;

@@ -128,11 +128,21 @@ async function getEmailCreationParams(username: string): Promise<
         !v.end || v.end > a.end ? v : a
     );
     // todo see what to do with startups
-    const needsExchange = _.some(latestMission?.startups, (id) => {
-        const startup = _.find(startupsInfos, { id });
+    const needsExchange = _.some(latestMission?.startups, async (uuid) => {
+        const startup = _.find(startupsInfos, { uuid });
         const incubator = startup?.incubator_id;
-        // todo change incubator_using_exchange to add uuid
-        return _.includes(INCUBATORS_USING_EXCHANGE, incubator);
+        if (!incubator) {
+            return false;
+        }
+        const incubatorInfo = await db
+            .selectFrom("incubators")
+            .select("ghid")
+            .where("uuid", "=", incubator)
+            .executeTakeFirst();
+        if (!incubatorInfo) {
+            return false;
+        }
+        return _.includes(INCUBATORS_USING_EXCHANGE, incubatorInfo.ghid);
     });
 
     if (needsExchange) {

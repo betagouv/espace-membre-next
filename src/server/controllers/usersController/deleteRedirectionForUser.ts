@@ -63,7 +63,7 @@ export async function deleteRedirectionForUserHandler(
         const message = `À la demande de ${req.auth.id} sur <${secretariatUrl}>, je supprime la redirection mail de ${username} vers ${toEmail}`;
 
         try {
-            addEvent({
+            await addEvent({
                 action_code: EventCode.MEMBER_REDIRECTION_DELETED,
                 created_by_username: req.auth.id,
                 action_on_username: username,

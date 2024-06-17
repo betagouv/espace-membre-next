@@ -8,6 +8,7 @@ import testStartups from "./startups.json";
 import testUsers from "./users.json";
 import { UsersDomaineEnum } from "@/@types/db";
 import { db } from "@/lib/kysely";
+import { startupToModel } from "@/models/mapper";
 import { Domaine } from "@/models/member";
 import config from "@/server/config";
 import knex from "@db";
@@ -235,7 +236,11 @@ const testUtils = {
                 start: string;
                 end?: string;
                 status?: string;
-                startups: [];
+                startups: (
+                    | "a-startup-at-gip"
+                    | "a-startup-at-dinum"
+                    | "anotherstartup"
+                )[];
                 employer?: string;
             }[];
         }[]
@@ -270,7 +275,7 @@ const testUtils = {
                     users.find((user) => user.id === createdUser.username)
                         ?.missions || [];
                 for (const mission of missions) {
-                    await db
+                    const insertedRow = await db
                         .insertInto("missions")
                         .values({
                             start: mission.start,
@@ -280,7 +285,28 @@ const testUtils = {
                         })
                         .returningAll()
                         .executeTakeFirstOrThrow();
-                    if (mission.startups) {
+                    for (const startup of mission.startups || []) {
+                        const insertedStartup = await db
+                            .insertInto("startups")
+                            .values({
+                                ghid: startup,
+                                name: startup,
+                            })
+                            .onConflict((oc) => {
+                                return oc.column("ghid").doUpdateSet({
+                                    ghid: startup,
+                                    name: startup,
+                                });
+                            })
+                            .returningAll()
+                            .executeTakeFirstOrThrow();
+                        await db
+                            .insertInto("missions_startups")
+                            .values({
+                                mission_id: insertedRow.uuid,
+                                startup_id: insertedStartup.uuid,
+                            })
+                            .execute();
                     }
                 }
             } else {
@@ -323,14 +349,14 @@ const testUtils = {
             )
             .returningAll()
             .execute();
-        const deletedRows = await db
-            .deleteFrom("missions")
-            .where(
-                "user_id",
-                "in",
-                createdUsers.map((u) => u.uuid)
-            )
-            .execute();
+        // const deletedRows = await db
+        //     .deleteFrom("missions")
+        //     .where(
+        //         "user_id",
+        //         "in",
+        //         createdUsers.map((u) => u.uuid)
+        //     )
+        //     .execute();
     },
 };
 

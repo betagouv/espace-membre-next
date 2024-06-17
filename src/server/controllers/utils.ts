@@ -201,8 +201,7 @@ export function isValidEmail(formValidationErrors, field, email) {
     return null;
 }
 
-export async function isPublicServiceEmail(email: string) {
-    console.log(email);
+export const isPublicServiceEmail = async function (email: string) {
     if (process.env.NODE_ENV === "development") {
         return true;
     }
@@ -221,7 +220,7 @@ export async function isPublicServiceEmail(email: string) {
     } catch (e) {
         throw new Error("Get response from tchap error");
     }
-}
+};
 
 export const asyncFilter = async (arr: Array<any>, predicate) => {
     const results = await Promise.all(arr.map(predicate));

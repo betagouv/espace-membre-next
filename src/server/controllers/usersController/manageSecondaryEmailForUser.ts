@@ -45,7 +45,6 @@ export async function manageSecondaryEmailForUserHandler(
     const isCurrentUser = req.auth.id === username;
     const { secondaryEmail } = req.body;
     const user = await utils.userInfos(username, isCurrentUser);
-
     try {
         if (
             user.authorizations.canChangeEmails ||
@@ -56,16 +55,20 @@ export async function manageSecondaryEmailForUserHandler(
                 .select("secondary_email")
                 .where("username", "=", username)
                 .executeTakeFirst();
+
             if (!user) {
                 throw new Error("Users not found");
             }
+
             await db
                 .updateTable("users")
                 .set({
                     secondary_email: secondaryEmail,
                 })
-                .where("username", "=", username);
-            addEvent({
+                .where("username", "=", username)
+                .execute();
+
+            await addEvent({
                 action_code: EventCode.MEMBER_SECONDARY_EMAIL_UPDATED,
                 created_by_username: req.auth.id,
                 action_on_username: username,

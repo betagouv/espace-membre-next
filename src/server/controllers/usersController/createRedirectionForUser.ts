@@ -4,7 +4,7 @@ import { addEvent } from "@/lib/events";
 import { EventCode } from "@/models/actionEvent";
 import config from "@/server/config";
 import BetaGouv from "@betagouv";
-import { userInfos } from "@controllers/utils";
+import { buildBetaEmail, userInfos } from "@controllers/utils";
 
 export async function createRedirectionForUserApi(req, res) {
     createRedirectionForUserHandler(
@@ -46,7 +46,7 @@ export async function createRedirectionForUserHandler(
     const isCurrentUser = req.auth.id === username;
 
     try {
-        const user = await utils.userInfos(username, isCurrentUser);
+        const user = await userInfos(username, isCurrentUser);
 
         // TODO: généraliser ce code dans un `app.param("id")` ?
         if (!user.userInfos) {
@@ -74,7 +74,7 @@ export async function createRedirectionForUserHandler(
         const message = `À la demande de ${req.auth.id} sur <${secretariatUrl}>, je crée une redirection mail pour ${username}`;
 
         try {
-            addEvent({
+            await addEvent({
                 action_code: EventCode.MEMBER_REDIRECTION_CREATED,
                 created_by_username: req.auth.id,
                 action_on_username: username,
@@ -84,7 +84,7 @@ export async function createRedirectionForUserHandler(
             });
             await BetaGouv.sendInfoToChat(message);
             await BetaGouv.createRedirection(
-                utils.buildBetaEmail(username),
+                buildBetaEmail(username),
                 req.body.to_email,
                 req.body.keep_copy === "true"
             );

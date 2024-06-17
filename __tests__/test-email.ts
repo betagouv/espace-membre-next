@@ -68,6 +68,9 @@ describe("Reinit password for expired users", () => {
         utilsTest.mockOvhRedirections();
         utilsTest.mockOvhUserResponder();
     });
+    after(async () => {
+        await utilsTest.deleteUsers(users);
+    });
     it("should call once ovh api to change password", async () => {
         const url = process.env.USERS_API || "https://beta.gouv.fr"; // can't replace with config.usersApi ?
         // nock(url)
@@ -100,9 +103,6 @@ describe("Reinit password for expired users", () => {
             EmailStatusCode.EMAIL_SUSPENDED
         );
         funcCalled.calledOnce;
-    });
-    after(async () => {
-        await utilsTest.deleteUsers(users);
     });
 });
 
