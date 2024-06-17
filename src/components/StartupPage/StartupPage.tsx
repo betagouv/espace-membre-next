@@ -2,8 +2,6 @@
 import Accordion from "@codegouvfr/react-dsfr/Accordion";
 import Button from "@codegouvfr/react-dsfr/Button";
 import { Table } from "@codegouvfr/react-dsfr/Table";
-import { format } from "date-fns";
-import { fr } from "date-fns/locale/fr";
 
 import { memberBaseInfoSchemaType } from "@/models/member";
 import { missionSchemaType } from "@/models/mission";
@@ -12,17 +10,7 @@ import {
     phaseSchemaType,
     startupSchemaType,
 } from "@/models/startup";
-
-const getLastMissionDate = (missions: missionSchemaType[]): string | null => {
-    const latestMission = missions.reduce((a, v) =>
-        //@ts-ignore todo
-        !v.end || v.end > a.end ? v : a
-    );
-    if (latestMission && latestMission.end) {
-        return format(latestMission.end, "d MMMM yyyy", { locale: fr });
-    }
-    return null;
-};
+import { getLastMissionDate } from "@/utils/member";
 
 const getCurrentPhase = (phases: phaseSchemaType[]): string | null => {
     if (!phases.length) {

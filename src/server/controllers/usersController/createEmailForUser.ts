@@ -25,7 +25,7 @@ export async function createEmailAndUpdateSecondaryEmail(
 ) {
     const isCurrentUser = currentUser === username;
     const [user] = await Promise.all([
-        utils.userInfos(username, isCurrentUser),
+        utils.userInfos({ username }, isCurrentUser),
     ]);
     if (!user.userInfos) {
         throw new Error(

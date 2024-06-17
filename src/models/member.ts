@@ -359,6 +359,7 @@ export const memberPublicInfoSchema = memberSchema.pick({
     link: true,
     github: true,
     missions: true,
+    competences: true,
     // primary_email: true,
     primary_email_status: true,
     // communication_email: true,

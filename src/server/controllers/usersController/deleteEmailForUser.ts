@@ -39,7 +39,7 @@ export async function deleteEmailForUserHandler(req, res, onSuccess, onError) {
     const isCurrentUser = req.auth.id === username;
 
     try {
-        const user = await utils.userInfos(username, isCurrentUser);
+        const user = await utils.userInfos({ username }, isCurrentUser);
 
         if (!isCurrentUser && !user.isExpired) {
             throw new Error(

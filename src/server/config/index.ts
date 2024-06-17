@@ -122,6 +122,7 @@ if (APP_TYPE === "app") {
     });
 }
 
+// eslint-disable-next-line import/no-anonymous-default-export
 export default {
     ...CRON_TASK_ENV_VAR,
     AUTH_URL: process.env.AUTH_URL,

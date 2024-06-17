@@ -20,7 +20,7 @@ const computeStartDate = () => {
 };
 
 export async function postBadgeRequest(req, res) {
-    const currentUser = await userInfos(req.auth.id, true);
+    const currentUser = await userInfos({ username: req.auth.id }, true);
     const startDate = computeStartDate();
     let endDate: Date;
 

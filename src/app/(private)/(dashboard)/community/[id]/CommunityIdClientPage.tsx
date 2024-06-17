@@ -1,10 +1,12 @@
 "use client";
-import axios from "axios";
-import type { Metadata, ResolvingMetadata } from "next";
 import React, { useEffect, useState } from "react";
+
+import axios from "axios";
+
 import MemberPage, {
     MemberPageProps,
 } from "@/components/MemberPage/MemberPage";
+import { memberWrapperPublicInfoSchemaType } from "@/models/member";
 import routes, { computeRoute } from "@/routes/routes";
 
 type Props = {
@@ -12,7 +14,7 @@ type Props = {
 };
 
 export default function Page({ params }: Props) {
-    const [data, setData] = useState({});
+    const [data, setData] = useState<memberWrapperPublicInfoSchemaType>();
     const [isLoading, setLoading] = useState(true);
     useEffect(() => {
         axios
@@ -32,5 +34,5 @@ export default function Page({ params }: Props) {
 
     if (isLoading) return <p>Chargement...</p>;
     if (!data) return <p>No profile data</p>;
-    return <MemberPage {...(data as MemberPageProps)} />;
+    return <MemberPage {...memberWrapperPublicInfoSchemaType} />;
 }

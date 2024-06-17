@@ -228,13 +228,13 @@ export const asyncFilter = async (arr: Array<any>, predicate) => {
 };
 
 export async function userInfos(
-    id: string,
+    params: { username: string } | { uuid: string },
     isCurrentUser: boolean
 ): Promise<memberWrapperSchemaType> {
     try {
         const userInfos = userInfosToModel(
             await getUserInfos({
-                username: id,
+                ...params,
                 options: { withDetails: true },
             })
         );
@@ -277,7 +277,11 @@ export async function userInfos(
     } catch (err) {
         console.error(err);
 
-        throw new Error(`Problème pour récupérer les infos du membre ${id}`);
+        throw new Error(
+            `Problème pour récupérer les infos du membre ${
+                "username" in params ? params.username : params.uuid
+            }`
+        );
     }
 }
 

@@ -10,7 +10,7 @@ export async function getUserInfo(req, res) {
     const isCurrentUser = req.auth ? req.auth.id === username : false;
 
     try {
-        const user = await utils.userInfos(username, isCurrentUser);
+        const user = await utils.userInfos({ username }, isCurrentUser);
 
         const hasGithubFile = user.userInfos;
         const hasEmailAddress =

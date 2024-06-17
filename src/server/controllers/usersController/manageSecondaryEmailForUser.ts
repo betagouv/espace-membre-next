@@ -44,7 +44,7 @@ export async function manageSecondaryEmailForUserHandler(
     const { username } = req.params;
     const isCurrentUser = req.auth.id === username;
     const { secondaryEmail } = req.body;
-    const user = await utils.userInfos(username, isCurrentUser);
+    const user = await utils.userInfos({ username }, isCurrentUser);
     try {
         if (
             user.authorizations.canChangeEmails ||

@@ -45,7 +45,7 @@ export async function deleteRedirectionForUserHandler(
     const isCurrentUser = req.auth.id === username;
 
     try {
-        const user = await utils.userInfos(username, isCurrentUser);
+        const user = await utils.userInfos({ username }, isCurrentUser);
         // TODO: vérifier si le membre existe sur Github ?
 
         if (!user.authorizations.canCreateRedirection) {

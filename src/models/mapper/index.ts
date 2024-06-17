@@ -67,7 +67,9 @@ export function phaseToModel(phase: Selectable<Phases>): phaseSchemaType {
 }
 
 export function memberBaseInfoToModel(
-    user: Awaited<ReturnType<typeof getAllUsersInfo>>[0]
+    user:
+        | Awaited<ReturnType<typeof getAllUsersInfo>>[0]
+        | Awaited<ReturnType<typeof getUserByStartup>>[0]
 ): memberBaseInfoSchemaType {
     if (!user) {
         throw new Error("No users");
@@ -102,6 +104,7 @@ export function memberBaseInfoToModel(
             start: typeof m.start === "string" ? new Date(m.start) : m.start,
             end: typeof m.end === "string" ? new Date(m.end) : m.end,
         })),
+        competences: user.competences ? [user.competences?.toString()] : [],
     };
 }
 

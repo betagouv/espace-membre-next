@@ -14,6 +14,7 @@ import Badge from "@codegouvfr/react-dsfr/Badge";
 import Button from "@codegouvfr/react-dsfr/Button";
 import Input from "@codegouvfr/react-dsfr/Input";
 import axios from "axios";
+import { useSession } from "next-auth/react";
 
 import MemberBrevoEventList from "./MemberBrevoEventList";
 import MemberEmailServiceInfo from "./MemberEmailServiceInfo";
@@ -23,24 +24,18 @@ import { EmailStatusCode } from "@/models/member";
 import { memberBaseInfoSchemaType } from "@/models/member";
 import { EMAIL_STATUS_READABLE_FORMAT } from "@/models/misc";
 import routes, { computeRoute } from "@/routes/routes";
+import { getLastMission, getLastMissionDate } from "@/utils/member";
 
 export interface MemberPageProps {
-    isExpired: boolean;
     emailInfos: any;
     redirections: any;
-    userInfos: any;
-    primaryEmail: string;
-    secondaryEmail: string;
-    canCreateEmail: boolean;
-    hasPublicServiceEmail: boolean;
-    isAdmin: boolean;
+    userInfos: memberBaseInfoSchemaType;
     availableEmailPros: any;
-    primaryEmailStatus: EmailStatusCode;
-    username: string;
     mattermostInfo: {
         hasMattermostAccount: boolean;
         isInactiveOrNotInTeam: boolean;
     };
+    isExpired: boolean;
     emailServiceInfo?: {
         primaryEmail?: {
             emailBlacklisted: boolean;
@@ -217,22 +212,36 @@ function EmailUpgrade({ availableEmailPros, userInfos }) {
     );
 }
 
+function BlocMission({ mission }: { mission: missionSchemaType }) {
+    return (
+        <>
+            <span>Mission : </span>
+            du {new Date(mission.start).toLocaleDateString("fr-FR")}
+            {mission.end &&
+                ` au ${new Date(mission.end).toLocaleDateString("fr-FR")}`}
+            <br />
+            {mission.employer && (
+                <>
+                    <span>Employeur : </span>
+                    {userInfos.employer}
+                    <br />
+                </>
+            )}
+        </>
+    );
+}
+
 export default function MemberPage({
-    isExpired,
     emailInfos,
     redirections,
     userInfos,
-    primaryEmail,
-    secondaryEmail,
-    canCreateEmail,
-    hasPublicServiceEmail,
-    isAdmin,
     availableEmailPros,
-    primaryEmailStatus,
-    username,
     mattermostInfo,
+    isExpired,
 }: // emailServiceInfo,
 MemberPageProps) {
+    const session = useSession();
+    const isAdmin = session.data?.user.isAdmin;
     const shouldDisplayUpgrade = Boolean(
         isAdmin &&
             availableEmailPros.length &&
@@ -255,7 +264,11 @@ MemberPageProps) {
 
                             <p>
                                 Le contrat de {userInfos.fullname} est arrivé à
-                                terme le <strong>{userInfos.end}</strong>.
+                                terme le{" "}
+                                <strong>
+                                    {getLastMissionDate(userInfos.missions)}
+                                </strong>
+                                .
                             </p>
                             <p>
                                 Si {userInfos.fullname} a effectivement quitté
@@ -280,7 +293,10 @@ MemberPageProps) {
                                         await axios.post(
                                             computeRoute(
                                                 routes.USER_DELETE_EMAIL_API
-                                            ).replace(":username", username),
+                                            ).replace(
+                                                ":username",
+                                                userInfos.username
+                                            ),
                                             undefined,
                                             {
                                                 withCredentials: true,
@@ -326,26 +342,12 @@ MemberPageProps) {
                                     )) ||
                                     null}
                                 <br />
-                                {userInfos.start && (
-                                    <>
-                                        <span>Mission : </span>
-                                        du{" "}
-                                        {new Date(
-                                            userInfos.start
-                                        ).toLocaleDateString("fr-FR")}
-                                        {userInfos.end &&
-                                            ` au ${new Date(
-                                                userInfos.end
-                                            ).toLocaleDateString("fr-FR")}`}
-                                        <br />
-                                    </>
-                                )}
-                                {userInfos.employer && (
-                                    <>
-                                        <span>Employeur : </span>
-                                        {userInfos.employer}
-                                        <br />
-                                    </>
+                                {getLastMission(userInfos.missions) && (
+                                    <BlocMission
+                                        mission={getLastMission(
+                                            userInfos.missions
+                                        )}
+                                    ></BlocMission>
                                 )}
                                 <span>Compte Github : </span>
                                 {userInfos.github && (
@@ -358,30 +360,27 @@ MemberPageProps) {
                                 {!userInfos.github && `Non renseigné`}
                                 <br />
                                 <span>Email principal : </span>{" "}
-                                {primaryEmail ? (
-                                    <a href={`mailto:${primaryEmail}`}>
-                                        {primaryEmail}
+                                {userInfos.primary_email ? (
+                                    <a
+                                        href={`mailto:${userInfos.primary_email}`}
+                                    >
+                                        {userInfos.primary_email}
                                     </a>
                                 ) : (
                                     "Non renseigné"
                                 )}
                                 <br />
                                 <span>Email secondaire : </span>{" "}
-                                {secondaryEmail ? (
-                                    <a href={`mailto:${secondaryEmail}`}>
-                                        {secondaryEmail}
+                                {userInfos.secondary_email ? (
+                                    <a
+                                        href={`mailto:${userInfos.secondary_email}`}
+                                    >
+                                        {userInfos.secondary_email}
                                     </a>
                                 ) : (
                                     "Non renseigné"
                                 )}
                             </p>
-                            <a
-                                className={fr.cx("fr-btn")}
-                                href={`https://github.com/betagouv/beta.gouv.fr/edit/master/content/_authors/${username}.md`}
-                                target="_blank"
-                            >
-                                Modifier sur Github
-                            </a>
                         </div>
                     </div>
                 )}
@@ -390,7 +389,7 @@ MemberPageProps) {
                         <p>Il n'y a de fiche pour ce membre sur github</p>
                         <a
                             className="button no-margin"
-                            href={`https://github.com/betagouv/beta.gouv.fr/new/master/content/_authors/?filename=${username}.md`}
+                            href={"/"}
                             target="_blank"
                         >
                             Créer sur Github
@@ -430,7 +429,7 @@ MemberPageProps) {
                                 statut de l'email :{" "}
                                 {
                                     EMAIL_STATUS_READABLE_FORMAT[
-                                        primaryEmailStatus
+                                        userInfos.primary_email_status
                                     ]
                                 }
                             </li>
@@ -443,30 +442,36 @@ MemberPageProps) {
                         </ul>
                     </>
                 )}
-                <MemberEmailServiceInfo userId={username} />
+                <MemberEmailServiceInfo userId={userInfos.username} />
                 {[
                     EmailStatusCode.EMAIL_CREATION_WAITING,
                     EmailStatusCode.EMAIL_VERIFICATION_WAITING,
-                ].includes(primaryEmailStatus) && (
-                    <p>{EMAIL_STATUS_READABLE_FORMAT[primaryEmailStatus]}</p>
+                ].includes(userInfos.primary_email_status) && (
+                    <p>
+                        {
+                            EMAIL_STATUS_READABLE_FORMAT[
+                                userInfos.primary_email_status
+                            ]
+                        }
+                    </p>
                 )}
                 {!emailInfos &&
                     ![
                         EmailStatusCode.EMAIL_CREATION_WAITING,
                         EmailStatusCode.EMAIL_VERIFICATION_WAITING,
-                    ].includes(primaryEmailStatus) &&
+                    ].includes(userInfos.primary_email_status) &&
                     canCreateEmail && (
                         <CreateEmailForm
                             userInfos={userInfos}
-                            secondaryEmail={secondaryEmail}
-                            username={username}
+                            secondaryEmail={userInfos.secondary_email}
+                            username={userInfos.username}
                             hasPublicServiceEmail={hasPublicServiceEmail}
                         />
                     )}
                 {isExpired && (
                     <>
                         <div className="notification error">
-                            Le compte {username} est expiré.
+                            Le compte {userInfos.username} est expiré.
                         </div>
                     </>
                 )}
@@ -518,8 +523,8 @@ MemberPageProps) {
                     <ChangeSecondaryEmailBloc
                         userInfos={userInfos}
                     ></ChangeSecondaryEmailBloc>
-                    <MemberBrevoEventList userId={username} />
-                    <MemberEventList userId={username} />
+                    <MemberBrevoEventList userId={userInfos.username} />
+                    <MemberEventList userId={userInfos.username} />
                     {shouldDisplayUpgrade && (
                         <Accordion label="Passer en compte pro">
                             {shouldDisplayUpgrade && (

@@ -46,7 +46,7 @@ export async function managePrimaryEmailForUserHandler(
     const { username } = req.params;
     const isCurrentUser = req.auth.id === username;
     const { primaryEmail } = req.body;
-    const user = await utils.userInfos(username, isCurrentUser);
+    const user = await utils.userInfos({ username }, isCurrentUser);
     try {
         if (!user.authorizations.canChangeEmails) {
             throw new Error(

@@ -86,7 +86,7 @@ export async function GET(
     const isCurrentUser = session.user.id === username;
     try {
         // todo not sure this call should send all user infos
-        const user = await userInfos(username, isCurrentUser);
+        const user = await userInfos({ username }, isCurrentUser);
         const hasGithubFile = user.userInfos;
         const hasEmailAddress =
             user.emailInfos || user.emailRedirections.length > 0;
@@ -96,7 +96,7 @@ export async function GET(
             );
         }
 
-        const dbUser = await getUserBasicInfo(username);
+        const dbUser = await getUserBasicInfo({ username });
         const primaryEmail = dbUser ? dbUser.primary_email : "";
         const secondaryEmail = dbUser ? dbUser.secondary_email : "";
         let availableEmailPros: string[] = [];
@@ -106,10 +106,10 @@ export async function GET(
         let { mattermostUser, mattermostUserInTeamAndActive } =
             await getMattermostUserInfo(dbUser);
         const title = user.userInfos ? user.userInfos.fullname : null;
+
         return Response.json({
-            title,
+            userBaseInfos: dbUser,
             username,
-            currentUserId: session.user.id,
             emailInfos: user.emailInfos,
             redirections: user.emailRedirections,
             userInfos: user.userInfos,
@@ -130,7 +130,6 @@ export async function GET(
                 dbUser.primary_email &&
                 !dbUser.primary_email.includes(config.domain),
             domain: config.domain,
-            activeTab: "community",
             secondaryEmail,
         });
     } catch (e) {}

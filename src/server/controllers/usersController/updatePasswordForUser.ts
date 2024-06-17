@@ -45,7 +45,7 @@ export async function updatePasswordForUserHandler(
     const { username } = req.params;
     const isCurrentUser = req.auth.id === username;
     try {
-        const user = await utils.userInfos(username, isCurrentUser);
+        const user = await utils.userInfos({ username }, isCurrentUser);
 
         if (!user.userInfos) {
             throw new Error(

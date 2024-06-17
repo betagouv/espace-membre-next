@@ -46,7 +46,7 @@ export async function createRedirectionForUserHandler(
     const isCurrentUser = req.auth.id === username;
 
     try {
-        const user = await userInfos(username, isCurrentUser);
+        const user = await userInfos({ username }, isCurrentUser);
 
         // TODO: généraliser ce code dans un `app.param("id")` ?
         if (!user.userInfos) {

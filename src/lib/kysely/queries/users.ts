@@ -27,6 +27,7 @@ const MEMBER_PROTECTED_INFO: SelectExpression<DB, "users">[] = [
     "primary_email_status_updated_at",
     "users.communication_email",
     "users.email_is_redirection",
+    "users.competences",
 ];
 
 type GetUserInfosParams =
@@ -107,24 +108,18 @@ export async function getUserByStartup(
 
 /** Return member informations */
 export async function getUserBasicInfo(
-    username: string,
+    params: { username: string } | { uuid: string },
     db: Kysely<DB> = database
 ) {
-    const query = db
+    let query = db
         .selectFrom("users")
-        .select((eb) => [
-            "users.username",
-            "users.fullname",
-            "users.role",
-            "users.domaine",
-            "users.bio",
-            "users.link",
-            "users.primary_email",
-            "users.secondary_email",
-            "users.primary_email_status",
-        ])
-        .where("users.username", "=", username)
-        .compile();
+        .select((eb) => [...MEMBER_PROTECTED_INFO, withMissions(eb)]);
+
+    if ("username" in params) {
+        query = query.where("users.username", "=", params.username);
+    } else {
+        query = query.where("users.uuid", "=", params.uuid);
+    }
 
     const userInfos = await db.executeQuery(query);
 
