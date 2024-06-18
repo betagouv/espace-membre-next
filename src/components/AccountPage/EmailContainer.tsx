@@ -238,7 +238,7 @@ export default function EmailContainer({
                             isExchange={emailInfos.isExchange || false}
                         />
                     )}
-                    {!!emailInfos && !emailInfos.isExchange && (
+                    {!!emailInfos && !emailInfos.isExchange && !emailInfos.isPro && (
                         <BlocRedirection
                             redirections={emailRedirections}
                             canCreateRedirection={canCreateRedirection}
