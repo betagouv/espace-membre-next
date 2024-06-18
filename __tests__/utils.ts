@@ -144,44 +144,7 @@ const testUtils = {
             .then(() => client.query(`CREATE DATABASE ${testDbName}`, []))
             .then(() => client.end())
             .then(() => knex.migrate.latest())
-            .then(async () => {
-                // const sixMinutesInMs: number = 6 * 1000 * 60;
-                // const dbUsers = testUsers.map((user) => ({
-                //     username: user.id,
-                //     fullname: user.fullname,
-                //     primary_email: `${user.id}@${config.domain}`,
-                //     primary_email_status_updated_at: new Date(
-                //         Date.now() - sixMinutesInMs
-                //     ),
-                //     domaine: (user.domaine ||
-                //         Domaine.ANIMATION) as UsersDomaineEnum,
-                //     role: user.role || "",
-                // }));
-                // const createdUsers = await db
-                //     .insertInto("users")
-                //     .values(dbUsers)
-                //     .returningAll()
-                //     .execute();
-                // for (const createdUser of createdUsers) {
-                //     const missions =
-                //         testUsers.find(
-                //             (user) => user.id === createdUser.username
-                //         )?.missions || [];
-                //     for (const mission of missions) {
-                //         await db
-                //             .insertInto("missions")
-                //             .values({
-                //                 ...mission,
-                //                 user_id: createdUser.uuid,
-                //             })
-                //             .returningAll()
-                //             .executeTakeFirstOrThrow();
-                //         // await db.insertInto("missions_startups").values({
-                //         //     mission_id: createdMission.uuid,
-                //         // });
-                //     }
-                // }
-            })
+            .then(async () => {})
             .then(() =>
                 console.log(`Test database ${testDbName} created successfully`)
             )
@@ -189,7 +152,7 @@ const testUtils = {
                 console.log(err);
             });
     },
-    cleanUpTestDatabase() {
+    async cleanUpTestDatabase() {
         const dbConfig = parse(process.env.DATABASE_URL || "");
         const testDbName = dbConfig.database;
         if (!testDbName)
@@ -204,7 +167,7 @@ const testUtils = {
             dbConfig.host || ""
         )}:${encodeURIComponent(dbConfig.port || "")}/postgres`;
         const client = new Client({ connectionString: temporaryConnection });
-
+        await db.destroy();
         return knex
             .destroy()
             .then(() => client.connect())
