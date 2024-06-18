@@ -1,6 +1,6 @@
 import { test as setup, expect } from "@playwright/test";
 
-const adminFile = "./playwright-auth-valid.member.json";
+const validMemberFile = "./playwright-auth-valid.member.json";
 
 setup("authenticate as valid.member through magic link", async ({ page }) => {
     // fill login form
@@ -33,5 +33,5 @@ setup("authenticate as valid.member through magic link", async ({ page }) => {
         page.getByText("Mon compte", { exact: true }).first()
     ).toBeVisible();
 
-    await page.context().storageState({ path: adminFile });
+    await page.context().storageState({ path: validMemberFile });
 });
