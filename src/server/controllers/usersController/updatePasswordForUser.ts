@@ -49,7 +49,7 @@ export async function updatePasswordForUserHandler(
 
         if (!user.userInfos) {
             throw new Error(
-                `Le membre ${username} n'a pas de fiche sur Github : vous ne pouvez pas modifier le mot de passe.`
+                `Le membre ${username} n'a pas de fiche sur l'espace-membre : vous ne pouvez pas modifier le mot de passe.`
             );
         }
 

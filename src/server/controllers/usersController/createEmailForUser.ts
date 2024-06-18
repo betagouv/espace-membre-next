@@ -29,7 +29,7 @@ export async function createEmailAndUpdateSecondaryEmail(
     ]);
     if (!user.userInfos) {
         throw new Error(
-            `Le membre ${username} n'a pas de fiche sur Github : vous ne pouvez pas créer son compte email.`
+            `Le membre ${username} n'a pas de fiche sur l'espace-membre: vous ne pouvez pas créer son compte email.`
         );
     }
 
@@ -49,11 +49,11 @@ export async function createEmailAndUpdateSecondaryEmail(
         );
         if (!loggedUserInfo) {
             throw new Error(
-                "Vous ne pouvez pas créer de compte email car votre compte  n'a pas de fiche github."
+                "Vous ne pouvez pas créer de compte email car votre compte  n'a pas de fiche dans l'espace-membre."
             );
         } else if (utils.checkUserIsExpired(loggedUserInfo)) {
             throw new Error(
-                "Vous ne pouvez pas créer le compte email car votre compte a une date de fin expiré sur Github."
+                "Vous ne pouvez pas créer le compte email car votre compte a une date de fin expiré."
             );
         }
     }

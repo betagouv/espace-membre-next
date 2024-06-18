@@ -6,7 +6,7 @@ import { PasswordInput } from "@codegouvfr/react-dsfr/blocks/PasswordInput";
 import Button from "@codegouvfr/react-dsfr/Button";
 import axios from "axios";
 
-import { EmailStatusCode } from "@/models/member";
+import { EmailStatusCode, memberBaseInfoSchemaType } from "@/models/member";
 import routes, { computeRoute } from "@/routes/routes";
 
 export default function BlocChangerMotDePasse({
@@ -16,7 +16,7 @@ export default function BlocChangerMotDePasse({
 }: {
     canChangePassword: boolean;
     status: EmailStatusCode;
-    userInfos: any;
+    userInfos: memberBaseInfoSchemaType;
 }) {
     const [password, setPassword] = React.useState<string>("");
     const [isSaving, setIsSaving] = React.useState<boolean>(false);
@@ -56,7 +56,7 @@ export default function BlocChangerMotDePasse({
                                     computeRoute(
                                         routes.USER_UPDATE_PASSWORD_API.replace(
                                             ":username",
-                                            userInfos.id
+                                            userInfos.username
                                         )
                                     ),
                                     {

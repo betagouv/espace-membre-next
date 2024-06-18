@@ -32,7 +32,7 @@ export interface MemberPageProps {
     redirections: memberWrapperSchemaType["emailRedirections"];
     authorizations: memberWrapperSchemaType["authorizations"];
     userInfos: memberBaseInfoSchemaType;
-    availableEmailPros: any;
+    availableEmailPros: string[];
     mattermostInfo: {
         hasMattermostAccount: boolean;
         isInactiveOrNotInTeam: boolean;
@@ -110,10 +110,11 @@ const ChangeSecondaryEmailBloc = ({
 const CreateEmailForm = ({
     userInfos,
     hasPublicServiceEmail,
-    username,
-    secondaryEmail,
+}: {
+    userInfos: memberBaseInfoSchemaType;
+    hasPublicServiceEmail: boolean;
 }) => {
-    const [email, setValue] = useState<string>(secondaryEmail);
+    const [email, setValue] = useState<string>(userInfos.secondary_email);
     return (
         <>
             <p>Tu peux créer un compte email pour {userInfos.fullname}.</p>
@@ -127,7 +128,7 @@ celle à utiliser pour mattermost, et d'autres outils.`}
                         computeRoute(
                             routes.USER_CREATE_EMAIL_API.replace(
                                 ":username",
-                                username
+                                userInfos.username
                             )
                         ),
                         {
@@ -143,7 +144,7 @@ celle à utiliser pour mattermost, et d'autres outils.`}
                     label="Email personnel ou professionnel"
                     hintText="Le mot de passe et les informations de connexion seront envoyées à cet email"
                     nativeInputProps={{
-                        defaultValue: secondaryEmail,
+                        defaultValue: userInfos.secondary_email,
                         name: "to_email",
                         type: "email",
                         required: true,
@@ -164,14 +165,20 @@ celle à utiliser pour mattermost, et d'autres outils.`}
     );
 };
 
-function EmailUpgrade({ availableEmailPros, userInfos }) {
+function EmailUpgrade({
+    availableEmailPros,
+    userInfos,
+}: {
+    userInfos: memberBaseInfoSchemaType;
+    availableEmailPros: string[];
+}) {
     const [password, setPassword] = useState<string>();
     const onSubmit = async () => {
         try {
             await axios.post(
                 computeRoute(routes.USER_UPGRADE_EMAIL_API).replace(
                     ":username",
-                    userInfos.id
+                    userInfos.username
                 ),
                 {
                     password,
@@ -459,8 +466,6 @@ MemberPageProps) {
                     authorizations.canCreateEmail && (
                         <CreateEmailForm
                             userInfos={userInfos}
-                            secondaryEmail={userInfos.secondary_email}
-                            username={userInfos.username}
                             hasPublicServiceEmail={
                                 authorizations.hasPublicServiceEmail
                             }

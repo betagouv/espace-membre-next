@@ -4,6 +4,7 @@ import { EventCode } from "@/models/actionEvent";
 import config from "@/server/config";
 import BetaGouv from "@betagouv";
 import * as utils from "@controllers/utils";
+import { EmailStatusCode } from "dist/src/models/member";
 export async function deleteEmailForUserApi(req, res) {
     deleteEmailForUserHandler(
         req,
@@ -72,8 +73,13 @@ export async function deleteEmailForUserHandler(req, res, onSuccess, onError) {
         );
         await db
             .updateTable("users")
-            .set({ secondary_email: null })
-            .where("username", "=", username);
+            .set({
+                secondary_email: null,
+                primary_email: null,
+                primary_email_status: EmailStatusCode.EMAIL_UNSET,
+            })
+            .where("username", "=", username)
+            .execute();
         console.log(
             `Redirection des emails de ${username} vers ${config.leavesEmail} (à la demande de ${req.auth.id})`
         );

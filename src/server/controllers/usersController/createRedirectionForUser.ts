@@ -51,7 +51,7 @@ export async function createRedirectionForUserHandler(
         // TODO: généraliser ce code dans un `app.param("id")` ?
         if (!user.userInfos) {
             throw new Error(
-                `Le membre ${username} n'a pas de fiche sur Github : vous ne pouvez pas créer de redirection.`
+                `Le membre ${username} n'a pas de fiche membre : vous ne pouvez pas créer de redirection.`
             );
         }
 

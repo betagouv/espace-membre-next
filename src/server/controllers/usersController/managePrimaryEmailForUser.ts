@@ -68,9 +68,13 @@ export async function managePrimaryEmailForUserHandler(
                 primaryEmail,
                 false
             );
-            await betagouv.deleteEmail(
-                user.userInfos.primary_email.split("@")[0]
-            );
+            try {
+                await betagouv.deleteEmail(
+                    user.userInfos.primary_email.split("@")[0]
+                );
+            } catch (e) {
+                console.log(e, "Email is possibly already deleted");
+            }
         } else {
             try {
                 await mattermost.getUserByEmail(primaryEmail);
@@ -89,7 +93,7 @@ export async function managePrimaryEmailForUserHandler(
             })
             .execute();
 
-        addEvent({
+        await addEvent({
             action_code: EventCode.MEMBER_PRIMARY_EMAIL_UPDATED,
             created_by_username: req.auth.id,
             action_on_username: username,

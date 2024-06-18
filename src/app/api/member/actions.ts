@@ -82,8 +82,9 @@ export async function updateCommunicationEmail(
             .set({
                 communication_email,
             })
-            .where("username", "=", session.user.id);
-        addEvent({
+            .where("username", "=", session.user.id)
+            .execute();
+        await addEvent({
             action_code: EventCode.MEMBER_COMMUNICATION_EMAIL_UPDATE,
             created_by_username: session.user.id,
             action_on_username: session.user.id,

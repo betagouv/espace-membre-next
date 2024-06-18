@@ -77,7 +77,7 @@ export const authOptions: NextAuthOptions = {
                 });
                 if (!dbUser) {
                     throw new Error(
-                        `Le membre ${user.id} n'a pas de fiche github.`
+                        `Il n'y a pas de fiche dans l'espace-membre pour cet email. Un membre de la communauté peut en créer une.`
                     );
                 }
                 if (checkUserIsExpired(memberBaseInfoToModel(dbUser), 5)) {
