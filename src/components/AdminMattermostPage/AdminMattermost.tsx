@@ -139,6 +139,14 @@ export const AdminMattermost = (props: AdminMattermostProps) => {
     const [value, setValue] = useState<"one" | "two" | "three" | undefined>(
         undefined
     );
+    const getCurrentChannel = (): string => {
+        const channel = props.channelOptions.find((c) => c.value === channel);
+        if (channel) {
+            return channel.label;
+        } else {
+            return "channel non définie";
+        }
+    };
     return (
         <>
             <div>
@@ -241,13 +249,7 @@ export const AdminMattermost = (props: AdminMattermostProps) => {
                             <strong>
                                 ⚠️ Attention ce message sera envoyé{" "}
                                 {messageType === "channel"
-                                    ? ` au canal ${
-                                          (
-                                              props.channelOptions.find(
-                                                  (c) => c.value === channel
-                                              ) as Option
-                                          ).label
-                                      }`
+                                    ? ` au canal ${getCurrentChannel()}`
                                     : `à ${usersForMessage.length} membres`}
                             </strong>
                             <br />

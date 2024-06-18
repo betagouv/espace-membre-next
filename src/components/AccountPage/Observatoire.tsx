@@ -51,7 +51,7 @@ export default function Observatoire({
                     {
                         children: "✏️ Mettre à jour",
                         linkProps: {
-                            href: "/account/info",
+                            href: "/account/base-info",
                         },
                     },
                     {

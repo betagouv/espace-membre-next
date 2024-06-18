@@ -93,6 +93,7 @@ export async function getNewsletter(req, res, onSuccess, onError) {
     try {
         let newsletters = await db
             .selectFrom("newsletters")
+            .selectAll()
             .orderBy("created_at", "desc")
             .execute();
         newsletters = newsletters.map((newsletter) =>
