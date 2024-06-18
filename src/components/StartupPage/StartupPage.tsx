@@ -5,25 +5,9 @@ import { Table } from "@codegouvfr/react-dsfr/Table";
 
 import { memberBaseInfoSchemaType } from "@/models/member";
 import { missionSchemaType } from "@/models/mission";
-import {
-    PHASES_ORDERED_LIST,
-    phaseSchemaType,
-    startupSchemaType,
-} from "@/models/startup";
+import { phaseSchemaType, startupSchemaType } from "@/models/startup";
 import { getLastMissionDate } from "@/utils/member";
-
-const getCurrentPhase = (phases: phaseSchemaType[]): string | null => {
-    if (!phases.length) {
-        return `Il n'y a pas de phase renseignée`;
-    }
-    const sorted = phases.sort(
-        (phaseA, phaseB) =>
-            PHASES_ORDERED_LIST.indexOf(phaseB.name) -
-            PHASES_ORDERED_LIST.indexOf(phaseA.name)
-    );
-
-    return sorted[0].name;
-};
+import { getCurrentPhase } from "@/utils/startup";
 
 function MemberTable({
     members,
@@ -101,13 +85,17 @@ export default function StartupPage({
                     <br />
                     <span>
                         Repository :{" "}
-                        <a
-                            className="fr-link"
-                            target="_blank"
-                            href={startupInfos.repository}
-                        >
-                            {startupInfos.repository}
-                        </a>
+                        {startupInfos.repository ? (
+                            <a
+                                className="fr-link"
+                                target="_blank"
+                                href={startupInfos.repository}
+                            >
+                                {startupInfos.repository}
+                            </a>
+                        ) : (
+                            "Non renseigné"
+                        )}
                     </span>
                     <br />
                     <span>
@@ -146,9 +134,6 @@ export default function StartupPage({
                         startup_id={startupInfos.uuid}
                     />
                 </Accordion>
-                {/* <Accordion label="Membres expirés">
-                    <MemberTable members={members.expired_members} />
-                </Accordion> */}
                 <Accordion label="Membres précédents">
                     <MemberTable
                         members={previousMembers}

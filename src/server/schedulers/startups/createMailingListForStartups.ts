@@ -2,22 +2,12 @@ import { generateMailingListName } from ".";
 import { db } from "@/lib/kysely";
 import { getAllStartups } from "@/lib/kysely/queries";
 import { getUserByStartup } from "@/lib/kysely/queries/users";
-import { startupToModel } from "@/models/mapper";
+import { phaseToModel, startupToModel } from "@/models/mapper";
 import { CommunicationEmailCode } from "@/models/member";
 import { memberBaseInfoSchema } from "@/models/member";
-import {
-    ACTIVE_PHASES,
-    StartupPhase,
-    phaseSchemaType,
-    startupSchemaType,
-} from "@/models/startup";
+import { ACTIVE_PHASES, startupSchemaType } from "@/models/startup";
+import { getCurrentPhase } from "@/utils/startup";
 import betagouv from "@betagouv";
-
-function getCurrentPhase(startup: startupSchemaType): StartupPhase | undefined {
-    return startup.phases
-        ? startup.phases[startup.phases.length - 1].name
-        : undefined;
-}
 
 const createMailingListForStartup = async (startup: startupSchemaType) => {
     const mailingListName = generateMailingListName(startup);
@@ -67,9 +57,15 @@ export const createMailingListForStartups = async () => {
     const startupDetails = (await getAllStartups()).map((startup) =>
         startupToModel(startup)
     );
+    const startupPhases = (
+        await db.selectFrom("phases").selectAll().execute()
+    ).map((phase) => phaseToModel(phase));
     console.log(`Will create ${startupDetails.length} mailing lists`);
     for (const startup of startupDetails) {
-        const phase = getCurrentPhase(startup);
+        const currentStartupPhases = startupPhases.filter(
+            (startupPhase) => startupPhase.startup_id === startup.uuid
+        );
+        const phase = getCurrentPhase(currentStartupPhases);
         if (phase && ACTIVE_PHASES.includes(phase)) {
             try {
                 if (!mailingLists.includes(generateMailingListName(startup))) {

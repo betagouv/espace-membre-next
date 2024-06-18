@@ -62,6 +62,7 @@ export function phaseToModel(phase: Selectable<Phases>): phaseSchemaType {
         end: phase.end,
         start: phase.start,
         comment: phase.comment,
+        startup_id: phase.startup_id,
         name: phase.name as StartupPhase,
     };
 }

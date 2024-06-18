@@ -20,7 +20,7 @@ import MemberBrevoEventList from "./MemberBrevoEventList";
 import MemberEmailServiceInfo from "./MemberEmailServiceInfo";
 import MemberEventList from "./MemberEventList";
 import { changeSecondaryEmailForUser } from "@/app/api/member/actions";
-import { EmailStatusCode } from "@/models/member";
+import { EmailStatusCode, memberWrapperSchemaType } from "@/models/member";
 import { memberBaseInfoSchemaType } from "@/models/member";
 import { EMAIL_STATUS_READABLE_FORMAT } from "@/models/misc";
 import { missionSchemaType } from "@/models/mission";
@@ -28,8 +28,9 @@ import routes, { computeRoute } from "@/routes/routes";
 import { getLastMission, getLastMissionDate } from "@/utils/member";
 
 export interface MemberPageProps {
-    emailInfos: any;
-    redirections: any;
+    emailInfos: memberWrapperSchemaType["emailInfos"];
+    redirections: memberWrapperSchemaType["emailRedirections"];
+    authorizations: memberWrapperSchemaType["authorizations"];
     userInfos: memberBaseInfoSchemaType;
     availableEmailPros: any;
     mattermostInfo: {
@@ -237,6 +238,7 @@ export default function MemberPage({
     redirections,
     userInfos,
     availableEmailPros,
+    authorizations,
     mattermostInfo,
     isExpired,
 }: // emailServiceInfo,
@@ -454,12 +456,14 @@ MemberPageProps) {
                         EmailStatusCode.EMAIL_CREATION_WAITING,
                         EmailStatusCode.EMAIL_VERIFICATION_WAITING,
                     ].includes(userInfos.primary_email_status) &&
-                    canCreateEmail && (
+                    authorizations.canCreateEmail && (
                         <CreateEmailForm
                             userInfos={userInfos}
                             secondaryEmail={userInfos.secondary_email}
                             username={userInfos.username}
-                            hasPublicServiceEmail={hasPublicServiceEmail}
+                            hasPublicServiceEmail={
+                                authorizations.hasPublicServiceEmail
+                            }
                         />
                     )}
                 {isExpired && (
@@ -472,19 +476,12 @@ MemberPageProps) {
             </div>
             <div className="fr-mb-8v">
                 <h2>Redirections</h2>
-                {redirections.map(function (redirection: {
-                    to:
-                        | string
-                        | number
-                        | boolean
-                        | ReactElement<any, string | JSXElementConstructor<any>>
-                        | Iterable<ReactNode>
-                        | ReactPortal
-                        | PromiseLikeOfReactNode
-                        | null
-                        | undefined;
-                }) {
-                    <div className="redirection-item">{redirection.to}</div>;
+                {redirections.map(function (redirection, i) {
+                    return (
+                        <div key={i} className="redirection-item">
+                            {redirection.to}
+                        </div>
+                    );
                 })}
                 {redirections.length === 0 && (
                     <p>

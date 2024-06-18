@@ -97,6 +97,7 @@ export default async function Page({
     return (
         <MemberPage
             availableEmailPros={availableEmailPros}
+            authorizations={user.authorizations}
             userInfos={memberBaseInfo}
             mattermostInfo={mattermostInfo}
             emailInfos={user.emailInfos}

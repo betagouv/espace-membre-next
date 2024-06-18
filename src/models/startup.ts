@@ -116,6 +116,7 @@ export const phaseSchema = z.object({
             })
             .describe("Date de début de la phase")
     ),
+    startup_id: z.string(),
     end: z
         .preprocess((val) => {
             if (typeof val === "string") {
