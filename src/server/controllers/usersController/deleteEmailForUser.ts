@@ -1,10 +1,10 @@
 import { addEvent } from "@/lib/events";
 import { db } from "@/lib/kysely";
 import { EventCode } from "@/models/actionEvent";
+import { EmailStatusCode } from "@/models/member";
 import config from "@/server/config";
 import BetaGouv from "@betagouv";
 import * as utils from "@controllers/utils";
-import { EmailStatusCode } from "dist/src/models/member";
 export async function deleteEmailForUserApi(req, res) {
     deleteEmailForUserHandler(
         req,

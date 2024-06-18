@@ -24,7 +24,6 @@ import {
     subscribeEmailAddresses,
     unsubscribeEmailAddresses,
 } from "@schedulers/emailScheduler";
-import { isPublicServiceEmail } from "dist/src/server/controllers/utils";
 
 chai.use(chaiHttp);
 
