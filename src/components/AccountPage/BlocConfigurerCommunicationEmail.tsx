@@ -3,20 +3,17 @@ import React from "react";
 import Accordion from "@codegouvfr/react-dsfr/Accordion";
 import Button from "@codegouvfr/react-dsfr/Button";
 import { RadioButtons } from "@codegouvfr/react-dsfr/RadioButtons";
-import axios from "axios";
 
 import { updateCommunicationEmail } from "@/app/api/member/actions";
-import { CommunicationEmailCode } from "@/models/member";
-import routes, { computeRoute } from "@/routes/routes";
+import {
+    CommunicationEmailCode,
+    memberBaseInfoSchemaType,
+} from "@/models/member";
 
 export default function BlocConfigurerCommunicationEmail({
-    primaryEmail,
-    secondaryEmail,
-    communication_email,
+    userInfos: { communication_email, primary_email, secondary_email },
 }: {
-    primaryEmail: string;
-    secondaryEmail: string;
-    communication_email: CommunicationEmailCode;
+    userInfos: memberBaseInfoSchemaType;
 }) {
     const [value, setValue] = React.useState<
         CommunicationEmailCode.PRIMARY | CommunicationEmailCode.SECONDARY
@@ -24,10 +21,10 @@ export default function BlocConfigurerCommunicationEmail({
     const [isSaving, setIsSaving] = React.useState<boolean>(false);
     return (
         <Accordion label="Quel email utiliser pour les communications @beta.gouv.fr ?">
-            {!!primaryEmail &&
-                !secondaryEmail &&
-                `Tu n'as qu'une seule adresse ${primaryEmail}. Ajoute une adresse secondaire pour choisir sur quelles adresses tu souhaites recevoir les communications`}
-            {!!primaryEmail && !!secondaryEmail && (
+            {!!primary_email &&
+                !secondary_email &&
+                `Tu n'as qu'une seule adresse ${primary_email}. Ajoute une adresse secondaire pour choisir sur quelles adresses tu souhaites recevoir les communications`}
+            {!!primary_email && !!secondary_email && (
                 <form
                     method="POST"
                     onSubmit={async (e) => {
@@ -46,7 +43,7 @@ export default function BlocConfigurerCommunicationEmail({
                         legend="Choisi l'email a utiliser pour recevoir les emails de communications @beta.gouv.fr"
                         options={[
                             {
-                                label: primaryEmail,
+                                label: primary_email,
                                 nativeInputProps: {
                                     defaultChecked:
                                         value ===
@@ -61,7 +58,7 @@ export default function BlocConfigurerCommunicationEmail({
                                 },
                             },
                             {
-                                label: secondaryEmail,
+                                label: secondary_email,
                                 nativeInputProps: {
                                     defaultChecked:
                                         value ===

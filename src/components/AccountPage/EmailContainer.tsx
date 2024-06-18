@@ -215,7 +215,6 @@ export default function EmailContainer({
                             EmailStatusCode.EMAIL_CREATION_PENDING,
                         ].includes(userInfos.primary_email_status) && (
                             <BlocCreateEmail
-                                secondaryEmail={userInfos.secondary_email}
                                 hasPublicServiceEmail={hasPublicServiceEmail}
                                 userInfos={userInfos}
                             />
@@ -251,17 +250,12 @@ export default function EmailContainer({
                     <BlocConfigurerEmailPrincipal
                         canChangeEmails={canChangeEmails}
                         userInfos={userInfos}
-                        primaryEmail={userInfos.primary_email}
                     />
                     <BlocConfigurerEmailSecondaire
                         canChangeEmails={canChangeEmails}
                         secondaryEmail={userInfos.secondary_email}
                     />
-                    <BlocConfigurerCommunicationEmail
-                        primaryEmail={userInfos.primary_email}
-                        secondaryEmail={userInfos.secondary_email}
-                        communication_email={userInfos.communication_email}
-                    />
+                    <BlocConfigurerCommunicationEmail userInfos={userInfos} />
                 </div>
             )}
         </div>

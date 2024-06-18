@@ -11,13 +11,13 @@ import routes, { computeRoute } from "@/routes/routes";
 export default function BlocConfigurerEmailPrincipal({
     canChangeEmails,
     userInfos,
-    primaryEmail,
 }: {
     canChangeEmails: boolean;
     userInfos: memberBaseInfoSchemaType;
-    primaryEmail: string;
 }) {
-    const [value, setValue] = React.useState<string>(primaryEmail);
+    const [value, setValue] = React.useState<string>(
+        userInfos.primary_email || ""
+    );
     const [isSaving, setIsSaving] = React.useState<boolean>(false);
     return (
         <Accordion label="Configurer mon email principal">

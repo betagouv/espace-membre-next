@@ -257,10 +257,7 @@ export const memberSchema = z.object({
         .describe("Email"),
     isEmailBetaAsked: z.boolean().optional().nullable(),
     email_is_redirection: z.boolean().optional(),
-    communication_email: z
-        .nativeEnum(CommunicationEmailCode)
-        .optional()
-        .nullable(),
+    communication_email: z.nativeEnum(CommunicationEmailCode),
     // stat info
     gender: z
         .nativeEnum(
