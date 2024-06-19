@@ -397,7 +397,15 @@ export function StartupForm(props: StartupFormProps) {
                                 (newSponsor) =>
                                     !idsToDelete.includes(newSponsor.ghid)
                             );
-                            setValue("startupSponsors", selectedSponsorIds);
+                            const updateNewSponsorIds = updateNewSponsors.map(
+                                (s) => s.ghid
+                            );
+                            setValue(
+                                "startupSponsors",
+                                selectedSponsorIds.filter(
+                                    (id) => !updateNewSponsorIds.includes(id)
+                                )
+                            );
                             setValue("newSponsors", updateNewSponsors);
                         }}
                         setNewSponsors={(

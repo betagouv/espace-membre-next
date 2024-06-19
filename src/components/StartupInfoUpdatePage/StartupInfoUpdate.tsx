@@ -29,18 +29,6 @@ export const StartupInfoUpdate = (props: StartupInfoUpdateProps) => {
 
     const save = async (data: startupInfoUpdateSchemaType) => {
         try {
-            // const resp = await axios.post(
-            //     computeRoute(routes.STARTUP_POST_INFO_UPDATE_FORM).replace(
-            //         ":startup",
-            //         props.startup.id
-            //     ),
-            //     {
-            //         ...data,
-            //     },
-            //     {
-            //         withCredentials: true,
-            //     }
-            // );
             await updateStartup({
                 formData: data,
                 startupUuid: props.startup.uuid,

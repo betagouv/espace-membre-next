@@ -4,10 +4,10 @@ import React from "react";
 import * as Sentry from "@sentry/nextjs";
 import axios from "axios";
 
-import { Option } from "@/models/misc";
 import { StartupForm, StartupFormProps } from "../StartupForm/StartupForm";
 import { createStartup } from "@/app/api/startups/actions";
 import { incubatorSchemaType } from "@/models/incubator";
+import { Option } from "@/models/misc";
 import { sponsorSchemaType } from "@/models/sponsor";
 import { StartupPhase } from "@/models/startup";
 import routes, { computeRoute } from "@/routes/routes";
@@ -20,7 +20,7 @@ interface StartupInfoCreateProps {
 /* Pure component */
 export const StartupInfoCreate = (props: StartupInfoCreateProps) => {
     const save = async (data) => {
-        createStartup({
+        await createStartup({
             formData: data,
         })
             .then((result) => {

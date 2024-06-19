@@ -27,82 +27,77 @@ export async function createStartup({
         throw new Error(`You don't have the right to access this function`);
     }
 
-    try {
-        await db.transaction().execute(async (trx) => {
-            // update startup data
-            const res = await trx
-                .insertInto("startups")
-                .values({
-                    ghid: slugify(startup.name),
-                    ...startup,
-                    techno: startup.techno
-                        ? JSON.stringify(startup.techno)
-                        : undefined,
-                    usertypes: startup.usertypes
-                        ? JSON.stringify(startup.usertypes)
-                        : undefined,
-                    thematiques: startup.thematiques
-                        ? JSON.stringify(startup.thematiques)
-                        : undefined,
-                })
+    await db.transaction().execute(async (trx) => {
+        // update startup data
+        const res = await trx
+            .insertInto("startups")
+            .values({
+                ghid: slugify(startup.name),
+                ...startup,
+                techno: startup.techno
+                    ? JSON.stringify(startup.techno)
+                    : undefined,
+                usertypes: startup.usertypes
+                    ? JSON.stringify(startup.usertypes)
+                    : undefined,
+                thematiques: startup.thematiques
+                    ? JSON.stringify(startup.thematiques)
+                    : undefined,
+            })
+            .returning("uuid")
+            .executeTakeFirst();
+        if (!res) {
+            throw new Error("Startup data could not be inserted into db");
+        }
+        const startupUuid = res.uuid;
+        // create new sponsors
+        for (const newSponsor of newSponsors) {
+            const sponsor = await trx
+                .insertInto("organizations")
+                .values(newSponsor)
                 .returning("uuid")
                 .executeTakeFirst();
-            if (!res) {
-                throw new Error("Startup data could not be inserted into db");
-            }
-            const startupUuid = res.uuid;
-            // create new sponsors
-            for (const newSponsor of newSponsors) {
-                const sponsor = await trx
-                    .insertInto("organizations")
-                    .values(newSponsor)
-                    .returning("uuid")
-                    .executeTakeFirst();
-                if (sponsor) {
-                    await trx
-                        .insertInto("startups_organizations")
-                        .values({
-                            organization_id: sponsor.uuid,
-                            startup_id: startupUuid,
-                        })
-                        .execute();
-                }
-            }
-
-            // add new sponsors
-            for (const sponsorUuid of startupSponsors) {
+            if (sponsor) {
                 await trx
                     .insertInto("startups_organizations")
                     .values({
-                        organization_id: sponsorUuid,
+                        organization_id: sponsor.uuid,
                         startup_id: startupUuid,
                     })
                     .execute();
             }
-
-            // create/update phases
-            for (const startupPhase of startupPhases) {
-                const args = {
-                    ...startupPhase,
+        }
+        // add new sponsors
+        for (const sponsorUuid of startupSponsors) {
+            await trx
+                .insertInto("startups_organizations")
+                .values({
+                    organization_id: sponsorUuid,
                     startup_id: startupUuid,
-                };
-                await trx
-                    .insertInto("phases")
-                    .values(args)
-                    .onConflict((oc) => {
-                        const { startup_id, name, ...rest } = args;
-                        return oc
-                            .column("startup_id")
-                            .column("name")
-                            .doUpdateSet(rest);
-                    })
-                    .returning("uuid")
-                    .executeTakeFirst();
-            }
-        });
-    } catch (error) {
-        console.error("Transaction failed:", error);
-    }
+                })
+                .execute();
+        }
+
+        // create/update phases
+        for (const startupPhase of startupPhases) {
+            const args = {
+                ...startupPhase,
+                startup_id: startupUuid,
+            };
+            await trx
+                .insertInto("phases")
+                .values(args)
+                .onConflict((oc) => {
+                    const { startup_id, name, ...rest } = args;
+                    return oc
+                        .column("startup_id")
+                        .column("name")
+                        .doUpdateSet(rest);
+                })
+                .returning("uuid")
+                .executeTakeFirst();
+        }
+    });
 }
 
 export async function updateStartup({
@@ -160,105 +155,101 @@ export async function updateStartup({
                 .execute()
         );
 
-    try {
-        await db.transaction().execute(async (trx) => {
-            // update startup data
-            await trx
-                .updateTable("startups")
-                .set({
-                    ...startup,
-                    techno: startup.techno
-                        ? JSON.stringify(startup.techno)
-                        : undefined,
-                    usertypes: startup.usertypes
-                        ? JSON.stringify(startup.usertypes)
-                        : undefined,
-                    thematiques: startup.thematiques
-                        ? JSON.stringify(startup.thematiques)
-                        : undefined,
-                })
-                .where("uuid", "=", startupUuid)
-                .execute();
+    await db.transaction().execute(async (trx) => {
+        // update startup data
+        await trx
+            .updateTable("startups")
+            .set({
+                ...startup,
+                techno: startup.techno
+                    ? JSON.stringify(startup.techno)
+                    : undefined,
+                usertypes: startup.usertypes
+                    ? JSON.stringify(startup.usertypes)
+                    : undefined,
+                thematiques: startup.thematiques
+                    ? JSON.stringify(startup.thematiques)
+                    : undefined,
+            })
+            .where("uuid", "=", startupUuid)
+            .execute();
 
-            // create new sponsors
-            for (const newSponsor of newSponsors) {
-                const sponsor = await trx
-                    .insertInto("organizations")
-                    .values(newSponsor)
-                    .returning("uuid")
-                    .executeTakeFirst();
-                if (sponsor) {
-                    await trx
-                        .insertInto("startups_organizations")
-                        .values({
-                            organization_id: sponsor.uuid,
-                            startup_id: startupUuid,
-                        })
-                        .execute();
-                }
-            }
-            // delete old sponsor
-            const sponsorsUuidToRemove = _.difference(
-                previousStartupSponsors.map((s) => s.uuid),
-                startupSponsors
-            );
-            for (const sponsorUuid of sponsorsUuidToRemove) {
-                await trx
-                    .deleteFrom("startups_organizations")
-                    .where("organization_id", "=", sponsorUuid)
-                    .where("startup_id", "=", startupUuid)
-                    .execute();
-            }
-
-            // add new sponsors
-            const sponsorUuidToAdd = _.difference(
-                startupSponsors,
-                previousStartupSponsors.map((s) => s.uuid)
-            );
-            for (const sponsorUuid of sponsorUuidToAdd) {
+        // create new sponsors
+        for (const newSponsor of newSponsors) {
+            const sponsor = await trx
+                .insertInto("organizations")
+                .values(newSponsor)
+                .returning("uuid")
+                .executeTakeFirst();
+            if (sponsor) {
                 await trx
                     .insertInto("startups_organizations")
                     .values({
-                        organization_id: sponsorUuid,
+                        organization_id: sponsor.uuid,
                         startup_id: startupUuid,
                     })
                     .execute();
             }
+        }
+        // delete old sponsor
+        const sponsorsUuidToRemove = _.difference(
+            previousStartupSponsors.map((s) => s.uuid),
+            startupSponsors
+        );
+        for (const sponsorUuid of sponsorsUuidToRemove) {
+            await trx
+                .deleteFrom("startups_organizations")
+                .where("organization_id", "=", sponsorUuid)
+                .where("startup_id", "=", startupUuid)
+                .execute();
+        }
 
-            // delete old phase
-            const phasesNameToRemove = _.difference(
-                previousStartupPhases.map((s) => s.name),
-                startupPhases.filter((s) => s.name).map((s) => s.name)
-            );
-            for (const phaseName of phasesNameToRemove) {
-                await trx
-                    .deleteFrom("phases")
-                    .where("name", "=", phaseName)
-                    .where("startup_id", "=", startupUuid)
-                    .execute();
-            }
-
-            // create/update phases
-            for (const startupPhase of startupPhases) {
-                const args = {
-                    ...startupPhase,
+        // add new sponsors
+        const sponsorUuidToAdd = _.difference(
+            startupSponsors,
+            previousStartupSponsors.map((s) => s.uuid)
+        );
+        for (const sponsorUuid of sponsorUuidToAdd) {
+            await trx
+                .insertInto("startups_organizations")
+                .values({
+                    organization_id: sponsorUuid,
                     startup_id: startupUuid,
-                };
-                await trx
-                    .insertInto("phases")
-                    .values(args)
-                    .onConflict((oc) => {
-                        const { startup_id, name, ...rest } = args;
-                        return oc
-                            .column("startup_id")
-                            .column("name")
-                            .doUpdateSet(rest);
-                    })
-                    .returning("uuid")
-                    .executeTakeFirst();
-            }
-        });
-    } catch (error) {
-        console.error("Transaction failed:", error);
-    }
+                })
+                .execute();
+        }
+
+        // delete old phase
+        const phasesNameToRemove = _.difference(
+            previousStartupPhases.map((s) => s.name),
+            startupPhases.filter((s) => s.name).map((s) => s.name)
+        );
+        for (const phaseName of phasesNameToRemove) {
+            await trx
+                .deleteFrom("phases")
+                .where("name", "=", phaseName)
+                .where("startup_id", "=", startupUuid)
+                .execute();
+        }
+
+        // create/update phases
+        for (const startupPhase of startupPhases) {
+            const args = {
+                ...startupPhase,
+                startup_id: startupUuid,
+            };
+            await trx
+                .insertInto("phases")
+                .values(args)
+                .onConflict((oc) => {
+                    const { startup_id, name, ...rest } = args;
+                    return oc
+                        .column("startup_id")
+                        .column("name")
+                        .doUpdateSet(rest);
+                })
+                .returning("uuid")
+                .executeTakeFirst();
+        }
+    });
 }

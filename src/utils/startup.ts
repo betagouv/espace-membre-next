@@ -15,6 +15,5 @@ export const getCurrentPhase = (
             PHASES_ORDERED_LIST.indexOf(phaseB.name) -
             PHASES_ORDERED_LIST.indexOf(phaseA.name)
     );
-    console.log("LCS PHASE", sorted[0]);
     return sorted[0].name;
 };
