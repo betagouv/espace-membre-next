@@ -5,6 +5,7 @@ import { getServerSession } from "next-auth";
 import { BaseInfoUpdate } from "@/components/BaseInfoUpdatePage";
 import { getAllStartups } from "@/lib/kysely/queries";
 import { getUserInfos } from "@/lib/kysely/queries/users";
+import { userInfosToModel } from "@/models/mapper";
 import { memberSchema } from "@/models/member";
 import { authOptions } from "@/utils/authoptions";
 import { routeTitles } from "@/utils/routes/routeTitles";
@@ -21,7 +22,7 @@ export default async function Page() {
     }
     const username = session.user.id;
     const dbData = await getUserInfos({ username });
-    const userInfos = memberSchema.parse(dbData);
+    const userInfos = userInfosToModel(dbData);
 
     const startups = await getAllStartups();
     const startupOptions = startups.map((startup) => ({
