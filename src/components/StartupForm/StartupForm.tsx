@@ -385,28 +385,39 @@ export function StartupForm(props: StartupFormProps) {
                             })),
                         }}
                         setSponsors={(selectedSponsorIds: string[]) => {
+                            /* workaround can probably be better, and we could probably do that
+                            just before the call to save method instead of in this function
+                            :
+                                here selectSponsorIds can be uuid or ghid.
+                                If it is a ghid, it means it is a new sponsor and
+                                we don't want to upload newSponsor as startupSponsor
+                            */
                             const newSponsors = getValues("newSponsors");
                             const newSponsorIds = newSponsors.map(
                                 (s) => s.ghid
                             );
+                            // if a new sponsor was created, but it is then removed by the user
+                            // we new to remove it from newSponsor
                             const idsToDelete = _.difference(
                                 newSponsorIds,
                                 selectedSponsorIds
                             );
-                            const updateNewSponsors = newSponsors.filter(
+                            const updatedNewSponsors = newSponsors.filter(
                                 (newSponsor) =>
                                     !idsToDelete.includes(newSponsor.ghid)
                             );
-                            const updateNewSponsorIds = updateNewSponsors.map(
+                            const updatedNewSponsorIds = updatedNewSponsors.map(
                                 (s) => s.ghid
                             );
+                            // change startupSponsor with ids that are not newSponsorsIds
                             setValue(
                                 "startupSponsors",
                                 selectedSponsorIds.filter(
-                                    (id) => !updateNewSponsorIds.includes(id)
+                                    (id) => !updatedNewSponsorIds.includes(id)
                                 )
                             );
-                            setValue("newSponsors", updateNewSponsors);
+                            // change newSonsors
+                            setValue("newSponsors", updatedNewSponsors);
                         }}
                         setNewSponsors={(
                             data: startupInfoUpdateSchemaType["newSponsors"]
