@@ -284,6 +284,8 @@ export const BaseInfoUpdate = (props: BaseInfoUpdateProps) => {
                         nativeSelectProps={{
                             ...register(`legal_status`),
                         }}
+                        state={errors.legal_status ? "error" : "default"}
+                        stateRelatedMessage={errors.legal_status?.message}
                     >
                         <option value="" disabled hidden>
                             Selectionnez une option
