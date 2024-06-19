@@ -41,7 +41,7 @@ export const StartupInfoUpdate = (props: StartupInfoUpdateProps) => {
             //         withCredentials: true,
             //     }
             // );
-            updateStartup({
+            await updateStartup({
                 formData: data,
                 startupUuid: props.startup.uuid,
             });

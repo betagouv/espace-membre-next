@@ -35,8 +35,8 @@ export async function createStartup({
                 .values({
                     ghid: slugify(startup.name),
                     ...startup,
-                    technos: startup.technos
-                        ? JSON.stringify(startup.technos)
+                    techno: startup.techno
+                        ? JSON.stringify(startup.techno)
                         : undefined,
                     usertypes: startup.usertypes
                         ? JSON.stringify(startup.usertypes)
@@ -165,7 +165,18 @@ export async function updateStartup({
             // update startup data
             await trx
                 .updateTable("startups")
-                .set(startup)
+                .set({
+                    ...startup,
+                    techno: startup.techno
+                        ? JSON.stringify(startup.techno)
+                        : undefined,
+                    usertypes: startup.usertypes
+                        ? JSON.stringify(startup.usertypes)
+                        : undefined,
+                    thematiques: startup.thematiques
+                        ? JSON.stringify(startup.thematiques)
+                        : undefined,
+                })
                 .where("uuid", "=", startupUuid)
                 .execute();
 

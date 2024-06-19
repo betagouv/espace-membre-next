@@ -187,8 +187,8 @@ export function StartupForm(props: StartupFormProps) {
     };
 
     watch("startup.analyse_risques"); // allow checkbox interaction
-    watch("startupSponsors"); // enable autocomplete update
-    watch("newSponsors");
+    const startupSponsors = watch("startupSponsors"); // enable autocomplete update
+    const newSponsors = watch("newSponsors");
     const hasAnalyseDeRisque =
         !!props.startup?.analyse_risques ||
         !!props.startup?.analyse_risques_url ||
@@ -374,12 +374,12 @@ export function StartupForm(props: StartupFormProps) {
 
                     <SponsorBlock
                         sponsors={[
-                            ...(getValues("startupSponsors") || []),
-                            ...getValues("newSponsors").map((s) => s.ghid),
+                            ...(startupSponsors || []),
+                            ...newSponsors.map((s) => s.ghid),
                         ]}
                         allSponsors={{
                             ...props.sponsorOptions,
-                            ...getValues("newSponsors").map((newSponsor) => ({
+                            ...newSponsors.map((newSponsor) => ({
                                 value: newSponsor.ghid,
                                 label: newSponsor.name,
                             })),
@@ -403,10 +403,11 @@ export function StartupForm(props: StartupFormProps) {
                         setNewSponsors={(
                             data: startupInfoUpdateSchemaType["newSponsors"]
                         ) => {
-                            setValue("newSponsors", [
-                                ...(getValues("newSponsors") || []),
-                                ...data,
-                            ]);
+                            setValue(
+                                "startupSponsors",
+                                getValues("startupSponsors")
+                            );
+                            setValue("newSponsors", [...newSponsors, ...data]);
                         }}
                     />
                     <div
