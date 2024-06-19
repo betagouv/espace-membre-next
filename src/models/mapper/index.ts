@@ -105,7 +105,7 @@ export function memberBaseInfoToModel(
             start: typeof m.start === "string" ? new Date(m.start) : m.start,
             end: typeof m.end === "string" ? new Date(m.end) : m.end,
         })),
-        competences: user.competences ? [user.competences?.toString()] : [],
+        competences: (user.competences ? user.competences : []) as string[],
     };
 }
 
@@ -123,7 +123,7 @@ export function userInfosToModel(
         secondary_email: user.secondary_email || "",
         gender: user.gender as GenderCode,
         legal_status: user.legal_status as LegalStatus,
-        competences: user.competences ? user.competences : [],
+        competences: (user.competences ? user.competences : []) as string[],
         email_is_redirection: user.email_is_redirection || false,
         communication_email:
             user.communication_email === CommunicationEmailCode.SECONDARY
@@ -150,9 +150,11 @@ export function startupToModel(
         incubator_id: startup.incubator_id || "",
         description: startup.description || "",
         pitch: startup.pitch || "",
-        techno: startup.techno ? startup.techno : [],
-        thematiques: startup.thematiques ? startup.thematiques : [],
-        usertypes: startup.usertypes ? startup.usertypes : [],
+        techno: (startup.techno ? startup.techno : []) as string[],
+        thematiques: (startup.thematiques
+            ? startup.thematiques
+            : []) as string[],
+        usertypes: (startup.usertypes ? startup.usertypes : []) as string[],
         repository: startup.repository || undefined,
     };
 }

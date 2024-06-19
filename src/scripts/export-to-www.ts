@@ -1,9 +1,9 @@
-import path from "path";
-import { db, sql } from "@lib/kysely";
-import { startup, author, organisation, incubator } from "./github-schemas";
-import yaml from "js-yaml";
 import { detailedDiff } from "deep-object-diff";
 import { writeFile } from "fs/promises";
+import yaml from "js-yaml";
+import path from "path";
+
+import { startup, author, organisation, incubator } from "./github-schemas";
 import {
     withEvents,
     withPhases,
@@ -12,6 +12,7 @@ import {
     dumpYaml,
     importFromZip,
 } from "./utils";
+import { db, sql } from "@lib/kysely";
 
 const getChanges = async (markdownData) => {
     const updates: any[] = [];
@@ -185,16 +186,16 @@ const getChanges = async (markdownData) => {
                 Object.keys(diffed.added).length
             ) {
                 if (
-                    diffed.updated.sponsors &&
+                    diffed.updated["sponsors"] &&
                     Object.keys(diffed.updated).length === 1
                 ) {
                     // skip sponsors update if only order change
                     return;
                 }
                 if (
-                    diffed.added.sponsors &&
+                    diffed.added["sponsors"] &&
                     Object.keys(diffed.added).length === 1 &&
-                    diffed.added.sponsors.length === 0
+                    diffed.added["sponsors"].length === 0
                 ) {
                     // skip sponsors update if no sponsor
                     return;
@@ -209,7 +210,12 @@ const getChanges = async (markdownData) => {
                 updated.phases =
                     updated.phases &&
                     updated.phases.map((p) => {
-                        const phase = {
+                        const phase: {
+                            end?: Date;
+                            name: string;
+                            comment?: string;
+                            start: Date;
+                        } = {
                             name: p.name,
                             comment: p.comment || undefined,
                             start: new Date(p.start),
@@ -276,7 +282,13 @@ const getChanges = async (markdownData) => {
                 updated.missions =
                     updated.missions &&
                     updated.missions.map((p) => {
-                        const mission = {
+                        const mission: {
+                            end?: Date;
+                            start: Date;
+                            employer?: string;
+                            status?: string;
+                            startups?: string[];
+                        } = {
                             start: new Date(p.start),
                         };
                         if (p.end) mission.end = new Date(p.end);

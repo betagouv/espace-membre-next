@@ -220,7 +220,7 @@ export interface StartupEvents {
   date: Timestamp;
   name: string;
   startup_id: string | null;
-  uuid: string;
+  uuid: Generated<string>;
 }
 
 export interface Startups {
