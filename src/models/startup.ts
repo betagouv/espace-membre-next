@@ -156,6 +156,7 @@ export const startupSchema = z.object({
                 message: "L'incubateur est obligatoire",
             }),
         })
+        .min(1)
         .describe("Incubateur ou fabrique numérique"),
     contact: z
         .string({

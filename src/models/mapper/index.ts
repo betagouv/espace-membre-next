@@ -147,7 +147,7 @@ export function startupToModel(
         ...startup,
         mailing_list: startup.mailing_list || undefined,
         contact: startup.contact || "",
-        incubator_id: startup.incubator_id || "",
+        incubator_id: startup.incubator_id as string,
         description: startup.description || "",
         pitch: startup.pitch || "",
         techno: (startup.techno ? startup.techno : []) as string[],

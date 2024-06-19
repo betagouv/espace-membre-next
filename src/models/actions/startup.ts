@@ -35,11 +35,13 @@ export const startupInfoUpdateSchema = z.object({
     startupPhases: z.array(
         phaseSchema.omit({
             uuid: true,
+            startup_id: true,
         })
     ),
     newPhases: z.array(
         phaseSchema.omit({
             uuid: true,
+            startup_id: true,
         })
     ),
 });
