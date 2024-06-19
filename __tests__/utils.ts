@@ -9,7 +9,7 @@ import testUsers from "./users.json";
 import { UsersDomaineEnum } from "@/@types/db";
 import { db } from "@/lib/kysely";
 import { startupToModel } from "@/models/mapper";
-import { Domaine } from "@/models/member";
+import { Domaine, EmailStatusCode } from "@/models/member";
 import config from "@/server/config";
 import knex from "@db";
 
@@ -218,6 +218,7 @@ const testUtils = {
             primary_email_status_updated_at: new Date(
                 Date.now() - sixMinutesInMs
             ),
+            primary_email_status: EmailStatusCode.EMAIL_ACTIVE,
             github: user.github,
             secondary_email: user.secondary_email,
             domaine: (user.domaine || Domaine.ANIMATION) as UsersDomaineEnum,
