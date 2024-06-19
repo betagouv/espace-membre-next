@@ -4,7 +4,7 @@ import {
     deleteMission,
     updateMission,
 } from "@/lib/kysely/queries/missions";
-import { getUserInfos, updateUser } from "@/lib/kysely/queries/users";
+import { getUserInfos } from "@/lib/kysely/queries/users";
 import {
     memberInfoUpdateSchemaType,
     memberValidateInfoSchemaType,
@@ -33,7 +33,7 @@ export async function updateMember(
                     link: memberData.link,
                     avatar: memberData.avatar,
                     github: memberData.github,
-                    competences: memberData.competences,
+                    competences: JSON.stringify(memberData.competences),
                     // teams: memberData.teams,
                     secondary_email:
                         "secondary_email" in memberData
