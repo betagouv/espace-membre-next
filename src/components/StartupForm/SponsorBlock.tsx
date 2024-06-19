@@ -7,7 +7,8 @@ import { createModal } from "@codegouvfr/react-dsfr/Modal";
 import SESponsorSelect from "../SESponsorSelect";
 import { SponsorForm } from "../SponsorForm/SponsorForm";
 import { startupInfoUpdateSchemaType } from "@/models/actions/startup";
-import { Sponsor } from "@/models/sponsor";
+import { Option } from "@/models/misc";
+import { Sponsor, sponsorSchemaType } from "@/models/sponsor";
 
 const modal = createModal({
     id: "foo-modal",
@@ -29,6 +30,11 @@ const SponsorBlock = ({
     sponsors,
     allSponsors,
     setNewSponsors,
+}: {
+    setSponsors: any;
+    sponsors: any;
+    allSponsors: Option[];
+    setNewSponsors: any;
 }) => {
     function openModal() {
         modal.open();
@@ -40,7 +46,6 @@ const SponsorBlock = ({
         setNewSponsors([newSponsor]);
         modal.close();
     }
-
     return (
         <div className="fr-input-group">
             <SESponsorSelect

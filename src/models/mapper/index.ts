@@ -150,11 +150,15 @@ export function startupToModel(
         incubator_id: startup.incubator_id as string,
         description: startup.description || "",
         pitch: startup.pitch || "",
-        techno: (startup.techno ? startup.techno : []) as string[],
-        thematiques: (startup.thematiques
+        techno: (startup.techno && Array.isArray(startup.techno)
+            ? startup.techno
+            : []) as string[],
+        thematiques: (startup.thematiques && Array.isArray(startup.thematiques)
             ? startup.thematiques
             : []) as string[],
-        usertypes: (startup.usertypes ? startup.usertypes : []) as string[],
+        usertypes: (startup.usertypes && Array.isArray(startup.usertypes)
+            ? startup.usertypes
+            : []) as string[],
         repository: startup.repository || undefined,
     };
 }

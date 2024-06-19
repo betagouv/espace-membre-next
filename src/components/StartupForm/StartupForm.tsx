@@ -10,6 +10,7 @@ import { Checkbox } from "@codegouvfr/react-dsfr/Checkbox";
 import { Input } from "@codegouvfr/react-dsfr/Input";
 import { Select } from "@codegouvfr/react-dsfr/Select";
 import { zodResolver } from "@hookform/resolvers/zod";
+import _ from "lodash";
 import MarkdownIt from "markdown-it";
 import { useForm } from "react-hook-form";
 import MdEditor from "react-markdown-editor-lite";
@@ -19,13 +20,12 @@ import SponsorBlock from "./SponsorBlock";
 import { ThematiquesEditor } from "./ThematiquesEditor";
 import { UsertypesEditor } from "./UsertypesEditor";
 import { ClientOnly } from "../ClientOnly";
-import { Option } from "../CommunityPage";
 import SelectAccessibilityStatus from "../SelectAccessibilityStatus";
 import {
     startupInfoUpdateSchema,
     startupInfoUpdateSchemaType,
 } from "@/models/actions/startup";
-import { incubatorSchemaType } from "@/models/incubator";
+import { Option } from "@/models/misc";
 import { sponsorSchemaType } from "@/models/sponsor";
 import {
     StartupPhase,
@@ -133,9 +133,6 @@ export function StartupForm(props: StartupFormProps) {
             newPhases: [],
         },
     });
-
-    const [newSponsors, setNewSponsors] = useState<any[]>([]);
-
     const [alertMessage, setAlertMessage] = React.useState<{
         title: string;
         message: NonNullable<React.ReactNode>;
@@ -191,12 +188,11 @@ export function StartupForm(props: StartupFormProps) {
 
     watch("startup.analyse_risques"); // allow checkbox interaction
     watch("startupSponsors"); // enable autocomplete update
-
+    watch("newSponsors");
     const hasAnalyseDeRisque =
         !!props.startup?.analyse_risques ||
         !!props.startup?.analyse_risques_url ||
         !!getValues("startup.analyse_risques");
-
     return (
         <>
             <div>
@@ -257,6 +253,30 @@ export function StartupForm(props: StartupFormProps) {
                             }}
                         />
                     </div>
+                    {/* <div
+                        className={`fr-input-group ${
+                            errors?.startup?.thematiques
+                                ? "fr-input-group--error"
+                                : ""
+                        }`}
+                    >
+                        <label className="fr-label">
+                            Techno{" "}
+                            <span className="fr-hint-text">
+                                Indiquez les technologies utilisées par la
+                                startup
+                            </span>
+                        </label>
+
+                        <TechnoEditor
+                            defaultValue={getValues("startup.techno") || []}
+                            onChange={(e, data) => {
+                                setValue("startup.techno", data, {
+                                    shouldDirty: true,
+                                });
+                            }}
+                        />
+                    </div> */}
                     <div
                         className={`fr-input-group ${
                             errors?.startup?.usertypes
@@ -358,17 +378,27 @@ export function StartupForm(props: StartupFormProps) {
                             ...getValues("newSponsors").map((s) => s.ghid),
                         ]}
                         allSponsors={{
-                            ...props.sponsorOptions.reduce(
-                                (a, c) => ({ ...a, [c.value]: c }),
-                                {}
-                            ),
-                            ...getValues("newSponsors").reduce(
-                                (a, c) => ({ ...a, [c.ghid]: c }),
-                                {}
-                            ),
+                            ...props.sponsorOptions,
+                            ...getValues("newSponsors").map((newSponsor) => ({
+                                value: newSponsor.ghid,
+                                label: newSponsor.name,
+                            })),
                         }}
-                        setSponsors={(data) => {
-                            setValue("startupSponsors", data);
+                        setSponsors={(selectedSponsorIds: string[]) => {
+                            const newSponsors = getValues("newSponsors");
+                            const newSponsorIds = newSponsors.map(
+                                (s) => s.ghid
+                            );
+                            const idsToDelete = _.difference(
+                                newSponsorIds,
+                                selectedSponsorIds
+                            );
+                            const updateNewSponsors = newSponsors.filter(
+                                (newSponsor) =>
+                                    !idsToDelete.includes(newSponsor.ghid)
+                            );
+                            setValue("startupSponsors", selectedSponsorIds);
+                            setValue("newSponsors", updateNewSponsors);
                         }}
                         setNewSponsors={(
                             data: startupInfoUpdateSchemaType["newSponsors"]
@@ -377,14 +407,6 @@ export function StartupForm(props: StartupFormProps) {
                                 ...(getValues("newSponsors") || []),
                                 ...data,
                             ]);
-                            // setValue(
-                            //     "startupSponsors",
-                            //     [
-                            //         ...(getValues("startupSponsors") || []),
-                            //         ...data.map((s) => s.ghid),
-                            //     ],
-                            //     { shouldDirty: true }
-                            // );
                         }}
                     />
                     <div

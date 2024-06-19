@@ -4,7 +4,7 @@ import React from "react";
 import * as Sentry from "@sentry/nextjs";
 import axios from "axios";
 
-import { Option } from "../CommunityPage";
+import { Option } from "@/models/misc";
 import { StartupForm, StartupFormProps } from "../StartupForm/StartupForm";
 import { createStartup } from "@/app/api/startups/actions";
 import { incubatorSchemaType } from "@/models/incubator";

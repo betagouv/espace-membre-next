@@ -5,11 +5,11 @@ import { fr } from "@codegouvfr/react-dsfr";
 import * as Sentry from "@sentry/nextjs";
 import axios from "axios";
 
-import { Option } from "../CommunityPage";
 import { StartupForm, StartupFormProps } from "../StartupForm/StartupForm";
 import { updateStartup } from "@/app/api/startups/actions";
 import { startupInfoUpdateSchemaType } from "@/models/actions/startup";
 import { incubatorSchemaType } from "@/models/incubator";
+import { Option } from "@/models/misc";
 import { sponsorSchemaType } from "@/models/sponsor";
 import { phaseSchemaType, startupSchemaType } from "@/models/startup";
 import routes, { computeRoute } from "@/routes/routes";

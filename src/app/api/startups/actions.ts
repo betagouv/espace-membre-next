@@ -3,7 +3,6 @@
 import slugify from "@sindresorhus/slugify";
 import _ from "lodash";
 import { getServerSession } from "next-auth";
-import { v4 as uuidv4 } from "uuid";
 import { z } from "zod";
 
 import { db } from "@/lib/kysely";
@@ -36,8 +35,15 @@ export async function createStartup({
                 .values({
                     ghid: slugify(startup.name),
                     ...startup,
-                    usertypes: JSON.stringify(startup.usertypes),
-                    thematiques: JSON.stringify(startup.thematiques),
+                    technos: startup.technos
+                        ? JSON.stringify(startup.technos)
+                        : undefined,
+                    usertypes: startup.usertypes
+                        ? JSON.stringify(startup.usertypes)
+                        : undefined,
+                    thematiques: startup.thematiques
+                        ? JSON.stringify(startup.thematiques)
+                        : undefined,
                 })
                 .returning("uuid")
                 .executeTakeFirst();

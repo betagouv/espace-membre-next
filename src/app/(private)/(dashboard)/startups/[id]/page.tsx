@@ -7,7 +7,11 @@ import StartupPage, {
 import { db, jsonArrayFrom } from "@/lib/kysely";
 import { getStartup } from "@/lib/kysely/queries";
 import { getUserByStartup } from "@/lib/kysely/queries/users";
-import { memberBaseInfoToModel, phaseToModel } from "@/models/mapper";
+import {
+    memberBaseInfoToModel,
+    phaseToModel,
+    startupToModel,
+} from "@/models/mapper";
 import { memberBaseInfoSchema, memberSchema } from "@/models/member";
 import { startupSchema } from "@/models/startup";
 
@@ -40,7 +44,7 @@ export default async function Page({ params }: Props) {
             .where("startup_id", "=", dbSe.uuid)
             .execute()
     ).map((phase) => phaseToModel(phase));
-    const startup = startupSchema.parse(dbSe);
+    const startup = startupToModel(dbSe);
     const startupMembers = (await getUserByStartup(params.id)).map((user) => {
         return memberBaseInfoToModel(user);
     });

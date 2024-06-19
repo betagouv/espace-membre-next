@@ -57,11 +57,10 @@ export function PhasesEditor({
         });
     };
 
-    const phases = useWatch({
+    useWatch({
         control,
         name: `startupPhases`,
     });
-
     return (
         <div className={fr.cx("fr-mb-3w")}>
             {errors && errors.message && (
