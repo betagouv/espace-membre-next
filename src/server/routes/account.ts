@@ -73,10 +73,10 @@ const router = express.Router();
 //     accountController.updateCommunicationEmailApi
 // );
 
-router.get(
-    routes.ME,
-    express.json({ type: "*/*" }),
-    accountController.getCurrentUser
-);
+// router.get(
+//     routes.ME,
+//     express.json({ type: "*/*" }),
+//     accountController.getCurrentUser
+// );
 
 export { router as accountRouter };

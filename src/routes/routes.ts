@@ -47,7 +47,6 @@ class routes {
         "/api/users/:username/secondary_email" as const;
     static USER_UPDATE_PRIMARY_EMAIL_API =
         "/api/users/:username/primary_email" as const;
-    static USER_UPDATE_END_DATE_API = "/api/users/:username/end-date" as const;
     static USER_UPGRADE_EMAIL_API =
         "/api/users/:username/email-upgrade" as const;
     static USER_CREATE_EMAIL_API = "/api/users/:username/create-email" as const;
@@ -56,8 +55,8 @@ class routes {
         "/api/account/set_email_responder" as const;
     // static USER_DELETE_EMAIL_RESPONDER_API =
     //     "/api/account/delete_email_responder" as const;
-    static USER_UPDATE_COMMUNICATION_EMAIL_API =
-        "/api/account/update_communication_email" as const;
+    // static USER_UPDATE_COMMUNICATION_EMAIL_API =
+    //     "/api/account/update_communication_email" as const;
     // account
     static ACCOUNT_GET = "/account" as const;
     static ACCOUNT_GET_API = "/api/account" as const;
