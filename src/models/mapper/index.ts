@@ -123,7 +123,7 @@ export function userInfosToModel(
         secondary_email: user.secondary_email || "",
         gender: user.gender as GenderCode,
         legal_status: user.legal_status as LegalStatus,
-        competences: user.competences ? [user.competences.toString()] : [],
+        competences: user.competences ? user.competences : [],
         email_is_redirection: user.email_is_redirection || false,
         communication_email:
             user.communication_email === CommunicationEmailCode.SECONDARY
@@ -150,11 +150,9 @@ export function startupToModel(
         incubator_id: startup.incubator_id || "",
         description: startup.description || "",
         pitch: startup.pitch || "",
-        techno: startup.techno ? [startup.techno?.toString()] : [],
-        thematiques: startup.thematiques
-            ? [startup.thematiques?.toString()]
-            : [],
-        usertypes: startup.usertypes ? [startup.usertypes?.toString()] : [],
+        techno: startup.techno ? startup.techno : [],
+        thematiques: startup.thematiques ? startup.thematiques : [],
+        usertypes: startup.usertypes ? startup.usertypes : [],
         repository: startup.repository || undefined,
     };
 }
