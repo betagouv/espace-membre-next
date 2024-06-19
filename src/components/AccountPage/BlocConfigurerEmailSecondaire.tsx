@@ -3,11 +3,9 @@ import React from "react";
 import Accordion from "@codegouvfr/react-dsfr/Accordion";
 import Button from "@codegouvfr/react-dsfr/Button";
 import Input from "@codegouvfr/react-dsfr/Input";
-import axios from "axios";
+import { useSession } from "next-auth/react";
 
 import { changeSecondaryEmailForUser } from "@/app/api/member/actions";
-import { useSession } from "@/proxies/next-auth";
-import routes, { computeRoute } from "@/routes/routes";
 
 export default function BlocConfigurerEmailSecondaire({
     canChangeEmails,
@@ -29,7 +27,7 @@ export default function BlocConfigurerEmailSecondaire({
                         setIsSaving(true);
                         changeSecondaryEmailForUser(
                             value,
-                            sessionWrapper.data?.user?.name!
+                            sessionWrapper.data?.user.id
                         )
                             .then((data) => {
                                 setIsSaving(false);

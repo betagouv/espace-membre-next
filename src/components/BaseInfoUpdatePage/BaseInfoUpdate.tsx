@@ -9,8 +9,8 @@ import Select from "@codegouvfr/react-dsfr/Select";
 import { zodResolver } from "@hookform/resolvers/zod";
 import * as Sentry from "@sentry/nextjs";
 import axios from "axios";
+import { useSession } from "next-auth/react";
 import { useForm } from "react-hook-form";
-import { z } from "zod";
 
 import { CompetencesEditor } from "./CompetencesEditor";
 import { MissionsEditor } from "./MissionsEditor";
@@ -24,7 +24,6 @@ import {
 } from "@/models/actions/member";
 import { GenderCode, statusOptions } from "@/models/member";
 import { DOMAINE_OPTIONS, memberSchema } from "@/models/member";
-import { useSession } from "@/proxies/next-auth";
 import routes, { computeRoute } from "@/routes/routes";
 import { routeTitles } from "@/utils/routes/routeTitles";
 
@@ -81,7 +80,6 @@ export const BaseInfoUpdate = (props: BaseInfoUpdateProps) => {
 
     const onSubmit = async (input: memberInfoUpdateSchemaType) => {
         //console.log("onSubmit", input);
-
         if (isSaving) {
             return;
         }
@@ -94,7 +92,7 @@ export const BaseInfoUpdate = (props: BaseInfoUpdateProps) => {
         try {
             const { message } = await postMemberData({
                 values: input,
-                sessionUsername: session.data?.user?.name as string,
+                sessionUsername: session.data?.user.id,
             });
             setAlertMessage({
                 title: `Modifications enregistrées`,
@@ -305,7 +303,7 @@ export const BaseInfoUpdate = (props: BaseInfoUpdateProps) => {
                                 setValueAs: (
                                     // use this instead of valueAsNumber to handle undefined value
                                     v
-                                ) => (v === "" ? null : parseInt(v)),
+                                ) => (!v ? null : parseInt(v)),
                             }),
                             type: "number",
                         }}
