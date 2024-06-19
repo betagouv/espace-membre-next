@@ -28,7 +28,7 @@ export async function PUT(
         throw new Error("User does not exists");
     }
 
-    updateMember(memberData, session.user.uuid);
+    await updateMember(memberData, session.user.uuid);
 
     const dbUser = await getUserInfos({
         username,
