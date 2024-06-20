@@ -5,9 +5,9 @@ import { Accordion } from "@codegouvfr/react-dsfr/Accordion";
 import Button from "@codegouvfr/react-dsfr/Button";
 import { Input } from "@codegouvfr/react-dsfr/Input";
 import { zodResolver } from "@hookform/resolvers/zod";
-import axios from "axios";
-import { useFieldArray, useForm } from "react-hook-form";
+import { useForm } from "react-hook-form";
 
+import { setEmailResponder } from "@/app/api/member/actions";
 import {
     UpdateOvhResponder,
     UpdateOvhResponderSchema,
@@ -62,7 +62,7 @@ export default function BlocEmailResponder({
             <form
                 className="fr-mb-6v"
                 onSubmit={handleSubmit(
-                    ({ content, from, to }: UpdateOvhResponder) => {
+                    async ({ content, from, to }: UpdateOvhResponder) => {
                         if (isSaving) {
                             return;
                         }
@@ -71,17 +71,16 @@ export default function BlocEmailResponder({
                             return;
                         }
                         setIsSaving(true);
-                        axios.post(
-                            computeRoute(routes.USER_SET_EMAIL_RESPONDER_API),
-                            {
+                        try {
+                            await setEmailResponder({
                                 content,
                                 from,
                                 to,
-                            },
-                            {
-                                withCredentials: true,
-                            }
-                        );
+                            });
+                        } catch (e) {
+                            alert(e);
+                        }
+                        setIsSaving(false);
                     }
                 )}
             >

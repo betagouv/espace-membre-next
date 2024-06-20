@@ -14,8 +14,7 @@ import {
     addContactsToMailingLists,
     removeContactsFromMailingList,
 } from "@/server/config/email.config";
-import { capitalizeWords, requiredError } from "@/server/controllers/utils";
-import { isValidDate } from "@/server/controllers/validator";
+import { capitalizeWords } from "@/server/controllers/utils";
 import { Contact, MAILING_LIST_TYPE } from "@/server/modules/email";
 import { authOptions } from "@/utils/authoptions";
 
@@ -129,7 +128,7 @@ async function changeContactEmail(previousEmail, contact: Contact) {
     }
 }
 
-export async function setEmailResponderHandler({
+export async function setEmailResponder({
     content,
     from,
     to,
@@ -138,8 +137,7 @@ export async function setEmailResponderHandler({
     if (!session || !session.user.id) {
         throw new Error(`You don't have the right to access this function`);
     }
-
-    if (to && from < to) {
+    if (!to || new Date(to).getTime() < new Date(from).getTime()) {
         throw new Error(
             "nouvelle date de fin : la date doit être supérieure à la date de début"
         );
@@ -152,7 +150,7 @@ export async function setEmailResponderHandler({
             to,
             content,
         });
-        addEvent({
+        await addEvent({
             action_code: EventCode.MEMBER_RESPONDER_CREATED,
             created_by_username: session.user.id,
             action_on_username: session.user.id,
@@ -166,7 +164,7 @@ export async function setEmailResponderHandler({
             to,
             content,
         });
-        addEvent({
+        await addEvent({
             action_code: EventCode.MEMBER_RESPONDER_UPDATED,
             created_by_username: session.user.id,
             action_on_username: session.user.id,
@@ -176,6 +174,7 @@ export async function setEmailResponderHandler({
             },
         });
     }
+    return true;
 }
 
 export async function deleteResponder() {
