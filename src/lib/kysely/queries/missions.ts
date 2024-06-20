@@ -67,7 +67,7 @@ export async function updateMission(
             .where("mission_id", "=", uuid)
             .execute();
 
-        for (const startup of startups) {
+        for (const startup of startups || []) {
             await trx
                 .insertInto("missions_startups")
                 .values({
