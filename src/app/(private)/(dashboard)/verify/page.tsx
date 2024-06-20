@@ -9,6 +9,7 @@ import { fetchGithubMarkdown } from "@/lib/github";
 import { db } from "@/lib/kysely";
 import { getAllStartups } from "@/lib/kysely/queries";
 import { getUserInfos } from "@/lib/kysely/queries/users";
+import { userInfosToModel } from "@/models/mapper";
 import { memberSchema } from "@/models/member";
 import betagouv from "@/server/betagouv";
 import { authOptions } from "@/utils/authoptions";
@@ -49,7 +50,7 @@ export default async function CreateMemberPage() {
 
     // const startups = await betagouv.startupsInfos();
     const startups = await getAllStartups();
-    const member = memberSchema.parse(await getUserInfos({ username }));
+    const member = userInfosToModel(await getUserInfos({ username }));
     // const missions = await db.selectFrom("missions").selectAll().execute();
     const startupOptions = startups.map((startup) => {
         return {
