@@ -27,7 +27,7 @@ export default function BlocConfigurerEmailSecondaire({
                         setIsSaving(true);
                         changeSecondaryEmailForUser(
                             value,
-                            sessionWrapper.data?.user.id
+                            sessionWrapper.data?.user.id!
                         )
                             .then((data) => {
                                 setIsSaving(false);
