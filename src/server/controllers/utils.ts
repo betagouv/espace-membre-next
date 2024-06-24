@@ -218,7 +218,9 @@ export const isPublicServiceEmail = async function (email: string) {
             return true;
         }
     } catch (e) {
-        throw new Error("Get response from tchap error");
+        console.error(e)
+        //throw new Error("Get response from tchap error");
+        return false;
     }
 };
 
