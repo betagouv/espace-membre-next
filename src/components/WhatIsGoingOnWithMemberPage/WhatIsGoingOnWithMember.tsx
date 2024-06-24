@@ -699,12 +699,7 @@ export const UpdateEndDateScreen = function (props) {
 //     );
 // };
 
-const isDateInTheFuture = function (date: Date) {
-    return date > new Date();
-};
-
 export const UpdateEndDatePendingScreen = function ({
-    getUser,
     user,
     pullRequestURL,
     next,
@@ -726,25 +721,6 @@ export const UpdateEndDatePendingScreen = function ({
             console.log(e);
         }
     };
-
-    const checkPRChangesAreApplied = async () => {
-        try {
-            const data = await getUserPublicInfo(user.userInfos.id);
-            if (isDateInTheFuture(new Date(data.userInfos.end))) {
-                setPRStatus("validated");
-                setSeconds(DEFAULT_TIME);
-                // user date is now in the future
-            }
-        } catch (e) {
-            console.error(e);
-        }
-    };
-
-    React.useEffect(() => {
-        if (isDateInTheFuture(new Date(user.userInfos.end))) {
-            setPRStatus("validated");
-        }
-    }, [user]);
 
     React.useEffect(() => {
         // exit early when we reach 0
