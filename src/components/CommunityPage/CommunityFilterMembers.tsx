@@ -23,14 +23,14 @@ import "react-tabulator/lib/css/tabulator.min.css"; // theme
 import { computeRoute } from "@/routes/routes";
 
 function Link(props: any) {
-    const cellValue = props.cell._cell.value || "Edit | Show";
-    return <a href={`/community/${cellValue}`}>{cellValue}@beta.gouv.fr</a>;
+    const cellValue = props.cell._cell.value; //|| "Edit | Show";
+    return <a href={`mailto:${cellValue}`}>{cellValue}</a>;
 }
 
 const columns: ColumnDefinition[] = [
     {
         title: "email",
-        field: "id",
+        field: "primary_email",
         width: 150,
         formatter: reactFormatter(<Link />),
     },

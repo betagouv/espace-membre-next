@@ -22,8 +22,7 @@ function MemberTable({
                 (member: memberBaseInfoSchemaType, index: number) => [
                     <a
                         key={index}
-                        target="_blank"
-                        href={`https://github.com/betagouv/beta.gouv.fr/edit/master/content/_authors/${member.username}.md`}
+                        href={`/community/${member.username}`}
                     >
                         {member.fullname}
                     </a>,
@@ -77,7 +76,7 @@ export default function StartupPage({
                         <a
                             className="fr-link"
                             target="_blank"
-                            href={`https://github.com/betagouv/beta.gouv.fr/edit/master/content/_startups/${startupInfos.ghid}.md`}
+                            href={`https://github.com/betagouv/beta.gouv.fr/blob/master/content/_startups/${startupInfos.ghid}.md`}
                         >
                             {startupInfos.name}
                         </a>
