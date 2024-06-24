@@ -228,10 +228,10 @@ const UserInfo = function (props: {
                         Startups actuelles:
                     </span>
                     <br />
-                    {props.userInfos.missions.map(function (startup) {
+                    {props.userInfos.missions.map(function (mission) {
                         return (
                             <>
-                                - {startup}
+                                - {mission.startups}
                                 <br />
                             </>
                         );
@@ -797,8 +797,8 @@ export const WhichMemberScreen = function ({
     users,
 }: {
     users: memberPublicInfoSchemaType[];
-    getUser: (user: string) => Promise<memberPublicInfoSchemaType>;
-    setUser: (user: memberPublicInfoSchemaType) => void;
+    getUser: (user: string) => Promise<memberWrapperPublicInfoSchemaType>;
+    setUser: (user: memberWrapperPublicInfoSchemaType) => void;
 }) {
     const [isSearching, setIsSearching] = React.useState(false);
 
@@ -1068,7 +1068,7 @@ export const WhatIsGoingOnWithMember = function (
         //             getUser={getUser}
         //         />
         //     );
-        // } else if (step === STEP.accountCreated && user) {
+    } else if (step === STEP.accountCreated && user) {
         stepView = (
             <div>
                 <p>
