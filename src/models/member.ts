@@ -349,6 +349,7 @@ export const memberBaseInfoSchema = memberSchema.pick({
 export type memberBaseInfoSchemaType = z.infer<typeof memberBaseInfoSchema>;
 
 export const memberPublicInfoSchema = memberSchema.pick({
+    uuid: true,
     username: true,
     fullname: true,
     role: true,

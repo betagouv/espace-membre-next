@@ -32,7 +32,9 @@ export function missionToModel(m: Selectable<Missions>) {
     };
 }
 
-export function memberPublicInfoToModel(user: any): memberPublicInfoSchemaType {
+export function memberPublicInfoToModel(
+    user: Selectable<Users>
+): memberPublicInfoSchemaType {
     if (!user) {
         throw new Error("No users");
     }
@@ -51,6 +53,7 @@ export function memberPublicInfoToModel(user: any): memberPublicInfoSchemaType {
         // domaine: user.domaine as Domaine,
         // missions: user.missions,
         //
+        uuid: user.uuid,
         username: user.username,
         fullname: user.fullname,
         role: user.role,

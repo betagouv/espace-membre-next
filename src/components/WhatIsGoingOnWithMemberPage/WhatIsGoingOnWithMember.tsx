@@ -4,6 +4,9 @@ import React from "react";
 import Button from "@codegouvfr/react-dsfr/Button";
 import Input from "@codegouvfr/react-dsfr/Input";
 import axios from "axios";
+import { format } from "date-fns";
+import { fr } from "date-fns/locale/fr";
+import { useRouter } from "next/navigation";
 
 import { useLiveChat } from "../live-chat/useLiveChat";
 import MemberSelect from "../MemberSelect";
@@ -16,6 +19,7 @@ import {
 import { EMAIL_STATUS_READABLE_FORMAT } from "@/models/misc";
 import { startupSchemaType } from "@/models/startup";
 import routes from "@/routes/routes";
+import { getLastMission } from "@/utils/member";
 
 enum STEP {
     whichMember = "whichMember",
@@ -320,6 +324,8 @@ const MemberComponent = function ({
     startups: startupSchemaType[];
     startFix: (step: any) => void;
 }) {
+    const router = useRouter();
+
     const steps = [STEP.whichMember, STEP.showMember];
     const showSteps =
         !!isExpired ||
@@ -351,6 +357,7 @@ const MemberComponent = function ({
         steps.push(STEP.emailBlocked);
     }
     steps.push(STEP.everythingIsGood);
+    const lastMission = getLastMission(userPublicInfos.missions);
     return (
         <div>
             <h2>{userPublicInfos.fullname}</h2>
@@ -373,8 +380,14 @@ const MemberComponent = function ({
                         {!!isExpired && (
                             <li>
                                 Le contrat de {userPublicInfos.fullname} est
-                                arrivé à terme le{" "}
-                                {/* <strong>{userPublicInfos.end}</strong>. */}
+                                arrivé à terme
+                                {lastMission && lastMission.end
+                                    ? ` le ` +
+                                      format(lastMission.end, "d MMMM yyyy", {
+                                          locale: fr,
+                                      })
+                                    : ""}
+                                .
                             </li>
                         )}
                         {userPublicInfos.primary_email_status ===
@@ -393,9 +406,7 @@ const MemberComponent = function ({
                     <div className="notification">
                         <p>Pour réactiver son compte il faut :</p>
                         <ol>
-                            {!!isExpired && (
-                                <li>changer sa date de fin et merger la PR</li>
-                            )}
+                            {!!isExpired && <li>changer sa date de fin</li>}
                             {!hasEmailInfos && <li>Re-créer son email beta</li>}
                             {userPublicInfos.primary_email_status ===
                                 EmailStatusCode.EMAIL_SUSPENDED && (
@@ -514,7 +525,14 @@ const MemberComponent = function ({
                     >
                         <Button
                             nativeButtonProps={{
-                                onClick: () => startFix(steps),
+                                onClick: () => {
+                                    router.push(
+                                        `/community/${userPublicInfos.username}`,
+                                        {
+                                            scroll: false,
+                                        }
+                                    );
+                                },
                             }}
                         >
                             Commencer la procédure
