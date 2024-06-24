@@ -13,7 +13,7 @@ test("submit invalid login returns error message", async ({ page }) => {
 
     await expect(
         page.getByText(
-            "Error: Le membre pouet.pouet@betagouv.ovh n'a pas de fiche github."
+            "Error: Il n'y a pas de fiche dans l'espace-membre pour cet email. Un membre de la communauté peut en créer une."
         )
     ).toBeVisible();
 });
