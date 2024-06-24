@@ -24,11 +24,19 @@ jobs:
                   sleep 15
                   yarn migrate
                   yarn seed
-                  yarn dev &
+                  yarn build
+                  yarn start &
               env:
                   OVH_APP_KEY: ${{ secrets.OVH_APP_KEY }}
                   OVH_APP_SECRET: ${{ secrets.OVH_APP_SECRET }}
                   OVH_CONSUMER_KEY: ${{ secrets.OVH_CONSUMER_KEY }}
+            - name: Wait
+              uses: cygnetdigital/wait_for_response@v2.0.0
+              with:
+                url: 'http://localhost:8100/'
+                responseCode: '200'
+                timeout: 120000
+                interval: 500
             - name: Launch playwright
               run: |
                   npx playwright test
@@ -37,4 +45,4 @@ jobs:
               with:
                   name: playwright-report
                   path: playwright-report/
-                  retention-days: 30
+                  retention-days: 3
