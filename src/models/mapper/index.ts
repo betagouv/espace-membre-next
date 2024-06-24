@@ -9,7 +9,7 @@ import {
     memberSchemaType,
 } from "../member";
 import { StartupPhase, phaseSchemaType, startupSchemaType } from "../startup";
-import { BadgeRequests, Phases } from "@/@types/db";
+import { BadgeRequests, Missions, Phases } from "@/@types/db";
 import { getStartup } from "@/lib/kysely/queries";
 import {
     getAllUsersInfo,
@@ -23,6 +23,14 @@ import {
     LegalStatus,
     MemberType,
 } from "@/models/member";
+
+export function missionToModel(m: Selectable<Missions>) {
+    return {
+        ...m,
+        start: typeof m.start === "string" ? new Date(m.start) : m.start,
+        end: typeof m.end === "string" ? new Date(m.end) : m.end,
+    };
+}
 
 export function memberPublicInfoToModel(user: any): memberPublicInfoSchemaType {
     if (!user) {
@@ -50,7 +58,9 @@ export function memberPublicInfoToModel(user: any): memberPublicInfoSchemaType {
         bio: user.bio,
         link: user.link,
         github: user.github,
-        missions: user.missions,
+        missions: (user?.missions || []).map((mission) =>
+            missionToModel(mission)
+        ),
         // primary_email: true,
         primary_email_status: user.primary_email_status,
     };
@@ -100,11 +110,7 @@ export function memberBaseInfoToModel(
             : undefined,
         primary_email_status_updated_at: user.primary_email_status_updated_at!,
         email_is_redirection: user.email_is_redirection || false,
-        missions: user.missions.map((m) => ({
-            ...m,
-            start: typeof m.start === "string" ? new Date(m.start) : m.start,
-            end: typeof m.end === "string" ? new Date(m.end) : m.end,
-        })),
+        missions: user.missions.map((m) => missionToModel(m)),
         competences: (user.competences ? user.competences : []) as string[],
     };
 }
@@ -131,9 +137,9 @@ export function userInfosToModel(
                 : CommunicationEmailCode.PRIMARY,
         primary_email_status_updated_at:
             user.primary_email_status_updated_at || new Date(),
-        missions: (user?.missions || []).map((mission) => ({
-            ...mission,
-        })),
+        missions: (user?.missions || []).map((mission) =>
+            missionToModel(mission)
+        ),
     };
 }
 

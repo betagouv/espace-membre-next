@@ -192,6 +192,8 @@ function withMissions(eb: ExpressionBuilder<DB, "users">) {
                 "missions.end",
                 "missions.employer",
                 "missions.status",
+                "missions.id",
+                "missions.user_id",
                 // aggregate startups names
                 sql<
                     Array<string>

@@ -1,12 +1,19 @@
 "use server";
 
+import { findLastIndex } from "lodash";
+import { GSP_NO_RETURNED_VALUE } from "next/dist/lib/constants";
 import { getServerSession } from "next-auth/next";
 
 import { addEvent } from "@/lib/events";
 import { db } from "@/lib/kysely";
+import { getUserByEmail, MattermostUser, searchUsers } from "@/lib/mattermost";
 import { EventCode } from "@/models/actionEvent";
 import { UpdateOvhResponder } from "@/models/actions/ovh";
-import { CommunicationEmailCode } from "@/models/member";
+import { memberPublicInfoToModel } from "@/models/mapper";
+import {
+    CommunicationEmailCode,
+    memberWrapperPublicInfoSchemaType,
+} from "@/models/member";
 import betagouv from "@/server/betagouv";
 import config from "@/server/config";
 import {
@@ -14,7 +21,7 @@ import {
     addContactsToMailingLists,
     removeContactsFromMailingList,
 } from "@/server/config/email.config";
-import { capitalizeWords } from "@/server/controllers/utils";
+import { capitalizeWords, userInfos } from "@/server/controllers/utils";
 import { Contact, MAILING_LIST_TYPE } from "@/server/modules/email";
 import { authOptions } from "@/utils/authoptions";
 
@@ -188,4 +195,57 @@ export async function deleteResponder() {
         created_by_username: session.user.id,
         action_on_username: session.user.id,
     });
+}
+
+export async function getUserPublicInfo(
+    username: string
+): Promise<memberWrapperPublicInfoSchemaType> {
+    try {
+        const user = await userInfos({ username }, false);
+
+        const hasGithubFile = user.userInfos;
+        const hasEmailAddress =
+            user.emailInfos || user.emailRedirections.length > 0;
+        if (!hasGithubFile && !hasEmailAddress) {
+            throw new Error(
+                'Il n\'y a pas de membres avec ce compte mail. Vous pouvez commencez par créer une fiche sur Github pour la personne <a href="/onboarding">en cliquant ici</a>.'
+            );
+        }
+        const dbUser = await db
+            .selectFrom("users")
+            .selectAll()
+            .where("username", "=", username)
+            .executeTakeFirst();
+        const secondaryEmail: string = dbUser?.secondary_email || "";
+        let mattermostUser = dbUser?.primary_email
+            ? await getUserByEmail(dbUser.primary_email).catch((e) => null)
+            : null;
+        let [mattermostUserInTeamAndActive]: MattermostUser[] =
+            dbUser?.primary_email
+                ? await searchUsers({
+                      term: dbUser.primary_email,
+                      team_id: config.mattermostTeamId,
+                      allow_inactive: false,
+                  }).catch((e) => [])
+                : [];
+        let data: memberWrapperPublicInfoSchemaType = {
+            isExpired: user.isExpired,
+            hasEmailInfos: !!user.emailInfos,
+            isEmailBlocked: user.emailInfos?.isBlocked || false,
+            hasSecondaryEmail: !!secondaryEmail,
+            // canCreateEmail: user.authorizations.canCreateEmail || false,
+            // emailInfos: req.auth?.id ? user.emailInfos : undefined,
+            mattermostInfo: {
+                hasMattermostAccount: !!mattermostUser,
+                isInactiveOrNotInTeam: !mattermostUserInTeamAndActive,
+            },
+            userPublicInfos: memberPublicInfoToModel(user.userInfos),
+        };
+        return data;
+    } catch (err) {
+        console.error(err);
+        throw new Error(
+            "Impossible de récupérer les informations du membre de la communauté."
+        );
+    }
 }

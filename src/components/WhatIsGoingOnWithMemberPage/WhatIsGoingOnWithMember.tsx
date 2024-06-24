@@ -3,17 +3,18 @@ import React from "react";
 
 import Button from "@codegouvfr/react-dsfr/Button";
 import Input from "@codegouvfr/react-dsfr/Input";
-import axios, { AxiosError } from "axios";
+import axios from "axios";
 
 import { useLiveChat } from "../live-chat/useLiveChat";
 import MemberSelect from "../MemberSelect";
+import { getUserPublicInfo } from "@/app/api/member/actions";
 import { EmailStatusCode } from "@/models/member";
 import {
-    memberBaseInfoSchemaType,
     memberPublicInfoSchemaType,
     memberWrapperPublicInfoSchemaType,
 } from "@/models/member";
 import { EMAIL_STATUS_READABLE_FORMAT } from "@/models/misc";
+import { startupSchemaType } from "@/models/startup";
 import routes from "@/routes/routes";
 
 enum STEP {
@@ -40,6 +41,7 @@ interface FormErrorResponse {
 
 export interface WhatIsGoingOnWithMemberProps {
     users: memberPublicInfoSchemaType[];
+    startups: startupSchemaType[];
 }
 
 const ConnectedScreen = (props) => {
@@ -208,6 +210,7 @@ const EmailInfo = function ({ emailInfos, primary_email_status }) {
 };
 
 const UserInfo = function (props: {
+    startups: startupSchemaType[];
     userInfos: memberWrapperPublicInfoSchemaType["userPublicInfos"];
     hasSecondaryEmail: memberWrapperPublicInfoSchemaType["hasSecondaryEmail"];
     mattermostInfo: memberWrapperPublicInfoSchemaType["mattermostInfo"];
@@ -224,18 +227,32 @@ const UserInfo = function (props: {
             </p>
             {props.userInfos.missions && (
                 <p>
-                    <span className="font-weight-bold">
-                        Startups actuelles:
-                    </span>
+                    <span className="font-weight-bold">Produits actuels:</span>
                     <br />
-                    {props.userInfos.missions.map(function (mission) {
-                        return (
-                            <>
-                                - {mission.startups}
-                                <br />
-                            </>
-                        );
-                    })}
+                    {props.userInfos.missions
+                        .filter((m) => !m.end || m.end > new Date())
+                        .map(function (mission) {
+                            return (
+                                <>
+                                    {mission.startups
+                                        ?.map((missionStartupUuid) =>
+                                            props.startups.find(
+                                                (startup) =>
+                                                    startup.uuid ===
+                                                    missionStartupUuid
+                                            )
+                                        )
+                                        .filter((startup) => !!startup)
+                                        .map((s) => (
+                                            <>
+                                                {`- `} {s?.name}
+                                                <br />
+                                            </>
+                                        ))}
+                                    <br />
+                                </>
+                            );
+                        })}
                 </p>
             )}
             {/* {props.userInfos.end && (
@@ -296,9 +313,11 @@ const MemberComponent = function ({
         hasSecondaryEmail,
         mattermostInfo,
     },
+    startups,
     startFix,
 }: {
     memberWrapper: memberWrapperPublicInfoSchemaType;
+    startups: startupSchemaType[];
     startFix: (step: any) => void;
 }) {
     const steps = [STEP.whichMember, STEP.showMember];
@@ -336,6 +355,7 @@ const MemberComponent = function ({
         <div>
             <h2>{userPublicInfos.fullname}</h2>
             <UserInfo
+                startups={startups}
                 userInfos={userPublicInfos}
                 mattermostInfo={mattermostInfo}
                 hasSecondaryEmail={hasSecondaryEmail}
@@ -691,7 +711,7 @@ export const UpdateEndDatePendingScreen = function ({
 
     const checkPRChangesAreApplied = async () => {
         try {
-            const data = await getUser(user.userInfos.id);
+            const data = await getUserPublicInfo(user.userInfos.id);
             if (isDateInTheFuture(new Date(data.userInfos.end))) {
                 setPRStatus("validated");
                 setSeconds(DEFAULT_TIME);
@@ -793,11 +813,9 @@ export const UpdateEndDatePendingScreen = function ({
 
 export const WhichMemberScreen = function ({
     setUser,
-    getUser,
     users,
 }: {
     users: memberPublicInfoSchemaType[];
-    getUser: (user: string) => Promise<memberWrapperPublicInfoSchemaType>;
     setUser: (user: memberWrapperPublicInfoSchemaType) => void;
 }) {
     const [isSearching, setIsSearching] = React.useState(false);
@@ -805,7 +823,7 @@ export const WhichMemberScreen = function ({
     const search = async (member: string) => {
         setIsSearching(true);
         try {
-            const data = await getUser(member);
+            const data = await getUserPublicInfo(member);
             setUser(data);
         } catch {
             alert(`Aucune info sur l'utilisateur`);
@@ -926,7 +944,7 @@ export const CreateEmailScreen = function (props) {
 export const WhatIsGoingOnWithMember = function (
     props: WhatIsGoingOnWithMemberProps
 ) {
-    const { users } = props;
+    const { users, startups } = props;
     const { showLiveChat, isLiveChatLoading } = useLiveChat();
 
     const [step, setStep] = React.useState(STEP.whichMember);
@@ -939,16 +957,6 @@ export const WhatIsGoingOnWithMember = function (
         (user: memberWrapperPublicInfoSchemaType) => void
     ] = React.useState();
     const [pullRequestURL, setPullRequestURL] = React.useState("");
-    const getUser: (
-        string
-    ) => Promise<memberWrapperPublicInfoSchemaType> = async (member) => {
-        return await axios
-            .get(routes.API_GET_PUBLIC_USER_INFO.replace(":username", member))
-            .then((resp) => {
-                setUser(resp.data);
-                return resp.data;
-            });
-    };
 
     React.useEffect(() => {
         if (localStorage.getItem("state")) {
@@ -975,10 +983,11 @@ export const WhatIsGoingOnWithMember = function (
                 if (state.pullRequestURL) {
                     setPullRequestURL(state.pullRequestURL);
                 }
-                console.log(state.user);
                 if (state.user) {
                     setUser(state.user);
-                    getUser(state.user.userPublicInfos.username).catch((e) => {
+                    getUserPublicInfo(
+                        state.user.userPublicInfos.username
+                    ).catch((e) => {
                         console.error(e);
                     });
                 }
@@ -1034,16 +1043,21 @@ export const WhatIsGoingOnWithMember = function (
     if (step === STEP.whichMember) {
         stepView = (
             <WhichMemberScreen
-                users={props.users}
+                users={users}
                 setUser={(user) => {
                     setUser(user);
                     next([STEP.whichMember, STEP.showMember], user);
                 }}
-                getUser={getUser}
             />
         );
     } else if (step === STEP.showMember && user) {
-        stepView = <MemberComponent memberWrapper={user} startFix={startFix} />;
+        stepView = (
+            <MemberComponent
+                startups={startups}
+                memberWrapper={user}
+                startFix={startFix}
+            />
+        );
         // } else if (step === STEP.updateEndDate && user) {
         //     stepView = (
         //         <UpdateEndDateScreen
@@ -1277,7 +1291,6 @@ export const WhatIsGoingOnWithMember = function (
             <UpdateEndDatePendingScreen
                 user={user}
                 next={next}
-                getUser={getUser}
                 pullRequestURL={pullRequestURL}
             />
         );
