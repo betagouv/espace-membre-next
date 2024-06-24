@@ -21,7 +21,6 @@ import {
     diagnosticRouter,
     userRouter,
     userApiRouter,
-    userPublicApiRouter,
     mapRouter,
     newsletterRouter,
     onboardingRouter,
@@ -101,7 +100,6 @@ const startServer = () => {
         server.get("/", indexController.getIndex);
         server.use(userRouter);
         server.use(userApiRouter);
-        server.use(userPublicApiRouter);
         server.use(accountRouter);
         server.use(startupRouter);
         server.use(communityRouter);

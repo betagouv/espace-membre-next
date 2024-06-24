@@ -1,7 +1,5 @@
 "use server";
 
-import { findLastIndex } from "lodash";
-import { GSP_NO_RETURNED_VALUE } from "next/dist/lib/constants";
 import { getServerSession } from "next-auth/next";
 
 import { addEvent } from "@/lib/events";
@@ -9,7 +7,7 @@ import { db } from "@/lib/kysely";
 import { getUserByEmail, MattermostUser, searchUsers } from "@/lib/mattermost";
 import { EventCode } from "@/models/actionEvent";
 import { UpdateOvhResponder } from "@/models/actions/ovh";
-import { memberPublicInfoToModel } from "@/models/mapper";
+import { memberBaseInfoToMemberPublicInfoModel } from "@/models/mapper";
 import {
     CommunicationEmailCode,
     memberWrapperPublicInfoSchemaType,
@@ -239,7 +237,9 @@ export async function getUserPublicInfo(
                 hasMattermostAccount: !!mattermostUser,
                 isInactiveOrNotInTeam: !mattermostUserInTeamAndActive,
             },
-            userPublicInfos: memberPublicInfoToModel(user.userInfos),
+            userPublicInfos: memberBaseInfoToMemberPublicInfoModel(
+                user.userInfos
+            ),
         };
         return data;
     } catch (err) {

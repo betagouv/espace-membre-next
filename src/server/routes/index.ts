@@ -1,5 +1,5 @@
 // export { authRouter } from "./auth";
-export { userRouter, userApiRouter, userPublicApiRouter } from "./users";
+export { userRouter, userApiRouter } from "./users";
 export { accountRouter } from "./account";
 export { adminRouter } from "./admin";
 export { badgeRouter } from "./badge";

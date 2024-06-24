@@ -9,5 +9,4 @@ export * from "./usersControllerUtils";
 export * from "./upgradeEmailForUser";
 // export * from "./baseInfo/postBaseInfoUpdate";
 // export * from "./baseInfo/publicPostBaseInfoUpdate";
-export * from "./api/getUserInfo";
 export * from "./api/createEmail";

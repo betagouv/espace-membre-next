@@ -32,8 +32,25 @@ export function missionToModel(m: Selectable<Missions>) {
     };
 }
 
+export function memberBaseInfoToMemberPublicInfoModel(
+    user: memberBaseInfoSchemaType
+) {
+    return {
+        uuid: user.uuid,
+        username: user.username,
+        fullname: user.fullname,
+        role: user.role,
+        domaine: user.domaine,
+        bio: user.bio,
+        link: user.link,
+        github: user.github,
+        missions: user.missions,
+        primary_email_status: user.primary_email_status,
+    };
+}
+
 export function memberPublicInfoToModel(
-    user: Selectable<Users>
+    user: Awaited<ReturnType<typeof getAllUsersInfo>>[0]
 ): memberPublicInfoSchemaType {
     if (!user) {
         throw new Error("No users");
@@ -65,7 +82,7 @@ export function memberPublicInfoToModel(
             missionToModel(mission)
         ),
         // primary_email: true,
-        primary_email_status: user.primary_email_status,
+        primary_email_status: user.primary_email_status as EmailStatusCode,
     };
 }
 

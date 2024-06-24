@@ -1,11 +1,11 @@
 import express from "express";
+
 import * as usersController from "../controllers/usersController";
 import routes from "@/routes/routes";
 import { publicGetRouteRateLimiter } from "@/server/middlewares/rateLimiter";
 
 const router = express.Router();
 const apiRouter = express.Router();
-const publicApiRouter = express.Router();
 
 // users
 // router.post(routes.USER_CREATE_EMAIL, usersController.createEmailForUser);
@@ -51,14 +51,4 @@ apiRouter.post(
     usersController.createEmailApi
 );
 
-publicApiRouter.get(
-    routes.API_GET_PUBLIC_USER_INFO,
-    publicGetRouteRateLimiter,
-    usersController.getUserInfo
-);
-
-export {
-    router as userRouter,
-    apiRouter as userApiRouter,
-    publicApiRouter as userPublicApiRouter,
-};
+export { router as userRouter, apiRouter as userApiRouter };
