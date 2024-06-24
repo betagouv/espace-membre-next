@@ -707,20 +707,6 @@ export const UpdateEndDatePendingScreen = function ({
     const DEFAULT_TIME = 60;
     const [seconds, setSeconds] = React.useState(DEFAULT_TIME);
     const [prStatus, setPRStatus] = React.useState("notMerged");
-    const checkPR = async () => {
-        try {
-            const pullRequests = await axios
-                .get(routes.PULL_REQUEST_GET_PRS)
-                .then((resp) => resp.data.pullRequests);
-            const pullRequestURLs = pullRequests.map((pr) => pr.html_url);
-            if (!pullRequestURLs.includes(pullRequestURL)) {
-                setPRStatus("merged");
-                setSeconds(DEFAULT_TIME);
-            }
-        } catch (e) {
-            console.log(e);
-        }
-    };
 
     React.useEffect(() => {
         // exit early when we reach 0
@@ -730,12 +716,6 @@ export const UpdateEndDatePendingScreen = function ({
         // component re-renders
         const intervalId = setInterval(() => {
             const prev = seconds;
-            if (seconds === DEFAULT_TIME && prStatus === "notMerged") {
-                checkPR();
-            }
-            if (seconds === DEFAULT_TIME && prStatus === "merged") {
-                checkPRChangesAreApplied();
-            }
             if (prev - 1 === 0) {
                 setSeconds(DEFAULT_TIME);
             } else {
