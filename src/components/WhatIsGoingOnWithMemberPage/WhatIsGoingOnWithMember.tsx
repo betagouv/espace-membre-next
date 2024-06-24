@@ -596,70 +596,70 @@ export const UpdateEndDateScreen = function (props) {
     );
 };
 
-const AccountPendingCreationScreen = function ({
-    getUser,
-    next,
-    user,
-}: {
-    getUser;
-    next;
-    user: memberWrapperPublicInfoSchemaType;
-}) {
-    const INITIAL_TIME = 60;
-    const [seconds, setSeconds] = React.useState(INITIAL_TIME);
-    React.useEffect(() => {
-        // exit early when we reach 0
-        if (!seconds) return;
+// const AccountPendingCreationScreen = function ({
+//     getUser,
+//     next,
+//     user,
+// }: {
+//     getUser;
+//     next;
+//     user: memberWrapperPublicInfoSchemaType;
+// }) {
+//     const INITIAL_TIME = 60;
+//     const [seconds, setSeconds] = React.useState(INITIAL_TIME);
+//     React.useEffect(() => {
+//         // exit early when we reach 0
+//         if (!seconds) return;
 
-        const intervalId = setInterval(() => {
-            const prev = seconds;
-            if (seconds === INITIAL_TIME) {
-                getUser(user.userPublicInfos.username).catch(console.error);
-            }
-            if (prev - 1 === 0) {
-                setSeconds(INITIAL_TIME);
-            } else {
-                setSeconds(seconds - 1);
-            }
-        }, 1000);
-        return () => clearInterval(intervalId);
-    }, [seconds, user]);
+//         const intervalId = setInterval(() => {
+//             const prev = seconds;
+//             if (seconds === INITIAL_TIME) {
+//                 getUser(user.userPublicInfos.username).catch(console.error);
+//             }
+//             if (prev - 1 === 0) {
+//                 setSeconds(INITIAL_TIME);
+//             } else {
+//                 setSeconds(seconds - 1);
+//             }
+//         }, 1000);
+//         return () => clearInterval(intervalId);
+//     }, [seconds, user]);
 
-    return (
-        <div>
-            <h2>Création du compte de {user.userPublicInfos.username}</h2>
-            {user &&
-                user.userPublicInfos.primary_email_status !==
-                    EmailStatusCode.EMAIL_ACTIVE && (
-                    <>
-                        <p>Création en cours ...</p>
-                        <p>
-                            Un email informant de la création du compte sera
-                            envoyé d'ici 10min
-                        </p>
-                        <p>Recheck automatique d'ici {seconds}s</p>
-                        <button className="button" onClick={() => next()}>
-                            C'est bon {user.userPublicInfos.fullname} a bien
-                            reçu l'email
-                        </button>
-                    </>
-                )}
-            {user &&
-                user.userPublicInfos.primary_email_status ===
-                    EmailStatusCode.EMAIL_ACTIVE && (
-                    <>
-                        <p className="notification">
-                            C'est bon le compte de{" "}
-                            {user.userPublicInfos.fullname} est actif.
-                        </p>
-                        <button className="button" onClick={() => next()}>
-                            Passer à l'étape suivante
-                        </button>
-                    </>
-                )}
-        </div>
-    );
-};
+//     return (
+//         <div>
+//             <h2>Création du compte de {user.userPublicInfos.username}</h2>
+//             {user &&
+//                 user.userPublicInfos.primary_email_status !==
+//                     EmailStatusCode.EMAIL_ACTIVE && (
+//                     <>
+//                         <p>Création en cours ...</p>
+//                         <p>
+//                             Un email informant de la création du compte sera
+//                             envoyé d'ici 10min
+//                         </p>
+//                         <p>Recheck automatique d'ici {seconds}s</p>
+//                         <button className="button" onClick={() => next()}>
+//                             C'est bon {user.userPublicInfos.fullname} a bien
+//                             reçu l'email
+//                         </button>
+//                     </>
+//                 )}
+//             {user &&
+//                 user.userPublicInfos.primary_email_status ===
+//                     EmailStatusCode.EMAIL_ACTIVE && (
+//                     <>
+//                         <p className="notification">
+//                             C'est bon le compte de{" "}
+//                             {user.userPublicInfos.fullname} est actif.
+//                         </p>
+//                         <button className="button" onClick={() => next()}>
+//                             Passer à l'étape suivante
+//                         </button>
+//                     </>
+//                 )}
+//         </div>
+//     );
+// };
 
 const isDateInTheFuture = function (date: Date) {
     return date > new Date();
@@ -791,7 +791,15 @@ export const UpdateEndDatePendingScreen = function ({
     );
 };
 
-export const WhichMemberScreen = function ({ setUser, getUser, users }) {
+export const WhichMemberScreen = function ({
+    setUser,
+    getUser,
+    users,
+}: {
+    users: memberPublicInfoSchemaType[];
+    getUser: (user: string) => Promise<memberPublicInfoSchemaType>;
+    setUser: (user: memberPublicInfoSchemaType) => void;
+}) {
     const [isSearching, setIsSearching] = React.useState(false);
 
     const search = async (member: string) => {
@@ -816,10 +824,12 @@ export const WhichMemberScreen = function ({ setUser, getUser, users }) {
                             hint="Cherche et sélectionne la personne que tu veux aider en tapant son nom ou son prénom."
                             name="username"
                             placeholder="Sélectionner un membre"
-                            onChange={(e) => search(e.value)}
-                            members={users.map((u) => ({
-                                value: u.id,
-                                label: u.fullname,
+                            onChange={(e) => {
+                                search(e.value);
+                            }}
+                            members={users.map((user) => ({
+                                value: user.username,
+                                label: user.fullname,
                             }))}
                             defaultValue={undefined}
                         />
@@ -942,33 +952,39 @@ export const WhatIsGoingOnWithMember = function (
 
     React.useEffect(() => {
         if (localStorage.getItem("state")) {
-            const state: {
-                step: STEP;
-                memberId: string;
-                user: memberWrapperPublicInfoSchemaType;
-                steps: STEP[];
-                pullRequestURL: string;
-            } = JSON.parse(localStorage.getItem("state")!);
-            history.pushState(
-                {
-                    step: state.step || STEP.whichMember,
-                },
-                ""
-            );
-            if (state.step) {
-                setStep(state.step);
-            }
-            if (state.steps) {
-                setFixes(state.steps);
-            }
-            if (state.pullRequestURL) {
-                setPullRequestURL(state.pullRequestURL);
-            }
-            if (state.user) {
-                setUser(state.user);
-                getUser(state.user.userPublicInfos.username).catch((e) => {
-                    console.error(e);
-                });
+            try {
+                const state: {
+                    step: STEP;
+                    memberId: string;
+                    user: memberWrapperPublicInfoSchemaType;
+                    steps: STEP[];
+                    pullRequestURL: string;
+                } = JSON.parse(localStorage.getItem("state")!);
+                history.pushState(
+                    {
+                        step: state.step || STEP.whichMember,
+                    },
+                    ""
+                );
+                if (state.step) {
+                    setStep(state.step);
+                }
+                if (state.steps) {
+                    setFixes(state.steps);
+                }
+                if (state.pullRequestURL) {
+                    setPullRequestURL(state.pullRequestURL);
+                }
+                console.log(state.user);
+                if (state.user) {
+                    setUser(state.user);
+                    getUser(state.user.userPublicInfos.username).catch((e) => {
+                        console.error(e);
+                    });
+                }
+            } catch (e) {
+                // if error clear localstorage state data
+                localStorage.removeItem("state");
             }
         }
         window.onpopstate = (e) => {
