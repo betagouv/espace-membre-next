@@ -9,7 +9,7 @@ import {
     memberSchemaType,
 } from "../member";
 import { StartupPhase, phaseSchemaType, startupSchemaType } from "../startup";
-import { BadgeRequests, Missions, Phases } from "@/@types/db";
+import { BadgeRequests, Missions, Phases, Users } from "@/@types/db";
 import { getStartup } from "@/lib/kysely/queries";
 import {
     getAllUsersInfo,
