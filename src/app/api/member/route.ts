@@ -17,10 +17,10 @@ export async function POST(req: Request) {
     const rawdata = await req.json();
     const { member, missions } = createMemberSchema.parse(rawdata);
 
-    let user;
-    try {
-        await db.transaction().execute(async (trx) => {
-            user = trx
+    return db
+        .transaction()
+        .execute(async (trx) => {
+            const user = await trx
                 .insertInto("users")
                 .values({
                     domaine: member.domaine,
@@ -31,31 +31,39 @@ export async function POST(req: Request) {
                     primary_email_status:
                         EmailStatusCode.EMAIL_VERIFICATION_WAITING,
                 })
-                .execute();
+                .returning("uuid")
+                .executeTakeFirstOrThrow();
             for (const mission of missions) {
                 // Now, use the same transaction to link to an organization
                 await createMission(
                     {
                         ...mission,
-                        user_id: session?.user.uuid,
+                        user_id: user.uuid,
                     },
                     trx
                 );
             }
             return user;
-        });
-        const dbUser = await getUserInfos({
-            username: user.username,
-            options: { withDetails: true },
-        });
+        })
+        .then(async (res) => {
+            console.log("res", res);
+            const dbUser = await getUserInfos({
+                uuid: res.uuid,
+                options: { withDetails: true },
+            });
 
-        return Response.json({
-            message: `Success`,
-            data: dbUser,
+            return Response.json({
+                message: `Success`,
+                data: dbUser,
+            });
+        })
+        .catch((e) => {
+            console.error("Transaction failed:", e);
+            return Response.json({
+                message: `Error`,
+                data: null,
+            });
         });
-    } catch (error) {
-        console.error("Transaction failed:", error);
-    }
 
     // addEvent({
     //     action_code: EventCode.MEMBER_BASE_INFO_UPDATED,

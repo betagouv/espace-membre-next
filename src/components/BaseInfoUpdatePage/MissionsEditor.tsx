@@ -92,51 +92,59 @@ export const Mission = ({
                 </div>
             )}
             <div className={fr.cx("fr-grid-row", "fr-grid-row--gutters")}>
-                <div className={fr.cx("fr-col-3")}>
-                    <Input
-                        label={
-                            labels.start ||
-                            missionSchema.shape.start.description
-                        }
-                        hintText="Date de début"
-                        nativeInputProps={{
-                            style: { width: 200 },
-                            placeholder: "JJ/MM/YYYY",
-                            type: "date",
-                            ...register(`missions.${index}.start`),
-                            value: startDateString,
-                        }}
-                        {...defaultState("start")}
-                    />
-                </div>{" "}
-                <div className={fr.cx("fr-col-4")}>
-                    <Input
-                        label={
-                            labels.end || missionSchema.shape.end.description
-                        }
-                        nativeInputProps={{
-                            style: { width: 200 },
-                            placeholder: "JJ/MM/YYYY",
-                            type: "date",
-                            ...register(`missions.${index}.end`),
-                            value: endDateString,
-                        }}
-                        hintText={
-                            <div>
-                                En cas de doute, mettre{" "}
-                                <button
-                                    className={fr.cx("fr-link", "fr-text--xs")}
-                                    onClick={() => onMissionAutoEndClick(index)}
-                                    role="button"
-                                    type="button"
-                                    title="Mettre la date de fin à +3 mois"
-                                >
-                                    J+3 mois
-                                </button>
-                            </div>
-                        }
-                        {...defaultState("end")}
-                    />
+                <div className={fr.cx("fr-col-12")}>
+                    <div style={{ display: "inline-block" }}  className={fr.cx("fr-mr-3w")}>
+                        <Input
+                            label={
+                                labels.start ||
+                                missionSchema.shape.start.description
+                            }
+                            hintText="Date de début"
+                            nativeInputProps={{
+                                style: { width: 200 },
+                                placeholder: "JJ/MM/YYYY",
+                                type: "date",
+                                ...register(`missions.${index}.start`),
+                                value: startDateString,
+                            }}
+                            {...defaultState("start")}
+                        />
+                    </div>
+                    <div style={{ display: "inline-block" }}>
+                        <Input
+                            label={
+                                labels.end ||
+                                missionSchema.shape.end.description
+                            }
+                            nativeInputProps={{
+                                style: { width: 200 },
+                                placeholder: "JJ/MM/YYYY",
+                                type: "date",
+                                ...register(`missions.${index}.end`),
+                                value: endDateString,
+                            }}
+                            hintText={
+                                <div>
+                                    En cas de doute, mettre{" "}
+                                    <button
+                                        className={fr.cx(
+                                            "fr-link",
+                                            "fr-text--xs"
+                                        )}
+                                        onClick={() =>
+                                            onMissionAutoEndClick(index)
+                                        }
+                                        role="button"
+                                        type="button"
+                                        title="Mettre la date de fin à +3 mois"
+                                    >
+                                        J+3 mois
+                                    </button>
+                                </div>
+                            }
+                            {...defaultState("end")}
+                        />
+                    </div>
                 </div>
             </div>
 
