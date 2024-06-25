@@ -136,7 +136,7 @@ export default function EmailContainer({
     emailResponder: OvhResponder | null;
     authorizations: memberWrapperSchemaType["authorizations"];
 }) {
-    const emailIsBeignCreated = [
+    const emailIsBeingCreated = [
         EmailStatusCode.EMAIL_CREATION_WAITING,
         EmailStatusCode.EMAIL_CREATION_PENDING,
     ].includes(userInfos.primary_email_status);
@@ -176,8 +176,7 @@ export default function EmailContainer({
                     </>
                 )}
                 {!emailInfos &&
-                    userInfos.primary_email &&
-                    !userInfos.primary_email.includes(frontConfig.domain) && (
+                    userInfos.primary_email && (
                         <>
                             <span className="font-weight-bold">
                                 Email principal :{" "}
@@ -199,7 +198,7 @@ export default function EmailContainer({
                     "Non renseigné"
                 )}
             </p>
-            {!!emailIsBeignCreated && (
+            {!!emailIsBeingCreated && (
                 <Alert
                     description="Ton email @beta.gouv.fr est en train d'être créé, tu recevras un email dès que celui-ci est actif."
                     severity="info"
@@ -207,7 +206,7 @@ export default function EmailContainer({
                     small
                 />
             )}
-            {!emailIsBeignCreated && (
+            {!emailIsBeingCreated && (
                 <div className={fr.cx("fr-accordions-group")}>
                     {canCreateEmail &&
                         ![

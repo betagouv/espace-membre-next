@@ -22,7 +22,7 @@ fileignoreconfig:
 - filename: src/app/(private)/(dashboard)/account/page.tsx
   checksum: 355668d8814f965d52adafcb7c199af47869deac16133151c524ccad34611cf4
 - filename: src/app/(private)/(dashboard)/community/create/CommunityCreateMemberPage.tsx
-  checksum: 61d659a5d6ef2f5abf96791577411bd8647ac4dc74e7a08c68d1ca671e435be6
+  checksum: c17bc01af05a054afa1c738171011c7fe9f9f78bf9d8ab0f02a6bcd07f7c675d
 - filename: src/app/(private)/(dashboard)/community/page.tsx
   checksum: b6aac599bbc93b516fc1738b81ede0cce8e08d3d9064af49af67c2b6bac74aaf
 - filename: src/app/(private)/(dashboard)/formations/page.tsx

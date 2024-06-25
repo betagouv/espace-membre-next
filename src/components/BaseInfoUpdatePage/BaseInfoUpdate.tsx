@@ -227,6 +227,15 @@ export const BaseInfoUpdate = (props: BaseInfoUpdateProps) => {
                         state={errors.link ? "error" : "default"}
                         stateRelatedMessage={errors.link?.message}
                     />
+                    <Input
+                        label={memberSchema.shape.github.description}
+                        nativeInputProps={{
+                            placeholder: "ex: kevinmitnick",
+                            ...register("github"),
+                        }}
+                        state={errors.github ? "error" : "default"}
+                        stateRelatedMessage={errors.github?.message}
+                    />
                     <h3>Mes compétences</h3>
                     <p>
                         Tu peux préciser tes compétences, cela permettra à la

@@ -84,7 +84,7 @@ const insertData = async (markdownData: MarkdownData) => {
             const query = db
                 .insertInto("startups")
                 .values({
-                    name: startup.attributes.title,
+                    name: startup.attributes.title || startup.attributes.ghid,
                     contact: startup.attributes.contact,
                     incubator_id,
                     link: startup.attributes.link,
@@ -214,6 +214,7 @@ const insertData = async (markdownData: MarkdownData) => {
                     link: author.attributes.link,
                     domaine: author.attributes.domaine,
                     avatar: author.attributes.avatar,
+                    github: author.attributes.github,
                     role: author.attributes.role,
                     username: author.attributes.ghid,
                     competences: JSON.stringify(author.attributes.competences),
@@ -226,6 +227,7 @@ const insertData = async (markdownData: MarkdownData) => {
                         link: author.attributes.link,
                         domaine: author.attributes.domaine,
                         avatar: author.attributes.avatar,
+                        github: author.attributes.github,
                         role: author.attributes.role,
                         competences: JSON.stringify(
                             author.attributes.competences

@@ -30,14 +30,14 @@ export default function DomaineSelect({
             <Autocomplete
                 multiple
                 options={domaines.map((se) => ({
-                    id: se.key,
+                    id: se.name,
                     label: se.name,
                 }))}
                 onChange={onChange}
                 defaultValue={
                     defaultValue
                         ? defaultValue.map((se) => ({
-                              id: se.key,
+                              id: se.name,
                               label: se.name,
                           }))
                         : undefined

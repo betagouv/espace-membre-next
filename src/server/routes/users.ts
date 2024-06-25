@@ -2,7 +2,6 @@ import express from "express";
 
 import * as usersController from "../controllers/usersController";
 import routes from "@/routes/routes";
-import { publicGetRouteRateLimiter } from "@/server/middlewares/rateLimiter";
 
 const router = express.Router();
 const apiRouter = express.Router();
