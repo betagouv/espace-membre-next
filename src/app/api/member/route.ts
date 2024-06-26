@@ -1,3 +1,4 @@
+import { revalidatePath } from "next/cache";
 import { getServerSession } from "next-auth";
 
 import { db } from "@/lib/kysely";
@@ -51,6 +52,7 @@ export async function POST(req: Request) {
                 uuid: res.uuid,
                 options: { withDetails: true },
             });
+            revalidatePath("/community");
 
             return Response.json({
                 message: `Success`,
