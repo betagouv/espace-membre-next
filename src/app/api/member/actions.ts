@@ -278,7 +278,6 @@ export async function updateMemberMissions(
     // todo check that it is authorized
     await db.transaction().execute(async (trx) => {
         for (const mission of missions) {
-            // Now, use the same transaction to link to an organization
             if (mission.uuid) {
                 const missionPreviousData = previousInfo?.missions.find(
                     (m) => m.uuid === mission.uuid
