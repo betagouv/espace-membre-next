@@ -4,10 +4,16 @@ import { getServerSession } from "next-auth/next";
 
 import { addEvent } from "@/lib/events";
 import { db } from "@/lib/kysely";
+import { createMission, updateMission } from "@/lib/kysely/queries/missions";
+import { getUserBasicInfo, getUserInfos } from "@/lib/kysely/queries/users";
 import { getUserByEmail, MattermostUser, searchUsers } from "@/lib/mattermost";
 import { EventCode } from "@/models/actionEvent";
+import { updateMemberMissionsSchemaType } from "@/models/actions/member";
 import { UpdateOvhResponder } from "@/models/actions/ovh";
-import { memberBaseInfoToMemberPublicInfoModel } from "@/models/mapper";
+import {
+    memberBaseInfoToMemberPublicInfoModel,
+    memberBaseInfoToModel,
+} from "@/models/mapper";
 import {
     CommunicationEmailCode,
     memberWrapperPublicInfoSchemaType,
@@ -248,4 +254,57 @@ export async function getUserPublicInfo(
             "Impossible de récupérer les informations du membre de la communauté."
         );
     }
+}
+
+export async function updateMemberMissions(
+    updateMemberMissionsData: updateMemberMissionsSchemaType
+) {
+    const missions = updateMemberMissionsData.missions;
+    const memberUuid = updateMemberMissionsData.memberUuid;
+    const dbUser = await getUserBasicInfo({ uuid: memberUuid });
+    if (!dbUser) {
+        throw new Error(`Impossible de trouver les données sur le membre`);
+    }
+    const previousInfo = memberBaseInfoToModel(dbUser);
+
+    // todo check that it is authorized
+    await db.transaction().execute(async (trx) => {
+        for (const mission of missions) {
+            // Now, use the same transaction to link to an organization
+            if (mission.uuid) {
+                const missionPreviousData = previousInfo?.missions.find(
+                    (m) => m.uuid === mission.uuid
+                );
+                if (!missionPreviousData) {
+                    throw new Error("La mission devrait déjà exister");
+                }
+                if (
+                    !mission.end ||
+                    !missionPreviousData.end ||
+                    mission.end < missionPreviousData.end
+                ) {
+                    throw new Error(
+                        "La nouvelle date de mission doit être supérieur à la précédente."
+                    );
+                }
+                const { uuid, end } = mission;
+                updateMission(
+                    uuid,
+                    {
+                        end,
+                        user_id: memberUuid,
+                    },
+                    trx
+                );
+            } else {
+                await createMission(
+                    {
+                        ...mission,
+                        user_id: memberUuid,
+                    },
+                    trx
+                );
+            }
+        }
+    });
 }
