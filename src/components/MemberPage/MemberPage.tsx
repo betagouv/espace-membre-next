@@ -10,6 +10,7 @@ import {
 
 import { fr } from "@codegouvfr/react-dsfr";
 import Accordion from "@codegouvfr/react-dsfr/Accordion";
+import Alert from "@codegouvfr/react-dsfr/Alert";
 import Badge from "@codegouvfr/react-dsfr/Badge";
 import Button from "@codegouvfr/react-dsfr/Button";
 import Input from "@codegouvfr/react-dsfr/Input";
@@ -263,70 +264,47 @@ MemberPageProps) {
         <>
             <div className="fr-mb-8v">
                 <h2>Fiche Membre</h2>
-                {isExpired &&
-                    (emailInfos ||
-                        (redirections && redirections.length > 0)) && (
-                        <div>
-                            <p className="fr-text--xl">
-                                ❗ Contrat de {userInfos.fullname} arrivé à
-                                expiration
-                            </p>
-
-                            <p>
-                                Le contrat de {userInfos.fullname} est arrivé à
-                                terme le{" "}
-                                <strong>
-                                    {getLastMissionDate(userInfos.missions)}
-                                </strong>
-                                .
-                            </p>
-                            <p>
-                                Si {userInfos.fullname} a effectivement quitté
-                                la communauté, clôturez son compte :
-                            </p>
-                            <ul>
-                                <li>Clôturer son compte email</li>
-                                <li>Supprimer toutes ses redirections</li>
-                                <li>
-                                    Rediriger des éventuels email vers
-                                    depart@beta.gouv.fr
-                                </li>
-                            </ul>
-                            <form
-                                onSubmit={async (e) => {
-                                    e.preventDefault();
-                                    if (
-                                        confirm(
-                                            "Es-tu sûr de vouloir supprimer son compte email et ses redirections pour <%= userInfos.fullname %> ?"
-                                        )
-                                    ) {
-                                        await axios.post(
-                                            computeRoute(
-                                                routes.USER_DELETE_EMAIL_API
-                                            ).replace(
-                                                ":username",
-                                                userInfos.username
-                                            ),
-                                            undefined,
-                                            {
-                                                withCredentials: true,
-                                            }
-                                        );
-                                    }
-                                }}
-                            >
+                {isExpired && (
+                    <>
+                        <Alert
+                            title={`Contrat de ${userInfos.fullname} arrivé à
+                        expiration`}
+                            severity="info"
+                            description={
                                 <div>
+                                    <p>
+                                        Le contrat de {userInfos.fullname} est
+                                        arrivé à terme le{" "}
+                                        <strong>
+                                            {getLastMissionDate(
+                                                userInfos.missions
+                                            )}
+                                        </strong>
+                                        .
+                                    </p>
+                                    <p>
+                                        Si {userInfos.fullname} est encore dans
+                                        la communauté ou revient pour une
+                                        nouvelle mission tu peux mettre à jour
+                                        ses missions en cliquant sur le bouton
+                                        ci-dessous :
+                                    </p>
+                                    <br />
                                     <Button
-                                        nativeButtonProps={{
-                                            type: "submit",
+                                        linkProps={{
+                                            href: `/community/${userInfos.username}/update`,
                                         }}
                                     >
-                                        Clôturer le compte
+                                        Mettre à jour les missions de
+                                        {userInfos.fullname}
                                     </Button>
+                                    <br />
                                 </div>
-                            </form>
-                        </div>
-                    )}
+                            }
+                        />
+                        <br />
+                    </>
+                )}
                 {userInfos && (
                     <div>
                         <div className="fr-mb-8v">
@@ -335,16 +313,15 @@ MemberPageProps) {
                                 <br />
                                 {userInfos.role}
                                 <br />
-                                <br />
                                 {(userInfos.competences &&
                                     userInfos.competences.length && (
                                         <>
                                             Compétences:{" "}
                                             {userInfos.competences.join(", ")}
+                                            <br />
                                         </>
                                     )) ||
                                     null}
-                                <br />
                                 {getLastMission(userInfos.missions) && (
                                     <BlocMission
                                         mission={

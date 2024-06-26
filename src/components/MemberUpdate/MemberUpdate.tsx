@@ -100,7 +100,7 @@ export const MemberUpdate = ({
     return (
         <>
             <div className={fr.cx("fr-mb-5w")}>
-                <h1>Mises à jour des infomations de {userInfos.fullname}</h1>
+                <h1>Mise à jour des infomations de {userInfos.fullname}</h1>
                 <br />
                 <br />
                 {!!alertMessage && (

@@ -2,7 +2,6 @@ import Alert from "@codegouvfr/react-dsfr/Alert";
 import Button from "@codegouvfr/react-dsfr/Button";
 
 export default function FicheMembre({ userInfos }) {
-    console.log("userInfos", userInfos);
     return (
         <div className="fr-mb-14v">
             <h2>Fiche Membre</h2>
@@ -11,9 +10,8 @@ export default function FicheMembre({ userInfos }) {
                     <>
                         <p>
                             <strong>{userInfos.fullname}</strong>
-                            <br />
-                            {userInfos.role}
                         </p>
+                        <p>{userInfos.role}</p>
                         {userInfos.startups && (
                             <p>
                                 <span className="font-weight-bold">
