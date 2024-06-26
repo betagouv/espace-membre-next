@@ -103,6 +103,13 @@ const populateUsers = async (knex) => {
         }))
     );
 
+    // add a valid mission for valid.member
+    await knex("missions").insert({
+        user_id: "23dd9fed-9c84-432c-a566-f785702147fc",
+        start: new Date("2023-01-01"),
+        end: new Date("2030-03-01"),
+    });
+
     // add an expired mission for expired.member
     await knex("missions").insert({
         user_id: "df843689-1eba-42d6-9f64-3806d8306cab",

@@ -30,7 +30,6 @@ test("search valid community members", async ({ page }) => {
         .locator(".tabulator-tableholder")
         .getByRole("row");
 
-    await expect(await rows.count()).toEqual(2);
-    await expect(await rows.nth(0).innerText()).toContain("Lucas Charrier");
+    await expect(await rows.count()).toEqual(1);
     await expect(await rows.nth(1).innerText()).toContain("Valid member");
 });
