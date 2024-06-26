@@ -324,7 +324,7 @@ MemberPageProps) {
                                             href: `/community/${userInfos.username}/update`,
                                         }}
                                     >
-                                        Mettre à jour les missions de
+                                        Mettre à jour les missions de{" "}
                                         {userInfos.fullname}
                                     </Button>
                                     <br />
@@ -389,6 +389,19 @@ MemberPageProps) {
                                 ) : (
                                     "Non renseigné"
                                 )}
+                                <br />
+                                {userInfos.link && (
+                                    <>
+                                        <span>URL : </span>
+                                        <a
+                                            href={userInfos.link}
+                                            target="_blank"
+                                        >
+                                            {userInfos.link}
+                                        </a>
+                                    </>
+                                )}
+                                <br />
                             </p>
                         </div>
                     </div>
