@@ -204,6 +204,10 @@ export async function deleteResponder() {
 export async function getUserPublicInfo(
     username: string
 ): Promise<memberWrapperPublicInfoSchemaType> {
+    const session = await getServerSession(authOptions);
+    if (!session || !session.user.id) {
+        throw new Error(`You don't have the right to access this function`);
+    }
     try {
         const user = await userInfos({ username }, false);
 
@@ -259,6 +263,10 @@ export async function getUserPublicInfo(
 export async function updateMemberMissions(
     updateMemberMissionsData: updateMemberMissionsSchemaType
 ) {
+    const session = await getServerSession(authOptions);
+    if (!session || !session.user.id) {
+        throw new Error(`You don't have the right to access this function`);
+    }
     const missions = updateMemberMissionsData.missions;
     const memberUuid = updateMemberMissionsData.memberUuid;
     const dbUser = await getUserBasicInfo({ uuid: memberUuid });
