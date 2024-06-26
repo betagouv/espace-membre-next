@@ -1,5 +1,5 @@
 import { NextRequest } from "next/server";
-import { searchUsers } from "@/lib/kysely/queries/users";
+import { searchUsers } from "@/lib/kysely/queries/search";
 
 export async function GET(req: NextRequest) {
     const { searchParams } = new URL(req.url);
