@@ -2,6 +2,7 @@
 
 import slugify from "@sindresorhus/slugify";
 import _ from "lodash";
+import { revalidatePath } from "next/cache";
 import { getServerSession } from "next-auth";
 import { z } from "zod";
 
@@ -97,6 +98,7 @@ export async function createStartup({
                 .returning("uuid")
                 .executeTakeFirst();
         }
+        revalidatePath("/startups");
     });
 }
 
@@ -251,5 +253,6 @@ export async function updateStartup({
                 .returning("uuid")
                 .executeTakeFirst();
         }
+        revalidatePath("/startups");
     });
 }
