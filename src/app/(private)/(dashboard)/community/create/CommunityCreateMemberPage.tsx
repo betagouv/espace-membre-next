@@ -92,11 +92,6 @@ export default function CommunityCreateMemberPage(props: BaseInfoUpdateProps) {
         name: "missions",
     });
 
-    const [alertMessage, setAlertMessage] = React.useState<{
-        title: string;
-        message: NonNullable<React.ReactNode>;
-        type: "success" | "warning";
-    } | null>();
     const [isSaving, setIsSaving] = React.useState(false);
     const [success, setSuccess] = React.useState<null | boolean>(null);
 
