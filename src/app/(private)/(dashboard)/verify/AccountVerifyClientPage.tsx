@@ -266,7 +266,9 @@ export default function AccountVerifyClientPage({
                                                 />
                                             </div>
                                             <div className="fr-fieldset__element fr-col-12 fr-mt-4w">
-                                                <h2>Mes compétences</h2>
+                                                <h2 className="fr-h3">
+                                                    Mes compétences
+                                                </h2>
                                                 <p>
                                                     Tu peux préciser tes
                                                     compétences, cela permettra
