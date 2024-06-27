@@ -87,7 +87,9 @@ export function PhasesEditor({
                                 `startupPhases.${index}.name`
                             )}
                         >
-                            <option value="">{"Selectionnez une phase"}</option>
+                            <option value="" disabled hidden>
+                                Selectionnez une phase
+                            </option>
                             {Object.entries(PHASES_ORDERED_LIST).map(
                                 ([id, label], index) => (
                                     <option key={index} value={label}>

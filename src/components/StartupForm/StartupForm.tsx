@@ -361,7 +361,9 @@ export function StartupForm(props: StartupFormProps) {
                             errors?.startup?.incubator_id?.message
                         }
                     >
-                        <option value="">Séléctionnez un incubateur</option>
+                        <option value="" disabled hidden>
+                            Séléctionnez un incubateur
+                        </option>
                         {props.incubatorOptions.map((incubator) => (
                             <option
                                 value={incubator.value}

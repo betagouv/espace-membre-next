@@ -17,7 +17,9 @@ export default function SelectAccebilityStatus({ value, onChange }) {
                 defaultValue: value,
             }}
         >
-            <option value="">---</option>
+            <option value="" disabled hidden>
+                Selectionnez une option
+            </option>
             {options.map((option) => {
                 return (
                     <option key={option.value} value={option.value}>

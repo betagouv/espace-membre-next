@@ -341,8 +341,12 @@ export default function AccountVerifyClientPage({
                                                         errors.domaine?.message
                                                     }
                                                 >
-                                                    <option value="">
-                                                        Domaine:
+                                                    <option
+                                                        value=""
+                                                        disabled
+                                                        hidden
+                                                    >
+                                                        Selectionnez une option
                                                     </option>
                                                     {DOMAINE_OPTIONS.map(
                                                         (domaine) => (

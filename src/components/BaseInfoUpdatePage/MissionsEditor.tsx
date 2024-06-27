@@ -93,7 +93,10 @@ export const Mission = ({
             )}
             <div className={fr.cx("fr-grid-row", "fr-grid-row--gutters")}>
                 <div className={fr.cx("fr-col-12")}>
-                    <div style={{ display: "inline-block" }}  className={fr.cx("fr-mr-3w")}>
+                    <div
+                        style={{ display: "inline-block" }}
+                        className={fr.cx("fr-mr-3w")}
+                    >
                         <Input
                             label={
                                 labels.start ||
@@ -171,7 +174,9 @@ export const Mission = ({
                         }}
                         {...defaultState("status")}
                     >
-                        <option value="">Statut:</option>
+                        <option value="" disabled hidden>
+                            Selectionnez une option
+                        </option>
                         {userStatusOptions.map((option) => (
                             <option key={option.key} value={option.key}>
                                 {option.name}
