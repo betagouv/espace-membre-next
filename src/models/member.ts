@@ -385,7 +385,7 @@ export type memberWrapperPublicInfoSchemaType = z.infer<
 
 const missionsArraySchema = z.array(missionSchema);
 
-export type HasMissions = {
+export type HasMissions<T = any> = T & {
     missions: z.infer<typeof missionsArraySchema>;
 };
 
