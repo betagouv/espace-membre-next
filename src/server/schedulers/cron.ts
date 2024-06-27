@@ -601,7 +601,7 @@ function startJobs() {
     console.log(`Started ${activeJobs} / ${jobs.length} cron jobs`);
 }
 
-if (require.name === "main") {
-    console.log("starting CRON");
-    startJobs();
-}
+// if (require.name === "main") {
+//     console.log("starting CRON");
+startJobs();
+// }
