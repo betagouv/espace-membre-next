@@ -238,7 +238,7 @@ export const BaseInfoUpdate = (props: BaseInfoUpdateProps) => {
                         state={errors.github ? "error" : "default"}
                         stateRelatedMessage={errors.github?.message}
                     />
-                    <h3>Mes compétences</h3>
+                    <h2>Mes compétences</h2>
                     <p>
                         Tu peux préciser tes compétences, cela permettra à la
                         communauté de mieux de trouver en cas de besoin {`:)`}
@@ -253,7 +253,7 @@ export const BaseInfoUpdate = (props: BaseInfoUpdateProps) => {
                     />
                     <br />
                     <br />
-                    <h3>Mes missions</h3>
+                    <h2>Mes missions</h2>
                     <p>
                         Précise les dates, employeurs et produits pour lesquels
                         tu as mis tes talents à contribution.
@@ -270,7 +270,7 @@ export const BaseInfoUpdate = (props: BaseInfoUpdateProps) => {
                         startupOptions={props.startupOptions}
                         errors={errors.missions || []}
                     />
-                    <h4>Participez à notre observatoire statistique </h4>
+                    <h2>Participe à notre observatoire statistique </h2>
                     ⚠️ Ces valeurs servent à alimenter l'
                     <a
                         href="https://metabase.incubateur.net/public/dashboard/554ff353-6104-4c25-a261-d8bdc40f75d5"
@@ -321,7 +321,7 @@ export const BaseInfoUpdate = (props: BaseInfoUpdateProps) => {
                         state={errors.tjm ? "error" : "default"}
                         stateRelatedMessage={errors.tjm?.message}
                     />
-                    <h4>Participe à la carte des membres (non anonyme)</h4>
+                    <h2>Participe à la carte des membres (non anonyme)</h2>
                     <CitySelect
                         onChange={handleCitySelect}
                         placeholder={"Commune ou code postal"}
