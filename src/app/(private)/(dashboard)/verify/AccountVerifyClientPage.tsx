@@ -587,6 +587,15 @@ export default function AccountVerifyClientPage({
                                                                 `legal_status`
                                                             ),
                                                         }}
+                                                        state={
+                                                            errors.legal_status
+                                                                ? "error"
+                                                                : "default"
+                                                        }
+                                                        stateRelatedMessage={
+                                                            errors.legal_status
+                                                                ?.message
+                                                        }
                                                     >
                                                         <option
                                                             value=""
