@@ -60,7 +60,20 @@ export async function PUT(
     }
     const memberData = memberValidateInfoSchema.parse(await req.json());
 
-    updateMember(memberData, session.user.uuid);
+    const hasPublicServiceEmail = await isPublicServiceEmail(
+        memberData.secondary_email
+    );
+    updateMember(memberData, session.user.uuid, {
+        primary_email: hasPublicServiceEmail
+            ? memberData.secondary_email
+            : null,
+        secondary_email: hasPublicServiceEmail
+            ? null
+            : memberData.secondary_email,
+        primary_email_status: hasPublicServiceEmail
+            ? EmailStatusCode.EMAIL_ACTIVE
+            : EmailStatusCode.EMAIL_CREATION_WAITING,
+    });
 
     const dbUser = await getUserInfos({
         username,

@@ -11,19 +11,32 @@ import {
     memberInfoUpdateSchemaType,
     memberValidateInfoSchemaType,
 } from "@/models/actions/member";
+import { EmailStatusCode } from "@/models/member";
+import { isPublicServiceEmail } from "@/server/controllers/utils";
 
 export async function updateMember(
     {
         missions,
         ...memberData
     }: memberInfoUpdateSchemaType | memberValidateInfoSchemaType,
-    memberUuid: string
+    memberUuid: string,
+    extraParams:
+        | {
+              primary_email: string;
+              secondary_email: null;
+              primary_email_status: EmailStatusCode;
+          }
+        | {
+              primary_email: null;
+              secondary_email: string;
+              primary_email_status: EmailStatusCode;
+          }
+        | {} = {} // quick hack to update primary_email,secondary_email and primary_email_status on verify
 ) {
     const previousInfo = await getUserInfos({ uuid: memberUuid });
     if (!previousInfo) {
         throw new Error("User does not exists");
     }
-
     try {
         await db.transaction().execute(async (trx) => {
             await trx
@@ -50,6 +63,7 @@ export async function updateMember(
                     workplace_insee_code: memberData.workplace_insee_code,
                     osm_city: memberData.osm_city,
                     member_type: memberData.memberType,
+                    ...extraParams,
                 })
                 .execute();
             const actualMissions = missions
