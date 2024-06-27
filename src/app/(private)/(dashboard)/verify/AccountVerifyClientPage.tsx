@@ -625,7 +625,7 @@ export default function AccountVerifyClientPage({
                                                                     // use this instead of valueAsNumber to handle undefined value
                                                                     v
                                                                 ) =>
-                                                                    v === ""
+                                                                    !v
                                                                         ? null
                                                                         : parseInt(
                                                                               v
@@ -656,8 +656,7 @@ export default function AccountVerifyClientPage({
                                                                             // use this instead of valueAsNumber to handle undefined value
                                                                             v
                                                                         ) =>
-                                                                            v ===
-                                                                            ""
+                                                                            !v
                                                                                 ? null
                                                                                 : parseInt(
                                                                                       v
