@@ -31,5 +31,8 @@ test("search valid community members", async ({ page }) => {
         .getByRole("row");
 
     await expect(await rows.count()).toEqual(1);
-    await expect(await rows.nth(1).innerText()).toContain("Valid member");
+    await expect(
+        rows.nth(0).getByText("valid.member@betagouv.ovh")
+    ).toBeVisible();
+    await expect(await rows.nth(0).getByText("Valid member")).toBeVisible();
 });

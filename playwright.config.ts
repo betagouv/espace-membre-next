@@ -29,10 +29,10 @@ export default defineConfig({
         /* Collect trace when retrying the failed test. See https://playwright.dev/docs/trace-viewer */
         trace: "on-first-retry",
 
-        screenshot: 'only-on-failure',
+        screenshot: "only-on-failure",
     },
-    timeout: 60000,
-    expect: { timeout: 20000 },
+    timeout: process.env.ci ? 60000 : 20000,
+    expect: { timeout: process.env.ci ? 20000 : 10000 },
     /* Configure projects for major browsers */
     projects: [
         { name: "setup", testMatch: /.*\.setup\.ts/ },
