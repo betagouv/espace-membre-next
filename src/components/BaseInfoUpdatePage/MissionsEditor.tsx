@@ -16,7 +16,7 @@ import {
 import SESelect from "../SESelect";
 import { userStatusOptions } from "@/frontConfig";
 import { HasMissions } from "@/models/member";
-import { Status, missionSchema } from "@/models/mission";
+import { Status, missionSchema, missionSchemaType } from "@/models/mission";
 
 export const Mission = ({
     index,
@@ -35,7 +35,7 @@ export const Mission = ({
     register: any;
     control: any;
     setValue: any;
-    mission: any;
+    mission?: missionSchemaType;
     missionsRemove: any;
     onMissionAutoEndClick: any;
     startupOptions: any;
@@ -170,7 +170,7 @@ export const Mission = ({
                         label={missionSchema.shape.status.description}
                         nativeSelectProps={{
                             ...register(`missions.${index}.status`),
-                            defaultValue: mission.status,
+                            defaultValue: mission ? mission.status : "",
                         }}
                         {...defaultState("status")}
                     >
@@ -188,10 +188,11 @@ export const Mission = ({
             <div className={fr.cx("fr-grid-row", "fr-grid-row--gutters")}>
                 <div className={fr.cx("fr-col-12")}>
                     <SESelect
-                        defaultValue={startupOptions.filter(
-                            (s) =>
-                                mission.startups &&
-                                mission.startups.includes(s.value)
+                        defaultValue={startupOptions.filter((s) =>
+                            mission
+                                ? mission.startups &&
+                                  mission.startups.includes(s.value)
+                                : undefined
                         )}
                         onChange={(startups) => {
                             setValue(
