@@ -8,9 +8,8 @@ import Input from "@codegouvfr/react-dsfr/Input";
 import Select from "@codegouvfr/react-dsfr/Select";
 import { zodResolver } from "@hookform/resolvers/zod";
 import * as Sentry from "@sentry/nextjs";
-import { add } from "date-fns";
+import { add, addMonths } from "date-fns";
 import { useFieldArray, useForm } from "react-hook-form";
-import { z } from "zod";
 
 import { Mission } from "@/components/BaseInfoUpdatePage/MissionsEditor";
 import {
@@ -343,11 +342,27 @@ export default function CommunityCreateMemberPage(props: BaseInfoUpdateProps) {
                                         missionsRemove={undefined}
                                         onMissionAutoEndClick={(index) => {
                                             const values = getValues();
+                                            let startDate;
+                                            try {
+                                                startDate = values.missions[
+                                                    index
+                                                ].start
+                                                    ? new Date(
+                                                          values.missions[
+                                                              index
+                                                          ].start
+                                                      )
+                                                    : new Date();
+                                            } catch (e) {
+                                                startDate = new Date();
+                                            }
+                                            const endDate = addMonths(
+                                                startDate,
+                                                3
+                                            );
                                             setValue(
                                                 `missions.${index}.end`,
-                                                add(values.missions[0].start, {
-                                                    months: 3,
-                                                })
+                                                endDate
                                             );
                                         }}
                                     ></Mission>

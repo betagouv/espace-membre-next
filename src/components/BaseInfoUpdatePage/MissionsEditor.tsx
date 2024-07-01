@@ -68,6 +68,7 @@ export const Mission = ({
         control,
         name: `missions.${index}.end`,
     });
+
     const endDateString = endDateValue
         ? new Date(endDateValue).toISOString().substring(0, 10)
         : "";
@@ -94,7 +95,10 @@ export const Mission = ({
             <div className={fr.cx("fr-grid-row", "fr-grid-row--gutters")}>
                 <div className={fr.cx("fr-col-12")}>
                     <div
-                        style={{ display: "inline-block" }}
+                        style={{
+                            display: "inline-block",
+                            verticalAlign: "top",
+                        }}
                         className={fr.cx("fr-mr-3w")}
                     >
                         <Input
@@ -113,7 +117,12 @@ export const Mission = ({
                             {...defaultState("start")}
                         />
                     </div>
-                    <div style={{ display: "inline-block" }}>
+                    <div
+                        style={{
+                            display: "inline-block",
+                            verticalAlign: "top",
+                        }}
+                    >
                         <Input
                             label={
                                 labels.end ||
@@ -251,10 +260,15 @@ export const MissionsEditor = ({
     };
 
     const onMissionAutoEndClick = (missionIndex) => {
-        const endDate = addMonths(
-            new Date(missionsFields[missionIndex]["start"]),
-            3
-        );
+        let startDate;
+        try {
+            startDate = missionsFields[missionIndex]["start"]
+                ? new Date(missionsFields[missionIndex]["start"])
+                : new Date();
+        } catch (e) {
+            startDate = new Date();
+        }
+        const endDate = addMonths(startDate, 3);
 
         setValue(`missions.${missionIndex}.end`, endDate, {
             shouldValidate: true,
