@@ -204,8 +204,8 @@ export const BaseInfoUpdate = (props: BaseInfoUpdateProps) => {
                         state={errors.domaine ? "error" : "default"}
                         stateRelatedMessage={errors.domaine?.message}
                     >
-                        <option value="" disabled hidden>
-                            Selectionnez une option
+                        <option disabled value="" hidden selected>
+                            Sélectionner une option
                         </option>
                         {DOMAINE_OPTIONS.map((domaine) => (
                             <option key={domaine.key} value={domaine.name}>
@@ -297,7 +297,7 @@ export const BaseInfoUpdate = (props: BaseInfoUpdateProps) => {
                         stateRelatedMessage={errors.legal_status?.message}
                     >
                         <option value="" disabled hidden>
-                            Selectionnez une option
+                            Sélectionner une option
                         </option>
                         {statusOptions.map((option) => (
                             <option key={option.key} value={option.key}>

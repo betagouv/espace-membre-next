@@ -183,8 +183,8 @@ export const Mission = ({
                         }}
                         {...defaultState("status")}
                     >
-                        <option value="" disabled hidden>
-                            Selectionnez une option
+                        <option disabled value="" hidden selected>
+                            Sélectionner une option
                         </option>
                         {userStatusOptions.map((option) => (
                             <option key={option.key} value={option.key}>
