@@ -52,16 +52,14 @@ export const missionSchema = z.object({
                 }),
             }
         )
-        .describe("Type de contrat")
-        .nullable(),
+        .describe("Type de contrat"),
     employer: z
         .string({
             errorMap: (issue, ctx) => ({
                 message: "Précisez un employeur",
             }),
         })
-        .describe("Entité avec qui tu as contractualisé")
-        .nullable(),
+        .describe("Entité avec qui tu as contractualisé"),
     startups: z.array(z.string()).optional(),
 });
 

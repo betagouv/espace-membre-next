@@ -67,7 +67,7 @@ export default function CommunityCreateMemberPage(props: BaseInfoUpdateProps) {
             {
                 start: new Date(),
                 end: add(new Date(), { months: 3 }),
-                status: Status.independent,
+                status: null,
                 employer: null,
             },
         ],
