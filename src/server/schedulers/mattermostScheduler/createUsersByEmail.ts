@@ -1,20 +1,21 @@
 import crypto from "crypto";
 
-import { getActiveGithubUsersUnregisteredOnMattermost } from ".";
+import { getActiveUsersUnregisteredOnMattermost } from ".";
 import * as mattermost from "@/lib/mattermost";
 import config from "@/server/config";
 import { sendEmail } from "@/server/config/email.config";
 import { EMAIL_TYPES } from "@modules/email";
 
 export async function createUsersByEmail() {
-    let activeGithubUsersUnregisteredOnMattermost =
-        await getActiveGithubUsersUnregisteredOnMattermost();
+    let activeUsersUnregisteredOnMattermost =
+        await getActiveUsersUnregisteredOnMattermost();
+
     //todo check how many account will be created
     const mattermostTeam: { invite_id: string } = await mattermost.getTeam(
         config.mattermostTeamId
     );
     const results = await Promise.all(
-        activeGithubUsersUnregisteredOnMattermost.map(async (user) => {
+        activeUsersUnregisteredOnMattermost.map(async (user) => {
             if (!user.primary_email) {
                 return;
             }

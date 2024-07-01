@@ -212,7 +212,7 @@ Les tâches CRON sont gérées par une app scalingo dédiée via le [Procfile](.
 | ✅      | 02:00 pm mon                               | sendReminderToUserAtDays                               | Send mattermost message to expired users (90 days)                                           |
 | ❌      | 05:00 am mon                               | sendReminderToUserAtDays                               | Send mattermost message to expired users (30 days)                                           |
 | ✅      | 10:00 am                                   | sendGroupDeSoutienReminder                             | Send mattermost message groupe de soutien                                                    |
-| ✅      | every 8 min.                               | createUsersByEmail                                     | Create missing mattermost users (from GitHub) and send invitation email                      |
+| ✅      | every 8 min.                               | createUsersByEmail                                     | Create missing mattermost users and send invitation email                                    |
 | ✅      | every 8 min.                               | addUsersNotInCommunityToCommunityTeam                  | Add existing users to community team if there not in                                         |
 | ❌      | 08:00 am 1 th                              | reactivateUsers                                        | Reactivate mattermost accounts if any                                                        |
 | ❌      | 10:00 am                                   | removeUsersFromCommunityTeam                           | Remove expired users from mattermost community team (90 days)                                |
@@ -222,9 +222,9 @@ Les tâches CRON sont gérées par une app scalingo dédiée via le [Procfile](.
 | ✅      | 05:00 am mon                               | createMailingListForStartups                           | Créé des mailings-list OVH pour les startups                                                 |
 | ❌      | 09:30 am 1 th Feb, May, Aug and Nov        | sendEmailToStartupToUpdatePhase                        | Envoie par mail une relance pour mise à jour de la phase de la SE                            |
 | ✅      | 10:00 am 1 th                              | buildCommunityBDD                                      | Met à jour la table communauté à partir des users                                            |
-| ✅      | every 4 min.                               | pullRequestStateMachine                                | Verifie les pulls requests sur GitHub et envoie un email de rappel à l'équipe ou au référent |
-| ✅      | 10:00 am                                   | syncBetagouvUserAPI                                    | Synchronize user info from beta.gouv.fr api with bdd                                         |
-| ✅      | 10:05 am                                   | syncBetagouvStartupAPI                                 | Synchronize startup info from beta.gouv.fr api with bdd                                      |
+| ❌      | every 4 min.                               | pullRequestStateMachine                                | Verifie les pulls requests sur GitHub et envoie un email de rappel à l'équipe ou au référent |
+| ❌      | 10:00 am                                   | syncBetagouvUserAPI                                    | Synchronize user info from beta.gouv.fr api with bdd                                         |
+| ❌      | 10:05 am                                   | syncBetagouvStartupAPI                                 | Synchronize startup info from beta.gouv.fr api with bdd                                      |
 | ✅      | 10:10 am                                   | syncMattermostUserWithMattermostMemberInfosTable       | Add new mattermost user to mattermost_member_info table                                      |
 | ✅      | 10:15 am                                   | syncMattermostUserStatusWithMattermostMemberInfosTable | Get mattermost user activity info from api and sync with mattermost_member_info table        |
 | ✅      | At 0h                                      | SyncFormationFromAirtable                              | Synchronise les données AirTable des formations avec la DB                                   |
@@ -251,6 +251,6 @@ Les tâches CRON sont gérées par une app scalingo dédiée via le [Procfile](.
 | ✅      | 10:00 am                                   | sendContractEndingMessageToUsers15days                 | Sending contract ending message to users (15 days)                                           |
 | ✅      | 10:00 am                                   | sendContractEndingMessageToUsers30days                 | Sending contract ending message to users (30 days)                                           |
 | ✅      | 10:00 am                                   | sendContractEndingMessageToUsers2days                  | Sending contract ending message to users (2 days)                                            |
-| ✅      | At 0h                                      | pullRequestWatcher                                     | Remind user with pending GitHub pull request on author file                                  |
-| ✅      | At 0h                                      | pullRequestWatcherSendEmailToTeam                      | Remind team with pending GitHub pull request on author file                                  |
+| ❌      | At 0h                                      | pullRequestWatcher                                     | Remind user with pending GitHub pull request on author file                                  |
+| ❌      | At 0h                                      | pullRequestWatcherSendEmailToTeam                      | Remind team with pending GitHub pull request on author file                                  |
 | ✅      | 10:00 am 1 th                              | sendMessageToActiveUsersWithoutSecondaryEmail          | Send message to active user without secondary email to update secondary email                |
