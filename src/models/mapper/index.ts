@@ -157,6 +157,7 @@ export function userInfosToModel(
                 : CommunicationEmailCode.PRIMARY,
         primary_email_status_updated_at:
             user.primary_email_status_updated_at || new Date(),
+        // @ts-ignore todo
         missions: (user?.missions || []).map((mission) =>
             missionToModel(mission)
         ),
