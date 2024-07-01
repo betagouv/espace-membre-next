@@ -20,15 +20,15 @@ const filterActiveUser = (user) => {
     );
 };
 
-export const getActiveGithubUsersUnregisteredOnMattermost = async (): Promise<
+export const getActiveUsersUnregisteredOnMattermost = async (): Promise<
     memberBaseInfoSchemaType[]
 > => {
     const allMattermostUsers: MattermostUser[] =
         await mattermost.getUserWithParams();
-    const githubUsers = (await getAllUsersInfo()).map((user) =>
+    const users = (await getAllUsersInfo()).map((user) =>
         memberBaseInfoToModel(user)
     );
-    const concernedUsers = githubUsers
+    const concernedUsers = users
         .filter((x) => !utils.checkUserIsExpired(x))
         .filter(filterActiveUser)
         .filter((user) => user.primary_email);

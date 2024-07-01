@@ -147,7 +147,7 @@ const mattermostJobs: Job[] = [
         isActive: !!config.featureCreateUserOnMattermost,
         name: "createUsersByEmail",
         description:
-            "Create missing mattermost users (from GitHub) and send invitation email",
+            "Create missing mattermost users and send invitation email",
     },
     {
         cronTime: "0 */8 * * * *",
