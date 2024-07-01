@@ -43,6 +43,7 @@ export const Mission = ({
     isMulti: boolean;
     labels?: {
         employer?: string;
+        status?: string;
         start?: string;
         end?: string;
     };
@@ -104,7 +105,8 @@ export const Mission = ({
                         <Input
                             label={
                                 labels.start ||
-                                missionSchema.shape.start.description
+                                missionSchema.shape.start.description +
+                                    " (obligatoire)"
                             }
                             hintText="Date de début"
                             nativeInputProps={{
@@ -126,7 +128,8 @@ export const Mission = ({
                         <Input
                             label={
                                 labels.end ||
-                                missionSchema.shape.end.description
+                                missionSchema.shape.end.description +
+                                    " (obligatoire)"
                             }
                             nativeInputProps={{
                                 style: { width: 200 },
@@ -165,7 +168,8 @@ export const Mission = ({
                     <Input
                         label={
                             labels.employer ||
-                            missionSchema.shape.employer.description
+                            missionSchema.shape.employer.description +
+                                " (obligatoire)"
                         }
                         nativeInputProps={{
                             placeholder: "ex: Scopyleft",
@@ -176,7 +180,11 @@ export const Mission = ({
                 </div>
                 <div className={fr.cx("fr-col-6")}>
                     <Select
-                        label={missionSchema.shape.status.description}
+                        label={
+                            labels.status ||
+                            missionSchema.shape.status.description +
+                                " (obligatoire)"
+                        }
                         nativeSelectProps={{
                             ...register(`missions.${index}.status`),
                             defaultValue: mission ? mission.status : "",
