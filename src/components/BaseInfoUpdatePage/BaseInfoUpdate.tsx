@@ -178,7 +178,10 @@ export const BaseInfoUpdate = (props: BaseInfoUpdateProps) => {
                     aria-label="Modifier mes informations"
                 >
                     <Input
-                        label={memberSchema.shape.fullname.description}
+                        label={
+                            memberSchema.shape.fullname.description +
+                            " (obligatoire)"
+                        }
                         nativeInputProps={{
                             placeholder: "ex: Grace HOPPER",
                             ...register("fullname"),
@@ -187,7 +190,10 @@ export const BaseInfoUpdate = (props: BaseInfoUpdateProps) => {
                         stateRelatedMessage={errors.fullname?.message}
                     />
                     <Input
-                        label={memberSchema.shape.role.description}
+                        label={
+                            memberSchema.shape.role.description +
+                            " (obligatoire)"
+                        }
                         nativeInputProps={{
                             placeholder: "ex: Développeuse",
                             ...register("role"),
@@ -196,7 +202,7 @@ export const BaseInfoUpdate = (props: BaseInfoUpdateProps) => {
                         stateRelatedMessage={errors.role?.message}
                     />
                     <Select
-                        label="Domaine"
+                        label="Domaine (obligatoire)"
                         nativeSelectProps={{
                             ...register(`domaine`),
                             defaultValue: props.formData.domaine,
@@ -289,7 +295,7 @@ export const BaseInfoUpdate = (props: BaseInfoUpdateProps) => {
                         stateRelatedMessage={errors.gender?.message}
                     />
                     <Select
-                        label="Statut"
+                        label="Statut (obligatoire)"
                         nativeSelectProps={{
                             ...register(`legal_status`),
                         }}

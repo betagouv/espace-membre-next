@@ -67,7 +67,9 @@ export default function CommunityCreateMemberPage(props: BaseInfoUpdateProps) {
             {
                 start: new Date(),
                 end: add(new Date(), { months: 3 }),
+                // @ts-ignore
                 status: null,
+                // @ts-ignore
                 employer: null,
             },
         ],
@@ -190,7 +192,8 @@ export default function CommunityCreateMemberPage(props: BaseInfoUpdateProps) {
                                     <Input
                                         label={
                                             createMemberSchema.shape.member
-                                                .shape.firstname.description
+                                                .shape.firstname.description +
+                                            " (obligatoire)"
                                         }
                                         nativeInputProps={{
                                             placeholder: "ex: Grace",
@@ -221,7 +224,8 @@ export default function CommunityCreateMemberPage(props: BaseInfoUpdateProps) {
                                     <Input
                                         label={
                                             createMemberSchema.shape.member
-                                                .shape.lastname.description
+                                                .shape.lastname.description +
+                                            " (obligatoire)"
                                         }
                                         nativeInputProps={{
                                             placeholder: "ex: HOPPER",
@@ -250,7 +254,7 @@ export default function CommunityCreateMemberPage(props: BaseInfoUpdateProps) {
                                     )}
                                 >
                                     <Input
-                                        label="Email pro"
+                                        label="Email pro (obligatoire)"
                                         hintText="Nous enverrons les informations relatives au compte à cet email"
                                         nativeInputProps={{
                                             placeholder:
@@ -291,7 +295,7 @@ export default function CommunityCreateMemberPage(props: BaseInfoUpdateProps) {
                                     )}
                                 >
                                     <Select
-                                        label="Domaine"
+                                        label="Domaine (obligatoire)"
                                         nativeSelectProps={{
                                             ...register(`member.domaine`),
                                         }}
@@ -306,8 +310,13 @@ export default function CommunityCreateMemberPage(props: BaseInfoUpdateProps) {
                                             errors.member.domaine?.message
                                         }
                                     >
-                                        <option value="" disabled hidden>
-                                            Selectionnez une option
+                                        <option
+                                            value=""
+                                            hidden
+                                            selected
+                                            disabled
+                                        >
+                                            Sélectionner une option
                                         </option>
                                         {DOMAINE_OPTIONS.map((domaine) => (
                                             <option
@@ -333,10 +342,11 @@ export default function CommunityCreateMemberPage(props: BaseInfoUpdateProps) {
                                         }
                                         index={0}
                                         labels={{
-                                            start: "Début de la mission",
-                                            end: "Fin de la mission",
+                                            start: "Début de la mission (obligatoire)",
+                                            end: "Fin de la mission (obligatoire)",
                                             employer:
-                                                "Entité qui gère la contractualisation",
+                                                "Entité qui gère la contractualisation (obligatoire)",
+                                            status: "Type de contrat (obligatoire)",
                                         }}
                                         mission={missionsFields[0]}
                                         missionsRemove={undefined}
