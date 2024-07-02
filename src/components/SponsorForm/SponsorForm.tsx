@@ -34,7 +34,7 @@ export const SponsorForm = (props: SponsorForm) => {
     ): Promise<void> => {
         e.preventDefault();
         props.addSponsor({
-            id: slugify(name),
+            ghid: slugify(name),
             name,
             domaine_ministeriel: domaine as SponsorDomaineMinisteriel,
             type: type as SponsorType,

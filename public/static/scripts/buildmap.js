@@ -1332,7 +1332,6 @@ map.on("idle", () => {
             event.stopPropagation();
             const isButtonActive = this.className.includes("active");
             var layer = event.target.id.substr("button-".length);
-            console.log(button, layer);
 
             if (isButtonActive) {
                 this.className = "button";

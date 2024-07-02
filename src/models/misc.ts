@@ -1,8 +1,13 @@
-import { EmailStatusCode } from "./dbUser";
+import { EmailStatusCode } from "./member";
+
+// export interface Option {
+//     key: string;
+//     name: string;
+// }
 
 export interface Option {
-    key: string;
-    name: string;
+    value: string;
+    label: string;
 }
 
 export const EMAIL_STATUS_READABLE_FORMAT: Record<EmailStatusCode, string> = {

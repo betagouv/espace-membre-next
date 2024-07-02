@@ -4,7 +4,7 @@ import { addEvent } from "@/lib/events";
 import { EventCode } from "@/models/actionEvent";
 import config from "@/server/config";
 import BetaGouv from "@betagouv";
-import * as utils from "@controllers/utils";
+import { buildBetaEmail, userInfos } from "@controllers/utils";
 
 export async function createRedirectionForUserApi(req, res) {
     createRedirectionForUserHandler(
@@ -46,12 +46,12 @@ export async function createRedirectionForUserHandler(
     const isCurrentUser = req.auth.id === username;
 
     try {
-        const user = await utils.userInfos(username, isCurrentUser);
+        const user = await userInfos({ username }, isCurrentUser);
 
         // TODO: généraliser ce code dans un `app.param("id")` ?
         if (!user.userInfos) {
             throw new Error(
-                `Le membre ${username} n'a pas de fiche sur Github : vous ne pouvez pas créer de redirection.`
+                `Le membre ${username} n'a pas de fiche membre : vous ne pouvez pas créer de redirection.`
             );
         }
 
@@ -59,7 +59,7 @@ export async function createRedirectionForUserHandler(
             throw new Error(`Le compte du membre ${username} est expiré.`);
         }
 
-        if (!user.canCreateRedirection) {
+        if (!user.authorizations.canCreateRedirection) {
             throw new Error(
                 "Vous n'avez pas le droit de créer de redirection."
             );
@@ -74,7 +74,7 @@ export async function createRedirectionForUserHandler(
         const message = `À la demande de ${req.auth.id} sur <${secretariatUrl}>, je crée une redirection mail pour ${username}`;
 
         try {
-            addEvent({
+            await addEvent({
                 action_code: EventCode.MEMBER_REDIRECTION_CREATED,
                 created_by_username: req.auth.id,
                 action_on_username: username,
@@ -84,7 +84,7 @@ export async function createRedirectionForUserHandler(
             });
             await BetaGouv.sendInfoToChat(message);
             await BetaGouv.createRedirection(
-                utils.buildBetaEmail(username),
+                buildBetaEmail(username),
                 req.body.to_email,
                 req.body.keep_copy === "true"
             );

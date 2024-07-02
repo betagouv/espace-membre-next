@@ -23,7 +23,7 @@ import {
 const phasesArraySchema = z.array(phaseSchema);
 
 export type HasPhases<T = any> = T & {
-    phases: z.infer<typeof phasesArraySchema>;
+    startupPhases: z.infer<typeof phasesArraySchema>;
 };
 
 export function PhasesEditor({
@@ -47,7 +47,7 @@ export function PhasesEditor({
     } = useFieldArray({
         rules: { minLength: 1 },
         control,
-        name: "phases",
+        name: "startupPhases",
     });
 
     const addMissionClick = (e) => {
@@ -57,11 +57,10 @@ export function PhasesEditor({
         });
     };
 
-    const phases = useWatch({
+    useWatch({
         control,
-        name: `phases`,
+        name: `startupPhases`,
     });
-
     return (
         <div className={fr.cx("fr-mb-3w")}>
             {errors && errors.message && (
@@ -72,8 +71,10 @@ export function PhasesEditor({
             <Table
                 style={{ marginBottom: "0.5rem" }}
                 data={phasesFields.map((phase, index) => {
-                    const startDateString = getValues(`phases.${index}.start`)
-                        ? new Date(getValues(`phases.${index}.start`))
+                    const startDateString = getValues(
+                        `startupPhases.${index}.start`
+                    )
+                        ? new Date(getValues(`startupPhases.${index}.start`))
                               .toISOString()
                               .substring(0, 10)
                         : "";
@@ -82,9 +83,13 @@ export function PhasesEditor({
                         <Select
                             key={phase.id + "-name"}
                             label={undefined}
-                            nativeSelectProps={register(`phases.${index}.name`)}
+                            nativeSelectProps={register(
+                                `startupPhases.${index}.name`
+                            )}
                         >
-                            <option value="">{"Selectionnez une phase"}</option>
+                            <option value="" disabled hidden>
+                                Selectionnez une phase
+                            </option>
                             {Object.entries(PHASES_ORDERED_LIST).map(
                                 ([id, label], index) => (
                                     <option key={index} value={label}>
@@ -98,7 +103,7 @@ export function PhasesEditor({
                             key={phase.id + "-start"}
                             nativeInputProps={{
                                 type: "date",
-                                ...register(`phases.${index}.start`),
+                                ...register(`startupPhases.${index}.start`),
                                 value: startDateString,
                             }}
                         />,

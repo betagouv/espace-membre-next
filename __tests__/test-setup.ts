@@ -1,6 +1,7 @@
 import chai from "chai";
 import chaiHttp from "chai-http";
 import nock from "nock";
+
 import utils from "./utils";
 import { startServer } from "@/server";
 
@@ -9,9 +10,7 @@ chai.should();
 
 before(async () => {
     await utils.setupTestDatabase();
-    await startServer().then(() => {
-        console.log("DOne");
-    });
+    await startServer().then(() => {});
 });
 
 beforeEach(() => {

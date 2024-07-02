@@ -1,26 +1,34 @@
-import routes, { computeRoute } from "@/routes/routes";
+import React from "react";
+
 import Accordion from "@codegouvfr/react-dsfr/Accordion";
 import Button from "@codegouvfr/react-dsfr/Button";
 import Input from "@codegouvfr/react-dsfr/Input";
 import axios from "axios";
-import React from "react";
+
+import { memberBaseInfoSchemaType } from "@/models/member";
+import routes, { computeRoute } from "@/routes/routes";
 
 export default function BlocConfigurerEmailPrincipal({
     canChangeEmails,
     userInfos,
-    primaryEmail,
+}: {
+    canChangeEmails: boolean;
+    userInfos: memberBaseInfoSchemaType;
 }) {
-    const [value, setValue] = React.useState<string>(primaryEmail);
+    const [value, setValue] = React.useState<string>(
+        userInfos.primary_email || ""
+    );
     const [isSaving, setIsSaving] = React.useState<boolean>(false);
     return (
         <Accordion label="Configurer mon email principal">
             <p>
                 L'email principal est utilisé pour toutes les communications en
                 rapport avec Betagouv. Ce doit être un email d'agent public. Il
-                s'agit par défaut de {userInfos.id}@beta.gouv.fr.
+                s'agit par défaut de {userInfos.username}@beta.gouv.fr.
                 <br />
                 <br />
-                En cas d'utilisation d'une adresse autre, l'email {userInfos.id}
+                En cas d'utilisation d'une adresse autre, l'email{" "}
+                {userInfos.username}
                 @beta.gouv.fr sera supprimé.
             </p>
             {canChangeEmails && (
@@ -33,7 +41,7 @@ export default function BlocConfigurerEmailPrincipal({
                             .put(
                                 computeRoute(
                                     routes.USER_UPDATE_PRIMARY_EMAIL_API
-                                ).replace(":username", userInfos.id),
+                                ).replace(":username", userInfos.username),
                                 {
                                     primaryEmail: value,
                                 },

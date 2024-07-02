@@ -1,21 +1,28 @@
-import { buildBetaEmail } from "@controllers/utils";
+import { db } from "@/lib/kysely";
+import { Domaine } from "@/models/member";
 import Betagouv from "@betagouv";
-import knex from "@db";
-import { Member } from "@/models/member";
+import { buildBetaEmail } from "@controllers/utils";
 
 const createMissingActiveUserInDb = async () => {
-    const activeUsers: Member[] = await Betagouv.getActiveRegisteredOVHUsers();
+    const activeUsers = await Betagouv.getActiveRegisteredOVHUsers();
     for (const user of activeUsers) {
         try {
-            const users = await knex("users")
-                .where({ username: user.id })
-                .first();
+            const users = await db
+                .selectFrom("users")
+                .where("username", "=", user.username)
+                .execute();
             if (!users) {
-                console.log(`User ${user.id} is active but not in bdd`);
-                await knex("users").insert({
-                    username: user.id,
-                    primary_email: buildBetaEmail(user.id),
-                });
+                console.log(`User ${user.username} is active but not in bdd`);
+                await db
+                    .insertInto("users")
+                    .values({
+                        username: user.username,
+                        fullname: user.username,
+                        primary_email: buildBetaEmail(user.username),
+                        role: "",
+                        domaine: Domaine.ANIMATION,
+                    })
+                    .execute();
             }
         } catch (e) {
             // error

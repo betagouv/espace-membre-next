@@ -1,8 +1,8 @@
 import { addEvent } from "@/lib/events";
+import { db } from "@/lib/kysely";
 import { EventCode } from "@/models/actionEvent";
 import config from "@/server/config";
 import * as utils from "@controllers/utils";
-import knex from "@db/index";
 
 export async function manageSecondaryEmailForUserApi(req, res) {
     manageSecondaryEmailForUserHandler(
@@ -44,35 +44,37 @@ export async function manageSecondaryEmailForUserHandler(
     const { username } = req.params;
     const isCurrentUser = req.auth.id === username;
     const { secondaryEmail } = req.body;
-    const user = await utils.userInfos(username, isCurrentUser);
-
+    const user = await utils.userInfos({ username }, isCurrentUser);
     try {
         if (
-            user.canChangeEmails ||
+            user.authorizations.canChangeEmails ||
             config.ESPACE_MEMBRE_ADMIN.includes(req.auth.id)
         ) {
-            const dbUser = await knex("users")
-                .where({
-                    username,
-                })
-                .then((db) => db[0]);
-            await knex("users")
-                .insert({
+            const user = await db
+                .selectFrom("users")
+                .select("secondary_email")
+                .where("username", "=", username)
+                .executeTakeFirst();
+
+            if (!user) {
+                throw new Error("Users not found");
+            }
+
+            await db
+                .updateTable("users")
+                .set({
                     secondary_email: secondaryEmail,
-                    username,
                 })
-                .onConflict("username")
-                .merge({
-                    secondary_email: secondaryEmail,
-                    username,
-                });
-            addEvent({
+                .where("username", "=", username)
+                .execute();
+
+            await addEvent({
                 action_code: EventCode.MEMBER_SECONDARY_EMAIL_UPDATED,
                 created_by_username: req.auth.id,
                 action_on_username: username,
                 action_metadata: {
                     value: secondaryEmail,
-                    old_value: dbUser ? dbUser.secondary_email : null,
+                    old_value: user.secondary_email || "",
                 },
             });
             req.flash(

@@ -1,12 +1,12 @@
+import { capitalizeWords, userInfos } from "../utils";
+import { db } from "@/lib/kysely";
+import { BADGE_REQUEST } from "@/models/badgeRequests";
+import config from "@/server/config";
+import DS from "@/server/config/ds/ds.config";
 import {
     createBadgeRequest,
     getBadgeRequestWithStatus,
 } from "@db/dbBadgeRequests";
-import { BADGE_REQUEST } from "@/models/badgeRequests";
-import DS from "@/server/config/ds/ds.config";
-import config from "@/server/config";
-import { MemberWithPermission } from "@/models/member";
-import { capitalizeWords, userInfos } from "../utils";
 
 const buildRequestId = () => {
     return "";
@@ -21,7 +21,7 @@ const computeStartDate = () => {
 };
 
 export async function postBadgeRenewalRequest(req, res) {
-    const currentUser = await userInfos(req.auth.id, true);
+    const currentUser = await userInfos({ username: req.auth.id }, true);
     const startDate = computeStartDate();
     let endDate: Date;
     let isRequestPendingToBeFilled = false;
@@ -38,12 +38,14 @@ export async function postBadgeRenewalRequest(req, res) {
         }
     }
     if (!isRequestPendingToBeFilled) {
-        if (!currentUser.userInfos?.end) {
-            endDate = startDate;
-            endDate.setMonth(endDate.getMonth() + 6);
-        } else {
-            endDate = new Date(currentUser.userInfos?.end);
-        }
+        // todo
+        // if (!currentUser.userInfos?.end) {
+        //     endDate = startDate;
+        //     endDate.setMonth(endDate.getMonth() + 6);
+        // } else {
+        //     endDate = new Date(currentUser.userInfos?.end);
+        // }
+        endDate = new Date();
         try {
             const names = req.auth.id.split(".");
             const firstname = capitalizeWords(names.shift());
@@ -55,7 +57,7 @@ export async function postBadgeRenewalRequest(req, res) {
                 {
                     identite_prenom: firstname,
                     identite_nom: lastname,
-                    champ_Q2hhbXAtMzcwOTI5Mw: endDate,
+                    champ_Q2hhbXAtMzcwOTI5Mw: "", //endDate,
                 }
             )) as unknown as {
                 dossier_number: number;
@@ -64,15 +66,19 @@ export async function postBadgeRenewalRequest(req, res) {
             };
             if (dossier && typeof dossier.dossier_number) {
                 let dossier_number = dossier.dossier_number;
-                badgeRequest = await createBadgeRequest({
-                    username: req.auth.id,
-                    status: BADGE_REQUEST.BADGE_RENEWAL_REQUEST_PENDING,
-                    start_date: startDate,
-                    end_date: endDate,
-                    dossier_number,
-                    request_id: buildRequestId(),
-                    ds_token: dossier.dossier_prefill_token,
-                });
+                badgeRequest = await db
+                    .insertInto("badge_requests")
+                    .values({
+                        username: req.auth.id,
+                        status: BADGE_REQUEST.BADGE_RENEWAL_REQUEST_PENDING,
+                        start_date: startDate,
+                        end_date: endDate,
+                        dossier_number,
+                        request_id: buildRequestId(),
+                        ds_token: dossier.dossier_prefill_token,
+                    })
+                    .returningAll()
+                    .executeTakeFirst();
             }
         } catch (e) {
             console.error(e);

@@ -49,7 +49,9 @@
     "domaine": "Animation",
     "missions": [
       { 
-        "start": "2020-07-03"
+        "start": "2020-07-03",
+        "status": "independent",
+        "employer": "octo"
       }
     ],
     "startups": ["test-startup"]

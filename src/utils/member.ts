@@ -1,11 +1,27 @@
-import crypto from "crypto";
+import { format } from "date-fns";
+import { fr } from "date-fns/locale/fr";
 
-import config from "@/server/config";
+import { missionSchemaType } from "@/models/mission";
 
-export const computeHash = function (username) {
-    const hash = crypto.createHmac(
-        "sha512",
-        config.HASH_SALT as string
-    ); /** Hashing algorithm sha512 */
-    return hash.update(username).digest("hex");
+export const getLastMission = (
+    missions: missionSchemaType[]
+): missionSchemaType | undefined => {
+    if (!missions.length) {
+        return;
+    }
+    const lastMission = missions.reduce((a, v) =>
+        //@ts-ignore todo
+        !v.end || v.end > a.end ? v : a
+    );
+    return lastMission;
+};
+
+export const getLastMissionDate = (
+    missions: missionSchemaType[]
+): string | null => {
+    const latestMission = getLastMission(missions);
+    if (latestMission && latestMission.end) {
+        return format(latestMission.end, "d MMMM yyyy", { locale: fr });
+    }
+    return null;
 };

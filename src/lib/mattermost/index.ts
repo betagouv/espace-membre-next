@@ -1,24 +1,28 @@
-import { getMattermostConfig } from "@/server/config/mattermost/mattermost.config";
-import config from "@/server/config";
 import axios from "axios";
+import { z } from "zod";
 
-export interface MattermostUser {
-    id: string;
-    create_at: number;
-    update_at: number;
-    delete_at: number;
-    username: string;
-    first_name: string;
-    last_name: string;
-    nickname: string;
-    email: string;
-    email_verified: boolean;
-    auth_service: string;
-    roles: string;
-    locale: string;
-    mfa_active: boolean;
-    last_activity_at: string;
-}
+import config from "@/server/config";
+import { getMattermostConfig } from "@/server/config/mattermost/mattermost.config";
+
+export const MattermostUserSchema = z.object({
+    id: z.string(),
+    create_at: z.number(),
+    update_at: z.number(),
+    delete_at: z.number(),
+    username: z.string(),
+    first_name: z.string(),
+    last_name: z.string(),
+    nickname: z.string(),
+    email: z.string(),
+    email_verified: z.boolean(),
+    auth_service: z.string(),
+    roles: z.string(),
+    locale: z.string(),
+    mfa_active: z.boolean(),
+    last_activity_at: z.string(),
+});
+
+export type MattermostUser = z.infer<typeof MattermostUserSchema>;
 
 export interface MattermostChannel {
     name: string;
@@ -29,7 +33,10 @@ export interface MattermostChannel {
     total_msg_count: string;
 }
 
-export async function getUserWithParams(params = {}, i = 0) {
+export async function getUserWithParams(
+    params = {},
+    i = 0
+): Promise<MattermostUser[]> {
     const mattermostUsers = await axios
         .get(`${config.mattermostURL}/api/v4/users?per_page=200&page=${i}`, {
             params: {

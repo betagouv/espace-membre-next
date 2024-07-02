@@ -10,23 +10,28 @@ import { Checkbox } from "@codegouvfr/react-dsfr/Checkbox";
 import { Input } from "@codegouvfr/react-dsfr/Input";
 import { Select } from "@codegouvfr/react-dsfr/Select";
 import { zodResolver } from "@hookform/resolvers/zod";
+import _ from "lodash";
 import MarkdownIt from "markdown-it";
 import { useForm } from "react-hook-form";
 import MdEditor from "react-markdown-editor-lite";
-import { z } from "zod";
 
 import { PhasesEditor } from "./PhasesEditor";
 import SponsorBlock from "./SponsorBlock";
 import { ThematiquesEditor } from "./ThematiquesEditor";
 import { UsertypesEditor } from "./UsertypesEditor";
 import { ClientOnly } from "../ClientOnly";
-import { PullRequestWarning } from "../PullRequestWarning";
 import SelectAccessibilityStatus from "../SelectAccessibilityStatus";
-
-import { GithubAPIPullRequest } from "@/lib/github";
-import { Incubator } from "@/models/incubator";
-import { Sponsor } from "@/models/sponsor";
-import { startupSchemaWithMarkdown } from "@/models/startup";
+import {
+    startupInfoUpdateSchema,
+    startupInfoUpdateSchemaType,
+} from "@/models/actions/startup";
+import { Option } from "@/models/misc";
+import { sponsorSchemaType } from "@/models/sponsor";
+import {
+    StartupPhase,
+    phaseSchemaType,
+    startupSchemaType,
+} from "@/models/startup";
 
 // import style manually
 const mdParser = new MarkdownIt(/* Markdown-it options */);
@@ -50,15 +55,22 @@ Décrit ta solution en quelques lignes? qui seront/sont les bénéficiaires ?
 Comment vous vous y prenez pour atteindre votre usagers ? quel impact chiffré visez-vous ?
 `;
 
-type StartupSchemaType = z.infer<typeof startupSchemaWithMarkdown>;
+const NEW_PRODUCT_DATA: startupInfoUpdateSchemaType["startup"] = {
+    name: "",
+    pitch: "",
+    description: "",
+    contact: "",
+    incubator_id: "",
+};
 
 // data from secretariat API
 export interface StartupFormProps {
-    formData: StartupSchemaType;
-    incubators: Incubator[];
-    sponsors: Sponsor[];
-    save: (data: string) => any;
-    updatePullRequest?: GithubAPIPullRequest;
+    startup?: startupSchemaType;
+    startupSponsors?: sponsorSchemaType[];
+    startupPhases?: phaseSchemaType[];
+    incubatorOptions: Option[];
+    sponsorOptions: Option[];
+    save: (data: startupInfoUpdateSchemaType) => any;
 }
 
 // boilerplate for text inputs
@@ -69,21 +81,27 @@ function BasicFormInput({
     placeholder,
     ...props
 }: {
-    id: keyof StartupSchemaType;
+    id: keyof startupInfoUpdateSchemaType["startup"];
     placeholder?: string;
     [some: string]: any;
 }) {
-    const fieldShape = startupSchemaWithMarkdown.shape[id];
+    const fieldShape = startupInfoUpdateSchema.shape["startup"].shape[id];
     return (
         (fieldShape && (
             <Input
                 label={fieldShape.description}
                 nativeInputProps={{
                     placeholder,
-                    ...register(id),
+                    ...register(`startup.${id}`),
                 }}
-                state={errors[id] ? "error" : "default"}
-                stateRelatedMessage={errors[id]?.message}
+                state={
+                    errors["startup"] && errors["startup"][id]
+                        ? "error"
+                        : "default"
+                }
+                stateRelatedMessage={
+                    errors["startup"] && errors["startup"]?.message
+                }
                 {...(props ? props : {})}
             />
         )) || <>Not found in schema: {id}</>
@@ -99,14 +117,22 @@ export function StartupForm(props: StartupFormProps) {
         getValues,
         watch,
         control,
-    } = useForm<StartupSchemaType>({
-        resolver: zodResolver(startupSchemaWithMarkdown),
+    } = useForm<startupInfoUpdateSchemaType>({
+        resolver: zodResolver(startupInfoUpdateSchema),
         mode: "onChange",
-        defaultValues: props.formData,
+        defaultValues: {
+            startup: props.startup || NEW_PRODUCT_DATA,
+            startupSponsors: (props.startupSponsors || []).map((s) => s.uuid),
+            startupPhases: props.startupPhases || [
+                {
+                    name: StartupPhase.PHASE_INVESTIGATION,
+                    start: new Date(),
+                },
+            ],
+            newSponsors: [],
+            newPhases: [],
+        },
     });
-
-    const [newSponsors, setNewSponsors] = useState<any[]>([]);
-
     const [alertMessage, setAlertMessage] = React.useState<{
         title: string;
         message: NonNullable<React.ReactNode>;
@@ -120,9 +146,7 @@ export function StartupForm(props: StartupFormProps) {
         ),
         [register, errors]
     );
-    const onSubmit = (data, e) => {
-        console.log("onSubmit", { e, data, isDirty, isValid, errors });
-
+    const onSubmit = (data: startupInfoUpdateSchemaType, e) => {
         if (isSaving) {
             return;
         }
@@ -133,27 +157,12 @@ export function StartupForm(props: StartupFormProps) {
         setAlertMessage(null);
 
         props
-            .save({ ...data, newSponsors })
+            .save({ ...data })
             .then((resp) => {
                 setIsSaving(false);
                 setAlertMessage({
-                    title: `⚠️ Pull request pour ${
-                        resp.isUpdate ? "la mise à jour" : "la création"
-                    } de la fiche produit ouverte.`,
-                    message: (
-                        <>
-                            Tu peux merger cette pull request :{" "}
-                            <a href={resp.data.pr_url} target="_blank">
-                                {resp.data.pr_url}
-                            </a>
-                            <br />
-                            Une fois mergée,{" "}
-                            {resp.isUpdate
-                                ? `les changements apparaitront`
-                                : `la fiche apparaitra`}{" "}
-                            sur le site beta.
-                        </>
-                    ),
+                    title: `Mise à jour effectuée`,
+                    message: <>La mise à jour a bien été effectuée</>,
                     type: "success",
                 });
                 return resp;
@@ -177,15 +186,13 @@ export function StartupForm(props: StartupFormProps) {
             });
     };
 
-    watch("analyse_risques"); // allow checkbox interaction
-    watch("sponsors"); // enable autocomplete update
-
+    watch("startup.analyse_risques"); // allow checkbox interaction
+    const startupSponsors = watch("startupSponsors"); // enable autocomplete update
+    const newSponsors = watch("newSponsors");
     const hasAnalyseDeRisque =
-        !!props.formData.analyse_risques ||
-        !!props.formData.analyse_risques_url ||
-        !!getValues("analyse_risques");
-
-    //console.log({ isDirty, isValid, isSaving, isSubmitting, errors });
+        !!props.startup?.analyse_risques ||
+        !!props.startup?.analyse_risques_url ||
+        !!getValues("startup.analyse_risques");
     return (
         <>
             <div>
@@ -198,25 +205,18 @@ export function StartupForm(props: StartupFormProps) {
                         description={<div>{alertMessage.message}</div>}
                     />
                 )}
-
-                {!!props.updatePullRequest && (
-                    <PullRequestWarning
-                        url={props.updatePullRequest.html_url}
-                    />
-                )}
-
                 <form
                     onSubmit={handleSubmit(onSubmit)}
                     aria-label="Modifier mes informations"
                 >
                     <BasicInput
-                        id="title"
+                        id="name"
                         placeholder="ex: Démarches simplifiées"
                         hintText={`Ce nom sert d'identifiant pour la startup et
                                 ne doit pas dépasser 30 caractères.`}
                     />
                     <BasicInput
-                        id="mission"
+                        id="pitch"
                         label="Quel est son objectif principal ?"
                         hintText={`Par exemple : "Faciliter la création d'une
                                     fiche produit". Pas besoin de faire plus
@@ -229,7 +229,9 @@ export function StartupForm(props: StartupFormProps) {
 
                     <div
                         className={`fr-input-group ${
-                            errors.thematiques ? "fr-input-group--error" : ""
+                            errors?.startup?.thematiques
+                                ? "fr-input-group--error"
+                                : ""
                         }`}
                     >
                         <label className="fr-label">
@@ -241,17 +243,45 @@ export function StartupForm(props: StartupFormProps) {
                         </label>
 
                         <ThematiquesEditor
-                            defaultValue={getValues("thematiques") || []}
+                            defaultValue={
+                                getValues("startup.thematiques") || []
+                            }
                             onChange={(e, data) => {
-                                setValue("thematiques", data, {
+                                setValue("startup.thematiques", data, {
                                     shouldDirty: true,
                                 });
                             }}
                         />
                     </div>
+                    {/* <div
+                        className={`fr-input-group ${
+                            errors?.startup?.thematiques
+                                ? "fr-input-group--error"
+                                : ""
+                        }`}
+                    >
+                        <label className="fr-label">
+                            Techno{" "}
+                            <span className="fr-hint-text">
+                                Indiquez les technologies utilisées par la
+                                startup
+                            </span>
+                        </label>
+
+                        <TechnoEditor
+                            defaultValue={getValues("startup.techno") || []}
+                            onChange={(e, data) => {
+                                setValue("startup.techno", data, {
+                                    shouldDirty: true,
+                                });
+                            }}
+                        />
+                    </div> */}
                     <div
                         className={`fr-input-group ${
-                            errors.usertypes ? "fr-input-group--error" : ""
+                            errors?.startup?.usertypes
+                                ? "fr-input-group--error"
+                                : ""
                         }`}
                     >
                         <label className="fr-label">
@@ -263,9 +293,9 @@ export function StartupForm(props: StartupFormProps) {
                         </label>
 
                         <UsertypesEditor
-                            defaultValue={getValues("usertypes") || []}
+                            defaultValue={getValues("startup.usertypes") || []}
                             onChange={(e, data) => {
-                                setValue("usertypes", data, {
+                                setValue("startup.usertypes", data, {
                                     shouldDirty: true,
                                 });
                             }}
@@ -274,22 +304,25 @@ export function StartupForm(props: StartupFormProps) {
                     <hr />
                     <div
                         className={`fr-input-group ${
-                            errors.markdown ? "fr-input-group--error" : ""
+                            errors?.startup?.description
+                                ? "fr-input-group--error"
+                                : ""
                         }`}
                     >
                         <label className="fr-label">
                             Description du produit :
                             <span className="fr-hint-text">
                                 {
-                                    startupSchemaWithMarkdown.shape.markdown
-                                        .description
+                                    startupInfoUpdateSchema.shape.startup.shape
+                                        .description.description
                                 }
                             </span>
                         </label>
                         <ClientOnly>
                             <MdEditor
                                 defaultValue={
-                                    props.formData.markdown || DEFAULT_CONTENT
+                                    props.startup?.description ||
+                                    DEFAULT_CONTENT
                                 }
                                 style={{
                                     height: "500px",
@@ -297,69 +330,110 @@ export function StartupForm(props: StartupFormProps) {
                                 }}
                                 renderHTML={(text) => mdParser.render(text)}
                                 onChange={(data, e) => {
-                                    setValue("markdown", data.text, {
+                                    setValue("startup.description", data.text, {
                                         shouldValidate: true,
                                         shouldDirty: true,
                                     });
                                 }}
                             />
                         </ClientOnly>
-                        {!!errors.markdown && (
+                        {!!errors?.startup?.description && (
                             <p
                                 id="text-input-error-desc-error"
                                 className="fr-error-text"
                             >
-                                {errors.markdown.message}
+                                {errors?.startup?.description.message}
                             </p>
                         )}
                     </div>
                     <hr />
                     <Select
                         label={
-                            startupSchemaWithMarkdown.shape.incubator
-                                .description
+                            startupInfoUpdateSchema.shape.startup.shape
+                                .incubator_id.description
                         }
-                        nativeSelectProps={register("incubator")}
+                        nativeSelectProps={register("startup.incubator_id")}
                         hint="Indiquez la structure dans laquelle est portée votre produit"
-                        state={errors.incubator ? "error" : "default"}
-                        stateRelatedMessage={errors.incubator?.message}
+                        state={
+                            errors?.startup?.incubator_id ? "error" : "default"
+                        }
+                        stateRelatedMessage={
+                            errors?.startup?.incubator_id?.message
+                        }
                     >
-                        <option value="">Séléctionnez un incubateur</option>
-                        {Object.entries(props.incubators).map(
-                            ([key, value]) => (
-                                <option value={key} key={key}>
-                                    {value.title}
-                                </option>
-                            )
-                        )}
+                        <option value="" disabled hidden>
+                            Séléctionnez un incubateur
+                        </option>
+                        {props.incubatorOptions.map((incubator) => (
+                            <option
+                                value={incubator.value}
+                                key={incubator.value}
+                            >
+                                {incubator.label}
+                            </option>
+                        ))}
                     </Select>
+
                     <SponsorBlock
-                        sponsors={[...(getValues("sponsors") || [])]}
+                        sponsors={[
+                            ...(startupSponsors || []),
+                            ...newSponsors.map((s) => s.ghid),
+                        ]}
                         allSponsors={{
-                            ...props.sponsors,
-                            ...newSponsors.reduce(
-                                (a, c) => ({ ...a, [c.id]: c }),
-                                {}
-                            ),
+                            ...props.sponsorOptions,
+                            ...newSponsors.map((newSponsor) => ({
+                                value: newSponsor.ghid,
+                                label: newSponsor.name,
+                            })),
                         }}
-                        setSponsors={(data) => {
-                            setValue("sponsors", data);
-                        }}
-                        setNewSponsors={(data) => {
-                            setNewSponsors([...newSponsors, ...data]);
-                            setValue(
-                                "sponsors",
-                                [
-                                    ...(getValues("sponsors") || []),
-                                    ...data.map((s) => s.id),
-                                ],
-                                { shouldDirty: true }
+                        setSponsors={(selectedSponsorIds: string[]) => {
+                            /* workaround can probably be better, and we could probably do that
+                            just before the call to save method instead of in this function
+                            :
+                                here selectSponsorIds can be uuid or ghid.
+                                If it is a ghid, it means it is a new sponsor and
+                                we don't want to upload newSponsor as startupSponsor
+                            */
+                            const newSponsors = getValues("newSponsors");
+                            const newSponsorIds = newSponsors.map(
+                                (s) => s.ghid
                             );
+                            // if a new sponsor was created, but it is then removed by the user
+                            // we new to remove it from newSponsor
+                            const idsToDelete = _.difference(
+                                newSponsorIds,
+                                selectedSponsorIds
+                            );
+                            const updatedNewSponsors = newSponsors.filter(
+                                (newSponsor) =>
+                                    !idsToDelete.includes(newSponsor.ghid)
+                            );
+                            const updatedNewSponsorIds = updatedNewSponsors.map(
+                                (s) => s.ghid
+                            );
+                            // change startupSponsor with ids that are not newSponsorsIds
+                            setValue(
+                                "startupSponsors",
+                                selectedSponsorIds.filter(
+                                    (id) => !updatedNewSponsorIds.includes(id)
+                                )
+                            );
+                            // change newSonsors
+                            setValue("newSponsors", updatedNewSponsors);
+                        }}
+                        setNewSponsors={(
+                            data: startupInfoUpdateSchemaType["newSponsors"]
+                        ) => {
+                            setValue(
+                                "startupSponsors",
+                                getValues("startupSponsors")
+                            );
+                            setValue("newSponsors", [...newSponsors, ...data]);
                         }}
                     />
                     <div
                         className={`fr-input-group ${
-                            errors.phases ? "fr-input-group--error" : ""
+                            errors.startupPhases ? "fr-input-group--error" : ""
                         }`}
                     >
                         <label className="fr-label">
@@ -374,7 +448,7 @@ export function StartupForm(props: StartupFormProps) {
                             register={register}
                             setValue={setValue}
                             getValues={getValues}
-                            errors={errors.phases || []}
+                            errors={errors.startupPhases || []}
                         />
                     </div>
                     {/*[FILE UPLOAD ]<hr />*/}
@@ -383,10 +457,10 @@ export function StartupForm(props: StartupFormProps) {
                     <BasicInput id="dashlord_url" />
 
                     <SelectAccessibilityStatus
-                        value={props.formData.accessibility_status}
+                        value={props.startup?.accessibility_status}
                         onChange={(e) =>
                             setValue(
-                                "accessibility_status",
+                                "startup.accessibility_status",
                                 e.currentTarget.value || undefined
                             )
                         }
@@ -394,12 +468,12 @@ export function StartupForm(props: StartupFormProps) {
                     <Checkbox
                         options={[
                             {
-                                label: startupSchemaWithMarkdown.shape
-                                    .mon_service_securise.description,
+                                label: startupInfoUpdateSchema.shape.startup
+                                    .shape.mon_service_securise.description,
                                 hintText:
                                     "Cochez cette case si votre produit est inscrit sur MonServiceSécurisé",
                                 nativeInputProps: {
-                                    ...register("mon_service_securise"),
+                                    ...register("startup.mon_service_securise"),
                                 },
                             },
                         ]}
@@ -407,12 +481,12 @@ export function StartupForm(props: StartupFormProps) {
                     <Checkbox
                         options={[
                             {
-                                label: startupSchemaWithMarkdown.shape
-                                    .analyse_risques.description,
+                                label: startupInfoUpdateSchema.shape.startup
+                                    .shape.analyse_risques.description,
                                 hintText:
                                     "Cochez cette case si l'équipe a produit une analyse de risque",
                                 nativeInputProps: {
-                                    ...register("analyse_risques"),
+                                    ...register("startup.analyse_risques"),
                                     checked: hasAnalyseDeRisque,
                                 },
                             },
@@ -435,7 +509,7 @@ export function StartupForm(props: StartupFormProps) {
 
                     <Button
                         className={fr.cx("fr-mt-3w")}
-                        disabled={!isValid || isSaving}
+                        disabled={isSaving}
                         children={
                             isSubmitting
                                 ? `Enregistrement en cours...`

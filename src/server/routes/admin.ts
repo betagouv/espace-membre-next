@@ -30,6 +30,4 @@ router.get(
     adminController.getSendinblueInfo
 );
 
-router.get("/api/get-users", adminController.getUsers);
-
 export { router as adminRouter };

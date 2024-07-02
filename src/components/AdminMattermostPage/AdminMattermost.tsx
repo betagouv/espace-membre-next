@@ -1,15 +1,16 @@
 "use client";
 import React, { useEffect, useState } from "react";
-import axios from "axios";
 
-import { Member } from "@/models/member";
-import routes, { computeRoute } from "@/routes/routes";
-import { AdminMattermostUser } from "./AdminMattermostUser";
-import RadioButtons from "@codegouvfr/react-dsfr/RadioButtons";
+import ButtonsGroup from "@codegouvfr/react-dsfr/ButtonsGroup";
 import { Checkbox } from "@codegouvfr/react-dsfr/Checkbox";
 import Input from "@codegouvfr/react-dsfr/Input";
+import RadioButtons from "@codegouvfr/react-dsfr/RadioButtons";
 import Select from "@codegouvfr/react-dsfr/Select";
-import ButtonsGroup from "@codegouvfr/react-dsfr/ButtonsGroup";
+import axios from "axios";
+
+import { AdminMattermostUser } from "./AdminMattermostUser";
+import { memberBaseInfoSchemaType } from "@/models/member";
+import routes, { computeRoute } from "@/routes/routes";
 
 interface Option {
     value: string;
@@ -21,7 +22,7 @@ export interface AdminMattermostProps {
     currentUserId: string;
     errors: string[];
     messages: string[];
-    users: Member[];
+    users: memberBaseInfoSchemaType[];
     activeTab: string;
     isAdmin: boolean;
     channelOptions: Option[];
@@ -138,6 +139,14 @@ export const AdminMattermost = (props: AdminMattermostProps) => {
     const [value, setValue] = useState<"one" | "two" | "three" | undefined>(
         undefined
     );
+    const getCurrentChannel = (): string => {
+        const channel = props.channelOptions.find((c) => c.value === channel);
+        if (channel) {
+            return channel.label;
+        } else {
+            return "channel non définie";
+        }
+    };
     return (
         <>
             <div>
@@ -240,13 +249,7 @@ export const AdminMattermost = (props: AdminMattermostProps) => {
                             <strong>
                                 ⚠️ Attention ce message sera envoyé{" "}
                                 {messageType === "channel"
-                                    ? ` au canal ${
-                                          (
-                                              props.channelOptions.find(
-                                                  (c) => c.value === channel
-                                              ) as Option
-                                          ).label
-                                      }`
+                                    ? ` au canal ${getCurrentChannel()}`
                                     : `à ${usersForMessage.length} membres`}
                             </strong>
                             <br />

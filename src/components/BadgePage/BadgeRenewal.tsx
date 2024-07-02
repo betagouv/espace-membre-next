@@ -1,16 +1,20 @@
-import config from "@/frontConfig";
-import { BadgeDossier } from "@/models/badgeDemande";
-import { BadgeRequest } from "@/models/badgeRequests";
-import routes, { computeRoute } from "@/routes/routes";
+"use client";
+
+import { useState } from "react";
+
 import Alert from "@codegouvfr/react-dsfr/Alert";
 import Button from "@codegouvfr/react-dsfr/Button";
 import Checkbox from "@codegouvfr/react-dsfr/Checkbox";
 import axios from "axios";
-import { useState } from "react";
 
-export interface BadgeRenewalProps {
-    badgeRequest: BadgeRequest;
-    dossier: BadgeDossier;
+import config from "@/frontConfig";
+import { badgeDossierSchemaType } from "@/models/badgeDemande";
+import { badgeRequestSchemaType } from "@/models/badgeRequests";
+import routes, { computeRoute } from "@/routes/routes";
+
+interface BadgeRenewalProps {
+    badgeRequest?: badgeRequestSchemaType;
+    dossier: badgeDossierSchemaType;
 }
 
 export default function BadgeRenewal({

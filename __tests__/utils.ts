@@ -6,11 +6,15 @@ import { v4 as uuidv4 } from "uuid";
 
 import testStartups from "./startups.json";
 import testUsers from "./users.json";
+import { UsersDomaineEnum } from "@/@types/db";
+import { db } from "@/lib/kysely";
+import { startupToModel } from "@/models/mapper";
+import { Domaine, EmailStatusCode } from "@/models/member";
 import config from "@/server/config";
 import knex from "@db";
 
-export default {
-    getJWT(id) {
+const testUtils = {
+    getJWT(id: string) {
         const token = jwt.sign(
             {
                 id,
@@ -24,7 +28,6 @@ export default {
                 expiresIn: "7 days",
             }
         );
-        console.log(token);
         return token;
     },
     mockUsers() {
@@ -118,7 +121,7 @@ export default {
     },
     setupTestDatabase() {
         console.log("Setup test database");
-        const dbConfig = parse(process.env.DATABASE_URL);
+        const dbConfig = parse(process.env.DATABASE_URL || "");
         const testDbName = dbConfig.database;
         if (!testDbName)
             return new Error("DATABASE_URL environment variable not set");
@@ -128,10 +131,10 @@ export default {
         // we need to connect to the default database to create it.
         console.log(`Creating test database ${testDbName}...`);
         const temporaryConnection = `postgres://${encodeURIComponent(
-            dbConfig.user
-        )}:${encodeURIComponent(dbConfig.password)}@${encodeURIComponent(
-            dbConfig.host
-        )}:${encodeURIComponent(dbConfig.port)}/postgres`;
+            dbConfig.user || ""
+        )}:${encodeURIComponent(dbConfig.password || "")}@${encodeURIComponent(
+            dbConfig.host || ""
+        )}:${encodeURIComponent(dbConfig.port || "")}/postgres`;
         const client = new Client({ connectionString: temporaryConnection });
         return client
             .connect()
@@ -141,17 +144,7 @@ export default {
             .then(() => client.query(`CREATE DATABASE ${testDbName}`, []))
             .then(() => client.end())
             .then(() => knex.migrate.latest())
-            .then(() => {
-                const sixMinutesInMs: number = 6 * 1000 * 60;
-                const dbUsers = testUsers.map((user) => ({
-                    username: user.id,
-                    primary_email: `${user.id}@${config.domain}`,
-                    primary_email_status_updated_at: new Date(
-                        Date.now() - sixMinutesInMs
-                    ),
-                }));
-                return knex("users").insert(dbUsers);
-            })
+            .then(async () => {})
             .then(() =>
                 console.log(`Test database ${testDbName} created successfully`)
             )
@@ -159,8 +152,8 @@ export default {
                 console.log(err);
             });
     },
-    cleanUpTestDatabase() {
-        const dbConfig = parse(process.env.DATABASE_URL);
+    async cleanUpTestDatabase() {
+        const dbConfig = parse(process.env.DATABASE_URL || "");
         const testDbName = dbConfig.database;
         if (!testDbName)
             return new Error("DATABASE_URL environment variable not set");
@@ -169,12 +162,12 @@ export default {
         // connect to the default database to clean up.
         console.log(`Cleaning up test database ${testDbName}...`);
         const temporaryConnection = `postgres://${encodeURIComponent(
-            dbConfig.user
-        )}:${encodeURIComponent(dbConfig.password)}@${encodeURIComponent(
-            dbConfig.host
-        )}:${encodeURIComponent(dbConfig.port)}/postgres`;
+            dbConfig.user || ""
+        )}:${encodeURIComponent(dbConfig.password || "")}@${encodeURIComponent(
+            dbConfig.host || ""
+        )}:${encodeURIComponent(dbConfig.port || "")}/postgres`;
         const client = new Client({ connectionString: temporaryConnection });
-
+        await db.destroy();
         return knex
             .destroy()
             .then(() => client.connect())
@@ -189,4 +182,145 @@ export default {
     randomUuid: function randomUuid() {
         return uuidv4();
     },
+    createUsers: async (
+        users: {
+            start?: string;
+            end?: string;
+            id: string;
+            fullname: string;
+            role?: string;
+            employer?: string;
+            domaine?: Domaine | string;
+            secondary_email?: string;
+            github?: string;
+            primary_email?: string | null;
+            missions?: {
+                start: string;
+                end?: string;
+                status?: string;
+                startups: (
+                    | "a-startup-at-gip"
+                    | "a-startup-at-dinum"
+                    | "anotherstartup"
+                )[];
+                employer?: string;
+            }[];
+        }[]
+    ) => {
+        const sixMinutesInMs: number = 6 * 1000 * 60;
+        const dbUsers = users.map((user) => ({
+            username: user.id,
+            fullname: user.fullname,
+            primary_email:
+                user.primary_email || user.primary_email === null
+                    ? user.primary_email
+                    : `${user.id}@${config.domain}`,
+            primary_email_status_updated_at: new Date(
+                Date.now() - sixMinutesInMs
+            ),
+            primary_email_status: EmailStatusCode.EMAIL_ACTIVE,
+            github: user.github,
+            secondary_email: user.secondary_email,
+            domaine: (user.domaine || Domaine.ANIMATION) as UsersDomaineEnum,
+            role: user.role || "",
+        }));
+        const createdUsers = await db
+            .insertInto("users")
+            .values(dbUsers)
+            .returningAll()
+            .execute();
+        for (const createdUser of createdUsers) {
+            const missionUser = users.find(
+                (user) => user.id === createdUser.username
+            );
+            if (missionUser?.missions) {
+                const missions =
+                    users.find((user) => user.id === createdUser.username)
+                        ?.missions || [];
+                for (const mission of missions) {
+                    const insertedRow = await db
+                        .insertInto("missions")
+                        .values({
+                            start: mission.start,
+                            end: mission.end,
+                            employer: mission.employer,
+                            user_id: createdUser.uuid,
+                        })
+                        .returningAll()
+                        .executeTakeFirstOrThrow();
+                    for (const startup of mission.startups || []) {
+                        const insertedStartup = await db
+                            .insertInto("startups")
+                            .values({
+                                ghid: startup,
+                                name: startup,
+                            })
+                            .onConflict((oc) => {
+                                return oc.column("ghid").doUpdateSet({
+                                    ghid: startup,
+                                    name: startup,
+                                });
+                            })
+                            .returningAll()
+                            .executeTakeFirstOrThrow();
+                        await db
+                            .insertInto("missions_startups")
+                            .values({
+                                mission_id: insertedRow.uuid,
+                                startup_id: insertedStartup.uuid,
+                            })
+                            .execute();
+                    }
+                }
+            } else {
+                await db
+                    .insertInto("missions")
+                    .values({
+                        start: missionUser?.start!,
+                        end: missionUser?.end,
+                        user_id: createdUser.uuid,
+                    })
+                    .execute();
+            }
+        }
+    },
+    deleteUsers: async (
+        users: {
+            star?: string;
+            end?: string;
+            id: string;
+            fullname: string;
+            role?: string;
+            employer?: string;
+            domaine?: Domaine | string;
+            secondary_email?: string;
+            github?: string;
+            missions?: {
+                start: string;
+                end?: string;
+                status?: string;
+                employer?: string;
+            }[];
+        }[]
+    ) => {
+        const createdUsers = await db
+            .deleteFrom("users")
+            .where(
+                "username",
+                "in",
+                users.map((user) => user.id)
+            )
+            .returningAll()
+            .execute();
+        // const deletedRows = await db
+        //     .deleteFrom("missions")
+        //     .where(
+        //         "user_id",
+        //         "in",
+        //         createdUsers.map((u) => u.uuid)
+        //     )
+        //     .execute();
+    },
 };
+
+export default testUtils;

@@ -1,12 +1,14 @@
 "use client";
 
+import React, { useEffect, useState } from "react";
+
+import axios from "axios";
+import { Metadata, ResolvingMetadata } from "next";
+
 import StartupPage, {
     StartupPageProps,
 } from "@/components/StartupPage/StartupPage";
-import React, { useEffect, useState } from "react";
-import axios from "axios";
 import routes, { computeRoute } from "@/routes/routes";
-import { Metadata, ResolvingMetadata } from "next";
 
 type Props = {
     params: { id: string };

@@ -3,11 +3,12 @@ import React from "react";
 import Autocomplete from "@mui/material/Autocomplete";
 import TextField from "@mui/material/TextField";
 
-import { Sponsor } from "@/models/sponsor";
+import { Option } from "@/models/misc";
+import { sponsorSchemaType } from "@/models/sponsor";
 
 interface SESponsorSelectProps {
     value: string[];
-    allSponsors: Sponsor[];
+    allSponsors: Option[];
     label?: string;
     hint?: string;
     state?: string;
@@ -30,11 +31,10 @@ export default function SESponsorSelect({
 }: SESponsorSelectProps) {
     const allOptions = Object.entries(allSponsors).map(
         ([key, sponsor], index) => ({
-            value: key,
-            label: sponsor.name,
+            value: sponsor.value,
+            label: sponsor.label,
         })
     );
-
     return (
         <div className="fr-select-group" style={containerStyle}>
             <label className="fr-label">

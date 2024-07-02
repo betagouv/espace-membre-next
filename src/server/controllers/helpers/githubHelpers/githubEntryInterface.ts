@@ -1,13 +1,13 @@
 import { z } from "zod";
 
-import { MemberSchemaType } from "@/components/BaseInfoUpdatePage";
+import { memberSchemaType } from "@/models/member";
 import { SponsorDomaineMinisteriel, SponsorType } from "@/models/sponsor";
-import { AccessibilityStatus, Phase, phaseSchema } from "@/models/startup";
+import { AccessibilityStatus, phaseSchema } from "@/models/startup";
 
-export interface GithubAuthorChange extends Omit<MemberSchemaType, "bio"> {}
+export interface GithubAuthorChange extends Omit<memberSchemaType, "bio"> {}
 
 export interface GithubAuthorMissionChange
-    extends Pick<MemberSchemaType, "missions"> {}
+    extends Pick<memberSchemaType, "missions"> {}
 
 export interface GithubFile {
     path: string;

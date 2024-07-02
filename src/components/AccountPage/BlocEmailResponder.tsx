@@ -1,34 +1,55 @@
 "use client";
 import React from "react";
-import routes, { computeRoute } from "@/routes/routes";
-import axios from "axios";
+
 import { Accordion } from "@codegouvfr/react-dsfr/Accordion";
-import { Input } from "@codegouvfr/react-dsfr/Input";
 import Button from "@codegouvfr/react-dsfr/Button";
+import { Input } from "@codegouvfr/react-dsfr/Input";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { useForm } from "react-hook-form";
+
+import { setEmailResponder } from "@/app/api/member/actions";
+import {
+    UpdateOvhResponder,
+    UpdateOvhResponderSchema,
+} from "@/models/actions/ovh";
+import { memberWrapperSchema } from "@/models/member";
+import { OvhResponder } from "@/models/ovh";
+import routes, { computeRoute } from "@/routes/routes";
 
 export default function BlocEmailResponder({
-    hasResponder,
-    responderFormData,
+    responder,
     username,
 }: {
-    hasResponder: boolean;
-    responderFormData?: {
-        from: string;
-        to: string;
-        content: string;
-    };
+    responder: OvhResponder | null | undefined;
     username: string;
 }) {
-    const [isSaving, setIsSaving] = React.useState<boolean>(false);
-    const [from, setFrom] = React.useState<string>(
-        (responderFormData && responderFormData.from) || ""
-    );
-    const [to, setTo] = React.useState<string>(
-        (responderFormData && responderFormData.to) || ""
-    );
-    const [content, setContent] = React.useState<string>(
-        (responderFormData && responderFormData.content) || ""
-    );
+    const defaultValues = responder
+        ? {
+              from: responder.from.toISOString().split("T")[0],
+              to: responder.to.toISOString().split("T")[0],
+              content: responder.content,
+          }
+        : {
+              from: new Date().toISOString().split("T")[0],
+              to: "",
+              content: "",
+          };
+    const {
+        register,
+        handleSubmit,
+        formState: { errors, isDirty, isSubmitting, isValid },
+        setValue,
+        getValues,
+        control,
+        watch,
+    } = useForm<UpdateOvhResponder>({
+        resolver: zodResolver(UpdateOvhResponderSchema),
+        mode: "onChange",
+        defaultValues,
+    });
+
+    const [isSaving, setIsSaving] = React.useState(false);
+
     return (
         <Accordion label="Configurer une réponse automatique">
             <p>
@@ -37,33 +58,33 @@ export default function BlocEmailResponder({
                 (la mise en place effective de la réponse automatique peut
                 prendre quelques minutes)
             </p>
+
             <form
                 className="fr-mb-6v"
-                onSubmit={(e) => {
-                    e.preventDefault();
-                    setIsSaving(true);
-                    axios
-                        .post(
-                            computeRoute(routes.USER_SET_EMAIL_RESPONDER_API),
-                            {
+                onSubmit={handleSubmit(
+                    async ({ content, from, to }: UpdateOvhResponder) => {
+                        if (isSaving) {
+                            return;
+                        }
+                        if (!isValid) {
+                            console.log("invalid");
+                            return;
+                        }
+                        setIsSaving(true);
+                        try {
+                            await setEmailResponder({
                                 content,
                                 from,
                                 to,
-                            },
-                            {
-                                withCredentials: true,
-                            }
-                        )
-                        .then((data) => {
-                            setIsSaving(false);
-                        })
-                        .catch((e) => {
-                            setIsSaving(false);
-                            console.error(e);
-                        });
-                }}
+                            });
+                        } catch (e) {
+                            alert(e);
+                        }
+                        setIsSaving(false);
+                    }
+                )}
             >
-                {hasResponder && (
+                {responder && (
                     <input type="hidden" name="method" value="update" />
                 )}
                 <Input
@@ -72,9 +93,9 @@ export default function BlocEmailResponder({
                     stateRelatedMessage="Text de validation / d'explication de l'erreur"
                     textArea
                     nativeTextAreaProps={{
-                        defaultValue: content,
+                        defaultValue: getValues("content"),
                         onChange: (e: { target: { value: string } }) => {
-                            setContent(e.target.value);
+                            setValue("content", e.target.value);
                         },
                         placeholder:
                             "Je ne serai pas en mesure de vous répondre du XX/XX au XX/XX. En cas d'urgence, n'hésitez pas à contacter ...",
@@ -85,9 +106,9 @@ export default function BlocEmailResponder({
                     label="Début"
                     nativeInputProps={{
                         type: "date",
-                        defaultValue: from,
+                        defaultValue: getValues("from"),
                         onChange: (e) => {
-                            setFrom(e.target.value);
+                            setValue("from", e.target.value);
                         },
                     }}
                 />
@@ -96,9 +117,9 @@ export default function BlocEmailResponder({
                     label="Fin"
                     nativeInputProps={{
                         type: "date",
-                        defaultValue: to,
+                        defaultValue: getValues("to"),
                         onChange: (e) => {
-                            setTo(e.target.value);
+                            setValue("to", e.target.value);
                         },
                     }}
                 />

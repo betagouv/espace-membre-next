@@ -1,126 +1,128 @@
-import BetaGouv from "../betagouv";
-import config from "@/server/config";
-import knex from "../db";
-import * as utils from "./utils";
-import {
-    requiredError,
-    isValidDate,
-    isValidPhoneNumber,
-} from "@/server/controllers/validator";
-import { format } from "date-fns/format";
+// import { format } from "date-fns/format";
 
-const getUserInfoForUsername = (usersInfos, username) =>
-    usersInfos.find((userInfo) => userInfo.id === username);
+// import * as utils from "./utils";
+// import BetaGouv from "../betagouv";
+// import knex from "../db";
+// import { getAllUsersPublicInfo } from "../db/dbUser";
+// import config from "@/server/config";
+// import {
+//     requiredError,
+//     isValidDate,
+//     isValidPhoneNumber,
+// } from "@/server/controllers/validator";
 
-const getFuturVisitsList = async function (usersInfos) {
-    const date = new Date(new Date().setDate(new Date().getDate()));
-    date.setHours(0, 0, 0, 0);
-    const visits = await knex("visits").select().where("date", ">=", date);
-    const visitsInfos = visits.map((visitInfo) => ({
-        ...visitInfo,
-        fullname: visitInfo.fullname,
-        date: format(visitInfo.date, "dd/MM/yyyy"),
-        referent:
-            (getUserInfoForUsername(usersInfos, visitInfo.referent) || {})
-                .fullname || "référent supprimé",
-    }));
-    return visitsInfos;
-};
+// const getUserInfoForUsername = (usersInfos, username) =>
+//     usersInfos.find((userInfo) => userInfo.id === username);
 
-export async function getForm(req, res) {
-    try {
-        const users = await BetaGouv.usersInfos();
+// const getFuturVisitsList = async function (usersInfos) {
+//     const date = new Date(new Date().setDate(new Date().getDate()));
+//     date.setHours(0, 0, 0, 0);
+//     const visits = await knex("visits").select().where("date", ">=", date);
+//     const visitsInfos = visits.map((visitInfo) => ({
+//         ...visitInfo,
+//         fullname: visitInfo.fullname,
+//         date: format(visitInfo.date, "dd/MM/yyyy"),
+//         referent:
+//             (getUserInfoForUsername(usersInfos, visitInfo.referent) || {})
+//                 .fullname || "référent supprimé",
+//     }));
+//     return visitsInfos;
+// };
 
-        const title = "Prévoir une visite";
-        return res.render("visit", {
-            domain: config.domain,
-            title,
-            errors: req.flash("error"),
-            messages: req.flash("message"),
-            userConfig: config.user,
-            users,
-            currentUserId: req.auth.id,
-            formData: {
-                visitorList: [],
-                referent: "",
-                start: new Date().toISOString().split("T")[0], // current date in YYYY-MM-DD format
-            },
-            visitsInfo: await getFuturVisitsList(users),
-            activeTab: "visit",
-            useSelectList: utils.isMobileFirefox(req),
-        });
-    } catch (err) {
-        console.error(err);
-        req.flash(
-            "error",
-            `Impossible de récupérer la liste des membres sur ${config.domain}`
-        );
-        return res.redirect("/");
-    }
-}
+// export async function getForm(req, res) {
+//     try {
+//         const users = await getAllUsersPublicInfo();
 
-export async function postForm(req, res) {
-    try {
-        const formValidationErrors = {};
-        const errorHandler = (field, message) => {
-            formValidationErrors[field] = message;
-        };
-        let visitors =
-            req.body.visitorList || requiredError("visiteurs", errorHandler);
-        const referent =
-            req.body.referentUsername ||
-            requiredError("référent", errorHandler);
-        const number = isValidPhoneNumber(
-            "numéro",
-            req.body.number,
-            errorHandler
-        );
-        let date = req.body.date || requiredError("date", errorHandler);
-        date = isValidDate("date de visite", new Date(date), errorHandler);
-        // when only one visitor is sent in the form, visitors is a string
-        visitors = Array.isArray(visitors) ? visitors : [visitors];
+//         const title = "Prévoir une visite";
+//         return res.render("visit", {
+//             domain: config.domain,
+//             title,
+//             errors: req.flash("error"),
+//             messages: req.flash("message"),
+//             userConfig: config.user,
+//             users,
+//             currentUserId: req.auth.id,
+//             formData: {
+//                 visitorList: [],
+//                 referent: "",
+//                 start: new Date().toISOString().split("T")[0], // current date in YYYY-MM-DD format
+//             },
+//             visitsInfo: await getFuturVisitsList(users),
+//             activeTab: "visit",
+//             useSelectList: utils.isMobileFirefox(req),
+//         });
+//     } catch (err) {
+//         console.error(err);
+//         req.flash(
+//             "error",
+//             `Impossible de récupérer la liste des membres sur ${config.domain}`
+//         );
+//         return res.redirect("/");
+//     }
+// }
 
-        if (Object.keys(formValidationErrors).length) {
-            req.flash("error", formValidationErrors);
-            throw new Error();
-        }
-        await knex("visits").insert(
-            visitors.map((fullname) => ({
-                fullname,
-                date,
-                number,
-                referent,
-                requester: req.auth.id,
-            }))
-        );
+// export async function postForm(req, res) {
+//     try {
+//         const formValidationErrors = {};
+//         const errorHandler = (field, message) => {
+//             formValidationErrors[field] = message;
+//         };
+//         let visitors =
+//             req.body.visitorList || requiredError("visiteurs", errorHandler);
+//         const referent =
+//             req.body.referentUsername ||
+//             requiredError("référent", errorHandler);
+//         const number = isValidPhoneNumber(
+//             "numéro",
+//             req.body.number,
+//             errorHandler
+//         );
+//         let date = req.body.date || requiredError("date", errorHandler);
+//         date = isValidDate("date de visite", new Date(date), errorHandler);
+//         // when only one visitor is sent in the form, visitors is a string
+//         visitors = Array.isArray(visitors) ? visitors : [visitors];
 
-        const lastVisitorInList = visitors.pop();
-        const dateToDisplay = format(
-            new Date(new Date().setDate(date.getDate() - 1)),
-            "dd/MM/yyyy"
-        );
-        req.flash(
-            "message",
-            `La visite a été programmée pour ${
-                visitors.length ? `${visitors.join(", ")} et ` : ""
-            }${lastVisitorInList}.
-      Un email sera envoyé à l'accueil Ségur le ${dateToDisplay} (la veille de la visite).`
-        );
+//         if (Object.keys(formValidationErrors).length) {
+//             req.flash("error", formValidationErrors);
+//             throw new Error();
+//         }
+//         await knex("visits").insert(
+//             visitors.map((fullname) => ({
+//                 fullname,
+//                 date,
+//                 number,
+//                 referent,
+//                 requester: req.auth.id,
+//             }))
+//         );
 
-        res.redirect("/visit");
-    } catch (err) {
-        const users = await BetaGouv.usersInfos();
-        res.render("visit", {
-            errors: req.flash("error"),
-            messages: req.flash("message"),
-            userConfig: config.user,
-            domain: config.domain,
-            currentUserId: req.auth.id,
-            visitsInfo: await getFuturVisitsList(users),
-            users,
-            activeTab: "visit",
-            formData: req.body,
-            useSelectList: utils.isMobileFirefox(req),
-        });
-    }
-}
+//         const lastVisitorInList = visitors.pop();
+//         const dateToDisplay = format(
+//             new Date(new Date().setDate(date.getDate() - 1)),
+//             "dd/MM/yyyy"
+//         );
+//         req.flash(
+//             "message",
+//             `La visite a été programmée pour ${
+//                 visitors.length ? `${visitors.join(", ")} et ` : ""
+//             }${lastVisitorInList}.
+//       Un email sera envoyé à l'accueil Ségur le ${dateToDisplay} (la veille de la visite).`
+//         );
+
+//         res.redirect("/visit");
+//     } catch (err) {
+//         const users = await getAllUsersPublicInfo();
+//         res.render("visit", {
+//             errors: req.flash("error"),
+//             messages: req.flash("message"),
+//             userConfig: config.user,
+//             domain: config.domain,
+//             currentUserId: req.auth.id,
+//             visitsInfo: await getFuturVisitsList(users),
+//             users,
+//             activeTab: "visit",
+//             formData: req.body,
+//             useSelectList: utils.isMobileFirefox(req),
+//         });
+//     }
+// }

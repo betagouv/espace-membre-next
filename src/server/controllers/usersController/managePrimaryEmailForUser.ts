@@ -1,11 +1,10 @@
 import { addEvent } from "@/lib/events";
+import { db } from "@/lib/kysely";
 import * as mattermost from "@/lib/mattermost";
 import { EventCode } from "@/models/actionEvent";
-import { DBUser } from "@/models/dbUser/dbUser";
 import config from "@/server/config";
 import betagouv from "@betagouv";
 import * as utils from "@controllers/utils";
-import knex from "@db/index";
 
 export async function managePrimaryEmailForUserApi(req, res) {
     managePrimaryEmailForUserHandler(
@@ -47,9 +46,9 @@ export async function managePrimaryEmailForUserHandler(
     const { username } = req.params;
     const isCurrentUser = req.auth.id === username;
     const { primaryEmail } = req.body;
-    const user = await utils.userInfos(username, isCurrentUser);
+    const user = await utils.userInfos({ username }, isCurrentUser);
     try {
-        if (!user.canChangeEmails) {
+        if (!user.authorizations.canChangeEmails) {
             throw new Error(
                 `L'utilisateur n'est pas autorisé à changer l'email primaire`
             );
@@ -63,18 +62,19 @@ export async function managePrimaryEmailForUserHandler(
             );
         }
 
-        const dbUser: DBUser = await knex("users")
-            .where({
-                username,
-            })
-            .then((db) => db[0]);
-        if (dbUser.primary_email?.includes(config.domain)) {
+        if (user.userInfos.primary_email?.includes(config.domain)) {
             await betagouv.createRedirection(
-                dbUser.primary_email,
+                user.userInfos.primary_email,
                 primaryEmail,
                 false
             );
-            await betagouv.deleteEmail(dbUser.primary_email.split("@")[0]);
+            try {
+                await betagouv.deleteEmail(
+                    user.userInfos.primary_email.split("@")[0]
+                );
+            } catch (e) {
+                console.log(e, "Email is possibly already deleted");
+            }
         } else {
             try {
                 await mattermost.getUserByEmail(primaryEmail);
@@ -84,23 +84,24 @@ export async function managePrimaryEmailForUserHandler(
                 );
             }
         }
-        await knex("users")
-            .insert({
+        await db
+            .updateTable("users")
+            .where("username", "=", username)
+            .set({
                 primary_email: primaryEmail,
                 username,
             })
-            .onConflict("username")
-            .merge({
-                primary_email: primaryEmail,
-                username,
-            });
-        addEvent({
+            .execute();
+
+        await addEvent({
             action_code: EventCode.MEMBER_PRIMARY_EMAIL_UPDATED,
             created_by_username: req.auth.id,
             action_on_username: username,
             action_metadata: {
                 value: primaryEmail,
-                old_value: dbUser ? dbUser.primary_email : undefined,
+                old_value: user
+                    ? user.userInfos.primary_email || undefined
+                    : undefined,
             },
         });
         req.flash(

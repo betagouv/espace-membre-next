@@ -2,15 +2,16 @@ import chai from "chai";
 import chaiHttp from "chai-http";
 import sinon from "sinon";
 
-import app from "@/server/index";
-import config from "@/server/config";
+import testUsers from "./users.json";
 import utils from "./utils";
-import * as adminConfig from "@/server/config/admin.config";
 import routes from "@/routes/routes";
-import * as mattermostScheduler from "@schedulers/mattermostScheduler/removeBetaAndParnersUsersFromCommunityTeam";
-import * as chat from "@infra/chat";
-import * as sendMattermostMessage from "@controllers/adminController/sendMattermostMessage";
+import config from "@/server/config";
+import * as adminConfig from "@/server/config/admin.config";
 import * as session from "@/server/helpers/session";
+import app from "@/server/index";
+import * as sendMattermostMessage from "@controllers/adminController/sendMattermostMessage";
+import * as chat from "@infra/chat";
+import * as mattermostScheduler from "@schedulers/mattermostScheduler/removeBetaAndParnersUsersFromCommunityTeam";
 
 chai.use(chaiHttp);
 
@@ -51,13 +52,15 @@ describe("Test Admin", () => {
     describe("GET /admin/mattermost authenticated", () => {
         let getToken;
 
-        beforeEach(() => {
+        beforeEach(async () => {
             getToken = sinon.stub(session, "getToken");
             getToken.returns(utils.getJWT("membre.actif"));
+            await utils.createUsers(testUsers);
         });
 
-        afterEach(() => {
+        afterEach(async () => {
             getToken.restore();
+            await utils.deleteUsers(testUsers);
         });
         it("should return a forbidden error if user not in admin", async () => {
             const res = await chai

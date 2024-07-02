@@ -1,15 +1,12 @@
 "use client";
 import React from "react";
 
-import SESelect from "@/components/SESelect";
-import Input from "@codegouvfr/react-dsfr/Input";
 import Button from "@codegouvfr/react-dsfr/Button";
+import Input from "@codegouvfr/react-dsfr/Input";
 import { useRouter } from "next/navigation";
+import { Option } from "@/models/misc";
 
-interface Option {
-    value: string;
-    label: string;
-}
+import SESelect from "@/components/SESelect";
 
 export interface StartupListProps {
     startups: Option[];

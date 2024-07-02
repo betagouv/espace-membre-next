@@ -5,7 +5,7 @@ import testUsers from "./users.json";
 import htmlBuilder from "../src/server/modules/htmlbuilder/htmlbuilder";
 import * as mdtohtml from "@/lib/mdtohtml";
 import { Job } from "@/models/job";
-import { Domaine, Member } from "@/models/member";
+import { Domaine, memberBaseInfoSchemaType } from "@/models/member";
 import {
     EmailMarrainageNewcomer,
     EmailMarrainageOnboarder,
@@ -21,10 +21,10 @@ describe("Test MARRAINAGE_REQUEST_EMAIL", async () => {
             variables: {
                 newcomer: testUsers.find(
                     (user) => user.id === "membre.actif"
-                ) as Member,
+                ) as unknown as memberBaseInfoSchemaType,
                 onboarder: testUsers.find(
                     (user) => user.id === "julien.dauphant"
-                ) as Member,
+                ) as unknown as memberBaseInfoSchemaType,
                 marrainageAcceptUrl: "http://adresse/marrainage/accept",
                 marrainageDeclineUrl: "http://adresse/marrainage/decline",
                 startup: "",
@@ -41,14 +41,14 @@ describe("Test MARRAINAGE_REQUEST_EMAIL", async () => {
     it("email MARRAINAGE_REQUEST_EMAIL should include position and startup when available", async () => {
         const newcomer = testUsers.find(
             (user) => user.id === "membre.actif"
-        ) as Member;
+        ) as unknown as memberBaseInfoSchemaType;
         const emailBody: string = await htmlBuilder.renderContentForType({
             type: EMAIL_TYPES.MARRAINAGE_REQUEST_EMAIL,
             variables: {
                 newcomer: newcomer,
                 onboarder: testUsers.find(
                     (user) => user.id === "julien.dauphant"
-                ) as Member,
+                ) as unknown as memberBaseInfoSchemaType,
                 marrainageAcceptUrl: "http://adresse/marrainage/accept",
                 marrainageDeclineUrl: "http://adresse/marrainage/decline",
                 startup: "test-startup",
@@ -65,10 +65,10 @@ describe("Test MARRAINAGE_REQUEST_EMAIL", async () => {
             variables: {
                 newcomer: testUsers.find(
                     (user) => user.id === "membre.plusieurs.missions"
-                ) as Member,
+                ) as unknown as memberBaseInfoSchemaType,
                 onboarder: testUsers.find(
                     (user) => user.id === "julien.dauphant"
-                ) as Member,
+                ) as unknown as memberBaseInfoSchemaType,
                 marrainageAcceptUrl: "http://adresse/marrainage/accept",
                 marrainageDeclineUrl: "http://adresse/marrainage/decline",
                 startup: "",
@@ -86,10 +86,10 @@ describe("Test MARRAINAGE_REQUEST_EMAIL", async () => {
                     fullname: "Membre Nouveau",
                     domaine: "Animation",
                     startups: ["test-startup"],
-                } as Member,
+                } as unknown as memberBaseInfoSchemaType,
                 onboarder: testUsers.find(
                     (user) => user.id === "julien.dauphant"
-                ) as Member,
+                ) as unknown as memberBaseInfoSchemaType,
                 marrainageAcceptUrl: "http://adresse/marrainage/accept",
                 marrainageDeclineUrl: "http://adresse/marrainage/decline",
                 startup: "test-startup",
@@ -108,10 +108,10 @@ describe("Test MARRAINAGE_ACCEPT_ONBOARDER_EMAIL", async () => {
             variables: {
                 newcomer: testUsers.find(
                     (user) => user.id === "membre.nouveau"
-                ) as Member,
+                ) as unknown as memberBaseInfoSchemaType,
                 onboarder: testUsers.find(
                     (user) => user.id === "julien.dauphant"
-                ) as Member,
+                ) as unknown as memberBaseInfoSchemaType,
             },
         });
         htmlBuilder.subjects[
@@ -128,10 +128,10 @@ describe("Test MARRAINAGE_ACCEPT_NEWCOMER_EMAIL", () => {
             variables: {
                 newcomer: testUsers.find(
                     (user) => user.id === "membre.nouveau"
-                ) as Member,
+                ) as unknown as memberBaseInfoSchemaType,
                 onboarder: testUsers.find(
                     (user) => user.id === "membre.actif"
-                ) as Member,
+                ) as unknown as memberBaseInfoSchemaType,
             },
         });
         htmlBuilder.subjects[
@@ -237,7 +237,7 @@ describe("Test EMAIL_ENDING_CONTRACT", () => {
             variables: {
                 user: testUsers.find(
                     (user) => user.id === "julien.dauphant"
-                ) as Member,
+                ) as unknown as memberBaseInfoSchemaType,
                 jobs: [job],
             },
         });
@@ -257,7 +257,7 @@ describe("Test EMAIL_ENDING_CONTRACT", () => {
             variables: {
                 user: testUsers.find(
                     (user) => user.id === "julien.dauphant"
-                ) as Member,
+                ) as unknown as memberBaseInfoSchemaType,
                 jobs: [job],
             },
         });
@@ -277,7 +277,7 @@ describe("Test EMAIL_ENDING_CONTRACT", () => {
             variables: {
                 user: testUsers.find(
                     (user) => user.id === "julien.dauphant"
-                ) as Member,
+                ) as unknown as memberBaseInfoSchemaType,
                 jobs: [job],
             },
         });
@@ -289,10 +289,10 @@ describe("Test EMAIL_ENDING_CONTRACT", () => {
 
 describe("Test EMAIL_NO_MORE_CONTRACT", () => {
     it("email EMAIL_NO_MORE_CONTRACT_1_DAY", async () => {
-        const user: Member = {
+        const user: memberBaseInfoSchemaType = {
             username: "jean.paul",
             fullname: "Jean Paul",
-        } as unknown as Member;
+        } as unknown as memberBaseInfoSchemaType;
         const emailBody: string = await htmlBuilder.renderContentForType({
             type: EMAIL_TYPES.EMAIL_NO_MORE_CONTRACT_1_DAY,
             variables: {
@@ -304,10 +304,10 @@ describe("Test EMAIL_NO_MORE_CONTRACT", () => {
     });
 
     it("email EMAIL_NO_MORE_CONTRACT_30_DAY", async () => {
-        const user: Member = {
+        const user: memberBaseInfoSchemaType = {
             username: "jean.paul",
             fullname: "Jean Paul",
-        } as unknown as Member;
+        } as unknown as memberBaseInfoSchemaType;
         const emailBody: string = await htmlBuilder.renderContentForType({
             type: EMAIL_TYPES.EMAIL_NO_MORE_CONTRACT_30_DAY,
             variables: {

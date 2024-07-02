@@ -1,7 +1,7 @@
 import Alert from "@codegouvfr/react-dsfr/Alert";
 import Button from "@codegouvfr/react-dsfr/Button";
 
-export default function FicheMembre({ userInfos, updatePullRequest }) {
+export default function FicheMembre({ userInfos }) {
     return (
         <div className="fr-mb-14v">
             <h2>Fiche Membre</h2>
@@ -10,9 +10,8 @@ export default function FicheMembre({ userInfos, updatePullRequest }) {
                     <>
                         <p>
                             <strong>{userInfos.fullname}</strong>
-                            <br />
-                            {userInfos.role}
                         </p>
+                        <p>{userInfos.role}</p>
                         {userInfos.startups && (
                             <p>
                                 <span className="font-weight-bold">
@@ -78,30 +77,7 @@ export default function FicheMembre({ userInfos, updatePullRequest }) {
                 <p className="fr-text--xs" style={{ fontStyle: "italic" }}>
                     Une information n'est pas à jour ?
                 </p>
-                {updatePullRequest && (
-                    <Alert
-                        className="fr-mb-8v"
-                        severity="warning"
-                        small={true}
-                        closable={false}
-                        title="Une pull request existe déjà sur ta fiche membre."
-                        description={
-                            <>
-                                {`Toi ou un membre de ton équipe doit la merger
-                                pour que les changements soient pris en compte : `}
-                                <a
-                                    className="fr-link"
-                                    href={updatePullRequest.url}
-                                    target="_blank"
-                                >
-                                    {updatePullRequest.url}
-                                </a>
-                                <br />
-                                (la prise en compte peut prendre 10 minutes.)
-                            </>
-                        }
-                    />
-                )}
+
                 <Button
                     linkProps={{
                         href: "/account/base-info",

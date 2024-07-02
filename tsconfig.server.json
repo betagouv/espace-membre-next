@@ -56,7 +56,6 @@
         "src/app",
         "src/components",
         "src/providers",
-        "src/proxies",
         "__tests__",
         "models",
         "src/lib",

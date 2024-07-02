@@ -1,33 +1,23 @@
 import nock from "nock";
 import rewire from "rewire";
 import sinon from "sinon";
-import config from "@/server/config";
+
 import testUsers from "./users.json";
 import utils from "./utils";
+import { db } from "@/lib/kysely";
 import * as mattermost from "@/lib/mattermost";
+import { EmailStatusCode } from "@/models/member";
+import config from "@/server/config";
 import * as email from "@/server/config/email.config";
-import knex from "@db";
-import { EmailStatusCode } from "@/models/dbUser/dbUser";
 import { removeBetaAndParnersUsersFromCommunityTeam } from "@schedulers/mattermostScheduler/removeBetaAndParnersUsersFromCommunityTeam";
 
-const mattermostUsers = [
-    {
-        id: "membre.actif",
-        email: `membre.actif@${config.domain}`,
-    },
-    {
-        id: "julien.dauphant",
-        email: `julien.dauphant@${config.domain}`,
-    },
-    {
-        id: "thomas.guillet",
-        email: `thomas.guillet@${config.domain}`,
-    },
-    {
-        id: "countdoesnotexist",
-        email: `countdoesnotexist@${config.domain}`,
-    },
-];
+// all users already has account but mattermost.newuser
+const mattermostUsers = testUsers
+    .filter((user) => user.id !== "mattermost.newuser")
+    .map((u) => ({
+        id: u.id,
+        email: `${u.id}@${config.domain}`,
+    }));
 
 const mattermostScheduler = rewire(
     "../src/server/schedulers/mattermostScheduler"
@@ -37,10 +27,12 @@ describe("invite users to mattermost", () => {
     beforeEach(async () => {
         utils.cleanMocks();
         utils.mockOvhTime();
+        await utils.createUsers(testUsers);
     });
 
     afterEach(async () => {
         // clock.restore();
+        await utils.deleteUsers(testUsers);
     });
 
     it("invite users to team by emails", async () => {
@@ -87,10 +79,18 @@ describe("invite users to mattermost", () => {
                 200,
                 testUsers.map((user) => user.id)
             );
-
+        // in this case this call get user in team Alumni
         nock(/.*mattermost.incubateur.net/)
             .get(/^.*api\/v4\/users.*/)
-            .reply(200, [...mattermostUsers]);
+            .reply(
+                200,
+                testUsers
+                    .filter((user) => user.id === "mattermost.newuser")
+                    .map((u) => ({
+                        id: u.id,
+                        email: `${u.id}@${config.domain}`,
+                    }))
+            );
         nock(/.*mattermost.incubateur.net/)
             .get(/^.*api\/v4\/users.*/)
             .reply(200, []);
@@ -101,24 +101,24 @@ describe("invite users to mattermost", () => {
             .persist();
 
         const url = process.env.USERS_API || "https://beta.gouv.fr";
-        nock(url)
-            .get((uri) => uri.includes("authors.json"))
-            .reply(200, testUsers)
-            .persist();
+        // nock(url)
+        //     .get((uri) => uri.includes("authors.json"))
+        //     .reply(200, testUsers)
+        //     .persist();
         const { addUsersNotInCommunityToCommunityTeam } = mattermostScheduler;
         const result = await addUsersNotInCommunityToCommunityTeam();
-        result.should.be.equal(2);
+        result.should.be.equal(1);
     });
 
     it("does not create users to team by emails if email pending", async () => {
-        await knex("users")
-            .where({
-                username: "mattermost.newuser",
-            })
-            .update({
+        await db
+            .updateTable("users")
+            .where("username", "=", "mattermost.newuser")
+            .set({
                 primary_email_status: EmailStatusCode.EMAIL_CREATION_PENDING,
                 primary_email_status_updated_at: new Date(),
-            });
+            })
+            .execute();
 
         nock(/.*mattermost.incubateur.net/)
             .get(/^.*api\/v4\/teams.*/)
@@ -146,10 +146,10 @@ describe("invite users to mattermost", () => {
             .persist();
 
         const url = process.env.USERS_API || "https://beta.gouv.fr";
-        nock(url)
-            .get((uri) => uri.includes("authors.json"))
-            .reply(200, testUsers)
-            .persist();
+        // nock(url)
+        //     .get((uri) => uri.includes("authors.json"))
+        //     .reply(200, testUsers)
+        //     .persist();
         const { createUsersByEmail } = mattermostScheduler;
         const result = await createUsersByEmail();
         result.length.should.be.equal(0);
@@ -158,14 +158,14 @@ describe("invite users to mattermost", () => {
     it("create users to team by emails", async () => {
         const tenMinutesInMs: number = 10 * 1000 * 60;
         const nowLessTenMinutes: Date = new Date(Date.now() - tenMinutesInMs);
-        await knex("users")
-            .where({
-                username: "mattermost.newuser",
-            })
-            .update({
+        await db
+            .updateTable("users")
+            .where("username", "=", "mattermost.newuser")
+            .set({
                 primary_email_status: EmailStatusCode.EMAIL_ACTIVE,
                 primary_email_status_updated_at: nowLessTenMinutes,
-            });
+            })
+            .execute();
         nock(/.*ovh.com/)
             .get(/^.*email\/domain\/.*\/account/)
             .reply(
@@ -196,10 +196,10 @@ describe("invite users to mattermost", () => {
         const mattermostCreateUser = sinon.spy(mattermost, "createUser");
 
         const url = process.env.USERS_API || "https://beta.gouv.fr";
-        nock(url)
-            .get((uri) => uri.includes("authors.json"))
-            .reply(200, testUsers)
-            .persist();
+        // nock(url)
+        //     .get((uri) => uri.includes("authors.json"))
+        //     .reply(200, testUsers)
+        //     .persist();
         const { createUsersByEmail } = mattermostScheduler;
         const result = await createUsersByEmail();
         result.length.should.be.equal(1);
@@ -228,10 +228,12 @@ describe("Reactivate current users on mattermost", () => {
         const date = new Date("2021-01-20T07:59:59+01:00");
         clock = sinon.useFakeTimers(date);
         utils.cleanMocks();
+        await utils.createUsers(testUsers);
     });
 
     afterEach(async () => {
         clock.restore();
+        await utils.deleteUsers(testUsers);
     });
 
     it("reactivate current users", async () => {
@@ -247,28 +249,39 @@ describe("Reactivate current users on mattermost", () => {
             .reply(200, [{ status: "ok" }])
             .persist();
 
-        const url = process.env.USERS_API || "https://beta.gouv.fr";
-        nock(url)
-            .get((uri) => uri.includes("authors.json"))
-            .reply(200, testUsers)
-            .persist();
-
         const { reactivateUsers } = mattermostScheduler;
         const result = await reactivateUsers();
         result.length.should.be.equal(1); // il n'y a qu'un utilisateur inactif simulé (julien.dauphant)
     });
 });
 
-describe("Move expired user to team Alumni on mattermost", () => {
+describe("Test to remove users from community team", () => {
     let clock;
+    const users = [
+        {
+            id: "julien.dauphant",
+            fullname: "Julien Dauphant",
+            missions: [
+                {
+                    start: "2016-11-03",
+                    end: "2020-10-20",
+                    status: "independent",
+                    employer: "octo",
+                },
+            ],
+            role: "",
+        },
+    ];
     beforeEach(async () => {
         const date = new Date("2021-01-20T07:59:59+01:00");
         clock = sinon.useFakeTimers(date);
         utils.cleanMocks();
+        await utils.createUsers(users);
     });
 
     afterEach(async () => {
         clock.restore();
+        await utils.deleteUsers(users);
     });
 
     it("Remove expired user from community team on mattermost", async () => {
@@ -296,23 +309,23 @@ describe("Move expired user to team Alumni on mattermost", () => {
             .persist();
 
         const url = process.env.USERS_API || "https://beta.gouv.fr";
-        nock(url)
-            .get((uri) => uri.includes("authors.json"))
-            .reply(200, [
-                {
-                    id: "julien.dauphant",
-                    fullname: "Julien Dauphant",
-                    missions: [
-                        {
-                            start: "2016-11-03",
-                            end: "2020-10-20",
-                            status: "independent",
-                            employer: "octo",
-                        },
-                    ],
-                },
-            ])
-            .persist();
+        // nock(url)
+        //     .get((uri) => uri.includes("authors.json"))
+        //     .reply(200, [
+        //         {
+        //             id: "julien.dauphant",
+        //             fullname: "Julien Dauphant",
+        //             missions: [
+        //                 {
+        //                     start: "2016-11-03",
+        //                     end: "2020-10-20",
+        //                     status: "independent",
+        //                     employer: "octo",
+        //                 },
+        //             ],
+        //         },
+        //     ])
+        //     .persist();
 
         const { removeUsersFromCommunityTeam } = mattermostScheduler;
         const result = await removeUsersFromCommunityTeam(undefined, true);
@@ -353,32 +366,42 @@ describe("Move expired user to team Alumni on mattermost", () => {
             .reply(200, [{ status: "ok" }])
             .persist();
 
-        const url = process.env.USERS_API || "https://beta.gouv.fr";
-        nock(url)
-            .get((uri) => uri.includes("authors.json"))
-            .reply(200, [
-                {
-                    id: "julien.dauphant",
-                    fullname: "Julien Dauphant",
-                    missions: [
-                        {
-                            start: "2016-11-03",
-                            end: "2020-10-20",
-                            status: "independent",
-                            employer: "octo",
-                        },
-                    ],
-                },
-            ])
-            .persist();
-
         await removeBetaAndParnersUsersFromCommunityTeam();
         removeFromTeamMock.isDone().should.be.true;
         addToTeamMock.isDone().should.be.true;
         // result.length.should.be.equal(1);
     });
+});
+describe("Test move expired user to alumni team", () => {
+    let clock;
+    const users = [
+        {
+            id: "julien.dauphant",
+            fullname: "Julien Dauphant",
+            missions: [
+                {
+                    start: "2016-11-03",
+                    end: "2021-01-17",
+                    status: "independent",
+                    employer: "octo",
+                },
+            ],
+            role: "",
+        },
+    ];
+    beforeEach(async () => {
+        const date = new Date("2021-01-20T07:59:59+01:00");
+        clock = sinon.useFakeTimers(date);
+        utils.cleanMocks();
+        await utils.createUsers(users);
+    });
 
-    it("Move expired user to team Alumni on mattermost", async () => {
+    afterEach(async () => {
+        clock.restore();
+        await utils.deleteUsers(users);
+    });
+
+    it("should move expired user to team Alumni on mattermost", async () => {
         nock(/.*mattermost.incubateur.net/)
             .get(/^.*api\/v4\/users.*/)
             .reply(200, [
@@ -412,24 +435,24 @@ describe("Move expired user to team Alumni on mattermost", () => {
             ])
             .persist();
 
-        const url = process.env.USERS_API || "https://beta.gouv.fr";
-        nock(url)
-            .get((uri) => uri.includes("authors.json"))
-            .reply(200, [
-                {
-                    id: "julien.dauphant",
-                    fullname: "Julien Dauphant",
-                    missions: [
-                        {
-                            start: "2016-11-03",
-                            end: "2021-01-17",
-                            status: "independent",
-                            employer: "octo",
-                        },
-                    ],
-                },
-            ])
-            .persist();
+        // const url = process.env.USERS_API || "https://beta.gouv.fr";
+        // nock(url)
+        //     .get((uri) => uri.includes("authors.json"))
+        //     .reply(200, [
+        //         {
+        //             id: "julien.dauphant",
+        //             fullname: "Julien Dauphant",
+        //             missions: [
+        //                 {
+        //                     start: "2016-11-03",
+        //                     end: "2021-01-17",
+        //                     status: "independent",
+        //                     employer: "octo",
+        //                 },
+        //             ],
+        //         },
+        //     ])
+        //     .persist();
 
         const { moveUsersToAlumniTeam } = mattermostScheduler;
         const result = await moveUsersToAlumniTeam();

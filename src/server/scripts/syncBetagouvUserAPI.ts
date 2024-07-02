@@ -1,5 +1,5 @@
-import { syncBetagouvUserAPI } from "@schedulers/syncBetagouvAPIScheduler";
+// import { syncBetagouvUserAPI } from "@schedulers/syncBetagouvAPIScheduler";
 
-syncBetagouvUserAPI().then(d => {
-    console.log('Sync betagouv user api done')
-})
+// syncBetagouvUserAPI().then(d => {
+//     console.log('Sync betagouv user api done')
+// })

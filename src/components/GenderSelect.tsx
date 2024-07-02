@@ -2,7 +2,7 @@ import React from "react";
 
 import Select from "@codegouvfr/react-dsfr/Select";
 
-import { genderOptions } from "@/models/dbUser";
+import { genderOptions } from "@/models/member";
 
 // Define the props for the parent component
 interface GenderSelectProps {

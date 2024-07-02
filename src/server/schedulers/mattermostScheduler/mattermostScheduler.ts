@@ -1,27 +1,13 @@
+import { getAllUsersInfo } from "@/lib/kysely/queries/users";
 import { MattermostUser } from "@/lib/mattermost";
 import * as mattermost from "@/lib/mattermost";
-import { DBUser, EmailStatusCode } from "@/models/dbUser/dbUser";
-import { MemberWithPrimaryEmailInfo, Member } from "@/models/member";
+import { memberBaseInfoToModel } from "@/models/mapper";
+import { EmailStatusCode } from "@/models/member";
+import { memberBaseInfoSchemaType } from "@/models/member";
 import config from "@/server/config";
 import betagouv from "@betagouv";
 import * as utils from "@controllers/utils";
-import knex from "@db";
 import { sendInfoToChat } from "@infra/chat";
-
-const mergedMemberAndDBUser = (user: Member, dbUser: DBUser) => {
-    return {
-        ...user,
-        primary_email_status: dbUser ? dbUser.primary_email_status : undefined,
-        primary_email: dbUser ? dbUser.primary_email : undefined,
-        primary_email_status_updated_at: dbUser
-            ? dbUser.primary_email_status_updated_at
-            : undefined,
-    };
-};
-
-const findDBUser = (dbUsers: DBUser[], user: Member) => {
-    return dbUsers.find((x) => x.username === user.id);
-};
 
 const filterActiveUser = (user) => {
     return (
@@ -71,26 +57,28 @@ export const deactivateMattermostUsersWithUnallowedEmails = async (
 };
 
 export const getActiveGithubUsersUnregisteredOnMattermost = async (): Promise<
-    MemberWithPrimaryEmailInfo[]
+    memberBaseInfoSchemaType[]
 > => {
     const allMattermostUsers: MattermostUser[] =
         await mattermost.getUserWithParams();
-    const dbUsers: DBUser[] = await knex("users").select();
-    const githubUsers: Member[] = await betagouv.usersInfos();
-    const activeGithubUsers: Member[] = githubUsers.filter(
+    const githubUsers = (await getAllUsersInfo()).map((user) =>
+        memberBaseInfoToModel(user)
+    );
+    const activeGithubUsers = githubUsers.filter(
         (x) => !utils.checkUserIsExpired(x)
     );
     const concernedUsers = activeGithubUsers
-        .map((user: Member) => {
-            const dbUser = findDBUser(dbUsers, user);
-            return mergedMemberAndDBUser(user, dbUser as DBUser);
-        })
-        .filter(filterActiveUser) as MemberWithPrimaryEmailInfo[];
+        // .map((user: Member) => {
+        //     const dbUser = findDBUser(dbUsers, user);
+        //     return mergedMemberAndDBUser(user, dbUser as DBUser);
+        // })
+        .filter(filterActiveUser);
     const allMattermostUsersEmails = allMattermostUsers.map(
         (mattermostUser) => mattermostUser.email
     );
     return concernedUsers.filter(
-        (user) => !allMattermostUsersEmails.includes(user.primary_email)
+        (user) =>
+            !allMattermostUsersEmails.includes(user.primary_email as string)
     );
 };
 
@@ -99,16 +87,17 @@ export const getMattermostUsersActiveGithubUsersNotInTeam = async (
 ): Promise<MattermostUser[]> => {
     const allMattermostUsers: MattermostUser[] =
         await mattermost.getUserWithParams({ not_in_team: teamId });
-    const dbUsers: DBUser[] = await knex("users").select();
-    const githubUsers: Member[] = await betagouv.usersInfos();
-    const activeGithubUsers: Member[] = githubUsers.filter(
+    const githubUsers = (await getAllUsersInfo()).map((user) =>
+        memberBaseInfoToModel(user)
+    );
+    const activeGithubUsers = githubUsers.filter(
         (x) => !utils.checkUserIsExpired(x)
     );
     const concernedUsers = activeGithubUsers
-        .map((user: Member) => {
-            const dbUser = findDBUser(dbUsers, user);
-            return mergedMemberAndDBUser(user, dbUser as DBUser);
-        })
+        // .map((user) => {
+        //     const dbUser = findDBUser(dbUsers, user);
+        //     return mergedMemberAndDBUser(user, dbUser as DBUser);
+        // })
         .filter(filterActiveUser);
     const concernedUsersEmails = concernedUsers.map(
         (user) => user.primary_email

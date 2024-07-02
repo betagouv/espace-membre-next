@@ -1,11 +1,19 @@
 import ButtonsGroup from "@codegouvfr/react-dsfr/ButtonsGroup";
 
 export default function Observatoire({
-    workplace,
+    workplace_insee_code,
+    osm_city,
     gender,
     tjm,
     legal_status,
     average_nb_of_days,
+}: {
+    osm_city: any;
+    gender: string | null | undefined;
+    tjm: number | null | undefined;
+    legal_status: string | null | undefined;
+    average_nb_of_days: number | null | undefined;
+    workplace_insee_code: string | null | undefined;
 }) {
     return (
         <div className="fr-mb-14v">
@@ -15,7 +23,7 @@ export default function Observatoire({
                 <span className="font-weight-bold">
                     Lieu de travail principal :{" "}
                 </span>{" "}
-                {workplace || "Non renseigné"}
+                {/* {workplace || "Non renseigné"} */}
                 <br />
                 <span className="font-weight-bold">Genre : </span>{" "}
                 <span className="hide-info-detail">
@@ -43,7 +51,7 @@ export default function Observatoire({
                     {
                         children: "✏️ Mettre à jour",
                         linkProps: {
-                            href: "/account/info",
+                            href: "/account/base-info",
                         },
                     },
                     {

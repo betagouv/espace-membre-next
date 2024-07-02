@@ -1,51 +1,55 @@
-import db from ".";
-import { BadgeRequest } from "@/models/badgeRequests";
+import { Insertable, Selectable, Updateable } from "kysely";
 
-interface CreateBadgeRequestProps
-    extends Omit<BadgeRequest, "id" | "created_at" | "updated_at"> {}
-interface UpdateBadgeRequestProps
-    extends Partial<Omit<BadgeRequest, "id" | "created_at" | "update_at">> {}
+import { BadgeRequests } from "@/@types/db";
+import { db } from "@/lib/kysely";
 
 const BADGE_REQUEST_TABLE = "badge_requests";
 
 export const createBadgeRequest = (
-    props: CreateBadgeRequestProps
-): Promise<BadgeRequest> => {
-    return db(BADGE_REQUEST_TABLE)
-        .insert({
+    props: Insertable<BadgeRequests>
+): Promise<Selectable<BadgeRequests> | undefined> => {
+    return db
+        .insertInto(BADGE_REQUEST_TABLE)
+        .values({
             ...props,
         })
-        .returning("*")
-        .then((res) => res[0]);
+        .returningAll()
+        .executeTakeFirst();
 };
 
 export const updateBadgeRequest = async (
-    props: UpdateBadgeRequestProps,
+    props: Updateable<BadgeRequests>,
     username: string
 ): Promise<void> => {
     console.log(props, username);
-    await db(BADGE_REQUEST_TABLE)
-        .update({
+    await db
+        .updateTable(BADGE_REQUEST_TABLE)
+        .set({
             ...props,
         })
-        .where({
-            username,
-        });
+        .where("username", "=", username);
     return;
 };
 
 export const getBadgeRequest = (
     username: string
-): Promise<BadgeRequest | undefined> => {
-    return db(BADGE_REQUEST_TABLE).where({ username }).first();
+): Promise<Selectable<BadgeRequests> | undefined> => {
+    return db
+        .selectFrom(BADGE_REQUEST_TABLE)
+        .selectAll()
+        .where("username", "=", username)
+        .executeTakeFirst();
 };
 
 export const getBadgeRequestWithStatus = (
     username: string,
-    status: BadgeRequest["status"]
-): Promise<BadgeRequest | undefined> => {
-    return db(BADGE_REQUEST_TABLE)
-        .where({ username, status })
+    status: BadgeRequests["status"]
+): Promise<Selectable<BadgeRequests> | undefined> => {
+    return db
+        .selectFrom(BADGE_REQUEST_TABLE)
+        .selectAll()
+        .where("username", "=", username)
+        .where("status", "=", status)
         .orderBy("created_at", "desc")
-        .first();
+        .executeTakeFirst();
 };

@@ -47,17 +47,16 @@ class routes {
         "/api/users/:username/secondary_email" as const;
     static USER_UPDATE_PRIMARY_EMAIL_API =
         "/api/users/:username/primary_email" as const;
-    static USER_UPDATE_END_DATE_API = "/api/users/:username/end-date" as const;
     static USER_UPGRADE_EMAIL_API =
         "/api/users/:username/email-upgrade" as const;
     static USER_CREATE_EMAIL_API = "/api/users/:username/create-email" as const;
     static API_GET_PUBLIC_USER_INFO = "/api/public/users/:username" as const;
     static USER_SET_EMAIL_RESPONDER_API =
         "/api/account/set_email_responder" as const;
-    static USER_DELETE_EMAIL_RESPONDER_API =
-        "/api/account/delete_email_responder" as const;
-    static USER_UPDATE_COMMUNICATION_EMAIL_API =
-        "/api/account/update_communication_email" as const;
+    // static USER_DELETE_EMAIL_RESPONDER_API =
+    //     "/api/account/delete_email_responder" as const;
+    // static USER_UPDATE_COMMUNICATION_EMAIL_API =
+    //     "/api/account/update_communication_email" as const;
     // account
     static ACCOUNT_GET = "/account" as const;
     static ACCOUNT_GET_API = "/api/account" as const;
@@ -65,7 +64,7 @@ class routes {
     static ACCOUNT_GET_BASE_INFO_FORM_API = "/api/account/base-info" as const;
 
     static ACCOUNT_POST_BASE_INFO_FORM =
-        "/api/account/base-info/:username" as const;
+        "/api/member/:username/info-update" as const;
     static ACCOUNT_GET_DETAIL_INFO_FORM_API = "/api/account/info" as const;
     static ACCOUNT_POST_DETAIL_INFO_FORM = "/api/account/info" as const;
     static API_PUBLIC_POST_BASE_INFO_FORM =
@@ -73,8 +72,8 @@ class routes {
     static ACCOUNT_GET_BADGE_REQUEST_PAGE = "/account/badge-demande" as const;
     static ACCOUNT_GET_BADGE_REQUEST_PAGE_API =
         "/api/account/badge-demande" as const;
-    static ACCOUNT_GET_BADGE_RENEWAL_REQUEST_PAGE_API =
-        "/api/account/badge-demande/renewal" as const;
+    // static ACCOUNT_GET_BADGE_RENEWAL_REQUEST_PAGE_API =
+    //     "/api/account/badge-demande/renewal" as const;
     static API_POST_BADGE_REQUEST = "/api/badge" as const;
     static API_POST_BADGE_RENEWAL_REQUEST = "/api/badge/renewal" as const;
     static API_UPDATE_BADGE_REQUEST_STATUS = "/api/badge/status" as const;
@@ -88,7 +87,7 @@ class routes {
     static API_PUBLIC_SPONSORS_GET_ALL: string = "/api/sponsors" as const;
 
     static GET_USER: string = "/community/:username" as const;
-    static GET_USER_API: string = "/api/community/:username" as const;
+    static GET_USER_API: string = "/api/member/:username" as const;
     static GET_COMMUNITY: string = "/community" as const;
     //static GET_COMMUNITY_API: string = "/api/community" as const;
 

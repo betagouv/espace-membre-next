@@ -1,6 +1,10 @@
-import { BadgeDossier } from "@/models/badgeDemande";
+import { badgeDossierSchemaType } from "@/models/badgeDemande";
 
-export const BadgeExistingView = ({ dossier }: { dossier: BadgeDossier }) => {
+export const BadgeExistingView = ({
+    dossier,
+}: {
+    dossier: badgeDossierSchemaType;
+}) => {
     return (
         <p>
             <b>Date de fin de validité du badge :</b>{" "}

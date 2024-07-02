@@ -1,14 +1,18 @@
 import BetaGouv from "../betagouv";
+import * as github from "@/lib/github";
+import { getAllUsersInfo } from "@/lib/kysely/queries/users";
+import { memberBaseInfoToModel } from "@/models/mapper";
 import config from "@/server/config";
 import { checkUserIsExpired } from "@controllers/utils";
-import * as github from "@/lib/github";
 
 // get users that are member (got a github card) and that have github account that is not in the team
 const getGithubUsersNotInOrganization = async (org) => {
     const allGithubOrganizationMembers = await github.getAllOrganizationMembers(
         org
     );
-    const users = await BetaGouv.usersInfos();
+    const users = (await getAllUsersInfo()).map((user) =>
+        memberBaseInfoToModel(user)
+    );
 
     const activeGithubUsers = users.filter((x) => {
         const stillActive = !checkUserIsExpired(x);
@@ -44,7 +48,9 @@ const getExpiredGithubUsersInOrganization = async (
     const allGithubOrganizationMembers = await github.getAllOrganizationMembers(
         org
     );
-    const users = await BetaGouv.usersInfos();
+    const users = (await getAllUsersInfo()).map((user) =>
+        memberBaseInfoToModel(user)
+    );
 
     const expiredGithubUsers = users.filter((x) => {
         const stillActive = checkUserIsExpired(x, numberOfExpirationDays);

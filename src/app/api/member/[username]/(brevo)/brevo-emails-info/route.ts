@@ -1,7 +1,7 @@
 import { getServerSession } from "next-auth";
 
+import { db } from "@/lib/kysely";
 import { brevoEmailInfoDataSchema } from "@/models/brevoInfo";
-import db from "@/server/db";
 import { getContactInfo } from "@/server/infra/email/sendInBlue";
 import { authOptions } from "@/utils/authoptions";
 
@@ -24,11 +24,11 @@ export async function GET(
         throw new Error(`User should be admin or should owned data`);
     }
 
-    const dbUser = await db("users")
-        .where({
-            username,
-        })
-        .first();
+    const dbUser = await db
+        .selectFrom("users")
+        .select(["primary_email", "secondary_email"])
+        .where("username", "=", username)
+        .executeTakeFirst();
 
     let emailServiceInfo = {};
     if (dbUser?.primary_email) {

@@ -1,7 +1,7 @@
 import { getServerSession } from "next-auth";
 
+import { db } from "@/lib/kysely";
 import { brevoEmailEventDataSchema } from "@/models/brevoEvent";
-import db from "@/server/db";
 import { getSendEventForUser } from "@/server/infra/email/sendInBlue";
 import { authOptions } from "@/utils/authoptions";
 
@@ -24,16 +24,16 @@ export async function GET(
         throw new Error(`User should be admin or should owned data`);
     }
 
-    const dbUser = await db("users")
-        .where({
-            username,
-        })
-        .first();
+    const dbUser = await db
+        .selectFrom("users")
+        .select(["primary_email", "secondary_email"])
+        .where("username", "=", username)
+        .executeTakeFirst();
     const resp = {
         primary_email: {},
         secondary_email: {},
     };
-    if (dbUser.primary_email) {
+    if (dbUser?.primary_email) {
         resp.primary_email = {
             email: dbUser.primary_email,
             events: [],
@@ -47,7 +47,7 @@ export async function GET(
             resp.primary_email["error"] = e;
         }
     }
-    if (dbUser.secondary_email) {
+    if (dbUser?.secondary_email) {
         resp.secondary_email = {
             email: dbUser.secondary_email,
             events: [],

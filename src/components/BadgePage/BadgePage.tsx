@@ -1,14 +1,17 @@
-import { BadgeDossier } from "@/models/badgeDemande";
-import { BadgeRequest } from "@/models/badgeRequests";
+"use client";
+import { useState } from "react";
+
 import Alert from "@codegouvfr/react-dsfr/Alert";
 import Button from "@codegouvfr/react-dsfr/Button";
-import { useState } from "react";
-import { WelcomeScreen } from "./BadgeWelcomeScreen";
-import { BadgeExistingView } from "./BadgeExistingView";
 
-export interface BadgeProps {
-    badgeRequest: BadgeRequest;
-    dossier: BadgeDossier;
+import { BadgeExistingView } from "./BadgeExistingView";
+import { WelcomeScreen } from "./BadgeWelcomeScreen";
+import { badgeDossierSchemaType } from "@/models/badgeDemande";
+import { badgeRequestSchemaType } from "@/models/badgeRequests";
+
+interface BadgeProps {
+    badgeRequest?: badgeRequestSchemaType;
+    dossier: badgeDossierSchemaType;
 }
 
 const STATUS = {

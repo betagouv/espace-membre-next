@@ -1,10 +1,16 @@
 import axios from "axios";
 import crypto from "crypto";
-import { format } from "date-fns/format";
+import { compareAsc, startOfDay } from "date-fns";
 import _ from "lodash";
 import nodemailer from "nodemailer";
 
-import { EmailInfos, Member } from "@/models/member";
+import { getUserInfos } from "@/lib/kysely/queries/users";
+import { userInfosToModel } from "@/models/mapper";
+import {
+    memberBaseInfoSchemaType,
+    memberSchemaType,
+    memberWrapperSchemaType,
+} from "@/models/member";
 import config from "@/server/config";
 import BetaGouv from "@betagouv";
 
@@ -105,42 +111,70 @@ export function objectArrayToCSV<T extends Record<string, any>>(
 }
 
 export function checkUserIsExpired(
-    user: Member,
+    user: memberSchemaType | memberBaseInfoSchemaType,
     minDaysOfExpiration: number = 1
 ) {
     // Le membre est considéré comme expiré si:
     // - il/elle existe
     // - il/elle a une date de fin
     // - son/sa date de fin est passée
+    // todo what to do with user.end
 
-    if (!user || user.end === undefined) return false;
-
+    if (!user || !user.missions || !user.missions.length) return false;
+    const latestMission = user.missions.reduce((a, v) =>
+        //@ts-ignore todo
+        !v.end || v.end > a.end ? v : a
+    );
+    if (!latestMission.end) {
+        return false;
+    }
     const today = new Date();
     today.setHours(0, 0, 0, 0);
 
-    const userEndDate = new Date(user.end);
+    //@ts-ignore todo
+    const userEndDate = new Date(latestMission.end);
     if (userEndDate.toString() === "Invalid Date") return false;
     userEndDate.setHours(0, 0, 0, 0);
-
     return (
         userEndDate.getTime() + minDaysOfExpiration * 24 * 3600 * 1000 <=
         today.getTime()
     );
 }
 
-export function getActiveUsers(users, minDaysOfExpiration = 0) {
-    return users.filter((u) => !checkUserIsExpired(u, minDaysOfExpiration - 1));
+export function getActiveUsers<
+    T extends memberSchemaType[] | memberBaseInfoSchemaType[]
+>(users: T, minDaysOfExpiration = 0): T {
+    return users.filter(
+        (u) => !checkUserIsExpired(u, minDaysOfExpiration - 1)
+    ) as T;
 }
 
-export function getExpiredUsers(users: Member[], minDaysOfExpiration = 0) {
-    return users.filter((u) => checkUserIsExpired(u, minDaysOfExpiration - 1));
+export function getExpiredUsers<
+    T extends memberSchemaType[] | memberBaseInfoSchemaType[]
+>(users: T, minDaysOfExpiration = 0): T {
+    return users.filter((u) =>
+        checkUserIsExpired(u, minDaysOfExpiration - 1)
+    ) as T;
 }
 
-export function getExpiredUsersForXDays(users: Member[], nbDays) {
+export function getExpiredUsersForXDays<
+    T extends memberSchemaType[] | memberBaseInfoSchemaType[]
+>(users: T, nbDays: number): T {
     const date = new Date();
     date.setDate(date.getDate() - nbDays);
-    const formatedDate = format(date, "yyyy-MM-dd");
-    return users.filter((x) => x.end === formatedDate);
+    // Assuming you need to compare dates, convert to YYYY-MM-DD format.
+    // const formattedDate = date.toISOString().slice(0, 10);
+    return users.filter((user) => {
+        const latestMission = user.missions.reduce((a, v) =>
+            !v.end || (a.end ? new Date(v.end) > new Date(a.end) : false)
+                ? v
+                : a
+        );
+        // Compare the normalized dates
+        return latestMission.end
+            ? compareAsc(startOfDay(latestMission.end), startOfDay(date)) === 0
+            : false;
+    }) as T;
 }
 
 export function isMobileFirefox(req) {
@@ -167,7 +201,7 @@ export function isValidEmail(formValidationErrors, field, email) {
     return null;
 }
 
-export async function isPublicServiceEmail(email) {
+export const isPublicServiceEmail = async function (email: string) {
     if (process.env.NODE_ENV === "development") {
         return true;
     }
@@ -184,82 +218,72 @@ export async function isPublicServiceEmail(email) {
             return true;
         }
     } catch (e) {
-        throw new Error("Get response from tchap error");
+        console.error(e)
+        //throw new Error("Get response from tchap error");
+        return false;
     }
-}
+};
 
 export const asyncFilter = async (arr: Array<any>, predicate) => {
     const results = await Promise.all(arr.map(predicate));
     return arr.filter((_v, index) => results[index]);
 };
 
-export interface UserInfos {
-    emailInfos: EmailInfos | null;
-    userInfos: Member | undefined;
-    redirections: any[];
-    isExpired: boolean;
-    canCreateEmail: boolean;
-    canCreateRedirection: boolean;
-    canChangePassword: boolean;
-    canChangeEmails: boolean;
-    responder: any;
-}
-
 export async function userInfos(
-    id: string,
+    params: { username: string } | { uuid: string },
     isCurrentUser: boolean
-): Promise<UserInfos> {
+): Promise<memberWrapperSchemaType> {
     try {
-        const [userInfos, emailInfos, redirections, responder] =
-            await Promise.all([
-                BetaGouv.userInfosById(id),
-                BetaGouv.emailInfos(id),
-                BetaGouv.redirectionsForId({ from: id }),
-                BetaGouv.getResponder(id),
-            ]);
-        const hasUserInfos = userInfos !== undefined;
-
-        const isExpired = !userInfos || checkUserIsExpired(userInfos);
-
+        const userInfos = userInfosToModel(
+            await getUserInfos({
+                ...params,
+                options: { withDetails: true },
+            })
+        );
+        const emailInfos = await BetaGouv.emailInfos(userInfos.username);
+        const emailRedirections = await BetaGouv.redirectionsForId({
+            from: userInfos.username,
+        });
+        const emailResponder = await BetaGouv.getResponder(userInfos.username);
+        const isExpired = checkUserIsExpired(userInfos);
         // On ne peut créé un compte que si:
         // - la page fiche Github existe
         // - le membre n'est pas expiré·e
         // - et le compte n'existe pas
-        const canCreateEmail =
-            hasUserInfos && !isExpired && emailInfos === null;
+        const canCreateEmail = !isExpired && emailInfos === null;
         // On peut créer une redirection & changer un password si:
         // - la page fiche Github existe
         // - le membre n'est pas expiré·e (le membre ne devrait de toute façon pas pouvoir se connecter)
         // - et que l'on est le membre connecté·e pour créer ces propres redirections.
-        const canCreateRedirection = !!(
-            hasUserInfos &&
-            !isExpired &&
-            isCurrentUser
-        );
-        const canChangePassword = !!(
-            hasUserInfos &&
-            !isExpired &&
-            isCurrentUser &&
-            emailInfos
-        );
-
-        const canChangeEmails = !!(hasUserInfos && !isExpired && isCurrentUser);
+        const canCreateRedirection = !!(!isExpired && isCurrentUser);
+        const canChangePassword = !!(!isExpired && isCurrentUser && emailInfos);
+        const canChangeEmails = !!(!isExpired && isCurrentUser);
+        const hasPublicServiceEmail = userInfos.primary_email
+            ? await isPublicServiceEmail(userInfos.primary_email)
+            : false;
 
         return {
-            emailInfos,
-            redirections,
-            userInfos,
             isExpired,
-            canCreateEmail,
-            canCreateRedirection,
-            canChangePassword,
-            canChangeEmails,
-            responder,
+            userInfos: userInfos,
+            emailResponder,
+            authorizations: {
+                canCreateEmail,
+                canCreateRedirection,
+                canChangePassword,
+                canChangeEmails,
+                hasPublicServiceEmail,
+            },
+            emailInfos,
+            emailRedirections,
         };
     } catch (err) {
         console.error(err);
 
-        throw new Error(`Problème pour récupérer les infos du membre ${id}`);
+        throw new Error(
+            `Problème pour récupérer les infos du membre ${
+                "username" in params ? params.username : params.uuid
+            }`
+        );
     }
 }
 

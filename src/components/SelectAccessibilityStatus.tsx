@@ -13,11 +13,13 @@ export default function SelectAccebilityStatus({ value, onChange }) {
             label="Sélectionne l'accessibilité de votre produit"
             nativeSelectProps={{
                 onChange,
-                required: false,
+                required: true,
                 defaultValue: value,
             }}
         >
-            <option value="">---</option>
+            <option value="" disabled hidden>
+                Selectionnez une option
+            </option>
             {options.map((option) => {
                 return (
                     <option key={option.value} value={option.value}>
