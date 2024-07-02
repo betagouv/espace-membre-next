@@ -304,7 +304,7 @@ export async function postSignInApi(req, res) {
 
         return res.json({
             url:
-                `${decodeURIComponent(req.body.next) || "/account"}` +
+                `${decodeURIComponent(req.body.next) || "/dashboard"}` +
                 `${req.query.anchor ? `#` + req.query.anchor : ""}`,
         });
     } catch (err) {

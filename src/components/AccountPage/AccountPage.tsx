@@ -1,5 +1,6 @@
 "use client";
-import React from "react";
+
+import React, { useEffect, useRef } from "react";
 
 import { fr } from "@codegouvfr/react-dsfr";
 import Alert from "@codegouvfr/react-dsfr/Alert";
@@ -28,6 +29,26 @@ export default function AccountPage(props: any) {
         redirections,
         status,
     } = props;
+
+    // This is used to scroll according to the hash
+    const emailSettingsContainerRef = useRef<HTMLDivElement | null>(null);
+    const observatoryContainerRef = useRef<HTMLDivElement | null>(null);
+
+    useEffect(() => {
+        switch (window.location.hash.slice(1)) {
+            case "email-settings":
+                emailSettingsContainerRef.current?.scrollIntoView({
+                    behavior: "smooth",
+                });
+                break;
+            case "observatory":
+                observatoryContainerRef.current?.scrollIntoView({
+                    behavior: "smooth",
+                });
+                break;
+        }
+    }, []);
+
     return (
         <div>
             {hasActiveResponder && (
@@ -90,14 +111,18 @@ export default function AccountPage(props: any) {
                         userInfos={userInfos}
                         updatePullRequest={updatePullRequest}
                     ></FicheMembre>
-                    <EmailContainer {...props}></EmailContainer>
-                    <Observatoire
-                        average_nb_of_days={average_nb_of_days}
-                        workplace={workplace}
-                        gender={gender}
-                        tjm={tjm}
-                        legal_status={legal_status}
-                    />
+                    <div ref={emailSettingsContainerRef}>
+                        <EmailContainer {...props}></EmailContainer>
+                    </div>
+                    <div ref={observatoryContainerRef}>
+                        <Observatoire
+                            average_nb_of_days={average_nb_of_days}
+                            workplace={workplace}
+                            gender={gender}
+                            tjm={tjm}
+                            legal_status={legal_status}
+                        />
+                    </div>
                 </>
             )}
             <div className="fr-mb-14v">

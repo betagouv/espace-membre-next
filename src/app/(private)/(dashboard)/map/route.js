@@ -102,9 +102,15 @@ export async function GET(req) {
               <div style="position: absolute; top:0px; right: 0px;"><a href="#hide"><< cacher </a></div>
               <ul class="hidden-mobile margin-bottom-5" id="drawer">
                   <li>
-                      <a href="/account" id="account" 
+                      <a href="/dashboard" id="home"
+                          class="nav-item <% if(activeTab === 'home') { %> active <% } %>">
+                          Accueil
+                      </a>
+                  </li>
+                  <li>
+                      <a href="/account" id="account"
                           class="nav-item <% if(activeTab === 'account') { %> active <% } %>">
-                          Mon compte
+                          Compte
                       </a>
                   </li>
                   <li>
