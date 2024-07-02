@@ -23,20 +23,14 @@ export default function SignClientPage() {
         setError("");
         if (hash) {
             await axios
-                .post(
-                    computeRoute(`${routes.SIGNIN_API}`),
-                    {
-                        token: hash,
-                    },
-                    {
-                        withCredentials: true,
-                    }
-                )
-                .then((r) =>
-                    axios.get(computeRoute(routes.ME), {
-                        withCredentials: true,
-                    })
-                )
+                .get(hash, {
+                    withCredentials: true,
+                })
+                // .then((r) =>
+                //     axios.get(computeRoute(routes.ME), {
+                //         withCredentials: true,
+                //     })
+                // )
                 .then((r) => {
                     window.location.href = "/account";
                 })
