@@ -46,9 +46,9 @@ export default function SignClientPage() {
         document.location = "/";
     };
 
-    React.useEffect(() => {
-        if (window) onSubmit();
-    }, [onSubmit]);
+    // React.useEffect(() => {
+    //     if (window) onSubmit();
+    // }, [onSubmit]);
 
     return (
         <div>
