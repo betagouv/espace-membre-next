@@ -1,47 +1,71 @@
 "use client";
-import { Member } from "@/models/member";
 import Accordion from "@codegouvfr/react-dsfr/Accordion";
-import Alert from "@codegouvfr/react-dsfr/Alert";
 import Button from "@codegouvfr/react-dsfr/Button";
 import { Table } from "@codegouvfr/react-dsfr/Table";
 
-function MemberTable({ members }: { members: Member[] }) {
+import { memberBaseInfoSchemaType } from "@/models/member";
+import { missionSchemaType } from "@/models/mission";
+import { phaseSchemaType, startupSchemaType } from "@/models/startup";
+import { getLastMissionDate } from "@/utils/member";
+import { getCurrentPhase } from "@/utils/startup";
+
+function MemberTable({
+    members,
+    startup_id,
+}: {
+    members: memberBaseInfoSchemaType[];
+    startup_id: string;
+}) {
     return (
         <Table
-            data={members.map((member: Member, index: number) => [
-                <a
-                    key={index}
-                    className="fr-link"
-                    target="_blank"
-                    href={`https://github.com/betagouv/beta.gouv.fr/edit/master/content/_authors/${member.id}.md`}
-                >
-                    {member.fullname}
-                </a>,
-                member.role,
-                member.end,
-            ])}
+            data={members.map(
+                (member: memberBaseInfoSchemaType, index: number) => [
+                    <a
+                        key={index}
+                        href={`/community/${member.username}`}
+                    >
+                        {member.fullname}
+                    </a>,
+                    member.role,
+                    getLastMissionDate(
+                        member.missions.filter((mission) =>
+                            (mission.startups || []).includes(startup_id)
+                        )
+                    ) || "",
+                ]
+            )}
             headers={["Nom", "Role", "Date de fin"]}
         />
     );
 }
 
 export interface StartupPageProps {
-    startupInfos: any;
-    currentPhase: string;
-    updatePullRequest: any;
-    members: {
-        expired_members: Member[];
-        active_members: Member[];
-        previous_members: Member[];
-    };
+    startupInfos: startupSchemaType;
+    members: memberBaseInfoSchemaType[];
+    phases: phaseSchemaType[];
 }
 
 export default function StartupPage({
     startupInfos,
-    currentPhase,
-    updatePullRequest,
     members,
+    phases,
 }: StartupPageProps) {
+    const currentPhase = getCurrentPhase(phases); // todo get current phase
+    const activeMembers = members.filter((member) =>
+        member.missions.find(
+            (m) =>
+                m.startups?.includes(startupInfos.uuid) &&
+                (!m.end || m.end >= new Date())
+        )
+    );
+    const previousMembers = members.filter((member) =>
+        member.missions.find(
+            (m) =>
+                m.startups?.includes(startupInfos.uuid) &&
+                m.end &&
+                m.end < new Date()
+        )
+    );
     return (
         <>
             <div className="fr-mb-8v">
@@ -52,7 +76,7 @@ export default function StartupPage({
                         <a
                             className="fr-link"
                             target="_blank"
-                            href={`https://github.com/betagouv/beta.gouv.fr/edit/master/content/_startups/${startupInfos.id}.md`}
+                            href={`https://github.com/betagouv/beta.gouv.fr/blob/master/content/_startups/${startupInfos.ghid}.md`}
                         >
                             {startupInfos.name}
                         </a>
@@ -60,13 +84,17 @@ export default function StartupPage({
                     <br />
                     <span>
                         Repository :{" "}
-                        <a
-                            className="fr-link"
-                            target="_blank"
-                            href={startupInfos.repository}
-                        >
-                            {startupInfos.repository}
-                        </a>
+                        {startupInfos.repository ? (
+                            <a
+                                className="fr-link"
+                                target="_blank"
+                                href={startupInfos.repository}
+                            >
+                                {startupInfos.repository}
+                            </a>
+                        ) : (
+                            "Non renseigné"
+                        )}
                     </span>
                     <br />
                     <span>
@@ -84,36 +112,9 @@ export default function StartupPage({
                 <p className="fr-text--sm" style={{ fontStyle: "italic" }}>
                     Une information n'est pas à jour ?
                 </p>
-                {updatePullRequest && (
-                    <>
-                        <br />
-                        <Alert
-                            severity="warning"
-                            small={true}
-                            closable={false}
-                            title="Une pull request existe déjà sur cette fiche."
-                            description={
-                                <>
-                                    {`Toi ou un membre de ton équipe doit la
-                                    merger pour que les changements soient pris en
-                                    compte : `}
-                                    <a
-                                        href={updatePullRequest.url}
-                                        target="_blank"
-                                    >
-                                        {updatePullRequest.url}
-                                    </a>
-                                    <br />
-                                    (la prise en compte peut prendre 10
-                                    minutes.)
-                                </>
-                            }
-                        />
-                    </>
-                )}
                 <Button
                     linkProps={{
-                        href: `/startups/${startupInfos.id}/info-form`,
+                        href: `/startups/${startupInfos.uuid}/info-form`,
                     }}
                 >
                     ✏️ Mettre à jour les infos
@@ -127,13 +128,16 @@ export default function StartupPage({
                     expanded={true}
                     onExpandedChange={(expanded, e) => {}}
                 >
-                    <MemberTable members={members.active_members} />
-                </Accordion>
-                <Accordion label="Membres expirés">
-                    <MemberTable members={members.expired_members} />
+                    <MemberTable
+                        members={activeMembers}
+                        startup_id={startupInfos.uuid}
+                    />
                 </Accordion>
                 <Accordion label="Membres précédents">
-                    <MemberTable members={members.previous_members} />
+                    <MemberTable
+                        members={previousMembers}
+                        startup_id={startupInfos.uuid}
+                    />
                 </Accordion>
             </div>
         </>

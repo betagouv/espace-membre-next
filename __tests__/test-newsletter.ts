@@ -1,27 +1,28 @@
 import chai from "chai";
 import chaiHttp from "chai-http";
-import HedgedocApi from "hedgedoc-api";
-import nock from "nock";
-import rewire from "rewire";
-import sinon from "sinon";
 import { add } from "date-fns/add";
 import { format } from "date-fns/format";
 import { fr } from "date-fns/locale/fr";
 import { startOfWeek } from "date-fns/startOfWeek";
+import HedgedocApi from "hedgedoc-api";
+import nock from "nock";
+import rewire from "rewire";
+import sinon from "sinon";
 
-import BetaGouv from "@betagouv";
-import config from "@/server/config";
-import * as dateUtils from "@/utils/date";
-import knex from "@db";
+import utils from "./utils";
+import { db } from "@/lib/kysely";
 import { renderHtmlFromMd } from "@/lib/mdtohtml";
+import config from "@/server/config";
+import * as Email from "@/server/config/email.config";
+import * as session from "@/server/helpers/session";
+import * as dateUtils from "@/utils/date";
+import BetaGouv from "@betagouv";
+import knex from "@db";
+import * as chat from "@infra/chat";
 import {
     createNewsletter,
     getJobOfferContent,
 } from "@schedulers/newsletterScheduler";
-import utils from "./utils";
-import * as chat from "@infra/chat";
-import * as Email from "@/server/config/email.config";
-import * as session from "@/server/helpers/session";
 
 chai.use(chaiHttp);
 
@@ -98,10 +99,10 @@ describe("Newsletter", () => {
     describe("should get newsletter data for newsletter page", () => {
         let getToken;
         beforeEach(async () => {
-            await knex("newsletters").insert([
-                ...mockNewsletters,
-                mockNewsletter,
-            ]);
+            await db
+                .insertInto("newsletters")
+                .values([...mockNewsletters, mockNewsletter])
+                .execute();
             getToken = sinon.stub(session, "getToken");
             getToken.returns(utils.getJWT("membre.actif"));
         });
@@ -218,16 +219,21 @@ describe("Newsletter", () => {
                     ),
                 })
             );
-            const newsletter = await knex("newsletters")
+            const newsletter = await db
+                .selectFrom("newsletters")
+                .selectAll()
                 .orderBy("created_at")
-                .first();
+                .executeTakeFirstOrThrow();
             newsletter.url.should.equal(`${config.padURL}/${newsletterName}`);
             clock.restore();
             await knex("newsletters").truncate();
         });
 
         it("should send remind on monday at 8am", async () => {
-            await knex("newsletters").insert([mockNewsletter]);
+            await db
+                .insertInto("newsletters")
+                .values({ ...mockNewsletter })
+                .execute();
             clock = sinon.useFakeTimers(new Date("2021-03-01T07:59:59+01:00"));
             await newsletterReminder("FIRST_REMINDER");
             slack.firstCall.args[0].text.should.equal(
@@ -240,7 +246,10 @@ describe("Newsletter", () => {
         });
 
         it("should send remind on thursday at 8am", async () => {
-            await knex("newsletters").insert([mockNewsletter]);
+            await db
+                .insertInto("newsletters")
+                .values({ ...mockNewsletter })
+                .execute();
             clock = sinon.useFakeTimers(new Date("2021-03-04T07:59:59+01:00"));
             await newsletterReminder("SECOND_REMINDER");
             slack.firstCall.args[0].text.should.equal(
@@ -253,7 +262,10 @@ describe("Newsletter", () => {
         });
 
         it("should send remind on thursday at 6pm", async () => {
-            await knex("newsletters").insert([mockNewsletter]);
+            await db
+                .insertInto("newsletters")
+                .values({ ...mockNewsletter })
+                .execute();
             clock = sinon.useFakeTimers(new Date("2021-03-04T17:59:59+01:00"));
             await newsletterReminder("THIRD_REMINDER");
             slack.firstCall.args[0].text.should.equal(
@@ -340,13 +352,14 @@ describe("Newsletter", () => {
                 .post(/^.*new/)
                 .reply(200, "");
 
-            await knex("newsletters").insert([
-                {
+            await db
+                .insertInto("newsletters")
+                .values({
                     ...mockNewsletter,
                     validator: "julien.dauphant",
                     sent_at: null,
-                },
-            ]);
+                })
+                .execute();
             const sendEmailStub = sinon
                 .stub(Email, "sendEmail")
                 .returns(Promise.resolve(null));
@@ -369,10 +382,12 @@ describe("Newsletter", () => {
                 renderHtmlFromMd(contentWithMacro)
             );
             slack.called.should.be.true;
-            const newsletter = await knex("newsletters")
+            const newsletter = await db
+                .selectFrom("newsletters")
+                .selectAll()
                 .orderBy("created_at")
-                .whereNotNull("sent_at")
-                .first();
+                .where("sent_at", "is not", null)
+                .executeTakeFirstOrThrow();
             newsletter.sent_at.should.not.be.null;
             clock.restore();
             sendEmailStub.restore();

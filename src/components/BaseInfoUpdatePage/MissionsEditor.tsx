@@ -16,7 +16,7 @@ import {
 import SESelect from "../SESelect";
 import { userStatusOptions } from "@/frontConfig";
 import { HasMissions } from "@/models/member";
-import { Status, missionSchema } from "@/models/mission";
+import { Status, missionSchema, missionSchemaType } from "@/models/mission";
 
 export const Mission = ({
     index,
@@ -35,7 +35,7 @@ export const Mission = ({
     register: any;
     control: any;
     setValue: any;
-    mission: any;
+    mission?: missionSchemaType;
     missionsRemove: any;
     onMissionAutoEndClick: any;
     startupOptions: any;
@@ -43,6 +43,7 @@ export const Mission = ({
     isMulti: boolean;
     labels?: {
         employer?: string;
+        status?: string;
         start?: string;
         end?: string;
     };
@@ -68,6 +69,7 @@ export const Mission = ({
         control,
         name: `missions.${index}.end`,
     });
+
     const endDateString = endDateValue
         ? new Date(endDateValue).toISOString().substring(0, 10)
         : "";
@@ -92,51 +94,72 @@ export const Mission = ({
                 </div>
             )}
             <div className={fr.cx("fr-grid-row", "fr-grid-row--gutters")}>
-                <div className={fr.cx("fr-col-3")}>
-                    <Input
-                        label={
-                            labels.start ||
-                            missionSchema.shape.start.description
-                        }
-                        hintText="Date de début"
-                        nativeInputProps={{
-                            style: { width: 200 },
-                            placeholder: "JJ/MM/YYYY",
-                            type: "date",
-                            ...register(`missions.${index}.start`),
-                            value: startDateString,
+                <div className={fr.cx("fr-col-12")}>
+                    <div
+                        style={{
+                            display: "inline-block",
+                            verticalAlign: "top",
                         }}
-                        {...defaultState("start")}
-                    />
-                </div>{" "}
-                <div className={fr.cx("fr-col-4")}>
-                    <Input
-                        label={
-                            labels.end || missionSchema.shape.end.description
-                        }
-                        nativeInputProps={{
-                            style: { width: 200 },
-                            placeholder: "JJ/MM/YYYY",
-                            type: "date",
-                            ...register(`missions.${index}.end`),
-                            value: endDateString,
+                        className={fr.cx("fr-mr-3w")}
+                    >
+                        <Input
+                            label={
+                                labels.start ||
+                                missionSchema.shape.start.description +
+                                    " (obligatoire)"
+                            }
+                            hintText="Date de début"
+                            nativeInputProps={{
+                                style: { width: 200 },
+                                placeholder: "JJ/MM/YYYY",
+                                type: "date",
+                                ...register(`missions.${index}.start`),
+                                value: startDateString,
+                            }}
+                            {...defaultState("start")}
+                        />
+                    </div>
+                    <div
+                        style={{
+                            display: "inline-block",
+                            verticalAlign: "top",
                         }}
-                        hintText={
-                            <div>
-                                En cas de doute, mettre{" "}
-                                <button
-                                    className={fr.cx("fr-link", "fr-text--xs")}
-                                    onClick={() => onMissionAutoEndClick(index)}
-                                    role="button"
-                                    type="button"
-                                    title="Mettre la date de fin à +3 mois"
-                                >
-                                    J+3 mois
-                                </button>
-                            </div>
-                        }
-                        {...defaultState("end")}
-                    />
+                    >
+                        <Input
+                            label={
+                                labels.end ||
+                                missionSchema.shape.end.description +
+                                    " (obligatoire)"
+                            }
+                            nativeInputProps={{
+                                style: { width: 200 },
+                                placeholder: "JJ/MM/YYYY",
+                                type: "date",
+                                ...register(`missions.${index}.end`),
+                                value: endDateString,
+                            }}
+                            hintText={
+                                <div>
+                                    En cas de doute, mettre{" "}
+                                    <button
+                                        className={fr.cx(
+                                            "fr-link",
+                                            "fr-text--xs"
+                                        )}
+                                        onClick={() =>
+                                            onMissionAutoEndClick(index)
+                                        }
+                                        role="button"
+                                        type="button"
+                                        title="Mettre la date de fin à +3 mois"
+                                    >
+                                        J+3 mois
+                                    </button>
+                                </div>
+                            }
+                            {...defaultState("end")}
+                        />
+                    </div>
                 </div>
             </div>
 
@@ -145,7 +168,8 @@ export const Mission = ({
                     <Input
                         label={
                             labels.employer ||
-                            missionSchema.shape.employer.description
+                            missionSchema.shape.employer.description +
+                                " (obligatoire)"
                         }
                         nativeInputProps={{
                             placeholder: "ex: Scopyleft",
@@ -156,14 +180,20 @@ export const Mission = ({
                 </div>
                 <div className={fr.cx("fr-col-6")}>
                     <Select
-                        label={missionSchema.shape.status.description}
+                        label={
+                            labels.status ||
+                            missionSchema.shape.status.description +
+                                " (obligatoire)"
+                        }
                         nativeSelectProps={{
                             ...register(`missions.${index}.status`),
-                            defaultValue: mission.status,
+                            defaultValue: mission ? mission.status : "",
                         }}
                         {...defaultState("status")}
                     >
-                        <option value="">Statut:</option>
+                        <option disabled value="" hidden selected>
+                            Sélectionner une option
+                        </option>
                         {userStatusOptions.map((option) => (
                             <option key={option.key} value={option.key}>
                                 {option.name}
@@ -175,10 +205,11 @@ export const Mission = ({
             <div className={fr.cx("fr-grid-row", "fr-grid-row--gutters")}>
                 <div className={fr.cx("fr-col-12")}>
                     <SESelect
-                        defaultValue={startupOptions.filter(
-                            (s) =>
-                                mission.startups &&
-                                mission.startups.includes(s.value)
+                        defaultValue={startupOptions.filter((s) =>
+                            mission
+                                ? mission.startups &&
+                                  mission.startups.includes(s.value)
+                                : undefined
                         )}
                         onChange={(startups) => {
                             setValue(
@@ -237,10 +268,15 @@ export const MissionsEditor = ({
     };
 
     const onMissionAutoEndClick = (missionIndex) => {
-        const endDate = addMonths(
-            new Date(missionsFields[missionIndex]["start"]),
-            3
-        );
+        let startDate;
+        try {
+            startDate = missionsFields[missionIndex]["start"]
+                ? new Date(missionsFields[missionIndex]["start"])
+                : new Date();
+        } catch (e) {
+            startDate = new Date();
+        }
+        const endDate = addMonths(startDate, 3);
 
         setValue(`missions.${missionIndex}.end`, endDate, {
             shouldValidate: true,
@@ -260,7 +296,7 @@ export const MissionsEditor = ({
                     isMulti={true}
                     key={mission.id}
                     index={index}
-                    mission={mission}
+                    mission={mission as unknown as missionSchemaType}
                     control={control}
                     register={register}
                     setValue={setValue}

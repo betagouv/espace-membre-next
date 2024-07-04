@@ -1,15 +1,17 @@
-import config from "@/frontConfig";
-import { BadgeRequest } from "@/models/badgeRequests";
-import routes, { computeRoute } from "@/routes/routes";
+import React, { useState } from "react";
+
 import Button from "@codegouvfr/react-dsfr/Button";
 import Checkbox from "@codegouvfr/react-dsfr/Checkbox";
 import axios from "axios";
-import React, { useState } from "react";
+
+import config from "@/frontConfig";
+import { badgeRequestSchemaType } from "@/models/badgeRequests";
+import routes, { computeRoute } from "@/routes/routes";
 
 export const WelcomeScreen = function ({
     badgeRequest,
 }: {
-    badgeRequest: BadgeRequest;
+    badgeRequest?: badgeRequestSchemaType;
 }) {
     const [isSaving, setIsSaving] = useState(false);
     const [understoodBox, setUnderstoodBox] = useState<boolean>(false);

@@ -1,9 +1,10 @@
 import { addEvent } from "@/lib/events";
+import { db } from "@/lib/kysely";
 import { EventCode } from "@/models/actionEvent";
+import { EmailStatusCode } from "@/models/member";
 import config from "@/server/config";
 import BetaGouv from "@betagouv";
 import * as utils from "@controllers/utils";
-import knex from "@db/index";
 export async function deleteEmailForUserApi(req, res) {
     deleteEmailForUserHandler(
         req,
@@ -39,7 +40,7 @@ export async function deleteEmailForUserHandler(req, res, onSuccess, onError) {
     const isCurrentUser = req.auth.id === username;
 
     try {
-        const user = await utils.userInfos(username, isCurrentUser);
+        const user = await utils.userInfos({ username }, isCurrentUser);
 
         if (!isCurrentUser && !user.isExpired) {
             throw new Error(
@@ -55,10 +56,10 @@ export async function deleteEmailForUserHandler(req, res, onSuccess, onError) {
             created_by_username: req.auth.id,
             action_on_username: username,
         });
-        if (user.redirections && user.redirections.length > 0) {
+        if (user.emailRedirections && user.emailRedirections.length > 0) {
             await BetaGouv.requestRedirections(
                 "DELETE",
-                user.redirections.map((x) => x.id)
+                user.emailRedirections.map((x) => x.id)
             );
             console.log(
                 `Suppression des redirections de l'email de ${username} (à la demande de ${req.auth.id})`
@@ -70,9 +71,15 @@ export async function deleteEmailForUserHandler(req, res, onSuccess, onError) {
             config.leavesEmail,
             false
         );
-        await knex("users")
-            .update({ secondary_email: null })
-            .where({ username });
+        await db
+            .updateTable("users")
+            .set({
+                secondary_email: null,
+                primary_email: null,
+                primary_email_status: EmailStatusCode.EMAIL_UNSET,
+            })
+            .where("username", "=", username)
+            .execute();
         console.log(
             `Redirection des emails de ${username} vers ${config.leavesEmail} (à la demande de ${req.auth.id})`
         );

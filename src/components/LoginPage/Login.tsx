@@ -52,7 +52,7 @@ export const LoginPage = function (props: Props) {
         } catch (e) {
             setIsSaving(false);
 
-            console.log("LCS ERROR", e);
+            console.log("error", e);
         }
     };
 

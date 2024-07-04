@@ -36,7 +36,7 @@ const MemberBrevoEventList = ({ userId }) => {
 
     if (loading) return <div>Loading...</div>;
     if (!emailServiceInfo?.primaryEmail && !emailServiceInfo?.secondaryEmail)
-        return <div>Pas d'information trouver sur les emails dans brevo</div>;
+        return <div>Pas d'information trouvée sur les emails dans brevo</div>;
 
     return (
         <div>

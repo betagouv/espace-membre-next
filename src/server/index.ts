@@ -16,13 +16,11 @@ import { setupSessionMiddleware } from "./middlewares/sessionMiddleware";
 import {
     accountRouter,
     adminRouter,
-    authRouter,
     badgeRouter,
     communityRouter,
     diagnosticRouter,
     userRouter,
     userApiRouter,
-    userPublicApiRouter,
     mapRouter,
     newsletterRouter,
     onboardingRouter,
@@ -102,12 +100,11 @@ const startServer = () => {
         server.get("/", indexController.getIndex);
         server.use(userRouter);
         server.use(userApiRouter);
-        server.use(userPublicApiRouter);
         server.use(accountRouter);
         server.use(startupRouter);
         server.use(communityRouter);
         server.use(adminRouter);
-        server.use(authRouter);
+        // server.use(authRouter);
         server.use(diagnosticRouter);
         server.use(badgeRouter);
         server.use(newsletterRouter);

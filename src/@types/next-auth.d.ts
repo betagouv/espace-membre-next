@@ -5,19 +5,23 @@ declare module "next-auth" {
     interface Session {
         user: {
             id: string; // Ajoutez l'ID utilisateur ici
+            uuid: string;
             name?: string | null;
             email?: string | null;
             image?: string | null;
             isAdmin: boolean;
         };
     }
-}
-
-declare module "next-auth" {
+    interface User extends DefaultUser {
+        id: string;
+        email?: string;
+        emailVerified: Date | null;
+        uuid: string;
+    }
     interface AdapterUser {
         id: string;
-        email: string;
+        email?: string;
         emailVerified: Date | null;
-        id?: string;
+        uuid: string;
     }
 }

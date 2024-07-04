@@ -98,4 +98,5 @@ function RootLayout(props: PropsWithChildren<RootLayoutProps>) {
     );
 }
 
+//@ts-ignore
 export default RootLayout;

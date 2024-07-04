@@ -1,6 +1,6 @@
 import { config } from "dotenv";
 
-import { MemberType } from "@/models/dbUser";
+import { MemberType } from "@/models/member";
 
 config();
 
@@ -49,18 +49,18 @@ export default {
     githubRepository: process.env.GITHUB_REPOSITORY,
     SPONSOR_API:
         process.env.NEXT_PUBLIC_SPONSOR_API ||
-        "https://beta.gouv.fr/api/v2.5/sponsors.json",
+        "https://beta.gouv.fr/api/v2.6/sponsors.json",
     usersAPI:
         process.env.USERS_API || "https://beta.gouv.fr/api/v2.6/authors.json",
     incubatorAPI:
         process.env.NEXT_PUBLIC_INCUBATOR_API ||
-        "https://beta.gouv.fr/api/v2.5/incubators.json",
+        "https://beta.gouv.fr/api/v2.6/incubators.json",
     startupsAPI:
         process.env.STARTUPS_API ||
-        "https://beta.gouv.fr/api/v2.5/startups.json",
+        "https://beta.gouv.fr/api/v2.6/startups.json",
     startupsDetailsAPI:
         process.env.STARTUPS_DETAILS_API ||
-        "https://beta.gouv.fr/api/v2.3/startups_details.json",
+        "https://beta.gouv.fr/api/v2.6/startups_details.json",
     SUPPORT_EMAIL: process.env.NEXT_SUPPORT_EMAIL,
     tchap_api: process.env.TCHAP_API,
     HASH_SALT: process.env.HASH_SALT,

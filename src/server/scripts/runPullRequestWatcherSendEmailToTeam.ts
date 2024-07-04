@@ -1,3 +1,3 @@
-import { pullRequestWatcherSendEmailToTeam } from "@schedulers/pullRequestWatcher";
+// import { pullRequestWatcherSendEmailToTeam } from "@schedulers/pullRequestWatcher";
 
-pullRequestWatcherSendEmailToTeam();
+// pullRequestWatcherSendEmailToTeam();

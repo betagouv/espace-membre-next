@@ -1,8 +1,10 @@
 import { useState } from "react";
-import { BadgeDossier } from "@/models/badgeDemande";
+
 import Button from "@codegouvfr/react-dsfr/Button";
 import Checkbox from "@codegouvfr/react-dsfr/Checkbox";
+
 import config from "@/frontConfig";
+import { badgeDossierSchemaType } from "@/models/badgeDemande";
 
 const STATUS = {
     "En attente de traitement": {
@@ -44,13 +46,13 @@ export const BadgePendingView = ({
     dsToken,
     primaryEmail,
 }: {
-    dossier: BadgeDossier;
+    dossier: badgeDossierSchemaType;
     dsToken: string | null;
     primaryEmail: string;
 }) => {
     const [understoodBox, setUnderstoodBox] = useState<boolean>(false);
 
-    function getStatus(dossier: BadgeDossier) {
+    function getStatus(dossier: badgeDossierSchemaType) {
         const statusObject = dossier.annotations.find(
             (annotation) => annotation.label === "Status"
         );

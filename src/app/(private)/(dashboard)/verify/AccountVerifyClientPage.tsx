@@ -16,12 +16,15 @@ import { Mission } from "@/components/BaseInfoUpdatePage/MissionsEditor";
 import CitySelect from "@/components/CitySelect";
 import GenderSelect from "@/components/GenderSelect";
 import { memberTypeOptions } from "@/frontConfig";
-import { statusOptions } from "@/models/dbUser";
+import {
+    memberValidateInfoSchema,
+    memberValidateInfoSchemaType,
+} from "@/models/actions/member";
+import { statusOptions } from "@/models/member";
 import {
     DOMAINE_OPTIONS,
-    completeMemberSchema,
-    completeMemberSchemaType,
     memberSchema,
+    memberSchemaType,
 } from "@/models/member";
 import routes, { computeRoute } from "@/routes/routes";
 
@@ -31,7 +34,7 @@ export interface AccountVerifyClientPageProps {
         value: string;
         label: string;
     }[];
-    formData: completeMemberSchemaType;
+    member: memberSchemaType;
 }
 
 const postMemberData = async ({ values, sessionUsername }) => {
@@ -65,24 +68,24 @@ const postMemberData = async ({ values, sessionUsername }) => {
     }
 };
 
-export default function AccountVerifyClientPage(
-    props: AccountVerifyClientPageProps
-) {
+export default function AccountVerifyClientPage({
+    member,
+    startupOptions,
+}: AccountVerifyClientPageProps) {
     const router = useRouter();
 
-    const defaultValues: completeMemberSchemaType = {
-        ...props.formData,
-    };
     const {
         register,
         handleSubmit,
         formState: { errors, isDirty, isSubmitting, isValid },
         setValue,
         control,
-    } = useForm<completeMemberSchemaType>({
-        resolver: zodResolver(completeMemberSchema),
+    } = useForm<memberValidateInfoSchemaType>({
+        resolver: zodResolver(memberValidateInfoSchema),
         mode: "onChange",
-        defaultValues,
+        defaultValues: {
+            ...member,
+        },
     });
     const { fields: missionsFields } = useFieldArray({
         rules: { minLength: 1 },
@@ -99,7 +102,7 @@ export default function AccountVerifyClientPage(
     } | null>();
     const [isSaving, setIsSaving] = React.useState(false);
 
-    const onSubmit = async (input: completeMemberSchemaType) => {
+    const onSubmit = async (input: memberValidateInfoSchemaType) => {
         if (isSaving) {
             return;
         }
@@ -263,7 +266,9 @@ export default function AccountVerifyClientPage(
                                                 />
                                             </div>
                                             <div className="fr-fieldset__element fr-col-12 fr-mt-4w">
-                                                <h3>Mes compétences</h3>
+                                                <h2 className="fr-h3">
+                                                    Mes compétences
+                                                </h2>
                                                 <p>
                                                     Tu peux préciser tes
                                                     compétences, cela permettra
@@ -282,8 +287,7 @@ export default function AccountVerifyClientPage(
                                                         );
                                                     }}
                                                     defaultValue={
-                                                        props.formData
-                                                            .competences || []
+                                                        member.competences || []
                                                     }
                                                 />
                                                 <br />
@@ -339,8 +343,12 @@ export default function AccountVerifyClientPage(
                                                         errors.domaine?.message
                                                     }
                                                 >
-                                                    <option value="">
-                                                        Domaine:
+                                                    <option
+                                                        value=""
+                                                        disabled
+                                                        hidden
+                                                    >
+                                                        Selectionnez une option
                                                     </option>
                                                     {DOMAINE_OPTIONS.map(
                                                         (domaine) => (
@@ -365,7 +373,7 @@ export default function AccountVerifyClientPage(
                                                     register={register}
                                                     setValue={setValue}
                                                     startupOptions={
-                                                        props.startupOptions
+                                                        startupOptions
                                                     }
                                                     errors={
                                                         errors.missions
@@ -579,6 +587,15 @@ export default function AccountVerifyClientPage(
                                                                 `legal_status`
                                                             ),
                                                         }}
+                                                        state={
+                                                            errors.legal_status
+                                                                ? "error"
+                                                                : "default"
+                                                        }
+                                                        stateRelatedMessage={
+                                                            errors.legal_status
+                                                                ?.message
+                                                        }
                                                     >
                                                         <option
                                                             value=""
@@ -617,7 +634,7 @@ export default function AccountVerifyClientPage(
                                                                     // use this instead of valueAsNumber to handle undefined value
                                                                     v
                                                                 ) =>
-                                                                    v === ""
+                                                                    !v
                                                                         ? null
                                                                         : parseInt(
                                                                               v
@@ -648,8 +665,7 @@ export default function AccountVerifyClientPage(
                                                                             // use this instead of valueAsNumber to handle undefined value
                                                                             v
                                                                         ) =>
-                                                                            v ===
-                                                                            ""
+                                                                            !v
                                                                                 ? null
                                                                                 : parseInt(
                                                                                       v

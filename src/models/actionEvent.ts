@@ -1,7 +1,7 @@
 import { z } from "zod";
 
-import { CommunicationEmailCode, EmailStatusCode } from "./dbUser";
 import { memberSchema } from "./member";
+import { CommunicationEmailCode, EmailStatusCode } from "@/models/member";
 import { GithubStartupChangeSchema } from "@/server/controllers/helpers/githubHelpers/githubEntryInterface";
 
 export enum EventCode {

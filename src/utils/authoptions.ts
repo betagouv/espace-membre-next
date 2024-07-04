@@ -3,12 +3,12 @@ import { NextAuthOptions } from "next-auth";
 import EmailProvider from "next-auth/providers/email";
 
 import customPostgresAdapter from "./pgAdpter";
-import betagouv from "@/server/betagouv";
+import { getUserInfos } from "@/lib/kysely/queries/users";
+import { memberBaseInfoToModel } from "@/models/mapper";
 import config from "@/server/config";
 import { getAdmin } from "@/server/config/admin.config";
 import { sendEmail } from "@/server/config/email.config";
 import { checkUserIsExpired } from "@/server/controllers/utils";
-import db from "@/server/db";
 import { getJwtTokenForUser } from "@/server/helpers/session";
 import { EMAIL_TYPES } from "@/server/modules/email";
 
@@ -68,15 +68,21 @@ export const authOptions: NextAuthOptions = {
     callbacks: {
         async signIn({ user }) {
             if (user.id) {
-                const member = await betagouv.userInfosById(user.id);
-                if (!member) {
+                // todo : this can be done in the call where user is fetch from db
+                const dbUser = await getUserInfos({
+                    username: user.id,
+                    options: {
+                        withDetails: true,
+                    },
+                });
+                if (!dbUser) {
                     throw new Error(
-                        `Le membre ${user.id} n'a pas de fiche github.`
+                        `Il n'y a pas de fiche dans l'espace-membre pour cet email. Un membre de la communauté peut en créer une.`
                     );
                 }
-                if (checkUserIsExpired(member, 5)) {
+                if (checkUserIsExpired(memberBaseInfoToModel(dbUser), 5)) {
                     throw new Error(
-                        `Membre ${member.fullname} a une date de fin expirée sur Github.`
+                        `Membre ${dbUser.fullname} a une date de fin expirée sur Github.`
                     );
                 }
                 return true; //if the email exists in the User collection, email them a magic login link
@@ -84,7 +90,7 @@ export const authOptions: NextAuthOptions = {
                 return false;
             }
         },
-        async session({ session, token }) {
+        async session({ session, token, user }) {
             let sessionWithId;
             if (session && session.user) {
                 sessionWithId = {
@@ -92,6 +98,7 @@ export const authOptions: NextAuthOptions = {
                     user: {
                         ...session.user,
                         id: token.sub,
+                        uuid: token.uuid,
                         isAdmin: getAdmin().includes(token.sub || ""),
                     },
                 };
@@ -101,6 +108,7 @@ export const authOptions: NextAuthOptions = {
         async jwt({ token, user, account, profile, isNewUser }) {
             if (account) {
                 token.id = user?.id;
+                token.uuid = user?.uuid;
             }
             return token;
         },

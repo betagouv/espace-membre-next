@@ -1,5 +1,6 @@
+// import { DBUser, DBUserWithEmailsAndMattermostUsername } from "@/models/dbUser";
 import { Job } from "@/models/job";
-import { Member } from "@/models/member";
+import { memberBaseInfoSchemaType } from "@/models/member";
 import { StartupPhase } from "@/models/startup";
 
 export enum EMAIL_TYPES {
@@ -57,7 +58,7 @@ type BaseEmail = {
 export type EmailMarrainageOnboarder = {
     type: EMAIL_TYPES.MARRAINAGE_ONBOARDER_EMAIL;
     variables: {
-        member: Member;
+        member: memberBaseInfoSchemaType;
         newcomers: {
             fullname: string;
             email: string;
@@ -69,7 +70,7 @@ export type EmailMarrainageOnboarder = {
 export type EmailMarrainageNewcomer = {
     type: EMAIL_TYPES.MARRAINAGE_NEWCOMER_EMAIL;
     variables: {
-        member: Member;
+        member: memberBaseInfoSchemaType;
         onboarder: {
             fullname: string;
         };
@@ -79,8 +80,8 @@ export type EmailMarrainageNewcomer = {
 export type MarrainageRequestEmail = {
     type: EMAIL_TYPES.MARRAINAGE_REQUEST_EMAIL;
     variables: {
-        newcomer: Member;
-        onboarder: Member;
+        newcomer: memberBaseInfoSchemaType;
+        onboarder: memberBaseInfoSchemaType;
         marrainageAcceptUrl: string;
         marrainageDeclineUrl: string;
         startup: string;
@@ -97,16 +98,16 @@ export type LoginEmail = {
 export type MarrainageAcceptNewcomerEmail = {
     type: EMAIL_TYPES.MARRAINAGE_ACCEPT_NEWCOMER_EMAIL;
     variables: {
-        newcomer: Member;
-        onboarder: Member;
+        newcomer: memberBaseInfoSchemaType;
+        onboarder: memberBaseInfoSchemaType;
     };
 };
 
 export type MarrainageAcceptOnboarderEmail = {
     type: EMAIL_TYPES.MARRAINAGE_ACCEPT_ONBOARDER_EMAIL;
     variables: {
-        newcomer: Member;
-        onboarder: Member;
+        newcomer: memberBaseInfoSchemaType;
+        onboarder: memberBaseInfoSchemaType;
     };
 };
 
@@ -160,7 +161,10 @@ export type EmailEndingContract = {
         | EMAIL_TYPES.EMAIL_ENDING_CONTRACT_15_DAYS
         | EMAIL_TYPES.EMAIL_ENDING_CONTRACT_2_DAYS;
     variables: {
-        user: Member;
+        user: {
+            userInfos: memberBaseInfoSchemaType;
+            mattermostUsername: string;
+        };
         jobs: Job[];
     };
 };
@@ -170,21 +174,17 @@ export type EmailNoMoreContract = {
         | EMAIL_TYPES.EMAIL_NO_MORE_CONTRACT_1_DAY
         | EMAIL_TYPES.EMAIL_NO_MORE_CONTRACT_30_DAY;
     variables: {
-        user: Member;
+        user: {
+            userInfos: memberBaseInfoSchemaType;
+            mattermostUsername: string;
+        };
     };
 };
 
 export type EmailUserShouldUpdateInfo = {
     type: EMAIL_TYPES.EMAIL_USER_SHOULD_UPDATE_INFO;
     variables: {
-        user: Member & {
-            startups: string[];
-            tjm: string;
-            gender: string;
-            legal_status: string;
-            workplace_insee_code: string;
-            secondary_email: string;
-        };
+        user: memberBaseInfoSchemaType;
         secretariatUrl: string;
     };
 };

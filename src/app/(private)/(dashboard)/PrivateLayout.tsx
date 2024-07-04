@@ -5,7 +5,6 @@ import { usePathname, useRouter } from "next/navigation";
 import { useSession } from "next-auth/react";
 
 import { useInfoContext } from "@/app/BreadCrumbProvider";
-// import { useSession } from "@/proxies/next-auth";
 import { linkRegistry } from "@/utils/routes/registry";
 import { routeTitles } from "@/utils/routes/routeTitles";
 import {
@@ -79,16 +78,16 @@ export function PrivateLayout({ children }: { children: React.ReactNode }) {
             text: routeTitles.accountEditBaseInfo(),
             isActive: hasPathnameThisMatch(pathname, accountEditBaseInfoLink),
         },
-        {
-            linkProps: {
-                href: accountEditPrivateInfoLink,
-            },
-            text: routeTitles.accountEditPrivateInfo(),
-            isActive: hasPathnameThisMatch(
-                pathname,
-                accountEditPrivateInfoLink
-            ),
-        },
+        // {
+        //     linkProps: {
+        //         href: accountEditPrivateInfoLink,
+        //     },
+        //     text: routeTitles.accountEditPrivateInfo(),
+        //     isActive: hasPathnameThisMatch(
+        //         pathname,
+        //         accountEditPrivateInfoLink
+        //     ),
+        // },
         {
             linkProps: {
                 href: "#",

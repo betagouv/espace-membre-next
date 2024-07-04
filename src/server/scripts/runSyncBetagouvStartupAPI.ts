@@ -1,5 +1,5 @@
-import { syncBetagouvStartupAPI } from "@schedulers/syncBetagouvAPIScheduler"
+// import { syncBetagouvStartupAPI } from "@schedulers/syncBetagouvAPIScheduler"
 
-syncBetagouvStartupAPI().then(() => {
-    console.log('Sync betagouv startup api has run')
-})
+// syncBetagouvStartupAPI().then(() => {
+//     console.log('Sync betagouv startup api has run')
+// })

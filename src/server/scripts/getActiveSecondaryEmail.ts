@@ -1,18 +1,24 @@
 import BetaGouv from "../betagouv";
+import { db } from "@/lib/kysely";
+import { getAllUsersInfo } from "@/lib/kysely/queries/users";
+import { memberBaseInfoToModel } from "@/models/mapper";
 import * as utils from "@controllers/utils";
-import knex from "@db";
-import { DBUser } from "@/models/dbUser/dbUser";
-import { Member } from "@/models/member";
 
 export async function getActiveSecondaryEmailsForUsers() {
-    const users: Member[] = await BetaGouv.usersInfos();
+    const users = (await getAllUsersInfo()).map((user) =>
+        memberBaseInfoToModel(user)
+    );
     const activeUsers = users.filter((user) => !utils.checkUserIsExpired(user));
-    const dbUsers: DBUser[] = await knex("users")
-        .whereNotNull("secondary_email")
-        .whereIn(
+    const dbUsers = await db
+        .selectFrom("users")
+        .select("secondary_email")
+        .where("secondary_email", "is not", "null")
+        .where(
             "username",
-            activeUsers.map((user) => user.id)
-        );
+            "in",
+            activeUsers.map((user) => user.username)
+        )
+        .execute();
     dbUsers.forEach((user) => {
         console.log(user.secondary_email);
     });

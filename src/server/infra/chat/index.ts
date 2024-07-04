@@ -1,6 +1,7 @@
-import config from "@/server/config";
 import { makeSendIntoToChatFromMattermost } from "./mattermost";
 import * as mattermost from "@/lib/mattermost";
+import { MattermostUser } from "@/lib/mattermost";
+import config from "@/server/config";
 
 export const sendInfoToChat = makeSendIntoToChatFromMattermost({
     config: {
@@ -21,22 +22,25 @@ export const getAllChannels =
           }
         : mattermost.getAllChannels;
 
-export const getUserWithParams =
+export const getUserWithParams: (
+    params?: any,
+    i?: number
+) => Promise<MattermostUser[]> =
     process.env.NODE_ENV === "development"
-        ? async () => {
+        ? async (params, i) => {
               return Promise.resolve([
                   {
                       email: "firstname.lastname@incubateur.net",
                       username: "firstname.lastname",
-                  },
+                  } as MattermostUser,
                   {
                       email: "firstname.lastname.toto@incubateur.net",
                       username: "firstname.lastname.toto",
-                  },
+                  } as MattermostUser,
                   {
                       email: `julien.dauphant@${config.domain}`,
                       username: "julien.dauphant",
-                  },
+                  } as MattermostUser,
               ]);
           }
         : mattermost.getUserWithParams;

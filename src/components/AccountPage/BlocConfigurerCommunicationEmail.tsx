@@ -1,42 +1,37 @@
-import axios from "axios";
 import React from "react";
-import routes, { computeRoute } from "@/routes/routes";
+
 import Accordion from "@codegouvfr/react-dsfr/Accordion";
-import { RadioButtons } from "@codegouvfr/react-dsfr/RadioButtons";
 import Button from "@codegouvfr/react-dsfr/Button";
+import { RadioButtons } from "@codegouvfr/react-dsfr/RadioButtons";
+
+import { updateCommunicationEmail } from "@/app/api/member/actions";
+import {
+    CommunicationEmailCode,
+    memberBaseInfoSchemaType,
+} from "@/models/member";
 
 export default function BlocConfigurerCommunicationEmail({
-    primaryEmail,
-    secondaryEmail,
-    communication_email,
+    userInfos: { communication_email, primary_email, secondary_email },
+}: {
+    userInfos: memberBaseInfoSchemaType;
 }) {
     const [value, setValue] = React.useState<
-        "primary" | "secondary" | undefined
+        CommunicationEmailCode.PRIMARY | CommunicationEmailCode.SECONDARY
     >(communication_email);
     const [isSaving, setIsSaving] = React.useState<boolean>(false);
     return (
         <Accordion label="Quel email utiliser pour les communications @beta.gouv.fr ?">
-            {!!primaryEmail &&
-                !secondaryEmail &&
-                `Tu n'as qu'une seule adresse ${primaryEmail}. Ajoute une adresse secondaire pour choisir sur quelles adresses tu souhaites recevoir les communications`}
-            {!!primaryEmail && !!secondaryEmail && (
+            {!!primary_email &&
+                !secondary_email &&
+                `Tu n'as qu'une seule adresse ${primary_email}. Ajoute une adresse secondaire pour choisir sur quelles adresses tu souhaites recevoir les communications`}
+            {!!primary_email && !!secondary_email && (
                 <form
                     method="POST"
                     onSubmit={async (e) => {
                         e.preventDefault();
                         setIsSaving(true);
                         try {
-                            await axios.put(
-                                computeRoute(
-                                    routes.USER_UPDATE_COMMUNICATION_EMAIL_API
-                                ),
-                                {
-                                    communication_email,
-                                },
-                                {
-                                    withCredentials: true,
-                                }
-                            );
+                            await updateCommunicationEmail(value);
                         } catch (e) {
                             setIsSaving(false);
                             console.error(e);
@@ -48,19 +43,33 @@ export default function BlocConfigurerCommunicationEmail({
                         legend="Choisi l'email a utiliser pour recevoir les emails de communications @beta.gouv.fr"
                         options={[
                             {
-                                label: primaryEmail,
+                                label: primary_email,
                                 nativeInputProps: {
-                                    defaultChecked: value === "primary",
-                                    checked: value === "primary",
-                                    onChange: () => setValue("primary"),
+                                    defaultChecked:
+                                        value ===
+                                        CommunicationEmailCode.PRIMARY,
+                                    checked:
+                                        value ===
+                                        CommunicationEmailCode.PRIMARY,
+                                    onChange: () =>
+                                        setValue(
+                                            CommunicationEmailCode.PRIMARY
+                                        ),
                                 },
                             },
                             {
-                                label: secondaryEmail,
+                                label: secondary_email,
                                 nativeInputProps: {
-                                    defaultChecked: value === "secondary",
-                                    checked: value === "secondary",
-                                    onChange: () => setValue("secondary"),
+                                    defaultChecked:
+                                        value ===
+                                        CommunicationEmailCode.SECONDARY,
+                                    checked:
+                                        value ===
+                                        CommunicationEmailCode.SECONDARY,
+                                    onChange: () =>
+                                        setValue(
+                                            CommunicationEmailCode.SECONDARY
+                                        ),
                                 },
                             },
                         ]}

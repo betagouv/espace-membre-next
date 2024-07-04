@@ -57,7 +57,7 @@ export async function upgradeEmailForUserHandler(req, res, onSuccess, onError) {
                 Il n'y a plus d'email pro disponible
             `);
         }
-        const user = await utils.userInfos(username, isCurrentUser);
+        const user = await utils.userInfos({ username }, isCurrentUser);
 
         if (user.isExpired) {
             throw new Error(
