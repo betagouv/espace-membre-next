@@ -31,11 +31,11 @@ if [[ `git status --porcelain content` ]]; then
     curl --location --request POST "https://api.github.com/repos/$GITHUB_REPOSITORY/pulls" \
         --header "Authorization: Bearer $GITHUB_TOKEN" \
         --header 'Content-Type: application/json' \
-        --data-raw '{
-            "base": "master",
-            "head": "$FORK_USER:$BRANCH",
-            "title": "$COMMIT"
-        }'
+        --data-raw "{
+            \"base\": \"master\",
+            \"head\": \"$FORK_USER:$BRANCH\",
+            \"title\": \"$COMMIT\"
+        }"
 
 else    
     echo "No changes detected"
