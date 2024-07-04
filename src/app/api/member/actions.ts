@@ -1,5 +1,6 @@
 "use server";
 
+import { revalidatePath } from "next/cache";
 import { getServerSession } from "next-auth/next";
 
 import { addEvent } from "@/lib/events";
@@ -67,6 +68,7 @@ export async function changeSecondaryEmailForUser(
             old_value: user.secondary_email || "",
         },
     });
+    revalidatePath("/account", "layout");
 }
 
 export async function updateCommunicationEmail(
@@ -314,4 +316,5 @@ export async function updateMemberMissions(
             }
         }
     });
+    revalidatePath("/community/[id]", "layout");
 }

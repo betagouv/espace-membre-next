@@ -52,7 +52,7 @@ export async function POST(req: Request) {
                 uuid: res.uuid,
                 options: { withDetails: true },
             });
-            revalidatePath("/community");
+            revalidatePath("/community", "layout");
 
             return Response.json({
                 message: `Success`,
