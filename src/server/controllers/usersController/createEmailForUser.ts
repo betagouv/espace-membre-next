@@ -129,7 +129,7 @@ async function getEmailCreationParams(username: string): Promise<
     );
     // todo see what to do with startups
     let needsExchange = false;
-    for (const startupUuid of latestMission?.startups) {
+    for (const startupUuid of latestMission?.startups || []) {
         const startup = _.find(startupsInfos, { uuid: startupUuid });
         const incubator = startup?.incubator_id;
         if (incubator) {
