@@ -92,18 +92,20 @@ export const author = z.object({
     link: z.string().optional().nullable(),
     avatar: z.string().optional().nullable(),
     github: z.string().optional().nullable(),
-    missions: z.array(
-        z.object({
-            start: z.date(),
-            end: z.date(),
-            status: z.string(),
-            employer: z.string().optional().nullable(),
-            startups: z
-                .array(z.string())
-                .optional()
-                .superRefine(preventDuplicates),
-        })
-    ),
+    missions: z
+        .array(
+            z.object({
+                start: z.date(),
+                end: z.date(),
+                status: z.string(),
+                employer: z.string().optional().nullable(),
+                startups: z
+                    .array(z.string())
+                    .optional()
+                    .superRefine(preventDuplicates),
+            })
+        )
+        .optional(),
     previously: z
         .array(z.string())
         .optional()
