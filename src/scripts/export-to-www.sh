@@ -1,6 +1,6 @@
 #!/bin/bash
 
-set -x # debug
+#set -x # debug
 set -e # stop on errors
 
 BRANCH="auto/changes-`date '+%Y%m%d_%H%M%S'`"
