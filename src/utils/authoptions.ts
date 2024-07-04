@@ -52,6 +52,10 @@ export const authOptions: NextAuthOptions = {
                     const decoded = jwt.verify(token, config.secret, {
                         algorithm: "HS512", // Assurez-vous que l'algorithme correspond à celui utilisé pour signer le token
                     } as VerifyOptions);
+                    if (!decoded["uuid"]) {
+                        // in case it was an old session without uuid
+                        return null;
+                    }
                     return decoded as JwtPayload; // Assurez-vous que cette conversion est sûre.
                 } catch (error) {
                     // Gérer l'erreur, par exemple en retournant `null` ou en relançant l'erreur.
