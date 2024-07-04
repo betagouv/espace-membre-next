@@ -17,7 +17,7 @@ async function sendVerificationRequest(params) {
     await sendEmail({
         type: EMAIL_TYPES.LOGIN_EMAIL,
         variables: {
-            loginUrlWithToken: url,
+            loginUrlWithToken: `${process.env.NEXTAUTH_URL}/signin#${url}`,
         },
         toEmail: [identifier],
     });
