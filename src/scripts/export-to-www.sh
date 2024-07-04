@@ -21,17 +21,22 @@ if [[ `git status --porcelain content` ]]; then
     git checkout -b "$BRANCH"
     echo "Changes detected !"
     git add content
-    
+    git config --global user.name "Bot espace-membre"
+    git config --global user.email "communaute@beta.gouv.fr"
     git commit -m "$COMMIT"
-    git push
-    curl --location --request POST 'https://api.github.com/repos/mattneub/temp/pulls' \
+    git push --set-upstream origin "$BRANCH"
+
+    # make PR from fork
+    FORK_USER="$( cut -d '/' -f 1 <<< "$GITHUB_FORK" )";
+    curl --location --request POST "https://api.github.com/repos/$GITHUB_REPOSITORY/pulls" \
         --header "Authorization: Bearer $GITHUB_TOKEN" \
         --header 'Content-Type: application/json' \
         --data-raw '{
             "base": "master",
-            "head": "$BRANCH",
+            "head": "$FORK_USER:$BRANCH",
             "title": "$COMMIT"
         }'
+
 else    
     echo "No changes detected"
 fi;
