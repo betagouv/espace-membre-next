@@ -261,10 +261,18 @@ const getChanges = async (markdownData) => {
             "bio",
         ]);
         if (!ghAuthor) {
-            // create gh startup
+            // create gh author
+
+            const dbAuthor3 = {
+                ...dbAuthor2,
+                missions: dbAuthor2.missions?.map((m) => {
+                    const { uuid, ...mission } = m;
+                    return mission;
+                }),
+            };
             updates.push({
                 file: `content/_authors/${dbAuthor.username}.md`,
-                content: dumpYaml(dbAuthor2, dbAuthor.bio || ""),
+                content: dumpYaml(dbAuthor3, dbAuthor.bio || ""),
             });
         } else {
             const { ghid: ghid2, ...ghAuthor2 } = ghAuthor.attributes;
@@ -313,11 +321,13 @@ const getChanges = async (markdownData) => {
 };
 
 const exportData = async () => {
+    // get the original markdowns to compoute changes
     const markdownData = await importFromZip();
 
     const updates = await getChanges(markdownData);
 
-    const outPath = "../beta.gouv.fr";
+    // apply changes to some local clone
+    const outPath = "./beta.gouv.fr";
 
     updates.forEach((update) => {
         const outFile = path.join(outPath, update.file);
