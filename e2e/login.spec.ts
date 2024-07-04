@@ -63,6 +63,8 @@ test("valid login sends magic link and show correct message", async ({
             .getAttribute("href")) || "/";
 
     await page.goto(href);
+    await page.getByText("Me connecter").first().click();
+    await page.waitForURL("/account");
 
     await expect(
         page.getByRole("heading").getByText("Mon compte", { exact: true })
