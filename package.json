@@ -20,7 +20,7 @@
     "postinstall": "is-ci || husky install",
     "kysely-codegen": "./node_modules/.bin/kysely-codegen --include-pattern=\"public.*\" --out-file ./src/@types/db.d.ts",
     "import-from-www": "ts-node src/scripts/import-from-www",
-    "export-to-www": "ts-node src/scripts/export-to-www"
+    "export-to-www": "./src/scripts/export-to-www.sh"
   },
   "dependencies": {
     "@codegouvfr/react-dsfr": "^0.76.4",
