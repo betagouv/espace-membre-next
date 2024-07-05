@@ -337,7 +337,7 @@ export const BaseInfoUpdate = (props: BaseInfoUpdateProps) => {
                         stateRelatedMessage={
                             errors.workplace_insee_code?.message
                         }
-                        defaultValue={""}
+                        defaultValue={defaultValues.workplace_insee_code || ""}
                     />
                     <Button
                         className={fr.cx("fr-mt-3w")}
