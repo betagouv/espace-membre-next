@@ -819,10 +819,7 @@ export const WhichMemberScreen = function ({
                             onChange={(e) => {
                                 search(e.value);
                             }}
-                            members={users.map((user) => ({
-                                value: user.username,
-                                label: user.fullname,
-                            }))}
+                            members={users}
                             defaultValue={undefined}
                         />
                     </div>

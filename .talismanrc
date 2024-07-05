@@ -55,6 +55,8 @@ fileignoreconfig:
   checksum: 2f825890548de8336fdec8a140bd55339de67c7bd428baf90e9621b094f08714
 - filename: src/components/MemberPage/MemberPage.tsx
   checksum: 8eace2e39fcb856b5ac251c7a8419548e53601aedf8fa79e6fa789ef6c0447ac
+- filename: src/components/MemberSelect.tsx
+  checksum: ec73d3b52be314f309b5e389fa51a5361725dc95777825528b5899f9cba3e6fe
 - filename: src/components/SESelect.tsx
   checksum: c251dbce68caf5cb85ac395bb400dfedb142737539d3ca0e1779f2a56460c520
 - filename: src/components/SESponsorSelect.tsx
