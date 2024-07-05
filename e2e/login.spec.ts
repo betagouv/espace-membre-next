@@ -26,7 +26,20 @@ test("submit expired login returns error message", async ({ page }) => {
 
     await expect(
         page.getByText(
-            "Error: Membre Expired member a une date de fin expirée sur Github."
+            "Error: Membre Expired member a une date de fin expirée ou pas de mission définie."
+        )
+    ).toBeVisible();
+});
+
+test("submit mission-less login returns error message", async ({ page }) => {
+    await page.goto("/");
+    await page.getByLabel("Mon email").fill("empty.member@betagouv.ovh");
+    await page.getByText("Recevoir le lien de connexion").click();
+    await page.waitForTimeout(2000);
+
+    await expect(
+        page.getByText(
+            "Error: Membre Empty member a une date de fin expirée ou pas de mission définie."
         )
     ).toBeVisible();
 });

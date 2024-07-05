@@ -91,6 +91,14 @@ const populateUsers = async (knex) => {
             domaine: "Autre",
             role: "Développement",
         },
+        {
+            uuid: "ab843689-1eba-42d6-9f64-3806d8306cab",
+            username: "empty.member",
+            fullname: "Empty member",
+            primary_email: "empty.member@betagouv.ovh",
+            domaine: "Autre",
+            role: "Développement",
+        },
     ];
     // users.forEach(async (user) => {
     await knex("users").insert(
