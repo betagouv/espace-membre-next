@@ -86,7 +86,7 @@ export const authOptions: NextAuthOptions = {
                 }
                 if (checkUserIsExpired(memberBaseInfoToModel(dbUser), 5)) {
                     throw new Error(
-                        `Membre ${dbUser.fullname} a une date de fin expirée sur Github.`
+                        `Membre ${dbUser.fullname} a une date de fin expirée ou pas de mission définie.`
                     );
                 }
                 return true; //if the email exists in the User collection, email them a magic login link
