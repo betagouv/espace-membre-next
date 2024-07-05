@@ -117,10 +117,11 @@ export function checkUserIsExpired(
     // Le membre est considéré comme expiré si:
     // - il/elle existe
     // - il/elle a une date de fin
-    // - son/sa date de fin est passée
+    // - son/sa date de fin est passée ou pas de mission
     // todo what to do with user.end
 
-    if (!user || !user.missions || !user.missions.length) return false;
+    if (!user) return false;
+    if (!user.missions || !user.missions.length) return true;
     const latestMission = user.missions.reduce((a, v) =>
         //@ts-ignore todo
         !v.end || v.end > a.end ? v : a
@@ -218,7 +219,7 @@ export const isPublicServiceEmail = async function (email: string) {
             return true;
         }
     } catch (e) {
-        console.error(e)
+        console.error(e);
         //throw new Error("Get response from tchap error");
         return false;
     }
