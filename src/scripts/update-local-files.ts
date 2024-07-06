@@ -249,73 +249,78 @@ const getChanges = async (markdownData) => {
     });
 
     // update users
-    users.forEach((dbAuthor) => {
-        const ghAuthor = markdownData.authors.find(
-            (o) => o.attributes.ghid === dbAuthor.username
-        );
-        const dbAuthor2 = extractValidValues(dbAuthor, [
-            "ghid",
-            "id",
-            "uuid",
-            "username",
-            "bio",
-        ]);
-        if (!ghAuthor) {
-            // create gh author
+    users
+        .filter((dbAuthor) => dbAuthor.fullname) // only those with fullname
+        .filter((dbAuthor) => dbAuthor.role) // only those with role
+        .filter((dbAuthor) => dbAuthor.missions.length) // only those with missions
+        .forEach((dbAuthor) => {
+            const ghAuthor = markdownData.authors.find(
+                (o) => o.attributes.ghid === dbAuthor.username
+            );
+            const dbAuthor2 = extractValidValues(dbAuthor, [
+                "ghid",
+                "id",
+                "uuid",
+                "username",
+                "bio",
+            ]);
+            if (!ghAuthor) {
+                // create gh author
 
-            const dbAuthor3 = {
-                ...dbAuthor2,
-                missions: dbAuthor2.missions?.map((m) => {
-                    const { uuid, ...mission } = m;
-                    return mission;
-                }),
-            };
-            updates.push({
-                file: `content/_authors/${dbAuthor.username}.md`,
-                content: dumpYaml(dbAuthor3, dbAuthor.bio || ""),
-            });
-        } else {
-            const { ghid: ghid2, ...ghAuthor2 } = ghAuthor.attributes;
-            const diffed = detailedDiff(ghAuthor2, dbAuthor2);
-            if (
-                Object.keys(diffed.updated).length ||
-                Object.keys(diffed.added).length
-            ) {
-                const updated = extractValidValues({
-                    ...ghAuthor2,
+                const dbAuthor3 = {
                     ...dbAuthor2,
-                });
-
-                // hack for validation
-                updated.missions =
-                    updated.missions &&
-                    updated.missions.map((p) => {
-                        const mission: {
-                            end?: Date;
-                            start: Date;
-                            employer?: string;
-                            status?: string;
-                            startups?: string[];
-                        } = {
-                            start: new Date(p.start),
-                        };
-                        if (p.end) mission.end = new Date(p.end);
-                        if (p.status) mission.status = p.status;
-                        if (p.employer) mission.employer = p.employer;
-                        if (p.startups.length) mission.startups = p.startups;
+                    missions: dbAuthor2.missions?.map((m) => {
+                        const { uuid, ...mission } = m;
                         return mission;
-                    });
-                if (updated.missions.length === 0) delete updated.missions;
-
-                author.parse(updated);
-
+                    }),
+                };
                 updates.push({
                     file: `content/_authors/${dbAuthor.username}.md`,
-                    content: dumpYaml(updated, dbAuthor.bio || ""),
+                    content: dumpYaml(dbAuthor3, dbAuthor.bio || ""),
                 });
+            } else {
+                const { ghid: ghid2, ...ghAuthor2 } = ghAuthor.attributes;
+                const diffed = detailedDiff(ghAuthor2, dbAuthor2);
+                if (
+                    Object.keys(diffed.updated).length ||
+                    Object.keys(diffed.added).length
+                ) {
+                    const updated = extractValidValues({
+                        ...ghAuthor2,
+                        ...dbAuthor2,
+                    });
+
+                    // hack for validation
+                    updated.missions =
+                        updated.missions &&
+                        updated.missions.map((p) => {
+                            const mission: {
+                                end?: Date;
+                                start: Date;
+                                employer?: string;
+                                status?: string;
+                                startups?: string[];
+                            } = {
+                                start: new Date(p.start),
+                            };
+                            if (p.end) mission.end = new Date(p.end);
+                            if (p.status) mission.status = p.status;
+                            if (p.employer) mission.employer = p.employer;
+                            if (p.startups.length)
+                                mission.startups = p.startups;
+                            return mission;
+                        });
+                    if (updated.missions.length === 0) delete updated.missions;
+
+                    author.parse(updated);
+
+                    updates.push({
+                        file: `content/_authors/${dbAuthor.username}.md`,
+                        content: dumpYaml(updated, dbAuthor.bio || ""),
+                    });
+                }
             }
-        }
-    });
+        });
 
     return updates;
 };
