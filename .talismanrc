@@ -25,6 +25,8 @@ fileignoreconfig:
   checksum: c17bc01af05a054afa1c738171011c7fe9f9f78bf9d8ab0f02a6bcd07f7c675d
 - filename: src/app/(private)/(dashboard)/community/page.tsx
   checksum: b6aac599bbc93b516fc1738b81ede0cce8e08d3d9064af49af67c2b6bac74aaf
+- filename: src/app/(private)/(dashboard)/formations/[id]/page.tsx
+  checksum: 10425dc282436b1f63096e75b75352fbdd235571dd645521756b9c4f23e35d47
 - filename: src/app/(private)/(dashboard)/formations/page.tsx
   checksum: 2bbe0f4d6807f4238b7d6085d45f8e5582bc8e57326db67a9839ee1aae1f4bdf
 - filename: src/app/(private)/(dashboard)/verify/AccountVerifyClientPage.tsx
@@ -45,6 +47,8 @@ fileignoreconfig:
   checksum: 42a1e9c44fc1a093ce628b796a51533f640d60cd75205c06ca6cd1d358f7cb02
 - filename: src/components/CommunityPage/CommunityFilterMembers.tsx
   checksum: 6e644062a8253a7ec4a0fcc0d417458c3cd149a4fd7aef2ac574269d72b48b44
+- filename: src/components/Formation/FormationCard.tsx
+  checksum: 69f8cf90d26dca06c7c9263d880567305a9ebbb49729a4221e08887b96b98d66
 - filename: src/components/Formation/FormationList.tsx
   checksum: 49ba981c5d52542548882b52ec95307299e3b6337689ff1f59fc3ec0d88369e4
 - filename: src/components/GenderSelect.tsx
