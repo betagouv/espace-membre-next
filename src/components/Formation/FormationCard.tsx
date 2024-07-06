@@ -4,6 +4,7 @@ import { format } from "date-fns/format";
 import { fr } from "date-fns/locale/fr";
 
 import { Formation } from "@/models/formation";
+import { ReactNode } from "react";
 
 export default function FormationCard({
     formation,
@@ -14,10 +15,10 @@ export default function FormationCard({
     isMemberRegistered: boolean;
     isMemberOnWaitingList: boolean;
 }) {
-    let registeredBadge;
+    let badges: ReactNode[] = [];
     if (isMemberRegistered) {
         if (!isMemberOnWaitingList) {
-            registeredBadge = (
+            badges.push(
                 <ul className="fr-badges-group">
                     <li>
                         <Badge severity="success">Inscrit</Badge>
@@ -25,7 +26,7 @@ export default function FormationCard({
                 </ul>
             );
         } else {
-            registeredBadge = (
+            badges.push(
                 <ul className="fr-badges-group">
                     <li>
                         <Badge>Inscrit sur liste d'attente</Badge>
@@ -34,6 +35,14 @@ export default function FormationCard({
             );
         }
     }
+    if (!!formation.isELearning) {
+        badges.push(
+            <Badge key={"e-learning"} severity="new">
+                E-learning
+            </Badge>
+        );
+    }
+
     return (
         <Card
             background
@@ -49,20 +58,11 @@ export default function FormationCard({
             }
             enlargeLink
             imageAlt={``}
-            imageUrl={formation.imageUrl}
+            imageUrl={formation.imageUrl || ""}
             linkProps={{
                 href: `/formations/${formation.airtable_id}`,
             }}
-            badges={
-                !!formation.isELearning
-                    ? [
-                          <Badge key={"e-learning"} severity="new">
-                              E-learning
-                          </Badge>,
-                      ]
-                    : undefined
-            }
-            start={registeredBadge}
+            start={badges}
             size="medium"
             title={formation.name}
             titleAs="h2"

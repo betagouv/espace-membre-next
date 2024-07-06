@@ -43,12 +43,12 @@ const addAndRemoveMemberToMailingListForStartup = async (
     for (const email of emails.filter(
         (email) => !subscribers.includes(email)
     )) {
-        betagouv.subscribeToMailingList(mailingListName, email);
+        await betagouv.subscribeToMailingList(mailingListName, email);
     }
     for (const subscriber of subscribers.filter(
         (subscriber) => !emails.includes(subscriber)
     )) {
-        betagouv.unsubscribeFromMailingList(mailingListName, subscriber);
+        await betagouv.unsubscribeFromMailingList(mailingListName, subscriber);
     }
 };
 

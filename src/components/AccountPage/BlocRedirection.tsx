@@ -103,7 +103,7 @@ export default function BlocRedirection({
                     }}
                 >
                     <Input
-                        label={`Rediriger mes mails ${domain} vers :`}
+                        label={`Rediriger mes mails vers :`}
                         nativeInputProps={{
                             type: "email",
                             required: true,

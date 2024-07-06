@@ -1,29 +1,4 @@
-// import React from "react"
-// import Select from 'react-select'
-
-// import { ClientOnly } from "./ClientOnly"
-
-// export default({
-//     members,
-//     defaultValue,
-//     onChange,
-//     name,
-//     placeholder } : {
-//         members: any,
-//         defaultValue: any,
-//         onChange: any,
-//         name?: string,
-//         placeholder?: string
-//     }) => {
-//     return <ClientOnly><Select
-//         options={members}
-//         defaultValue={defaultValue}
-//         onChange={onChange}
-//         name={name}
-//         placeholder={placeholder || 'Sélectionne un référent'}  /></ClientOnly>
-//   }
-import { useState } from "react";
-import { Select } from "@codegouvfr/react-dsfr/Select";
+import { memberPublicInfoSchemaType } from "@/models/member";
 import Autocomplete from "@mui/material/Autocomplete";
 import TextField from "@mui/material/TextField";
 
@@ -32,7 +7,7 @@ type MemberSelectProps<T extends boolean> = {
         ? (value: string[]) => void
         : (value: string) => void;
     isMulti?: T;
-    members: { value: string; label: string }[];
+    members: memberPublicInfoSchemaType[];
     defaultValue: T extends true
         ? { value: string; label: string }[] | undefined
         : { value: string; label: string } | undefined;
@@ -92,10 +67,11 @@ export default function MemberSelect<T extends boolean>({
             </label>
             <Autocomplete
                 multiple={!!multiple}
-                options={members.map((se) => ({
-                    id: se.value,
-                    label: se.label,
+                options={members.map((member) => ({
+                    id: member.username,
+                    label: member.fullname || member.username,
                 }))}
+                getOptionKey={() => "id"}
                 onChange={onTagsChange}
                 defaultValue={defaultMemberValue}
                 isOptionEqualToValue={(option, value) => option.id === value.id}

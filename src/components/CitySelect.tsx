@@ -223,7 +223,7 @@ export default function CitySelect({
         callback(data);
     };
     const [loading, setLoading] = useState<boolean>(false);
-    const debounceLoadOptions = useCallback(_.debounce(loadOptions, 2000), []);
+    const debounceLoadOptions = useCallback(_.debounce(loadOptions, 500), []);
     const [search, onSearchChange] = useState("");
     const [inputElement, setInputElement] = useState<HTMLInputElement | null>(
         null

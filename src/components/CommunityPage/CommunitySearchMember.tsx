@@ -37,10 +37,7 @@ export const CommunitySearchMember = ({
                                     (member as { value: string }).value
                                 );
                             }}
-                            members={users.map((u) => ({
-                                value: u.username,
-                                label: u.fullname || u.username,
-                            }))}
+                            members={users}
                             defaultValue={undefined}
                         ></MemberSelect>
                     </div>

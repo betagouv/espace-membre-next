@@ -25,6 +25,8 @@ fileignoreconfig:
   checksum: c17bc01af05a054afa1c738171011c7fe9f9f78bf9d8ab0f02a6bcd07f7c675d
 - filename: src/app/(private)/(dashboard)/community/page.tsx
   checksum: b6aac599bbc93b516fc1738b81ede0cce8e08d3d9064af49af67c2b6bac74aaf
+- filename: src/app/(private)/(dashboard)/formations/[id]/page.tsx
+  checksum: 10425dc282436b1f63096e75b75352fbdd235571dd645521756b9c4f23e35d47
 - filename: src/app/(private)/(dashboard)/formations/page.tsx
   checksum: 2bbe0f4d6807f4238b7d6085d45f8e5582bc8e57326db67a9839ee1aae1f4bdf
 - filename: src/app/(private)/(dashboard)/verify/AccountVerifyClientPage.tsx
@@ -36,15 +38,17 @@ fileignoreconfig:
 - filename: src/components/AccountPage/AccountPage.tsx
   checksum: 8c41f6f6f8766a47a10a87b822ba90c667dfbe4a5bf204e5566e45d0fa6b23b8
 - filename: src/components/AccountPage/BlocChangerMotDePasse.tsx
-  checksum: 57f6bceb79e20cb6815ec0c78b3320d0da8ce99d1d99aebb96d97359ba80d900
+  checksum: 4428b9812ff4858f70b686580526aa8244ddb29624444acbab00517813097faf
 - filename: src/components/AccountPage/EmailContainer.tsx
-  checksum: ff757ee916228a004ac0fa9ab3b3d93a29cf7525654f2d2004399a094c8dd55a
+  checksum: 2b806ede38e4ec54119ef9061358ae2e10a038a16e07bfe39921709967e2e00a
 - filename: src/components/BaseInfoUpdatePage/BaseInfoUpdate.tsx
   checksum: d2565fbfe06ac2e626c09e5451e673753c827551829a98c239dea593aedbcb0a
 - filename: src/components/BaseInfoUpdatePage/MissionsEditor.tsx
   checksum: 42a1e9c44fc1a093ce628b796a51533f640d60cd75205c06ca6cd1d358f7cb02
 - filename: src/components/CommunityPage/CommunityFilterMembers.tsx
   checksum: 6e644062a8253a7ec4a0fcc0d417458c3cd149a4fd7aef2ac574269d72b48b44
+- filename: src/components/Formation/FormationCard.tsx
+  checksum: 69f8cf90d26dca06c7c9263d880567305a9ebbb49729a4221e08887b96b98d66
 - filename: src/components/Formation/FormationList.tsx
   checksum: 49ba981c5d52542548882b52ec95307299e3b6337689ff1f59fc3ec0d88369e4
 - filename: src/components/GenderSelect.tsx
@@ -55,6 +59,8 @@ fileignoreconfig:
   checksum: 2f825890548de8336fdec8a140bd55339de67c7bd428baf90e9621b094f08714
 - filename: src/components/MemberPage/MemberPage.tsx
   checksum: 8eace2e39fcb856b5ac251c7a8419548e53601aedf8fa79e6fa789ef6c0447ac
+- filename: src/components/MemberSelect.tsx
+  checksum: ec73d3b52be314f309b5e389fa51a5361725dc95777825528b5899f9cba3e6fe
 - filename: src/components/SESelect.tsx
   checksum: c251dbce68caf5cb85ac395bb400dfedb142737539d3ca0e1779f2a56460c520
 - filename: src/components/SESponsorSelect.tsx

@@ -127,20 +127,17 @@ export default async function Page({ params }: Props) {
                         <Card
                             background
                             border
-                            badges={
-                                !!formation.isELearning
-                                    ? [
-                                          <Badge
-                                              key={"e-learning"}
-                                              severity="new"
-                                          >
-                                              E-learning
-                                          </Badge>,
-                                      ]
-                                    : undefined
+                            start={
+                                !!formation.isELearning ? (
+                                    <Badge key={"e-learning"} severity="new">
+                                        E-learning
+                                    </Badge>
+                                ) : (
+                                    ""
+                                )
                             }
                             imageAlt={``}
-                            imageUrl={formation.imageUrl}
+                            imageUrl={formation.imageUrl || ""}
                             size="medium"
                             desc={
                                 <>

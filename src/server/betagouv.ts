@@ -316,6 +316,7 @@ const betaOVH = {
         try {
             return await ovh.requestPromised("GET", url, {});
         } catch (err) {
+            console.error("getAllMailingList", err);
             if ((err as { error: number }).error === 404) return null;
             throw new Error(`OVH Error GET on ${url} : ${err}`);
         }
@@ -334,6 +335,7 @@ const betaOVH = {
                 ownerEmail: "espace-membre@beta.gouv.fr",
             });
         } catch (err) {
+            console.error("createMailingList", err);
             if ((err as { error: number }).error === 404) return null;
             throw new Error(`OVH Error createMailingList on ${url} : ${err}`);
         }
@@ -346,6 +348,7 @@ const betaOVH = {
         try {
             return await ovh.requestPromised("DELETE", url);
         } catch (err) {
+            console.error("unsubscribeFromMailingList", err);
             if ((err as { error: number }).error === 404) return null;
             throw new Error(`OVH Error DELETE on ${url} : ${err}`);
         }
@@ -353,13 +356,15 @@ const betaOVH = {
     subscribeToMailingList: async (
         mailingListName: string,
         email: string
-    ): Promise<OvhMailingList[]> => {
+    ): Promise<OvhMailingList[] | null> => {
         const url = `/email/domain/${config.domain}/mailingList/${mailingListName}/subscriber`;
         try {
             return await ovh.requestPromised("POST", url, {
                 email,
             });
         } catch (err) {
+            console.error("subscribeToMailingList", err);
+            if ((err as { error: number }).error === 404) return null; // user already exist
             throw new Error(
                 `OVH Error subscribe on ${url} : ${JSON.stringify(err)}`
             );
