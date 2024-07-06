@@ -36,7 +36,7 @@ fileignoreconfig:
 - filename: src/components/AccountPage/AccountPage.tsx
   checksum: 8c41f6f6f8766a47a10a87b822ba90c667dfbe4a5bf204e5566e45d0fa6b23b8
 - filename: src/components/AccountPage/BlocChangerMotDePasse.tsx
-  checksum: 57f6bceb79e20cb6815ec0c78b3320d0da8ce99d1d99aebb96d97359ba80d900
+  checksum: 4428b9812ff4858f70b686580526aa8244ddb29624444acbab00517813097faf
 - filename: src/components/AccountPage/EmailContainer.tsx
   checksum: 2b806ede38e4ec54119ef9061358ae2e10a038a16e07bfe39921709967e2e00a
 - filename: src/components/BaseInfoUpdatePage/BaseInfoUpdate.tsx
