@@ -1,3 +1,4 @@
+"use client";
 import React from "react";
 
 import { fr } from "@codegouvfr/react-dsfr";
@@ -94,22 +95,18 @@ function BlocEmailConfiguration({ emailInfos }: { emailInfos: EmailInfos }) {
                 </a>
             </p>
             {["imap", "smtp"].map((confType) => (
-                <>
-                    <b>{confType} : </b>
-                    <Table
-                        data={[
-                            ["Serveur", conf[plan][confType].server],
-                            ["Port", conf[plan][confType].port],
-                            [
-                                "Méthode de chiffrement",
-                                conf[plan][confType].method,
-                            ],
-                            [`Nom d'utilisateur`, emailInfos.email],
-                            ["Mot de passe", "Le mot de passe de ton email"],
-                        ]}
-                        headers={["Paramètre", "Valeur"]}
-                    />
-                </>
+                <Table
+                    key={confType}
+                    caption={confType}
+                    data={[
+                        ["Serveur", conf[plan][confType].server],
+                        ["Port", conf[plan][confType].port],
+                        ["Méthode de chiffrement", conf[plan][confType].method],
+                        [`Nom d'utilisateur`, emailInfos.email],
+                        ["Mot de passe", "Le mot de passe de ton email"],
+                    ]}
+                    headers={["Paramètre", "Valeur"]}
+                />
             ))}
         </Accordion>
     );
@@ -175,20 +172,19 @@ export default function EmailContainer({
                         <br />
                     </>
                 )}
-                {!emailInfos &&
-                    userInfos.primary_email && (
-                        <>
-                            <span className="font-weight-bold">
-                                Email principal :{" "}
-                            </span>
-                            <span className="font-weight-bold text-color-blue">
-                                <a href={`mailto:${userInfos.primary_email}`}>
-                                    {userInfos.primary_email}
-                                </a>
-                            </span>
-                            <br />
-                        </>
-                    )}
+                {!emailInfos && userInfos.primary_email && (
+                    <>
+                        <span className="font-weight-bold">
+                            Email principal :{" "}
+                        </span>
+                        <span className="font-weight-bold text-color-blue">
+                            <a href={`mailto:${userInfos.primary_email}`}>
+                                {userInfos.primary_email}
+                            </a>
+                        </span>
+                        <br />
+                    </>
+                )}
                 <span className="font-weight-bold">Email secondaire : </span>{" "}
                 {userInfos.secondary_email ? (
                     <a href={`mailto:${userInfos.secondary_email}`}>
@@ -237,15 +233,17 @@ export default function EmailContainer({
                             isExchange={emailInfos.isExchange || false}
                         />
                     )}
-                    {!!emailInfos && !emailInfos.isExchange && !emailInfos.isPro && (
-                        <BlocRedirection
-                            redirections={emailRedirections}
-                            canCreateRedirection={canCreateRedirection}
-                            userInfos={userInfos}
-                            isExpired={isExpired}
-                            domain={frontConfig.domain}
-                        />
-                    )}
+                    {!!emailInfos &&
+                        !emailInfos.isExchange &&
+                        !emailInfos.isPro && (
+                            <BlocRedirection
+                                redirections={emailRedirections}
+                                canCreateRedirection={canCreateRedirection}
+                                userInfos={userInfos}
+                                isExpired={isExpired}
+                                domain={frontConfig.domain}
+                            />
+                        )}
                     <BlocConfigurerEmailPrincipal
                         canChangeEmails={canChangeEmails}
                         userInfos={userInfos}
