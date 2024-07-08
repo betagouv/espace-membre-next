@@ -2,11 +2,12 @@
 
 import { fr } from "@codegouvfr/react-dsfr";
 import { Tile } from "@codegouvfr/react-dsfr/Tile";
-import { StaticImageData } from "next/image";
-import locationFrance from "@gouvfr/dsfr/dist/artwork/pictograms/map/location-france.svg";
-import document from "@gouvfr/dsfr/dist/artwork/pictograms/document/document.svg";
-import mailSend from "@gouvfr/dsfr/dist/artwork/pictograms/digital/mail-send.svg";
 import school from "@gouvfr/dsfr/dist/artwork/pictograms/buildings/school.svg";
+import mailSend from "@gouvfr/dsfr/dist/artwork/pictograms/digital/mail-send.svg";
+import document from "@gouvfr/dsfr/dist/artwork/pictograms/document/document.svg";
+import locationFrance from "@gouvfr/dsfr/dist/artwork/pictograms/map/location-france.svg";
+import { StaticImageData } from "next/image";
+
 import { linkRegistry } from "@/utils/routes/registry";
 
 export interface DashboardPageProps {}
