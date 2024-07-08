@@ -2,14 +2,11 @@ import type { Metadata } from "next";
 import { redirect } from "next/navigation";
 import { getServerSession } from "next-auth";
 
-import AccountClientPage from "./AccountClientPage";
-import { Missions } from "@/@types/db";
 import AccountPage from "@/components/AccountPage/AccountPage";
 import { getUserInfos } from "@/lib/kysely/queries/users";
 import { userInfosToModel } from "@/models/mapper";
 import { EmailStatusCode } from "@/models/member";
-import { Domaine, memberSchemaType } from "@/models/member";
-import { missionSchemaType } from "@/models/mission";
+import { memberSchemaType } from "@/models/member";
 import betagouv from "@/server/betagouv";
 import {
     checkUserIsExpired,
