@@ -302,6 +302,7 @@ export async function updateMemberMissions(
                     {
                         end,
                         user_id: memberUuid,
+                        startups: mission.startups,
                     },
                     trx
                 );
@@ -310,6 +311,7 @@ export async function updateMemberMissions(
                     {
                         ...mission,
                         user_id: memberUuid,
+                        startups: mission.startups,
                     },
                     trx
                 );
