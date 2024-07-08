@@ -63,17 +63,22 @@ export async function PUT(
     const hasPublicServiceEmail = await isPublicServiceEmail(
         memberData.secondary_email
     );
-    updateMember(memberData, session.user.uuid, {
-        primary_email: hasPublicServiceEmail
-            ? memberData.secondary_email
-            : null,
-        secondary_email: hasPublicServiceEmail
-            ? null
-            : memberData.secondary_email,
-        primary_email_status: hasPublicServiceEmail
-            ? EmailStatusCode.EMAIL_ACTIVE
-            : EmailStatusCode.EMAIL_CREATION_WAITING,
-    });
+    updateMember(
+        memberData,
+        session.user.uuid,
+        {
+            primary_email: hasPublicServiceEmail
+                ? memberData.secondary_email
+                : null,
+            secondary_email: hasPublicServiceEmail
+                ? null
+                : memberData.secondary_email,
+            primary_email_status: hasPublicServiceEmail
+                ? EmailStatusCode.EMAIL_ACTIVE
+                : EmailStatusCode.EMAIL_CREATION_WAITING,
+        },
+        session.user.id
+    );
 
     const dbUser = await getUserInfos({
         username,

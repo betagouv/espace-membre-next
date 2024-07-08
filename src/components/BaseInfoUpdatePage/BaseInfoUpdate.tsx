@@ -34,10 +34,16 @@ export interface BaseInfoUpdateProps {
         value: string;
         label: string;
     }[];
-    updatePullRequest?: GithubAPIPullRequest;
+    username: string;
 }
 
-const postMemberData = async ({ values, sessionUsername }) => {
+const postMemberData = async ({
+    values,
+    sessionUsername,
+}: {
+    values: memberInfoUpdateSchemaType;
+    sessionUsername: string;
+}) => {
     const {
         data: { username, message },
     }: {
@@ -89,10 +95,11 @@ export const BaseInfoUpdate = (props: BaseInfoUpdateProps) => {
         }
         setIsSaving(true);
         setAlertMessage(null);
+
         try {
             const { message } = await postMemberData({
                 values: input,
-                sessionUsername: session.data?.user.id,
+                sessionUsername: props.username,
             });
             setAlertMessage({
                 title: `Modifications enregistrées`,
@@ -143,10 +150,16 @@ export const BaseInfoUpdate = (props: BaseInfoUpdateProps) => {
         }
     };
 
+    const isCurrentUser = session.data?.user.id === props.username;
+
     return (
         <>
             <div className={fr.cx("fr-mb-5w")}>
-                <h1>{routeTitles.accountEditBaseInfo()}</h1>
+                <h1>
+                    {isCurrentUser
+                        ? routeTitles.accountEditBaseInfo()
+                        : `Mise à jour des informations de ${props.formData.fullname}`}
+                </h1>
                 <p>
                     Ces informations seront publiées sur le site beta.gouv.fr.
                 </p>
@@ -166,16 +179,13 @@ export const BaseInfoUpdate = (props: BaseInfoUpdateProps) => {
                         }
                     />
                 )}
-
-                {!!props.updatePullRequest && (
-                    <PullRequestWarning
-                        url={props.updatePullRequest.html_url}
-                    />
-                )}
-
                 <form
                     onSubmit={handleSubmit(onSubmit)}
-                    aria-label="Modifier mes informations"
+                    aria-label={
+                        isCurrentUser
+                            ? `Modifier mes informations`
+                            : `Modifier les informations de ${props.formData.fullname}`
+                    }
                 >
                     <Input
                         label={
@@ -244,11 +254,17 @@ export const BaseInfoUpdate = (props: BaseInfoUpdateProps) => {
                         state={errors.github ? "error" : "default"}
                         stateRelatedMessage={errors.github?.message}
                     />
-                    <h2>Mes compétences</h2>
-                    <p>
-                        Tu peux préciser tes compétences, cela permettra à la
-                        communauté de mieux de trouver en cas de besoin {`:)`}
-                    </p>
+                    <h2>
+                        {" "}
+                        {isCurrentUser ? `Mes compétences` : `Compétences`}
+                    </h2>
+                    {isCurrentUser && (
+                        <p>
+                            Tu peux préciser tes compétences, cela permettra à
+                            la communauté de mieux de trouver en cas de besoin{" "}
+                            {`:)`}
+                        </p>
+                    )}
                     <CompetencesEditor
                         onChange={(e, values) => {
                             setValue("competences", values, {
@@ -259,16 +275,18 @@ export const BaseInfoUpdate = (props: BaseInfoUpdateProps) => {
                     />
                     <br />
                     <br />
-                    <h2>Mes missions</h2>
-                    <p>
-                        Précise les dates, employeurs et produits pour lesquels
-                        tu as mis tes talents à contribution.
-                        <br />
-                        <br />
-                        Ne saute aucun détail pour que la communauté puisse te
-                        repérer facilement dans la foule !
-                        <br />
-                    </p>
+                    <h2>{isCurrentUser ? `Mes missions` : `Missions`}</h2>
+                    {!!isCurrentUser && (
+                        <p>
+                            Précise les dates, employeurs et produits pour
+                            lesquels tu as mis tes talents à contribution.
+                            <br />
+                            <br />
+                            Ne saute aucun détail pour que la communauté puisse
+                            te repérer facilement dans la foule !
+                            <br />
+                        </p>
+                    )}
                     <MissionsEditor
                         control={control}
                         setValue={setValue}
@@ -276,7 +294,11 @@ export const BaseInfoUpdate = (props: BaseInfoUpdateProps) => {
                         startupOptions={props.startupOptions}
                         errors={errors.missions || []}
                     />
-                    <h2>Participe à notre observatoire statistique </h2>
+                    <h2>
+                        {isCurrentUser
+                            ? `Participe à notre observatoire statistique`
+                            : `Observatoire statistique`}
+                    </h2>
                     ⚠️ Ces valeurs servent à alimenter l'
                     <a
                         href="https://metabase.incubateur.net/public/dashboard/554ff353-6104-4c25-a261-d8bdc40f75d5"
@@ -327,7 +349,11 @@ export const BaseInfoUpdate = (props: BaseInfoUpdateProps) => {
                         state={errors.tjm ? "error" : "default"}
                         stateRelatedMessage={errors.tjm?.message}
                     />
-                    <h2>Participe à la carte des membres (non anonyme)</h2>
+                    <h2>
+                        {isCurrentUser
+                            ? `Participe à la carte des membres (non anonyme)`
+                            : "Carte des membres"}
+                    </h2>
                     <CitySelect
                         onChange={handleCitySelect}
                         placeholder={"Commune ou code postal"}

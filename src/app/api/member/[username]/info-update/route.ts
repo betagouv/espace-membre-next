@@ -18,7 +18,7 @@ export async function PUT(
 ) {
     console.log("Info Update");
     const session = await getServerSession(authOptions);
-    if (!session || session.user.id !== username) {
+    if (!session || (session.user.id !== username && !session.user.isAdmin)) {
         throw new Error(`You don't have the right to access this function`);
     }
     const rawdata = await req.json();
@@ -28,7 +28,12 @@ export async function PUT(
         throw new Error("User does not exists");
     }
 
-    await updateMember(memberData, session.user.uuid);
+    await updateMember(
+        memberData,
+        previousInfo.uuid,
+        undefined,
+        session.user.uuid
+    );
 
     const dbUser = await getUserInfos({
         username,

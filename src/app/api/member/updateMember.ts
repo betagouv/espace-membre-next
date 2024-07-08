@@ -1,5 +1,6 @@
 "use server";
 
+import { addEvent } from "@/lib/events";
 import { db } from "@/lib/kysely";
 import {
     createMission,
@@ -7,18 +8,17 @@ import {
     updateMission,
 } from "@/lib/kysely/queries/missions";
 import { getUserInfos } from "@/lib/kysely/queries/users";
+import { EventCode } from "@/models/actionEvent";
 import {
     memberInfoUpdateSchemaType,
     memberValidateInfoSchemaType,
 } from "@/models/actions/member";
+import { userInfosToModel } from "@/models/mapper";
 import { EmailStatusCode } from "@/models/member";
 import { isPublicServiceEmail } from "@/server/controllers/utils";
 
 export async function updateMember(
-    {
-        missions,
-        ...memberData
-    }: memberInfoUpdateSchemaType | memberValidateInfoSchemaType,
+    data: memberInfoUpdateSchemaType | memberValidateInfoSchemaType,
     memberUuid: string,
     extraParams:
         | {
@@ -31,8 +31,10 @@ export async function updateMember(
               secondary_email: string;
               primary_email_status: EmailStatusCode;
           }
-        | {} = {} // quick hack to update primary_email,secondary_email and primary_email_status on verify
+        | {} = {}, // quick hack to update primary_email,secondary_email and primary_email_status on verify
+    created_by_username: string
 ) {
+    const { missions, ...memberData } = data;
     const previousInfo = await getUserInfos({ uuid: memberUuid });
     if (!previousInfo) {
         throw new Error("User does not exists");
@@ -102,14 +104,14 @@ export async function updateMember(
         console.error("Transaction failed:", error);
         throw error;
     }
-    // addEvent({
-    //     action_code: EventCode.MEMBER_BASE_INFO_UPDATED,
-    //     created_by_username: session.user.id as string,
-    //     action_on_username: username,
-    //     action_metadata: {
-    //         value: rawdata,
-    //         old_value: previousInfo
-    //     }
-    // });
+    addEvent({
+        action_code: EventCode.MEMBER_BASE_INFO_UPDATED,
+        created_by_username: created_by_username,
+        action_on_username: previousInfo.username,
+        action_metadata: {
+            value: data,
+            old_value: userInfosToModel(previousInfo),
+        },
+    });
     return true;
 }

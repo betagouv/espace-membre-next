@@ -10,18 +10,32 @@ import { memberSchema } from "@/models/member";
 import { authOptions } from "@/utils/authoptions";
 import { routeTitles } from "@/utils/routes/routeTitles";
 
-export const metadata: Metadata = {
-    title: `${routeTitles.accountEditBaseInfo()} / Espace Membre`,
+export const generateMetadata = async ({
+    params: { id },
+}: {
+    params: { id: string };
+}) => {
+    const dbData = await getUserInfos({ username: id });
+
+    return {
+        title: `Mise à jour des infos de ${dbData?.fullname} / Espace Membre`,
+    };
 };
 
-export default async function Page() {
+export default async function Page({
+    params: { id },
+}: {
+    params: { id: string };
+}) {
     const session = await getServerSession(authOptions);
 
     if (!session) {
         redirect("/login");
     }
-    const username = session.user.id;
-    const dbData = await getUserInfos({ username });
+    if (!session.user.isAdmin) {
+        redirect(`/community/${id}`);
+    }
+    const dbData = await getUserInfos({ username: id });
     const userInfos = userInfosToModel(dbData);
 
     const startups = await getAllStartups();
@@ -41,8 +55,8 @@ export default async function Page() {
         formData: {
             ...userInfos,
         },
-        username,
         startupOptions,
+        username: id,
     };
 
     return <BaseInfoUpdate {...props} />;
