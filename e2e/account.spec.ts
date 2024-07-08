@@ -3,7 +3,7 @@ import { test, expect } from "@playwright/test";
 test.use({ storageState: "./playwright-auth-valid.member.json" });
 
 test("account page", async ({ page }) => {
-    await page.goto("/");
+    await page.goto("/account");
     await expect(page.getByText("Valid member").first()).toBeVisible();
     await expect(
         page.getByText("Email principal : valid.member@betagouv.ovh").first()
