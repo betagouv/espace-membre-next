@@ -80,12 +80,10 @@ test("valid login sends magic link and show correct message", async ({
     await page.waitForURL("/dashboard");
 
     await expect(
-        page.getByRole("heading").getByText("Compte", { exact: true })
+        page.getByRole("heading").getByText("Gérer mon compte", { exact: true })
     ).toBeVisible();
 
     await expect(
-        page
-            .getByRole("link")
-            .getByText("Mise à jour de mes informations", { exact: true })
+        page.getByRole("link").getByText("Ma fiche membre", { exact: true })
     ).toBeVisible();
 });
