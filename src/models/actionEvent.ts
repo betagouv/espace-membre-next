@@ -1,5 +1,9 @@
 import { z } from "zod";
 
+import {
+    memberInfoUpdateSchema,
+    memberValidateInfoSchema,
+} from "./actions/member";
 import { memberSchema } from "./member";
 import { CommunicationEmailCode, EmailStatusCode } from "@/models/member";
 import { GithubStartupChangeSchema } from "@/server/controllers/helpers/githubHelpers/githubEntryInterface";
@@ -190,8 +194,8 @@ export const EventMemberEmailUpgradedUpdatePayload = z.object({
 export const EventMemberBaseInfoUpdatedPayload = z.object({
     action_code: z.literal(EventCode.MEMBER_BASE_INFO_UPDATED),
     action_metadata: z.object({
-        value: memberSchema,
-        old_value: memberSchema.optional(),
+        value: z.union([memberInfoUpdateSchema, memberValidateInfoSchema]),
+        old_value: z.union([memberInfoUpdateSchema, memberValidateInfoSchema]),
     }),
 });
 
