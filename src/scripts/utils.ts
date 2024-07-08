@@ -49,7 +49,10 @@ export const dumpYaml = (attributes, body = "") =>
         // hack for js-yaml dumps for short dates
         .replace(/start: ([\d-]{10})T.*/g, "start: $1")
         .replace(/end: ([\d-]{10})T.*/g, "end: $1")
-        .replace(/date: ([\d-]{10})T.*/g, "date: $1") +
+        .replace(/date: ([\d-]{10})T.*/g, "date: $1")
+        .replace(/start: '([\d-]{10})(T.*)?'/g, "start: $1")
+        .replace(/end: '([\d-]{10})(T.*)?'/g, "end: $1")
+        .replace(/date: '([\d-]{10})(T.*)?'/g, "date: $1") +
     "---\n" +
     body;
 
