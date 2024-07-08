@@ -77,10 +77,10 @@ test("valid login sends magic link and show correct message", async ({
 
     await page.goto(href);
     await page.getByText("Me connecter").first().click();
-    await page.waitForURL("/account");
+    await page.waitForURL("/dashboard");
 
     await expect(
-        page.getByRole("heading").getByText("Mon compte", { exact: true })
+        page.getByRole("heading").getByText("Compte", { exact: true })
     ).toBeVisible();
 
     await expect(

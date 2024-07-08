@@ -29,9 +29,9 @@ setup("authenticate as valid.member through magic link", async ({ page }) => {
     // open magic link
     await page.goto(href);
     await page.getByText("Me connecter").first().click();
-    await page.waitForURL("/account");
+    await page.waitForURL("/dashboard");
     await expect(
-        page.getByText("Mon compte", { exact: true }).first()
+        page.getByText("Compte", { exact: true }).first()
     ).toBeVisible();
 
     await page.context().storageState({ path: validMemberFile });

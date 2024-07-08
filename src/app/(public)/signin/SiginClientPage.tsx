@@ -14,7 +14,7 @@ export default function SignClientPage() {
     const { status, data: session } = useSession();
 
     if (status === "authenticated") {
-        window.location.href = "/account";
+        window.location.href = "/dashboard";
     }
 
     const onSubmit = React.useCallback(async () => {
@@ -32,7 +32,7 @@ export default function SignClientPage() {
                 //     })
                 // )
                 .then((r) => {
-                    window.location.href = "/account";
+                    window.location.href = "/dashboard";
                 })
                 .catch((e) => {
                     if (e.response?.data?.error) {
