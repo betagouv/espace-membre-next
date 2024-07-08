@@ -66,7 +66,7 @@ export function DashboardPage(props: DashboardPageProps) {
                     <Tile
                         className={fr.cx("fr-tile--sm")}
                         title="Communauté"
-                        desc="Modifier ma mission en cours ou mes infos personnelles."
+                        desc="Explorer la communauté"
                         horizontal
                         imageUrl={(mailSend as StaticImageData).src}
                         linkProps={{
