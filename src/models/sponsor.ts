@@ -22,7 +22,7 @@ export enum SponsorDomaineMinisteriel {
     SPONSOR_DOMAINE_JUSTICE = "justice",
     SPONSOR_DOMAINE_OUTRE_MER = "outre-mer",
     SPONSOR_DOMAINE_SOLIDARITE_SANTE = "solidarite-sante",
-    SPONSOR_DOMAINE_SPM = "spm # Service du premier ministre",
+    SPONSOR_DOMAINE_SPM = "spm",
     SPONSOR_DOMAINE_SPORT = "sport",
     SPONSOR_DOMAINE_TRAVAIL = "travail",
     SPONSOR_DOMAINE_TERRITOIRES = "territoires",
