@@ -1,3 +1,4 @@
+import { NextRequest, NextResponse } from "next/server";
 import { getServerSession } from "next-auth";
 
 import { updateMember } from "../../updateMember";
@@ -13,19 +14,24 @@ import { memberInfoUpdateSchema } from "@/models/actions/member";
 import { authOptions } from "@/utils/authoptions";
 
 export async function PUT(
-    req: Request,
+    req,
     { params: { username } }: { params: { username: string } }
 ) {
-    console.log("Info Update");
     const session = await getServerSession(authOptions);
     if (!session || (session.user.id !== username && !session.user.isAdmin)) {
-        throw new Error(`You don't have the right to access this function`);
+        return NextResponse.json(
+            { message: "You don't have the right to access this function" },
+            { status: 403 }
+        );
     }
     const rawdata = await req.json();
     const memberData = memberInfoUpdateSchema.parse(rawdata);
     const previousInfo = await getUserInfos({ username });
     if (!previousInfo) {
-        throw new Error("User does not exists");
+        return NextResponse.json(
+            { message: "User does not exist" },
+            { status: 404 }
+        );
     }
 
     await updateMember(
