@@ -129,5 +129,9 @@ export const routes = {
             localizedRoutes.incubatorDetails.params,
             localizedRoutes.incubatorDetails.paths.fr
         ),
+        startupDocs: defineRoute(
+            localizedRoutes.startupDocs.params,
+            localizedRoutes.startupDocs.paths.fr
+        ),
     }).routes,
 };

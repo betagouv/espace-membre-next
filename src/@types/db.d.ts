@@ -248,6 +248,34 @@ export interface Startups {
   uuid: Generated<string>;
 }
 
+export interface StartupsFiles {
+  /**
+   * Contenu du fichier
+   */
+  base64: Buffer | null;
+  comments: string | null;
+  created_at: Generated<Timestamp>;
+  data: Json | null;
+  /**
+   * Nom du fichier
+   */
+  filename: string | null;
+  /**
+   * Taille du fichier en octets
+   */
+  size: number | null;
+  startup_id: string;
+  /**
+   * Titre du fichier
+   */
+  title: string | null;
+  /**
+   * Type de document
+   */
+  type: string | null;
+  uuid: Generated<string>;
+}
+
 export interface StartupsOrganizations {
   organization_id: string;
   startup_id: string;
@@ -352,6 +380,7 @@ export interface DB {
   sessions: Sessions;
   startup_events: StartupEvents;
   startups: Startups;
+  startups_files: StartupsFiles;
   startups_organizations: StartupsOrganizations;
   tasks: Tasks;
   user_details: UserDetails;

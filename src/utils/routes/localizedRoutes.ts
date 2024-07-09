@@ -99,6 +99,12 @@ export const localizedRoutes = {
             fr: (p) => `/startups/${p.startupId}/info-form`,
         }
     ),
+    startupDocs: defineLocalizedRoute(
+        { startupId: param.path.string },
+        {
+            fr: (p) => `/startups/${p.startupId}/docs`,
+        }
+    ),
     startupCreate: defineLocalizedRoute(
         {},
         {
@@ -176,5 +182,5 @@ export const localizedRoutes = {
         {
             fr: (p) => "/verify",
         }
-    ),
+    )
 };

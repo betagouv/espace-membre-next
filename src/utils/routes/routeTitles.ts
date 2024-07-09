@@ -18,6 +18,9 @@ export const routeTitles: {
     startupDetailsEdit: (id?: string) => {
         return `Modifier la fiche produit de ${id}`;
     },
+    startupDocs: (id?: string) => {
+        return `Fiches du produit ${id}`;
+    },
     startupCreate: () => "Créer une fiche produit",
     adminMattermost: () => "Administration mattermost",
     home: () => "",

@@ -4,6 +4,9 @@ const { withSentryConfig } = require("@sentry/nextjs");
 const nextConfig = {
     experimental: {
         serverComponentsExternalPackages: ["knex", "sib-api-v3-sdk"],
+        serverActions: {
+            bodySizeLimit: "10mb",
+        },
     },
     sentry: {
         disableServerWebpackPlugin: true,
