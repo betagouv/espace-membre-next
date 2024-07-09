@@ -14,6 +14,14 @@ import { sponsorSchema } from "@/models/sponsor";
 import { phaseSchema } from "@/models/startup";
 import { authOptions } from "@/utils/authoptions";
 
+export async function getStartup({ uuid }: { uuid: string }) {
+    return db
+        .selectFrom("startups")
+        .selectAll()
+        .where("uuid", "=", uuid)
+        .executeTakeFirstOrThrow();
+}
+
 export async function createStartup({
     formData: {
         startup,
