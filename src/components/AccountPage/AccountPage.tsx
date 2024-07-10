@@ -1,5 +1,6 @@
 "use client";
-import React from "react";
+
+import React, { useEffect, useRef } from "react";
 
 import { fr } from "@codegouvfr/react-dsfr";
 import Alert from "@codegouvfr/react-dsfr/Alert";
@@ -10,24 +11,68 @@ import axios from "axios";
 import EmailContainer from "./EmailContainer";
 import FicheMembre from "./FicheMembre";
 import Observatoire from "./Observatoire";
-import { EmailStatusCode } from "@/models/dbUser";
+import { EmailStatusCode } from "@/models/member";
+import {
+    memberSchemaType,
+    memberSchema,
+    EmailInfos,
+    memberWrapperSchemaType,
+} from "@/models/member";
+import { OvhRedirection, OvhResponder } from "@/models/ovh";
 import routes, { computeRoute } from "@/routes/routes";
 import { routeTitles } from "@/utils/routes/routeTitles";
 
-export default function AccountPage(props: any) {
+type AccountPageProps = {
+    isExpired: memberWrapperSchemaType["isExpired"];
+    userInfos: memberWrapperSchemaType["userInfos"];
+    emailInfos: memberWrapperSchemaType["emailInfos"] | null;
+    emailRedirections: memberWrapperSchemaType["emailRedirections"];
+    emailResponder: memberWrapperSchemaType["emailResponder"] | null;
+    authorizations: memberWrapperSchemaType["authorizations"];
+};
+
+export default function AccountPage(props: AccountPageProps) {
     const {
-        updatePullRequest,
-        hasActiveResponder,
-        userInfos,
-        workplace,
-        gender,
+        emailResponder,
+        isExpired,
+        userInfos: {
+            username,
+            workplace_insee_code,
+            osm_city,
+            gender,
+            legal_status,
+            tjm,
+            average_nb_of_days,
+            primary_email_status,
+        },
+        authorizations,
         emailInfos,
-        legal_status,
-        tjm,
-        average_nb_of_days,
-        redirections,
-        status,
+        emailRedirections,
     } = props;
+
+    const hasActiveResponder =
+        emailResponder &&
+        emailResponder?.from > new Date() &&
+        emailResponder?.to < new Date();
+    // This is used to scroll according to the hash
+    const emailSettingsContainerRef = useRef<HTMLDivElement | null>(null);
+    const observatoryContainerRef = useRef<HTMLDivElement | null>(null);
+
+    useEffect(() => {
+        switch (window.location.hash.slice(1)) {
+            case "email-settings":
+                emailSettingsContainerRef.current?.scrollIntoView({
+                    behavior: "smooth",
+                });
+                break;
+            case "observatory":
+                observatoryContainerRef.current?.scrollIntoView({
+                    behavior: "smooth",
+                });
+                break;
+        }
+    }, []);
+
     return (
         <div>
             {hasActiveResponder && (
@@ -40,7 +85,7 @@ export default function AccountPage(props: any) {
             {[
                 EmailStatusCode.EMAIL_CREATION_WAITING,
                 EmailStatusCode.EMAIL_CREATION_PENDING,
-            ].includes(status) && (
+            ].includes(primary_email_status) && (
                 <Alert
                     title={"Bienvenue"}
                     closable={true}
@@ -65,7 +110,7 @@ export default function AccountPage(props: any) {
             )}
             {[
                 EmailStatusCode.EMAIL_ACTIVE_AND_PASSWORD_DEFINITION_PENDING,
-            ].includes(status) && (
+            ].includes(primary_email_status) && (
                 <Alert
                     title={"Bienvenue"}
                     closable={true}
@@ -84,20 +129,30 @@ export default function AccountPage(props: any) {
                 />
             )}
             <h1>{routeTitles.account()}</h1>
-            {userInfos && (
+            {props.userInfos && (
                 <>
-                    <FicheMembre
-                        userInfos={userInfos}
-                        updatePullRequest={updatePullRequest}
-                    ></FicheMembre>
-                    <EmailContainer {...props}></EmailContainer>
-                    <Observatoire
-                        average_nb_of_days={average_nb_of_days}
-                        workplace={workplace}
-                        gender={gender}
-                        tjm={tjm}
-                        legal_status={legal_status}
-                    />
+                    <FicheMembre userInfos={props.userInfos}></FicheMembre>
+
+                    <div ref={emailSettingsContainerRef}>
+                        <EmailContainer
+                            isExpired={isExpired}
+                            emailInfos={emailInfos}
+                            emailResponder={emailResponder}
+                            emailRedirections={emailRedirections}
+                            userInfos={props.userInfos}
+                            authorizations={authorizations}
+                        ></EmailContainer>
+                    </div>
+                    <div ref={observatoryContainerRef}>
+                        <Observatoire
+                            average_nb_of_days={average_nb_of_days}
+                            workplace_insee_code={workplace_insee_code}
+                            osm_city={osm_city}
+                            gender={gender}
+                            tjm={tjm}
+                            legal_status={legal_status}
+                        />
+                    </div>
                 </>
             )}
             <div className="fr-mb-14v">
@@ -114,7 +169,8 @@ export default function AccountPage(props: any) {
                     inlineLayoutWhen="md and up"
                 />
             </div>
-            {(emailInfos || (redirections && redirections.length > 0)) && (
+            {(emailInfos ||
+                (emailRedirections && emailRedirections.length > 0)) && (
                 <div className="fr-mb-14v">
                     <h2>❗ Clôturer mon compte</h2>
                     <p>
@@ -133,18 +189,24 @@ export default function AccountPage(props: any) {
                     </ul>
                     <form
                         onSubmit={() => {
-                            axios.post(
-                                computeRoute(
-                                    routes.USER_DELETE_EMAIL_API.replace(
-                                        ":username",
-                                        userInfos.id
-                                    )
-                                ),
-                                undefined,
-                                {
-                                    withCredentials: true,
-                                }
-                            );
+                            if (
+                                confirm(
+                                    "Es-tu sûr de vouloir supprimer ton compte email et toutes ses redirections ? "
+                                )
+                            ) {
+                                axios.post(
+                                    computeRoute(
+                                        routes.USER_DELETE_EMAIL_API.replace(
+                                            ":username",
+                                            username
+                                        )
+                                    ),
+                                    undefined,
+                                    {
+                                        withCredentials: true,
+                                    }
+                                );
+                            }
                         }}
                     >
                         <div>

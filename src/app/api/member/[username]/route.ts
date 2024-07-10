@@ -1,14 +1,53 @@
+import * as Sentry from "@sentry/node";
 import { getServerSession } from "next-auth";
 
-import { createOrUpdateMemberData } from "../createOrUpdateMemberData";
-import { EmailStatusCode, MemberType } from "@/models/dbUser";
+import { updateMember } from "../updateMember";
 import {
-    completeMemberSchema,
-    completeMemberSchemaType,
-    memberSchema,
-} from "@/models/member";
-import { isPublicServiceEmail } from "@/server/controllers/utils";
+    getUserBasicInfo,
+    getUserInfos,
+    updateUser,
+} from "@/lib/kysely/queries/users";
+import { MattermostUser, getUserByEmail, searchUsers } from "@/lib/mattermost";
+import {
+    memberInfoUpdateSchemaType,
+    memberInfoUpdateSchema,
+    memberValidateInfoSchema,
+} from "@/models/actions/member";
+import { EmailStatusCode } from "@/models/member";
+import betagouv from "@/server/betagouv";
+import config from "@/server/config";
+import { isPublicServiceEmail, userInfos } from "@/server/controllers/utils";
 import { authOptions } from "@/utils/authoptions";
+
+const getMattermostUserInfo = async (
+    dbUser
+): Promise<{
+    mattermostUser: MattermostUser | null;
+    mattermostUserInTeamAndActive: boolean;
+}> => {
+    try {
+        let mattermostUser = dbUser?.primary_email
+            ? await getUserByEmail(dbUser.primary_email).catch((e) => null)
+            : null;
+        const [mattermostUserInTeamAndActive] = dbUser?.primary_email
+            ? await searchUsers({
+                  term: dbUser.primary_email,
+                  team_id: config.mattermostTeamId,
+                  allow_inactive: false,
+              }).catch((e) => [])
+            : [];
+        return {
+            mattermostUser,
+            mattermostUserInTeamAndActive,
+        };
+    } catch (e) {
+        Sentry.captureException(e);
+        return {
+            mattermostUser: null,
+            mattermostUserInTeamAndActive: false,
+        };
+    }
+};
 
 export async function PUT(
     req: Request,
@@ -19,72 +58,97 @@ export async function PUT(
     if (!session || session.user.id !== username) {
         throw new Error(`You don't have the right to access this function`);
     }
-    const data = await req.json();
-    let {
-        osm_city,
-        workplace_insee_code,
-        gender,
-        secondary_email,
-        legal_status,
-        average_nb_of_days,
-        tjm,
-        bio,
-        memberType,
-        ...postParams
-    }: completeMemberSchemaType = completeMemberSchema.parse({
-        ...data,
-        username,
-    });
+    const memberData = memberValidateInfoSchema.parse(await req.json());
 
-    let primary_email;
-    const hasPublicServiceEmail = await isPublicServiceEmail(secondary_email);
-    if (hasPublicServiceEmail) {
-        primary_email = secondary_email;
-        secondary_email = undefined;
-    }
-
-    const primary_email_status = primary_email
-        ? EmailStatusCode.EMAIL_ACTIVE
-        : EmailStatusCode.EMAIL_CREATION_WAITING;
-
-    const privateData = {
-        tjm,
-        gender,
-        average_nb_of_days,
-    };
-
-    const dbData = {
-        username,
-        primary_email,
-        workplace_insee_code,
-        legal_status,
-        secondary_email,
-        primary_email_status,
-        primary_email_status_updated_at: new Date(),
-        should_create_marrainage: false,
-        email_is_redirection: memberType === MemberType.ATTRIBUTAIRE,
-        osm_city,
-    };
-    const githubData = memberSchema.parse({
-        ...postParams,
-        bio,
-        memberType,
-        role: `${postParams.domaine}`,
-    });
-
-    const prInfo = await createOrUpdateMemberData(
-        {
-            author: session.user.id,
-            method: "update",
-            username,
-        },
-        githubData,
-        dbData,
-        privateData
+    const hasPublicServiceEmail = await isPublicServiceEmail(
+        memberData.secondary_email
     );
+    updateMember(
+        memberData,
+        session.user.uuid,
+        {
+            primary_email: hasPublicServiceEmail
+                ? memberData.secondary_email
+                : null,
+            secondary_email: hasPublicServiceEmail
+                ? null
+                : memberData.secondary_email,
+            primary_email_status: hasPublicServiceEmail
+                ? EmailStatusCode.EMAIL_ACTIVE
+                : EmailStatusCode.EMAIL_CREATION_WAITING,
+        },
+        session.user.id
+    );
+
+    const dbUser = await getUserInfos({
+        username,
+        options: { withDetails: true },
+    });
 
     return Response.json({
         message: `Success`,
-        pr_url: prInfo.html_url,
+        data: dbUser,
     });
+}
+
+export async function GET(
+    req: Request,
+    { params: { username } }: { params: { username: string } }
+) {
+    const session = await getServerSession(authOptions);
+
+    if (!session || !session.user.id) {
+        throw new Error(`You don't have the right to access this function`);
+    }
+
+    const isCurrentUser = session.user.id === username;
+    try {
+        // todo not sure this call should send all user infos
+        const user = await userInfos({ username }, isCurrentUser);
+        const hasGithubFile = user.userInfos;
+        const hasEmailAddress =
+            user.emailInfos || user.emailRedirections.length > 0;
+        if (!hasGithubFile && !hasEmailAddress) {
+            throw new Error(
+                'Il n\'y a pas de membres avec ce compte mail. Vous pouvez commencez par créer une fiche sur Github pour la personne <a href="/onboarding">en cliquant ici</a>.'
+            );
+        }
+
+        const dbUser = await getUserBasicInfo({ username });
+        const primaryEmail = dbUser ? dbUser.primary_email : "";
+        const secondaryEmail = dbUser ? dbUser.secondary_email : "";
+        let availableEmailPros: string[] = [];
+        if (config.ESPACE_MEMBRE_ADMIN.includes(session.user.id)) {
+            availableEmailPros = await betagouv.getAvailableProEmailInfos();
+        }
+        let { mattermostUser, mattermostUserInTeamAndActive } =
+            await getMattermostUserInfo(dbUser);
+        const title = user.userInfos ? user.userInfos.fullname : null;
+
+        return Response.json({
+            userBaseInfos: dbUser,
+            username,
+            emailInfos: user.emailInfos,
+            redirections: user.emailRedirections,
+            userInfos: user.userInfos,
+            isExpired: user.isExpired,
+            isAdmin: config.ESPACE_MEMBRE_ADMIN.includes(session.user.id),
+            availableEmailPros,
+            mattermostInfo: {
+                hasMattermostAccount: !!mattermostUser,
+                isInactiveOrNotInTeam: !mattermostUserInTeamAndActive,
+            },
+            primaryEmail,
+            primaryEmailStatus: dbUser
+                ? dbUser.primary_email_status
+                : EmailStatusCode.EMAIL_UNSET,
+            canCreateEmail: user.authorizations.canCreateEmail,
+            hasPublicServiceEmail:
+                dbUser &&
+                dbUser.primary_email &&
+                !dbUser.primary_email.includes(config.domain),
+            domain: config.domain,
+            secondaryEmail,
+        });
+    } catch (e) {}
 }

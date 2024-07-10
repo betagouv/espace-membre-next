@@ -1,10 +1,16 @@
 import { Metadata } from "next";
 import { redirect } from "next/navigation";
 import { getServerSession } from "next-auth";
+import { z } from "zod";
 
 import { StartupInfoUpdate } from "@/components/StartupInfoUpdatePage";
 import { getPullRequestForBranch, fetchGithubMarkdown } from "@/lib/github";
-import { startupSchema } from "@/models/startup";
+import { db } from "@/lib/kysely";
+import { startupToModel } from "@/models/mapper";
+import { sponsorSchema } from "@/models/sponsor";
+import { phaseSchema, startupSchema } from "@/models/startup";
+import { thematiques } from "@/models/thematiques";
+import { usertypes } from "@/models/usertypes";
 import betagouv from "@/server/betagouv";
 import { authOptions } from "@/utils/authoptions";
 import { routeTitles } from "@/utils/routes/routeTitles";
@@ -54,22 +60,69 @@ export default async function Page(props) {
     if (!session) {
         redirect("/login");
     }
-    const id = props.params.id;
-    const startupPR = await getPullRequestForBranch(`edit-startup-${id}`);
+    const uuid = props.params.id;
+    // const startupPR = await getPullRequestForBranch(`edit-startup-${id}`);
 
-    const sha = startupPR && startupPR.head.sha;
-    const formData = await fetchGithubPageData(id, sha || "master");
-    const incubators = await betagouv.incubators();
-    const sponsors = await betagouv.sponsors();
-
+    // const sha = startupPR && startupPR.head.sha;
+    // const formData = await fetchGithubPageData(id, sha || "master");
+    const incubators = await db.selectFrom("incubators").selectAll().execute(); //await betagouv.incubators();
+    const sponsors = await db.selectFrom("organizations").selectAll().execute(); //await betagouv.sponsors();
+    const startup = startupToModel(
+        await db
+            .selectFrom("startups")
+            .selectAll()
+            .where("uuid", "=", uuid)
+            .executeTakeFirst()
+    );
+    if (!startup) {
+        redirect("/startups");
+    }
+    const startupSponsors = z
+        .array(sponsorSchema)
+        .parse(
+            await db
+                .selectFrom("organizations")
+                .leftJoin(
+                    "startups_organizations",
+                    "organization_id",
+                    "organizations.uuid"
+                )
+                .where("startup_id", "=", startup.uuid)
+                .select([
+                    "organizations.uuid",
+                    "organizations.acronym",
+                    "organizations.type",
+                    "organizations.domaine_ministeriel",
+                    "organizations.ghid",
+                    "organizations.name",
+                ])
+                .execute()
+        );
+    const startupPhases = z
+        .array(phaseSchema)
+        .parse(
+            await db
+                .selectFrom("phases")
+                .where("startup_id", "=", startup.uuid)
+                .selectAll()
+                .execute()
+        );
     const componentProps = {
-        formData: {
-            ...formData,
-            id,
-        },
-        incubators,
-        sponsors,
-        updatePullRequest: startupPR,
+        startup,
+        startupSponsors,
+        startupPhases,
+        incubatorOptions: incubators.map((incubator) => {
+            return {
+                value: incubator.uuid,
+                label: incubator.title,
+            };
+        }),
+        sponsorOptions: sponsors.map((incubator) => {
+            return {
+                value: incubator.uuid,
+                label: incubator.name,
+            };
+        }),
     };
 
     return <StartupInfoUpdate {...componentProps} />;

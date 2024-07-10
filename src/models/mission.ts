@@ -1,43 +1,13 @@
 import { z } from "zod";
 
-import { userStatusOptions } from "@/frontConfig";
-
-// export type Status = "independant" | "admin" | "service";
-
 export enum Status {
     "independent" = "independent",
     "admin" = "admin",
     "service" = "service",
 }
 
-export interface Mission {
-    start: string;
-    end: string;
-    status: Status;
-    employer: string;
-    startups: string[];
-}
-
-export interface DBMission {
-    id: number;
-    startup: string;
-    status: string;
-    role?: string;
-    employer: string;
-    username: string;
-    start: Date;
-    end?: Date;
-}
-
-export interface GithubMission {
-    start: Date;
-    end: Date;
-    status: Status;
-    employer: string;
-    startups?: string[];
-}
-
 export const missionSchema = z.object({
+    uuid: z.string().readonly().optional(),
     start: z
         .preprocess(
             (val) => {
@@ -70,10 +40,12 @@ export const missionSchema = z.object({
 
                 .optional()
         )
-        .describe("Date de fin de mission"),
+        .describe("Date de fin de mission")
+        .optional()
+        .nullable(),
     status: z
-        .nativeEnum(
-            Status, // force status options
+        .enum(
+            ["independent", "admin", "service"], // force status options
             {
                 errorMap: (issue, ctx) => ({
                     message: "Le statut est requis",
@@ -87,8 +59,8 @@ export const missionSchema = z.object({
                 message: "Précisez un employeur",
             }),
         })
-        .describe("Entité avec qui tu as contractualisé")
-        .optional()
-        .nullable(),
+        .describe("Entité avec qui tu as contractualisé"),
     startups: z.array(z.string()).optional(),
 });
+
+export type missionSchemaType = z.infer<typeof missionSchema>;

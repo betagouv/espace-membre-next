@@ -36,19 +36,18 @@ import {
     newsletterReminder,
     sendNewsletterAndCreateNewOne,
 } from "./newsletterScheduler";
-import { pullRequestStateMachine } from "./onboarding/pullRequestStateMachine";
-import {
-    pullRequestWatcher,
-    pullRequestWatcherSendEmailToTeam,
-} from "./pullRequestWatcher";
+// import { pullRequestStateMachine } from "./onboarding/pullRequestStateMachine";
+// import {
+//     pullRequestWatcher,
+//     pullRequestWatcherSendEmailToTeam,
+// } from "./pullRequestWatcher";
 import { recreateEmailIfUserActive } from "./recreateEmailIfUserActive";
 import { createMailingListForStartups } from "./startups/createMailingListForStartups";
 import { sendEmailToStartupToUpdatePhase } from "./startups/sendEmailToStartupToUpdatePhase";
-import {
-    buildCommunityBDD,
-    syncBetagouvStartupAPI,
-    syncBetagouvUserAPI,
-} from "./syncBetagouvAPIScheduler";
+import // buildCommunityBDD,
+// syncBetagouvStartupAPI,
+// syncBetagouvUserAPI,
+"./syncBetagouvAPIScheduler";
 import { unblockEmailsThatAreActive } from "./unblockEmailsThatAreActive";
 import { sendMessageToActiveUsersWithoutSecondaryEmail } from "./updateProfileScheduler";
 import {
@@ -60,8 +59,8 @@ import {
     deleteRedirectionsAfterQuitting,
     removeEmailsFromMailingList,
 } from "./userContractEndingScheduler";
+import { db } from "@/lib/kysely";
 import config from "@/server/config";
-import db from "@db";
 import { setEmailExpired } from "@schedulers/setEmailExpired";
 
 interface Job {
@@ -117,18 +116,21 @@ const mattermostJobs: Job[] = [
         onTick: removeBetaAndParnersUsersFromCommunityTeam,
         isActive: true,
         name: "removeBetaAndParnersUsersFromCommunityTeam",
+        description: "Move expired user to mattermost alumni",
     },
     {
         cronTime: "0 0 14 * * 1",
         onTick: () => sendReminderToUserAtDays({ nbDays: 90 }),
         isActive: true,
         name: "sendReminderToUserAtDays",
+        description: "Send mattermost message to expired users (90 days)",
     },
     {
         cronTime: "0 0 5 * * 1",
         onTick: () => sendReminderToUserAtDays({ nbDays: 30 }),
         isActive: !!config.FEATURE_MATTERMOST_REMOVE_USERS,
         name: "sendReminderToUserAtDays",
+        description: "Send mattermost message to expired users (30 days)",
     },
     {
         cronTime: "0 0 10 * * *",
@@ -137,41 +139,44 @@ const mattermostJobs: Job[] = [
         },
         isActive: true,
         name: "sendGroupDeSoutienReminder",
+        description: "Send mattermost message groupe de soutien",
     },
     {
         cronTime: "0 */8 * * * *",
         onTick: createUsersByEmail,
         isActive: !!config.featureCreateUserOnMattermost,
         name: "createUsersByEmail",
-        description: "Cron job to create user on mattermost by email",
+        description:
+            "Create missing mattermost users and send invitation email",
     },
     {
         cronTime: "0 */8 * * * *",
         onTick: addUsersNotInCommunityToCommunityTeam,
         isActive: !!config.featureAddUserToCommunityTeam,
         name: "addUsersNotInCommunityToCommunityTeam",
-        description:
-            "Cron job to add user existing on mattermost to community team if there not in",
+        description: "Add existing users to community team if there not in",
     },
     {
         cronTime: "0 0 8 1 * *",
         onTick: reactivateUsers,
         isActive: !!config.featureReactiveMattermostUsers,
         name: "reactivateUsers",
+        description: "Reactivate mattermost accounts if any",
     },
     {
         cronTime: "0 0 10 * * *",
         onTick: removeUsersFromCommunityTeam,
         isActive: !!config.featureRemoveExpiredUsersFromCommunityOnMattermost,
         name: "removeUsersFromCommunityTeam",
-        description: "Cron job to remove user from community on mattermost",
+        description:
+            "Remove expired users from mattermost community team (90 days)",
     },
     {
         cronTime: "0 10 10 * * *",
         onTick: moveUsersToAlumniTeam,
         isActive: !!config.featureAddExpiredUsersToAlumniOnMattermost,
         name: "moveUsersToAlumniTeam",
-        description: "Cron job to add user to alumni on mattermost",
+        description: "Add user to mattermost alumni team",
     },
     // Post automatic
     {
@@ -210,12 +215,15 @@ const startupJobs: Job[] = [
         onTick: createMailingListForStartups,
         isActive: true,
         name: "createMailingListForStartups",
+        description: "Créé des mailings-list OVH pour les startups",
     },
     {
         cronTime: "30 09 01 Jan,Apr,Jul,Oct *",
         onTick: sendEmailToStartupToUpdatePhase,
         isActive: config.FEATURE_SEND_EMAIL_TO_STARTUP_TO_UPDATE_PHASE,
         name: "sendEmailToStartupToUpdatePhase",
+        description:
+            "Envoie par mail une relance pour mise à jour de la phase de la SE",
     },
 ];
 
@@ -225,32 +233,39 @@ const formationJobs: Job[] = [
         onTick: () => syncFormationFromAirtable(true),
         isActive: true,
         name: "SyncFormationFromAirtable",
+        description:
+            "Synchronise les données AirTable des formations avec la DB",
     },
     {
         cronTime: "0 0 * * *",
         onTick: () => syncFormationInscriptionFromAirtable(true),
         isActive: true,
         name: "SyncFormationInscriptionFromAirtable",
+        description:
+            "Synchronise les données AirTable des inscriptions aux formations avec la DB",
     },
 ];
 
-const metricJobs: Job[] = [
-    {
-        cronTime: "0 10 1 * *", // every 1srt of each month,
-        onTick: buildCommunityBDD,
-        isActive: true,
-        name: "buildCommunityBDD",
-    },
-];
+// const metricJobs: Job[] = [
+//     {
+//         cronTime: "0 10 1 * *", // every 1srt of each month,
+//         onTick: buildCommunityBDD,
+//         isActive: true,
+//         name: "buildCommunityBDD",
+//         description: "Met à jour la table communauté à partir des users",
+//     },
+// ];
 
-const pullRequestJobs: Job[] = [
-    {
-        cronTime: "0 */4 * * * *",
-        onTick: pullRequestStateMachine,
-        isActive: true,
-        name: "pullRequestStateMachine",
-    },
-];
+// const pullRequestJobs: Job[] = [
+//     {
+//         cronTime: "0 */4 * * * *",
+//         onTick: pullRequestStateMachine,
+//         isActive: true,
+//         name: "pullRequestStateMachine",
+//         description:
+//             "Verifie les pulls requests sur GitHub et envoie un email de rappel à l'équipe ou au référent",
+//     },
+// ];
 
 const newsletterJobs = [
     {
@@ -258,46 +273,51 @@ const newsletterJobs = [
         onTick: () => newsletterReminder("FIRST_REMINDER"),
         isActive: config.FEATURE_NEWSLETTER,
         name: "newsletterMondayReminderJob",
+        description: "Rappel mattermost newsletter 1",
     },
     {
         cronTime: "0 0 8 * * 4",
         onTick: () => newsletterReminder("SECOND_REMINDER"),
         isActive: config.FEATURE_NEWSLETTER,
         name: "newsletterThursdayMorningReminderJob",
+        description: "Rappel mattermost newsletter 2",
     },
     {
         cronTime: "0 0 14 * * 4", // every week a 14:00 on thursday
         onTick: () => newsletterReminder("THIRD_REMINDER"),
         isActive: config.FEATURE_NEWSLETTER,
         name: "newsletterThursdayEveningReminderJob",
+        description: "Rappel mattermost newsletter 3",
     },
     {
         cronTime: config.newsletterSendTime || "0 16 * * 4", // run on thursday et 4pm,
         onTick: sendNewsletterAndCreateNewOne,
         isActive: config.FEATURE_NEWSLETTER,
         name: "sendNewsletterAndCreateNewOneJob",
+        description:
+            "Envoi de la newsletter et creation d'un nouveau PAD + message mattermost",
     },
 ];
 
 const synchronizationJobs = [
-    {
-        cronTime: "0 10 * * *", // every day at 10,
-        onTick: syncBetagouvUserAPI,
-        start: true,
-        timeZone: "Europe/Paris",
-        isActive: !!config.FEATURE_SYNC_BETAGOUV_USER_API,
-        name: "syncBetagouvUserAPI",
-        description: "Synchronize user info from beta.gouv.fr api with bdd",
-    },
-    {
-        cronTime: "5 10 * * *", // every day at 10,
-        onTick: syncBetagouvStartupAPI,
-        start: true,
-        timeZone: "Europe/Paris",
-        isActive: true,
-        name: "syncBetagouvStartupAPI",
-        description: "Synchronize startup info from beta.gouv.fr api with bdd",
-    },
+    // {
+    //     cronTime: "0 10 * * *", // every day at 10,
+    //     onTick: syncBetagouvUserAPI,
+    //     start: true,
+    //     timeZone: "Europe/Paris",
+    //     isActive: !!config.FEATURE_SYNC_BETAGOUV_USER_API,
+    //     name: "syncBetagouvUserAPI",
+    //     description: "Synchronize user info from beta.gouv.fr api with bdd",
+    // },
+    // {
+    //     cronTime: "5 10 * * *", // every day at 10,
+    //     onTick: syncBetagouvStartupAPI,
+    //     start: true,
+    //     timeZone: "Europe/Paris",
+    //     isActive: true,
+    //     name: "syncBetagouvStartupAPI",
+    //     description: "Synchronize startup info from beta.gouv.fr api with bdd",
+    // },
     {
         cronTime: "0 10 10 * * *",
         onTick: syncMattermostUserWithMattermostMemberInfosTable,
@@ -319,12 +339,12 @@ const synchronizationJobs = [
     },
 ];
 
-const jobs: Job[] = [
+export const jobs: Job[] = [
     ...newsletterJobs,
     ...mattermostJobs,
     ...startupJobs,
-    ...metricJobs,
-    ...pullRequestJobs,
+    // ...metricJobs,
+    // ...pullRequestJobs,
     ...synchronizationJobs,
     ...formationJobs,
     {
@@ -332,6 +352,8 @@ const jobs: Job[] = [
         onTick: unblockEmailsThatAreActive,
         isActive: true,
         name: "Unblock blacklisted email",
+        description:
+            "Unblock emails from MAILING_LIST_NEWSLETTER Brevo mailing-list",
     },
     {
         cronTime: "0 */8 * * * *",
@@ -345,144 +367,166 @@ const jobs: Job[] = [
         onTick: setEmailAddressesActive,
         isActive: true,
         name: "setEmailAddressesActive",
+        description:
+            "Add pending users to mailing-list and set email as active",
     },
     {
         cronTime: "0 */8 * * * *",
         onTick: sendOnboardingVerificationPendingEmail,
         isActive: true,
         name: "sendOnboardingVerificationPendingEmail",
+        description:
+            "Envoi d'un email de relance pour les adresses en attente de validation",
     },
     {
         cronTime: "0 */4 * * * *",
         onTick: createEmailAddresses,
         isActive: true,
         name: "emailCreationJob",
+        description: "Créé les emails en attente sur OVH",
     },
     {
         cronTime: "0 */4 * * * *",
         onTick: createRedirectionEmailAdresses,
         isActive: true,
         name: "cron de creation de redirection",
+        description: "Créé les redirections email en attente sur OVH",
     },
     {
         cronTime: "0 */4 * * * *",
         onTick: setCreatedEmailRedirectionsActive,
         isActive: true,
         name: "setEmailRedirectionActive",
+        description:
+            "Ajoute les nouvelles redirections aux mailing-lists brevo et active l'adresse",
     },
     {
         cronTime: "0 */4 * * * *",
         onTick: subscribeEmailAddresses,
         isActive: !!config.featureSubscribeToIncubateurMailingList,
         name: "subscribeEmailAddresses",
+        description:
+            "Re-inscrit les désabonnés à la mailing-list brevo incubateur",
     },
     {
         cronTime: "0 */4 * * * *",
         onTick: unsubscribeEmailAddresses,
         isActive: !!config.featureUnsubscribeFromIncubateurMailingList,
         name: "unsubscribeEmailAddresses",
+        description: "Désinscrit les membres expirés de la mailing list",
     },
     {
         cronTime: "0 */5 * * * 1-5",
         onTick: addGithubUserToOrganization,
         isActive: !!config.featureAddGithubUserToOrganization,
         name: "addGithubUserToOrganization",
+        description:
+            "Envoi des invitations GitHub et ajout à la team GitHub/betagouv",
     },
     {
         cronTime: "0 0 18 * * *",
         onTick: removeGithubUserFromOrganization,
         isActive: !!config.featureRemoveGithubUserFromOrganization,
         name: "removeGithubUserFromOrganization",
+        description: "Désinscrit les membres expirés de l'organisation GitHub",
     },
     {
         cronTime: "0 0 8,14 * * *",
         onTick: deleteRedirectionsAfterQuitting,
         isActive: !!config.featureDeleteRedirectionsAfterQuitting,
         name: "deleteRedirectionsAfterQuitting",
+        description:
+            "Supprime les redirections email OVH des utilisateurs expirés",
     },
     {
         cronTime: "0 0 8 * * *",
         onTick: sendJ1Email,
         isActive: !!config.featureSendJ1Email,
         name: "sendJ1Email",
+        description: "Email départ J+1",
     },
     {
         cronTime: "0 0 8 * * *",
         onTick: sendJ30Email,
         isActive: !!config.featureSendJ30Email,
         name: "sendJ30Email",
+        description: "Email départ J+30",
     },
     {
         cronTime: "0 0 10 * * *",
         onTick: deleteSecondaryEmailsForUsers,
         isActive: !!config.featureDeleteSecondaryEmail,
         name: "deleteSecondaryEmailsForUsers",
-        description: "Cron job to delete secondary email",
+        description:
+            "Supprime dans la DB les emails secondaires des membres expirés",
     },
     {
         cronTime: "0 0 15 * * *",
         onTick: deleteOVHEmailAcounts,
         isActive: !!config.featureDeleteOVHEmailAccounts,
         name: "deleteOVHEmailAcounts",
+        description: "Supprime les emails OVH des membres expirés (30 days)",
     },
     {
         cronTime: "0 0 15 * * *",
         onTick: setEmailExpired,
         isActive: !!config.featureSetEmailExpired,
         name: "setEmailExpired",
+        description: "Marque en DB les emails des membres comme expirés",
     },
     {
         cronTime: "0 0 8 * * *",
         onTick: removeEmailsFromMailingList,
         isActive: !!config.featureRemoveEmailsFromMailingList,
         name: "removeEmailsFromMailingList",
+        description:
+            "Supprime les utilisateurs expirés des mailing-lists brevo ONBOARDING,NEWSLETTER",
     },
     {
         cronTime: "0 0 14 * * *",
         onTick: reinitPasswordEmail,
         isActive: !!config.featureReinitPasswordEmail,
         name: "reinitPasswordEmail",
+        description:
+            "Réinitialise le mot de passe email des membres expirés après 5 jours",
     },
     {
         cronTime: "0 0 10 * * *",
         onTick: () => sendContractEndingMessageToUsers("mail15days", true),
         isActive: !!config.featureOnUserContractEnd,
         name: "sendContractEndingMessageToUsers15days",
-        description:
-            "Create cron job for sending contract ending message to users",
+        description: "Sending contract ending message to users (15 days)",
     },
     {
         cronTime: "0 0 10 * * *",
         onTick: () => sendContractEndingMessageToUsers("mail30days", true),
         isActive: !!config.featureOnUserContractEnd,
         name: "sendContractEndingMessageToUsers30days",
-        description:
-            "Create cron job for sending contract ending message to users",
+        description: "Sending contract ending message to users (30 days)",
     },
     {
         cronTime: "0 0 10 * * *",
         onTick: () => sendContractEndingMessageToUsers("mail2days", false),
         isActive: !!config.featureOnUserContractEnd,
         name: "sendContractEndingMessageToUsers2days",
-        description:
-            "Create cron job for sending contract ending message to users",
+        description: "Sending contract ending message to users (2 days)",
     },
-    {
-        cronTime: "0 * * * *", // every hours at minute 0,
-        onTick: pullRequestWatcher,
-        isActive: !!config.featureRemindUserWithPendingPullRequestOnAuthorFile,
-        name: "pullRequestWatcher",
-        description:
-            "Cron job to remind user with pending pull request on author file",
-    },
-    {
-        cronTime: "0 * * * *", // every hours at minute 0,
-        onTick: pullRequestWatcherSendEmailToTeam,
-        isActive: !!config.FEATURE_REMINDER_TEAM_IF_PENDING_PR_ON_AUTHOR_FILE,
-        name: "pullRequestWatcherSendEmailToTeam",
-        description:
-            "Cron job to remind user with pending pull request on author file",
-    },
+    // {
+    //     cronTime: "0 * * * *", // every hours at minute 0,
+    //     onTick: pullRequestWatcher,
+    //     isActive: !!config.featureRemindUserWithPendingPullRequestOnAuthorFile,
+    //     name: "pullRequestWatcher",
+    //     description:
+    //         "Remind user with pending GitHub pull request on author file",
+    // },
+    // {
+    //     cronTime: "0 * * * *", // every hours at minute 0,
+    //     onTick: pullRequestWatcherSendEmailToTeam,
+    //     isActive: !!config.FEATURE_REMINDER_TEAM_IF_PENDING_PR_ON_AUTHOR_FILE,
+    //     name: "pullRequestWatcherSendEmailToTeam",
+    //     description:
+    //         "Remind team with pending GitHub pull request on author file",
+    // },
     {
         cronTime: "0 10 1 * *", // every 1srt of each month,
         onTick: sendMessageToActiveUsersWithoutSecondaryEmail,
@@ -495,49 +539,69 @@ const jobs: Job[] = [
     },
 ];
 
-let activeJobs = 0;
-for (const job of jobs) {
-    const cronjob: Job = { timeZone: "Europe/Paris", start: true, ...job };
+function startJobs() {
+    let activeJobs = 0;
+    for (const job of jobs) {
+        const cronjob: Job = { timeZone: "Europe/Paris", start: true, ...job };
 
-    if (cronjob.isActive) {
-        console.log(`🚀 The job "${cronjob.name}" is ON ${cronjob.cronTime}`);
-        new CronJob({
-            ...cronjob,
-            onTick: onTickWrapper(
-                cronjob.name,
-                cronjob.onTick,
-                async function () {
-                    const dbTaskSucceed: DBTaskInsertSucceed = {
-                        name: cronjob.name,
-                        description: cronjob.description,
-                        updated_at: new Date(),
-                        last_completed: new Date(),
-                    };
-                    await db("tasks")
-                        .insert(dbTaskSucceed)
-                        .onConflict("name")
-                        .merge();
-                    return;
-                },
-                async function (error) {
-                    const dbTaskFailed: DBTaskInsertFailed = {
-                        name: cronjob.name,
-                        description: cronjob.description,
-                        updated_at: new Date(),
-                        last_failed: new Date(),
-                        error_message: error.message,
-                    };
-                    await db("tasks")
-                        .insert(dbTaskFailed)
-                        .onConflict("name")
-                        .merge();
-                    return;
-                }
-            ),
-        });
-        activeJobs++;
-    } else {
-        console.log(`❌ The job "${cronjob.name}" is OFF`);
+        if (cronjob.isActive) {
+            console.log(
+                `🚀 The job "${cronjob.name}" is ON ${cronjob.cronTime}`
+            );
+            new CronJob({
+                ...cronjob,
+                onTick: onTickWrapper(
+                    cronjob.name,
+                    cronjob.onTick,
+                    async function () {
+                        const dbTaskSucceed: DBTaskInsertSucceed = {
+                            name: cronjob.name,
+                            description: cronjob.description,
+                            updated_at: new Date(),
+                            last_completed: new Date(),
+                        };
+                        await db
+                            .insertInto("tasks")
+                            .values(dbTaskSucceed)
+                            .onConflict((eb) =>
+                                eb.column("name").doUpdateSet({
+                                    ...dbTaskSucceed,
+                                })
+                            )
+                            .execute();
+                        return;
+                    },
+                    async function (error) {
+                        const dbTaskFailed: DBTaskInsertFailed = {
+                            name: cronjob.name,
+                            description: cronjob.description,
+                            updated_at: new Date(),
+                            last_failed: new Date(),
+                            error_message: error.message,
+                        };
+                        await db
+                            .insertInto("tasks")
+                            .values(dbTaskFailed)
+                            .onConflict((eb) =>
+                                eb.column("name").doUpdateSet({
+                                    ...dbTaskFailed,
+                                })
+                            )
+                            .execute();
+                        return;
+                    }
+                ),
+            });
+            activeJobs++;
+        } else {
+            console.log(`❌ The job "${cronjob.name}" is OFF`);
+        }
     }
+
+    console.log(`Started ${activeJobs} / ${jobs.length} cron jobs`);
 }
-console.log(`Started ${activeJobs} / ${jobs.length} cron jobs`);
+
+// if (require.name === "main") {
+//     console.log("starting CRON");
+startJobs();
+// }

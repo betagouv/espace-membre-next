@@ -2,8 +2,12 @@ import crypto from "crypto";
 import _ from "lodash";
 
 import { addEvent } from "@/lib/events";
+import { db } from "@/lib/kysely";
+import { getAllStartups } from "@/lib/kysely/queries";
+import { getUserInfos } from "@/lib/kysely/queries/users";
 import { EventCode } from "@/models/actionEvent";
-import { DBUser, EmailStatusCode } from "@/models/dbUser/dbUser";
+import { userInfosToModel } from "@/models/mapper";
+import { Domaine, EmailStatusCode } from "@/models/member";
 import {
     EMAIL_PLAN_TYPE,
     OvhExchangeCreationData,
@@ -12,7 +16,6 @@ import {
 import config from "@/server/config";
 import BetaGouv from "@betagouv";
 import * as utils from "@controllers/utils";
-import knex from "@db/index";
 
 const INCUBATORS_USING_EXCHANGE = ["gip-inclusion"];
 
@@ -21,15 +24,12 @@ export async function createEmailAndUpdateSecondaryEmail(
     currentUser: string
 ) {
     const isCurrentUser = currentUser === username;
-    const [user, dbUser] = await Promise.all([
-        utils.userInfos(username, isCurrentUser),
-        ((): Promise<DBUser> => {
-            return knex("users").where({ username }).first();
-        })(),
+    const [user] = await Promise.all([
+        utils.userInfos({ username }, isCurrentUser),
     ]);
     if (!user.userInfos) {
         throw new Error(
-            `Le membre ${username} n'a pas de fiche sur Github : vous ne pouvez pas créer son compte email.`
+            `Le membre ${username} n'a pas de fiche sur l'espace-membre: vous ne pouvez pas créer son compte email.`
         );
     }
 
@@ -37,40 +37,49 @@ export async function createEmailAndUpdateSecondaryEmail(
         throw new Error(`Le compte du membre ${username} est expiré.`);
     }
 
-    if (!user.canCreateEmail) {
+    if (!user.authorizations.canCreateEmail) {
         throw new Error(
             "Vous n'avez pas le droit de créer le compte email du membre."
         );
     }
 
     if (!isCurrentUser) {
-        const loggedUserInfo = await BetaGouv.userInfosById(currentUser);
+        const loggedUserInfo = userInfosToModel(
+            await getUserInfos({ username: currentUser })
+        );
         if (!loggedUserInfo) {
             throw new Error(
-                "Vous ne pouvez pas créer de compte email car votre compte  n'a pas de fiche github."
+                "Vous ne pouvez pas créer de compte email car votre compte  n'a pas de fiche dans l'espace-membre."
             );
         } else if (utils.checkUserIsExpired(loggedUserInfo)) {
             throw new Error(
-                "Vous ne pouvez pas créer le compte email car votre compte a une date de fin expiré sur Github."
+                "Vous ne pouvez pas créer le compte email car votre compte a une date de fin expiré."
             );
         }
     }
     let emailIsRecreated = false;
-    if (dbUser) {
-        if (dbUser.email_is_redirection) {
+    if (user) {
+        if (user.userInfos.email_is_redirection) {
             throw new Error(
                 `Le membre ${username} ne peut pas avoir d'email beta.gouv.fr, iel utilise une adresse de redirection.`
             );
         }
         emailIsRecreated =
-            dbUser.primary_email_status === EmailStatusCode.EMAIL_DELETED;
+            user.userInfos.primary_email_status ===
+            EmailStatusCode.EMAIL_DELETED;
         await updateSecondaryEmail(username, email);
     } else {
-        await knex("users").insert({
-            username,
-            primary_email_status: EmailStatusCode.EMAIL_UNSET,
-            secondary_email: email,
-        });
+        await db
+            .insertInto("users")
+            .values({
+                username,
+                fullname: username,
+                domaine: Domaine.AUTRE,
+                primary_email_status: EmailStatusCode.EMAIL_UNSET,
+                role: "",
+                secondary_email: email,
+            })
+            .execute();
     }
     await createEmail(username, currentUser, emailIsRecreated);
 }
@@ -105,18 +114,38 @@ async function getEmailCreationParams(username: string): Promise<
           creationData: OvhProCreationData;
       }
 > {
-    const [usersInfos, startupsInfos] = await Promise.all([
-        BetaGouv.usersInfos(),
-        BetaGouv.startupsInfos(),
+    const [userInfo, startupsInfos] = await Promise.all([
+        getUserInfos({ username }),
+        getAllStartups(),
     ]);
 
-    const userInfo = _.find(usersInfos, { id: username });
+    if (!userInfo?.missions) {
+        throw new Error(`User ${userInfo?.username} has no mission`);
+    }
 
-    const needsExchange = _.some(userInfo?.startups, (id) => {
-        const startup = _.find(startupsInfos, { id });
-        const incubator = startup?.relationships?.incubator?.data?.id;
-        return _.includes(INCUBATORS_USING_EXCHANGE, incubator);
-    });
+    const latestMission = userInfo.missions.reduce((a, v) =>
+        //@ts-ignore
+        !v.end || v.end > a.end ? v : a
+    );
+    // todo see what to do with startups
+    let needsExchange = false;
+    for (const startupUuid of latestMission?.startups || []) {
+        const startup = _.find(startupsInfos, { uuid: startupUuid });
+        const incubator = startup?.incubator_id;
+        if (incubator) {
+            const incubatorInfo = await db
+                .selectFrom("incubators")
+                .select("ghid")
+                .where("uuid", "=", incubator)
+                .executeTakeFirst();
+            if (
+                incubatorInfo &&
+                _.includes(INCUBATORS_USING_EXCHANGE, incubatorInfo.ghid)
+            ) {
+                needsExchange = true;
+            }
+        }
+    }
 
     if (needsExchange) {
         const displayName = userInfo?.fullname ?? "";
@@ -183,17 +212,17 @@ export async function createEmail(
             break;
     }
 
-    await knex("users")
-        .where({
-            username,
-        })
-        .update({
+    await db
+        .updateTable("users")
+        .where("username", "=", username)
+        .set({
             primary_email: email,
             primary_email_status: emailIsRecreated
                 ? EmailStatusCode.EMAIL_RECREATION_PENDING
                 : EmailStatusCode.EMAIL_CREATION_PENDING,
             primary_email_status_updated_at: new Date(),
-        });
+        })
+        .execute();
 
     addEvent({
         action_code: emailIsRecreated
@@ -212,11 +241,11 @@ export async function createEmail(
 }
 
 export async function updateSecondaryEmail(username, secondary_email) {
-    return knex("users")
-        .where({
-            username,
-        })
-        .update({
+    return db
+        .updateTable("users")
+        .where("username", "=", username)
+        .set({
             secondary_email,
-        });
+        })
+        .execute();
 }

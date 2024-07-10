@@ -1,11 +1,17 @@
 "use client";
 import React from "react";
-import routes, { computeRoute } from "@/routes/routes";
-import axios from "axios";
+
 import { Accordion } from "@codegouvfr/react-dsfr/Accordion";
 import Button from "@codegouvfr/react-dsfr/Button";
-import { Input } from "@codegouvfr/react-dsfr/Input";
 import { Checkbox } from "@codegouvfr/react-dsfr/Checkbox";
+import { Input } from "@codegouvfr/react-dsfr/Input";
+import axios from "axios";
+
+import {
+    memberBaseInfoSchemaType,
+    memberWrapperSchemaType,
+} from "@/models/member";
+import routes, { computeRoute } from "@/routes/routes";
 
 export default function BlocRedirection({
     redirections,
@@ -13,6 +19,12 @@ export default function BlocRedirection({
     userInfos,
     isExpired,
     domain,
+}: {
+    userInfos: memberBaseInfoSchemaType;
+    canCreateRedirection: boolean;
+    isExpired: boolean;
+    redirections: memberWrapperSchemaType["emailRedirections"];
+    domain: string;
 }) {
     const [toEmail, setToEmail] = React.useState<string>("");
     const [keepCopy, setKeepCopy] = React.useState<boolean>(false);
@@ -42,7 +54,7 @@ export default function BlocRedirection({
                                             )
                                                 .replace(
                                                     ":username",
-                                                    userInfos.id
+                                                    userInfos.username
                                                 )
                                                 .replace(
                                                     ":email",
@@ -75,7 +87,7 @@ export default function BlocRedirection({
                             await axios.post(
                                 computeRoute(
                                     routes.USER_CREATE_REDIRECTION_API
-                                ).replace(":username", userInfos.id),
+                                ).replace(":username", userInfos.username),
                                 {
                                     to_email: toEmail,
                                     keepCopy,
@@ -91,7 +103,7 @@ export default function BlocRedirection({
                     }}
                 >
                     <Input
-                        label={`Rediriger mes mails ${domain} vers :`}
+                        label={`Rediriger mes mails vers :`}
                         nativeInputProps={{
                             type: "email",
                             required: true,
@@ -133,12 +145,12 @@ export default function BlocRedirection({
                 <>
                     {isExpired && (
                         <div className="notification error">
-                            Le compte {userInfos.id} est expiré.
+                            Le compte de {userInfos.fullname} est expiré.
                         </div>
                     )}
                     {!isExpired && (
                         <div className="notification warning">
-                            Seul {userInfos.id} peut créer ou modifier les
+                            Seul {userInfos.fullname} peut créer ou modifier les
                             redirections.
                         </div>
                     )}

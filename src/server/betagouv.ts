@@ -3,9 +3,10 @@ import _ from "lodash";
 import ovh0 from "ovh";
 import unescape from "unescape";
 
-import { Incubator } from "@/models/incubator";
+import { getAllUsersInfo } from "@/lib/kysely/queries/users";
 import { Job, JobWTTJ } from "@/models/job";
-import { Member } from "@/models/member";
+import { memberBaseInfoToModel, userInfosToModel } from "@/models/mapper";
+import { memberBaseInfoSchemaType } from "@/models/member";
 import { EmailInfos } from "@/models/member";
 import {
     EMAIL_PLAN_TYPE,
@@ -14,11 +15,10 @@ import {
     OvhProCreationData,
     OvhResponder,
     OvhRedirection,
+    OvhResponderSchema,
 } from "@/models/ovh";
-import { Startup, StartupInfo } from "@/models/startup";
 import config from "@/server/config";
 import { checkUserIsExpired } from "@controllers/utils";
-import { Sponsor } from "@/models/sponsor";
 
 const ovh = ovh0({
     appKey: config.OVH_APP_KEY,
@@ -57,69 +57,79 @@ const betaGouv = {
         }
     },
 
-    usersInfos: async (): Promise<Member[]> => {
-        return axios
-            .get<Member[]>(config.usersAPI)
-            .then((response) =>
-                response.data.map((author: Member) => {
-                    if (author.missions && author.missions.length > 0) {
-                        const sortedStartDates = author.missions
-                            .map((x) => x.start)
-                            .sort();
-                        const sortedEndDates = author.missions
-                            .map((x) => x.end || "")
-                            .sort()
-                            .reverse();
-                        const latestMission = author.missions.reduce((a, v) =>
-                            v.end > a.end || !v.end ? v : a
-                        );
+    // usersInfos: async (): Promise<Member[]> => {
+    //     return axios
+    //         .get<Member[]>(config.usersAPI)
+    //         .then((response) =>
+    //             response.data.map((author: Member) => {
+    //                 if (author.missions && author.missions.length > 0) {
+    //                     const sortedStartDates = author.missions
+    //                         .map((x) => x.start)
+    //                         .sort();
+    //                     const sortedEndDates = author.missions
+    //                         .map((x) => x.end || "")
+    //                         .sort()
+    //                         .reverse();
+    //                     const latestMission = author.missions.reduce((a, v) =>
+    //                         v.end > a.end || !v.end ? v : a
+    //                     );
 
-                        [author.start] = sortedStartDates;
-                        // todo: voir impact si on supprime (info deja dans les missions)
-                        author.end = sortedEndDates.includes("")
-                            ? ""
-                            : sortedEndDates[0];
-                        // todo: voir impact si on supprime (info deja dans les missions)
-                        author.employer = latestMission.status
-                            ? `${latestMission.status}/${latestMission.employer}`
-                            : latestMission.employer;
-                    }
-                    return {
-                        ...author,
-                        role: unescape(author.role),
-                    };
-                })
-            )
-            .catch((err) => {
-                throw new Error(
-                    `Error to get users infos in ${config.domain}: ${err}`
-                );
-            });
-    },
-    incubators: async (): Promise<Incubator[]> => {
-        return axios
-            .get<any[]>(config.incubatorAPI)
-            .then((response) => response.data)
-            .catch((err) => {
-                throw new Error(`Error to get incubators infos : ${err}`);
-            });
-    },
-    sponsors: async (): Promise<Sponsor[]> => {
-        return axios
-            .get<any[]>(config.SPONSOR_API)
-            .then((response) => response.data)
-            .catch((err) => {
-                throw new Error(`Error to get incubators infos : ${err}`);
-            });
-    },
-    getJobs: async (): Promise<Job[]> => {
-        return await axios
-            .get<any[]>(config.JOBS_API)
-            .then((res) => res.data)
-            .catch((err) => {
-                throw new Error(`Error to get jobs infos : ${err}`);
-            });
-    },
+    //                     [author.start] = sortedStartDates;
+    //                     // todo: voir impact si on supprime (info deja dans les missions)
+    //                     author.end = sortedEndDates.includes("")
+    //                         ? ""
+    //                         : sortedEndDates[0];
+    //                     // todo: voir impact si on supprime (info deja dans les missions)
+    //                     author.employer = latestMission.status
+    //                         ? `${latestMission.status}/${latestMission.employer}`
+    //                         : latestMission.employer;
+    //                 }
+    //                 return {
+    //                     ...author,
+    //                     role: unescape(author.role),
+    //                 };
+    //             })
+    //         )
+    //         .catch((err) => {
+    //             throw new Error(
+    //                 `Error to get users infos in ${config.domain}: ${err}`
+    //             );
+    //         });
+    // },
+    // incubators: async (): Promise<Incubator[]> => {
+    //     return axios
+    //         .get<any[]>(config.incubatorAPI)
+    //         .then((response) => {
+    //             return Object.keys(response.data).map((key) => ({
+    //                 ghid: key,
+    //                 ...response.data[key],
+    //             }));
+    //         })
+    //         .catch((err) => {
+    //             throw new Error(`Error to get incubators infos : ${err}`);
+    //         });
+    // },
+    // sponsors: async (): Promise<Sponsor[]> => {
+    //     return axios
+    //         .get<any[]>(config.SPONSOR_API)
+    //         .then((response) => {
+    //             return Object.keys(response.data).map((key) => ({
+    //                 ghid: key,
+    //                 ...response.data[key],
+    //             }));
+    //         })
+    //         .catch((err) => {
+    //             throw new Error(`Error to get incubators infos : ${err}`);
+    //         });
+    // },
+    // getJobs: async (): Promise<Job[]> => {
+    //     return await axios
+    //         .get<any[]>(config.JOBS_API)
+    //         .then((res) => res.data)
+    //         .catch((err) => {
+    //             throw new Error(`Error to get jobs infos : ${err}`);
+    //         });
+    // },
     getJobsWTTJ: async (): Promise<JobWTTJ[]> => {
         return await axios
             .get(config.JOBS_WTTJ_API!)
@@ -128,35 +138,35 @@ const betaGouv = {
                 throw new Error(`Error to get jobs infos : ${err}`);
             });
     },
-    userInfosById: async (id: string): Promise<Member | undefined> => {
-        const users = await betaGouv.usersInfos();
-        return users.find((user) => user.id === id);
-    },
-    startupInfos: async (): Promise<Startup[]> => {
-        return axios
-            .get<Startup[]>(config.startupsDetailsAPI)
-            .then((response) =>
-                Object.keys(response.data).map((key) => response.data[key])
-            )
-            .catch((err) => {
-                throw new Error(
-                    `Error to get startups infos in ${config.domain}: ${err}`
-                );
-            });
-    },
-    startupInfosById: async (id: string): Promise<Startup | undefined> => {
-        const startups = await betaGouv.startupInfos();
-        return startups.find((startup) => startup.id === id);
-    },
-    startupsInfos: async (): Promise<StartupInfo[]> =>
-        axios
-            .get(config.startupsAPI)
-            .then((x) => x.data.data) // data key
-            .catch((err) => {
-                throw new Error(
-                    `Error to get startups infos in ${config.domain}: ${err}`
-                );
-            }),
+    // userInfosById: async (id: string): Promise<Member | undefined> => {
+    //     const users = await betaGouv.usersInfos();
+    //     return users.find((user) => user.id === id);
+    // },
+    // startupInfos: async (): Promise<Startup[]> => {
+    //     return axios
+    //         .get<Startup[]>(config.startupsDetailsAPI)
+    //         .then((response) =>
+    //             Object.keys(response.data).map((key) => response.data[key])
+    //         )
+    //         .catch((err) => {
+    //             throw new Error(
+    //                 `Error to get startups infos in ${config.domain}: ${err}`
+    //             );
+    //         });
+    // },
+    // startupInfosById: async (id: string): Promise<Startup | undefined> => {
+    //     const startups = await betaGouv.startupInfos();
+    //     return startups.find((startup) => startup.id === id);
+    // },
+    // startupsInfos: async (): Promise<StartupInfo[]> =>
+    //     axios
+    //         .get(config.startupsAPI)
+    //         .then((x) => x.data.data) // data key
+    //         .catch((err) => {
+    //             throw new Error(
+    //                 `Error to get startups infos in ${config.domain}: ${err}`
+    //             );
+    //         }),
 };
 
 const betaOVH = {
@@ -301,11 +311,12 @@ const betaOVH = {
             );
         }
     },
-    getAllMailingList: async () => {
+    getAllMailingList: async (): Promise<string[] | null> => {
         const url = `/email/domain/${config.domain}/mailingList/`;
         try {
             return await ovh.requestPromised("GET", url, {});
         } catch (err) {
+            console.error("getAllMailingList", err);
             if ((err as { error: number }).error === 404) return null;
             throw new Error(`OVH Error GET on ${url} : ${err}`);
         }
@@ -324,6 +335,7 @@ const betaOVH = {
                 ownerEmail: "espace-membre@beta.gouv.fr",
             });
         } catch (err) {
+            console.error("createMailingList", err);
             if ((err as { error: number }).error === 404) return null;
             throw new Error(`OVH Error createMailingList on ${url} : ${err}`);
         }
@@ -336,6 +348,7 @@ const betaOVH = {
         try {
             return await ovh.requestPromised("DELETE", url);
         } catch (err) {
+            console.error("unsubscribeFromMailingList", err);
             if ((err as { error: number }).error === 404) return null;
             throw new Error(`OVH Error DELETE on ${url} : ${err}`);
         }
@@ -343,38 +356,47 @@ const betaOVH = {
     subscribeToMailingList: async (
         mailingListName: string,
         email: string
-    ): Promise<OvhMailingList[]> => {
+    ): Promise<OvhMailingList[] | null> => {
         const url = `/email/domain/${config.domain}/mailingList/${mailingListName}/subscriber`;
         try {
             return await ovh.requestPromised("POST", url, {
                 email,
             });
         } catch (err) {
+            console.error("subscribeToMailingList", err);
+            if ((err as { error: number }).error === 404) return null; // user already exist
             throw new Error(
                 `OVH Error subscribe on ${url} : ${JSON.stringify(err)}`
             );
         }
     },
     // get active users with email registered on ovh
-    getActiveUsers: async () => {
-        const users = await betaGouv.usersInfos();
-        const activeUsers = users.filter((user) => !checkUserIsExpired(user));
-        return activeUsers;
-    },
-    getActiveRegisteredOVHUsers: async () => {
-        const users = await betaGouv.usersInfos();
+    // getActiveUsers: async () => {
+    //     const users = await betaGouv.usersInfos();
+    //     const activeUsers = users.filter((user) => !checkUserIsExpired(user));
+    //     return activeUsers;
+    // },
+    getActiveRegisteredOVHUsers: async (): Promise<
+        memberBaseInfoSchemaType[]
+    > => {
+        const users = (await getAllUsersInfo()).map((user) =>
+            memberBaseInfoToModel(user)
+        );
         const allOvhEmails = await betaOVH.getAllEmailInfos();
         const activeUsers = users.filter(
             (user) =>
-                !checkUserIsExpired(user) && allOvhEmails.includes(user.id)
+                !checkUserIsExpired(user) &&
+                allOvhEmails.includes(user.username)
         );
         return activeUsers;
     },
-    getResponder: async (id): Promise<OvhResponder | null> => {
+    getResponder: async (id: string): Promise<OvhResponder | null> => {
         const url = `/email/domain/${config.domain}/responder/${id}`;
 
         try {
-            return await ovh.requestPromised("GET", url);
+            return OvhResponderSchema.parse(
+                await ovh.requestPromised("GET", url)
+            );
         } catch (err) {
             console.log(typeof err);
             if ((err as { error: number }).error === 404) return null;
@@ -472,7 +494,14 @@ const betaOVH = {
         Promise.all(
             redirectionIds.map((x) => betaOVH.requestRedirection(method, x))
         ),
-    redirectionsForId: async (query): Promise<OvhRedirection[]> => {
+    redirectionsForId: async (
+        query:
+            | {
+                  from: string;
+                  to?: string;
+              }
+            | { from?: string; to: string }
+    ): Promise<OvhRedirection[]> => {
         if (!query.from && !query.to) {
             throw new Error("paramètre 'from' ou 'to' manquant");
         }

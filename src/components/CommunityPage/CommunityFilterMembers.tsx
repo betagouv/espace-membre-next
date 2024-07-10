@@ -1,7 +1,7 @@
 "use client";
 
 import React from "react";
-
+import Link from "next/link";
 import ButtonsGroup from "@codegouvfr/react-dsfr/ButtonsGroup";
 import axios from "axios";
 import {
@@ -22,19 +22,33 @@ import "react-tabulator/lib/styles.css"; // required styles
 import "react-tabulator/lib/css/tabulator.min.css"; // theme
 import { computeRoute } from "@/routes/routes";
 
-function Link(props: any) {
-    const cellValue = props.cell._cell.value || "Edit | Show";
-    return <a href={`/community/${cellValue}`}>{cellValue}@beta.gouv.fr</a>;
+function EmailLink(props: any) {
+    const cellValue = props.cell._cell.value; //|| "Edit | Show";
+    return <a href={`mailto:${cellValue}`}>{cellValue}</a>;
+}
+
+function MemberLink(props: any) {
+    const cellValue = props.cell._cell.value; //|| "Edit | Show";
+    const username = props.cell._cell.row.data.username;
+    return <Link href={`/community/${username}`}>{cellValue}</Link>;
 }
 
 const columns: ColumnDefinition[] = [
     {
         title: "email",
-        field: "id",
+        field: "primary_email",
         width: 150,
-        formatter: reactFormatter(<Link />),
+        formatter: reactFormatter(<EmailLink />),
     },
-    { title: "fullname", field: "fullname" },
+    {
+        title: "fullname",
+        field: "fullname",
+        width: 150,
+        formatter: reactFormatter(<MemberLink />),
+        // (props) => (
+        //     <Link href={`/community/xxx`}>{props.cellValue}</Link>
+        // )),
+    },
     { title: "startups", field: "startups", hozAlign: "center" },
     { title: "domaine", field: "domaine", hozAlign: "center" },
 ];
@@ -46,6 +60,7 @@ export const CommunityFilterMembers = (props: CommunityProps) => {
     const [state, setState] = React.useState<any>({
         selectedName: "",
         ...props,
+        users: [],
     });
 
     const onClickSearch = async () => {
@@ -71,7 +86,7 @@ export const CommunityFilterMembers = (props: CommunityProps) => {
             .map((key) => key + "=" + encodeURIComponent(params[key]))
             .join("&");
         const data = await axios
-            .get(computeRoute(`/api/get-users?${queryParamsString}`), {
+            .get(computeRoute(`/api/members?${queryParamsString}`), {
                 withCredentials: true,
             })
             .then((response) => response.data);

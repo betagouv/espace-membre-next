@@ -1,3 +1,3 @@
-export * from "../startups/syncBetagouvStartupAPI";
-export * from "./syncBetagouvUserAPI";
-export * from "./buildCommunityBDD";
+// export * from "../startups/syncBetagouvStartupAPI";
+// export * from "./syncBetagouvUserAPI";
+// export * from "./buildCommunityBDD";

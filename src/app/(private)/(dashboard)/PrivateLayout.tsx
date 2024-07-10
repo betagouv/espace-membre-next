@@ -5,7 +5,6 @@ import { usePathname, useRouter } from "next/navigation";
 import { useSession } from "next-auth/react";
 
 import { useInfoContext } from "@/app/BreadCrumbProvider";
-// import { useSession } from "@/proxies/next-auth";
 import { linkRegistry } from "@/utils/routes/registry";
 import { routeTitles } from "@/utils/routes/routeTitles";
 import {
@@ -42,6 +41,7 @@ export function PrivateLayout({ children }: { children: React.ReactNode }) {
         "communityCreateMember",
         undefined
     );
+    const dashboardLink = linkRegistry.get("dashboard", undefined);
     const startupListLink = linkRegistry.get("startupList", undefined);
     const startupCreateLink = linkRegistry.get("startupCreate", undefined);
     const adminMattermostLink = linkRegistry.get("adminMattermost", undefined);
@@ -79,16 +79,16 @@ export function PrivateLayout({ children }: { children: React.ReactNode }) {
             text: routeTitles.accountEditBaseInfo(),
             isActive: hasPathnameThisMatch(pathname, accountEditBaseInfoLink),
         },
-        {
-            linkProps: {
-                href: accountEditPrivateInfoLink,
-            },
-            text: routeTitles.accountEditPrivateInfo(),
-            isActive: hasPathnameThisMatch(
-                pathname,
-                accountEditPrivateInfoLink
-            ),
-        },
+        // {
+        //     linkProps: {
+        //         href: accountEditPrivateInfoLink,
+        //     },
+        //     text: routeTitles.accountEditPrivateInfo(),
+        //     isActive: hasPathnameThisMatch(
+        //         pathname,
+        //         accountEditPrivateInfoLink
+        //     ),
+        // },
         {
             linkProps: {
                 href: "#",
@@ -136,6 +136,13 @@ export function PrivateLayout({ children }: { children: React.ReactNode }) {
     ];
 
     const MenuItems: ItemLink[] = [
+        {
+            linkProps: {
+                href: dashboardLink,
+            },
+            text: "Accueil",
+            isActive: hasPathnameThisMatch(pathname, dashboardLink),
+        },
         {
             isActive: hasPathnameThisMatch(pathname, accountLink),
             breadcrumb: {

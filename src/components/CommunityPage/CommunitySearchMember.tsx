@@ -6,12 +6,15 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 
 import MemberSelect from "../MemberSelect";
-
-import { Member } from "@/models/member";
+import { memberBaseInfoSchemaType } from "@/models/member";
 import { routeTitles } from "@/utils/routes/routeTitles";
 
 /* Pure component */
-export const CommunitySearchMember = ({ users }: { users: Member[] }) => {
+export const CommunitySearchMember = ({
+    users,
+}: {
+    users: memberBaseInfoSchemaType[];
+}) => {
     const router = useRouter();
     const [username, setUsername] = React.useState<string | undefined>();
 
@@ -34,10 +37,7 @@ export const CommunitySearchMember = ({ users }: { users: Member[] }) => {
                                     (member as { value: string }).value
                                 );
                             }}
-                            members={users.map((u) => ({
-                                value: u.id,
-                                label: u.fullname,
-                            }))}
+                            members={users}
                             defaultValue={undefined}
                         ></MemberSelect>
                     </div>

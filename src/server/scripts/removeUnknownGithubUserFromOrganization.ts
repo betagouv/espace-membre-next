@@ -1,13 +1,16 @@
-import config from "@/server/config";
-import BetaGouv from "../betagouv";
 import * as github from "@/lib/github";
+import { getAllUsersInfo, getUserInfos } from "@/lib/kysely/queries/users";
+import { memberBaseInfoToModel } from "@/models/mapper";
+import config from "@/server/config";
 
 // get users that are members of organization but don't have matching github card
 const getUnknownGithubUsersInOrganization = async (org) => {
     const allGithubOrganizationMembers = await github.getAllOrganizationMembers(
         org
     );
-    const users = await BetaGouv.usersInfos();
+    const users = (await getAllUsersInfo()).map((user) =>
+        memberBaseInfoToModel(user)
+    );
 
     const activeGithubUsers = users
         .filter((x) => x.github)

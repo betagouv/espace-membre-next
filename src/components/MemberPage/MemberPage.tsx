@@ -8,37 +8,37 @@ import {
     useState,
 } from "react";
 
+import { fr } from "@codegouvfr/react-dsfr";
 import Accordion from "@codegouvfr/react-dsfr/Accordion";
+import Alert from "@codegouvfr/react-dsfr/Alert";
+import Badge from "@codegouvfr/react-dsfr/Badge";
 import Button from "@codegouvfr/react-dsfr/Button";
 import Input from "@codegouvfr/react-dsfr/Input";
 import axios from "axios";
+import { useSession } from "next-auth/react";
 
 import MemberBrevoEventList from "./MemberBrevoEventList";
 import MemberEmailServiceInfo from "./MemberEmailServiceInfo";
 import MemberEventList from "./MemberEventList";
-import { EmailStatusCode } from "@/models/dbUser";
+import { changeSecondaryEmailForUser } from "@/app/api/member/actions";
+import { EmailStatusCode, memberWrapperSchemaType } from "@/models/member";
+import { memberBaseInfoSchemaType } from "@/models/member";
 import { EMAIL_STATUS_READABLE_FORMAT } from "@/models/misc";
+import { missionSchemaType } from "@/models/mission";
 import routes, { computeRoute } from "@/routes/routes";
-import Badge from "@codegouvfr/react-dsfr/Badge";
-import { fr } from "@codegouvfr/react-dsfr";
+import { getLastMission, getLastMissionDate } from "@/utils/member";
 
 export interface MemberPageProps {
-    isExpired: boolean;
-    emailInfos: any;
-    redirections: any;
-    userInfos: any;
-    primaryEmail: string;
-    secondaryEmail: string;
-    canCreateEmail: boolean;
-    hasPublicServiceEmail: boolean;
-    isAdmin: boolean;
-    availableEmailPros: any;
-    primaryEmailStatus: EmailStatusCode;
-    username: string;
+    emailInfos: memberWrapperSchemaType["emailInfos"];
+    redirections: memberWrapperSchemaType["emailRedirections"];
+    authorizations: memberWrapperSchemaType["authorizations"];
+    userInfos: memberBaseInfoSchemaType;
+    availableEmailPros: string[];
     mattermostInfo: {
         hasMattermostAccount: boolean;
         isInactiveOrNotInTeam: boolean;
     };
+    isExpired: boolean;
     emailServiceInfo?: {
         primaryEmail?: {
             emailBlacklisted: boolean;
@@ -51,9 +51,14 @@ export interface MemberPageProps {
     };
 }
 
-const ChangeSecondaryEmailBloc = ({ secondaryEmail, userInfos }) => {
-    const [newSecondaryEmail, setNewSecondaryEmail] =
-        useState<string>(secondaryEmail);
+const ChangeSecondaryEmailBloc = ({
+    userInfos,
+}: {
+    userInfos: memberBaseInfoSchemaType;
+}) => {
+    const [newSecondaryEmail, setNewSecondaryEmail] = useState<string>(
+        userInfos.secondary_email
+    );
     const [isSaving, setIsSaving] = useState<boolean>(false);
 
     return (
@@ -62,18 +67,10 @@ const ChangeSecondaryEmailBloc = ({ secondaryEmail, userInfos }) => {
                 onSubmit={async (e) => {
                     e.preventDefault();
                     setIsSaving(true);
-                    axios
-                        .post(
-                            computeRoute(
-                                routes.USER_UPDATE_SECONDARY_EMAIL_API
-                            ).replace(":username", userInfos.id),
-                            {
-                                secondaryEmail: newSecondaryEmail,
-                            },
-                            {
-                                withCredentials: true,
-                            }
-                        )
+                    changeSecondaryEmailForUser(
+                        newSecondaryEmail,
+                        userInfos.username
+                    )
                         .then((data) => {
                             setIsSaving(false);
                         })
@@ -114,45 +111,74 @@ const ChangeSecondaryEmailBloc = ({ secondaryEmail, userInfos }) => {
 const CreateEmailForm = ({
     userInfos,
     hasPublicServiceEmail,
-    username,
-    secondaryEmail,
+}: {
+    userInfos: memberBaseInfoSchemaType;
+    hasPublicServiceEmail: boolean;
 }) => {
-    const [email, setValue] = useState<string>(secondaryEmail);
+    const [email, setValue] = useState<string>(userInfos.secondary_email);
+    const [alertMessage, setAlertMessage] = useState<{
+        title: string;
+        message: NonNullable<React.ReactNode>;
+        type: "success" | "warning";
+    } | null>();
     return (
         <>
             <p>Tu peux créer un compte email pour {userInfos.fullname}.</p>
             {hasPublicServiceEmail &&
                 `Attention s'iel a une adresse de service public en adresse primaire. L'adresse @beta.gouv.fr deviendra son adresse primaire :
 celle à utiliser pour mattermost, et d'autres outils.`}
+            {!!alertMessage && (
+                <Alert
+                    className="fr-mb-8v"
+                    severity={alertMessage.type}
+                    closable={false}
+                    description={alertMessage.message}
+                    title={alertMessage.title}
+                />
+            )}
             <form
                 onSubmit={async (e) => {
                     e.preventDefault();
-                    await axios.post(
-                        computeRoute(
-                            routes.USER_CREATE_EMAIL_API.replace(
-                                ":username",
-                                username
-                            )
-                        ),
-                        {
-                            to_email: email,
-                        },
-                        {
-                            withCredentials: true,
+                    try {
+                        await axios.post(
+                            computeRoute(
+                                routes.USER_CREATE_EMAIL_API.replace(
+                                    ":username",
+                                    userInfos.username
+                                )
+                            ),
+                            {
+                                to_email: email,
+                            },
+                            {
+                                withCredentials: true,
+                            }
+                        );
+                        setAlertMessage({
+                            title: `L'email est en cours de création`,
+                            message: `L'email est en train d'être créé. ${userInfos.fullname} recevra un message dès que celui-ci sera actif.`,
+                            type: "success",
+                        });
+                    } catch (e) {
+                        if (e instanceof Error) {
+                            setAlertMessage({
+                                title: `Une erreur est survenue`,
+                                message: e.message,
+                                type: "warning",
+                            });
                         }
-                    );
+                    }
                 }}
             >
                 <Input
                     label="Email personnel ou professionnel"
                     hintText="Le mot de passe et les informations de connexion seront envoyées à cet email"
                     nativeInputProps={{
-                        defaultValue: secondaryEmail,
+                        defaultValue: userInfos.secondary_email,
                         name: "to_email",
                         type: "email",
                         required: true,
                         onChange: (e) => {
-                            console.log(e.target.value);
                             setValue(e.target.value);
                         },
                     }}
@@ -169,14 +195,20 @@ celle à utiliser pour mattermost, et d'autres outils.`}
     );
 };
 
-function EmailUpgrade({ availableEmailPros, userInfos }) {
+function EmailUpgrade({
+    availableEmailPros,
+    userInfos,
+}: {
+    userInfos: memberBaseInfoSchemaType;
+    availableEmailPros: string[];
+}) {
     const [password, setPassword] = useState<string>();
     const onSubmit = async () => {
         try {
             await axios.post(
                 computeRoute(routes.USER_UPGRADE_EMAIL_API).replace(
                     ":username",
-                    userInfos.id
+                    userInfos.username
                 ),
                 {
                     password,
@@ -219,22 +251,37 @@ function EmailUpgrade({ availableEmailPros, userInfos }) {
     );
 }
 
+function BlocMission({ mission }: { mission: missionSchemaType }) {
+    return (
+        <>
+            <span>Mission : </span>
+            du {new Date(mission.start).toLocaleDateString("fr-FR")}
+            {mission.end &&
+                ` au ${new Date(mission.end).toLocaleDateString("fr-FR")}`}
+            <br />
+            {mission.employer && (
+                <>
+                    <span>Employeur : </span>
+                    {mission.employer}
+                    <br />
+                </>
+            )}
+        </>
+    );
+}
+
 export default function MemberPage({
-    isExpired,
     emailInfos,
     redirections,
     userInfos,
-    primaryEmail,
-    secondaryEmail,
-    canCreateEmail,
-    hasPublicServiceEmail,
-    isAdmin,
     availableEmailPros,
-    primaryEmailStatus,
-    username,
+    authorizations,
     mattermostInfo,
+    isExpired,
 }: // emailServiceInfo,
 MemberPageProps) {
+    const session = useSession();
+    const isAdmin = session.data?.user.isAdmin;
     const shouldDisplayUpgrade = Boolean(
         isAdmin &&
             availableEmailPros.length &&
@@ -246,70 +293,47 @@ MemberPageProps) {
         <>
             <div className="fr-mb-8v">
                 <h2>Fiche Membre</h2>
-                {isExpired &&
-                    (emailInfos ||
-                        (redirections && redirections.length > 0)) && (
-                        <div>
-                            <p className="fr-text--xl">
-                                ❗ Contrat de {userInfos.fullname} arrivé à
-                                expiration
-                            </p>
-
-                            <p>
-                                Le contrat de {userInfos.fullname} est arrivé à
-                                terme le <strong>{userInfos.end}</strong>.
-                            </p>
-                            <p>
-                                Si {userInfos.fullname} a effectivement quitté
-                                la communauté, clôturez son compte :
-                            </p>
-                            <ul>
-                                <li>Clôturer son compte email</li>
-                                <li>Supprimer toutes ses redirections</li>
-                                <li>
-                                    Rediriger des éventuels email vers
-                                    depart@beta.gouv.fr
-                                </li>
-                            </ul>
-                            <form
-                                onSubmit={async (e) => {
-                                    e.preventDefault();
-                                    if (
-                                        confirm(
-                                            "Es-tu sûr de vouloir supprimer son compte email et ses redirections pour <%= userInfos.fullname %> ?"
-                                        )
-                                    ) {
-                                        await axios.post(
-                                            computeRoute(
-                                                routes.USER_DELETE_EMAIL_API
-                                            ).replace(":username", username),
-                                            undefined,
-                                            {
-                                                withCredentials: true,
-                                            }
-                                        );
-                                    }
-                                }}
-                            >
+                {isExpired && (
+                    <>
+                        <Alert
+                            title={`Contrat de ${userInfos.fullname} arrivé à
+                        expiration`}
+                            severity="info"
+                            description={
                                 <div>
+                                    <p>
+                                        Le contrat de {userInfos.fullname} est
+                                        arrivé à terme le{" "}
+                                        <strong>
+                                            {getLastMissionDate(
+                                                userInfos.missions
+                                            )}
+                                        </strong>
+                                        .
+                                    </p>
+                                    <p>
+                                        Si {userInfos.fullname} est encore dans
+                                        la communauté ou revient pour une
+                                        nouvelle mission tu peux mettre à jour
+                                        ses missions en cliquant sur le bouton
+                                        ci-dessous :
+                                    </p>
+                                    <br />
                                     <Button
-                                        nativeButtonProps={{
-                                            type: "submit",
+                                        linkProps={{
+                                            href: `/community/${userInfos.username}/update`,
                                         }}
                                     >
-                                        Clôturer le compte
+                                        Mettre à jour les missions de{" "}
+                                        {userInfos.fullname}
                                     </Button>
-                                    <a
-                                        className="fr-link"
-                                        href={`https://github.com/betagouv/beta.gouv.fr/blob/master/content/_authors/${userInfos.id}.md`}
-                                        target="_blank"
-                                    >
-                                        Mettre à jour le contrat
-                                    </a>
+                                    <br />
                                 </div>
-                            </form>
-                        </div>
-                    )}
+                            }
+                        />
+                        <br />
+                    </>
+                )}
                 {userInfos && (
                     <div>
                         <div className="fr-mb-8v">
@@ -318,36 +342,21 @@ MemberPageProps) {
                                 <br />
                                 {userInfos.role}
                                 <br />
-                                <br />
                                 {(userInfos.competences &&
                                     userInfos.competences.length && (
                                         <>
                                             Compétences:{" "}
                                             {userInfos.competences.join(", ")}
+                                            <br />
                                         </>
                                     )) ||
                                     null}
-                                <br />
-                                {userInfos.start && (
-                                    <>
-                                        <span>Mission : </span>
-                                        du{" "}
-                                        {new Date(
-                                            userInfos.start
-                                        ).toLocaleDateString("fr-FR")}
-                                        {userInfos.end &&
-                                            ` au ${new Date(
-                                                userInfos.end
-                                            ).toLocaleDateString("fr-FR")}`}
-                                        <br />
-                                    </>
-                                )}
-                                {userInfos.employer && (
-                                    <>
-                                        <span>Employeur : </span>
-                                        {userInfos.employer}
-                                        <br />
-                                    </>
+                                {getLastMission(userInfos.missions) && (
+                                    <BlocMission
+                                        mission={
+                                            getLastMission(userInfos.missions)!
+                                        }
+                                    ></BlocMission>
                                 )}
                                 <span>Compte Github : </span>
                                 {userInfos.github && (
@@ -360,30 +369,40 @@ MemberPageProps) {
                                 {!userInfos.github && `Non renseigné`}
                                 <br />
                                 <span>Email principal : </span>{" "}
-                                {primaryEmail ? (
-                                    <a href={`mailto:${primaryEmail}`}>
-                                        {primaryEmail}
+                                {userInfos.primary_email ? (
+                                    <a
+                                        href={`mailto:${userInfos.primary_email}`}
+                                    >
+                                        {userInfos.primary_email}
                                     </a>
                                 ) : (
                                     "Non renseigné"
                                 )}
                                 <br />
                                 <span>Email secondaire : </span>{" "}
-                                {secondaryEmail ? (
-                                    <a href={`mailto:${secondaryEmail}`}>
-                                        {secondaryEmail}
+                                {userInfos.secondary_email ? (
+                                    <a
+                                        href={`mailto:${userInfos.secondary_email}`}
+                                    >
+                                        {userInfos.secondary_email}
                                     </a>
                                 ) : (
                                     "Non renseigné"
                                 )}
+                                <br />
+                                {userInfos.link && (
+                                    <>
+                                        <span>URL : </span>
+                                        <a
+                                            href={userInfos.link}
+                                            target="_blank"
+                                        >
+                                            {userInfos.link}
+                                        </a>
+                                    </>
+                                )}
+                                <br />
                             </p>
-                            <a
-                                className={fr.cx("fr-btn")}
-                                href={`https://github.com/betagouv/beta.gouv.fr/edit/master/content/_authors/${username}.md`}
-                                target="_blank"
-                            >
-                                Modifier sur Github
-                            </a>
                         </div>
                     </div>
                 )}
@@ -392,7 +411,7 @@ MemberPageProps) {
                         <p>Il n'y a de fiche pour ce membre sur github</p>
                         <a
                             className="button no-margin"
-                            href={`https://github.com/betagouv/beta.gouv.fr/new/master/content/_authors/?filename=${username}.md`}
+                            href={"/"}
                             target="_blank"
                         >
                             Créer sur Github
@@ -432,7 +451,7 @@ MemberPageProps) {
                                 statut de l'email :{" "}
                                 {
                                     EMAIL_STATUS_READABLE_FORMAT[
-                                        primaryEmailStatus
+                                        userInfos.primary_email_status
                                     ]
                                 }
                             </li>
@@ -445,49 +464,48 @@ MemberPageProps) {
                         </ul>
                     </>
                 )}
-                <MemberEmailServiceInfo userId={username} />
+                <MemberEmailServiceInfo userId={userInfos.username} />
                 {[
                     EmailStatusCode.EMAIL_CREATION_WAITING,
                     EmailStatusCode.EMAIL_VERIFICATION_WAITING,
-                ].includes(primaryEmailStatus) && (
-                    <p>{EMAIL_STATUS_READABLE_FORMAT[primaryEmailStatus]}</p>
+                ].includes(userInfos.primary_email_status) && (
+                    <p>
+                        {
+                            EMAIL_STATUS_READABLE_FORMAT[
+                                userInfos.primary_email_status
+                            ]
+                        }
+                    </p>
                 )}
                 {!emailInfos &&
                     ![
                         EmailStatusCode.EMAIL_CREATION_WAITING,
                         EmailStatusCode.EMAIL_VERIFICATION_WAITING,
-                    ].includes(primaryEmailStatus) &&
-                    canCreateEmail && (
+                    ].includes(userInfos.primary_email_status) &&
+                    authorizations.canCreateEmail && (
                         <CreateEmailForm
                             userInfos={userInfos}
-                            secondaryEmail={secondaryEmail}
-                            username={username}
-                            hasPublicServiceEmail={hasPublicServiceEmail}
+                            hasPublicServiceEmail={
+                                authorizations.hasPublicServiceEmail
+                            }
                         />
                     )}
                 {isExpired && (
                     <>
                         <div className="notification error">
-                            Le compte {username} est expiré.
+                            Le compte {userInfos.username} est expiré.
                         </div>
                     </>
                 )}
             </div>
             <div className="fr-mb-8v">
                 <h2>Redirections</h2>
-                {redirections.map(function (redirection: {
-                    to:
-                        | string
-                        | number
-                        | boolean
-                        | ReactElement<any, string | JSXElementConstructor<any>>
-                        | Iterable<ReactNode>
-                        | ReactPortal
-                        | PromiseLikeOfReactNode
-                        | null
-                        | undefined;
-                }) {
-                    <div className="redirection-item">{redirection.to}</div>;
+                {redirections.map(function (redirection, i) {
+                    return (
+                        <div key={i} className="redirection-item">
+                            {redirection.to}
+                        </div>
+                    );
                 })}
                 {redirections.length === 0 && (
                     <p>
@@ -519,10 +537,9 @@ MemberPageProps) {
                     <h2>Actions admin</h2>
                     <ChangeSecondaryEmailBloc
                         userInfos={userInfos}
-                        secondaryEmail={secondaryEmail}
                     ></ChangeSecondaryEmailBloc>
-                    <MemberBrevoEventList userId={username} />
-                    <MemberEventList userId={username} />
+                    <MemberBrevoEventList userId={userInfos.username} />
+                    <MemberEventList userId={userInfos.username} />
                     {shouldDisplayUpgrade && (
                         <Accordion label="Passer en compte pro">
                             {shouldDisplayUpgrade && (

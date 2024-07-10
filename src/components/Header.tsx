@@ -17,6 +17,7 @@ const MainHeader = () => {
     const pathname = usePathname();
     const newsletterLink = linkRegistry.get("newsletters", undefined);
 
+    const dashboardLink = linkRegistry.get("dashboard", undefined);
     const accountLink = linkRegistry.get("account", undefined);
     const communityLink = linkRegistry.get("community", undefined);
     const startupListLink = linkRegistry.get("startupList", undefined);
@@ -69,6 +70,7 @@ const MainHeader = () => {
     const nav =
         session?.user &&
         [
+            "/dashboard",
             "/account",
             "/community",
             "/admin",
@@ -78,6 +80,14 @@ const MainHeader = () => {
             "/events",
         ].find((url) => pathname.startsWith(url))
             ? [
+                  {
+                      linkProps: {
+                          href: "/dashboard",
+                          target: "_self",
+                      },
+                      text: routeTitles.dashboard(),
+                      isActive: hasPathnameThisRoot(pathname, dashboardLink),
+                  },
                   {
                       linkProps: {
                           href: "/account",

@@ -1,13 +1,14 @@
+import axios from "axios";
+
+import { getAllUsersInfo } from "@/lib/kysely/queries/users";
 import { MattermostUser } from "@/lib/mattermost";
-import { DBUser, EmailStatusCode } from "@/models/dbUser/dbUser";
-import { Member } from "@/models/member";
-import knex from "@db";
+import * as mattermost from "@/lib/mattermost";
+import { memberBaseInfoToModel } from "@/models/mapper";
+import { EmailStatusCode } from "@/models/member";
+import { memberBaseInfoSchemaType } from "@/models/member";
 import config from "@/server/config";
 import * as utils from "@controllers/utils";
-import * as mattermost from "@/lib/mattermost";
-import betagouv from "@betagouv";
 import { sendInfoToChat } from "@infra/chat";
-import axios from "axios";
 
 function validateAtLeastOneFormat(regexStrArr: string[], value) {
     let valid: boolean = false;
@@ -22,7 +23,7 @@ function validateAtLeastOneFormat(regexStrArr: string[], value) {
 }
 
 interface UsersToRemoveProps {
-    optionalUsers?: Member[];
+    optionalUsers?: memberBaseInfoSchemaType[];
     nbDays: number;
     checkAll?: boolean;
 }
@@ -46,8 +47,8 @@ enum MattermostUserStatus {
 
 export type MattermostUserWithStatus = MattermostUser & {
     status: MattermostUserStatus;
-    memberInfo?: Member;
-    dbUser?: DBUser;
+    // memberInfo?: Member;
+    dbUser?: memberBaseInfoSchemaType;
 };
 
 const MESSAGE_FOR_TYPE: Record<
@@ -91,7 +92,7 @@ const MESSAGE_FOR_TYPE: Record<
 Tu reçois ce message car ta fiche membre beta.gouv.fr à une date de fin dépassée sur github.
 
 Si c'est normal tu n'as rien a faire et ton compte mattermost sera ajouté à l'espace alumni et retiré de l'espace "Communauté" dans 1 semaine. 
-Sinon il faudrait la mettre à jour : [ici](https://github.com/betagouv/beta.gouv.fr/edit/master/content/_authors/${user?.memberInfo?.id}.md)
+Sinon il faudrait la mettre à jour : [ici](https://github.com/betagouv/beta.gouv.fr/edit/master/content/_authors/${user.dbUser?.username}.md)
 
 Si tu n'y arrives pas un membre de ton équipe pourra sans doute t'aider.
 
@@ -107,7 +108,7 @@ Ceci est un message automatique envoyé par l'app Espace Membre.
         return `Bonjour ${user.first_name},
 Tu reçois ce message car ta fiche membre beta.gouv.fr à une date de fin à jour, mais l'email lié a ton compte mattermost semble supprimé.
 Tu peux le recréer dans l'[espace membre](https://espace-membre.incubateur.net/) auquel tu peux te connecter avec ton adresse secondaire : ${user?.dbUser?.secondary_email}.
-Dans Mon compte > Mon email.
+Dans Compte > Mon email.
 Si tu as des questions tu peux les poser dans [~incubateur-help](https://mattermost.incubateur.net/betagouv/channels/incubateur-help). S'il y a une erreur tu peux écrire à espace-membre@incubateur.net.
         
 Ceci est un message automatique envoyé par l'app Espace Membre
@@ -118,7 +119,7 @@ Ceci est un message automatique envoyé par l'app Espace Membre
     ): string {
         return `Bonjour ${user.first_name},
 Tu reçois ce message car ta fiche membre beta.gouv.fr à une date de fin à jour, mais l'email lié a ton compte mattermost semble supprimé.
-Tu peux le recréer dans l'[espace membre](https://espace-membre.incubateur.net/account) sur la page Mon compte > Mon Email.
+Tu peux le recréer dans l'[espace membre](https://espace-membre.incubateur.net/account) sur la page Compte > Mon Email.
 Tu peux te connecter à l'espace membre avec ton adresse secondaire : ${user?.dbUser?.secondary_email}.
 
 Si tu as des questions tu peux les poser dans [~incubateur-help](https://mattermost.incubateur.net/betagouv/channels/incubateur-help). S'il y a une erreur tu peux écrire à espace-membre@incubateur.net.
@@ -166,7 +167,7 @@ Ceci est un message automatique envoyé par l'app Espace Membre.
 Tu reçois ce message car ta fiche membre beta.gouv.fr à une date de fin dépassée sur github.
 
 Si c'est normal tu n'as rien a faire et ton compte mattermost sera ajouté à l'espace alumni et retiré de l'espace "Communauté" dans 1 semaine. 
-Sinon il faudrait la mettre à jour : [ici](https://github.com/betagouv/beta.gouv.fr/edit/master/content/_authors/${user?.memberInfo?.id}.md)
+Sinon il faudrait la mettre à jour : [ici](https://github.com/betagouv/beta.gouv.fr/edit/master/content/_authors/${user?.dbUser?.username}.md)
 Et merger la pull request.
 
 Si tu n'y arrives pas un membre de ton équipe pourra sans doute t'aider.
@@ -184,7 +185,7 @@ Ceci est un message automatique envoyé par l'app Espace Membre.
 Tu reçois ce message car ta fiche membre beta.gouv.fr à une date de fin dépassée sur github.
 
 Si c'est normal tu n'as rien a faire et ton compte mattermost sera ajouté à l'espace alumni et retiré de l'espace "Communauté" dans 1 mois. 
-Sinon il faudrait la mettre à jour : [ici](https://github.com/betagouv/beta.gouv.fr/edit/master/content/_authors/${user?.memberInfo?.id}.md)
+Sinon il faudrait la mettre à jour : [ici](https://github.com/betagouv/beta.gouv.fr/edit/master/content/_authors/${user?.dbUser?.username}.md)
 Et merger la pull request.
 
 Si tu n'y arrives pas un membre de ton équipe pourra sans doute t'aider.
@@ -203,9 +204,11 @@ export async function getMattermostUsersWithStatus({
     // Removed users referenced on github but expired for more than 3 months
 
     // Members in authors.json
-    let users = await betagouv.usersInfos();
+    // let users = await getAllDBUsersAndMission();
     // Member in db
-    const dbUsers: DBUser[] = await knex("users");
+    const dbUsers = (await getAllUsersInfo()).map((user) =>
+        memberBaseInfoToModel(user)
+    );
     const dbuser_primary_emails = dbUsers
         .map((dbUser) => dbUser.primary_email)
         .filter((email) => email);
@@ -218,15 +221,13 @@ export async function getMattermostUsersWithStatus({
         .filter((email) => email);
 
     // Parners
-    const partnersUserEmails: string[] = await getPartnersUserEmails({
-        nbDays,
-    });
-    const activePartnersUserEmails: string[] = utils.getActiveUsers(
-        partnersUserEmails,
-        nbDays
-    );
-    console.log(partnersUserEmails);
-    console.log(activePartnersUserEmails);
+    // const partnersUserEmails: string[] = await getPartnersUserEmails({
+    //     nbDays,
+    // });
+    // const activePartnersUserEmails: string[] = utils.getActiveUsers(
+    //     partnersUserEmails,
+    //     nbDays
+    // );
 
     const mattermostUsers: MattermostUser[] =
         await mattermost.getActiveMattermostUsers({
@@ -240,20 +241,20 @@ export async function getMattermostUsersWithStatus({
     const mattermostUsersToRemove: MattermostUserWithStatus[] =
         mattermostUsers.map((mUser) => {
             let status;
-            let memberInfo;
+            // let memberInfo;
             let dbUser;
             if (dbuser_primary_emails.includes(mUser.email)) {
                 if (dbuser_not_active_primary_emails.includes(mUser.email)) {
                     dbUser = dbUsers.find(
                         (dbUser) => dbUser.primary_email === mUser.email
                     );
-                    memberInfo = users.find(
-                        (user) => user.id === dbUser.username
-                    );
-                    if (!memberInfo) {
+                    // memberInfo = users.find(
+                    //     (user) => user.username === dbUser.username
+                    // );
+                    if (!dbUser) {
                         status =
                             MattermostUserStatus.USER_HAS_EXPIRED_PRIMARY_EMAIL_BUT_NO_GITUB_INFO;
-                    } else if (utils.checkUserIsExpired(memberInfo)) {
+                    } else if (utils.checkUserIsExpired(dbUser)) {
                         if (
                             dbUser.primary_email_status ===
                             EmailStatusCode.EMAIL_SUSPENDED
@@ -280,13 +281,13 @@ export async function getMattermostUsersWithStatus({
                     dbUser = dbUsers.find(
                         (dbUser) => dbUser.primary_email === mUser.email
                     );
-                    memberInfo = users.find(
-                        (user) => user.id === dbUser.username
-                    );
-                    if (!memberInfo) {
+                    // memberInfo = users.find(
+                    //     (user) => user.id === dbUser.username
+                    // );
+                    if (!dbUser) {
                         status =
                             MattermostUserStatus.USER_HAS_ACTIVE_PRIMARY_EMAIL_BUT_NO_GITUB_INFO;
-                    } else if (utils.checkUserIsExpired(memberInfo)) {
+                    } else if (utils.checkUserIsExpired(dbUser)) {
                         if (
                             dbUser.primary_email_status ===
                             EmailStatusCode.EMAIL_SUSPENDED
@@ -302,13 +303,14 @@ export async function getMattermostUsersWithStatus({
                             MattermostUserStatus.USER_IS_VALID_WITH_ACTIVE_PRIMARY_EMAIL;
                     }
                 }
-            } else if (partnersUserEmails.includes(mUser.email)) {
-                if (activePartnersUserEmails.includes(mUser.email)) {
-                    status = MattermostUserStatus.USER_IS_VALID_WITH_PARTNER;
-                } else {
-                    status =
-                        MattermostUserStatus.USER_IS_PARTNER_BUT_IS_EXPIRED;
-                }
+                // } else if (partnersUserEmails.includes(mUser.email)) {
+                //     if (activePartnersUserEmails.includes(mUser.email)) {
+                //         status = MattermostUserStatus.USER_IS_VALID_WITH_PARTNER;
+                //     } else {
+                //         status =
+                //             MattermostUserStatus.USER_IS_PARTNER_BUT_IS_EXPIRED;
+                //     }
+                // }
             } else if (
                 validateAtLeastOneFormat(
                     mattermostEmailRegexException,
@@ -321,7 +323,7 @@ export async function getMattermostUsersWithStatus({
             }
             return {
                 ...mUser,
-                memberInfo,
+                // memberInfo,
                 dbUser,
                 status,
             };
@@ -394,8 +396,7 @@ export async function removeBetaAndParnersUsersFromCommunityTeam() {
     usersToDelete = usersToDelete.filter((user) => {
         return (
             user.status === MattermostUserStatus.USER_IS_NOT_VALID ||
-            (user.memberInfo &&
-                utils.checkUserIsExpired(user.memberInfo, 3 * 30))
+            (user.dbUser && utils.checkUserIsExpired(user.dbUser, 3 * 30))
         );
     });
     console.log(`${usersToDelete.length} users to remove`);

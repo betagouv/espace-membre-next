@@ -1,17 +1,21 @@
-import config from "@/server/config";
-import * as utils from "@controllers/utils";
+import { getAllUsersInfo } from "@/lib/kysely/queries/users";
 import * as mattermost from "@/lib/mattermost";
+import { memberBaseInfoToModel } from "@/models/mapper";
+import config from "@/server/config";
 import betagouv from "@betagouv";
+import * as utils from "@controllers/utils";
 
 export async function reactivateUsers() {
     const inactiveMattermostUsers =
         await mattermost.getInactiveMattermostUsers();
 
-    const users = await betagouv.usersInfos();
+    const users = (await getAllUsersInfo()).map((user) =>
+        memberBaseInfoToModel(user)
+    );
     const currentUsers = users.filter((x) => !utils.checkUserIsExpired(x));
 
     const currentUsersEmails = currentUsers.map(
-        (user) => `${user.id}@${config.domain}`
+        (user) => `${user.username}@${config.domain}`
     );
     const mattermostUsersToReactivate = inactiveMattermostUsers.filter(
         ({ email }) => currentUsersEmails.find((userMail) => userMail === email)

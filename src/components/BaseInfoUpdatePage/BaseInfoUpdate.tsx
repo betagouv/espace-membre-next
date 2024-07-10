@@ -9,41 +9,46 @@ import Select from "@codegouvfr/react-dsfr/Select";
 import { zodResolver } from "@hookform/resolvers/zod";
 import * as Sentry from "@sentry/nextjs";
 import axios from "axios";
+import { useSession } from "next-auth/react";
 import { useForm } from "react-hook-form";
-import { z } from "zod";
 
 import { CompetencesEditor } from "./CompetencesEditor";
 import { MissionsEditor } from "./MissionsEditor";
+import CitySelect from "../CitySelect";
+import GenderSelect from "../GenderSelect";
 import { PullRequestWarning } from "../PullRequestWarning";
-
 import { GithubAPIPullRequest } from "@/lib/github";
 import {
-    DOMAINE_OPTIONS,
-    memberSchema,
-    memberSchemaType,
-} from "@/models/member";
-import { useSession } from "@/proxies/next-auth";
+    memberInfoUpdateSchemaType,
+    memberInfoUpdateSchema,
+} from "@/models/actions/member";
+import { GenderCode, statusOptions } from "@/models/member";
+import { DOMAINE_OPTIONS, memberSchema } from "@/models/member";
 import routes, { computeRoute } from "@/routes/routes";
 import { routeTitles } from "@/utils/routes/routeTitles";
 
-export type MemberSchemaType = z.infer<typeof memberSchema>;
-
 // data from secretariat API
 export interface BaseInfoUpdateProps {
-    formData: memberSchemaType;
+    formData: memberInfoUpdateSchemaType;
     startupOptions: {
         value: string;
         label: string;
     }[];
-    updatePullRequest?: GithubAPIPullRequest;
+    username: string;
 }
 
-const postMemberData = async ({ values, sessionUsername }) => {
+const postMemberData = async ({
+    values,
+    sessionUsername,
+}: {
+    values: memberInfoUpdateSchemaType;
+    sessionUsername: string;
+}) => {
     const {
         data: { username, message },
     }: {
         data: { username: string; message: string };
-    } = await axios.post(
+    } = await axios.put(
         computeRoute(routes.ACCOUNT_POST_BASE_INFO_FORM).replace(
             ":username",
             sessionUsername
@@ -57,15 +62,15 @@ const postMemberData = async ({ values, sessionUsername }) => {
 };
 
 export const BaseInfoUpdate = (props: BaseInfoUpdateProps) => {
-    const defaultValues: memberSchemaType = { ...props.formData };
+    const defaultValues: memberInfoUpdateSchemaType = { ...props.formData };
     const {
         register,
         handleSubmit,
         formState: { errors, isDirty, isSubmitting, isValid },
         setValue,
         control,
-    } = useForm<memberSchemaType>({
-        resolver: zodResolver(memberSchema),
+    } = useForm<memberInfoUpdateSchemaType>({
+        resolver: zodResolver(memberInfoUpdateSchema),
         mode: "onChange",
         defaultValues,
     });
@@ -79,9 +84,8 @@ export const BaseInfoUpdate = (props: BaseInfoUpdateProps) => {
     } | null>();
     const [isSaving, setIsSaving] = React.useState(false);
 
-    const onSubmit = async (input: memberSchemaType) => {
+    const onSubmit = async (input: memberInfoUpdateSchemaType) => {
         //console.log("onSubmit", input);
-
         if (isSaving) {
             return;
         }
@@ -91,10 +95,11 @@ export const BaseInfoUpdate = (props: BaseInfoUpdateProps) => {
         }
         setIsSaving(true);
         setAlertMessage(null);
+
         try {
             const { message } = await postMemberData({
                 values: input,
-                sessionUsername: session.data?.user?.name as string,
+                sessionUsername: props.username,
             });
             setAlertMessage({
                 title: `Modifications enregistrées`,
@@ -123,10 +128,38 @@ export const BaseInfoUpdate = (props: BaseInfoUpdateProps) => {
         setIsSaving(false);
     };
 
+    const handleCitySelect = (newValue) => {
+        if (newValue.isOSM) {
+            setValue(`osm_city`, JSON.stringify(newValue), {
+                shouldValidate: true,
+                shouldDirty: true,
+            });
+            setValue(`workplace_insee_code`, "", {
+                shouldValidate: true,
+                shouldDirty: true,
+            });
+        } else {
+            setValue(`workplace_insee_code`, newValue.value, {
+                shouldValidate: true,
+                shouldDirty: true,
+            });
+            setValue(`osm_city`, "", {
+                shouldValidate: true,
+                shouldDirty: true,
+            });
+        }
+    };
+
+    const isCurrentUser = session.data?.user.id === props.username;
+
     return (
         <>
             <div className={fr.cx("fr-mb-5w")}>
-                <h1>{routeTitles.accountEditBaseInfo()}</h1>
+                <h1>
+                    {isCurrentUser
+                        ? routeTitles.accountEditBaseInfo()
+                        : `Mise à jour des informations de ${props.formData.fullname}`}
+                </h1>
                 <p>
                     Ces informations seront publiées sur le site beta.gouv.fr.
                 </p>
@@ -146,19 +179,19 @@ export const BaseInfoUpdate = (props: BaseInfoUpdateProps) => {
                         }
                     />
                 )}
-
-                {!!props.updatePullRequest && (
-                    <PullRequestWarning
-                        url={props.updatePullRequest.html_url}
-                    />
-                )}
-
                 <form
                     onSubmit={handleSubmit(onSubmit)}
-                    aria-label="Modifier mes informations"
+                    aria-label={
+                        isCurrentUser
+                            ? `Modifier mes informations`
+                            : `Modifier les informations de ${props.formData.fullname}`
+                    }
                 >
                     <Input
-                        label={memberSchema.shape.fullname.description}
+                        label={
+                            memberSchema.shape.fullname.description +
+                            " (obligatoire)"
+                        }
                         nativeInputProps={{
                             placeholder: "ex: Grace HOPPER",
                             ...register("fullname"),
@@ -167,7 +200,10 @@ export const BaseInfoUpdate = (props: BaseInfoUpdateProps) => {
                         stateRelatedMessage={errors.fullname?.message}
                     />
                     <Input
-                        label={memberSchema.shape.role.description}
+                        label={
+                            memberSchema.shape.role.description +
+                            " (obligatoire)"
+                        }
                         nativeInputProps={{
                             placeholder: "ex: Développeuse",
                             ...register("role"),
@@ -176,7 +212,7 @@ export const BaseInfoUpdate = (props: BaseInfoUpdateProps) => {
                         stateRelatedMessage={errors.role?.message}
                     />
                     <Select
-                        label="Domaine"
+                        label="Domaine (obligatoire)"
                         nativeSelectProps={{
                             ...register(`domaine`),
                             defaultValue: props.formData.domaine,
@@ -184,7 +220,9 @@ export const BaseInfoUpdate = (props: BaseInfoUpdateProps) => {
                         state={errors.domaine ? "error" : "default"}
                         stateRelatedMessage={errors.domaine?.message}
                     >
-                        <option value="">Domaine:</option>
+                        <option disabled value="" hidden selected>
+                            Sélectionner une option
+                        </option>
                         {DOMAINE_OPTIONS.map((domaine) => (
                             <option key={domaine.key} value={domaine.name}>
                                 {domaine.name}
@@ -207,11 +245,26 @@ export const BaseInfoUpdate = (props: BaseInfoUpdateProps) => {
                         state={errors.link ? "error" : "default"}
                         stateRelatedMessage={errors.link?.message}
                     />
-                    <h3>Mes compétences</h3>
-                    <p>
-                        Tu peux préciser tes compétences, cela permettra à la
-                        communauté de mieux de trouver en cas de besoin :)
-                    </p>
+                    <Input
+                        label={memberSchema.shape.github.description}
+                        nativeInputProps={{
+                            placeholder: "ex: kevinmitnick",
+                            ...register("github"),
+                        }}
+                        state={errors.github ? "error" : "default"}
+                        stateRelatedMessage={errors.github?.message}
+                    />
+                    <h2>
+                        {" "}
+                        {isCurrentUser ? `Mes compétences` : `Compétences`}
+                    </h2>
+                    {isCurrentUser && (
+                        <p>
+                            Tu peux préciser tes compétences, cela permettra à
+                            la communauté de mieux de trouver en cas de besoin{" "}
+                            {`:)`}
+                        </p>
+                    )}
                     <CompetencesEditor
                         onChange={(e, values) => {
                             setValue("competences", values, {
@@ -222,16 +275,18 @@ export const BaseInfoUpdate = (props: BaseInfoUpdateProps) => {
                     />
                     <br />
                     <br />
-                    <h3>Mes missions</h3>
-                    <p>
-                        Précise les dates, employeurs et produits pour lesquels
-                        tu as mis tes talents à contribution.
-                        <br />
-                        <br />
-                        Ne saute aucun détail pour que la communauté puisse te
-                        repérer facilement dans la foule !
-                        <br />
-                    </p>
+                    <h2>{isCurrentUser ? `Mes missions` : `Missions`}</h2>
+                    {!!isCurrentUser && (
+                        <p>
+                            Précise les dates, employeurs et produits pour
+                            lesquels tu as mis tes talents à contribution.
+                            <br />
+                            <br />
+                            Ne saute aucun détail pour que la communauté puisse
+                            te repérer facilement dans la foule !
+                            <br />
+                        </p>
+                    )}
                     <MissionsEditor
                         control={control}
                         setValue={setValue}
@@ -239,7 +294,77 @@ export const BaseInfoUpdate = (props: BaseInfoUpdateProps) => {
                         startupOptions={props.startupOptions}
                         errors={errors.missions || []}
                     />
-
+                    <h2>
+                        {isCurrentUser
+                            ? `Participe à notre observatoire statistique`
+                            : `Observatoire statistique`}
+                    </h2>
+                    ⚠️ Ces valeurs servent à alimenter l'
+                    <a
+                        href="https://metabase.incubateur.net/public/dashboard/554ff353-6104-4c25-a261-d8bdc40f75d5"
+                        target="_blank"
+                    >
+                        observatoire de la communauté
+                    </a>
+                    . Elles sont confidentielles et anonymisées mis à part le
+                    lieu de travail.<br></br>
+                    <GenderSelect
+                        label="Genre"
+                        nativeSelectProps={{
+                            ...register("gender"),
+                        }}
+                        state={errors.gender ? "error" : "default"}
+                        stateRelatedMessage={errors.gender?.message}
+                    />
+                    <Select
+                        label="Statut (obligatoire)"
+                        nativeSelectProps={{
+                            ...register(`legal_status`),
+                        }}
+                        state={errors.legal_status ? "error" : "default"}
+                        stateRelatedMessage={errors.legal_status?.message}
+                    >
+                        <option value="" disabled hidden>
+                            Sélectionner une option
+                        </option>
+                        {statusOptions.map((option) => (
+                            <option key={option.key} value={option.key}>
+                                {option.name}
+                            </option>
+                        ))}
+                    </Select>
+                    <Input
+                        label="TJM moyen HT (si tu es indépendant)"
+                        hintText="Cette information est utilisée uniquement pour
+                                    faire des statistiques. Elle n'est pas affichée."
+                        nativeInputProps={{
+                            ...register("tjm", {
+                                setValueAs: (
+                                    // use this instead of valueAsNumber to handle undefined value
+                                    v
+                                ) => (!v ? null : parseInt(v)),
+                            }),
+                            type: "number",
+                        }}
+                        state={errors.tjm ? "error" : "default"}
+                        stateRelatedMessage={errors.tjm?.message}
+                    />
+                    <h2>
+                        {isCurrentUser
+                            ? `Participe à la carte des membres (non anonyme)`
+                            : "Carte des membres"}
+                    </h2>
+                    <CitySelect
+                        onChange={handleCitySelect}
+                        placeholder={"Commune ou code postal"}
+                        state={
+                            errors.workplace_insee_code ? "error" : "default"
+                        }
+                        stateRelatedMessage={
+                            errors.workplace_insee_code?.message
+                        }
+                        defaultValue={defaultValues.workplace_insee_code || ""}
+                    />
                     <Button
                         className={fr.cx("fr-mt-3w")}
                         children={

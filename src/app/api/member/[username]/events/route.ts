@@ -19,7 +19,10 @@ export async function GET(
         throw new Error(`You don't have the right to access this function`);
     }
     if (!session.user.isAdmin) {
-        throw new Error(`User should be admin or should owned data`);
+        console.error(
+            `get user events error: User should be admin or should owned data`
+        );
+        return Response.json([]);
     }
 
     let events = await getEventListByUsername(username);

@@ -17,6 +17,7 @@ import Header from "@/components/Header";
 import { LiveChatProvider } from "@/components/live-chat/LiveChatProvider";
 import { authOptions } from "@/utils/authoptions";
 import { Matomo } from "@/app/Matomo";
+import Link from "next/link";
 
 export interface RootLayoutProps {
     workaroundForNextJsPages?: boolean;
@@ -33,7 +34,7 @@ async function MainStructure(props: PropsWithChildren) {
             {/* eslint-disable-next-line @next/next/no-head-element */}
             <head>
                 <StartDsfr />
-                <DsfrHead />
+                <DsfrHead Link={Link} />
             </head>
             <body>
                 <ClientSessionProvider session={session}>
@@ -98,4 +99,5 @@ function RootLayout(props: PropsWithChildren<RootLayoutProps>) {
     );
 }
 
+//@ts-ignore
 export default RootLayout;

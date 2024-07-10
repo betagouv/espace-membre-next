@@ -51,6 +51,12 @@ export const localizedRoutes = {
             fr: (p) => `/community/create`,
         }
     ),
+    dashboard: defineLocalizedRoute(
+        {},
+        {
+            fr: (p) => `/dashboard`,
+        }
+    ),
     startupList: defineLocalizedRoute(
         {},
         {

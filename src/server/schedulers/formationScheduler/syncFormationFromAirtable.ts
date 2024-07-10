@@ -1,6 +1,7 @@
-import { createFormation } from "@db/dbFormations";
-import Airtable from "airtable";
 import * as Sentry from "@sentry/node";
+import Airtable from "airtable";
+
+import { db } from "@/lib/kysely";
 
 export const syncFormationFromAirtable = (syncOnlyNewRecord) => {
     var base = new Airtable({ apiKey: process.env.AIRTABLE_API_KEY }).base(
@@ -37,23 +38,26 @@ export const syncFormationFromAirtable = (syncOnlyNewRecord) => {
 
                 for (const record of records) {
                     try {
-                        await createFormation({
-                            is_embarquement: Boolean(
-                                record.get("embarquement") === true ||
-                                    record.get("embarquement") === "true"
-                            ),
-                            formation_date: new Date(
-                                record.get("Début") as string
-                            ),
-                            formation_type: (
-                                record.get("formationTypeName") as [string]
-                            )[0],
-                            formation_type_airtable_id: (
-                                record.get("formationType") as [string]
-                            )[0],
-                            airtable_id: record.get("Record ID") as string,
-                            name: record.get("Formation") as string,
-                        });
+                        await db
+                            .insertInto("formations")
+                            .values({
+                                is_embarquement: Boolean(
+                                    record.get("embarquement") === true ||
+                                        record.get("embarquement") === "true"
+                                ),
+                                formation_date: new Date(
+                                    record.get("Début") as string
+                                ),
+                                formation_type: (
+                                    record.get("formationTypeName") as [string]
+                                )[0],
+                                formation_type_airtable_id: (
+                                    record.get("formationType") as [string]
+                                )[0],
+                                airtable_id: record.get("Record ID") as string,
+                                name: record.get("Formation") as string,
+                            })
+                            .execute();
                     } catch (e) {
                         Sentry.captureException(e);
                         console.error(e);

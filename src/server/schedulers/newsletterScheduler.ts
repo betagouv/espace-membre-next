@@ -7,12 +7,12 @@ import { startOfWeek } from "date-fns/startOfWeek";
 import HedgedocApi from "hedgedoc-api";
 
 import BetaGouv from "../betagouv";
+import { db } from "@/lib/kysely";
 import { getTitle, renderHtmlFromMd } from "@/lib/mdtohtml";
 import { JobWTTJ } from "@/models/job";
 import config from "@/server/config";
 import { sendEmail, sendCampaignEmail } from "@/server/config/email.config";
 import * as dateUtils from "@/utils/date";
-import knex from "@db";
 import { sendInfoToChat } from "@infra/chat";
 import { EMAIL_TYPES, MAILING_LIST_TYPE } from "@modules/email";
 
@@ -79,9 +79,12 @@ const createNewsletter = async () => {
     );
     const padUrl = result.request.res.responseUrl;
     const message = `Nouveau pad pour l'infolettre : ${padUrl}`;
-    await knex("newsletters").insert({
-        url: padUrl,
-    });
+    await db
+        .insertInto("newsletters")
+        .values({
+            url: padUrl,
+        })
+        .execute();
     await sendInfoToChat({
         text: message,
     });
@@ -130,21 +133,23 @@ Vérifie une dernière fois le contenu du pad ${newsletter.url}. À 16 h, il ser
 };
 
 export async function newsletterReminder(reminder) {
-    const currentNewsletter = await knex("newsletters")
-        .where({
-            sent_at: null,
-        })
-        .first();
+    const currentNewsletter = await db
+        .selectFrom("newsletters")
+        .selectAll()
+        .where("sent_at", "is", null)
+        .executeTakeFirst();
 
-    const lastSentNewsletter = await knex("newsletters")
+    const lastSentNewsletter = await db
+        .selectFrom("newsletters")
+        .selectAll()
         .orderBy("sent_at", "desc")
-        .whereNotNull("sent_at")
-        .first();
+        .where("sent_at", "is not", null)
+        .executeTakeFirst();
 
     if (lastSentNewsletter) {
         const nbOfDays = differenceInDays(
             new Date(),
-            lastSentNewsletter.sent_at
+            lastSentNewsletter.sent_at!
         );
         if (nbOfDays < config.NEWSLETTER_NUMBER_OF_DAYS_WITH_LAST_NEWSLETTER) {
             console.log(
@@ -197,21 +202,22 @@ export async function sendNewsletterAndCreateNewOne(
     shouldCreatedNewone = true
 ) {
     const date = new Date();
-    const currentNewsletter = await knex("newsletters")
-        .where({
-            sent_at: null,
-        })
-        .first();
-
-    const lastSentNewsletter = await knex("newsletters")
+    const currentNewsletter = await db
+        .selectFrom("newsletters")
+        .selectAll()
+        .where("sent_at", "is", null)
+        .executeTakeFirst();
+    const lastSentNewsletter = await db
+        .selectFrom("newsletters")
+        .selectAll()
         .orderBy("sent_at", "desc")
-        .whereNotNull("sent_at")
-        .first();
+        .where("sent_at", "is not", null)
+        .executeTakeFirst();
 
     if (lastSentNewsletter) {
         const nbOfDays = differenceInDays(
             new Date(),
-            lastSentNewsletter.sent_at
+            lastSentNewsletter.sent_at!
         );
         if (nbOfDays < config.NEWSLETTER_NUMBER_OF_DAYS_WITH_LAST_NEWSLETTER) {
             return;
@@ -253,13 +259,13 @@ export async function sendNewsletterAndCreateNewOne(
             });
         }
 
-        await knex("newsletters")
-            .where({
-                id: currentNewsletter.id,
-            })
-            .update({
+        await db
+            .updateTable("newsletters")
+            .where("id", "=", currentNewsletter.id)
+            .set({
                 sent_at: date,
-            });
+            })
+            .execute();
         if (shouldCreatedNewone) {
             await createNewsletter();
         }

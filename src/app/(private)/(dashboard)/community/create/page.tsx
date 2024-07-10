@@ -1,8 +1,7 @@
 import type { Metadata } from "next";
 
 import CommunityCreateMemberPage from "./CommunityCreateMemberPage";
-import { StartupInfo } from "@/models/startup";
-import betagouv from "@/server/betagouv";
+import { getAllStartups } from "@/lib/kysely/queries";
 import { routeTitles } from "@/utils/routes/routeTitles";
 
 export const metadata: Metadata = {
@@ -10,13 +9,11 @@ export const metadata: Metadata = {
 };
 
 export default async function CreateMemberPage() {
-    const startups: StartupInfo[] = await betagouv.startupsInfos();
-    const startupOptions = startups.map((startup) => {
-        return {
-            value: startup.id,
-            label: startup.attributes.name,
-        };
-    });
+    const startups = await getAllStartups();
+    const startupOptions = startups.map((startup) => ({
+        value: startup.uuid,
+        label: startup.name || "",
+    }));
 
     const props = {
         startupOptions,

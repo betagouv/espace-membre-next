@@ -1,9 +1,9 @@
-import { createUserFormation } from "@db/dbUsersFormations";
-import Airtable from "airtable";
 import * as Sentry from "@sentry/node";
-import config from "@/server/config";
-import { getFormation } from "@db/dbFormations";
+import Airtable from "airtable";
+
+import { db } from "@/lib/kysely";
 import { Formation } from "@/models/formation";
+import config from "@/server/config";
 
 export const syncFormationInscriptionFromAirtable = (syncOnlyNewRecord) => {
     var base = new Airtable({ apiKey: config.AIRTABLE_API_KEY }).base(
@@ -32,14 +32,23 @@ export const syncFormationInscriptionFromAirtable = (syncOnlyNewRecord) => {
                             "Record ID (from Formation)"
                         ) as [string];
                         if (formation_record_id) {
-                            const formation = await getFormation({
-                                airtable_id: formation_record_id[0],
-                            });
+                            const formation = await db
+                                .selectFrom("formations")
+                                .selectAll()
+                                .where(
+                                    "airtable_id",
+                                    "=",
+                                    formation_record_id[0]
+                                )
+                                .executeTakeFirst();
                             if (formation && username) {
-                                await createUserFormation({
-                                    formation_id: formation.id,
-                                    username: username.split("@")[0],
-                                });
+                                db.insertInto("users_formations")
+                                    .values({
+                                        formation_id: formation.id,
+                                        username: username.split("@")[0],
+                                    })
+                                    .returningAll()
+                                    .executeTakeFirst();
                             }
                         }
                     } catch (e) {

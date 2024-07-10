@@ -1,3 +1,5 @@
+import { z } from "zod";
+
 export enum SponsorType {
     SPONSOR_TYPE_ADMINISTRATION_CENTRALE = "administration-centrale",
     SPONSOR_TYPE_SERVICE_DECONCENTRE = "service-deconcentre",
@@ -20,7 +22,7 @@ export enum SponsorDomaineMinisteriel {
     SPONSOR_DOMAINE_JUSTICE = "justice",
     SPONSOR_DOMAINE_OUTRE_MER = "outre-mer",
     SPONSOR_DOMAINE_SOLIDARITE_SANTE = "solidarite-sante",
-    SPONSOR_DOMAINE_SPM = "spm # Service du premier ministre",
+    SPONSOR_DOMAINE_SPM = "spm",
     SPONSOR_DOMAINE_SPORT = "sport",
     SPONSOR_DOMAINE_TRAVAIL = "travail",
     SPONSOR_DOMAINE_TERRITOIRES = "territoires",
@@ -28,9 +30,25 @@ export enum SponsorDomaineMinisteriel {
 }
 
 export interface Sponsor {
-    id: string;
+    ghid: string;
     name: string;
     acronym: string;
     domaine_ministeriel: SponsorDomaineMinisteriel;
     type: SponsorType;
 }
+
+const SponsorDomaineMinisterielSchema = z.nativeEnum(SponsorDomaineMinisteriel);
+const SponsorTypeSchema = z.nativeEnum(SponsorType);
+
+// Define the Sponsor schema
+export const sponsorSchema = z.object({
+    uuid: z.string(),
+    ghid: z.string(),
+    name: z.string(),
+    acronym: z.string(),
+    domaine_ministeriel: SponsorDomaineMinisterielSchema,
+    type: SponsorTypeSchema,
+});
+
+// Example TypeScript type extraction from Zod schema
+export type sponsorSchemaType = z.infer<typeof sponsorSchema>;

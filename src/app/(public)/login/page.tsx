@@ -18,7 +18,7 @@ async function Login() {
         // pass
     }
     if (session && session.user.id) {
-        return redirect("/account");
+        return redirect("/dashboard");
     }
     const errors: any[] = [];
     const messages = "";

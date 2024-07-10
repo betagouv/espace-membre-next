@@ -1,2 +1,2 @@
-import { setEmailStatusActiveForUsers } from '@schedulers/emailScheduler'
-setEmailStatusActiveForUsers()
+// import { setEmailStatusActiveForUsers } from '@schedulers/emailScheduler'
+// setEmailStatusActiveForUsers()

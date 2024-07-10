@@ -1,4 +1,4 @@
-import { Member } from "@/models/member";
+import { memberBaseInfoSchemaType } from "@/models/member";
 
 export interface Option {
     value: string;
@@ -6,7 +6,7 @@ export interface Option {
 }
 
 export interface CommunityProps {
-    users: Member[];
+    users: memberBaseInfoSchemaType[];
     incubatorOptions: Option[];
     startupOptions: Option[];
     domaineOptions: Option[];

@@ -105,7 +105,8 @@ export const CompetencesEditor = ({
 
                 const { inputValue } = params;
                 const isExisting = options.some(
-                    (option) => inputValue === option.label
+                    (option) =>
+                        inputValue.toLowerCase() === option.label.toLowerCase()
                 );
                 if (inputValue !== "" && !isExisting) {
                     filtered.push({

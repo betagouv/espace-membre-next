@@ -9,14 +9,13 @@ import { getServerSession } from "next-auth";
 
 import { BreadCrumbFiller } from "@/app/BreadCrumbProvider";
 import { fetchAirtableFormationById } from "@/lib/airtable";
-import { CommunicationEmailCode, DBUser } from "@/models/dbUser";
-import { Domaine, Member } from "@/models/member";
-import betagouv from "@/server/betagouv";
-import config from "@/server/config";
-import db from "@/server/db";
+import { db } from "@/lib/kysely";
+import { getUserInfos } from "@/lib/kysely/queries/users";
+import { userInfosToModel } from "@/models/mapper";
+import { CommunicationEmailCode } from "@/models/member";
+import { Domaine } from "@/models/member";
 import { authOptions } from "@/utils/authoptions";
 import { durationBetweenDate } from "@/utils/date";
-import { routeTitles } from "@/utils/routes/routeTitles";
 
 export async function generateMetadata(
     { params }: Props,
@@ -64,13 +63,21 @@ export default async function Page({ params }: Props) {
     if (!session) {
         redirect("/login");
     }
-    const buildInscriptionLink = (originalUrl: string, user: Member) => {
+    const buildInscriptionLink = (
+        originalUrl: string,
+        user: {
+            fullname: string;
+            email: string;
+            username: string;
+            domaine: Domaine;
+        }
+    ) => {
         const url = new URL(originalUrl);
         const newParams = {
             prefill_Nom: user.fullname,
             prefill_Email: user.email,
             prefill_Domaine: DomaineToAirtableDomaine[user.domaine],
-            prefill_username: user.id,
+            prefill_username: user.username,
         };
         // Access the current search parameters
         const searchParams = new URLSearchParams(url.search);
@@ -87,20 +94,28 @@ export default async function Page({ params }: Props) {
     };
     const formation = await fetchAirtableFormationById(params.id);
 
-    const user = (await betagouv.userInfosById(session.user.id)) as Member;
-    const dbUser: DBUser = await db("users")
-        .where({
-            username: session.user.id,
+    const dbUser = userInfosToModel(
+        await getUserInfos({
+            uuid: session.user.uuid,
         })
-        .first();
-    if (user) {
-        user.email =
+    );
+    if (!dbUser) {
+        redirect("/");
+        return;
+    }
+    let email;
+    if (dbUser) {
+        email =
             dbUser.communication_email === CommunicationEmailCode.PRIMARY
                 ? dbUser.primary_email
                 : dbUser.secondary_email;
     }
-    const isMemberRegistered = formation.registeredMembers?.includes(user.id);
-    const isInWaitingList = formation.waitingListUsernames?.includes(user.id);
+    const isMemberRegistered = formation.registeredMembers?.includes(
+        dbUser.username
+    );
+    const isInWaitingList = formation.waitingListUsernames?.includes(
+        dbUser.username
+    );
 
     return (
         <>
@@ -112,20 +127,17 @@ export default async function Page({ params }: Props) {
                         <Card
                             background
                             border
-                            badges={
-                                !!formation.isELearning
-                                    ? [
-                                          <Badge
-                                              key={"e-learning"}
-                                              severity="new"
-                                          >
-                                              E-learning
-                                          </Badge>,
-                                      ]
-                                    : undefined
+                            start={
+                                !!formation.isELearning ? (
+                                    <Badge key={"e-learning"} severity="new">
+                                        E-learning
+                                    </Badge>
+                                ) : (
+                                    ""
+                                )
                             }
                             imageAlt={``}
-                            imageUrl={formation.imageUrl}
+                            imageUrl={formation.imageUrl || ""}
                             size="medium"
                             desc={
                                 <>
@@ -160,7 +172,14 @@ export default async function Page({ params }: Props) {
                                             linkProps={{
                                                 href: buildInscriptionLink(
                                                     formation.inscriptionLink,
-                                                    user
+                                                    {
+                                                        fullname:
+                                                            dbUser.fullname,
+                                                        email,
+                                                        username:
+                                                            dbUser.username,
+                                                        domaine: dbUser.domaine,
+                                                    }
                                                 ),
                                                 target: "_blank",
                                             }}

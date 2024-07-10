@@ -14,7 +14,7 @@ export default function SignClientPage() {
     const { status, data: session } = useSession();
 
     if (status === "authenticated") {
-        window.location.href = "/account";
+        window.location.href = "/dashboard";
     }
 
     const onSubmit = React.useCallback(async () => {
@@ -23,22 +23,16 @@ export default function SignClientPage() {
         setError("");
         if (hash) {
             await axios
-                .post(
-                    computeRoute(`${routes.SIGNIN_API}`),
-                    {
-                        token: hash,
-                    },
-                    {
-                        withCredentials: true,
-                    }
-                )
-                .then((r) =>
-                    axios.get(computeRoute(routes.ME), {
-                        withCredentials: true,
-                    })
-                )
+                .get(hash, {
+                    withCredentials: true,
+                })
+                // .then((r) =>
+                //     axios.get(computeRoute(routes.ME), {
+                //         withCredentials: true,
+                //     })
+                // )
                 .then((r) => {
-                    window.location.href = "/account";
+                    window.location.href = "/dashboard";
                 })
                 .catch((e) => {
                     if (e.response?.data?.error) {
@@ -52,9 +46,9 @@ export default function SignClientPage() {
         document.location = "/";
     };
 
-    React.useEffect(() => {
-        if (window) onSubmit();
-    }, [onSubmit]);
+    // React.useEffect(() => {
+    //     if (window) onSubmit();
+    // }, [onSubmit]);
 
     return (
         <div>
