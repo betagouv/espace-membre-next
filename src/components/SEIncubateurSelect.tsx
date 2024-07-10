@@ -1,4 +1,5 @@
 import React from "react";
+
 import Autocomplete from "@mui/material/Autocomplete";
 import TextField from "@mui/material/TextField";
 
@@ -8,11 +9,13 @@ export default function SEIncubateurSelect({
     label,
     hint,
     state,
+    isMulti,
     stateRelatedMessage,
     defaultValue,
 }: {
     incubators: { value: string; label: string }[];
     onChange: any;
+    isMulti?: boolean;
     label?: any;
     hint?: any;
     state?: any;
@@ -32,7 +35,7 @@ export default function SEIncubateurSelect({
                 </label>
             )}
             <Autocomplete
-                multiple
+                multiple={isMulti}
                 options={incubatorOptions}
                 onChange={onChange}
                 defaultValue={

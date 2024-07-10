@@ -21,6 +21,7 @@ const MainHeader = () => {
     const accountLink = linkRegistry.get("account", undefined);
     const communityLink = linkRegistry.get("community", undefined);
     const startupListLink = linkRegistry.get("startupList", undefined);
+    const incubatorListLink = linkRegistry.get("incubatorList", undefined);
     const adminMattermostLink = linkRegistry.get("adminMattermost", undefined);
     const formationListLink = linkRegistry.get("formationList", undefined);
     const eventsListLink = linkRegistry.get("eventsList", undefined);
@@ -74,6 +75,7 @@ const MainHeader = () => {
             "/account",
             "/community",
             "/admin",
+            "/incubator",
             "/startups",
             "/newsletters",
             "/formations",
@@ -111,6 +113,17 @@ const MainHeader = () => {
                       },
                       text: "Produit",
                       isActive: hasPathnameThisRoot(pathname, startupListLink),
+                  },
+                  {
+                      linkProps: {
+                          href: "/incubators",
+                          target: "_self",
+                      },
+                      text: "Incubateur",
+                      isActive: hasPathnameThisRoot(
+                          pathname,
+                          incubatorListLink
+                      ),
                   },
                   {
                       linkProps: {

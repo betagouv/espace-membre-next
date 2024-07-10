@@ -1,6 +1,7 @@
 import { Selectable } from "kysely";
 
 import { BADGE_REQUEST, badgeRequestSchemaType } from "../badgeRequests";
+import { incubatorSchemaType } from "../incubator";
 import {
     Domaine,
     memberBaseInfoSchema,
@@ -9,7 +10,13 @@ import {
     memberSchemaType,
 } from "../member";
 import { StartupPhase, phaseSchemaType, startupSchemaType } from "../startup";
-import { BadgeRequests, Missions, Phases, Users } from "@/@types/db";
+import {
+    BadgeRequests,
+    Incubators,
+    Missions,
+    Phases,
+    Users,
+} from "@/@types/db";
 import { getStartup } from "@/lib/kysely/queries";
 import {
     getAllUsersInfo,
@@ -203,5 +210,20 @@ export function badgeRequestToModel(
         start_date: badgeRequest.start_date as unknown as Date,
         updated_at: badgeRequest.updated_at as unknown as Date,
         created_at: badgeRequest.created_at as unknown as Date,
+    };
+}
+
+export function incubatorToModel(
+    incubator: Selectable<Incubators>
+): incubatorSchemaType {
+    return {
+        uuid: incubator.uuid,
+        title: incubator.title,
+        owner_id: incubator.owner_id || undefined,
+        contact: incubator.contact || "",
+        ghid: incubator.ghid || "",
+        address: incubator.address,
+        website: incubator.website,
+        github: incubator.github,
     };
 }

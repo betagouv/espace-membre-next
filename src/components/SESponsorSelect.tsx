@@ -6,19 +6,22 @@ import TextField from "@mui/material/TextField";
 import { Option } from "@/models/misc";
 import { sponsorSchemaType } from "@/models/sponsor";
 
-interface SESponsorSelectProps {
-    value: string[];
+type SESponsorSelectProps<T extends boolean> = {
+    isMulti?: T;
+    value: T extends true ? string[] | undefined : string | undefined;
     allSponsors: Option[];
     label?: string;
     hint?: string;
     state?: string;
     placeholder?: string;
-    onChange: (e: string | string[]) => void;
+    onChange: T extends true
+        ? (value: string[]) => void
+        : (value: string) => void;
     stateMessageRelated?: string;
     containerStyle?: React.CSSProperties;
-}
+};
 
-export default function SESponsorSelect({
+export default function SESponsorSelect<T extends boolean>({
     value,
     allSponsors,
     label,
@@ -28,7 +31,8 @@ export default function SESponsorSelect({
     placeholder,
     stateMessageRelated,
     containerStyle,
-}: SESponsorSelectProps) {
+    isMulti,
+}: SESponsorSelectProps<T>) {
     const allOptions = Object.entries(allSponsors).map(
         ([key, sponsor], index) => ({
             value: sponsor.value,
@@ -42,18 +46,24 @@ export default function SESponsorSelect({
                 {!!hint && <span className="fr-hint-text">{hint}</span>}
             </label>
             <Autocomplete
-                multiple
+                multiple={isMulti === undefined ? true : isMulti}
                 style={{
                     marginTop: "0.5rem",
                 }}
                 options={allOptions}
                 onChange={(event, newValue) => {
-                    onChange(newValue.map((v) => v.value));
+                    if (isMulti) {
+                        onChange(newValue.map((v) => v.value));
+                    } else {
+                        onChange(newValue.value);
+                    }
                 }}
                 getOptionLabel={(option) => option.label}
                 value={
-                    value && value.length
+                    isMulti && value && value.length
                         ? allOptions.filter((se) => value.includes(se.value))
+                        : value
+                        ? allOptions.find((se) => se.value === value)
                         : undefined
                 }
                 isOptionEqualToValue={(option, value) =>
