@@ -50,7 +50,6 @@ export function EventsList({ events }: { events: CalendarResponse }) {
                                 }}
                             />
                         }
-                        linkProps={event.location && { href: event.location }}
                         start={
                             <div className={fr.cx("fr-mb-2w", "fr-text--bold")}>
                                 🗓️{" "}
