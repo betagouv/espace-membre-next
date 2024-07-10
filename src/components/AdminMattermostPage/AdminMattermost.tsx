@@ -140,9 +140,11 @@ export const AdminMattermost = (props: AdminMattermostProps) => {
         undefined
     );
     const getCurrentChannel = (): string => {
-        const channel = props.channelOptions.find((c) => c.value === channel);
-        if (channel) {
-            return channel.label;
+        const currentChannel = props.channelOptions.find(
+            (c) => c.value === channel
+        );
+        if (currentChannel) {
+            return currentChannel.label;
         } else {
             return "channel non définie";
         }
