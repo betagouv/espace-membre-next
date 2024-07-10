@@ -111,7 +111,7 @@ describe("PUT /api/member[username]/info-update", () => {
         res.status.should.equals(200);
     });
 
-    it("should return ok if user making the action is admin", async () => {
+    it("should return 404 if user to change is unknown", async () => {
         const mockSession = {
             user: {
                 id: "lucas.charrier",
