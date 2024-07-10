@@ -129,6 +129,12 @@ export const localizedRoutes = {
             fr: (p) => `/keskispasse`,
         }
     ),
+    eventsList: defineLocalizedRoute(
+        {},
+        {
+            fr: (p) => `/events`,
+        }
+    ),
     formationList: defineLocalizedRoute(
         {},
         {

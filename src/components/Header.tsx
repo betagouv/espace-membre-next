@@ -23,6 +23,7 @@ const MainHeader = () => {
     const startupListLink = linkRegistry.get("startupList", undefined);
     const adminMattermostLink = linkRegistry.get("adminMattermost", undefined);
     const formationListLink = linkRegistry.get("formationList", undefined);
+    const eventsListLink = linkRegistry.get("eventsList", undefined);
     const quickAccessItems: (React.ReactNode | HeaderProps.QuickAccessItem)[] =
         [];
     if (session) {
@@ -76,6 +77,7 @@ const MainHeader = () => {
             "/startups",
             "/newsletters",
             "/formations",
+            "/events",
         ].find((url) => pathname.startsWith(url))
             ? [
                   {
@@ -120,6 +122,14 @@ const MainHeader = () => {
                           pathname,
                           formationListLink
                       ),
+                  },
+                  {
+                      linkProps: {
+                          href: "/events",
+                          target: "_self",
+                      },
+                      text: "Évenements",
+                      isActive: hasPathnameThisRoot(pathname, eventsListLink),
                   },
                   {
                       linkProps: {

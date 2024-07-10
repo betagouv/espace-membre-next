@@ -97,6 +97,10 @@ export const routes = {
             localizedRoutes.keskispasse.params,
             localizedRoutes.keskispasse.paths.fr
         ),
+        eventsList: defineRoute(
+            localizedRoutes.eventsList.params,
+            localizedRoutes.eventsList.paths.fr
+        ),
         formationList: defineRoute(
             localizedRoutes.formationList.params,
             localizedRoutes.formationList.paths.fr
