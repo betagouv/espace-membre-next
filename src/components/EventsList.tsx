@@ -4,7 +4,7 @@ import { format } from "date-fns";
 import { fr as frLocale } from "date-fns/locale/fr";
 import { CalendarResponse } from "node-ical";
 
-function htmlize(str) {
+function htmlize(str="") {
     return str
         .replace(/^(https:\/\/[^\s\n]+)/g, `<a href="$1">$1</a>`)
         .replace(/[^="'](https:\/\/[^\s\n]+)/g, `<a href="$1">$1</a>`);
