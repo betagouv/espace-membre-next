@@ -3,6 +3,7 @@
 import { fr } from "@codegouvfr/react-dsfr";
 import { Tile } from "@codegouvfr/react-dsfr/Tile";
 import school from "@gouvfr/dsfr/dist/artwork/pictograms/buildings/school.svg";
+import community from "@gouvfr/dsfr/dist/artwork/pictograms/environment/human-cooperation.svg";
 import mailSend from "@gouvfr/dsfr/dist/artwork/pictograms/digital/mail-send.svg";
 import document from "@gouvfr/dsfr/dist/artwork/pictograms/document/document.svg";
 import locationFrance from "@gouvfr/dsfr/dist/artwork/pictograms/map/location-france.svg";
@@ -68,7 +69,7 @@ export function DashboardPage(props: DashboardPageProps) {
                         title="Communauté"
                         desc="Explorer la communauté"
                         horizontal
-                        imageUrl={(mailSend as StaticImageData).src}
+                        imageUrl={(community as StaticImageData).src}
                         linkProps={{
                             href: linkRegistry.get("community", undefined),
                         }}
