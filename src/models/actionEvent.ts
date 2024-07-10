@@ -27,6 +27,7 @@ export enum EventCode {
     MEMBER_EMAIL_RECREATED = "MEMBER_EMAIL_RECREATED",
     MEMBER_EMAIL_UPGRADED = "MEMBER_EMAIL_UPGRADED",
     MEMBER_BASE_INFO_UPDATED = "MEMBER_BASE_INFO_UPDATED",
+    MEMBER_UNBLOCK_EMAIL = "MEMBER_UNBLOCK_EMAIL",
     STARTUP_PHASE_UPDATED = "STARTUP_PHASE_UPDATED",
     STARTUP_INFO_UPDATED = "STARTUP_INFO_UPDATED",
     STARTUP_INFO_CREATED = "STARTUP_INFO_CREATED",
@@ -64,6 +65,7 @@ export const EventCodeToReadable: Record<EventCode, string> = {
     [EventCode.MEMBER_EMAIL_RECREATED]: "Email re-créé",
     [EventCode.MEMBER_EMAIL_UPGRADED]: "Email mis à jour",
     [EventCode.MEMBER_BASE_INFO_UPDATED]: "Info de base mis à jour",
+    [EventCode.MEMBER_UNBLOCK_EMAIL]: "Email débloqué de brevo",
     [EventCode.STARTUP_PHASE_UPDATED]: "Phase de startup mis à jour",
     [EventCode.STARTUP_INFO_UPDATED]: "Info de startup mis à jour",
     [EventCode.STARTUP_INFO_CREATED]: "Fiche de startup crée",
@@ -217,6 +219,13 @@ export const EventStartupInfoCreatedPayload = z.object({
     }),
 });
 
+export const EventMemberUnblockEmailPayload = z.object({
+    action_code: z.literal(EventCode.MEMBER_UNBLOCK_EMAIL),
+    action_metadata: z.object({
+        email: z.string(),
+    }),
+});
+
 export type EventPayloads =
     | z.infer<typeof EventMemberCommunicationEmailUpdatePayload>
     | z.infer<typeof EventMemberBaseInfoUpdatedPayload>
@@ -239,7 +248,8 @@ export type EventPayloads =
     | z.infer<typeof EventMemberSecondaryEmailUpdatedPayload>
     | z.infer<typeof EventMemberPrimaryEmailUpdatedPayload>
     | z.infer<typeof EventMemberRedirectionDeletedPayload>
-    | z.infer<typeof EventMemberEmailDeletedPayload>;
+    | z.infer<typeof EventMemberEmailDeletedPayload>
+    | z.infer<typeof EventMemberUnblockEmailPayload>;
 
 export type EventAction = BaseActionEvent & EventPayloads;
 
