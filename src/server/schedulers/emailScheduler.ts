@@ -98,6 +98,14 @@ export async function setEmailAddressesActive() {
             await smtpBlockedContactsEmailDelete({
                 email: user.primary_email as string,
             });
+            await addEvent({
+                action_code: EventCode.MEMBER_UNBLOCK_EMAIL,
+                created_by_username: "system",
+                action_on_username: user.username,
+                action_metadata: {
+                    email: user.primary_email!,
+                },
+            });
             await setEmailActive(user.username);
             // once email created we create marrainage
         })
