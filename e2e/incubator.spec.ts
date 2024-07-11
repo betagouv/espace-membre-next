@@ -5,7 +5,7 @@ import { db } from "@/lib/kysely";
 test.use({ storageState: "./playwright-auth-valid.member.json" });
 
 test("incubator list page", async ({ page }) => {
-    await page.goto("/incubator");
+    await page.goto("/incubators");
     await expect(
         page.getByText("Rechercher un incubateur").first()
     ).toBeVisible();
@@ -19,12 +19,10 @@ test("incubator detail page and form page", async ({ page }) => {
         })
         .returning("uuid")
         .executeTakeFirst();
-    await page.goto(`/incubator/${incubator?.uuid}`);
+    await page.goto(`/incubators/${incubator?.uuid}`);
     await expect(page.getByText("Mon super incubateur").first()).toBeVisible();
     await page.getByText("✏️ Mettre à jour les infos").first().click();
-    await page.waitForURL(
-        `/incubator/${incubator?.uuid}/1562ecbf-347d-42f2-a60e-6d617e053976/info-form`
-    );
+    await page.waitForURL(`/incubators/${incubator?.uuid}/info-form`);
     await expect(
         page
             .getByText("Modifier la fiche incubateur de Mon super incubateur")
@@ -36,7 +34,7 @@ test("incubator detail page and form page", async ({ page }) => {
 });
 
 test("incubator create page", async ({ page }) => {
-    await page.goto(`/incubator/create-form`);
+    await page.goto(`/incubators/create-form`);
     await expect(
         page.getByText("Créer une fiche incubateur").first()
     ).toBeVisible();
