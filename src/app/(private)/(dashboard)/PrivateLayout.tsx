@@ -61,6 +61,7 @@ export function PrivateLayout({ children }: { children: React.ReactNode }) {
     );
     const mapLink = linkRegistry.get("map", undefined);
     const formationLink = linkRegistry.get("formationList", undefined);
+    const eventsLink = linkRegistry.get("eventsList", undefined);
     const formationDetailLink = linkRegistry.get("formationDetails", undefined);
     const verifyLink = linkRegistry.get("verifyMember", undefined);
 
@@ -136,18 +137,18 @@ export function PrivateLayout({ children }: { children: React.ReactNode }) {
     ];
 
     const MenuItems: ItemLink[] = [
-        {
-            linkProps: {
-                href: dashboardLink,
-            },
-            text: "Accueil",
-            isActive: hasPathnameThisMatch(pathname, dashboardLink),
-        },
+        // {
+        //     linkProps: {
+        //         href: dashboardLink,
+        //     },
+        //     text: "Accueil",
+        //     isActive: hasPathnameThisMatch(pathname, dashboardLink),
+        // },
         {
             isActive: hasPathnameThisMatch(pathname, accountLink),
-            breadcrumb: {
-                href: accountLink,
-            },
+            // breadcrumb: {
+            //     href: accountLink,
+            // },
             text: "Compte",
             expandedByDefault:
                 Boolean(accountSubPages.find((a) => a.isActive)) ||
@@ -176,6 +177,13 @@ export function PrivateLayout({ children }: { children: React.ReactNode }) {
             },
             text: routeTitles.newsletters(),
             isActive: hasPathnameThisMatch(pathname, newsletterLink),
+        },
+        {
+            linkProps: {
+                href: eventsLink,
+            },
+            text: routeTitles.eventsList(),
+            isActive: hasPathnameThisMatch(pathname, eventsLink),
         },
         {
             linkProps: {

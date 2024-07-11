@@ -1,12 +1,5 @@
 "use client";
-import {
-    ReactElement,
-    JSXElementConstructor,
-    ReactNode,
-    ReactPortal,
-    PromiseLikeOfReactNode,
-    useState,
-} from "react";
+import { useState } from "react";
 
 import { fr } from "@codegouvfr/react-dsfr";
 import Accordion from "@codegouvfr/react-dsfr/Accordion";

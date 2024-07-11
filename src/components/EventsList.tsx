@@ -17,6 +17,11 @@ export function EventsList({ events }: { events: CalendarResponse }) {
             ([key, event]) =>
                 event.type === "VEVENT" && event.start >= new Date()
         )
+        .filter(
+            ([key, event]) =>
+                event.type === "VEVENT" &&
+                !event.summary.toLowerCase().includes("formation")
+        )
         .sort(
             ([key1, event1], [key2, event2]) =>
                 (event1.type === "VEVENT" &&

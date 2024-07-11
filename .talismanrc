@@ -45,10 +45,10 @@ fileignoreconfig:
   checksum: d2565fbfe06ac2e626c09e5451e673753c827551829a98c239dea593aedbcb0a
 - filename: src/components/BaseInfoUpdatePage/MissionsEditor.tsx
   checksum: 42a1e9c44fc1a093ce628b796a51533f640d60cd75205c06ca6cd1d358f7cb02
-- filename: src/components/EventsList.tsx
-  checksum: 4860b2efb049d277f74fe1f84a795b53d00082dc74b0c33a02ebc4cc7079dbef
 - filename: src/components/CommunityPage/CommunityFilterMembers.tsx
   checksum: 6e644062a8253a7ec4a0fcc0d417458c3cd149a4fd7aef2ac574269d72b48b44
+- filename: src/components/EventsList.tsx
+  checksum: 7497b733aed8d013e6e773aebc093df382fda3e5f38fbc51b1d7ebcf90278f5e
 - filename: src/components/Formation/FormationCard.tsx
   checksum: 69f8cf90d26dca06c7c9263d880567305a9ebbb49729a4221e08887b96b98d66
 - filename: src/components/Formation/FormationList.tsx
