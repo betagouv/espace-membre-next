@@ -29,7 +29,10 @@ test("incubator detail page and form page", async ({ page }) => {
             .first()
     ).toBeVisible();
     if (incubator) {
-        await db.deleteFrom("incubators").where("uuid", "=", incubator?.uuid);
+        await db
+            .deleteFrom("incubators")
+            .where("uuid", "=", incubator?.uuid)
+            .execute();
     }
 });
 
