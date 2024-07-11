@@ -6,23 +6,25 @@ import TextField from "@mui/material/TextField";
 import { Option } from "@/models/misc";
 import { sponsorSchemaType } from "@/models/sponsor";
 
+type OnChangeType<T> = T extends true
+    ? (value: string[] | null) => void
+    : (value: string | null) => void;
+
 type SESponsorSelectProps<T extends boolean> = {
-    isMulti?: T;
-    value: T extends true ? string[] | undefined : string | undefined;
+    isMulti: T;
+    defaultValue: T extends true ? string[] | undefined : string | undefined;
     allSponsors: Option[];
     label?: string;
     hint?: string;
     state?: string;
     placeholder?: string;
-    onChange: T extends true
-        ? (value: string[]) => void
-        : (value: string) => void;
+    onChange: OnChangeType<T>;
     stateMessageRelated?: string;
     containerStyle?: React.CSSProperties;
 };
 
 export default function SESponsorSelect<T extends boolean>({
-    value,
+    defaultValue,
     allSponsors,
     label,
     hint,
@@ -32,7 +34,7 @@ export default function SESponsorSelect<T extends boolean>({
     stateMessageRelated,
     containerStyle,
     isMulti,
-}: SESponsorSelectProps<T>) {
+}: SESponsorSelectProps<true> | SESponsorSelectProps<false>) {
     const allOptions = Object.entries(allSponsors).map(
         ([key, sponsor], index) => ({
             value: sponsor.value,
@@ -46,29 +48,44 @@ export default function SESponsorSelect<T extends boolean>({
                 {!!hint && <span className="fr-hint-text">{hint}</span>}
             </label>
             <Autocomplete
-                multiple={isMulti === undefined ? true : isMulti}
+                multiple={isMulti}
                 style={{
                     marginTop: "0.5rem",
                 }}
                 options={allOptions}
-                onChange={(event, newValue) => {
-                    if (isMulti) {
-                        onChange(newValue.map((v) => v.value));
-                    } else {
-                        onChange(newValue.value);
+                onChange={(e, newValue) => {
+                    if (!newValue) {
+                        onChange(newValue);
+                    } else if (isMulti === true) {
+                        onChange(
+                            (
+                                newValue as unknown as {
+                                    value: string;
+                                    label: string;
+                                }[]
+                            ).map((v) => v.value)
+                        );
+                    } else if (isMulti === false && !Array.isArray(newValue)) {
+                        if (!newValue) {
+                            onChange(newValue);
+                        } else {
+                            onChange(newValue.value);
+                        }
                     }
                 }}
-                getOptionLabel={(option) => option.label}
-                value={
-                    isMulti && value && value.length
-                        ? allOptions.filter((se) => value.includes(se.value))
-                        : value
-                        ? allOptions.find((se) => se.value === value)
+                // getOptionLabel={(option) => option.label}
+                defaultValue={
+                    isMulti && defaultValue && defaultValue.length
+                        ? allOptions.filter((se) =>
+                              defaultValue.includes(se.value)
+                          )
+                        : defaultValue
+                        ? allOptions.find((se) => se.value === defaultValue)
                         : undefined
                 }
-                isOptionEqualToValue={(option, value) =>
-                    option.value === value.value
-                }
+                // isOptionEqualToValue={(option, value) =>
+                //     option.value === value.value
+                // }
                 renderInput={(params) => (
                     <TextField
                         {...params}

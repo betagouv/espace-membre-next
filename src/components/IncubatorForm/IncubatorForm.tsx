@@ -183,10 +183,10 @@ export function IncubatorForm(props: IncubatorFormProps) {
                         placeholder="ex: https://github.com/beta.gouv.fr"
                     />
                     <SESponsorSelect
-                        value={getValues("owner_id")}
+                        defaultValue={getValues("owner_id")}
                         allSponsors={props.sponsorOptions}
                         onChange={(newSponsor) => {
-                            setValue("owner_id", newSponsor);
+                            setValue("owner_id", newSponsor || undefined);
                         }}
                         placeholder={"Sélectionnez des sponsors"}
                         containerStyle={{
