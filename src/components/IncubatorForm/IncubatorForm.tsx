@@ -14,9 +14,8 @@ import {
     incubatorUpdateSchema,
     incubatorUpdateSchemaType,
 } from "@/models/actions/incubator";
+import { incubatorSchemaType } from "@/models/incubator";
 import { Option } from "@/models/misc";
-import { sponsorSchemaType } from "@/models/sponsor";
-import { incubatorSchemaType } from "dist/src/models/incubator";
 
 const NEW_INCUBATOR_DATA: incubatorUpdateSchemaType = {
     title: "",
