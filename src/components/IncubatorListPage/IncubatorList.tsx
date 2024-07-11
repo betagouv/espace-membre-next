@@ -34,7 +34,7 @@ export const IncubatorList = (props: IncubatorListProps) => {
                     isMulti={false}
                 />
                 <Button
-                    children="Voir ce produit"
+                    children="Voir cet incubateur"
                     nativeButtonProps={{
                         type: "submit",
                         disabled: !incubator,
@@ -43,8 +43,8 @@ export const IncubatorList = (props: IncubatorListProps) => {
             </form>
             <br></br>
             <br></br>
-            Pour créer une nouvelle fiche produit c'est ici :{" "}
-            <a href="/incubators/create-form">Créer une fiche produit</a>
+            Pour créer une nouvelle fiche incubateur c'est ici :{" "}
+            <a href="/incubators/create-form">Créer une fiche incubateur</a>
         </>
     );
 };
