@@ -128,7 +128,7 @@ const MainHeader = () => {
                           href: "/events",
                           target: "_self",
                       },
-                      text: "Évenements",
+                      text: "Événements",
                       isActive: hasPathnameThisRoot(pathname, eventsListLink),
                   },
                   {
