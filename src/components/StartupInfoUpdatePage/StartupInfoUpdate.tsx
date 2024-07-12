@@ -11,7 +11,11 @@ import { startupInfoUpdateSchemaType } from "@/models/actions/startup";
 import { incubatorSchemaType } from "@/models/incubator";
 import { Option } from "@/models/misc";
 import { sponsorSchemaType } from "@/models/sponsor";
-import { phaseSchemaType, startupSchemaType } from "@/models/startup";
+import {
+    eventSchemaType,
+    phaseSchemaType,
+    startupSchemaType,
+} from "@/models/startup";
 import routes, { computeRoute } from "@/routes/routes";
 import { routeTitles } from "@/utils/routes/routeTitles";
 
@@ -19,6 +23,7 @@ interface StartupInfoUpdateProps {
     startup: startupSchemaType;
     startupSponsors: sponsorSchemaType[];
     startupPhases: phaseSchemaType[];
+    startupEvents: eventSchemaType[];
     incubatorOptions: Option[];
     sponsorOptions: Option[];
 }
@@ -60,6 +65,7 @@ export const StartupInfoUpdate = (props: StartupInfoUpdateProps) => {
                         save={save}
                         startupSponsors={props.startupSponsors}
                         startupPhases={props.startupPhases}
+                        startupEvents={props.startupEvents}
                         startup={props.startup}
                         incubatorOptions={props.incubatorOptions}
                         sponsorOptions={props.sponsorOptions}

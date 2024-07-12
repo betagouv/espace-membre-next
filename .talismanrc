@@ -67,6 +67,8 @@ fileignoreconfig:
   checksum: c251dbce68caf5cb85ac395bb400dfedb142737539d3ca0e1779f2a56460c520
 - filename: src/components/SESponsorSelect.tsx
   checksum: 0bf9460e4c98022fc27b175504a2b17019d29b3cac33beb1cbb7e372cbec2cdb
+- filename: src/components/StartupForm/EventsEditor.tsx
+  checksum: 3d851ff203a6cbcaad0ca20c2e90ebefb6c8c55719c866ae7f770df2c6ebfe72
 - filename: src/components/StartupForm/PhasesEditor.tsx
   checksum: c5fd9bbfffa9cde5c80cfccbff17f8dc5536b465c539534aa553c22179b31367
 - filename: src/components/StartupForm/StartupForm.tsx

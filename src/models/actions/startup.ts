@@ -1,7 +1,7 @@
 import { z } from "zod";
 
 import { sponsorSchema } from "../sponsor";
-import { phaseSchema, startupSchema } from "@/models/startup";
+import { eventSchema, phaseSchema, startupSchema } from "@/models/startup";
 
 export const startupInfoUpdateSchema = z.object({
     startup: z.object({
@@ -18,7 +18,7 @@ export const startupInfoUpdateSchema = z.object({
         mon_service_securise: startupSchema.shape.mon_service_securise,
         analyse_risques: startupSchema.shape.analyse_risques,
         analyse_risques_url: startupSchema.shape.analyse_risques_url,
-        events: startupSchema.shape.events,
+        //  events: startupSchema.shape.events,
         techno: startupSchema.shape.techno,
         usertypes: startupSchema.shape.usertypes,
         //redirect_from: z.array(z.string()).optional(),
@@ -34,6 +34,12 @@ export const startupInfoUpdateSchema = z.object({
     ),
     startupPhases: z.array(
         phaseSchema.omit({
+            uuid: true,
+            startup_id: true,
+        })
+    ),
+    startupEvents: z.array(
+        eventSchema.omit({
             uuid: true,
             startup_id: true,
         })
