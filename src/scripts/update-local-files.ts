@@ -83,7 +83,7 @@ const getChanges = async (markdownData) => {
             withPhases(eb),
             withEvents(eb),
         ])
-        .groupBy([...startupColumns, "startups.uuid"])
+        .groupBy([...startupColumns, "startups.uuid", "incubators.ghid"])
         .execute();
 
     const userColumns = [
