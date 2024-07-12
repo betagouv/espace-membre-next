@@ -69,10 +69,12 @@ const getChanges = async (markdownData) => {
             "organizations.uuid",
             "startups_organizations.organization_id"
         )
+        .leftJoin("incubators", "incubators.uuid", "startups.incubator_id")
         .select((eb) => [
             ...startupColumns,
             eb.ref("startups.name").as("title"),
             eb.ref("startups.pitch").as("mission"),
+            eb.ref("incubators.ghid").as("incubator"),
             sql<
                 Array<string>
             >`COALESCE(NULLIF(ARRAY_AGG(CONCAT('/organisations/', organizations.ghid)), '{/organisations/}'), '{}')`.as(
