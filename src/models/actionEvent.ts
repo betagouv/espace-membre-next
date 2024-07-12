@@ -6,7 +6,7 @@ import {
 } from "./actions/member";
 import { memberSchema } from "./member";
 import { CommunicationEmailCode, EmailStatusCode } from "@/models/member";
-import { GithubStartupChangeSchema } from "@/server/controllers/helpers/githubHelpers/githubEntryInterface";
+//import { GithubStartupChangeSchema } from "@/server/controllers/helpers/githubHelpers/githubEntryInterface";
 
 export enum EventCode {
     MEMBER_REDIRECTION_CREATED = "MEMBER_REDIRECTION_CREATED",
@@ -208,14 +208,14 @@ export const EventStartupPhaseUpdatedPayload = z.object({
 export const EventStartupInfoUpdatedPayload = z.object({
     action_code: z.literal(EventCode.STARTUP_INFO_UPDATED),
     action_metadata: z.object({
-        value: GithubStartupChangeSchema,
+        //value: GithubStartupChangeSchema,
     }),
 });
 
 export const EventStartupInfoCreatedPayload = z.object({
     action_code: z.literal(EventCode.STARTUP_INFO_CREATED),
     action_metadata: z.object({
-        value: GithubStartupChangeSchema,
+        //value: GithubStartupChangeSchema,
     }),
 });
 
