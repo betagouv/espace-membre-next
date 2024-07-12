@@ -7,7 +7,7 @@ import routes from "@/routes/routes";
 import * as session from "@/server/helpers/session";
 import app from "@/server/index";
 import * as betagouv from "@betagouv";
-import * as UpdateGithubCollectionEntry from "@controllers/helpers/githubHelpers/updateGithubCollectionEntry";
+//import * as UpdateGithubCollectionEntry from "@controllers/helpers/githubHelpers/updateGithubCollectionEntry";
 
 chai.use(chaiHttp);
 
@@ -63,21 +63,21 @@ describe("Startup page", () => {
 
     describe("post /api/startups/:startup authenticated", () => {
         let getToken;
-        let updateStartupGithubFileStub;
+        //  let updateStartupGithubFileStub;
         let startupInfosStub;
         beforeEach(() => {
             getToken = sinon.stub(session, "getToken");
             getToken.returns(utils.getJWT("membre.actif"));
-            updateStartupGithubFileStub = sinon.stub(
-                UpdateGithubCollectionEntry,
-                "updateMultipleFilesPR"
-            );
-            updateStartupGithubFileStub.returns(
-                Promise.resolve({
-                    html_url: "https://djkajdlskjad.com",
-                    number: 12151,
-                })
-            );
+            // updateStartupGithubFileStub = sinon.stub(
+            //     UpdateGithubCollectionEntry,
+            //     "updateMultipleFilesPR"
+            // );
+            // updateStartupGithubFileStub.returns(
+            //     Promise.resolve({
+            //         html_url: "https://djkajdlskjad.com",
+            //         number: 12151,
+            //     })
+            // );
             startupInfosStub = sinon.stub(betagouv.default, "startupsInfos");
             startupInfosStub.returns(
                 Promise.resolve([
@@ -123,7 +123,7 @@ describe("Startup page", () => {
 
         afterEach(() => {
             getToken.restore();
-            updateStartupGithubFileStub.restore();
+            //updateStartupGithubFileStub.restore();
             startupInfosStub.restore();
         });
 
