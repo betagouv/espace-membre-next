@@ -9,7 +9,7 @@ const InfoContext = createContext({
 
 // Exporter un fournisseur de contexte
 export const BreadCrumbProvider = ({ children }) => {
-    const [currentPage, setCurrentPage] = useState("");
+    const [currentPage, setCurrentPage] = useState("/");
 
     return (
         <InfoContext.Provider value={{ currentPage, setCurrentPage }}>
