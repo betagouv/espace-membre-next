@@ -219,11 +219,13 @@ export function incubatorToModel(
     return {
         uuid: incubator.uuid,
         title: incubator.title,
-        owner_id: incubator.owner_id || undefined,
+        owner_id: incubator.owner_id || "",
         contact: incubator.contact || "",
         ghid: incubator.ghid || "",
         address: incubator.address,
-        website: incubator.website,
+        website: incubator.website || "",
         github: incubator.github,
+        description: incubator.description || "",
+        short_description: incubator.short_description || "",
     };
 }

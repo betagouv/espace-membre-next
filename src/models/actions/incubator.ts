@@ -10,6 +10,8 @@ export const incubatorUpdateSchema = z.object({
     address: incubatorSchema.shape.address,
     website: incubatorSchema.shape.website,
     github: incubatorSchema.shape.github,
+    description: incubatorSchema.shape.description,
+    short_description: incubatorSchema.shape.short_description,
 });
 
 export type incubatorUpdateSchemaType = z.infer<typeof incubatorUpdateSchema>;

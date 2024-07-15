@@ -1,11 +1,14 @@
 "use client";
 import React, { useCallback } from "react";
+import MarkdownIt from "markdown-it";
 
 import { Alert } from "@codegouvfr/react-dsfr/Alert";
 import { Button } from "@codegouvfr/react-dsfr/Button";
 import { fr } from "@codegouvfr/react-dsfr/fr";
 import { Input } from "@codegouvfr/react-dsfr/Input";
 import { zodResolver } from "@hookform/resolvers/zod";
+import MdEditor from "react-markdown-editor-lite";
+import { ClientOnly } from "../ClientOnly";
 import _ from "lodash";
 import { useForm } from "react-hook-form";
 
@@ -17,12 +20,19 @@ import {
 import { incubatorSchemaType } from "@/models/incubator";
 import { Option } from "@/models/misc";
 
+import "react-markdown-editor-lite/lib/index.css";
+
 const NEW_INCUBATOR_DATA: incubatorUpdateSchemaType = {
     title: "",
     ghid: "",
     contact: "",
     owner_id: "",
+    website: "",
+    description: "",
+    short_description: "",
 };
+
+const mdParser = new MarkdownIt(/* Markdown-it options */);
 
 // data from secretariat API
 export interface IncubatorFormProps {
@@ -37,6 +47,7 @@ function BasicFormInput({
     errors,
     id,
     placeholder,
+    rows,
     ...props
 }: {
     id: keyof incubatorUpdateSchemaType;
@@ -44,14 +55,26 @@ function BasicFormInput({
     [some: string]: any;
 }) {
     const fieldShape = incubatorUpdateSchema.shape[id];
+    const nativeProps =
+        props.textArea === true
+            ? {
+                  nativeTextAreaProps: {
+                      placeholder,
+                      rows,
+                      ...register(`${id}`),
+                  },
+              }
+            : {
+                  nativeInputProps: {
+                      placeholder,
+                      ...register(`${id}`),
+                  },
+              };
     return (
         (fieldShape && (
             <Input
                 label={fieldShape.description}
-                nativeInputProps={{
-                    placeholder,
-                    ...register(`${id}`),
-                }}
+                {...nativeProps}
                 state={errors && errors[id] ? "error" : "default"}
                 stateRelatedMessage={errors && errors[id]?.message}
                 {...(props ? props : {})}
@@ -60,6 +83,21 @@ function BasicFormInput({
     );
 }
 
+const DEFAULT_SHORT_DESCRIPTION =
+    "Lancé en XXXX, cet incubateur a pour mission de soutenir les services en faveur de **politique publique cible**.";
+
+const DEFAULT_DESCRIPTION = `
+L’Incubateur XXXX est un programme de XXXX.
+
+Membre du réseau beta.gouv dont il suit et diffuse [l'approche](https://beta.gouv.fr/manifeste), il vise à **accompagner XXX dans leurs usages du numérique** en :
+
+- **intervenant directement auprès d'elles pour diagnostiquer leurs besoins** et préconiser les solutions _open source_ qui y répondent ;
+- **développant, selon la méthodologie "startup d'Etat", des services publics numériques** à impact répondant à leurs besoins ;
+- **transformant les méthodologies et outils des agents publics de XXX** ;
+- **s'impliquant dans la structuration et l'écosystème des communs numériques**
+
+
+`;
 export function IncubatorForm(props: IncubatorFormProps) {
     const {
         register,
@@ -161,6 +199,97 @@ export function IncubatorForm(props: IncubatorFormProps) {
                         placeholder="ISN"
                         hintText={`Par exemple : "ISN"`}
                     />
+                    <div
+                        className={`fr-input-group ${
+                            errors?.short_description
+                                ? "fr-input-group--error"
+                                : ""
+                        }`}
+                    >
+                        <label className="fr-label">
+                            Description rapide de l'incubateur (obligatoire) :
+                            <span className="fr-hint-text">
+                                Aperçu en une phrase de cet incubateur.
+                            </span>
+                        </label>
+
+                        <ClientOnly>
+                            <MdEditor
+                                plugins={[
+                                    "font-bold",
+                                    "font-italic",
+                                    "font-underline",
+                                    "font-strikethrough",
+                                ]}
+                                defaultValue={
+                                    props.incubator?.short_description ||
+                                    DEFAULT_SHORT_DESCRIPTION
+                                }
+                                style={{
+                                    height: "160px",
+                                    marginTop: "0.5rem",
+                                }}
+                                renderHTML={(text) => mdParser.render(text)}
+                                onChange={(data, e) => {
+                                    setValue("short_description", data.text, {
+                                        shouldValidate: true,
+                                        shouldDirty: true,
+                                    });
+                                }}
+                            />
+                        </ClientOnly>
+                    </div>
+
+                    <div
+                        className={`fr-input-group ${
+                            errors?.description ? "fr-input-group--error" : ""
+                        }`}
+                    >
+                        <label className="fr-label">
+                            Description complète de l'incubateur (obligatoire) :
+                            <span className="fr-hint-text">
+                                Pour la fiche de l'incubateur.
+                            </span>
+                        </label>
+
+                        <ClientOnly>
+                            <MdEditor
+                                plugins={[
+                                    "header",
+                                    "font-bold",
+                                    "font-italic",
+                                    "font-underline",
+                                    "font-strikethrough",
+                                    "list-unordered",
+                                    "list-ordered",
+                                    "block-quote",
+                                    "block-wrap",
+                                    "table",
+                                    "image",
+                                    "link",
+                                    "clear",
+                                    "full-screen",
+                                    "tab-insert",
+                                ]}
+                                defaultValue={
+                                    props.incubator?.description ||
+                                    DEFAULT_DESCRIPTION
+                                }
+                                style={{
+                                    height: "500px",
+                                    marginTop: "0.5rem",
+                                }}
+                                renderHTML={(text) => mdParser.render(text)}
+                                onChange={(data, e) => {
+                                    setValue("description", data.text, {
+                                        shouldValidate: true,
+                                        shouldDirty: true,
+                                    });
+                                }}
+                            />
+                        </ClientOnly>
+                    </div>
+
                     <BasicInput
                         id="contact"
                         label="Contact"
@@ -179,7 +308,7 @@ export function IncubatorForm(props: IncubatorFormProps) {
                     />
                     <BasicInput
                         id="github"
-                        label="Organisation GitHub de l'incubateur"
+                        label="URL de l'organisation GitHub de l'incubateur"
                         placeholder="ex: https://github.com/beta.gouv.fr"
                     />
                     <SESponsorSelect
@@ -187,7 +316,7 @@ export function IncubatorForm(props: IncubatorFormProps) {
                         defaultValue={getValues("owner_id")}
                         allSponsors={props.sponsorOptions}
                         onChange={(newSponsor) => {
-                            setValue("owner_id", newSponsor || undefined);
+                            setValue("owner_id", newSponsor || "");
                         }}
                         placeholder={"Sélectionnez un sponsor"}
                         containerStyle={{
@@ -195,6 +324,10 @@ export function IncubatorForm(props: IncubatorFormProps) {
                         }}
                         hint={
                             "Indiquez l'administration qui porte cet incubateur"
+                        }
+                        state={errors.owner_id && "error"}
+                        stateMessageRelated={
+                            errors.owner_id && errors.owner_id.message
                         }
                         isMulti={false}
                     ></SESponsorSelect>

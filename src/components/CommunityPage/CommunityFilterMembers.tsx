@@ -146,7 +146,7 @@ export const CommunityFilterMembers = (props: CommunityProps) => {
                     <div className="fr-col-6">
                         <SEIncubateurSelect
                             label={"Incubateurs"}
-                            incubators={props.incubatorOptions}
+                            incubators={props.incubators}
                             onChange={(e, incubators) => {
                                 setState({
                                     ...state,

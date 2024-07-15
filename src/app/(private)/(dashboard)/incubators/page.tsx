@@ -1,7 +1,7 @@
 import { Metadata } from "next";
 
 import { IncubatorList } from "@/components/IncubatorListPage";
-import { getAllIncubators } from "@/lib/kysely/queries/incubators";
+import { getAllIncubatorsOptions } from "@/lib/kysely/queries/incubators";
 import { routeTitles } from "@/utils/routes/routeTitles";
 
 export const metadata: Metadata = {
@@ -9,16 +9,11 @@ export const metadata: Metadata = {
 };
 
 export default async function Page() {
-    const incubators = await getAllIncubators().then((r) =>
-        r.map((s) => ({
-            value: s.uuid,
-            label: s.title,
-        }))
-    );
+    const incubatorOptions = await getAllIncubatorsOptions();
     return (
         <>
             <h1>{routeTitles.incubatorList()}</h1>
-            <IncubatorList incubators={incubators} />;
+            <IncubatorList incubatorOptions={incubatorOptions} />;
         </>
     );
 }
