@@ -26,10 +26,6 @@ export default function SEIncubateurSelect({
     stateRelatedMessage?: any;
     defaultValue?: any;
 }) {
-    const incubatorOptions = incubators.map((se) => ({
-        id: se.value,
-        label: se.label,
-    }));
     return (
         <div className="fr-select-group">
             {!!label && (
@@ -42,15 +38,10 @@ export default function SEIncubateurSelect({
                 multiple={isMulti}
                 options={incubatorOptions}
                 onChange={onChange}
-                defaultValue={
-                    defaultValue
-                        ? defaultValue.map((se) => ({
-                              id: se.value,
-                              label: se.label,
-                          }))
-                        : undefined
-                }
-                isOptionEqualToValue={(option, value) => option.id === value.id}
+                defaultValue={defaultValue || undefined}
+                isOptionEqualToValue={(option, value) => {
+                    return option.value === value.value;
+                }}
                 renderInput={(params) => (
                     <TextField
                         {...params}
