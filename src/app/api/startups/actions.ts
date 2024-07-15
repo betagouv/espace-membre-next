@@ -18,6 +18,7 @@ export async function createStartup({
     formData: {
         startup,
         startupSponsors,
+        startupEvents,
         startupPhases,
         newSponsors,
         newPhases,
@@ -97,6 +98,25 @@ export async function createStartup({
                         .column("name")
                         .doUpdateSet(rest);
                 })
+                .returning("uuid")
+                .executeTakeFirst();
+        }
+
+        // create/update startup events
+        await trx
+            .deleteFrom("startup_events")
+            .where("startup_id", "=", startupUuid)
+            .execute();
+
+        if (startupEvents.length) {
+            await trx
+                .insertInto("startup_events")
+                .values(
+                    startupEvents.map((e) => ({
+                        ...e,
+                        startup_id: startupUuid,
+                    }))
+                )
                 .returning("uuid")
                 .executeTakeFirst();
         }
