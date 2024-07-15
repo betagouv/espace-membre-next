@@ -57,6 +57,30 @@ export const localizedRoutes = {
             fr: (p) => `/dashboard`,
         }
     ),
+    incubatorDetailsEdit: defineLocalizedRoute(
+        { incubatorId: param.path.string },
+        {
+            fr: (p) => `/incubators/${p.incubatorId}`,
+        }
+    ),
+    incubatorList: defineLocalizedRoute(
+        {},
+        {
+            fr: (p) => `/incubators`,
+        }
+    ),
+    incubatorCreate: defineLocalizedRoute(
+        {},
+        {
+            fr: (p) => `/incubators/create-form`,
+        }
+    ),
+    incubatorDetails: defineLocalizedRoute(
+        { incubatorId: param.path.string },
+        {
+            fr: (p) => `/incubators/${p.incubatorId}`,
+        }
+    ),
     startupList: defineLocalizedRoute(
         {},
         {

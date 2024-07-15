@@ -1,6 +1,7 @@
-import { memberPublicInfoSchemaType } from "@/models/member";
 import Autocomplete from "@mui/material/Autocomplete";
 import TextField from "@mui/material/TextField";
+
+import { memberPublicInfoSchemaType } from "@/models/member";
 
 type MemberSelectProps<T extends boolean> = {
     onChange: T extends true

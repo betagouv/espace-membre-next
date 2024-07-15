@@ -44,17 +44,15 @@ export function PrivateLayout({ children }: { children: React.ReactNode }) {
     const dashboardLink = linkRegistry.get("dashboard", undefined);
     const startupListLink = linkRegistry.get("startupList", undefined);
     const startupCreateLink = linkRegistry.get("startupCreate", undefined);
+    const incubatorListLink = linkRegistry.get("incubatorList", undefined);
+    const incubatorCreateLink = linkRegistry.get("incubatorCreate", undefined);
+
     const adminMattermostLink = linkRegistry.get("adminMattermost", undefined);
     const newsletterLink = linkRegistry.get("newsletters", undefined);
     const accountEditBaseInfoLink = linkRegistry.get(
         "accountEditBaseInfo",
         undefined
     );
-    const accountEditPrivateInfoLink = linkRegistry.get(
-        "accountEditPrivateInfo",
-        undefined
-    );
-    const accountBadge = linkRegistry.get("accountBadge", undefined);
     const accountBadgeRenewalLink = linkRegistry.get(
         "accountBadgeRenewal",
         undefined
@@ -136,6 +134,23 @@ export function PrivateLayout({ children }: { children: React.ReactNode }) {
         },
     ];
 
+    const incubatorSubPage: ItemLink[] = [
+        {
+            linkProps: {
+                href: incubatorListLink,
+            },
+            text: routeTitles.incubatorList(),
+            isActive: hasPathnameThisMatch(pathname, incubatorListLink),
+        },
+        {
+            linkProps: {
+                href: incubatorCreateLink,
+            },
+            text: routeTitles.incubatorCreate(),
+            isActive: hasPathnameThisMatch(pathname, incubatorCreateLink),
+        },
+    ];
+
     const MenuItems: ItemLink[] = [
         // {
         //     linkProps: {
@@ -170,6 +185,17 @@ export function PrivateLayout({ children }: { children: React.ReactNode }) {
             isActive: hasPathnameThisMatch(pathname, startupListLink),
             expandedByDefault: Boolean(startupSubPage.find((a) => a.isActive)),
             items: startupSubPage,
+        },
+        {
+            linkProps: {
+                href: incubatorListLink,
+            },
+            text: "Incubateur",
+            isActive: hasPathnameThisMatch(pathname, incubatorListLink),
+            expandedByDefault: Boolean(
+                incubatorSubPage.find((a) => a.isActive)
+            ),
+            items: incubatorSubPage,
         },
         {
             linkProps: {
@@ -247,6 +273,8 @@ export function PrivateLayout({ children }: { children: React.ReactNode }) {
         const firstSubPage = pathname.split("/")[1];
         if (firstSubPage.includes("account")) {
             return accountSubPages;
+        } else if (firstSubPage.includes("incubators")) {
+            return incubatorSubPage;
         } else if (firstSubPage.includes("startups")) {
             return startupSubPage;
         } else if (firstSubPage.includes("community")) {

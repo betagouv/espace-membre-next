@@ -1,9 +1,6 @@
+import { Incubators } from "@/@types/db";
 import { memberBaseInfoSchemaType } from "@/models/member";
-
-export interface Option {
-    value: string;
-    label: string;
-}
+import { Option } from "@/models/misc";
 
 export interface CommunityProps {
     users: memberBaseInfoSchemaType[];

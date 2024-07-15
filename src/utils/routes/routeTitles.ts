@@ -36,4 +36,14 @@ export const routeTitles: {
     verifyMember: () => {
         return `Vérifie les informations de ton compte`;
     },
+    incubatorDetailsEdit: (id?: string) => {
+        return `Modifier la fiche incubateur de ${id}`;
+    },
+    incubatorList: () => "Rechercher un incubateur",
+    incubatorCreate: function (): string {
+        return `Créer une fiche incubateur`;
+    },
+    incubatorDetails: function (): string {
+        return `Fiche incubateur`;
+    },
 };
