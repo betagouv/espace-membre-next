@@ -8,6 +8,7 @@ import { competencesList } from "@/models/competences";
 import { memberBaseInfoToModel } from "@/models/mapper";
 import { DOMAINE_OPTIONS } from "@/models/member";
 import { routeTitles } from "@/utils/routes/routeTitles";
+import { getAllIncubatorsOptions } from "@/lib/kysely/queries/incubators";
 
 export const metadata: Metadata = {
     title: `${routeTitles.community()} / Espace Membre`,
@@ -17,18 +18,13 @@ export default async function Page() {
     const users = (await getAllUsersInfo()).map((member) =>
         memberBaseInfoToModel(member)
     );
-    const incubators = await db.selectFrom("incubators").selectAll().execute();
+    const incubatorOptions = await getAllIncubatorsOptions();
     const startups = await getAllStartups();
     const title = routeTitles.community();
 
     const props = {
         title,
-        incubatorOptions: incubators.map((incubator) => {
-            return {
-                value: incubator.uuid,
-                label: incubator.title,
-            };
-        }),
+        incubatorOptions: incubatorOptions,
         startupOptions: startups.map((startup) => {
             return {
                 value: startup.uuid,
