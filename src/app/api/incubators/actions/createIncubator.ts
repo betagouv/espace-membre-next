@@ -22,7 +22,6 @@ export async function createIncubator({
         throw new Error(`You don't have the right to access this function`);
     }
     incubatorUpdateSchema.parse(incubator);
-    console.log("LCS TOTO 1");
     await db.transaction().execute(async (trx) => {
         console.log("LCS TOTO 2", incubator);
 
