@@ -38,7 +38,7 @@ export async function PUT(
         memberData,
         previousInfo.uuid,
         undefined,
-        session.user.uuid
+        session.user.id
     );
 
     const dbUser = await getUserInfos({
