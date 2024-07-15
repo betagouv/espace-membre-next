@@ -9,9 +9,8 @@ import Button from "@codegouvfr/react-dsfr/Button";
 import Checkbox from "@codegouvfr/react-dsfr/Checkbox";
 import Input from "@codegouvfr/react-dsfr/Input";
 import { useEffect } from "react";
-import { useForm, SubmitHandler, useWatch, FieldErrors } from "react-hook-form";
-import { z, ZodSchema } from "zod";
-import { a } from "dist/playwright-report/trace/assets/testServerConnection-CpiRu-AA";
+import { useForm, SubmitHandler } from "react-hook-form";
+import { z } from "zod";
 
 const contenus = [
     {

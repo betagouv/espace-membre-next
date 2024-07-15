@@ -37,6 +37,7 @@ export async function updateMember(
         | {} = {}, // quick hack to update primary_email,secondary_email and primary_email_status on verify
     created_by_username: string
 ) {
+    // todo: auth
     const { missions, ...memberData } = data;
     const previousInfo = await getUserInfos({ uuid: memberUuid });
     if (!previousInfo) {
