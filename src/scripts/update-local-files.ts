@@ -2,7 +2,7 @@ import { detailedDiff } from "deep-object-diff";
 import { writeFile } from "fs/promises";
 import yaml from "js-yaml";
 import path from "path";
-
+import markdownit from "markdown-it";
 import { startup, author, organisation, incubator } from "./github-schemas";
 import {
     withEvents,
@@ -13,6 +13,8 @@ import {
     importFromZip,
 } from "./utils";
 import { db, sql } from "@lib/kysely";
+
+const md = markdownit({ html: true });
 
 const getChanges = async (markdownData) => {
     const updates: any[] = [];
@@ -77,7 +79,7 @@ const getChanges = async (markdownData) => {
             eb.ref("incubators.ghid").as("incubator"),
             sql<
                 Array<string>
-            >`COALESCE(NULLIF(ARRAY_AGG(CONCAT('/organisations/', organizations.ghid)), '{/organisations/}'), '{}')`.as(
+            >`COALESCE(NULLIF(ARRAY_AGG(CONCAT('/organisations/', organizations.ghid) order by organizations.ghid), '{/organisations/}'), '{}')`.as(
                 "sponsors"
             ),
             withPhases(eb),
@@ -124,7 +126,12 @@ const getChanges = async (markdownData) => {
                 Object.keys(diffed.updated).length
             ) {
                 const updated = { ...ghOrga2, ...dbOrga2 };
-                organisation.parse(updated);
+                try {
+                    organisation.parse(updated);
+                } catch (e) {
+                    console.error(`ERROR parsing organisation ${ghid2}`);
+                    console.error(e);
+                }
                 updates.push({
                     file: `content/_organisations/${dbOrga.ghid}.md`,
                     content: dumpYaml(updated),
@@ -138,23 +145,54 @@ const getChanges = async (markdownData) => {
         const ghIncub = markdownData.incubators.find(
             (o) => o.attributes.ghid === dbIncub.ghid
         );
-        const dbIncub2 = extractValidValues(dbIncub, ["ghid", "description"]);
+        const dbIncub2 = extractValidValues(dbIncub, [
+            "ghid",
+            "description",
+            "short_description",
+        ]);
+        const htmlShortDescription =
+            (dbIncub.short_description &&
+                md.renderInline(dbIncub.short_description)) ||
+            "";
         if (!ghIncub) {
             // create gh orga
             updates.push({
                 file: `content/_incubators/${dbIncub.ghid}.md`,
-                content: dumpYaml(dbIncub2, dbIncub.description || ""),
+                content: dumpYaml(
+                    {
+                        ...dbIncub2,
+                        short_description: htmlShortDescription,
+                    },
+                    dbIncub.description || ""
+                ),
             });
         } else {
             // dont update null values from DB
             const { ghid: ghid2, ...ghIncub2 } = ghIncub.attributes;
-            const diffed = detailedDiff(ghIncub2, dbIncub2);
+            const diffed = detailedDiff(ghIncub2, {
+                ...dbIncub2,
+                short_description: htmlShortDescription,
+            });
             if (
                 Object.keys(diffed.updated).length ||
                 Object.keys(diffed.added).length
             ) {
-                const updated = { ...ghIncub2, ...dbIncub2 };
-                incubator.parse(updated);
+                const updated = {
+                    ...ghIncub2,
+                    ...dbIncub2,
+                    short_description: htmlShortDescription,
+                };
+                updated.website = updated.website || ""; // wth due to url field ?
+                updated.github = updated.github || ""; // wth due to url field ?
+                updated.owner = updated.owner || ""; // wth
+                updated.address = updated.address || ""; // wth
+                updated.contact = updated.contact || ""; // wth
+                try {
+                    incubator.parse(updated);
+                } catch (e) {
+                    console.error(`ERROR parsing incubator ${ghid2}`);
+                    console.error(e);
+                }
                 updates.push({
                     file: `content/_incubators/${dbIncub.ghid}.md`,
                     content: dumpYaml(updated, dbIncub.description || ""),
@@ -241,7 +279,12 @@ const getChanges = async (markdownData) => {
                 if (updated.sponsors.length === 0) delete updated.sponsors;
                 if (updated.events.length === 0) delete updated.events;
 
-                startup.parse(updated);
+                try {
+                    startup.parse(updated);
+                } catch (e) {
+                    console.error(`ERROR parsing startup ${ghid2}`);
+                    console.error(e);
+                }
 
                 updates.push({
                     file: `content/_startups/${dbStartup.ghid}.md`,
@@ -315,7 +358,12 @@ const getChanges = async (markdownData) => {
                         });
                     if (updated.missions.length === 0) delete updated.missions;
 
-                    author.parse(updated);
+                    try {
+                        author.parse(updated);
+                    } catch (e) {
+                        console.error(`ERROR parsing author ${ghid2}`);
+                        console.error(e);
+                    }
 
                     updates.push({
                         file: `content/_authors/${dbAuthor.username}.md`,
