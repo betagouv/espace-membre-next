@@ -37,7 +37,6 @@ export async function createIncubator({
             })
             .returning("uuid")
             .executeTakeFirst();
-        console.log("LCS TOTO 3");
 
         if (!res) {
             throw new Error("Incubator data could not be inserted into db");
