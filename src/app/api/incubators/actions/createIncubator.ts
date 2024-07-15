@@ -23,7 +23,6 @@ export async function createIncubator({
     }
     incubatorUpdateSchema.parse(incubator);
     await db.transaction().execute(async (trx) => {
-        console.log("LCS TOTO 2", incubator);
 
         // update incubator data
         const res = await trx
