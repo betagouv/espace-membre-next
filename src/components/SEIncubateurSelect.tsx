@@ -7,6 +7,7 @@ export default function SEIncubateurSelect({
     incubators,
     onChange,
     label,
+    placeholder,
     hint,
     state,
     isMulti,
@@ -17,6 +18,7 @@ export default function SEIncubateurSelect({
     onChange: any;
     isMulti?: boolean;
     label?: any;
+    placeholder?: string;
     hint?: any;
     state?: any;
     stateRelatedMessage?: any;
@@ -63,7 +65,10 @@ export default function SEIncubateurSelect({
                             backgroundColor: `var(--background-contrast-grey)`,
                             boxShadow: `inset 0 -2px 0 0 var(--border-plain-grey)`,
                         }}
-                        placeholder="Sélectionne un ou plusieurs incubateurs"
+                        placeholder={
+                            placeholder ||
+                            "Sélectionne un ou plusieurs incubateurs"
+                        }
                     />
                 )}
             />

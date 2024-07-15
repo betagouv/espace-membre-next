@@ -25,7 +25,8 @@ export const IncubatorList = (props: IncubatorListProps) => {
         <>
             <form onSubmit={save}>
                 <SEIncubateurSelect
-                    label={"Incubateurs"}
+                    label="Incubateurs"
+                    placeholder="Sélectionne un incubateur"
                     incubators={props.incubators}
                     onChange={(e, incubator) => {
                         console.log(e, incubator);
