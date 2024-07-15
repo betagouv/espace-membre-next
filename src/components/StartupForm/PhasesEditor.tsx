@@ -114,6 +114,7 @@ export function PhasesEditor({
                                     cursor: "pointer",
                                     float: "right",
                                 }}
+                                type="button"
                                 onClick={() => phasesRemove(index)}
                                 title={`Supprimer la phase ${index + 1}`}
                             />

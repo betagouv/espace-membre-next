@@ -8,7 +8,7 @@ import { getPullRequestForBranch, fetchGithubMarkdown } from "@/lib/github";
 import { db } from "@/lib/kysely";
 import { startupToModel } from "@/models/mapper";
 import { sponsorSchema } from "@/models/sponsor";
-import { phaseSchema, startupSchema } from "@/models/startup";
+import { eventSchema, phaseSchema, startupSchema } from "@/models/startup";
 import { thematiques } from "@/models/thematiques";
 import { usertypes } from "@/models/usertypes";
 import betagouv from "@/server/betagouv";
@@ -107,10 +107,20 @@ export default async function Page(props) {
                 .selectAll()
                 .execute()
         );
+    const startupEvents = z
+        .array(eventSchema)
+        .parse(
+            await db
+                .selectFrom("startup_events")
+                .where("startup_events.startup_id", "=", startup.uuid)
+                .selectAll()
+                .execute()
+        );
     const componentProps = {
         startup,
         startupSponsors,
         startupPhases,
+        startupEvents,
         incubatorOptions: incubators.map((incubator) => {
             return {
                 value: incubator.uuid,

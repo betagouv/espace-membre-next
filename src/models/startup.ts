@@ -50,6 +50,33 @@ export enum AccessibilityStatus {
     TOTALEMENT_CONFORME = "totalement conforme",
 }
 
+export enum StartupEvent {
+    EVENT_LAUNCH = "product_launch",
+    EVENT_COMITE = "committee",
+    EVENT_FAST = "fast",
+    EVENT_NATIONAL_IMPACT = "national_impact",
+    EVENT_OTHER = "other",
+    EVENT_END = "end",
+}
+
+export const EVENT_READABLE_NAME = {
+    product_launch: "Lancement du produit",
+    committee: "Passage en comité",
+    fast: "FAST",
+    national_impact: "Impact national validé",
+    other: "Autre",
+    end: "Abandon",
+};
+
+export const EVENTS_ORDERED_LIST = [
+    StartupEvent.EVENT_LAUNCH,
+    StartupEvent.EVENT_COMITE,
+    StartupEvent.EVENT_FAST,
+    StartupEvent.EVENT_NATIONAL_IMPACT,
+    StartupEvent.EVENT_OTHER,
+    StartupEvent.EVENT_END,
+];
+
 // export interface Startup {
 //     github?: string;
 //     website?: string;
@@ -98,7 +125,6 @@ export enum AccessibilityStatus {
 // }
 
 export const phaseSchema = z.object({
-    // @ts-ignore
     uuid: z.string(),
     name: z.nativeEnum(StartupPhase),
     start: z.preprocess(
@@ -129,6 +155,30 @@ export const phaseSchema = z.object({
 });
 
 export type phaseSchemaType = z.infer<typeof phaseSchema>;
+
+export const eventSchema = z.object({
+    uuid: z.string(),
+    name: z.nativeEnum(StartupEvent),
+    date: z.preprocess(
+        (val) => {
+            if (typeof val === "string") {
+                return new Date(val);
+            }
+            return val;
+        },
+        z
+            .date({
+                errorMap: (issue, ctx) => ({
+                    message: "Champ obligatoire",
+                }),
+            })
+            .describe("Date")
+    ),
+    startup_id: z.string(),
+    comment: z.string().optional().nullable(),
+});
+
+export type eventSchemaType = z.infer<typeof eventSchema>;
 
 export const startupSchema = z.object({
     uuid: z.string(),
@@ -205,10 +255,10 @@ export const startupSchema = z.object({
         .describe("Url de l'analyse de risque")
         .optional()
         .nullable(),
-    events: z
-        .array(z.object({ name: z.string(), date: z.date() }))
-        .optional()
-        .nullable(),
+    // events: z
+    //     .array(eventSchema.omit({ uuid: true }))
+    //     .optional()
+    //     .nullable(),
     // phases: z
     //     .array(phaseSchema)
     //     .min(1, "Vous devez définir au moins une phase (ex: investigation)")

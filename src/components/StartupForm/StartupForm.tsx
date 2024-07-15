@@ -28,10 +28,13 @@ import {
 import { Option } from "@/models/misc";
 import { sponsorSchemaType } from "@/models/sponsor";
 import {
+    StartupEvent,
     StartupPhase,
+    eventSchemaType,
     phaseSchemaType,
     startupSchemaType,
 } from "@/models/startup";
+import { EventsEditor } from "./EventsEditor";
 
 // import style manually
 const mdParser = new MarkdownIt(/* Markdown-it options */);
@@ -68,6 +71,7 @@ export interface StartupFormProps {
     startup?: startupSchemaType;
     startupSponsors?: sponsorSchemaType[];
     startupPhases?: phaseSchemaType[];
+    startupEvents?: eventSchemaType[];
     incubatorOptions: Option[];
     sponsorOptions: Option[];
     save: (data: startupInfoUpdateSchemaType) => any;
@@ -127,6 +131,12 @@ export function StartupForm(props: StartupFormProps) {
                 {
                     name: StartupPhase.PHASE_INVESTIGATION,
                     start: new Date(),
+                },
+            ],
+            startupEvents: props.startupEvents || [
+                {
+                    name: undefined,
+                    date: new Date(),
                 },
             ],
             newSponsors: [],
@@ -449,6 +459,26 @@ export function StartupForm(props: StartupFormProps) {
                             setValue={setValue}
                             getValues={getValues}
                             errors={errors.startupPhases || []}
+                        />
+                    </div>
+                    <div
+                        className={`fr-input-group ${
+                            errors.startupEvents ? "fr-input-group--error" : ""
+                        }`}
+                    >
+                        <label className="fr-label">
+                            Événements
+                            <span className="fr-hint-text">
+                                Voici l'historique des événements marquants de
+                                la startup
+                            </span>
+                        </label>
+                        <EventsEditor
+                            control={control}
+                            register={register}
+                            setValue={setValue}
+                            getValues={getValues}
+                            errors={errors.startupEvents || []}
                         />
                     </div>
                     {/*[FILE UPLOAD ]<hr />*/}
