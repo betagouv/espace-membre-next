@@ -43,6 +43,7 @@ export const CommunitySearchMember = ({
                     </div>
                     <div className="fr-mt-6v">
                         <Button
+                            disabled={!username}
                             nativeButtonProps={{
                                 type: "submit",
                             }}
