@@ -165,7 +165,7 @@ export function IncubatorForm(props: IncubatorFormProps) {
                         id="contact"
                         label="Contact"
                         placeholder="ex: contact@[incubator].beta.gouv.fr"
-                        hintText="L'email a utilisé pour contacter l'incubateur"
+                        hintText="L'email a utiliser pour contacter l'incubateur"
                     />
                     <BasicInput
                         id="address"
@@ -179,21 +179,22 @@ export function IncubatorForm(props: IncubatorFormProps) {
                     />
                     <BasicInput
                         id="github"
-                        label="Organisation github de l'incubateur"
+                        label="Organisation GitHub de l'incubateur"
                         placeholder="ex: https://github.com/beta.gouv.fr"
                     />
                     <SESponsorSelect
+                        label="Sponsor"
                         defaultValue={getValues("owner_id")}
                         allSponsors={props.sponsorOptions}
                         onChange={(newSponsor) => {
                             setValue("owner_id", newSponsor || undefined);
                         }}
-                        placeholder={"Sélectionnez des sponsors"}
+                        placeholder={"Sélectionnez un sponsor"}
                         containerStyle={{
                             marginBottom: `0.5rem`,
                         }}
                         hint={
-                            "Indiquez la ou les administrations qui sponsorisent votre produit"
+                            "Indiquez l'administration qui porte cet incubateur"
                         }
                         isMulti={false}
                     ></SESponsorSelect>
