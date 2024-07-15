@@ -224,7 +224,7 @@ export function incubatorToModel(
         ghid: incubator.ghid || "",
         address: incubator.address,
         website: incubator.website || "",
-        github: incubator.github,
+        github: incubator.github || "",
         description: incubator.description || "",
         short_description: incubator.short_description || "",
     };

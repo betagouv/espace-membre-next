@@ -11,11 +11,14 @@ import { startupInfoUpdateSchemaType } from "@/models/actions/startup";
 import { sponsorSchema } from "@/models/sponsor";
 import { phaseSchema } from "@/models/startup";
 import { authOptions } from "@/utils/authoptions";
+import { addEvent } from "@/lib/events";
+import { EventCode } from "@/models/actionEvent";
 
 export async function createStartup({
     formData: {
         startup,
         startupSponsors,
+        startupEvents,
         startupPhases,
         newSponsors,
         newPhases,
@@ -98,6 +101,31 @@ export async function createStartup({
                 .returning("uuid")
                 .executeTakeFirst();
         }
+
+        // create/update startup events
+        await trx
+            .deleteFrom("startup_events")
+            .where("startup_id", "=", startupUuid)
+            .execute();
+
+        if (startupEvents.length) {
+            await trx
+                .insertInto("startup_events")
+                .values(
+                    startupEvents.map((e) => ({
+                        ...e,
+                        startup_id: startupUuid,
+                    }))
+                )
+                .returning("uuid")
+                .executeTakeFirst();
+        }
+
+        addEvent({
+            action_code: EventCode.STARTUP_INFO_CREATED,
+            created_by_username: session.user.id,
+        });
+
         revalidatePath("/startups");
     });
 }
@@ -273,6 +301,10 @@ export async function updateStartup({
                 .returning("uuid")
                 .executeTakeFirst();
         }
+        addEvent({
+            action_code: EventCode.STARTUP_INFO_UPDATED,
+            created_by_username: session.user.id,
+        });
 
         revalidatePath("/startups");
     });

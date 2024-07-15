@@ -8,8 +8,8 @@ export const incubatorSchema = z.object({
     contact: z.string().nullable().optional(),
     ghid: z.string().min(2),
     address: z.string().nullable().optional(),
-    website: z.union([z.literal(""), z.string().trim().url()]),
-    github: z.string().url().nullable().optional(),
+    website: z.string().url().optional().or(z.literal("")),
+    github: z.string().url().optional().or(z.literal("")),
     description: z.string(),
     short_description: z.string(),
 });

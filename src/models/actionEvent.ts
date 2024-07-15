@@ -207,16 +207,20 @@ export const EventStartupPhaseUpdatedPayload = z.object({
 
 export const EventStartupInfoUpdatedPayload = z.object({
     action_code: z.literal(EventCode.STARTUP_INFO_UPDATED),
-    action_metadata: z.object({
-        //value: GithubStartupChangeSchema,
-    }),
+    action_metadata: z
+        .object({
+            //   value: GithubStartupChangeSchema,
+        })
+        .optional(),
 });
 
 export const EventStartupInfoCreatedPayload = z.object({
     action_code: z.literal(EventCode.STARTUP_INFO_CREATED),
-    action_metadata: z.object({
-        //value: GithubStartupChangeSchema,
-    }),
+    action_metadata: z
+        .object({
+            //value: GithubStartupChangeSchema,
+        })
+        .optional(),
 });
 
 export const EventMemberUnblockEmailPayload = z.object({
