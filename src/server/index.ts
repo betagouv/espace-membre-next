@@ -14,25 +14,20 @@ import { errorHandler } from "./middlewares/errorHandler";
 import { rateLimiter } from "./middlewares/rateLimiter";
 import { setupSessionMiddleware } from "./middlewares/sessionMiddleware";
 import {
-    accountRouter,
     adminRouter,
     badgeRouter,
-    communityRouter,
-    diagnosticRouter,
     userRouter,
     userApiRouter,
     mapRouter,
     newsletterRouter,
-    onboardingRouter,
     setupStaticFiles,
-    startupRouter,
 } from "./routes";
-import routes from "@/routes/routes";
+//import routes from "@/routes/routes";
 import config from "@/server/config";
 import { getToken } from "@/server/helpers/session";
 import * as hookController from "@controllers/hookController";
 import * as indexController from "@controllers/indexController";
-import * as pullRequestsController from "@controllers/pullRequestsController";
+//import * as pullRequestsController from "@controllers/pullRequestsController";
 import * as resourceController from "@controllers/resourceController";
 import { initializeSentry, sentryErrorHandler } from "@lib/sentry";
 
@@ -100,21 +95,16 @@ const startServer = () => {
         server.get("/", indexController.getIndex);
         server.use(userRouter);
         server.use(userApiRouter);
-        server.use(accountRouter);
-        server.use(startupRouter);
-        server.use(communityRouter);
         server.use(adminRouter);
         // server.use(authRouter);
-        server.use(diagnosticRouter);
         server.use(badgeRouter);
         server.use(newsletterRouter);
-        server.use(onboardingRouter);
         server.use(mapRouter);
 
-        server.get(
-            routes.PULL_REQUEST_GET_PRS,
-            pullRequestsController.getAllPullRequests
-        );
+        // server.get(
+        //     routes.PULL_REQUEST_GET_PRS,
+        //     pullRequestsController.getAllPullRequests
+        // );
         // INCUBATORS
         //server.get(routes.API_PUBLIC_INCUBATORS_GET_ALL, getAllIncubators);
 
