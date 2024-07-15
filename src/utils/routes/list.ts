@@ -113,5 +113,21 @@ export const routes = {
             localizedRoutes.verifyMember.params,
             localizedRoutes.verifyMember.paths.fr
         ),
+        incubatorDetailsEdit: defineRoute(
+            localizedRoutes.incubatorDetailsEdit.params,
+            localizedRoutes.incubatorDetailsEdit.paths.fr
+        ),
+        incubatorList: defineRoute(
+            localizedRoutes.incubatorList.params,
+            localizedRoutes.incubatorList.paths.fr
+        ),
+        incubatorCreate: defineRoute(
+            localizedRoutes.incubatorCreate.params,
+            localizedRoutes.incubatorCreate.paths.fr
+        ),
+        incubatorDetails: defineRoute(
+            localizedRoutes.incubatorDetails.params,
+            localizedRoutes.incubatorDetails.paths.fr
+        ),
     }).routes,
 };

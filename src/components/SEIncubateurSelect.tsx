@@ -1,28 +1,31 @@
 import React from "react";
+
 import Autocomplete from "@mui/material/Autocomplete";
 import TextField from "@mui/material/TextField";
+import { Incubators } from "@/@types/db";
+import { Option } from "@/models/misc";
 
 export default function SEIncubateurSelect({
-    incubators,
+    incubatorOptions,
     onChange,
     label,
+    placeholder,
     hint,
     state,
+    isMulti,
     stateRelatedMessage,
     defaultValue,
 }: {
-    incubators: { value: string; label: string }[];
+    incubatorOptions: Option[];
     onChange: any;
+    isMulti?: boolean;
     label?: any;
+    placeholder?: string;
     hint?: any;
     state?: any;
     stateRelatedMessage?: any;
     defaultValue?: any;
 }) {
-    const incubatorOptions = incubators.map((se) => ({
-        id: se.value,
-        label: se.label,
-    }));
     return (
         <div className="fr-select-group">
             {!!label && (
@@ -32,18 +35,13 @@ export default function SEIncubateurSelect({
                 </label>
             )}
             <Autocomplete
-                multiple
+                multiple={isMulti}
                 options={incubatorOptions}
                 onChange={onChange}
-                defaultValue={
-                    defaultValue
-                        ? defaultValue.map((se) => ({
-                              id: se.value,
-                              label: se.label,
-                          }))
-                        : undefined
-                }
-                isOptionEqualToValue={(option, value) => option.id === value.id}
+                defaultValue={defaultValue || undefined}
+                isOptionEqualToValue={(option, value) => {
+                    return option.value === value.value;
+                }}
                 renderInput={(params) => (
                     <TextField
                         {...params}
@@ -60,7 +58,10 @@ export default function SEIncubateurSelect({
                             backgroundColor: `var(--background-contrast-grey)`,
                             boxShadow: `inset 0 -2px 0 0 var(--border-plain-grey)`,
                         }}
-                        placeholder="Sélectionne un ou plusieurs incubateurs"
+                        placeholder={
+                            placeholder ||
+                            "Sélectionne un ou plusieurs incubateurs"
+                        }
                     />
                 )}
             />

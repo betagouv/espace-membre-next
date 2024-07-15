@@ -49,7 +49,8 @@ const SponsorBlock = ({
     return (
         <div className="fr-input-group">
             <SESponsorSelect
-                value={sponsors}
+                isMulti={true}
+                defaultValue={sponsors}
                 allSponsors={allSponsors}
                 onChange={(newSponsors) => {
                     setSponsors(newSponsors);
