@@ -1,3 +1,4 @@
+import { NextAppDirEmotionCacheProvider } from "tss-react/next/appDir";
 import { PropsWithChildren } from "react";
 
 import { fr } from "@codegouvfr/react-dsfr";
@@ -37,48 +38,50 @@ async function MainStructure(props: PropsWithChildren) {
                 <DsfrHead Link={Link} />
             </head>
             <body>
-                <ClientSessionProvider session={session}>
-                    <DsfrProvider>
-                        <MuiDsfrThemeProvider>
-                            <BreadCrumbProvider>
-                                <LiveChatProvider>
-                                    <Header />
+                <NextAppDirEmotionCacheProvider options={{ key: "css" }}>
+                    <ClientSessionProvider session={session}>
+                        <DsfrProvider>
+                            <MuiDsfrThemeProvider>
+                                <BreadCrumbProvider>
+                                    <LiveChatProvider>
+                                        <Header />
 
-                                    <div
-                                        className={`fr-container fr-container--fluid ${fr.cx(
-                                            "fr-mb-10v"
-                                        )}`}
-                                        id="root-container"
-                                    >
-                                        {props.children}
-                                    </div>
-                                    <Footer
-                                        accessibility="partially compliant"
-                                        contentDescription="Espace Membre est une application permettant aux membres de la communauté beta.gouv.fr d'accéder aux espaces dédiés à la communauté."
-                                        termsLinkProps={{
-                                            href: "#",
-                                        }}
-                                        brandTop={
-                                            <>
-                                                République
-                                                <br />
-                                                Française
-                                            </>
-                                        }
-                                        homeLinkProps={{
-                                            href: "/",
-                                            title: "Accueil - Espace Membre @beta.gouv.fr",
-                                        }}
-                                        websiteMapLinkProps={{
-                                            href: "#",
-                                        }}
-                                    />
-                                </LiveChatProvider>
-                            </BreadCrumbProvider>
-                        </MuiDsfrThemeProvider>
-                    </DsfrProvider>
-                    <Matomo />
-                </ClientSessionProvider>
+                                        <div
+                                            className={`fr-container fr-container--fluid ${fr.cx(
+                                                "fr-mb-10v"
+                                            )}`}
+                                            id="root-container"
+                                        >
+                                            {props.children}
+                                        </div>
+                                        <Footer
+                                            accessibility="partially compliant"
+                                            contentDescription="Espace Membre est une application permettant aux membres de la communauté beta.gouv.fr d'accéder aux espaces dédiés à la communauté."
+                                            termsLinkProps={{
+                                                href: "#",
+                                            }}
+                                            brandTop={
+                                                <>
+                                                    République
+                                                    <br />
+                                                    Française
+                                                </>
+                                            }
+                                            homeLinkProps={{
+                                                href: "/",
+                                                title: "Accueil - Espace Membre @beta.gouv.fr",
+                                            }}
+                                            websiteMapLinkProps={{
+                                                href: "#",
+                                            }}
+                                        />
+                                    </LiveChatProvider>
+                                </BreadCrumbProvider>
+                            </MuiDsfrThemeProvider>
+                        </DsfrProvider>
+                        <Matomo />
+                    </ClientSessionProvider>
+                </NextAppDirEmotionCacheProvider>
             </body>
         </>
     );

@@ -33,6 +33,8 @@ fileignoreconfig:
   checksum: ae267f7b99f6fce11d7085a1ce26995e53eca0b86653fcf3f5ed2ec1a11c76e8
 - filename: src/app/error.tsx
   checksum: 27b9e96bc30d8d4ebc96320f7fc79d9af807f8c6d9f1796497c60318dd728e47
+- filename: src/app/layout.tsx
+  checksum: 5c3c0e57c619fb0ffdb6a4cc06ebe16bb4824ebf1461d31a1f765bb94cb9d6ba
 - filename: src/app/not-found.tsx
   checksum: 29d7b736894451f16680665937d005f2e9912981a2dc42bd0015c1ccb3d0c835
 - filename: src/components/AccountPage/AccountPage.tsx
