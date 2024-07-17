@@ -3,6 +3,8 @@ import React from "react";
 import Accordion from "@codegouvfr/react-dsfr/Accordion";
 import Button from "@codegouvfr/react-dsfr/Button";
 import Input from "@codegouvfr/react-dsfr/Input";
+import { fr } from "@codegouvfr/react-dsfr";
+
 import axios from "axios";
 
 import { memberBaseInfoSchemaType } from "@/models/member";
@@ -27,35 +29,46 @@ export default function BlocConfigurerEmailPrincipal({
                 s'agit par défaut de {userInfos.username}@beta.gouv.fr.
                 <br />
                 <br />
-                En cas d'utilisation d'une adresse autre, l'email{" "}
-                {userInfos.username}
-                @beta.gouv.fr sera supprimé.
+                <i
+                    className={fr.cx("fr-icon--md", "fr-icon-warning-fill")}
+                />{" "}
+                En cas d'utilisation d'une adresse autre,{" "}
+                <strong>
+                    l'email {userInfos.username}
+                    @beta.gouv.fr sera définitivement supprimé
+                </strong>
+                .
             </p>
             {canChangeEmails && (
                 <form
                     method="POST"
                     onSubmit={(e) => {
                         e.preventDefault();
-                        setIsSaving(true);
-                        axios
-                            .put(
-                                computeRoute(
-                                    routes.USER_UPDATE_PRIMARY_EMAIL_API
-                                ).replace(":username", userInfos.username),
-                                {
-                                    primaryEmail: value,
-                                },
-                                {
-                                    withCredentials: true,
-                                }
-                            )
-                            .then((resp) => {
-                                setIsSaving(false);
-                            })
-                            .catch((err) => {
-                                setIsSaving(false);
-                                console.error(err);
-                            });
+                        const confirmed = confirm(
+                            "Êtes-vous vraiment certain(e) de vouloir changer cet email ?"
+                        );
+                        if (confirmed) {
+                            setIsSaving(true);
+                            axios
+                                .put(
+                                    computeRoute(
+                                        routes.USER_UPDATE_PRIMARY_EMAIL_API
+                                    ).replace(":username", userInfos.username),
+                                    {
+                                        primaryEmail: value,
+                                    },
+                                    {
+                                        withCredentials: true,
+                                    }
+                                )
+                                .then((resp) => {
+                                    setIsSaving(false);
+                                })
+                                .catch((err) => {
+                                    setIsSaving(false);
+                                    console.error(err);
+                                });
+                        }
                     }}
                 >
                     <Input
