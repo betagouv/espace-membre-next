@@ -272,8 +272,7 @@ export const memberSchema = z.object({
         .nullable(),
     average_nb_of_days: z
         .number()
-        .describe("Nombre de jour moyen travaillé")
-        .min(1)
+        .describe("Nombre de jour moyen travaillé par semaine")
         .max(5)
         .nullable()
         .optional(),
