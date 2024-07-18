@@ -14,9 +14,10 @@ type Props = {
 
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
     // read route params
-    const id = params.id;
+    const uuid = params.id;
+    const produit = await getStartup({ uuid });
     return {
-        title: `${routeTitles.startupDocs(id)} / Espace Membre`,
+        title: `${routeTitles.startupDocs(produit.name)} / Espace Membre`,
     };
 }
 

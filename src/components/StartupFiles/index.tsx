@@ -1,7 +1,7 @@
 "use client";
 import React, { useCallback, useState } from "react";
 import { useDropzone } from "react-dropzone";
-import { createModal } from "@codegouvfr/react-dsfr/Modal";
+import { Upload } from "@codegouvfr/react-dsfr/Upload";
 import { CallOut } from "@codegouvfr/react-dsfr/CallOut";
 import { fr } from "@codegouvfr/react-dsfr";
 import { FileForm } from "./FileForm";
@@ -21,33 +21,19 @@ function DocsDropZone({ onDrop }) {
         onDrop,
     });
 
-    const blockStyle = {
-        width: "100%",
-        height: 200,
-        margin: "1rem 0",
-        padding: "1rem",
-        border: "3px solid var(--text-default-grey)",
-        backgroundColor: "var(--artwork-background-grey)",
-        cursor: "pointer",
-    };
-    if (isDragActive) {
-        blockStyle.backgroundColor = "var(--artwork-background-green-bourgeon)";
-    }
+    const { style, ...props } = getInputProps();
+
     return (
-        <div {...getRootProps()} style={blockStyle}>
-            <input {...getInputProps()} />
-            <p>
-                <i className={fr.cx("fr-icon-upload-2-fill", "fr-mr-1w")}></i>
-                Déposez des fichiers ici ou cliquez pour choisir des fichiers
-            </p>
+        <div {...getRootProps()}>
+            <Upload
+                nativeInputProps={{ ...props }}
+                label="Choisissez un ou plusieurs fichiers"
+                hint="Taille maximale : 10 Mo. Formats supportés : pdf, doc, docx, ppt, pptx. Plusieurs fichiers possibles."
+                multiple
+            />
         </div>
     );
 }
-
-const uploadModal = createModal({
-    id: "upload-startup-file-modal",
-    isOpenedByDefault: false,
-});
 
 function generateDataUrl(file: File): Promise<string> {
     return new Promise((resolve) => {
@@ -70,7 +56,6 @@ export const StartupFiles = ({
     const onDrop = useCallback((acceptedFiles: File[]) => {
         setPendingFiles(acceptedFiles);
         setFileIndex(0);
-        uploadModal.open();
     }, []);
 
     const onFormSubmit = async (data: DocSchemaType) => {
@@ -90,7 +75,6 @@ export const StartupFiles = ({
         } else {
             alert("Impossible d'uploader");
         }
-        uploadModal.close();
         await wait();
 
         if (fileIndex === pendingFiles.length - 1) {
@@ -99,31 +83,33 @@ export const StartupFiles = ({
             setFileIndex(0);
         } else {
             setFileIndex((fileIndex) => fileIndex + 1);
-            uploadModal.open();
         }
 
         return true;
     };
 
-    const file = pendingFiles.length > fileIndex && pendingFiles[fileIndex];
+    const pendingFile =
+        pendingFiles.length > fileIndex && pendingFiles[fileIndex];
     return (
         <>
-            <CallOut title="Fichiers de la startup">
+            <CallOut title="Fichiers du produit">
                 Déposez et retrouvez ici les fichiers relatifs à la vie du
                 produit. <br />
                 Ces fichiers sont accessibles à{" "}
                 <b>toute la communauté beta.gouv.fr.</b>
             </CallOut>
-            <uploadModal.Component title={(file && file.name) || ""}>
-                {file && (
-                    <FileForm
-                        onSubmit={onFormSubmit}
-                        file={pendingFiles[fileIndex]}
-                    />
-                )}
-            </uploadModal.Component>
+
             <FileList files={files} />
+
             <DocsDropZone onDrop={onDrop} />
+
+            {pendingFile && (
+                <>
+                    <br />
+                    <h2>{pendingFile.name}</h2>
+                    <FileForm onSubmit={onFormSubmit} file={pendingFile} />
+                </>
+            )}
         </>
     );
 };
