@@ -18,8 +18,8 @@ export const routeTitles: {
     startupDetailsEdit: (id?: string) => {
         return `Modifier la fiche produit de ${id}`;
     },
-    startupDocs: (id?: string) => {
-        return `Fiches du produit ${id}`;
+    startupDocs: (name?: string) => {
+        return `Fichiers du produit ${name}`;
     },
     startupCreate: () => "Créer une fiche produit",
     organizationList: () => "Rechercher une organisation sponsor",
