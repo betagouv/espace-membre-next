@@ -23,7 +23,7 @@ export function DashboardPage(props: DashboardPageProps) {
                         className={fr.cx("fr-tile--sm")}
                         title="Ma fiche membre"
                         desc="Modifier ma mission en cours ou mes infos personnelles."
-                        horizontal
+                        orientation="horizontal"
                         imageUrl={(document as StaticImageData).src}
                         linkProps={{
                             href: linkRegistry.get(
@@ -38,7 +38,7 @@ export function DashboardPage(props: DashboardPageProps) {
                         className={fr.cx("fr-tile--sm")}
                         title="Email"
                         desc="Configurer l'accès à mes emails."
-                        horizontal
+                        orientation="horizontal"
                         imageUrl={(mailSend as StaticImageData).src}
                         linkProps={{
                             href: `${linkRegistry.get(
@@ -53,7 +53,7 @@ export function DashboardPage(props: DashboardPageProps) {
                         className={fr.cx("fr-tile--sm")}
                         title="Fiches produit"
                         desc="Compléter ma fiche produit."
-                        horizontal
+                        orientation="horizontal"
                         imageUrl={(document as StaticImageData).src}
                         linkProps={{
                             href: linkRegistry.get("startupList", undefined),
@@ -68,7 +68,7 @@ export function DashboardPage(props: DashboardPageProps) {
                         className={fr.cx("fr-tile--sm")}
                         title="Communauté"
                         desc="Explorer la communauté"
-                        horizontal
+                        orientation="horizontal"
                         imageUrl={(community as StaticImageData).src}
                         linkProps={{
                             href: linkRegistry.get("community", undefined),
@@ -80,7 +80,7 @@ export function DashboardPage(props: DashboardPageProps) {
                         className={fr.cx("fr-tile--sm")}
                         title="Observatoire de la communauté"
                         desc="Consulter les informations anonymisées sur la communauté (TJM...)."
-                        horizontal
+                        orientation="horizontal"
                         imageUrl={(locationFrance as StaticImageData).src}
                         linkProps={{
                             href: `${linkRegistry.get(
@@ -95,7 +95,7 @@ export function DashboardPage(props: DashboardPageProps) {
                         className={fr.cx("fr-tile--sm")}
                         title="Formations"
                         desc="S'inscrire aux formations réservées à la communauté."
-                        horizontal
+                        orientation="horizontal"
                         imageUrl={(school as StaticImageData).src}
                         linkProps={{
                             href: linkRegistry.get("formationList", undefined),
@@ -107,7 +107,7 @@ export function DashboardPage(props: DashboardPageProps) {
                         className={fr.cx("fr-tile--sm")}
                         title="Actualités"
                         desc="Lire les dernières infolettres de la communauté."
-                        horizontal
+                        orientation="horizontal"
                         imageUrl={(mailSend as StaticImageData).src}
                         linkProps={{
                             href: linkRegistry.get("newsletters", undefined),
