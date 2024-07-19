@@ -65,23 +65,46 @@ export const CompetencesEditor = ({
                     : null;
                 if (typeof newValue === "string") {
                     // touche entrée
-                    const values = [...value, { label: newValue }];
-                    setValue(values);
-                    onChange(
-                        event,
-                        values.map((v) => v.inputValue || v.label)
-                    );
+                    if (!value.map((v) => v.label).includes(newValue)) {
+                        const values = [...value, { label: newValue }];
+                        setValue(values);
+                        onChange(
+                            event,
+                            values.map((v) => v.inputValue || v.label)
+                        );
+                    }
                 } else if (newValue && newValue.inputValue) {
                     // Create a new value from the user input
-                    const values = [...value, { label: newValue.inputValue }];
-                    setValue(values);
-                    onChange(
-                        event,
-                        values.map((v) => v.inputValue || v.label)
-                    );
+                    if (
+                        !value.map((v) => v.label).includes(newValue.inputValue)
+                    ) {
+                        const values = [
+                            ...value,
+                            { label: newValue.inputValue },
+                        ];
+                        setValue(values);
+                        onChange(
+                            event,
+                            values.map((v) => v.inputValue || v.label)
+                        );
+                    }
                 } else if (Array.isArray(newValues)) {
-                    const convertedValues: CompetenceType[] = newValues.map(
-                        (newValue) => {
+                    const convertedValues: CompetenceType[] = newValues
+                        .filter((newValue, i) => {
+                            // remove duplicates
+                            if (typeof newValue === "string") {
+                                return !newValues
+                                    .slice(i + 1)
+                                    .map((v) => v.label)
+                                    .includes(newValue);
+                            } else {
+                                return !newValues
+                                    .slice(i + 1)
+                                    .map((v) => v.label)
+                                    .includes(newValue.label);
+                            }
+                        })
+                        .map((newValue) => {
                             if (typeof newValue === "string") {
                                 // Convert string to CompetenceType
                                 return { label: newValue };
@@ -89,8 +112,7 @@ export const CompetencesEditor = ({
                                 // Already in the correct format
                                 return newValue;
                             }
-                        }
-                    );
+                        });
                     setValue(convertedValues);
 
                     // Send changes upstream
