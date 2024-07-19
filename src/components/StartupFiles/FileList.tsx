@@ -25,7 +25,11 @@ export const FileList = ({ files }) => {
                 headers={["Date", "Type", "Fichier", "Tags", "Commentaires"]}
                 data={files.map((file) => [
                     format(file.created_at, "dd/MM/yyyy"),
-                    <Tag small style={{ backgroundColor: colors[file.type] }}>
+                    <Tag
+                        key="type"
+                        small
+                        style={{ backgroundColor: colors[file.type] }}
+                    >
                         {file.data?.date_comite
                             ? `Comité du ${format(
                                   file.data?.date_comite,
@@ -34,6 +38,7 @@ export const FileList = ({ files }) => {
                             : file.type}
                     </Tag>,
                     <Link
+                        key="title"
                         target="_blank"
                         href={`/api/startups/download-file/${file.uuid}`}
                     >
