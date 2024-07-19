@@ -196,7 +196,7 @@ En dev : le GITHUB_REPOSITORY est un fork de `betagouv/beta.gouv.fr`, et le GITH
 Pour simplifier, on peut utiliser des repos communs entre dev. Demandez a vos collègues le nom des repository à spécifer dans le .env
 ainsi que les droits d'accès au resository `GITHUB_FORK`
 
-## Sripts CRON
+## Scripts CRON
 
 Les tâches CRON sont gérées par une app scalingo dédiée via le [Procfile](./Procfile)
 
