@@ -23,7 +23,7 @@
     "export-to-www": "./src/scripts/export-to-www.sh"
   },
   "dependencies": {
-    "@codegouvfr/react-dsfr": "^1.9.31",
+    "@codegouvfr/react-dsfr": "^1.10.9",
     "@emotion/styled": "^11.11.0",
     "@gouvfr/dsfr": "^1.12.1",
     "@hookform/resolvers": "^3.3.4",
