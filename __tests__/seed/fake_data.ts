@@ -49,6 +49,31 @@ export async function seed(knex) {
 
     await populateUsers(knex);
     console.log("Populated users table with fake accounts");
+
+    const incubId = uuidv4();
+    await knex("incubators").insert([
+        {
+            uuid: incubId,
+            title: "Incubateur test",
+            ghid: "inc1",
+        },
+    ]);
+
+    await knex("startups").insert([
+        {
+            uuid: uuidv4(),
+            ghid: "startup-1",
+            name: "Startup 1",
+            incubator_id: incubId,
+        },
+        {
+            uuid: uuidv4(),
+            ghid: "startup-2",
+            name: "Startup 2",
+            incubator_id: incubId,
+        },
+    ]);
+    console.log("Inserted fake startups");
 }
 
 const workplace_insee_codes = [
