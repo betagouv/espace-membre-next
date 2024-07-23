@@ -217,12 +217,14 @@ export default function EmailContainer({
                     {!!emailInfos && (
                         <BlocEmailConfiguration emailInfos={emailInfos} />
                     )}
-                    {!!emailInfos && !emailInfos.isExchange && (
-                        <BlocEmailResponder
-                            username={userInfos.username}
-                            responder={emailResponder}
-                        />
-                    )}
+                    {!!emailInfos &&
+                        !emailInfos.isExchange &&
+                        !emailInfos.isPro && (
+                            <BlocEmailResponder
+                                username={userInfos.username}
+                                responder={emailResponder}
+                            />
+                        )}
                     <BlocChangerMotDePasse
                         canChangePassword={canChangePassword}
                         status={userInfos.primary_email_status}
