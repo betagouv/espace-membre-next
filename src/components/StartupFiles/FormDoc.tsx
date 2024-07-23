@@ -15,15 +15,15 @@ import { z } from "zod";
 const contenus = [
     {
         label: "recherche-ux",
-        description: "Une synthèse de recherche utilisateur",
+        description: "Synthèse de recherche utilisateur",
     },
-    { label: "benchmark", description: "Un benchmark de solutions existantes" },
-    { label: "impact", description: "Une évaluation de notre impact à date" },
+    { label: "benchmark", description: "BVenchmark de solutions existantes" },
+    { label: "impact", description: "Évaluation de notre impact à date" },
     {
         label: "roadmap",
-        description: "Notre feuille de route produit pour les prochains mois",
+        description: "Feuille de route produit pour les prochains mois",
     },
-    { label: "budget", description: "Notre budget" },
+    { label: "budget", description: "Budget du produit" },
 ];
 
 function isComiteSchema(
@@ -67,7 +67,7 @@ export const FormDoc = ({
     } = useForm<z.infer<typeof schema>>({
         resolver: zodResolver(schema),
         defaultValues: {
-            title: file.name.replace(/(\.[a-z]{3,4})/, ""),
+            title: file.name,
             data: type === "Document de comité" && {
                 contenu: [],
                 date_comite: undefined,
@@ -160,8 +160,8 @@ export const FormDoc = ({
                                     errors.data?.contenu?.message
                                 }
                                 options={contenus.map((m, i) => ({
-                                    hintText: m.description,
-                                    label: m.label,
+                                    //  hintText: m.description,
+                                    label: m.description,
                                     nativeInputProps: {
                                         value: m.label,
                                         checked: selectedContenu.includes(
@@ -187,6 +187,11 @@ export const FormDoc = ({
             <Button
                 type="submit"
                 className={fr.cx("fr-mt-3w")}
+                iconId={
+                    isSubmitting
+                        ? "fr-icon-timer-fill"
+                        : "fr-icon-add-circle-fill"
+                }
                 children={
                     isSubmitting ? `Enregistrement en cours...` : `Enregistrer`
                 }

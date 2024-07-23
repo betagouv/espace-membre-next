@@ -124,7 +124,7 @@ export default function StartupPage({
                             },
                         },
                         {
-                            children: "Gérer les fichiers",
+                            children: "Gérer les documents",
                             iconId: "fr-icon-file-add-line",
                             linkProps: {
                                 href: `/startups/${startupInfos.uuid}/files`,

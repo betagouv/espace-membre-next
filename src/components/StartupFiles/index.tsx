@@ -1,5 +1,5 @@
 "use client";
-import React, { useCallback, useState } from "react";
+import React, { useCallback, useEffect, useRef, useState } from "react";
 import { useDropzone } from "react-dropzone";
 import { Upload } from "@codegouvfr/react-dsfr/Upload";
 import { CallOut } from "@codegouvfr/react-dsfr/CallOut";
@@ -11,24 +11,32 @@ import { getStartupFiles } from "@/app/api/startups/get-startup-files";
 
 import { FileList } from "./FileList";
 
-const wait = () =>
-    new Promise((resolve) => {
-        setTimeout(resolve, 500);
-    });
+function DocsDropZone({ onDrop, reset }) {
+    const inputRef = useRef<HTMLInputElement | null>(null);
 
-function DocsDropZone({ onDrop }) {
     const { getRootProps, getInputProps, isDragActive } = useDropzone({
         onDrop,
     });
 
-    const { style, ...props } = getInputProps();
+    useEffect(() => {
+        // force reset the field
+        if (inputRef && inputRef.current) {
+            inputRef.current.value = "";
+        }
+    }, [reset]);
 
+    const { style, ...props } = getInputProps();
     return (
         <div {...getRootProps()}>
             <Upload
-                nativeInputProps={{ ...props }}
-                label="Choisissez un ou plusieurs fichiers"
-                hint="Taille maximale : 10 Mo. Formats supportés : pdf, doc, docx, ppt, pptx. Plusieurs fichiers possibles."
+                nativeInputProps={{
+                    ...props,
+                    ref: inputRef,
+                    // pdf, xls, doc, ptt
+                    accept: "application/pdf, application/vnd.ms-powerpoint, application/vnd.openxmlformats-officedocument.presentationml.presentation, application/vnd.ms-excel, application/vnd.openxmlformats-officedocument.spreadsheetml.sheet, application/msword, application/vnd.openxmlformats-officedocument.wordprocessingml.document",
+                }}
+                label="Choisissez un ou plusieurs documents"
+                hint="Taille maximale : 10 Mo. Formats supportés : pdf, doc, docx, ppt, pptx. Plusieurs documents possibles."
                 multiple
             />
         </div>
@@ -52,15 +60,17 @@ export const StartupFiles = ({
 }) => {
     const [pendingFiles, setPendingFiles] = useState<File[]>([]);
     const [fileIndex, setFileIndex] = useState(0);
+    const [uploadsCompleted, setUploadsCompleted] = useState<boolean | null>(
+        false
+    );
 
     const onDrop = useCallback((acceptedFiles: File[]) => {
+        setUploadsCompleted(false);
         setPendingFiles(acceptedFiles);
         setFileIndex(0);
     }, []);
 
     const onFormSubmit = async (data: DocSchemaType) => {
-        await wait();
-
         const uploaded = await uploadStartupFile({
             uuid: startup.uuid,
             content: await generateDataUrl(pendingFiles[fileIndex]),
@@ -73,14 +83,14 @@ export const StartupFiles = ({
             // upload
             files.unshift(uploaded);
         } else {
-            alert("Impossible d'uploader");
+            alert("Impossible d'uploader le document 😰");
         }
-        await wait();
 
         if (fileIndex === pendingFiles.length - 1) {
             // finished
             setPendingFiles([]);
             setFileIndex(0);
+            setUploadsCompleted(true);
         } else {
             setFileIndex((fileIndex) => fileIndex + 1);
         }
@@ -92,24 +102,31 @@ export const StartupFiles = ({
         pendingFiles.length > fileIndex && pendingFiles[fileIndex];
     return (
         <>
-            <CallOut title="Fichiers du produit">
-                Déposez et retrouvez ici les fichiers relatifs à la vie du
+            <CallOut title="Documents du produit" titleAs="p">
+                Déposez et retrouvez ici les documents relatifs à la vie du
                 produit. <br />
-                Ces fichiers sont accessibles à{" "}
+                Ces documents sont accessibles à{" "}
                 <b>toute la communauté beta.gouv.fr.</b>
             </CallOut>
 
             <FileList files={files} />
 
-            <DocsDropZone onDrop={onDrop} />
+            <h2>Ajouter un document</h2>
 
-            {pendingFile && (
-                <>
-                    <br />
-                    <h2>{pendingFile.name}</h2>
-                    <FileForm onSubmit={onFormSubmit} file={pendingFile} />
-                </>
-            )}
+            <div
+                className={fr.cx("fr-p-2w")}
+                style={{ border: "1px solid var(--border-plain-grey)" }}
+            >
+                <DocsDropZone onDrop={onDrop} reset={uploadsCompleted} />
+
+                {pendingFile && (
+                    <>
+                        <br />
+                        <h2>{pendingFile.name}</h2>
+                        <FileForm onSubmit={onFormSubmit} file={pendingFile} />
+                    </>
+                )}
+            </div>
         </>
     );
 };
