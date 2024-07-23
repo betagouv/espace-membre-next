@@ -21,7 +21,7 @@ export const docComiteDataSchema = z.object({
                 }),
             })
         )
-        .describe("date du comité d'investissement"),
+        .describe("Date du comité d'investissement"),
     contenu: z
         .array(z.string().describe("Contenu du document"))
         .describe("Que contient ce document ?")
@@ -30,11 +30,11 @@ export const docComiteDataSchema = z.object({
 });
 
 export const docSchema = z.object({
-    title: z.string().describe("titre du document").min(5),
-    type: z.enum(typesDocuments).describe("type de document"),
+    title: z.string().describe("Titre du document").min(5),
+    type: z.enum(typesDocuments).describe("Type de document"),
     comments: z
         .string()
-        .describe("commentaires sur le contenu du fichier")
+        .describe("Commentaires sur le contenu du document")
         .optional(),
     data: z.any().optional().nullable(),
 });

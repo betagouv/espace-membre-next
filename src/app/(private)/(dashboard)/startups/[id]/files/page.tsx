@@ -34,7 +34,7 @@ export default async function Page(props) {
 
     return (
         <div>
-            <h1>Fichiers de {startup.name}</h1>
+            <h1>Documents de {startup.name}</h1>
             <StartupFiles startup={startup} files={files} />
         </div>
     );
