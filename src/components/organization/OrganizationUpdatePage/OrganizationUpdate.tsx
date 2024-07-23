@@ -55,7 +55,6 @@ export const OrganizationUpdate = (props: OrganizationUpdateProps) => {
                     <OrganizationForm
                         save={save}
                         organization={props.organization}
-                        sponsorOptions={props.sponsorOptions}
                     />
                 )) || <>Loading...</>}
             </div>
