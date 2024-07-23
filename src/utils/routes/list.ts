@@ -129,5 +129,21 @@ export const routes = {
             localizedRoutes.incubatorDetails.params,
             localizedRoutes.incubatorDetails.paths.fr
         ),
+        organizationDetailsEdit: defineRoute(
+            localizedRoutes.organizationDetailsEdit.params,
+            localizedRoutes.organizationDetailsEdit.paths.fr
+        ),
+        organizationList: defineRoute(
+            localizedRoutes.organizationList.params,
+            localizedRoutes.organizationList.paths.fr
+        ),
+        organizationCreate: defineRoute(
+            localizedRoutes.organizationCreate.params,
+            localizedRoutes.organizationCreate.paths.fr
+        ),
+        organizationDetails: defineRoute(
+            localizedRoutes.organizationDetails.params,
+            localizedRoutes.organizationDetails.paths.fr
+        ),
     }).routes,
 };

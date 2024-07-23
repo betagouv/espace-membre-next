@@ -19,6 +19,12 @@ export const routeTitles: {
         return `Modifier la fiche produit de ${id}`;
     },
     startupCreate: () => "Créer une fiche produit",
+    organizationList: () => "Rechercher une organisation sponsor",
+    organizationDetails: () => "",
+    organizationDetailsEdit: (id?: string) => {
+        return `Modifier la fiche de ${id}`;
+    },
+    organizationCreate: () => "Créer une fiche organisation sponsor",
     adminMattermost: () => "Administration mattermost",
     home: () => "",
     signIn: () => "Me connecter",

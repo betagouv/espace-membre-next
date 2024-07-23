@@ -12,7 +12,7 @@ type OnChangeType<T> = T extends true
 
 type SESponsorSelectProps<T extends boolean> = {
     isMulti: T;
-    defaultValue: T extends true ? string[] | undefined : string | undefined;
+    defaultValue?: T extends true ? string[] | undefined : string | undefined;
     allSponsors: Option[];
     label?: string;
     hint?: string;

@@ -177,4 +177,28 @@ export const localizedRoutes = {
             fr: (p) => "/verify",
         }
     ),
+    organizationList: defineLocalizedRoute(
+        {},
+        {
+            fr: (p) => "/organizations",
+        }
+    ),
+    organizationDetails: defineLocalizedRoute(
+        { organizationId: param.path.string },
+        {
+            fr: (p) => `/organizations/${p.organizationId}`,
+        }
+    ),
+    organizationDetailsEdit: defineLocalizedRoute(
+        { organizationId: param.path.string },
+        {
+            fr: (p) => `/organizations/${p.organizationId}/info-form`,
+        }
+    ),
+    organizationCreate: defineLocalizedRoute(
+        {},
+        {
+            fr: (p) => "/organizations/create-form",
+        }
+    ),
 };
