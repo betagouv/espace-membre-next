@@ -15,12 +15,14 @@ import {
     SponsorType,
 } from "../sponsor";
 import { StartupPhase, phaseSchemaType, startupSchemaType } from "../startup";
+import { teamSchemaType } from "../team";
 import {
     BadgeRequests,
     Incubators,
     Missions,
     Organizations,
     Phases,
+    Teams,
     Users,
 } from "@/@types/db";
 import { getStartup } from "@/lib/kysely/queries";
@@ -247,5 +249,15 @@ export function organizationToModel(
         domaine_ministeriel:
             organization.domaine_ministeriel as SponsorDomaineMinisteriel,
         type: organization.type as SponsorType,
+    };
+}
+
+export function teamToModel(team: Selectable<Teams>): teamSchemaType {
+    return {
+        uuid: team.uuid,
+        name: team.name,
+        ghid: team.ghid || "",
+        mission: team.mission,
+        incubator_id: team.incubator_id,
     };
 }

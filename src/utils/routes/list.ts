@@ -149,5 +149,21 @@ export const routes = {
             localizedRoutes.organizationDetails.params,
             localizedRoutes.organizationDetails.paths.fr
         ),
+        teamDetailsEdit: defineRoute(
+            localizedRoutes.teamDetailsEdit.params,
+            localizedRoutes.teamDetailsEdit.paths.fr
+        ),
+        teamList: defineRoute(
+            localizedRoutes.teamList.params,
+            localizedRoutes.teamList.paths.fr
+        ),
+        teamCreate: defineRoute(
+            localizedRoutes.teamCreate.params,
+            localizedRoutes.teamCreate.paths.fr
+        ),
+        teamDetails: defineRoute(
+            localizedRoutes.teamDetails.params,
+            localizedRoutes.teamDetails.paths.fr
+        ),
     }).routes,
 };
