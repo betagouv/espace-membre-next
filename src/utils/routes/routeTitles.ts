@@ -53,4 +53,14 @@ export const routeTitles: {
     incubatorDetails: function (): string {
         return `Fiche incubateur`;
     },
+    teamDetailsEdit: (id?: string) => {
+        return `Modifier la fiche équipe de ${id}`;
+    },
+    teamList: () => "Rechercher une équipe",
+    teamCreate: function (): string {
+        return `Créer une fiche équipe`;
+    },
+    teamDetails: function (): string {
+        return `Fiche équipe`;
+    },
 };

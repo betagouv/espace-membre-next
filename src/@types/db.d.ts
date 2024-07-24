@@ -229,6 +229,7 @@ export interface Startups {
   analyse_risques_url: string | null;
   budget_url: string | null;
   contact: string | null;
+  created_at: Generated<Timestamp>;
   dashlord_url: string | null;
   description: string | null;
   ghid: string;
@@ -262,6 +263,16 @@ export interface Tasks {
   last_failed: Timestamp | null;
   name: string;
   updated_at: Generated<Timestamp>;
+}
+
+export interface Teams {
+  created_at: Generated<Timestamp>;
+  ghid: string | null;
+  incubator_id: string;
+  mission: string | null;
+  name: string;
+  updated_at: Generated<Timestamp>;
+  uuid: Generated<string>;
 }
 
 export interface UserDetails {
@@ -313,6 +324,12 @@ export interface UsersStartups {
   user_id: string;
 }
 
+export interface UsersTeams {
+  team_id: string;
+  user_id: string;
+  uuid: Generated<string>;
+}
+
 export interface VerificationTokens {
   expires: Timestamp;
   identifier: string;
@@ -354,10 +371,12 @@ export interface DB {
   startups: Startups;
   startups_organizations: StartupsOrganizations;
   tasks: Tasks;
+  teams: Teams;
   user_details: UserDetails;
   users: Users;
   users_formations: UsersFormations;
   users_startups: UsersStartups;
+  users_teams: UsersTeams;
   verification_tokens: VerificationTokens;
   visits: Visits;
 }

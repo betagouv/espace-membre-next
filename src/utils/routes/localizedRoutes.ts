@@ -81,6 +81,30 @@ export const localizedRoutes = {
             fr: (p) => `/incubators/${p.incubatorId}`,
         }
     ),
+    teamDetailsEdit: defineLocalizedRoute(
+        { teamId: param.path.string },
+        {
+            fr: (p) => `/teams/${p.teamId}`,
+        }
+    ),
+    teamList: defineLocalizedRoute(
+        {},
+        {
+            fr: (p) => `/teams`,
+        }
+    ),
+    teamCreate: defineLocalizedRoute(
+        {},
+        {
+            fr: (p) => `/teams/create-form`,
+        }
+    ),
+    teamDetails: defineLocalizedRoute(
+        { teamId: param.path.string },
+        {
+            fr: (p) => `/teams/${p.teamId}`,
+        }
+    ),
     startupList: defineLocalizedRoute(
         {},
         {
