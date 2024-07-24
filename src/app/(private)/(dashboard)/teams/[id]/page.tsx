@@ -4,11 +4,7 @@ import { redirect } from "next/navigation";
 import TeamPage, { TeamPageProps } from "@/components/team/TeamPage/Team";
 import { db } from "@/lib/kysely";
 import { getTeam } from "@/lib/kysely/queries/teams";
-import {
-    teamToModel,
-    memberPublicInfoSchemaType,
-    memberPublicInfoToModel,
-} from "@/models/mapper";
+import { teamToModel, memberPublicInfoToModel } from "@/models/mapper";
 import { memberBaseInfoSchema, memberSchema } from "@/models/member";
 
 type Props = {
