@@ -4,7 +4,12 @@ import { getServerSession } from "next-auth";
 
 import { TeamUpdate } from "@/components/team/TeamUpdatePage";
 import { db } from "@/lib/kysely";
-import { teamToModel } from "@/models/mapper";
+import { getAllUsersInfo } from "@/lib/kysely/queries/users";
+import {
+    memberBaseInfoToModel,
+    memberPublicInfoToModel,
+    teamToModel,
+} from "@/models/mapper";
 import { authOptions } from "@/utils/authoptions";
 import { routeTitles } from "@/utils/routes/routeTitles";
 
@@ -32,10 +37,22 @@ export default async function Page(props: Props) {
         .selectAll()
         .where("uuid", "=", uuid)
         .executeTakeFirst();
+
     if (!dbTeam) {
         redirect("/teams");
     }
     const incubators = await db.selectFrom("incubators").selectAll().execute(); //await betagouv.sponsors();
+    const members = (await getAllUsersInfo()).map((member) =>
+        memberPublicInfoToModel(member)
+    );
+    const teamMembers = (
+        await db
+            .selectFrom("users")
+            .selectAll()
+            .innerJoin("users_teams", "users.uuid", "users_teams.user_id")
+            .where("users_teams.team_id", "=", uuid)
+            .execute()
+    ).map((user) => memberPublicInfoToModel(user));
 
     const team = teamToModel(dbTeam);
     const componentProps = {
@@ -46,6 +63,8 @@ export default async function Page(props: Props) {
                 label: team.title,
             };
         }),
+        members,
+        teamMembers,
     };
 
     return <TeamUpdate {...componentProps} />;
