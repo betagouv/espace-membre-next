@@ -10,12 +10,16 @@ import { db } from "@/lib/kysely";
 import { teamUpdateSchema, teamUpdateSchemaType } from "@/models/actions/team";
 import { authOptions } from "@/utils/authoptions";
 
-export async function createTeam({ team }: { team: teamUpdateSchemaType }) {
+export async function createTeam({
+    teamWrapper: { team, members },
+}: {
+    teamWrapper: teamUpdateSchemaType;
+}) {
     const session = await getServerSession(authOptions);
     if (!session || !session.user.id) {
         throw new Error(`You don't have the right to access this function`);
     }
-    teamUpdateSchema.parse(team);
+    teamUpdateSchema.parse({ team, members });
     await db.transaction().execute(async (trx) => {
         // update team data
         const incubator = await trx
@@ -33,6 +37,17 @@ export async function createTeam({ team }: { team: teamUpdateSchemaType }) {
             })
             .returning("uuid")
             .executeTakeFirst();
+        if (res?.uuid) {
+            await trx
+                .insertInto("users_teams")
+                .values(
+                    members.map((memberUuid) => ({
+                        team_id: res?.uuid,
+                        user_id: memberUuid,
+                    }))
+                )
+                .execute();
+        }
 
         if (!res) {
             throw new Error("Team data could not be inserted into db");

@@ -17,6 +17,7 @@ type MemberSelectProps<T extends boolean> = {
     hint?: string;
     label?: string;
     required?: boolean;
+    valueKey?: string;
     state?: "success" | "default" | "error" | undefined;
     stateRelatedMessage?: string;
     multiple?: boolean;
@@ -31,6 +32,7 @@ export default function MemberSelect<T extends boolean>({
     hint,
     label,
     required,
+    valueKey,
     state,
     stateRelatedMessage,
     multiple,
@@ -69,10 +71,9 @@ export default function MemberSelect<T extends boolean>({
             <Autocomplete
                 multiple={!!multiple}
                 options={members.map((member) => ({
-                    id: member.username,
+                    id: member[valueKey || "username"],
                     label: member.fullname || member.username,
                 }))}
-                getOptionKey={() => "id"}
                 onChange={onTagsChange}
                 defaultValue={defaultMemberValue}
                 isOptionEqualToValue={(option, value) => option.id === value.id}

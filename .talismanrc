@@ -1,134 +1,138 @@
 fileignoreconfig:
-- filename: .env.test
-  checksum: 2b64612faef63a30e7f5c02109d1e2f21edf95a4db1d2120f328fe6834bf0122
-- filename: .github/workflows/nodejs.yml
-  checksum: 4b2c5eb935d39d1ddf54252c633c103ee3ccc5b7fda23bdebffdb9ccd4a6b66e
-- filename: .github/workflows/playwright.yml
-  checksum: efe350e9b1812f0009c776906cb71bf0e43e85648455aafe1ddeacaa29e15262
-- filename: README.md
-  checksum: 81570c2f0395a7e443a156f22ffd0d3202f461311c05871a360b02e2148e9035
-- filename: __tests__/htmlbuilder.spec.ts
-  checksum: 59bb880710465666eb47a0d8dc220c693a25412a8112043f8ad9812b50f7896e
-- filename: __tests__/test-account.ts
-  checksum: da7f9933e9d15538def749e8e58bdccb8a52e2a2a1de7c7e4a327108e4dd05e9
-- filename: __tests__/test-community.ts
-  checksum: 7b34d7e039233d20430b5b0be9f05400606c94b69ce17c593dbe9340c9c26a62
-- filename: __tests__/test-email.ts
-  checksum: 4192baa86c9c611168e394237bcc8586f71d186ef41a4d9747a91603fdddb3a2
-- filename: __tests__/test-visit.ts
-  checksum: 8a605ffb247bede59135ac4407259921beabf8a2a59b7c64f085bf882409013c
-- filename: src/app/(private)/(dashboard)/account/base-info/page.tsx
-  checksum: d379d505af1ac3bf76cc4d32fc7b5b2c12e0b776d4bc695ebf0ff8ceec6ea52e
-- filename: src/app/(private)/(dashboard)/account/page.tsx
-  checksum: 355668d8814f965d52adafcb7c199af47869deac16133151c524ccad34611cf4
-- filename: src/app/(private)/(dashboard)/community/create/CommunityCreateMemberPage.tsx
-  checksum: c17bc01af05a054afa1c738171011c7fe9f9f78bf9d8ab0f02a6bcd07f7c675d
-- filename: src/app/(private)/(dashboard)/community/page.tsx
-  checksum: b6aac599bbc93b516fc1738b81ede0cce8e08d3d9064af49af67c2b6bac74aaf
-- filename: src/app/(private)/(dashboard)/formations/[id]/page.tsx
-  checksum: 10425dc282436b1f63096e75b75352fbdd235571dd645521756b9c4f23e35d47
-- filename: src/app/(private)/(dashboard)/formations/page.tsx
-  checksum: 2bbe0f4d6807f4238b7d6085d45f8e5582bc8e57326db67a9839ee1aae1f4bdf
-- filename: src/app/(private)/(dashboard)/metabase/page.tsx
-  checksum: f91ba3f4ccea5cd2020fd0f2ff1fbe031e93df6cf42e2c9acf4d8b99b2059162
-- filename: src/app/(private)/(dashboard)/verify/AccountVerifyClientPage.tsx
-  checksum: ae267f7b99f6fce11d7085a1ce26995e53eca0b86653fcf3f5ed2ec1a11c76e8
-- filename: src/app/error.tsx
-  checksum: 27b9e96bc30d8d4ebc96320f7fc79d9af807f8c6d9f1796497c60318dd728e47
-- filename: src/app/layout.tsx
-  checksum: 5c3c0e57c619fb0ffdb6a4cc06ebe16bb4824ebf1461d31a1f765bb94cb9d6ba
-- filename: src/app/not-found.tsx
-  checksum: 29d7b736894451f16680665937d005f2e9912981a2dc42bd0015c1ccb3d0c835
-- filename: src/components/AccountPage/AccountPage.tsx
-  checksum: 8c41f6f6f8766a47a10a87b822ba90c667dfbe4a5bf204e5566e45d0fa6b23b8
-- filename: src/components/AccountPage/BlocChangerMotDePasse.tsx
-  checksum: 4428b9812ff4858f70b686580526aa8244ddb29624444acbab00517813097faf
-- filename: src/components/AccountPage/EmailContainer.tsx
-  checksum: 2b806ede38e4ec54119ef9061358ae2e10a038a16e07bfe39921709967e2e00a
-- filename: src/components/BaseInfoUpdatePage/BaseInfoUpdate.tsx
-  checksum: d2565fbfe06ac2e626c09e5451e673753c827551829a98c239dea593aedbcb0a
-- filename: src/components/BaseInfoUpdatePage/MissionsEditor.tsx
-  checksum: 42a1e9c44fc1a093ce628b796a51533f640d60cd75205c06ca6cd1d358f7cb02
-- filename: src/components/CommunityPage/CommunityFilterMembers.tsx
-  checksum: 6e644062a8253a7ec4a0fcc0d417458c3cd149a4fd7aef2ac574269d72b48b44
-- filename: src/components/EventsList.tsx
-  checksum: 7497b733aed8d013e6e773aebc093df382fda3e5f38fbc51b1d7ebcf90278f5e
-- filename: src/components/Formation/FormationCard.tsx
-  checksum: 69f8cf90d26dca06c7c9263d880567305a9ebbb49729a4221e08887b96b98d66
-- filename: src/components/Formation/FormationList.tsx
-  checksum: 49ba981c5d52542548882b52ec95307299e3b6337689ff1f59fc3ec0d88369e4
-- filename: src/components/GenderSelect.tsx
-  checksum: 865f2afa081c138aff54ead33343a8b425075236d95bda9ec75e62bfb4eb83c1
-- filename: src/components/LoginPage/Login.tsx
-  checksum: 78a4519fee63dc7932c0a335762bde95a88516d2323e40fa92f071b8eb59d6fc
-- filename: src/components/MemberPage/MemberEventList.tsx
-  checksum: 2f825890548de8336fdec8a140bd55339de67c7bd428baf90e9621b094f08714
-- filename: src/components/MemberPage/MemberPage.tsx
-  checksum: 8eace2e39fcb856b5ac251c7a8419548e53601aedf8fa79e6fa789ef6c0447ac
-- filename: src/components/MemberSelect.tsx
-  checksum: ec73d3b52be314f309b5e389fa51a5361725dc95777825528b5899f9cba3e6fe
-- filename: src/components/SESelect.tsx
-  checksum: c251dbce68caf5cb85ac395bb400dfedb142737539d3ca0e1779f2a56460c520
-- filename: src/components/SESponsorSelect.tsx
-  checksum: 0bf9460e4c98022fc27b175504a2b17019d29b3cac33beb1cbb7e372cbec2cdb
-- filename: src/components/StartupForm/EventsEditor.tsx
-  checksum: 3d851ff203a6cbcaad0ca20c2e90ebefb6c8c55719c866ae7f770df2c6ebfe72
-- filename: src/components/StartupForm/PhasesEditor.tsx
-  checksum: c5fd9bbfffa9cde5c80cfccbff17f8dc5536b465c539534aa553c22179b31367
-- filename: src/components/StartupForm/StartupForm.tsx
-  checksum: 52534440fddd23754ba648f2687a5cad2353ff6414a4d72d3909c08263acdabe
-- filename: src/components/StartupForm/ThematiquesEditor.tsx
-  checksum: dcaa8a0e4f7fac866160ef2422014f2ad118701d18ba177c162dc1bbd1b86be3
-- filename: src/components/StartupForm/UsertypesEditor.tsx
-  checksum: 776745d3054dbb7ca1a51f3f12a97905ab783c0226aee41c5d38bd42afd6a626
-- filename: src/components/StartupPage/StartupPage.tsx
-  checksum: a0aaa86a066780ede70d6f9f3e3b933672c43bb5e343ef64843caf9e148a52ee
-- filename: src/frontConfig/index.ts
-  checksum: dfa7fcba549f3059c547970b66d918c32d7ca97d9506c57ef982510c64562282
-- filename: src/lib/airtable.ts
-  checksum: 073b6fdb5d40706c9c05bdf16def31bfca6f0de2401c78d89b9ef4b3ed2da47d
-- filename: src/lib/flat.ts
-  checksum: acaf37cddde0cc65fa08af74353cace365eda4144141a3d84998b423ad64738b
-- filename: src/lib/hstore.ts
-  checksum: fb334bc9463fc981ae71bd7b3fa47a5c5f60f24547face356804ff032ff95a0a
-- filename: src/models/actionEvent.ts
-  checksum: 1414841edac62430cc18218059f68098ec84ad54782c57c42703b3827b00b667
-- filename: src/models/badgeDemande.ts
-  checksum: db93bb8bad9c445c0f7747d256f02ec015c3e8c45f3c158a58751f1105c15a6e
-- filename: src/models/dbUser/dbUser.ts
-  checksum: 796e5668df837d35d981c24c33436a21f3363c3b746cf3ee47d4a85cfb538d0d
-- filename: src/models/member.ts
-  checksum: 9ed875ca1310da2fe72241679ed45e883bb8392997ea2e03fed1cb8c3e91f868
-- filename: src/routes/routes.ts
-  checksum: 675ba81fc5357f186d2ca4ce446a75016fbbcda42492d414d31ee7ad7fa8f7d5
-- filename: src/scripts/export-to-www.ts
-  checksum: c4f5ee74a16556022b05975b4d6981eb74b62f123b6317c239232ef841e9f029
-- filename: src/scripts/import-from-www.ts
-  checksum: 1cf2db2b010fa9d7508a4ce7d918aac94b2d35faea6934a457fca0fdd1609df3
-- filename: src/scripts/utils.ts
-  checksum: d67aa04034f438f2a05ffd1b29f24c930908b05aaad4b6deaa933da42e56d786
-- filename: src/server/betagouv.ts
-  checksum: 3fea239f6476881245b6607b4f7013b1ed769a66c1c56ef21e0a0fddca005689
-- filename: src/server/controllers/accountController/getCurrentAccount.ts
-  checksum: f84d46040125fc1488d319afd0e832a0db0f7bcafd53d8b312f3193a02f28ed8
-- filename: src/server/controllers/usersController/createEmailForUser.ts
-  checksum: fecf58ca9f7d8c7ff5aaadaa998ee3bf86e386027e14d6f2e0d1ab6b9693b27b
-- filename: src/server/controllers/usersController/usersControllerUtils.ts
-  checksum: afb73b3143023c22e51461c9dfaf870daff6c0e2689571c3a7500f784aa76346
-- filename: src/server/controllers/utils.ts
-  checksum: 6a6f3aac127977f76cb5639f9a5e09c69dac2642120937566c8999f8f7a3a036
-- filename: src/server/index.ts
-  checksum: d15e0bf95fa87a6dd7bd87b84a84b4e934c31d63d2bc987d281bfb42cce13439
-- filename: src/server/middlewares/sessionMiddleware.ts
-  checksum: 37395239eb8012e5b4c310a6f2e23ef2eafd187abea8bfa1eee02212cba978a8
-- filename: src/server/schedulers/emailScheduler.ts
-  checksum: a97b144c7af4f55b0f85c16effaca351f821a044ce32dd3c5cc6b89e44805bf7
-- filename: src/server/schedulers/syncBetagouvAPIScheduler/buildCommunityBDD.ts
-  checksum: 0f9f79370cd6f0bbf3732c170c728c203c3d72102ac07eb84392d129eecd55f2
-- filename: src/server/views/templates/emails/verificationWaiting.ejs
-  checksum: ba761c51315e4882a69e38228bf57f7495608ac3c9680027ded3d2bb5d6c714d
-- filename: src/utils/authoptions.ts
-  checksum: a2ae546d82a86dcb1485d4d4a17a19cc7a028fd30cf35d945b370a6c96846d93
+    - filename: .env.test
+      checksum: 2b64612faef63a30e7f5c02109d1e2f21edf95a4db1d2120f328fe6834bf0122
+    - filename: .github/workflows/nodejs.yml
+      checksum: 4b2c5eb935d39d1ddf54252c633c103ee3ccc5b7fda23bdebffdb9ccd4a6b66e
+    - filename: .github/workflows/playwright.yml
+      checksum: efe350e9b1812f0009c776906cb71bf0e43e85648455aafe1ddeacaa29e15262
+    - filename: README.md
+      checksum: 81570c2f0395a7e443a156f22ffd0d3202f461311c05871a360b02e2148e9035
+    - filename: __tests__/htmlbuilder.spec.ts
+      checksum: 59bb880710465666eb47a0d8dc220c693a25412a8112043f8ad9812b50f7896e
+    - filename: __tests__/test-account.ts
+      checksum: da7f9933e9d15538def749e8e58bdccb8a52e2a2a1de7c7e4a327108e4dd05e9
+    - filename: __tests__/test-community.ts
+      checksum: 7b34d7e039233d20430b5b0be9f05400606c94b69ce17c593dbe9340c9c26a62
+    - filename: __tests__/test-email.ts
+      checksum: 4192baa86c9c611168e394237bcc8586f71d186ef41a4d9747a91603fdddb3a2
+    - filename: __tests__/test-visit.ts
+      checksum: 8a605ffb247bede59135ac4407259921beabf8a2a59b7c64f085bf882409013c
+    - filename: src/app/(private)/(dashboard)/account/base-info/page.tsx
+      checksum: d379d505af1ac3bf76cc4d32fc7b5b2c12e0b776d4bc695ebf0ff8ceec6ea52e
+    - filename: src/app/(private)/(dashboard)/account/page.tsx
+      checksum: 355668d8814f965d52adafcb7c199af47869deac16133151c524ccad34611cf4
+    - filename: src/app/(private)/(dashboard)/community/create/CommunityCreateMemberPage.tsx
+      checksum: c17bc01af05a054afa1c738171011c7fe9f9f78bf9d8ab0f02a6bcd07f7c675d
+    - filename: src/app/(private)/(dashboard)/community/page.tsx
+      checksum: b6aac599bbc93b516fc1738b81ede0cce8e08d3d9064af49af67c2b6bac74aaf
+    - filename: src/app/(private)/(dashboard)/formations/[id]/page.tsx
+      checksum: 10425dc282436b1f63096e75b75352fbdd235571dd645521756b9c4f23e35d47
+    - filename: src/app/(private)/(dashboard)/formations/page.tsx
+      checksum: 2bbe0f4d6807f4238b7d6085d45f8e5582bc8e57326db67a9839ee1aae1f4bdf
+    - filename: src/app/(private)/(dashboard)/metabase/page.tsx
+      checksum: f91ba3f4ccea5cd2020fd0f2ff1fbe031e93df6cf42e2c9acf4d8b99b2059162
+    - filename: src/app/(private)/(dashboard)/verify/AccountVerifyClientPage.tsx
+      checksum: ae267f7b99f6fce11d7085a1ce26995e53eca0b86653fcf3f5ed2ec1a11c76e8
+    - filename: src/app/error.tsx
+      checksum: 27b9e96bc30d8d4ebc96320f7fc79d9af807f8c6d9f1796497c60318dd728e47
+    - filename: src/app/layout.tsx
+      checksum: 5c3c0e57c619fb0ffdb6a4cc06ebe16bb4824ebf1461d31a1f765bb94cb9d6ba
+    - filename: src/app/not-found.tsx
+      checksum: 29d7b736894451f16680665937d005f2e9912981a2dc42bd0015c1ccb3d0c835
+    - filename: src/components/AccountPage/AccountPage.tsx
+      checksum: 8c41f6f6f8766a47a10a87b822ba90c667dfbe4a5bf204e5566e45d0fa6b23b8
+    - filename: src/components/AccountPage/BlocChangerMotDePasse.tsx
+      checksum: 4428b9812ff4858f70b686580526aa8244ddb29624444acbab00517813097faf
+    - filename: src/components/AccountPage/EmailContainer.tsx
+      checksum: 2b806ede38e4ec54119ef9061358ae2e10a038a16e07bfe39921709967e2e00a
+    - filename: src/components/BaseInfoUpdatePage/BaseInfoUpdate.tsx
+      checksum: d2565fbfe06ac2e626c09e5451e673753c827551829a98c239dea593aedbcb0a
+    - filename: src/components/BaseInfoUpdatePage/MissionsEditor.tsx
+      checksum: 42a1e9c44fc1a093ce628b796a51533f640d60cd75205c06ca6cd1d358f7cb02
+    - filename: src/components/CommunityPage/CommunityFilterMembers.tsx
+      checksum: 6e644062a8253a7ec4a0fcc0d417458c3cd149a4fd7aef2ac574269d72b48b44
+    - filename: src/components/EventsList.tsx
+      checksum: 7497b733aed8d013e6e773aebc093df382fda3e5f38fbc51b1d7ebcf90278f5e
+    - filename: src/components/Formation/FormationCard.tsx
+      checksum: 69f8cf90d26dca06c7c9263d880567305a9ebbb49729a4221e08887b96b98d66
+    - filename: src/components/Formation/FormationList.tsx
+      checksum: 49ba981c5d52542548882b52ec95307299e3b6337689ff1f59fc3ec0d88369e4
+    - filename: src/components/GenderSelect.tsx
+      checksum: 865f2afa081c138aff54ead33343a8b425075236d95bda9ec75e62bfb4eb83c1
+    - filename: src/components/LoginPage/Login.tsx
+      checksum: 78a4519fee63dc7932c0a335762bde95a88516d2323e40fa92f071b8eb59d6fc
+    - filename: src/components/MemberPage/MemberEventList.tsx
+      checksum: 2f825890548de8336fdec8a140bd55339de67c7bd428baf90e9621b094f08714
+    - filename: src/components/MemberPage/MemberPage.tsx
+      checksum: 8eace2e39fcb856b5ac251c7a8419548e53601aedf8fa79e6fa789ef6c0447ac
+    - filename: src/components/MemberSelect.tsx
+      checksum: ec73d3b52be314f309b5e389fa51a5361725dc95777825528b5899f9cba3e6fe
+    - filename: src/components/SESelect.tsx
+      checksum: c251dbce68caf5cb85ac395bb400dfedb142737539d3ca0e1779f2a56460c520
+    - filename: src/components/SESponsorSelect.tsx
+      checksum: 0bf9460e4c98022fc27b175504a2b17019d29b3cac33beb1cbb7e372cbec2cdb
+    - filename: src/components/StartupForm/EventsEditor.tsx
+      checksum: 3d851ff203a6cbcaad0ca20c2e90ebefb6c8c55719c866ae7f770df2c6ebfe72
+    - filename: src/components/StartupForm/PhasesEditor.tsx
+      checksum: c5fd9bbfffa9cde5c80cfccbff17f8dc5536b465c539534aa553c22179b31367
+    - filename: src/components/StartupForm/StartupForm.tsx
+      checksum: 52534440fddd23754ba648f2687a5cad2353ff6414a4d72d3909c08263acdabe
+    - filename: src/components/StartupForm/ThematiquesEditor.tsx
+      checksum: dcaa8a0e4f7fac866160ef2422014f2ad118701d18ba177c162dc1bbd1b86be3
+    - filename: src/components/StartupForm/UsertypesEditor.tsx
+      checksum: 776745d3054dbb7ca1a51f3f12a97905ab783c0226aee41c5d38bd42afd6a626
+    - filename: src/components/StartupPage/StartupPage.tsx
+      checksum: a0aaa86a066780ede70d6f9f3e3b933672c43bb5e343ef64843caf9e148a52ee
+    - filename: src/components/team/TeamForm/TeamForm.tsx
+      checksum: 2634810de919ee8b9f2cc90721f71a9e75117b10fe9ec3209be2bc9b76e5f6a0
+    - filename: src/components/team/TeamPage/Team.tsx
+      checksum: 6f8bc8abdbf42702d260ef3039c6e6ebf4fda09948911e3530e74d3e85e035fc
+    - filename: src/frontConfig/index.ts
+      checksum: dfa7fcba549f3059c547970b66d918c32d7ca97d9506c57ef982510c64562282
+    - filename: src/lib/airtable.ts
+      checksum: 073b6fdb5d40706c9c05bdf16def31bfca6f0de2401c78d89b9ef4b3ed2da47d
+    - filename: src/lib/flat.ts
+      checksum: acaf37cddde0cc65fa08af74353cace365eda4144141a3d84998b423ad64738b
+    - filename: src/lib/hstore.ts
+      checksum: fb334bc9463fc981ae71bd7b3fa47a5c5f60f24547face356804ff032ff95a0a
+    - filename: src/models/actionEvent.ts
+      checksum: 1414841edac62430cc18218059f68098ec84ad54782c57c42703b3827b00b667
+    - filename: src/models/badgeDemande.ts
+      checksum: db93bb8bad9c445c0f7747d256f02ec015c3e8c45f3c158a58751f1105c15a6e
+    - filename: src/models/dbUser/dbUser.ts
+      checksum: 796e5668df837d35d981c24c33436a21f3363c3b746cf3ee47d4a85cfb538d0d
+    - filename: src/models/member.ts
+      checksum: 3c421d5c592882181ce37fe6b1ab9982122e6a43d362b332500d79e0b65d9efe
+    - filename: src/routes/routes.ts
+      checksum: 675ba81fc5357f186d2ca4ce446a75016fbbcda42492d414d31ee7ad7fa8f7d5
+    - filename: src/scripts/export-to-www.ts
+      checksum: c4f5ee74a16556022b05975b4d6981eb74b62f123b6317c239232ef841e9f029
+    - filename: src/scripts/import-from-www.ts
+      checksum: 1cf2db2b010fa9d7508a4ce7d918aac94b2d35faea6934a457fca0fdd1609df3
+    - filename: src/scripts/utils.ts
+      checksum: d67aa04034f438f2a05ffd1b29f24c930908b05aaad4b6deaa933da42e56d786
+    - filename: src/server/betagouv.ts
+      checksum: 3fea239f6476881245b6607b4f7013b1ed769a66c1c56ef21e0a0fddca005689
+    - filename: src/server/controllers/accountController/getCurrentAccount.ts
+      checksum: f84d46040125fc1488d319afd0e832a0db0f7bcafd53d8b312f3193a02f28ed8
+    - filename: src/server/controllers/usersController/createEmailForUser.ts
+      checksum: fecf58ca9f7d8c7ff5aaadaa998ee3bf86e386027e14d6f2e0d1ab6b9693b27b
+    - filename: src/server/controllers/usersController/usersControllerUtils.ts
+      checksum: afb73b3143023c22e51461c9dfaf870daff6c0e2689571c3a7500f784aa76346
+    - filename: src/server/controllers/utils.ts
+      checksum: 6a6f3aac127977f76cb5639f9a5e09c69dac2642120937566c8999f8f7a3a036
+    - filename: src/server/index.ts
+      checksum: d15e0bf95fa87a6dd7bd87b84a84b4e934c31d63d2bc987d281bfb42cce13439
+    - filename: src/server/middlewares/sessionMiddleware.ts
+      checksum: 37395239eb8012e5b4c310a6f2e23ef2eafd187abea8bfa1eee02212cba978a8
+    - filename: src/server/schedulers/emailScheduler.ts
+      checksum: a97b144c7af4f55b0f85c16effaca351f821a044ce32dd3c5cc6b89e44805bf7
+    - filename: src/server/schedulers/syncBetagouvAPIScheduler/buildCommunityBDD.ts
+      checksum: 0f9f79370cd6f0bbf3732c170c728c203c3d72102ac07eb84392d129eecd55f2
+    - filename: src/server/views/templates/emails/verificationWaiting.ejs
+      checksum: ba761c51315e4882a69e38228bf57f7495608ac3c9680027ded3d2bb5d6c714d
+    - filename: src/utils/authoptions.ts
+      checksum: a2ae546d82a86dcb1485d4d4a17a19cc7a028fd30cf35d945b370a6c96846d93
 scopeconfig:
-- scope: node
+    - scope: node
 version: "1.0"

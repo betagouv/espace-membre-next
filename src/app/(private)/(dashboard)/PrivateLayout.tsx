@@ -55,6 +55,8 @@ export function PrivateLayout({ children }: { children: React.ReactNode }) {
         "organizationCreate",
         undefined
     );
+    const teamListLink = linkRegistry.get("teamList", undefined);
+    const teamCreateLink = linkRegistry.get("teamCreate", undefined);
 
     const adminMattermostLink = linkRegistry.get("adminMattermost", undefined);
     const newsletterLink = linkRegistry.get("newsletters", undefined);
@@ -234,6 +236,23 @@ export function PrivateLayout({ children }: { children: React.ReactNode }) {
         },
     ];
 
+    const teamSubPage: ItemLink[] = [
+        {
+            linkProps: {
+                href: teamListLink,
+            },
+            text: routeTitles.teamList(),
+            isActive: hasPathnameThisMatch(pathname, teamListLink),
+        },
+        {
+            linkProps: {
+                href: teamCreateLink,
+            },
+            text: routeTitles.teamCreate(),
+            isActive: hasPathnameThisMatch(pathname, teamCreateLink),
+        },
+    ];
+
     const MenuItems: ItemLink[] = [
         // {
         //     linkProps: {
@@ -373,6 +392,8 @@ export function PrivateLayout({ children }: { children: React.ReactNode }) {
             const firstSubPage = pathname.split("/")[1];
             if (firstSubPage.includes("account")) {
                 return accountSubPages;
+            } else if (firstSubPage.includes("teams")) {
+                return teamSubPage;
             } else if (firstSubPage.includes("incubators")) {
                 return incubatorSubPage;
             } else if (firstSubPage.includes("organizations")) {

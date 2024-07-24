@@ -10,10 +10,10 @@ import { teamUpdateSchemaType } from "@/models/actions/team";
 import { authOptions } from "@/utils/authoptions";
 
 export async function updateTeam({
-    team,
+    teamWrapper: { team, members },
     teamUuid,
 }: {
-    team: teamUpdateSchemaType;
+    teamWrapper: teamUpdateSchemaType;
     teamUuid: string;
 }) {
     const session = await getServerSession(authOptions);
@@ -47,6 +47,22 @@ export async function updateTeam({
             })
             .where("uuid", "=", teamUuid)
             .execute();
+
+        const res = await trx
+            .deleteFrom("users_teams")
+            .where("team_id", "=", teamUuid)
+            .execute();
+        if (members && members.length) {
+            await trx
+                .insertInto("users_teams")
+                .values(
+                    members.map((memberUuid) => ({
+                        team_id: teamUuid,
+                        user_id: memberUuid,
+                    }))
+                )
+                .execute();
+        }
 
         revalidatePath("/teams");
     });

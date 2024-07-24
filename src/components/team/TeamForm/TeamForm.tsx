@@ -21,11 +21,16 @@ import { Option } from "@/models/misc";
 import { teamSchemaType } from "@/models/team";
 
 import "react-markdown-editor-lite/lib/index.css";
+import MemberSelect from "@/components/MemberSelect";
+import { memberBaseInfoSchemaType } from "@/models/member";
 
 const NEW_TEAM_DATA: teamUpdateSchemaType = {
-    name: "",
-    incubator_id: "",
-    mission: "",
+    team: {
+        name: "",
+        incubator_id: "",
+        mission: "",
+    },
+    members: [],
 };
 
 const mdParser = new MarkdownIt(/* Markdown-it options */);
@@ -34,7 +39,9 @@ const mdParser = new MarkdownIt(/* Markdown-it options */);
 export interface TeamFormProps {
     incubatorOptions: Option[];
     team?: teamSchemaType;
+    teamMembers?: memberBaseInfoSchemaType[];
     save: (data: teamUpdateSchemaType) => any;
+    members: memberBaseInfoSchemaType[];
 }
 
 const DEFAULT_SHORT_DESCRIPTION =
@@ -53,20 +60,20 @@ function BasicFormInput({
     placeholder?: string;
     [some: string]: any;
 }) {
-    const fieldShape = teamUpdateSchema.shape[id];
+    const fieldShape = teamUpdateSchema.shape.team.shape[id];
     const nativeProps =
         props.textArea === true
             ? {
                   nativeTextAreaProps: {
                       placeholder,
                       rows,
-                      ...register(`${String(id)}`),
+                      ...register(`team.${String(id)}`),
                   },
               }
             : {
                   nativeInputProps: {
                       placeholder,
-                      ...register(`${String(id)}`),
+                      ...register(`team.${String(id)}`),
                   },
               };
     return (
@@ -74,8 +81,14 @@ function BasicFormInput({
             <Input
                 label={fieldShape.description}
                 {...nativeProps}
-                state={errors && errors[id] ? "error" : "default"}
-                stateRelatedMessage={errors && errors[id]?.message}
+                state={
+                    errors && errors.team && errors.team[id]
+                        ? "error"
+                        : "default"
+                }
+                stateRelatedMessage={
+                    errors && errors.team && errors.team[id]?.message
+                }
                 {...(props ? props : {})}
             />
         )) || <>Not found in schema: {id}</>
@@ -95,10 +108,8 @@ export function TeamForm(props: TeamFormProps) {
         resolver: zodResolver(teamUpdateSchema),
         mode: "onChange",
         defaultValues: {
-            ...(props.team || NEW_TEAM_DATA),
-            // teamSponsors: (props.teamSponsors || []).map(
-            //     (s) => s.uuid
-            // ),
+            team: props.team || NEW_TEAM_DATA.team,
+            members: (props.teamMembers || []).map((m) => m.uuid),
         },
     });
     const [alertMessage, setAlertMessage] = React.useState<{
@@ -177,9 +188,12 @@ export function TeamForm(props: TeamFormProps) {
                         hintText={`Le nom complet de l'équipe et
                                 ne doit pas dépasser 30 caractères.`}
                     />
+
                     <div
                         className={`fr-input-group ${
-                            errors?.mission ? "fr-input-group--error" : ""
+                            errors && errors.team && errors.team.mission
+                                ? "fr-input-group--error"
+                                : ""
                         }`}
                     >
                         <label className="fr-label">
@@ -198,7 +212,7 @@ export function TeamForm(props: TeamFormProps) {
                                     "font-strikethrough",
                                 ]}
                                 defaultValue={
-                                    props.team?.mission ||
+                                    getValues("team.mission") ||
                                     DEFAULT_SHORT_DESCRIPTION
                                 }
                                 style={{
@@ -207,7 +221,7 @@ export function TeamForm(props: TeamFormProps) {
                                 }}
                                 renderHTML={(text) => mdParser.render(text)}
                                 onChange={(data, e) => {
-                                    setValue("mission", data.text, {
+                                    setValue("team.mission", data.text, {
                                         shouldValidate: true,
                                         shouldDirty: true,
                                     });
@@ -215,21 +229,42 @@ export function TeamForm(props: TeamFormProps) {
                             />
                         </ClientOnly>
                     </div>
+                    {getValues("team.incubator_id")}
                     <SEIncubateurSelect
                         isMulti={false}
                         defaultValue={
                             props.incubatorOptions.filter(
                                 (incubator) =>
                                     incubator.value ===
-                                    getValues("incubator_id")
+                                    getValues("team.incubator_id")
                             )[0]
                         }
                         label={"Incubateurs"}
                         incubatorOptions={props.incubatorOptions}
                         onChange={(e, incubator) => {
-                            setValue("incubator_id", incubator.value);
+                            setValue("team.incubator_id", incubator.value);
                         }}
                     />
+                    <MemberSelect
+                        name="username"
+                        multiple={true}
+                        placeholder="Sélectionne les membres de cette équipe"
+                        onChange={(members) => {
+                            console.log(members);
+                            setValue(
+                                "members",
+                                members.map((member) => member.value)
+                            );
+                        }}
+                        members={props.members}
+                        valueKey={"uuid"}
+                        defaultValue={(props.teamMembers || []).map(
+                            (member) => ({
+                                label: member.fullname,
+                                value: member.uuid,
+                            })
+                        )}
+                    ></MemberSelect>
                     <hr />
                     <Button
                         className={fr.cx("fr-mt-3w")}
