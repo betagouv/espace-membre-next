@@ -179,9 +179,7 @@ export function TeamForm(props: TeamFormProps) {
                     />
                     <div
                         className={`fr-input-group ${
-                            errors?.short_description
-                                ? "fr-input-group--error"
-                                : ""
+                            errors?.mission ? "fr-input-group--error" : ""
                         }`}
                     >
                         <label className="fr-label">
