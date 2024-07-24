@@ -24,7 +24,6 @@ import "react-markdown-editor-lite/lib/index.css";
 
 const NEW_TEAM_DATA: teamUpdateSchemaType = {
     name: "",
-    ghid: "",
     incubator_id: "",
     mission: "",
 };
@@ -61,13 +60,13 @@ function BasicFormInput({
                   nativeTextAreaProps: {
                       placeholder,
                       rows,
-                      ...register(`${id}`),
+                      ...register(`${String(id)}`),
                   },
               }
             : {
                   nativeInputProps: {
                       placeholder,
-                      ...register(`${id}`),
+                      ...register(`${String(id)}`),
                   },
               };
     return (
