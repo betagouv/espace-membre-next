@@ -22,7 +22,10 @@ import { teamSchemaType } from "@/models/team";
 
 import "react-markdown-editor-lite/lib/index.css";
 import MemberSelect from "@/components/MemberSelect";
-import { memberBaseInfoSchemaType } from "@/models/member";
+import {
+    memberBaseInfoSchemaType,
+    memberPublicInfoSchemaType,
+} from "@/models/member";
 
 const NEW_TEAM_DATA: teamUpdateSchemaType = {
     team: {
@@ -39,9 +42,9 @@ const mdParser = new MarkdownIt(/* Markdown-it options */);
 export interface TeamFormProps {
     incubatorOptions: Option[];
     team?: teamSchemaType;
-    teamMembers?: memberBaseInfoSchemaType[];
+    teamMembers?: memberPublicInfoSchemaType[];
     save: (data: teamUpdateSchemaType) => any;
-    members: memberBaseInfoSchemaType[];
+    members: memberPublicInfoSchemaType[];
 }
 
 const DEFAULT_SHORT_DESCRIPTION =
