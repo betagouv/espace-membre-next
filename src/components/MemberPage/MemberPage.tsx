@@ -500,9 +500,29 @@ MemberPageProps) {
                         </div>
                     );
                 })}
-                {redirections.length === 0 && (
+                {!emailInfos?.isExchange &&
+                    !emailInfos?.isPro &&
+                    redirections.length === 0 && (
+                        <p>
+                            <strong>Aucune redirection</strong>
+                        </p>
+                    )}
+                {emailInfos?.isPro && (
                     <p>
-                        <strong>Aucune redirection</strong>
+                        <strong>
+                            Cet utilisateur à un compte email OVH pro, il peut
+                            voir ses redirections depuis
+                            `https://pro1.mail.ovh.net/owa/#path=/options/inboxrules`
+                        </strong>
+                    </p>
+                )}
+                {emailInfos?.isExchange && (
+                    <p>
+                        <strong>
+                            Cet utilisateur à un compte email OVH Microsoft
+                            Exchange, il peut voir ses redirections depuis les
+                            paramètes de son webmail.
+                        </strong>
                     </p>
                 )}
             </div>
