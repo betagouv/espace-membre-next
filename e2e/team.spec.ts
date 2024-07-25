@@ -26,7 +26,7 @@ test("team detail page and form page", async ({ page }) => {
         .returning("uuid")
         .executeTakeFirst();
     await page.goto(`/teams/${team?.uuid}`);
-    await expect(page.getByText("Mon super team").first()).toBeVisible();
+    await expect(page.getByText("Ma super team").first()).toBeVisible();
     await page.getByText("✏️ Mettre à jour les infos").first().click();
     await page.waitForURL(`/teams/${team?.uuid}/info-form`);
     await expect(
