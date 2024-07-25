@@ -57,13 +57,11 @@ export async function updateTeam({
             .select("uuid")
             .where("uuid", "in", members)
             .execute();
-        console.log(existingUsers);
         if (members && members.length) {
             await trx
                 .insertInto("users_teams")
                 .values(
                     members.map((memberUuid) => {
-                        console.log("LCS MEMBER UUID", memberUuid);
                         return {
                             team_id: teamUuid,
                             user_id: memberUuid,
