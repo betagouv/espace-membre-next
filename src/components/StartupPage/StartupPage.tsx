@@ -8,7 +8,6 @@ import { memberBaseInfoSchemaType } from "@/models/member";
 import { phaseSchemaType, startupSchemaType } from "@/models/startup";
 import { getLastMissionDate } from "@/utils/member";
 import { getCurrentPhase } from "@/utils/startup";
-import { BreadCrumbFiller } from "@/app/BreadCrumbProvider";
 
 function MemberTable({
     members,
