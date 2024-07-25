@@ -132,6 +132,28 @@ export function PrivateLayout({ children }: { children: React.ReactNode }) {
             text: routeTitles.startupCreate(),
             isActive: hasPathnameThisMatch(pathname, startupCreateLink),
         },
+        {
+            linkProps: {
+                href: currentPage,
+            },
+            dynamic: true,
+            text: currentPage,
+            isActive: hasPathnameThisRegex(
+                pathname,
+                "^/startups/[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$"
+            ),
+        },
+        {
+            linkProps: {
+                href: currentPage,
+            },
+            dynamic: true,
+            text: currentPage,
+            isActive: hasPathnameThisRegex(
+                pathname,
+                "^/startups/[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}/info-form$"
+            ),
+        },
     ];
 
     const incubatorSubPage: ItemLink[] = [
@@ -148,6 +170,28 @@ export function PrivateLayout({ children }: { children: React.ReactNode }) {
             },
             text: routeTitles.incubatorCreate(),
             isActive: hasPathnameThisMatch(pathname, incubatorCreateLink),
+        },
+        {
+            linkProps: {
+                href: currentPage,
+            },
+            dynamic: true,
+            text: currentPage,
+            isActive: hasPathnameThisRegex(
+                pathname,
+                "^/incubators/[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$"
+            ),
+        },
+        {
+            linkProps: {
+                href: currentPage,
+            },
+            dynamic: true,
+            text: currentPage,
+            isActive: hasPathnameThisRegex(
+                pathname,
+                "^/incubators/[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}/info-form$"
+            ),
         },
     ];
 
@@ -250,6 +294,7 @@ export function PrivateLayout({ children }: { children: React.ReactNode }) {
         breadcrumb?: {
             href: string;
         };
+        dynamic?: boolean;
         items?: ItemLink[];
     }
 
@@ -270,83 +315,88 @@ export function PrivateLayout({ children }: { children: React.ReactNode }) {
     };
 
     const displayMenuForSubPage = (pathname) => {
-        const firstSubPage = pathname.split("/")[1];
-        if (firstSubPage.includes("account")) {
-            return accountSubPages;
-        } else if (firstSubPage.includes("incubators")) {
-            return incubatorSubPage;
-        } else if (firstSubPage.includes("startups")) {
-            return startupSubPage;
-        } else if (firstSubPage.includes("community")) {
-            return [
-                {
-                    linkProps: {
-                        href: communityLink,
+        const getSubMenu = () => {
+            const firstSubPage = pathname.split("/")[1];
+            if (firstSubPage.includes("account")) {
+                return accountSubPages;
+            } else if (firstSubPage.includes("incubators")) {
+                return incubatorSubPage;
+            } else if (firstSubPage.includes("startups")) {
+                return startupSubPage;
+            } else if (firstSubPage.includes("community")) {
+                return [
+                    {
+                        linkProps: {
+                            href: communityLink,
+                        },
+                        text: routeTitles.community(),
+                        isActive: hasPathnameThisMatch(pathname, communityLink),
                     },
-                    text: routeTitles.community(),
-                    isActive: hasPathnameThisMatch(pathname, communityLink),
-                },
-                {
-                    linkProps: {
-                        href: communityCreateMemberLink,
+                    {
+                        linkProps: {
+                            href: communityCreateMemberLink,
+                        },
+                        text: routeTitles.communityCreateMember(),
+                        isActive: hasPathnameThisMatch(
+                            pathname,
+                            communityCreateMemberLink
+                        ),
                     },
-                    text: routeTitles.communityCreateMember(),
-                    isActive: hasPathnameThisMatch(
-                        pathname,
-                        communityCreateMemberLink
-                    ),
-                },
-                {
-                    linkProps: {
-                        href: mapLink,
+                    {
+                        linkProps: {
+                            href: mapLink,
+                        },
+                        text: routeTitles.map(),
+                        isActive: hasPathnameThisMatch(pathname, mapLink),
                     },
-                    text: routeTitles.map(),
-                    isActive: hasPathnameThisMatch(pathname, mapLink),
-                },
-            ];
-        } else if (firstSubPage.includes("admin")) {
-            return [
-                {
-                    linkProps: {
-                        href: communityLink,
+                ];
+            } else if (firstSubPage.includes("admin")) {
+                return [
+                    {
+                        linkProps: {
+                            href: communityLink,
+                        },
+                        text: routeTitles.adminMattermost(),
+                        isActive: hasPathnameThisMatch(
+                            pathname,
+                            adminMattermostLink
+                        ),
                     },
-                    text: routeTitles.adminMattermost(),
-                    isActive: hasPathnameThisMatch(
-                        pathname,
-                        adminMattermostLink
-                    ),
-                },
-            ];
-        }
-        return [];
+                ];
+            }
+            return [];
+        };
+        return getSubMenu().filter((menu) => !menu.dynamic);
     };
 
     const tree = findActiveItem(MenuItems);
+    console.log(tree);
     return (
         <>
-            {!hasPathnameThisMatch(pathname, verifyLink) && (
-                <Breadcrumb
-                    currentPageLabel={tree[tree.length - 1]?.text}
-                    homeLinkProps={{
-                        href: "/",
-                    }}
-                    segments={tree
-                        .slice(0, tree.length - 1)
-                        .filter(
-                            (segment) =>
-                                segment.linkProps?.href ||
-                                segment.breadcrumb?.href
-                        )
-                        .map((segment) => ({
-                            label: segment.text,
-                            linkProps: {
-                                href: (segment.linkProps?.href ||
-                                    segment.breadcrumb?.href) as string,
-                            },
-                        }))}
-                />
-            )}
-            <div className="fr-grid-row fr-grid-row-gutters">
+            {!hasPathnameThisMatch(pathname, verifyLink) &&
+                pathname !== "/dashboard" && (
+                    <Breadcrumb
+                        currentPageLabel={tree[tree.length - 1]?.text}
+                        homeLinkProps={{
+                            href: "/",
+                        }}
+                        segments={tree
+                            .slice(0, tree.length - 1)
+                            .filter(
+                                (segment) =>
+                                    segment.linkProps?.href ||
+                                    segment.breadcrumb?.href
+                            )
+                            .map((segment) => ({
+                                label: segment.text,
+                                linkProps: {
+                                    href: (segment.linkProps?.href ||
+                                        segment.breadcrumb?.href) as string,
+                                },
+                            }))}
+                    />
+                )}
+            <div className="fr-grid-row fr-grid-row-gutters fr-my-4w">
                 {!!displayMenuForSubPage(pathname).length && (
                     <div className="fr-col-12 fr-col-md-3 fr-col-lg-3">
                         <SideMenu

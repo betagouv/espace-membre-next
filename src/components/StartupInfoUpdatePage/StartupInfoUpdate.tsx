@@ -7,6 +7,7 @@ import axios from "axios";
 
 import { StartupForm, StartupFormProps } from "../StartupForm/StartupForm";
 import { updateStartup } from "@/app/api/startups/actions";
+import { BreadCrumbFiller } from "@/app/BreadCrumbProvider";
 import { startupInfoUpdateSchemaType } from "@/models/actions/startup";
 import { incubatorSchemaType } from "@/models/incubator";
 import { Option } from "@/models/misc";
@@ -55,6 +56,9 @@ export const StartupInfoUpdate = (props: StartupInfoUpdateProps) => {
 
     return (
         <>
+            <BreadCrumbFiller
+                currentPage={routeTitles.startupDetailsEdit(props.startup.name)}
+            ></BreadCrumbFiller>
             <div className={fr.cx("fr-mb-5w")}>
                 <h1>{routeTitles.startupDetailsEdit(props.startup.name)}</h1>
 

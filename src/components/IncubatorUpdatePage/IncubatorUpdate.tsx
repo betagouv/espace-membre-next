@@ -6,6 +6,7 @@ import * as Sentry from "@sentry/nextjs";
 
 import { IncubatorForm } from "../IncubatorForm/IncubatorForm";
 import { updateIncubator } from "@/app/api/incubators/actions/updateIncubator";
+import { BreadCrumbFiller } from "@/app/BreadCrumbProvider";
 import { incubatorUpdateSchemaType } from "@/models/actions/incubator";
 import { incubatorSchemaType } from "@/models/incubator";
 import { Option } from "@/models/misc";
@@ -43,6 +44,11 @@ export const IncubatorUpdate = (props: IncubatorUpdateProps) => {
 
     return (
         <>
+            <BreadCrumbFiller
+                currentPage={routeTitles.incubatorDetailsEdit(
+                    props.incubator.title
+                )}
+            ></BreadCrumbFiller>
             <div className={fr.cx("fr-mb-5w")}>
                 <h1>
                     {routeTitles.incubatorDetailsEdit(props.incubator.title)}

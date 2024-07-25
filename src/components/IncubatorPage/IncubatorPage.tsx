@@ -2,6 +2,7 @@
 
 import Button from "@codegouvfr/react-dsfr/Button";
 
+import { BreadCrumbFiller } from "@/app/BreadCrumbProvider";
 import { incubatorSchemaType } from "@/models/incubator";
 
 export interface IncubatorPageProps {
@@ -11,6 +12,10 @@ export interface IncubatorPageProps {
 export default function IncubatorPage({ incubatorInfos }: IncubatorPageProps) {
     return (
         <>
+            <BreadCrumbFiller
+                currentPage={incubatorInfos.title}
+            ></BreadCrumbFiller>
+
             <div className="fr-mb-8v">
                 <h1>{incubatorInfos.title}</h1>
                 <p>
