@@ -15,6 +15,7 @@ import {
 } from "@/models/mapper";
 import { authOptions } from "@/utils/authoptions";
 import { routeTitles } from "@/utils/routes/routeTitles";
+import { getTeam } from "@/lib/kysely/queries/teams";
 
 type Props = {
     params: { id: string };
@@ -23,8 +24,10 @@ type Props = {
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
     // read route params
     const id = params.id;
+    const team = await getTeam(id);
+
     return {
-        title: `${routeTitles.teamDetailsEdit(id)} / Espace Membre`,
+        title: `${routeTitles.teamDetailsEdit(team?.name)} / Espace Membre`,
     };
 }
 

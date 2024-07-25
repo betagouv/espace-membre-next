@@ -24,9 +24,9 @@ export async function generateMetadata(
     // read route params
     const id = params.id;
 
-    const produit = await getTeam(id);
+    const team = await getTeam(id);
     return {
-        title: produit ? `Produit ${produit.ghid} / Espace Membre` : "",
+        title: team ? `Équipe ${team.name} / Espace Membre` : "",
     };
 }
 
