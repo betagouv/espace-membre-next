@@ -38,7 +38,6 @@ export const OrganizationUpdate = (props: OrganizationUpdateProps) => {
         }
     };
 
-    // console.log("formData", props.formData);
 
     return (
         <>

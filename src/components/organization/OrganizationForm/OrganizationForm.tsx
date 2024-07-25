@@ -138,7 +138,6 @@ export function OrganizationForm(props: OrganizationFormProps) {
                 setIsSaving(false);
             });
     };
-    console.log(errors);
     return (
         <>
             <div>
