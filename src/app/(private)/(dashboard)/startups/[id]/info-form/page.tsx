@@ -4,16 +4,12 @@ import { getServerSession } from "next-auth";
 import { z } from "zod";
 
 import { StartupInfoUpdate } from "@/components/StartupInfoUpdatePage";
-import { getPullRequestForBranch, fetchGithubMarkdown } from "@/lib/github";
 import { db } from "@/lib/kysely";
 import { getStartup } from "@/lib/kysely/queries";
 import s3 from "@/lib/s3";
 import { startupToModel } from "@/models/mapper";
 import { sponsorSchema } from "@/models/sponsor";
-import { eventSchema, phaseSchema, startupSchema } from "@/models/startup";
-import { thematiques } from "@/models/thematiques";
-import { usertypes } from "@/models/usertypes";
-import betagouv from "@/server/betagouv";
+import { eventSchema, phaseSchema } from "@/models/startup";
 import { authOptions } from "@/utils/authoptions";
 import { routeTitles } from "@/utils/routes/routeTitles";
 
@@ -33,33 +29,6 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
     };
 }
 
-async function fetchGithubPageData(startup: string, ref: string = "master") {
-    const { attributes, body } = await fetchGithubMarkdown({
-        ref,
-        schema: startupSchema,
-        path: `content/_startups/${startup}.md`,
-        overrides: (values) => ({
-            ...values,
-            // prevent some exceptions with invalid content
-            title: values.title || "",
-            mission: values.mission || "",
-            incubator: values.incubator || "",
-            contact: values.contact || "",
-            sponsors:
-                (values.sponsors &&
-                    values.sponsors.map((sponsor) =>
-                        sponsor.replace(/^\/organisations\//, "")
-                    )) ||
-                [],
-        }),
-    });
-
-    return {
-        ...attributes,
-        markdown: body,
-    };
-}
-
 export default async function Page(props) {
     const session = await getServerSession(authOptions);
 
@@ -67,10 +36,7 @@ export default async function Page(props) {
         redirect("/login");
     }
     const uuid = props.params.id;
-    // const startupPR = await getPullRequestForBranch(`edit-startup-${id}`);
 
-    // const sha = startupPR && startupPR.head.sha;
-    // const formData = await fetchGithubPageData(id, sha || "master");
     const incubators = await db.selectFrom("incubators").selectAll().execute(); //await betagouv.incubators();
     const sponsors = await db.selectFrom("organizations").selectAll().execute(); //await betagouv.sponsors();
     const startup = startupToModel(

@@ -251,23 +251,35 @@ export interface Startups {
 
 export interface StartupsFiles {
   /**
-   * Contenu du fichier
+   * Contenu base64 du document
    */
   base64: Buffer | null;
   comments: string | null;
   created_at: Generated<Timestamp>;
-  data: Json | null;
   /**
-   * Nom du fichier
+   * User qui a déposé le document
+   */
+  created_by: string;
+  /**
+   * Metadonnées du document
+   */
+  data: Json | null;
+  deleted_at: Timestamp | null;
+  /**
+   * User qui a détruit le document
+   */
+  deleted_by: string | null;
+  /**
+   * Nom du document
    */
   filename: string | null;
   /**
-   * Taille du fichier en octets
+   * Taille du document en octets
    */
   size: number | null;
   startup_id: string;
   /**
-   * Titre du fichier
+   * Titre du document
    */
   title: string | null;
   /**

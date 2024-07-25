@@ -5,7 +5,7 @@ import { getServerSession } from "next-auth";
 import { StartupFiles } from "@/components/StartupFiles";
 import { authOptions } from "@/utils/authoptions";
 import { routeTitles } from "@/utils/routes/routeTitles";
-import { getStartupFiles } from "@/app/api/startups/get-startup-files";
+import { getStartupFiles } from "@/app/api/startups/files/list";
 import { getStartup } from "@/app/api/startups/actions";
 
 type Props = {

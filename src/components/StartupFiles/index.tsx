@@ -5,9 +5,9 @@ import { Upload } from "@codegouvfr/react-dsfr/Upload";
 import { CallOut } from "@codegouvfr/react-dsfr/CallOut";
 import { fr } from "@codegouvfr/react-dsfr";
 import { FileForm } from "./FileForm";
-import { uploadStartupFile } from "../../app/api/startups/upload-file";
+import { uploadStartupFile } from "../../app/api/startups/files/upload";
 import { DocSchemaType } from "@/models/startupFiles";
-import { getStartupFiles } from "@/app/api/startups/get-startup-files";
+import { getStartupFiles } from "@/app/api/startups/files/list";
 
 import { FileList } from "./FileList";
 

@@ -1,14 +1,15 @@
 "use client";
 import React from "react";
-import { ColorOptions, fr } from "@codegouvfr/react-dsfr";
+import { fr } from "@codegouvfr/react-dsfr";
 import Tag from "@codegouvfr/react-dsfr/Tag";
 import Link from "next/link";
 import { format } from "date-fns";
-import { typesDocuments } from "@/models/startupFiles";
 import Table from "@codegouvfr/react-dsfr/Table";
-import { getStartupFiles } from "@/app/api/startups/get-startup-files";
+import { getStartupFiles } from "@/app/api/startups/files/list";
 
 import "./FileList.css";
+import { revalidatePath } from "next/cache";
+import { deleteFile } from "@/app/api/startups/files/delete";
 
 type FilesType = Awaited<ReturnType<typeof getStartupFiles>>;
 
@@ -21,11 +22,23 @@ const colors: Record<string, string> = {
 };
 
 export const FileList = ({ files }: { files: FilesType }) => {
+    const onDeleteClick = async (uuid) => {
+        if (
+            confirm(
+                "Êtes-vous sûr(e) de vouloir définitivement supprimer ce document ?"
+            )
+        ) {
+            await deleteFile({ uuid });
+
+            // todo: there is a better way
+            document.location.reload();
+        }
+    };
     return (
         files.length > 0 && (
             <Table
                 className="startup-files-list-table"
-                headers={["Date", "Type", "Titre", "Tags", "Commentaires"]}
+                headers={["Date", "Type", "Titre", "Tags", "Commentaires", "-"]}
                 data={files.map((file) => [
                     format(file.created_at, "dd/MM/yyyy"),
                     <Tag
@@ -49,7 +62,7 @@ export const FileList = ({ files }: { files: FilesType }) => {
                     <Link
                         key="title"
                         target="_blank"
-                        href={`/api/startups/download-file/${file.uuid}`}
+                        href={`/api/startups/files/download/${file.uuid}`}
                     >
                         {file.title}
                     </Link>,
@@ -63,6 +76,14 @@ export const FileList = ({ files }: { files: FilesType }) => {
                         ))) ||
                         "",
                     file.comments || "",
+                    <i
+                        key="del"
+                        title="Supprimer ce document"
+                        role="button"
+                        onClick={() => onDeleteClick(file.uuid)}
+                        style={{ cursor: "pointer" }}
+                        className={fr.cx("fr-icon-delete-bin-fill")}
+                    />,
                 ])}
             />
         )

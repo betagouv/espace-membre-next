@@ -6,14 +6,6 @@ import { db } from "@/lib/kysely";
 import { DocSchemaType } from "@/models/startupFiles";
 import { authOptions } from "@/utils/authoptions";
 
-type PostParams = {
-    content: string;
-    uuid: string;
-    filename: string;
-    size: number;
-    data?: any;
-};
-
 const commonFileFields = [
     "startups_files.title",
     "startups_files.uuid",
@@ -23,6 +15,14 @@ const commonFileFields = [
     "startups_files.type",
     "startups_files.data",
 ] as const;
+
+type PostParams = {
+    content: string;
+    uuid: string;
+    filename: string;
+    size: number;
+    data?: any;
+};
 
 export async function uploadStartupFile(
     {
@@ -45,7 +45,7 @@ export async function uploadStartupFile(
     // todo: ensure user can upload files here
     const inserted = await db
         .insertInto("startups_files")
-        .values(({ selectFrom }) => ({
+        .values({
             base64,
             type,
             data,
@@ -54,7 +54,8 @@ export async function uploadStartupFile(
             size,
             title,
             startup_id: uuid,
-        }))
+            created_by: session.user.uuid,
+        })
         .returning(commonFileFields)
         .executeTakeFirstOrThrow();
     return inserted;
