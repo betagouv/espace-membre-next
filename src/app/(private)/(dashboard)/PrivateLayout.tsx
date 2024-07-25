@@ -219,6 +219,28 @@ export function PrivateLayout({ children }: { children: React.ReactNode }) {
             text: routeTitles.organizationCreate(),
             isActive: hasPathnameThisMatch(pathname, organizationCreateLink),
         },
+        {
+            linkProps: {
+                href: currentPage,
+            },
+            dynamic: true,
+            text: currentPage,
+            isActive: hasPathnameThisRegex(
+                pathname,
+                "^/organizations/[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$"
+            ),
+        },
+        {
+            linkProps: {
+                href: currentPage,
+            },
+            dynamic: true,
+            text: currentPage,
+            isActive: hasPathnameThisRegex(
+                pathname,
+                "^/organizations/[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}/info-form$"
+            ),
+        },
     ];
 
     const MenuItems: ItemLink[] = [
