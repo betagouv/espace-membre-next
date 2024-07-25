@@ -16,6 +16,7 @@ export async function GET(
         .selectFrom("startups_files")
         .select(["filename", "base64"])
         .where("uuid", "=", id)
+        .where("deleted_at", "is", null)
         .executeTakeFirstOrThrow();
 
     if (file.base64) {
