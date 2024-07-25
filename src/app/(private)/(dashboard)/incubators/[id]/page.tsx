@@ -1,13 +1,12 @@
 import { Metadata, ResolvingMetadata } from "next";
 import { redirect } from "next/navigation";
 
-import { getIncubator } from "@/lib/kysely/queries/incubators";
-import { incubatorToModel } from "@/models/mapper";
-import { memberBaseInfoSchema, memberSchema } from "@/models/member";
-
 import IncubatorPage, {
     IncubatorPageProps,
 } from "@/components/IncubatorPage/IncubatorPage";
+import { getIncubator } from "@/lib/kysely/queries/incubators";
+import { incubatorToModel } from "@/models/mapper";
+import { memberBaseInfoSchema, memberSchema } from "@/models/member";
 
 type Props = {
     params: { id: string };
@@ -22,7 +21,7 @@ export async function generateMetadata(
 
     const produit = await getIncubator(id);
     return {
-        title: produit ? `Produit ${produit.ghid} / Espace Membre` : "",
+        title: produit ? `Incubateur ${produit.ghid} / Espace Membre` : "",
     };
 }
 

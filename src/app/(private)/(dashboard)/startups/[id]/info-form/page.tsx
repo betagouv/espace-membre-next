@@ -6,6 +6,7 @@ import { z } from "zod";
 import { StartupInfoUpdate } from "@/components/StartupInfoUpdatePage";
 import { getPullRequestForBranch, fetchGithubMarkdown } from "@/lib/github";
 import { db } from "@/lib/kysely";
+import { getStartup } from "@/lib/kysely/queries";
 import { startupToModel } from "@/models/mapper";
 import { sponsorSchema } from "@/models/sponsor";
 import { eventSchema, phaseSchema, startupSchema } from "@/models/startup";
@@ -22,8 +23,12 @@ type Props = {
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
     // read route params
     const id = params.id;
+    const startup = await getStartup(id);
+
     return {
-        title: `${routeTitles.startupDetailsEdit(id)} / Espace Membre`,
+        title: `${routeTitles.startupDetailsEdit(
+            startup?.name
+        )} / Espace Membre`,
     };
 }
 
