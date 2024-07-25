@@ -14,6 +14,7 @@ import {
 import { Option } from "@/models/misc";
 import { teamSchemaType } from "@/models/team";
 import { routeTitles } from "@/utils/routes/routeTitles";
+import { BreadCrumbFiller } from "@/app/BreadCrumbProvider";
 
 interface TeamUpdateProps {
     team: teamSchemaType;
@@ -45,9 +46,12 @@ export const TeamUpdate = (props: TeamUpdateProps) => {
         }
     };
 
-
     return (
         <>
+            <BreadCrumbFiller
+                currentPage={routeTitles.teamDetailsEdit(props.team.name)}
+            ></BreadCrumbFiller>
+
             <div className={fr.cx("fr-mb-5w")}>
                 <h1>{routeTitles.teamDetailsEdit(props.team.name)}</h1>
 
