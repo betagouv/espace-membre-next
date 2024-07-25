@@ -232,7 +232,6 @@ export function TeamForm(props: TeamFormProps) {
                             />
                         </ClientOnly>
                     </div>
-                    {getValues("team.incubator_id")}
                     <SEIncubateurSelect
                         isMulti={false}
                         defaultValue={
