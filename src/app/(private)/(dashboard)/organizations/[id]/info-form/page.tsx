@@ -4,6 +4,7 @@ import { getServerSession } from "next-auth";
 
 import { OrganizationUpdate } from "@/components/organization/OrganizationUpdatePage";
 import { db } from "@/lib/kysely";
+import { getOrganization } from "@/lib/kysely/queries/organizations";
 import { organizationToModel } from "@/models/mapper";
 import { authOptions } from "@/utils/authoptions";
 import { routeTitles } from "@/utils/routes/routeTitles";
@@ -15,8 +16,12 @@ type Props = {
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
     // read route params
     const id = params.id;
+    const organization = await getOrganization(id);
+
     return {
-        title: `${routeTitles.organizationDetailsEdit(id)} / Espace Membre`,
+        title: `${routeTitles.organizationDetailsEdit(
+            organization?.name
+        )} / Espace Membre`,
     };
 }
 
