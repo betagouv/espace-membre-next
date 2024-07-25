@@ -9,7 +9,7 @@ COMMIT="chore: db changes `date '+%Y%m%d_%H%M%S'`"
 rm -rf ./beta.gouv.fr || true
 
 # clone the fork
-git clone "https://$GITHUB_TOKEN@github.com/$GITHUB_FORK"
+git clone "https://$GITHUB_TOKEN@github.com/$GITHUB_REPOSITORY"
 
 # update beta.gouv local clone
 node ./dist/src/scripts/update-local-files
