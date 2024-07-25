@@ -4,7 +4,13 @@ import { ExpressionBuilder, sql } from "kysely";
 import unzipper, { Entry } from "unzipper";
 import { ZodSchema, z } from "zod";
 
-import { startup, author, organisation, incubator } from "./github-schemas";
+import {
+    startup,
+    author,
+    organisation,
+    incubator,
+    team,
+} from "./github-schemas";
 import { DB } from "@/@types/db";
 import { jsonArrayFrom } from "@/lib/kysely";
 
@@ -90,6 +96,17 @@ export function withMissions(eb: ExpressionBuilder<DB, "users">) {
     ).as("missions");
 }
 
+export function withTeams(eb: ExpressionBuilder<DB, "users">) {
+    return jsonArrayFrom(
+        eb
+            .selectFrom(["teams"])
+            .leftJoin("users_teams", "users_teams.team_id", "teams.uuid")
+            .select((eb2) => ["teams.ghid"])
+            .whereRef("users_teams.user_id", "=", "users.uuid")
+        // .whereRef("missions.uuid", "=", "missions_startups.mission_id")
+    ).as("teams");
+}
+
 export function withPhases(eb: ExpressionBuilder<DB, "startups">) {
     return jsonArrayFrom(
         eb
@@ -122,6 +139,7 @@ export function withEvents(eb: ExpressionBuilder<DB, "startups">) {
 const zipUrl = `https://github.com/betagouv/beta.gouv.fr/archive/refs/heads/master.zip`;
 
 export type MarkdownData = {
+    teams: FmReturn<z.infer<typeof team> & { ghid: string }>[];
     incubators: FmReturn<z.infer<typeof incubator> & { ghid: string }>[];
     organisations: FmReturn<z.infer<typeof organisation> & { ghid: string }>[];
     startups: FmReturn<z.infer<typeof startup> & { ghid: string }>[];
@@ -135,6 +153,7 @@ export const importFromZip = (): Promise<MarkdownData> => {
         organisations: [],
         startups: [],
         authors: [],
+        teams: [],
     };
 
     const schemas: Record<keyof typeof markdownData, ZodSchema> = {
@@ -142,6 +161,7 @@ export const importFromZip = (): Promise<MarkdownData> => {
         organisations: organisation,
         startups: startup,
         authors: author,
+        teams: team,
     };
 
     return new Promise(async (resolve) => {

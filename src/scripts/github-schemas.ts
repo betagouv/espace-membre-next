@@ -19,6 +19,12 @@ export const organisation = z.object({
     type: z.string(),
 });
 
+export const team = z.object({
+    name: z.string(),
+    mission: z.string(),
+    incubator: z.string(),
+});
+
 export const startup = z.object({
     title: z.string(),
     mission: z.string(),

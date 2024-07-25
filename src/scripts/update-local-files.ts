@@ -1,9 +1,16 @@
 import { detailedDiff } from "deep-object-diff";
 import { writeFile } from "fs/promises";
 import yaml from "js-yaml";
-import path from "path";
 import markdownit from "markdown-it";
-import { startup, author, organisation, incubator } from "./github-schemas";
+import path from "path";
+
+import {
+    startup,
+    author,
+    organisation,
+    incubator,
+    team,
+} from "./github-schemas";
 import {
     withEvents,
     withPhases,
@@ -36,6 +43,18 @@ const getChanges = async (markdownData) => {
             "incubators.ghid",
             sql<string>`CASE WHEN organizations.ghid IS NOT NULL then concat('/organisations/', organizations.ghid) else NULL END`.as(
                 "owner"
+            ),
+        ])
+        .execute();
+    const teams = await db
+        .selectFrom("teams")
+        .leftJoin("incubators", "incubators.uuid", "teams.incubator_id")
+        .select((eb) => [
+            "name",
+            "mission",
+            "teams.ghid",
+            sql<string>`CASE WHEN incubators.ghid IS NOT NULL then concat('/incubators/', incubators.ghid) else NULL END`.as(
+                "incubator"
             ),
         ])
         .execute();
@@ -196,6 +215,58 @@ const getChanges = async (markdownData) => {
                 updates.push({
                     file: `content/_incubators/${dbIncub.ghid}.md`,
                     content: dumpYaml(updated, dbIncub.description || ""),
+                });
+            }
+        }
+    });
+
+    // update teams
+    teams.forEach((dbTeam) => {
+        const ghTeam = markdownData.teams.find(
+            (o) => o.attributes.ghid === dbTeam.ghid
+        );
+        const dbTeam2 = extractValidValues(dbTeam, ["ghid", "mission"]);
+        const htmlMission =
+            (dbTeam.mission && md.renderInline(dbTeam.mission)) || "";
+        if (!ghTeam) {
+            // create gh orga
+            updates.push({
+                file: `content/_teams/${dbTeam.ghid}.md`,
+                content: dumpYaml(
+                    {
+                        ...dbTeam2,
+                        mission: htmlMission,
+                    },
+                    ""
+                ),
+            });
+        } else {
+            // dont update null values from DB
+            const { ghid: ghid2, ...ghTeam2 } = ghTeam.attributes;
+            const diffed = detailedDiff(ghTeam2, {
+                ...dbTeam2,
+                short_description: htmlMission,
+            });
+            if (
+                Object.keys(diffed.updated).length ||
+                Object.keys(diffed.added).length
+            ) {
+                const updated = {
+                    ...ghTeam2,
+                    ...dbTeam2,
+                    mission: htmlMission,
+                };
+                updated.name = updated.name || ""; // wth due to url field ?
+                updated.incubator = updated.incubator || ""; // wth
+                try {
+                    team.parse(updated);
+                } catch (e) {
+                    console.error(`ERROR parsing team ${ghid2}`);
+                    console.error(e);
+                }
+                updates.push({
+                    file: `content/_teams/${dbTeam.ghid}.md`,
+                    content: dumpYaml(updated, ""),
                 });
             }
         }

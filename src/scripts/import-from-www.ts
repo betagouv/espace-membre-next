@@ -1,11 +1,19 @@
-const { Readable } = require("stream");
 import fm from "front-matter";
-import unzipper, { Entry } from "unzipper";
-import { db } from "@lib/kysely";
-import { startup, author, organisation, incubator } from "./github-schemas";
-import { ZodSchema, z } from "zod";
 import pAll from "p-all";
+import unzipper, { Entry } from "unzipper";
+import { ZodSchema, z } from "zod";
+
+import {
+    startup,
+    author,
+    organisation,
+    incubator,
+    team,
+} from "./github-schemas";
 import { importFromZip, MarkdownData } from "./utils";
+import { db } from "@lib/kysely";
+
+const { Readable } = require("stream");
 
 const insertData = async (markdownData: MarkdownData) => {
     // truncate tables
@@ -18,6 +26,7 @@ const insertData = async (markdownData: MarkdownData) => {
     await db.deleteFrom("startups").execute();
     await db.deleteFrom("incubators").execute();
     await db.deleteFrom("organizations").execute();
+    await db.deleteFrom("teams").execute();
 
     // insert organisations
     const organisations = await db
@@ -75,6 +84,29 @@ const insertData = async (markdownData: MarkdownData) => {
         .returning(["uuid", "ghid"])
         .execute();
 
+    // insert teams
+    const teams = await db
+        .insertInto("teams")
+        .values(({ selectFrom }) =>
+            markdownData.teams.map((team) => ({
+                ghid: team.attributes.ghid,
+                incubator_id: (team.attributes.incubator &&
+                    selectFrom("incubators")
+                        .where(
+                            "ghid",
+                            "=",
+                            team.attributes.incubator.replace(
+                                "/incubators/",
+                                ""
+                            )
+                        )
+                        .select("uuid"))!,
+                mission: team.attributes.mission!,
+                name: team.attributes.name,
+            }))
+        )
+        .returning(["uuid", "ghid"])
+        .execute();
     // insert startups
     const startups = await pAll(
         markdownData.startups.map((startup) => async () => {
@@ -283,6 +315,25 @@ const insertData = async (markdownData: MarkdownData) => {
                 }) || [],
                 { concurrency: 1 }
             );
+            await pAll(
+                author.attributes.teams?.map((team) => async () => {
+                    const res = await db
+                        .selectFrom("teams")
+                        .where("ghid", "=", team.replace("/teams/", ""))
+                        .select("uuid")
+                        .executeTakeFirst();
+                    if (res) {
+                        return db
+                            .insertInto("users_teams")
+                            .values({
+                                team_id: res.uuid,
+                                user_id: userId.uuid,
+                            })
+                            .execute();
+                    }
+                }) || [],
+                { concurrency: 1 }
+            );
 
             return userId;
         }),
@@ -291,6 +342,7 @@ const insertData = async (markdownData: MarkdownData) => {
 
     console.log("\n\n");
     console.table({
+        teams: teams.length,
         organisations: organisations.length,
         incubators: incubators.length,
         startups: startups.length,
