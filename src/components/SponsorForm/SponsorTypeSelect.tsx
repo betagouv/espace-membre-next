@@ -29,7 +29,6 @@ export default function SponsorTypeSelect({
     stateRelatedMessage?: string;
 }) {
     if (!isMulti) {
-        console.log(defaultValue);
         return (
             <SingleSelect
                 onChange={onChange}
