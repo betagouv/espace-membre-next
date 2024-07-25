@@ -18,6 +18,7 @@ import {
     extractValidValues,
     dumpYaml,
     importFromZip,
+    withTeams,
 } from "./utils";
 import { db, sql } from "@lib/kysely";
 
@@ -121,7 +122,7 @@ const getChanges = async (markdownData) => {
     ] as const;
     const users = await db
         .selectFrom("users")
-        .select((eb) => [...userColumns, withMissions(eb)])
+        .select((eb) => [...userColumns, withMissions(eb), withTeams(eb)])
         .groupBy([...userColumns, "users.uuid"])
         .execute();
 
@@ -390,6 +391,7 @@ const getChanges = async (markdownData) => {
                         const { uuid, ...mission } = m;
                         return mission;
                     }),
+                    teams: dbAuthor2.teams?.map((team) => team.ghid),
                 };
                 updates.push({
                     file: `content/_authors/${dbAuthor.username}.md`,
@@ -397,7 +399,10 @@ const getChanges = async (markdownData) => {
                 });
             } else {
                 const { ghid: ghid2, ...ghAuthor2 } = ghAuthor.attributes;
-                const diffed = detailedDiff(ghAuthor2, dbAuthor2);
+                const diffed = detailedDiff(ghAuthor2, {
+                    dbAuthor2,
+                    teams: dbAuthor2.teams?.map((team) => team.ghid),
+                });
                 if (
                     Object.keys(diffed.updated).length ||
                     Object.keys(diffed.added).length
@@ -405,6 +410,7 @@ const getChanges = async (markdownData) => {
                     const updated = extractValidValues({
                         ...ghAuthor2,
                         ...dbAuthor2,
+                        teams: dbAuthor2.teams?.map((team) => team.ghid),
                     });
 
                     // hack for validation
