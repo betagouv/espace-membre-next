@@ -391,7 +391,9 @@ const getChanges = async (markdownData) => {
                         const { uuid, ...mission } = m;
                         return mission;
                     }),
-                    teams: dbAuthor2.teams?.map((team) => team.ghid),
+                    teams: dbAuthor2.teams?.map(
+                        (team) => `/teams/${team.ghid}`
+                    ),
                 };
                 updates.push({
                     file: `content/_authors/${dbAuthor.username}.md`,
@@ -401,7 +403,9 @@ const getChanges = async (markdownData) => {
                 const { ghid: ghid2, ...ghAuthor2 } = ghAuthor.attributes;
                 const diffed = detailedDiff(ghAuthor2, {
                     dbAuthor2,
-                    teams: dbAuthor2.teams?.map((team) => team.ghid),
+                    teams: dbAuthor2.teams?.map(
+                        (team) => `/teams/${team.ghid}`
+                    ),
                 });
                 if (
                     Object.keys(diffed.updated).length ||
@@ -410,7 +414,9 @@ const getChanges = async (markdownData) => {
                     const updated = extractValidValues({
                         ...ghAuthor2,
                         ...dbAuthor2,
-                        teams: dbAuthor2.teams?.map((team) => team.ghid),
+                        teams: dbAuthor2.teams?.map(
+                            (team) => `/teams/${team.ghid}`
+                        ),
                     });
 
                     // hack for validation
