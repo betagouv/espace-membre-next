@@ -10,10 +10,14 @@ export function getAllTeams() {
 
 /** Return all teams */
 export async function getAllTeamsOptions() {
-    const teams = await getAllTeams();
+    const teams = await db
+        .selectFrom("teams")
+        .innerJoin("incubators", "teams.incubator_id", "incubators.uuid")
+        .select(["teams.uuid", "teams.name", "incubators.title"])
+        .execute();
     return teams.map((team) => ({
         value: team.uuid,
-        label: `${team.name}`,
+        label: `${team.name} - ${team.title}`,
     }));
 }
 
