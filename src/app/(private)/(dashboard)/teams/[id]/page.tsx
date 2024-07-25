@@ -3,9 +3,15 @@ import { redirect } from "next/navigation";
 
 import TeamPage, { TeamPageProps } from "@/components/team/TeamPage/Team";
 import { db } from "@/lib/kysely";
+import { getIncubator } from "@/lib/kysely/queries/incubators";
 import { getTeam } from "@/lib/kysely/queries/teams";
-import { teamToModel, memberPublicInfoToModel } from "@/models/mapper";
+import {
+    teamToModel,
+    memberPublicInfoToModel,
+    incubatorToModel,
+} from "@/models/mapper";
 import { memberBaseInfoSchema, memberSchema } from "@/models/member";
+import { incubator } from "@/scripts/github-schemas";
 
 type Props = {
     params: { id: string };
@@ -30,6 +36,10 @@ export default async function Page({ params }: Props) {
     if (!dbTeam) {
         redirect("/teams");
     }
+    const incubator = await getIncubator(dbTeam.incubator_id);
+    if (!incubator) {
+        throw new Error("An incubator should exist of incubator.uuid");
+    }
     const teamMembers = (
         await db
             .selectFrom("users")
@@ -39,5 +49,11 @@ export default async function Page({ params }: Props) {
             .execute()
     ).map((user) => memberPublicInfoToModel(user));
     const team = teamToModel(dbTeam);
-    return <TeamPage teamInfos={team} teamMembers={teamMembers || []} />;
+    return (
+        <TeamPage
+            incubator={incubatorToModel(incubator)}
+            teamInfos={team}
+            teamMembers={teamMembers || []}
+        />
+    );
 }

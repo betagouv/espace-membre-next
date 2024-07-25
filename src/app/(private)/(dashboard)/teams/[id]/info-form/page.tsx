@@ -4,7 +4,10 @@ import { getServerSession } from "next-auth";
 
 import { TeamUpdate } from "@/components/team/TeamUpdatePage";
 import { db } from "@/lib/kysely";
-import { getAllUsersInfo } from "@/lib/kysely/queries/users";
+import {
+    getAllUsersInfo,
+    MEMBER_PROTECTED_INFO,
+} from "@/lib/kysely/queries/users";
 import {
     memberBaseInfoToModel,
     memberPublicInfoToModel,
@@ -48,7 +51,7 @@ export default async function Page(props: Props) {
     const teamMembers = (
         await db
             .selectFrom("users")
-            .selectAll()
+            .select([...MEMBER_PROTECTED_INFO]) // here explicitly get user.uuid otherwise teamMember.uuid=users_teams.uuid
             .innerJoin("users_teams", "users.uuid", "users_teams.user_id")
             .where("users_teams.team_id", "=", uuid)
             .execute()
