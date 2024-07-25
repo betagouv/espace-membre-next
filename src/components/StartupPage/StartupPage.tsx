@@ -3,6 +3,7 @@ import Accordion from "@codegouvfr/react-dsfr/Accordion";
 import Button from "@codegouvfr/react-dsfr/Button";
 import { Table } from "@codegouvfr/react-dsfr/Table";
 
+import { BreadCrumbFiller } from "@/app/BreadCrumbProvider";
 import { memberBaseInfoSchemaType } from "@/models/member";
 import { missionSchemaType } from "@/models/mission";
 import { phaseSchemaType, startupSchemaType } from "@/models/startup";
@@ -20,10 +21,7 @@ function MemberTable({
         <Table
             data={members.map(
                 (member: memberBaseInfoSchemaType, index: number) => [
-                    <a
-                        key={index}
-                        href={`/community/${member.username}`}
-                    >
+                    <a key={index} href={`/community/${member.username}`}>
                         {member.fullname}
                     </a>,
                     member.role,
@@ -68,6 +66,9 @@ export default function StartupPage({
     );
     return (
         <>
+            <BreadCrumbFiller
+                currentPage={startupInfos.name}
+            ></BreadCrumbFiller>
             <div className="fr-mb-8v">
                 <h1>{startupInfos.name}</h1>
                 <p>

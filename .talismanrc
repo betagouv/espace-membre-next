@@ -79,6 +79,8 @@ fileignoreconfig:
   checksum: dcaa8a0e4f7fac866160ef2422014f2ad118701d18ba177c162dc1bbd1b86be3
 - filename: src/components/StartupForm/UsertypesEditor.tsx
   checksum: 776745d3054dbb7ca1a51f3f12a97905ab783c0226aee41c5d38bd42afd6a626
+- filename: src/components/StartupPage/StartupPage.tsx
+  checksum: a0aaa86a066780ede70d6f9f3e3b933672c43bb5e343ef64843caf9e148a52ee
 - filename: src/frontConfig/index.ts
   checksum: dfa7fcba549f3059c547970b66d918c32d7ca97d9506c57ef982510c64562282
 - filename: src/lib/airtable.ts
