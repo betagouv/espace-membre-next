@@ -167,7 +167,6 @@ export function TeamForm(props: TeamFormProps) {
                 setIsSaving(false);
             });
     };
-    console.log(errors);
     return (
         <>
             <div>
@@ -252,7 +251,6 @@ export function TeamForm(props: TeamFormProps) {
                         multiple={true}
                         placeholder="Sélectionne les membres de cette équipe"
                         onChange={(members) => {
-                            console.log(members);
                             setValue(
                                 "members",
                                 members.map((member) => member.value)

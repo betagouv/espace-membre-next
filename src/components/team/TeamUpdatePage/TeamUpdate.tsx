@@ -45,7 +45,6 @@ export const TeamUpdate = (props: TeamUpdateProps) => {
         }
     };
 
-    // console.log("formData", props.formData);
 
     return (
         <>
