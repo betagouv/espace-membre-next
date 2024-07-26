@@ -1,4 +1,5 @@
 "use client";
+
 import React, { useCallback, useEffect, useRef, useState } from "react";
 import { useDropzone } from "react-dropzone";
 import { Upload } from "@codegouvfr/react-dsfr/Upload";
@@ -8,6 +9,7 @@ import { FileForm } from "./FileForm";
 import { uploadStartupFile } from "../../app/api/startups/files/upload";
 import { DocSchemaType } from "@/models/startupFiles";
 import { getStartupFiles } from "@/app/api/startups/files/list";
+import * as Sentry from "@sentry/browser";
 
 import { FileList } from "./FileList";
 
@@ -77,13 +79,14 @@ export const StartupFiles = ({
             filename: pendingFiles[fileIndex].name,
             size: pendingFiles[fileIndex].size,
             ...data,
+        }).catch((err) => {
+            Sentry.captureException(err);
+            alert("Impossible d'uploader le document 😰");
         });
 
         if (uploaded) {
             // upload
             files.unshift(uploaded);
-        } else {
-            alert("Impossible d'uploader le document 😰");
         }
 
         if (fileIndex === pendingFiles.length - 1) {
