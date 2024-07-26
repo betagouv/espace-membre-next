@@ -14,6 +14,14 @@ import { authOptions } from "@/utils/authoptions";
 import { addEvent } from "@/lib/events";
 import { EventCode } from "@/models/actionEvent";
 
+export async function getStartup({ uuid }: { uuid: string }) {
+    return db
+        .selectFrom("startups")
+        .selectAll()
+        .where("uuid", "=", uuid)
+        .executeTakeFirstOrThrow();
+}
+
 export async function createStartup({
     formData: {
         startup,

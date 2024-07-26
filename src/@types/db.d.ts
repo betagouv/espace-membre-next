@@ -229,6 +229,7 @@ export interface Startups {
   analyse_risques_url: string | null;
   budget_url: string | null;
   contact: string | null;
+  created_at: Generated<Timestamp>;
   dashlord_url: string | null;
   description: string | null;
   ghid: string;
@@ -245,6 +246,46 @@ export interface Startups {
   thematiques: Json | null;
   updated_at: Generated<Timestamp>;
   usertypes: Json | null;
+  uuid: Generated<string>;
+}
+
+export interface StartupsFiles {
+  /**
+   * Contenu base64 du document
+   */
+  base64: Buffer | null;
+  comments: string | null;
+  created_at: Generated<Timestamp>;
+  /**
+   * User qui a déposé le document
+   */
+  created_by: string;
+  /**
+   * Metadonnées du document
+   */
+  data: Json | null;
+  deleted_at: Timestamp | null;
+  /**
+   * User qui a détruit le document
+   */
+  deleted_by: string | null;
+  /**
+   * Nom du document
+   */
+  filename: string | null;
+  /**
+   * Taille du document en octets
+   */
+  size: number | null;
+  startup_id: string;
+  /**
+   * Titre du document
+   */
+  title: string | null;
+  /**
+   * Type de document
+   */
+  type: string | null;
   uuid: Generated<string>;
 }
 
@@ -352,6 +393,7 @@ export interface DB {
   sessions: Sessions;
   startup_events: StartupEvents;
   startups: Startups;
+  startups_files: StartupsFiles;
   startups_organizations: StartupsOrganizations;
   tasks: Tasks;
   user_details: UserDetails;
