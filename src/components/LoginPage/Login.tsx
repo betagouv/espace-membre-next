@@ -7,7 +7,6 @@ import { Alert } from "@codegouvfr/react-dsfr/Alert";
 import Button from "@codegouvfr/react-dsfr/Button";
 import { ButtonsGroup } from "@codegouvfr/react-dsfr/ButtonsGroup";
 import { Input } from "@codegouvfr/react-dsfr/Input";
-import { connect } from "http2";
 import Link from "next/link";
 import { signIn } from "next-auth/react";
 
@@ -18,9 +17,6 @@ interface Props {
     next: string;
 }
 
-const LightConnectBlock = ({ children }) => {
-    return <>{children}</>;
-};
 const ConnectBlock = ({ children }) => {
     return (
         <>
