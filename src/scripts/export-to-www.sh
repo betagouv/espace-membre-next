@@ -27,7 +27,7 @@ if [[ `git status --porcelain content` ]]; then
     git push --set-upstream origin "$BRANCH"
 
     # make PR from fork
-    FORK_USER="$( cut -d '/' -f 1 <<< "$GITHUB_FORK" )";
+    FORK_USER="$( cut -d '/' -f 1 <<< "$GITHUB_REPOSITORY" )";
     curl --location --request POST "https://api.github.com/repos/$GITHUB_REPOSITORY/pulls" \
         --header "Authorization: Bearer $GITHUB_TOKEN" \
         --header 'Content-Type: application/json' \
