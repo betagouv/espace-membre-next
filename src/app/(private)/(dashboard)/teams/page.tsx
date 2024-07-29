@@ -13,7 +13,7 @@ export default async function Page() {
     return (
         <>
             <h1>{routeTitles.teamList()}</h1>
-            <TeamList teamOptions={teamOptions} />;
+            <TeamList teamOptions={teamOptions} />
         </>
     );
 }

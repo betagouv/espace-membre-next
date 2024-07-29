@@ -330,6 +330,14 @@ export function PrivateLayout({ children }: { children: React.ReactNode }) {
         // },
         {
             linkProps: {
+                href: teamListLink,
+            },
+            text: "Équipe",
+            isActive: hasPathnameThisMatch(pathname, teamListLink),
+            items: teamSubPage,
+        },
+        {
+            linkProps: {
                 href: newsletterLink,
             },
             text: routeTitles.newsletters(),
