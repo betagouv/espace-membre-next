@@ -446,7 +446,7 @@ export async function sendOnboardingVerificationPendingEmail() {
     );
 
     concernedUsers.map(async (user) => {
-        const secretariatUrl = `${config.protocol}://${config.host}`;
+        const secretariatUrl = `${config.protocol}://${config.host}?secondary_email=${user.secondary_email}`;
         const event = await db
             .selectFrom("events")
             .selectAll()
