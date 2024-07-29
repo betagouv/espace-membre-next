@@ -54,6 +54,9 @@ export async function updateOrganization({
                 value: {
                     ...res,
                 },
+                old_value: {
+                   ...previousOrganizationData
+                }
             },
         });
     });
