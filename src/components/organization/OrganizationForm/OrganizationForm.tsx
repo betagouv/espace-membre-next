@@ -157,7 +157,7 @@ export function OrganizationForm(props: OrganizationFormProps) {
                     <BasicInput
                         id="name"
                         label="Nom de l'organisation (obligatoire)"
-                        placeholder="ex: Direciton Interministeriel du Numérique"
+                        placeholder="ex: Direction Interministerielle du Numérique"
                         hintText={`Le nom complet de l'organisation sponsor et
                                 ne doit pas dépasser 30 caractères.`}
                     />
