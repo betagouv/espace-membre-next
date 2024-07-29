@@ -24,7 +24,7 @@ export const OrganizationList = (props: OrganizationListProps) => {
             <form onSubmit={save}>
                 <SESponsorSelect
                     isMulti={false}
-                    label="Sponsor/Organisations"
+                    label="Organisations sponsors"
                     placeholder="Sélectionne une organisation sponsor"
                     allSponsors={props.organizationOptions}
                     onChange={(organization) => {

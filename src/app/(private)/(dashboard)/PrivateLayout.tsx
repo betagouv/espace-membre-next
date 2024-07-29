@@ -322,6 +322,14 @@ export function PrivateLayout({ children }: { children: React.ReactNode }) {
                 },
             ],
         },
+        {
+            linkProps: {
+                href: organizationListLink,
+            },
+            text: "Organisations",
+            isActive: hasPathnameThisMatch(pathname, organizationListLink),
+            items: organizationSubPage,
+        },
     ];
 
     if (session?.user?.isAdmin) {
@@ -420,7 +428,6 @@ export function PrivateLayout({ children }: { children: React.ReactNode }) {
     };
 
     const tree = findActiveItem(MenuItems);
-    console.log(tree);
     return (
         <>
             {!hasPathnameThisMatch(pathname, verifyLink) &&

@@ -4,7 +4,9 @@ import _ from "lodash";
 import { revalidatePath } from "next/cache";
 import { getServerSession } from "next-auth";
 
+import { addEvent } from "@/lib/events";
 import { db } from "@/lib/kysely";
+import { EventCode } from "@/models/actionEvent";
 import { organizationUpdateSchemaType } from "@/models/actions/organization";
 import { authOptions } from "@/utils/authoptions";
 
@@ -30,7 +32,7 @@ export async function updateOrganization({
 
     await db.transaction().execute(async (trx) => {
         // update organization data
-        await trx
+        const res = await trx
             .updateTable("organizations")
             .set({
                 name: organization.name,
@@ -40,8 +42,19 @@ export async function updateOrganization({
                 type: organization.type,
             })
             .where("uuid", "=", organizationUuid)
-            .execute();
+            .returningAll()
+            .executeTakeFirstOrThrow();
 
         revalidatePath("/organizations");
+
+        await addEvent({
+            action_code: EventCode.ORGANIZATION_CREATED,
+            created_by_username: session.user.id,
+            action_metadata: {
+                value: {
+                    ...res,
+                },
+            },
+        });
     });
 }
