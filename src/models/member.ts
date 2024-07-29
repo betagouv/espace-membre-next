@@ -41,9 +41,9 @@ export enum LegalStatus {
     EIRL = "EIRL",
     EURL = "EURL",
     fonctionnaire = "fonctionnaire",
-    PORTAGE = "portage",
+    PORTAGE = "PORTAGE",
     asso = "asso",
-    SA = "sa",
+    SA = "SA",
     SASU = "SASU",
     SNC = "SNC",
 }
@@ -79,7 +79,10 @@ export const genderOptions = [
     },
 ];
 
-export const statusOptions = [
+export const statusOptions: {
+    key: keyof typeof LegalStatus;
+    name: string;
+}[] = [
     {
         key: "AE",
         name: "Auto-entreprise/micro-entreprise",

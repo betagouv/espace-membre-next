@@ -96,7 +96,7 @@ fileignoreconfig:
 - filename: src/models/dbUser/dbUser.ts
   checksum: 796e5668df837d35d981c24c33436a21f3363c3b746cf3ee47d4a85cfb538d0d
 - filename: src/models/member.ts
-  checksum: 3c421d5c592882181ce37fe6b1ab9982122e6a43d362b332500d79e0b65d9efe
+  checksum: 9ed875ca1310da2fe72241679ed45e883bb8392997ea2e03fed1cb8c3e91f868
 - filename: src/routes/routes.ts
   checksum: 675ba81fc5357f186d2ca4ce446a75016fbbcda42492d414d31ee7ad7fa8f7d5
 - filename: src/scripts/export-to-www.ts
