@@ -5,7 +5,9 @@ import _ from "lodash";
 import { revalidatePath } from "next/cache";
 import { getServerSession } from "next-auth";
 
+import { addEvent } from "@/lib/events";
 import { db } from "@/lib/kysely";
+import { EventCode } from "@/models/actionEvent";
 import { teamUpdateSchemaType } from "@/models/actions/team";
 import { authOptions } from "@/utils/authoptions";
 
@@ -36,7 +38,7 @@ export async function updateTeam({
             .selectAll()
             .where("uuid", "=", team.incubator_id)
             .executeTakeFirst();
-        await trx
+        const udpatedTeam = await trx
             .updateTable("teams")
             .set({
                 ...team,
@@ -46,19 +48,18 @@ export async function updateTeam({
                         : previousTeamData.ghid,
             })
             .where("uuid", "=", teamUuid)
-            .execute();
+            .returningAll()
+            .executeTakeFirstOrThrow();
 
-        const res = await trx
+        const previousMembers = await trx
             .deleteFrom("users_teams")
             .where("team_id", "=", teamUuid)
+            .returning("uuid")
             .execute();
-        const existingUsers = await trx
-            .selectFrom("users")
-            .select("uuid")
-            .where("uuid", "in", members)
-            .execute();
+
+        let memberIds: { uuid: string }[] = [];
         if (members && members.length) {
-            await trx
+            memberIds = await trx
                 .insertInto("users_teams")
                 .values(
                     members.map((memberUuid) => {
@@ -68,9 +69,33 @@ export async function updateTeam({
                         };
                     })
                 )
+                .returning("uuid")
                 .execute();
         }
 
         revalidatePath("/teams");
+
+        await addEvent({
+            action_code: EventCode.TEAM_UPDATED,
+            created_by_username: session.user.id,
+            action_metadata: {
+                value: {
+                    uuid: udpatedTeam.uuid,
+                    ghid: udpatedTeam.ghid,
+                    name: udpatedTeam.name,
+                    mission: udpatedTeam.mission,
+                    incubator_id: udpatedTeam.incubator_id,
+                    memberIds: memberIds.map((m) => m.uuid),
+                },
+                old_value: {
+                    uuid: previousTeamData.uuid,
+                    ghid: previousTeamData.ghid,
+                    name: previousTeamData.name,
+                    mission: previousTeamData.mission,
+                    incubator_id: previousTeamData.incubator_id,
+                    memberIds: previousMembers.map((m) => m.uuid),
+                },
+            },
+        });
     });
 }

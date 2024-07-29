@@ -31,6 +31,8 @@ export enum EventCode {
     STARTUP_PHASE_UPDATED = "STARTUP_PHASE_UPDATED",
     STARTUP_INFO_UPDATED = "STARTUP_INFO_UPDATED",
     STARTUP_INFO_CREATED = "STARTUP_INFO_CREATED",
+    TEAM_CREATED = "TEAM_CREATED",
+    TEAM_UPDATED = "TEAM_UPDATED",
     EMAIL_VERIFICATION_WAITING_SENT = "EMAIL_VERIFICATION_WAITING_SENT",
     ORGANIZATION_CREATED = "ORGANIZATION_CREATED",
     ORGANIZATION_UPDATED = "ORGANIZATION_UPDATED",
@@ -71,6 +73,8 @@ export const EventCodeToReadable: Record<EventCode, string> = {
     [EventCode.STARTUP_PHASE_UPDATED]: "Phase de startup mis à jour",
     [EventCode.STARTUP_INFO_UPDATED]: "Info de startup mis à jour",
     [EventCode.STARTUP_INFO_CREATED]: "Fiche de startup crée",
+    [EventCode.TEAM_CREATED]: "Team créée",
+    [EventCode.TEAM_UPDATED]: "Team mise à jour",
     [EventCode.EMAIL_VERIFICATION_WAITING_SENT]:
         "Email de fiche à vérifier envoyé",
     [EventCode.ORGANIZATION_CREATED]: "Organization créée",
@@ -247,6 +251,20 @@ export const EventOrganizationCreatedPayload = z.object({
     }),
 });
 
+export const EventTeamCreatedPayload = z.object({
+    action_code: z.literal(EventCode.TEAM_CREATED),
+    action_metadata: z.object({
+        value: z.object({
+            uuid: z.string(),
+            ghid: z.string().nullable(),
+            name: z.string(),
+            mission: z.string().nullable(),
+            incubator_id: z.string(),
+            memberIds: z.array(z.string()),
+        }),
+    }),
+});
+
 export const EventOrganizationUpdatedPayload = z.object({
     action_code: z.literal(EventCode.ORGANIZATION_UPDATED),
     action_metadata: z.object({
@@ -263,6 +281,28 @@ export const EventOrganizationUpdatedPayload = z.object({
             ghid: z.string().optional().nullable(),
             domaine_ministeriel: z.string(),
             type: z.string(),
+        }),
+    }),
+});
+
+export const EventTeamUpdatedPayload = z.object({
+    action_code: z.literal(EventCode.TEAM_UPDATED),
+    action_metadata: z.object({
+        value: z.object({
+            uuid: z.string(),
+            ghid: z.string().nullable(),
+            name: z.string(),
+            mission: z.string().nullable(),
+            incubator_id: z.string(),
+            memberIds: z.array(z.string()),
+        }),
+        old_value: z.object({
+            uuid: z.string(),
+            ghid: z.string().nullable(),
+            name: z.string(),
+            mission: z.string().nullable(),
+            incubator_id: z.string(),
+            memberIds: z.array(z.string()),
         }),
     }),
 });
@@ -289,6 +329,8 @@ export type EventPayloads =
     | z.infer<typeof EventMemberSecondaryEmailUpdatedPayload>
     | z.infer<typeof EventMemberPrimaryEmailUpdatedPayload>
     | z.infer<typeof EventMemberRedirectionDeletedPayload>
+    | z.infer<typeof EventTeamCreatedPayload>
+    | z.infer<typeof EventTeamUpdatedPayload>
     | z.infer<typeof EventMemberEmailDeletedPayload>
     | z.infer<typeof EventMemberUnblockEmailPayload>
     | z.infer<typeof EventOrganizationCreatedPayload>
