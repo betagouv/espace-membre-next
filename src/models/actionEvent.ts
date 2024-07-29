@@ -32,6 +32,8 @@ export enum EventCode {
     STARTUP_INFO_UPDATED = "STARTUP_INFO_UPDATED",
     STARTUP_INFO_CREATED = "STARTUP_INFO_CREATED",
     EMAIL_VERIFICATION_WAITING_SENT = "EMAIL_VERIFICATION_WAITING_SENT",
+    ORGANIZATION_CREATED = "ORGANIZATION_CREATED",
+    ORGANIZATION_UPDATED = "ORGANIZATION_UPDATED",
 }
 
 interface ActionMetadata {
@@ -71,6 +73,8 @@ export const EventCodeToReadable: Record<EventCode, string> = {
     [EventCode.STARTUP_INFO_CREATED]: "Fiche de startup crée",
     [EventCode.EMAIL_VERIFICATION_WAITING_SENT]:
         "Email de fiche à vérifier envoyé",
+    [EventCode.ORGANIZATION_CREATED]: "Organization créée",
+    [EventCode.ORGANIZATION_UPDATED]: "Organization mise à jour",
 };
 
 export interface BaseActionEvent {
@@ -230,6 +234,39 @@ export const EventMemberUnblockEmailPayload = z.object({
     }),
 });
 
+export const EventOrganizationCreatedPayload = z.object({
+    action_code: z.literal(EventCode.ORGANIZATION_CREATED),
+    action_metadata: z.object({
+        value: z.object({
+            name: z.string(),
+            acronym: z.string().optional().nullable(),
+            ghid: z.string().optional().nullable(),
+            domaine_ministeriel: z.string(),
+            type: z.string(),
+        }),
+    }),
+});
+
+export const EventOrganizationUpdatedPayload = z.object({
+    action_code: z.literal(EventCode.ORGANIZATION_CREATED),
+    action_metadata: z.object({
+        value: z.object({
+            name: z.string(),
+            acronym: z.string().optional().nullable(),
+            ghid: z.string().optional().nullable(),
+            domaine_ministeriel: z.string(),
+            type: z.string(),
+        }),
+        old_value: z.object({
+            name: z.string(),
+            acronym: z.string().optional().nullable(),
+            ghid: z.string().optional().nullable(),
+            domaine_ministeriel: z.string(),
+            type: z.string(),
+        }),
+    }),
+});
+
 export type EventPayloads =
     | z.infer<typeof EventMemberCommunicationEmailUpdatePayload>
     | z.infer<typeof EventMemberBaseInfoUpdatedPayload>
@@ -253,7 +290,9 @@ export type EventPayloads =
     | z.infer<typeof EventMemberPrimaryEmailUpdatedPayload>
     | z.infer<typeof EventMemberRedirectionDeletedPayload>
     | z.infer<typeof EventMemberEmailDeletedPayload>
-    | z.infer<typeof EventMemberUnblockEmailPayload>;
+    | z.infer<typeof EventMemberUnblockEmailPayload>
+    | z.infer<typeof EventOrganizationCreatedPayload>
+    | z.infer<typeof EventOrganizationUpdatedPayload>;
 
 export type EventAction = BaseActionEvent & EventPayloads;
 

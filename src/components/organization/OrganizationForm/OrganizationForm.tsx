@@ -81,9 +81,6 @@ export function OrganizationForm(props: OrganizationFormProps) {
         mode: "onChange",
         defaultValues: {
             ...props.organization,
-            // organizationSponsors: (props.organizationSponsors || []).map(
-            //     (s) => s.uuid
-            // ),
         },
     });
     const [alertMessage, setAlertMessage] = React.useState<{
@@ -114,8 +111,14 @@ export function OrganizationForm(props: OrganizationFormProps) {
             .then((resp) => {
                 setIsSaving(false);
                 setAlertMessage({
-                    title: `Mise à jour effectuée`,
-                    message: <>La mise à jour a bien été effectuée</>,
+                    title: props.organization
+                        ? `Mise à jour effectuée`
+                        : `Organisation créée`,
+                    message: props.organization ? (
+                        <>La mise à jour a bien été effectuée</>
+                    ) : (
+                        <>L'organisation a bien été créée</>
+                    ),
                     type: "success",
                 });
                 return resp;
@@ -170,7 +173,10 @@ export function OrganizationForm(props: OrganizationFormProps) {
                     <SponsorTypeSelect
                         isMulti={false}
                         onChange={(value) => {
-                            setValue("type", value.value);
+                            setValue("type", value.value, {
+                                shouldValidate: true,
+                                shouldDirty: true,
+                            });
                         }}
                         state={errors && errors["type"] ? "error" : "default"}
                         stateRelatedMessage={errors && errors["type"]?.message}
@@ -180,7 +186,10 @@ export function OrganizationForm(props: OrganizationFormProps) {
                     <SponsorDomainSelect
                         isMulti={false}
                         onChange={(value) => {
-                            setValue("domaine_ministeriel", value.value);
+                            setValue("domaine_ministeriel", value.value, {
+                                shouldValidate: true,
+                                shouldDirty: true,
+                            });
                         }}
                         state={
                             errors && errors["domaine_ministeriel"]

@@ -5,7 +5,9 @@ import { revalidatePath } from "next/cache";
 import { getServerSession } from "next-auth";
 import { z } from "zod";
 
+import { addEvent } from "@/lib/events";
 import { db } from "@/lib/kysely";
+import { EventCode } from "@/models/actionEvent";
 import {
     organizationUpdateSchemaType,
     organizationUpdateSchema,
@@ -33,7 +35,7 @@ export async function createOrganization({
                 domaine_ministeriel: organization.domaine_ministeriel,
                 type: organization.type,
             })
-            .returning("uuid")
+            .returningAll()
             .executeTakeFirst();
 
         if (!res) {
@@ -41,5 +43,15 @@ export async function createOrganization({
         }
 
         revalidatePath("/organizations");
+
+        await addEvent({
+            action_code: EventCode.ORGANIZATION_CREATED,
+            created_by_username: session.user.id,
+            action_metadata: {
+                value: {
+                    ...res,
+                },
+            },
+        });
     });
 }
