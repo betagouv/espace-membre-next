@@ -9,11 +9,17 @@ import {
     memberPublicInfoSchemaType,
     memberSchemaType,
 } from "../member";
+import {
+    SponsorDomaineMinisteriel,
+    sponsorSchemaType,
+    SponsorType,
+} from "../sponsor";
 import { StartupPhase, phaseSchemaType, startupSchemaType } from "../startup";
 import {
     BadgeRequests,
     Incubators,
     Missions,
+    Organizations,
     Phases,
     Users,
 } from "@/@types/db";
@@ -227,5 +233,19 @@ export function incubatorToModel(
         github: incubator.github || "",
         description: incubator.description || "",
         short_description: incubator.short_description || "",
+    };
+}
+
+export function organizationToModel(
+    organization: Selectable<Organizations>
+): sponsorSchemaType {
+    return {
+        uuid: organization.uuid,
+        ghid: organization.ghid as string,
+        name: organization.name,
+        acronym: organization.acronym as string,
+        domaine_ministeriel:
+            organization.domaine_ministeriel as SponsorDomaineMinisteriel,
+        type: organization.type as SponsorType,
     };
 }

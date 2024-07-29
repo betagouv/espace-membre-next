@@ -47,6 +47,15 @@ export function PrivateLayout({ children }: { children: React.ReactNode }) {
     const incubatorListLink = linkRegistry.get("incubatorList", undefined);
     const incubatorCreateLink = linkRegistry.get("incubatorCreate", undefined);
 
+    const organizationListLink = linkRegistry.get(
+        "organizationList",
+        undefined
+    );
+    const organizationCreateLink = linkRegistry.get(
+        "organizationCreate",
+        undefined
+    );
+
     const adminMattermostLink = linkRegistry.get("adminMattermost", undefined);
     const newsletterLink = linkRegistry.get("newsletters", undefined);
     const accountEditBaseInfoLink = linkRegistry.get(
@@ -195,6 +204,45 @@ export function PrivateLayout({ children }: { children: React.ReactNode }) {
         },
     ];
 
+    const organizationSubPage: ItemLink[] = [
+        {
+            linkProps: {
+                href: organizationListLink,
+            },
+            text: routeTitles.organizationList(),
+            isActive: hasPathnameThisMatch(pathname, organizationListLink),
+        },
+        {
+            linkProps: {
+                href: organizationCreateLink,
+            },
+            text: routeTitles.organizationCreate(),
+            isActive: hasPathnameThisMatch(pathname, organizationCreateLink),
+        },
+        {
+            linkProps: {
+                href: currentPage,
+            },
+            dynamic: true,
+            text: currentPage,
+            isActive: hasPathnameThisRegex(
+                pathname,
+                "^/organizations/[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$"
+            ),
+        },
+        {
+            linkProps: {
+                href: currentPage,
+            },
+            dynamic: true,
+            text: currentPage,
+            isActive: hasPathnameThisRegex(
+                pathname,
+                "^/organizations/[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}/info-form$"
+            ),
+        },
+    ];
+
     const MenuItems: ItemLink[] = [
         // {
         //     linkProps: {
@@ -230,17 +278,17 @@ export function PrivateLayout({ children }: { children: React.ReactNode }) {
             expandedByDefault: Boolean(startupSubPage.find((a) => a.isActive)),
             items: startupSubPage,
         },
-        {
-            linkProps: {
-                href: incubatorListLink,
-            },
-            text: "Incubateur",
-            isActive: hasPathnameThisMatch(pathname, incubatorListLink),
-            expandedByDefault: Boolean(
-                incubatorSubPage.find((a) => a.isActive)
-            ),
-            items: incubatorSubPage,
-        },
+        // {
+        //     linkProps: {
+        //         href: incubatorListLink,
+        //     },
+        //     text: "Incubateur",
+        //     isActive: hasPathnameThisMatch(pathname, incubatorListLink),
+        //     expandedByDefault: Boolean(
+        //         incubatorSubPage.find((a) => a.isActive)
+        //     ),
+        //     items: incubatorSubPage,
+        // },
         {
             linkProps: {
                 href: newsletterLink,
@@ -273,6 +321,14 @@ export function PrivateLayout({ children }: { children: React.ReactNode }) {
                     ),
                 },
             ],
+        },
+        {
+            linkProps: {
+                href: organizationListLink,
+            },
+            text: "Organisations",
+            isActive: hasPathnameThisMatch(pathname, organizationListLink),
+            items: organizationSubPage,
         },
     ];
 
@@ -321,6 +377,8 @@ export function PrivateLayout({ children }: { children: React.ReactNode }) {
                 return accountSubPages;
             } else if (firstSubPage.includes("incubators")) {
                 return incubatorSubPage;
+            } else if (firstSubPage.includes("organizations")) {
+                return organizationSubPage;
             } else if (firstSubPage.includes("startups")) {
                 return startupSubPage;
             } else if (firstSubPage.includes("community")) {
@@ -370,7 +428,6 @@ export function PrivateLayout({ children }: { children: React.ReactNode }) {
     };
 
     const tree = findActiveItem(MenuItems);
-    console.log(tree);
     return (
         <>
             {!hasPathnameThisMatch(pathname, verifyLink) &&

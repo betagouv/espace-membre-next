@@ -1,7 +1,9 @@
 import React from "react";
-import ReactSelect from "react-select";
 import { useState } from "react";
+
 import { Select } from "@codegouvfr/react-dsfr/Select";
+import ReactSelect from "react-select";
+
 import { ClientOnly } from "../ClientOnly";
 import { SponsorType } from "@/models/sponsor";
 
@@ -15,12 +17,16 @@ export default function SponsorTypeSelect({
     isMulti,
     placeholder,
     defaultValue,
+    state,
+    stateRelatedMessage,
 }: {
     value?: any;
     onChange?: any;
     isMulti?: boolean;
     placeholder?: any;
     defaultValue?: string;
+    state?: "default" | "success" | "error";
+    stateRelatedMessage?: string;
 }) {
     if (!isMulti) {
         return (
@@ -28,6 +34,8 @@ export default function SponsorTypeSelect({
                 onChange={onChange}
                 placeholder={placeholder}
                 defaultValue={defaultValue}
+                state={state}
+                stateRelatedMessage={stateRelatedMessage}
             ></SingleSelect>
         );
     }
@@ -52,13 +60,16 @@ function SingleSelect({
     defaultValue,
     onChange,
     placeholder,
+    state,
+    stateRelatedMessage,
 }: {
     defaultValue?: string;
     onChange: any;
     placeholder?: string;
+    state?: "default" | "success" | "error";
+    stateRelatedMessage?: string;
 }) {
     const [value, setValue] = useState(defaultValue || "");
-
     return (
         <Select
             label="Type de sponsor"
@@ -67,8 +78,11 @@ function SingleSelect({
                     setValue(event.target.value);
                     onChange({ value: event.target.value });
                 },
+                defaultValue,
                 value,
             }}
+            state={state}
+            stateRelatedMessage={stateRelatedMessage}
         >
             <option value="" disabled hidden>
                 {placeholder || "Sélectionne un type de sponsor"}

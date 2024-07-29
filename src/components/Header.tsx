@@ -80,6 +80,7 @@ const MainHeader = () => {
             "/newsletters",
             "/formations",
             "/events",
+            "/organizations",
         ].find((url) => pathname.startsWith(url))
             ? [
                   {

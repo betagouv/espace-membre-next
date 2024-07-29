@@ -1,9 +1,11 @@
 import React from "react";
-import ReactSelect from "react-select";
 import { useState } from "react";
+
+import { Select } from "@codegouvfr/react-dsfr/Select";
+import ReactSelect from "react-select";
+
 import { ClientOnly } from "../ClientOnly";
 import { SponsorDomaineMinisteriel } from "@/models/sponsor";
-import { Select } from "@codegouvfr/react-dsfr/Select";
 
 const options = Object.values(SponsorDomaineMinisteriel).map((type) => ({
     value: type,
@@ -15,12 +17,16 @@ export default function SponsorDomainSelect({
     isMulti,
     placeholder,
     defaultValue,
+    state,
+    stateRelatedMessage,
 }: {
     value?: any;
     onChange?: any;
     isMulti?: boolean;
     placeholder?: any;
     defaultValue?: string;
+    state?: "default" | "success" | "error";
+    stateRelatedMessage?: string;
 }) {
     if (!isMulti) {
         return (
@@ -28,6 +34,8 @@ export default function SponsorDomainSelect({
                 onChange={onChange}
                 placeholder={placeholder}
                 defaultValue={defaultValue}
+                state={state}
+                stateRelatedMessage={stateRelatedMessage}
             ></SingleSelect>
         );
     }
@@ -58,10 +66,14 @@ function SingleSelect({
     defaultValue,
     onChange,
     placeholder,
+    state,
+    stateRelatedMessage,
 }: {
     defaultValue?: string;
     onChange: any;
     placeholder?: string;
+    state?: "default" | "success" | "error";
+    stateRelatedMessage?: string;
 }) {
     const [value, setValue] = useState(defaultValue || "");
 
@@ -75,6 +87,8 @@ function SingleSelect({
                 },
                 value,
             }}
+            state={state}
+            stateRelatedMessage={stateRelatedMessage}
         >
             <option value="" disabled hidden>
                 Sélectionne un domaine ministériel
