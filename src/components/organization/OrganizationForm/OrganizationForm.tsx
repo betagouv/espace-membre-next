@@ -6,7 +6,6 @@ import { Button } from "@codegouvfr/react-dsfr/Button";
 import { fr } from "@codegouvfr/react-dsfr/fr";
 import { Input } from "@codegouvfr/react-dsfr/Input";
 import { zodResolver } from "@hookform/resolvers/zod";
-import _ from "lodash";
 import { useForm } from "react-hook-form";
 
 import SponsorDomainSelect from "@/components/SponsorForm/SponsorDomainSelect";
