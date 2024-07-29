@@ -143,8 +143,14 @@ export function TeamForm(props: TeamFormProps) {
             .then((resp) => {
                 setIsSaving(false);
                 setAlertMessage({
-                    title: `Mise à jour effectuée`,
-                    message: <>La mise à jour a bien été effectuée</>,
+                    title: props.team
+                        ? `Mise à jour effectuée`
+                        : "Équipe créée",
+                    message: props.team ? (
+                        <>La mise à jour a bien été effectuée</>
+                    ) : (
+                        <>L'équipe a bien été créée</>
+                    ),
                     type: "success",
                 });
                 return resp;
@@ -243,7 +249,10 @@ export function TeamForm(props: TeamFormProps) {
                         label={"Incubateurs"}
                         incubatorOptions={props.incubatorOptions}
                         onChange={(e, incubator) => {
-                            setValue("team.incubator_id", incubator.value);
+                            setValue("team.incubator_id", incubator.value, {
+                                shouldValidate: true,
+                                shouldDirty: true,
+                            });
                         }}
                     />
                     <MemberSelect
@@ -253,7 +262,11 @@ export function TeamForm(props: TeamFormProps) {
                         onChange={(members) => {
                             setValue(
                                 "members",
-                                members.map((member) => member.value)
+                                members.map((member) => member.value),
+                                {
+                                    shouldValidate: true,
+                                    shouldDirty: true,
+                                }
                             );
                         }}
                         members={props.members}
