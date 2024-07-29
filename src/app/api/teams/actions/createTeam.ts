@@ -6,7 +6,9 @@ import { revalidatePath } from "next/cache";
 import { getServerSession } from "next-auth";
 import { z } from "zod";
 
+import { addEvent } from "@/lib/events";
 import { db } from "@/lib/kysely";
+import { EventCode } from "@/models/actionEvent";
 import { teamUpdateSchema, teamUpdateSchemaType } from "@/models/actions/team";
 import { authOptions } from "@/utils/authoptions";
 
@@ -35,10 +37,11 @@ export async function createTeam({
                 mission: team.mission,
                 incubator_id: team.incubator_id,
             })
-            .returning("uuid")
+            .returningAll()
             .executeTakeFirst();
+        let memberIds: { uuid: string }[] = [];
         if (res?.uuid) {
-            await trx
+            memberIds = await trx
                 .insertInto("users_teams")
                 .values(
                     members.map((memberUuid) => ({
@@ -46,6 +49,7 @@ export async function createTeam({
                         user_id: memberUuid,
                     }))
                 )
+                .returning("uuid")
                 .execute();
         }
 
@@ -54,5 +58,20 @@ export async function createTeam({
         }
 
         revalidatePath("/teams");
+
+        await addEvent({
+            action_code: EventCode.TEAM_CREATED,
+            created_by_username: session.user.id,
+            action_metadata: {
+                value: {
+                    uuid: res.uuid,
+                    ghid: res.ghid,
+                    name: res.name,
+                    mission: res.mission,
+                    incubator_id: res.incubator_id,
+                    memberIds: memberIds.map((m) => m.uuid),
+                },
+            },
+        });
     });
 }
