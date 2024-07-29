@@ -9,7 +9,7 @@ COMMIT="chore: db changes `date '+%Y%m%d_%H%M%S'`"
 rm -rf ./beta.gouv.fr || true
 
 # clone the fork
-git clone "https://$GITHUB_TOKEN@github.com/$GITHUB_FORK"
+git clone "https://$GITHUB_TOKEN@github.com/$GITHUB_REPOSITORY"
 
 # update beta.gouv local clone
 node ./dist/src/scripts/update-local-files
@@ -27,7 +27,7 @@ if [[ `git status --porcelain content` ]]; then
     git push --set-upstream origin "$BRANCH"
 
     # make PR from fork
-    FORK_USER="$( cut -d '/' -f 1 <<< "$GITHUB_FORK" )";
+    FORK_USER="$( cut -d '/' -f 1 <<< "$GITHUB_REPOSITORY" )";
     curl --location --request POST "https://api.github.com/repos/$GITHUB_REPOSITORY/pulls" \
         --header "Authorization: Bearer $GITHUB_TOKEN" \
         --header 'Content-Type: application/json' \
