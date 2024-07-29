@@ -248,7 +248,7 @@ export const EventOrganizationCreatedPayload = z.object({
 });
 
 export const EventOrganizationUpdatedPayload = z.object({
-    action_code: z.literal(EventCode.ORGANIZATION_CREATED),
+    action_code: z.literal(EventCode.ORGANIZATION_UPDATED),
     action_metadata: z.object({
         value: z.object({
             name: z.string(),
