@@ -34,6 +34,7 @@
     "@sindresorhus/slugify": "^1.1.0",
     "@socialgouv/matomo-next": "^1.9.0",
     "airtable": "^0.12.2",
+    "aws-sdk": "^2.1664.0",
     "axios": "^1.6.7",
     "compression": "^1.7.4",
     "connect-flash": "^0.1.1",

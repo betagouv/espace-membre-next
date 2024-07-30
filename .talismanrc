@@ -106,7 +106,7 @@ fileignoreconfig:
     - filename: src/models/dbUser/dbUser.ts
       checksum: 796e5668df837d35d981c24c33436a21f3363c3b746cf3ee47d4a85cfb538d0d
     - filename: src/models/member.ts
-      checksum: 3c421d5c592882181ce37fe6b1ab9982122e6a43d362b332500d79e0b65d9efe
+      checksum: 9ed875ca1310da2fe72241679ed45e883bb8392997ea2e03fed1cb8c3e91f868
     - filename: src/routes/routes.ts
       checksum: 675ba81fc5357f186d2ca4ce446a75016fbbcda42492d414d31ee7ad7fa8f7d5
     - filename: src/scripts/export-to-www.ts
@@ -117,6 +117,8 @@ fileignoreconfig:
       checksum: d67aa04034f438f2a05ffd1b29f24c930908b05aaad4b6deaa933da42e56d786
     - filename: src/server/betagouv.ts
       checksum: 3fea239f6476881245b6607b4f7013b1ed769a66c1c56ef21e0a0fddca005689
+    - filename: src/server/config/index.ts
+      checksum: d9c191b6c2728b50c817c6a7b76b78ec104db7822e6760e2d1e6ff7a2325c709
     - filename: src/server/controllers/accountController/getCurrentAccount.ts
       checksum: f84d46040125fc1488d319afd0e832a0db0f7bcafd53d8b312f3193a02f28ed8
     - filename: src/server/controllers/usersController/createEmailForUser.ts
@@ -129,8 +131,6 @@ fileignoreconfig:
       checksum: d15e0bf95fa87a6dd7bd87b84a84b4e934c31d63d2bc987d281bfb42cce13439
     - filename: src/server/middlewares/sessionMiddleware.ts
       checksum: 37395239eb8012e5b4c310a6f2e23ef2eafd187abea8bfa1eee02212cba978a8
-    - filename: src/server/schedulers/emailScheduler.ts
-      checksum: 6b79b7a4322bde74d5b5fd8c89033a69572141c1e3057066c9af479db9cf07d2
     - filename: src/server/schedulers/emailScheduler.ts
       checksum: a97b144c7af4f55b0f85c16effaca351f821a044ce32dd3c5cc6b89e44805bf7
     - filename: src/server/schedulers/syncBetagouvAPIScheduler/buildCommunityBDD.ts

@@ -6,9 +6,11 @@ import Alert from "@codegouvfr/react-dsfr/Alert";
 import { Button } from "@codegouvfr/react-dsfr/Button";
 import Input from "@codegouvfr/react-dsfr/Input";
 import Select from "@codegouvfr/react-dsfr/Select";
+import { Upload } from "@codegouvfr/react-dsfr/Upload";
 import { zodResolver } from "@hookform/resolvers/zod";
 import * as Sentry from "@sentry/nextjs";
 import axios from "axios";
+import Image from "next/image";
 import { useSession } from "next-auth/react";
 import { useForm } from "react-hook-form";
 
@@ -17,6 +19,7 @@ import { MissionsEditor } from "./MissionsEditor";
 import CitySelect from "../CitySelect";
 import GenderSelect from "../GenderSelect";
 import { PullRequestWarning } from "../PullRequestWarning";
+import UploadForm from "../UploladForm/UploadForm";
 import { GithubAPIPullRequest } from "@/lib/github";
 import {
     memberInfoUpdateSchemaType,
@@ -39,21 +42,51 @@ export interface BaseInfoUpdateProps {
 
 const postMemberData = async ({
     values,
-    sessionUsername,
+    username,
 }: {
     values: memberInfoUpdateSchemaType;
-    sessionUsername: string;
+    username: string;
 }) => {
+    const { member, picture } = values;
+    if (picture) {
+        const response = await fetch("/api/upload", {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json",
+            },
+            body: JSON.stringify({
+                fileName: username,
+                fileType: picture.type,
+            }),
+        });
+        const { signedUrl } = await response.json();
+
+        const uploadResponse = await fetch(signedUrl, {
+            method: "PUT",
+            headers: {
+                "Content-Type": picture.type,
+            },
+            body: picture,
+        });
+
+        if (uploadResponse.ok) {
+            console.log(signedUrl.split("?")[0]);
+            console.log("File uploaded successfully");
+        } else {
+            console.error("Failed to upload file");
+        }
+    }
+
     const {
-        data: { username, message },
+        data: { message },
     }: {
         data: { username: string; message: string };
     } = await axios.put(
         computeRoute(routes.ACCOUNT_POST_BASE_INFO_FORM).replace(
             ":username",
-            sessionUsername
+            username
         ),
-        values,
+        member,
         {
             withCredentials: true,
         }
@@ -69,6 +102,7 @@ export const BaseInfoUpdate = (props: BaseInfoUpdateProps) => {
         formState: { errors, isDirty, isSubmitting, isValid },
         setValue,
         control,
+        getValues,
     } = useForm<memberInfoUpdateSchemaType>({
         resolver: zodResolver(memberInfoUpdateSchema),
         mode: "onChange",
@@ -99,7 +133,7 @@ export const BaseInfoUpdate = (props: BaseInfoUpdateProps) => {
         try {
             const { message } = await postMemberData({
                 values: input,
-                sessionUsername: props.username,
+                username: props.username,
             });
             setAlertMessage({
                 title: `Modifications enregistrées`,
@@ -130,20 +164,20 @@ export const BaseInfoUpdate = (props: BaseInfoUpdateProps) => {
 
     const handleCitySelect = (newValue) => {
         if (newValue.isOSM) {
-            setValue(`osm_city`, JSON.stringify(newValue), {
+            setValue(`member.osm_city`, JSON.stringify(newValue), {
                 shouldValidate: true,
                 shouldDirty: true,
             });
-            setValue(`workplace_insee_code`, "", {
+            setValue(`member.workplace_insee_code`, "", {
                 shouldValidate: true,
                 shouldDirty: true,
             });
         } else {
-            setValue(`workplace_insee_code`, newValue.value, {
+            setValue(`member.workplace_insee_code`, newValue.value, {
                 shouldValidate: true,
                 shouldDirty: true,
             });
-            setValue(`osm_city`, "", {
+            setValue(`member.osm_city`, "", {
                 shouldValidate: true,
                 shouldDirty: true,
             });
@@ -158,7 +192,7 @@ export const BaseInfoUpdate = (props: BaseInfoUpdateProps) => {
                 <h1>
                     {isCurrentUser
                         ? routeTitles.accountEditBaseInfo()
-                        : `Mise à jour des informations de ${props.formData.fullname}`}
+                        : `Mise à jour des informations de ${props.formData.member.fullname}`}
                 </h1>
                 <p>
                     Ces informations seront publiées sur le site beta.gouv.fr.
@@ -179,12 +213,18 @@ export const BaseInfoUpdate = (props: BaseInfoUpdateProps) => {
                         }
                     />
                 )}
+                <Image
+                    width={300}
+                    height={320}
+                    src={`/api/member/${session.data?.user.id}/image`}
+                    alt="Photo de profil de l'utilisateur"
+                />
                 <form
                     onSubmit={handleSubmit(onSubmit)}
                     aria-label={
                         isCurrentUser
                             ? `Modifier mes informations`
-                            : `Modifier les informations de ${props.formData.fullname}`
+                            : `Modifier les informations de ${props.formData.member.fullname}`
                     }
                 >
                     <Input
@@ -194,10 +234,10 @@ export const BaseInfoUpdate = (props: BaseInfoUpdateProps) => {
                         }
                         nativeInputProps={{
                             placeholder: "ex: Grace HOPPER",
-                            ...register("fullname"),
+                            ...register("member.fullname"),
                         }}
-                        state={errors.fullname ? "error" : "default"}
-                        stateRelatedMessage={errors.fullname?.message}
+                        state={errors.member?.fullname ? "error" : "default"}
+                        stateRelatedMessage={errors.member?.fullname?.message}
                     />
                     <Input
                         label={
@@ -206,19 +246,19 @@ export const BaseInfoUpdate = (props: BaseInfoUpdateProps) => {
                         }
                         nativeInputProps={{
                             placeholder: "ex: Développeuse",
-                            ...register("role"),
+                            ...register("member.role"),
                         }}
-                        state={errors.role ? "error" : "default"}
-                        stateRelatedMessage={errors.role?.message}
+                        state={errors.member?.role ? "error" : "default"}
+                        stateRelatedMessage={errors.member?.role?.message}
                     />
                     <Select
                         label="Domaine (obligatoire)"
                         nativeSelectProps={{
-                            ...register(`domaine`),
-                            defaultValue: props.formData.domaine,
+                            ...register(`member.domaine`),
+                            defaultValue: props.formData.member.domaine,
                         }}
-                        state={errors.domaine ? "error" : "default"}
-                        stateRelatedMessage={errors.domaine?.message}
+                        state={errors.member?.domaine ? "error" : "default"}
+                        stateRelatedMessage={errors.member?.domaine?.message}
                     >
                         <option disabled value="" hidden selected>
                             Sélectionner une option
@@ -232,27 +272,48 @@ export const BaseInfoUpdate = (props: BaseInfoUpdateProps) => {
                     <Input
                         textArea
                         label={memberSchema.shape.bio.description}
-                        nativeTextAreaProps={{ ...register("bio") }}
-                        state={errors.bio ? "error" : "default"}
-                        stateRelatedMessage={errors.bio?.message}
+                        nativeTextAreaProps={{ ...register("member.bio") }}
+                        state={errors.member?.bio ? "error" : "default"}
+                        stateRelatedMessage={errors.member?.bio?.message}
                     />
                     <Input
                         label={memberSchema.shape.link.description}
                         nativeInputProps={{
                             placeholder: "ex: https://linkedin.com/in/xxxx",
-                            ...register("link"),
+                            ...register("member.link"),
                         }}
-                        state={errors.link ? "error" : "default"}
-                        stateRelatedMessage={errors.link?.message}
+                        state={errors.member?.link ? "error" : "default"}
+                        stateRelatedMessage={errors.member?.link?.message}
                     />
                     <Input
                         label={memberSchema.shape.github.description}
                         nativeInputProps={{
                             placeholder: "ex: kevinmitnick",
-                            ...register("github"),
+                            ...register("member.github"),
                         }}
-                        state={errors.github ? "error" : "default"}
-                        stateRelatedMessage={errors.github?.message}
+                        state={errors.member?.github ? "error" : "default"}
+                        stateRelatedMessage={errors.member?.github?.message}
+                    />
+                    {/* <UploadForm /> */}
+                    <Upload
+                        hint="Une photo de profil"
+                        state={errors.picture ? "error" : "default"}
+                        stateRelatedMessage={errors.picture?.message}
+                        label={"Importer une photo de profil"}
+                        nativeInputProps={{
+                            // ...register("picture"),
+                            onChange: (
+                                e: React.ChangeEvent<HTMLInputElement>
+                            ) => {
+                                if (e.target.files) {
+                                    setValue("picture", e.target.files[0], {
+                                        shouldDirty: true,
+                                        shouldValidate: true,
+                                    });
+                                }
+                            },
+                            accept: "image/jpg, image/jpeg",
+                        }}
                     />
                     <h2>
                         {" "}
@@ -267,11 +328,11 @@ export const BaseInfoUpdate = (props: BaseInfoUpdateProps) => {
                     )}
                     <CompetencesEditor
                         onChange={(e, values) => {
-                            setValue("competences", values, {
+                            setValue("member.competences", values, {
                                 shouldDirty: true,
                             });
                         }}
-                        defaultValue={props.formData.competences || []}
+                        defaultValue={props.formData.member.competences || []}
                     />
                     <br />
                     <br />
@@ -292,7 +353,7 @@ export const BaseInfoUpdate = (props: BaseInfoUpdateProps) => {
                         setValue={setValue}
                         register={register}
                         startupOptions={props.startupOptions}
-                        errors={errors.missions || []}
+                        errors={errors.member?.missions || []}
                     />
                     <h2>
                         {isCurrentUser
@@ -311,18 +372,22 @@ export const BaseInfoUpdate = (props: BaseInfoUpdateProps) => {
                     <GenderSelect
                         label="Genre"
                         nativeSelectProps={{
-                            ...register("gender"),
+                            ...register("member.gender"),
                         }}
-                        state={errors.gender ? "error" : "default"}
-                        stateRelatedMessage={errors.gender?.message}
+                        state={errors.member?.gender ? "error" : "default"}
+                        stateRelatedMessage={errors.member?.gender?.message}
                     />
                     <Select
                         label="Statut (obligatoire)"
                         nativeSelectProps={{
-                            ...register(`legal_status`),
+                            ...register(`member.legal_status`),
                         }}
-                        state={errors.legal_status ? "error" : "default"}
-                        stateRelatedMessage={errors.legal_status?.message}
+                        state={
+                            errors.member?.legal_status ? "error" : "default"
+                        }
+                        stateRelatedMessage={
+                            errors.member?.legal_status?.message
+                        }
                     >
                         <option value="" disabled hidden>
                             Sélectionner une option
@@ -338,7 +403,7 @@ export const BaseInfoUpdate = (props: BaseInfoUpdateProps) => {
                         hintText="Cette information est utilisée uniquement pour
                                     faire des statistiques. Elle n'est pas affichée."
                         nativeInputProps={{
-                            ...register("tjm", {
+                            ...register("member.tjm", {
                                 setValueAs: (
                                     // use this instead of valueAsNumber to handle undefined value
                                     v
@@ -346,8 +411,8 @@ export const BaseInfoUpdate = (props: BaseInfoUpdateProps) => {
                             }),
                             type: "number",
                         }}
-                        state={errors.tjm ? "error" : "default"}
-                        stateRelatedMessage={errors.tjm?.message}
+                        state={errors.member?.tjm ? "error" : "default"}
+                        stateRelatedMessage={errors.member?.tjm?.message}
                     />
                     <h2>
                         {isCurrentUser
@@ -358,12 +423,16 @@ export const BaseInfoUpdate = (props: BaseInfoUpdateProps) => {
                         onChange={handleCitySelect}
                         placeholder={"Commune ou code postal"}
                         state={
-                            errors.workplace_insee_code ? "error" : "default"
+                            errors.member?.workplace_insee_code
+                                ? "error"
+                                : "default"
                         }
                         stateRelatedMessage={
-                            errors.workplace_insee_code?.message
+                            errors.member?.workplace_insee_code?.message
                         }
-                        defaultValue={defaultValues.workplace_insee_code || ""}
+                        defaultValue={
+                            defaultValues.member.workplace_insee_code || ""
+                        }
                     />
                     <Button
                         className={fr.cx("fr-mt-3w")}

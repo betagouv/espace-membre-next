@@ -253,4 +253,9 @@ export default {
     DS_BADGE_RENEWAL_FORM_URL:
         process.env.NEXT_PUBLIC_DS_BADGE_RENEWAL_FORM_URL,
     SUPPORT_EMAIL: process.env.NEXT_SUPPORT_EMAIL,
+    S3_KEY_ID: process.env.S3_KEY_ID,
+    S3_KEY_SECRET: process.env.S3_KEY_SECRET,
+    S3_HOST: process.env.S3_HOST,
+    S3_BUCKET: process.env.S3_BUCKET,
+    S3_GET_HOST: process.env.S3_GET_HOST,
 };

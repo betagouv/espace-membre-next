@@ -25,7 +25,7 @@ export async function PUT(
         );
     }
     const rawdata = await req.json();
-    const memberData = memberInfoUpdateSchema.parse(rawdata);
+    const memberData = memberInfoUpdateSchema.shape.member.parse(rawdata);
     const previousInfo = await getUserInfos({ username });
     if (!previousInfo) {
         return NextResponse.json(
