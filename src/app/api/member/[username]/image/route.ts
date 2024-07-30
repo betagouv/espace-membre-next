@@ -52,10 +52,10 @@ export const GET = async (
             .promise();
         console.log(s3Object);
         return new NextResponse(s3Object.Body as Buffer, {
-            headers: {
-                "Content-Type": s3Object.ContentType,
-                "Cache-Control": "public, max-age=31536000", // Cache for 1 year
-            },
+            // headers: {
+            //     "Content-Type": s3Object.ContentType,
+            //     "Cache-Control": "public, max-age=31536000", // Cache for 1 year
+            // },
         });
     } catch (error) {
         // if (error.code === "NoSuchKey") {
@@ -68,7 +68,6 @@ export const GET = async (
         //         },
         //     });
         // } else {
-        console.error("LCS ERROR", error);
         return new NextResponse(
             JSON.stringify({ error: "Internal Server Error" }),
             {
