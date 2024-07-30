@@ -36,6 +36,8 @@ const s3 = new AWS.S3({
 //     return canvas.toBuffer();
 // };
 
+export const dynamic = "force-dynamic";
+
 export const GET = async (
     req: Request,
     { params: { username } }: { params: { username: string } }
@@ -50,7 +52,6 @@ export const GET = async (
                 Key: s3Key,
             })
             .promise();
-        console.log(s3Object);
         return new NextResponse(s3Object.Body as Buffer, {
             // headers: {
             //     "Content-Type": s3Object.ContentType,
