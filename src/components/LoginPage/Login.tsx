@@ -95,10 +95,18 @@ const ConnectBlock = ({ children }) => {
     );
 };
 
+const getSecondaryEmailQueryParams = () => {
+    if (typeof window !== "undefined") {
+        const params = new URLSearchParams(window.location.search);
+        const secondary_email = params.get("secondary_email");
+        return secondary_email;
+    }
+};
+
 /* Pure component */
 export const LoginPage = function (props: Props) {
     const [formErrors, setFormErrors] = React.useState<string>();
-    const [email, setEmail] = React.useState("");
+    const [email, setEmail] = React.useState(getSecondaryEmailQueryParams());
     const [isFirstTime, setIsFirstTime] = React.useState(false);
     const [isSaving, setIsSaving] = React.useState<boolean>(false);
     const [alertMessage, setAlertMessage] = React.useState<{
@@ -109,12 +117,9 @@ export const LoginPage = function (props: Props) {
 
     useEffect(() => {
         // This ensures that the code runs only in the browser
-        if (typeof window !== "undefined") {
-            const params = new URLSearchParams(window.location.search);
-            const secondary_email = params.get("secondary_email");
-            setEmail(secondary_email || "");
-            setIsFirstTime(!!secondary_email);
-        }
+        const secondary_email = getSecondaryEmailQueryParams();
+        setEmail(secondary_email || "");
+        setIsFirstTime(!!secondary_email);
     }, []);
 
     const sendLogin = async (event: { preventDefault: () => void }) => {
@@ -212,6 +217,10 @@ export const LoginPage = function (props: Props) {
             </p>
         </form>
     );
+
+    if (typeof window === "undefined") {
+        return;
+    }
 
     return (
         <>
