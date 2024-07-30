@@ -28,7 +28,7 @@ async function Login({
     const messages = "";
     const domain = "";
     const next = "";
-    const secondary_email = searchParams.messages || "";
+    const secondary_email = searchParams.secondary_email || "";
 
     return (
         <LoginPage
