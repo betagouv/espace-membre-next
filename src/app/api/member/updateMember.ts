@@ -1,5 +1,7 @@
 "use server";
 
+import { z } from "zod";
+
 import { addEvent } from "@/lib/events";
 import { db } from "@/lib/kysely";
 import {
@@ -10,15 +12,16 @@ import {
 import { getUserInfos } from "@/lib/kysely/queries/users";
 import { EventCode } from "@/models/actionEvent";
 import {
-    memberInfoUpdateSchemaType,
+    memberInfoUpdateSchema,
     memberValidateInfoSchemaType,
 } from "@/models/actions/member";
 import { userInfosToModel } from "@/models/mapper";
 import { EmailStatusCode } from "@/models/member";
-import { isPublicServiceEmail } from "@/server/controllers/utils";
 
 export async function updateMember(
-    data: memberInfoUpdateSchemaType | memberValidateInfoSchemaType,
+    data:
+        | z.infer<typeof memberInfoUpdateSchema.shape.member>
+        | memberValidateInfoSchemaType,
     memberUuid: string,
     extraParams:
         | {
