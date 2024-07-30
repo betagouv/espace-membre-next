@@ -10,7 +10,11 @@ export const metadata: Metadata = {
     title: `${routeTitles.login()} / Espace Membre`,
 };
 
-async function Login() {
+async function Login({
+    searchParams,
+}: {
+    searchParams: { [key: string]: string };
+}) {
     let session;
     try {
         session = await getServerSession(authOptions);
@@ -24,8 +28,11 @@ async function Login() {
     const messages = "";
     const domain = "";
     const next = "";
+    const secondary_email = searchParams.messages || "";
+
     return (
         <LoginPage
+            secondary_email={secondary_email}
             errors={errors}
             messages={messages}
             domain={domain}
