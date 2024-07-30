@@ -101,12 +101,15 @@ const getSecondaryEmailQueryParams = () => {
         const secondary_email = params.get("secondary_email");
         return secondary_email;
     }
+    return "";
 };
 
 /* Pure component */
 export const LoginPage = function (props: Props) {
     const [formErrors, setFormErrors] = React.useState<string>();
-    const [email, setEmail] = React.useState(getSecondaryEmailQueryParams());
+    const [email, setEmail] = React.useState(
+        getSecondaryEmailQueryParams() || ""
+    );
     const [isFirstTime, setIsFirstTime] = React.useState(false);
     const [isSaving, setIsSaving] = React.useState<boolean>(false);
     const [alertMessage, setAlertMessage] = React.useState<{
