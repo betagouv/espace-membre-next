@@ -47,7 +47,12 @@ export class LinkRegistry {
                 absoluteLink = options.absolute;
             }
         }
-        const route = routes[lang][key](params as unknown as any);
+        const fn = routes[lang][key];
+        if (!fn) {
+            console.error(`Error getting route ${lang}/${key}`);
+            return "/";
+        }
+        const route = fn(params as unknown as any);
 
         if (absoluteLink && this.absoluteBaseUrl !== "") {
             // Concatenate pathname and base URL
