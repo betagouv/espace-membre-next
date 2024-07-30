@@ -53,7 +53,9 @@ export default async function Page({
 
     const props = {
         formData: {
-            ...userInfos,
+            member: {
+                ...userInfos,
+            },
         },
         startupOptions,
         username: id,

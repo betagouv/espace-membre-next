@@ -3,23 +3,30 @@ import { z } from "zod";
 import { memberSchema } from "@/models/member";
 
 export const memberInfoUpdateSchema = z.object({
-    fullname: memberSchema.shape.fullname,
-    role: memberSchema.shape.role,
-    link: memberSchema.shape.link,
-    avatar: memberSchema.shape.avatar,
-    github: memberSchema.shape.github,
-    competences: memberSchema.shape.competences,
-    teams: memberSchema.shape.teams,
-    missions: memberSchema.shape.missions,
-    domaine: memberSchema.shape.domaine,
-    bio: memberSchema.shape.bio,
-    memberType: memberSchema.shape.memberType,
-    gender: memberSchema.shape.gender,
-    average_nb_of_days: memberSchema.shape.average_nb_of_days,
-    tjm: memberSchema.shape.tjm,
-    legal_status: memberSchema.shape.legal_status,
-    workplace_insee_code: memberSchema.shape.workplace_insee_code,
-    osm_city: memberSchema.shape.osm_city,
+    member: z.object({
+        fullname: memberSchema.shape.fullname,
+        role: memberSchema.shape.role,
+        link: memberSchema.shape.link,
+        avatar: memberSchema.shape.avatar,
+        github: memberSchema.shape.github,
+        competences: memberSchema.shape.competences,
+        teams: memberSchema.shape.teams,
+        missions: memberSchema.shape.missions,
+        domaine: memberSchema.shape.domaine,
+        bio: memberSchema.shape.bio,
+        memberType: memberSchema.shape.memberType,
+        gender: memberSchema.shape.gender,
+        average_nb_of_days: memberSchema.shape.average_nb_of_days,
+        tjm: memberSchema.shape.tjm,
+        legal_status: memberSchema.shape.legal_status,
+        workplace_insee_code: memberSchema.shape.workplace_insee_code,
+        osm_city: memberSchema.shape.osm_city,
+    }),
+    picture: z
+        .instanceof(File)
+        .refine((file) => file.size > 0, "File is required")
+        .nullable()
+        .optional(),
 });
 
 export type memberInfoUpdateSchemaType = z.infer<typeof memberInfoUpdateSchema>;
