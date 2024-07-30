@@ -18,9 +18,6 @@ import { CompetencesEditor } from "./CompetencesEditor";
 import { MissionsEditor } from "./MissionsEditor";
 import CitySelect from "../CitySelect";
 import GenderSelect from "../GenderSelect";
-import { PullRequestWarning } from "../PullRequestWarning";
-import UploadForm from "../UploladForm/UploadForm";
-import { GithubAPIPullRequest } from "@/lib/github";
 import {
     memberInfoUpdateSchemaType,
     memberInfoUpdateSchema,
@@ -294,7 +291,6 @@ export const BaseInfoUpdate = (props: BaseInfoUpdateProps) => {
                         state={errors.member?.github ? "error" : "default"}
                         stateRelatedMessage={errors.member?.github?.message}
                     />
-                    {/* <UploadForm /> */}
                     <Upload
                         hint="Une photo de profil"
                         state={errors.picture ? "error" : "default"}
