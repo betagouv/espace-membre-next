@@ -36,9 +36,9 @@ fileignoreconfig:
     - filename: src/app/(public)/login/page.tsx
       checksum: 80573f96ab68e1f5ae690a7f26f4b530d2cbdd2c917abc4d5d672bb8bac24ddb
     - filename: src/app/api/member/[username]/image/route.ts
-      checksum: e8576abc19fb4a63454041e44de4fbeea7f3613cb46da2e9b455a28ac17f0bd3
+      checksum: 6a9e61bdb39705415a681172d0eba33051c803969e455cc9e328a3ea1e4375be
     - filename: src/app/api/upload/route.ts
-      checksum: 0272e1798e1f76cafa8c017a2b1b768203eacb397b3b6b223553065b4566750b
+      checksum: d8f92a748bbd2db538339f99906e69e569d40159499b39d651bfc770bbf47b4e
     - filename: src/app/error.tsx
       checksum: 27b9e96bc30d8d4ebc96320f7fc79d9af807f8c6d9f1796497c60318dd728e47
     - filename: src/app/layout.tsx
@@ -65,8 +65,6 @@ fileignoreconfig:
       checksum: 49ba981c5d52542548882b52ec95307299e3b6337689ff1f59fc3ec0d88369e4
     - filename: src/components/GenderSelect.tsx
       checksum: 865f2afa081c138aff54ead33343a8b425075236d95bda9ec75e62bfb4eb83c1
-    - filename: src/components/LoginPage/Login.tsx
-      checksum: 512d4653406a95e5a06a5355313bf13dd30619f6952b740f4ed0e36baa24a288
     - filename: src/components/LoginPage/Login.tsx
       checksum: 78a4519fee63dc7932c0a335762bde95a88516d2323e40fa92f071b8eb59d6fc
     - filename: src/components/MemberPage/MemberEventList.tsx
@@ -127,7 +125,7 @@ fileignoreconfig:
       checksum: f84d46040125fc1488d319afd0e832a0db0f7bcafd53d8b312f3193a02f28ed8
     - filename: src/server/controllers/usersController/createEmailForUser.ts
       checksum: fecf58ca9f7d8c7ff5aaadaa998ee3bf86e386027e14d6f2e0d1ab6b9693b27b
-    - filename: src/server/controllers/usersController.usersControllerUtils.ts
+    - filename: src/server/controllers/usersController/usersControllerUtils.ts
       checksum: afb73b3143023c22e51461c9dfaf870daff6c0e2689571c3a7500f784aa76346
     - filename: src/server/controllers/utils.ts
       checksum: 6a6f3aac127977f76cb5639f9a5e09c69dac2642120937566c8999f8f7a3a036
