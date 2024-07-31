@@ -29,6 +29,8 @@ fileignoreconfig:
   checksum: 10425dc282436b1f63096e75b75352fbdd235571dd645521756b9c4f23e35d47
 - filename: src/app/(private)/(dashboard)/formations/page.tsx
   checksum: 2bbe0f4d6807f4238b7d6085d45f8e5582bc8e57326db67a9839ee1aae1f4bdf
+- filename: src/app/(private)/(dashboard)/metabase/page.tsx
+  checksum: f91ba3f4ccea5cd2020fd0f2ff1fbe031e93df6cf42e2c9acf4d8b99b2059162
 - filename: src/app/(private)/(dashboard)/verify/AccountVerifyClientPage.tsx
   checksum: ae267f7b99f6fce11d7085a1ce26995e53eca0b86653fcf3f5ed2ec1a11c76e8
 - filename: src/app/error.tsx
