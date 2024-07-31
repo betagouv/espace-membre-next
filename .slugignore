@@ -2,4 +2,5 @@ doc
 /tmp/cache
 /node_modules/aws-sdk
 /node_modules/@socialgouv/matomo-next
+/node_modules/node-ical
 /.cache/yarn
