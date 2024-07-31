@@ -11,5 +11,6 @@ doc
 /node_modules/ieee754
 /node_modules/events
 /node_modules/buffer
+/node_modules/util
 /node_modules/base64-js
 /.cache/yarn
