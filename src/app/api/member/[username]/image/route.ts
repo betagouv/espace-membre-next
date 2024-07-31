@@ -1,17 +1,21 @@
 // pages/api/image/[username].js
 import AWS from "aws-sdk";
 // import { createCanvas } from "canvas";
-import { NextResponse } from "next/server";
 
 import config from "@/server/config";
 
-const s3 = new AWS.S3({
-    accessKeyId: config.S3_KEY_ID,
-    secretAccessKey: config.S3_KEY_SECRET,
-    region: "US",
-    endpoint: new AWS.Endpoint(config.S3_HOST!),
-    s3ForcePathStyle: true, // Needed for some S3-compatible storage services
-});
+let s3;
+try {
+    s3 = new AWS.S3({
+        accessKeyId: config.S3_KEY_ID,
+        secretAccessKey: config.S3_KEY_SECRET,
+        region: "US",
+        endpoint: new AWS.Endpoint(config.S3_HOST!),
+        s3ForcePathStyle: true, // Needed for some S3-compatible storage services
+    });
+} catch {
+    console.error("S3 is not defined");
+}
 
 // const generateImage = (username) => {
 //     const canvas = createCanvas(200, 200);
@@ -42,9 +46,6 @@ export const GET = async (
     req: Request,
     { params: { username } }: { params: { username: string } }
 ) => {
-    if (!username) {
-        return Response.json({});
-    }
     const s3Key = `members/${username}/avatar.jpg`;
 
     try {

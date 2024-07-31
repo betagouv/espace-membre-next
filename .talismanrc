@@ -127,7 +127,7 @@ fileignoreconfig:
       checksum: f84d46040125fc1488d319afd0e832a0db0f7bcafd53d8b312f3193a02f28ed8
     - filename: src/server/controllers/usersController/createEmailForUser.ts
       checksum: fecf58ca9f7d8c7ff5aaadaa998ee3bf86e386027e14d6f2e0d1ab6b9693b27b
-    - filename: src/server/controllers/usersController/usersControllerUtils.ts
+    - filename: src/server/controllers/usersController.usersControllerUtils.ts
       checksum: afb73b3143023c22e51461c9dfaf870daff6c0e2689571c3a7500f784aa76346
     - filename: src/server/controllers/utils.ts
       checksum: 6a6f3aac127977f76cb5639f9a5e09c69dac2642120937566c8999f8f7a3a036
