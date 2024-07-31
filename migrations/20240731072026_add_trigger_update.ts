@@ -1,7 +1,7 @@
 export async function up(knex) {
-    return knex.schema
-        .alterTable(
-            knex.raw(`
+    return knex
+        .raw(
+            `
         CREATE OR REPLACE FUNCTION update_updated_at_column()
         RETURNS TRIGGER AS $$
         BEGIN
@@ -9,7 +9,7 @@ export async function up(knex) {
           RETURN NEW;
         END;
         $$ language 'plpgsql';
-      `)
+      `
         )
         .then(() =>
             knex.raw(`
@@ -30,11 +30,11 @@ export async function up(knex) {
 }
 
 export async function down(knex) {
-    return knex.schema
-        .alterTable(
-            knex.raw(`
+    return knex
+        .raw(
+            `
         DROP TRIGGER IF EXISTS update_teams_updated_at ON teams;
-      `)
+      `
         )
         .then(() =>
             knex.raw(`
