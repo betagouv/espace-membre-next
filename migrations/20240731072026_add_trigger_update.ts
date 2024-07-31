@@ -18,14 +18,6 @@ export async function up(knex) {
         FOR EACH ROW
         EXECUTE PROCEDURE update_updated_at_column();
       `)
-        )
-        .then(() =>
-            knex.raw(`
-        CREATE TRIGGER update_teams_updated_at
-        BEFORE UPDATE ON teams
-        FOR EACH ROW
-        EXECUTE PROCEDURE update_updated_at_column();
-      `)
         );
 }
 
