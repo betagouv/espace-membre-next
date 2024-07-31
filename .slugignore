@@ -3,4 +3,13 @@ doc
 /node_modules/aws-sdk
 /node_modules/@socialgouv/matomo-next
 /node_modules/node-ical
+/node_modules/sax
+/node_modules/url
+/node_modules/xml2js
+/node_modules/xmlbuilder
+/node_modules/jmespath
+/node_modules/ieee754
+/node_modules/events
+/node_modules/buffer
+/node_modules/base64-js
 /.cache/yarn
