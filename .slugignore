@@ -1,3 +1,4 @@
 doc
 /tmp/cache
+/node_modules/aws-sdk
 /.cache/yarn
