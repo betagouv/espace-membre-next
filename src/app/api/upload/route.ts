@@ -7,13 +7,18 @@ import config from "@/server/config";
 import { authOptions } from "@/utils/authoptions";
 
 // Configure AWS SDK
-const s3 = new AWS.S3({
-    accessKeyId: config.S3_KEY_ID,
-    secretAccessKey: config.S3_KEY_SECRET,
-    region: "US",
-    endpoint: new AWS.Endpoint(config.S3_HOST!),
-    s3ForcePathStyle: true, // Needed for some S3-compatible storage services
-});
+let s3;
+try {
+    s3 = new AWS.S3({
+        accessKeyId: config.S3_KEY_ID,
+        secretAccessKey: config.S3_KEY_SECRET,
+        region: "US",
+        endpoint: new AWS.Endpoint(config.S3_HOST!),
+        s3ForcePathStyle: true, // Needed for some S3-compatible storage services
+    });
+} catch {
+    console.error("there is not s3");
+}
 
 const getFileName = {
     member: (username) => `members/${username}/avatar.jpg`,
@@ -22,6 +27,16 @@ const getFileName = {
 };
 
 export async function POST(req: NextRequest) {
+    if (!s3) {
+        return Response.json(
+            {
+                error: "s3 is not defined",
+            },
+            {
+                status: 500,
+            }
+        );
+    }
     const { fileName, fileType } = await req.json();
 
     const session = await getServerSession(authOptions);
