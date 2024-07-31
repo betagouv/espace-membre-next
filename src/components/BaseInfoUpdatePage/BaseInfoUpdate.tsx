@@ -1,16 +1,16 @@
 "use client";
-import React from "react";
+import React, { useRef, useState } from "react";
 
 import { fr } from "@codegouvfr/react-dsfr";
 import Alert from "@codegouvfr/react-dsfr/Alert";
 import { Button } from "@codegouvfr/react-dsfr/Button";
+import ButtonsGroup from "@codegouvfr/react-dsfr/ButtonsGroup";
 import Input from "@codegouvfr/react-dsfr/Input";
 import Select from "@codegouvfr/react-dsfr/Select";
 import { Upload } from "@codegouvfr/react-dsfr/Upload";
 import { zodResolver } from "@hookform/resolvers/zod";
 import * as Sentry from "@sentry/nextjs";
 import axios from "axios";
-import Image from "next/image";
 import { useSession } from "next-auth/react";
 import { useForm } from "react-hook-form";
 
@@ -18,6 +18,7 @@ import { CompetencesEditor } from "./CompetencesEditor";
 import { MissionsEditor } from "./MissionsEditor";
 import CitySelect from "../CitySelect";
 import GenderSelect from "../GenderSelect";
+import UploadForm from "../UploadForm/UploadForm";
 import {
     memberInfoUpdateSchemaType,
     memberInfoUpdateSchema,
@@ -44,9 +45,9 @@ const postMemberData = async ({
     values: memberInfoUpdateSchemaType;
     username: string;
 }) => {
-    const { member, picture } = values;
+    const { member, picture, shouldDeletePicture } = values;
     if (picture) {
-        const response = await fetch("/api/upload", {
+        const response = await fetch("/api/image", {
             method: "POST",
             headers: {
                 "Content-Type": "application/json",
@@ -73,7 +74,17 @@ const postMemberData = async ({
             console.error("Failed to upload file");
         }
     }
-
+    if (shouldDeletePicture) {
+        await fetch("/api/image", {
+            method: "DELETE",
+            headers: {
+                "Content-Type": "application/json",
+            },
+            body: JSON.stringify({
+                fileName: username,
+            }),
+        });
+    }
     const {
         data: { message },
     }: {
@@ -210,12 +221,6 @@ export const BaseInfoUpdate = (props: BaseInfoUpdateProps) => {
                         }
                     />
                 )}
-                <Image
-                    width={300}
-                    height={320}
-                    src={`/api/member/${session.data?.user.id}/image`}
-                    alt="Photo de profil de l'utilisateur"
-                />
                 <form
                     onSubmit={handleSubmit(onSubmit)}
                     aria-label={
@@ -291,26 +296,43 @@ export const BaseInfoUpdate = (props: BaseInfoUpdateProps) => {
                         state={errors.member?.github ? "error" : "default"}
                         stateRelatedMessage={errors.member?.github?.message}
                     />
-                    <Upload
-                        hint="Une photo de profil"
-                        state={errors.picture ? "error" : "default"}
-                        stateRelatedMessage={errors.picture?.message}
-                        label={"Importer une photo de profil"}
-                        nativeInputProps={{
-                            // ...register("picture"),
-                            onChange: (
-                                e: React.ChangeEvent<HTMLInputElement>
-                            ) => {
-                                if (e.target.files) {
-                                    setValue("picture", e.target.files[0], {
-                                        shouldDirty: true,
-                                        shouldValidate: true,
-                                    });
+                    <div>
+                        {/* <Upload
+                            state={errors.picture ? "error" : "default"}
+                            stateRelatedMessage={errors.picture?.message}
+                            label={""}
+                            nativeInputProps={{
+                                // ...register("picture"),
+                                onChange: (
+                                    e: React.ChangeEvent<HTMLInputElement>
+                                ) => {
+                                    if (e.target.files) {
+                                        setValue("picture", e.target.files[0], {
+                                            shouldDirty: true,
+                                            shouldValidate: true,
+                                        });
+                                    }
+                                },
+                                accept: "image/jpg, image/jpeg",
+                            }}
+                        /> */}
+                        <UploadForm
+                            onChange={(event) => {
+                                const file = event.target.files;
+                                if (file && file.length) {
+                                    setValue("picture", file[0]);
+                                    setValue("shouldDeletePicture", false);
                                 }
-                            },
-                            accept: "image/jpg, image/jpeg",
-                        }}
-                    />
+                            }}
+                            url={`/api/member/${session.data?.user.id}/image`}
+                            onDelete={() => {
+                                setValue("picture", null);
+                                setValue("shouldDeletePicture", true);
+                            }}
+                        />
+                    </div>
+                    <br />
+                    <br />
                     <h2>
                         {" "}
                         {isCurrentUser ? `Mes compétences` : `Compétences`}

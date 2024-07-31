@@ -27,6 +27,7 @@ export const memberInfoUpdateSchema = z.object({
         .refine((file) => file.size > 0, "File is required")
         .nullable()
         .optional(),
+    shouldDeletePicture: z.boolean().optional().nullable(),
 });
 
 export type memberInfoUpdateSchemaType = z.infer<typeof memberInfoUpdateSchema>;

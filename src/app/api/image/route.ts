@@ -1,8 +1,10 @@
-// pages/api/upload.ts
 import AWS from "aws-sdk";
 import { NextRequest } from "next/server";
+
+// pages/api/upload.ts
 import { getServerSession } from "next-auth/next";
 
+import { getFileName } from "./utils";
 import config from "@/server/config";
 import { authOptions } from "@/utils/authoptions";
 
@@ -20,11 +22,32 @@ try {
     console.error("there is not s3");
 }
 
-const getFileName = {
-    member: (username) => `members/${username}/avatar.jpg`,
-    startupHero: (startupId) => `s3/startups/${startupId}/hero.jpg`,
-    startupShot: (startupId) => `s3/startups/${startupId}/shot.jpg`,
-};
+export async function DELETE(req: NextRequest) {
+    const { fileName } = await req.json(); // The key of the image to be deleted
+
+    if (!fileName) {
+        return Response.json(
+            { message: "Image key is required" },
+            { status: 400 }
+        );
+    }
+
+    const params = {
+        Bucket: config.S3_BUCKET!,
+        Key: getFileName["member"](fileName),
+    };
+
+    try {
+        await s3.deleteObject(params).promise();
+        Response.json(
+            { message: "Image deleted successfully" },
+            { status: 200 }
+        );
+    } catch (error) {
+        console.error("Error deleting image:", error);
+        Response.json({ message: "Error deleting image" }, { status: 500 });
+    }
+}
 
 export async function POST(req: NextRequest) {
     if (!s3) {
