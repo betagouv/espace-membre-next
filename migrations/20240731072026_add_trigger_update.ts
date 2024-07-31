@@ -21,8 +21,8 @@ export async function up(knex) {
         )
         .then(() =>
             knex.raw(`
-        CREATE TRIGGER update_users_updated_at
-        BEFORE UPDATE ON users
+        CREATE TRIGGER update_teams_updated_at
+        BEFORE UPDATE ON teams
         FOR EACH ROW
         EXECUTE PROCEDURE update_updated_at_column();
       `)
@@ -38,7 +38,7 @@ export async function down(knex) {
         )
         .then(() =>
             knex.raw(`
-        DROP TRIGGER IF EXISTS update_users_updated_at ON users;
+        DROP TRIGGER IF EXISTS update_teams_updated_at ON teams;
       `)
         )
         .then(() =>
