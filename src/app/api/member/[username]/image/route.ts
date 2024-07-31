@@ -42,6 +42,9 @@ export const GET = async (
     req: Request,
     { params: { username } }: { params: { username: string } }
 ) => {
+    if (!username) {
+        return Response.json({});
+    }
     const s3Key = `members/${username}/avatar.jpg`;
 
     try {
@@ -52,7 +55,7 @@ export const GET = async (
                 Key: s3Key,
             })
             .promise();
-        return new NextResponse(s3Object.Body as Buffer, {
+        return new Response(s3Object.Body as Buffer, {
             // headers: {
             //     "Content-Type": s3Object.ContentType,
             //     "Cache-Control": "public, max-age=31536000", // Cache for 1 year
@@ -69,7 +72,7 @@ export const GET = async (
         //         },
         //     });
         // } else {
-        return new NextResponse(
+        return new Response(
             JSON.stringify({ error: "Internal Server Error" }),
             {
                 status: 500,
