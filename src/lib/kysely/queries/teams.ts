@@ -17,7 +17,7 @@ export async function getAllTeamsOptions() {
         .execute();
     return teams.map((team) => ({
         value: team.uuid,
-        label: `${team.name} - ${team.title}`,
+        label: `${team.title} - ${team.name}`,
     }));
 }
 
