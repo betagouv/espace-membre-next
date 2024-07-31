@@ -4,6 +4,7 @@ import { getServerSession } from "next-auth";
 
 import { TeamUpdate } from "@/components/team/TeamUpdatePage";
 import { db } from "@/lib/kysely";
+import { getTeam } from "@/lib/kysely/queries/teams";
 import {
     getAllUsersInfo,
     MEMBER_PROTECTED_INFO,
@@ -15,7 +16,6 @@ import {
 } from "@/models/mapper";
 import { authOptions } from "@/utils/authoptions";
 import { routeTitles } from "@/utils/routes/routeTitles";
-import { getTeam } from "@/lib/kysely/queries/teams";
 
 type Props = {
     params: { id: string };
@@ -38,11 +38,7 @@ export default async function Page(props: Props) {
         redirect("/login");
     }
     const uuid = props.params.id;
-    const dbTeam = await db
-        .selectFrom("teams")
-        .selectAll()
-        .where("uuid", "=", uuid)
-        .executeTakeFirst();
+    const dbTeam = await getTeam(uuid);
 
     if (!dbTeam) {
         redirect("/teams");
