@@ -1,6 +1,7 @@
 // pages/api/image/[username].js
 import AWS from "aws-sdk";
 // import { createCanvas } from "canvas";
+import { NextResponse } from "next/server";
 
 import config from "@/server/config";
 
@@ -46,6 +47,9 @@ export const GET = async (
     req: Request,
     { params: { username } }: { params: { username: string } }
 ) => {
+    if (!username) {
+        return Response.json({});
+    }
     const s3Key = `members/${username}/avatar.jpg`;
 
     try {
@@ -56,7 +60,7 @@ export const GET = async (
                 Key: s3Key,
             })
             .promise();
-        return new Response(s3Object.Body as Buffer, {
+        return new NextResponse(s3Object.Body as Buffer, {
             // headers: {
             //     "Content-Type": s3Object.ContentType,
             //     "Cache-Control": "public, max-age=31536000", // Cache for 1 year
@@ -73,7 +77,7 @@ export const GET = async (
         //         },
         //     });
         // } else {
-        return new Response(
+        return new NextResponse(
             JSON.stringify({ error: "Internal Server Error" }),
             {
                 status: 500,
