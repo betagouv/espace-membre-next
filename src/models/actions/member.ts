@@ -2,6 +2,21 @@ import { z } from "zod";
 
 import { memberSchema } from "@/models/member";
 
+// Define a mock file class for environments without File API
+class MockFile {
+    size: number;
+    name: string;
+    type: string;
+    constructor(buffer: Buffer, name: string, type: string) {
+        this.size = buffer.length;
+        this.name = name;
+        this.type = type;
+    }
+}
+
+// Use the global File if available, otherwise use MockFile
+const FileType = typeof File !== "undefined" ? File : MockFile;
+
 export const memberInfoUpdateSchema = z.object({
     member: z.object({
         fullname: memberSchema.shape.fullname,
@@ -23,7 +38,7 @@ export const memberInfoUpdateSchema = z.object({
         osm_city: memberSchema.shape.osm_city,
     }),
     picture: z
-        .instanceof(File)
+        .instanceof(FileType)
         .refine((file) => file.size > 0, "File is required")
         .nullable()
         .optional(),
