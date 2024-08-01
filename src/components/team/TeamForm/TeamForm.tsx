@@ -257,6 +257,7 @@ export function TeamForm(props: TeamFormProps) {
                     />
                     <MemberSelect
                         name="username"
+                        label="Membres de l'équipe"
                         multiple={true}
                         placeholder="Sélectionne les membres de cette équipe"
                         onChange={(members) => {
