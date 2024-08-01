@@ -20,12 +20,7 @@ export const GET = async (
                 Key: s3Key,
             })
             .promise();
-        return new NextResponse(s3Object.Body as Buffer, {
-            // headers: {
-            //     "Content-Type": s3Object.ContentType,
-            //     "Cache-Control": "public, max-age=31536000", // Cache for 1 year
-            // },
-        });
+        return new NextResponse(s3Object.Body as Buffer);
     } catch (error) {
         if ((error as { code: string }).code === "NoSuchKey") {
             return new NextResponse(
