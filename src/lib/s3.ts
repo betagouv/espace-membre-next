@@ -6,7 +6,7 @@ import config from "@/server/config";
 
 // Configure AWS SDK
 let s3;
-if (process.env.NODE_ENV === "test") {
+if (process.env.NODE_ENV === "test" || process.env.CI) {
     const localS3Dir = path.join(__dirname, "mock-s3-files");
     if (!fs.existsSync(localS3Dir)) {
         fs.mkdirSync(localS3Dir);
@@ -46,7 +46,7 @@ if (process.env.NODE_ENV === "test") {
             },
         });
     } catch {
-        console.error("there is not s3");
+        console.error("there is no S3");
     }
 }
 
