@@ -18,9 +18,11 @@ fileignoreconfig:
     - filename: __tests__/test-visit.ts
       checksum: 8a605ffb247bede59135ac4407259921beabf8a2a59b7c64f085bf882409013c
     - filename: src/app/(private)/(dashboard)/account/base-info/page.tsx
-      checksum: d379d505af1ac3bf76cc4d32fc7b5b2c12e0b776d4bc695ebf0ff8ceec6ea52e
+      checksum: b8076f25eb454bb38a41e7997b6c07e825ee8291c2fe4c71246d7f57ca730515
     - filename: src/app/(private)/(dashboard)/account/page.tsx
       checksum: 355668d8814f965d52adafcb7c199af47869deac16133151c524ccad34611cf4
+    - filename: src/app/(private)/(dashboard)/community/[id]/admin-update/page.tsx
+      checksum: 3621f113632f10483e06aabf45246a8fba8c92f62d31a13ed087b243932ea50e
     - filename: src/app/(private)/(dashboard)/community/create/CommunityCreateMemberPage.tsx
       checksum: c17bc01af05a054afa1c738171011c7fe9f9f78bf9d8ab0f02a6bcd07f7c675d
     - filename: src/app/(private)/(dashboard)/community/page.tsx
@@ -29,12 +31,8 @@ fileignoreconfig:
       checksum: 10425dc282436b1f63096e75b75352fbdd235571dd645521756b9c4f23e35d47
     - filename: src/app/(private)/(dashboard)/formations/page.tsx
       checksum: 2bbe0f4d6807f4238b7d6085d45f8e5582bc8e57326db67a9839ee1aae1f4bdf
-    - filename: src/app/(private)/(dashboard)/metabase/page.tsx
-      checksum: f91ba3f4ccea5cd2020fd0f2ff1fbe031e93df6cf42e2c9acf4d8b99b2059162
     - filename: src/app/(private)/(dashboard)/verify/AccountVerifyClientPage.tsx
       checksum: ae267f7b99f6fce11d7085a1ce26995e53eca0b86653fcf3f5ed2ec1a11c76e8
-    - filename: src/app/(public)/login/page.tsx
-      checksum: 80573f96ab68e1f5ae690a7f26f4b530d2cbdd2c917abc4d5d672bb8bac24ddb
     - filename: src/app/api/member/[username]/image/route.ts
       checksum: e66122d673644d6538f07ff1be2f9322336893e09743a76fc6d6798ce1dc7f11
     - filename: src/app/api/upload/route.ts
@@ -90,7 +88,7 @@ fileignoreconfig:
     - filename: src/components/StartupPage/StartupPage.tsx
       checksum: a0aaa86a066780ede70d6f9f3e3b933672c43bb5e343ef64843caf9e148a52ee
     - filename: src/components/UploadForm/UploadForm.tsx
-      checksum: e0382a8fe5112eeb447e3ea9de434bc9fc802bbfab2aa0c6f4eed92efe33620b
+      checksum: d20ba6b35f5aba5f8407742d4b97cfce6d071d3ff1284c076a838a8c018cae69
     - filename: src/components/team/TeamForm/TeamForm.tsx
       checksum: 2634810de919ee8b9f2cc90721f71a9e75117b10fe9ec3209be2bc9b76e5f6a0
     - filename: src/components/team/TeamPage/Team.tsx
@@ -127,7 +125,7 @@ fileignoreconfig:
       checksum: f84d46040125fc1488d319afd0e832a0db0f7bcafd53d8b312f3193a02f28ed8
     - filename: src/server/controllers/usersController/createEmailForUser.ts
       checksum: fecf58ca9f7d8c7ff5aaadaa998ee3bf86e386027e14d6f2e0d1ab6b9693b27b
-    - filename: src/server/controllers/usersController/usersControllerUtils.ts
+    - filename: src/server/controllers/usersController.usersControllerUtils.ts
       checksum: afb73b3143023c22e51461c9dfaf870daff6c0e2689571c3a7500f784aa76346
     - filename: src/server/controllers/utils.ts
       checksum: 6a6f3aac127977f76cb5639f9a5e09c69dac2642120937566c8999f8f7a3a036
