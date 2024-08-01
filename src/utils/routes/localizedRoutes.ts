@@ -147,6 +147,12 @@ export const localizedRoutes = {
             fr: (p) => `/map`,
         }
     ),
+    metabase: defineLocalizedRoute(
+        {},
+        {
+            fr: (p) => `/metabase`,
+        }
+    ),
     keskispasse: defineLocalizedRoute(
         {},
         {

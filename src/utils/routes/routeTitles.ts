@@ -33,6 +33,7 @@ export const routeTitles: {
     onboardingSuccess: () => "Fiche membre créée",
     newsletters: () => "Infolettre",
     map: () => "Carte des membres",
+    metabase: () => "Dataviz des membres",
     keskispasse: () => "Qu'est-ce qui se passe ?",
     eventsList: () => "Événements à venir",
     formationList: () => "Catalogue des formations",

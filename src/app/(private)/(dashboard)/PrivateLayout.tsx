@@ -67,6 +67,7 @@ export function PrivateLayout({ children }: { children: React.ReactNode }) {
         undefined
     );
     const mapLink = linkRegistry.get("map", undefined);
+    const metabaseLink = linkRegistry.get("metabase", undefined);
     const formationLink = linkRegistry.get("formationList", undefined);
     const eventsLink = linkRegistry.get("eventsList", undefined);
     const formationDetailLink = linkRegistry.get("formationDetails", undefined);
@@ -87,16 +88,6 @@ export function PrivateLayout({ children }: { children: React.ReactNode }) {
             text: routeTitles.accountEditBaseInfo(),
             isActive: hasPathnameThisMatch(pathname, accountEditBaseInfoLink),
         },
-        // {
-        //     linkProps: {
-        //         href: accountEditPrivateInfoLink,
-        //     },
-        //     text: routeTitles.accountEditPrivateInfo(),
-        //     isActive: hasPathnameThisMatch(
-        //         pathname,
-        //         accountEditPrivateInfoLink
-        //     ),
-        // },
         {
             linkProps: {
                 href: "#",
@@ -278,6 +269,13 @@ export function PrivateLayout({ children }: { children: React.ReactNode }) {
             expandedByDefault: Boolean(startupSubPage.find((a) => a.isActive)),
             items: startupSubPage,
         },
+        {
+            linkProps: {
+                href: startupListLink,
+            },
+            text: "Metabase",
+            isActive: hasPathnameThisMatch(pathname, metabaseLink),
+        },
         // {
         //     linkProps: {
         //         href: incubatorListLink,
@@ -405,6 +403,13 @@ export function PrivateLayout({ children }: { children: React.ReactNode }) {
                             href: mapLink,
                         },
                         text: routeTitles.map(),
+                        isActive: hasPathnameThisMatch(pathname, mapLink),
+                    },
+                    {
+                        linkProps: {
+                            href: metabaseLink,
+                        },
+                        text: routeTitles.metabase(),
                         isActive: hasPathnameThisMatch(pathname, mapLink),
                     },
                 ];

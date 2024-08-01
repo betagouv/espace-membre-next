@@ -93,6 +93,10 @@ export const routes = {
             localizedRoutes.map.params,
             localizedRoutes.map.paths.fr
         ),
+        metabase: defineRoute(
+            localizedRoutes.metabase.params,
+            localizedRoutes.metabase.paths.fr
+        ),
         keskispasse: defineRoute(
             localizedRoutes.keskispasse.params,
             localizedRoutes.keskispasse.paths.fr
