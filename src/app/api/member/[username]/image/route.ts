@@ -3,20 +3,8 @@ import AWS from "aws-sdk";
 // import { createCanvas } from "canvas";
 import { NextResponse } from "next/server";
 
+import s3 from "@/lib/s3";
 import config from "@/server/config";
-
-let s3;
-try {
-    s3 = new AWS.S3({
-        accessKeyId: config.S3_KEY_ID,
-        secretAccessKey: config.S3_KEY_SECRET,
-        region: "US",
-        endpoint: new AWS.Endpoint(config.S3_HOST!),
-        s3ForcePathStyle: true, // Needed for some S3-compatible storage services
-    });
-} catch {
-    console.error("S3 is not defined");
-}
 
 // const generateImage = (username) => {
 //     const canvas = createCanvas(200, 200);
@@ -56,7 +44,6 @@ export const GET = async (
         // Try to get the image from S3
         const s3Object = await s3
             .getObject({
-                Bucket: config.S3_BUCKET!,
                 Key: s3Key,
             })
             .promise();

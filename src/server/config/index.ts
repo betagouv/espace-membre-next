@@ -258,4 +258,5 @@ export default {
     S3_HOST: process.env.S3_HOST,
     S3_BUCKET: process.env.S3_BUCKET,
     S3_GET_HOST: process.env.S3_GET_HOST,
+    S3_REGION: process.env.S3_REGION,
 };
