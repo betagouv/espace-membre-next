@@ -2,10 +2,10 @@
 
 import Button from "@codegouvfr/react-dsfr/Button";
 
+import { BreadCrumbFiller } from "@/app/BreadCrumbProvider";
 import { incubatorSchemaType } from "@/models/incubator";
 import { memberPublicInfoSchemaType } from "@/models/member";
 import { teamSchemaType } from "@/models/team";
-import { BreadCrumbFiller } from "@/app/BreadCrumbProvider";
 
 export interface TeamPageProps {
     teamInfos: teamSchemaType;
@@ -29,7 +29,13 @@ export default function TeamPage({
                 <br />
                 <br />
                 <h2>Mission : </h2>
-                {teamInfos.mission ? `${teamInfos.mission}` : "Non renseigné"}
+                {teamInfos.mission ? (
+                    <div
+                        dangerouslySetInnerHTML={{ __html: teamInfos.mission }}
+                    />
+                ) : (
+                    "Non renseigné"
+                )}
                 <br />
                 <br />
 
@@ -38,7 +44,12 @@ export default function TeamPage({
                     <ul>
                         {teamMembers.map((member) => (
                             <li key={member.uuid}>
-                                {member.fullname}, {member.role}
+                                <a
+                                    className="fr-link"
+                                    href={`/community/${member.username}`}
+                                >
+                                    {member.fullname}, {member.role}
+                                </a>
                             </li>
                         ))}
                     </ul>
