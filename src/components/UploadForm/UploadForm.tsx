@@ -87,9 +87,7 @@ const UploadForm = ({ url, onChange, onDelete }) => {
             </div>
 
             <span className="fr-hint-text fr-mb-1w">
-                Taille maximale : 500 Mo. Format supporté : jpg. Plusieurs
-                fichiers possibles. Lorem ipsum dolor sit amet, consectetur
-                adipiscing.
+                Taille maximale : 500 Mo. Format supporté : jpg.
             </span>
             <input
                 type="file"

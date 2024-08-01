@@ -297,43 +297,28 @@ export const BaseInfoUpdate = (props: BaseInfoUpdateProps) => {
                         state={errors.member?.github ? "error" : "default"}
                         stateRelatedMessage={errors.member?.github?.message}
                     />
-                    <div>
-                        {/* <Upload
-                            state={errors.picture ? "error" : "default"}
-                            stateRelatedMessage={errors.picture?.message}
-                            label={""}
-                            nativeInputProps={{
-                                // ...register("picture"),
-                                onChange: (
-                                    e: React.ChangeEvent<HTMLInputElement>
-                                ) => {
-                                    if (e.target.files) {
-                                        setValue("picture", e.target.files[0], {
-                                            shouldDirty: true,
-                                            shouldValidate: true,
-                                        });
-                                    }
-                                },
-                                accept: "image/jpg, image/jpeg",
-                            }}
-                        /> */}
-                        <UploadForm
-                            onChange={(event) => {
-                                const file = event.target.files;
-                                if (file && file.length) {
-                                    setValue("picture", file[0]);
-                                    setValue("shouldDeletePicture", false);
-                                }
-                            }}
-                            url={props.profileURL}
-                            onDelete={() => {
-                                setValue("picture", null);
-                                if (props.profileURL) {
-                                    setValue("shouldDeletePicture", true);
-                                }
-                            }}
-                        />
-                    </div>
+                    <UploadForm
+                        onChange={(event) => {
+                            const file = event.target.files;
+                            if (file && file.length) {
+                                setValue("picture", file[0], {
+                                    shouldValidate: true,
+                                    shouldDirty: true,
+                                });
+                                setValue("shouldDeletePicture", false);
+                            }
+                        }}
+                        url={props.profileURL}
+                        onDelete={() => {
+                            setValue("picture", null, {
+                                shouldValidate: true,
+                                shouldDirty: true,
+                            });
+                            if (props.profileURL) {
+                                setValue("shouldDeletePicture", true);
+                            }
+                        }}
+                    />
                     <br />
                     <br />
                     <h2>
