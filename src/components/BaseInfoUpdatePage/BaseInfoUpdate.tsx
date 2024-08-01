@@ -30,6 +30,7 @@ import { routeTitles } from "@/utils/routes/routeTitles";
 
 // data from secretariat API
 export interface BaseInfoUpdateProps {
+    profileURL?: string;
     formData: memberInfoUpdateSchemaType;
     startupOptions: {
         value: string;
@@ -324,10 +325,12 @@ export const BaseInfoUpdate = (props: BaseInfoUpdateProps) => {
                                     setValue("shouldDeletePicture", false);
                                 }
                             }}
-                            url={`/api/member/${session.data?.user.id}/image`}
+                            url={props.profileURL}
                             onDelete={() => {
                                 setValue("picture", null);
-                                setValue("shouldDeletePicture", true);
+                                if (props.profileURL) {
+                                    setValue("shouldDeletePicture", true);
+                                }
                             }}
                         />
                     </div>

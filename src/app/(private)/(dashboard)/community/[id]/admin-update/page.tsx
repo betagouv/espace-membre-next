@@ -1,14 +1,12 @@
-import type { Metadata } from "next";
 import { redirect } from "next/navigation";
 import { getServerSession } from "next-auth";
 
 import { BaseInfoUpdate } from "@/components/BaseInfoUpdatePage";
 import { getAllStartups } from "@/lib/kysely/queries";
 import { getUserInfos } from "@/lib/kysely/queries/users";
+import s3 from "@/lib/s3";
 import { userInfosToModel } from "@/models/mapper";
-import { memberSchema } from "@/models/member";
 import { authOptions } from "@/utils/authoptions";
-import { routeTitles } from "@/utils/routes/routeTitles";
 
 export const generateMetadata = async ({
     params: { id },
@@ -35,6 +33,18 @@ export default async function Page({
     if (!session.user.isAdmin) {
         redirect(`/community/${id}`);
     }
+    const s3Key = `members/${id}/avatar.jpg`;
+    let hasImage = false;
+    try {
+        const s3Object = await s3
+            .getObject({
+                Key: s3Key,
+            })
+            .promise();
+        hasImage = true;
+    } catch (error) {
+        console.log("No image for user");
+    }
     const dbData = await getUserInfos({ username: id });
     const userInfos = userInfosToModel(dbData);
 
@@ -57,6 +67,7 @@ export default async function Page({
                 ...userInfos,
             },
         },
+        profileURL: hasImage ? s3Key : undefined,
         startupOptions,
         username: id,
     };
