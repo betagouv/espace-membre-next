@@ -65,7 +65,7 @@ const postMemberData = async ({
             headers: {
                 "Content-Type": picture.type,
             },
-            body: picture,
+            body: picture as File,
         });
 
         if (uploadResponse.ok) {
