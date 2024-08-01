@@ -8,7 +8,12 @@ import s3 from "@/lib/s3";
 import { authOptions } from "@/utils/authoptions";
 
 export async function DELETE(req: NextRequest) {
-    const { fileName } = await req.json(); // The key of the image to be deleted
+    const { fileName } = await req.json();
+    const session = await getServerSession(authOptions);
+
+    if (!session || (session.user.id !== fileName && !session.user.isAdmin)) {
+        throw new Error(`You don't have the right to access this function`);
+    }
 
     if (!fileName) {
         return Response.json(
@@ -48,7 +53,7 @@ export async function POST(req: NextRequest) {
 
     const session = await getServerSession(authOptions);
 
-    if (!session || session.user.id !== fileName) {
+    if (!session || (session.user.id !== fileName && !session.user.isAdmin)) {
         throw new Error(`You don't have the right to access this function`);
     }
 
