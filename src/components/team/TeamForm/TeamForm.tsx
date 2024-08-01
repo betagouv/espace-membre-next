@@ -246,7 +246,7 @@ export function TeamForm(props: TeamFormProps) {
                                     getValues("team.incubator_id")
                             )[0]
                         }
-                        label={"Incubateurs"}
+                        label={"Incubateur"}
                         incubatorOptions={props.incubatorOptions}
                         onChange={(e, incubator) => {
                             setValue("team.incubator_id", incubator.value, {
