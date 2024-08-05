@@ -56,7 +56,7 @@ export default async function Page() {
                 ...userInfos,
             },
         },
-        profileURL: hasImage ? s3Key : undefined,
+        profileURL: hasImage ? `/api/member/${username}/image` : undefined,
         username,
         startupOptions,
     };
