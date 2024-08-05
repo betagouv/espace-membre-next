@@ -2,6 +2,7 @@ import React from "react";
 
 import Autocomplete from "@mui/material/Autocomplete";
 import TextField from "@mui/material/TextField";
+
 import { Incubators } from "@/@types/db";
 import { Option } from "@/models/misc";
 
@@ -42,6 +43,7 @@ export default function SEIncubateurSelect({
                 isOptionEqualToValue={(option, value) => {
                     return option.value === value.value;
                 }}
+                getOptionKey={(option) => option.value}
                 renderInput={(params) => (
                     <TextField
                         {...params}

@@ -8,13 +8,15 @@ import {
     type ReactNode,
     useCallback,
 } from "react";
-import _ from "lodash";
-import { useStyles } from "tss-react/dsfr";
-import { assert } from "tsafe/assert";
-import Autocomplete from "@mui/material/Autocomplete";
+
 import { fr } from "@codegouvfr/react-dsfr";
-import Popper from "@mui/material/Popper";
 import { SearchBar } from "@codegouvfr/react-dsfr/SearchBar";
+import Autocomplete from "@mui/material/Autocomplete";
+import Popper from "@mui/material/Popper";
+import _ from "lodash";
+import { assert } from "tsafe/assert";
+import { useStyles } from "tss-react/dsfr";
+
 import { searchCommunes } from "@/lib/searchCommune";
 
 interface InternationPlaceResult {

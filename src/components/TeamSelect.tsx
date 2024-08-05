@@ -43,6 +43,7 @@ export default function TeamSelect({
                 isOptionEqualToValue={(option, value) => {
                     return option.value === value.value;
                 }}
+                getOptionKey={(option) => option.value}
                 renderInput={(params) => (
                     <TextField
                         {...params}

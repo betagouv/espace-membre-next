@@ -1,8 +1,10 @@
 import React, { useState } from "react";
+
+import Select from "@codegouvfr/react-dsfr/Select";
 import Autocomplete from "@mui/material/Autocomplete";
 import TextField from "@mui/material/TextField";
+
 import { ClientOnly } from "./ClientOnly";
-import Select from "@codegouvfr/react-dsfr/Select";
 
 const options = [
     { value: "acceleration", label: "En Accélération" },
@@ -85,6 +87,7 @@ export default function SEPhaseSelect({
                           }))
                         : undefined
                 }
+                getOptionKey={(option) => option.id}
                 isOptionEqualToValue={(option, value) => option.id === value.id}
                 renderInput={(params) => (
                     <TextField
