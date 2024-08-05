@@ -42,6 +42,7 @@ export default function DomaineSelect({
                           }))
                         : undefined
                 }
+                getOptionKey={(option) => option.id}
                 isOptionEqualToValue={(option, value) => option.id === value.id}
                 renderInput={(params) => (
                     <TextField

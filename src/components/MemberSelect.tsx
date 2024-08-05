@@ -62,6 +62,30 @@ export default function MemberSelect<T extends boolean>({
             label: singleDefaultValue.label,
         };
     }
+    const uniqueIds = new Set();
+
+    const memberOptions = members
+        .map((member) => ({
+            id: member[valueKey || "username"],
+            label: member.fullname || member.username,
+        }))
+        .filter((memberOption) => {
+            if (uniqueIds.has(memberOption.id)) {
+                return false;
+            } else {
+                uniqueIds.add(memberOption.id);
+                return true;
+            }
+        })
+        .sort((a, b) => {
+            if (a.label < b.label) {
+                return -1;
+            }
+            if (a.label > b.label) {
+                return 1;
+            }
+            return 0;
+        });
     return (
         <div className="fr-select-group">
             <label className="fr-label">
@@ -70,12 +94,10 @@ export default function MemberSelect<T extends boolean>({
             </label>
             <Autocomplete
                 multiple={!!multiple}
-                options={members.map((member) => ({
-                    id: member[valueKey || "username"],
-                    label: member.fullname || member.username,
-                }))}
+                options={memberOptions}
                 onChange={onTagsChange}
                 defaultValue={defaultMemberValue}
+                getOptionKey={(option) => option.id}
                 isOptionEqualToValue={(option, value) => option.id === value.id}
                 renderInput={(params) => (
                     <TextField

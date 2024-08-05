@@ -1,23 +1,22 @@
 fileignoreconfig:
-- filename: src/lib/s3.ts
-  checksum: 5a532acf6592a3dc694e8aa67063303a8122e799419f3171b94e7f9075774491
+- filename: src/components/DomaineSelect.tsx
+  checksum: 832e496fc8cbe062dc10e78a493d9f0be946a952026f9d41b0f5cf2131a37aea
+- filename: src/components/MemberSelect.tsx
+  checksum: e7ef8a3c5fbf4cfd8143cc168b440e2804b3e7a9bf1e208f478e6ee821073d98
+- filename: src/components/MemberStatusSelect.tsx
+  checksum: f48abd74c1e9c78a7b160062acd59e82214d837239f2fb6fa81f1a20f6e33490
+- filename: src/components/SEIncubateurSelect.tsx
+  checksum: 1140cfe2164079bea37661021253f0877e415c725d15d6d2508a364d7cdfb80a
+- filename: src/components/SEPhaseSelect.tsx
+  checksum: 329b1e2c54fd2a9ec258cbf598f7aaba3c7460bafa1bd113484d03a01540d480
+- filename: src/components/SESelect.tsx
+  checksum: bfce73668e85299248f8ebe0a5417b7ef509a26c650fc552e8eeaa15f93b88c7
+- filename: src/components/SESponsorSelect.tsx
+  checksum: 53d51e1303cf910ce39ebaae8fb188ce719b5812021b0b361102e20a08e1c795
+- filename: src/components/TeamSelect.tsx
+  checksum: 45a8b0f4f4a4381b07933f27444697a9c80643d113578ca7a21e1bc3b71f0904
 version: ""
-hub/workflows/nodejs.yml
-  checksum: 4b2c5eb935d39d1ddf54252c633c103ee3ccc5b7fda23bdebffdb9ccd4a6b66e
-- filename: .github/workflows/playwright.yml
-  checksum: efe350e9b1812f0009c776906cb71bf0e43e85648455aafe1ddeacaa29e15262
-- filename: README.md
-  checksum: 81570c2f0395a7e443a156f22ffd0d3202f461311c05871a360b02e2148e9035
-- filename: __tests__/htmlbuilder.spec.ts
-  checksum: 59bb880710465666eb47a0d8dc220c693a25412a8112043f8ad9812b50f7896e
-- filename: __tests__/test-account.ts
-  checksum: da7f9933e9d15538def749e8e58bdccb8a52e2a2a1de7c7e4a327108e4dd05e9
-- filename: __tests__/test-community.ts
-  checksum: 7b34d7e039233d20430b5b0be9f05400606c94b69ce17c593dbe9340c9c26a62
-- filename: __tests__/test-email.ts
-  checksum: 4192baa86c9c611168e394237bcc8586f71d186ef41a4d9747a91603fdddb3a2
-- filename: __tests__/test-visit.ts
-  checksum: 8a605ffb247bede59135ac4407259921beabf8a2a59b7c64f085bf882409013c
+59b7c64f085bf882409013c
 - filename: src/app/(private)/(dashboard)/account/base-info/page.tsx
   checksum: b8076f25eb454bb38a41e7997b6c07e825ee8291c2fe4c71246d7f57ca730515
 - filename: src/app/(private)/(dashboard)/account/page.tsx

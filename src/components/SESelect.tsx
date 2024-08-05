@@ -67,6 +67,7 @@ export default function SESelect({
                         />
                     ));
                 }}
+                getOptionKey={(option) => option.value}
                 getOptionLabel={(opt) => opt.label}
                 isOptionEqualToValue={(option, value) =>
                     option.value === value.value

@@ -1,4 +1,5 @@
 import React from "react";
+
 import Autocomplete from "@mui/material/Autocomplete";
 import TextField from "@mui/material/TextField";
 
@@ -48,6 +49,7 @@ export default function MemberStatusSelect({
                           }))
                         : undefined
                 }
+                getOptionKey={(option) => option.id}
                 filterSelectedOptions={true}
                 isOptionEqualToValue={(option, value) => option.id === value.id}
                 renderInput={(params) => (
