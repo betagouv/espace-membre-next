@@ -393,16 +393,16 @@ const getChanges = async (markdownData) => {
                         }),
                        
                     };
-                    if (process.env.EXPORT_UPDATE_TEAMS) {
-                        if (dbAuthor2.teams && dbAuthor2.teams.length) {
-                            // @ts-ignore
-                            dbAuthor3.teams = dbAuthor2.teams && dbAuthor2.teams.length
-                                ? dbAuthor2.teams?.map(
-                                    (team) => `/teams/${team.ghid}`
-                                )
-                                : undefined
-                        }
-                    }
+                    // if (process.env.EXPORT_UPDATE_TEAMS) {
+                    //     if (dbAuthor2.teams && dbAuthor2.teams.length) {
+                    //         // @ts-ignore
+                    //         dbAuthor3.teams = dbAuthor2.teams && dbAuthor2.teams.length
+                    //             ? dbAuthor2.teams?.map(
+                    //                 (team) => `/teams/${team.ghid}`
+                    //             )
+                    //             : undefined
+                    //     }
+                    // }
 
                     updates.push({
                         file: `content/_authors/${dbAuthor.username}.md`,
@@ -413,16 +413,16 @@ const getChanges = async (markdownData) => {
                     const diffed = detailedDiff(ghAuthor2, {
                         ...dbAuthor2
                     });
-                    if (process.env.EXPORT_UPDATE_TEAMS) {
-                        if (dbAuthor2.teams && dbAuthor2.teams.length) {
-                            // @ts-ignore
-                            diffed.teams = dbAuthor2.teams && dbAuthor2.teams.length
-                                    ? dbAuthor2.teams?.map(
-                                        (team) => `/teams/${team.ghid}`
-                                    )
-                                    : undefined
-                                }
-                    }
+                    // if (process.env.EXPORT_UPDATE_TEAMS) {
+                    //     if (dbAuthor2.teams && dbAuthor2.teams.length) {
+                    //         // @ts-ignore
+                    //         diffed.teams = dbAuthor2.teams && dbAuthor2.teams.length
+                    //                 ? dbAuthor2.teams?.map(
+                    //                     (team) => `/teams/${team.ghid}`
+                    //                 )
+                    //                 : undefined
+                    //             }
+                    // }
                     if (
                         Object.keys(diffed.updated).length ||
                         Object.keys(diffed.added).length
@@ -431,17 +431,17 @@ const getChanges = async (markdownData) => {
                             ...ghAuthor2,
                             ...dbAuthor2,
                         });
-                        if (process.env.EXPORT_UPDATE_TEAMS) {
-                            // @ts-ignore
-                            if (dbAuthor2.teams && dbAuthor2.teams.length) {
-                                updated.teams =
-                                dbAuthor2.teams && dbAuthor2.teams.length
-                                    ? dbAuthor2.teams?.map(
-                                        (team) => `/teams/${team.ghid}`
-                                    )
-                                    : undefined
-                                }
-                        }
+                        // if (process.env.EXPORT_UPDATE_TEAMS) {
+                        //     // @ts-ignore
+                        //     if (dbAuthor2.teams && dbAuthor2.teams.length) {
+                        //         updated.teams =
+                        //         dbAuthor2.teams && dbAuthor2.teams.length
+                        //             ? dbAuthor2.teams?.map(
+                        //                 (team) => `/teams/${team.ghid}`
+                        //             )
+                        //             : undefined
+                        //         }
+                        // }
 
                         // hack for validation
                         updated.missions =
