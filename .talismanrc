@@ -1,7 +1,8 @@
 fileignoreconfig:
-- filename: src/components/DomaineSelect.tsx
-  checksum: 832e496fc8cbe062dc10e78a493d9f0be946a952026f9d41b0f5cf2131a37aea
-- filename: src/components/MemberSelect.tsx
+- filename: src/components/SESponsorSelect.tsx
+  checksum: fdc0be8c9477e06c8574be7011f092c4aa6b327fe146bfba7495633e396dc497
+version: ""
+c/components/MemberSelect.tsx
   checksum: e7ef8a3c5fbf4cfd8143cc168b440e2804b3e7a9bf1e208f478e6ee821073d98
 - filename: src/components/MemberStatusSelect.tsx
   checksum: f48abd74c1e9c78a7b160062acd59e82214d837239f2fb6fa81f1a20f6e33490
