@@ -39,7 +39,7 @@ const UploadForm = ({ url, onChange, onDelete }) => {
     let src = placeholderURL;
     if (image) {
         src = URL.createObjectURL(image);
-    } else if (url) {
+    } else if (url && !shouldDeletePicture) {
         src = url;
     }
 
