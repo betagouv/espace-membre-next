@@ -52,7 +52,7 @@ export default function SESponsorSelect<T extends boolean>({
                 style={{
                     marginTop: "0.5rem",
                 }}
-                getOptionKey={(option) => option.value}
+                getOptionKey={(option) => "value"}
                 options={allOptions}
                 onChange={(e, newValue) => {
                     if (!newValue) {
