@@ -40,7 +40,7 @@ export async function createTeam({
             .returningAll()
             .executeTakeFirst();
         let memberIds: { uuid: string }[] = [];
-        if (res?.uuid) {
+        if (res?.uuid && members && members.length) {
             memberIds = await trx
                 .insertInto("users_teams")
                 .values(
