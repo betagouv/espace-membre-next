@@ -122,7 +122,11 @@ const getChanges = async (markdownData) => {
     ] as const;
     const users = await db
         .selectFrom("users")
-        .select((eb) => [...userColumns, withMissions(eb), withTeams(eb)])
+        .select((eb) => [
+            ...userColumns,
+            withMissions(eb),
+            //withTeams(eb)
+        ])
         .groupBy([...userColumns, "users.uuid"])
         .execute();
 
