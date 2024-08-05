@@ -49,7 +49,7 @@ Pour les joindre :
 👉 [Choisir un créneau](${process.env.CALENDSO_GROUP_DE_SOUTIEN}) pour échanger avec un·e des membres (attribution aléatoire)
 👉 Contacter l'équipe par email : soutien@beta.gouv.fr
 👉 Contacter un·e membre individuellement sur Mattermost, par email ou en personne.
-*Les membres du groupe : Amel Alili, Anne Poirot, Bréanne Mallat, Caroline Lawson, Clémence Lopez, Denis Baudot, Fanny Blanc, Florian Briand , Mélodie Dahi, Rebecca Dumazert.*`;
+*Les membres du groupe : Amel Alili, Bréanne Mallat, Caroline Lawson, Clémence Lopez, Denis Baudot, Fanny Blanc, Florian Briand , Mélodie Dahi, Rebecca Dumazert.*`;
     const XMondayOfTheMonth =
         getAllXDaysOfTheMonth(dayOfTheWeek)[nXDayOfTheWeek];
     if (datesAreOnSameDay(XMondayOfTheMonth, new Date())) {
