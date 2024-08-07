@@ -67,7 +67,7 @@ export async function createTeam({
                     uuid: res.uuid,
                     ghid: res.ghid,
                     name: res.name,
-                    mission: res.mission,
+                    mission: encodeURIComponent(res.mission || ""),
                     incubator_id: res.incubator_id,
                     memberIds: memberIds.map((m) => m.uuid),
                 },
