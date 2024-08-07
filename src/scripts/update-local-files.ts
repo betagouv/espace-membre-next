@@ -226,56 +226,57 @@ const getChanges = async (markdownData) => {
     });
 
     // update teams
-    // teams.forEach((dbTeam) => {
-    //     const ghTeam = markdownData.teams.find(
-    //         (o) => o.attributes.ghid === dbTeam.ghid
-    //     );
-    //     const dbTeam2 = extractValidValues(dbTeam, ["ghid", "mission"]);
-    //     const htmlMission =
-    //         (dbTeam.mission && md.renderInline(dbTeam.mission)) || "";
-    //     if (!ghTeam) {
-    //         // create gh orga
-    //         updates.push({
-    //             file: `content/_teams/${dbTeam.ghid}.md`,
-    //             content: dumpYaml(
-    //                 {
-    //                     ...dbTeam2,
-    //                     mission: htmlMission,
-    //                 },
-    //                 ""
-    //             ),
-    //         });
-    //     } else {
-    //         // dont update null values from DB
-    //         const { ghid: ghid2, ...ghTeam2 } = ghTeam.attributes;
-    //         const diffed = detailedDiff(ghTeam2, {
-    //             ...dbTeam2,
-    //             short_description: htmlMission,
-    //         });
-    //         if (
-    //             Object.keys(diffed.updated).length ||
-    //             Object.keys(diffed.added).length
-    //         ) {
-    //             const updated = {
-    //                 ...ghTeam2,
-    //                 ...dbTeam2,
-    //                 mission: htmlMission,
-    //             };
-    //             updated.name = updated.name || ""; // wth due to url field ?
-    //             updated.incubator = updated.incubator || ""; // wth
-    //             try {
-    //                 team.parse(updated);
-    //             } catch (e) {
-    //                 console.error(`ERROR parsing team ${ghid2}`);
-    //                 console.error(e);
-    //             }
-    //             updates.push({
-    //                 file: `content/_teams/${dbTeam.ghid}.md`,
-    //                 content: dumpYaml(updated, ""),
-    //             });
-    //         }
-    //     }
-    // });
+    teams.forEach((dbTeam) => {
+        const ghTeam = markdownData.teams.find(
+            (o) => o.attributes.ghid === dbTeam.ghid
+        );
+        const dbTeam2 = extractValidValues(dbTeam, ["ghid", "mission"]);
+        const htmlMission =
+            (dbTeam.mission && md.renderInline(dbTeam.mission)) || "";
+        if (!ghTeam) {
+            // create gh orga
+            updates.push({
+                file: `content/_teams/${dbTeam.ghid}.md`,
+                content: dumpYaml(
+                    {
+                        ...dbTeam2,
+                        mission: htmlMission,
+                    },
+                    ""
+                ),
+            });
+        } else {
+            // dont update null values from DB
+            const { ghid: ghid2, ...ghTeam2 } = ghTeam.attributes;
+            const diffed = detailedDiff(ghTeam2, {
+                ...dbTeam2,
+                short_description: htmlMission,
+            });
+            if (
+                Object.keys(diffed.updated).length ||
+                Object.keys(diffed.added).length
+            ) {
+                const updated = {
+                    ...ghTeam2,
+                    ...dbTeam2,
+                    mission: htmlMission,
+                };
+                updated.name = updated.name || ""; // wth due to url field ?
+                updated.incubator =
+                    updated.incubator.replace("/incubators/", "") || ""; // wth
+                try {
+                    team.parse(updated);
+                } catch (e) {
+                    console.error(`ERROR parsing team ${ghid2}`);
+                    console.error(e);
+                }
+                updates.push({
+                    file: `content/_teams/${dbTeam.ghid}.md`,
+                    content: dumpYaml(updated, ""),
+                });
+            }
+        }
+    });
 
     // update startups
     startups.forEach((dbStartup) => {
