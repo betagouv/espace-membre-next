@@ -436,7 +436,7 @@ const getChanges = async (markdownData) => {
                     Object.keys(diffed.added).length === 1 &&
                     diffed.added["teams"].length === 0
                 ) {
-                    // skip teams update if no sponsor
+                    // skip teams update if no teams
                     return;
                 }
 
