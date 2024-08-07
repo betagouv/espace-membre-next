@@ -420,6 +420,28 @@ export const BaseInfoUpdate = (props: BaseInfoUpdateProps) => {
                         state={errors.member?.tjm ? "error" : "default"}
                         stateRelatedMessage={errors.member?.tjm?.message}
                     />
+                    <Input
+                        label="Nombre de jours moyen travaillés par semaine"
+                        hintText="Cette information est utilisée uniquement pour
+                                    faire des statistiques. Elle n'est pas affichée."
+                        nativeInputProps={{
+                            ...register("member.average_nb_of_days", {
+                                setValueAs: (
+                                    // use this instead of valueAsNumber to handle undefined value
+                                    v
+                                ) => (!v ? null : parseInt(v)),
+                            }),
+                            type: "number",
+                        }}
+                        state={
+                            errors.member?.average_nb_of_days
+                                ? "error"
+                                : "default"
+                        }
+                        stateRelatedMessage={
+                            errors.member?.average_nb_of_days?.message
+                        }
+                    />
                     <h2>
                         {isCurrentUser
                             ? `Participe à la carte des membres (non anonyme)`
