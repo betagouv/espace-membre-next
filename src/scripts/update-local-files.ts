@@ -129,7 +129,7 @@ const getChanges = async (markdownData) => {
             withMissions(eb),
             sql<
                 Array<string>
-            >`COALESCE(NULLIF(ARRAY_AGG(CONCAT('/teams/', teams.ghid) order by teams.ghid), '{/teams/}'), '{}')`.as(
+            >`COALESCE(NULLIF(ARRAY_AGG(CONCAT('/teams/', teams.ghid) order by teams.ghid), '{/teams/}'), NULL)`.as(
                 "teams"
             ),
             //withTeams(eb)
@@ -424,6 +424,22 @@ const getChanges = async (markdownData) => {
                 const diffed = detailedDiff(ghAuthor2, {
                     ...dbAuthor2,
                 });
+                if (
+                    diffed.updated["teams"] &&
+                    Object.keys(diffed.updated).length === 1
+                ) {
+                    // skip teams update if only order change
+                    return;
+                }
+                if (
+                    diffed.added["teams"] &&
+                    Object.keys(diffed.added).length === 1 &&
+                    diffed.added["teams"].length === 0
+                ) {
+                    // skip teams update if no sponsor
+                    return;
+                }
+
                 // if (process.env.EXPORT_UPDATE_TEAMS) {
                 //     if (dbAuthor2.teams && dbAuthor2.teams.length) {
                 //         // @ts-ignore
