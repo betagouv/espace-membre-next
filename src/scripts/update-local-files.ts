@@ -54,7 +54,7 @@ const getChanges = async (markdownData) => {
             "name",
             "mission",
             "teams.ghid",
-            sql<string>`CASE WHEN incubators.ghid IS NOT NULL then concat('/incubators/', incubators.ghid) else NULL END`.as(
+            sql<string>`CASE WHEN incubators.ghid IS NOT NULL then incubators.ghid else NULL END`.as(
                 "incubator"
             ),
         ])
@@ -122,9 +122,16 @@ const getChanges = async (markdownData) => {
     ] as const;
     const users = await db
         .selectFrom("users")
+        .leftJoin("users_teams", "users_teams.user_id", "users.uuid")
+        .leftJoin("teams", "teams.uuid", "users_teams.team_id")
         .select((eb) => [
             ...userColumns,
             withMissions(eb),
+            sql<
+                Array<string>
+            >`COALESCE(NULLIF(ARRAY_AGG(CONCAT('/teams/', teams.ghid) order by teams.ghid), '{/teams/}'), '{}')`.as(
+                "teams"
+            ),
             //withTeams(eb)
         ])
         .groupBy([...userColumns, "users.uuid"])
@@ -230,7 +237,7 @@ const getChanges = async (markdownData) => {
         const ghTeam = markdownData.teams.find(
             (o) => o.attributes.ghid === dbTeam.ghid
         );
-        const dbTeam2 = extractValidValues(dbTeam, ["ghid", "mission"]);
+        const dbTeam2 = extractValidValues(dbTeam, ["ghid"]);
         const htmlMission =
             (dbTeam.mission && md.renderInline(dbTeam.mission)) || "";
         if (!ghTeam) {
