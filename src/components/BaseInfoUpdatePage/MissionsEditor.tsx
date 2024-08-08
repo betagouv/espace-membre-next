@@ -250,7 +250,7 @@ export const MissionsEditor = ({
     register: UseFormRegister<HasMissions>;
     setValue: UseFormSetValue<HasMissions>;
     startupOptions: any;
-    missionArrayKey: string;
+    missionArrayKey?: string;
 }) => {
     const {
         fields: missionsFields,
