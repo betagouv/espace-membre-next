@@ -19,6 +19,7 @@ import { MissionsEditor } from "./MissionsEditor";
 import CitySelect from "../CitySelect";
 import GenderSelect from "../GenderSelect";
 import UploadForm from "../UploadForm/UploadForm";
+import { imagePostApiSchemaType } from "@/models/actions/image";
 import {
     memberInfoUpdateSchemaType,
     memberInfoUpdateSchema,
@@ -48,15 +49,18 @@ const postMemberData = async ({
 }) => {
     const { member, picture, shouldDeletePicture } = values;
     if (picture) {
+        const imageBody: imagePostApiSchemaType = {
+            fileIdentifier: "avatar",
+            fileRelativeObjType: "member",
+            fileObjIdentifier: username,
+            fileType: "image/jpeg",
+        };
         const response = await fetch("/api/image", {
             method: "POST",
             headers: {
                 "Content-Type": "application/json",
             },
-            body: JSON.stringify({
-                fileName: username,
-                fileType: picture.type,
-            }),
+            body: JSON.stringify(imageBody),
         });
         const { signedUrl } = await response.json();
 
@@ -308,6 +312,9 @@ export const BaseInfoUpdate = (props: BaseInfoUpdateProps) => {
                                 setValue("shouldDeletePicture", false);
                             }
                         }}
+                        shape="round"
+                        label="Photo de profile"
+                        hintText="Taille maximale : 500 Mo. Format supporté : jpg."
                         url={props.profileURL}
                         onDelete={() => {
                             setValue("picture", null, {

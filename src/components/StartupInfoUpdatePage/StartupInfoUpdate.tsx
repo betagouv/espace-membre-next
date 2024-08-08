@@ -18,6 +18,7 @@ import {
     startupSchemaType,
 } from "@/models/startup";
 import routes, { computeRoute } from "@/routes/routes";
+import { saveImage } from "@/utils/file";
 import { routeTitles } from "@/utils/routes/routeTitles";
 
 interface StartupInfoUpdateProps {
@@ -27,6 +28,8 @@ interface StartupInfoUpdateProps {
     startupEvents: eventSchemaType[];
     incubatorOptions: Option[];
     sponsorOptions: Option[];
+    heroURL?: string;
+    shotURL?: string;
 }
 
 /* Pure component */
@@ -35,10 +38,61 @@ export const StartupInfoUpdate = (props: StartupInfoUpdateProps) => {
 
     const save = async (data: startupInfoUpdateSchemaType) => {
         try {
-            await updateStartup({
-                formData: data,
+            const res = await updateStartup({
+                formData: {
+                    startup: data.startup,
+                    startupEvents: data.startupEvents,
+                    startupPhases: data.startupPhases,
+                    startupSponsors: data.startupSponsors,
+                    newSponsors: data.newSponsors,
+                    newPhases: data.newPhases,
+                },
                 startupUuid: props.startup.uuid,
             });
+            if (data.hero) {
+                await saveImage({
+                    fileIdentifier: "hero",
+                    fileRelativeObjType: "startup",
+                    fileObjIdentifier: res.ghid,
+                    file: data.hero,
+                });
+            }
+            if (data.shot) {
+                await saveImage({
+                    fileIdentifier: "shot",
+                    fileRelativeObjType: "startup",
+                    fileObjIdentifier: res.ghid,
+                    file: data.shot,
+                });
+            }
+
+            if (data.shouldDeleteHero) {
+                await fetch("/api/image", {
+                    method: "DELETE",
+                    headers: {
+                        "Content-Type": "application/json",
+                    },
+                    body: JSON.stringify({
+                        fileObjIdentifier: res.ghid,
+                        fileIdentifier: "hero",
+                        fileRelativeObjType: "startup",
+                    }),
+                });
+            }
+
+            if (data.shouldDeleteShot) {
+                await fetch("/api/image", {
+                    method: "DELETE",
+                    headers: {
+                        "Content-Type": "application/json",
+                    },
+                    body: JSON.stringify({
+                        fileObjIdentifier: res.ghid,
+                        fileIdentifier: "shot",
+                        fileRelativeObjType: "startup",
+                    }),
+                });
+            }
             window.scrollTo({ top: 20, behavior: "smooth" });
             return {
                 // ...resp,
@@ -71,6 +125,8 @@ export const StartupInfoUpdate = (props: StartupInfoUpdateProps) => {
                         startupPhases={props.startupPhases}
                         startupEvents={props.startupEvents}
                         startup={props.startup}
+                        heroURL={props.heroURL}
+                        shotURL={props.shotURL}
                         incubatorOptions={props.incubatorOptions}
                         sponsorOptions={props.sponsorOptions}
                     />

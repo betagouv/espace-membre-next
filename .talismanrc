@@ -1,22 +1,4 @@
 fileignoreconfig:
-- filename: src/components/BaseInfoUpdatePage/BaseInfoUpdate.tsx
-  checksum: fcdd40ccedf1b340d3ca274c3d393aef1bf48cc3916f3ef0324e51884f29abd0
-- filename: src/components/BaseInfoUpdatePage/MissionsEditor.tsx
-  checksum: 0c8efb936ba1277cc7ea47be813288cddaa0d47d078fd324f0c769932e0968e8
-version: ""
-hecksum: f48abd74c1e9c78a7b160062acd59e82214d837239f2fb6fa81f1a20f6e33490
-- filename: src/components/SEIncubateurSelect.tsx
-  checksum: 1140cfe2164079bea37661021253f0877e415c725d15d6d2508a364d7cdfb80a
-- filename: src/components/SEPhaseSelect.tsx
-  checksum: 329b1e2c54fd2a9ec258cbf598f7aaba3c7460bafa1bd113484d03a01540d480
-- filename: src/components/SESelect.tsx
-  checksum: bfce73668e85299248f8ebe0a5417b7ef509a26c650fc552e8eeaa15f93b88c7
-- filename: src/components/SESponsorSelect.tsx
-  checksum: 53d51e1303cf910ce39ebaae8fb188ce719b5812021b0b361102e20a08e1c795
-- filename: src/components/TeamSelect.tsx
-  checksum: 45a8b0f4f4a4381b07933f27444697a9c80643d113578ca7a21e1bc3b71f0904
-version: ""
-59b7c64f085bf882409013c
 - filename: src/app/(private)/(dashboard)/account/base-info/page.tsx
   checksum: b8076f25eb454bb38a41e7997b6c07e825ee8291c2fe4c71246d7f57ca730515
 - filename: src/app/(private)/(dashboard)/account/page.tsx
@@ -31,8 +13,12 @@ version: ""
   checksum: 10425dc282436b1f63096e75b75352fbdd235571dd645521756b9c4f23e35d47
 - filename: src/app/(private)/(dashboard)/formations/page.tsx
   checksum: 2bbe0f4d6807f4238b7d6085d45f8e5582bc8e57326db67a9839ee1aae1f4bdf
+- filename: src/app/(private)/(dashboard)/startups/[id]/info-form/page.tsx
+  checksum: e861b8766169a1bf54adc52f79afbe78271d914b42cddae5122ab76503c9a476
 - filename: src/app/(private)/(dashboard)/verify/AccountVerifyClientPage.tsx
   checksum: ae267f7b99f6fce11d7085a1ce26995e53eca0b86653fcf3f5ed2ec1a11c76e8
+- filename: src/app/api/image/route.ts
+  checksum: 06f5305b471b5555d9868ee254bdfdca9e26c0437d64bf614ed77e0ba3c935a2
 - filename: src/app/api/member/[username]/image/route.ts
   checksum: e66122d673644d6538f07ff1be2f9322336893e09743a76fc6d6798ce1dc7f11
 - filename: src/app/api/upload/route.ts
@@ -71,6 +57,8 @@ version: ""
   checksum: 8eace2e39fcb856b5ac251c7a8419548e53601aedf8fa79e6fa789ef6c0447ac
 - filename: src/components/MemberSelect.tsx
   checksum: ec73d3b52be314f309b5e389fa51a5361725dc95777825528b5899f9cba3e6fe
+- filename: src/components/SEPhaseSelect.tsx
+  checksum: 329b1e2c54fd2a9ec258cbf598f7aaba3c7460bafa1bd113484d03a01540d480
 - filename: src/components/SESelect.tsx
   checksum: c251dbce68caf5cb85ac395bb400dfedb142737539d3ca0e1779f2a56460c520
 - filename: src/components/SESponsorSelect.tsx
@@ -87,6 +75,8 @@ version: ""
   checksum: 776745d3054dbb7ca1a51f3f12a97905ab783c0226aee41c5d38bd42afd6a626
 - filename: src/components/StartupPage/StartupPage.tsx
   checksum: a0aaa86a066780ede70d6f9f3e3b933672c43bb5e343ef64843caf9e148a52ee
+- filename: src/components/TeamSelect.tsx
+  checksum: 45a8b0f4f4a4381b07933f27444697a9c80643d113578ca7a21e1bc3b71f0904
 - filename: src/components/UploadForm/UploadForm.tsx
   checksum: d20ba6b35f5aba5f8407742d4b97cfce6d071d3ff1284c076a838a8c018cae69
 - filename: src/components/team/TeamForm/TeamForm.tsx
@@ -146,7 +136,20 @@ version: ""
 scopeconfig:
 - scope: node
 version: "1.0"
-/server/schedulers/syncBetagouvAPIScheduler/buildCommunityBDD.ts
+977f76cb5639f9a5e09c69dac2642120937566c8999f8f7a3a036
+    - filename: src/server/index.ts
+      checksum: d15e0bf95fa87a6dd7bd87b84a84b4e934c31d63d2bc987d281bfb42cce13439
+    - filename: src/server/middlewares/sessionMiddleware.ts
+      checksum: 37395239eb8012e5b4c310a6f2e23ef2eafd187abea8bfa1eee02212cba978a8
+    - filename: src/server/schedulers/emailScheduler.ts
+      checksum: a97b144c7af4f55b0f85c16effaca351f821a044ce32dd3c5cc6b89e44805bf7
+    - filename: src/server/schedulers/syncBetagouvAPIScheduler/buildCommunityBDD.ts
+      checksum: 0f9f79370cd6f0bbf3732c170c728c203c3d72102ac07eb84392d129eecd55f2
+    - filename: src/server/views/templates/emails/verificationWaiting.ejs
+      checksum: ba761c51315e4882a69e38228bf57f7495608ac3c9680027ded3d2bb5d6c714d
+    - filename: src/utils/authoptions.ts
+      checksum: a2ae546d82a86dcb1485d4d4a17a19cc7a028fd30cf35d945b370a6c96846d93
+    - filename: src/server/schedulers/syncBetagouvAPIScheduler/buildCommunityBDD.ts
       checksum: 0f9f79370cd6f0bbf3732c170c728c203c3d72102ac07eb84392d129eecd55f2
     - filename: src/server/views/templates/emails/verificationWaiting.ejs
       checksum: ba761c51315e4882a69e38228bf57f7495608ac3c9680027ded3d2bb5d6c714d

@@ -1,21 +1,27 @@
-import { NextRequest } from "next/server";
+import { NextRequest, NextResponse } from "next/server";
+import { getServerSession } from "next-auth/next";
+import { z } from "zod";
 
 // pages/api/upload.ts
-import { getServerSession } from "next-auth/next";
 
 import { getFileName } from "./utils";
 import s3 from "@/lib/s3";
 import { authOptions } from "@/utils/authoptions";
 
 export async function DELETE(req: NextRequest) {
-    const { fileName } = await req.json();
+    const { fileRelativeIdentifier, fileReliveObjType } = await req.json();
     const session = await getServerSession(authOptions);
 
-    if (!session || (session.user.id !== fileName && !session.user.isAdmin)) {
+    if (
+        !session ||
+        (session.user.id !== fileRelativeIdentifier &&
+            fileReliveObjType === "member" &&
+            !session.user.isAdmin)
+    ) {
         throw new Error(`You don't have the right to access this function`);
     }
 
-    if (!fileName) {
+    if (!fileRelativeIdentifier) {
         return Response.json(
             { message: "Image key is required" },
             { status: 400 }
@@ -23,7 +29,7 @@ export async function DELETE(req: NextRequest) {
     }
 
     const params = {
-        Key: getFileName["member"](fileName),
+        Key: getFileName[fileReliveObjType](fileRelativeIdentifier),
     };
 
     try {
@@ -49,16 +55,26 @@ export async function POST(req: NextRequest) {
             }
         );
     }
-    const { fileName, fileType } = await req.json();
+    const { fileObjIdentifier, fileRelativeObjType, fileType, fileIdentifier } =
+        await req.json();
 
     const session = await getServerSession(authOptions);
+    console.log("LCS IMAGE 1");
 
-    if (!session || (session.user.id !== fileName && !session.user.isAdmin)) {
+    if (
+        !session ||
+        (session.user.id !== fileObjIdentifier &&
+            fileRelativeObjType === "member" &&
+            !session.user.isAdmin)
+    ) {
         throw new Error(`You don't have the right to access this function`);
     }
 
     const s3Params = {
-        Key: getFileName["member"](fileName),
+        Key: getFileName[fileRelativeObjType](
+            fileObjIdentifier,
+            fileIdentifier
+        ),
         Expires: 60,
         ContentType: fileType,
     };
@@ -68,7 +84,6 @@ export async function POST(req: NextRequest) {
 
         return Response.json({ signedUrl }, { status: 200 });
     } catch (error) {
-        console.log("LCS ERRORS");
         return Response.json(
             {
                 error: "Failed to generate signed URL",

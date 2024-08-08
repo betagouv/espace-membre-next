@@ -6,13 +6,13 @@ import { revalidatePath } from "next/cache";
 import { getServerSession } from "next-auth";
 import { z } from "zod";
 
+import { addEvent } from "@/lib/events";
 import { db } from "@/lib/kysely";
+import { EventCode } from "@/models/actionEvent";
 import { startupInfoUpdateSchemaType } from "@/models/actions/startup";
 import { sponsorSchema } from "@/models/sponsor";
 import { phaseSchema } from "@/models/startup";
 import { authOptions } from "@/utils/authoptions";
-import { addEvent } from "@/lib/events";
-import { EventCode } from "@/models/actionEvent";
 
 export async function createStartup({
     formData: {
@@ -24,14 +24,21 @@ export async function createStartup({
         newPhases,
     },
 }: {
-    formData: startupInfoUpdateSchemaType;
-}) {
+    formData: {
+        startup: startupInfoUpdateSchemaType["startup"];
+        startupEvents: startupInfoUpdateSchemaType["startupEvents"];
+        startupPhases: startupInfoUpdateSchemaType["startupPhases"];
+        startupSponsors: startupInfoUpdateSchemaType["startupSponsors"];
+        newSponsors: startupInfoUpdateSchemaType["newSponsors"];
+        newPhases: startupInfoUpdateSchemaType["newPhases"];
+    };
+}): Promise<{ uuid: string; ghid: string }> {
     const session = await getServerSession(authOptions);
     if (!session || !session.user.id) {
         throw new Error(`You don't have the right to access this function`);
     }
 
-    await db.transaction().execute(async (trx) => {
+    return await db.transaction().execute(async (trx) => {
         // update startup data
         const res = await trx
             .insertInto("startups")
@@ -48,7 +55,7 @@ export async function createStartup({
                     ? JSON.stringify(startup.thematiques)
                     : undefined,
             })
-            .returning("uuid")
+            .returning(["uuid", "ghid"])
             .executeTakeFirst();
         if (!res) {
             throw new Error("Startup data could not be inserted into db");
@@ -127,6 +134,7 @@ export async function createStartup({
         });
 
         revalidatePath("/startups");
+        return res;
     });
 }
 
@@ -141,9 +149,16 @@ export async function updateStartup({
     },
     startupUuid,
 }: {
-    formData: startupInfoUpdateSchemaType;
+    formData: {
+        startup: startupInfoUpdateSchemaType["startup"];
+        startupEvents: startupInfoUpdateSchemaType["startupEvents"];
+        startupPhases: startupInfoUpdateSchemaType["startupPhases"];
+        startupSponsors: startupInfoUpdateSchemaType["startupSponsors"];
+        newSponsors: startupInfoUpdateSchemaType["newSponsors"];
+        newPhases: startupInfoUpdateSchemaType["newPhases"];
+    };
     startupUuid: string;
-}) {
+}): Promise<{ uuid: string; ghid: string }> {
     const session = await getServerSession(authOptions);
     if (!session || !session.user.id) {
         throw new Error(`You don't have the right to access this function`);
@@ -186,9 +201,9 @@ export async function updateStartup({
                 .execute()
         );
 
-    await db.transaction().execute(async (trx) => {
+    return await db.transaction().execute(async (trx) => {
         // update startup data
-        await trx
+        const res = await trx
             .updateTable("startups")
             .set({
                 ...startup,
@@ -203,8 +218,8 @@ export async function updateStartup({
                     : undefined,
             })
             .where("uuid", "=", startupUuid)
-            .execute();
-
+            .returning(["uuid", "ghid"])
+            .executeTakeFirstOrThrow();
         // create new sponsors
         for (const newSponsor of newSponsors) {
             const sponsor = await trx
@@ -307,5 +322,7 @@ export async function updateStartup({
         });
 
         revalidatePath("/startups");
+
+        return res;
     });
 }
