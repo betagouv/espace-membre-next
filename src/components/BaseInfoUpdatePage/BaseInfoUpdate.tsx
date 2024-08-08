@@ -358,6 +358,7 @@ export const BaseInfoUpdate = (props: BaseInfoUpdateProps) => {
                         control={control}
                         setValue={setValue}
                         register={register}
+                        missionArrayKey="member.missions"
                         startupOptions={props.startupOptions}
                         errors={errors.member?.missions || []}
                     />

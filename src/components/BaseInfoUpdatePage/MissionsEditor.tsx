@@ -243,12 +243,14 @@ export const MissionsEditor = ({
     register,
     setValue,
     startupOptions,
+    missionArrayKey = "missions",
 }: {
     control: Control<HasMissions>;
     errors?: Record<string, any>;
     register: UseFormRegister<HasMissions>;
     setValue: UseFormSetValue<HasMissions>;
     startupOptions: any;
+    missionArrayKey: string;
 }) => {
     const {
         fields: missionsFields,
@@ -258,7 +260,7 @@ export const MissionsEditor = ({
     } = useFieldArray({
         rules: { minLength: 1 },
         control,
-        name: "member.missions",
+        name: missionArrayKey,
     });
 
     const addMissionClick = (e) => {
@@ -274,15 +276,15 @@ export const MissionsEditor = ({
     const onMissionAutoEndClick = (missionIndex) => {
         let startDate;
         try {
-            startDate = missionsFields["member"][missionIndex]["start"]
-                ? new Date(missionsFields["member"][missionIndex]["start"])
+            startDate = missionsFields[missionIndex]["start"]
+                ? new Date(missionsFields[missionIndex]["start"])
                 : new Date();
         } catch (e) {
             startDate = new Date();
         }
         const endDate = addMonths(startDate, 3);
 
-        setValue(`member.missions.${missionIndex}.end`, endDate, {
+        setValue(`${missionArrayKey}.${missionIndex}.end`, endDate, {
             shouldValidate: true,
             shouldDirty: true,
         });
@@ -304,7 +306,7 @@ export const MissionsEditor = ({
                     control={control}
                     register={register}
                     setValue={setValue}
-                    missionArrayKey="member.missions"
+                    missionArrayKey={missionArrayKey}
                     missionsRemove={() => missionsRemove(index)}
                     onMissionAutoEndClick={() => onMissionAutoEndClick(index)}
                     startupOptions={startupOptions}
