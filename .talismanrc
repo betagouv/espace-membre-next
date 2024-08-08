@@ -1,11 +1,10 @@
 fileignoreconfig:
+- filename: src/components/BaseInfoUpdatePage/BaseInfoUpdate.tsx
+  checksum: fcdd40ccedf1b340d3ca274c3d393aef1bf48cc3916f3ef0324e51884f29abd0
 - filename: src/components/BaseInfoUpdatePage/MissionsEditor.tsx
-  checksum: 5c6317f34e451f6574731f65b4b1327ac6fe2d0717c1da87abad302678d32c73
+  checksum: 0c8efb936ba1277cc7ea47be813288cddaa0d47d078fd324f0c769932e0968e8
 version: ""
-rSelect.tsx
-  checksum: e7ef8a3c5fbf4cfd8143cc168b440e2804b3e7a9bf1e208f478e6ee821073d98
-- filename: src/components/MemberStatusSelect.tsx
-  checksum: f48abd74c1e9c78a7b160062acd59e82214d837239f2fb6fa81f1a20f6e33490
+hecksum: f48abd74c1e9c78a7b160062acd59e82214d837239f2fb6fa81f1a20f6e33490
 - filename: src/components/SEIncubateurSelect.tsx
   checksum: 1140cfe2164079bea37661021253f0877e415c725d15d6d2508a364d7cdfb80a
 - filename: src/components/SEPhaseSelect.tsx
