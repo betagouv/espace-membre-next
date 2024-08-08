@@ -58,7 +58,7 @@ export const Mission = ({
     });
     const startDateValue = useWatch({
         control,
-        name: `missions.${index}.start`,
+        name: `member.missions.${index}.start`,
     });
     // Convertir la valeur de date en format de chaîne requis par l'input de type date
     const startDateString = startDateValue
@@ -67,7 +67,7 @@ export const Mission = ({
 
     const endDateValue = useWatch({
         control,
-        name: `missions.${index}.end`,
+        name: `member.missions.${index}.end`,
     });
 
     const endDateString = endDateValue
@@ -254,7 +254,7 @@ export const MissionsEditor = ({
     } = useFieldArray({
         rules: { minLength: 1 },
         control,
-        name: "missions",
+        name: "member.missions",
     });
 
     const addMissionClick = (e) => {
@@ -270,15 +270,15 @@ export const MissionsEditor = ({
     const onMissionAutoEndClick = (missionIndex) => {
         let startDate;
         try {
-            startDate = missionsFields[missionIndex]["start"]
-                ? new Date(missionsFields[missionIndex]["start"])
+            startDate = missionsFields["member"][missionIndex]["start"]
+                ? new Date(missionsFields["member"][missionIndex]["start"])
                 : new Date();
         } catch (e) {
             startDate = new Date();
         }
         const endDate = addMonths(startDate, 3);
 
-        setValue(`missions.${missionIndex}.end`, endDate, {
+        setValue(`member.missions.${missionIndex}.end`, endDate, {
             shouldValidate: true,
             shouldDirty: true,
         });
