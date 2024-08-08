@@ -30,6 +30,7 @@ export const Mission = ({
     errors,
     isMulti,
     labels = {},
+    missionArrayKey = "missions",
 }: {
     index: number;
     register: any;
@@ -47,6 +48,7 @@ export const Mission = ({
         start?: string;
         end?: string;
     };
+    missionArrayKey?: string;
 }) => {
     const missionErrors = errors;
     const defaultState = (field) => ({
@@ -58,7 +60,7 @@ export const Mission = ({
     });
     const startDateValue = useWatch({
         control,
-        name: `member.missions.${index}.start`,
+        name: `${missionArrayKey}.${index}.start`,
     });
     // Convertir la valeur de date en format de chaîne requis par l'input de type date
     const startDateString = startDateValue
@@ -67,7 +69,7 @@ export const Mission = ({
 
     const endDateValue = useWatch({
         control,
-        name: `member.missions.${index}.end`,
+        name: `${missionArrayKey}.${index}.end`,
     });
 
     const endDateString = endDateValue
@@ -113,7 +115,9 @@ export const Mission = ({
                                 style: { width: 200 },
                                 placeholder: "JJ/MM/YYYY",
                                 type: "date",
-                                ...register(`member.missions.${index}.start`),
+                                ...register(
+                                    `${missionArrayKey}.${index}.start`
+                                ),
                                 value: startDateString,
                             }}
                             {...defaultState("start")}
@@ -135,7 +139,7 @@ export const Mission = ({
                                 style: { width: 200 },
                                 placeholder: "JJ/MM/YYYY",
                                 type: "date",
-                                ...register(`member.missions.${index}.end`),
+                                ...register(`${missionArrayKey}.${index}.end`),
                                 value: endDateString,
                             }}
                             hintText={
@@ -173,7 +177,7 @@ export const Mission = ({
                         }
                         nativeInputProps={{
                             placeholder: "ex: Scopyleft",
-                            ...register(`member.missions.${index}.employer`),
+                            ...register(`${missionArrayKey}.${index}.employer`),
                         }}
                         {...defaultState("employer")}
                     />
@@ -186,7 +190,7 @@ export const Mission = ({
                                 " (obligatoire)"
                         }
                         nativeSelectProps={{
-                            ...register(`member.missions.${index}.status`),
+                            ...register(`${missionArrayKey}.${index}.status`),
                             defaultValue: mission ? mission.status : "",
                         }}
                         {...defaultState("status")}
@@ -213,7 +217,7 @@ export const Mission = ({
                         )}
                         onChange={(startups) => {
                             setValue(
-                                `member.missions.${index}.startups`,
+                                `${missionArrayKey}.${index}.startups`,
                                 startups.map((startup) => startup.value),
                                 {
                                     shouldValidate: true,
@@ -300,6 +304,7 @@ export const MissionsEditor = ({
                     control={control}
                     register={register}
                     setValue={setValue}
+                    missionArrayKey="member.missions"
                     missionsRemove={() => missionsRemove(index)}
                     onMissionAutoEndClick={() => onMissionAutoEndClick(index)}
                     startupOptions={startupOptions}
