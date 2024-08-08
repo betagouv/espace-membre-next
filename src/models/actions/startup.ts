@@ -1,6 +1,7 @@
 import { z } from "zod";
 
 import { sponsorSchema } from "../sponsor";
+import { FileType } from "@/lib/file";
 import { eventSchema, phaseSchema, startupSchema } from "@/models/startup";
 
 export const startupInfoUpdateSchema = z.object({
@@ -26,6 +27,18 @@ export const startupInfoUpdateSchema = z.object({
         thematiques: startupSchema.shape.thematiques,
         description: startupSchema.shape.description,
     }),
+    shot: z
+        .instanceof(FileType)
+        .refine((file) => file.size > 0, "File is required")
+        .nullable()
+        .optional(),
+    hero: z
+        .instanceof(FileType)
+        .refine((file) => file.size > 0, "File is required")
+        .nullable()
+        .optional(),
+    shouldDeleteShot: z.boolean().optional(),
+    shouldDeleteHero: z.boolean().optional(),
     startupSponsors: z.array(z.string()),
     newSponsors: z.array(
         sponsorSchema.omit({

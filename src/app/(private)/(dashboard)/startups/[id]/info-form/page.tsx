@@ -7,6 +7,7 @@ import { StartupInfoUpdate } from "@/components/StartupInfoUpdatePage";
 import { getPullRequestForBranch, fetchGithubMarkdown } from "@/lib/github";
 import { db } from "@/lib/kysely";
 import { getStartup } from "@/lib/kysely/queries";
+import s3 from "@/lib/s3";
 import { startupToModel } from "@/models/mapper";
 import { sponsorSchema } from "@/models/sponsor";
 import { eventSchema, phaseSchema, startupSchema } from "@/models/startup";
@@ -121,11 +122,42 @@ export default async function Page(props) {
                 .selectAll()
                 .execute()
         );
+    const s3ShotKey = `startups/${startup.ghid}/shot.jpg`;
+    let hasShot = false;
+    try {
+        const s3Object = await s3
+            .getObject({
+                Key: s3ShotKey,
+            })
+            .promise();
+        hasShot = true;
+    } catch (error) {
+        console.log("No image for user");
+    }
+    const s3HeroKey = `startups/${startup.ghid}/hero.jpg`;
+    let hasHero = false;
+    try {
+        const s3Object = await s3
+            .getObject({
+                Key: s3HeroKey,
+            })
+            .promise();
+        hasHero = true;
+    } catch (error) {
+        console.log("No image for user");
+    }
+
     const componentProps = {
         startup,
         startupSponsors,
         startupPhases,
         startupEvents,
+        heroURL: hasHero
+            ? `/api/image?fileObjIdentifier=${startup.ghid}&fileRelativeObjType=startup&fileIdentifier=hero`
+            : undefined,
+        shotURL: hasShot
+            ? `/api/image?fileObjIdentifier=${startup.ghid}&fileRelativeObjType=startup&fileIdentifier=shot`
+            : undefined,
         incubatorOptions: incubators.map((incubator) => {
             return {
                 value: incubator.uuid,
