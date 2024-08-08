@@ -1,14 +1,33 @@
-import { useState, useRef } from "react";
+import { useState, useRef, ChangeEvent } from "react";
 
 import { fr } from "@codegouvfr/react-dsfr";
 import { ButtonProps } from "@codegouvfr/react-dsfr/Button";
 import ButtonsGroup from "@codegouvfr/react-dsfr/ButtonsGroup";
+import { PlaceholderValue } from "next/dist/shared/lib/get-img-props";
 import Image from "next/image";
 
-const placeholderURL =
+const defaultPlaceholder =
     "data:image/jpeg;base64,/9j/4AAQSkZJRgABAQACWAJYAAD/2wCEAAgGBgcGBQgHBwcJCQgKDBQNDAsLDBkSEw8UHRofHh0aHBwgJC4nICIsIxwcKDcpLDAxNDQ0Hyc5PTgyPC4zNDIBCQkJDAsMGA0NGDIhHCEyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMv/CABEIAMgAyAMBIgACEQEDEQH/xAAtAAEAAwEBAQAAAAAAAAAAAAAAAwQFAgEHAQEBAAAAAAAAAAAAAAAAAAAAAf/aAAwDAQACEAMQAAAA+vCwAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA8zS9UpCz1UGjbw5TYcdgAAAAAAAGbU98oAAC1p42zAAAAAAACOSMxhQAAHW3hbsAAAAAAAIpapmCgAAPdnF1onAAAAAAAhm8MNNDQAADaztSAAAAAAAAKmbuY5GKAEpozkAAAAAAAAM3QyiEUAt1JzWc9QAAAAAAIyTmjUPeCgAAO9jE6jbZ9wkAAAITqnT8JYigAAAAAAJbFIbMmHrRMBlhWFAAAAAAAAALJGoD//xAA1EAACAQEFBQUHAwUAAAAAAAABAgMRAAQhMDEFEjJAURMgM2FxEBQiQVJygZGhwUJicJKx/9oACAEBAAE/AP8AEEt5ihwZqt9I1s+0WJ+BAPXG3v8AP1X/AFsu0JRqqH8Usm0UPGjL6Y2BBAI0PJM6opZiAo1JtPfHkJCEqn7nvQ3iSA/Car9J0tFKs0YZfyOnI3+UtN2dcFGnnkXBys+5XBhyBNASdBjZ2LuWOpNciBit4jI+ochOaXeT7Tkod2RW6EHkJxW7yD+05Q0z55ViiJetDhhkilRXS0Uiyxh1rQ9c+/it3B6MMq5il1Tzqf3z70u/dnHQV/TKiXchRegz2UMpU6EUNrxd/d2Ub28DphkXa69uN4mig/ryO0E3oVcf0n/uRdI+zuyg6n4j+eRZQ6lW0IobTRGGUocaaHqO9d4u2mCnh1Ppye0fHT7f572zvHf7f55J3SNauwUedr1KJpt5eECg711lEM4ZuEihskiSLVGDDy5CSRIl3nYAWkdpJCzEnHCuRG7RyBlJGONLRyJKu8jAjNknii43APQYm0u0CaiJaeZszs7bzMSepyldkbeViD1FotoEUEq18xaOeKXgcE9DgciWeOEVdvQDU2faLHw0A82xs95mk4nNOgw5BLzNHwuadDjZNosPEQHzXC0U8cwqjeoOo7l5n7COoxc4KLMzOxZiSTqTyisyMGUkEaEWu0/bx1ODjBh7b8xa8kfJQBy1xYreQPkwI9n/xAAUEQEAAAAAAAAAAAAAAAAAAABw/9oACAECAQE/ACn/xAAUEQEAAAAAAAAAAAAAAAAAAABw/9oACAEDAQE/ACn/2Q==";
 
-const UploadForm = ({ url, onChange, onDelete }) => {
+interface UploadFormProps {
+    label: string;
+    hintText?: string;
+    url?: string;
+    placeholderURL?: PlaceholderValue;
+    onChange: (event: ChangeEvent<HTMLInputElement>) => void;
+    onDelete: () => void;
+    shape?: "round" | "square";
+}
+
+const UploadForm = ({
+    url,
+    onChange,
+    onDelete,
+    label,
+    shape,
+    hintText,
+    placeholderURL = defaultPlaceholder,
+}: UploadFormProps) => {
     const [image, setImage] = useState<File | null>(null); // Use union type File | null
 
     const [shouldDeletePicture, setShouldDeletePicture] =
@@ -36,7 +55,7 @@ const UploadForm = ({ url, onChange, onDelete }) => {
         },
     ];
 
-    let src = placeholderURL;
+    let src: string = placeholderURL;
     if (image) {
         src = URL.createObjectURL(image);
     } else if (url && !shouldDeletePicture) {
@@ -64,16 +83,26 @@ const UploadForm = ({ url, onChange, onDelete }) => {
     return (
         <div className="fr-upload-group">
             <label className="fr-label" htmlFor="file-upload">
-                Photo de profile
+                {label}
             </label>
             <div
-                style={{
-                    width: "200px",
-                    height: "200px",
-                    position: "relative",
-                    borderRadius: "50%",
-                    overflow: "hidden",
-                }}
+                style={
+                    shape === "round"
+                        ? {
+                              width: "200px",
+                              height: "200px",
+                              position: "relative",
+                              borderRadius: "50%",
+                              overflow: "hidden",
+                          }
+                        : {
+                              width: "356px",
+                              height: "200px",
+                              position: "relative",
+                              overflow: "hidden",
+                              border: "1px solid #000",
+                          }
+                }
                 className={fr.cx("fr-mb-1w", "fr-mt-1w")}
             >
                 <Image
@@ -86,9 +115,7 @@ const UploadForm = ({ url, onChange, onDelete }) => {
                 />
             </div>
 
-            <span className="fr-hint-text fr-mb-1w">
-                Taille maximale : 500 Mo. Format supporté : jpg.
-            </span>
+            <span className="fr-hint-text fr-mb-1w">{hintText}</span>
             <input
                 type="file"
                 accept="image/*"

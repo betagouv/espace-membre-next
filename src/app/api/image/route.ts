@@ -1,21 +1,27 @@
-import { NextRequest } from "next/server";
+import { NextRequest, NextResponse } from "next/server";
+import { getServerSession } from "next-auth/next";
+import { z } from "zod";
 
 // pages/api/upload.ts
-import { getServerSession } from "next-auth/next";
 
 import { getFileName } from "./utils";
 import s3 from "@/lib/s3";
 import { authOptions } from "@/utils/authoptions";
 
 export async function DELETE(req: NextRequest) {
-    const { fileName } = await req.json();
+    const { fileRelativeIdentifier, fileReliveObjType } = await req.json();
     const session = await getServerSession(authOptions);
 
-    if (!session || (session.user.id !== fileName && !session.user.isAdmin)) {
+    if (
+        !session ||
+        (session.user.id !== fileRelativeIdentifier &&
+            fileReliveObjType === "member" &&
+            !session.user.isAdmin)
+    ) {
         throw new Error(`You don't have the right to access this function`);
     }
 
-    if (!fileName) {
+    if (!fileRelativeIdentifier) {
         return Response.json(
             { message: "Image key is required" },
             { status: 400 }
@@ -23,7 +29,7 @@ export async function DELETE(req: NextRequest) {
     }
 
     const params = {
-        Key: getFileName["member"](fileName),
+        Key: getFileName[fileReliveObjType](fileRelativeIdentifier),
     };
 
     try {
@@ -49,16 +55,26 @@ export async function POST(req: NextRequest) {
             }
         );
     }
-    const { fileName, fileType } = await req.json();
+    const { fileObjIdentifier, fileRelativeObjType, fileType, fileIdentifier } =
+        await req.json();
 
     const session = await getServerSession(authOptions);
+    console.log("LCS IMAGE 1");
 
-    if (!session || (session.user.id !== fileName && !session.user.isAdmin)) {
+    if (
+        !session ||
+        (session.user.id !== fileObjIdentifier &&
+            fileRelativeObjType === "member" &&
+            !session.user.isAdmin)
+    ) {
         throw new Error(`You don't have the right to access this function`);
     }
 
     const s3Params = {
-        Key: getFileName["member"](fileName),
+        Key: getFileName[fileRelativeObjType](
+            fileObjIdentifier,
+            fileIdentifier
+        ),
         Expires: 60,
         ContentType: fileType,
     };
@@ -68,7 +84,6 @@ export async function POST(req: NextRequest) {
 
         return Response.json({ signedUrl }, { status: 200 });
     } catch (error) {
-        console.log("LCS ERRORS");
         return Response.json(
             {
                 error: "Failed to generate signed URL",
@@ -77,5 +92,68 @@ export async function POST(req: NextRequest) {
                 status: 500,
             }
         );
+    }
+}
+
+const ImageParamsSchema = z.object({
+    fileRelativeObjType: z.enum(["startup", "member"]),
+    fileIdentifier: z.enum(["shot", "hero", "avatar"]),
+    fileObjIdentifier: z.string(),
+});
+
+export async function GET(req: NextRequest) {
+    const searchParams = req.nextUrl.searchParams;
+
+    const { fileObjIdentifier, fileRelativeObjType, fileIdentifier } =
+        ImageParamsSchema.parse({
+            fileRelativeObjType: searchParams.get("fileRelativeObjType"),
+            fileIdentifier: searchParams.get("fileIdentifier"),
+            fileObjIdentifier: searchParams.get("fileObjIdentifier"),
+        });
+    if (!s3) {
+        return Response.json(
+            {
+                error: "s3 is not defined",
+            },
+            {
+                status: 500,
+            }
+        );
+    }
+    const s3Key = getFileName[fileRelativeObjType](
+        fileObjIdentifier,
+        fileIdentifier
+    );
+
+    try {
+        // Try to get the image from S3
+        const s3Object = await s3
+            .getObject({
+                Key: s3Key,
+            })
+            .promise();
+        return new NextResponse(s3Object.Body as Buffer);
+    } catch (error) {
+        if ((error as { code: string }).code === "NoSuchKey") {
+            return new NextResponse(
+                JSON.stringify({ error: "Image does not exist on s3" }),
+                {
+                    status: 404,
+                    headers: {
+                        "Content-Type": "application/json",
+                    },
+                }
+            );
+        } else {
+            return new NextResponse(
+                JSON.stringify({ error: "Internal Server Error" }),
+                {
+                    status: 500,
+                    headers: {
+                        "Content-Type": "application/json",
+                    },
+                }
+            );
+        }
     }
 }
