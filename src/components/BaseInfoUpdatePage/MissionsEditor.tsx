@@ -113,7 +113,7 @@ export const Mission = ({
                                 style: { width: 200 },
                                 placeholder: "JJ/MM/YYYY",
                                 type: "date",
-                                ...register(`missions.${index}.start`),
+                                ...register(`member.missions.${index}.start`),
                                 value: startDateString,
                             }}
                             {...defaultState("start")}
@@ -135,7 +135,7 @@ export const Mission = ({
                                 style: { width: 200 },
                                 placeholder: "JJ/MM/YYYY",
                                 type: "date",
-                                ...register(`missions.${index}.end`),
+                                ...register(`member.missions.${index}.end`),
                                 value: endDateString,
                             }}
                             hintText={
@@ -173,7 +173,7 @@ export const Mission = ({
                         }
                         nativeInputProps={{
                             placeholder: "ex: Scopyleft",
-                            ...register(`missions.${index}.employer`),
+                            ...register(`member.missions.${index}.employer`),
                         }}
                         {...defaultState("employer")}
                     />
@@ -186,7 +186,7 @@ export const Mission = ({
                                 " (obligatoire)"
                         }
                         nativeSelectProps={{
-                            ...register(`missions.${index}.status`),
+                            ...register(`member.missions.${index}.status`),
                             defaultValue: mission ? mission.status : "",
                         }}
                         {...defaultState("status")}
@@ -213,7 +213,7 @@ export const Mission = ({
                         )}
                         onChange={(startups) => {
                             setValue(
-                                `missions.${index}.startups`,
+                                `member.missions.${index}.startups`,
                                 startups.map((startup) => startup.value),
                                 {
                                     shouldValidate: true,
