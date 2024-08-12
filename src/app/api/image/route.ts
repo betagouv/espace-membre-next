@@ -9,19 +9,20 @@ import s3 from "@/lib/s3";
 import { authOptions } from "@/utils/authoptions";
 
 export async function DELETE(req: NextRequest) {
-    const { fileRelativeIdentifier, fileReliveObjType } = await req.json();
+    const { fileIdentifier, fileReliveObjType, fileObjIdentifier } =
+        await req.json();
     const session = await getServerSession(authOptions);
 
     if (
         !session ||
-        (session.user.id !== fileRelativeIdentifier &&
+        (session.user.id !== fileIdentifier &&
             fileReliveObjType === "member" &&
             !session.user.isAdmin)
     ) {
         throw new Error(`You don't have the right to access this function`);
     }
 
-    if (!fileRelativeIdentifier) {
+    if (!fileIdentifier) {
         return Response.json(
             { message: "Image key is required" },
             { status: 400 }
@@ -29,7 +30,7 @@ export async function DELETE(req: NextRequest) {
     }
 
     const params = {
-        Key: getFileName[fileReliveObjType](fileRelativeIdentifier),
+        Key: getFileName[fileReliveObjType](fileObjIdentifier, fileIdentifier),
     };
 
     try {
@@ -59,7 +60,6 @@ export async function POST(req: NextRequest) {
         await req.json();
 
     const session = await getServerSession(authOptions);
-    console.log("LCS IMAGE 1");
 
     if (
         !session ||
