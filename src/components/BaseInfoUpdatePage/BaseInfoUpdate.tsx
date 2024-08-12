@@ -88,6 +88,7 @@ const postMemberData = async ({
             body: JSON.stringify({
                 fileRelativeObjType: "member",
                 fileObjIdentifier: username,
+                fileIdentifier: "avatar",
             }),
         });
     }
