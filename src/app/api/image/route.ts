@@ -15,7 +15,7 @@ export async function DELETE(req: NextRequest) {
 
     if (
         !session ||
-        (session.user.id !== fileIdentifier &&
+        (session.user.id !== fileObjIdentifier &&
             fileRelativeObjType === "member" &&
             !session.user.isAdmin)
     ) {
