@@ -38,13 +38,16 @@ export async function DELETE(req: NextRequest) {
 
     try {
         await s3.deleteObject(params).promise();
-        Response.json(
+        return Response.json(
             { message: "Image deleted successfully" },
             { status: 200 }
         );
     } catch (error) {
         console.error("Error deleting image:", error);
-        Response.json({ message: "Error deleting image" }, { status: 500 });
+        return Response.json(
+            { message: "Error deleting image" },
+            { status: 500 }
+        );
     }
 }
 
