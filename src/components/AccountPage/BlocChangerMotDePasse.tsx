@@ -2,12 +2,12 @@ import React, { useCallback, useMemo } from "react";
 
 import Accordion from "@codegouvfr/react-dsfr/Accordion";
 import Alert, { AlertProps } from "@codegouvfr/react-dsfr/Alert";
-import { fr } from "@codegouvfr/react-dsfr/fr";
 import {
     PasswordInput,
     PasswordInputProps,
 } from "@codegouvfr/react-dsfr/blocks/PasswordInput";
 import Button from "@codegouvfr/react-dsfr/Button";
+import { fr } from "@codegouvfr/react-dsfr/fr";
 import axios from "axios";
 
 import { EmailStatusCode, memberBaseInfoSchemaType } from "@/models/member";
@@ -75,8 +75,28 @@ function PasswordChange({ username }: { username: string }) {
                 },
             ]) || [
                 {
-                    message:
-                        "Votre mot de passe doit contenir de 14 à 30 caractères, sans caractères spéciaux au début ou à la fin",
+                    message: (
+                        <>
+                            <ul>
+                                <li>
+                                    Le mot de passe doit contenir de 14 à 30
+                                    caractères,
+                                </li>
+                                <li>
+                                    des majuscules et des minuscules ainsi que
+                                    des caractères spéciaux,
+                                </li>
+                                <li>
+                                    pas de caractères spéciaux au début ou à la
+                                    fin,
+                                </li>
+                                <li>
+                                    ne doit pas contenir tout ou partie du nom
+                                    de compte utilisateur
+                                </li>
+                            </ul>
+                        </>
+                    ),
                     severity: "info" as PasswordInputProps.Severity,
                 },
             ],
