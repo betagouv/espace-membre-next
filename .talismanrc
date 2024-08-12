@@ -1,6 +1,8 @@
 fileignoreconfig:
-- filename: src/app/(private)/(dashboard)/account/page.tsx
-  checksum: 355668d8814f965d52adafcb7c199af47869deac16133151c524ccad34611cf4
+- filename: src/app/api/image/route.ts
+  checksum: 03a306b1cd51ce291c07c997c830a58943a3f4d95e5b542751610c4893ad8b13
+version: ""
+4611cf4
 - filename: src/app/(private)/(dashboard)/community/[id]/admin-update/page.tsx
   checksum: 3621f113632f10483e06aabf45246a8fba8c92f62d31a13ed087b243932ea50e
 - filename: src/app/(private)/(dashboard)/community/create/CommunityCreateMemberPage.tsx
