@@ -41,8 +41,6 @@ export default async function Page({
     }
 
     // // todo: to make TS happy
-    // const domaine = userInfos.domaine as DomaineSchemaType;
-    // const memberType = userInfos.member_type as MemberType;
 
     const props = {
         userInfos,

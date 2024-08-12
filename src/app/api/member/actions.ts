@@ -297,7 +297,7 @@ export async function updateMemberMissions(
                     );
                 }
                 const { uuid, end } = mission;
-                updateMission(
+                await updateMission(
                     uuid,
                     {
                         end,
