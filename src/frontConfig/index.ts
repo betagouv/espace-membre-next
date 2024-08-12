@@ -66,4 +66,6 @@ export default {
     HASH_SALT: process.env.HASH_SALT,
     matomoUrl: process.env.NEXT_PUBLIC_MATOMO_URL,
     matomoSiteId: process.env.NEXT_PUBLIC_MATOMO_SITE_ID,
+    FEATURE_SHOW_UPLOAD_IMAGE_PRODUCT_WIDGET:
+        process.env.NEXT_PUBLIC_FEATURE_SHOW_UPLOAD_IMAGE_PRODUCT_WIDGET,
 };
