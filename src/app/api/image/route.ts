@@ -9,14 +9,14 @@ import s3 from "@/lib/s3";
 import { authOptions } from "@/utils/authoptions";
 
 export async function DELETE(req: NextRequest) {
-    const { fileIdentifier, fileReliveObjType, fileObjIdentifier } =
+    const { fileIdentifier, fileRelativeObjType, fileObjIdentifier } =
         await req.json();
     const session = await getServerSession(authOptions);
 
     if (
         !session ||
         (session.user.id !== fileIdentifier &&
-            fileReliveObjType === "member" &&
+            fileRelativeObjType === "member" &&
             !session.user.isAdmin)
     ) {
         throw new Error(`You don't have the right to access this function`);
@@ -30,7 +30,10 @@ export async function DELETE(req: NextRequest) {
     }
 
     const params = {
-        Key: getFileName[fileReliveObjType](fileObjIdentifier, fileIdentifier),
+        Key: getFileName[fileRelativeObjType](
+            fileObjIdentifier,
+            fileIdentifier
+        ),
     };
 
     try {
