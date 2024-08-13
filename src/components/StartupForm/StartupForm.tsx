@@ -203,6 +203,17 @@ export function StartupForm(props: StartupFormProps) {
     watch("startup.analyse_risques"); // allow checkbox interaction
     const startupSponsors = watch("startupSponsors"); // enable autocomplete update
     const newSponsors = watch("newSponsors");
+    const sponsors = [
+        ...(startupSponsors || []),
+        ...newSponsors.map((s) => s.ghid),
+    ];
+    const allSponsors = {
+        ...props.sponsorOptions,
+        ...newSponsors.map((newSponsor) => ({
+            value: newSponsor.ghid,
+            label: newSponsor.name,
+        })),
+    };
     const hasAnalyseDeRisque =
         !!props.startup?.analyse_risques ||
         !!props.startup?.analyse_risques_url ||
@@ -444,17 +455,8 @@ export function StartupForm(props: StartupFormProps) {
                     </Select>
 
                     <SponsorBlock
-                        sponsors={[
-                            ...(startupSponsors || []),
-                            ...newSponsors.map((s) => s.ghid),
-                        ]}
-                        allSponsors={{
-                            ...props.sponsorOptions,
-                            ...newSponsors.map((newSponsor) => ({
-                                value: newSponsor.ghid,
-                                label: newSponsor.name,
-                            })),
-                        }}
+                        sponsors={sponsors}
+                        allSponsors={allSponsors}
                         setSponsors={(selectedSponsorIds: string[]) => {
                             /* workaround can probably be better, and we could probably do that
                             just before the call to save method instead of in this function
@@ -493,11 +495,10 @@ export function StartupForm(props: StartupFormProps) {
                         setNewSponsors={(
                             data: startupInfoUpdateSchemaType["newSponsors"]
                         ) => {
-                            setValue(
-                                "startupSponsors",
-                                getValues("startupSponsors")
-                            );
-                            setValue("newSponsors", [...newSponsors, ...data]);
+                            setValue("newSponsors", [...newSponsors, ...data], {
+                                shouldValidate: true,
+                                shouldDirty: true,
+                            });
                         }}
                     />
                     <div

@@ -51,6 +51,7 @@ const SponsorBlock = ({
             <SESponsorSelect
                 isMulti={true}
                 defaultValue={sponsors}
+                value={sponsors}
                 allSponsors={allSponsors}
                 onChange={(newSponsors) => {
                     setSponsors(newSponsors);
