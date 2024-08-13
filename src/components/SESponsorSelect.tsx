@@ -55,9 +55,9 @@ export default function SESponsorSelect<T extends boolean>({
                     marginTop: "0.5rem",
                 }}
                 value={
-                    isMulti && value && value.length
+                    isMulti && value && Array.isArray(value)
                         ? allOptions.filter((se) => value.includes(se.value))
-                        : defaultValue
+                        : value
                         ? allOptions.find((se) => se.value === value)
                         : undefined
                 }
