@@ -74,7 +74,7 @@ export default function BlocEmailResponder({
             setAlertMessage({
                 title: "Erreur",
                 //@ts-ignore
-                message: e.response?.data?.message || e.message,
+                message: res.message,
                 type: "warning",
             });
         } else {
