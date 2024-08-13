@@ -65,24 +65,23 @@ export default function BlocEmailResponder({
         }
         setAlertMessage(null);
         setIsSaving(true);
-        try {
-            await setEmailResponder({
-                content,
-                from,
-                to,
-            });
-            setAlertMessage({
-                title: `Réponse automatique enregistrée`,
-                message: "Votre réponse automatique a bien été enregistrée",
-                type: "success",
-            });
-        } catch (e) {
-            alert(e);
+        const res = await setEmailResponder({
+            content,
+            from,
+            to,
+        });
+        if (res.status === "error") {
             setAlertMessage({
                 title: "Erreur",
                 //@ts-ignore
                 message: e.response?.data?.message || e.message,
                 type: "warning",
+            });
+        } else {
+            setAlertMessage({
+                title: `Réponse automatique enregistrée`,
+                message: "Votre réponse automatique a bien été enregistrée",
+                type: "success",
             });
         }
 

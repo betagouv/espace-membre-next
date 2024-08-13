@@ -36,13 +36,19 @@ export async function changeSecondaryEmailForUser(
 ) {
     const session = await getServerSession(authOptions);
     if (!session || !session.user.id) {
-        throw new Error(`You don't have the right to access this function`);
+        return {
+            message: "You don't have the right to access this function",
+            status: "error",
+        };
     }
     if (
         !config.ESPACE_MEMBRE_ADMIN.includes(session.user.id) &&
         session.user.id != username
     ) {
-        throw new Error(`You are not allowed to execute this function`);
+        return {
+            message: "You don't have the right to access this function",
+            status: "error",
+        };
     }
     const user = await db
         .selectFrom("users")
@@ -76,7 +82,10 @@ export async function updateCommunicationEmail(
 ) {
     const session = await getServerSession(authOptions);
     if (!session || !session.user.id) {
-        throw new Error(`You don't have the right to access this function`);
+        return {
+            message: "You don't have the right to access this function",
+            status: "error",
+        };
     }
     const dbUser = await db
         .selectFrom("users")
@@ -84,7 +93,10 @@ export async function updateCommunicationEmail(
         .where("username", "=", session.user.id)
         .executeTakeFirst();
     if (!dbUser) {
-        throw new Error(`You don't have the right to access this function`);
+        return {
+            message: "You don't have the right to access this function",
+            status: "error",
+        };
     }
     let previousCommunicationEmail = dbUser.communication_email;
     let hasBothEmailsSet = dbUser.primary_email && dbUser.secondary_email;
@@ -115,11 +127,18 @@ export async function updateCommunicationEmail(
             previousCommunicationEmail === CommunicationEmailCode.PRIMARY
                 ? dbUser.primary_email
                 : dbUser.secondary_email;
-        await changeContactEmail(previousEmail, {
-            email: newEmail as string,
-            firstname: capitalizeWords(dbUser.username.split(".")[0]),
-            lastname: capitalizeWords(dbUser.username.split(".")[1]),
-        });
+        try {
+            await changeContactEmail(previousEmail, {
+                email: newEmail as string,
+                firstname: capitalizeWords(dbUser.username.split(".")[0]),
+                lastname: capitalizeWords(dbUser.username.split(".")[1]),
+            });
+        } catch (e: any) {
+            return {
+                message: e.response?.data?.message || e.message,
+                status: "error",
+            };
+        }
     }
 }
 
@@ -145,55 +164,72 @@ export async function setEmailResponder({
     content,
     from,
     to,
-}: UpdateOvhResponder) {
+}: UpdateOvhResponder): Promise<{ status: "error" | "ok"; message?: string }> {
     const session = await getServerSession(authOptions);
     if (!session || !session.user.id) {
-        throw new Error(`You don't have the right to access this function`);
+        return {
+            message: "You don't have the right to access this function",
+            status: "error",
+        };
     }
     if (!to || new Date(to).getTime() < new Date(from).getTime()) {
-        throw new Error(
-            "nouvelle date de fin : la date doit être supérieure à la date de début"
-        );
+        return {
+            message:
+                "nouvelle date de fin : la date doit être supérieure à la date de début",
+            status: "error",
+        };
     }
+    try {
+        const responder = await betagouv.getResponder(session.user.id);
+        if (!responder) {
+            await betagouv.setResponder(session.user.id, {
+                from,
+                to,
+                content,
+            });
+            await addEvent({
+                action_code: EventCode.MEMBER_RESPONDER_CREATED,
+                created_by_username: session.user.id,
+                action_on_username: session.user.id,
+                action_metadata: {
+                    value: content,
+                },
+            });
+        } else {
+            await betagouv.updateResponder(session.user.id, {
+                from,
+                to,
+                content,
+            });
 
-    const responder = await betagouv.getResponder(session.user.id);
-    if (!responder) {
-        await betagouv.setResponder(session.user.id, {
-            from,
-            to,
-            content,
-        });
-        await addEvent({
-            action_code: EventCode.MEMBER_RESPONDER_CREATED,
-            created_by_username: session.user.id,
-            action_on_username: session.user.id,
-            action_metadata: {
-                value: content,
-            },
-        });
-    } else {
-        await betagouv.updateResponder(session.user.id, {
-            from,
-            to,
-            content,
-        });
-        await addEvent({
-            action_code: EventCode.MEMBER_RESPONDER_UPDATED,
-            created_by_username: session.user.id,
-            action_on_username: session.user.id,
-            action_metadata: {
-                value: content,
-                old_value: responder.content,
-            },
-        });
+            await addEvent({
+                action_code: EventCode.MEMBER_RESPONDER_UPDATED,
+                created_by_username: session.user.id,
+                action_on_username: session.user.id,
+                action_metadata: {
+                    value: content,
+                    old_value: responder.content,
+                },
+            });
+        }
+    } catch (e: any) {
+        return {
+            message: e.response?.data?.message || e.message,
+            status: "error",
+        };
     }
-    return true;
+    return {
+        status: "ok",
+    };
 }
 
 export async function deleteResponder() {
     const session = await getServerSession(authOptions);
     if (!session || !session.user.id) {
-        throw new Error(`You don't have the right to access this function`);
+        return {
+            message: "You don't have the right to access this function",
+            status: "error",
+        };
     }
     await betagouv.deleteResponder(session.user.id);
     addEvent({
