@@ -14,6 +14,7 @@ type SESponsorSelectProps<T extends boolean> = {
     isMulti: T;
     defaultValue?: T extends true ? string[] | undefined : string | undefined;
     allSponsors: Option[];
+    value?: T extends true ? string[] | undefined : string | undefined;
     label?: string;
     hint?: string;
     state?: string;
@@ -30,6 +31,7 @@ export default function SESponsorSelect<T extends boolean>({
     hint,
     state,
     onChange,
+    value,
     placeholder,
     stateMessageRelated,
     containerStyle,
@@ -52,7 +54,19 @@ export default function SESponsorSelect<T extends boolean>({
                 style={{
                     marginTop: "0.5rem",
                 }}
-                getOptionKey={(option) => "value"}
+                value={
+                    isMulti && value && value.length
+                        ? allOptions.filter((se) => value.includes(se.value))
+                        : defaultValue
+                        ? allOptions.find((se) => se.value === value)
+                        : undefined
+                }
+                getOptionKey={(option: { value: string; label: string }) => {
+                    return option.value;
+                }}
+                getOptionLabel={(option: { value: string; label: string }) => {
+                    return option.label;
+                }}
                 options={allOptions}
                 onChange={(e, newValue) => {
                     if (!newValue) {
@@ -74,8 +88,8 @@ export default function SESponsorSelect<T extends boolean>({
                         }
                     }
                 }}
-                // getOptionLabel={(option) => option.label}
                 defaultValue={
+                    // defaultValue
                     isMulti && defaultValue && defaultValue.length
                         ? allOptions.filter((se) =>
                               defaultValue.includes(se.value)
@@ -84,9 +98,9 @@ export default function SESponsorSelect<T extends boolean>({
                         ? allOptions.find((se) => se.value === defaultValue)
                         : undefined
                 }
-                // isOptionEqualToValue={(option, value) =>
-                //     option.value === value.value
-                // }
+                isOptionEqualToValue={(option, value) => {
+                    return option.value === value.value;
+                }}
                 renderInput={(params) => (
                     <TextField
                         {...params}
