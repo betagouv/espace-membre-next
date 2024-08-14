@@ -95,6 +95,7 @@ export default function BlocEmailResponder({
                     className="fr-mb-8v"
                     severity={alertMessage.type}
                     closable={false}
+                    description={alertMessage.message}
                     title={alertMessage.title}
                 />
             )}
