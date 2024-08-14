@@ -11,6 +11,7 @@ interface ISibWebhookBody {
         | "unsubscribed";
     email: string;
     id: number;
+    "message-id": string;
     timestamp: number;
     ts_event: number;
     date: string;
@@ -24,8 +25,10 @@ export const postToHook = async (req, res) => {
         let sibWebhookBody = req.body as ISibWebhookBody;
 
         const message = `:toolbox: Webhook send in blue\n
-    email: ${sibWebhookBody.email}\n
-    statut de l'email : ${sibWebhookBody.event}\n
+    email: ${sibWebhookBody.email}
+    statut de l'email : ${sibWebhookBody.event}
+    webhook_id: ${sibWebhookBody.id}
+    message_id: ${sibWebhookBody["message-id"]}
     date: ${sibWebhookBody.date}
     sujet: ${sibWebhookBody.subject}
     tags: ${sibWebhookBody.tags}
