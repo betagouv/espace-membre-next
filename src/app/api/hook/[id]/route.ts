@@ -86,4 +86,5 @@ https://chatwoot.incubateur.net/app/accounts/1/inbox/1/conversations/${conversat
             { text: message }
         );
     }
+    return Response.json({ success: true });
 };
