@@ -112,11 +112,11 @@ const startServer = () => {
         // server.get(routes.API_PUBLIC_SPONSORS_GET_ALL, getAllSponsors);
 
         server.get("/resources", resourceController.getResources);
-        server.post(
-            "/hook/:hookId",
-            express.json({ type: "*/*" }),
-            hookController.postToHook
-        );
+        // server.post(
+        //     "/hook/:hookId",
+        //     express.json({ type: "*/*" }),
+        //     hookController.postToHook
+        // );
         // Default catch-all handler to allow Next.js to handle all other routes
         server.all("*", (req, res) => {
             return handle(req, res);
