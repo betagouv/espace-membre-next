@@ -9,11 +9,7 @@ import {
     getAllUsersInfo,
     MEMBER_PROTECTED_INFO,
 } from "@/lib/kysely/queries/users";
-import {
-    memberBaseInfoToModel,
-    memberPublicInfoToModel,
-    teamToModel,
-} from "@/models/mapper";
+import { memberPublicInfoToModel, teamToModel } from "@/models/mapper";
 import { authOptions } from "@/utils/authoptions";
 import { routeTitles } from "@/utils/routes/routeTitles";
 

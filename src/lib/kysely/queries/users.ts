@@ -31,6 +31,10 @@ type GetUserInfosParams =
     | {
           uuid: string;
           options?: { withDetails: boolean };
+      }
+    | {
+          email: string;
+          options?: { withDetails: boolean };
       };
 /** Return member informations */
 
@@ -56,8 +60,15 @@ export async function getUserInfos(
     // )
     if ("username" in params) {
         query = query.where("users.username", "=", params.username);
-    } else {
+    } else if ("uuid" in params) {
         query = query.where("users.uuid", "=", params.uuid);
+    } else {
+        query = query.where((eb) =>
+            eb.or([
+                eb(sql`LOWER(users.secondary_email)`, "=", params.email),
+                eb(sql`LOWER(users.primary_email)`, "=", params.email),
+            ])
+        );
     }
 
     const userInfos = await db.executeQuery(query);
@@ -101,21 +112,27 @@ export async function getUserByStartup(
 
 /** Return member informations */
 export async function getUserBasicInfo(
-    params: { username: string } | { uuid: string },
+    params: { username: string } | { uuid: string } | { email: string },
     db: Kysely<DB> = database
 ) {
     let query = db
         .selectFrom("users")
-        .select((eb) => [...MEMBER_PROTECTED_INFO, withMissions(eb)]);
+        .select((eb) => [withMissions(eb), ...MEMBER_PROTECTED_INFO]);
 
     if ("username" in params) {
         query = query.where("users.username", "=", params.username);
-    } else {
+    } else if ("uuid" in params) {
         query = query.where("users.uuid", "=", params.uuid);
+    } else {
+        query = query.where((eb) =>
+            eb.or([
+                eb(sql`LOWER(users.secondary_email)`, "=", params.email),
+                eb(sql`LOWER(users.primary_email)`, "=", params.email),
+            ])
+        );
     }
 
     const userInfos = await db.executeQuery(query);
-
     return (userInfos.rows.length && userInfos.rows[0]) || undefined;
 }
 

@@ -231,7 +231,7 @@ export const asyncFilter = async (arr: Array<any>, predicate) => {
 };
 
 export async function userInfos(
-    params: { username: string } | { uuid: string },
+    params: { username: string } | { uuid: string } | { email: string },
     isCurrentUser: boolean
 ): Promise<memberWrapperSchemaType> {
     try {

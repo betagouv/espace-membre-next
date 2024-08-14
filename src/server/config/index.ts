@@ -259,4 +259,7 @@ export default {
     S3_BUCKET: process.env.S3_BUCKET,
     S3_GET_HOST: process.env.S3_GET_HOST,
     S3_REGION: process.env.S3_REGION,
+    SIB_TECH_WEBHOOK_ID: process.env.SIB_TECH_WEBHOOK_ID
+        ? parseInt(process.env.SIB_TECH_WEBHOOK_ID, 10)
+        : undefined,
 };
