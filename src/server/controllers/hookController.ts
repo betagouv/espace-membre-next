@@ -14,7 +14,9 @@ interface ISibWebhookBody {
     timestamp: number;
     ts_event: number;
     date: string;
-    "message-id": string;
+    subject: string;
+    template_id: number;
+    tags: string[];
 }
 
 export const postToHook = async (req, res) => {
@@ -22,8 +24,11 @@ export const postToHook = async (req, res) => {
         let sibWebhookBody = req.body as ISibWebhookBody;
 
         const message = `:toolbox: Webhook send in blue\n
-email: ${sibWebhookBody.email}\n
-statut de l'email : ${sibWebhookBody.event}\n
+    email: ${sibWebhookBody.email}\n
+    statut de l'email : ${sibWebhookBody.event}\n
+    date: ${sibWebhookBody.date}
+    sujet: ${sibWebhookBody.subject}
+    tags: ${sibWebhookBody.tags}
 `;
         await axios.post(
             `https://mattermost.incubateur.net/hooks/${config.SIB_WEBHOOK_ID}`,
