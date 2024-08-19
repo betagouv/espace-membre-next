@@ -187,11 +187,15 @@ async function setEmailResponder({
             },
         });
     } else {
-        await betagouv.updateResponder(session.user.id, {
-            from,
-            to,
-            content,
-        });
+        try {
+            await betagouv.updateResponder(session.user.id, {
+                from,
+                to,
+                content,
+            });
+        } catch (e: any) {
+            throw new OVHError(e?.message);
+        }
 
         await addEvent({
             action_code: EventCode.MEMBER_RESPONDER_UPDATED,
