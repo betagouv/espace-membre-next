@@ -974,11 +974,15 @@ export const WhatIsGoingOnWithMember = function (
                 }
                 if (state.user) {
                     setUser(state.user);
-                    getUserPublicInfo(
-                        state.user.userPublicInfos.username
-                    ).catch((e) => {
-                        console.error(e);
-                    });
+                    safeGetUserPublicInfo(state.user.userPublicInfos.username)
+                        .then((res) => {
+                            if (res.success) {
+                                setUser(res.data);
+                            }
+                        })
+                        .catch((e) => {
+                            console.error(e);
+                        });
                 }
             } catch (e) {
                 // if error clear localstorage state data
