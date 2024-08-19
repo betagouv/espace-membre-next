@@ -13,7 +13,7 @@ import { useSession } from "next-auth/react";
 import MemberBrevoEventList from "./MemberBrevoEventList";
 import MemberEmailServiceInfo from "./MemberEmailServiceInfo";
 import MemberEventList from "./MemberEventList";
-import { changeSecondaryEmailForUser } from "@/app/api/member/actions";
+import { safeChangeSecondaryEmailForUser } from "@/app/api/member/actions";
 import { EmailStatusCode, memberWrapperSchemaType } from "@/models/member";
 import { memberBaseInfoSchemaType } from "@/models/member";
 import { EMAIL_STATUS_READABLE_FORMAT } from "@/models/misc";
@@ -53,24 +53,44 @@ const ChangeSecondaryEmailBloc = ({
         userInfos.secondary_email
     );
     const [isSaving, setIsSaving] = useState<boolean>(false);
-
+    const [alertMessage, setAlertMessage] = useState<{
+        title: string;
+        message: NonNullable<React.ReactNode>;
+        type: "success" | "warning";
+    } | null>();
     return (
         <Accordion label="Définir/changer l'email secondaire pour cette personne">
+            {!!alertMessage && (
+                <Alert
+                    className="fr-mb-8v"
+                    severity={alertMessage.type}
+                    closable={false}
+                    title={alertMessage.title}
+                    description={<div>{alertMessage.message}</div>}
+                />
+            )}
             <form
                 onSubmit={async (e) => {
                     e.preventDefault();
                     setIsSaving(true);
-                    changeSecondaryEmailForUser(
+                    const res = await safeChangeSecondaryEmailForUser(
                         newSecondaryEmail,
                         userInfos.username
-                    )
-                        .then((data) => {
-                            setIsSaving(false);
-                        })
-                        .catch((e) => {
-                            setIsSaving(false);
-                            console.error(e);
+                    );
+                    setIsSaving(false);
+                    if (res.success) {
+                        setAlertMessage({
+                            title: "Email secondaire mis à jour",
+                            message: "",
+                            type: "success",
                         });
+                    } else {
+                        setAlertMessage({
+                            title: "Une erreur est survenue",
+                            message: res.message || "",
+                            type: "warning",
+                        });
+                    }
                 }}
             >
                 <Input
