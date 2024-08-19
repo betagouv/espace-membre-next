@@ -13,8 +13,15 @@ import { startupInfoUpdateSchemaType } from "@/models/actions/startup";
 import { sponsorSchema } from "@/models/sponsor";
 import { phaseSchema } from "@/models/startup";
 import { authOptions } from "@/utils/authoptions";
+import {
+    AuthorizationError,
+    NoDataError,
+    UnwrapPromise,
+    ValidationError,
+    withErrorHandling,
+} from "@/utils/error";
 
-export async function createStartup({
+async function createStartup({
     formData: {
         startup,
         startupSponsors,
@@ -35,7 +42,9 @@ export async function createStartup({
 }): Promise<{ uuid: string; ghid: string }> {
     const session = await getServerSession(authOptions);
     if (!session || !session.user.id) {
-        throw new Error(`You don't have the right to access this function`);
+        throw new AuthorizationError(
+            `You don't have the right to access this function`
+        );
     }
 
     return await db.transaction().execute(async (trx) => {
@@ -161,7 +170,9 @@ export async function updateStartup({
 }): Promise<{ uuid: string; ghid: string }> {
     const session = await getServerSession(authOptions);
     if (!session || !session.user.id) {
-        throw new Error(`You don't have the right to access this function`);
+        throw new AuthorizationError(
+            `You don't have the right to access this function`
+        );
     }
     const previousStartupData = await db
         .selectFrom("startups")
@@ -169,7 +180,7 @@ export async function updateStartup({
         .where("uuid", "=", startupUuid)
         .executeTakeFirst();
     if (!previousStartupData) {
-        throw new Error("Cannot find startup");
+        throw new NoDataError("Cannot find startup");
     }
     const previousStartupSponsors = z.array(sponsorSchema).parse(
         await db
@@ -326,3 +337,13 @@ export async function updateStartup({
         return res;
     });
 }
+
+export const safeCreateStartup = withErrorHandling<
+    UnwrapPromise<ReturnType<typeof createStartup>>,
+    Parameters<typeof createStartup>
+>(createStartup);
+
+export const safeUpdateStartup = withErrorHandling<
+    UnwrapPromise<ReturnType<typeof updateStartup>>,
+    Parameters<typeof updateStartup>
+>(updateStartup);

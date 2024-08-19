@@ -6,7 +6,8 @@ import * as Sentry from "@sentry/nextjs";
 import axios from "axios";
 
 import { StartupForm, StartupFormProps } from "../StartupForm/StartupForm";
-import { updateStartup } from "@/app/api/startups/actions";
+import { ActionResponse } from "@/@types/serverAction";
+import { safeUpdateStartup, updateStartup } from "@/app/api/startups/actions";
 import { BreadCrumbFiller } from "@/app/BreadCrumbProvider";
 import { startupInfoUpdateSchemaType } from "@/models/actions/startup";
 import { incubatorSchemaType } from "@/models/incubator";
@@ -36,9 +37,11 @@ interface StartupInfoUpdateProps {
 export const StartupInfoUpdate = (props: StartupInfoUpdateProps) => {
     const css = ".panel { overflow: hidden; width: auto; min-height: 100vh; }";
 
-    const save = async (data: startupInfoUpdateSchemaType) => {
+    const save = async (
+        data: startupInfoUpdateSchemaType
+    ): Promise<ActionResponse> => {
         try {
-            const res = await updateStartup({
+            const res = await safeUpdateStartup({
                 formData: {
                     startup: data.startup,
                     startupEvents: data.startupEvents,
@@ -49,55 +52,54 @@ export const StartupInfoUpdate = (props: StartupInfoUpdateProps) => {
                 },
                 startupUuid: props.startup.uuid,
             });
-            if (data.hero) {
-                await saveImage({
-                    fileIdentifier: "hero",
-                    fileRelativeObjType: "startup",
-                    fileObjIdentifier: res.ghid,
-                    file: data.hero,
-                });
-            }
-            if (data.shot) {
-                await saveImage({
-                    fileIdentifier: "shot",
-                    fileRelativeObjType: "startup",
-                    fileObjIdentifier: res.ghid,
-                    file: data.shot,
-                });
-            }
-
-            if (data.shouldDeleteHero) {
-                await fetch("/api/image", {
-                    method: "DELETE",
-                    headers: {
-                        "Content-Type": "application/json",
-                    },
-                    body: JSON.stringify({
-                        fileObjIdentifier: res.ghid,
+            if (res.success) {
+                if (data.hero) {
+                    await saveImage({
                         fileIdentifier: "hero",
                         fileRelativeObjType: "startup",
-                    }),
-                });
-            }
-
-            if (data.shouldDeleteShot) {
-                await fetch("/api/image", {
-                    method: "DELETE",
-                    headers: {
-                        "Content-Type": "application/json",
-                    },
-                    body: JSON.stringify({
-                        fileObjIdentifier: res.ghid,
+                        fileObjIdentifier: res.data.ghid,
+                        file: data.hero,
+                    });
+                }
+                if (data.shot) {
+                    await saveImage({
                         fileIdentifier: "shot",
                         fileRelativeObjType: "startup",
-                    }),
-                });
+                        fileObjIdentifier: res.data.ghid,
+                        file: data.shot,
+                    });
+                }
+
+                if (data.shouldDeleteHero) {
+                    await fetch("/api/image", {
+                        method: "DELETE",
+                        headers: {
+                            "Content-Type": "application/json",
+                        },
+                        body: JSON.stringify({
+                            fileObjIdentifier: res.data.ghid,
+                            fileIdentifier: "hero",
+                            fileRelativeObjType: "startup",
+                        }),
+                    });
+                }
+
+                if (data.shouldDeleteShot) {
+                    await fetch("/api/image", {
+                        method: "DELETE",
+                        headers: {
+                            "Content-Type": "application/json",
+                        },
+                        body: JSON.stringify({
+                            fileObjIdentifier: res.data.ghid,
+                            fileIdentifier: "shot",
+                            fileRelativeObjType: "startup",
+                        }),
+                    });
+                }
             }
             window.scrollTo({ top: 20, behavior: "smooth" });
-            return {
-                // ...resp,
-                isUpdate: true,
-            };
+            return res;
         } catch (e) {
             Sentry.captureException(e);
             console.error(e);

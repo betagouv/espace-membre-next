@@ -11,7 +11,7 @@ import { useSession } from "next-auth/react";
 import { useForm } from "react-hook-form";
 
 import { MissionsEditor } from "../BaseInfoUpdatePage/MissionsEditor";
-import { updateMemberMissions } from "@/app/api/member/actions";
+import { safeUpdateMemberMissions } from "@/app/api/member/actions";
 import {
     updateMemberMissionsSchema,
     updateMemberMissionsSchemaType,
@@ -68,33 +68,23 @@ export const MemberUpdate = ({
         }
         setIsSaving(true);
         setAlertMessage(null);
-        try {
-            await updateMemberMissions(data);
+        const res = await safeUpdateMemberMissions(data);
+        setIsSaving(false);
+        if (res.success) {
             setAlertMessage({
                 title: `Modifications enregistrées`,
                 message: `Mise à jour des missions ok`,
                 type: "success",
             });
-        } catch (e: any) {
-            console.log(e.message);
+        } else {
+            console.error(res.message);
             setAlertMessage({
                 title: "Erreur",
-                //@ts-ignore
-                message: e.response?.data?.message || e.message,
+                message: res.message || "",
                 type: "warning",
             });
-            //e.response.data.fieldErrors;
-            setIsSaving(false);
-            Sentry.captureException(e);
-            if (e.errors) {
-                control.setError("root", {
-                    //@ts-ignore
-                    message: Object.values(e.errors).join("\n"),
-                });
-            }
         }
         document.body.scrollIntoView();
-        setIsSaving(false);
     };
 
     return (

@@ -2,7 +2,6 @@
 import React, { useCallback, useState } from "react";
 
 import "react-markdown-editor-lite/lib/index.css";
-
 import { fr } from "@codegouvfr/react-dsfr";
 import { Alert } from "@codegouvfr/react-dsfr/Alert";
 import { Button } from "@codegouvfr/react-dsfr/Button";
@@ -23,6 +22,7 @@ import { UsertypesEditor } from "./UsertypesEditor";
 import { ClientOnly } from "../ClientOnly";
 import SelectAccessibilityStatus from "../SelectAccessibilityStatus";
 import UploadForm from "../UploadForm/UploadForm";
+import { ActionResponse } from "@/@types/serverAction";
 import frontConfig from "@/frontConfig";
 import {
     startupInfoUpdateSchema,
@@ -78,7 +78,7 @@ export interface StartupFormProps {
     startupEvents?: eventSchemaType[];
     incubatorOptions: Option[];
     sponsorOptions: Option[];
-    save: (data: startupInfoUpdateSchemaType) => any;
+    save: (data: startupInfoUpdateSchemaType) => Promise<ActionResponse>;
 }
 
 // boilerplate for text inputs
@@ -174,29 +174,27 @@ export function StartupForm(props: StartupFormProps) {
             .save({ ...data })
             .then((resp) => {
                 setIsSaving(false);
-                setAlertMessage({
-                    title: `Mise à jour effectuée`,
-                    message: <>La mise à jour a bien été effectuée</>,
-                    type: "success",
-                });
-                return resp;
-            })
-            .catch((e) => {
-                setIsSaving(false);
-                if (e) {
+                if (resp.success) {
                     setAlertMessage({
-                        title: "Une erreur est survenue",
-                        message: e.message,
-                        type: "warning",
+                        title: `Mise à jour effectuée`,
+                        message: <>La mise à jour a bien été effectuée</>,
+                        type: "success",
                     });
                 } else {
                     setAlertMessage({
-                        title: "Une erreur est survenue 2",
-                        message: "Merci de vérifier les champs du formulaire",
+                        title: `Une erreur est survenue`,
+                        message: resp.message || "",
                         type: "warning",
                     });
                 }
+            })
+            .catch((e: any) => {
                 setIsSaving(false);
+                setAlertMessage({
+                    title: "Une erreur est survenue",
+                    message: e.message,
+                    type: "warning",
+                });
             });
     };
 
