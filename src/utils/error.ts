@@ -18,6 +18,13 @@ export class NoDataError extends Error {
     }
 }
 
+export class OVHError extends Error {
+    constructor(message: string = "Erreur OVH") {
+        super(message);
+        this.name = "OVHError";
+    }
+}
+
 export class ValidationError extends Error {
     constructor(message: string = "Validation failed") {
         super(message);
@@ -40,7 +47,8 @@ export function withErrorHandling<T, Args extends any[]>(
             if (
                 error instanceof AuthorizationError ||
                 error instanceof NoDataError ||
-                error instanceof ValidationError
+                error instanceof ValidationError ||
+                error instanceof OVHError
             ) {
                 // Return a standardized error response
                 return {

@@ -2,7 +2,6 @@
 
 import * as Sentry from "@sentry/nextjs";
 import { revalidatePath } from "next/cache";
-import error from "next/error";
 import { getServerSession } from "next-auth/next";
 
 import { addEvent } from "@/lib/events";
@@ -36,6 +35,7 @@ import {
     NoDataError,
     UnwrapPromise,
     ValidationError,
+    OVHError,
     withErrorHandling,
 } from "@/utils/error";
 
@@ -169,11 +169,15 @@ async function setEmailResponder({
     }
     const responder = await betagouv.getResponder(session.user.id);
     if (!responder) {
-        await betagouv.setResponder(session.user.id, {
-            from,
-            to,
-            content,
-        });
+        try {
+            await betagouv.setResponder(session.user.id, {
+                from,
+                to,
+                content,
+            });
+        } catch (e: any) {
+            throw new OVHError(e?.message);
+        }
         await addEvent({
             action_code: EventCode.MEMBER_RESPONDER_CREATED,
             created_by_username: session.user.id,
