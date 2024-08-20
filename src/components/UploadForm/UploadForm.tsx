@@ -47,7 +47,7 @@ const UploadForm = ({
             const fileSizeInKB = file.size / 1024;
             const fileExtension = file.name.split(".").pop()?.toLowerCase();
 
-            if (!["jpeg", "jpg"].includes(fileExtension)) {
+            if (!fileExtension || !["jpeg", "jpg"].includes(fileExtension)) {
                 alert("Le fichier doit être au format .jpeg");
                 return;
             }
