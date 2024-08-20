@@ -238,7 +238,7 @@ async function getUserPublicInfo(
         user.emailInfos || user.emailRedirections.length > 0;
     if (!hasGithubFile && !hasEmailAddress) {
         throw new NoDataError(
-            'Il n\'y a pas de membres avec ce compte mail. Vous pouvez commencez par créer une fiche sur Github pour la personne <a href="/onboarding">en cliquant ici</a>.'
+            'Il n\'y a pas de membre avec ce compte mail. Vous pouvez commencez par l\'inviter <a href="/onboarding">en cliquant ici</a>.'
         );
     }
     const dbUser = await db
