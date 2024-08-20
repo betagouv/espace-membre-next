@@ -1,7 +1,7 @@
 {
-  "jobs": [
-    {
-      "command": "0 12,18 * * * npm run export-to-www"
-    }
-  ]
+    "jobs": [
+        {
+            "command": "0 18 * * MON-FRI [[ \"$APP\" = \"espace-membre-staging\"* ]] && echo 'skip export' || npm run export-to-www"
+        }
+    ]
 }
