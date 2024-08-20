@@ -2,10 +2,8 @@ import { Metadata, ResolvingMetadata } from "next";
 import { redirect } from "next/navigation";
 import { validate } from "uuid";
 
-import StartupPage, {
-    StartupPageProps,
-} from "@/components/StartupPage/StartupPage";
-import { db, jsonArrayFrom } from "@/lib/kysely";
+import StartupPage from "@/components/StartupPage/StartupPage";
+import { db } from "@/lib/kysely";
 import { getStartup } from "@/lib/kysely/queries";
 import { getUserByStartup } from "@/lib/kysely/queries/users";
 import {
@@ -13,8 +11,6 @@ import {
     phaseToModel,
     startupToModel,
 } from "@/models/mapper";
-import { memberBaseInfoSchema, memberSchema } from "@/models/member";
-import { startupSchema } from "@/models/startup";
 
 type Props = {
     params: { id: string };
