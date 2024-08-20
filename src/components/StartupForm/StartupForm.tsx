@@ -174,6 +174,7 @@ export function StartupForm(props: StartupFormProps) {
             .save({ ...data })
             .then((resp) => {
                 setIsSaving(false);
+                window.scrollTo({ top: 20, behavior: "smooth" });
                 if (resp.success) {
                     setAlertMessage({
                         title: `Mise à jour effectuée`,
@@ -190,6 +191,7 @@ export function StartupForm(props: StartupFormProps) {
             })
             .catch((e: any) => {
                 setIsSaving(false);
+                window.scrollTo({ top: 20, behavior: "smooth" });
                 setAlertMessage({
                     title: "Une erreur est survenue",
                     message: e.message,
@@ -225,12 +227,18 @@ export function StartupForm(props: StartupFormProps) {
                         severity={alertMessage.type}
                         closable={false}
                         title={alertMessage.title}
-                        description={<div>{alertMessage.message}</div>}
+                        description={
+                            <div
+                                dangerouslySetInnerHTML={{
+                                    __html: alertMessage.message,
+                                }}
+                            />
+                        }
                     />
                 )}
                 <form
                     onSubmit={handleSubmit(onSubmit)}
-                    aria-label="Modifier mes informations"
+                    aria-label="Modifier les informations du produit"
                 >
                     <BasicInput
                         id="name"

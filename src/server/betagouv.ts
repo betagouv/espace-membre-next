@@ -416,15 +416,11 @@ const betaOVH = {
     },
     updateResponder: async (id, { content, from, to }) => {
         const url = `/email/domain/${config.domain}/responder/${id}`;
-        try {
-            return await ovh.requestPromised("PUT", url, {
-                content,
-                from,
-                to,
-            });
-        } catch (err) {
-            throw new Error(`OVH Error PUT on ${url} : ${JSON.stringify(err)}`);
-        }
+        return await ovh.requestPromised("PUT", url, {
+            content,
+            from,
+            to,
+        });
     },
     deleteResponder: async (id) => {
         const url = `/email/domain/${config.domain}/responder/${id}`;

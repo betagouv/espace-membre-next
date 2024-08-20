@@ -1,5 +1,6 @@
 import { Metadata, ResolvingMetadata } from "next";
 import { redirect } from "next/navigation";
+import { validate } from "uuid";
 
 import StartupPage, {
     StartupPageProps,
@@ -24,16 +25,31 @@ export async function generateMetadata(
     parent: ResolvingMetadata
 ): Promise<Metadata> {
     // read route params
-    const id = params.id;
-
-    const produit = await getStartup(id);
+    let query: { ghid: string } | { uuid: string } = {
+        ghid: params.id,
+    };
+    if (validate(params.id)) {
+        query = {
+            uuid: params.id,
+        };
+    }
+    const produit = await getStartup(query);
     return {
         title: produit ? `Produit ${produit.ghid} / Espace Membre` : "",
     };
 }
 
 export default async function Page({ params }: Props) {
-    const dbSe = await getStartup(params.id);
+    let query: { ghid: string } | { uuid: string } = {
+        ghid: params.id,
+    };
+    if (validate(params.id)) {
+        query = {
+            uuid: params.id,
+        };
+    }
+
+    const dbSe = await getStartup(query);
     if (!dbSe) {
         redirect("/startups");
     }
@@ -45,7 +61,7 @@ export default async function Page({ params }: Props) {
             .execute()
     ).map((phase) => phaseToModel(phase));
     const startup = startupToModel(dbSe);
-    const startupMembers = (await getUserByStartup(params.id)).map((user) => {
+    const startupMembers = (await getUserByStartup(dbSe.uuid)).map((user) => {
         return memberBaseInfoToModel(user);
     });
     return (

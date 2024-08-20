@@ -9,13 +9,17 @@ export function getAllStartups() {
 }
 
 /** Return all startups */
-export async function getStartup(uuid: string) {
-    const startups = await db
-        .selectFrom("startups")
-        .selectAll()
-        .where("startups.uuid", "=", uuid)
-        .execute();
-    return (startups.length && startups[0]) || undefined;
+export async function getStartup(params: { ghid: string } | { uuid: string }) {
+    let query = db.selectFrom("startups").selectAll();
+
+    if ("ghid" in params) {
+        query = query.where("startups.ghid", "=", params.ghid);
+    } else {
+        query = query.where("startups.uuid", "=", params.uuid);
+    }
+    const startups = await db.executeQuery(query);
+
+    return (startups.rows.length && startups.rows[0]) || undefined;
 }
 
 /* UTILS */
