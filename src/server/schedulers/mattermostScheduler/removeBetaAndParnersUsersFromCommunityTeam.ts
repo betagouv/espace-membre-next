@@ -89,10 +89,10 @@ const MESSAGE_FOR_TYPE: Record<
         user: MattermostUserWithStatus
     ): string {
         return `Bonjour ${user.first_name},
-Tu reçois ce message car ta fiche membre beta.gouv.fr à une date de fin dépassée sur github.
+Tu reçois ce message car ta fiche membre beta.gouv.fr à une date de fin dépassée.
 
 Si c'est normal tu n'as rien a faire et ton compte mattermost sera ajouté à l'espace alumni et retiré de l'espace "Communauté" dans 1 semaine. 
-Sinon il faudrait la mettre à jour : [ici](https://github.com/betagouv/beta.gouv.fr/edit/master/content/_authors/${user.dbUser?.username}.md)
+Sinon il faudrait la mettre à jour. Un membre de ton équipe peut le faire pour toi en allant sur https://${config.host}/community/${user?.dbUser?.username})
 
 Si tu n'y arrives pas un membre de ton équipe pourra sans doute t'aider.
 
@@ -164,13 +164,10 @@ Ceci est un message automatique envoyé par l'app Espace Membre.
         user: MattermostUserWithStatus
     ): string {
         return `Bonjour ${user.first_name},
-Tu reçois ce message car ta fiche membre beta.gouv.fr à une date de fin dépassée sur github.
+Tu reçois ce message car ta fiche membre beta.gouv.fr à une date de fin dépassée.
 
 Si c'est normal tu n'as rien a faire et ton compte mattermost sera ajouté à l'espace alumni et retiré de l'espace "Communauté" dans 1 semaine. 
-Sinon il faudrait la mettre à jour : [ici](https://github.com/betagouv/beta.gouv.fr/edit/master/content/_authors/${user?.dbUser?.username}.md)
-Et merger la pull request.
-
-Si tu n'y arrives pas un membre de ton équipe pourra sans doute t'aider.
+Sinon il faudrait la mettre à jour. Un membre de ton équipe peut le faire pour toi en allant sur https://${config.host}/community/${user?.dbUser?.username})
 
 Sinon n'hésite pas à poser tes questions sur Mattermost dans [~incubateur-help](https://mattermost.incubateur.net/betagouv/channels/incubateur-help) ou à répondre [par email à espace-membre@incubateur.net](mailto:espace-membre@incubateur.net).
 
@@ -182,13 +179,10 @@ Ceci est un message automatique envoyé par l'app Espace Membre.
         user: MattermostUserWithStatus
     ): string {
         return `Bonjour ${user.first_name},
-Tu reçois ce message car ta fiche membre beta.gouv.fr à une date de fin dépassée sur github.
+Tu reçois ce message car ta fiche membre beta.gouv.fr à une date de fin dépassée.
 
 Si c'est normal tu n'as rien a faire et ton compte mattermost sera ajouté à l'espace alumni et retiré de l'espace "Communauté" dans 1 mois. 
-Sinon il faudrait la mettre à jour : [ici](https://github.com/betagouv/beta.gouv.fr/edit/master/content/_authors/${user?.dbUser?.username}.md)
-Et merger la pull request.
-
-Si tu n'y arrives pas un membre de ton équipe pourra sans doute t'aider.
+Sinon il faudrait la mettre à jour. Un membre de ton équipe peut le faire pour toi en allant sur https://${config.host}/community/${user?.dbUser?.username})
 
 Sinon n'hésite pas à poser tes questions sur Mattermost dans [~incubateur-help](https://mattermost.incubateur.net/betagouv/channels/incubateur-help) ou à répondre [par email à espace-membre@incubateur.net](mailto:espace-membre@incubateur.net).
 

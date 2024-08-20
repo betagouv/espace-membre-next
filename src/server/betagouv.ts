@@ -405,32 +405,22 @@ const betaOVH = {
     },
     setResponder: async (id, { content, from, to }) => {
         const url = `/email/domain/${config.domain}/responder`;
-        try {
-            const params: OvhResponder = {
-                account: id,
-                content,
-                from,
-                to,
-                copy: true,
-            };
-            return await ovh.requestPromised("POST", url, params);
-        } catch (err) {
-            throw new Error(
-                `OVH Error POST on ${url} : ${JSON.stringify(err)}`
-            );
-        }
+        const params: OvhResponder = {
+            account: id,
+            content,
+            from,
+            to,
+            copy: true,
+        };
+        return await ovh.requestPromised("POST", url, params);
     },
     updateResponder: async (id, { content, from, to }) => {
         const url = `/email/domain/${config.domain}/responder/${id}`;
-        try {
-            return await ovh.requestPromised("PUT", url, {
-                content,
-                from,
-                to,
-            });
-        } catch (err) {
-            throw new Error(`OVH Error PUT on ${url} : ${JSON.stringify(err)}`);
-        }
+        return await ovh.requestPromised("PUT", url, {
+            content,
+            from,
+            to,
+        });
     },
     deleteResponder: async (id) => {
         const url = `/email/domain/${config.domain}/responder/${id}`;

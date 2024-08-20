@@ -1,6 +1,7 @@
 "use client";
-import React from "react";
+import React, { useState } from "react";
 
+import Alert from "@codegouvfr/react-dsfr/Alert";
 import Button from "@codegouvfr/react-dsfr/Button";
 import Input from "@codegouvfr/react-dsfr/Input";
 import axios from "axios";
@@ -10,7 +11,7 @@ import { useRouter } from "next/navigation";
 
 import { useLiveChat } from "../live-chat/useLiveChat";
 import MemberSelect from "../MemberSelect";
-import { getUserPublicInfo } from "@/app/api/member/actions";
+import { safeGetUserPublicInfo } from "@/app/api/member/actions";
 import { EmailStatusCode } from "@/models/member";
 import {
     memberPublicInfoSchemaType,
@@ -793,14 +794,22 @@ export const WhichMemberScreen = function ({
     setUser: (user: memberWrapperPublicInfoSchemaType) => void;
 }) {
     const [isSearching, setIsSearching] = React.useState(false);
-
+    const [alertMessage, setAlertMessage] = useState<{
+        title: string;
+        message: NonNullable<React.ReactNode>;
+        type: "success" | "warning";
+    } | null>();
     const search = async (member: string) => {
         setIsSearching(true);
-        try {
-            const data = await getUserPublicInfo(member);
-            setUser(data);
-        } catch {
-            alert(`Aucune info sur l'utilisateur`);
+        const res = await safeGetUserPublicInfo(member);
+        if (res.success) {
+            setUser(res.data);
+        } else {
+            setAlertMessage({
+                title: "Une erreur est survenue",
+                message: res.message || "",
+                type: "warning",
+            });
         }
         setIsSearching(false);
     };
@@ -810,6 +819,15 @@ export const WhichMemberScreen = function ({
             {
                 <form className="no-margin">
                     <h2>Qu'est-ce qu'il se passe ?</h2>
+                    {!!alertMessage && (
+                        <Alert
+                            className="fr-mb-8v"
+                            severity={alertMessage.type}
+                            closable={false}
+                            title={alertMessage.title}
+                            description={<div>{alertMessage.message}</div>}
+                        />
+                    )}
                     <div className="fr-select-group">
                         <MemberSelect
                             label="Quelle personne veux-tu aider ? (ça peut être toi-même)"
@@ -956,11 +974,15 @@ export const WhatIsGoingOnWithMember = function (
                 }
                 if (state.user) {
                     setUser(state.user);
-                    getUserPublicInfo(
-                        state.user.userPublicInfos.username
-                    ).catch((e) => {
-                        console.error(e);
-                    });
+                    safeGetUserPublicInfo(state.user.userPublicInfos.username)
+                        .then((res) => {
+                            if (res.success) {
+                                setUser(res.data);
+                            }
+                        })
+                        .catch((e) => {
+                            console.error(e);
+                        });
                 }
             } catch (e) {
                 // if error clear localstorage state data

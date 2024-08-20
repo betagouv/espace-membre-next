@@ -1,10 +1,9 @@
 import { Metadata, ResolvingMetadata } from "next";
 import { redirect } from "next/navigation";
+import { validate } from "uuid";
 
-import StartupPage, {
-    StartupPageProps,
-} from "@/components/StartupPage/StartupPage";
-import { db, jsonArrayFrom } from "@/lib/kysely";
+import StartupPage from "@/components/StartupPage/StartupPage";
+import { db } from "@/lib/kysely";
 import { getStartup } from "@/lib/kysely/queries";
 import { getUserByStartup } from "@/lib/kysely/queries/users";
 import {
@@ -12,8 +11,6 @@ import {
     phaseToModel,
     startupToModel,
 } from "@/models/mapper";
-import { memberBaseInfoSchema, memberSchema } from "@/models/member";
-import { startupSchema } from "@/models/startup";
 
 type Props = {
     params: { id: string };
@@ -24,16 +21,31 @@ export async function generateMetadata(
     parent: ResolvingMetadata
 ): Promise<Metadata> {
     // read route params
-    const id = params.id;
-
-    const produit = await getStartup(id);
+    let query: { ghid: string } | { uuid: string } = {
+        ghid: params.id,
+    };
+    if (validate(params.id)) {
+        query = {
+            uuid: params.id,
+        };
+    }
+    const produit = await getStartup(query);
     return {
         title: produit ? `Produit ${produit.ghid} / Espace Membre` : "",
     };
 }
 
 export default async function Page({ params }: Props) {
-    const dbSe = await getStartup(params.id);
+    let query: { ghid: string } | { uuid: string } = {
+        ghid: params.id,
+    };
+    if (validate(params.id)) {
+        query = {
+            uuid: params.id,
+        };
+    }
+
+    const dbSe = await getStartup(query);
     if (!dbSe) {
         redirect("/startups");
     }
@@ -45,7 +57,7 @@ export default async function Page({ params }: Props) {
             .execute()
     ).map((phase) => phaseToModel(phase));
     const startup = startupToModel(dbSe);
-    const startupMembers = (await getUserByStartup(params.id)).map((user) => {
+    const startupMembers = (await getUserByStartup(dbSe.uuid)).map((user) => {
         return memberBaseInfoToModel(user);
     });
     return (

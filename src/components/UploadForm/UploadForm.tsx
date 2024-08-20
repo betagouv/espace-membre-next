@@ -40,6 +40,23 @@ const UploadForm = ({
         }
     };
 
+    const handleFileChange = (event: ChangeEvent<HTMLInputElement>) => {
+        const file = event.target.files?.[0];
+
+        if (file) {
+            const fileSizeInKB = file.size / 1024;
+
+            if (fileSizeInKB > 500) {
+                alert("Le fichier ne peut pas faire plus de 500 Ko");
+                return;
+            }
+
+            setImage(file);
+            setShouldDeletePicture(false);
+            onChange(event);
+        }
+    };
+
     const buttons: [ButtonProps, ...ButtonProps[]] = [
         {
             children:
@@ -84,6 +101,8 @@ const UploadForm = ({
         <div className="fr-upload-group">
             <label className="fr-label" htmlFor="file-upload">
                 {label}
+                {hintText && <span className="fr-hint-text">{hintText}</span>}
+                <span className="fr-hint-text fr-mb-1w">{`Taille maximale : 500 ko. Format supporté : jpg.`}</span>
             </label>
             <div
                 style={
@@ -114,21 +133,12 @@ const UploadForm = ({
                     style={{ objectFit: "cover" }}
                 />
             </div>
-
-            <span className="fr-hint-text fr-mb-1w">{hintText}</span>
             <input
                 type="file"
-                accept="image/*"
+                accept="image/jpeg"
                 ref={fileInputRef}
                 style={{ display: "none" }}
-                onChange={(event) => {
-                    const file = event.target.files;
-                    if (file && file.length) {
-                        setImage(file[0]);
-                        setShouldDeletePicture(false);
-                    }
-                    onChange(event);
-                }}
+                onChange={handleFileChange}
             />
             <ButtonsGroup buttons={buttons} inlineLayoutWhen="always" />
             {/* <input

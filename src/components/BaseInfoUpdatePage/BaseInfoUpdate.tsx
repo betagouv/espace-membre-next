@@ -316,7 +316,6 @@ export const BaseInfoUpdate = (props: BaseInfoUpdateProps) => {
                         }}
                         shape="round"
                         label="Photo de profile"
-                        hintText="Taille maximale : 500 Mo. Format supporté : jpg."
                         url={props.profileURL}
                         onDelete={() => {
                             setValue("picture", null, {

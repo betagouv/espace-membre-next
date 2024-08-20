@@ -1,6 +1,7 @@
 import { Metadata } from "next";
 import { redirect } from "next/navigation";
 import { getServerSession } from "next-auth";
+import { validate } from "uuid";
 import { z } from "zod";
 
 import { StartupInfoUpdate } from "@/components/StartupInfoUpdatePage";
@@ -19,8 +20,15 @@ type Props = {
 
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
     // read route params
-    const id = params.id;
-    const startup = await getStartup(id);
+    let query: { ghid: string } | { uuid: string } = {
+        ghid: params.id,
+    };
+    if (validate(params.id)) {
+        query = {
+            uuid: params.id,
+        };
+    }
+    const startup = await getStartup(query);
 
     return {
         title: `${routeTitles.startupDetailsEdit(
@@ -35,17 +43,19 @@ export default async function Page(props) {
     if (!session) {
         redirect("/login");
     }
-    const uuid = props.params.id;
+    const params = props.params;
+    let query: { ghid: string } | { uuid: string } = {
+        ghid: params.id,
+    };
+    if (validate(params.id)) {
+        query = {
+            uuid: params.id,
+        };
+    }
 
     const incubators = await db.selectFrom("incubators").selectAll().execute(); //await betagouv.incubators();
     const sponsors = await db.selectFrom("organizations").selectAll().execute(); //await betagouv.sponsors();
-    const startup = startupToModel(
-        await db
-            .selectFrom("startups")
-            .selectAll()
-            .where("uuid", "=", uuid)
-            .executeTakeFirst()
-    );
+    const startup = startupToModel(await getStartup(query));
     if (!startup) {
         redirect("/startups");
     }
