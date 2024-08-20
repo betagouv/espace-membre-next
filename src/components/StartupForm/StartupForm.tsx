@@ -178,7 +178,7 @@ export function StartupForm(props: StartupFormProps) {
                 if (resp.success) {
                     setAlertMessage({
                         title: `Mise à jour effectuée`,
-                        message: <>La mise à jour a bien été effectuée</>,
+                        message: `La mise à jour a bien été effectuée`,
                         type: "success",
                     });
                 } else {
@@ -228,11 +228,13 @@ export function StartupForm(props: StartupFormProps) {
                         closable={false}
                         title={alertMessage.title}
                         description={
-                            <div
-                                dangerouslySetInnerHTML={{
-                                    __html: alertMessage.message,
-                                }}
-                            />
+                            alertMessage.message ? (
+                                <div
+                                    dangerouslySetInnerHTML={{
+                                        __html: alertMessage.message,
+                                    }}
+                                />
+                            ) : undefined
                         }
                     />
                 )}
