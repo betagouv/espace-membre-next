@@ -7,11 +7,9 @@ import config from "@/server/config";
 export const ERROR_MESSAGES = {
     STARTUP_UNIQUE_CONSTRAINT: (name?: string) =>
         name
-            ? `Un produit avec le même nom "${name}" existe déjà. Tu peux consulter sa fiche sur <a href="https://${
-                  config.host
-              }/${slugify(name)}">https://${config.host}/startups/${slugify(
+            ? `Un produit avec le même nom "${name}" existe déjà. Tu peux consulter sa fiche sur <a href="/startups/${slugify(
                   name
-              )}</a>.`
+              )}">https://${config.host}/startups/${slugify(name)}</a>.`
             : "Un produit avec le même nom existe déjà",
     AUTHORIZATION_ERROR: "You don’t have the right to access this function.",
     STARTUP_INSERT_FAILED:
