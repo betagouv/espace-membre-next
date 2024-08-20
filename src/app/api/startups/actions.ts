@@ -16,6 +16,7 @@ import { authOptions } from "@/utils/authoptions";
 import {
     AuthorizationError,
     NoDataError,
+    StartupUniqueConstraintViolationError,
     UnwrapPromise,
     ValidationError,
     withErrorHandling,
@@ -42,109 +43,128 @@ async function createStartup({
 }): Promise<{ uuid: string; ghid: string }> {
     const session = await getServerSession(authOptions);
     if (!session || !session.user.id) {
-        throw new AuthorizationError(
-            `You don't have the right to access this function`
-        );
+        throw new AuthorizationError();
     }
 
-    return await db.transaction().execute(async (trx) => {
-        // update startup data
-        const res = await trx
-            .insertInto("startups")
-            .values({
-                ghid: slugify(startup.name),
-                ...startup,
-                techno: startup.techno
-                    ? JSON.stringify(startup.techno)
-                    : undefined,
-                usertypes: startup.usertypes
-                    ? JSON.stringify(startup.usertypes)
-                    : undefined,
-                thematiques: startup.thematiques
-                    ? JSON.stringify(startup.thematiques)
-                    : undefined,
-            })
-            .returning(["uuid", "ghid"])
-            .executeTakeFirst();
-        if (!res) {
-            throw new Error("Startup data could not be inserted into db");
-        }
-        const startupUuid = res.uuid;
-        // create new sponsors
-        for (const newSponsor of newSponsors) {
-            const sponsor = await trx
-                .insertInto("organizations")
-                .values(newSponsor)
-                .returning("uuid")
+    try {
+        return await db.transaction().execute(async (trx) => {
+            // Insert startup data
+            const res = await trx
+                .insertInto("startups")
+                .values({
+                    ghid: slugify(startup.name),
+                    ...startup,
+                    techno: startup.techno
+                        ? JSON.stringify(startup.techno)
+                        : undefined,
+                    usertypes: startup.usertypes
+                        ? JSON.stringify(startup.usertypes)
+                        : undefined,
+                    thematiques: startup.thematiques
+                        ? JSON.stringify(startup.thematiques)
+                        : undefined,
+                })
+                .returning(["uuid", "ghid"])
                 .executeTakeFirst();
-            if (sponsor) {
+
+            if (!res) {
+                throw new Error(
+                    "Startup data could not be inserted into the database"
+                );
+            }
+
+            const startupUuid = res.uuid;
+
+            // Create new sponsors
+            for (const newSponsor of newSponsors) {
+                const sponsor = await trx
+                    .insertInto("organizations")
+                    .values(newSponsor)
+                    .returning("uuid")
+                    .executeTakeFirst();
+                if (sponsor) {
+                    await trx
+                        .insertInto("startups_organizations")
+                        .values({
+                            organization_id: sponsor.uuid,
+                            startup_id: startupUuid,
+                        })
+                        .execute();
+                }
+            }
+
+            // Add new sponsors
+            for (const sponsorUuid of startupSponsors) {
                 await trx
                     .insertInto("startups_organizations")
                     .values({
-                        organization_id: sponsor.uuid,
+                        organization_id: sponsorUuid,
                         startup_id: startupUuid,
                     })
                     .execute();
             }
-        }
-        // add new sponsors
-        for (const sponsorUuid of startupSponsors) {
-            await trx
-                .insertInto("startups_organizations")
-                .values({
-                    organization_id: sponsorUuid,
+
+            // Create/update phases
+            for (const startupPhase of startupPhases) {
+                const args = {
+                    ...startupPhase,
                     startup_id: startupUuid,
-                })
+                };
+                await trx
+                    .insertInto("phases")
+                    .values(args)
+                    .onConflict((oc) => {
+                        const { startup_id, name, ...rest } = args;
+                        return oc
+                            .column("startup_id")
+                            .column("name")
+                            .doUpdateSet(rest);
+                    })
+                    .returning("uuid")
+                    .executeTakeFirst();
+            }
+
+            // Create/update startup events
+            await trx
+                .deleteFrom("startup_events")
+                .where("startup_id", "=", startupUuid)
                 .execute();
-        }
 
-        // create/update phases
-        for (const startupPhase of startupPhases) {
-            const args = {
-                ...startupPhase,
-                startup_id: startupUuid,
-            };
-            await trx
-                .insertInto("phases")
-                .values(args)
-                .onConflict((oc) => {
-                    const { startup_id, name, ...rest } = args;
-                    return oc
-                        .column("startup_id")
-                        .column("name")
-                        .doUpdateSet(rest);
-                })
-                .returning("uuid")
-                .executeTakeFirst();
-        }
+            if (startupEvents.length) {
+                await trx
+                    .insertInto("startup_events")
+                    .values(
+                        startupEvents.map((e) => ({
+                            ...e,
+                            startup_id: startupUuid,
+                        }))
+                    )
+                    .returning("uuid")
+                    .executeTakeFirst();
+            }
 
-        // create/update startup events
-        await trx
-            .deleteFrom("startup_events")
-            .where("startup_id", "=", startupUuid)
-            .execute();
+            addEvent({
+                action_code: EventCode.STARTUP_INFO_CREATED,
+                created_by_username: session.user.id,
+            });
 
-        if (startupEvents.length) {
-            await trx
-                .insertInto("startup_events")
-                .values(
-                    startupEvents.map((e) => ({
-                        ...e,
-                        startup_id: startupUuid,
-                    }))
-                )
-                .returning("uuid")
-                .executeTakeFirst();
-        }
-
-        addEvent({
-            action_code: EventCode.STARTUP_INFO_CREATED,
-            created_by_username: session.user.id,
+            revalidatePath("/startups");
+            return res;
         });
+    } catch (error: any) {
+        if (
+            error.message.includes(
+                "duplicate key value violates unique constraint"
+            )
+        ) {
+            // Handle unique constraint violation
+            throw new StartupUniqueConstraintViolationError(startup.name);
+        }
 
-        revalidatePath("/startups");
-        return res;
-    });
+        // Handle other potential errors (logging, rethrowing, etc.)
+        console.error("Unexpected error:", error);
+        throw error;
+    }
 }
 
 export async function updateStartup({

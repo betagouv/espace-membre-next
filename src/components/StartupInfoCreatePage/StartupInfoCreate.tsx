@@ -80,7 +80,6 @@ export const StartupInfoCreate = (props: StartupInfoCreateProps) => {
             }
             return res;
         } catch (e) {
-            window.scrollTo({ top: 20, behavior: "smooth" });
             Sentry.captureException(e);
             throw e;
         }
