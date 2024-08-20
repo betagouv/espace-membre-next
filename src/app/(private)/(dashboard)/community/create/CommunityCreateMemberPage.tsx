@@ -28,32 +28,6 @@ export interface BaseInfoUpdateProps {
     }[];
 }
 
-const postMemberData = async ({ values }) => {
-    try {
-        const response = await fetch(
-            computeRoute(routes.ACCOUNT_POST_INFO_API),
-            {
-                method: "POST", // Specify the method
-                body: JSON.stringify(values), // Convert the values object to JSON
-                headers: {
-                    "Content-Type": "application/json", // Specify the content type
-                },
-            }
-        );
-
-        if (!response.ok) {
-            throw new Error("Network response was not ok");
-        }
-
-        const { message } = await response.json(); // Destructure the data from the response
-
-        return { message }; // Return the username and message
-    } catch (error) {
-        console.error("There was a problem with the fetch operation:", error);
-        throw error; // Rethrow the error to be handled by the caller
-    }
-};
-
 export default function CommunityCreateMemberPage(props: BaseInfoUpdateProps) {
     const defaultValues: createMemberSchemaType = {
         member: {
@@ -95,6 +69,11 @@ export default function CommunityCreateMemberPage(props: BaseInfoUpdateProps) {
 
     const [isSaving, setIsSaving] = React.useState(false);
     const [success, setSuccess] = React.useState<null | boolean>(null);
+    const [alertMessage, setAlertMessage] = React.useState<{
+        title: string;
+        message: NonNullable<React.ReactNode>;
+        type: "success" | "warning" | "error" | "info";
+    } | null>();
 
     const firstname = watch("member.firstname");
     const lastname = watch("member.lastname");
@@ -109,58 +88,56 @@ export default function CommunityCreateMemberPage(props: BaseInfoUpdateProps) {
         }
         setIsSaving(true);
         setSuccess(null);
-
-        try {
-            const { message } = await postMemberData({
-                values: input,
-            });
-            if (message === "Error") {
-                Sentry.captureException(
-                    `Cannot record fiche for ${firstname} ${lastname}`
-                );
-
-                throw `Cannot record fiche for ${firstname} ${lastname}`;
+        const response = await fetch(
+            computeRoute(routes.ACCOUNT_POST_INFO_API),
+            {
+                method: "POST", // Specify the method
+                body: JSON.stringify(input), // Convert the values object to JSON
+                headers: {
+                    "Content-Type": "application/json", // Specify the content type
+                },
             }
-
+        );
+        setIsSaving(false);
+        const data = await response.json();
+        if (response.ok) {
             setSuccess(true);
-        } catch (e: any) {
-            // todo: sentry
-            console.log(e);
-            Sentry.captureException(e);
+            setAlertMessage({
+                title: "C'est presque bon !",
+                type: "info",
+                message: `${firstname} ${lastname} va recevoir un email pour l'inviter à se connecter à l'espace membre et compléter sa fiche`,
+            });
+        } else {
             setSuccess(false);
-            setIsSaving(false);
-            if (e.errors) {
-                control.setError("root", {
-                    //@ts-ignore
-                    message: Object.values(e.errors).join("\n"),
-                });
-            }
+            setAlertMessage({
+                title: "Erreur lors de la création de la fiche",
+                type: "error",
+                message: data.message,
+            });
         }
         document.body.scrollIntoView();
-        setIsSaving(false);
     };
 
     return (
         <>
             <h1>Créer une fiche membre</h1>
 
-            {success === true && (
+            {!!alertMessage && (
                 <Alert
+                    className="fr-mb-8v"
+                    severity={alertMessage.type}
+                    closable={false}
                     small={true}
-                    severity="info"
-                    title="C'est presque bon !"
-                    description={`${firstname} ${lastname} va recevoir un email pour l'inviter à se connecter à l'espace membre et compléter sa fiche`}
-                ></Alert>
+                    title={alertMessage.title}
+                    description={
+                        <div
+                            dangerouslySetInnerHTML={{
+                                __html: alertMessage.message,
+                            }}
+                        />
+                    }
+                />
             )}
-            {success === false && (
-                <Alert
-                    small={true}
-                    severity="error"
-                    title="Erreur"
-                    description={`Impossible de créer la fiche :/`}
-                ></Alert>
-            )}
-
             {success !== true && (
                 <div className="fr-grid-row fr-grid-row-gutters">
                     <div className="fr-col-12 fr-col-md-12 fr-col-lg-12">
