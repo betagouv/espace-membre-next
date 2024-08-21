@@ -20,6 +20,11 @@ interface UploadFormProps {
     shape?: "round" | "square";
 }
 
+function isRelativeUrl(url) {
+    const absolutePattern = /^(?:[a-zA-Z][a-zA-Z\d+\-.]*:|\/\/)/;
+    return !absolutePattern.test(url);
+}
+
 const computeVersion = () => {
     const now = new Date();
     const year = now.getUTCFullYear(); // Gets the year (e.g., 2023)
@@ -33,7 +38,10 @@ const computeVersion = () => {
 };
 
 function addVersionParam(url: string): string {
-    const parsedUrl = new URL(url);
+    const isRelative = isRelativeUrl(url);
+    const tempUrl = isRelative
+        ? new URL(url, window.location.origin)
+        : new URL(url);
     const params = parsedUrl.searchParams;
     const version = computeVersion();
     params.set("v", version);
