@@ -1,5 +1,6 @@
 "use server";
 
+import * as Sentry from "@sentry/nextjs";
 import { revalidatePath } from "next/cache";
 import { getServerSession } from "next-auth/next";
 
@@ -29,26 +30,28 @@ import {
 import { capitalizeWords, userInfos } from "@/server/controllers/utils";
 import { Contact, MAILING_LIST_TYPE } from "@/server/modules/email";
 import { authOptions } from "@/utils/authoptions";
+import {
+    AuthorizationError,
+    NoDataError,
+    UnwrapPromise,
+    ValidationError,
+    OVHError,
+    withErrorHandling,
+} from "@/utils/error";
 
-export async function changeSecondaryEmailForUser(
+async function changeSecondaryEmailForUser(
     secondary_email: string,
     username: string
-) {
+): Promise<void> {
     const session = await getServerSession(authOptions);
     if (!session || !session.user.id) {
-        return {
-            message: "You don't have the right to access this function",
-            status: "error",
-        };
+        throw new AuthorizationError();
     }
     if (
         !config.ESPACE_MEMBRE_ADMIN.includes(session.user.id) &&
         session.user.id != username
     ) {
-        return {
-            message: "You don't have the right to access this function",
-            status: "error",
-        };
+        throw new AuthorizationError();
     }
     const user = await db
         .selectFrom("users")
@@ -56,7 +59,7 @@ export async function changeSecondaryEmailForUser(
         .where("username", "=", username)
         .executeTakeFirst();
     if (!user) {
-        throw new Error("Users not found");
+        throw new NoDataError("Users not found");
     }
     await db
         .updateTable("users")
@@ -77,15 +80,12 @@ export async function changeSecondaryEmailForUser(
     revalidatePath("/account", "layout");
 }
 
-export async function updateCommunicationEmail(
+async function updateCommunicationEmail(
     communication_email: CommunicationEmailCode
 ) {
     const session = await getServerSession(authOptions);
     if (!session || !session.user.id) {
-        return {
-            message: "You don't have the right to access this function",
-            status: "error",
-        };
+        throw new AuthorizationError();
     }
     const dbUser = await db
         .selectFrom("users")
@@ -93,10 +93,7 @@ export async function updateCommunicationEmail(
         .where("username", "=", session.user.id)
         .executeTakeFirst();
     if (!dbUser) {
-        return {
-            message: "You don't have the right to access this function",
-            status: "error",
-        };
+        throw new AuthorizationError();
     }
     let previousCommunicationEmail = dbUser.communication_email;
     let hasBothEmailsSet = dbUser.primary_email && dbUser.secondary_email;
@@ -127,22 +124,18 @@ export async function updateCommunicationEmail(
             previousCommunicationEmail === CommunicationEmailCode.PRIMARY
                 ? dbUser.primary_email
                 : dbUser.secondary_email;
-        try {
-            await changeContactEmail(previousEmail, {
-                email: newEmail as string,
-                firstname: capitalizeWords(dbUser.username.split(".")[0]),
-                lastname: capitalizeWords(dbUser.username.split(".")[1]),
-            });
-        } catch (e: any) {
-            return {
-                message: e.response?.data?.message || e.message,
-                status: "error",
-            };
-        }
+        await changeContactEmail(previousEmail, {
+            email: newEmail as string,
+            firstname: capitalizeWords(dbUser.username.split(".")[0]),
+            lastname: capitalizeWords(dbUser.username.split(".")[1]),
+        });
     }
 }
 
-async function changeContactEmail(previousEmail, contact: Contact) {
+async function changeContactEmail(
+    previousEmail,
+    contact: Contact
+): Promise<void> {
     if (config.FEATURE_SIB_USE_UPDATE_CONTACT_EMAIL) {
         await updateContactEmail({
             previousEmail,
@@ -160,78 +153,70 @@ async function changeContactEmail(previousEmail, contact: Contact) {
     }
 }
 
-export async function setEmailResponder({
+async function setEmailResponder({
     content,
     from,
     to,
-}: UpdateOvhResponder): Promise<{ status: "error" | "ok"; message?: string }> {
+}: UpdateOvhResponder): Promise<void> {
     const session = await getServerSession(authOptions);
     if (!session || !session.user.id) {
-        return {
-            message: "You don't have the right to access this function",
-            status: "error",
-        };
+        throw new AuthorizationError();
     }
     if (!to || new Date(to).getTime() < new Date(from).getTime()) {
-        return {
-            message:
-                "nouvelle date de fin : la date doit être supérieure à la date de début",
-            status: "error",
-        };
+        throw new ValidationError(
+            "nouvelle date de fin : la date doit être supérieure à la date de début"
+        );
     }
-    try {
-        const responder = await betagouv.getResponder(session.user.id);
-        if (!responder) {
+    const responder = await betagouv.getResponder(session.user.id);
+    if (!responder) {
+        try {
             await betagouv.setResponder(session.user.id, {
                 from,
                 to,
                 content,
             });
-            await addEvent({
-                action_code: EventCode.MEMBER_RESPONDER_CREATED,
-                created_by_username: session.user.id,
-                action_on_username: session.user.id,
-                action_metadata: {
-                    value: content,
-                },
-            });
-        } else {
+        } catch (e: any) {
+            throw new OVHError(e?.message);
+        }
+        await addEvent({
+            action_code: EventCode.MEMBER_RESPONDER_CREATED,
+            created_by_username: session.user.id,
+            action_on_username: session.user.id,
+            action_metadata: {
+                value: content,
+            },
+        });
+    } else {
+        try {
             await betagouv.updateResponder(session.user.id, {
                 from,
                 to,
                 content,
             });
-
-            await addEvent({
-                action_code: EventCode.MEMBER_RESPONDER_UPDATED,
-                created_by_username: session.user.id,
-                action_on_username: session.user.id,
-                action_metadata: {
-                    value: content,
-                    old_value: responder.content,
-                },
-            });
+        } catch (e: any) {
+            throw new OVHError(e?.message);
         }
-    } catch (e: any) {
-        return {
-            message: e.response?.data?.message || e.message,
-            status: "error",
-        };
+
+        await addEvent({
+            action_code: EventCode.MEMBER_RESPONDER_UPDATED,
+            created_by_username: session.user.id,
+            action_on_username: session.user.id,
+            action_metadata: {
+                value: content,
+                old_value: responder.content,
+            },
+        });
     }
-    return {
-        status: "ok",
-    };
 }
 
-export async function deleteResponder() {
+async function deleteResponder(): Promise<void> {
     const session = await getServerSession(authOptions);
     if (!session || !session.user.id) {
-        return {
-            message: "You don't have the right to access this function",
-            status: "error",
-        };
+        throw new AuthorizationError();
     }
+
     await betagouv.deleteResponder(session.user.id);
+
     addEvent({
         action_code: EventCode.MEMBER_RESPONDER_DELETED,
         created_by_username: session.user.id,
@@ -239,77 +224,70 @@ export async function deleteResponder() {
     });
 }
 
-export async function getUserPublicInfo(
+async function getUserPublicInfo(
     username: string
 ): Promise<memberWrapperPublicInfoSchemaType> {
     const session = await getServerSession(authOptions);
     if (!session || !session.user.id) {
-        throw new Error(`You don't have the right to access this function`);
+        throw new AuthorizationError();
     }
-    try {
-        const user = await userInfos({ username }, false);
+    const user = await userInfos({ username }, false);
 
-        const hasGithubFile = user.userInfos;
-        const hasEmailAddress =
-            user.emailInfos || user.emailRedirections.length > 0;
-        if (!hasGithubFile && !hasEmailAddress) {
-            throw new Error(
-                'Il n\'y a pas de membres avec ce compte mail. Vous pouvez commencez par créer une fiche sur Github pour la personne <a href="/onboarding">en cliquant ici</a>.'
-            );
-        }
-        const dbUser = await db
-            .selectFrom("users")
-            .selectAll()
-            .where("username", "=", username)
-            .executeTakeFirst();
-        const secondaryEmail: string = dbUser?.secondary_email || "";
-        let mattermostUser = dbUser?.primary_email
-            ? await getUserByEmail(dbUser.primary_email).catch((e) => null)
-            : null;
-        let [mattermostUserInTeamAndActive]: MattermostUser[] =
-            dbUser?.primary_email
-                ? await searchUsers({
-                      term: dbUser.primary_email,
-                      team_id: config.mattermostTeamId,
-                      allow_inactive: false,
-                  }).catch((e) => [])
-                : [];
-        let data: memberWrapperPublicInfoSchemaType = {
-            isExpired: user.isExpired,
-            hasEmailInfos: !!user.emailInfos,
-            isEmailBlocked: user.emailInfos?.isBlocked || false,
-            hasSecondaryEmail: !!secondaryEmail,
-            // canCreateEmail: user.authorizations.canCreateEmail || false,
-            // emailInfos: req.auth?.id ? user.emailInfos : undefined,
-            mattermostInfo: {
-                hasMattermostAccount: !!mattermostUser,
-                isInactiveOrNotInTeam: !mattermostUserInTeamAndActive,
-            },
-            userPublicInfos: memberBaseInfoToMemberPublicInfoModel(
-                user.userInfos
-            ),
-        };
-        return data;
-    } catch (err) {
-        console.error(err);
-        throw new Error(
-            "Impossible de récupérer les informations du membre de la communauté."
+    const hasGithubFile = user.userInfos;
+    const hasEmailAddress =
+        user.emailInfos || user.emailRedirections.length > 0;
+    if (!hasGithubFile && !hasEmailAddress) {
+        throw new NoDataError(
+            'Il n\'y a pas de membre avec ce compte mail. Vous pouvez commencez par l\'inviter <a href="/onboarding">en cliquant ici</a>.'
         );
     }
+    const dbUser = await db
+        .selectFrom("users")
+        .selectAll()
+        .where("username", "=", username)
+        .executeTakeFirst();
+    const secondaryEmail: string = dbUser?.secondary_email || "";
+    let mattermostUser = dbUser?.primary_email
+        ? await getUserByEmail(dbUser.primary_email).catch((e) => null)
+        : null;
+    let [mattermostUserInTeamAndActive]: MattermostUser[] =
+        dbUser?.primary_email
+            ? await searchUsers({
+                  term: dbUser.primary_email,
+                  team_id: config.mattermostTeamId,
+                  allow_inactive: false,
+              }).catch((e) => [])
+            : [];
+    let data: memberWrapperPublicInfoSchemaType = {
+        isExpired: user.isExpired,
+        hasEmailInfos: !!user.emailInfos,
+        isEmailBlocked: user.emailInfos?.isBlocked || false,
+        hasSecondaryEmail: !!secondaryEmail,
+        // canCreateEmail: user.authorizations.canCreateEmail || false,
+        // emailInfos: req.auth?.id ? user.emailInfos : undefined,
+        mattermostInfo: {
+            hasMattermostAccount: !!mattermostUser,
+            isInactiveOrNotInTeam: !mattermostUserInTeamAndActive,
+        },
+        userPublicInfos: memberBaseInfoToMemberPublicInfoModel(user.userInfos),
+    };
+    return data;
 }
 
-export async function updateMemberMissions(
+async function updateMemberMissions(
     updateMemberMissionsData: updateMemberMissionsSchemaType
-) {
+): Promise<void> {
     const session = await getServerSession(authOptions);
     if (!session || !session.user.id) {
-        throw new Error(`You don't have the right to access this function`);
+        throw new AuthorizationError();
     }
     const missions = updateMemberMissionsData.missions;
     const memberUuid = updateMemberMissionsData.memberUuid;
     const dbUser = await getUserBasicInfo({ uuid: memberUuid });
     if (!dbUser) {
-        throw new Error(`Impossible de trouver les données sur le membre`);
+        throw new NoDataError(
+            `Impossible de trouver les données sur le membre`
+        );
     }
     const previousInfo = memberBaseInfoToModel(dbUser);
 
@@ -321,14 +299,14 @@ export async function updateMemberMissions(
                     (m) => m.uuid === mission.uuid
                 );
                 if (!missionPreviousData) {
-                    throw new Error("La mission devrait déjà exister");
+                    throw new NoDataError("La mission devrait déjà exister");
                 }
                 if (
                     !mission.end ||
                     !missionPreviousData.end ||
                     mission.end < missionPreviousData.end
                 ) {
-                    throw new Error(
+                    throw new ValidationError(
                         "La nouvelle date de mission doit être supérieur à la précédente."
                     );
                 }
@@ -356,3 +334,25 @@ export async function updateMemberMissions(
     });
     revalidatePath("/community/[id]", "layout");
 }
+
+export const safeUpdateMemberMissions = withErrorHandling(updateMemberMissions);
+export const safeGetUserPublicInfo = withErrorHandling<
+    UnwrapPromise<ReturnType<typeof getUserPublicInfo>>,
+    Parameters<typeof getUserPublicInfo>
+>(getUserPublicInfo);
+export const safeDeleteResponder = withErrorHandling<
+    UnwrapPromise<ReturnType<typeof deleteResponder>>,
+    Parameters<typeof deleteResponder>
+>(deleteResponder);
+export const safeSetEmailResponder = withErrorHandling<
+    UnwrapPromise<ReturnType<typeof setEmailResponder>>,
+    Parameters<typeof setEmailResponder>
+>(setEmailResponder);
+export const safeChangeSecondaryEmailForUser = withErrorHandling<
+    UnwrapPromise<ReturnType<typeof changeSecondaryEmailForUser>>,
+    Parameters<typeof changeSecondaryEmailForUser>
+>(changeSecondaryEmailForUser);
+export const safeUpdateCommunicationEmail = withErrorHandling<
+    UnwrapPromise<ReturnType<typeof updateCommunicationEmail>>,
+    Parameters<typeof updateCommunicationEmail>
+>(updateCommunicationEmail);

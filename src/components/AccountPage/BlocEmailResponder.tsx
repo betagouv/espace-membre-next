@@ -8,7 +8,7 @@ import { Input } from "@codegouvfr/react-dsfr/Input";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 
-import { setEmailResponder } from "@/app/api/member/actions";
+import { safeSetEmailResponder } from "@/app/api/member/actions";
 import {
     UpdateOvhResponder,
     UpdateOvhResponderSchema,
@@ -65,12 +65,13 @@ export default function BlocEmailResponder({
         }
         setAlertMessage(null);
         setIsSaving(true);
-        const res = await setEmailResponder({
+        const res = await safeSetEmailResponder({
             content,
             from,
             to,
         });
-        if (res.status === "error") {
+        setIsSaving(false);
+        if (!res.success) {
             setAlertMessage({
                 title: "Erreur",
                 //@ts-ignore
@@ -84,8 +85,6 @@ export default function BlocEmailResponder({
                 type: "success",
             });
         }
-
-        setIsSaving(false);
     };
 
     return (
