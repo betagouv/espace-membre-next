@@ -39,7 +39,7 @@ const computeVersion = () => {
 
 function addVersionParam(url: string): string {
     const isRelative = isRelativeUrl(url);
-    const tempUrl = isRelative
+    const parsedUrl = isRelative
         ? new URL(url, window.location.origin)
         : new URL(url);
     const params = parsedUrl.searchParams;
