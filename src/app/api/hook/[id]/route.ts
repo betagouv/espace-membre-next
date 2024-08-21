@@ -45,7 +45,7 @@ export const fixBounceEmail = async ({ email, id }: ISibWebhookBody) => {
                     text: `Bonjour, 
                     il semble que l'adresse liée à ton compte mattermost n'existe plus (${email}), l'email est classé en "Hardbounce".
                     \n
-                    Si en effet il s'agit d'une ancienne adresse, tu peux changer ton adresse en cliquant sur ta photo de profile, puis dans profile > Email.
+                    Si en effet il s'agit d'une ancienne adresse, tu peux changer ton adresse en cliquant sur ta photo de profil, puis dans profil > Email.
                     Ta nouvelle adresse doit être une adresse de service public.
                     Il faut ensuite cliquer sur le lien envoyé par email par mattermost pour valider ton changement d'adresse.
                     \n
