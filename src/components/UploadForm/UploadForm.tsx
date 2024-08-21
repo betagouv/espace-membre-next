@@ -39,13 +39,13 @@ const computeVersion = () => {
 
 function addVersionParam(url: string): string {
     const isRelative = isRelativeUrl(url);
-    const parsedUrl = isRelative
+    const tempUrl = isRelative
         ? new URL(url, window.location.origin)
         : new URL(url);
-    const params = parsedUrl.searchParams;
+    const params = tempUrl.searchParams;
     const version = computeVersion();
     params.set("v", version);
-    return parsedUrl.toString();
+    return isRelative ? tempUrl.pathname + tempUrl.search : tempUrl.toString();
 }
 
 const UploadForm = ({
