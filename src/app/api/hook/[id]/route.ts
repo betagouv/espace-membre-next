@@ -56,7 +56,7 @@ export const fixBounceEmail = async ({ email, id }: ISibWebhookBody) => {
             return "User not found";
         }
     }
-    if (member.emailInfos?.email === email) {
+    if (member.emailInfos?.email === email && !member.isExpired) {
         await smtpBlockedContactsEmailDelete({
             email: email as string,
         });
