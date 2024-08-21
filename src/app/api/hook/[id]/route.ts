@@ -8,6 +8,7 @@ import {
     memberBaseInfoToModel,
 } from "@/models/mapper";
 import config from "@/server/config";
+import { smtpBlockedContactsEmailDelete } from "@/server/config/email.config";
 import { checkUserIsExpired, userInfos } from "@/server/controllers/utils";
 import { sendInfoToChat } from "@/server/infra/chat";
 
@@ -33,10 +34,10 @@ interface ISibWebhookBody {
 }
 
 export const fixBounceEmail = async ({ email, id }: ISibWebhookBody) => {
+    const member = await userInfos({ email }, false);
     if (config.SIB_TECH_WEBHOOK_ID && id === config.SIB_TECH_WEBHOOK_ID) {
         // the identified case is a mattermost notification that has bounced
         try {
-            const member = await userInfos({ email }, false);
             if (!member.emailInfos?.email) {
                 const mattermostUser = await getUserByEmail(email);
                 await sendInfoToChat({
@@ -54,6 +55,11 @@ export const fixBounceEmail = async ({ email, id }: ISibWebhookBody) => {
         } catch (e) {
             return "User not found";
         }
+    }
+    if (member.emailInfos?.email === email) {
+        await smtpBlockedContactsEmailDelete({
+            email: email as string,
+        });
     }
 };
 
