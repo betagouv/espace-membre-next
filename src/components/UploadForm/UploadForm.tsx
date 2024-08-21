@@ -3,6 +3,7 @@ import { useState, useRef, ChangeEvent } from "react";
 import { fr } from "@codegouvfr/react-dsfr";
 import { ButtonProps } from "@codegouvfr/react-dsfr/Button";
 import ButtonsGroup from "@codegouvfr/react-dsfr/ButtonsGroup";
+import Skeleton from "@mui/material/Skeleton/Skeleton";
 import { PlaceholderValue } from "next/dist/shared/lib/get-img-props";
 import Image from "next/image";
 
@@ -19,6 +20,18 @@ interface UploadFormProps {
     shape?: "round" | "square";
 }
 
+const computeVersion = () => {
+    const now = new Date();
+    const year = now.getUTCFullYear(); // Gets the year (e.g., 2023)
+    const month = String(now.getUTCMonth() + 1).padStart(2, "0"); // Months are 0-indexed, so add 1
+    const day = String(now.getUTCDate()).padStart(2, "0");
+    const hours = String(now.getUTCHours()).padStart(2, "0");
+    const minutes = String(now.getUTCMinutes()).padStart(2, "0");
+    const seconds = String(now.getUTCSeconds()).padStart(2, "0");
+    const version = `${year}${month}${day}T${hours}${minutes}${seconds}`;
+    return version;
+};
+
 const UploadForm = ({
     url,
     onChange,
@@ -29,7 +42,7 @@ const UploadForm = ({
     placeholderURL = defaultPlaceholder,
 }: UploadFormProps) => {
     const [image, setImage] = useState<File | null>(null); // Use union type File | null
-
+    const [isImageLoading, setIsImageLoading] = useState<boolean>(true);
     const [shouldDeletePicture, setShouldDeletePicture] =
         useState<boolean>(false);
     const fileInputRef = useRef<HTMLInputElement>(null);
@@ -76,7 +89,7 @@ const UploadForm = ({
     if (image) {
         src = URL.createObjectURL(image);
     } else if (url && !shouldDeletePicture) {
-        src = url;
+        src = `${url}?v=${computeVersion()}`;
     }
 
     if ((url || image) && !shouldDeletePicture) {
@@ -97,6 +110,23 @@ const UploadForm = ({
             priority: "secondary",
         });
     }
+    const imageStyle: React.CSSProperties =
+        shape === "round"
+            ? {
+                  width: "200px",
+                  height: "200px",
+                  position: "relative",
+                  borderRadius: "50%",
+                  overflow: "hidden",
+              }
+            : {
+                  width: "356px",
+                  height: "200px",
+                  position: "relative",
+                  overflow: "hidden",
+                  border: "1px solid #000",
+              };
+
     return (
         <div className="fr-upload-group">
             <label className="fr-label" htmlFor="file-upload">
@@ -104,35 +134,42 @@ const UploadForm = ({
                 {hintText && <span className="fr-hint-text">{hintText}</span>}
                 <span className="fr-hint-text fr-mb-1w">{`Taille maximale : 500 ko. Format supporté : jpg.`}</span>
             </label>
-            <div
-                style={
-                    shape === "round"
-                        ? {
-                              width: "200px",
-                              height: "200px",
-                              position: "relative",
-                              borderRadius: "50%",
-                              overflow: "hidden",
-                          }
-                        : {
-                              width: "356px",
-                              height: "200px",
-                              position: "relative",
-                              overflow: "hidden",
-                              border: "1px solid #000",
-                          }
-                }
-                className={fr.cx("fr-mb-1w", "fr-mt-1w")}
-            >
-                <Image
-                    src={src}
-                    placeholder={placeholderURL}
-                    alt="Photo de profil de l'utilisateur"
-                    fill={true}
-                    onError={() => {}}
-                    style={{ objectFit: "cover" }}
-                />
-            </div>
+            {/* workaround to make skeleton work with Image component when image loading */}
+            {isImageLoading && (
+                <Skeleton
+                    variant={shape === "round" ? "rounded" : "rectangular"}
+                >
+                    <div
+                        style={imageStyle}
+                        className={fr.cx("fr-mb-1w", "fr-mt-1w")}
+                    >
+                        <Image
+                            src={src}
+                            placeholder={placeholderURL}
+                            alt="Photo de profil de l'utilisateur"
+                            fill={true}
+                            onLoadingComplete={() => {
+                                setIsImageLoading(false);
+                            }}
+                            style={{ objectFit: "cover" }}
+                        />
+                    </div>
+                </Skeleton>
+            )}
+            {!isImageLoading && (
+                <div
+                    style={imageStyle}
+                    className={fr.cx("fr-mb-1w", "fr-mt-1w")}
+                >
+                    <Image
+                        src={src}
+                        alt="Photo de profil de l'utilisateur"
+                        fill={true}
+                        style={{ objectFit: "cover" }}
+                    />
+                </div>
+            )}
+
             <input
                 type="file"
                 accept="image/jpeg"
@@ -141,12 +178,6 @@ const UploadForm = ({
                 onChange={handleFileChange}
             />
             <ButtonsGroup buttons={buttons} inlineLayoutWhen="always" />
-            {/* <input
-        className="fr-upload"
-        type="file"
-        id="file-upload"
-        name="file-upload"
-    /> */}
         </div>
     );
 };
