@@ -32,6 +32,14 @@ const computeVersion = () => {
     return version;
 };
 
+function addVersionParam(url: string): string {
+    const parsedUrl = new URL(url);
+    const params = parsedUrl.searchParams;
+    const version = computeVersion();
+    params.set("v", version);
+    return parsedUrl.toString();
+}
+
 const UploadForm = ({
     url,
     onChange,
@@ -89,7 +97,7 @@ const UploadForm = ({
     if (image) {
         src = URL.createObjectURL(image);
     } else if (url && !shouldDeletePicture) {
-        src = `${url}?v=${computeVersion()}`;
+        src = addVersionParam(url);
     }
 
     if ((url || image) && !shouldDeletePicture) {
