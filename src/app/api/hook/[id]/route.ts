@@ -49,7 +49,7 @@ export const fixBounceEmail = async ({ email, id }: ISibWebhookBody) => {
                     Ta nouvelle adresse doit être une adresse de service public.
                     Il faut ensuite cliquer sur le lien envoyé par email par mattermost pour valider ton changement d'adresse.
                     \n
-                    Si ton adresse est censée existée, tu peux faire une demande ops via le formulaire en header du canal ~incubateur-demandes-ops (le mot de passe est indiqué dans le header) et faire une demande de type "Mon email bounce".`,
+                    Si ton adresse est censée exister, tu peux faire une demande ops via le formulaire en header du canal ~incubateur-demandes-ops (le mot de passe est indiqué dans le header) et faire une demande de type "Mon email bounce".`,
                 });
             }
         } catch (e) {
