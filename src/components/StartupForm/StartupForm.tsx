@@ -336,7 +336,7 @@ export function StartupForm(props: StartupFormProps) {
                     </div>
                     {frontConfig.FEATURE_SHOW_UPLOAD_IMAGE_PRODUCT_WIDGET && (
                         <>
-                            <hr />
+                            {/* <hr />
                             <UploadForm
                                 label="Photo de la banière hero"
                                 onChange={(event) => {
@@ -360,7 +360,7 @@ export function StartupForm(props: StartupFormProps) {
                                         setValue("shouldDeleteHero", true);
                                     }
                                 }}
-                            />
+                            /> */}
                             <hr />
                             <UploadForm
                                 label="Image à droite du nom du produit"
