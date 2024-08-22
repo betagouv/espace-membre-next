@@ -85,7 +85,11 @@ const MemberBrevoEventList = ({
                     Email secondaire blacklisté sur brevo :{" "}
                     {emailServiceInfo.secondaryEmail.emailBlacklisted
                         ? "oui"
-                        : "non"}
+                        : "non"}{emailServiceInfo.secondaryEmail.emailBlacklisted && (
+                        <UnblockAdminAction
+                            email={emailServiceInfo.secondaryEmail}
+                        ></UnblockAdminAction>
+                    )}
                 </li>
             )}
         </div>
