@@ -477,7 +477,10 @@ MemberPageProps) {
                         </ul>
                     </>
                 )}
-                <MemberEmailServiceInfo userId={userInfos.username} />
+                <MemberEmailServiceInfo
+                    userId={userInfos.username}
+                    isAdmin={isAdmin}
+                />
                 {[
                     EmailStatusCode.EMAIL_CREATION_WAITING,
                     EmailStatusCode.EMAIL_VERIFICATION_WAITING,

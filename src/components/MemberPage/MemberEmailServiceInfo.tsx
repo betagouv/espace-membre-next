@@ -1,11 +1,38 @@
 import { useEffect, useState } from "react";
 
+import Button from "@codegouvfr/react-dsfr/Button";
+
+import { unblockMemberEmailAddress } from "@/app/api/admin/action";
 import {
     brevoEmailInfoDataSchema,
     brevoEmailInfoDataSchemaType,
 } from "@/models/brevoInfo";
 
-const MemberBrevoEventList = ({ userId }) => {
+const UnblockAdminAction = ({ email }) => {
+    const [loading, setLoading] = useState<boolean>(false);
+    const onClick = async () => {
+        setLoading(true);
+        await unblockMemberEmailAddress(email);
+        setLoading;
+    };
+    return (
+        <div>
+            <Button disabled={loading} onClick={onClick}>
+                {loading
+                    ? `Débloquage de l'email en cours ...`
+                    : `Débloquer l'email`}
+            </Button>
+        </div>
+    );
+};
+
+const MemberBrevoEventList = ({
+    userId,
+    isAdmin,
+}: {
+    userId: string;
+    isAdmin: boolean;
+}) => {
     const [emailServiceInfo, setEmailServiceInfo] =
         useState<brevoEmailInfoDataSchemaType>();
     const [loading, setLoading] = useState(false);
@@ -46,6 +73,11 @@ const MemberBrevoEventList = ({ userId }) => {
                     {emailServiceInfo.primaryEmail.emailBlacklisted
                         ? "oui"
                         : "non"}
+                    {emailServiceInfo.primaryEmail.emailBlacklisted && (
+                        <UnblockAdminAction
+                            email={emailServiceInfo.primaryEmail}
+                        ></UnblockAdminAction>
+                    )}
                 </li>
             )}
             {emailServiceInfo.secondaryEmail && (
