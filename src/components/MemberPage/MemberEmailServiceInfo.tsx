@@ -13,7 +13,7 @@ const UnblockAdminAction = ({ email }) => {
     const onClick = async () => {
         setLoading(true);
         await unblockMemberEmailAddress(email);
-        setLoading;
+        setLoading(false);
     };
     return (
         <div>
