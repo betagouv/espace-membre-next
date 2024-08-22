@@ -8,7 +8,7 @@ import {
     brevoEmailInfoDataSchemaType,
 } from "@/models/brevoInfo";
 
-const UnblockAdminAction = ({ email }) => {
+const UnblockAdminAction = ({ email }: { email: string }) => {
     const [loading, setLoading] = useState<boolean>(false);
     const onClick = async () => {
         setLoading(true);
@@ -75,7 +75,7 @@ const MemberBrevoEventList = ({
                         : "non"}
                     {emailServiceInfo.primaryEmail.emailBlacklisted && (
                         <UnblockAdminAction
-                            email={emailServiceInfo.primaryEmail}
+                            email={emailServiceInfo.primaryEmail.email}
                         ></UnblockAdminAction>
                     )}
                 </li>
@@ -85,9 +85,10 @@ const MemberBrevoEventList = ({
                     Email secondaire blacklisté sur brevo :{" "}
                     {emailServiceInfo.secondaryEmail.emailBlacklisted
                         ? "oui"
-                        : "non"}{emailServiceInfo.secondaryEmail.emailBlacklisted && (
+                        : "non"}
+                    {emailServiceInfo.secondaryEmail.emailBlacklisted && (
                         <UnblockAdminAction
-                            email={emailServiceInfo.secondaryEmail}
+                            email={emailServiceInfo.secondaryEmail.email}
                         ></UnblockAdminAction>
                     )}
                 </li>
