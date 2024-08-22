@@ -1,4 +1,5 @@
 import { useState, useRef, ChangeEvent } from "react";
+import { format } from "date-fns";
 
 import { fr } from "@codegouvfr/react-dsfr";
 import { ButtonProps } from "@codegouvfr/react-dsfr/Button";
@@ -26,14 +27,7 @@ function isRelativeUrl(url) {
 }
 
 const computeVersion = () => {
-    const now = new Date();
-    const year = now.getUTCFullYear(); // Gets the year (e.g., 2023)
-    const month = String(now.getUTCMonth() + 1).padStart(2, "0"); // Months are 0-indexed, so add 1
-    const day = String(now.getUTCDate()).padStart(2, "0");
-    const hours = String(now.getUTCHours()).padStart(2, "0");
-    const minutes = String(now.getUTCMinutes()).padStart(2, "0");
-    const seconds = String(now.getUTCSeconds()).padStart(2, "0");
-    const version = `${year}${month}${day}T${hours}${minutes}${seconds}`;
+    const version = format(new Date(), "yyyyMMdd'T'HHmmss") ?
     return version;
 };
 
