@@ -282,7 +282,11 @@ export async function userInfos(
 
         throw new Error(
             `Problème pour récupérer les infos du membre ${
-                "username" in params ? params.username : params.uuid
+                "username" in params
+                    ? params.username
+                    : "uuid" in params
+                    ? params.uuid
+                    : params.email
             }`
         );
     }
