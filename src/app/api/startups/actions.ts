@@ -22,7 +22,15 @@ import {
     withErrorHandling,
 } from "@/utils/error";
 
-async function createStartup({
+export async function getStartup({ uuid }: { uuid: string }) {
+    return db
+        .selectFrom("startups")
+        .selectAll()
+        .where("uuid", "=", uuid)
+        .executeTakeFirstOrThrow();
+}
+
+export async function createStartup({
     formData: {
         startup,
         startupSponsors,

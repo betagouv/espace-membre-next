@@ -1,11 +1,10 @@
 "use client";
 import Accordion from "@codegouvfr/react-dsfr/Accordion";
-import Button from "@codegouvfr/react-dsfr/Button";
+import ButtonsGroup from "@codegouvfr/react-dsfr/ButtonsGroup";
 import { Table } from "@codegouvfr/react-dsfr/Table";
 
 import { BreadCrumbFiller } from "@/app/BreadCrumbProvider";
 import { memberBaseInfoSchemaType } from "@/models/member";
-import { missionSchemaType } from "@/models/mission";
 import { phaseSchemaType, startupSchemaType } from "@/models/startup";
 import { getLastMissionDate } from "@/utils/member";
 import { getCurrentPhase } from "@/utils/startup";
@@ -113,13 +112,26 @@ export default function StartupPage({
                 <p className="fr-text--sm" style={{ fontStyle: "italic" }}>
                     Une information n'est pas à jour ?
                 </p>
-                <Button
-                    linkProps={{
-                        href: `/startups/${startupInfos.uuid}/info-form`,
-                    }}
-                >
-                    ✏️ Mettre à jour les infos
-                </Button>
+                <ButtonsGroup
+                    inlineLayoutWhen="always"
+                    buttons={[
+                        {
+                            children: "Mettre à jour les infos",
+                            iconId: "fr-icon-edit-fill",
+                            linkProps: {
+                                href: `/startups/${startupInfos.uuid}/info-form`,
+                            },
+                        },
+                        {
+                            children: "Gérer les documents",
+                            iconId: "fr-icon-file-add-line",
+                            linkProps: {
+                                href: `/startups/${startupInfos.uuid}/files`,
+                            },
+                            priority: "secondary",
+                        },
+                    ]}
+                ></ButtonsGroup>
             </div>
 
             <div className="fr-mb-4v">

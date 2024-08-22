@@ -165,5 +165,9 @@ export const routes = {
             localizedRoutes.teamDetails.params,
             localizedRoutes.teamDetails.paths.fr
         ),
+        startupDocs: defineRoute(
+            localizedRoutes.startupDocs.params,
+            localizedRoutes.startupDocs.paths.fr
+        ),
     }).routes,
 };

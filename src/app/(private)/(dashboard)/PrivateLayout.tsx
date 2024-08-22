@@ -43,6 +43,9 @@ export function PrivateLayout({ children }: { children: React.ReactNode }) {
     );
     const dashboardLink = linkRegistry.get("dashboard", undefined);
     const startupListLink = linkRegistry.get("startupList", undefined);
+    const startupDetailLink = linkRegistry.get("startupDetails", {
+        startupId: "",
+    });
     const startupCreateLink = linkRegistry.get("startupCreate", undefined);
     const incubatorListLink = linkRegistry.get("incubatorList", undefined);
     const incubatorCreateLink = linkRegistry.get("incubatorCreate", undefined);
@@ -308,7 +311,16 @@ export function PrivateLayout({ children }: { children: React.ReactNode }) {
             text: "Produit",
             isActive: hasPathnameThisMatch(pathname, startupListLink),
             expandedByDefault: Boolean(startupSubPage.find((a) => a.isActive)),
-            items: startupSubPage,
+            items: [
+                ...startupSubPage,
+                {
+                    linkProps: {
+                        href: pathname,
+                    },
+                    text: currentPage || pathname,
+                    isActive: hasPathnameThisRegex(pathname, startupDetailLink),
+                },
+            ],
         },
         {
             linkProps: {
