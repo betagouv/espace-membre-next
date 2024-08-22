@@ -294,7 +294,7 @@ export default function MemberPage({
 }: // emailServiceInfo,
 MemberPageProps) {
     const session = useSession();
-    const isAdmin = session.data?.user.isAdmin;
+    const isAdmin = !!session.data?.user.isAdmin;
     const shouldDisplayUpgrade = Boolean(
         isAdmin &&
             availableEmailPros.length &&
