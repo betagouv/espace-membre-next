@@ -10,7 +10,8 @@ export async function unblockMemberEmailAddress(email: string) {
     if (!session || !session.user.id || !session.user.isAdmin) {
         throw new AuthorizationError();
     }
-    smtpBlockedContactsEmailDelete({
+    const res = await smtpBlockedContactsEmailDelete({
         email,
     });
+    return res;
 }
