@@ -27,7 +27,7 @@ function isRelativeUrl(url) {
 }
 
 const computeVersion = () => {
-    const version = format(new Date(), "yyyyMMdd'T'HHmmss") ?
+    const version = format(new Date(), "yyyyMMdd'T'HHmmss")
     return version;
 };
 
