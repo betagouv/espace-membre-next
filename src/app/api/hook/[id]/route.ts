@@ -33,7 +33,7 @@ interface ISibWebhookBody {
     tags: string[];
 }
 
-export const fixBounceEmail = async ({ email, id }: ISibWebhookBody) => {
+const fixBounceEmail = async ({ email, id }: ISibWebhookBody) => {
     const member = await userInfos({ email }, false);
     if (config.SIB_TECH_WEBHOOK_ID && id === config.SIB_TECH_WEBHOOK_ID) {
         // the identified case is a mattermost notification that has bounced
