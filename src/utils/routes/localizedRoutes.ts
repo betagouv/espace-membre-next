@@ -126,7 +126,7 @@ export const localizedRoutes = {
     startupDocs: defineLocalizedRoute(
         { startupId: param.path.string },
         {
-            fr: (p) => `/startups/${p.startupId}/docs`,
+            fr: (p) => `/startups/${p.startupId}/files`,
         }
     ),
     startupCreate: defineLocalizedRoute(
