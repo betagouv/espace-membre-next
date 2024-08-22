@@ -17,7 +17,7 @@ const contenus = [
         label: "recherche-ux",
         description: "Synthèse de recherche utilisateur",
     },
-    { label: "benchmark", description: "BVenchmark de solutions existantes" },
+    { label: "benchmark", description: "Benchmark de solutions existantes" },
     { label: "impact", description: "Évaluation de notre impact à date" },
     {
         label: "roadmap",
