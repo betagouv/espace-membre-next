@@ -156,7 +156,7 @@ export function Search(props: SearchProps) {
                             nativeInputProps.className
                         )}
                         value={isEditing ? value : selectedValue}
-                        defaultValue={defaultValue}
+                        // defaultValue={defaultValue}
                         id={nativeInputProps.id}
                         placeholder={nativeInputProps.placeholder}
                         type={nativeInputProps.type}

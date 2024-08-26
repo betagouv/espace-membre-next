@@ -195,7 +195,7 @@ export const Mission = ({
                         }}
                         {...defaultState("status")}
                     >
-                        <option disabled value="" hidden selected>
+                        <option disabled value="" hidden>
                             Sélectionner une option
                         </option>
                         {userStatusOptions.map((option) => (

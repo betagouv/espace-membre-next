@@ -287,12 +287,7 @@ export default function CommunityCreateMemberPage(props: BaseInfoUpdateProps) {
                                             errors.member.domaine?.message
                                         }
                                     >
-                                        <option
-                                            value=""
-                                            hidden
-                                            selected
-                                            disabled
-                                        >
+                                        <option value="" hidden disabled>
                                             Sélectionner une option
                                         </option>
                                         {DOMAINE_OPTIONS.map((domaine) => (
