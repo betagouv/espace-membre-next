@@ -20,6 +20,7 @@ import { EMAIL_STATUS_READABLE_FORMAT } from "@/models/misc";
 import { missionSchemaType } from "@/models/mission";
 import routes, { computeRoute } from "@/routes/routes";
 import { getLastMission, getLastMissionDate } from "@/utils/member";
+import Tag from "@codegouvfr/react-dsfr/Tag";
 
 export interface MemberPageProps {
     emailInfos: memberWrapperSchemaType["emailInfos"];
@@ -42,6 +43,7 @@ export interface MemberPageProps {
             listIds: number[];
         };
     };
+    startups: { uuid: string | null; name: string | null }[];
 }
 
 const ChangeSecondaryEmailBloc = ({
@@ -291,6 +293,7 @@ export default function MemberPage({
     authorizations,
     mattermostInfo,
     isExpired,
+    startups,
 }: // emailServiceInfo,
 MemberPageProps) {
     const session = useSession();
@@ -415,6 +418,29 @@ MemberPageProps) {
                                     </>
                                 )}
                                 <br />
+                                {startups.length > 0 && (
+                                    <div className={fr.cx("fr-mt-2w")}>
+                                        A contribué à ces produits:
+                                        <br />
+                                        <div className={fr.cx("fr-mt-1w")}>
+                                            {startups
+                                                .filter((s) => !!s.name)
+                                                .map((startup, i) => (
+                                                    <Tag
+                                                        key={i}
+                                                        className={fr.cx(
+                                                            "fr-mr-1v"
+                                                        )}
+                                                        linkProps={{
+                                                            href: `/startups/${startup.uuid}`,
+                                                        }}
+                                                    >
+                                                        {startup.name}
+                                                    </Tag>
+                                                ))}
+                                        </div>
+                                    </div>
+                                )}
                             </p>
                         </div>
                     </div>

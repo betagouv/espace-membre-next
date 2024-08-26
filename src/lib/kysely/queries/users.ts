@@ -242,3 +242,29 @@ export async function updateUser(
 
     return result.length;
 }
+
+export async function getUserStartups(
+    uuid: string,
+    db: Kysely<DB> = database
+): Promise<{ name: string | null; uuid: string | null }[]> {
+    const result = await db
+        .selectFrom("users")
+        .leftJoin("missions", "missions.user_id", "users.uuid")
+        .leftJoin(
+            "missions_startups",
+            "missions_startups.mission_id",
+            "missions.uuid"
+        )
+        .leftJoin("startups", "startups.uuid", "missions_startups.startup_id")
+        .select(["startups.uuid", "startups.name", "missions.start"])
+        .distinct()
+        .where("users.uuid", "=", uuid)
+        .orderBy("missions.start", "desc")
+        .execute();
+
+    if (!result) {
+        throw new Error("Failed to insert or update mission");
+    }
+
+    return result;
+}
