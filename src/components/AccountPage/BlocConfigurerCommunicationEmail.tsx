@@ -74,9 +74,6 @@ export default function BlocConfigurerCommunicationEmail({
                                         defaultChecked:
                                             value ===
                                             CommunicationEmailCode.PRIMARY,
-                                        checked:
-                                            value ===
-                                            CommunicationEmailCode.PRIMARY,
                                         onChange: () =>
                                             setValue(
                                                 CommunicationEmailCode.PRIMARY
@@ -87,9 +84,6 @@ export default function BlocConfigurerCommunicationEmail({
                                     label: secondary_email,
                                     nativeInputProps: {
                                         defaultChecked:
-                                            value ===
-                                            CommunicationEmailCode.SECONDARY,
-                                        checked:
                                             value ===
                                             CommunicationEmailCode.SECONDARY,
                                         onChange: () =>
