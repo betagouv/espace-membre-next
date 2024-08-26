@@ -63,7 +63,11 @@ const MemberEmailServiceInfo = ({
 
     if (loading) return <div>Loading...</div>;
     if (!emailServiceInfo?.primaryEmail && !emailServiceInfo?.secondaryEmail)
-        return <div>Pas d'information trouvée sur les emails dans brevo</div>;
+        return (
+            <div>
+                <p>Pas d'information trouvée sur les emails dans brevo</p>
+            </div>
+        );
 
     return (
         <div>
