@@ -4,8 +4,9 @@ import { db } from "@/lib/kysely";
 import { brevoEmailInfoDataSchema } from "@/models/brevoInfo";
 import { getContactInfo } from "@/server/infra/email/sendInBlue";
 import { authOptions } from "@/utils/authoptions";
+import { AuthorizationError, withHttpErrorHandling } from "@/utils/error";
 
-export async function GET(
+export const GET = withHttpErrorHandling(async function (
     req: Request,
     {
         params: { username },
@@ -18,10 +19,7 @@ export async function GET(
     const session = await getServerSession(authOptions);
 
     if (!session || !session.user.id) {
-        throw new Error(`You don't have the right to access this function`);
-    }
-    if (!session.user.isAdmin) {
-        throw new Error(`User should be admin or should owned data`);
+        throw new AuthorizationError();
     }
 
     const dbUser = await db
@@ -42,4 +40,4 @@ export async function GET(
         });
     }
     return Response.json(brevoEmailInfoDataSchema.parse(emailServiceInfo));
-}
+});

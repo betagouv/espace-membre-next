@@ -130,7 +130,7 @@ export function withHttpErrorHandling<Args extends any[]>(
 ): (...args: Args) => Promise<Response> {
     return async (...args: Args) => {
         try {
-            return Response.json(await action(...args));
+            return await action(...args);
         } catch (error: any) {
             const errorName = error.constructor.name;
             if (errorMapping[errorName]) {
