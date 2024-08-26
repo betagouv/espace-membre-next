@@ -103,7 +103,8 @@ export function withErrorHandling<T, Args extends any[]>(
                 error instanceof NoDataError ||
                 error instanceof ValidationError ||
                 error instanceof OVHError ||
-                error instanceof StartupUniqueConstraintViolationError
+                error instanceof StartupUniqueConstraintViolationError ||
+                error instanceof MemberUniqueConstraintViolationError
             ) {
                 // Return a standardized error response
                 return {
