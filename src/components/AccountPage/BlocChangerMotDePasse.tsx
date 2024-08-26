@@ -77,24 +77,16 @@ function PasswordChange({ username }: { username: string }) {
                 {
                     message: (
                         <>
-                            <ul>
-                                <li>
-                                    Le mot de passe doit contenir de 14 à 30
-                                    caractères,
-                                </li>
-                                <li>
-                                    des majuscules et des minuscules ainsi que
-                                    des caractères spéciaux,
-                                </li>
-                                <li>
-                                    pas de caractères spéciaux au début ou à la
-                                    fin,
-                                </li>
-                                <li>
-                                    ne doit pas contenir tout ou partie du nom
-                                    de compte utilisateur
-                                </li>
-                            </ul>
+                            Le mot de passe doit :
+                            <br />
+                            - contenir de 14 à 30 caractères,
+                            <br />
+                            - des majuscules et des minuscules ainsi que des
+                            caractères spéciaux,
+                            <br />
+                            - pas de caractères spéciaux au début ou à la fin,
+                            <br />- ne doit pas contenir tout ou partie du nom
+                            de compte utilisateur
                         </>
                     ),
                     severity: "info" as PasswordInputProps.Severity,
