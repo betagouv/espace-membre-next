@@ -158,7 +158,7 @@ const UploadForm = ({
                             placeholder={placeholderURL}
                             alt="Photo de profil de l'utilisateur"
                             fill={true}
-                            onLoadingComplete={() => {
+                            onLoad={() => {
                                 setIsImageLoading(false);
                             }}
                             style={{ objectFit: "cover" }}
