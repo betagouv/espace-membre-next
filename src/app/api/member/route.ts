@@ -73,5 +73,5 @@ export const POST = withHttpErrorHandling(async (req: Request) => {
         console.error("Unexpected error:", error);
         throw error;
     }
-    return dbUser;
+    return Response.json(dbUser);
 });
