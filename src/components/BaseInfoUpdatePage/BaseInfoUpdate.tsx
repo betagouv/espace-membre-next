@@ -269,7 +269,7 @@ export const BaseInfoUpdate = (props: BaseInfoUpdateProps) => {
                         state={errors.member?.domaine ? "error" : "default"}
                         stateRelatedMessage={errors.member?.domaine?.message}
                     >
-                        <option disabled value="" hidden selected>
+                        <option disabled value="" hidden>
                             Sélectionner une option
                         </option>
                         {DOMAINE_OPTIONS.map((domaine) => (
