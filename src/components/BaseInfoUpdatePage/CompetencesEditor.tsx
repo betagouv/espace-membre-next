@@ -59,6 +59,9 @@ export const CompetencesEditor = ({
                     <ul>{params.children}</ul>
                 </li>
             )}
+            isOptionEqualToValue={(option, value) => {
+                return option.label === value.label;
+            }}
             onChange={(event, newValues) => {
                 const newValue = newValues.length
                     ? newValues[newValues.length - 1]
