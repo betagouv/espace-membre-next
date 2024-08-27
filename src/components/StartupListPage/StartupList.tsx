@@ -40,10 +40,8 @@ export const StartupList = (props: StartupListProps) => {
                     }}
                 />
             </form>
-            <br></br>
-            <br></br>
-            Pour créer une nouvelle fiche produit c'est ici :{" "}
-            <a href="/startups/create-form">Créer une fiche produit</a>
+            <br>
+            <p><a class="fr-btn" href="/startups/create-form">Créer une nouvelle fiche produit</a></p>
         </>
     );
 };

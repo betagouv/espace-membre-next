@@ -61,7 +61,7 @@ const SponsorBlock = ({
                     marginBottom: `0.5rem`,
                 }}
                 hint={
-                    "Indiquez la ou les administrations qui sponsorisent votre produit"
+                    "Administration(s) qui sponsorise(nt) le produit"
                 }
             />
             <span className="fr-text fr-text--sm">

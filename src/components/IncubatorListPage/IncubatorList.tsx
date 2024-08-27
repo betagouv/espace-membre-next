@@ -42,10 +42,8 @@ export const IncubatorList = (props: IncubatorListProps) => {
                     }}
                 />
             </form>
-            <br></br>
-            <br></br>
-            Pour créer une nouvelle fiche incubateur c'est ici :{" "}
-            <a href="/incubators/create-form">Créer une fiche incubateur</a>
+            <br>
+            <p><a class="fr-btn" href="/incubators/create-form">Créer une nouvelle fiche incubateur</a></p>
         </>
     );
 };

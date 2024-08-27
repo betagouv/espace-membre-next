@@ -41,10 +41,8 @@ export const TeamList = (props: TeamListProps) => {
                     }}
                 />
             </form>
-            <br></br>
-            <br></br>
-            Pour créer une nouvelle fiche équipe c'est ici :{" "}
-            <a href="/teams/create-form">Créer une fiche équipe</a>
+            <br>
+            <p><a class="fr-btn" href="/teams/create-form">Créer une nouvelle fiche équipe</a></p>
         </>
     );
 };
