@@ -7,6 +7,52 @@ import {
     brevoEmailInfoDataSchema,
     brevoEmailInfoDataSchemaType,
 } from "@/models/brevoInfo";
+import { SIBContact } from "@/server/infra/email/sendInBlue";
+
+const ContactCard = (contact: SIBContact) => {
+    // Parse and validate the data
+
+    // Format the date for display
+    const formattedDate = contact.blockedAt.toLocaleString();
+
+    return (
+        <table>
+            <tbody>
+                <tr>
+                    <td>
+                        <strong>Email:</strong>
+                    </td>
+                    <td>{contact.email}</td>
+                </tr>
+                <tr>
+                    <td>
+                        <strong>Raison:</strong>
+                    </td>
+                    <td>{contact.reason.message}</td>
+                </tr>
+                <tr>
+                    <td>
+                        <strong>Code:</strong>
+                    </td>
+                    <td>{contact.reason.code}</td>
+                </tr>
+                <tr>
+                    <td>
+                        <strong>Bloqué le :</strong>
+                    </td>
+                    <td>{formattedDate}</td>
+                </tr>
+                <tr>
+                    <td>
+                        <UnblockAdminAction
+                            email={contact.email}
+                        ></UnblockAdminAction>
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+    );
+};
 
 const UnblockAdminAction = ({ email }: { email: string }) => {
     const [loading, setLoading] = useState<boolean>(false);
@@ -17,7 +63,7 @@ const UnblockAdminAction = ({ email }: { email: string }) => {
     };
     return (
         <div>
-            <Button disabled={loading} onClick={onClick}>
+            <Button size="small" disabled={loading} onClick={onClick}>
                 {loading
                     ? `Débloquage de l'email en cours ...`
                     : `Débloquer l'email`}
@@ -62,41 +108,52 @@ const MemberEmailServiceInfo = ({
     }, [userId]);
 
     if (loading) return <div>Loading...</div>;
-    if (!emailServiceInfo?.primaryEmail && !emailServiceInfo?.secondaryEmail)
-        return (
-            <div>
-                <p>Pas d'information trouvée sur les emails dans brevo</p>
-            </div>
-        );
+    if (
+        !emailServiceInfo?.primaryEmail &&
+        !emailServiceInfo?.secondaryEmail &&
+        !emailServiceInfo?.primaryEmailTransac &&
+        !emailServiceInfo?.secondaryEmailTransac
+    )
+        return <div>Pas d'information trouvée sur les emails dans brevo</div>;
 
     return (
         <div>
             {emailServiceInfo.primaryEmail && (
                 <li>
-                    Email primaire blacklisté sur brevo :{" "}
+                    Email primaire blacklisté sur les campagnes brevo :{" "}
                     {emailServiceInfo.primaryEmail.emailBlacklisted
                         ? "oui"
                         : "non"}
-                    {isAdmin &&
-                        emailServiceInfo.primaryEmail.emailBlacklisted && (
-                            <UnblockAdminAction
-                                email={emailServiceInfo.primaryEmail.email}
-                            ></UnblockAdminAction>
-                        )}
                 </li>
             )}
             {emailServiceInfo.secondaryEmail && (
                 <li>
-                    Email secondaire blacklisté sur brevo :{" "}
+                    Email secondaire blacklisté sur les campagnes brevo :{" "}
                     {emailServiceInfo.secondaryEmail.emailBlacklisted
                         ? "oui"
                         : "non"}
-                    {isAdmin &&
-                        emailServiceInfo.secondaryEmail.emailBlacklisted && (
-                            <UnblockAdminAction
-                                email={emailServiceInfo.secondaryEmail.email}
-                            ></UnblockAdminAction>
-                        )}
+                </li>
+            )}
+            {emailServiceInfo.primaryEmailTransac && (
+                <li>
+                    Email primaire bloqué sur brevo en transactionnel :{" "}
+                    {emailServiceInfo.primaryEmailTransac ? "oui" : "non"}
+                    {isAdmin && emailServiceInfo.primaryEmailTransac && (
+                        <ContactCard
+                            {...emailServiceInfo.primaryEmailTransac}
+                        />
+                    )}
+                </li>
+            )}
+            {emailServiceInfo.secondaryEmailTransac && (
+                <li>
+                    Email secondaire bloqué sur brevo :{" "}
+                    {emailServiceInfo.secondaryEmailTransac ? "oui" : "non"}
+                    {isAdmin && emailServiceInfo.secondaryEmailTransac && (
+                        <ContactCard
+                            {...emailServiceInfo.secondaryEmailTransac}
+                        />
+                    )}
                 </li>
             )}
         </div>
