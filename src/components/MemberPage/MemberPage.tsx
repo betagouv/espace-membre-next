@@ -422,23 +422,29 @@ MemberPageProps) {
                                     <div className={fr.cx("fr-mt-2w")}>
                                         A contribué à ces produits:
                                         <br />
-                                        <div className={fr.cx("fr-mt-1w")}>
+                                        <ul style={{ paddingLeft: 0 }}>
                                             {startups
                                                 .filter((s) => !!s.name)
                                                 .map((startup, i) => (
-                                                    <Tag
+                                                    <li
                                                         key={i}
-                                                        className={fr.cx(
-                                                            "fr-mr-1v"
-                                                        )}
-                                                        linkProps={{
-                                                            href: `/startups/${startup.uuid}`,
+                                                        style={{
+                                                            display: "inline",
                                                         }}
                                                     >
-                                                        {startup.name}
-                                                    </Tag>
+                                                        <Tag
+                                                            className={fr.cx(
+                                                                "fr-mr-1v"
+                                                            )}
+                                                            linkProps={{
+                                                                href: `/startups/${startup.uuid}`,
+                                                            }}
+                                                        >
+                                                            {startup.name}
+                                                        </Tag>
+                                                    </li>
                                                 ))}
-                                        </div>
+                                        </ul>
                                     </div>
                                 )}
                             </p>
