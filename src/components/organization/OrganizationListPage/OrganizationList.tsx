@@ -42,7 +42,7 @@ export const OrganizationList = (props: OrganizationListProps) => {
                 />
             </form>
             <br>
-            <p><a class="fr-btn" href="/organizations/create-form">
+            <p><a class="fr-btn fr-btn--secondary" href="/organizations/create-form">
                 Créer une fiche nouvelle organisation sponsor
             </a></p>
         </>
