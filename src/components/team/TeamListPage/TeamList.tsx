@@ -42,7 +42,7 @@ export const TeamList = (props: TeamListProps) => {
                 />
             </form>
             <br>
-            <p><a class="fr-btn" href="/teams/create-form">Créer une nouvelle fiche équipe</a></p>
+            <p><a class="fr-btn fr-btn--secondary" href="/teams/create-form">Créer une nouvelle fiche équipe</a></p>
         </>
     );
 };

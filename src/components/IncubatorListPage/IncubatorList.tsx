@@ -43,7 +43,7 @@ export const IncubatorList = (props: IncubatorListProps) => {
                 />
             </form>
             <br>
-            <p><a class="fr-btn" href="/incubators/create-form">Créer une nouvelle fiche incubateur</a></p>
+            <p><a class="fr-btn fr-btn--secondary" href="/incubators/create-form">Créer une nouvelle fiche incubateur</a></p>
         </>
     );
 };

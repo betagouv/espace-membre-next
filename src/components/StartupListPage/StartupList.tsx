@@ -41,7 +41,7 @@ export const StartupList = (props: StartupListProps) => {
                 />
             </form>
             <br>
-            <p><a class="fr-btn" href="/startups/create-form">Créer une nouvelle fiche produit</a></p>
+            <p><a class="fr-btn fr-btn--secondary" href="/startups/create-form">Créer une nouvelle fiche produit</a></p>
         </>
     );
 };
