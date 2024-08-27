@@ -101,18 +101,18 @@ export async function PUT(
 //         throw new Error(`You don't have the right to access this function`);
 //     }
 
-//     const isCurrentUser = session.user.id === username;
-//     try {
-//         // todo not sure this call should send all user infos
-//         const user = await userInfos({ username }, isCurrentUser);
-//         const hasGithubFile = user.userInfos;
-//         const hasEmailAddress =
-//             user.emailInfos || user.emailRedirections.length > 0;
-//         if (!hasGithubFile && !hasEmailAddress) {
-//             throw new Error(
-//                 'Il n\'y a pas de membres avec ce compte mail. Vous pouvez commencez par créer une fiche sur Github pour la personne <a href="/onboarding">en cliquant ici</a>.'
-//             );
-//         }
+// const isCurrentUser = session.user.id === username;
+// try {
+//     // todo not sure this call should send all user infos
+//     const user = await userInfos({ username }, isCurrentUser);
+//     const hasGithubFile = user.userInfos;
+//     const hasEmailAddress =
+//         user.emailInfos || user.emailRedirections.length > 0;
+//     if (!hasGithubFile && !hasEmailAddress) {
+//         throw new Error(
+//             'Il n\'y a pas de membres avec ce compte mail. Vous pouvez <a href="/onboarding">créer la fiche de cette personne</a>.'
+//         );
+//     }
 
 //         const dbUser = await getUserBasicInfo({ username });
 //         const primaryEmail = dbUser ? dbUser.primary_email : "";
