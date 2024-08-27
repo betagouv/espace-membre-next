@@ -1,18 +1,4 @@
 import {
-    AddContactsToMailingLists,
-    GetAllContacts,
-    GetAllContactsFromList,
-    GetAllTransacBlockedContacts,
-    IMailingService,
-    RemoveContactsFromMailingList,
-    SendCampaignEmail,
-    SendEmail,
-    SmtpBlockedContactsEmailDelete,
-    UpdateContactEmail,
-    UnblacklistContactEmail,
-    GetContactInfo,
-} from "@modules/email";
-import {
     fakeAddContactsToMailingLists,
     fakeGetAllTransacBlockedContacts,
     fakeRemoveContactsFromMailingList,
@@ -27,6 +13,20 @@ import {
     fakeGetContactInfo,
 } from "@infra/email";
 import { makeSendinblue } from "@infra/email/sendInBlue";
+import {
+    AddContactsToMailingLists,
+    GetAllContacts,
+    GetAllContactsFromList,
+    GetAllTransacBlockedContacts,
+    IMailingService,
+    RemoveContactsFromMailingList,
+    SendCampaignEmail,
+    SendEmail,
+    SmtpBlockedContactsEmailDelete,
+    UpdateContactEmail,
+    UnblacklistContactEmail,
+    GetContactInfo,
+} from "@modules/email";
 import htmlBuilder from "@modules/htmlbuilder/htmlbuilder";
 
 let sendEmail: SendEmail = fakeSendEmail;
@@ -162,6 +162,7 @@ if (process.env.NODE_ENV !== "test") {
             unblacklistContactEmail = sendInBlue.unblacklistContactEmail;
             getContactInfo = sendInBlue.getContactInfo;
         }
+        getAllTransacBlockedContacts = sendInBlue.getAllTransacBlockedContacts;
     } catch (e) {
         console.error(e);
         process.exit(1);

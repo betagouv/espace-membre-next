@@ -82,6 +82,21 @@ type SendinblueDeps = {
         | undefined;
 };
 
+export interface SIBContact {
+    email: string;
+    reason: {
+        message: string;
+        code:
+            | "hardBounce"
+            | "unsubscribedViaMA"
+            | "unsubscribedViaEmail"
+            | "adminBlocked"
+            | "unsubscribedViaApi"
+            | "contactFlaggedAsSpam";
+    };
+    blockedAt: Date;
+}
+
 export function createContact({
     email,
     listIds,
@@ -338,43 +353,43 @@ export async function unblacklistContactEmail({
     );
 }
 
-export async function getAllTransacBlockedContacts({
-    startDate,
-    endDate,
-    offset,
-    senders,
-}: {
-    startDate: Date;
-    endDate: Date;
-    senders?: string[];
-    offset: number;
-}): Promise<Contact[]> {
-    const limit = 100;
-    let apiInstance = new SibApiV3Sdk.TransactionalEmailsApi();
-    let opts = {
-        startDate: startDate.toISOString().split("T")[0], //mandatory
-        endDate: endDate.toISOString().split("T")[0], //mandatory
-        limit, // max 100
-        offset: offset || 0,
-        senders,
-    };
+// export async function getAllTransacBlockedContacts({
+//     startDate,
+//     endDate,
+//     offset,
+//     senders,
+// }: {
+//     startDate: Date;
+//     endDate: Date;
+//     senders?: string[];
+//     offset: number;
+// }): Promise<Contact[]> {
+//     const limit = 100;
+//     let apiInstance = new SibApiV3Sdk.TransactionalEmailsApi();
+//     let opts = {
+//         startDate: startDate.toISOString().split("T")[0], //mandatory
+//         endDate: endDate.toISOString().split("T")[0], //mandatory
+//         limit, // max 100
+//         offset: offset || 0,
+//         senders,
+//     };
 
-    const data = await apiInstance
-        .getTransacBlockedContacts(opts)
-        .then((data) => {
-            return data.contacts;
-        });
-    if (data.length < limit) {
-        return data;
-    }
-    const nextData = await getAllTransacBlockedContacts({
-        startDate,
-        endDate,
-        senders,
-        offset: limit,
-    });
-    return [...data, ...nextData];
-}
+//     const data = await apiInstance
+//         .getTransacBlockedContacts(opts)
+//         .then((data) => {
+//             return data.contacts;
+//         });
+//     if (data.length < limit) {
+//         return data;
+//     }
+//     const nextData = await getAllTransacBlockedContacts({
+//         startDate,
+//         endDate,
+//         senders,
+//         offset: limit,
+//     });
+//     return [...data, ...nextData];
+// }
 
 export async function getAllContacts({
     offset,
@@ -462,6 +477,69 @@ export async function getContactInfo({ email }: { email: string }) {
         }
     );
     return data;
+}
+
+export async function getTransacBlockedContacts({
+    startDate,
+    endDate,
+    limit,
+    offset,
+    senders,
+}: {
+    startDate?: Date;
+    endDate?: Date;
+    limit: number;
+    offset?: number;
+    senders?: string[];
+}): Promise<{
+    contacts: SIBContact[];
+    count: number;
+}> {
+    let apiInstance = new SibApiV3Sdk.TransactionalEmailsApi();
+
+    let opts = {
+        startDate,
+        endDate,
+        limit,
+        offset,
+        senders,
+    };
+
+    return apiInstance.getTransacBlockedContacts(opts).then(function (data) {
+        console.log(
+            "API called successfully. Returned data: " + JSON.stringify(data)
+        );
+        return data;
+    });
+}
+
+export async function getAllTransacBlockedContacts(
+    params: {
+        startDate?: Date;
+        endDate?: Date;
+        senders?: string[];
+    } = {}
+): Promise<SIBContact[]> {
+    const limit = 100;
+
+    async function fetchContacts(offset: number = 0): Promise<SIBContact[]> {
+        const res = await getTransacBlockedContacts({
+            ...params,
+            offset,
+            limit,
+        });
+
+        // Log the current offset for debugging
+        if (res.contacts.length < limit) {
+            return res.contacts;
+        } else {
+            // Recursively fetch the next batch and concatenate it with the current batch
+            const nextContacts = await fetchContacts(offset + limit);
+            return [...res.contacts, ...nextContacts];
+        }
+    }
+
+    return fetchContacts();
 }
 
 export async function addContactsToMailingLists({
