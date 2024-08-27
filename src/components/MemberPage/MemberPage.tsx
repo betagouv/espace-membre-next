@@ -136,12 +136,49 @@ const CreateEmailForm = ({
         message: NonNullable<React.ReactNode>;
         type: "success" | "warning";
     } | null>();
+    const onSubmit = async (e) => {
+        e.preventDefault();
+        try {
+            await axios.post(
+                computeRoute(
+                    routes.USER_CREATE_EMAIL_API.replace(
+                        ":username",
+                        userInfos.username
+                    )
+                ),
+                {
+                    to_email: email,
+                },
+                {
+                    withCredentials: true,
+                }
+            );
+            setAlertMessage({
+                title: `L'email est en cours de création`,
+                message: `L'email est en train d'être créé. ${userInfos.fullname} recevra un message dès que celui-ci sera actif.`,
+                type: "success",
+            });
+        } catch (e) {
+            if (e instanceof Error) {
+                setAlertMessage({
+                    title: `Une erreur est survenue`,
+                    message: e.message,
+                    type: "warning",
+                });
+            }
+        }
+    };
     return (
         <>
             <p>Tu peux créer un compte email pour {userInfos.fullname}.</p>
-            {hasPublicServiceEmail &&
-                `Attention s'iel a une adresse de service public en adresse primaire. L'adresse @beta.gouv.fr deviendra son adresse primaire :
-celle à utiliser pour mattermost, et d'autres outils.`}
+            {hasPublicServiceEmail && (
+                <p>
+                    Attention s'iel a une adresse de service public en adresse
+                    primaire. L'adresse @beta.gouv.fr deviendra son adresse
+                    primaire : celle à utiliser pour mattermost, et d'autres
+                    outils.
+                </p>
+            )}
             {!!alertMessage && (
                 <Alert
                     className="fr-mb-8v"
@@ -151,40 +188,7 @@ celle à utiliser pour mattermost, et d'autres outils.`}
                     title={alertMessage.title}
                 />
             )}
-            <form
-                onSubmit={async (e) => {
-                    e.preventDefault();
-                    try {
-                        await axios.post(
-                            computeRoute(
-                                routes.USER_CREATE_EMAIL_API.replace(
-                                    ":username",
-                                    userInfos.username
-                                )
-                            ),
-                            {
-                                to_email: email,
-                            },
-                            {
-                                withCredentials: true,
-                            }
-                        );
-                        setAlertMessage({
-                            title: `L'email est en cours de création`,
-                            message: `L'email est en train d'être créé. ${userInfos.fullname} recevra un message dès que celui-ci sera actif.`,
-                            type: "success",
-                        });
-                    } catch (e) {
-                        if (e instanceof Error) {
-                            setAlertMessage({
-                                title: `Une erreur est survenue`,
-                                message: e.message,
-                                type: "warning",
-                            });
-                        }
-                    }
-                }}
-            >
+            <form onSubmit={onSubmit}>
                 <Input
                     label="Email personnel ou professionnel"
                     hintText="Le mot de passe et les informations de connexion seront envoyées à cet email"
@@ -557,27 +561,23 @@ MemberPageProps) {
                 })}
                 {!emailInfos?.isExchange &&
                     !emailInfos?.isPro &&
-                    redirections.length === 0 && (
-                        <p>
-                            <strong>Aucune redirection</strong>
-                        </p>
-                    )}
+                    redirections.length === 0 && <p>Aucune redirection</p>}
                 {emailInfos?.isPro && (
                     <p>
-                        <strong>
-                            Cet utilisateur à un compte email OVH pro, il peut
-                            voir ses redirections depuis
-                            `https://pro1.mail.ovh.net/owa/#path=/options/inboxrules`
-                        </strong>
+                        Cet utilisateur à un compte email OVH pro, il peut voir
+                        ses redirections depuis
+                        <a
+                            className="fr-link"
+                            href="https://pro1.mail.ovh.net/owa/#path=/options/inboxrules"
+                            target="_blank"
+                        ></a>
                     </p>
                 )}
                 {emailInfos?.isExchange && (
                     <p>
-                        <strong>
-                            Cet utilisateur à un compte email OVH Microsoft
-                            Exchange, il peut voir ses redirections depuis les
-                            paramètes de son webmail.
-                        </strong>
+                        Cet utilisateur à un compte email OVH Microsoft
+                        Exchange, il peut voir ses redirections depuis les
+                        paramètes de son webmail.
                     </p>
                 )}
             </div>

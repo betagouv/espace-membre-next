@@ -20,11 +20,11 @@ export default function SEIncubateurSelect({
     incubatorOptions: Option[];
     onChange: any;
     isMulti?: boolean;
-    label?: any;
+    label?: string;
     placeholder?: string;
-    hint?: any;
-    state?: any;
-    stateRelatedMessage?: any;
+    hint?: string;
+    state?: "error" | "success" | "warning";
+    stateRelatedMessage?: string;
     defaultValue?: any;
 }) {
     return (
@@ -39,7 +39,7 @@ export default function SEIncubateurSelect({
                 multiple={isMulti}
                 options={incubatorOptions}
                 onChange={onChange}
-                defaultValue={defaultValue || undefined}
+                defaultValue={defaultValue}
                 isOptionEqualToValue={(option, value) => {
                     return option.value === value.value;
                 }}

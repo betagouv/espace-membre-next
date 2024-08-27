@@ -24,7 +24,7 @@ export async function generateMetadata(
     const id = params.id;
 
     return {
-        title: `Membre ${id} / Espace Membre"`,
+        title: `Membre ${id} / Espace Membre`,
     };
 }
 

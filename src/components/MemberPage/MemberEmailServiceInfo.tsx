@@ -26,7 +26,7 @@ const UnblockAdminAction = ({ email }: { email: string }) => {
     );
 };
 
-const MemberBrevoEventList = ({
+const MemberEmailServiceInfo = ({
     userId,
     isAdmin,
 }: {
@@ -63,7 +63,11 @@ const MemberBrevoEventList = ({
 
     if (loading) return <div>Loading...</div>;
     if (!emailServiceInfo?.primaryEmail && !emailServiceInfo?.secondaryEmail)
-        return <div>Pas d'information trouvée sur les emails dans brevo</div>;
+        return (
+            <div>
+                <p>Pas d'information trouvée sur les emails dans brevo</p>
+            </div>
+        );
 
     return (
         <div>
@@ -73,11 +77,12 @@ const MemberBrevoEventList = ({
                     {emailServiceInfo.primaryEmail.emailBlacklisted
                         ? "oui"
                         : "non"}
-                    {emailServiceInfo.primaryEmail.emailBlacklisted && (
-                        <UnblockAdminAction
-                            email={emailServiceInfo.primaryEmail.email}
-                        ></UnblockAdminAction>
-                    )}
+                    {isAdmin &&
+                        emailServiceInfo.primaryEmail.emailBlacklisted && (
+                            <UnblockAdminAction
+                                email={emailServiceInfo.primaryEmail.email}
+                            ></UnblockAdminAction>
+                        )}
                 </li>
             )}
             {emailServiceInfo.secondaryEmail && (
@@ -86,15 +91,16 @@ const MemberBrevoEventList = ({
                     {emailServiceInfo.secondaryEmail.emailBlacklisted
                         ? "oui"
                         : "non"}
-                    {emailServiceInfo.secondaryEmail.emailBlacklisted && (
-                        <UnblockAdminAction
-                            email={emailServiceInfo.secondaryEmail.email}
-                        ></UnblockAdminAction>
-                    )}
+                    {isAdmin &&
+                        emailServiceInfo.secondaryEmail.emailBlacklisted && (
+                            <UnblockAdminAction
+                                email={emailServiceInfo.secondaryEmail.email}
+                            ></UnblockAdminAction>
+                        )}
                 </li>
             )}
         </div>
     );
 };
 
-export default MemberBrevoEventList;
+export default MemberEmailServiceInfo;

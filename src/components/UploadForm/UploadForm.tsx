@@ -1,10 +1,10 @@
 import { useState, useRef, ChangeEvent } from "react";
-import { format } from "date-fns";
 
 import { fr } from "@codegouvfr/react-dsfr";
 import { ButtonProps } from "@codegouvfr/react-dsfr/Button";
 import ButtonsGroup from "@codegouvfr/react-dsfr/ButtonsGroup";
 import Skeleton from "@mui/material/Skeleton/Skeleton";
+import { format } from "date-fns";
 import { PlaceholderValue } from "next/dist/shared/lib/get-img-props";
 import Image from "next/image";
 
@@ -27,7 +27,7 @@ function isRelativeUrl(url) {
 }
 
 const computeVersion = () => {
-    const version = format(new Date(), "yyyyMMdd'T'HHmmss")
+    const version = format(new Date(), "yyyyMMdd'T'HHmmss");
     return version;
 };
 
@@ -158,7 +158,7 @@ const UploadForm = ({
                             placeholder={placeholderURL}
                             alt="Photo de profil de l'utilisateur"
                             fill={true}
-                            onLoadingComplete={() => {
+                            onLoad={() => {
                                 setIsImageLoading(false);
                             }}
                             style={{ objectFit: "cover" }}

@@ -103,7 +103,8 @@ export function withErrorHandling<T, Args extends any[]>(
                 error instanceof NoDataError ||
                 error instanceof ValidationError ||
                 error instanceof OVHError ||
-                error instanceof StartupUniqueConstraintViolationError
+                error instanceof StartupUniqueConstraintViolationError ||
+                error instanceof MemberUniqueConstraintViolationError
             ) {
                 // Return a standardized error response
                 return {
@@ -129,7 +130,7 @@ export function withHttpErrorHandling<Args extends any[]>(
 ): (...args: Args) => Promise<Response> {
     return async (...args: Args) => {
         try {
-            return Response.json(await action(...args));
+            return await action(...args);
         } catch (error: any) {
             const errorName = error.constructor.name;
             if (errorMapping[errorName]) {
