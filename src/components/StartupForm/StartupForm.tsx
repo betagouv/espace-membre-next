@@ -38,6 +38,10 @@ import {
     startupSchemaType,
 } from "@/models/startup";
 
+import MdEditorCustomHeaderPlugin from "./MdEditorCustomHeaderPlugin";
+
+MdEditor.use(MdEditorCustomHeaderPlugin);
+
 // import style manually
 const mdParser = new MarkdownIt(/* Markdown-it options */);
 
@@ -415,6 +419,27 @@ export function StartupForm(props: StartupFormProps) {
                                     height: "500px",
                                     marginTop: "0.5rem",
                                 }}
+                                plugins={[
+                                    "header2",
+                                    "font-bold",
+                                    "font-italic",
+                                    "font-underline",
+                                    "font-strikethrough",
+                                    "list-unordered",
+                                    "list-ordered",
+                                    "block-quote",
+                                    "block-wrap",
+                                    "block-code-inline",
+                                    "block-code-block",
+                                    "table",
+                                    "image",
+                                    "link",
+                                    "clear",
+                                    "logger",
+                                    "mode-toggle",
+                                    "full-screen",
+                                    "tab-insert",
+                                ]}
                                 renderHTML={(text) => mdParser.render(text)}
                                 onChange={(data, e) => {
                                     setValue("startup.description", data.text, {
