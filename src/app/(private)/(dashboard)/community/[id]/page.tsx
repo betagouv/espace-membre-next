@@ -3,7 +3,7 @@ import type { Metadata, ResolvingMetadata } from "next";
 import { getServerSession } from "next-auth/next";
 
 import MemberPage from "@/components/MemberPage/MemberPage";
-import { getUserBasicInfo } from "@/lib/kysely/queries/users";
+import { getUserBasicInfo, getUserStartups } from "@/lib/kysely/queries/users";
 import { getUserByEmail, searchUsers } from "@/lib/mattermost";
 import { memberBaseInfoToModel } from "@/models/mapper";
 import { MattermostUser } from "@/models/mattermost";
@@ -89,6 +89,7 @@ export default async function Page({
     let { mattermostUser, mattermostUserInTeamAndActive } =
         await getMattermostUserInfo(dbUser);
     const title = user.userInfos ? user.userInfos.fullname : null;
+    const startups = await getUserStartups(dbUser.uuid);
 
     const mattermostInfo = {
         hasMattermostAccount: !!mattermostUser,
@@ -103,6 +104,7 @@ export default async function Page({
             emailInfos={user.emailInfos}
             isExpired={user.isExpired}
             redirections={user.emailRedirections}
+            startups={startups}
         />
     );
 }
