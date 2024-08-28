@@ -146,7 +146,8 @@ export function withHttpErrorHandling<Args extends any[]>(
                     }
                 );
             } else {
-                // Handle unexpected errors
+                // Handle unexpected errors\
+                console.error(error);
                 Sentry.captureException(error);
                 return Response.json(
                     {
