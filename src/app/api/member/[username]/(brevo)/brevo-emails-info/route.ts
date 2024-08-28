@@ -47,16 +47,12 @@ export const GET = withHttpErrorHandling(async function (
     const blockedContacts = await getAllTransacBlockedContacts();
     if (dbUser?.primary_email) {
         emailServiceInfo["primaryEmailTransac"] = blockedContacts.find(
-            (contact) =>
-                dbUser.primary_email === contact.email ||
-                contact.email === "abdellah.bouhend@beta.gouv.fr"
+            (contact) => dbUser.primary_email === contact.email
         );
     }
     if (dbUser?.secondary_email) {
         emailServiceInfo["secondaryEmailTransac"] = blockedContacts.find(
-            (contact) =>
-                dbUser.secondary_email === contact.email ||
-                contact.email === "lucharrier@gmail.com"
+            (contact) => dbUser.secondary_email === contact.email
         );
     }
 
