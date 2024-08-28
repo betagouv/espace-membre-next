@@ -162,6 +162,9 @@ if (process.env.NODE_ENV !== "test") {
             unblacklistContactEmail = sendInBlue.unblacklistContactEmail;
             getContactInfo = sendInBlue.getContactInfo;
         }
+        smtpBlockedContactsEmailDelete =
+            sendInBlue.smtpBlockedContactsEmailDelete;
+        unblacklistContactEmail = sendInBlue.unblacklistContactEmail;
     } catch (e) {
         console.error(e);
         process.exit(1);
