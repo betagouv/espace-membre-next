@@ -9,7 +9,6 @@ export const SURVEY_BOX_COOKIE_NAME = "espace-membre-survey";
 export const SurveyBox = ({ value }: { value: string | null }) => {
     const [_, updateCookie] = useCookie(SURVEY_BOX_COOKIE_NAME);
     const onClose = () => {
-        console.log("onClose");
         updateCookie("closed", { expires: add(new Date(), { days: 7 }) });
     };
     return (
