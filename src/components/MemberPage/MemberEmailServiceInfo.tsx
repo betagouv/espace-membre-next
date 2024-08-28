@@ -2,7 +2,10 @@ import { useEffect, useState } from "react";
 
 import Button from "@codegouvfr/react-dsfr/Button";
 
-import { unblockMemberEmailAddress } from "@/app/api/admin/action";
+import {
+    unblockMemberEmailAddress,
+    unblockMemberEmailAddressFromCampaign,
+} from "@/app/api/admin/action";
 import {
     brevoEmailInfoDataSchema,
     brevoEmailInfoDataSchemaType,
@@ -45,6 +48,7 @@ const ContactCard = (contact: SIBContact) => {
                 <tr>
                     <td>
                         <UnblockAdminAction
+                            type={"smtp"}
                             email={contact.email}
                         ></UnblockAdminAction>
                     </td>
@@ -54,11 +58,21 @@ const ContactCard = (contact: SIBContact) => {
     );
 };
 
-const UnblockAdminAction = ({ email }: { email: string }) => {
+const UnblockAdminAction = ({
+    email,
+    type,
+}: {
+    email: string;
+    type: "campaign" | "smtp";
+}) => {
     const [loading, setLoading] = useState<boolean>(false);
     const onClick = async () => {
         setLoading(true);
-        await unblockMemberEmailAddress(email);
+        if (type === "smtp") {
+            await unblockMemberEmailAddress(email);
+        } else {
+            await unblockMemberEmailAddressFromCampaign(email);
+        }
         setLoading(false);
     };
     return (
@@ -124,6 +138,12 @@ const MemberEmailServiceInfo = ({
                     {emailServiceInfo.primaryEmail.emailBlacklisted
                         ? "oui"
                         : "non"}
+                    {emailServiceInfo.primaryEmail.emailBlacklisted && (
+                        <UnblockAdminAction
+                            type="campaign"
+                            email={emailServiceInfo.primaryEmail.email}
+                        ></UnblockAdminAction>
+                    )}
                 </li>
             )}
             {emailServiceInfo.secondaryEmail && (
@@ -132,9 +152,15 @@ const MemberEmailServiceInfo = ({
                     {emailServiceInfo.secondaryEmail.emailBlacklisted
                         ? "oui"
                         : "non"}
+                    {emailServiceInfo.secondaryEmail.emailBlacklisted && (
+                        <UnblockAdminAction
+                            type="campaign"
+                            email={emailServiceInfo.secondaryEmail.email}
+                        ></UnblockAdminAction>
+                    )}
                 </li>
             )}
-            {emailServiceInfo.primaryEmailTransac && (
+            {
                 <li>
                     Email primaire bloqué sur brevo en transactionnel :{" "}
                     {emailServiceInfo.primaryEmailTransac ? "oui" : "non"}
@@ -144,8 +170,8 @@ const MemberEmailServiceInfo = ({
                         />
                     )}
                 </li>
-            )}
-            {emailServiceInfo.secondaryEmailTransac && (
+            }
+            {
                 <li>
                     Email secondaire bloqué sur brevo :{" "}
                     {emailServiceInfo.secondaryEmailTransac ? "oui" : "non"}
@@ -155,7 +181,7 @@ const MemberEmailServiceInfo = ({
                         />
                     )}
                 </li>
-            )}
+            }
         </div>
     );
 };
