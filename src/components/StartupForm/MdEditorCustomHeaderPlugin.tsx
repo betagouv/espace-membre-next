@@ -7,6 +7,7 @@ interface State {
     show: boolean;
 }
 
+// from https://github.com/HarryChen0506/react-markdown-editor-lite/blob/master/src/plugins/header/index.tsx
 const Header2Plugin = (props) => {
     const [visible, setVisible] = useState(false);
     const show = () => {
