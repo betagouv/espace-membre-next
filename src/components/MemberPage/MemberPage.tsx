@@ -139,7 +139,7 @@ const CreateEmailForm = ({
     const onSubmit = async (e) => {
         e.preventDefault();
         try {
-            await axios.post(
+            const response = await fetch(
                 computeRoute(
                     routes.USER_CREATE_EMAIL_API.replace(
                         ":username",
@@ -147,12 +147,22 @@ const CreateEmailForm = ({
                     )
                 ),
                 {
-                    to_email: email,
-                },
-                {
-                    withCredentials: true,
+                    method: "POST",
+                    credentials: "include", // This is equivalent to `withCredentials: true`
+                    headers: {
+                        "Content-Type": "application/json",
+                    },
+                    body: JSON.stringify({
+                        to_email: email,
+                    }),
                 }
             );
+
+            if (!response.ok) {
+                const body = await response.json();
+                throw new Error(body.errors);
+            }
+
             setAlertMessage({
                 title: `L'email est en cours de création`,
                 message: `L'email est en train d'être créé. ${userInfos.fullname} recevra un message dès que celui-ci sera actif.`,
