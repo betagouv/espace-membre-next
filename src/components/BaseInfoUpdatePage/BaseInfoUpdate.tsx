@@ -336,10 +336,8 @@ export const BaseInfoUpdate = (props: BaseInfoUpdateProps) => {
                         {isCurrentUser ? `Mes compétences` : `Compétences`}
                     </h2>
                     {isCurrentUser && (
-                        <p>
-                            Tu peux préciser tes compétences, cela permettra à
-                            la communauté de mieux de trouver en cas de besoin{" "}
-                            {`:)`}
+                        <p>Aide les membres de la communauté de mieux t'identifier 
+                            en cas de besoin
                         </p>
                     )}
                     <CompetencesEditor
@@ -355,13 +353,7 @@ export const BaseInfoUpdate = (props: BaseInfoUpdateProps) => {
                     <h2>{isCurrentUser ? `Mes missions` : `Missions`}</h2>
                     {!!isCurrentUser && (
                         <p>
-                            Précise les dates, employeurs et produits pour
-                            lesquels tu as mis tes talents à contribution.
-                            <br />
-                            <br />
-                            Ne saute aucun détail pour que la communauté puisse
-                            te repérer facilement dans la foule !
-                            <br />
+                            Renseigne tes différentes missions chez beta.
                         </p>
                     )}
                     <MissionsEditor
