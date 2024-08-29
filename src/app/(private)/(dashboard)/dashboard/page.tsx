@@ -1,20 +1,21 @@
 import type { Metadata } from "next";
 import { redirect } from "next/navigation";
 import { getServerSession } from "next-auth";
+import { cookies } from "next/headers";
 
-import { DashboardPage, DashboardPageProps } from "./DashboardPage";
+import { DashboardPage } from "./DashboardPage";
 import { getUserInfos } from "@/lib/kysely/queries/users";
 import { userInfosToModel } from "@/models/mapper";
 import { EmailStatusCode } from "@/models/member";
-import db from "@/server/db";
 import { authOptions } from "@/utils/authoptions";
 import { routeTitles } from "@/utils/routes/routeTitles";
+import { SURVEY_BOX_COOKIE_NAME } from "@/components/SurveyBox";
 
 export const metadata: Metadata = {
     title: `${routeTitles.dashboard()} / Espace Membre`,
 };
 
-export default async function Page(props: DashboardPageProps) {
+export default async function Page(props) {
     const session = await getServerSession(authOptions);
     if (!session) {
         redirect("/login");
@@ -33,5 +34,9 @@ export default async function Page(props: DashboardPageProps) {
         return redirect("/verify");
     }
 
-    return <DashboardPage {...props} />;
+    const cookieStore = cookies();
+    const surveyCookie = cookieStore.get(SURVEY_BOX_COOKIE_NAME);
+    const surveyCookieValue = (surveyCookie && surveyCookie.value) || null;
+
+    return <DashboardPage {...props} surveyCookieValue={surveyCookieValue} />;
 }
