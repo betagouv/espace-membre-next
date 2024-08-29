@@ -54,7 +54,6 @@ export default async function Page() {
                     </Link>
                 </span>
             </h1>
-            <p></p>
             <EventsList events={events}></EventsList>
         </div>
     );

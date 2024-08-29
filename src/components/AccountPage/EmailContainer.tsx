@@ -140,7 +140,7 @@ export default function EmailContainer({
     return (
         <div className="fr-mb-14v">
             <h2>Email</h2>
-            <p>
+            <div>
                 {emailInfos && (
                     <>
                         <span className="font-weight-bold">
@@ -193,7 +193,7 @@ export default function EmailContainer({
                 ) : (
                     "Non renseigné"
                 )}
-            </p>
+            </div>
             {!!emailIsBeingCreated && (
                 <Alert
                     description="Ton email @beta.gouv.fr est en train d'être créé, tu recevras un email dès que celui-ci est actif."
