@@ -367,101 +367,92 @@ MemberPageProps) {
                 {userInfos && (
                     <div>
                         <div className="fr-mb-8v">
-                            <p>
-                                <strong>{userInfos.fullname}</strong>
-                                <br />
-                                {userInfos.role}
-                                <br />
-                                {(userInfos.competences &&
-                                    userInfos.competences.length && (
-                                        <>
-                                            Compétences:{" "}
-                                            {userInfos.competences.join(", ")}
-                                            <br />
-                                        </>
-                                    )) ||
-                                    null}
-                                {getLastMission(userInfos.missions) && (
-                                    <BlocMission
-                                        mission={
-                                            getLastMission(userInfos.missions)!
-                                        }
-                                    ></BlocMission>
-                                )}
-                                <span>Compte Github : </span>
-                                {userInfos.github && (
-                                    <a
-                                        href={`https://github.com/${userInfos.github}`}
-                                    >
-                                        {userInfos.github}
-                                    </a>
-                                )}
-                                {!userInfos.github && `Non renseigné`}
-                                <br />
-                                <span>Email principal : </span>{" "}
-                                {userInfos.primary_email ? (
-                                    <a
-                                        href={`mailto:${userInfos.primary_email}`}
-                                    >
-                                        {userInfos.primary_email}
-                                    </a>
-                                ) : (
-                                    "Non renseigné"
-                                )}
-                                <br />
-                                <span>Email secondaire : </span>{" "}
-                                {userInfos.secondary_email ? (
-                                    <a
-                                        href={`mailto:${userInfos.secondary_email}`}
-                                    >
-                                        {userInfos.secondary_email}
-                                    </a>
-                                ) : (
-                                    "Non renseigné"
-                                )}
-                                <br />
-                                {userInfos.link && (
+                            <strong>{userInfos.fullname}</strong>
+                            <br />
+                            {userInfos.role}
+                            <br />
+                            {(userInfos.competences &&
+                                userInfos.competences.length && (
                                     <>
-                                        <span>URL : </span>
-                                        <a
-                                            href={userInfos.link}
-                                            target="_blank"
-                                        >
-                                            {userInfos.link}
-                                        </a>
-                                    </>
-                                )}
-                                <br />
-                                {startups.length > 0 && (
-                                    <div className={fr.cx("fr-mt-2w")}>
-                                        A contribué à ces produits:
+                                        Compétences:{" "}
+                                        {userInfos.competences.join(", ")}
                                         <br />
-                                        <ul style={{ paddingLeft: 0 }}>
-                                            {startups
-                                                .filter((s) => !!s.name)
-                                                .map((startup, i) => (
-                                                    <li
-                                                        key={i}
-                                                        style={{
-                                                            display: "inline",
+                                    </>
+                                )) ||
+                                null}
+                            {getLastMission(userInfos.missions) && (
+                                <BlocMission
+                                    mission={
+                                        getLastMission(userInfos.missions)!
+                                    }
+                                ></BlocMission>
+                            )}
+                            <span>Compte Github : </span>
+                            {userInfos.github && (
+                                <a
+                                    href={`https://github.com/${userInfos.github}`}
+                                >
+                                    {userInfos.github}
+                                </a>
+                            )}
+                            {!userInfos.github && `Non renseigné`}
+                            <br />
+                            <span>Email principal : </span>{" "}
+                            {userInfos.primary_email ? (
+                                <a href={`mailto:${userInfos.primary_email}`}>
+                                    {userInfos.primary_email}
+                                </a>
+                            ) : (
+                                "Non renseigné"
+                            )}
+                            <br />
+                            <span>Email secondaire : </span>{" "}
+                            {userInfos.secondary_email ? (
+                                <a href={`mailto:${userInfos.secondary_email}`}>
+                                    {userInfos.secondary_email}
+                                </a>
+                            ) : (
+                                "Non renseigné"
+                            )}
+                            <br />
+                            {userInfos.link && (
+                                <>
+                                    <span>URL : </span>
+                                    <a href={userInfos.link} target="_blank">
+                                        {userInfos.link}
+                                    </a>
+                                </>
+                            )}
+                            <br />
+                            {startups.length > 0 && (
+                                <div className={fr.cx("fr-mt-2w")}>
+                                    A contribué à ces produits:
+                                    <br />
+                                    <ul style={{ paddingLeft: 0 }}>
+                                        {startups
+                                            .filter((s) => !!s.name)
+                                            .map((startup, i) => (
+                                                <li
+                                                    key={i}
+                                                    style={{
+                                                        display: "inline",
+                                                    }}
+                                                >
+                                                    <Tag
+                                                        className={fr.cx(
+                                                            "fr-mr-1v"
+                                                        )}
+                                                        linkProps={{
+                                                            href: `/startups/${startup.uuid}`,
                                                         }}
                                                     >
-                                                        <Tag
-                                                            className={fr.cx(
-                                                                "fr-mr-1v"
-                                                            )}
-                                                            linkProps={{
-                                                                href: `/startups/${startup.uuid}`,
-                                                            }}
-                                                        >
-                                                            {startup.name}
-                                                        </Tag>
-                                                    </li>
-                                                ))}
-                                        </ul>
-                                    </div>
-                                )}
-                            </p>
+                                                        {startup.name}
+                                                    </Tag>
+                                                </li>
+                                            ))}
+                                    </ul>
+                                </div>
+                            )}
                         </div>
                     </div>
                 )}
