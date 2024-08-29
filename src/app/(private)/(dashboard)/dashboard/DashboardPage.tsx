@@ -11,12 +11,17 @@ import { StaticImageData } from "next/image";
 
 import { linkRegistry } from "@/utils/routes/registry";
 
-export interface DashboardPageProps {}
+import { SurveyBox } from "@/components/SurveyBox";
+
+export interface DashboardPageProps {
+    surveyCookieValue: string | null;
+}
 
 export function DashboardPage(props: DashboardPageProps) {
     return (
         <div className={fr.cx("fr-container", "fr-pb-6w")}>
             <h2>Gérer mon compte</h2>
+            <SurveyBox value={props.surveyCookieValue} />
             <div className={fr.cx("fr-grid-row", "fr-grid-row--gutters")}>
                 <div className={fr.cx("fr-col-12", "fr-col-lg-4")}>
                     <Tile
