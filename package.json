@@ -28,7 +28,7 @@
     "@gouvfr/dsfr": "^1.12.1",
     "@hookform/resolvers": "^3.3.4",
     "@mui/material": "^5.15.10",
-    "@octokit/rest": "^20.0.2",
+    "@octokit/rest": "^21.0.2",
     "@sentry/nextjs": "^7.101.1",
     "@sentry/node": "^7.101.1",
     "@sindresorhus/slugify": "^1.1.0",
