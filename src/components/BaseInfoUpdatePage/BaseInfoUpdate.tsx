@@ -336,8 +336,9 @@ export const BaseInfoUpdate = (props: BaseInfoUpdateProps) => {
                         {isCurrentUser ? `Mes compétences` : `Compétences`}
                     </h2>
                     {isCurrentUser && (
-                        <p>Aide les membres de la communauté de mieux t'identifier 
-                            en cas de besoin
+                        <p>
+                            Aide les membres de la communauté de mieux
+                            t'identifier en cas de besoin
                         </p>
                     )}
                     <CompetencesEditor
@@ -352,9 +353,7 @@ export const BaseInfoUpdate = (props: BaseInfoUpdateProps) => {
                     <br />
                     <h2>{isCurrentUser ? `Mes missions` : `Missions`}</h2>
                     {!!isCurrentUser && (
-                        <p>
-                            Renseigne tes différentes missions chez beta.
-                        </p>
+                        <p>Renseigne tes différentes missions chez beta.</p>
                     )}
                     <MissionsEditor
                         control={control}
@@ -369,12 +368,14 @@ export const BaseInfoUpdate = (props: BaseInfoUpdateProps) => {
                             ? `Participe à notre observatoire statistique`
                             : `Observatoire statistique`}
                     </h2>
-                    ⚠️ Ces valeurs servent à alimenter l'
-                    <Link href="/metabase" target="_blank">
-                        observatoire de la communauté
-                    </Link>
-                    . Elles sont confidentielles et anonymisées mis à part le
-                    lieu de travail.<br></br>
+                    <p>
+                        ⚠️ Ces valeurs servent à alimenter l'
+                        <Link href="/metabase" target="_blank">
+                            observatoire de la communauté
+                        </Link>
+                        . Elles sont confidentielles et anonymisées mis à part
+                        le lieu de travail.
+                    </p>
                     <GenderSelect
                         label="Genre"
                         nativeSelectProps={{
