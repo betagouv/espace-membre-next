@@ -7,6 +7,7 @@ import Alert from "@codegouvfr/react-dsfr/Alert";
 import Badge from "@codegouvfr/react-dsfr/Badge";
 import Button from "@codegouvfr/react-dsfr/Button";
 import Input from "@codegouvfr/react-dsfr/Input";
+import Tag from "@codegouvfr/react-dsfr/Tag";
 import axios from "axios";
 import { useSession } from "next-auth/react";
 
@@ -20,7 +21,6 @@ import { EMAIL_STATUS_READABLE_FORMAT } from "@/models/misc";
 import { missionSchemaType } from "@/models/mission";
 import routes, { computeRoute } from "@/routes/routes";
 import { getLastMission, getLastMissionDate } from "@/utils/member";
-import Tag from "@codegouvfr/react-dsfr/Tag";
 
 export interface MemberPageProps {
     emailInfos: memberWrapperSchemaType["emailInfos"];
@@ -473,7 +473,7 @@ MemberPageProps) {
                 <h2>Compte email</h2>
                 {!!emailInfos && (
                     <>
-                        <p className="text-color-blue font-weight-bold">
+                        <div className="text-color-blue font-weight-bold">
                             <a href={`mailto:${emailInfos.email}`}>
                                 {emailInfos.email}
                             </a>
@@ -495,7 +495,7 @@ MemberPageProps) {
                                     OVH Exchange
                                 </Badge>
                             )}
-                        </p>
+                        </div>
                         <ul>
                             <li>
                                 statut de l'email :{" "}
@@ -571,7 +571,9 @@ MemberPageProps) {
                             className="fr-link"
                             href="https://pro1.mail.ovh.net/owa/#path=/options/inboxrules"
                             target="_blank"
-                        ></a>
+                        >
+                            https://pro1.mail.ovh.net/owa/#path=/options/inboxrules
+                        </a>
                     </p>
                 )}
                 {emailInfos?.isExchange && (
