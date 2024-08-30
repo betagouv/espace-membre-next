@@ -259,6 +259,7 @@ export async function getUserStartups(
         .select(["startups.uuid", "startups.name", "missions.start"])
         .distinct()
         .where("users.uuid", "=", uuid)
+        .where("startups.name", "is not", null)
         .orderBy("missions.start", "desc")
         .execute();
 
