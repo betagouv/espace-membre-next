@@ -227,10 +227,6 @@ async function deleteResponder(): Promise<void> {
 async function getUserPublicInfo(
     username: string
 ): Promise<memberWrapperPublicInfoSchemaType> {
-    // const session = await getServerSession(authOptions);
-    // if (!session || !session.user.id) {
-    //     throw new AuthorizationError();
-    // }
     const user = await userInfos({ username }, false);
 
     const hasGithubFile = user.userInfos;
