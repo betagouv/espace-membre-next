@@ -1,5 +1,5 @@
 "use client";
-import React, { createContext, useState, useContext } from "react";
+import React, { createContext, useState, useContext, useEffect } from "react";
 
 // Créer un contexte avec une valeur par défaut
 const InfoContext = createContext({
@@ -20,8 +20,10 @@ export const BreadCrumbProvider = ({ children }) => {
 
 export const BreadCrumbFiller = ({ currentPage }) => {
     const { setCurrentPage } = useInfoContext();
-    setCurrentPage(currentPage);
-    return null;
+
+    useEffect(() => {
+        setCurrentPage(currentPage);
+    }, [currentPage, setCurrentPage]);
 };
 
 // Hook personnalisé pour utiliser le contexte

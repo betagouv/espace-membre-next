@@ -141,62 +141,81 @@ export default async function Page({ params }: Props) {
                             size="medium"
                             desc={
                                 <>
-                                    <p>
-                                        Animateur :{" "}
-                                        {formation.animator ||
-                                            formation.animatorEmail}
-                                    </p>
+                                    Animateur :{" "}
+                                    {formation.animator ||
+                                        formation.animatorEmail}
                                     {!!(formation.end && formation.start) && (
-                                        <p>
+                                        <span
+                                            style={{
+                                                display: "block",
+                                                marginBottom: 5,
+                                                marginTop: 5,
+                                            }}
+                                        >
                                             Durée :{" "}
                                             {durationBetweenDate(
                                                 formation.end,
                                                 formation.start
                                             )}
-                                        </p>
+                                        </span>
                                     )}
                                     {formation.maxSeats !== undefined &&
                                         formation.availableSeats !==
                                             undefined && (
-                                            <p>
+                                            <span
+                                                style={{
+                                                    display: "block",
+                                                    marginBottom: 5,
+                                                    marginTop: 5,
+                                                }}
+                                            >
                                                 Inscription: {}
                                                 {formation.availableSeats > 0
                                                     ? formation.maxSeats -
                                                       formation.availableSeats
                                                     : formation.maxSeats}
                                                 /{formation.maxSeats}
-                                            </p>
+                                            </span>
                                         )}
-                                    {!isMemberRegistered ? (
-                                        <Button
-                                            linkProps={{
-                                                href: buildInscriptionLink(
-                                                    formation.inscriptionLink,
-                                                    {
-                                                        fullname:
-                                                            dbUser.fullname,
-                                                        email,
-                                                        username:
-                                                            dbUser.username,
-                                                        domaine: dbUser.domaine,
-                                                    }
-                                                ),
-                                                target: "_blank",
-                                            }}
-                                        >
-                                            {formation.availableSeats <= 0
-                                                ? `M'inscrire sur liste d'attente`
-                                                : `M'inscrire`}
-                                        </Button>
-                                    ) : isInWaitingList ? (
-                                        <Badge>
-                                            Inscrit sur liste d'attente
-                                        </Badge>
-                                    ) : (
-                                        <Badge severity="success">
-                                            Inscrit
-                                        </Badge>
-                                    )}
+                                    <span
+                                        style={{
+                                            display: "block",
+                                            marginBottom: 5,
+                                            marginTop: 5,
+                                        }}
+                                    >
+                                        {!isMemberRegistered ? (
+                                            <Button
+                                                linkProps={{
+                                                    href: buildInscriptionLink(
+                                                        formation.inscriptionLink,
+                                                        {
+                                                            fullname:
+                                                                dbUser.fullname,
+                                                            email,
+                                                            username:
+                                                                dbUser.username,
+                                                            domaine:
+                                                                dbUser.domaine,
+                                                        }
+                                                    ),
+                                                    target: "_blank",
+                                                }}
+                                            >
+                                                {formation.availableSeats <= 0
+                                                    ? `M'inscrire sur liste d'attente`
+                                                    : `M'inscrire`}
+                                            </Button>
+                                        ) : isInWaitingList ? (
+                                            <Badge>
+                                                Inscrit sur liste d'attente
+                                            </Badge>
+                                        ) : (
+                                            <Badge severity="success">
+                                                Inscrit
+                                            </Badge>
+                                        )}
+                                    </span>
                                 </>
                             }
                             title={
@@ -209,7 +228,7 @@ export default async function Page({ params }: Props) {
                                     : "Formation en ligne"
                             }
                             titleAs="h2"
-                        ></Card>
+                        />
                     </div>
                     <div className="fr-col-md-8 fr-col-lg-8 fr-col-sm-12">
                         <p>{formation.description}</p>
