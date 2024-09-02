@@ -227,10 +227,10 @@ async function deleteResponder(): Promise<void> {
 async function getUserPublicInfo(
     username: string
 ): Promise<memberWrapperPublicInfoSchemaType> {
-    const session = await getServerSession(authOptions);
-    if (!session || !session.user.id) {
-        throw new AuthorizationError();
-    }
+    // const session = await getServerSession(authOptions);
+    // if (!session || !session.user.id) {
+    //     throw new AuthorizationError();
+    // }
     const user = await userInfos({ username }, false);
 
     const hasGithubFile = user.userInfos;
@@ -238,7 +238,7 @@ async function getUserPublicInfo(
         user.emailInfos || user.emailRedirections.length > 0;
     if (!hasGithubFile && !hasEmailAddress) {
         throw new NoDataError(
-            'Il n\'y a pas de membre avec ce compte mail. Vous pouvez commencez par l\'inviter <a href="/onboarding">en cliquant ici</a>.'
+            "Il n'y a pas de membre avec ce compte mail. Vous pouvez commencez par l'inviter <a href=\"/onboarding\">en cliquant ici</a>."
         );
     }
     const dbUser = await db
