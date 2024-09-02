@@ -24,6 +24,8 @@ export const BreadCrumbFiller = ({ currentPage }) => {
     useEffect(() => {
         setCurrentPage(currentPage);
     }, [currentPage, setCurrentPage]);
+
+    return null;
 };
 
 // Hook personnalisé pour utiliser le contexte
