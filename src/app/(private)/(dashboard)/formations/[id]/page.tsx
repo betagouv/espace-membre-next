@@ -129,7 +129,11 @@ export default async function Page({ params }: Props) {
                             border
                             start={
                                 !!formation.isELearning ? (
-                                    <Badge key={"e-learning"} severity="new">
+                                    <Badge
+                                        key={"e-learning"}
+                                        severity="new"
+                                        as="span"
+                                    >
                                         E-learning
                                     </Badge>
                                 ) : (
@@ -207,11 +211,11 @@ export default async function Page({ params }: Props) {
                                                     : `M'inscrire`}
                                             </Button>
                                         ) : isInWaitingList ? (
-                                            <Badge>
+                                            <Badge as="span">
                                                 Inscrit sur liste d'attente
                                             </Badge>
                                         ) : (
-                                            <Badge severity="success">
+                                            <Badge severity="success" as="span">
                                                 Inscrit
                                             </Badge>
                                         )}
