@@ -383,9 +383,6 @@ export default function AccountVerifyClientPage({
                                                     index={0}
                                                     mission={missionsFields[0]}
                                                     missionsRemove={undefined}
-                                                    onMissionAutoEndClick={
-                                                        undefined
-                                                    }
                                                 ></Mission>
                                             </div>
                                         </fieldset>

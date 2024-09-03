@@ -322,31 +322,6 @@ export default function CommunityCreateMemberPage(props: BaseInfoUpdateProps) {
                                         }}
                                         mission={missionsFields[0]}
                                         missionsRemove={undefined}
-                                        onMissionAutoEndClick={(index) => {
-                                            const values = getValues();
-                                            let startDate;
-                                            try {
-                                                startDate = values.missions[
-                                                    index
-                                                ].start
-                                                    ? new Date(
-                                                          values.missions[
-                                                              index
-                                                          ].start
-                                                      )
-                                                    : new Date();
-                                            } catch (e) {
-                                                startDate = new Date();
-                                            }
-                                            const endDate = addMonths(
-                                                startDate,
-                                                3
-                                            );
-                                            setValue(
-                                                `missions.${index}.end`,
-                                                endDate
-                                            );
-                                        }}
                                     ></Mission>
                                 </div>
                             </fieldset>
