@@ -1,4 +1,6 @@
 fileignoreconfig:
+- filename: src/app/(private)/(dashboard)/community/[id]/admin-update/page.tsx
+  checksum: 3621f113632f10483e06aabf45246a8fba8c92f62d31a13ed087b243932ea50e
 - filename: src/components/BaseInfoUpdatePage/MissionsEditor.tsx
   checksum: 5fcca19cec5b44f2d2693c196b15cfa4dbed4ec4461f29541824746de47822e2
 - filename: src/app/(private)/(dashboard)/community/create/CommunityCreateMemberPage.tsx
