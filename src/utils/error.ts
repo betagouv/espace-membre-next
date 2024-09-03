@@ -106,6 +106,8 @@ export function withErrorHandling<T, Args extends any[]>(
                 error instanceof StartupUniqueConstraintViolationError ||
                 error instanceof MemberUniqueConstraintViolationError
             ) {
+                console.log("Expected error", error);
+
                 // Return a standardized error response
                 return {
                     success: false,
@@ -133,6 +135,7 @@ export function withHttpErrorHandling<Args extends any[]>(
             return await action(...args);
         } catch (error: any) {
             const errorName = error.constructor.name;
+            console.log("Error name", errorName);
             if (errorMapping[errorName]) {
                 const statusCode = errorMapping[errorName];
 
@@ -147,7 +150,7 @@ export function withHttpErrorHandling<Args extends any[]>(
                 );
             } else {
                 // Handle unexpected errors\
-                console.error(error);
+                console.error("Unexpected", error);
                 Sentry.captureException(error);
                 return Response.json(
                     {
