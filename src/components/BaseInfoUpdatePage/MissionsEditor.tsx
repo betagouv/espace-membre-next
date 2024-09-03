@@ -25,7 +25,6 @@ export const Mission = ({
     setValue,
     mission,
     missionsRemove,
-    onMissionAutoEndClick,
     startupOptions,
     errors,
     isMulti,
@@ -38,7 +37,6 @@ export const Mission = ({
     setValue: any;
     mission?: missionSchemaType;
     missionsRemove: any;
-    onMissionAutoEndClick: any;
     startupOptions: any;
     errors: any;
     isMulti: boolean;
@@ -75,6 +73,17 @@ export const Mission = ({
     const endDateString = endDateValue
         ? new Date(endDateValue).toISOString().substring(0, 10)
         : "";
+
+    const onMissionAutoEndClick = () => {
+        let startDate;
+        startDate = startDateValue ? new Date(startDateValue) : new Date();
+        const endDate = addMonths(startDate, 3);
+
+        setValue(`${missionArrayKey}.${index}.end`, endDate, {
+            shouldValidate: true,
+            shouldDirty: true,
+        });
+    };
 
     return (
         <div key={index} className={fr.cx("fr-mb-6w")}>
@@ -150,9 +159,7 @@ export const Mission = ({
                                             "fr-link",
                                             "fr-text--xs"
                                         )}
-                                        onClick={() =>
-                                            onMissionAutoEndClick(index)
-                                        }
+                                        onClick={onMissionAutoEndClick}
                                         role="button"
                                         type="button"
                                         title="Mettre la date de fin à +3 mois"
@@ -273,23 +280,6 @@ export const MissionsEditor = ({
         });
     };
 
-    const onMissionAutoEndClick = (missionIndex) => {
-        let startDate;
-        try {
-            startDate = missionsFields[missionIndex]["start"]
-                ? new Date(missionsFields[missionIndex]["start"])
-                : new Date();
-        } catch (e) {
-            startDate = new Date();
-        }
-        const endDate = addMonths(startDate, 3);
-
-        setValue(`${missionArrayKey}.${missionIndex}.end`, endDate, {
-            shouldValidate: true,
-            shouldDirty: true,
-        });
-    };
-
     return (
         <div className={fr.cx("fr-mb-3w")}>
             {errors && errors.message && (
@@ -308,7 +298,6 @@ export const MissionsEditor = ({
                     setValue={setValue}
                     missionArrayKey={missionArrayKey}
                     missionsRemove={() => missionsRemove(index)}
-                    onMissionAutoEndClick={() => onMissionAutoEndClick(index)}
                     startupOptions={startupOptions}
                     errors={errors ? errors[index] : undefined}
                 />
