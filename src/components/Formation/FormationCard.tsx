@@ -1,10 +1,11 @@
+import { ReactNode } from "react";
+
 import { Badge } from "@codegouvfr/react-dsfr/Badge";
 import { Card } from "@codegouvfr/react-dsfr/Card";
 import { format } from "date-fns/format";
 import { fr } from "date-fns/locale/fr";
 
 import { Formation } from "@/models/formation";
-import { ReactNode } from "react";
 
 export default function FormationCard({
     formation,
@@ -21,7 +22,9 @@ export default function FormationCard({
             badges.push(
                 <ul className="fr-badges-group">
                     <li>
-                        <Badge severity="success">Inscrit</Badge>
+                        <Badge severity="success" as="span">
+                            Inscrit
+                        </Badge>
                     </li>
                 </ul>
             );
@@ -29,7 +32,7 @@ export default function FormationCard({
             badges.push(
                 <ul className="fr-badges-group">
                     <li>
-                        <Badge>Inscrit sur liste d'attente</Badge>
+                        <Badge as="span">Inscrit sur liste d'attente</Badge>
                     </li>
                 </ul>
             );
@@ -37,7 +40,7 @@ export default function FormationCard({
     }
     if (!!formation.isELearning) {
         badges.push(
-            <Badge key={"e-learning"} severity="new">
+            <Badge key={"e-learning"} severity="new" as="span">
                 E-learning
             </Badge>
         );
