@@ -506,9 +506,6 @@ export async function getTransacBlockedContacts({
     };
 
     return apiInstance.getTransacBlockedContacts(opts).then(function (data) {
-        console.log(
-            "API called successfully. Returned data: " + JSON.stringify(data)
-        );
         return data;
     });
 }
