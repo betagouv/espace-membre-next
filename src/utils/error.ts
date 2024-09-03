@@ -4,15 +4,6 @@ import slugify from "@sindresorhus/slugify";
 import { ActionResponse } from "@/@types/serverAction";
 import config from "@/server/config";
 
-const errorMapping = {
-    AuthorizationError: 403,
-    NoDataError: 404,
-    ValidationError: 400,
-    OVHError: 502,
-    StartupUniqueConstraintViolationError: 409,
-    MemberUniqueConstraintViolationError: 409,
-};
-
 export const ERROR_MESSAGES = {
     STARTUP_UNIQUE_CONSTRAINT: (name?: string) =>
         name
@@ -35,55 +26,85 @@ export const ERROR_MESSAGES = {
 };
 // errors.ts
 
-export class AuthorizationError extends Error {
+export class ErrorWithStatus extends Error {
+    statusCode: number;
+    constructor(message: string) {
+        super(message);
+        this.statusCode = 500;
+    }
+}
+
+export class AuthorizationError extends ErrorWithStatus {
     constructor(message: string = ERROR_MESSAGES.AUTHORIZATION_ERROR) {
         super(message);
         this.name = "AuthorizationError";
+        this.statusCode = 403;
     }
 }
 
-export class NoDataError extends Error {
+export class NoDataError extends ErrorWithStatus {
     constructor(message: string = "Data could not be found") {
         super(message);
         this.name = "NoDataError";
+        this.statusCode = 404;
     }
 }
 
-export class OVHError extends Error {
+export class OVHError extends ErrorWithStatus {
     constructor(message: string = "Erreur OVH") {
         super(message);
         this.name = "OVHError";
+        this.statusCode = 502;
     }
 }
 
-export class ValidationError extends Error {
+export class ValidationError extends ErrorWithStatus {
     constructor(message: string = "Validation failed") {
         super(message);
         this.name = "ValidationError";
+        this.statusCode = 400;
     }
 }
 
-export class StartupUniqueConstraintViolationError extends Error {
+export class StartupUniqueConstraintViolationError extends ErrorWithStatus {
     constructor(startupName?: string) {
         const message = ERROR_MESSAGES.STARTUP_UNIQUE_CONSTRAINT(startupName);
         super(message);
         this.name = "StartupUniqueConstraintViolationError";
+        this.statusCode = 409;
     }
 }
 
-export class MemberUniqueConstraintViolationError extends Error {
+export class MemberUniqueConstraintViolationError extends ErrorWithStatus {
     constructor(username?: string) {
         const message = ERROR_MESSAGES.MEMBER_UNIQUE_CONSTRAINT(username);
         super(message);
         this.name = "MemberUniqueConstraintViolationError";
+        this.statusCode = 409;
     }
 }
 
-export class StartupInsertFailedError extends Error {
+export class StartupInsertFailedError extends ErrorWithStatus {
     constructor() {
         super(ERROR_MESSAGES.STARTUP_INSERT_FAILED);
         this.name = "StartupInsertFailedError";
+        this.statusCode = 409;
     }
+}
+
+const EXPECTED_ERRORS = [
+    AuthorizationError,
+    NoDataError,
+    ValidationError,
+    OVHError,
+    StartupUniqueConstraintViolationError,
+    MemberUniqueConstraintViolationError,
+];
+
+function isExpectedError(error: unknown): error is ErrorWithStatus {
+    return EXPECTED_ERRORS.some(
+        (expectedError) => error instanceof expectedError
+    );
 }
 
 export type UnwrapPromise<T> = T extends Promise<infer U> ? U : T;
@@ -98,14 +119,7 @@ export function withErrorHandling<T, Args extends any[]>(
                 success: true,
             };
         } catch (error) {
-            if (
-                error instanceof AuthorizationError ||
-                error instanceof NoDataError ||
-                error instanceof ValidationError ||
-                error instanceof OVHError ||
-                error instanceof StartupUniqueConstraintViolationError ||
-                error instanceof MemberUniqueConstraintViolationError
-            ) {
+            if (isExpectedError(error)) {
                 console.log("Expected error", error);
 
                 // Return a standardized error response
@@ -134,10 +148,8 @@ export function withHttpErrorHandling<Args extends any[]>(
         try {
             return await action(...args);
         } catch (error: any) {
-            const errorName = error.constructor.name;
-            console.log("Error name", errorName);
-            if (errorMapping[errorName]) {
-                const statusCode = errorMapping[errorName];
+            if (isExpectedError(error)) {
+                console.log("Expected error", error);
 
                 return Response.json(
                     {
@@ -145,7 +157,7 @@ export function withHttpErrorHandling<Args extends any[]>(
                         message: error.message,
                     },
                     {
-                        status: statusCode,
+                        status: error.statusCode,
                     }
                 );
             } else {
