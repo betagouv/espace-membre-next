@@ -23,11 +23,11 @@ router.post(
     express.json({ type: "*/*" }),
     adminController.sendMessageToUsersOnChat
 );
-router.get(
-    routes.ADMIN_SENDINBLUE,
-    permit(MemberRole.MEMBER_ROLE_ADMIN),
-    express.json({ type: "*/*" }),
-    adminController.getSendinblueInfo
-);
+// router.get(
+//     routes.ADMIN_SENDINBLUE,
+//     permit(MemberRole.MEMBER_ROLE_ADMIN),
+//     express.json({ type: "*/*" }),
+//     adminController.getSendinblueInfo
+// );
 
 export { router as adminRouter };
