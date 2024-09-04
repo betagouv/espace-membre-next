@@ -1,6 +1,5 @@
 "use client";
 import React from "react";
-import { useEffect } from "react";
 
 import { fr } from "@codegouvfr/react-dsfr";
 import { Alert } from "@codegouvfr/react-dsfr/Alert";
@@ -8,6 +7,7 @@ import Button from "@codegouvfr/react-dsfr/Button";
 import { ButtonsGroup } from "@codegouvfr/react-dsfr/ButtonsGroup";
 import { Input } from "@codegouvfr/react-dsfr/Input";
 import Link from "next/link";
+import { useSearchParams } from "next/navigation";
 import { signIn } from "next-auth/react";
 
 interface Props {
@@ -107,6 +107,8 @@ export const LoginPage = function (props: Props) {
         type: "success" | "warning";
         description?: string;
     } | null>();
+    const searchParams = useSearchParams();
+    const next = searchParams.get("next");
 
     const sendLogin = async (event: { preventDefault: () => void }) => {
         if (isSaving) {
@@ -116,8 +118,13 @@ export const LoginPage = function (props: Props) {
         setFormErrors("");
         setIsSaving(true);
         setAlertMessage(null);
+
         try {
-            const data = await signIn("email", { email, redirect: false });
+            const data = await signIn("email", {
+                email,
+                redirect: false,
+                callbackUrl: next ? next : undefined,
+            });
             console.log(data);
             setIsSaving(false);
 

@@ -7,8 +7,6 @@ import Button from "@codegouvfr/react-dsfr/Button";
 import axios from "axios";
 import { useSession } from "next-auth/react";
 
-import routes, { computeRoute } from "@/routes/routes";
-
 export default function SignClientPage() {
     const [error, setError] = React.useState<string>("");
     const { status, data: session } = useSession();
@@ -18,21 +16,19 @@ export default function SignClientPage() {
     }
 
     const onSubmit = React.useCallback(async () => {
-        const hash =
+        const url =
             window !== undefined ? window.location.hash.split("#")[1] : null;
         setError("");
-        if (hash) {
+        if (url) {
             await axios
-                .get(hash, {
+                .get(url, {
                     withCredentials: true,
                 })
-                // .then((r) =>
-                //     axios.get(computeRoute(routes.ME), {
-                //         withCredentials: true,
-                //     })
-                // )
                 .then((r) => {
-                    window.location.href = "/dashboard";
+                    const parsedUrl = new URL(url);
+                    const searchParams = parsedUrl.searchParams;
+                    const callbackUrl = searchParams.get("callbackUrl");
+                    window.location.href = callbackUrl || "/dashboard";
                 })
                 .catch((e) => {
                     if (e.response?.data?.error) {
