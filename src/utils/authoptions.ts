@@ -14,7 +14,6 @@ import { EMAIL_TYPES } from "@/server/modules/email";
 
 async function sendVerificationRequest(params) {
     const { identifier, url, provider, theme } = params;
-    const redirectURL = new URL(url).searchParams.get("call");
     await sendEmail({
         type: EMAIL_TYPES.LOGIN_EMAIL,
         variables: {
