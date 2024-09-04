@@ -1,13 +1,11 @@
 "use client";
-import React, { useRef, useState } from "react";
+import React from "react";
 
 import { fr } from "@codegouvfr/react-dsfr";
 import Alert from "@codegouvfr/react-dsfr/Alert";
 import { Button } from "@codegouvfr/react-dsfr/Button";
-import ButtonsGroup from "@codegouvfr/react-dsfr/ButtonsGroup";
 import Input from "@codegouvfr/react-dsfr/Input";
 import Select from "@codegouvfr/react-dsfr/Select";
-import { Upload } from "@codegouvfr/react-dsfr/Upload";
 import { zodResolver } from "@hookform/resolvers/zod";
 import * as Sentry from "@sentry/nextjs";
 import axios from "axios";
@@ -24,15 +22,18 @@ import {
     memberInfoUpdateSchemaType,
     memberInfoUpdateSchema,
 } from "@/models/actions/member";
-import { GenderCode, statusOptions } from "@/models/member";
+import { statusOptions } from "@/models/member";
 import { DOMAINE_OPTIONS, memberSchema } from "@/models/member";
 import routes, { computeRoute } from "@/routes/routes";
 import { routeTitles } from "@/utils/routes/routeTitles";
+import { getEventListByUsername } from "@/lib/events";
+import { format } from "date-fns";
 import Link from "next/link";
 
 // data from secretariat API
 export interface BaseInfoUpdateProps {
     profileURL?: string;
+    changes: Awaited<ReturnType<typeof getEventListByUsername>>;
     formData: memberInfoUpdateSchemaType;
     startupOptions: {
         value: string;
@@ -213,6 +214,18 @@ export const BaseInfoUpdate = (props: BaseInfoUpdateProps) => {
                 <p>
                     Ces informations seront publiées sur le site beta.gouv.fr.
                 </p>
+                {(props.changes.length && (
+                    <p>
+                        Dernière modification le{" "}
+                        {format(props.changes[0].created_at, "dd/MM/yy")} par{" "}
+                        <Link
+                            href={`/community/${props.changes[0].created_by_username}`}
+                        >
+                            {props.changes[0].created_by_username}
+                        </Link>
+                    </p>
+                )) ||
+                    null}
 
                 {!!alertMessage && (
                     <Alert
@@ -316,7 +329,7 @@ export const BaseInfoUpdate = (props: BaseInfoUpdateProps) => {
                             }
                         }}
                         shape="round"
-                        label="Photo de profile"
+                        label="Photo de profil"
                         url={props.profileURL}
                         onDelete={() => {
                             setValue("picture", null, {
