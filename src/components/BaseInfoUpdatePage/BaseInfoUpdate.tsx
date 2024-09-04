@@ -15,6 +15,7 @@ import { useForm } from "react-hook-form";
 import { CompetencesEditor } from "./CompetencesEditor";
 import { MissionsEditor } from "./MissionsEditor";
 import CitySelect from "../CitySelect";
+import LastChange from "../LastChange";
 import GenderSelect from "../GenderSelect";
 import UploadForm from "../UploadForm/UploadForm";
 import { imagePostApiSchemaType } from "@/models/actions/image";
@@ -27,8 +28,6 @@ import { DOMAINE_OPTIONS, memberSchema } from "@/models/member";
 import routes, { computeRoute } from "@/routes/routes";
 import { routeTitles } from "@/utils/routes/routeTitles";
 import { getEventListByUsername } from "@/lib/events";
-import { format } from "date-fns";
-import Link from "next/link";
 
 // data from secretariat API
 export interface BaseInfoUpdateProps {
@@ -214,19 +213,7 @@ export const BaseInfoUpdate = (props: BaseInfoUpdateProps) => {
                 <p>
                     Ces informations seront publiées sur le site beta.gouv.fr.
                 </p>
-                {(props.changes.length && (
-                    <p>
-                        Dernière modification le{" "}
-                        {format(props.changes[0].created_at, "dd/MM/yy")} par{" "}
-                        <Link
-                            href={`/community/${props.changes[0].created_by_username}`}
-                        >
-                            {props.changes[0].created_by_username}
-                        </Link>
-                    </p>
-                )) ||
-                    null}
-
+                <LastChange changes={props.changes} />
                 {!!alertMessage && (
                     <Alert
                         className="fr-mb-8v"

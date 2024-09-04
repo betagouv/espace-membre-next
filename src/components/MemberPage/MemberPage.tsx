@@ -21,6 +21,8 @@ import { EMAIL_STATUS_READABLE_FORMAT } from "@/models/misc";
 import { missionSchemaType } from "@/models/mission";
 import routes, { computeRoute } from "@/routes/routes";
 import { getLastMission, getLastMissionDate } from "@/utils/member";
+import { getEventListByUsername } from "@/lib/events";
+import LastChange from "../LastChange";
 
 export interface MemberPageProps {
     emailInfos: memberWrapperSchemaType["emailInfos"];
@@ -44,6 +46,7 @@ export interface MemberPageProps {
         };
     };
     startups: { uuid: string | null; name: string | null }[];
+    changes: Awaited<ReturnType<typeof getEventListByUsername>>;
 }
 
 const ChangeSecondaryEmailBloc = ({
@@ -308,6 +311,7 @@ export default function MemberPage({
     mattermostInfo,
     isExpired,
     startups,
+    changes,
 }: // emailServiceInfo,
 MemberPageProps) {
     const session = useSession();
@@ -323,6 +327,7 @@ MemberPageProps) {
         <>
             <div className="fr-mb-8v">
                 <h2>Fiche Membre</h2>
+                <LastChange changes={changes} />
                 {isExpired && (
                     <>
                         <Alert
