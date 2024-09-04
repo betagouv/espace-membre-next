@@ -92,7 +92,7 @@ test("valid login sends magic link and redirect to the page pass in next searchP
     page,
     browser,
 }) => {
-    await page.goto("/next=/community/valid.member");
+    await page.goto("/login?next=/community/valid.member");
     await page.getByLabel("Mon email").fill("valid.member@betagouv.ovh");
     await page.getByText("Recevoir le lien de connexion").click();
     await page.waitForTimeout(2000);
