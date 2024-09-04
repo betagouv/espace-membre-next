@@ -1,11 +1,8 @@
 import { request } from "@octokit/request";
 import { Octokit } from "@octokit/rest";
-import axios from "axios";
 import fm from "front-matter";
-import yaml from "js-yaml";
 import { ZodError, ZodSchema, z } from "zod";
 
-import { memberSchema } from "@/models/member";
 import config from "@/server/config";
 
 function getURL(objectID) {
@@ -17,65 +14,6 @@ const requestWithAuth = request.defaults({
         authorization: `token ${config.githubToken}`,
     },
 });
-
-async function getJson(uri) {
-    await axios(uri, {
-        auth: {
-            username: config.GITHUB_CLIENT_ID,
-            password: config.GITHUB_CLIENT_SECRET,
-        },
-        headers: {
-            "User-Agent": "Secretariat beta.gouv.fr",
-            Accept: "application/vnd.github.v3+json",
-        },
-    }).then((x) => x.data);
-}
-
-async function getAuthorFileList(hash) {
-    if (hash === "0000000000000000000000000000000000000000") {
-        return {};
-    }
-    const before: any = await getJson(getURL(`commits/${hash}`));
-
-    const beforeRootTree: any = await getJson(before.commit.tree.url);
-    const contentObject = beforeRootTree.tree.find(
-        (element) => element.path === "content"
-    );
-
-    const beforeContentTree: any = await getJson(contentObject.url);
-    const authorsObject = beforeContentTree.tree.find(
-        (element) => element.path === "_authors"
-    );
-
-    const fileList: any = await getJson(authorsObject.url);
-
-    return fileList.tree.reduce((map, fileInfo) => {
-        map[fileInfo.path] = fileInfo;
-        return map;
-    }, {});
-}
-
-async function listChanges(input) {
-    const beforeMap = await getAuthorFileList(input.before);
-    const afterMap = await getAuthorFileList(input.after);
-
-    const currentKeys = Object.keys(afterMap);
-    return currentKeys.reduce((changes: any[], key) => {
-        if (beforeMap[key] && afterMap[key].sha !== beforeMap[key].sha) {
-            changes.push({
-                ...afterMap[key],
-                before: beforeMap[key],
-            });
-        }
-        return changes;
-    }, [] as any[]);
-}
-
-function getContent(payload) {
-    const buff = Buffer.from(payload, "base64");
-    const str = buff.toString("utf-8");
-    return fm(str);
-}
 
 function extractEndDates(item) {
     const periods = ["before", "after"];
@@ -89,24 +27,6 @@ function extractEndDates(item) {
 }
 
 export { extractEndDates };
-
-async function fetchDetails(input) {
-    const changes = await listChanges(input);
-
-    await Promise.all(
-        changes.map(async (data) => {
-            const beforeMetadata: any = await getJson(data.before.url);
-            const afterMetadata: any = await getJson(data.url);
-            return {
-                data,
-                before: getContent(beforeMetadata.content),
-                after: getContent(afterMetadata.content),
-            };
-        })
-    );
-}
-
-export { fetchDetails };
 
 /**
  * Username may only contain alphanumeric characters or single hyphens, and cannot begin or end with a hyphen.

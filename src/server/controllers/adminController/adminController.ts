@@ -54,48 +54,48 @@ import { makeSendinblue } from "@infra/email/sendInBlue";
 //     }
 // );
 
-export async function getSendinblueInfo(req, res) {
-    const sendInBlueTech = makeSendinblue({
-        MAIL_SENDER: config.senderEmail,
-        SIB_APIKEY_PUBLIC: config.SIB_APIKEY_TECH_PUBLIC,
-        SIB_APIKEY_PRIVATE: config.SIB_APIKEY_TECH_PRIVATE,
-        htmlBuilder: undefined,
-    });
+// export async function getSendinblueInfo(req, res) {
+//     const sendInBlueTech = makeSendinblue({
+//         MAIL_SENDER: config.senderEmail,
+//         SIB_APIKEY_PUBLIC: config.SIB_APIKEY_TECH_PUBLIC,
+//         SIB_APIKEY_PRIVATE: config.SIB_APIKEY_TECH_PRIVATE,
+//         htmlBuilder: undefined,
+//     });
 
-    const startDate = new Date();
-    const endDate = new Date();
+//     const startDate = new Date();
+//     const endDate = new Date();
 
-    // Set it to one month ago
-    startDate.setMonth(startDate.getMonth() - 1);
+//     // Set it to one month ago
+//     startDate.setMonth(startDate.getMonth() - 1);
 
-    const techTransacBlockedContact =
-        await sendInBlueTech.getAllTransacBlockedContacts({
-            startDate,
-            endDate,
-            offset: 0,
-        });
+//     const techTransacBlockedContact =
+//         await sendInBlueTech.getAllTransacBlockedContacts({
+//             startDate,
+//             endDate,
+//             offset: 0,
+//         });
 
-    const sendInBlueCommu = makeSendinblue({
-        MAIL_SENDER: config.senderEmail,
-        SIB_APIKEY_PUBLIC: config.SIB_APIKEY_PUBLIC,
-        SIB_APIKEY_PRIVATE: config.SIB_APIKEY_PRIVATE!,
-        htmlBuilder: undefined,
-    });
+//     const sendInBlueCommu = makeSendinblue({
+//         MAIL_SENDER: config.senderEmail,
+//         SIB_APIKEY_PUBLIC: config.SIB_APIKEY_PUBLIC,
+//         SIB_APIKEY_PRIVATE: config.SIB_APIKEY_PRIVATE!,
+//         htmlBuilder: undefined,
+//     });
 
-    let contacts = await sendInBlueCommu.getAllContactsFromList({
-        listId: config.MAILING_LIST_NEWSLETTER!,
-    }); // SIB newsletter mailing list
-    contacts = contacts.filter((c) => c.emailBlacklisted);
-    const commuTransacBlockedContact =
-        await sendInBlueCommu.getAllTransacBlockedContacts({
-            startDate,
-            endDate,
-            offset: 0,
-        });
+//     let contacts = await sendInBlueCommu.getAllContactsFromList({
+//         listId: config.MAILING_LIST_NEWSLETTER!,
+//     }); // SIB newsletter mailing list
+//     contacts = contacts.filter((c) => c.emailBlacklisted);
+//     const commuTransacBlockedContact =
+//         await sendInBlueCommu.getAllTransacBlockedContacts({
+//             startDate,
+//             endDate,
+//             offset: 0,
+//         });
 
-    return res.json({
-        contacts,
-        commuTransacBlockedContact,
-        techTransacBlockedContact,
-    });
-}
+//     return res.json({
+//         contacts,
+//         commuTransacBlockedContact,
+//         techTransacBlockedContact,
+//     });
+// }
