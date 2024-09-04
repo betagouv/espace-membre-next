@@ -13,7 +13,6 @@ doc
 /node_modules/buffer
 /node_modules/util
 /node_modules/base64-js
-node_modules
 playwright
 playwright-report
 e2e
