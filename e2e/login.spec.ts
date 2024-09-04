@@ -122,7 +122,8 @@ test("valid login sends magic link and redirect to the page pass in next searchP
     await page.goto(href);
     await page.getByText("Me connecter").first().click();
     await page.waitForURL("/community/valid.member");
-
+    const url = new URL(page.url());
+    const pathname = url.pathname;
     // Verify the URL is correct after redirection
-    expect(page.url()).toBe("/community/valid.member");
+    expect(pathname).toBe("/community/valid.member");
 });
