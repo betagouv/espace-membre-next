@@ -7,6 +7,7 @@ import { getUserInfos } from "@/lib/kysely/queries/users";
 import s3 from "@/lib/s3";
 import { userInfosToModel } from "@/models/mapper";
 import { authOptions } from "@/utils/authoptions";
+import { getEventListByUsername } from "@/lib/events";
 
 export const generateMetadata = async ({
     params: { id },
@@ -36,7 +37,7 @@ export default async function Page({
     const s3Key = `members/${id}/avatar.jpg`;
     let hasImage = false;
     try {
-        const s3Object = await s3
+        await s3
             .getObject({
                 Key: s3Key,
             })
@@ -57,9 +58,7 @@ export default async function Page({
         redirect("/errors");
     }
 
-    // // todo: to make TS happy
-    // const domaine = userInfos.domaine as DomaineSchemaType;
-    // const memberType = userInfos.member_type as MemberType;
+    const changes = await getEventListByUsername(id);
 
     const props = {
         formData: {
@@ -67,6 +66,7 @@ export default async function Page({
                 ...userInfos,
             },
         },
+        changes,
         profileURL: hasImage ? s3Key : undefined,
         startupOptions,
         username: id,
