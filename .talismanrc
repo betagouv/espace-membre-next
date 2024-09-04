@@ -6,6 +6,10 @@ fileignoreconfig:
   checksum: 7b81cd088b5aaa007139608d5e20e0f3ed7c7c8258c9fa1e5ba2b10c0b11e493
 - filename: src/components/BaseInfoUpdatePage/MissionsEditor.tsx
   checksum: 5fcca19cec5b44f2d2693c196b15cfa4dbed4ec4461f29541824746de47822e2
+- filename: e2e/login.spec.ts
+  checksum: de00755490c9817f1ee6574c6d64aa84709c71f6c48ff9aec7bdeb1ca472a370
+version: ""
+6a8fba8c92f62d31a13ed087b243932ea50e
 - filename: src/app/(private)/(dashboard)/community/create/CommunityCreateMemberPage.tsx
   checksum: c17bc01af05a054afa1c738171011c7fe9f9f78bf9d8ab0f02a6bcd07f7c675d
 - filename: src/app/(private)/(dashboard)/community/page.tsx
