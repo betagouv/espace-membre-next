@@ -11,6 +11,7 @@ import betagouv from "@/server/betagouv";
 import config from "@/server/config";
 import { userInfos } from "@/server/controllers/utils";
 import { authOptions } from "@/utils/authoptions";
+import { getEventListByUsername } from "@/lib/events";
 
 type Props = {
     params: { id: string };
@@ -90,6 +91,7 @@ export default async function Page({
         await getMattermostUserInfo(dbUser);
     const title = user.userInfos ? user.userInfos.fullname : null;
     const startups = await getUserStartups(dbUser.uuid);
+    const changes = await getEventListByUsername(id);
 
     const mattermostInfo = {
         hasMattermostAccount: !!mattermostUser,
@@ -97,6 +99,7 @@ export default async function Page({
     };
     return (
         <MemberPage
+            changes={changes}
             availableEmailPros={availableEmailPros}
             authorizations={user.authorizations}
             userInfos={memberBaseInfo}
