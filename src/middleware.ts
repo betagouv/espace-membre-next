@@ -67,6 +67,6 @@ export const config = {
          * - favicon.ico, sitemap.xml, robots.txt (metadata files)
          */
         // "/dashboard",
-        "/((?!keskispasse|login|signin|api/hook|api/auth|_next/static|_next/image|favicon.ico|sitemap.xml|robots.txt).*)",
+        "/((?!keskispasse|login|signin|api/hook|api/auth|static/|_next/static|_next/image|favicon.ico|sitemap.xml|robots.txt).*)",
     ],
 };
