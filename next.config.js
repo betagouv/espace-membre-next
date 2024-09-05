@@ -32,10 +32,11 @@ const sentryWebpackPluginOptions = {
     // the following options are set automatically, and overriding them is not
     // recommended:
     //   release, url, configFile, stripPrefix, urlPrefix, include, ignore
-    //org: "example-org",
-    //project: "example-project",
+    release: process.env.SOURCE_VERSION, // https://doc.scalingo.com/platform/app/environment#build-environment-variables
+    org: "betagouv",
+    project: "espace-membre-next",
     // An auth token is required for uploading source maps.
-    //authToken: process.env.SENTRY_AUTH_TOKEN,
+    authToken: process.env.SENTRY_AUTH_TOKEN,
     //silent: true, // Suppresses all logs
     // For all available options, see:
     // https://github.com/getsentry/sentry-webpack-plugin#options.
