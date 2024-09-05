@@ -2,6 +2,19 @@ const { withSentryConfig } = require("@sentry/nextjs");
 
 /** @type {import('next').NextConfig} */
 const nextConfig = {
+    async headers() {
+        return [
+            {
+                source: "/(.*)",
+                headers: [
+                    {
+                        key: "Content-Security-Policy",
+                        value: cspHeader.replace(/\n/g, ""),
+                    },
+                ],
+            },
+        ];
+    },
     experimental: {
         serverComponentsExternalPackages: ["knex", "sib-api-v3-sdk"],
         serverActions: {
@@ -25,6 +38,20 @@ const nextConfig = {
         hideSourceMaps: true,
     },
 };
+
+const cspHeader = `
+    default-src 'self';
+    script-src 'self' 'unsafe-eval' 'unsafe-inline' *.gouv.fr;
+    style-src 'self' 'unsafe-inline';
+    img-src 'self' blob: data: *.gouv.fr *.airtableusercontent.com;
+    font-src 'self' data:;
+    frame-src 'self' metabase.incubateur.net;
+    object-src 'none';
+    base-uri 'self';
+    form-action 'self';
+    frame-ancestors 'none';
+    upgrade-insecure-requests;
+`;
 
 const sentryWebpackPluginOptions = {
     // Additional config options for the Sentry webpack plugin. Keep in mind that
