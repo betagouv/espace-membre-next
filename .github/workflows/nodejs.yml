@@ -48,8 +48,6 @@ jobs:
                   GITHUB_FORK: dummy-github-fork
                   MAILING_LIST_NEWSLETTER: 0
                   REDIS_URL: "dummy-url"
-                  GITHUB_CLIENT_ID: dumygithubclient
-                  GITHUB_CLIENT_SECRET: dummygithubsecret
             - run: npm run test
               env:
                   CI: true
@@ -75,5 +73,3 @@ jobs:
                   GITHUB_FORK: dummy-github-fork
                   MAILING_LIST_NEWSLETTER: 0
                   REDIS_URL: "dummy-url"
-                  GITHUB_CLIENT_ID: dumygithubclient
-                  GITHUB_CLIENT_SECRET: dummygithubsecret
