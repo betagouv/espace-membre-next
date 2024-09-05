@@ -1,4 +1,5 @@
 import express from "express";
+
 import * as mapController from "@controllers/mapController";
 
 const router = express.Router();

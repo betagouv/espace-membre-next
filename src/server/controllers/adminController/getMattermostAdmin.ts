@@ -1,10 +1,10 @@
-import config from "@/server/config";
 import { MattermostChannel } from "@/lib/mattermost";
+import config from "@/server/config";
+import { getAllChannels } from "@infra/chat";
 import {
     MattermostUserWithStatus,
     getMattermostUsersWithStatus,
 } from "@schedulers/mattermostScheduler/removeBetaAndParnersUsersFromCommunityTeam";
-import { getAllChannels } from "@infra/chat";
 
 export function getMattermostAdminApi(req, res) {
     getMattermostAdminPageData(

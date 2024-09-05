@@ -3,7 +3,6 @@
 import { getServerSession } from "next-auth";
 
 import { db } from "@/lib/kysely";
-
 import { authOptions } from "@/utils/authoptions";
 
 export async function deleteFile({ uuid }: { uuid: string }) {

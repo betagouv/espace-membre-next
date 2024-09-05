@@ -1,5 +1,5 @@
-import ICAL from "ical.js";
 import axios from "axios";
+import ICAL from "ical.js";
 
 const isOccurenceOverdue = function (event, startDate) {
     const rule = event.component.getFirstPropertyValue("rrule");

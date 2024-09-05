@@ -1,5 +1,5 @@
-import makeDS from "@/lib/ds";
 import config from "..";
+import makeDS from "@/lib/ds";
 
 interface Annotation {
     label: string;

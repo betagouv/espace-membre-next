@@ -4,9 +4,10 @@ import React from "react";
 import Button from "@codegouvfr/react-dsfr/Button";
 import Input from "@codegouvfr/react-dsfr/Input";
 import { useRouter } from "next/navigation";
-import { Option } from "@/models/misc";
 
 import SESelect from "@/components/SESelect";
+import { Option } from "@/models/misc";
+
 
 export interface StartupListProps {
     startups: Option[];

@@ -1,4 +1,5 @@
 import axios from "axios";
+
 import config from "@/server/config";
 import { getMattermostConfig } from "@/server/config/mattermost/mattermost.config";
 

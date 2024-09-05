@@ -1,7 +1,8 @@
+import axios from "axios";
+
+import { MattermostUser } from ".";
 import config from "@/server/config";
 import { getMattermostConfig } from "@/server/config/mattermost/mattermost.config";
-import axios from "axios";
-import { MattermostUser } from ".";
 
 export async function changeUserEmail(id: string, email: string) {
     try {

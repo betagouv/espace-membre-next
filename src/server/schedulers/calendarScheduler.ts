@@ -2,11 +2,11 @@ import { format } from "date-fns/format";
 import { fr } from "date-fns/locale/fr";
 import ejs from "ejs";
 
-import { getEventsForCalendarFromDateToDate } from "@lib/icalhelper";
 import betagouv from "../betagouv";
 import { sendCampaignEmail } from "@/server/config/email.config";
-import { EMAIL_TYPES, MAILING_LIST_TYPE } from "@modules/email";
 import { sendInfoToChat } from "@infra/chat";
+import { getEventsForCalendarFromDateToDate } from "@lib/icalhelper";
+import { EMAIL_TYPES, MAILING_LIST_TYPE } from "@modules/email";
 
 interface ReadableEvents {
     startDate: string;

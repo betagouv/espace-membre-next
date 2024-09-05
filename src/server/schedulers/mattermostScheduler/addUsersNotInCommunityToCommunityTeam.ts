@@ -1,7 +1,7 @@
-import { MattermostUser } from "@/lib/mattermost";
-import config from "@/server/config";
-import * as mattermost from "@/lib/mattermost";
 import { getMattermostUsersActiveGithubUsersInTeam } from ".";
+import { MattermostUser } from "@/lib/mattermost";
+import * as mattermost from "@/lib/mattermost";
+import config from "@/server/config";
 
 export async function addUsersNotInCommunityToCommunityTeam() {
     console.log(`Ajout des utilisateurs existant à l'espace communauté`);

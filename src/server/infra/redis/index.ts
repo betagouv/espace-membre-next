@@ -1,4 +1,5 @@
 import { config } from "dotenv";
+
 import { IEventBus } from "../eventBus";
 
 config();
