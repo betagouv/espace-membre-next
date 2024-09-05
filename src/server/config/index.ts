@@ -247,8 +247,6 @@ export default {
     tchap_api: process.env.TCHAP_API,
     HASH_SALT: process.env.HASH_SALT,
     REDIS_URL: process.env.REDIS_URL!,
-    GITHUB_CLIENT_ID: getOrThrowError("GITHUB_CLIENT_ID"),
-    GITHUB_CLIENT_SECRET: getOrThrowError("GITHUB_CLIENT_SECRET"),
     DS_BADGE_FORM_URL: process.env.NEXT_PUBLIC_DS_BADGE_FORM_URL,
     DS_BADGE_RENEWAL_FORM_URL:
         process.env.NEXT_PUBLIC_DS_BADGE_RENEWAL_FORM_URL,
