@@ -41,10 +41,11 @@ const nextConfig = {
 
 const cspHeader = `
     default-src 'self';
-    script-src 'self' 'unsafe-eval' 'unsafe-inline' *.gouv.fr sentry.incubateur.net;
-    style-src 'self' 'unsafe-inline';
+    connect-src 'self' api.maptiler.com;
+    script-src 'self' blob: *.gouv.fr sentry.incubateur.net unpkg.com;
+    style-src 'self' 'unsafe-inline' cdnjs.cloudflare.com unpkg.com;
     img-src https: data:;
-    font-src 'self' data:;
+    font-src 'self' data: cdnjs.cloudflare.com;
     frame-src 'self' metabase.incubateur.net;
     object-src 'none';
     base-uri 'self';
