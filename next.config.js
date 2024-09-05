@@ -1,5 +1,20 @@
 const { withSentryConfig } = require("@sentry/nextjs");
 
+const cspHeader = `
+    default-src 'self';
+    connect-src 'self' api.maptiler.com;
+    script-src 'self' 'unsafe-inline' 'unsafe-eval' blob: *.gouv.fr sentry.incubateur.net unpkg.com;
+    style-src 'self' 'unsafe-inline' cdnjs.cloudflare.com unpkg.com;
+    img-src * data:;
+    font-src 'self' data: cdnjs.cloudflare.com;
+    frame-src 'self' metabase.incubateur.net;
+    object-src 'none';
+    base-uri 'self';
+    form-action 'self';
+    frame-ancestors 'self';
+    upgrade-insecure-requests;
+`;
+
 /** @type {import('next').NextConfig} */
 const nextConfig = {
     async headers() {
@@ -39,21 +54,6 @@ const nextConfig = {
         return config;
     },
 };
-
-const cspHeader = `
-    default-src 'self';
-    connect-src 'self' api.maptiler.com;
-    script-src 'self' 'unsafe-inline' 'unsafe-eval' blob: *.gouv.fr sentry.incubateur.net unpkg.com;
-    style-src 'self' 'unsafe-inline' cdnjs.cloudflare.com unpkg.com;
-    img-src https: data:;
-    font-src 'self' data: cdnjs.cloudflare.com;
-    frame-src 'self' metabase.incubateur.net;
-    object-src 'none';
-    base-uri 'self';
-    form-action 'self';
-    frame-ancestors 'none';
-    upgrade-insecure-requests;
-`;
 
 const sentryWebpackPluginOptions = {
     // Additional config options for the Sentry webpack plugin. Keep in mind that
