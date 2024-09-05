@@ -8,10 +8,6 @@ const nextConfig = {
             bodySizeLimit: "10mb",
         },
     },
-    sentry: {
-        disableServerWebpackPlugin: true,
-        disableClientWebpackPlugin: true,
-    },
     webpack: (config, { isServer }) => {
         if (!isServer) {
             // don't resolve 'fs' module on the client to prevent this error on build --> Error: Can't resolve 'fs'
