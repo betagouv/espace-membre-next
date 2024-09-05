@@ -41,9 +41,9 @@ const nextConfig = {
 
 const cspHeader = `
     default-src 'self';
-    script-src 'self' 'unsafe-eval' 'unsafe-inline' *.gouv.fr;
+    script-src 'self' 'unsafe-eval' 'unsafe-inline' *.gouv.fr sentry.incubateur.net;
     style-src 'self' 'unsafe-inline';
-    img-src 'self' blob: data: *.gouv.fr *.airtableusercontent.com;
+    img-src https: data:;
     font-src 'self' data:;
     frame-src 'self' metabase.incubateur.net;
     object-src 'none';
