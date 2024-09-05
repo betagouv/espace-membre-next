@@ -1,17 +1,18 @@
 "use client";
 import React, { useCallback } from "react";
-import MarkdownIt from "markdown-it";
+
 
 import { Alert } from "@codegouvfr/react-dsfr/Alert";
 import { Button } from "@codegouvfr/react-dsfr/Button";
 import { fr } from "@codegouvfr/react-dsfr/fr";
 import { Input } from "@codegouvfr/react-dsfr/Input";
 import { zodResolver } from "@hookform/resolvers/zod";
-import MdEditor from "react-markdown-editor-lite";
-import { ClientOnly } from "../ClientOnly";
 import _ from "lodash";
+import MarkdownIt from "markdown-it";
 import { useForm } from "react-hook-form";
+import MdEditor from "react-markdown-editor-lite";
 
+import { ClientOnly } from "../ClientOnly";
 import SESponsorSelect from "../SESponsorSelect";
 import {
     incubatorUpdateSchema,

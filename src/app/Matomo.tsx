@@ -1,10 +1,12 @@
 "use client";
 
-import config from "@/frontConfig";
+import { useEffect, useState } from "react";
+
 import { init, push } from "@socialgouv/matomo-next";
 import { usePathname, useSearchParams } from "next/navigation";
-import { useEffect, useState } from "react";
 import { useEffectOnce } from "react-use";
+
+import config from "@/frontConfig";
 
 export interface MatomoProps {
     nonce?: string;

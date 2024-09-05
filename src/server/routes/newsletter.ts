@@ -1,6 +1,7 @@
 import express from "express";
-import * as newsletterController from "@controllers/newsletterController";
+
 import routes from "@/routes/routes";
+import * as newsletterController from "@controllers/newsletterController";
 
 const router = express.Router();
 

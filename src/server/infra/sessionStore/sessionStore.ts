@@ -1,6 +1,7 @@
-import { createClient } from "redis";
-import session from "express-session";
 import connectRedis from "connect-redis";
+import session from "express-session";
+import { createClient } from "redis";
+
 import config from "@/server/config";
 
 const makeSessionStore = () => {

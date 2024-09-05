@@ -1,10 +1,12 @@
 "use client";
 
+import React, { useEffect, useState } from "react";
+
+import axios from "axios";
+
 import NewsletterPage, {
     NewsletterPageProps,
 } from "@/components/NewsletterPage/NewsletterPage";
-import React, { useEffect, useState } from "react";
-import axios from "axios";
 import routes, { computeRoute } from "@/routes/routes";
 
 type Props = {

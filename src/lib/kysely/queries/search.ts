@@ -1,8 +1,9 @@
 import { sql, Kysely, Expression } from "kysely";
+
+import { MEMBER_PROTECTED_INFO } from "./users";
 import { DB, StartupsPhaseEnum, UsersDomaineEnum } from "@/@types/db"; // generated with `npm run kysely-codegen`
 import { db as database } from "@/lib/kysely";
 
-import { MEMBER_PROTECTED_INFO } from "./users";
 
 // get list of startups with latest phase
 export const getSesWithLatestPhaseQuery = (db: Kysely<DB> = database) =>

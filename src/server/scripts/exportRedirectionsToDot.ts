@@ -1,5 +1,6 @@
-import BetaGouv from "../betagouv";
 import { config } from "dotenv";
+
+import BetaGouv from "../betagouv";
 
 config();
 
