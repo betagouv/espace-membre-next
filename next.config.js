@@ -34,7 +34,7 @@ const sentryWebpackPluginOptions = {
     //   release, url, configFile, stripPrefix, urlPrefix, include, ignore
     release: process.env.SOURCE_VERSION, // https://doc.scalingo.com/platform/app/environment#build-environment-variables
     org: "betagouv",
-    project: "espace-membre-next",
+    project: "espace-membre",
     // An auth token is required for uploading source maps.
     authToken: process.env.SENTRY_AUTH_TOKEN,
     //silent: true, // Suppresses all logs
