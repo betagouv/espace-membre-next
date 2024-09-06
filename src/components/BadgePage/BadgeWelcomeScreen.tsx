@@ -46,17 +46,17 @@ export const WelcomeScreen = function ({
                 fois par semaine.
             </p>
             <p>
-                Sinon tu devras demander un badge invité à chacune des tes
-                venues. Ce sont les régles du batiment Ségur nous n'y pouvont
+                Sinon, tu devras demander un badge invité à chacune des tes
+                venues. Ce sont les règles du batiment Ségur nous n'y pouvons
                 rien.
             </p>
 
             <p>
-                Pour faire une demande de badge il te faut les document
-                suivants:
+                Pour faire une demande de badge il te faut les documents
+                suivants :
             </p>
             <ul>
-                <li>une photo de ta piéce d'identité</li>
+                <li>une photo de ta pièce d'identité</li>
                 <li>une photo d'identité</li>
             </ul>
 
