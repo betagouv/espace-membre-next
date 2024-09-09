@@ -1,7 +1,6 @@
 "use client";
 import React, { useCallback } from "react";
 
-
 import { Alert } from "@codegouvfr/react-dsfr/Alert";
 import { Button } from "@codegouvfr/react-dsfr/Button";
 import { fr } from "@codegouvfr/react-dsfr/fr";
@@ -22,6 +21,7 @@ import { incubatorSchemaType } from "@/models/incubator";
 import { Option } from "@/models/misc";
 
 import "react-markdown-editor-lite/lib/index.css";
+import SESelect from "../SESelect";
 
 const NEW_INCUBATOR_DATA: incubatorUpdateSchemaType = {
     title: "",
@@ -38,6 +38,7 @@ const mdParser = new MarkdownIt(/* Markdown-it options */);
 // data from secretariat API
 export interface IncubatorFormProps {
     sponsorOptions: Option[];
+    startupOptions: Option[];
     incubator?: incubatorSchemaType;
     save: (data: incubatorUpdateSchemaType) => any;
 }
@@ -240,7 +241,6 @@ export function IncubatorForm(props: IncubatorFormProps) {
                             />
                         </ClientOnly>
                     </div>
-
                     <div
                         className={`fr-input-group ${
                             errors?.description ? "fr-input-group--error" : ""
@@ -290,7 +290,6 @@ export function IncubatorForm(props: IncubatorFormProps) {
                             />
                         </ClientOnly>
                     </div>
-
                     <BasicInput
                         id="contact"
                         label="Contact"
@@ -332,6 +331,31 @@ export function IncubatorForm(props: IncubatorFormProps) {
                         }
                         isMulti={false}
                     ></SESponsorSelect>
+                    \
+                    <SESelect
+                        defaultValue={props.startupOptions.filter((s) =>
+                            props.incubator
+                                ? props.incubator.highlighted_startups &&
+                                  props.incubator.highlighted_startups.includes(
+                                      s.value
+                                  )
+                                : undefined
+                        )}
+                        onChange={(startups) => {
+                            setValue(
+                                "highlighted_startups",
+                                startups.map((startup) => startup.value),
+                                {
+                                    shouldValidate: true,
+                                    shouldDirty: true,
+                                }
+                            );
+                        }}
+                        isMulti={true}
+                        placeholder={`Sélectionne un ou plusieurs produits`}
+                        startups={props.startupOptions}
+                        label="Produits concernés par la mission :"
+                    />
                     <hr />
                     <Button
                         className={fr.cx("fr-mt-3w")}
