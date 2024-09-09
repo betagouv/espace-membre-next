@@ -8,6 +8,7 @@ import { getIncubator } from "@/lib/kysely/queries/incubators";
 import { incubatorToModel } from "@/models/mapper";
 import { authOptions } from "@/utils/authoptions";
 import { routeTitles } from "@/utils/routes/routeTitles";
+import s3 from "@/lib/s3";
 
 type Props = {
     params: { id: string };
