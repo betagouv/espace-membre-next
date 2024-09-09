@@ -30,6 +30,9 @@ export default defineConfig({
         trace: "on-first-retry",
 
         screenshot: "only-on-failure",
+
+        // we'd need custom CSP
+        bypassCSP: true,
     },
     timeout: process.env.ci ? 60000 : 20000,
     expect: { timeout: process.env.ci ? 20000 : 10000 },
