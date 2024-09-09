@@ -83,13 +83,10 @@ class routes {
     static SIGNIN: string = "/signin" as const;
     static SIGNIN_API: string = "/api/signin" as const;
     static API_UPDATE_BADGE_STATUS: string;
-    //static API_PUBLIC_INCUBATORS_GET_ALL: string = "/api/incubators" as const;
     static API_PUBLIC_SPONSORS_GET_ALL: string = "/api/sponsors" as const;
 
     static GET_USER: string = "/community/:username" as const;
-    static GET_USER_API: string = "/api/member/:username" as const;
     static GET_COMMUNITY: string = "/community" as const;
-    //static GET_COMMUNITY_API: string = "/api/community" as const;
 
     static LOGOUT: string = "/logout" as const;
     static LOGOUT_API: string = "/api/logout" as const;
@@ -100,18 +97,6 @@ class routes {
     static ADMIN_SENDINBLUE = "/api/admin/sendinblue" as const;
     static ACCOUNT_UPDATE_INFO_API = "/api/member/:username" as const;
     static ACCOUNT_POST_INFO_API = "/api/member" as const;
-
-    // users
-    // static USER_DELETE_EMAIL = "/users/:username/email/delete"  as const;
-    // static USER_CREATE_REDIRECTION = "/users/:username/redirections"  as const;
-    // static USER_UPDATE_COMMUNICATION_EMAIL =
-    //     "/account/update_communication_email"  as const;
-
-    // static USER_UPDATE_PASSWORD = "/users/:username/password"  as const;
-    // static USER_UPDATE_SECONDARY_EMAIL = "/users/:username/secondary_email"  as const;
-    // static USER_UPDATE_PRIMARY_EMAIL = "/users/:username/primary_email"  as const;
-    // static USER_UPDATE_END_DATE = "/users/:username/end-date"  as const;
-    // static USER_UPGRADE_EMAIL = "/users/:username/email-upgrade"  as const;
 }
 
 export default routes;
