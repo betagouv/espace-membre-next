@@ -1,8 +1,10 @@
 import React from "react";
+
 import AsyncSelect from "react-select/async";
-import { searchCommunes } from "@/lib/searchCommune";
 
 import { ClientOnly } from "./ClientOnly";
+import { searchCommunes } from "@/lib/searchCommune";
+
 
 export default function CommuneSelect({ defaultValue, onChange, placeholder }) {
     const loadOptions = (inputValue: string) => searchCommunes(inputValue);

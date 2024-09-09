@@ -1,12 +1,12 @@
 import express from "express";
 
 import routes from "@/routes/routes";
+import { postBadgeRenewalRequest } from "@controllers/badgeRequestsController/postBadgeRenewalRequest";
+import { postBadgeRequest } from "@controllers/badgeRequestsController/postBadgeRequest";
 import {
     updateBadgeRenewalRequestStatus,
     updateBadgeRequestStatus,
 } from "@controllers/badgeRequestsController/updateBadgeRequestStatus";
-import { postBadgeRequest } from "@controllers/badgeRequestsController/postBadgeRequest";
-import { postBadgeRenewalRequest } from "@controllers/badgeRequestsController/postBadgeRenewalRequest";
 
 const router = express.Router();
 

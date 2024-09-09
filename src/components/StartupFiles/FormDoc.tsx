@@ -1,16 +1,18 @@
+import { useEffect } from "react";
+
+import { fr } from "@codegouvfr/react-dsfr";
+import Button from "@codegouvfr/react-dsfr/Button";
+import Checkbox from "@codegouvfr/react-dsfr/Checkbox";
+import Input from "@codegouvfr/react-dsfr/Input";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { useForm, SubmitHandler } from "react-hook-form";
+import { z } from "zod";
+
 import {
     DocSchemaType,
     docSchema,
     docComiteDataSchema,
 } from "@/models/startupFiles";
-import { zodResolver } from "@hookform/resolvers/zod";
-import { fr } from "@codegouvfr/react-dsfr";
-import Button from "@codegouvfr/react-dsfr/Button";
-import Checkbox from "@codegouvfr/react-dsfr/Checkbox";
-import Input from "@codegouvfr/react-dsfr/Input";
-import { useEffect } from "react";
-import { useForm, SubmitHandler } from "react-hook-form";
-import { z } from "zod";
 
 const contenus = [
     {

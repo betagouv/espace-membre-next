@@ -4,10 +4,10 @@ import { getServerSession } from "next-auth";
 
 import { IncubatorUpdate } from "@/components/IncubatorUpdatePage";
 import { db } from "@/lib/kysely";
+import { getIncubator } from "@/lib/kysely/queries/incubators";
 import { incubatorToModel } from "@/models/mapper";
 import { authOptions } from "@/utils/authoptions";
 import { routeTitles } from "@/utils/routes/routeTitles";
-import { getIncubator } from "@/lib/kysely/queries/incubators";
 
 type Props = {
     params: { id: string };

@@ -1,12 +1,13 @@
+import { useEffect, useState } from "react";
+
+import Select from "@codegouvfr/react-dsfr/Select";
+
+import { FormDoc } from "./FormDoc";
 import {
     typesDocuments,
     docSchema,
     DocSchemaType,
 } from "@/models/startupFiles";
-import Select from "@codegouvfr/react-dsfr/Select";
-import { useEffect, useState } from "react";
-
-import { FormDoc } from "./FormDoc";
 
 // allows to switch between diffrent forms
 export const FileForm = ({

@@ -1,4 +1,5 @@
 import axios from "axios";
+
 import config from "@/frontConfig";
 
 export async function GET() {

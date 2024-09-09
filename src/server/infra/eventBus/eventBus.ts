@@ -1,6 +1,6 @@
-import config from "@/server/config";
 import InMemoryEventBus from "../inMemoryEventBus";
 import makeRedisEventBus from "../redis";
+import config from "@/server/config";
 
 export interface IEventBus {
     init: any;

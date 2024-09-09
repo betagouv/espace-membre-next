@@ -2,9 +2,9 @@
 // import { routes } from "@/src/app/utils/routes/list";
 // import { getBaseUrl } from "@/src/app/utils/url";
 
-import { getBaseUrl } from "../url";
 import { Lang } from "./common";
 import { routes } from "./list";
+import { getBaseUrl } from "../url";
 
 export interface GetOptions {
     lang?: Lang;

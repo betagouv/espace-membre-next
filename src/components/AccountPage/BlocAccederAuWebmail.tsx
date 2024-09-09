@@ -1,5 +1,6 @@
-import Accordion from "@codegouvfr/react-dsfr/Accordion";
 import React from "react";
+
+import Accordion from "@codegouvfr/react-dsfr/Accordion";
 
 export default function BlocAccederAuWebmail({
     isExchange = false,

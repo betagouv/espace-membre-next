@@ -6,6 +6,7 @@ import * as Sentry from "@sentry/nextjs";
 
 import { TeamForm } from "../TeamForm/TeamForm";
 import { updateTeam } from "@/app/api/teams/actions/updateTeam";
+import { BreadCrumbFiller } from "@/app/BreadCrumbProvider";
 import { teamUpdateSchemaType } from "@/models/actions/team";
 import {
     memberBaseInfoSchemaType,
@@ -14,7 +15,6 @@ import {
 import { Option } from "@/models/misc";
 import { teamSchemaType } from "@/models/team";
 import { routeTitles } from "@/utils/routes/routeTitles";
-import { BreadCrumbFiller } from "@/app/BreadCrumbProvider";
 
 interface TeamUpdateProps {
     team: teamSchemaType;

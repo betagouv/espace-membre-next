@@ -1,4 +1,5 @@
 import nodemailer from "nodemailer";
+
 import {
     EmailVariants,
     HtmlBuilderType,

@@ -1,7 +1,8 @@
+import { NextRequest } from "next/server";
 import { getServerSession } from "next-auth";
+
 import { db } from "@/lib/kysely";
 import { authOptions } from "@/utils/authoptions";
-import { NextRequest } from "next/server";
 
 export async function GET(
     req: NextRequest,
