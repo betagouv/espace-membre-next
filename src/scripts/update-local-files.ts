@@ -42,6 +42,7 @@ const getChanges = async (markdownData) => {
             "title",
             "website",
             "incubators.ghid",
+            "highlighted_startups",
             sql<string>`CASE WHEN organizations.ghid IS NOT NULL then concat('/organisations/', organizations.ghid) else NULL END`.as(
                 "owner"
             ),
@@ -78,6 +79,7 @@ const getChanges = async (markdownData) => {
         "startups.thematiques",
         "startups.usertypes",
         "startups.techno",
+        "startups.uuid",
     ] as const;
     const startups = await db
         .selectFrom("startups")
@@ -185,6 +187,13 @@ const getChanges = async (markdownData) => {
             (dbIncub.short_description &&
                 md.renderInline(dbIncub.short_description)) ||
             "";
+        const highlighted_startups_ghids = dbIncub2.highlighted_startups
+            ? dbIncub2.highlighted_startups
+                  .map((uuid) => startups.find((s) => s.uuid === uuid))
+                  .filter((se) => se)
+                  .map((se) => se!.ghid)
+            : undefined;
+
         if (!ghIncub) {
             // create gh orga
             updates.push({
@@ -193,6 +202,7 @@ const getChanges = async (markdownData) => {
                     {
                         ...dbIncub2,
                         short_description: htmlShortDescription,
+                        highlighted_startups: highlighted_startups_ghids,
                     },
                     dbIncub.description || ""
                 ),
@@ -203,6 +213,7 @@ const getChanges = async (markdownData) => {
             const diffed = detailedDiff(ghIncub2, {
                 ...dbIncub2,
                 short_description: htmlShortDescription,
+                highlighted_startups: highlighted_startups_ghids,
             });
             if (
                 Object.keys(diffed.updated).length ||
@@ -212,6 +223,7 @@ const getChanges = async (markdownData) => {
                     ...ghIncub2,
                     ...dbIncub2,
                     short_description: htmlShortDescription,
+                    highlighted_startups: highlighted_startups_ghids,
                 };
                 updated.website = updated.website || ""; // wth due to url field ?
                 updated.github = updated.github || ""; // wth due to url field ?
@@ -296,6 +308,7 @@ const getChanges = async (markdownData) => {
             "description",
             "name",
             "pitch",
+            "uuid",
         ]);
         if (!ghStartup) {
             // create gh startup
