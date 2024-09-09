@@ -13,6 +13,12 @@ export const incubatorUpdateSchema = z.object({
     description: incubatorSchema.shape.description,
     short_description: incubatorSchema.shape.short_description,
     highlighted_startups: incubatorSchema.shape.highlighted_startups,
+    logo: z
+        .instanceof(FileType)
+        .refine((file) => file.size > 0, "File is required")
+        .nullable()
+        .optional(),
+    shouldDeleteLogo: z.boolean().optional(),
 });
 
 export type incubatorUpdateSchemaType = z.infer<typeof incubatorUpdateSchema>;
