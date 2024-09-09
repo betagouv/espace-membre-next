@@ -290,7 +290,7 @@ export function StartupForm(props: StartupFormProps) {
                             }}
                         />
                     </div>
-                    {/* <div
+                    <div
                         className={`fr-input-group ${
                             errors?.startup?.thematiques
                                 ? "fr-input-group--error"
@@ -313,7 +313,7 @@ export function StartupForm(props: StartupFormProps) {
                                 });
                             }}
                         />
-                    </div> */}
+                    </div>
                     <div
                         className={`fr-input-group ${
                             errors?.startup?.usertypes
