@@ -20,7 +20,7 @@ const filter = createFilterOptions<TechnoType>();
 // todo: should be merged with UsertypesEditor and others
 
 //  from https://mui.com/material-ui/react-autocomplete/#creatable
-export const TechnosEditor = ({
+export const TechnoEditor = ({
     onChange,
     defaultValue,
 }: {
