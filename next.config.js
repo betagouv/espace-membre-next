@@ -36,10 +36,6 @@ const nextConfig = {
             bodySizeLimit: "10mb",
         },
     },
-    sentry: {
-        disableServerWebpackPlugin: true,
-        disableClientWebpackPlugin: true,
-    },
     webpack: (config, { isServer }) => {
         if (!isServer) {
             // don't resolve 'fs' module on the client to prevent this error on build --> Error: Can't resolve 'fs'
@@ -53,6 +49,9 @@ const nextConfig = {
         });
         return config;
     },
+    sentry: {
+        hideSourceMaps: true,
+    },
 };
 
 const sentryWebpackPluginOptions = {
@@ -60,11 +59,17 @@ const sentryWebpackPluginOptions = {
     // the following options are set automatically, and overriding them is not
     // recommended:
     //   release, url, configFile, stripPrefix, urlPrefix, include, ignore
-    //org: "example-org",
-    //project: "example-project",
+
+    release: process.env.SOURCE_VERSION, // https://doc.scalingo.com/platform/app/environment#build-environment-variables
+    org: "betagouv",
+    project: "espace-membre",
     // An auth token is required for uploading source maps.
-    //authToken: process.env.SENTRY_AUTH_TOKEN,
-    //silent: true, // Suppresses all logs
+    authToken: process.env.SENTRY_AUTH_TOKEN,
+    url: "https://sentry.incubateur.net",
+    // silent: true, // Suppresses all logs
+    errorHandler: (err, invokeErr, compilation) => {
+        compilation.warnings.push("Sentry CLI Plugin: " + err.message);
+    },
     // For all available options, see:
     // https://github.com/getsentry/sentry-webpack-plugin#options.
 };

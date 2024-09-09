@@ -1,5 +1,5 @@
-import { updateBadgeRequest } from "@db/dbBadgeRequests";
 import { BADGE_REQUEST } from "@/models/badgeRequests";
+import { updateBadgeRequest } from "@db/dbBadgeRequests";
 
 export async function updateBadgeRequestStatus(req, res) {
     await updateBadgeRequest(

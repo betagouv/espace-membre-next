@@ -1,4 +1,5 @@
 import { config } from 'dotenv';
+
 import { deleteRedirectionsAfterQuitting } from '@schedulers/userContractEndingScheduler';
 
 config();

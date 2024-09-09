@@ -1,10 +1,9 @@
 import React from "react";
 
+import { fr } from "@codegouvfr/react-dsfr";
 import Accordion from "@codegouvfr/react-dsfr/Accordion";
 import Button from "@codegouvfr/react-dsfr/Button";
 import Input from "@codegouvfr/react-dsfr/Input";
-import { fr } from "@codegouvfr/react-dsfr";
-
 import axios from "axios";
 
 import { memberBaseInfoSchemaType } from "@/models/member";

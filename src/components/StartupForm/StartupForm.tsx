@@ -15,6 +15,7 @@ import { useForm } from "react-hook-form";
 import MdEditor from "react-markdown-editor-lite";
 
 import { EventsEditor } from "./EventsEditor";
+import MdEditorCustomHeaderPlugin from "./MdEditorCustomHeaderPlugin";
 import { PhasesEditor } from "./PhasesEditor";
 import SponsorBlock from "./SponsorBlock";
 import { ThematiquesEditor } from "./ThematiquesEditor";
@@ -38,7 +39,6 @@ import {
     startupSchemaType,
 } from "@/models/startup";
 
-import MdEditorCustomHeaderPlugin from "./MdEditorCustomHeaderPlugin";
 
 MdEditor.use(MdEditorCustomHeaderPlugin);
 

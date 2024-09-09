@@ -1,4 +1,5 @@
 import { Metadata, ResolvingMetadata } from "next";
+
 import NewsletterClientPage from "./NewsletterClientPage";
 
 type Props = {

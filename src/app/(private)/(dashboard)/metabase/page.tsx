@@ -1,3 +1,4 @@
+import jwt from "jsonwebtoken";
 import type { Metadata } from "next";
 import { redirect } from "next/navigation";
 import { getServerSession } from "next-auth";
@@ -5,7 +6,6 @@ import { getServerSession } from "next-auth";
 import { authOptions } from "@/utils/authoptions";
 import { routeTitles } from "@/utils/routes/routeTitles";
 
-import jwt from "jsonwebtoken";
 
 export const metadata: Metadata = {
     title: `${routeTitles.metabase()} / Espace Membre`,

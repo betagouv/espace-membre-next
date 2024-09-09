@@ -9,6 +9,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 
 import SponsorDomainSelect from "@/components/SponsorForm/SponsorDomainSelect";
+import SponsorTypeSelect from "@/components/SponsorForm/SponsorTypeSelect";
 import {
     organizationUpdateSchema,
     organizationUpdateSchemaType,
@@ -16,7 +17,6 @@ import {
 import { sponsorSchemaType } from "@/models/sponsor";
 
 import "react-markdown-editor-lite/lib/index.css";
-import SponsorTypeSelect from "@/components/SponsorForm/SponsorTypeSelect";
 
 // data from secretariat API
 export interface OrganizationFormProps {

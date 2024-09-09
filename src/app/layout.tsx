@@ -1,4 +1,3 @@
-import { NextAppDirEmotionCacheProvider } from "tss-react/next/appDir";
 import { PropsWithChildren } from "react";
 
 import { fr } from "@codegouvfr/react-dsfr";
@@ -6,19 +5,21 @@ import { Footer } from "@codegouvfr/react-dsfr/Footer";
 import { DsfrHead } from "@codegouvfr/react-dsfr/next-appdir/DsfrHead";
 import { DsfrProvider } from "@codegouvfr/react-dsfr/next-appdir/DsfrProvider";
 import { getHtmlAttributes } from "@codegouvfr/react-dsfr/next-appdir/getHtmlAttributes";
+import Link from "next/link";
 import { getServerSession } from "next-auth/next";
+import { NextAppDirEmotionCacheProvider } from "tss-react/next/appDir";
+
 
 import { BreadCrumbProvider } from "./BreadCrumbProvider";
 import ClientSessionProvider from "./context/ClientContextProvider";
 import { defaultColorScheme } from "./defaultColorScheme";
 import { MuiDsfrThemeProvider } from "./MuiDsfrThemeProvider";
 import { StartDsfr } from "./StartDsfr";
-
+import { Matomo } from "@/app/Matomo";
 import Header from "@/components/Header";
 import { LiveChatProvider } from "@/components/live-chat/LiveChatProvider";
 import { authOptions } from "@/utils/authoptions";
-import { Matomo } from "@/app/Matomo";
-import Link from "next/link";
+
 
 export interface RootLayoutProps {
     workaroundForNextJsPages?: boolean;
