@@ -46,6 +46,22 @@ export default async function Page(props: Props) {
 
     const sponsors = await db.selectFrom("organizations").selectAll().execute();
 
+    const s3LogoKey = `incubators/${dbIncubator.ghid}/logo.jpg`;
+    let hasLogo = false;
+    try {
+        const s3Object = await s3
+            .getObject({
+                Key: s3LogoKey,
+            })
+            .promise();
+        hasLogo = true;
+    } catch (error) {
+        console.log("No image for user");
+    }
+    const logoURL = hasLogo
+        ? `/api/image?fileObjIdentifier=${dbIncubator.ghid}&fileRelativeObjType=incubator&fileIdentifier=logo`
+        : undefined;
+
     const incubator = incubatorToModel(dbIncubator);
     const componentProps = {
         incubator,
@@ -61,6 +77,7 @@ export default async function Page(props: Props) {
                 label: startup.name,
             };
         }),
+        logoURL,
     };
 
     return <IncubatorUpdate {...componentProps} />;
