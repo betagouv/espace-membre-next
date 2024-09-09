@@ -233,6 +233,7 @@ export interface Startups {
   dashlord_url: string | null;
   description: string | null;
   ghid: string;
+  highlighted_startups: string[] | null;
   incubator_id: string | null;
   link: string | null;
   mailing_list: string | null;

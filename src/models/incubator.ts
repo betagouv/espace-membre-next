@@ -12,5 +12,6 @@ export const incubatorSchema = z.object({
     github: z.string().url().optional().or(z.literal("")),
     description: z.string(),
     short_description: z.string(),
+    highlighted_startups: z.array(z.string().uuid()).optional(),
 });
 export type incubatorSchemaType = z.infer<typeof incubatorSchema>;

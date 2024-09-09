@@ -37,10 +37,14 @@ export default async function Page(props: Props) {
         .selectAll()
         .where("uuid", "=", uuid)
         .executeTakeFirst();
+
     if (!dbIncubator) {
         redirect("/incubators");
     }
-    const sponsors = await db.selectFrom("organizations").selectAll().execute(); //await betagouv.sponsors();
+
+    const startups = await db.selectFrom("startups").selectAll().execute();
+
+    const sponsors = await db.selectFrom("organizations").selectAll().execute();
 
     const incubator = incubatorToModel(dbIncubator);
     const componentProps = {
@@ -49,6 +53,12 @@ export default async function Page(props: Props) {
             return {
                 value: incubator.uuid,
                 label: incubator.name,
+            };
+        }),
+        startupOptions: (startups || []).map((startup) => {
+            return {
+                value: startup.uuid,
+                label: startup.name,
             };
         }),
     };

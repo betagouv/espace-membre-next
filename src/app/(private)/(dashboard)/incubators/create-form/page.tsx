@@ -10,11 +10,18 @@ export const metadata: Metadata = {
 
 export default async function Page(props) {
     const sponsors = await db.selectFrom("organizations").selectAll().execute(); //await betagouv.sponsors();
+    const startups = await db.selectFrom("startups").selectAll().execute(); //await betagouv.sponsors();
 
     return (
         <>
             <h1>{routeTitles.incubatorCreate()}</h1>
             <IncubatorCreate
+                startupOptions={startups.map((startup) => {
+                    return {
+                        value: startup.uuid,
+                        label: startup.name,
+                    };
+                })}
                 sponsorOptions={sponsors.map((incubator) => {
                     return {
                         value: incubator.uuid,

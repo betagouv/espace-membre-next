@@ -10,11 +10,13 @@ import { BreadCrumbFiller } from "@/app/BreadCrumbProvider";
 import { incubatorUpdateSchemaType } from "@/models/actions/incubator";
 import { incubatorSchemaType } from "@/models/incubator";
 import { Option } from "@/models/misc";
+import { startupSchemaType } from "@/models/startup";
 import { routeTitles } from "@/utils/routes/routeTitles";
 
 interface IncubatorUpdateProps {
     incubator: incubatorSchemaType;
     sponsorOptions: Option[];
+    startupOptions: Option[];
 }
 
 /* Pure component */
@@ -60,6 +62,7 @@ export const IncubatorUpdate = (props: IncubatorUpdateProps) => {
                     <IncubatorForm
                         save={save}
                         incubator={props.incubator}
+                        startupOptions={props.startupOptions}
                         sponsorOptions={props.sponsorOptions}
                     />
                 )) || <>Loading...</>}
