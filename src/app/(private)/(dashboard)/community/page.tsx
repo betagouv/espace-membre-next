@@ -3,12 +3,12 @@ import type { Metadata } from "next";
 import { Community } from "@/components/CommunityPage";
 import { db } from "@/lib/kysely";
 import { getAllStartups } from "@/lib/kysely/queries";
+import { getAllIncubatorsOptions } from "@/lib/kysely/queries/incubators";
 import { getAllUsersInfo } from "@/lib/kysely/queries/users";
 import { competencesList } from "@/models/competences";
 import { memberBaseInfoToModel } from "@/models/mapper";
 import { DOMAINE_OPTIONS } from "@/models/member";
 import { routeTitles } from "@/utils/routes/routeTitles";
-import { getAllIncubatorsOptions } from "@/lib/kysely/queries/incubators";
 
 export const metadata: Metadata = {
     title: `${routeTitles.community()} / Espace Membre`,

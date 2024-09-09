@@ -1,6 +1,7 @@
+import axios from "axios";
+
 import config from "@/server/config";
 import { getMattermostConfig } from "@/server/config/mattermost/mattermost.config";
-import axios from "axios";
 
 export async function getTeam(teamId: string) {
     try {

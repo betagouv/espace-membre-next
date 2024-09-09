@@ -1,15 +1,15 @@
 import type { Metadata } from "next";
+import { cookies } from "next/headers";
 import { redirect } from "next/navigation";
 import { getServerSession } from "next-auth";
-import { cookies } from "next/headers";
 
 import { DashboardPage } from "./DashboardPage";
+import { SURVEY_BOX_COOKIE_NAME } from "@/components/SurveyBox";
 import { getUserInfos } from "@/lib/kysely/queries/users";
 import { userInfosToModel } from "@/models/mapper";
 import { EmailStatusCode } from "@/models/member";
 import { authOptions } from "@/utils/authoptions";
 import { routeTitles } from "@/utils/routes/routeTitles";
-import { SURVEY_BOX_COOKIE_NAME } from "@/components/SurveyBox";
 
 export const metadata: Metadata = {
     title: `${routeTitles.dashboard()} / Espace Membre`,

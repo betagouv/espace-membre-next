@@ -1,12 +1,14 @@
 "use client";
+import { useEffect, useState } from "react";
+
 import axios from "axios";
 import type { Metadata } from "next";
-import { useEffect, useState } from "react";
-import routes, { computeRoute } from "@/routes/routes";
+
 import {
     AdminMattermost,
     AdminMattermostProps,
 } from "@/components/AdminMattermostPage/AdminMattermost";
+import routes, { computeRoute } from "@/routes/routes";
 
 export default function Page() {
     const [data, setData] = useState({});

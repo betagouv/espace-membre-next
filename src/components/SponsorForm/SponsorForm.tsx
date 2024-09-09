@@ -9,7 +9,6 @@ import slugify from "@sindresorhus/slugify";
 
 import SponsorDomainSelect from "./SponsorDomainSelect";
 import SponsorTypeSelect from "./SponsorTypeSelect";
-
 import {
     Sponsor,
     SponsorDomaineMinisteriel,
