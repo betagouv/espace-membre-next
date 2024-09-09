@@ -1,4 +1,6 @@
-scopeconfig:
-    - scope: node
-version: "1.0"
 fileignoreconfig:
+- filename: src/components/StartupForm/TechnoEditor.tsx
+  checksum: 1945d388ece9e30e247acfa902436849f78ffcd032047f8c0292173dddc8ea53
+scopeconfig:
+- scope: node
+version: "1.0"
