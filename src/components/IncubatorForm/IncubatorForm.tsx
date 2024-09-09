@@ -119,6 +119,12 @@ export function IncubatorForm(props: IncubatorFormProps) {
             // ),
         },
     });
+    const defaultHighlightStartups = props.startupOptions.filter((s) =>
+        props.incubator
+            ? props.incubator.highlighted_startups &&
+              props.incubator.highlighted_startups.includes(s.value)
+            : undefined
+    );
     const [alertMessage, setAlertMessage] = React.useState<{
         title: string;
         message: NonNullable<React.ReactNode>;
@@ -331,16 +337,8 @@ export function IncubatorForm(props: IncubatorFormProps) {
                         }
                         isMulti={false}
                     ></SESponsorSelect>
-                    \
                     <SESelect
-                        defaultValue={props.startupOptions.filter((s) =>
-                            props.incubator
-                                ? props.incubator.highlighted_startups &&
-                                  props.incubator.highlighted_startups.includes(
-                                      s.value
-                                  )
-                                : undefined
-                        )}
+                        defaultValue={defaultHighlightStartups}
                         onChange={(startups) => {
                             setValue(
                                 "highlighted_startups",

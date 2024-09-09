@@ -1,5 +1,5 @@
 "use client";
-import React from "react";
+import React, { useState } from "react";
 
 import Autocomplete from "@mui/material/Autocomplete";
 import Chip from "@mui/material/Chip";
@@ -33,6 +33,11 @@ export default function SESelect({
     const onTagsChange = (event, values) => {
         onChange(values);
     };
+    const [initialValue] = useState(
+        defaultValue
+            ? (defaultValue as { value: string; label: string }[])
+            : undefined
+    );
 
     return (
         <div className="fr-select-group">
@@ -45,11 +50,7 @@ export default function SESelect({
                 options={startups}
                 onChange={onTagsChange}
                 onBlur={onBlur}
-                defaultValue={
-                    defaultValue
-                        ? (defaultValue as { value: string; label: string }[])
-                        : undefined
-                }
+                defaultValue={initialValue}
                 // getOptionKey={(opt) => opt.value}
                 renderOption={(props, option) => {
                     return (

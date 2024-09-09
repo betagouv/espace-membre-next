@@ -235,6 +235,7 @@ export function incubatorToModel(
         github: incubator.github || "",
         description: incubator.description || "",
         short_description: incubator.short_description || "",
+        highlighted_startups: incubator.highlighted_startups || [],
     };
 }
 
