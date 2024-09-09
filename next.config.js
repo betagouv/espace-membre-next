@@ -1,7 +1,35 @@
 const { withSentryConfig } = require("@sentry/nextjs");
 
+const cspHeader = `
+    default-src 'self';
+    connect-src 'self' api.maptiler.com;
+    script-src 'self' 'unsafe-inline' 'unsafe-eval' blob: *.gouv.fr sentry.incubateur.net unpkg.com;
+    style-src 'self' 'unsafe-inline' cdnjs.cloudflare.com unpkg.com;
+    img-src * data:;
+    font-src 'self' data: cdnjs.cloudflare.com;
+    frame-src 'self' metabase.incubateur.net;
+    object-src 'none';
+    base-uri 'self';
+    form-action 'self';
+    frame-ancestors 'self';
+    upgrade-insecure-requests;
+`;
+
 /** @type {import('next').NextConfig} */
 const nextConfig = {
+    async headers() {
+        return [
+            {
+                source: "/(.*)",
+                headers: [
+                    {
+                        key: "Content-Security-Policy",
+                        value: cspHeader.replace(/\n/g, ""),
+                    },
+                ],
+            },
+        ];
+    },
     experimental: {
         serverComponentsExternalPackages: ["knex", "sib-api-v3-sdk"],
         serverActions: {
