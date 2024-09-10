@@ -137,7 +137,7 @@ export const TechnoEditor = ({
                         backgroundColor: `var(--background-contrast-grey)`,
                         boxShadow: `inset 0 -2px 0 0 var(--border-plain-grey)`,
                     }}
-                    placeholder="Choisissez ou ajoutez les thématiques"
+                    placeholder="Choisissez ou ajoutez les technos utilisées par votre produit"
                 />
             )}
         />
