@@ -9,7 +9,7 @@ export const incubator = z.object({
     address: z.string(),
     website: z.string(),
     github: z.string(),
-    highlighted_startups: z.array(z.string()),
+    highlighted_startups: z.array(z.string()).optional(),
 });
 
 export const organisation = z.object({
