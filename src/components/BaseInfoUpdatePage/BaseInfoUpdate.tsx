@@ -28,6 +28,7 @@ import { GenderCode, statusOptions } from "@/models/member";
 import { DOMAINE_OPTIONS, memberSchema } from "@/models/member";
 import routes, { computeRoute } from "@/routes/routes";
 import { routeTitles } from "@/utils/routes/routeTitles";
+import Link from "next/link";
 
 // data from secretariat API
 export interface BaseInfoUpdateProps {
@@ -376,12 +377,9 @@ export const BaseInfoUpdate = (props: BaseInfoUpdateProps) => {
                             : `Observatoire statistique`}
                     </h2>
                     ⚠️ Ces valeurs servent à alimenter l'
-                    <a
-                        href="https://metabase.incubateur.net/public/dashboard/554ff353-6104-4c25-a261-d8bdc40f75d5"
-                        target="_blank"
-                    >
+                    <Link href="/metabase" target="_blank">
                         observatoire de la communauté
-                    </a>
+                    </Link>
                     . Elles sont confidentielles et anonymisées mis à part le
                     lieu de travail.<br></br>
                     <GenderSelect

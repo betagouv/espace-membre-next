@@ -58,8 +58,7 @@ export default function Observatoire({
                         children: `Consulter l'observatoire`,
                         iconId: "fr-icon-chat-check-fill",
                         linkProps: {
-                            href: "https://metabase.incubateur.net/public/dashboard/554ff353-6104-4c25-a261-d8bdc40f75d5",
-                            target: "_blank",
+                            href: "/metabase",
                         },
                         priority: "secondary",
                     },
