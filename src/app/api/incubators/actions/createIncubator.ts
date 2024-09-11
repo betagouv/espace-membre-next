@@ -22,15 +22,13 @@ import {
 export async function createIncubator({
     incubator,
 }: {
-    incubator: incubatorUpdateSchemaType;
+    incubator: incubatorUpdateSchemaType["incubator"];
 }): Promise<incubatorSchemaType> {
     const session = await getServerSession(authOptions);
     if (!session || !session.user.id) {
         throw new AuthorizationError();
     }
-    const memberData = incubatorUpdateSchema.shape.incubator.parse(
-        incubator.incubator
-    );
+    const memberData = incubatorUpdateSchema.shape.incubator.parse(incubator);
     let newIncubator;
     await db.transaction().execute(async (trx) => {
         // update incubator data
