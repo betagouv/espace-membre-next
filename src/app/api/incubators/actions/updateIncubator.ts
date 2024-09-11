@@ -8,6 +8,12 @@ import { db } from "@/lib/kysely";
 import { incubatorUpdateSchemaType } from "@/models/actions/incubator";
 import { incubatorSchemaType } from "@/models/incubator";
 import { authOptions } from "@/utils/authoptions";
+import {
+    AuthorizationError,
+    NoDataError,
+    UnwrapPromise,
+    withErrorHandling,
+} from "@/utils/error";
 
 export async function updateIncubator({
     incubator,
@@ -18,7 +24,7 @@ export async function updateIncubator({
 }): Promise<incubatorSchemaType> {
     const session = await getServerSession(authOptions);
     if (!session || !session.user.id) {
-        throw new Error(`You don't have the right to access this function`);
+        throw new AuthorizationError();
     }
     const previousIncubatorData = await db
         .selectFrom("incubators")
@@ -26,7 +32,7 @@ export async function updateIncubator({
         .where("uuid", "=", incubatorUuid)
         .executeTakeFirst();
     if (!previousIncubatorData) {
-        throw new Error("Cannot find incubator");
+        throw new NoDataError("Cannot find incubator");
     }
     let updatedIncubator;
     await db.transaction().execute(async (trx) => {
@@ -47,3 +53,8 @@ export async function updateIncubator({
     }
     return updatedIncubator;
 }
+
+export const safeUpdateIncubator = withErrorHandling<
+    UnwrapPromise<ReturnType<typeof updateIncubator>>,
+    Parameters<typeof updateIncubator>
+>(updateIncubator);

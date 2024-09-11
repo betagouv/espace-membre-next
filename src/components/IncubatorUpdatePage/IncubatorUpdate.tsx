@@ -5,7 +5,10 @@ import { fr } from "@codegouvfr/react-dsfr";
 import * as Sentry from "@sentry/nextjs";
 
 import { IncubatorForm } from "../IncubatorForm/IncubatorForm";
-import { updateIncubator } from "@/app/api/incubators/actions/updateIncubator";
+import {
+    safeUpdateIncubator,
+    updateIncubator,
+} from "@/app/api/incubators/actions/updateIncubator";
 import { BreadCrumbFiller } from "@/app/BreadCrumbProvider";
 import { incubatorUpdateSchemaType } from "@/models/actions/incubator";
 import { incubatorSchemaType } from "@/models/incubator";
@@ -26,34 +29,36 @@ export const IncubatorUpdate = (props: IncubatorUpdateProps) => {
 
     const save = async (data: incubatorUpdateSchemaType) => {
         try {
-            const updatedIncubator = await updateIncubator({
+            const res = await safeUpdateIncubator({
                 incubator: data,
                 incubatorUuid: props.incubator.uuid,
             });
-            if (data.logo) {
-                saveImage({
-                    fileIdentifier: "logo",
-                    fileRelativeObjType: "incubator",
-                    fileObjIdentifier: data.incubator.ghid,
-                    file: data.logo,
-                });
-            }
+            if (res.success) {
+                if (data.logo) {
+                    saveImage({
+                        fileIdentifier: "logo",
+                        fileRelativeObjType: "incubator",
+                        fileObjIdentifier: data.incubator.ghid,
+                        file: data.logo,
+                    });
+                }
 
-            if (data.shouldDeleteLogo) {
-                await fetch("/api/image", {
-                    method: "DELETE",
-                    headers: {
-                        "Content-Type": "application/json",
-                    },
-                    body: JSON.stringify({
-                        fileObjIdentifier: updatedIncubator.ghid,
-                        fileIdentifer: "hero",
-                        fileRelativeObjType: "startup",
-                    }),
-                });
+                if (data.shouldDeleteLogo) {
+                    await fetch("/api/image", {
+                        method: "DELETE",
+                        headers: {
+                            "Content-Type": "application/json",
+                        },
+                        body: JSON.stringify({
+                            fileObjIdentifier: res.data.ghid,
+                            fileIdentifer: "hero",
+                            fileRelativeObjType: "startup",
+                        }),
+                    });
+                }
             }
             window.scrollTo({ top: 20, behavior: "smooth" });
-            return updatedIncubator;
+            return res;
         } catch (e) {
             Sentry.captureException(e);
             console.error(e);
