@@ -5,6 +5,7 @@ import { fr } from "@codegouvfr/react-dsfr";
 import * as Sentry from "@sentry/nextjs";
 
 import { IncubatorForm } from "../IncubatorForm/IncubatorForm";
+import { ActionResponse } from "@/@types/serverAction";
 import {
     safeUpdateIncubator,
     updateIncubator,
@@ -27,7 +28,9 @@ interface IncubatorUpdateProps {
 export const IncubatorUpdate = (props: IncubatorUpdateProps) => {
     const css = ".panel { overflow: hidden; width: auto; min-height: 100vh; }";
 
-    const save = async (data: incubatorUpdateSchemaType) => {
+    const save = async (
+        data: incubatorUpdateSchemaType
+    ): Promise<ActionResponse> => {
         try {
             const res = await safeUpdateIncubator({
                 incubator: data.incubator,
