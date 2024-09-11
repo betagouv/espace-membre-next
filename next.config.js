@@ -5,7 +5,7 @@ const cspHeader = `
     connect-src 'self' api.maptiler.com;
     script-src 'self' 'unsafe-inline' 'unsafe-eval' blob: *.gouv.fr sentry.incubateur.net unpkg.com;
     style-src 'self' 'unsafe-inline' cdnjs.cloudflare.com unpkg.com;
-    img-src * data:;
+    img-src * data: blob:;
     font-src 'self' data: cdnjs.cloudflare.com;
     frame-src 'self' metabase.incubateur.net;
     object-src 'none';
