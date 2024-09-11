@@ -162,12 +162,19 @@ export function IncubatorForm(props: IncubatorFormProps) {
             .save({ ...data })
             .then((resp) => {
                 setIsSaving(false);
-                setAlertMessage({
-                    title: `Mise à jour effectuée`,
-                    message: <>La mise à jour a bien été effectuée</>,
-                    type: "success",
-                });
-                return resp;
+                if (resp.success) {
+                    setAlertMessage({
+                        title: `Mise à jour effectuée`,
+                        message: `La mise à jour a bien été effectuée`,
+                        type: "success",
+                    });
+                } else {
+                    setAlertMessage({
+                        title: `Une erreur est survenue`,
+                        message: resp.message || "",
+                        type: "warning",
+                    });
+                }
             })
             .catch((e) => {
                 setIsSaving(false);

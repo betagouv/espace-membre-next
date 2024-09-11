@@ -13,7 +13,11 @@ import {
 import { incubatorSchemaType } from "@/models/incubator";
 import { incubatorToModel } from "@/models/mapper";
 import { authOptions } from "@/utils/authoptions";
-import { AuthorizationError } from "@/utils/error";
+import {
+    AuthorizationError,
+    UnwrapPromise,
+    withErrorHandling,
+} from "@/utils/error";
 
 export async function createIncubator({
     incubator,
@@ -46,3 +50,8 @@ export async function createIncubator({
 
     return incubatorToModel(newIncubator);
 }
+
+export const safeCreateIncubator = withErrorHandling<
+    UnwrapPromise<ReturnType<typeof createIncubator>>,
+    Parameters<typeof createIncubator>
+>(createIncubator);
