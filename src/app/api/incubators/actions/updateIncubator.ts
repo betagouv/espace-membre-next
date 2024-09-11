@@ -19,7 +19,7 @@ export async function updateIncubator({
     incubator,
     incubatorUuid,
 }: {
-    incubator: incubatorUpdateSchemaType;
+    incubator: incubatorUpdateSchemaType["incubator"];
     incubatorUuid: string;
 }): Promise<incubatorSchemaType> {
     const session = await getServerSession(authOptions);
@@ -40,8 +40,8 @@ export async function updateIncubator({
         updatedIncubator = await trx
             .updateTable("incubators")
             .set({
-                ...inucubator.incubator,
-                owner_id: incubator.incubator.owner_id || undefined, // explicitly set owner_id to undefined
+                ...inucubator,
+                owner_id: incubator.owner_id || undefined, // explicitly set owner_id to undefined
             })
             .where("uuid", "=", incubatorUuid)
             .returningAll()
