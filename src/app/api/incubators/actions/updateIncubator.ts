@@ -40,7 +40,7 @@ export async function updateIncubator({
         updatedIncubator = await trx
             .updateTable("incubators")
             .set({
-                ...inucubator,
+                ...incubator,
                 owner_id: incubator.owner_id || undefined, // explicitly set owner_id to undefined
             })
             .where("uuid", "=", incubatorUuid)
