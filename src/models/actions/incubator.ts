@@ -12,6 +12,7 @@ export const incubatorUpdateSchema = z.object({
     github: incubatorSchema.shape.github,
     description: incubatorSchema.shape.description,
     short_description: incubatorSchema.shape.short_description,
+    highlighted_startups: incubatorSchema.shape.highlighted_startups,
 });
 
 export type incubatorUpdateSchemaType = z.infer<typeof incubatorUpdateSchema>;

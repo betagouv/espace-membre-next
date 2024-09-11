@@ -9,8 +9,8 @@ import { createIncubator } from "@/app/api/incubators/actions/createIncubator";
 import { Option } from "@/models/misc";
 
 interface IncubatorInfoCreateProps {
-    incubatorOptions: Option[];
     sponsorOptions: Option[];
+    startupOptions: Option[];
 }
 
 /* Pure component */
@@ -36,6 +36,7 @@ export const IncubatorCreate = (props: IncubatorInfoCreateProps) => {
                 <IncubatorForm
                     save={save}
                     sponsorOptions={props.sponsorOptions}
+                    startupOptions={props.startupOptions}
                 />
                 <br />
                 <br />

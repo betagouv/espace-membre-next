@@ -99,6 +99,7 @@ export interface Incubators {
   description: string | null;
   ghid: string | null;
   github: string | null;
+  highlighted_startups: string[] | null;
   owner_id: string | null;
   short_description: string | null;
   title: string;
