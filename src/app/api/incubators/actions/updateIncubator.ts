@@ -15,7 +15,7 @@ export async function updateIncubator({
 }: {
     incubator: incubatorUpdateSchemaType;
     incubatorUuid: string;
-}): incubatorSchemaType {
+}): Promise<incubatorSchemaType> {
     const session = await getServerSession(authOptions);
     if (!session || !session.user.id) {
         throw new Error(`You don't have the right to access this function`);
