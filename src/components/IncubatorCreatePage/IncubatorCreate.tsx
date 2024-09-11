@@ -23,7 +23,7 @@ export const IncubatorCreate = (props: IncubatorInfoCreateProps) => {
     const save = async (data: incubatorUpdateSchemaType) => {
         try {
             const res = await safeCreateIncubator({
-                incubator: data,
+                incubator: data.incubator,
             });
             if (res.success) {
                 if (data.logo) {

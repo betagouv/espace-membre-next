@@ -30,7 +30,7 @@ export const IncubatorUpdate = (props: IncubatorUpdateProps) => {
     const save = async (data: incubatorUpdateSchemaType) => {
         try {
             const res = await safeUpdateIncubator({
-                incubator: data,
+                incubator: data.incubator,
                 incubatorUuid: props.incubator.uuid,
             });
             if (res.success) {
