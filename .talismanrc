@@ -1,10 +1,16 @@
 fileignoreconfig:
-- filename: src/app/(private)/(dashboard)/incubators/[id]/info-form/page.tsx
-  checksum: 1ec9acf039a7d336e710ef7b47c385eb7080293ee2750c2cf99e9056cde7f129
-- filename: src/components/AutoComplete.tsx
-  checksum: 1508b6cb2d14d760483cbb52a2924ff2e93cb34f3fda64703e298f6d758ef08e
+- filename: package-lock.json
+  checksum: 7f5cd4af23287e4bdccc09aee6057303c58f25b47dd3eb475d993dd1284b4e26
+- filename: src/app/(private)/(dashboard)/account/page.tsx
+  checksum: 1c9b1df42135952c43133eb46ccfb97a7f073cfb9ffc1751efd91c62875b436a
+- filename: src/components/FichePicture.tsx
+  checksum: 181275c6da1d9e5d09f75a4bf202f57867f3323cc53f0c698f4b4a773de4fc42
 - filename: src/components/IncubatorForm/IncubatorForm.tsx
   checksum: 267f0f0e491b06862cd957ae86d22baf799a705370673cd24e588391a4613a5a
+- filename: src/components/MemberPage/EmailUpgrade.tsx
+  checksum: 183a72c4974a5bd2e7a3da0d60895480dc6843e158933a221329dd18e586e400
+- filename: src/components/MemberPage/MemberPage.tsx
+  checksum: d7e1d2aa3b94b36055a1cee44c29b8818cd734c7a454c63e11eb0ad6a6877c56
 - filename: src/components/SEPhaseSelect.tsx
   checksum: 0415032e0a9fb86957148673924ac6e16bc1ffb4b1851091377d23a200562e5e
 - filename: src/components/SESponsorSelect.tsx
@@ -13,8 +19,10 @@ fileignoreconfig:
   checksum: 1945d388ece9e30e247acfa902436849f78ffcd032047f8c0292173dddc8ea53
 - filename: src/lib/hstore.ts
   checksum: a02535588a717719f9e51c324d78779afd8c08fe4904a4aae525b85f8720b0ef
-- filename: src/components/StartupForm/TechnoEditor.tsx
-  checksum: 1945d388ece9e30e247acfa902436849f78ffcd032047f8c0292173dddc8ea53
+- filename: src/lib/s3.ts
+  checksum: a91be258dbac2f22c916598e597bd8cb4ca640e03dd422653486d6288375e849
+- filename: src/utils/routes/list.ts
+  checksum: ebb1c7a8c5fb51e0e49a23f79d1342f177946b4e783154bb265970b672aa2a2c
 scopeconfig:
 - scope: node
 version: "1.0"

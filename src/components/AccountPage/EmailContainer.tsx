@@ -7,7 +7,6 @@ import Alert from "@codegouvfr/react-dsfr/Alert";
 import Badge from "@codegouvfr/react-dsfr/Badge";
 import Table from "@codegouvfr/react-dsfr/Table";
 
-import BlocAccederAuWebmail from "./BlocAccederAuWebmail";
 import BlocChangerMotDePasse from "./BlocChangerMotDePasse";
 import BlocConfigurerCommunicationEmail from "./BlocConfigurerCommunicationEmail";
 import BlocConfigurerEmailPrincipal from "./BlocConfigurerEmailPrincipal";
@@ -17,12 +16,13 @@ import BlocEmailResponder from "./BlocEmailResponder";
 import BlocRedirection from "./BlocRedirection";
 import frontConfig from "@/frontConfig";
 import { EmailStatusCode } from "@/models/member";
+import { WebMailButton } from "../MemberPage/WebMailButton";
 import {
     EmailInfos,
     memberSchemaType,
     memberWrapperSchemaType,
 } from "@/models/member";
-import { OvhRedirection, OvhResponder } from "@/models/ovh";
+import { EMAIL_PLAN_TYPE, OvhRedirection, OvhResponder } from "@/models/ovh";
 
 function BlocEmailConfiguration({ emailInfos }: { emailInfos: EmailInfos }) {
     interface ServerConf {
@@ -150,7 +150,7 @@ export default function EmailContainer({
                             <a href={`mailto:${emailInfos.email}`}>
                                 {emailInfos.email}
                             </a>
-                            {emailInfos.isPro && (
+                            {emailInfos.isPro ? (
                                 <Badge
                                     small
                                     className={fr.cx("fr-ml-1w")}
@@ -158,8 +158,7 @@ export default function EmailContainer({
                                 >
                                     OVH Pro
                                 </Badge>
-                            )}
-                            {emailInfos.isExchange && (
+                            ) : emailInfos.isExchange ? (
                                 <Badge
                                     small
                                     className={fr.cx("fr-ml-1w")}
@@ -167,7 +166,16 @@ export default function EmailContainer({
                                 >
                                     OVH Exchange
                                 </Badge>
-                            )}
+                            ) : emailInfos.emailPlan ===
+                              EMAIL_PLAN_TYPE.EMAIL_PLAN_BASIC ? (
+                                <Badge
+                                    small
+                                    className={fr.cx("fr-ml-1w")}
+                                    severity="success"
+                                >
+                                    OVH MX
+                                </Badge>
+                            ) : null}
                         </span>
                         <br />
                     </>
@@ -194,6 +202,13 @@ export default function EmailContainer({
                     "Non renseigné"
                 )}
             </div>
+            <br />
+            {!emailIsBeingCreated && emailInfos && (
+                <WebMailButton
+                    isExchange={!!emailInfos.isExchange}
+                    className={fr.cx("fr-mb-2w")}
+                />
+            )}
             {!!emailIsBeingCreated && (
                 <Alert
                     description="Ton email @beta.gouv.fr est en train d'être créé, tu recevras un email dès que celui-ci est actif."
@@ -230,11 +245,7 @@ export default function EmailContainer({
                         status={userInfos.primary_email_status}
                         userInfos={userInfos}
                     />
-                    {!!emailInfos && (
-                        <BlocAccederAuWebmail
-                            isExchange={emailInfos.isExchange || false}
-                        />
-                    )}
+
                     {!!emailInfos &&
                         !emailInfos.isExchange &&
                         !emailInfos.isPro && (

@@ -9,7 +9,6 @@ import community from "@gouvfr/dsfr/dist/artwork/pictograms/environment/human-co
 import locationFrance from "@gouvfr/dsfr/dist/artwork/pictograms/map/location-france.svg";
 import { StaticImageData } from "next/image";
 
-
 import { SurveyBox } from "@/components/SurveyBox";
 import { linkRegistry } from "@/utils/routes/registry";
 
@@ -31,10 +30,9 @@ export function DashboardPage(props: DashboardPageProps) {
                         orientation="horizontal"
                         imageUrl={(document as StaticImageData).src}
                         linkProps={{
-                            href: linkRegistry.get(
-                                "accountEditBaseInfo",
-                                undefined
-                            ),
+                            href: linkRegistry.get("communityMember", {
+                                username: "me",
+                            }),
                         }}
                     />
                 </div>

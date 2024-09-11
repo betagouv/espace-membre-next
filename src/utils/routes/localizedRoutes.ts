@@ -45,6 +45,12 @@ export const localizedRoutes = {
             fr: (p) => `/community`,
         }
     ),
+    communityMember: defineLocalizedRoute(
+        { username: param.path.string },
+        {
+            fr: (p) => `/community/${p.username}`,
+        }
+    ),
     communityCreateMember: defineLocalizedRoute(
         {},
         {

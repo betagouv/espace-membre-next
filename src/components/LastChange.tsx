@@ -5,15 +5,18 @@ import Link from "next/link";
 
 import { PrivateMemberChangeSchemaType } from "@/models/memberChange";
 import { StartupChangeSchemaType } from "@/models/startupChange";
+import { CSSProperties } from "react";
 
 export const LastChange = ({
     changes,
+    style,
 }: {
     changes: PrivateMemberChangeSchemaType[] | StartupChangeSchemaType[];
+    style?: CSSProperties;
 }) =>
     (changes.length && (
         <p
-            style={{ color: "var(--text-mention-grey)" }}
+            style={{ color: "var(--text-mention-grey)", ...(style || {}) }}
             className={fr.cx("fr-text--xs")}
         >
             Dernière modification le{" "}
