@@ -11,6 +11,7 @@ import {
     incubatorUpdateSchemaType,
 } from "@/models/actions/incubator";
 import { authOptions } from "@/utils/authoptions";
+import { AuthorizationError } from "@/utils/error";
 
 export async function createIncubator({
     incubator,
@@ -19,21 +20,18 @@ export async function createIncubator({
 }) {
     const session = await getServerSession(authOptions);
     if (!session || !session.user.id) {
-        throw new Error(`You don't have the right to access this function`);
+        throw new AuthorizationError();
     }
-    incubatorUpdateSchema.parse(incubator);
-    await db.transaction().execute(async (trx) => {
+    const memberData = incubatorUpdateSchema.shape.incubator.parse(
+        incubator.incubator
+    );
 
+    await db.transaction().execute(async (trx) => {
         // update incubator data
         const res = await trx
             .insertInto("incubators")
             .values({
-                website: incubator.website,
-                github: incubator.github,
-                ghid: incubator.ghid,
-                title: incubator.title,
-                address: incubator.address,
-                contact: incubator.contact,
+                ...memberData,
             })
             .returning("uuid")
             .executeTakeFirst();
