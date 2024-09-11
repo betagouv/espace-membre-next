@@ -11,6 +11,7 @@ import { incubatorUpdateSchemaType } from "@/models/actions/incubator";
 import { incubatorSchemaType } from "@/models/incubator";
 import { Option } from "@/models/misc";
 import { startupSchemaType } from "@/models/startup";
+import { saveImage } from "@/utils/file";
 import { routeTitles } from "@/utils/routes/routeTitles";
 
 interface IncubatorUpdateProps {
@@ -25,15 +26,34 @@ export const IncubatorUpdate = (props: IncubatorUpdateProps) => {
 
     const save = async (data: incubatorUpdateSchemaType) => {
         try {
-            await updateIncubator({
+            const updatedIncubator = await updateIncubator({
                 incubator: data,
                 incubatorUuid: props.incubator.uuid,
             });
+            if (data.logo) {
+                saveImage({
+                    fileIdentifier: "logo",
+                    fileRelativeObjType: "incubator",
+                    fileObjIdentifier: data.incubator.ghid,
+                    file: data.logo,
+                });
+            }
+
+            if (data.shouldDeleteLogo) {
+                await fetch("/api/image", {
+                    method: "DELETE",
+                    headers: {
+                        "Content-Type": "application/json",
+                    },
+                    body: JSON.stringify({
+                        fileObjIdentifier: updatedIncubator.ghid,
+                        fileIdentifer: "hero",
+                        fileRelativeObjType: "startup",
+                    }),
+                });
+            }
             window.scrollTo({ top: 20, behavior: "smooth" });
-            return {
-                // ...resp,
-                isUpdate: true,
-            };
+            return updatedIncubator;
         } catch (e) {
             Sentry.captureException(e);
             console.error(e);

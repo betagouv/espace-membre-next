@@ -10,6 +10,8 @@ import {
     incubatorUpdateSchema,
     incubatorUpdateSchemaType,
 } from "@/models/actions/incubator";
+import { incubatorSchemaType } from "@/models/incubator";
+import { incubatorToModel } from "@/models/mapper";
 import { authOptions } from "@/utils/authoptions";
 import { AuthorizationError } from "@/utils/error";
 
@@ -17,7 +19,7 @@ export async function createIncubator({
     incubator,
 }: {
     incubator: incubatorUpdateSchemaType;
-}) {
+}): Promise<incubatorSchemaType> {
     const session = await getServerSession(authOptions);
     if (!session || !session.user.id) {
         throw new AuthorizationError();
@@ -25,21 +27,22 @@ export async function createIncubator({
     const memberData = incubatorUpdateSchema.shape.incubator.parse(
         incubator.incubator
     );
-
+    let newIncubator;
     await db.transaction().execute(async (trx) => {
         // update incubator data
-        const res = await trx
+        newIncubator = await trx
             .insertInto("incubators")
             .values({
                 ...memberData,
             })
-            .returning("uuid")
+            .returningAll()
             .executeTakeFirst();
-
-        if (!res) {
-            throw new Error("Incubator data could not be inserted into db");
-        }
-
-        revalidatePath("/incubators");
     });
+
+    if (!newIncubator) {
+        throw new Error("Incubator data could not be inserted into db");
+    }
+    revalidatePath("/incubators");
+
+    return incubatorToModel(newIncubator);
 }

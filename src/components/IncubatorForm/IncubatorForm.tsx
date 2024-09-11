@@ -24,7 +24,7 @@ import { Option } from "@/models/misc";
 import "react-markdown-editor-lite/lib/index.css";
 import SESelect from "../SESelect";
 
-const NEW_INCUBATOR_DATA: incubatorUpdateSchemaType = {
+const NEW_INCUBATOR_DATA = {
     title: "",
     ghid: "",
     contact: "",
@@ -42,7 +42,7 @@ export interface IncubatorFormProps {
     startupOptions: Option[];
     incubator?: incubatorSchemaType;
     save: (data: incubatorUpdateSchemaType) => any;
-    shotURL?: string;
+    logoURL?: string;
 }
 
 // boilerplate for text inputs
@@ -54,24 +54,24 @@ function BasicFormInput({
     rows,
     ...props
 }: {
-    id: keyof incubatorUpdateSchemaType;
+    id: keyof incubatorUpdateSchemaType["incubator"];
     placeholder?: string;
     [some: string]: any;
 }) {
-    const fieldShape = incubatorUpdateSchema.shape[id];
+    const fieldShape = incubatorUpdateSchema.shape["incubator"].shape[id];
     const nativeProps =
         props.textArea === true
             ? {
                   nativeTextAreaProps: {
                       placeholder,
                       rows,
-                      ...register(`${id}`),
+                      ...register(`incubator.${id}`),
                   },
               }
             : {
                   nativeInputProps: {
                       placeholder,
-                      ...register(`${id}`),
+                      ...register(`incubator.${id}`),
                   },
               };
     return (
@@ -79,8 +79,14 @@ function BasicFormInput({
             <Input
                 label={fieldShape.description}
                 {...nativeProps}
-                state={errors && errors[id] ? "error" : "default"}
-                stateRelatedMessage={errors && errors[id]?.message}
+                state={
+                    errors && errors.incubator && errors.incubator
+                        ? "error"
+                        : "default"
+                }
+                stateRelatedMessage={
+                    errors && errors.incubator && errors.incubator[id]?.message
+                }
                 {...(props ? props : {})}
             />
         )) || <>Not found in schema: {id}</>
@@ -115,7 +121,9 @@ export function IncubatorForm(props: IncubatorFormProps) {
         resolver: zodResolver(incubatorUpdateSchema),
         mode: "onChange",
         defaultValues: {
-            ...(props.incubator || NEW_INCUBATOR_DATA),
+            incubator: {
+                ...(props.incubator || NEW_INCUBATOR_DATA),
+            },
             // incubatorSponsors: (props.incubatorSponsors || []).map(
             //     (s) => s.uuid
             // ),
@@ -211,7 +219,8 @@ export function IncubatorForm(props: IncubatorFormProps) {
                     />
                     <div
                         className={`fr-input-group ${
-                            errors?.short_description
+                            errors?.incubator &&
+                            errors?.incubator.short_description
                                 ? "fr-input-group--error"
                                 : ""
                         }`}
@@ -241,17 +250,23 @@ export function IncubatorForm(props: IncubatorFormProps) {
                                 }}
                                 renderHTML={(text) => mdParser.render(text)}
                                 onChange={(data, e) => {
-                                    setValue("short_description", data.text, {
-                                        shouldValidate: true,
-                                        shouldDirty: true,
-                                    });
+                                    setValue(
+                                        "incubator.short_description",
+                                        data.text,
+                                        {
+                                            shouldValidate: true,
+                                            shouldDirty: true,
+                                        }
+                                    );
                                 }}
                             />
                         </ClientOnly>
                     </div>
                     <div
                         className={`fr-input-group ${
-                            errors?.description ? "fr-input-group--error" : ""
+                            errors?.incubator && errors?.incubator.description
+                                ? "fr-input-group--error"
+                                : ""
                         }`}
                     >
                         <label className="fr-label">
@@ -290,10 +305,14 @@ export function IncubatorForm(props: IncubatorFormProps) {
                                 }}
                                 renderHTML={(text) => mdParser.render(text)}
                                 onChange={(data, e) => {
-                                    setValue("description", data.text, {
-                                        shouldValidate: true,
-                                        shouldDirty: true,
-                                    });
+                                    setValue(
+                                        "incubator.description",
+                                        data.text,
+                                        {
+                                            shouldValidate: true,
+                                            shouldDirty: true,
+                                        }
+                                    );
                                 }}
                             />
                         </ClientOnly>
@@ -321,10 +340,10 @@ export function IncubatorForm(props: IncubatorFormProps) {
                     />
                     <SESponsorSelect
                         label="Sponsor"
-                        defaultValue={getValues("owner_id")}
+                        defaultValue={getValues("incubator.owner_id")}
                         allSponsors={props.sponsorOptions}
                         onChange={(newSponsor) => {
-                            setValue("owner_id", newSponsor || "");
+                            setValue("incubator.owner_id", newSponsor || "");
                         }}
                         placeholder={"Sélectionnez un sponsor"}
                         containerStyle={{
@@ -333,9 +352,15 @@ export function IncubatorForm(props: IncubatorFormProps) {
                         hint={
                             "Indiquez l'administration qui porte cet incubateur"
                         }
-                        state={errors.owner_id && "error"}
+                        state={
+                            errors.incubator &&
+                            errors.incubator.owner_id &&
+                            "error"
+                        }
                         stateMessageRelated={
-                            errors.owner_id && errors.owner_id.message
+                            errors.incubator &&
+                            errors.incubator.owner_id &&
+                            errors.incubator.owner_id.message
                         }
                         isMulti={false}
                     ></SESponsorSelect>
@@ -343,7 +368,7 @@ export function IncubatorForm(props: IncubatorFormProps) {
                         defaultValue={defaultHighlightStartups}
                         onChange={(startups) => {
                             setValue(
-                                "highlighted_startups",
+                                "incubator.highlighted_startups",
                                 startups.map((startup) => startup.value),
                                 {
                                     shouldValidate: true,
