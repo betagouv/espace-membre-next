@@ -34,10 +34,11 @@ export async function updateIncubator({
             .updateTable("incubators")
             .set({
                 ...incubator,
+                owner_id: incubator.owner_id || undefined, // explicitly set owner_id to undefined
             })
             .where("uuid", "=", incubatorUuid)
-            .execute();
-
+            .returningAll()
+            .executeTakeFirstOrThrow();
         revalidatePath("/incubators");
     });
 }
