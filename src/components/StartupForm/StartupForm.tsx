@@ -255,7 +255,7 @@ export function StartupForm(props: StartupFormProps) {
                         id="pitch"
                         label="Objectif principal"
                         hintText={`Par exemple : "Faciliter la création d'une
-                                    fiche produit". Pas besoin de faire plus
+                                    fiche produit". Pas besoin de faire
                                     long.`}
                     />
                     <BasicInput
@@ -274,7 +274,7 @@ export function StartupForm(props: StartupFormProps) {
                         <label className="fr-label">
                             Thématiques{" "}
                             <span className="fr-hint-text">
-                                Par exemple : Jeunesse. Logement.
+                                Par exemple : Jeunesse, Logement.
                             </span>
                         </label>
 
@@ -323,7 +323,7 @@ export function StartupForm(props: StartupFormProps) {
                         <label className="fr-label">
                             Utilisateurs cible{" "}
                             <span className="fr-hint-text">
-                                Par exemple : Particuliers. Entreprises.
+                                Par exemple : Particuliers, Entreprises.
                             </span>
                         </label>
 
