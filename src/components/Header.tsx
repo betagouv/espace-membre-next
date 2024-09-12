@@ -114,7 +114,7 @@ const MainHeader = () => {
                           href: "/startups",
                           target: "_self",
                       },
-                      text: "Produit",
+                      text: "Produits",
                       isActive: hasPathnameThisRoot(pathname, startupListLink),
                   },
                   {
@@ -122,7 +122,7 @@ const MainHeader = () => {
                           href: "/incubators",
                           target: "_self",
                       },
-                      text: "Incubateur",
+                      text: "Incubateurs",
                       isActive: hasPathnameThisRoot(
                           pathname,
                           incubatorListLink
