@@ -22,7 +22,7 @@ export const IncubatorList = (props: IncubatorListProps) => {
     };
     return (
         <>
-            <form onSubmit={save}>
+            <form onSubmit={save} class="fr-mb-2w">
                 <SEIncubateurSelect
                     label="Incubateurs"
                     placeholder="Sélectionne un incubateur"
@@ -42,7 +42,7 @@ export const IncubatorList = (props: IncubatorListProps) => {
                     }}
                 />
             </form>
-            <br>
+            
             <p><a class="fr-btn fr-btn--secondary" href="/incubators/create-form">Créer une nouvelle fiche incubateur</a></p>
         </>
     );
