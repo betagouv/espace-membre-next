@@ -27,7 +27,7 @@ const NEW_INCUBATOR_DATA: incubatorUpdateSchemaType = {
     title: "",
     ghid: "",
     contact: "",
-    owner_id: "",
+    owner_id: undefined,
     website: "",
     description: "",
     short_description: "",
