@@ -10,38 +10,46 @@ import {
     incubatorUpdateSchema,
     incubatorUpdateSchemaType,
 } from "@/models/actions/incubator";
+import { incubatorSchemaType } from "@/models/incubator";
+import { incubatorToModel } from "@/models/mapper";
 import { authOptions } from "@/utils/authoptions";
+import {
+    AuthorizationError,
+    UnwrapPromise,
+    withErrorHandling,
+} from "@/utils/error";
 
 export async function createIncubator({
     incubator,
 }: {
-    incubator: incubatorUpdateSchemaType;
-}) {
+    incubator: incubatorUpdateSchemaType["incubator"];
+}): Promise<incubatorSchemaType> {
     const session = await getServerSession(authOptions);
     if (!session || !session.user.id) {
-        throw new Error(`You don't have the right to access this function`);
+        throw new AuthorizationError();
     }
-    incubatorUpdateSchema.parse(incubator);
+    const memberData = incubatorUpdateSchema.shape.incubator.parse(incubator);
+    let newIncubator;
     await db.transaction().execute(async (trx) => {
-
         // update incubator data
-        const res = await trx
+        newIncubator = await trx
             .insertInto("incubators")
             .values({
-                website: incubator.website,
-                github: incubator.github,
-                ghid: incubator.ghid,
-                title: incubator.title,
-                address: incubator.address,
-                contact: incubator.contact,
+                ...memberData,
             })
-            .returning("uuid")
+            .returningAll()
             .executeTakeFirst();
-
-        if (!res) {
-            throw new Error("Incubator data could not be inserted into db");
-        }
-
-        revalidatePath("/incubators");
     });
+
+    if (!newIncubator) {
+        throw new Error("Incubator data could not be inserted into db");
+    }
+    revalidatePath("/incubators");
+
+    return incubatorToModel(newIncubator);
 }
+
+export const safeCreateIncubator = withErrorHandling<
+    UnwrapPromise<ReturnType<typeof createIncubator>>,
+    Parameters<typeof createIncubator>
+>(createIncubator);

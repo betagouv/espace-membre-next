@@ -5,12 +5,17 @@ import { fr } from "@codegouvfr/react-dsfr";
 import * as Sentry from "@sentry/nextjs";
 
 import { IncubatorForm } from "../IncubatorForm/IncubatorForm";
-import { updateIncubator } from "@/app/api/incubators/actions/updateIncubator";
+import { ActionResponse } from "@/@types/serverAction";
+import {
+    safeUpdateIncubator,
+    updateIncubator,
+} from "@/app/api/incubators/actions/updateIncubator";
 import { BreadCrumbFiller } from "@/app/BreadCrumbProvider";
 import { incubatorUpdateSchemaType } from "@/models/actions/incubator";
 import { incubatorSchemaType } from "@/models/incubator";
 import { Option } from "@/models/misc";
 import { startupSchemaType } from "@/models/startup";
+import { saveImage } from "@/utils/file";
 import { routeTitles } from "@/utils/routes/routeTitles";
 
 interface IncubatorUpdateProps {
@@ -23,17 +28,40 @@ interface IncubatorUpdateProps {
 export const IncubatorUpdate = (props: IncubatorUpdateProps) => {
     const css = ".panel { overflow: hidden; width: auto; min-height: 100vh; }";
 
-    const save = async (data: incubatorUpdateSchemaType) => {
+    const save = async (
+        data: incubatorUpdateSchemaType
+    ): Promise<ActionResponse> => {
         try {
-            await updateIncubator({
-                incubator: data,
+            const res = await safeUpdateIncubator({
+                incubator: data.incubator,
                 incubatorUuid: props.incubator.uuid,
             });
+            if (res.success) {
+                if (data.logo) {
+                    saveImage({
+                        fileIdentifier: "logo",
+                        fileRelativeObjType: "incubator",
+                        fileObjIdentifier: data.incubator.ghid,
+                        file: data.logo,
+                    });
+                }
+
+                if (data.shouldDeleteLogo) {
+                    await fetch("/api/image", {
+                        method: "DELETE",
+                        headers: {
+                            "Content-Type": "application/json",
+                        },
+                        body: JSON.stringify({
+                            fileObjIdentifier: res.data.ghid,
+                            fileIdentifer: "hero",
+                            fileRelativeObjType: "startup",
+                        }),
+                    });
+                }
+            }
             window.scrollTo({ top: 20, behavior: "smooth" });
-            return {
-                // ...resp,
-                isUpdate: true,
-            };
+            return res;
         } catch (e) {
             Sentry.captureException(e);
             console.error(e);

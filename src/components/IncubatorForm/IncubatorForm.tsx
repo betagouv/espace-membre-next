@@ -13,6 +13,7 @@ import MdEditor from "react-markdown-editor-lite";
 
 import { ClientOnly } from "../ClientOnly";
 import SESponsorSelect from "../SESponsorSelect";
+import UploadForm from "../UploadForm/UploadForm";
 import {
     incubatorUpdateSchema,
     incubatorUpdateSchemaType,
@@ -23,11 +24,11 @@ import { Option } from "@/models/misc";
 import "react-markdown-editor-lite/lib/index.css";
 import SESelect from "../SESelect";
 
-const NEW_INCUBATOR_DATA: incubatorUpdateSchemaType = {
+const NEW_INCUBATOR_DATA = {
     title: "",
     ghid: "",
     contact: "",
-    owner_id: "",
+    owner_id: undefined,
     website: "",
     description: "",
     short_description: "",
@@ -41,6 +42,7 @@ export interface IncubatorFormProps {
     startupOptions: Option[];
     incubator?: incubatorSchemaType;
     save: (data: incubatorUpdateSchemaType) => any;
+    logoURL?: string;
 }
 
 // boilerplate for text inputs
@@ -52,24 +54,24 @@ function BasicFormInput({
     rows,
     ...props
 }: {
-    id: keyof incubatorUpdateSchemaType;
+    id: keyof incubatorUpdateSchemaType["incubator"];
     placeholder?: string;
     [some: string]: any;
 }) {
-    const fieldShape = incubatorUpdateSchema.shape[id];
+    const fieldShape = incubatorUpdateSchema.shape["incubator"].shape[id];
     const nativeProps =
         props.textArea === true
             ? {
                   nativeTextAreaProps: {
                       placeholder,
                       rows,
-                      ...register(`${id}`),
+                      ...register(`incubator.${id}`),
                   },
               }
             : {
                   nativeInputProps: {
                       placeholder,
-                      ...register(`${id}`),
+                      ...register(`incubator.${id}`),
                   },
               };
     return (
@@ -77,8 +79,14 @@ function BasicFormInput({
             <Input
                 label={fieldShape.description}
                 {...nativeProps}
-                state={errors && errors[id] ? "error" : "default"}
-                stateRelatedMessage={errors && errors[id]?.message}
+                state={
+                    errors && errors.incubator && errors.incubator
+                        ? "error"
+                        : "default"
+                }
+                stateRelatedMessage={
+                    errors && errors.incubator && errors.incubator[id]?.message
+                }
                 {...(props ? props : {})}
             />
         )) || <>Not found in schema: {id}</>
@@ -113,7 +121,9 @@ export function IncubatorForm(props: IncubatorFormProps) {
         resolver: zodResolver(incubatorUpdateSchema),
         mode: "onChange",
         defaultValues: {
-            ...(props.incubator || NEW_INCUBATOR_DATA),
+            incubator: {
+                ...(props.incubator || NEW_INCUBATOR_DATA),
+            },
             // incubatorSponsors: (props.incubatorSponsors || []).map(
             //     (s) => s.uuid
             // ),
@@ -152,12 +162,19 @@ export function IncubatorForm(props: IncubatorFormProps) {
             .save({ ...data })
             .then((resp) => {
                 setIsSaving(false);
-                setAlertMessage({
-                    title: `Mise à jour effectuée`,
-                    message: <>La mise à jour a bien été effectuée</>,
-                    type: "success",
-                });
-                return resp;
+                if (resp.success) {
+                    setAlertMessage({
+                        title: `Mise à jour effectuée`,
+                        message: `La mise à jour a bien été effectuée`,
+                        type: "success",
+                    });
+                } else {
+                    setAlertMessage({
+                        title: `Une erreur est survenue`,
+                        message: resp.message || "",
+                        type: "warning",
+                    });
+                }
             })
             .catch((e) => {
                 setIsSaving(false);
@@ -209,7 +226,8 @@ export function IncubatorForm(props: IncubatorFormProps) {
                     />
                     <div
                         className={`fr-input-group ${
-                            errors?.short_description
+                            errors?.incubator &&
+                            errors?.incubator.short_description
                                 ? "fr-input-group--error"
                                 : ""
                         }`}
@@ -239,17 +257,23 @@ export function IncubatorForm(props: IncubatorFormProps) {
                                 }}
                                 renderHTML={(text) => mdParser.render(text)}
                                 onChange={(data, e) => {
-                                    setValue("short_description", data.text, {
-                                        shouldValidate: true,
-                                        shouldDirty: true,
-                                    });
+                                    setValue(
+                                        "incubator.short_description",
+                                        data.text,
+                                        {
+                                            shouldValidate: true,
+                                            shouldDirty: true,
+                                        }
+                                    );
                                 }}
                             />
                         </ClientOnly>
                     </div>
                     <div
                         className={`fr-input-group ${
-                            errors?.description ? "fr-input-group--error" : ""
+                            errors?.incubator && errors?.incubator.description
+                                ? "fr-input-group--error"
+                                : ""
                         }`}
                     >
                         <label className="fr-label">
@@ -288,10 +312,14 @@ export function IncubatorForm(props: IncubatorFormProps) {
                                 }}
                                 renderHTML={(text) => mdParser.render(text)}
                                 onChange={(data, e) => {
-                                    setValue("description", data.text, {
-                                        shouldValidate: true,
-                                        shouldDirty: true,
-                                    });
+                                    setValue(
+                                        "incubator.description",
+                                        data.text,
+                                        {
+                                            shouldValidate: true,
+                                            shouldDirty: true,
+                                        }
+                                    );
                                 }}
                             />
                         </ClientOnly>
@@ -319,10 +347,10 @@ export function IncubatorForm(props: IncubatorFormProps) {
                     />
                     <SESponsorSelect
                         label="Sponsor"
-                        defaultValue={getValues("owner_id")}
+                        defaultValue={getValues("incubator.owner_id")}
                         allSponsors={props.sponsorOptions}
                         onChange={(newSponsor) => {
-                            setValue("owner_id", newSponsor || "");
+                            setValue("incubator.owner_id", newSponsor || "");
                         }}
                         placeholder={"Sélectionnez un sponsor"}
                         containerStyle={{
@@ -331,9 +359,15 @@ export function IncubatorForm(props: IncubatorFormProps) {
                         hint={
                             "Indiquez l'administration qui porte cet incubateur"
                         }
-                        state={errors.owner_id && "error"}
+                        state={
+                            errors.incubator &&
+                            errors.incubator.owner_id &&
+                            "error"
+                        }
                         stateMessageRelated={
-                            errors.owner_id && errors.owner_id.message
+                            errors.incubator &&
+                            errors.incubator.owner_id &&
+                            errors.incubator.owner_id.message
                         }
                         isMulti={false}
                     ></SESponsorSelect>
@@ -341,7 +375,7 @@ export function IncubatorForm(props: IncubatorFormProps) {
                         defaultValue={defaultHighlightStartups}
                         onChange={(startups) => {
                             setValue(
-                                "highlighted_startups",
+                                "incubator.highlighted_startups",
                                 startups.map((startup) => startup.value),
                                 {
                                     shouldValidate: true,
@@ -353,6 +387,32 @@ export function IncubatorForm(props: IncubatorFormProps) {
                         placeholder={`Sélectionne un ou plusieurs produits`}
                         startups={props.startupOptions}
                         label="Produits portés par l'incubateur :"
+                    />
+                    <hr />
+                    <UploadForm
+                        label="Logo de l'incubateur"
+                        placeholderURL="data:image/png;base64,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"
+                        hintText="Il s'agit du logo de votre incubateur."
+                        onChange={(event) => {
+                            const file = event.target.files;
+                            if (file && file.length) {
+                                setValue("logo", file[0], {
+                                    shouldValidate: true,
+                                    shouldDirty: true,
+                                });
+                                setValue("shouldDeleteLogo", false);
+                            }
+                        }}
+                        url={props.logoURL}
+                        onDelete={() => {
+                            setValue("logo", null, {
+                                shouldValidate: true,
+                                shouldDirty: true,
+                            });
+                            if (props.logoURL) {
+                                setValue("shouldDeleteLogo", true);
+                            }
+                        }}
                     />
                     <hr />
                     <Button

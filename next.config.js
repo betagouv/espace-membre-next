@@ -2,10 +2,10 @@ const { withSentryConfig } = require("@sentry/nextjs");
 
 const cspHeader = `
     default-src 'self';
-    connect-src 'self' api.maptiler.com;
+    connect-src 'self' api.maptiler.com espace-membre.cellar-c2.services.clever-cloud.com espace-membre-staging.cellar-c2.services.clever-cloud.com *.gouv.fr sentry.incubateur.net;
     script-src 'self' 'unsafe-inline' 'unsafe-eval' blob: *.gouv.fr sentry.incubateur.net unpkg.com;
     style-src 'self' 'unsafe-inline' cdnjs.cloudflare.com unpkg.com;
-    img-src * data:;
+    img-src * data: blob:;
     font-src 'self' data: cdnjs.cloudflare.com;
     frame-src 'self' metabase.incubateur.net;
     object-src 'none';

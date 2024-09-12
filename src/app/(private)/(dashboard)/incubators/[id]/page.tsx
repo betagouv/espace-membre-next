@@ -1,12 +1,10 @@
 import { Metadata, ResolvingMetadata } from "next";
 import { redirect } from "next/navigation";
 
-import IncubatorPage, {
-    IncubatorPageProps,
-} from "@/components/IncubatorPage/IncubatorPage";
+import IncubatorPage from "@/components/IncubatorPage/IncubatorPage";
 import { getIncubator } from "@/lib/kysely/queries/incubators";
+import s3 from "@/lib/s3";
 import { incubatorToModel } from "@/models/mapper";
-import { memberBaseInfoSchema, memberSchema } from "@/models/member";
 
 type Props = {
     params: { id: string };

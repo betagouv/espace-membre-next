@@ -102,8 +102,8 @@ export async function POST(req: NextRequest) {
 }
 
 const ImageParamsSchema = z.object({
-    fileRelativeObjType: z.enum(["startup", "member"]),
-    fileIdentifier: z.enum(["shot", "hero", "avatar"]),
+    fileRelativeObjType: z.enum(["startup", "member", "incubator"]),
+    fileIdentifier: z.enum(["shot", "hero", "avatar", "logo"]),
     fileObjIdentifier: z.string(),
 });
 

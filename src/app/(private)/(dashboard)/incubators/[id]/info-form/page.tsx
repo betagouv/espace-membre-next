@@ -8,6 +8,7 @@ import { getIncubator } from "@/lib/kysely/queries/incubators";
 import { incubatorToModel } from "@/models/mapper";
 import { authOptions } from "@/utils/authoptions";
 import { routeTitles } from "@/utils/routes/routeTitles";
+import s3 from "@/lib/s3";
 
 type Props = {
     params: { id: string };
@@ -46,6 +47,22 @@ export default async function Page(props: Props) {
 
     const sponsors = await db.selectFrom("organizations").selectAll().execute();
 
+    const s3LogoKey = `incubators/${dbIncubator.ghid}/logo.jpg`;
+    let hasLogo = false;
+    try {
+        const s3Object = await s3
+            .getObject({
+                Key: s3LogoKey,
+            })
+            .promise();
+        hasLogo = true;
+    } catch (error) {
+        console.log("No image for user");
+    }
+    const logoURL = hasLogo
+        ? `/api/image?fileObjIdentifier=${dbIncubator.ghid}&fileRelativeObjType=incubator&fileIdentifier=logo`
+        : undefined;
+
     const incubator = incubatorToModel(dbIncubator);
     const componentProps = {
         incubator,
@@ -61,6 +78,7 @@ export default async function Page(props: Props) {
                 label: startup.name,
             };
         }),
+        logoURL,
     };
 
     return <IncubatorUpdate {...componentProps} />;

@@ -18,6 +18,7 @@ import { EventsEditor } from "./EventsEditor";
 import MdEditorCustomHeaderPlugin from "./MdEditorCustomHeaderPlugin";
 import { PhasesEditor } from "./PhasesEditor";
 import SponsorBlock from "./SponsorBlock";
+import { TechnoEditor } from "./TechnoEditor";
 import { ThematiquesEditor } from "./ThematiquesEditor";
 import { UsertypesEditor } from "./UsertypesEditor";
 import { ClientOnly } from "../ClientOnly";
@@ -38,7 +39,6 @@ import {
     phaseSchemaType,
     startupSchemaType,
 } from "@/models/startup";
-
 
 MdEditor.use(MdEditorCustomHeaderPlugin);
 
@@ -290,7 +290,7 @@ export function StartupForm(props: StartupFormProps) {
                             }}
                         />
                     </div>
-                    {/* <div
+                    <div
                         className={`fr-input-group ${
                             errors?.startup?.thematiques
                                 ? "fr-input-group--error"
@@ -313,7 +313,7 @@ export function StartupForm(props: StartupFormProps) {
                                 });
                             }}
                         />
-                    </div> */}
+                    </div>
                     <div
                         className={`fr-input-group ${
                             errors?.startup?.usertypes
