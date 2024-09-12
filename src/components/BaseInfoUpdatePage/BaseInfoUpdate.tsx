@@ -337,7 +337,7 @@ export const BaseInfoUpdate = (props: BaseInfoUpdateProps) => {
                     </h2>
                     {isCurrentUser && (
                         <p>
-                            Aide les membres de la communauté de mieux
+                            Aide les membres de la communauté à mieux
                             t'identifier en cas de besoin
                         </p>
                     )}
