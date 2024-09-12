@@ -34,7 +34,7 @@ export const routeTitles: {
     login: () => "Me connecter",
     onboarding: () => "Créer une fiche membre",
     onboardingSuccess: () => "Fiche membre créée",
-    newsletters: () => "Infolettre",
+    newsletters: () => "Infolettres",
     map: () => "Carte des membres",
     metabase: () => "Observatoire",
     keskispasse: () => "Qu'est-ce qui se passe ?",
