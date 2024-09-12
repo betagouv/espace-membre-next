@@ -23,7 +23,7 @@ export const StartupList = (props: StartupListProps) => {
     };
     return (
         <>
-            <form onSubmit={save}>
+            <form onSubmit={save} class="fr-mb-2w">
                 <SESelect
                     startups={props.startups}
                     onChange={(e: { value: React.SetStateAction<string> }) => {
@@ -40,7 +40,7 @@ export const StartupList = (props: StartupListProps) => {
                     }}
                 />
             </form>
-            <br>
+
             <p><a class="fr-btn fr-btn--secondary" href="/startups/create-form">Créer une nouvelle fiche produit</a></p>
         </>
     );

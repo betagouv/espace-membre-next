@@ -21,7 +21,7 @@ export const TeamList = (props: TeamListProps) => {
     };
     return (
         <>
-            <form onSubmit={save}>
+            <form onSubmit={save} class="fr-mb-2w">
                 <TeamSelect
                     label="Équipes"
                     placeholder="Sélectionne un équipe"
@@ -41,7 +41,7 @@ export const TeamList = (props: TeamListProps) => {
                     }}
                 />
             </form>
-            <br>
+
             <p><a class="fr-btn fr-btn--secondary" href="/teams/create-form">Créer une nouvelle fiche équipe</a></p>
         </>
     );
