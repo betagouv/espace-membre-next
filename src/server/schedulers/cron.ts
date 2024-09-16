@@ -218,6 +218,18 @@ const startupJobs: Job[] = [
     },
 ];
 
+const servicesJobs: Job[] = [
+    {
+        cronTime: "0 0 5 * * 1",
+        onTick: () => {
+            // deleteMatomoAccount
+        },
+        isActive: true,
+        name: "deleteMatomoAccount",
+        description: "deleteMatomoAccount",
+    },
+];
+
 const formationJobs: Job[] = [
     {
         cronTime: "0 0 * * *",
@@ -295,6 +307,7 @@ export const jobs: Job[] = [
     ...newsletterJobs,
     ...mattermostJobs,
     ...startupJobs,
+    ...servicesJobs,
     // ...metricJobs,
     // ...pullRequestJobs,
     ...synchronizationJobs,
