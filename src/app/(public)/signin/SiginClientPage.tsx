@@ -21,14 +21,14 @@ export default function SignClientPage() {
         const parsedUrl = new URL(url);
         const searchParams = parsedUrl.searchParams || "";
         const callbackUrl = searchParams.get("callbackUrl") || "";
-        const allowedDomains = [frontConfig.host, "127.0.0.1", "localhost"];
+        const allowedDomains = [frontConfig.host];
 
         // Create an anchor element to parse the URL
         const anchor = document.createElement("a");
         anchor.href = callbackUrl;
 
         // Extract the hostname from the callback URL
-        const callbackHostname = anchor.hostname;
+        const callbackHostname = anchor.host;
         console.log(callbackUrl);
         // Validate if the callbackUrl is internal or part of trusted domains
         if (
