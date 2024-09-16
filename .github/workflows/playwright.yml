@@ -33,13 +33,15 @@ jobs:
             - name: Wait
               uses: cygnetdigital/wait_for_response@v2.0.0
               with:
-                url: 'http://localhost:8100/'
-                responseCode: '200'
-                timeout: 120000
-                interval: 500
+                  url: "http://localhost:8100/"
+                  responseCode: "200"
+                  timeout: 120000
+                  interval: 500
             - name: Launch playwright
               run: |
                   npx playwright test
+              env:
+                  HOST: 127.0.0.1:8100
             - uses: actions/upload-artifact@v4
               if: always()
               with:
