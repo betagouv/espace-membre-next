@@ -29,7 +29,7 @@ export default function SignClientPage() {
 
         // Extract the hostname from the callback URL
         const callbackHostname = anchor.hostname;
-
+        console.log(callbackUrl);
         // Validate if the callbackUrl is internal or part of trusted domains
         if (
             callbackUrl.startsWith("/") ||
