@@ -6,7 +6,7 @@ import Table from "@codegouvfr/react-dsfr/Table";
 import Tag from "@codegouvfr/react-dsfr/Tag";
 import Link from "next/link";
 import { format } from "date-fns";
-
+import { frenchSmallDate } from "@utils/date";
 
 import "./FileList.css";
 import { revalidatePath } from "next/cache";
@@ -43,7 +43,7 @@ export const FileList = ({ files }: { files: FilesType }) => {
                 className="startup-files-list-table"
                 headers={["Date", "Type", "Titre", "Tags", "Commentaires", "-"]}
                 data={files.map((file) => [
-                    format(file.created_at, "dd/MM/yyyy"),
+                    frenchSmallDate(file.created_at),
                     <Tag
                         key="type"
                         small
@@ -54,10 +54,9 @@ export const FileList = ({ files }: { files: FilesType }) => {
                         {
                             // @ts-ignore todo
                             file.data?.date_comite
-                                ? `Comité du ${format(
+                                ? `Comité du ${frenchSmallDate(
                                       // @ts-ignore todo
-                                      file.data?.date_comite,
-                                      "dd/MM/yy"
+                                      file.data?.date_comite
                                   )}`
                                 : file.type
                         }
