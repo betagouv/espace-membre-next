@@ -4,6 +4,7 @@ import React from "react";
 import { fr } from "@codegouvfr/react-dsfr";
 import Alert from "@codegouvfr/react-dsfr/Alert";
 import Button from "@codegouvfr/react-dsfr/Button";
+import * as Sentry from "@sentry/nextjs";
 import axios from "axios";
 import { useSession } from "next-auth/react";
 
@@ -53,6 +54,7 @@ export default function SignClientPage() {
                 });
                 navigateToNextPage(url);
             } catch (e: any) {
+                Sentry.captureException(e);
                 if (e.response?.data?.error) {
                     setError(e.response?.data?.error);
                 }
