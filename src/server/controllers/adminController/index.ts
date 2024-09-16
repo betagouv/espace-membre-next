@@ -1,3 +1,2 @@
-export * from './adminController'
-export * from './getMattermostAdmin'
-export * from './sendMattermostMessage'
+export * from "./getMattermostAdmin";
+export * from "./sendMattermostMessage";
