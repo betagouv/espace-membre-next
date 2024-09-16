@@ -21,7 +21,7 @@ export default function SignClientPage() {
         const parsedUrl = new URL(url);
         const searchParams = parsedUrl.searchParams || "";
         const callbackUrl = searchParams.get("callbackUrl") || "";
-        const allowedDomains = [frontConfig.host];
+        const allowedDomains = [frontConfig.host, "127.0.0.1", "localhost"];
 
         // Create an anchor element to parse the URL
         const anchor = document.createElement("a");
