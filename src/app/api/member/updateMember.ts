@@ -108,7 +108,7 @@ export async function updateMember(
         console.error("Transaction failed:", error);
         throw error;
     }
-    addEvent({
+    await addEvent({
         action_code: EventCode.MEMBER_BASE_INFO_UPDATED,
         created_by_username: created_by_username,
         action_on_username: previousInfo.username,
