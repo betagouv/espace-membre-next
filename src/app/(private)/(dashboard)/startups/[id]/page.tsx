@@ -3,12 +3,14 @@ import { redirect } from "next/navigation";
 import { validate } from "uuid";
 
 import StartupPage from "@/components/StartupPage/StartupPage";
+import { getEventListByStartupUuid } from "@/lib/events";
 import { db } from "@/lib/kysely";
 import { getStartup } from "@/lib/kysely/queries";
 import { getUserByStartup } from "@/lib/kysely/queries/users";
 import {
     memberBaseInfoToModel,
     phaseToModel,
+    startupChangeToModel,
     startupToModel,
 } from "@/models/mapper";
 
@@ -60,8 +62,11 @@ export default async function Page({ params }: Props) {
     const startupMembers = (await getUserByStartup(dbSe.uuid)).map((user) => {
         return memberBaseInfoToModel(user);
     });
+    const changes = await getEventListByStartupUuid(startup.uuid);
+
     return (
         <StartupPage
+            changes={changes.map((change) => startupChangeToModel(change))}
             startupInfos={startup}
             members={startupMembers}
             phases={phases}

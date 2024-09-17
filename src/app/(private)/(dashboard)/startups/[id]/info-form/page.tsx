@@ -5,10 +5,11 @@ import { validate } from "uuid";
 import { z } from "zod";
 
 import { StartupInfoUpdate } from "@/components/StartupInfoUpdatePage";
+import { getEventListByStartupUuid } from "@/lib/events";
 import { db } from "@/lib/kysely";
 import { getStartup } from "@/lib/kysely/queries";
 import s3 from "@/lib/s3";
-import { startupToModel } from "@/models/mapper";
+import { startupChangeToModel, startupToModel } from "@/models/mapper";
 import { sponsorSchema } from "@/models/sponsor";
 import { eventSchema, phaseSchema } from "@/models/startup";
 import { authOptions } from "@/utils/authoptions";
@@ -125,6 +126,8 @@ export default async function Page(props) {
         console.log("No image for user");
     }
 
+    const changes = await getEventListByStartupUuid(startup.uuid);
+
     const componentProps = {
         startup,
         startupSponsors,
@@ -148,6 +151,7 @@ export default async function Page(props) {
                 label: incubator.name,
             };
         }),
+        changes: changes.map((change) => startupChangeToModel(change)),
     };
 
     return <StartupInfoUpdate {...componentProps} />;

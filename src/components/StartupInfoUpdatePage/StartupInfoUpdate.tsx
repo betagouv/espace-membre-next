@@ -3,14 +3,13 @@ import React from "react";
 
 import { fr } from "@codegouvfr/react-dsfr";
 import * as Sentry from "@sentry/nextjs";
-import axios from "axios";
 
+import LastChange from "../LastChange";
 import { StartupForm, StartupFormProps } from "../StartupForm/StartupForm";
 import { ActionResponse } from "@/@types/serverAction";
 import { safeUpdateStartup, updateStartup } from "@/app/api/startups/actions";
 import { BreadCrumbFiller } from "@/app/BreadCrumbProvider";
 import { startupInfoUpdateSchemaType } from "@/models/actions/startup";
-import { incubatorSchemaType } from "@/models/incubator";
 import { Option } from "@/models/misc";
 import { sponsorSchemaType } from "@/models/sponsor";
 import {
@@ -18,7 +17,7 @@ import {
     phaseSchemaType,
     startupSchemaType,
 } from "@/models/startup";
-import routes, { computeRoute } from "@/routes/routes";
+import { StartupChangeSchemaType } from "@/models/startupChange";
 import { saveImage } from "@/utils/file";
 import { routeTitles } from "@/utils/routes/routeTitles";
 
@@ -31,6 +30,7 @@ interface StartupInfoUpdateProps {
     sponsorOptions: Option[];
     heroURL?: string;
     shotURL?: string;
+    changes: StartupChangeSchemaType[];
 }
 
 /* Pure component */
@@ -117,9 +117,7 @@ export const StartupInfoUpdate = (props: StartupInfoUpdateProps) => {
             ></BreadCrumbFiller>
             <div className={fr.cx("fr-mb-5w")}>
                 <h1>{routeTitles.startupDetailsEdit(props.startup.name)}</h1>
-
-                <div className="beta-banner"></div>
-
+                <LastChange changes={props.changes} />
                 {(props.startup && (
                     <StartupForm
                         save={save}

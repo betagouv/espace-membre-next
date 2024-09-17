@@ -4,6 +4,7 @@ import {
     memberInfoUpdateSchema,
     memberValidateInfoSchema,
 } from "./actions/member";
+import { startupInfoUpdateSchema } from "./actions/startup";
 import { memberSchema } from "./member";
 import { CommunicationEmailCode, EmailStatusCode } from "@/models/member";
 //import { GithubStartupChangeSchema } from "@/server/controllers/helpers/githubHelpers/githubEntryInterface";
@@ -221,18 +222,36 @@ export const EventStartupPhaseUpdatedPayload = z.object({
 
 export const EventStartupInfoUpdatedPayload = z.object({
     action_code: z.literal(EventCode.STARTUP_INFO_UPDATED),
+    action_on_startup: z.string(),
     action_metadata: z
         .object({
-            //   value: GithubStartupChangeSchema,
+            value: z.object({
+                startup: startupInfoUpdateSchema.shape.startup,
+                startupEvents: startupInfoUpdateSchema.shape.startupEvents,
+                startupPhases: startupInfoUpdateSchema.shape.startupPhases,
+                startupSponsorIds: z.array(z.string()),
+            }),
+            old_value: z.object({
+                startup: startupInfoUpdateSchema.shape.startup,
+                startupEvents: startupInfoUpdateSchema.shape.startupEvents,
+                startupPhases: startupInfoUpdateSchema.shape.startupPhases,
+                startupSponsorIds: z.array(z.string()),
+            }),
         })
         .optional(),
 });
 
 export const EventStartupInfoCreatedPayload = z.object({
     action_code: z.literal(EventCode.STARTUP_INFO_CREATED),
+    action_on_startup: z.string(),
     action_metadata: z
         .object({
-            //value: GithubStartupChangeSchema,
+            value: z.object({
+                startup: startupInfoUpdateSchema.shape.startup,
+                startupEvents: startupInfoUpdateSchema.shape.startupEvents,
+                startupPhases: startupInfoUpdateSchema.shape.startupPhases,
+                startupSponsorIds: z.array(z.string()),
+            }),
         })
         .optional(),
 });
@@ -354,6 +373,7 @@ export interface BaseEventAction<T extends EventCode> {
     created_by_username: string;
     action_code: T;
     action_metadata: EventActionMetadata<T>;
+    action_on_startup?: string;
 }
 
 // Assuming ActionMetadata is also dependent on T

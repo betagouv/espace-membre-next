@@ -1,5 +1,6 @@
 import { flatten, unflatten } from "@/lib/flat";
 
+// Safely convert input into a string and escape problematic characters
 function to_string(input) {
     switch (typeof input) {
         case "boolean":
@@ -13,53 +14,51 @@ function to_string(input) {
     }
 }
 
-export const stringify = function (data: any) {
+// Escape special characters like backslashes and double quotes
+function escape_string(input) {
+    if (input === null || input === undefined) return "NULL";
+    return String(input)
+        .replace(/\\/g, "\\\\") // Escape backslashes
+        .replace(/"/g, '\\"'); // Escape double quotes
+}
+
+// Unescape the string when parsing HSTORE
+function unescape_string(input) {
+    if (input === "NULL") return null;
+    return String(input)
+        .replace(/\\"/g, '"') // Unescape double quotes
+        .replace(/\\\\/g, "\\"); // Unescape backslashes
+}
+
+export const stringify = function (data) {
     const flattenData = flatten(data, undefined);
-    var hstore = Object.keys(flattenData).map(function (key) {
-        if (flattenData[key] === null) {
-            return '"' + to_string(key) + '"=>NULL';
+    const hstore = Object.keys(flattenData).map((key) => {
+        const keyStr = escape_string(to_string(key));
+        const value = flattenData[key];
+        if (value === null) {
+            return `"${keyStr}"=>NULL`;
         } else {
-            return (
-                '"' +
-                to_string(key) +
-                '"=>"' +
-                to_string(flattenData[key]) +
-                '"'
-            );
+            const valueStr = escape_string(to_string(value));
+            return `"${keyStr}"=>"${valueStr}"`;
         }
     });
-    var joined = hstore.join();
-    return joined;
+    return hstore.join();
 };
 
 export const parse = function (string) {
-    var result = {},
-        //using [\s\S] to match any character, including line feed and carriage return,
-        r = /(["])(?:\\\1|\\\\|[\s\S])*?\1|NULL/g,
-        matches = string.match(r),
-        i,
-        l,
-        clean = function (value) {
-            // Remove leading double quotes
-            value = value.replace(/^\"|\"$/g, "");
-            // Unescape quotes
-            value = value.replace(/\\"/g, '"');
-            //Unescape backslashes
-            value = value.replace(/\\\\/g, "\\");
-            //Unescape single quotes
-            value = value.replace(/''/g, "'");
+    const result = {};
 
-            return value;
-        };
+    // Regular expression to match key=>value pairs, including those with escaped quotes and NULL values
+    const regex = /"((?:\\.|[^"])*)"=>(NULL|"((?:\\.|[^"])*)")/g;
+    let match;
 
-    if (matches) {
-        for (i = 0, l = matches.length; i < l; i += 2) {
-            if (matches[i] && matches[i + 1]) {
-                var key = clean(matches[i]);
-                var value = matches[i + 1];
-                result[key] = value == "NULL" ? null : clean(value);
-            }
+    while ((match = regex.exec(string)) !== null) {
+        const key = unescape_string(match[1]);
+        const value = match[2] === "NULL" ? null : unescape_string(match[3]);
+        if (key) {
+            result[key] = value;
         }
     }
+
     return unflatten(result, undefined);
 };

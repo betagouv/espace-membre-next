@@ -76,6 +76,7 @@ export interface Community {
 export interface Events {
   action_code: string;
   action_metadata: string | null;
+  action_on_startup: string | null;
   action_on_username: string | null;
   created_at: Generated<Timestamp>;
   created_by_username: string;
