@@ -21,7 +21,7 @@ export const OrganizationList = (props: OrganizationListProps) => {
     };
     return (
         <>
-            <form onSubmit={save} class="fr-mb-2w">
+            <form onSubmit={save} className="fr-mb-2w">
                 <SESponsorSelect
                     isMulti={false}
                     label="Organisations sponsors"
@@ -42,9 +42,14 @@ export const OrganizationList = (props: OrganizationListProps) => {
                 />
             </form>
 
-            <p><a class="fr-btn fr-btn--secondary" href="/organizations/create-form">
-                Créer une nouvelle fiche organisation sponsor
-            </a></p>
+            <p>
+                <a
+                    className="fr-btn fr-btn--secondary"
+                    href="/organizations/create-form"
+                >
+                    Créer une nouvelle fiche organisation sponsor
+                </a>
+            </p>
         </>
     );
 };

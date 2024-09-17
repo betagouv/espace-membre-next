@@ -1,7 +1,6 @@
 "use client";
 import React from "react";
 
-
 import Button from "@codegouvfr/react-dsfr/Button";
 import { useRouter } from "next/navigation";
 
@@ -22,7 +21,7 @@ export const IncubatorList = (props: IncubatorListProps) => {
     };
     return (
         <>
-            <form onSubmit={save} class="fr-mb-2w">
+            <form onSubmit={save} className="fr-mb-2w">
                 <SEIncubateurSelect
                     label="Incubateurs"
                     placeholder="Sélectionne un incubateur"
@@ -42,8 +41,15 @@ export const IncubatorList = (props: IncubatorListProps) => {
                     }}
                 />
             </form>
-            
-            <p><a class="fr-btn fr-btn--secondary" href="/incubators/create-form">Créer une nouvelle fiche incubateur</a></p>
+
+            <p>
+                <a
+                    className="fr-btn fr-btn--secondary"
+                    href="/incubators/create-form"
+                >
+                    Créer une nouvelle fiche incubateur
+                </a>
+            </p>
         </>
     );
 };
