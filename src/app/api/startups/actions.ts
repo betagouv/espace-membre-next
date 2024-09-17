@@ -204,6 +204,7 @@ export async function updateStartup({
         startupPhases: startupInfoUpdateSchemaType["startupPhases"];
         startupSponsors: startupInfoUpdateSchemaType["startupSponsors"];
         newSponsors: startupInfoUpdateSchemaType["newSponsors"];
+        newPhases: startupInfoUpdateSchemaType["newPhases"];
     };
     startupUuid: string;
 }): Promise<{ uuid: string; ghid: string }> {
