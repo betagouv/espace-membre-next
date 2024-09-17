@@ -3,13 +3,13 @@ import { redirect } from "next/navigation";
 import { getServerSession } from "next-auth";
 
 import { BaseInfoUpdate } from "@/components/BaseInfoUpdatePage";
+import { getEventListByUsername } from "@/lib/events";
 import { getAllStartups } from "@/lib/kysely/queries";
 import { getUserInfos } from "@/lib/kysely/queries/users";
 import s3 from "@/lib/s3";
-import { userInfosToModel } from "@/models/mapper";
+import { memberChangeToModel, userInfosToModel } from "@/models/mapper";
 import { authOptions } from "@/utils/authoptions";
 import { routeTitles } from "@/utils/routes/routeTitles";
-import { getEventListByUsername } from "@/lib/events";
 
 export const metadata: Metadata = {
     title: `${routeTitles.accountEditBaseInfo()} / Espace Membre`,
@@ -49,7 +49,7 @@ export default async function Page() {
     const changes = await getEventListByUsername(username);
 
     const props = {
-        changes,
+        changes: changes.map((change) => memberChangeToModel(change)),
         formData: {
             member: {
                 ...userInfos,

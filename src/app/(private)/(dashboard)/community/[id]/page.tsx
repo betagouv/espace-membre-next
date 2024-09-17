@@ -1,17 +1,18 @@
 import * as Sentry from "@sentry/node";
+import { compareDesc } from "date-fns/compareDesc";
 import type { Metadata, ResolvingMetadata } from "next";
 import { getServerSession } from "next-auth/next";
 
 import MemberPage from "@/components/MemberPage/MemberPage";
+import { getEventListByUsername } from "@/lib/events";
 import { getUserBasicInfo, getUserStartups } from "@/lib/kysely/queries/users";
 import { getUserByEmail, searchUsers } from "@/lib/mattermost";
-import { memberBaseInfoToModel } from "@/models/mapper";
+import { memberBaseInfoToModel, memberChangeToModel } from "@/models/mapper";
 import { MattermostUser } from "@/models/mattermost";
 import betagouv from "@/server/betagouv";
 import config from "@/server/config";
 import { userInfos } from "@/server/controllers/utils";
 import { authOptions } from "@/utils/authoptions";
-import { getEventListByUsername } from "@/lib/events";
 
 type Props = {
     params: { id: string };
@@ -92,14 +93,13 @@ export default async function Page({
     const title = user.userInfos ? user.userInfos.fullname : null;
     const startups = await getUserStartups(dbUser.uuid);
     const changes = await getEventListByUsername(id);
-
     const mattermostInfo = {
         hasMattermostAccount: !!mattermostUser,
         isInactiveOrNotInTeam: !mattermostUserInTeamAndActive,
     };
     return (
         <MemberPage
-            changes={changes}
+            changes={changes.map((change) => memberChangeToModel(change))}
             availableEmailPros={availableEmailPros}
             authorizations={user.authorizations}
             userInfos={memberBaseInfo}

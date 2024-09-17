@@ -14,15 +14,15 @@ import { useSession } from "next-auth/react";
 import MemberBrevoEventList from "./MemberBrevoEventList";
 import MemberEmailServiceInfo from "./MemberEmailServiceInfo";
 import MemberEventList from "./MemberEventList";
+import LastChange from "../LastChange";
 import { safeChangeSecondaryEmailForUser } from "@/app/api/member/actions";
 import { EmailStatusCode, memberWrapperSchemaType } from "@/models/member";
 import { memberBaseInfoSchemaType } from "@/models/member";
+import { PrivateMemberChangeSchemaType } from "@/models/memberChange";
 import { EMAIL_STATUS_READABLE_FORMAT } from "@/models/misc";
 import { missionSchemaType } from "@/models/mission";
 import routes, { computeRoute } from "@/routes/routes";
 import { getLastMission, getLastMissionDate } from "@/utils/member";
-import { getEventListByUsername } from "@/lib/events";
-import LastChange from "../LastChange";
 
 export interface MemberPageProps {
     emailInfos: memberWrapperSchemaType["emailInfos"];
@@ -46,7 +46,7 @@ export interface MemberPageProps {
         };
     };
     startups: { uuid: string | null; name: string | null }[];
-    changes: Awaited<ReturnType<typeof getEventListByUsername>>;
+    changes: PrivateMemberChangeSchemaType[];
 }
 
 const ChangeSecondaryEmailBloc = ({
