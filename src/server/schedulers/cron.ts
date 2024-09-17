@@ -282,13 +282,13 @@ const newsletterJobs = [
         name: "newsletterThursdayMorningReminderJob",
         description: "Rappel mattermost newsletter 2",
     },
-    {
-        cronTime: "0 0 14 * * 4", // every week a 14:00 on thursday
-        onTick: () => newsletterReminder("THIRD_REMINDER"),
-        isActive: config.FEATURE_NEWSLETTER,
-        name: "newsletterThursdayEveningReminderJob",
-        description: "Rappel mattermost newsletter 3",
-    },
+    // {
+    //     cronTime: "0 0 14 * * 4", // every week a 14:00 on thursday
+    //     onTick: () => newsletterReminder("THIRD_REMINDER"),
+    //     isActive: config.FEATURE_NEWSLETTER,
+    //     name: "newsletterThursdayEveningReminderJob",
+    //     description: "Rappel mattermost newsletter 3",
+    // },
     {
         cronTime: config.newsletterSendTime || "0 16 * * 4", // run on thursday et 4pm,
         onTick: sendNewsletterAndCreateNewOne,
