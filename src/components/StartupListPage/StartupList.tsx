@@ -8,7 +8,6 @@ import { useRouter } from "next/navigation";
 import SESelect from "@/components/SESelect";
 import { Option } from "@/models/misc";
 
-
 export interface StartupListProps {
     startups: Option[];
 }
@@ -23,7 +22,7 @@ export const StartupList = (props: StartupListProps) => {
     };
     return (
         <>
-            <form onSubmit={save} class="fr-mb-2w">
+            <form onSubmit={save} className="fr-mb-2w">
                 <SESelect
                     startups={props.startups}
                     onChange={(e: { value: React.SetStateAction<string> }) => {
@@ -41,7 +40,14 @@ export const StartupList = (props: StartupListProps) => {
                 />
             </form>
 
-            <p><a class="fr-btn fr-btn--secondary" href="/startups/create-form">Créer une nouvelle fiche produit</a></p>
+            <p>
+                <a
+                    className="fr-btn fr-btn--secondary"
+                    href="/startups/create-form"
+                >
+                    Créer une nouvelle fiche produit
+                </a>
+            </p>
         </>
     );
 };
