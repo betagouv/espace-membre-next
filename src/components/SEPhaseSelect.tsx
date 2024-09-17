@@ -1,12 +1,13 @@
 import React, { useState } from "react";
 
 import Select from "@codegouvfr/react-dsfr/Select";
-import Autocomplete from "@mui/material/Autocomplete";
-import TextField from "@mui/material/TextField";
+import AutoComplete, { OptionType } from "@/components/AutoComplete";
 
-import { ClientOnly } from "./ClientOnly";
+type PhaseType = OptionType<false> & {
+    value: string;
+}
 
-const options = [
+const options: PhaseType[] = [
     { value: "acceleration", label: "En Accélération" },
     { value: "success", label: "Pérennisé (success)" },
     { value: "transfer", label: "Transféré" },
@@ -70,45 +71,12 @@ export default function SEPhaseSelect({
                     {!!hint && <span className="fr-hint-text">{hint}</span>}
                 </label>
             )}
-            <Autocomplete
+            <AutoComplete
+                optionKeyField={"value"}
                 multiple
-                options={options.map((se) => ({
-                    id: se.value,
-                    label: se.label,
-                }))}
-                onChange={onChange}
-                defaultValue={
-                    defaultValue
-                        ? (
-                              defaultValue as { value: string; label: string }[]
-                          ).map((se) => ({
-                              id: se.value,
-                              label: se.label,
-                          }))
-                        : undefined
-                }
-                getOptionKey={(option) => option.id}
-                isOptionEqualToValue={(option, value) => option.id === value.id}
-                renderInput={(params) => (
-                    <TextField
-                        {...params}
-                        inputProps={{
-                            ...params.inputProps,
-                            style: {
-                                padding: `0.75rem 0.5rem`,
-                            },
-                        }}
-                        variant="standard"
-                        style={{
-                            paddingLeft: 10,
-                            borderRadius: `0.25rem 0.25rem 0 0`,
-                            backgroundColor: `var(--background-contrast-grey)`,
-                            boxShadow: `inset 0 -2px 0 0 var(--border-plain-grey)`,
-                        }}
-                        placeholder="Sélectionne une ou plusieurs phases"
-                    />
-                )}
-                // sx={{ width: "500px" }}
+                options={options}
+                onSelect={onChange}
+                defaultValue={defaultValue as PhaseType[]}
             />
             {!!state && !!stateRelatedMessage && (
                 <p className="fr-error-text">{stateRelatedMessage}</p>

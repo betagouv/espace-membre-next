@@ -1,5 +1,6 @@
 import { Metadata } from "next";
 
+import { StartupType } from "@/components/SESelect";
 import { StartupList } from "@/components/StartupListPage";
 import { getAllStartups } from "@/lib/kysely/queries";
 import { routeTitles } from "@/utils/routes/routeTitles";
@@ -13,7 +14,7 @@ export default async function Page() {
         r.map((s) => ({
             value: s.uuid,
             label: s.name,
-        }))
+        }) as StartupType)
     );
     return (
         <>

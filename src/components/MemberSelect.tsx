@@ -1,6 +1,4 @@
-import Autocomplete from "@mui/material/Autocomplete";
-import TextField from "@mui/material/TextField";
-
+import AutoComplete from "@/components/AutoComplete";
 import { memberPublicInfoSchemaType } from "@/models/member";
 
 type MemberSelectProps<T extends boolean> = {
@@ -37,11 +35,11 @@ export default function MemberSelect<T extends boolean>({
     stateRelatedMessage,
     multiple,
 }: MemberSelectProps<T>) {
-    const onTagsChange = (event, data) => {
+    const onTagsChange = (data) => {
         onChange(
             !!multiple
                 ? data.map((user) => ({ value: user.id, label: user.label }))
-                : { value: data.id, label: data.label }
+                : { value: data.id, label: data.label },
         );
     };
     let defaultMemberValue;
@@ -92,33 +90,13 @@ export default function MemberSelect<T extends boolean>({
                 {label}
                 {!!hint && <span className="fr-hint-text">{hint}</span>}
             </label>
-            <Autocomplete
+            <AutoComplete
                 multiple={!!multiple}
                 options={memberOptions}
-                onChange={onTagsChange}
+                onSelect={onTagsChange}
                 defaultValue={defaultMemberValue}
-                getOptionKey={(option) => option.id}
-                isOptionEqualToValue={(option, value) => option.id === value.id}
-                renderInput={(params) => (
-                    <TextField
-                        {...params}
-                        inputProps={{
-                            ...params.inputProps,
-                            style: {
-                                padding: `0.75rem 0.5rem`,
-                            },
-                        }}
-                        variant="standard"
-                        style={{
-                            paddingLeft: 10,
-                            borderRadius: `0.25rem 0.25rem 0 0`,
-                            backgroundColor: `var(--background-contrast-grey)`,
-                            boxShadow: `inset 0 -2px 0 0 var(--border-plain-grey)`,
-                        }}
-                        placeholder={placeholder}
-                    />
-                )}
-                // sx={{ width: "500px" }}
+                optionKeyField={"id"}
+                placeholder={placeholder}
             />
             {!!state && !!stateRelatedMessage && (
                 <p className="fr-error-text">{stateRelatedMessage}</p>

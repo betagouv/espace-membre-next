@@ -1,9 +1,11 @@
 "use client";
 import React, { useState } from "react";
 
-import Autocomplete from "@mui/material/Autocomplete";
-import Chip from "@mui/material/Chip";
-import TextField from "@mui/material/TextField";
+import AutoComplete, { OptionType } from "@/components/AutoComplete";
+
+export type StartupType = OptionType<false> & {
+    value: string;
+};
 
 export default function SESelect({
     startups,
@@ -17,7 +19,7 @@ export default function SESelect({
     state,
     stateMessageRelated,
 }: {
-    startups: { value: string; label: string }[];
+    startups: StartupType[];
     onChange?: any;
     onBlur?: any;
     isMulti?: boolean;
@@ -30,13 +32,11 @@ export default function SESelect({
     state?: "default" | "success" | "error" | undefined;
     stateMessageRelated?: string;
 }) {
-    const onTagsChange = (event, values) => {
+    const onTagsChange = (values) => {
         onChange(values);
     };
     const [initialValue] = useState(
-        defaultValue
-            ? (defaultValue as { value: string; label: string }[])
-            : undefined
+        defaultValue ? (defaultValue as StartupType[]) : undefined,
     );
 
     return (
@@ -45,53 +45,13 @@ export default function SESelect({
                 {label}
                 {!!hint && <span className="fr-hint-text">{hint}</span>}
             </label>
-            <Autocomplete
+            <AutoComplete
+                placeholder={placeholder}
                 multiple={isMulti}
                 options={startups}
-                onChange={onTagsChange}
+                onSelect={onTagsChange}
                 onBlur={onBlur}
                 defaultValue={initialValue}
-                // getOptionKey={(opt) => opt.value}
-                renderOption={(props, option) => {
-                    return (
-                        <li {...props} key={option.value}>
-                            {option.label}
-                        </li>
-                    );
-                }}
-                renderTags={(tagValue, getTagProps) => {
-                    return tagValue.map((option, index) => (
-                        <Chip
-                            {...getTagProps({ index })}
-                            key={option.value}
-                            label={option.label}
-                        />
-                    ));
-                }}
-                getOptionKey={(option) => option.value}
-                getOptionLabel={(opt) => opt.label}
-                isOptionEqualToValue={(option, value) =>
-                    option.value === value.value
-                }
-                renderInput={(params) => (
-                    <TextField
-                        {...params}
-                        inputProps={{
-                            ...params.inputProps,
-                            style: {
-                                padding: `0.75rem 0.5rem`,
-                            },
-                        }}
-                        variant="standard"
-                        style={{
-                            paddingLeft: 10,
-                            borderRadius: `0.25rem 0.25rem 0 0`,
-                            backgroundColor: `var(--background-contrast-grey)`,
-                            boxShadow: `inset 0 -2px 0 0 var(--border-plain-grey)`,
-                        }}
-                        placeholder={placeholder}
-                    />
-                )}
                 // sx={{ width: "500px" }}
             />
             {!!state && !!stateMessageRelated && (
