@@ -9,6 +9,7 @@ import {
     memberPublicInfoSchemaType,
     memberSchemaType,
 } from "../member";
+import { PrivateMemberChangeSchemaType } from "../memberChange";
 import {
     SponsorDomaineMinisteriel,
     sponsorSchemaType,
@@ -18,6 +19,7 @@ import { StartupPhase, phaseSchemaType, startupSchemaType } from "../startup";
 import { teamSchemaType } from "../team";
 import {
     BadgeRequests,
+    Events,
     Incubators,
     Missions,
     Organizations,
@@ -260,5 +262,15 @@ export function teamToModel(team: Selectable<Teams>): teamSchemaType {
         ghid: team.ghid || "",
         mission: team.mission,
         incubator_id: team.incubator_id,
+    };
+}
+
+export function memberChangeToModel(
+    memberChange: Selectable<Events>
+): PrivateMemberChangeSchemaType {
+    return {
+        action_on_username: memberChange.action_on_username,
+        created_at: memberChange.created_at,
+        created_by_username: memberChange.created_by_username,
     };
 }

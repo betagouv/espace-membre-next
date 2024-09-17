@@ -1,13 +1,14 @@
-import { getEventListByUsername } from "@/lib/events";
+import { fr } from "@codegouvfr/react-dsfr";
 import { format } from "date-fns";
 import { fr as frLocale } from "date-fns/locale/fr";
 import Link from "next/link";
-import { fr } from "@codegouvfr/react-dsfr";
+
+import { PrivateMemberChangeSchemaType } from "@/models/memberChange";
 
 export const LastChange = ({
     changes,
 }: {
-    changes: Awaited<ReturnType<typeof getEventListByUsername>>;
+    changes: PrivateMemberChangeSchemaType[];
 }) =>
     (changes.length && (
         <p

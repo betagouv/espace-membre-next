@@ -15,8 +15,8 @@ import { useForm } from "react-hook-form";
 import { CompetencesEditor } from "./CompetencesEditor";
 import { MissionsEditor } from "./MissionsEditor";
 import CitySelect from "../CitySelect";
-import LastChange from "../LastChange";
 import GenderSelect from "../GenderSelect";
+import LastChange from "../LastChange";
 import UploadForm from "../UploadForm/UploadForm";
 import { imagePostApiSchemaType } from "@/models/actions/image";
 import {
@@ -25,14 +25,14 @@ import {
 } from "@/models/actions/member";
 import { statusOptions } from "@/models/member";
 import { DOMAINE_OPTIONS, memberSchema } from "@/models/member";
+import { PrivateMemberChangeSchemaType } from "@/models/memberChange";
 import routes, { computeRoute } from "@/routes/routes";
 import { routeTitles } from "@/utils/routes/routeTitles";
-import { getEventListByUsername } from "@/lib/events";
 
 // data from secretariat API
 export interface BaseInfoUpdateProps {
     profileURL?: string;
-    changes: Awaited<ReturnType<typeof getEventListByUsername>>;
+    changes: PrivateMemberChangeSchemaType[];
     formData: memberInfoUpdateSchemaType;
     startupOptions: {
         value: string;
