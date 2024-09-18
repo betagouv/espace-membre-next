@@ -182,7 +182,7 @@ export function StartupForm(props: StartupFormProps) {
                 if (resp.success) {
                     setAlertMessage({
                         title: `Mise à jour effectuée`,
-                        message: `La mise à jour a bien été effectuée`,
+                        message: `La modification sera visible en ligne d'ici 24 heures.`,
                         type: "success",
                     });
                 } else {
@@ -539,7 +539,8 @@ export function StartupForm(props: StartupFormProps) {
                         <label className="fr-label">
                             Phases
                             <span className="fr-hint-text">
-                                Historique des phases du progruit (investigation, construction...)
+                                Historique des phases du produit (investigation,
+                                construction...)
                             </span>
                         </label>
                         <PhasesEditor
@@ -558,8 +559,9 @@ export function StartupForm(props: StartupFormProps) {
                         <label className="fr-label">
                             Événements
                             <span className="fr-hint-text">
-                                Historique des événements marquants de
-                                la startup. Par exemple : "Lancement du produit", "Comité"...
+                                Historique des événements marquants de la
+                                startup. Par exemple : "Lancement du produit",
+                                "Comité"...
                             </span>
                         </label>
                         <EventsEditor
@@ -612,16 +614,10 @@ export function StartupForm(props: StartupFormProps) {
                         ]}
                     />
                     {hasAnalyseDeRisque && (
-                        <BasicInput
-                            id="analyse_risques_url"
-                        />
+                        <BasicInput id="analyse_risques_url" />
                     )}
-                    <BasicInput
-                        id="stats_url"
-                    />
-                    <BasicInput
-                        id="budget_url"
-                    />
+                    <BasicInput id="stats_url" />
+                    <BasicInput id="budget_url" />
 
                     <Button
                         className={fr.cx("fr-mt-3w")}
