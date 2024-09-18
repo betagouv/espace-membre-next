@@ -115,7 +115,7 @@ export function OrganizationForm(props: OrganizationFormProps) {
                         : `Organisation créée`,
                     message: props.organization ? (
                         <>
-                            La mise à jour a bien été effectuée. Elle sera
+                            La modification sera
                             visible en ligne d'ici quelques heures.
                         </>
                     ) : (
