@@ -127,21 +127,6 @@ describe("send message on contract end to user", () => {
         sendEmailStub = sinon
             .stub(email, "sendEmail")
             .returns(Promise.resolve(null));
-        // jobsStub = sinon.stub(BetaGouv, "getJobs").returns(
-        //     Promise.resolve([
-        //         {
-        //             id: "/recrutement/2022/05/31/developpeur-se.full.stack.4.jours.par.semaine",
-        //             domaines: [Domaine.DEVELOPPEMENT],
-        //             title: "        Développeur.se full stack – 4 jours par semaine - Offre de France Chaleur Urbaine        ",
-        //             url: "http://localhost:4000/recrutement/2022/05/31/developpeur-se.full.stack.4.jours.par.semaine.html",
-        //             published: new Date().toISOString(),
-        //             updated: "2022-05-31 15:52:38 +0200",
-        //             author: "beta.gouv.fr",
-        //             technos: "",
-        //             content: "",
-        //         },
-        //     ])
-        // );
         chat = sinon.spy(BetaGouv, "sendInfoToChat");
         clock = sinon.useFakeTimers(new Date(fakeDate));
         nock(
@@ -167,18 +152,6 @@ describe("send message on contract end to user", () => {
     });
 
     it("should send message to users for j-15", async () => {
-        // await db
-        //     .insertInto("users")
-        //     .values({
-        //         username: "membre.quipart",
-        //         primary_email: "membre.quipart@modernisation.gouv.fr",
-        //         secondary_email: "membre.emailsecondary@gmail.com",
-        //     })
-        //     .execute();
-        // const url = process.env.USERS_API || "https://beta.gouv.fr";
-        // nock(url)
-        //     .get((uri) => uri.includes("authors.json"))
-        //     .reply(200, betaGouvUsers);
         const { sendContractEndingMessageToUsers } =
             userContractEndingScheduler;
         await sendContractEndingMessageToUsers("mail15days", true);
@@ -186,23 +159,9 @@ describe("send message on contract end to user", () => {
         chat.firstCall.args[2].should.be.equal("membre.quipart");
         sendEmailStub.firstCall.args[0] =
             "membre.quipart@modernisation.gouv.fr,membre.emailsecondary@gmail.com";
-        // await knex("users")
-        //     .where({
-        //         username: "membre.quipart",
-        //     })
-        //     .delete();
     });
 
     it("should send message to users for j-30", async () => {
-        // await knex("users").insert({
-        //     username: "membre.quipart",
-        //     primary_email: "membre.quipart@modernisation.gouv.fr",
-        //     secondary_email: "membre.emailsecondary@gmail.com",
-        // });
-        // const url = process.env.USERS_API || "https://beta.gouv.fr";
-        // nock(url)
-        //     .get((uri) => uri.includes("authors.json"))
-        //     .reply(200, betaGouvUsers);
         const { sendContractEndingMessageToUsers } =
             userContractEndingScheduler;
         try {
@@ -214,11 +173,6 @@ describe("send message on contract end to user", () => {
         chat.firstCall.args[2].should.be.equal("membre.quipart.30days");
         sendEmailStub.firstCall.args[0] =
             "membre.quipart@modernisation.gouv.fr,membre.emailsecondary@gmail.com";
-        // await knex("users")
-        //     .where({
-        //         username: "membre.quipart",
-        //     })
-        //     .delete();
     });
     describe("Test sending j+x day email", () => {
         const users = [
@@ -246,52 +200,11 @@ describe("send message on contract end to user", () => {
             await utils.deleteUsers(users);
         });
         it("should send j1 mail to users", async () => {
-            // const url = process.env.USERS_API || "https://beta.gouv.fr";
-            // nock(url)
-            //     .get((uri) => uri.includes("authors.json"))
-            //     .reply(200, [
-            //         {
-            //             id: "julien.dauphant",
-            //             fullname: "Julien Dauphant",
-            //             missions: [
-            //                 {
-            //                     start: "2016-11-03",
-            //                     end: fakeDateLess1day,
-            //                     status: "independent",
-            //                     employer: "octo",
-            //                 },
-            //             ],
-            //         },
-            //     ])
-            //     .persist();
-            // await sendInfoToSecondaryEmailAfterXDays(1);
-            // // sendEmail not call because secondary email does not exists for user
-            // console.log(sendEmailStub.called)
-            // sendEmailStub.calledOnce.should.be.false;
-
             await sendInfoToSecondaryEmailAfterXDays(1);
             sendEmailStub.calledOnce.should.be.true;
         });
 
         it("should delete user ovh account if email status suspended for more than 30 days", async () => {
-            // const url = process.env.USERS_API || "https://beta.gouv.fr";
-            // nock(url)
-            //     .get((uri) => uri.includes("authors.json"))
-            //     .reply(200, [
-            //         {
-            //             id: "membre.expire",
-            //             fullname: "Membre expire",
-            //             missions: [
-            //                 {
-            //                     start: "2016-11-03",
-            //                     end: fakeDateLess30days,
-            //                     status: "independent",
-            //                     employer: "octo",
-            //                 },
-            //             ],
-            //         },
-            //     ])
-            //     .persist();
             const updatedUser = await db
                 .updateTable("users")
                 .where("username", "=", "membre.expire")
@@ -337,24 +250,6 @@ describe("send message on contract end to user", () => {
         });
 
         it("should not delete user secondary_email if suspended less than 30days", async () => {
-            // const url = process.env.USERS_API || "https://beta.gouv.fr";
-            // nock(url)
-            //     .get((uri) => uri.includes("authors.json"))
-            //     .reply(200, [
-            //         {
-            //             id: "julien.dauphant",
-            //             fullname: "Julien Dauphant",
-            //             missions: [
-            //                 {
-            //                     start: "2016-11-03",
-            //                     end: fakeDateLess30days,
-            //                     status: "independent",
-            //                     employer: "octo",
-            //                 },
-            //             ],
-            //         },
-            //     ])
-            //     .persist();
             const today = new Date();
             const todayLess29days = new Date();
             todayLess29days.setDate(today.getDate() - 29);
@@ -406,24 +301,6 @@ describe("send message on contract end to user", () => {
         });
 
         it("should delete user secondary_email if suspended more than 30days", async () => {
-            // const url = process.env.USERS_API || "https://beta.gouv.fr";
-            // nock(url)
-            //     .get((uri) => uri.includes("authors.json"))
-            //     .reply(200, [
-            //         {
-            //             id: "julien.dauphant",
-            //             fullname: "Julien Dauphant",
-            //             missions: [
-            //                 {
-            //                     start: "2016-11-03",
-            //                     end: fakeDateLess30days,
-            //                     status: "independent",
-            //                     employer: "octo",
-            //                 },
-            //             ],
-            //         },
-            //     ])
-            //     .persist();
             const today = new Date();
             const todayLess31days = new Date();
             todayLess31days.setDate(today.getDate() - 31);
@@ -505,35 +382,6 @@ describe("After quitting", () => {
             .returns(Promise.resolve(null));
         clock = sinon.useFakeTimers(new Date(fakeDate));
         await utils.createUsers(users);
-        //     const url = process.env.USERS_API || "https://beta.gouv.fr";
-        //     nock(url)
-        //         .get((uri) => uri.includes("authors.json"))
-        //         .reply(200, [
-        //             {
-        //                 id: "julien.dauphant",
-        //                 fullname: "Julien Dauphant",
-        //                 missions: [
-        //                     {
-        //                         start: "2016-11-03",
-        //                         end: fakeDateLess1day,
-        //                         status: "independent",
-        //                         employer: "octo",
-        //                     },
-        //                 ],
-        //             },
-        //             {
-        //                 id: "julien.dauphant2",
-        //                 fullname: "Julien Dauphant",
-        //                 missions: [
-        //                     {
-        //                         start: "2016-11-03",
-        //                         end: fakeDateLess30days,
-        //                         status: "independent",
-        //                         employer: "octo",
-        //                     },
-        //                 ],
-        //             },
-        //         ]);
     });
 
     afterEach(async () => {
@@ -562,21 +410,6 @@ describe("After quitting", () => {
         const today = new Date(fakeDate);
         const todayLess31days = new Date();
         todayLess31days.setDate(today.getDate() - 31);
-        // const userinfos = sinon.stub(betagouv, "usersInfos").returns(
-        //     Promise.resolve([
-        //         {
-        //             id: "membre.actif",
-        //             fullname: "membre actif",
-        //             employer: "Dinum",
-        //             startups: [],
-        //             domaine: "Animation",
-        //             start: "2020-01-01",
-        //             end: todayLess31days.toISOString().split("T")[0],
-        //             missions: [],
-        //         },
-        //     ])
-        // );
-
         const updatedUser = await db
             .updateTable("users")
             .where("username", "=", "julien.dauphant")
