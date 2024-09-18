@@ -3,15 +3,17 @@ import { MatomoClient } from "@/lib/matomo"; // or relative path if not publishe
 import config from "@/server/config";
 
 // Create a new MatomoClient instance
-const matomo = new MatomoClient(config.MATOMO_URL, config.MATOMO_TOKEN);
-
-// Fetch a user by email
-async function fetchUserByEmail(email: string) {
-    const user = await matomo.getUserByEmail(email);
-    console.log(user);
+if (!config.MATOMO_API_URL) {
+    console.error("Missing MATOMO_API_URL");
+    process.exit(1);
 }
+if (!config.MATOMO_TOKEN) {
+    console.error("Missing MATOMO_TOKEN");
+    process.exit(1);
+}
+const matomo = new MatomoClient(config.MATOMO_API_URL, config.MATOMO_TOKEN);
 
 // Delete a user by email
-async function deleteUser(email: string) {
+export async function deleteUser(email: string) {
     await matomo.deleteUserByEmail(email);
 }

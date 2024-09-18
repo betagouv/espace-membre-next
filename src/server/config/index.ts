@@ -113,6 +113,8 @@ const CRON_TASK_ENV_VAR = {
     padURL: process.env.PAD_URL || "https://pad.incubateur.net",
     padEmail: process.env.PAD_USERNAME,
     padPassword: process.env.PAD_PASSWORD,
+    MATOMO_TOKEN: process.env.MATOMO_TOKEN,
+    MATOMO_API_URL: process.env.MATOMO_API_URL,
 };
 
 const REQUIRED_APP_KEY = ["SESSION_SECRET", "REDIS_URL"];
