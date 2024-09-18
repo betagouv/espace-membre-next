@@ -147,7 +147,10 @@ export function TeamForm(props: TeamFormProps) {
                         ? `Mise à jour effectuée`
                         : "Équipe créée",
                     message: props.team ? (
-                        <>La mise à jour a bien été effectuée</>
+                        <>
+                            La mise à jour a bien été effectuée. Elle sera
+                            visible en ligne d'ici 24 heures.
+                        </>
                     ) : (
                         <>L'équipe a bien été créée</>
                     ),

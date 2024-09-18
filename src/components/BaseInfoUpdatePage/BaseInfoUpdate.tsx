@@ -153,7 +153,7 @@ export const BaseInfoUpdate = (props: BaseInfoUpdateProps) => {
                 username: props.username,
             });
             setAlertMessage({
-                title: `Modifications enregistrées`,
+                title: `Modifications enregistrées. Elle seront visibles en ligne d'ici 24 heures.`,
                 message,
                 type: "success",
             });

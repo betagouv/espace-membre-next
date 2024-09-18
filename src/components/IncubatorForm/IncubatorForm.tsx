@@ -165,7 +165,7 @@ export function IncubatorForm(props: IncubatorFormProps) {
                 if (resp.success) {
                     setAlertMessage({
                         title: `Mise à jour effectuée`,
-                        message: `La mise à jour a bien été effectuée`,
+                        message: `La mise à jour a bien été effectuée. Elle sera visible en ligne d'ici 24 heures.`,
                         type: "success",
                     });
                 } else {
