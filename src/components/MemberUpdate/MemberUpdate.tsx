@@ -73,7 +73,7 @@ export const MemberUpdate = ({
         if (res.success) {
             setAlertMessage({
                 title: `Modifications enregistrées`,
-                message: `Mise à jour des missions ok.`,
+                message: `Les missions ont été mises à jour.`,
                 type: "success",
             });
         } else {
