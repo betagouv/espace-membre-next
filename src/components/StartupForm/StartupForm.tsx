@@ -182,7 +182,7 @@ export function StartupForm(props: StartupFormProps) {
                 if (resp.success) {
                     setAlertMessage({
                         title: `Mise à jour effectuée`,
-                        message: `La mise à jour a bien été effectuée`,
+                        message: `La modification sera visible en ligne d'ici 24 heures.`,
                         type: "success",
                     });
                 } else {
@@ -249,19 +249,19 @@ export function StartupForm(props: StartupFormProps) {
                     <BasicInput
                         id="name"
                         placeholder="ex: Démarches simplifiées"
-                        hintText={`Ce nom sert d'identifiant pour la startup et
-                                ne doit pas dépasser 30 caractères.`}
+                        hintText={`Identifiant de la startup. Ne doit pas dépasser 30 caractères.`}
                     />
                     <BasicInput
                         id="pitch"
-                        label="Quel est son objectif principal ?"
+                        label="Objectif principal"
                         hintText={`Par exemple : "Faciliter la création d'une
-                                    fiche produit". Pas besoin de faire plus
+                                    fiche produit". Pas besoin de faire
                                     long.`}
                     />
                     <BasicInput
                         id="contact"
                         placeholder="ex: contact@[startup].beta.gouv.fr"
+                        hintText={`Préférer un email générique plutôt que le mail d'une personne de l'équipe.`}
                     />
 
                     <div
@@ -274,8 +274,7 @@ export function StartupForm(props: StartupFormProps) {
                         <label className="fr-label">
                             Thématiques{" "}
                             <span className="fr-hint-text">
-                                Indiquez toutes les thématiques adressées par la
-                                startup
+                                Par exemple : Jeunesse, Logement.
                             </span>
                         </label>
 
@@ -324,8 +323,7 @@ export function StartupForm(props: StartupFormProps) {
                         <label className="fr-label">
                             Utilisateurs cible{" "}
                             <span className="fr-hint-text">
-                                Indiquez toutes les utilisateurs qui
-                                bénéficieront du produit
+                                Par exemple : Particuliers, Entreprises.
                             </span>
                         </label>
 
@@ -367,9 +365,9 @@ export function StartupForm(props: StartupFormProps) {
                             /> */}
                             <hr />
                             <UploadForm
-                                label="Image à droite du nom du produit"
+                                label="Image"
                                 placeholderURL="data:image/png;base64,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"
-                                hintText="Il s'agit d'une image représentant votre produit, généralemment il s'agit de la page d'accueil du produit."
+                                hintText="Elle s'affiche sur la fiche produit. Généralemment il s'agit d'une capture d'écran de la page d'accueil."
                                 onChange={(event) => {
                                     const file = event.target.files;
                                     if (file && file.length) {
@@ -401,7 +399,7 @@ export function StartupForm(props: StartupFormProps) {
                         }`}
                     >
                         <label className="fr-label">
-                            Description du produit :
+                            Description
                             <span className="fr-hint-text">
                                 {
                                     startupInfoUpdateSchema.shape.startup.shape
@@ -465,7 +463,7 @@ export function StartupForm(props: StartupFormProps) {
                                 .incubator_id.description
                         }
                         nativeSelectProps={register("startup.incubator_id")}
-                        hint="Indiquez la structure dans laquelle est portée votre produit"
+                        hint="Structure dans laquelle est portée votre produit"
                         state={
                             errors?.startup?.incubator_id ? "error" : "default"
                         }
@@ -539,10 +537,10 @@ export function StartupForm(props: StartupFormProps) {
                         }`}
                     >
                         <label className="fr-label">
-                            Phase
+                            Phases
                             <span className="fr-hint-text">
-                                Voici l'historique des phases dans lesquelles a
-                                été ce produit.
+                                Historique des phases du produit (investigation,
+                                construction...)
                             </span>
                         </label>
                         <PhasesEditor
@@ -561,8 +559,9 @@ export function StartupForm(props: StartupFormProps) {
                         <label className="fr-label">
                             Événements
                             <span className="fr-hint-text">
-                                Voici l'historique des événements marquants de
-                                la startup
+                                Historique des événements marquants de la
+                                startup. Par exemple : "Lancement du produit",
+                                "Comité"...
                             </span>
                         </label>
                         <EventsEditor
@@ -615,19 +614,10 @@ export function StartupForm(props: StartupFormProps) {
                         ]}
                     />
                     {hasAnalyseDeRisque && (
-                        <BasicInput
-                            id="analyse_risques_url"
-                            hintText="Si l'analyse de risques est publique, tu peux indiquer le lien vers ce document ici."
-                        />
+                        <BasicInput id="analyse_risques_url" />
                     )}
-                    <BasicInput
-                        id="stats_url"
-                        hintText="Si la page de stastiques est publique, tu peux indiquer le lien vers ce document ici."
-                    />
-                    <BasicInput
-                        id="budget_url"
-                        hintText="Si le budget est public, tu peux indiquer le lien vers ce document ici."
-                    />
+                    <BasicInput id="stats_url" />
+                    <BasicInput id="budget_url" />
 
                     <Button
                         className={fr.cx("fr-mt-3w")}

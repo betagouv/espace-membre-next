@@ -10,7 +10,8 @@ const options = [
 export default function SelectAccebilityStatus({ value, onChange }) {
     return (
         <Select
-            label="Sélectionne l'accessibilité de votre produit"
+            label="Conformité en accessibilité du produit"
+            hint="Non conforme, si le site n'a pas encore été audité"
             nativeSelectProps={{
                 onChange,
                 required: true,

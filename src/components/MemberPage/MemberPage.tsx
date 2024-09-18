@@ -14,9 +14,11 @@ import { useSession } from "next-auth/react";
 import MemberBrevoEventList from "./MemberBrevoEventList";
 import MemberEmailServiceInfo from "./MemberEmailServiceInfo";
 import MemberEventList from "./MemberEventList";
+import LastChange from "../LastChange";
 import { safeChangeSecondaryEmailForUser } from "@/app/api/member/actions";
 import { EmailStatusCode, memberWrapperSchemaType } from "@/models/member";
 import { memberBaseInfoSchemaType } from "@/models/member";
+import { PrivateMemberChangeSchemaType } from "@/models/memberChange";
 import { EMAIL_STATUS_READABLE_FORMAT } from "@/models/misc";
 import { missionSchemaType } from "@/models/mission";
 import routes, { computeRoute } from "@/routes/routes";
@@ -44,6 +46,7 @@ export interface MemberPageProps {
         };
     };
     startups: { uuid: string | null; name: string | null }[];
+    changes: PrivateMemberChangeSchemaType[];
 }
 
 const ChangeSecondaryEmailBloc = ({
@@ -308,6 +311,7 @@ export default function MemberPage({
     mattermostInfo,
     isExpired,
     startups,
+    changes,
 }: // emailServiceInfo,
 MemberPageProps) {
     const session = useSession();
@@ -323,6 +327,7 @@ MemberPageProps) {
         <>
             <div className="fr-mb-8v">
                 <h2>Fiche Membre</h2>
+                <LastChange changes={changes} />
                 {isExpired && (
                     <>
                         <Alert

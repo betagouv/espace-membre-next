@@ -1,18 +1,49 @@
 "use client";
-import React from "react";
+import React, { useEffect } from "react";
 
 import { fr } from "@codegouvfr/react-dsfr";
 import Alert from "@codegouvfr/react-dsfr/Alert";
 import Button from "@codegouvfr/react-dsfr/Button";
+import * as Sentry from "@sentry/nextjs";
 import axios from "axios";
 import { useSession } from "next-auth/react";
+
+import frontConfig from "@/frontConfig";
 
 export default function SignClientPage() {
     const [error, setError] = React.useState<string>("");
     const { status, data: session } = useSession();
 
-    if (status === "authenticated") {
-        window.location.href = "/dashboard";
+    useEffect(() => {
+        // Ensure this runs only on the client-side
+        if (status === "authenticated" && typeof window !== "undefined") {
+            window.location.href = "/dashboard";
+        }
+    }, [status]);
+
+    function navigateToNextPage(url) {
+        const parsedUrl = new URL(url);
+        const searchParams = parsedUrl.searchParams || "";
+        const callbackUrl = searchParams.get("callbackUrl") || "";
+        const allowedDomains = [frontConfig.host];
+
+        // Create an anchor element to parse the URL
+        const anchor = document.createElement("a");
+        anchor.href = callbackUrl;
+
+        // Extract the hostname from the callback URL
+        const callbackHostname = anchor.host;
+        // Validate if the callbackUrl is internal or part of trusted domains
+        if (
+            callbackUrl.startsWith("/") ||
+            allowedDomains.includes(callbackHostname)
+        ) {
+            // Safe to redirect
+            window.location.href = callbackUrl;
+        } else {
+            // Redirect to a default safe URL (e.g., dashboard)
+            window.location.href = "/dashboard";
+        }
     }
 
     const onSubmit = React.useCallback(async () => {
@@ -20,21 +51,17 @@ export default function SignClientPage() {
             window !== undefined ? window.location.hash.split("#")[1] : null;
         setError("");
         if (url) {
-            await axios
-                .get(url, {
+            try {
+                await axios.get(url, {
                     withCredentials: true,
-                })
-                .then((r) => {
-                    const parsedUrl = new URL(url);
-                    const searchParams = parsedUrl.searchParams;
-                    const callbackUrl = searchParams.get("callbackUrl");
-                    window.location.href = callbackUrl || "/dashboard";
-                })
-                .catch((e) => {
-                    if (e.response?.data?.error) {
-                        setError(e.response?.data?.error);
-                    }
                 });
+                navigateToNextPage(url);
+            } catch (e: any) {
+                Sentry.captureException(e);
+                if (e.response?.data?.error) {
+                    setError(e.response?.data?.error);
+                }
+            }
         }
     }, []);
 
@@ -42,9 +69,9 @@ export default function SignClientPage() {
         document.location = "/";
     };
 
-    // React.useEffect(() => {
-    //     if (window) onSubmit();
-    // }, [onSubmit]);
+    React.useEffect(() => {
+        if (typeof window !== "undefined") onSubmit();
+    }, [onSubmit]);
 
     return (
         <div>

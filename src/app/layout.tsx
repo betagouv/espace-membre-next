@@ -17,6 +17,7 @@ import { MuiDsfrThemeProvider } from "./MuiDsfrThemeProvider";
 import { StartDsfr } from "./StartDsfr";
 import { Matomo } from "@/app/Matomo";
 import Header from "@/components/Header";
+import { Skiplinks } from '@/components/Skiplinks';
 import { LiveChatProvider } from "@/components/live-chat/LiveChatProvider";
 import { authOptions } from "@/utils/authoptions";
 
@@ -45,6 +46,7 @@ async function MainStructure(props: PropsWithChildren) {
                             <MuiDsfrThemeProvider>
                                 <BreadCrumbProvider>
                                     <LiveChatProvider>
+                                        <Skiplinks />
                                         <Header />
 
                                         <div
@@ -56,7 +58,7 @@ async function MainStructure(props: PropsWithChildren) {
                                             {props.children}
                                         </div>
                                         <Footer
-                                            accessibility="partially compliant"
+                                            accessibility="non compliant"
                                             contentDescription="Espace Membre est une application permettant aux membres de la communauté beta.gouv.fr d'accéder aux espaces dédiés à la communauté."
                                             termsLinkProps={{
                                                 href: "#",

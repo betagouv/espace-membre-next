@@ -1,4 +1,4 @@
-import { intervalToDuration } from "date-fns";
+import { format, intervalToDuration } from "date-fns";
 
 export const NUMBER_OF_DAY_IN_A_WEEK = 7;
 
@@ -20,4 +20,12 @@ export function durationBetweenDate(date1: Date, date2: Date) {
         result += `${duration.seconds.toString().padStart(2, "0")}`;
     }
     return result;
+}
+
+export function frenchSmallDate(str) {
+    try {
+        return format(str, "dd/MM/yyyy");
+    } catch (e) {
+        return "?";
+    }
 }

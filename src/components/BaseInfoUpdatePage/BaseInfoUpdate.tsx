@@ -1,16 +1,15 @@
 "use client";
-import React, { useRef, useState } from "react";
+import React from "react";
 
 import { fr } from "@codegouvfr/react-dsfr";
 import Alert from "@codegouvfr/react-dsfr/Alert";
 import { Button } from "@codegouvfr/react-dsfr/Button";
-import ButtonsGroup from "@codegouvfr/react-dsfr/ButtonsGroup";
 import Input from "@codegouvfr/react-dsfr/Input";
 import Select from "@codegouvfr/react-dsfr/Select";
-import { Upload } from "@codegouvfr/react-dsfr/Upload";
 import { zodResolver } from "@hookform/resolvers/zod";
 import * as Sentry from "@sentry/nextjs";
 import axios from "axios";
+import Link from "next/link";
 import { useSession } from "next-auth/react";
 import { useForm } from "react-hook-form";
 
@@ -18,21 +17,23 @@ import { CompetencesEditor } from "./CompetencesEditor";
 import { MissionsEditor } from "./MissionsEditor";
 import CitySelect from "../CitySelect";
 import GenderSelect from "../GenderSelect";
+import LastChange from "../LastChange";
 import UploadForm from "../UploadForm/UploadForm";
 import { imagePostApiSchemaType } from "@/models/actions/image";
 import {
     memberInfoUpdateSchemaType,
     memberInfoUpdateSchema,
 } from "@/models/actions/member";
-import { GenderCode, statusOptions } from "@/models/member";
+import { statusOptions } from "@/models/member";
 import { DOMAINE_OPTIONS, memberSchema } from "@/models/member";
+import { PrivateMemberChangeSchemaType } from "@/models/memberChange";
 import routes, { computeRoute } from "@/routes/routes";
 import { routeTitles } from "@/utils/routes/routeTitles";
-import Link from "next/link";
 
 // data from secretariat API
 export interface BaseInfoUpdateProps {
     profileURL?: string;
+    changes: PrivateMemberChangeSchemaType[];
     formData: memberInfoUpdateSchemaType;
     startupOptions: {
         value: string;
@@ -152,7 +153,7 @@ export const BaseInfoUpdate = (props: BaseInfoUpdateProps) => {
                 username: props.username,
             });
             setAlertMessage({
-                title: `Modifications enregistrées`,
+                title: `Modifications enregistrées. Elle seront visibles en ligne d'ici 24 heures.`,
                 message,
                 type: "success",
             });
@@ -213,7 +214,7 @@ export const BaseInfoUpdate = (props: BaseInfoUpdateProps) => {
                 <p>
                     Ces informations seront publiées sur le site beta.gouv.fr.
                 </p>
-
+                <LastChange changes={props.changes} />
                 {!!alertMessage && (
                     <Alert
                         className="fr-mb-8v"
@@ -316,7 +317,7 @@ export const BaseInfoUpdate = (props: BaseInfoUpdateProps) => {
                             }
                         }}
                         shape="round"
-                        label="Photo de profile"
+                        label="Photo de profil"
                         url={props.profileURL}
                         onDelete={() => {
                             setValue("picture", null, {
@@ -336,9 +337,8 @@ export const BaseInfoUpdate = (props: BaseInfoUpdateProps) => {
                     </h2>
                     {isCurrentUser && (
                         <p>
-                            Tu peux préciser tes compétences, cela permettra à
-                            la communauté de mieux de trouver en cas de besoin{" "}
-                            {`:)`}
+                            Aide les membres de la communauté à mieux
+                            t'identifier en cas de besoin
                         </p>
                     )}
                     <CompetencesEditor
@@ -353,15 +353,7 @@ export const BaseInfoUpdate = (props: BaseInfoUpdateProps) => {
                     <br />
                     <h2>{isCurrentUser ? `Mes missions` : `Missions`}</h2>
                     {!!isCurrentUser && (
-                        <p>
-                            Précise les dates, employeurs et produits pour
-                            lesquels tu as mis tes talents à contribution.
-                            <br />
-                            <br />
-                            Ne saute aucun détail pour que la communauté puisse
-                            te repérer facilement dans la foule !
-                            <br />
-                        </p>
+                        <p>Renseigne tes différentes missions chez beta.</p>
                     )}
                     <MissionsEditor
                         control={control}
@@ -376,12 +368,14 @@ export const BaseInfoUpdate = (props: BaseInfoUpdateProps) => {
                             ? `Participe à notre observatoire statistique`
                             : `Observatoire statistique`}
                     </h2>
-                    ⚠️ Ces valeurs servent à alimenter l'
-                    <Link href="/metabase" target="_blank">
-                        observatoire de la communauté
-                    </Link>
-                    . Elles sont confidentielles et anonymisées mis à part le
-                    lieu de travail.<br></br>
+                    <p>
+                        ⚠️ Ces valeurs servent à alimenter l'
+                        <Link href="/metabase" target="_blank">
+                            observatoire de la communauté
+                        </Link>
+                        . Elles sont confidentielles et anonymisées mis à part
+                        le lieu de travail.
+                    </p>
                     <GenderSelect
                         label="Genre"
                         nativeSelectProps={{

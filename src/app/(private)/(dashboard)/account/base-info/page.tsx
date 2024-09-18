@@ -3,11 +3,11 @@ import { redirect } from "next/navigation";
 import { getServerSession } from "next-auth";
 
 import { BaseInfoUpdate } from "@/components/BaseInfoUpdatePage";
+import { getEventListByUsername } from "@/lib/events";
 import { getAllStartups } from "@/lib/kysely/queries";
 import { getUserInfos } from "@/lib/kysely/queries/users";
 import s3 from "@/lib/s3";
-import { userInfosToModel } from "@/models/mapper";
-import { memberSchema } from "@/models/member";
+import { memberChangeToModel, userInfosToModel } from "@/models/mapper";
 import { authOptions } from "@/utils/authoptions";
 import { routeTitles } from "@/utils/routes/routeTitles";
 
@@ -27,7 +27,7 @@ export default async function Page() {
     const s3Key = `members/${username}/avatar.jpg`;
     let hasImage = false;
     try {
-        const s3Object = await s3
+        await s3
             .getObject({
                 Key: s3Key,
             })
@@ -46,11 +46,10 @@ export default async function Page() {
         redirect("/errors");
     }
 
-    // // todo: to make TS happy
-    // const domaine = userInfos.domaine as DomaineSchemaType;
-    // const memberType = userInfos.member_type as MemberType;
+    const changes = await getEventListByUsername(username);
 
     const props = {
+        changes: changes.map((change) => memberChangeToModel(change)),
         formData: {
             member: {
                 ...userInfos,

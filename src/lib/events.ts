@@ -38,6 +38,7 @@ export async function getEventListByUsername(username: string) {
         .selectFrom("events")
         .selectAll()
         .where("action_on_username", "=", username)
+        .orderBy("created_at desc")
         .execute();
     return eventList.map((event) => ({
         ...event,
