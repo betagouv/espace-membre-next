@@ -1,5 +1,5 @@
 "use client";
-import React from "react";
+import React, { useEffect } from "react";
 
 import { fr } from "@codegouvfr/react-dsfr";
 import Alert from "@codegouvfr/react-dsfr/Alert";
@@ -14,9 +14,12 @@ export default function SignClientPage() {
     const [error, setError] = React.useState<string>("");
     const { status, data: session } = useSession();
 
-    if (status === "authenticated") {
-        window.location.href = "/dashboard";
-    }
+    useEffect(() => {
+        // Ensure this runs only on the client-side
+        if (status === "authenticated" && typeof window !== "undefined") {
+            window.location.href = "/dashboard";
+        }
+    }, [status]);
 
     function navigateToNextPage(url) {
         const parsedUrl = new URL(url);
@@ -67,7 +70,7 @@ export default function SignClientPage() {
     };
 
     React.useEffect(() => {
-        if (window) onSubmit();
+        if (typeof window !== "undefined") onSubmit();
     }, [onSubmit]);
 
     return (
