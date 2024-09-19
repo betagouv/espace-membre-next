@@ -1,13 +1,10 @@
 import { differenceInDays, startOfDay } from "date-fns";
 
-import config from "../config";
 import { matomoClient } from "../config/matomo.config";
 import { AccountService, SERVICES } from "../config/services.config";
-import { Matomo } from "@/app/Matomo";
 import { addEvent } from "@/lib/events";
 import { db } from "@/lib/kysely";
 import { getAllUsersInfo } from "@/lib/kysely/queries/users";
-import { MatomoClient } from "@/lib/matomo";
 import * as mattermost from "@/lib/mattermost";
 import { EventCode, SYSTEM_NAME } from "@/models/actionEvent";
 import { Job } from "@/models/job";
