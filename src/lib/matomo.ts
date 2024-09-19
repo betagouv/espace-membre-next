@@ -1,5 +1,17 @@
 // matomoClient.ts
-export class MatomoClient {
+
+import { AccountService } from "@/server/config/services.config";
+
+// Define an interface for the Matomo User
+export interface MatomoUser {
+    login: string;
+    email: string;
+    alias: string;
+    superuser_access: string;
+    date_registered: string;
+}
+
+export class Matomo implements AccountService {
     private apiUrl: string;
     private authToken: string;
 
@@ -70,6 +82,29 @@ export class MatomoClient {
             await this.deleteUserByLogin(user.login);
         } else {
             console.log(`No user found with email: ${email}`);
+        }
+    }
+
+    // Function to fetch all users from Matomo
+    async getAllUsers(): Promise<MatomoUser[]> {
+        // API URL for fetching users
+        const url = `${this.apiUrl}/index.php?module=API&method=UsersManager.getUsers&format=JSON&token_auth=${this.authToken}`;
+
+        try {
+            const response = await fetch(url);
+            if (!response.ok) {
+                throw new Error(
+                    `Error fetching users: ${response.status} ${response.statusText}`
+                );
+            }
+
+            const users: MatomoUser[] = await response.json();
+
+            // Optionally, you could add validation or transformation of the data here if needed
+            return users;
+        } catch (error) {
+            console.error("Failed to fetch Matomo users:", error);
+            throw error; // Re-throw the error after logging
         }
     }
 }

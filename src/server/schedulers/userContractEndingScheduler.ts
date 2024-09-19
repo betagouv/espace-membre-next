@@ -1,7 +1,12 @@
 import { differenceInDays, startOfDay } from "date-fns";
 
+import config from "../config";
+import { matomoClient } from "../config/matomo.config";
+import { AccountService } from "../config/services.config";
+import { Matomo } from "@/app/Matomo";
 import { db } from "@/lib/kysely";
 import { getAllUsersInfo } from "@/lib/kysely/queries/users";
+import { MatomoClient } from "@/lib/matomo";
 import * as mattermost from "@/lib/mattermost";
 import { Job } from "@/models/job";
 import { memberBaseInfoToModel } from "@/models/mapper";
@@ -330,6 +335,49 @@ export async function deleteSecondaryEmailsForUsers(
         } catch {
             console.log(
                 `Erreur lors de la suppression de secondary_email pour ${user.username}`
+            );
+        }
+    }
+}
+
+export async function deleteMatomoAccount() {
+    await deleteServiceAccounts(matomoClient);
+}
+
+export async function deleteServiceAccounts(
+    service: AccountService, // Accept any service that implements the AccountService interface
+    optionalExpiredUsers?: memberBaseInfoSchemaType[]
+) {
+    let expiredUsers = optionalExpiredUsers;
+
+    if (!expiredUsers) {
+        const users = (await getAllUsersInfo()).map((user) =>
+            memberBaseInfoToModel(user)
+        );
+        const allServiceUsers = await service.getAllUsers();
+        const allServiceUserEmails = allServiceUsers.map((user) => user.email);
+        const today = new Date();
+        const todayLess30days = new Date();
+        todayLess30days.setDate(today.getDate() - 30);
+        expiredUsers = users.filter((user) => {
+            return (
+                utils.checkUserIsExpired(user, 30) &&
+                ((user.primary_email &&
+                    allServiceUserEmails.includes(user.primary_email)) ||
+                    (user.secondary_email &&
+                        allServiceUserEmails.includes(user.secondary_email)))
+            );
+        });
+    }
+    for (const user of expiredUsers) {
+        try {
+            if (user.primary_email) {
+                await service.deleteUserByEmail(user.primary_email);
+            }
+            console.log(`Suppression du compte pour ${user.username}`);
+        } catch {
+            console.log(
+                `Erreur lors de la suppression du compte pour ${user.username}`
             );
         }
     }

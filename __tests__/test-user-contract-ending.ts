@@ -8,8 +8,8 @@ import { EmailStatusCode } from "@/models/member";
 import { Domaine } from "@/models/member";
 import config from "@/server/config";
 import * as email from "@/server/config/email.config";
+import { FakeMatomo, matomoClient } from "@/server/config/matomo.config";
 import BetaGouv from "@betagouv";
-import betagouv from "@betagouv";
 import { setEmailExpired } from "@schedulers/setEmailExpired";
 import {
     sendInfoToSecondaryEmailAfterXDays,
@@ -17,14 +17,16 @@ import {
     deleteOVHEmailAcounts,
     removeEmailsFromMailingList,
     deleteRedirectionsAfterQuitting,
+    deleteMatomoAccount,
+    deleteServiceAccounts,
 } from "@schedulers/userContractEndingScheduler";
 
 const should = chai.should();
-const fakeDate = "2020-01-01T09:59:59+01:00";
-const fakeDateLess1day = "2019-12-31";
-const fakeDateMore15days = "2020-01-16";
-const fakeDateMore30days = "2020-01-31";
-const fakeDateLess30days = "2019-12-02";
+const fakeTodayDate = "2020-01-01T09:59:59+01:00";
+const expiredFor1dayDate = "2019-12-31";
+const expiredFor15daysDate = "2020-01-16";
+const willExpireIn30daysDate = "2020-01-31";
+const expiredFor30daysDate = "2019-12-02";
 
 const betaGouvUsers = [
     {
@@ -58,7 +60,7 @@ const betaGouvUsers = [
         missions: [
             {
                 start: "2016-11-03",
-                end: fakeDateMore15days,
+                end: expiredFor15daysDate,
                 status: "independent",
                 employer: "octo",
             },
@@ -73,7 +75,7 @@ const betaGouvUsers = [
         missions: [
             {
                 start: "2016-11-03",
-                end: fakeDateMore30days,
+                end: willExpireIn30daysDate,
                 status: "independent",
                 employer: "octo",
             },
@@ -128,7 +130,7 @@ describe("send message on contract end to user", () => {
             .stub(email, "sendEmail")
             .returns(Promise.resolve(null));
         chat = sinon.spy(BetaGouv, "sendInfoToChat");
-        clock = sinon.useFakeTimers(new Date(fakeDate));
+        clock = sinon.useFakeTimers(new Date(fakeTodayDate));
         nock(
             "https://mattermost.incubateur.net/^.*api/v4/users?per_page=200&page=0"
         )
@@ -186,7 +188,7 @@ describe("send message on contract end to user", () => {
                 missions: [
                     {
                         start: "2016-11-03",
-                        end: fakeDateLess1day,
+                        end: expiredFor1dayDate,
                         status: "independent",
                         employer: "octo",
                     },
@@ -218,7 +220,7 @@ describe("send message on contract end to user", () => {
                 .updateTable("missions")
                 .where("user_id", "=", updatedUser.uuid)
                 .set({
-                    end: fakeDateLess30days,
+                    end: expiredFor30daysDate,
                 })
                 .execute();
             const ovhEmailDeletion = nock(/.*ovh.com/)
@@ -267,7 +269,7 @@ describe("send message on contract end to user", () => {
                 .updateTable("missions")
                 .where("user_id", "=", updatedUser.uuid)
                 .set({
-                    end: fakeDateLess30days,
+                    end: expiredFor30daysDate,
                 })
                 .execute();
             const [user1] = await db
@@ -280,14 +282,14 @@ describe("send message on contract end to user", () => {
                 "uneadressesecondaire@gmail.com"
             );
 
-            const todayLess31days = new Date();
-            todayLess31days.setDate(today.getDate() - 31);
+            const expiredFor31daysDate = new Date();
+            expiredFor31daysDate.setDate(today.getDate() - 31);
             await db
                 .updateTable("users")
                 .where("username", "=", "julien.dauphant")
                 .set({
                     primary_email_status: EmailStatusCode.EMAIL_DELETED,
-                    primary_email_status_updated_at: todayLess31days,
+                    primary_email_status_updated_at: expiredFor31daysDate,
                     secondary_email: "uneadressesecondaire@gmail.com",
                 })
                 .execute();
@@ -302,14 +304,14 @@ describe("send message on contract end to user", () => {
 
         it("should delete user secondary_email if suspended more than 30days", async () => {
             const today = new Date();
-            const todayLess31days = new Date();
-            todayLess31days.setDate(today.getDate() - 31);
+            const expiredFor31daysDate = new Date();
+            expiredFor31daysDate.setDate(today.getDate() - 31);
             const updatedUser = await db
                 .updateTable("users")
                 .where("username", "=", "julien.dauphant")
                 .set({
                     primary_email_status: EmailStatusCode.EMAIL_DELETED,
-                    primary_email_status_updated_at: todayLess31days,
+                    primary_email_status_updated_at: expiredFor31daysDate,
                     secondary_email: "uneadressesecondaire@gmail.com",
                 })
                 .returningAll()
@@ -318,7 +320,7 @@ describe("send message on contract end to user", () => {
                 .updateTable("missions")
                 .where("user_id", "=", updatedUser.uuid)
                 .set({
-                    end: fakeDateLess30days,
+                    end: expiredFor30daysDate,
                 })
                 .execute();
             await deleteSecondaryEmailsForUsers();
@@ -349,7 +351,7 @@ describe("After quitting", () => {
             missions: [
                 {
                     start: "2016-11-03",
-                    end: fakeDateLess1day,
+                    end: expiredFor1dayDate,
                     status: "independent",
                     employer: "octo",
                 },
@@ -361,7 +363,7 @@ describe("After quitting", () => {
             missions: [
                 {
                     start: "2016-11-03",
-                    end: fakeDateLess30days,
+                    end: expiredFor30daysDate,
                     status: "independent",
                     employer: "octo",
                 },
@@ -380,7 +382,7 @@ describe("After quitting", () => {
         sendEmailStub = sinon
             .stub(email, "sendEmail")
             .returns(Promise.resolve(null));
-        clock = sinon.useFakeTimers(new Date(fakeDate));
+        clock = sinon.useFakeTimers(new Date(fakeTodayDate));
         await utils.createUsers(users);
     });
 
@@ -396,27 +398,27 @@ describe("After quitting", () => {
         should.equal(test.length, 1);
     });
 
-    it("could delete redirections even for past users", async () => {
+    it("should delete redirections even for past users", async () => {
         const test: unknown[] = await deleteRedirectionsAfterQuitting(true);
         should.equal(test.length, 2);
     });
 
-    it("could delete redirections even for past users", async () => {
+    it("should delete redirections even for past users", async () => {
         const test: unknown[] = await deleteRedirectionsAfterQuitting(true);
         should.equal(test.length, 2);
     });
 
     it("should set email as expired", async () => {
-        const today = new Date(fakeDate);
-        const todayLess31days = new Date();
-        todayLess31days.setDate(today.getDate() - 31);
+        const today = new Date(fakeTodayDate);
+        const expiredFor31daysDate = new Date();
+        expiredFor31daysDate.setDate(today.getDate() - 31);
         const updatedUser = await db
             .updateTable("users")
             .where("username", "=", "julien.dauphant")
             .set({
                 primary_email: `julien.dauphant@${config.domain}`,
                 primary_email_status: EmailStatusCode.EMAIL_SUSPENDED,
-                primary_email_status_updated_at: todayLess31days,
+                primary_email_status_updated_at: expiredFor31daysDate,
             })
             .returningAll()
             .executeTakeFirstOrThrow();
@@ -425,7 +427,7 @@ describe("After quitting", () => {
             .where("user_id", "=", updatedUser.uuid)
             .set({
                 start: "2018-01-01",
-                end: todayLess31days.toISOString().split("T")[0],
+                end: expiredFor31daysDate.toISOString().split("T")[0],
             })
             .execute();
         await setEmailExpired();
@@ -449,7 +451,7 @@ describe("After quitting", () => {
                     missions: [
                         {
                             start: "2016-11-03",
-                            end: fakeDateLess30days,
+                            end: expiredFor30daysDate,
                             status: "independent",
                             employer: "octo",
                         },
@@ -485,5 +487,29 @@ describe("After quitting", () => {
         ovhMailingList.isDone().should.be.true;
         mailingListBeta.isDone().should.be.true;
         mailingListAideJeune.isDone().should.be.true;
+    });
+
+    it("should delete matomo user account for expired users", async () => {
+        const matomoClient = new FakeMatomo([
+            {
+                login: "",
+                email: `valid.member@${config.domain}`,
+                alias: "",
+                superuser_access: "",
+                date_registered: "",
+            },
+            // membre expiré
+            {
+                login: "",
+                email: `julien.dauphant2@${config.domain}`,
+                alias: "",
+                superuser_access: "",
+                date_registered: "",
+            },
+        ]);
+        await deleteServiceAccounts(matomoClient);
+        const users = await matomoClient.getAllUsers();
+        users.length.should.equals(1);
+        users[0].email.should.equals(`valid.member@${config.domain}`);
     });
 });

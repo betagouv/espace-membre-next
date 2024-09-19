@@ -49,6 +49,8 @@ import {
     deleteOVHEmailAcounts,
     deleteRedirectionsAfterQuitting,
     removeEmailsFromMailingList,
+    deleteServiceAccounts,
+    deleteMatomoAccount,
 } from "./userContractEndingScheduler";
 import { db } from "@/lib/kysely";
 import config from "@/server/config";
@@ -428,6 +430,13 @@ export const jobs: Job[] = [
     {
         cronTime: "0 0 15 * * *",
         onTick: deleteOVHEmailAcounts,
+        isActive: !!config.featureDeleteOVHEmailAccounts,
+        name: "deleteOVHEmailAcounts",
+        description: "Supprime les emails OVH des membres expirés (30 days)",
+    },
+    {
+        cronTime: "0 0 15 * * *",
+        onTick: deleteMatomoAccount,
         isActive: !!config.featureDeleteOVHEmailAccounts,
         name: "deleteOVHEmailAcounts",
         description: "Supprime les emails OVH des membres expirés (30 days)",
