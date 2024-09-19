@@ -2,12 +2,14 @@ import { differenceInDays, startOfDay } from "date-fns";
 
 import config from "../config";
 import { matomoClient } from "../config/matomo.config";
-import { AccountService } from "../config/services.config";
+import { AccountService, SERVICES } from "../config/services.config";
 import { Matomo } from "@/app/Matomo";
+import { addEvent } from "@/lib/events";
 import { db } from "@/lib/kysely";
 import { getAllUsersInfo } from "@/lib/kysely/queries/users";
 import { MatomoClient } from "@/lib/matomo";
 import * as mattermost from "@/lib/mattermost";
+import { EventCode, SYSTEM_NAME } from "@/models/actionEvent";
 import { Job } from "@/models/job";
 import { memberBaseInfoToModel } from "@/models/mapper";
 import { CommunicationEmailCode, EmailStatusCode } from "@/models/member";
@@ -362,10 +364,8 @@ export async function deleteServiceAccounts(
         expiredUsers = users.filter((user) => {
             return (
                 utils.checkUserIsExpired(user, 30) &&
-                ((user.primary_email &&
-                    allServiceUserEmails.includes(user.primary_email)) ||
-                    (user.secondary_email &&
-                        allServiceUserEmails.includes(user.secondary_email)))
+                user.primary_email &&
+                allServiceUserEmails.includes(user.primary_email)
             );
         });
     }
@@ -373,8 +373,16 @@ export async function deleteServiceAccounts(
         try {
             if (user.primary_email) {
                 await service.deleteUserByEmail(user.primary_email);
+                console.log(`Suppression du compte pour ${user.username}`);
+                await addEvent({
+                    created_by_username: SYSTEM_NAME,
+                    action_code: EventCode.MEMBER_SERVICE_ACCOUNT_DELETED,
+                    action_metadata: {
+                        email: user.primary_email,
+                        service: SERVICES.MATOMO,
+                    },
+                });
             }
-            console.log(`Suppression du compte pour ${user.username}`);
         } catch {
             console.log(
                 `Erreur lors de la suppression du compte pour ${user.username}`

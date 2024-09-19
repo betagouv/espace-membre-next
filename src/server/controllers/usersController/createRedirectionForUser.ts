@@ -1,7 +1,7 @@
 import * as Sentry from "@sentry/node";
 
 import { addEvent } from "@/lib/events";
-import { EventCode } from "@/models/actionEvent";
+import { EventCode } from "@/models/actionEvent/actionEvent";
 import config from "@/server/config";
 import BetaGouv from "@betagouv";
 import { buildBetaEmail, userInfos } from "@controllers/utils";

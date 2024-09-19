@@ -1,7 +1,7 @@
 import { addEvent } from "@/lib/events";
 import { db } from "@/lib/kysely";
 import * as mattermost from "@/lib/mattermost";
-import { EventCode } from "@/models/actionEvent";
+import { EventCode } from "@/models/actionEvent/actionEvent";
 import config from "@/server/config";
 import { AdminEmailNotAllowedError } from "@/utils/error";
 import betagouv from "@betagouv";

@@ -1,13 +1,12 @@
 import { z } from "zod";
 
+import { EventServiceAccountDeletedPayload } from "./serviceActionEvent";
 import {
     memberInfoUpdateSchema,
     memberValidateInfoSchema,
-} from "./actions/member";
-import { startupInfoUpdateSchema } from "./actions/startup";
-import { memberSchema } from "./member";
-import { CommunicationEmailCode, EmailStatusCode } from "@/models/member";
-//import { GithubStartupChangeSchema } from "@/server/controllers/helpers/githubHelpers/githubEntryInterface";
+} from "../actions/member";
+import { startupInfoUpdateSchema } from "../actions/startup";
+import { CommunicationEmailCode } from "@/models/member";
 
 export enum EventCode {
     MEMBER_REDIRECTION_CREATED = "MEMBER_REDIRECTION_CREATED",
@@ -37,18 +36,8 @@ export enum EventCode {
     EMAIL_VERIFICATION_WAITING_SENT = "EMAIL_VERIFICATION_WAITING_SENT",
     ORGANIZATION_CREATED = "ORGANIZATION_CREATED",
     ORGANIZATION_UPDATED = "ORGANIZATION_UPDATED",
+    MEMBER_SERVICE_ACCOUNT_DELETED = "MEMBER_SERVICE_ACCOUNT_DELETED",
 }
-
-interface ActionMetadata {
-    old_value?: any;
-    value?: any;
-}
-
-// export type EventParam = {
-//     action_on_username?: string;
-//     created_by_username: string;
-//     action_metadata?: ActionMetadata;
-// };
 
 export const EventCodeToReadable: Record<EventCode, string> = {
     [EventCode.MEMBER_REDIRECTION_CREATED]: "Redirection email créé",
@@ -80,7 +69,10 @@ export const EventCodeToReadable: Record<EventCode, string> = {
         "Email de fiche à vérifier envoyé",
     [EventCode.ORGANIZATION_CREATED]: "Organization créée",
     [EventCode.ORGANIZATION_UPDATED]: "Organization mise à jour",
+    [EventCode.MEMBER_SERVICE_ACCOUNT_DELETED]: "Compte de service supprimé",
 };
+
+export const SYSTEM_NAME = "system";
 
 export interface BaseActionEvent {
     action_on_username?: string;
@@ -90,7 +82,6 @@ export interface BaseActionEvent {
 
 export interface ActionEvent {
     action_code: EventCode;
-    // action_metadata?: ActionMetadata;
     action_on_username: string | undefined;
     created_by_username: string;
 }
@@ -359,7 +350,8 @@ export type EventPayloads =
     | z.infer<typeof EventMemberEmailDeletedPayload>
     | z.infer<typeof EventMemberUnblockEmailPayload>
     | z.infer<typeof EventOrganizationCreatedPayload>
-    | z.infer<typeof EventOrganizationUpdatedPayload>;
+    | z.infer<typeof EventOrganizationUpdatedPayload>
+    | z.infer<typeof EventServiceAccountDeletedPayload>;
 
 export type EventAction = BaseActionEvent & EventPayloads;
 
