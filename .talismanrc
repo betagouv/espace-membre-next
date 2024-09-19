@@ -1,9 +1,6 @@
 fileignoreconfig:
 - filename: src/components/CommunityPage/Community.tsx
   checksum: 5e8f61254f178c6991364f6027983fd649c844e1f26ed412a98a404b37e1ffc7
-version: ""
-ard)/account/page.tsx
-  checksum: 1c9b1df42135952c43133eb46ccfb97a7f073cfb9ffc1751efd91c62875b436a
 - filename: src/components/CommunityPage/Community.tsx
   checksum: dc3ab9308a1f99026b70342a2ecf7f6c3dffa8c83caef74e44cb244d4cafcf06
 - filename: src/components/CommunityPage/exportToCsv.ts
