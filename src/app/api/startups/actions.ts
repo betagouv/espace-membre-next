@@ -10,6 +10,7 @@ import { addEvent } from "@/lib/events";
 import { db } from "@/lib/kysely";
 import { EventCode } from "@/models/actionEvent";
 import { startupInfoUpdateSchemaType } from "@/models/actions/startup";
+import { startupEventToModel } from "@/models/mapper";
 import { sponsorSchema } from "@/models/sponsor";
 import { phaseSchema } from "@/models/startup";
 import { authOptions } from "@/utils/authoptions";
@@ -151,10 +152,22 @@ export async function createStartup({
                     .executeTakeFirst();
             }
 
-            addEvent({
-                action_code: EventCode.STARTUP_INFO_CREATED,
-                created_by_username: session.user.id,
-            });
+            await addEvent(
+                {
+                    action_code: EventCode.STARTUP_INFO_CREATED,
+                    created_by_username: session.user.id,
+                    action_on_startup: startupUuid,
+                    action_metadata: {
+                        value: {
+                            startup,
+                            startupEvents,
+                            startupPhases,
+                            startupSponsorIds: startupSponsors,
+                        },
+                    },
+                },
+                trx
+            );
 
             revalidatePath("/startups");
             return res;
@@ -182,7 +195,6 @@ export async function updateStartup({
         startupPhases,
         startupEvents,
         newSponsors,
-        newPhases,
     },
     startupUuid,
 }: {
@@ -259,6 +271,7 @@ export async function updateStartup({
             .where("uuid", "=", startupUuid)
             .returning(["uuid", "ghid"])
             .executeTakeFirstOrThrow();
+
         // create new sponsors
         for (const newSponsor of newSponsors) {
             const sponsor = await trx
@@ -355,9 +368,52 @@ export async function updateStartup({
                 .returning("uuid")
                 .executeTakeFirst();
         }
-        addEvent({
+
+        const previousStartupEvents = await trx
+            .selectFrom("startup_events")
+            .selectAll()
+            .where("startup_id", "=", startupUuid)
+            .execute();
+
+        const existingSponsorsUuid = _.difference(
+            startupSponsors,
+            sponsorsUuidToRemove
+        );
+        await addEvent({
             action_code: EventCode.STARTUP_INFO_UPDATED,
             created_by_username: session.user.id,
+            action_on_startup: startupUuid,
+            action_metadata: {
+                value: {
+                    startup,
+                    startupEvents,
+                    startupPhases,
+                    startupSponsorIds: [
+                        ...sponsorUuidToAdd,
+                        ...existingSponsorsUuid,
+                    ],
+                },
+                old_value: {
+                    startup: {
+                        ...previousStartupData,
+                        pitch: previousStartupData.pitch || "",
+                        incubator_id: previousStartupData.incubator_id || "",
+                        contact: previousStartupData.contact || "",
+                        description: previousStartupData.description || "",
+                        techno: previousStartupData.techno as string[],
+                        thematiques:
+                            previousStartupData.thematiques as string[],
+                        usertypes: previousStartupData.usertypes as string[],
+                    },
+                    startupEvents: previousStartupEvents.map((event) =>
+                        startupEventToModel(event)
+                    ),
+                    startupPhases: previousStartupPhases,
+                    startupSponsorIds: previousStartupSponsors.map(
+                        (sponsor) => sponsor.uuid
+                    ),
+                },
+            },
         });
 
         revalidatePath("/startups");

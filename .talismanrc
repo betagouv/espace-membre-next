@@ -1,10 +1,12 @@
 fileignoreconfig:
-    - filename: src/components/StartupForm/TechnoEditor.tsx
-      checksum: 1945d388ece9e30e247acfa902436849f78ffcd032047f8c0292173dddc8ea53
-    - filename: src/app/(private)/(dashboard)/incubators/[id]/info-form/page.tsx
-      checksum: 1ec9acf039a7d336e710ef7b47c385eb7080293ee2750c2cf99e9056cde7f129
-    - filename: src/components/IncubatorForm/IncubatorForm.tsx
-      checksum: 267f0f0e491b06862cd957ae86d22baf799a705370673cd24e588391a4613a5a
+- filename: src/app/(private)/(dashboard)/incubators/[id]/info-form/page.tsx
+  checksum: 1ec9acf039a7d336e710ef7b47c385eb7080293ee2750c2cf99e9056cde7f129
+- filename: src/components/IncubatorForm/IncubatorForm.tsx
+  checksum: 267f0f0e491b06862cd957ae86d22baf799a705370673cd24e588391a4613a5a
+- filename: src/components/StartupForm/TechnoEditor.tsx
+  checksum: 1945d388ece9e30e247acfa902436849f78ffcd032047f8c0292173dddc8ea53
+- filename: src/lib/hstore.ts
+  checksum: a02535588a717719f9e51c324d78779afd8c08fe4904a4aae525b85f8720b0ef
 scopeconfig:
-    - scope: node
+- scope: node
 version: "1.0"
