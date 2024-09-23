@@ -15,7 +15,12 @@ import {
     sponsorSchemaType,
     SponsorType,
 } from "../sponsor";
-import { StartupPhase, phaseSchemaType, startupSchemaType } from "../startup";
+import {
+    StartupPhase,
+    eventSchemaType,
+    phaseSchemaType,
+    startupSchemaType,
+} from "../startup";
 import { teamSchemaType } from "../team";
 import {
     BadgeRequests,
@@ -24,6 +29,7 @@ import {
     Missions,
     Organizations,
     Phases,
+    StartupEvents,
     Teams,
     Users,
 } from "@/@types/db";
@@ -269,8 +275,26 @@ export function memberChangeToModel(
     memberChange: Selectable<Events>
 ): PrivateMemberChangeSchemaType {
     return {
-        action_on_username: memberChange.action_on_username,
         created_at: memberChange.created_at,
         created_by_username: memberChange.created_by_username,
+    };
+}
+
+export function startupChangeToModel(
+    memberChange: Selectable<Events>
+): PrivateMemberChangeSchemaType {
+    return {
+        created_at: memberChange.created_at,
+        created_by_username: memberChange.created_by_username,
+    };
+}
+
+export function startupEventToModel(
+    startupEvent: Selectable<StartupEvents>
+): eventSchemaType {
+    return {
+        ...startupEvent,
+        startup_id: startupEvent.startup_id as string,
+        name: startupEvent.name as eventSchemaType["name"],
     };
 }
