@@ -34,8 +34,11 @@ export default function SignClientPage() {
         // Extract the hostname from the callback URL
         const callbackHostname = anchor.host;
         // Validate if the callbackUrl is internal or part of trusted domains
+        const isValidInternalPath = /^\/(?!\/|\\).*/.test(callbackUrl);
+
+        // Validate if the callbackUrl is an internal path or a trusted domain
         if (
-            callbackUrl.startsWith("/") ||
+            (isValidInternalPath && callbackUrl.startsWith("/")) ||
             allowedDomains.includes(callbackHostname)
         ) {
             // Safe to redirect
