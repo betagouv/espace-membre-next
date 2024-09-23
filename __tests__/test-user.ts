@@ -42,7 +42,6 @@ describe("User", () => {
                 .type("form")
                 .send({
                     _method: "POST",
-                    to_email: "test@example.com",
                 })
                 .end((err, res) => {
                     res.should.have.status(401);
@@ -88,9 +87,7 @@ describe("User", () => {
                     )
                 )
                 .type("form")
-                .send({
-                    to_email: "test@example.com",
-                });
+                .send({});
 
             const res = await db
                 .selectFrom("users")
@@ -132,9 +129,7 @@ describe("User", () => {
                     )
                 )
                 .type("form")
-                .send({
-                    to_email: "test@example.com",
-                })
+                .send({})
                 .end((err, res) => {
                     ovhEmailCreation.isDone().should.be.false;
                     done();
@@ -154,9 +149,7 @@ describe("User", () => {
                     )
                 )
                 .type("form")
-                .send({
-                    to_email: "test@example.com",
-                })
+                .send({})
                 .end((err, res) => {
                     ovhEmailCreation.isDone().should.be.false;
                     done();
@@ -176,9 +169,7 @@ describe("User", () => {
                     )
                 )
                 .type("form")
-                .send({
-                    to_email: "test@example.com",
-                })
+                .send({})
                 .end((err, res) => {
                     ovhEmailCreation.isDone().should.be.false;
                     done();
@@ -199,9 +190,7 @@ describe("User", () => {
                     )
                 )
                 .type("form")
-                .send({
-                    to_email: "test@example.com",
-                })
+                .send({})
                 .end((err, res) => {
                     ovhEmailCreation.isDone().should.be.false;
                     done();
@@ -229,16 +218,13 @@ describe("User", () => {
                     )
                 )
                 .type("form")
-                .send({
-                    to_email: "test@example.com",
-                });
+                .send({});
             ovhEmailCreation.isDone().should.be.true;
             const user = await db
                 .selectFrom("users")
                 .selectAll()
                 .where("username", "=", "membre.actif")
                 .executeTakeFirstOrThrow();
-            user.secondary_email.should.equal("test@example.com");
         });
     });
 

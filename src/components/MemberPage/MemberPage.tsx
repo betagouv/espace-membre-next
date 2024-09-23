@@ -155,9 +155,7 @@ const CreateEmailForm = ({
                     headers: {
                         "Content-Type": "application/json",
                     },
-                    body: JSON.stringify({
-                        to_email: email,
-                    }),
+                    body: JSON.stringify({}),
                 }
             );
 
@@ -192,6 +190,11 @@ const CreateEmailForm = ({
                     outils.
                 </p>
             )}
+            <Alert
+                severity="warning"
+                title={`Vérifie que ${userInfos.fullname} a accès à ${userInfos.secondary_email}`}
+                description={`Les informations de connexion seront envoyées sur ${userInfos.secondary_email} vérifie que ${userInfos.fullname} a toujours accès à cet email, sinon il faudra demander à un admin via le canal mattermost ~incubateur-help de changer cet email.`}
+            />
             {!!alertMessage && (
                 <Alert
                     className="fr-mb-8v"
@@ -202,19 +205,6 @@ const CreateEmailForm = ({
                 />
             )}
             <form onSubmit={onSubmit}>
-                <Input
-                    label="Email personnel ou professionnel"
-                    hintText="Le mot de passe et les informations de connexion seront envoyées à cet email"
-                    nativeInputProps={{
-                        defaultValue: userInfos.secondary_email,
-                        name: "to_email",
-                        type: "email",
-                        required: true,
-                        onChange: (e) => {
-                            setValue(e.target.value);
-                        },
-                    }}
-                />
                 <Button
                     nativeButtonProps={{
                         type: "submit",
@@ -540,12 +530,26 @@ MemberPageProps) {
                         EmailStatusCode.EMAIL_CREATION_WAITING,
                         EmailStatusCode.EMAIL_VERIFICATION_WAITING,
                     ].includes(userInfos.primary_email_status) &&
+                    userInfos.secondary_email &&
                     authorizations.canCreateEmail && (
                         <CreateEmailForm
                             userInfos={userInfos}
                             hasPublicServiceEmail={
                                 authorizations.hasPublicServiceEmail
                             }
+                        />
+                    )}
+                {!emailInfos &&
+                    ![
+                        EmailStatusCode.EMAIL_CREATION_WAITING,
+                        EmailStatusCode.EMAIL_VERIFICATION_WAITING,
+                    ].includes(userInfos.primary_email_status) &&
+                    !userInfos.secondary_email &&
+                    authorizations.canCreateEmail && (
+                        <Alert
+                            severity="warning"
+                            title={`Pas d'email secondaire définie`}
+                            description={`Pour recréer un compte email pour ${userInfos.fullname} demande dans le canal ~incubateur-help si admin peut lui recréer son compte email.`}
                         />
                     )}
                 {isExpired && (
