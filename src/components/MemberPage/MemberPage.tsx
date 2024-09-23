@@ -190,11 +190,13 @@ const CreateEmailForm = ({
                     outils.
                 </p>
             )}
+            <br />
             <Alert
-                severity="warning"
-                title={`Vérifie que ${userInfos.fullname} a accès à ${userInfos.secondary_email}`}
-                description={`Les informations de connexion seront envoyées sur ${userInfos.secondary_email} vérifie que ${userInfos.fullname} a toujours accès à cet email, sinon il faudra demander à un admin via le canal mattermost ~incubateur-help de changer cet email.`}
+                severity="info"
+                title={`Vérifie que ${userInfos.fullname} ai accès à son adresse ${userInfos.secondary_email}`}
+                description={`Les informations de connexion seront envoyées sur ${userInfos.secondary_email} vérifie que ${userInfos.fullname} a toujours accès à cet email, sinon il faudra demander à un admin via le canal mattermost ~incubateur-entraide-communaute de changer cet email.`}
             />
+            <br />
             {!!alertMessage && (
                 <Alert
                     className="fr-mb-8v"
@@ -546,11 +548,14 @@ MemberPageProps) {
                     ].includes(userInfos.primary_email_status) &&
                     !userInfos.secondary_email &&
                     authorizations.canCreateEmail && (
-                        <Alert
-                            severity="warning"
-                            title={`Pas d'email secondaire définie`}
-                            description={`Pour recréer un compte email pour ${userInfos.fullname} demande dans le canal ~incubateur-help si admin peut lui recréer son compte email.`}
-                        />
+                        <>
+                            <br />
+                            <Alert
+                                severity="info"
+                                title={`Créer un compte pour ${userInfos.fullname}`}
+                                description={`Pour recréer un compte email pour ${userInfos.fullname}, il faut que son email secondaire soit défini. Demande dans le canal ~incubateur-entraide-communaute sur mattermost si un admin peut lui définir cette email secondaire.`}
+                            />
+                        </>
                     )}
                 {isExpired && (
                     <>
