@@ -165,14 +165,19 @@ test("valid login sends magic link and but the callback url is changed to be evi
         throw new Error("Magic link not found in the email.");
     }
 
-    // Modify the callback URL parameter
-    const modifiedUrl = new URL(originalHref);
+    // Parse the URL and fragment (the part after the #)
+    const [baseUrl, fragment] = originalHref.split("#");
 
-    // Assuming "callback" is the parameter you want to modify
-    modifiedUrl.searchParams.set("callbackUrl", "//evil.com");
+    // Parse the fragment as a URL
+    const fragmentUrl = new URL(fragment);
 
+    // Modify the callbackUrl parameter
+    fragmentUrl.searchParams.set("callbackUrl", "//evil.com");
+
+    // Rebuild the full URL with the modified callbackUrl
+    const modifiedHref = `${baseUrl}#${fragmentUrl.toString()}`;
     // Navigate to the modified URL
-    await page.goto(modifiedUrl.toString());
+    await page.goto(modifiedHref);
     await page.getByText("Me connecter").first().click();
     await page.waitForURL("/dashboard");
     const url = new URL(page.url());
@@ -218,14 +223,19 @@ test(`valid login sends magic link and but the callback url is changed to be evi
         throw new Error("Magic link not found in the email.");
     }
 
-    // Modify the callback URL parameter
-    const modifiedUrl = new URL(originalHref);
+    // Parse the URL and fragment (the part after the #)
+    const [baseUrl, fragment] = originalHref.split("#");
 
-    // Assuming "callback" is the parameter you want to modify
-    modifiedUrl.searchParams.set("callbackUrl", `/\evil.com`);
+    // Parse the fragment as a URL
+    const fragmentUrl = new URL(fragment);
 
+    // Modify the callbackUrl parameter
+    fragmentUrl.searchParams.set("callbackUrl", `/\evil.com`);
+
+    // Rebuild the full URL with the modified callbackUrl
+    const modifiedHref = `${baseUrl}#${fragmentUrl.toString()}`;
     // Navigate to the modified URL
-    await page.goto(modifiedUrl.toString());
+    await page.goto(modifiedHref);
     await page.getByText("Me connecter").first().click();
     await page.waitForURL("/dashboard");
     const url = new URL(page.url());
