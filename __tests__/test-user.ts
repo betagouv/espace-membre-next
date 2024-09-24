@@ -717,15 +717,53 @@ describe("User", () => {
             isPublicServiceEmailStub.restore();
             await utils.deleteUsers(testUsers);
         });
-        it("should keep the user in database secretariat", async () => {
-            const addRedirection = nock(/.*ovh.com/)
-                .post(/^.*email\/domain\/.*\/redirection/)
-                .reply(200);
 
+        it("should not work if user is not current user", async () => {
+            // Make the request and await the response
+            const res = await chai
+                .request(app)
+                .post("/api/users/membre.expire/email/delete");
+
+            // Assert the status code or other properties of the error
+            res.should.have.status(500);
+            res.body.error.includes(
+                "Seul l'utilisateur courant peut supprimer son compte."
+            ).should.be.true;
+        });
+
+        it("should not work if user is active", async () => {
             const dbRes = await db
                 .selectFrom("users")
                 .selectAll()
                 .where("username", "=", "membre.actif")
+                .execute();
+            // Assert the user exists in the database
+
+            dbRes.length.should.equal(1);
+
+            // Make the request and await the response
+            const res = await chai
+                .request(app)
+                .post("/api/users/membre.actif/email/delete");
+
+            res.should.have.status(500);
+            res.body.error.includes(
+                `Le compte "membre.actif" n'est pas expiré, vous ne pouvez pas supprimer ce compte.`
+            ).should.be.true;
+        });
+
+        it("should keep the user in database", async () => {
+            const addRedirection = nock(/.*ovh.com/)
+                .post(/^.*email\/domain\/.*\/redirection/)
+                .reply(200);
+            getToken.restore();
+            getToken = sinon.stub(session, "getToken");
+            getToken.returns(utils.getJWT("membre.expire"));
+
+            const dbRes = await db
+                .selectFrom("users")
+                .selectAll()
+                .where("username", "=", "membre.expire")
                 .execute();
             dbRes.length.should.equal(1);
             await chai
@@ -734,16 +772,20 @@ describe("User", () => {
             const dbNewRes = await db
                 .selectFrom("users")
                 .selectAll()
-                .where("username", "=", "membre.actif")
+                .where("username", "=", "membre.expire")
                 .execute();
             dbNewRes.length.should.equal(1);
             addRedirection.isDone().should.be.true;
         });
 
         it("should ask OVH to redirect to the departs email", (done) => {
+            getToken.restore();
+            getToken = sinon.stub(session, "getToken");
+            getToken.returns(utils.getJWT("membre.expire"));
+
             const expectedRedirectionBody = (body) => {
                 return (
-                    body.from === `membre.actif@${config.domain}` &&
+                    body.from === `membre.expire@${config.domain}` &&
                     body.to === config.leavesEmail
                 );
             };

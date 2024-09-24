@@ -42,7 +42,13 @@ export async function deleteEmailForUserHandler(req, res, onSuccess, onError) {
     try {
         const user = await utils.userInfos({ username }, isCurrentUser);
 
-        if (!isCurrentUser && !user.isExpired) {
+        if (!isCurrentUser) {
+            throw new Error(
+                `Seul l'utilisateur courant peut supprimer son compte.`
+            );
+        }
+
+        if (!user.isExpired) {
             throw new Error(
                 `Le compte "${username}" n'est pas expiré, vous ne pouvez pas supprimer ce compte.`
             );
