@@ -169,7 +169,7 @@ test("valid login sends magic link and but the callback url is changed to be evi
     const modifiedUrl = new URL(originalHref);
 
     // Assuming "callback" is the parameter you want to modify
-    modifiedUrl.searchParams.set("callback", "//evil.com");
+    modifiedUrl.searchParams.set("callbackUrl", "//evil.com");
 
     // Navigate to the modified URL
     await page.goto(modifiedUrl.toString());
@@ -222,7 +222,7 @@ test(`valid login sends magic link and but the callback url is changed to be evi
     const modifiedUrl = new URL(originalHref);
 
     // Assuming "callback" is the parameter you want to modify
-    modifiedUrl.searchParams.set("callback", `/\evil.com`);
+    modifiedUrl.searchParams.set("callbackUrl", `/\evil.com`);
 
     // Navigate to the modified URL
     await page.goto(modifiedUrl.toString());
