@@ -193,7 +193,7 @@ const CreateEmailForm = ({
             <br />
             <Alert
                 severity="info"
-                title={`Vérifie que ${userInfos.fullname} ai accès à son adresse ${userInfos.secondary_email}`}
+                title={`Vérifie que ${userInfos.fullname} ait accès à son adresse ${userInfos.secondary_email}`}
                 description={`Les informations de connexion seront envoyées sur ${userInfos.secondary_email} vérifie que ${userInfos.fullname} a toujours accès à cet email, sinon il faudra demander à un admin via le canal mattermost ~incubateur-entraide-communaute de changer cet email.`}
             />
             <br />
