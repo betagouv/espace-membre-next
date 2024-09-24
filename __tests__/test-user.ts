@@ -768,7 +768,7 @@ describe("User", () => {
             dbRes.length.should.equal(1);
             await chai
                 .request(app)
-                .post("/api/users/membre.actif/email/delete");
+                .post("/api/users/membre.expire/email/delete");
             const dbNewRes = await db
                 .selectFrom("users")
                 .selectAll()
@@ -798,7 +798,7 @@ describe("User", () => {
                 .reply(200);
 
             chai.request(app)
-                .post("/api/users/membre.actif/email/delete")
+                .post("/api/users/membre.expire/email/delete")
                 .end((err, res) => {
                     ovhRedirectionDepartureEmail.isDone().should.be.true;
                     done();
