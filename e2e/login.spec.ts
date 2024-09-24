@@ -230,7 +230,7 @@ test(`valid login sends magic link and but the callback url is changed to be evi
     const fragmentUrl = new URL(fragment);
 
     // Modify the callbackUrl parameter
-    fragmentUrl.searchParams.set("callbackUrl", `/\evil.com`);
+    fragmentUrl.searchParams.set("callbackUrl", `/\\evil.com`);
 
     // Rebuild the full URL with the modified callbackUrl
     const modifiedHref = `${baseUrl}#${fragmentUrl.toString()}`;
