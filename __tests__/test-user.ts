@@ -951,6 +951,47 @@ describe("User", () => {
                 .execute();
         });
 
+        it("should not update primary email if email is an admin account", async () => {
+            isPublicServiceEmailStub.returns(Promise.resolve(true));
+            mattermostGetUserByEmailStub.returns(Promise.reject("404 error"));
+            const username = "membre.nouveau";
+            const primaryEmail = "membre.nouveau.new@example.com";
+            getToken.returns(utils.getJWT("membre.nouveau"));
+            await db
+                .updateTable("users")
+                .where("username", "=", "membre.nouveau")
+                .set({
+                    primary_email: `admin@otherdomaine.gouv.fr`,
+                })
+                .execute();
+
+            const res = await chai
+                .request(app)
+                .put(`/api/users/${username}/primary_email/`)
+                .type("form")
+                .send({
+                    username,
+                    primaryEmail: primaryEmail,
+                });
+            const dbNewRes = await db
+                .selectFrom("users")
+                .selectAll()
+                .where("username", "=", "membre.nouveau")
+                .execute();
+            dbNewRes.length.should.equal(1);
+            dbNewRes[0].primary_email.should.not.equal(primaryEmail);
+
+            mattermostGetUserByEmailStub.calledOnce.should.be.true;
+
+            await db
+                .updateTable("users")
+                .where("username", "=", "membre.nouveau")
+                .set({
+                    primary_email: `membre.nouveau@${config.domain}`,
+                })
+                .execute();
+        });
+
         it("should update primary email", async () => {
             isPublicServiceEmailStub.returns(Promise.resolve(true));
             mattermostGetUserByEmailStub.returns(Promise.resolve(true));

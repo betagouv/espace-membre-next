@@ -3,8 +3,10 @@ import { db } from "@/lib/kysely";
 import * as mattermost from "@/lib/mattermost";
 import { EventCode } from "@/models/actionEvent";
 import config from "@/server/config";
+import { AdminEmailNotAllowedError } from "@/utils/error";
 import betagouv from "@betagouv";
 import * as utils from "@controllers/utils";
+import { isAdminEmail } from "@controllers/utils";
 
 export async function managePrimaryEmailForUserApi(req, res) {
     managePrimaryEmailForUserHandler(
@@ -60,6 +62,9 @@ export async function managePrimaryEmailForUserHandler(
             throw new Error(
                 `L'email renseigné n'est pas un email de service public`
             );
+        }
+        if (!isAdminEmail(primaryEmail)) {
+            throw new AdminEmailNotAllowedError();
         }
 
         if (user.userInfos.primary_email?.includes(config.domain)) {

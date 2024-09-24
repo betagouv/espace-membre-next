@@ -6,8 +6,10 @@ import { createMission } from "@/lib/kysely/queries/missions";
 import { getUserInfos } from "@/lib/kysely/queries/users";
 import { createMemberSchema } from "@/models/actions/member";
 import { EmailStatusCode } from "@/models/member";
+import { isPublicServiceEmail, isAdminEmail } from "@/server/controllers/utils";
 import { authOptions } from "@/utils/authoptions";
 import {
+    AdminEmailNotAllowedError,
     AuthorizationError,
     MemberUniqueConstraintViolationError,
     withHttpErrorHandling,
@@ -21,6 +23,10 @@ export const POST = withHttpErrorHandling(async (req: Request) => {
     }
     const rawdata = await req.json();
     const { member, missions } = createMemberSchema.parse(rawdata);
+    const hasPublicServiceEmail = await isPublicServiceEmail(member.email);
+    if (hasPublicServiceEmail && !isAdminEmail(member.email)) {
+        throw new AdminEmailNotAllowedError();
+    }
     const username = createUsername(member.firstname, member.lastname);
     let dbUser;
     try {

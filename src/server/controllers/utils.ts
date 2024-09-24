@@ -192,14 +192,17 @@ export function requiredError(formValidationErrors, field) {
     formValidationErrors.push(`${field} : le champ n'est pas renseigné`);
 }
 
-export function isValidEmail(formValidationErrors, field, email) {
-    const emailRegex =
-        /^(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
-    if (emailRegex.test(email.toLowerCase())) {
-        return email;
-    }
-    formValidationErrors.push(`${field} : l'adresse email n'est pas valide`);
-    return null;
+export function isAdminEmail(email: string): boolean {
+    // a user should not use an admin email as access are personnal
+    // Basic email format regex (RFC 5322 compliant)
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+
+    // Regex to block suspicious email patterns
+    const blacklistRegex =
+        /^(?!.*(?:admin|administrator|support|root|sysadmin|superuser|team|staff|moderator|service|helpdesk|contact|management|no-reply|noreply|master|info)).*$/i;
+
+    // Check if the email matches the valid email regex and does not match the blacklist
+    return emailRegex.test(email) && blacklistRegex.test(email);
 }
 
 export const isPublicServiceEmail = async function (email: string) {

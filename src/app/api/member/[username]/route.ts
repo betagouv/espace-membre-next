@@ -16,8 +16,13 @@ import {
 import { EmailStatusCode } from "@/models/member";
 import betagouv from "@/server/betagouv";
 import config from "@/server/config";
-import { isPublicServiceEmail, userInfos } from "@/server/controllers/utils";
+import {
+    isPublicServiceEmail,
+    isAdminEmail,
+    userInfos,
+} from "@/server/controllers/utils";
 import { authOptions } from "@/utils/authoptions";
+import { AdminEmailNotAllowedError } from "@/utils/error";
 
 const getMattermostUserInfo = async (
     dbUser
@@ -63,6 +68,9 @@ export async function PUT(
     const hasPublicServiceEmail = await isPublicServiceEmail(
         memberData.secondary_email
     );
+    if (hasPublicServiceEmail && !isAdminEmail(memberData.secondary_email)) {
+        throw new AdminEmailNotAllowedError();
+    }
     updateMember(
         memberData,
         session.user.uuid,
