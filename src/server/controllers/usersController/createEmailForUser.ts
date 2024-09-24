@@ -19,8 +19,8 @@ import * as utils from "@controllers/utils";
 
 const INCUBATORS_USING_EXCHANGE = ["gip-inclusion"];
 
-export async function createEmailAndUpdateSecondaryEmail(
-    { username, email }: { username: string; email: string },
+export async function createEmailForUser(
+    { username }: { username: string },
     currentUser: string
 ) {
     const isCurrentUser = currentUser === username;
@@ -67,7 +67,6 @@ export async function createEmailAndUpdateSecondaryEmail(
         emailIsRecreated =
             user.userInfos.primary_email_status ===
             EmailStatusCode.EMAIL_DELETED;
-        await updateSecondaryEmail(username, email);
     } else {
         await db
             .insertInto("users")
@@ -77,7 +76,6 @@ export async function createEmailAndUpdateSecondaryEmail(
                 domaine: Domaine.AUTRE,
                 primary_email_status: EmailStatusCode.EMAIL_UNSET,
                 role: "",
-                secondary_email: email,
             })
             .execute();
     }

@@ -155,9 +155,7 @@ const CreateEmailForm = ({
                     headers: {
                         "Content-Type": "application/json",
                     },
-                    body: JSON.stringify({
-                        to_email: email,
-                    }),
+                    body: JSON.stringify({}),
                 }
             );
 
@@ -192,6 +190,13 @@ const CreateEmailForm = ({
                     outils.
                 </p>
             )}
+            <br />
+            <Alert
+                severity="info"
+                title={`Vérifie que ${userInfos.fullname} ait accès à son adresse ${userInfos.secondary_email}`}
+                description={`Les informations de connexion seront envoyées sur ${userInfos.secondary_email} vérifie que ${userInfos.fullname} a toujours accès à cet email, sinon il faudra demander à un admin via le canal mattermost ~incubateur-entraide-communaute de changer cet email.`}
+            />
+            <br />
             {!!alertMessage && (
                 <Alert
                     className="fr-mb-8v"
@@ -202,19 +207,6 @@ const CreateEmailForm = ({
                 />
             )}
             <form onSubmit={onSubmit}>
-                <Input
-                    label="Email personnel ou professionnel"
-                    hintText="Le mot de passe et les informations de connexion seront envoyées à cet email"
-                    nativeInputProps={{
-                        defaultValue: userInfos.secondary_email,
-                        name: "to_email",
-                        type: "email",
-                        required: true,
-                        onChange: (e) => {
-                            setValue(e.target.value);
-                        },
-                    }}
-                />
                 <Button
                     nativeButtonProps={{
                         type: "submit",
@@ -540,6 +532,7 @@ MemberPageProps) {
                         EmailStatusCode.EMAIL_CREATION_WAITING,
                         EmailStatusCode.EMAIL_VERIFICATION_WAITING,
                     ].includes(userInfos.primary_email_status) &&
+                    userInfos.secondary_email &&
                     authorizations.canCreateEmail && (
                         <CreateEmailForm
                             userInfos={userInfos}
@@ -547,6 +540,22 @@ MemberPageProps) {
                                 authorizations.hasPublicServiceEmail
                             }
                         />
+                    )}
+                {!emailInfos &&
+                    ![
+                        EmailStatusCode.EMAIL_CREATION_WAITING,
+                        EmailStatusCode.EMAIL_VERIFICATION_WAITING,
+                    ].includes(userInfos.primary_email_status) &&
+                    !userInfos.secondary_email &&
+                    authorizations.canCreateEmail && (
+                        <>
+                            <br />
+                            <Alert
+                                severity="info"
+                                title={`Créer un compte pour ${userInfos.fullname}`}
+                                description={`Pour recréer un compte email pour ${userInfos.fullname}, il faut que son email secondaire soit défini. Demande dans le canal ~incubateur-entraide-communaute sur mattermost si un admin peut lui définir cette email secondaire.`}
+                            />
+                        </>
                     )}
                 {isExpired && (
                     <>

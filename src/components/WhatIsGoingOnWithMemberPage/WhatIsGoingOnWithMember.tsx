@@ -872,9 +872,7 @@ export const CreateEmailScreen = function (props) {
                 props.user.userInfos.id
             );
             setIsSaving(false);
-            const res = await axios.post(api, {
-                to_email: emailValue,
-            });
+            const res = await axios.post(api, {});
             if (res.status === 200) {
                 props.next();
             } else {
