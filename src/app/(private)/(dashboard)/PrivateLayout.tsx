@@ -1,10 +1,12 @@
 "use client";
+import Alert from "@codegouvfr/react-dsfr/Alert";
 import { Breadcrumb } from "@codegouvfr/react-dsfr/Breadcrumb";
 import { SideMenu, SideMenuProps } from "@codegouvfr/react-dsfr/SideMenu";
 import { usePathname, useRouter } from "next/navigation";
 import { useSession } from "next-auth/react";
 
 import { useInfoContext } from "@/app/BreadCrumbProvider";
+import frontConfig from "@/frontConfig";
 import { linkRegistry } from "@/utils/routes/registry";
 import { routeTitles } from "@/utils/routes/routeTitles";
 import {
@@ -522,6 +524,23 @@ export function PrivateLayout({ children }: { children: React.ReactNode }) {
                     />
                 )}
             <div className="fr-grid-row fr-grid-row-gutters fr-my-4w">
+                {!!frontConfig.NEXT_PUBLIC_ALERT_MESSAGE_PRIVATE && (
+                    <Alert
+                        className="fr-mb-8v"
+                        severity={
+                            frontConfig.NEXT_PUBLIC_ALERT_MESSAGE_PRIVATE
+                                .severity
+                        }
+                        closable={false}
+                        description={
+                            frontConfig.NEXT_PUBLIC_ALERT_MESSAGE_PRIVATE
+                                .description
+                        }
+                        title={
+                            frontConfig.NEXT_PUBLIC_ALERT_MESSAGE_PRIVATE.title
+                        }
+                    />
+                )}
                 {!!displayMenuForSubPage(pathname).length && (
                     <div className="fr-col-12 fr-col-md-3 fr-col-lg-3">
                         <SideMenu
