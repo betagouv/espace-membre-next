@@ -158,7 +158,7 @@ export const AdminProductClientPage = (props: CommunityProps) => {
             //     canResize: true,
             // },
             {
-                Header: "Nombre de missions active",
+                Header: "Tendances nombre de missions sur 12 derniers mois",
                 accessor: "activeMember.trendOverTwelveMonths",
                 canResize: true,
                 description:
@@ -175,6 +175,17 @@ export const AdminProductClientPage = (props: CommunityProps) => {
                             {value}
                         </span>
                     );
+                },
+                sortType: (rowA, rowB) => {
+                    const a =
+                        parseFloat(
+                            rowA.original.activeMember.trendOverTwelveMonths
+                        ) || 0;
+                    const b =
+                        parseFloat(
+                            rowB.original.activeMember.trendOverTwelveMonths
+                        ) || 0;
+                    return a - b; // Ascending order sorting
                 },
                 minWidth: 300, // Sets a minimum width to fit content and title
                 maxWidth: 500, // Prevents the column from getting too wide
