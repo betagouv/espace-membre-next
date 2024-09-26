@@ -5,7 +5,7 @@ import AutoComplete, { OptionType } from "@/components/AutoComplete";
 
 type PhaseType = OptionType<false> & {
     value: string;
-}
+};
 
 const options: PhaseType[] = [
     { value: "acceleration", label: "En Accélération" },
@@ -77,6 +77,7 @@ export default function SEPhaseSelect({
                 options={options}
                 onSelect={onChange}
                 defaultValue={defaultValue as PhaseType[]}
+                placeholder="Sélectionne une ou plusieurs phases"
             />
             {!!state && !!stateRelatedMessage && (
                 <p className="fr-error-text">{stateRelatedMessage}</p>

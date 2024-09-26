@@ -10,7 +10,7 @@ const thematiquesMap: readonly UsertypeType[] = usertypes.map(
     (thematique) =>
         ({
             label: thematique,
-        }) as UsertypeType,
+        } as UsertypeType)
 );
 
 //  from https://mui.com/material-ui/react-autocomplete/#creatable
@@ -25,11 +25,13 @@ export const UsertypesEditor = ({
         <AutoComplete
             defaultValue={defaultValue.map((label) => ({ label }))}
             multiple
+            freeSolo
+            placeholder="Précise les types d'usagers du produits"
             options={thematiquesMap}
             onSelect={(values, event) => {
                 onChange(
                     event,
-                    values.map((v) => v.label),
+                    values.map((v) => v.label)
                 );
             }}
         />

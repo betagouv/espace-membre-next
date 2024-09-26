@@ -9,7 +9,6 @@ import AutoComplete from "@/components/AutoComplete";
 const statusOptions = [
     { value: "active", label: "Membres Actifs" },
     { value: "unactive", label: "Alumnis" },
-    { value: "both", label: "Membres actifs et Alumnis" },
 ];
 
 export default function MemberStatusSelect({
@@ -43,6 +42,7 @@ export default function MemberStatusSelect({
                 }))}
                 onSelect={(values, event) => onChange(event, values)}
                 defaultValue={defaultValue}
+                placeholder="Sélectionne un statut"
             />
             {!!state && !!stateRelatedMessage && (
                 <p className="fr-error-text">{stateRelatedMessage}</p>

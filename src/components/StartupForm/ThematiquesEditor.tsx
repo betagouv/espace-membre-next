@@ -10,7 +10,7 @@ const thematiquesMap: readonly ThematiqueType[] = thematiques.map(
     (thematique) =>
         ({
             label: thematique,
-        }) as ThematiqueType,
+        } as ThematiqueType)
 );
 
 export const ThematiquesEditor = ({
@@ -24,11 +24,15 @@ export const ThematiquesEditor = ({
         <AutoComplete
             defaultValue={defaultValue.map((label) => ({ label }))}
             multiple
+            freeSolo
+            selectOnFocus={true}
+            placeholder="Choisis une ou plusieurs thématiques"
+            clearOnBlur={true}
             options={thematiquesMap}
             onSelect={(values, event) =>
                 onChange(
                     event,
-                    values.map((v) => v.label),
+                    values.map((v) => v.label)
                 )
             }
         />

@@ -56,13 +56,11 @@ const SponsorBlock = ({
                 onChange={(newSponsors) => {
                     setSponsors(newSponsors);
                 }}
-                placeholder={"Sélectionnez des sponsors"}
+                placeholder={"Sélectionne un ou plusieurs sponsors"}
                 containerStyle={{
                     marginBottom: `0.5rem`,
                 }}
-                hint={
-                    "Administration(s) qui sponsorise(nt) le produit"
-                }
+                hint={"Administration(s) qui sponsorise(nt) le produit"}
             />
             <span className="fr-text fr-text--sm">
                 Le sponsor n'est pas encore dans la base de donnée ?
@@ -71,6 +69,7 @@ const SponsorBlock = ({
                 nativeButtonProps={{
                     onClick: openModal,
                 }}
+                type="button"
                 style={{
                     marginLeft: `0.5rem`,
                     transform: `translateY(0.25rem)`,
