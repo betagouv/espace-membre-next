@@ -9,28 +9,30 @@ type CompetenceType = OptionType<true> & {
 };
 
 const competencesMap: readonly CompetenceType[] = Object.keys(
-    competences,
+    competences
 ).flatMap((key) =>
     competences[key].map((competence) => ({
         group: key,
         label: competence,
-    })),
+    }))
 );
 
 export const CompetencesEditor = ({
     onChange,
     defaultValue,
     placeholder = "Choisissez ou ajoutez vos compétences",
+    freeSolo = true,
 }: {
     onChange: (event: any, competences: string[]) => void;
     defaultValue: string[];
     placeholder?: string;
+    freeSolo?: boolean;
 }) => {
     return (
         <AutoComplete
-            freeSolo={true}
+            freeSolo={freeSolo}
             defaultValue={defaultValue.map(
-                (label) => ({ label }) as CompetenceType,
+                (label) => ({ label } as CompetenceType)
             )}
             multiple
             groupOptions
@@ -39,7 +41,7 @@ export const CompetencesEditor = ({
             onSelect={(values, event) => {
                 onChange(
                     event,
-                    values.map((v) => v.label),
+                    values.map((v) => v.label)
                 );
             }}
         />

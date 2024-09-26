@@ -11,15 +11,18 @@ export const metadata: Metadata = {
 
 export default async function Page() {
     const startups = await getAllStartups().then((r) =>
-        r.map((s) => ({
-            value: s.uuid,
-            label: s.name,
-        }) as StartupType)
+        r.map(
+            (s) =>
+                ({
+                    value: s.uuid,
+                    label: s.name,
+                } as StartupType)
+        )
     );
     return (
         <>
             <h1>{routeTitles.startupList()}</h1>
-            <StartupList startups={startups} />;
+            <StartupList startups={startups} />
         </>
     );
 }

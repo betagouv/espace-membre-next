@@ -215,6 +215,7 @@ export const CommunityFilterMembers = (props: CommunityProps) => {
                         <label className="fr-label">Compétences</label>
                         <CompetencesEditor
                             placeholder="Sélectionne une ou plusieurs compétences"
+                            freeSolo={false}
                             defaultValue={[]}
                             onChange={(e, competences) => {
                                 setState({
