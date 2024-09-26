@@ -106,7 +106,7 @@ export const MemberUpdate = ({
                     className="fr-mb-8v"
                     severity={"info"}
                     closable={false}
-                    title={`Une fois la date de fin mise à jour, il faut que ${userInfos.fullname} réactive son email en rédéfinissant son mot de passe dans l'espace-membre`}
+                    title={`Après la mise à jour de sa date de fin de mission, ${userInfos.fullname} doit redéfinir le mot de passe de son email dans son Espace Membre pour le réactiver.`}
                 />
                 <form
                     onSubmit={handleSubmit(onSubmit)}
