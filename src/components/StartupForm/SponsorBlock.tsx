@@ -55,7 +55,7 @@ const SponsorBlock = ({
                 onChange={(newSponsors) => {
                     setSponsors(newSponsors);
                 }}
-                placeholder={"Sélectionnez des sponsors"}
+                placeholder={"Sélectionne un ou plusieurs sponsors"}
                 containerStyle={{
                     marginBottom: `0.5rem`,
                 }}
@@ -68,6 +68,7 @@ const SponsorBlock = ({
                 nativeButtonProps={{
                     onClick: openModal,
                 }}
+                type="button"
                 style={{
                     marginLeft: `0.5rem`,
                     transform: `translateY(0.25rem)`,

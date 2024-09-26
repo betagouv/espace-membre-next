@@ -17,18 +17,18 @@ type AutoCompleteValue<
     Value,
     Multiple extends boolean | undefined,
     DisableClearable extends boolean | undefined,
-    FreeSolo extends boolean | undefined,
+    FreeSolo extends boolean | undefined
 > = MuiAutocompleteValue<Value, Multiple, DisableClearable, FreeSolo>;
 
 type AutoCompleteSelect<
     Value,
     Multiple extends boolean | undefined,
-    DisableClearable extends boolean | undefined,
+    DisableClearable extends boolean | undefined
 > = Multiple extends true
     ? Array<Value>
     : DisableClearable extends true
-      ? NonNullable<Value>
-      : Value | null;
+    ? NonNullable<Value>
+    : Value | null;
 
 export type OptionType<Group extends boolean | undefined> = {
     inputValue?: string;
@@ -42,7 +42,7 @@ interface AutoCompleteProps<
     DisableClearable extends boolean | undefined,
     FreeSolo extends boolean | undefined,
     GroupOptions extends boolean | undefined,
-    ChipComponent extends React.ElementType = ChipTypeMap["defaultComponent"],
+    ChipComponent extends React.ElementType = ChipTypeMap["defaultComponent"]
 > extends UseAutocompleteProps<Value, Multiple, DisableClearable, FreeSolo>,
         StandardProps<
             React.HTMLAttributes<HTMLDivElement>,
@@ -61,11 +61,11 @@ interface AutoCompleteProps<
     groupOptions?: GroupOptions;
     onChange?: (
         event: React.SyntheticEvent,
-        value: AutoCompleteValue<Value, Multiple, DisableClearable, FreeSolo>,
+        value: AutoCompleteValue<Value, Multiple, DisableClearable, FreeSolo>
     ) => void;
     onSelect: (
         value: AutoCompleteSelect<Value, Multiple, DisableClearable>,
-        event: React.SyntheticEvent,
+        event: React.SyntheticEvent
     ) => void;
     placeholder?: string;
     optionKeyField?: string;
@@ -78,7 +78,7 @@ export default function AutoComplete<
     Multiple extends boolean | undefined,
     FreeSolo extends boolean | undefined,
     DisableClearable extends boolean | undefined,
-    GroupOptions extends boolean | undefined,
+    GroupOptions extends boolean | undefined
 >({
     onChange,
     onSelect,
@@ -140,7 +140,7 @@ export default function AutoComplete<
                 placeholder={placeholder}
             />
         ),
-        [placeholder],
+        [placeholder]
     );
 
     return (
@@ -219,7 +219,7 @@ export default function AutoComplete<
                             Multiple,
                             DisableClearable
                         >,
-                        event,
+                        event
                     );
                 } else {
                     onChange && onChange(event, newValues);
@@ -238,7 +238,7 @@ export default function AutoComplete<
                 const isExisting = options.some(
                     (option) =>
                         inputValue.toLowerCase() ===
-                        option[optionLabelField].toLowerCase(),
+                        option[optionLabelField].toLowerCase()
                 );
                 if (inputValue !== "" && !isExisting) {
                     filtered.push({

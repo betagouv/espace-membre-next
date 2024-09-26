@@ -188,7 +188,7 @@ export const CommunityFilterMembers = (props: CommunityProps) => {
                     </div>
                     <div className="fr-col-6">
                         <MemberStatusSelect
-                            label={"Membres"}
+                            label={"Statut des membres"}
                             onChange={(e, memberStatus) =>
                                 setState({
                                     ...state,

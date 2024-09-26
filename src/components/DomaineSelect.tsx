@@ -32,6 +32,7 @@ export default function DomaineSelect({
                 }))}
                 onSelect={(values, e) => onChange(e, values)}
                 defaultValue={defaultValue}
+                placeholder="Sélectionne un ou plusieurs domaines"
             />
             {!!state && !!stateRelatedMessage && (
                 <p className="fr-error-text">{stateRelatedMessage}</p>
