@@ -59,17 +59,34 @@ export default function SESponsorSelect<T extends boolean>({
             }
 
             if (isMulti && Array.isArray(newValues)) {
-                onChange(newValues);
+                onChange(newValues.map((v) => v.value));
 
                 return;
             }
 
-            if (!isMulti && "string" === typeof newValues) {
-                onChange(newValues);
+            if (!isMulti) {
+                onChange(newValues.value ?? null);
             }
         },
         [isMulti, onChange],
     );
+
+    const convertToAutoCompleteValue = (
+        value: string[] | string | undefined,
+        options: Option[],
+    ): Option[] | Option => {
+        if (isMulti) {
+            return Array.isArray(value)
+                ? value
+                      .map((v) => options.find((o) => o.value === v))
+                      .filter((v) => !!v)
+                : [];
+        }
+
+        return (
+            value ? options.find((o) => o.value === value) : null
+        ) as Option;
+    };
 
     const autoCompleteProps = {
         style: {
@@ -78,6 +95,9 @@ export default function SESponsorSelect<T extends boolean>({
         placeholder,
         options: allOptions,
         onSelect: localOnChange,
+        optionKeyField: "value",
+        value: convertToAutoCompleteValue(value, allOptions),
+        defaultValue: convertToAutoCompleteValue(defaultValue, allOptions),
     };
 
     return (
@@ -91,16 +111,12 @@ export default function SESponsorSelect<T extends boolean>({
                     {...autoCompleteProps}
                     multiple
                     freeSolo={false}
-                    defaultValue={
-                        value ? value.map((label) => ({ label })) : []
-                    }
                 />
             ) : (
                 <AutoComplete
                     {...autoCompleteProps}
                     multiple={false}
                     freeSolo={false}
-                    defaultValue={value ? { label: value } : ""}
                 />
             )}
 

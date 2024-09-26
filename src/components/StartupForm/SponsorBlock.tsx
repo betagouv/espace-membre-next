@@ -41,7 +41,7 @@ const SponsorBlock = ({
     }
 
     function addSponsor(
-        newSponsor: startupInfoUpdateSchemaType["newSponsors"]
+        newSponsor: startupInfoUpdateSchemaType["newSponsors"],
     ) {
         setNewSponsors([newSponsor]);
         modal.close();
@@ -50,7 +50,6 @@ const SponsorBlock = ({
         <div className="fr-input-group">
             <SESponsorSelect
                 isMulti={true}
-                defaultValue={sponsors}
                 value={sponsors}
                 allSponsors={allSponsors}
                 onChange={(newSponsors) => {
@@ -60,9 +59,7 @@ const SponsorBlock = ({
                 containerStyle={{
                     marginBottom: `0.5rem`,
                 }}
-                hint={
-                    "Administration(s) qui sponsorise(nt) le produit"
-                }
+                hint={"Administration(s) qui sponsorise(nt) le produit"}
             />
             <span className="fr-text fr-text--sm">
                 Le sponsor n'est pas encore dans la base de donnée ?

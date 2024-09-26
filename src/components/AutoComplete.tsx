@@ -89,6 +89,7 @@ export default function AutoComplete<
     placeholder,
     optionKeyField = "label",
     optionLabelField = "label",
+    value: valueFromProps,
     defaultValue,
     renderInput,
     ...props
@@ -99,10 +100,13 @@ export default function AutoComplete<
     FreeSolo,
     GroupOptions
 >) {
-    const [value, setValue] = useState<
+    const isControlled = typeof valueFromProps != "undefined";
+    const hasDefaultValue = typeof defaultValue != "undefined";
+
+    const [internalValue, setInternalValue] = useState<
         AutoCompleteValue<Value, Multiple, DisableClearable, FreeSolo>
     >(() => {
-        if (defaultValue) {
+        if (hasDefaultValue) {
             return defaultValue;
         }
 
@@ -113,6 +117,7 @@ export default function AutoComplete<
             FreeSolo
         >;
     });
+    const value = isControlled ? valueFromProps : internalValue;
     const filter = createFilterOptions<Value>();
 
     const defaultRenderInput = useCallback(
@@ -147,8 +152,8 @@ export default function AutoComplete<
             loadingText={"Chargement..."}
             noOptionsText={"Pas de résultat"}
             {...props}
-            freeSolo={freeSolo}
             value={value}
+            freeSolo={freeSolo}
             multiple={multiple}
             options={options}
             selectOnFocus={true}
@@ -203,7 +208,10 @@ export default function AutoComplete<
                     newValues = values;
                 }
 
-                setValue(newValues);
+                if (!isControlled) {
+                    setInternalValue(newValues);
+                }
+
                 if (onSelect) {
                     onSelect(
                         newValues as AutoCompleteSelect<
