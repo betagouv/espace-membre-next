@@ -29,7 +29,7 @@
     "@hookform/resolvers": "^3.3.4",
     "@mui/material": "^5.15.10",
     "@octokit/rest": "^20.0.2",
-    "@sentry/nextjs": "^7.101.1",
+    "@sentry/nextjs": "^8.32.0",
     "@sentry/node": "^7.101.1",
     "@sindresorhus/slugify": "^1.1.0",
     "@socialgouv/matomo-next": "^1.9.0",
