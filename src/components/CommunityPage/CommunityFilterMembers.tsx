@@ -17,7 +17,7 @@ import DomaineSelect from "../DomaineSelect";
 import MemberStatusSelect from "../MemberStatusSelect";
 import SEIncubateurSelect from "../SEIncubateurSelect";
 import SEPhaseSelect from "../SEPhaseSelect";
-import SESelect from "../SESelect";
+import SESelect, { StartupType } from "../SESelect";
 
 import "react-tabulator/lib/styles.css"; // required styles
 import "react-tabulator/lib/css/tabulator.min.css"; // theme
@@ -164,7 +164,7 @@ export const CommunityFilterMembers = (props: CommunityProps) => {
                             label={"Produits"}
                             placeholder={"Sélectionne un ou plusieurs produits"}
                             isMulti={true}
-                            startups={props.startupOptions}
+                            startups={props.startupOptions as StartupType[]}
                             onChange={(startups) => {
                                 setState({
                                     ...state,
@@ -188,7 +188,7 @@ export const CommunityFilterMembers = (props: CommunityProps) => {
                     </div>
                     <div className="fr-col-6">
                         <MemberStatusSelect
-                            label={"Membres"}
+                            label={"Statut des membres"}
                             onChange={(e, memberStatus) =>
                                 setState({
                                     ...state,
@@ -203,7 +203,7 @@ export const CommunityFilterMembers = (props: CommunityProps) => {
                         <SEPhaseSelect
                             label={"Phases"}
                             isMulti={true}
-                            onChange={(e, startupPhases) =>
+                            onChange={(startupPhases) =>
                                 setState({
                                     ...state,
                                     startupPhases,
@@ -215,6 +215,7 @@ export const CommunityFilterMembers = (props: CommunityProps) => {
                         <label className="fr-label">Compétences</label>
                         <CompetencesEditor
                             placeholder="Sélectionne une ou plusieurs compétences"
+                            freeSolo={false}
                             defaultValue={[]}
                             onChange={(e, competences) => {
                                 setState({
