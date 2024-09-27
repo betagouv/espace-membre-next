@@ -1,11 +1,7 @@
 import React, { useCallback } from "react";
 
-import Autocomplete from "@mui/material/Autocomplete";
-import TextField from "@mui/material/TextField";
-
 import AutoComplete, { OptionType } from "@/components/AutoComplete";
 import { Option } from "@/models/misc";
-import { sponsorSchemaType } from "@/models/sponsor";
 
 type OnChangeType<T> = T extends true
     ? (value: string[] | null) => void
@@ -71,21 +67,25 @@ export default function SESponsorSelect<T extends boolean>({
         [isMulti, onChange],
     );
 
-    const convertToAutoCompleteValue = (
+    const convertToAutoCompleteValue = function <
+        Multiple extends boolean,
+        R = Multiple extends true ? Option[] : Option | null,
+    >(
         value: string[] | string | undefined,
         options: Option[],
-    ): Option[] | Option => {
+        isMulti: Multiple,
+    ): R {
         if (isMulti) {
-            return Array.isArray(value)
-                ? value
-                      .map((v) => options.find((o) => o.value === v))
-                      .filter((v) => !!v)
-                : [];
+            return (
+                Array.isArray(value)
+                    ? value
+                          .map((v) => options.find((o) => o.value === v))
+                          .filter((v) => !!v)
+                    : []
+            ) as R;
         }
 
-        return (
-            value ? options.find((o) => o.value === value) : null
-        ) as Option;
+        return (value ? options.find((o) => o.value === value) : null) as R;
     };
 
     const autoCompleteProps = {
@@ -96,8 +96,6 @@ export default function SESponsorSelect<T extends boolean>({
         options: allOptions,
         onSelect: localOnChange,
         optionKeyField: "value",
-        value: convertToAutoCompleteValue(value, allOptions),
-        defaultValue: convertToAutoCompleteValue(defaultValue, allOptions),
     };
 
     return (
@@ -110,6 +108,12 @@ export default function SESponsorSelect<T extends boolean>({
                 <AutoComplete
                     {...autoCompleteProps}
                     multiple
+                    value={convertToAutoCompleteValue(value, allOptions, true)}
+                    defaultValue={convertToAutoCompleteValue(
+                        defaultValue,
+                        allOptions,
+                        true,
+                    )}
                     freeSolo={false}
                 />
             ) : (
@@ -117,6 +121,12 @@ export default function SESponsorSelect<T extends boolean>({
                     {...autoCompleteProps}
                     multiple={false}
                     freeSolo={false}
+                    value={convertToAutoCompleteValue(value, allOptions, false)}
+                    defaultValue={convertToAutoCompleteValue(
+                        defaultValue,
+                        allOptions,
+                        false,
+                    )}
                 />
             )}
 
