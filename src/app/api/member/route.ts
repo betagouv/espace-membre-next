@@ -24,7 +24,7 @@ export const POST = withHttpErrorHandling(async (req: Request) => {
     const rawdata = await req.json();
     const { member, missions } = createMemberSchema.parse(rawdata);
     const hasPublicServiceEmail = await isPublicServiceEmail(member.email);
-    if (hasPublicServiceEmail && !isAdminEmail(member.email)) {
+    if (hasPublicServiceEmail && isAdminEmail(member.email)) {
         throw new AdminEmailNotAllowedError();
     }
     const username = createUsername(member.firstname, member.lastname);
