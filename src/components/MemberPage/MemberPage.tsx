@@ -462,7 +462,7 @@ MemberPageProps) {
 
                                 <Button
                                     linkProps={{
-                                        href: "/account/base-info",
+                                        href: `/community/${userInfos.fullname}/admin-update`,
                                     }}
                                 >
                                     ✏️ Mettre à jour les informations de{" "}
