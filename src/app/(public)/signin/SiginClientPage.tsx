@@ -22,31 +22,11 @@ export default function SignClientPage() {
     }, [status]);
 
     function navigateToNextPage(url) {
-        const parsedUrl = new URL(url);
-        const searchParams = parsedUrl.searchParams || "";
-        const callbackUrl = searchParams.get("callbackUrl") || "";
-        const allowedDomains = [frontConfig.host];
-
-        // Create an anchor element to parse the URL
-        const anchor = document.createElement("a");
-        anchor.href = callbackUrl;
-
-        // Extract the hostname from the callback URL
-        const callbackHostname = anchor.host;
-        // Validate if the callbackUrl is internal or part of trusted domains
-        const isValidInternalPath = /^\/(?!\/|\\).*/.test(callbackUrl);
-
-        // Validate if the callbackUrl is an internal path or a trusted domain
-        if (
-            (isValidInternalPath && callbackUrl.startsWith("/")) ||
-            allowedDomains.includes(callbackHostname)
-        ) {
-            // Safe to redirect
-            window.location.href = callbackUrl;
-        } else {
-            // Redirect to a default safe URL (e.g., dashboard)
-            window.location.href = "/dashboard";
-        }
+        const hostname = window.location.origin; // Get the current hostname (e.g., https://example.com)
+        const fullUrl = url.startsWith("/")
+            ? `${hostname}${url}`
+            : `${hostname}/${url}`;
+        window.location.href = fullUrl;
     }
 
     const onSubmit = React.useCallback(async () => {
