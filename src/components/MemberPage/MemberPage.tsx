@@ -451,6 +451,25 @@ MemberPageProps) {
                                 </div>
                             )}
                         </div>
+                        {isAdmin && (
+                            <>
+                                <p
+                                    className="fr-text--xs"
+                                    style={{ fontStyle: "italic" }}
+                                >
+                                    Une information n'est pas à jour ?
+                                </p>
+
+                                <Button
+                                    linkProps={{
+                                        href: `/community/${userInfos.fullname}/admin-update`,
+                                    }}
+                                >
+                                    ✏️ Mettre à jour les informations de{" "}
+                                    {userInfos.fullname}
+                                </Button>
+                            </>
+                        )}
                     </div>
                 )}
                 {!userInfos && (
