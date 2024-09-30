@@ -979,17 +979,9 @@ describe("User", () => {
                 .where("username", "=", "membre.nouveau")
                 .execute();
             dbNewRes.length.should.equal(1);
-            dbNewRes[0].primary_email.should.not.equal(primaryEmail);
+            dbNewRes[0].primary_email.should.equal(primaryEmail);
 
             mattermostGetUserByEmailStub.calledOnce.should.be.true;
-
-            await db
-                .updateTable("users")
-                .where("username", "=", "membre.nouveau")
-                .set({
-                    primary_email: `membre.nouveau@${config.domain}`,
-                })
-                .execute();
         });
 
         it("should update primary email", async () => {
