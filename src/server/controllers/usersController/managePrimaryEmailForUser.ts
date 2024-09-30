@@ -63,7 +63,7 @@ export async function managePrimaryEmailForUserHandler(
                 `L'email renseigné n'est pas un email de service public`
             );
         }
-        if (!isAdminEmail(primaryEmail)) {
+        if (isAdminEmail(primaryEmail)) {
             throw new AdminEmailNotAllowedError();
         }
 
