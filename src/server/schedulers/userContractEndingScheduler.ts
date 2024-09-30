@@ -68,7 +68,7 @@ const getRegisteredUsersWithEndingContractInXDays = async (
         // const githubUser = activeGithubUsers.find(
         //     (ghUser) => ghUser.username === user.username
         // );
-        if (index && allMattermostUsers[index].username) {
+        if (index !== -1 && allMattermostUsers[index].username) {
             registeredUsersWithEndingContractInXDays.push({
                 userInfos: user,
                 mattermostUsername: allMattermostUsers[index].username,
