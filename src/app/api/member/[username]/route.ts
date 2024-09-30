@@ -68,7 +68,7 @@ export async function PUT(
     const hasPublicServiceEmail = await isPublicServiceEmail(
         memberData.secondary_email
     );
-    if (hasPublicServiceEmail && !isAdminEmail(memberData.secondary_email)) {
+    if (hasPublicServiceEmail && isAdminEmail(memberData.secondary_email)) {
         throw new AdminEmailNotAllowedError();
     }
     updateMember(
