@@ -199,8 +199,7 @@ export function isAdminEmail(email: string): boolean {
 
     // Regex to block suspicious email patterns
     const blacklistRegex =
-        /^(?!.*(?:admin|administrator|support|root|sysadmin|superuser|team|staff|moderator|service|helpdesk|contact|management|no-reply|noreply|master|info)).*$/i;
-
+        /.*(?:admin|administrator|support|root|sysadmin|superuser|team|staff|moderator|service|helpdesk|contact|management|no-reply|noreply|master|info).*/i;
     // Check if the email matches the valid email regex and does not match the blacklist
     return emailRegex.test(email) && blacklistRegex.test(email);
 }

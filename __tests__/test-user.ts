@@ -955,17 +955,17 @@ describe("User", () => {
             isPublicServiceEmailStub.returns(Promise.resolve(true));
             mattermostGetUserByEmailStub.returns(Promise.reject("404 error"));
             const username = "membre.nouveau";
-            const primaryEmail = "membre.nouveau.new@example.com";
+            const primaryEmail = "admin@otherdomaine.gouv.fr";
             getToken.returns(utils.getJWT("membre.nouveau"));
             await db
                 .updateTable("users")
                 .where("username", "=", "membre.nouveau")
                 .set({
-                    primary_email: `admin@otherdomaine.gouv.fr`,
+                    primary_email: `membre.nouveau@${config.domain}`,
                 })
                 .execute();
 
-            const res = await chai
+            await chai
                 .request(app)
                 .put(`/api/users/${username}/primary_email/`)
                 .type("form")
@@ -979,9 +979,16 @@ describe("User", () => {
                 .where("username", "=", "membre.nouveau")
                 .execute();
             dbNewRes.length.should.equal(1);
-            dbNewRes[0].primary_email.should.equal(primaryEmail);
-
-            mattermostGetUserByEmailStub.calledOnce.should.be.true;
+            dbNewRes[0].primary_email.should.equal(
+                `membre.nouveau@${config.domain}`
+            );
+            await db
+                .updateTable("users")
+                .where("username", "=", "membre.nouveau")
+                .set({
+                    primary_email: `membre.nouveau@${config.domain}`,
+                })
+                .execute();
         });
 
         it("should update primary email", async () => {
