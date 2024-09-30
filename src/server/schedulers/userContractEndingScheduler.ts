@@ -34,7 +34,7 @@ const getRegisteredUsersWithEndingContractInXDays = async (
         (user) => memberBaseInfoToModel(user)
     );
     const activeGithubUsers = users
-        .filter((user) => user.missions && user.missions.length)
+        .filter((user) => user.missions.length)
         .filter((user) => {
             const today = new Date();
             const stillActive = !utils.checkUserIsExpired(user);
