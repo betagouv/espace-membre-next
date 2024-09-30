@@ -33,28 +33,30 @@ const getRegisteredUsersWithEndingContractInXDays = async (
     const users: memberBaseInfoSchemaType[] = (await getAllUsersInfo()).map(
         (user) => memberBaseInfoToModel(user)
     );
-    const activeGithubUsers = users.filter((user) => {
-        const today = new Date();
-        // filter user that have have been created after implementation of this function
-        const stillActive = !utils.checkUserIsExpired(user);
-        const latestMission = user.missions.reduce((a, v) =>
+    const activeGithubUsers = users
+        .filter((user) => user.missions && user.missions.length)
+        .filter((user) => {
+            const today = new Date();
+            // filter user that have have been created after implementation of this function
+            const stillActive = !utils.checkUserIsExpired(user);
+            const latestMission = user.missions.reduce((a, v) =>
+                //@ts-ignore todo
+                v.end > a.end || !v.end ? v : a
+            );
             //@ts-ignore todo
-            v.end > a.end || !v.end ? v : a
-        );
-        //@ts-ignore todo
-        // const userEndDate = new Date(latestMission.end);
-        // userEndDate.setHours(0, 0, 0, 0);
-        if (!latestMission.end) {
-            return false;
-        }
-        return (
-            stillActive &&
-            differenceInDays(
-                startOfDay(latestMission.end),
-                startOfDay(today)
-            ) === days
-        );
-    });
+            // const userEndDate = new Date(latestMission.end);
+            // userEndDate.setHours(0, 0, 0, 0);
+            if (!latestMission.end) {
+                return false;
+            }
+            return (
+                stillActive &&
+                differenceInDays(
+                    startOfDay(latestMission.end),
+                    startOfDay(today)
+                ) === days
+            );
+        });
 
     const allMattermostUsersEmails = allMattermostUsers.map(
         (mattermostUser) => mattermostUser.email
