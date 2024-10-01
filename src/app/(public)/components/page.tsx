@@ -92,12 +92,6 @@ const sampleMember: { member: MemberPageProps } = {
 };
 
 export default async function Page() {
-    const session = await getServerSession(authOptions);
-
-    if (!session) {
-        redirect("/login");
-    }
-
     return (
         <div className={fr.cx("fr-col-12")}>
             <h1>Members</h1>
