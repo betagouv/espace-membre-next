@@ -21,23 +21,28 @@ export default function SignClientPage() {
         }
     }, [status]);
 
-    function navigateToNextPage(url) {
+    function navigateToNextPage(loginURL: string) {
         const hostname = window.location.origin;
+        const parsedUrl = new URL(loginURL);
+        const searchParams = parsedUrl.searchParams || "";
+        const callbackUrl = searchParams.get("callbackUrl") || "";
+        const redirectionUrl = "/dashboard";
+        if (callbackUrl) {
+            try {
+                // Try to construct a new URL. This will succeed for both absolute and relative URLs.
+                const parsedUrl = new URL(callbackUrl, hostname); // Use current origin if URL is relative.
 
-        try {
-            // Try to construct a new URL. This will succeed for both absolute and relative URLs.
-            const parsedUrl = new URL(url, hostname); // Use current origin if URL is relative.
+                // If the URL is absolute, replace its origin with the current hostname
+                const fullUrl = `${hostname}${parsedUrl.pathname}${parsedUrl.search}${parsedUrl.hash}`;
 
-            // If the URL is absolute, replace its origin with the current hostname
-            const fullUrl = `${hostname}${parsedUrl.pathname}${parsedUrl.search}${parsedUrl.hash}`;
-
-            // Navigate to the constructed URL
-            window.location.href = fullUrl;
-        } catch (e) {
-            // In case of any error, fallback to redirecting to a default page
-            console.error("Invalid URL provided:", e);
-            window.location.href = `${hostname}/dashboard`; // Fallback to dashboard
+                // Navigate to the constructed URL
+                window.location.href = fullUrl;
+            } catch (e) {
+                // In case of any error, fallback to redirecting to a default page
+                console.error("Invalid URL provided:", e);
+            }
         }
+        window.location.href = redirectionUrl;
     }
 
     const onSubmit = React.useCallback(async () => {
