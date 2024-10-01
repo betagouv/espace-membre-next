@@ -58,7 +58,7 @@ import { setEmailExpired } from "@schedulers/setEmailExpired";
 
 interface Job {
     cronTime: string;
-    onTick: (any) => void;
+    onTick: (any) => any;
     isActive: boolean;
     name: string;
     description?: string;
