@@ -19,6 +19,7 @@ export const MemberMissions = ({
             headers={["Startup", "Début", "Fin"]}
             data={startups.map((startup) => [
                 <Tag
+                    key="startup"
                     className={fr.cx("fr-mr-1v")}
                     linkProps={{
                         href: `/startups/${startup.uuid}`,

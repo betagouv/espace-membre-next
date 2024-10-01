@@ -90,7 +90,9 @@ export const MemberStatus = ({
         ],
         ...redirections.map((r) => [
             r.from,
-            <Badge severity="success">{r.to}</Badge>,
+            <Badge key={r.to} severity="success">
+                {r.to}
+            </Badge>,
         ]),
     ].filter((z) => !!z);
 
