@@ -99,7 +99,7 @@ const MainHeader = () => {
                           target: "_self",
                       },
                       text: routeTitles.account(),
-                      isActive: hasPathnameThisRoot(pathname, "/account"),
+                      isActive: hasPathnameThisRoot(pathname, accountLink),
                   },
                   {
                       isActive: hasPathnameThisRoot(pathname, communityLink),
