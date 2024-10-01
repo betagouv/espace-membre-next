@@ -1,9 +1,10 @@
 import config from ".";
-import { AccountService } from "./services.config";
+import { AccountService, SERVICES } from "./services.config";
 import { Matomo, MatomoUser } from "@/lib/matomo";
 
 export class FakeMatomo implements AccountService {
     users: MatomoUser[] = [];
+    public name = SERVICES.MATOMO;
 
     constructor(users: MatomoUser[]) {
         this.users = users;

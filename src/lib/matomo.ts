@@ -1,6 +1,6 @@
 // matomoClient.ts
 
-import { AccountService } from "@/server/config/services.config";
+import { AccountService, SERVICES } from "@/server/config/services.config";
 
 // Define an interface for the Matomo User
 export interface MatomoUser {
@@ -14,6 +14,7 @@ export interface MatomoUser {
 export class Matomo implements AccountService {
     private apiUrl: string;
     private authToken: string;
+    public name = SERVICES.MATOMO;
 
     constructor(apiUrl: string, authToken: string) {
         this.apiUrl = apiUrl;

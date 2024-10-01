@@ -376,7 +376,7 @@ export async function deleteServiceAccounts(
                     action_code: EventCode.MEMBER_SERVICE_ACCOUNT_DELETED,
                     action_metadata: {
                         email: user.primary_email,
-                        service: SERVICES.MATOMO,
+                        service: service.name,
                     },
                 });
             }
