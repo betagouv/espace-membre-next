@@ -26,7 +26,7 @@ export default function SignClientPage() {
         const parsedUrl = new URL(loginURL);
         const searchParams = parsedUrl.searchParams || "";
         const callbackUrl = searchParams.get("callbackUrl") || "";
-        const redirectionUrl = "/dashboard";
+        let redirectionUrl = "/dashboard";
         if (callbackUrl) {
             try {
                 // Try to construct a new URL. This will succeed for both absolute and relative URLs.
@@ -34,9 +34,8 @@ export default function SignClientPage() {
 
                 // If the URL is absolute, replace its origin with the current hostname
                 const fullUrl = `${hostname}${parsedUrl.pathname}${parsedUrl.search}${parsedUrl.hash}`;
-
                 // Navigate to the constructed URL
-                window.location.href = fullUrl;
+                redirectionUrl = fullUrl;
             } catch (e) {
                 // In case of any error, fallback to redirecting to a default page
                 console.error("Invalid URL provided:", e);
