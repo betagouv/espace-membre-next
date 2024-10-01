@@ -239,17 +239,17 @@ const formationJobs: Job[] = [
 
 const newsletterJobs = [
     {
-        cronTime: process.env.NEWSLETTER_FIRST_REMINDER_TIME || "0 0 10 * * 1", // every week a 8:00 on monday
+        cronTime: process.env.NEWSLETTER_FIRST_REMINDER_TIME || "0 0 10 * * 3", // every week a 8:00 on monday
         onTick: () => newsletterReminder("FIRST_REMINDER"),
         isActive: config.FEATURE_NEWSLETTER,
-        name: "newsletterMondayReminderJob",
+        name: "newsletterFirstReminderJob",
         description: "Rappel mattermost newsletter 1",
     },
     {
-        cronTime: "0 0 8 * * 4",
+        cronTime: "0 0 8 * * 2",
         onTick: () => newsletterReminder("SECOND_REMINDER"),
         isActive: config.FEATURE_NEWSLETTER,
-        name: "newsletterThursdayMorningReminderJob",
+        name: "newsletterSecondReminderJob",
         description: "Rappel mattermost newsletter 2",
     },
     // {
@@ -260,7 +260,7 @@ const newsletterJobs = [
     //     description: "Rappel mattermost newsletter 3",
     // },
     {
-        cronTime: config.newsletterSendTime || "0 16 * * 4", // run on thursday et 4pm,
+        cronTime: config.newsletterSendTime || "0 16 * * 2", // run on thursday et 4pm,
         onTick: sendNewsletterAndCreateNewOne,
         isActive: config.FEATURE_NEWSLETTER,
         name: "sendNewsletterAndCreateNewOneJob",
