@@ -151,7 +151,7 @@ export default async function Page() {
                 }}
             />
             <hr />
-            <h2>With localisation</h2>
+            <h2>With workplace</h2>
             <hr />
             <MemberPage
                 {...sampleMember.member}
@@ -163,7 +163,7 @@ export default async function Page() {
             <hr />
             <h2>No avatar</h2>
             <hr />
-            <MemberPage {...sampleMember.member} />
+            <MemberPage {...sampleMember.member} avatar={undefined} />
         </div>
     );
 }
