@@ -27,6 +27,7 @@ const expiredFor1dayDate = "2019-12-31";
 const expiredFor15daysDate = "2020-01-16";
 const willExpireIn30daysDate = "2020-01-31";
 const expiredFor30daysDate = "2019-12-02";
+const expiredFor31daysDate = "2019-12-01";
 
 const betaGouvUsers = [
     {
@@ -282,14 +283,14 @@ describe("send message on contract end to user", () => {
                 "uneadressesecondaire@gmail.com"
             );
 
-            const expiredFor31daysDate = new Date();
-            expiredFor31daysDate.setDate(today.getDate() - 31);
             await db
                 .updateTable("users")
                 .where("username", "=", "julien.dauphant")
                 .set({
                     primary_email_status: EmailStatusCode.EMAIL_DELETED,
-                    primary_email_status_updated_at: expiredFor31daysDate,
+                    primary_email_status_updated_at: new Date(
+                        expiredFor31daysDate
+                    ),
                     secondary_email: "uneadressesecondaire@gmail.com",
                 })
                 .execute();
@@ -303,15 +304,14 @@ describe("send message on contract end to user", () => {
         });
 
         it("should delete user secondary_email if suspended more than 30days", async () => {
-            const today = new Date();
-            const expiredFor31daysDate = new Date();
-            expiredFor31daysDate.setDate(today.getDate() - 31);
             const updatedUser = await db
                 .updateTable("users")
                 .where("username", "=", "julien.dauphant")
                 .set({
                     primary_email_status: EmailStatusCode.EMAIL_DELETED,
-                    primary_email_status_updated_at: expiredFor31daysDate,
+                    primary_email_status_updated_at: new Date(
+                        expiredFor31daysDate
+                    ),
                     secondary_email: "uneadressesecondaire@gmail.com",
                 })
                 .returningAll()
@@ -410,8 +410,7 @@ describe("After quitting", () => {
 
     it("should set email as expired", async () => {
         const today = new Date(fakeTodayDate);
-        const expiredFor31daysDate = new Date();
-        expiredFor31daysDate.setDate(today.getDate() - 31);
+
         const updatedUser = await db
             .updateTable("users")
             .where("username", "=", "julien.dauphant")
@@ -507,6 +506,16 @@ describe("After quitting", () => {
                 date_registered: "",
             },
         ]);
+        const updatedUser = await db
+            .updateTable("users")
+            .where("username", "=", "julien.dauphant2")
+            .set({
+                primary_email: `julien.dauphant2@${config.domain}`,
+                primary_email_status: EmailStatusCode.EMAIL_DELETED,
+                primary_email_status_updated_at: expiredFor31daysDate,
+            })
+            .returningAll()
+            .executeTakeFirstOrThrow();
         await deleteServiceAccounts(matomoClient);
         const users = await matomoClient.getAllUsers();
         users.length.should.equals(1);
