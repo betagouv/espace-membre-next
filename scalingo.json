@@ -13,8 +13,11 @@
         }
     ],
     "env": {
-        "CANONICAL_HOST_URL": {
+        "NEXTAUTH_URL": {
             "generator": "url"
+        },
+        "HOSTNAME": {
+            "template": "%APP%.%REGION%.scalingo.io"
         }
     },
     "scripts": {
