@@ -80,7 +80,7 @@ const sampleMember: { member: MemberPageProps } = {
             isInactiveOrNotInTeam: false,
             mattermostUserName: "ada.lovelace",
         },
-        redirections: [],
+        redirections: [{ from: "ada@love.com", id: "42", to: "some@one.com" }],
         authorizations: {
             canCreateEmail: false,
             canCreateRedirection: false,

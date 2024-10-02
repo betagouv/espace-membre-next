@@ -10,10 +10,14 @@ export const MemberContact = ({
     userInfos,
     mattermostInfo,
     emailInfos,
+    isAdmin,
+    canEdit,
 }: {
     userInfos: MemberPageProps["userInfos"];
     mattermostInfo: MemberPageProps["mattermostInfo"];
     emailInfos: MemberPageProps["emailInfos"];
+    isAdmin: MemberPageProps["isAdmin"];
+    canEdit: MemberPageProps["canEdit"];
 }) => {
     const infos: { label: string; value: ReactNode }[] = [];
     if (userInfos.primary_email) {
@@ -47,7 +51,7 @@ export const MemberContact = ({
         });
     }
 
-    if (userInfos.secondary_email) {
+    if ((isAdmin || canEdit) && userInfos.secondary_email) {
         infos.push({
             label: "Email secondaire",
             value: (

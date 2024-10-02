@@ -28,9 +28,8 @@ export const AdminPanel = ({
     return (
         <div className="fr-mb-8v">
             <h2>Actions admin</h2>
+            <h3>Emails</h3>
             <ChangeSecondaryEmail userInfos={userInfos}></ChangeSecondaryEmail>
-            <MemberBrevoEventList userId={userInfos.username} />
-            <MemberEventList userId={userInfos.username} />
             {shouldDisplayUpgrade && (
                 <Accordion label="Passer en compte pro">
                     {shouldDisplayUpgrade && (
@@ -55,6 +54,10 @@ export const AdminPanel = ({
                         }
                     />
                 )}
+            <br />
+            <h3>Évènements</h3>
+            <MemberEventList userId={userInfos.username} />
+            <MemberBrevoEventList userId={userInfos.username} />
             <br />
             <h3>Brevo</h3>
             <MemberEmailServiceInfo

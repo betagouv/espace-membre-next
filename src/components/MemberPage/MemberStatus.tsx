@@ -1,11 +1,13 @@
 import { EmailStatusCode } from "@/models/member";
 import Badge from "@codegouvfr/react-dsfr/Badge";
-import { fr } from "@codegouvfr/react-dsfr/fr";
+import { fr, FrCxArg } from "@codegouvfr/react-dsfr/fr";
 import { EMAIL_STATUS_READABLE_FORMAT } from "@/models/misc";
 import Table from "@codegouvfr/react-dsfr/Table";
 
 import { MemberPageProps } from "./MemberPage";
 import { EMAIL_PLAN_TYPE } from "@/models/ovh";
+
+const EmailLink = ({ email }) => <a href={`mailto:${email}`}>{email}</a>;
 
 export const MemberStatus = ({
     isExpired,
@@ -23,7 +25,20 @@ export const MemberStatus = ({
     // todo: use ts-pattern or equivalent to handle all cases
     const rows = [
         [
-            "Compte beta",
+            <>
+                Compte beta
+                <span
+                    className={fr.cx(
+                        "fr-icon--xs",
+                        "fr-icon-info-fill",
+                        "fr-ml-1v"
+                    )}
+                    style={{ cursor: "pointer" }}
+                    title={
+                        "Indique si ton compte membre beta.gouv.fr est actif"
+                    }
+                />
+            </>,
             !isExpired ? (
                 <Badge severity="success">Actif</Badge>
             ) : (
@@ -31,7 +46,9 @@ export const MemberStatus = ({
             ),
         ],
         (emailInfos && [
-            `Statut de l'email ${emailInfos.email}`,
+            <>
+                Statut de l'email <EmailLink email={emailInfos.email} />
+            </>,
             <>
                 <Badge severity="info" className={fr.cx("fr-mr-1w")}>
                     {/* todo: pkoi 3 flags ? */}
@@ -48,7 +65,7 @@ export const MemberStatus = ({
                 EmailStatusCode.EMAIL_ACTIVE ? (
                     <Badge severity="success">Actif</Badge>
                 ) : (
-                    <Badge severity="warning">
+                    <Badge severity="error">
                         {
                             EMAIL_STATUS_READABLE_FORMAT[
                                 userInfos.primary_email_status
@@ -60,7 +77,9 @@ export const MemberStatus = ({
         ]) ||
             [],
         (emailInfos && [
-            `Email ${emailInfos.email} classé en spam OVH`,
+            <>
+                Email <EmailLink email={emailInfos.email} /> classé en spam OVH
+            </>,
             !emailInfos.isBlocked ? (
                 <Badge severity="success">Pas de spam</Badge>
             ) : (
@@ -74,7 +93,7 @@ export const MemberStatus = ({
             mattermostInfo.hasMattermostAccount &&
             mattermostInfo.mattermostUserName ? (
                 <>
-                    <Badge severity="success" className={fr.cx("fr-mr-1w")}>
+                    <Badge severity="info" className={fr.cx("fr-mr-1w")}>
                         {mattermostInfo.mattermostUserName}
                     </Badge>
                     {!mattermostInfo.isInactiveOrNotInTeam ? (
@@ -89,9 +108,12 @@ export const MemberStatus = ({
             ,
         ],
         ...redirections.map((r) => [
-            r.from,
+            <>
+                Redirection <EmailLink email={r.from} /> vers{" "}
+                <EmailLink email={r.to} />.
+            </>,
             <Badge key={r.to} severity="success">
-                {r.to}
+                OK
             </Badge>,
         ]),
     ].filter((z) => !!z);
