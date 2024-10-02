@@ -19,7 +19,7 @@ export const MemberContact = ({
     isAdmin: MemberPageProps["isAdmin"];
     canEdit: MemberPageProps["canEdit"];
 }) => {
-    const infos: { label: string; value: ReactNode }[] = [];
+    const infos: { label: ReactNode; value: ReactNode }[] = [];
     if (userInfos.primary_email) {
         infos.push({
             label: "Email principal",
@@ -53,7 +53,15 @@ export const MemberContact = ({
 
     if ((isAdmin || canEdit) && userInfos.secondary_email) {
         infos.push({
-            label: "Email secondaire",
+            label: (
+                <>
+                    Email secondaire{" "}
+                    <span
+                        title="Information privée"
+                        className={fr.cx("fr-icon--sm", "fr-icon-lock-line")}
+                    />
+                </>
+            ),
             value: (
                 <a href={`mailto:${userInfos.secondary_email}`}>
                     {userInfos.secondary_email}
