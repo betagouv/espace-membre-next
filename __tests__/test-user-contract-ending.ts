@@ -426,7 +426,7 @@ describe("After quitting", () => {
             .where("user_id", "=", updatedUser.uuid)
             .set({
                 start: "2018-01-01",
-                end: expiredFor31daysDate.toISOString().split("T")[0],
+                end: new Date(expiredFor31daysDate).toISOString().split("T")[0],
             })
             .execute();
         await setEmailExpired();
