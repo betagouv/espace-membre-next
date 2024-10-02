@@ -60,11 +60,11 @@ export const MemberStatus = ({
         ]) ||
             [],
         (emailInfos && [
-            `Liste SPAM OVH ${emailInfos.email}`,
+            `Email ${emailInfos.email} classé en spam OVH`,
             !emailInfos.isBlocked ? (
-                <Badge severity="success">ok</Badge>
+                <Badge severity="success">Pas de spam</Badge>
             ) : (
-                <Badge severity="error">BLOQUÉ</Badge>
+                <Badge severity="error">SPAM</Badge>
             ),
         ]) ||
             [],
