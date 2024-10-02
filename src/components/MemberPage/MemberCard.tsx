@@ -73,7 +73,7 @@ export const MemberCard = ({
                         style={{ marginTop: fr.spacing("2w") }}
                         size="small"
                         linkProps={{
-                            href: `/community/${userInfos.username}/admin-update`,
+                            href: isAdmin ? `/community/${userInfos.username}/admin-update` : `/account/base-info`,
                         }}
                     >
                         Modifier
