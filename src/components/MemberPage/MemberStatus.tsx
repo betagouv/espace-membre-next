@@ -25,7 +25,7 @@ export const MemberStatus = ({
         [
             "Compte beta",
             !isExpired ? (
-                <Badge severity="success">OK</Badge>
+                <Badge severity="success">Actif</Badge>
             ) : (
                 <Badge severity="error">Expiré</Badge>
             ),
