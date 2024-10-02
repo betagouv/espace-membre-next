@@ -16,7 +16,7 @@ import {
     updateMemberMissionsSchema,
     updateMemberMissionsSchemaType,
 } from "@/models/actions/member";
-import { memberBaseInfoSchemaType } from "@/models/member";
+import { EmailStatusCode, memberBaseInfoSchemaType } from "@/models/member";
 import routes, { computeRoute } from "@/routes/routes";
 
 // data from secretariat API
@@ -102,6 +102,12 @@ export const MemberUpdate = ({
                         title={alertMessage.title}
                     />
                 )}
+                <Alert
+                    className="fr-mb-8v"
+                    severity={"info"}
+                    closable={false}
+                    title={`Après la mise à jour de sa date de fin de mission, ${userInfos.fullname} doit redéfinir le mot de passe de son email dans son Espace Membre pour le réactiver.`}
+                />
                 <form
                     onSubmit={handleSubmit(onSubmit)}
                     aria-label="Modifier mes informations"

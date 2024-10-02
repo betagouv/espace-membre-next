@@ -21,29 +21,27 @@ export default function SignClientPage() {
         }
     }, [status]);
 
-    function navigateToNextPage(url) {
-        const parsedUrl = new URL(url);
+    function navigateToNextPage(loginURL: string) {
+        const hostname = window.location.origin;
+        const parsedUrl = new URL(loginURL);
         const searchParams = parsedUrl.searchParams || "";
         const callbackUrl = searchParams.get("callbackUrl") || "";
-        const allowedDomains = [frontConfig.host];
+        let redirectionUrl = "/dashboard";
+        if (callbackUrl) {
+            try {
+                // Try to construct a new URL. This will succeed for both absolute and relative URLs.
+                const parsedUrl = new URL(callbackUrl, hostname); // Use current origin if URL is relative.
 
-        // Create an anchor element to parse the URL
-        const anchor = document.createElement("a");
-        anchor.href = callbackUrl;
-
-        // Extract the hostname from the callback URL
-        const callbackHostname = anchor.host;
-        // Validate if the callbackUrl is internal or part of trusted domains
-        if (
-            callbackUrl.startsWith("/") ||
-            allowedDomains.includes(callbackHostname)
-        ) {
-            // Safe to redirect
-            window.location.href = callbackUrl;
-        } else {
-            // Redirect to a default safe URL (e.g., dashboard)
-            window.location.href = "/dashboard";
+                // If the URL is absolute, replace its origin with the current hostname
+                const fullUrl = `${hostname}${parsedUrl.pathname}${parsedUrl.search}${parsedUrl.hash}`;
+                // Navigate to the constructed URL
+                redirectionUrl = fullUrl;
+            } catch (e) {
+                // In case of any error, fallback to redirecting to a default page
+                console.error("Invalid URL provided:", e);
+            }
         }
+        window.location.href = redirectionUrl;
     }
 
     const onSubmit = React.useCallback(async () => {

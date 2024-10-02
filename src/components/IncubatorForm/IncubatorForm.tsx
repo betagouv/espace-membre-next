@@ -133,7 +133,7 @@ export function IncubatorForm(props: IncubatorFormProps) {
         props.incubator
             ? props.incubator.highlighted_startups &&
               props.incubator.highlighted_startups.includes(s.value)
-            : undefined
+            : undefined,
     );
     const [alertMessage, setAlertMessage] = React.useState<{
         title: string;
@@ -146,7 +146,7 @@ export function IncubatorForm(props: IncubatorFormProps) {
         (props) => (
             <BasicFormInput register={register} errors={errors} {...props} />
         ),
-        [register, errors]
+        [register, errors],
     );
     const onSubmit = (data: incubatorUpdateSchemaType, e) => {
         if (isSaving) {
@@ -263,7 +263,7 @@ export function IncubatorForm(props: IncubatorFormProps) {
                                         {
                                             shouldValidate: true,
                                             shouldDirty: true,
-                                        }
+                                        },
                                     );
                                 }}
                             />
@@ -318,7 +318,7 @@ export function IncubatorForm(props: IncubatorFormProps) {
                                         {
                                             shouldValidate: true,
                                             shouldDirty: true,
-                                        }
+                                        },
                                     );
                                 }}
                             />
@@ -347,7 +347,7 @@ export function IncubatorForm(props: IncubatorFormProps) {
                     />
                     <SESponsorSelect
                         label="Sponsor"
-                        defaultValue={getValues("incubator.owner_id")}
+                        value={watch("incubator.owner_id")}
                         allSponsors={props.sponsorOptions}
                         onChange={(newSponsor) => {
                             setValue("incubator.owner_id", newSponsor || "");
@@ -380,7 +380,7 @@ export function IncubatorForm(props: IncubatorFormProps) {
                                 {
                                     shouldValidate: true,
                                     shouldDirty: true,
-                                }
+                                },
                             );
                         }}
                         isMulti={true}

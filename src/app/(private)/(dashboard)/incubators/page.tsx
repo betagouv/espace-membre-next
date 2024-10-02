@@ -13,7 +13,7 @@ export default async function Page() {
     return (
         <>
             <h1>{routeTitles.incubatorList()}</h1>
-            <IncubatorList incubatorOptions={incubatorOptions} />;
+            <IncubatorList incubatorOptions={incubatorOptions} />
         </>
     );
 }

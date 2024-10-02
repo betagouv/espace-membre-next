@@ -4,11 +4,12 @@ import { fr as frLocale } from "date-fns/locale/fr";
 import Link from "next/link";
 
 import { PrivateMemberChangeSchemaType } from "@/models/memberChange";
+import { StartupChangeSchemaType } from "@/models/startupChange";
 
 export const LastChange = ({
     changes,
 }: {
-    changes: PrivateMemberChangeSchemaType[];
+    changes: PrivateMemberChangeSchemaType[] | StartupChangeSchemaType[];
 }) =>
     (changes.length && (
         <p

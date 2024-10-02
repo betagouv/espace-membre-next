@@ -22,7 +22,7 @@ export default async function Page() {
                 équipe de beta.gouv.fr pour créer une solution numérique
                 adaptée.
             </p>
-            <OrganizationList organizationOptions={organizationOptions} />;
+            <OrganizationList organizationOptions={organizationOptions} />
         </>
     );
 }

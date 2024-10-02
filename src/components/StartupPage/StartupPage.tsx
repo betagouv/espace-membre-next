@@ -3,9 +3,11 @@ import Accordion from "@codegouvfr/react-dsfr/Accordion";
 import ButtonsGroup from "@codegouvfr/react-dsfr/ButtonsGroup";
 import { Table } from "@codegouvfr/react-dsfr/Table";
 
+import LastChange from "../LastChange";
 import { BreadCrumbFiller } from "@/app/BreadCrumbProvider";
 import { memberBaseInfoSchemaType } from "@/models/member";
 import { phaseSchemaType, startupSchemaType } from "@/models/startup";
+import { StartupChangeSchemaType } from "@/models/startupChange";
 import { getLastMissionDate } from "@/utils/member";
 import { getCurrentPhase } from "@/utils/startup";
 
@@ -40,12 +42,14 @@ export interface StartupPageProps {
     startupInfos: startupSchemaType;
     members: memberBaseInfoSchemaType[];
     phases: phaseSchemaType[];
+    changes: StartupChangeSchemaType[];
 }
 
 export default function StartupPage({
     startupInfos,
     members,
     phases,
+    changes,
 }: StartupPageProps) {
     const currentPhase = getCurrentPhase(phases); // todo get current phase
     const activeMembers = members.filter((member) =>
@@ -70,6 +74,7 @@ export default function StartupPage({
             ></BreadCrumbFiller>
             <div className="fr-mb-8v">
                 <h1>{startupInfos.name}</h1>
+                <LastChange changes={changes} />
                 <p>
                     <span>
                         Fiche GitHub :{" "}

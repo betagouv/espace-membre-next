@@ -2,12 +2,12 @@ const { withSentryConfig } = require("@sentry/nextjs");
 
 const cspHeader = `
     default-src 'self';
-    connect-src 'self' api.maptiler.com espace-membre.cellar-c2.services.clever-cloud.com espace-membre-staging.cellar-c2.services.clever-cloud.com *.gouv.fr sentry.incubateur.net;
-    script-src 'self' 'unsafe-inline' 'unsafe-eval' blob: *.gouv.fr sentry.incubateur.net unpkg.com;
-    style-src 'self' 'unsafe-inline' cdnjs.cloudflare.com unpkg.com;
-    img-src * data: blob:;
-    font-src 'self' data: cdnjs.cloudflare.com;
-    frame-src 'self' metabase.incubateur.net;
+    connect-src 'self' api.maptiler.com espace-membre.cellar-c2.services.clever-cloud.com espace-membre-staging.cellar-c2.services.clever-cloud.com *.gouv.fr sentry.incubateur.net https://client.crisp.chat https://storage.crisp.chat wss://client.relay.crisp.chat wss://stream.relay.crisp.chat https://nominatim.openstreetmap.org;
+    script-src 'self' 'unsafe-inline' 'unsafe-eval' blob: *.gouv.fr sentry.incubateur.net unpkg.com https://client.crisp.chat https://settings.crisp.chat;
+    style-src 'self' 'unsafe-inline' cdnjs.cloudflare.com unpkg.com https://client.crisp.chat;
+    img-src * data: blob: https://client.crisp.chat https://image.crisp.chat https://storage.crisp.chat;
+    font-src 'self' data: cdnjs.cloudflare.com https://client.crisp.chat;
+    frame-src 'self' metabase.incubateur.net https://game.crisp.chat;
     object-src 'none';
     base-uri 'self';
     form-action 'self';

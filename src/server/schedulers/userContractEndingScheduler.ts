@@ -33,28 +33,26 @@ const getRegisteredUsersWithEndingContractInXDays = async (
     const users: memberBaseInfoSchemaType[] = (await getAllUsersInfo()).map(
         (user) => memberBaseInfoToModel(user)
     );
-    const activeGithubUsers = users.filter((user) => {
-        const today = new Date();
-        // filter user that have have been created after implementation of this function
-        const stillActive = !utils.checkUserIsExpired(user);
-        const latestMission = user.missions.reduce((a, v) =>
-            //@ts-ignore todo
-            v.end > a.end || !v.end ? v : a
-        );
-        //@ts-ignore todo
-        // const userEndDate = new Date(latestMission.end);
-        // userEndDate.setHours(0, 0, 0, 0);
-        if (!latestMission.end) {
-            return false;
-        }
-        return (
-            stillActive &&
-            differenceInDays(
-                startOfDay(latestMission.end),
-                startOfDay(today)
-            ) === days
-        );
-    });
+    const activeGithubUsers = users
+        .filter((user) => user.missions.length)
+        .filter((user) => {
+            const today = new Date();
+            const stillActive = !utils.checkUserIsExpired(user);
+            const latestMission = user.missions.reduce((a, v) =>
+                //@ts-ignore todo
+                v.end > a.end || !v.end ? v : a
+            );
+            if (!latestMission.end) {
+                return false;
+            }
+            return (
+                stillActive &&
+                differenceInDays(
+                    startOfDay(latestMission.end),
+                    startOfDay(today)
+                ) === days
+            );
+        });
 
     const allMattermostUsersEmails = allMattermostUsers.map(
         (mattermostUser) => mattermostUser.email
@@ -70,7 +68,7 @@ const getRegisteredUsersWithEndingContractInXDays = async (
         // const githubUser = activeGithubUsers.find(
         //     (ghUser) => ghUser.username === user.username
         // );
-        if (index && allMattermostUsers[index].username) {
+        if (index !== -1 && allMattermostUsers[index].username) {
             registeredUsersWithEndingContractInXDays.push({
                 userInfos: user,
                 mattermostUsername: allMattermostUsers[index].username,

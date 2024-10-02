@@ -27,10 +27,9 @@ export const OrganizationList = (props: OrganizationListProps) => {
                     label="Organisations sponsors"
                     placeholder="Sélectionne une organisation sponsor"
                     allSponsors={props.organizationOptions}
+                    value={organization}
                     onChange={(organization) => {
-                        if (organization) {
-                            setOrganization(organization);
-                        }
+                        setOrganization(organization ?? "");
                     }}
                 />
                 <Button

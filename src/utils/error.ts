@@ -22,6 +22,8 @@ export const ERROR_MESSAGES = {
     AUTHORIZATION_ERROR: "You don’t have the right to access this function.",
     STARTUP_INSERT_FAILED:
         "Startup data could not be inserted into the database.",
+    MEMBER_ADMIN_EMAIL_ADDRESS_NOT_ALLOWED:
+        "Les emails admin ne sont pas autorisés",
     // Add more error messages as needed
 };
 // errors.ts
@@ -92,6 +94,16 @@ export class StartupInsertFailedError extends ErrorWithStatus {
     }
 }
 
+export class AdminEmailNotAllowedError extends ErrorWithStatus {
+    constructor() {
+        super(ERROR_MESSAGES.MEMBER_ADMIN_EMAIL_ADDRESS_NOT_ALLOWED);
+        this.name = "AdminEmailNotAllowedError";
+        this.statusCode = 403;
+        // Ensure the prototype chain is correctly set (for older versions of TypeScript/JavaScript)
+        Object.setPrototypeOf(this, AdminEmailNotAllowedError.prototype);
+    }
+}
+
 const EXPECTED_ERRORS = [
     AuthorizationError,
     NoDataError,
@@ -99,6 +111,7 @@ const EXPECTED_ERRORS = [
     OVHError,
     StartupUniqueConstraintViolationError,
     MemberUniqueConstraintViolationError,
+    AdminEmailNotAllowedError,
 ];
 
 function isExpectedError(error: unknown): error is ErrorWithStatus {

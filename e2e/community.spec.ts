@@ -12,7 +12,7 @@ test("search valid community members", async ({ page }) => {
 
     await page.goto("/community");
     await page
-        .getByPlaceholder("Sélectionne les membres")
+        .getByPlaceholder("Sélectionne un statut")
         .fill("Membres actifs");
     await page
         .getByRole("option", { name: "Membres Actifs", exact: true })

@@ -42,7 +42,6 @@ describe("User", () => {
                 .type("form")
                 .send({
                     _method: "POST",
-                    to_email: "test@example.com",
                 })
                 .end((err, res) => {
                     res.should.have.status(401);
@@ -88,9 +87,7 @@ describe("User", () => {
                     )
                 )
                 .type("form")
-                .send({
-                    to_email: "test@example.com",
-                });
+                .send({});
 
             const res = await db
                 .selectFrom("users")
@@ -132,9 +129,7 @@ describe("User", () => {
                     )
                 )
                 .type("form")
-                .send({
-                    to_email: "test@example.com",
-                })
+                .send({})
                 .end((err, res) => {
                     ovhEmailCreation.isDone().should.be.false;
                     done();
@@ -154,9 +149,7 @@ describe("User", () => {
                     )
                 )
                 .type("form")
-                .send({
-                    to_email: "test@example.com",
-                })
+                .send({})
                 .end((err, res) => {
                     ovhEmailCreation.isDone().should.be.false;
                     done();
@@ -176,9 +169,7 @@ describe("User", () => {
                     )
                 )
                 .type("form")
-                .send({
-                    to_email: "test@example.com",
-                })
+                .send({})
                 .end((err, res) => {
                     ovhEmailCreation.isDone().should.be.false;
                     done();
@@ -199,9 +190,7 @@ describe("User", () => {
                     )
                 )
                 .type("form")
-                .send({
-                    to_email: "test@example.com",
-                })
+                .send({})
                 .end((err, res) => {
                     ovhEmailCreation.isDone().should.be.false;
                     done();
@@ -229,16 +218,13 @@ describe("User", () => {
                     )
                 )
                 .type("form")
-                .send({
-                    to_email: "test@example.com",
-                });
+                .send({});
             ovhEmailCreation.isDone().should.be.true;
             const user = await db
                 .selectFrom("users")
                 .selectAll()
                 .where("username", "=", "membre.actif")
                 .executeTakeFirstOrThrow();
-            user.secondary_email.should.equal("test@example.com");
         });
     });
 
@@ -956,6 +942,46 @@ describe("User", () => {
 
             mattermostGetUserByEmailStub.calledOnce.should.be.true;
 
+            await db
+                .updateTable("users")
+                .where("username", "=", "membre.nouveau")
+                .set({
+                    primary_email: `membre.nouveau@${config.domain}`,
+                })
+                .execute();
+        });
+
+        it("should not update primary email if email is an admin account", async () => {
+            isPublicServiceEmailStub.returns(Promise.resolve(true));
+            mattermostGetUserByEmailStub.returns(Promise.reject("404 error"));
+            const username = "membre.nouveau";
+            const primaryEmail = "admin@otherdomaine.gouv.fr";
+            getToken.returns(utils.getJWT("membre.nouveau"));
+            await db
+                .updateTable("users")
+                .where("username", "=", "membre.nouveau")
+                .set({
+                    primary_email: `membre.nouveau@${config.domain}`,
+                })
+                .execute();
+
+            await chai
+                .request(app)
+                .put(`/api/users/${username}/primary_email/`)
+                .type("form")
+                .send({
+                    username,
+                    primaryEmail: primaryEmail,
+                });
+            const dbNewRes = await db
+                .selectFrom("users")
+                .selectAll()
+                .where("username", "=", "membre.nouveau")
+                .execute();
+            dbNewRes.length.should.equal(1);
+            dbNewRes[0].primary_email.should.equal(
+                `membre.nouveau@${config.domain}`
+            );
             await db
                 .updateTable("users")
                 .where("username", "=", "membre.nouveau")

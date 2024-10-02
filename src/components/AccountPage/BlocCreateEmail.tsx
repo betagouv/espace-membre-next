@@ -32,9 +32,7 @@ export default function BlocCreateEmail({
                                 ":username",
                                 userInfos.username
                             ),
-                            {
-                                to_email: email,
-                            },
+                            {},
                             {
                                 withCredentials: true,
                             }
