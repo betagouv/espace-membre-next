@@ -18,7 +18,7 @@
         },
         "HOSTNAME": {
             "generator": "template",
-            "template": "%APP%.%REGION_NAME%.scalingo.io"
+            "template": "%APP%.osc-fr1.scalingo.io"
         }
     },
     "scripts": {
