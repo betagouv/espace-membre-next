@@ -23,7 +23,7 @@ export const MemberStatus = ({
     // todo: use ts-pattern or equivalent to handle all cases
     const rows = [
         [
-            "Validité du compte du compte beta",
+            "Compte beta",
             !isExpired ? (
                 <Badge severity="success">OK</Badge>
             ) : (
