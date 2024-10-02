@@ -4,7 +4,10 @@ import { matomoClient } from "../config/matomo.config";
 import { AccountService, SERVICES } from "../config/services.config";
 import { addEvent } from "@/lib/events";
 import { db } from "@/lib/kysely";
-import { getAllUsersInfo } from "@/lib/kysely/queries/users";
+import {
+    getAllExpiredUsers,
+    getAllUsersInfo,
+} from "@/lib/kysely/queries/users";
 import * as mattermost from "@/lib/mattermost";
 import { EventCode, SYSTEM_NAME } from "@/models/actionEvent";
 import { Job } from "@/models/job";
@@ -350,22 +353,18 @@ export async function deleteServiceAccounts(
     let expiredUsers = optionalExpiredUsers;
 
     if (!expiredUsers) {
-        const users = (await getAllUsersInfo()).map((user) =>
-            memberBaseInfoToModel(user)
-        );
         const allServiceUsers = await service.getAllUsers();
         const allServiceUserEmails = allServiceUsers.map((user) => user.email);
         const today = new Date();
         const todayLess30days = new Date();
         todayLess30days.setDate(today.getDate() - 30);
+        const users = (await getAllExpiredUsers(todayLess30days)).map((user) =>
+            memberBaseInfoToModel(user)
+        );
+
         expiredUsers = users.filter((user) => {
             return (
                 user.primary_email &&
-                [
-                    EmailStatusCode.EMAIL_DELETED,
-                    EmailStatusCode.EMAIL_EXPIRED,
-                ].includes(user.primary_email_status) &&
-                user.primary_email_status_updated_at < todayLess30days &&
                 allServiceUserEmails.includes(user.primary_email)
             );
         });
