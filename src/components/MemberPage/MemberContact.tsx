@@ -88,11 +88,13 @@ export const MemberContact = ({
     }
 
     return (
-        <Table
-            className="tbl-contact"
-            fixed
-            headers={["Titre", "Lien"]}
-            data={infos.map((info) => [info.label, info.value])}
-        ></Table>
+        (infos.length && (
+            <Table
+                className="tbl-contact"
+                fixed
+                headers={["Titre", "Lien"]}
+                data={infos.map((info) => [info.label, info.value])}
+            ></Table>
+        )) || <>Aucune information de contact trouvée 😰</>
     );
 };

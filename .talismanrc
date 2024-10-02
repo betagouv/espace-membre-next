@@ -10,7 +10,7 @@ fileignoreconfig:
 - filename: src/components/MemberPage/EmailUpgrade.tsx
   checksum: 183a72c4974a5bd2e7a3da0d60895480dc6843e158933a221329dd18e586e400
 - filename: src/components/MemberPage/MemberMissions.tsx
-  checksum: c43f69bf2bad36a3a82d6cce94b2c85d27a3e6e5eb5cfb28c212a2fb73beba23
+  checksum: a3eda5493ad1c44ffdc2607b76d31e132e9de8680af7779865f059d7025ac4ad
 - filename: src/components/MemberPage/MemberPage.tsx
   checksum: d7e1d2aa3b94b36055a1cee44c29b8818cd734c7a454c63e11eb0ad6a6877c56
 - filename: src/components/MemberPage/MemberStatus.tsx
