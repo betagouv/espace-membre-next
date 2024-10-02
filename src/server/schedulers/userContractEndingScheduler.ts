@@ -360,8 +360,11 @@ export async function deleteServiceAccounts(
         todayLess30days.setDate(today.getDate() - 30);
         expiredUsers = users.filter((user) => {
             return (
-                utils.checkUserIsExpired(user, 30) &&
                 user.primary_email &&
+                [
+                    EmailStatusCode.EMAIL_DELETED,
+                    EmailStatusCode.EMAIL_EXPIRED,
+                ].includes(user.primary_email_status) &&
                 user.primary_email_status_updated_at < todayLess30days &&
                 allServiceUserEmails.includes(user.primary_email)
             );

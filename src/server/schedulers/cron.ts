@@ -222,7 +222,7 @@ const startupJobs: Job[] = [
 
 const servicesJobs: Job[] = [
     {
-        cronTime: "0 0 5 * * 1",
+        cronTime: "0 0 5 * * *",
         onTick: () => {
             // deleteMatomoAccount
         },
