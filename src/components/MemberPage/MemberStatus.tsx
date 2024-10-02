@@ -29,8 +29,8 @@ export const MemberStatus = ({
                 Compte beta
                 <span
                     className={fr.cx(
-                        "fr-icon--xs",
-                        "fr-icon-info-fill",
+                        "fr-icon--sm",
+                        "fr-icon-info-line",
                         "fr-ml-1v"
                     )}
                     style={{ cursor: "pointer" }}

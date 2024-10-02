@@ -5,6 +5,7 @@ import { fr } from "@codegouvfr/react-dsfr";
 import Badge from "@codegouvfr/react-dsfr/Badge";
 
 import { MemberPageProps } from "./MemberPage";
+import { EMAIL_PLAN_TYPE } from "@/models/ovh";
 
 export const MemberContact = ({
     userInfos,
@@ -28,24 +29,33 @@ export const MemberContact = ({
                     <a href={`mailto:${userInfos.primary_email}`}>
                         {userInfos.primary_email}
                     </a>
-                    {emailInfos && emailInfos.isPro && (
-                        <Badge
-                            small
-                            className={fr.cx("fr-ml-1w")}
-                            severity="success"
-                        >
-                            OVH Pro
-                        </Badge>
-                    )}
-                    {emailInfos && emailInfos.isExchange && (
-                        <Badge
-                            small
-                            className={fr.cx("fr-ml-1w")}
-                            severity="success"
-                        >
-                            OVH Exchange
-                        </Badge>
-                    )}
+                    {emailInfos &&
+                        (emailInfos.isPro ? (
+                            <Badge
+                                small
+                                className={fr.cx("fr-ml-1w")}
+                                severity="info"
+                            >
+                                OVH Pro
+                            </Badge>
+                        ) : emailInfos.isExchange ? (
+                            <Badge
+                                small
+                                className={fr.cx("fr-ml-1w")}
+                                severity="info"
+                            >
+                                OVH Exchange
+                            </Badge>
+                        ) : emailInfos.emailPlan ===
+                          EMAIL_PLAN_TYPE.EMAIL_PLAN_BASIC ? (
+                            <Badge
+                                small
+                                className={fr.cx("fr-ml-1w")}
+                                severity="info"
+                            >
+                                OVH MX
+                            </Badge>
+                        ) : null)}
                 </>
             ),
         });

@@ -154,7 +154,7 @@ export default function EmailContainer({
                                 <Badge
                                     small
                                     className={fr.cx("fr-ml-1w")}
-                                    severity="success"
+                                    severity="info"
                                 >
                                     OVH Pro
                                 </Badge>
@@ -162,7 +162,7 @@ export default function EmailContainer({
                                 <Badge
                                     small
                                     className={fr.cx("fr-ml-1w")}
-                                    severity="success"
+                                    severity="info"
                                 >
                                     OVH Exchange
                                 </Badge>
@@ -171,7 +171,7 @@ export default function EmailContainer({
                                 <Badge
                                     small
                                     className={fr.cx("fr-ml-1w")}
-                                    severity="success"
+                                    severity="info"
                                 >
                                     OVH MX
                                 </Badge>
