@@ -70,7 +70,7 @@ export const MemberStatus = ({
             [],
 
         mattermostInfo && [
-            "Compte mattermost",
+            "Compte Mattermost",
             mattermostInfo.hasMattermostAccount &&
             mattermostInfo.mattermostUserName ? (
                 <>
