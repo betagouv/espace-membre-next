@@ -362,6 +362,7 @@ export async function deleteServiceAccounts(
             return (
                 utils.checkUserIsExpired(user, 30) &&
                 user.primary_email &&
+                user.primary_email_status_updated_at < todayLess30days &&
                 allServiceUserEmails.includes(user.primary_email)
             );
         });
