@@ -74,7 +74,7 @@ export class Matomo implements AccountService {
     }
 
     /**
-     * Delete a user by email. This function combines getUserByEmail and deleteUserByLogin
+     * Delete a user by email.
      * @param email - The email of the user to delete
      */
     async deleteUserByEmail(email: string): Promise<void> {
