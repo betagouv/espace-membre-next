@@ -7,6 +7,15 @@ import Alert from "@codegouvfr/react-dsfr/Alert";
 import Badge from "@codegouvfr/react-dsfr/Badge";
 import Table from "@codegouvfr/react-dsfr/Table";
 
+import frontConfig from "@/frontConfig";
+import { EmailStatusCode } from "@/models/member";
+import {
+    EmailInfos,
+    memberSchemaType,
+    memberWrapperSchemaType,
+} from "@/models/member";
+import { EMAIL_PLAN_TYPE, OvhRedirection, OvhResponder } from "@/models/ovh";
+
 import BlocChangerMotDePasse from "./BlocChangerMotDePasse";
 import BlocConfigurerCommunicationEmail from "./BlocConfigurerCommunicationEmail";
 import BlocConfigurerEmailPrincipal from "./BlocConfigurerEmailPrincipal";
@@ -14,15 +23,7 @@ import BlocConfigurerEmailSecondaire from "./BlocConfigurerEmailSecondaire";
 import BlocCreateEmail from "./BlocCreateEmail";
 import BlocEmailResponder from "./BlocEmailResponder";
 import BlocRedirection from "./BlocRedirection";
-import frontConfig from "@/frontConfig";
-import { EmailStatusCode } from "@/models/member";
-import { WebMailButton } from "../MemberPage/WebMailButton";
-import {
-    EmailInfos,
-    memberSchemaType,
-    memberWrapperSchemaType,
-} from "@/models/member";
-import { EMAIL_PLAN_TYPE, OvhRedirection, OvhResponder } from "@/models/ovh";
+import { WebMailButton } from "./WebMailButton";
 
 function BlocEmailConfiguration({ emailInfos }: { emailInfos: EmailInfos }) {
     interface ServerConf {
