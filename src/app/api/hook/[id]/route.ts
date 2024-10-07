@@ -26,7 +26,12 @@ export const POST = async (
     req: NextRequest,
     { params: { id } }: { params: { id: string } }
 ) => {
-    if (id === config.SIB_WEBHOOK_ID) {
+    if (id === config.MATTERMOST_WEBHOOK_PING) {
+        await axios.post(
+            `https://mattermost.incubateur.net/hooks/${config.MATTERMOST_WEBHOOK_PING}`,
+            { text: `${config.MATTERMOST_TEAM_PING}` }
+        );
+    } else if (id === config.SIB_WEBHOOK_ID) {
         let sibWebhookBody = (await req.json()) as ISibWebhookBody;
 
         const message = `:toolbox: Webhook send in blue\n
