@@ -1,10 +1,10 @@
 import Accordion from "@codegouvfr/react-dsfr/Accordion";
-import { ChangeSecondaryEmail } from "./ChangeSecondaryEmail";
+import { EmailStatusCode } from "@/models/member";
+import { ChangeSecondaryEmail } from "./Email/ChangeSecondaryEmail";
 import MemberBrevoEventList from "./MemberBrevoEventList";
 import MemberEventList from "./MemberEventList";
 import { MemberPageProps } from "./MemberPage";
 import { EmailUpgrade } from "./EmailUpgrade";
-import { EmailStatusCode } from "@/models/member";
 import { CreateEmailForm } from "./CreateEmailForm";
 import MemberEmailServiceInfo from "./MemberEmailServiceInfo";
 

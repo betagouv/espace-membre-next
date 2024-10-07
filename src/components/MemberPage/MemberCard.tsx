@@ -20,9 +20,7 @@ export const MemberCard = ({
     isAdmin,
     canEdit,
 }: {
-    userInfos: Omit<MemberPageProps["userInfos"], "teams"> & {
-        teams: { name: string; incubator_title: string }[];
-    };
+    userInfos: MemberPageProps["userInfos"];
     avatar?: string | undefined;
     changes: PrivateMemberChangeSchemaType[];
     isAdmin: boolean;
@@ -34,6 +32,7 @@ export const MemberCard = ({
             <br />
             {userInfos.teams?.length
                 ? userInfos.teams
+                      // @ts-ignore todo
                       ?.map((t) => `${t.name} - ${t.incubator_title}`)
                       .join(", ")
                 : null}

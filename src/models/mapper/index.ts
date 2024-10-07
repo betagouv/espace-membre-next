@@ -102,9 +102,10 @@ export function memberPublicInfoToModel(
         bio: user.bio,
         link: user.link,
         github: user.github,
-        missions: (user?.missions || []).map((mission) =>
-            missionToModel(mission)
-        ),
+        missions: user?.missions || [],
+        //.map((mission) =>
+        //     missionToModel(mission)
+        // ),
         // primary_email: true,
         primary_email_status: user.primary_email_status as EmailStatusCode,
     };

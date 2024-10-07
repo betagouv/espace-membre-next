@@ -22,7 +22,7 @@ export const MEMBER_PROTECTED_INFO: SelectExpression<DB, "users">[] = [
     "users.communication_email",
     "users.email_is_redirection",
     "users.competences",
-];
+] as const;
 
 type GetUserInfosParams =
     | {
@@ -132,11 +132,8 @@ export async function getUserBasicInfo(
 export async function getAllUsersInfo(db: Kysely<DB> = database) {
     const query = db
         .selectFrom("users")
-        .select((eb) => [
-            ...MEMBER_PROTECTED_INFO,
-            withMissions(eb),
-            withTeams(eb),
-        ])
+        .selectAll("users")
+        .select((eb) => [withMissions, withTeams])
         .compile();
 
     const userInfos = await db.executeQuery(query);
@@ -211,7 +208,9 @@ function withMissions(eb: ExpressionBuilder<DB, "users">) {
             // .whereRef("missions.uuid", "=", "missions_startups.mission_id")
             .orderBy("missions.start", "asc")
             .groupBy("missions.uuid")
-    ).as("missions");
+    )
+        .$notNull()
+        .as("missions");
 }
 
 function withTeams(eb: ExpressionBuilder<DB, "users">) {
@@ -228,7 +227,9 @@ function withTeams(eb: ExpressionBuilder<DB, "users">) {
             .whereRef("users_teams.user_id", "=", "users.uuid")
             .orderBy(["incubators.title asc", "teams.name asc"])
             .groupBy(["teams.uuid", "incubators.title"])
-    ).as("teams");
+    )
+        .$notNull()
+        .as("teams");
 }
 
 /** Compute member end date */
