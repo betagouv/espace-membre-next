@@ -9,6 +9,24 @@ import { EMAIL_PLAN_TYPE } from "@/models/ovh";
 
 const EmailLink = ({ email }) => <a href={`mailto:${email}`}>{email}</a>;
 
+const ToolTip = ({ id, children }) => (
+    <>
+        <button
+            aria-describedby={`tooltip-${id}`}
+            className={fr.cx("fr-btn--tooltip", "fr-btn")}
+        >
+            Information contextuelle
+        </button>
+        <span
+            className={fr.cx("fr-tooltip", "fr-placement")}
+            id={`tooltip-${id}`}
+            role="tooltip"
+        >
+            {children}
+        </span>
+    </>
+);
+
 export const MemberStatus = ({
     isExpired,
     emailInfos,
@@ -27,17 +45,9 @@ export const MemberStatus = ({
         [
             <>
                 Compte beta
-                <span
-                    className={fr.cx(
-                        "fr-icon--sm",
-                        "fr-icon-info-line",
-                        "fr-ml-1v"
-                    )}
-                    style={{ cursor: "pointer" }}
-                    title={
-                        "Indique si ton compte membre beta.gouv.fr est actif"
-                    }
-                />
+                <ToolTip id="compte-beta">
+                    Indique si ton compte membre beta.gouv.fr est actif
+                </ToolTip>
             </>,
             !isExpired ? (
                 <Badge severity="success">Actif</Badge>

@@ -20,21 +20,25 @@ export const MemberCard = ({
     isAdmin,
     canEdit,
 }: {
-    userInfos: MemberPageProps["userInfos"];
+    userInfos: Omit<MemberPageProps["userInfos"], "teams"> & {
+        teams: { name: string; incubator_title: string }[];
+    };
     avatar?: string | undefined;
     changes: PrivateMemberChangeSchemaType[];
     isAdmin: boolean;
     canEdit: boolean;
 }) => {
-    console.log(userInfos);
-    const heading = `${userInfos.domaine} ${
-        userInfos.teams?.length
-            ? userInfos.teams
-                  // @ts-ignore TODO: TS
-                  ?.map((t) => `${t.name} - ${t.incubator_title}`)
-                  .join(", ")
-            : ""
-    }`;
+    const heading = (
+        <>
+            Domaine: {userInfos.domaine}
+            <br />
+            {userInfos.teams?.length
+                ? userInfos.teams
+                      ?.map((t) => `${t.name} - ${t.incubator_title}`)
+                      .join(", ")
+                : null}
+        </>
+    );
 
     return (
         <div

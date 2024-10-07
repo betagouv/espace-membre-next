@@ -30,9 +30,7 @@ export function DashboardPage(props: DashboardPageProps) {
                         orientation="horizontal"
                         imageUrl={(document as StaticImageData).src}
                         linkProps={{
-                            href: linkRegistry.get("communityMember", {
-                                username: "me",
-                            }),
+                            href: linkRegistry.get("account"),
                         }}
                     />
                 </div>
