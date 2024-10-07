@@ -232,7 +232,7 @@ export default function CommunityCreateMemberPage(props: BaseInfoUpdateProps) {
                                 >
                                     <Input
                                         label="Email (obligatoire)"
-                                        hintText="Vous recevrez sur cette adresse email les informations nécessaires pour créer votre compte @beta.gouv.fr. Elle servira également d'email secondaire."
+                                        hintText="Saisissez votre adresse email (celle de votre administration si vous en avez une ; votre email personnel sinon)."
                                         nativeInputProps={{
                                             placeholder:
                                                 "ex: grace.hopper@gmail.com",
