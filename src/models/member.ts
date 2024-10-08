@@ -222,7 +222,7 @@ export const memberSchema = z.object({
         .optional()
         .nullable(),
     teams: z
-        .array(z.string())
+        .array(teamSchema)
         .describe("Liste des équipes incubateurs")
         .optional()
         .nullable(),
@@ -362,6 +362,7 @@ export const memberPublicInfoSchema = memberSchema.pick({
     link: true,
     github: true,
     missions: true,
+    teams: true,
     competences: true,
     workplace_insee_code: true,
     // primary_email: true,

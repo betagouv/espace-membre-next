@@ -75,7 +75,7 @@ export function memberBaseInfoToMemberPublicInfoModel(
 
 export function memberPublicInfoToModel(
     user: Awaited<ReturnType<typeof getAllUsersInfo>>[0]
-): memberPublicInfoSchemaType {
+) {
     if (!user) {
         throw new Error("No users");
     }
@@ -103,6 +103,7 @@ export function memberPublicInfoToModel(
         link: user.link,
         github: user.github,
         missions: user?.missions || [],
+        teams: user?.teams || [],
         //.map((mission) =>
         //     missionToModel(mission)
         // ),

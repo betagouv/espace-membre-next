@@ -167,14 +167,6 @@ export async function adminGetAllUsersInfos(db: Kysely<DB> = database) {
 
 /* UTILS */
 
-function withUserDetails(eb: ExpressionBuilder<DB, "user_details">) {
-    return eb
-        .selectFrom("user_details")
-        .selectAll()
-        .whereRef("user_details.hash", "=", sql.val<string>("xx"))
-        .as("details");
-}
-
 function withMissions(eb: ExpressionBuilder<DB, "users">) {
     return jsonArrayFrom(
         eb
@@ -221,6 +213,9 @@ function withTeams(eb: ExpressionBuilder<DB, "users">) {
             .leftJoin("incubators", "incubators.uuid", "teams.incubator_id")
             .select([
                 "teams.uuid",
+                "teams.ghid",
+                "teams.mission",
+                "teams.incubator_id",
                 "teams.name",
                 "incubators.title as incubator_title",
             ])

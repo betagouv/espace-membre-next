@@ -5,7 +5,7 @@ export const teamSchema = z.object({
     // id: z.number(),
     name: z.string().min(1),
     mission: z.string().nullable().optional(),
-    ghid: z.string().min(2),
+    ghid: z.string().min(2).nullable().optional(),
     incubator_id: z.string(),
 });
 export type teamSchemaType = z.infer<typeof teamSchema>;
