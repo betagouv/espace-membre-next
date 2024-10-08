@@ -368,7 +368,7 @@ export async function deleteServiceAccounts(
         try {
             if (user.primary_email) {
                 await service.deleteUserByEmail(user.primary_email);
-                console.log(`Suppression du compte pour ${user.username}`);
+                console.log(`Compte matomo supprimé pour ${user.username}`);
                 await addEvent({
                     created_by_username: SYSTEM_NAME,
                     action_code: EventCode.MEMBER_SERVICE_ACCOUNT_DELETED,

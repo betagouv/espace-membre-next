@@ -99,6 +99,7 @@ const CRON_TASK_ENV_VAR = {
         process.env
             .FEATURE_SEND_MESSAGE_TO_ACTIVE_USERS_WITHOUT_SECONDARY_EMAIL ===
         "true",
+    FEATURE_DELETE_MATOMO_ACCOUNT: process.env.FEATURE_DELETE_MATOMO_ACCOUNT,
     FEATURE_SEND_NEWSLETTER: process.env.FEATURE_SEND_NEWSLETTER === "true",
     visitSenderEmail:
         process.env.VISIT_MAIL_SENDER || "secretariat@beta.gouv.fr",
