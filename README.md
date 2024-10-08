@@ -254,3 +254,4 @@ Les tâches CRON sont gérées par une app scalingo dédiée via le [Procfile](.
 | ❌      | At 0h                                      | pullRequestWatcher                                     | Remind user with pending GitHub pull request on author file                                  |
 | ❌      | At 0h                                      | pullRequestWatcherSendEmailToTeam                      | Remind team with pending GitHub pull request on author file                                  |
 | ✅      | 10:00 am 1 th                              | sendMessageToActiveUsersWithoutSecondaryEmail          | Send message to active user without secondary email to update secondary email                |
+| ✅      | 15:00                                      | deleteMatomoAccount                                    | Delete matomo account                                                                        |
