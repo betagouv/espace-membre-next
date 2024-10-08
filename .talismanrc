@@ -1,18 +1,20 @@
 fileignoreconfig:
-    - filename: src/app/(private)/(dashboard)/incubators/[id]/info-form/page.tsx
-      checksum: 1ec9acf039a7d336e710ef7b47c385eb7080293ee2750c2cf99e9056cde7f129
-    - filename: src/components/AutoComplete.tsx
-      checksum: 1508b6cb2d14d760483cbb52a2924ff2e93cb34f3fda64703e298f6d758ef08e
-    - filename: src/components/IncubatorForm/IncubatorForm.tsx
-      checksum: 267f0f0e491b06862cd957ae86d22baf799a705370673cd24e588391a4613a5a
-    - filename: src/components/SEPhaseSelect.tsx
-      checksum: 0415032e0a9fb86957148673924ac6e16bc1ffb4b1851091377d23a200562e5e
-    - filename: src/components/SESponsorSelect.tsx
-      checksum: ae63a1c0173015ad4e9e904e4f025eecb992aca7ca5c1cbf4086baf16470dfcf
-    - filename: src/lib/hstore.ts
-      checksum: a02535588a717719f9e51c324d78779afd8c08fe4904a4aae525b85f8720b0ef
-    - filename: src/components/StartupForm/TechnoEditor.tsx
-      checksum: 1945d388ece9e30e247acfa902436849f78ffcd032047f8c0292173dddc8ea53
+- filename: .github/workflows/playwright.yml
+  checksum: 1234abbe043fe93a6d257b3b7d7797f994e14535c0b276f95121c6ce3a44284d
+- filename: src/app/(private)/(dashboard)/incubators/[id]/info-form/page.tsx
+  checksum: 1ec9acf039a7d336e710ef7b47c385eb7080293ee2750c2cf99e9056cde7f129
+- filename: src/components/AutoComplete.tsx
+  checksum: 1508b6cb2d14d760483cbb52a2924ff2e93cb34f3fda64703e298f6d758ef08e
+- filename: src/components/IncubatorForm/IncubatorForm.tsx
+  checksum: 267f0f0e491b06862cd957ae86d22baf799a705370673cd24e588391a4613a5a
+- filename: src/components/SEPhaseSelect.tsx
+  checksum: 0415032e0a9fb86957148673924ac6e16bc1ffb4b1851091377d23a200562e5e
+- filename: src/components/SESponsorSelect.tsx
+  checksum: ae63a1c0173015ad4e9e904e4f025eecb992aca7ca5c1cbf4086baf16470dfcf
+- filename: src/components/StartupForm/TechnoEditor.tsx
+  checksum: 1945d388ece9e30e247acfa902436849f78ffcd032047f8c0292173dddc8ea53
+- filename: src/lib/hstore.ts
+  checksum: a02535588a717719f9e51c324d78779afd8c08fe4904a4aae525b85f8720b0ef
 scopeconfig:
-    - scope: node
+- scope: node
 version: "1.0"
