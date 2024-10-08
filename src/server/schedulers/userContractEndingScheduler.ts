@@ -347,28 +347,23 @@ export async function deleteMatomoAccount() {
 }
 
 export async function deleteServiceAccounts(
-    service: AccountService, // Accept any service that implements the AccountService interface
-    optionalExpiredUsers?: memberBaseInfoSchemaType[]
+    service: AccountService // Accept any service that implements the AccountService interface
 ) {
-    let expiredUsers = optionalExpiredUsers;
+    const allServiceUsers = await service.getAllUsers();
+    const allServiceUserEmails = allServiceUsers.map((user) => user.email);
+    const today = new Date();
+    const todayLess30days = new Date();
+    todayLess30days.setDate(today.getDate() - 30);
+    const users = (await getAllExpiredUsers(todayLess30days)).map((user) =>
+        memberBaseInfoToModel(user)
+    );
 
-    if (!expiredUsers) {
-        const allServiceUsers = await service.getAllUsers();
-        const allServiceUserEmails = allServiceUsers.map((user) => user.email);
-        const today = new Date();
-        const todayLess30days = new Date();
-        todayLess30days.setDate(today.getDate() - 30);
-        const users = (await getAllExpiredUsers(todayLess30days)).map((user) =>
-            memberBaseInfoToModel(user)
+    const expiredUsers = users.filter((user) => {
+        return (
+            user.primary_email &&
+            allServiceUserEmails.includes(user.primary_email)
         );
-
-        expiredUsers = users.filter((user) => {
-            return (
-                user.primary_email &&
-                allServiceUserEmails.includes(user.primary_email)
-            );
-        });
-    }
+    });
     for (const user of expiredUsers) {
         try {
             if (user.primary_email) {
