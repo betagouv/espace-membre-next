@@ -7,7 +7,7 @@ import { z } from "zod";
 
 import { addEvent } from "@/lib/events";
 import { db } from "@/lib/kysely";
-import { EventCode } from "@/models/actionEvent";
+import { EventCode } from "@/models/actionEvent/actionEvent";
 import {
     organizationUpdateSchemaType,
     organizationUpdateSchema,

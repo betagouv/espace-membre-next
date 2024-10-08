@@ -9,7 +9,7 @@ import { db } from "@/lib/kysely";
 import { createMission, updateMission } from "@/lib/kysely/queries/missions";
 import { getUserBasicInfo, getUserInfos } from "@/lib/kysely/queries/users";
 import { getUserByEmail, MattermostUser, searchUsers } from "@/lib/mattermost";
-import { EventCode } from "@/models/actionEvent";
+import { EventCode } from "@/models/actionEvent/actionEvent";
 import { updateMemberMissionsSchemaType } from "@/models/actions/member";
 import { UpdateOvhResponder } from "@/models/actions/ovh";
 import {

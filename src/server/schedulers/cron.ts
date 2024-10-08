@@ -49,6 +49,8 @@ import {
     deleteOVHEmailAcounts,
     deleteRedirectionsAfterQuitting,
     removeEmailsFromMailingList,
+    deleteServiceAccounts,
+    deleteMatomoAccount,
 } from "./userContractEndingScheduler";
 import { db } from "@/lib/kysely";
 import config from "@/server/config";
@@ -56,7 +58,7 @@ import { setEmailExpired } from "@schedulers/setEmailExpired";
 
 interface Job {
     cronTime: string;
-    onTick: (any) => void;
+    onTick: (any) => any;
     isActive: boolean;
     name: string;
     description?: string;
@@ -218,6 +220,17 @@ const startupJobs: Job[] = [
     },
 ];
 
+const servicesJobs: Job[] = [
+    {
+        cronTime: "0 0 15 * * *",
+        onTick: deleteMatomoAccount,
+        isActive: !!config.FEATURE_DELETE_MATOMO_ACCOUNT,
+        name: "deleteMatomoAccount",
+        description:
+            "Supprime les comptes matomos des membres expirés (30 days)",
+    },
+];
+
 const formationJobs: Job[] = [
     {
         cronTime: "0 0 * * *",
@@ -295,6 +308,7 @@ export const jobs: Job[] = [
     ...newsletterJobs,
     ...mattermostJobs,
     ...startupJobs,
+    ...servicesJobs,
     // ...metricJobs,
     // ...pullRequestJobs,
     ...synchronizationJobs,

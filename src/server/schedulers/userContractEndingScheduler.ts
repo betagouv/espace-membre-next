@@ -1,8 +1,15 @@
 import { differenceInDays, startOfDay } from "date-fns";
 
+import { matomoClient } from "../config/matomo.config";
+import { AccountService, SERVICES } from "../config/services.config";
+import { addEvent } from "@/lib/events";
 import { db } from "@/lib/kysely";
-import { getAllUsersInfo } from "@/lib/kysely/queries/users";
+import {
+    getAllExpiredUsers,
+    getAllUsersInfo,
+} from "@/lib/kysely/queries/users";
 import * as mattermost from "@/lib/mattermost";
+import { EventCode, SYSTEM_NAME } from "@/models/actionEvent";
 import { Job } from "@/models/job";
 import { memberBaseInfoToModel } from "@/models/mapper";
 import { CommunicationEmailCode, EmailStatusCode } from "@/models/member";
@@ -330,6 +337,50 @@ export async function deleteSecondaryEmailsForUsers(
         } catch {
             console.log(
                 `Erreur lors de la suppression de secondary_email pour ${user.username}`
+            );
+        }
+    }
+}
+
+export async function deleteMatomoAccount() {
+    await deleteServiceAccounts(matomoClient);
+}
+
+export async function deleteServiceAccounts(
+    service: AccountService // Accept any service that implements the AccountService interface
+) {
+    const allServiceUsers = await service.getAllUsers();
+    const allServiceUserEmails = allServiceUsers.map((user) => user.email);
+    const today = new Date();
+    const todayLess30days = new Date();
+    todayLess30days.setDate(today.getDate() - 30);
+    const users = (await getAllExpiredUsers(todayLess30days)).map((user) =>
+        memberBaseInfoToModel(user)
+    );
+
+    const expiredUsers = users.filter((user) => {
+        return (
+            user.primary_email &&
+            allServiceUserEmails.includes(user.primary_email)
+        );
+    });
+    for (const user of expiredUsers) {
+        try {
+            if (user.primary_email) {
+                await service.deleteUserByEmail(user.primary_email);
+                console.log(`Compte matomo supprimé pour ${user.username}`);
+                await addEvent({
+                    created_by_username: SYSTEM_NAME,
+                    action_code: EventCode.MEMBER_SERVICE_ACCOUNT_DELETED,
+                    action_metadata: {
+                        email: user.primary_email,
+                        service: service.name,
+                    },
+                });
+            }
+        } catch {
+            console.log(
+                `Erreur lors de la suppression du compte pour ${user.username}`
             );
         }
     }

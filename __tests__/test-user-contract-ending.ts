@@ -8,8 +8,8 @@ import { EmailStatusCode } from "@/models/member";
 import { Domaine } from "@/models/member";
 import config from "@/server/config";
 import * as email from "@/server/config/email.config";
+import { FakeMatomo, matomoClient } from "@/server/config/matomo.config";
 import BetaGouv from "@betagouv";
-import betagouv from "@betagouv";
 import { setEmailExpired } from "@schedulers/setEmailExpired";
 import {
     sendInfoToSecondaryEmailAfterXDays,
@@ -17,14 +17,17 @@ import {
     deleteOVHEmailAcounts,
     removeEmailsFromMailingList,
     deleteRedirectionsAfterQuitting,
+    deleteMatomoAccount,
+    deleteServiceAccounts,
 } from "@schedulers/userContractEndingScheduler";
 
 const should = chai.should();
-const fakeDate = "2020-01-01T09:59:59+01:00";
-const fakeDateLess1day = "2019-12-31";
-const fakeDateMore15days = "2020-01-16";
-const fakeDateMore30days = "2020-01-31";
-const fakeDateLess30days = "2019-12-02";
+const fakeTodayDate = "2020-01-01T09:59:59+01:00";
+const expiredFor1dayDate = "2019-12-31";
+const expiredFor15daysDate = "2020-01-16";
+const willExpireIn30daysDate = "2020-01-31";
+const expiredFor30daysDate = "2019-12-02";
+const expiredFor31daysDate = "2019-12-01";
 
 const betaGouvUsers = [
     {
@@ -58,7 +61,7 @@ const betaGouvUsers = [
         missions: [
             {
                 start: "2016-11-03",
-                end: fakeDateMore15days,
+                end: expiredFor15daysDate,
                 status: "independent",
                 employer: "octo",
             },
@@ -73,7 +76,7 @@ const betaGouvUsers = [
         missions: [
             {
                 start: "2016-11-03",
-                end: fakeDateMore30days,
+                end: willExpireIn30daysDate,
                 status: "independent",
                 employer: "octo",
             },
@@ -127,23 +130,8 @@ describe("send message on contract end to user", () => {
         sendEmailStub = sinon
             .stub(email, "sendEmail")
             .returns(Promise.resolve(null));
-        // jobsStub = sinon.stub(BetaGouv, "getJobs").returns(
-        //     Promise.resolve([
-        //         {
-        //             id: "/recrutement/2022/05/31/developpeur-se.full.stack.4.jours.par.semaine",
-        //             domaines: [Domaine.DEVELOPPEMENT],
-        //             title: "        Développeur.se full stack – 4 jours par semaine - Offre de France Chaleur Urbaine        ",
-        //             url: "http://localhost:4000/recrutement/2022/05/31/developpeur-se.full.stack.4.jours.par.semaine.html",
-        //             published: new Date().toISOString(),
-        //             updated: "2022-05-31 15:52:38 +0200",
-        //             author: "beta.gouv.fr",
-        //             technos: "",
-        //             content: "",
-        //         },
-        //     ])
-        // );
         chat = sinon.spy(BetaGouv, "sendInfoToChat");
-        clock = sinon.useFakeTimers(new Date(fakeDate));
+        clock = sinon.useFakeTimers(new Date(fakeTodayDate));
         nock(
             "https://mattermost.incubateur.net/^.*api/v4/users?per_page=200&page=0"
         )
@@ -167,18 +155,6 @@ describe("send message on contract end to user", () => {
     });
 
     it("should send message to users for j-15", async () => {
-        // await db
-        //     .insertInto("users")
-        //     .values({
-        //         username: "membre.quipart",
-        //         primary_email: "membre.quipart@modernisation.gouv.fr",
-        //         secondary_email: "membre.emailsecondary@gmail.com",
-        //     })
-        //     .execute();
-        // const url = process.env.USERS_API || "https://beta.gouv.fr";
-        // nock(url)
-        //     .get((uri) => uri.includes("authors.json"))
-        //     .reply(200, betaGouvUsers);
         const { sendContractEndingMessageToUsers } =
             userContractEndingScheduler;
         await sendContractEndingMessageToUsers("mail15days", true);
@@ -186,23 +162,9 @@ describe("send message on contract end to user", () => {
         chat.firstCall.args[2].should.be.equal("membre.quipart");
         sendEmailStub.firstCall.args[0] =
             "membre.quipart@modernisation.gouv.fr,membre.emailsecondary@gmail.com";
-        // await knex("users")
-        //     .where({
-        //         username: "membre.quipart",
-        //     })
-        //     .delete();
     });
 
     it("should send message to users for j-30", async () => {
-        // await knex("users").insert({
-        //     username: "membre.quipart",
-        //     primary_email: "membre.quipart@modernisation.gouv.fr",
-        //     secondary_email: "membre.emailsecondary@gmail.com",
-        // });
-        // const url = process.env.USERS_API || "https://beta.gouv.fr";
-        // nock(url)
-        //     .get((uri) => uri.includes("authors.json"))
-        //     .reply(200, betaGouvUsers);
         const { sendContractEndingMessageToUsers } =
             userContractEndingScheduler;
         try {
@@ -214,11 +176,6 @@ describe("send message on contract end to user", () => {
         chat.firstCall.args[2].should.be.equal("membre.quipart.30days");
         sendEmailStub.firstCall.args[0] =
             "membre.quipart@modernisation.gouv.fr,membre.emailsecondary@gmail.com";
-        // await knex("users")
-        //     .where({
-        //         username: "membre.quipart",
-        //     })
-        //     .delete();
     });
     describe("Test sending j+x day email", () => {
         const users = [
@@ -232,7 +189,7 @@ describe("send message on contract end to user", () => {
                 missions: [
                     {
                         start: "2016-11-03",
-                        end: fakeDateLess1day,
+                        end: expiredFor1dayDate,
                         status: "independent",
                         employer: "octo",
                     },
@@ -246,52 +203,11 @@ describe("send message on contract end to user", () => {
             await utils.deleteUsers(users);
         });
         it("should send j1 mail to users", async () => {
-            // const url = process.env.USERS_API || "https://beta.gouv.fr";
-            // nock(url)
-            //     .get((uri) => uri.includes("authors.json"))
-            //     .reply(200, [
-            //         {
-            //             id: "julien.dauphant",
-            //             fullname: "Julien Dauphant",
-            //             missions: [
-            //                 {
-            //                     start: "2016-11-03",
-            //                     end: fakeDateLess1day,
-            //                     status: "independent",
-            //                     employer: "octo",
-            //                 },
-            //             ],
-            //         },
-            //     ])
-            //     .persist();
-            // await sendInfoToSecondaryEmailAfterXDays(1);
-            // // sendEmail not call because secondary email does not exists for user
-            // console.log(sendEmailStub.called)
-            // sendEmailStub.calledOnce.should.be.false;
-
             await sendInfoToSecondaryEmailAfterXDays(1);
             sendEmailStub.calledOnce.should.be.true;
         });
 
         it("should delete user ovh account if email status suspended for more than 30 days", async () => {
-            // const url = process.env.USERS_API || "https://beta.gouv.fr";
-            // nock(url)
-            //     .get((uri) => uri.includes("authors.json"))
-            //     .reply(200, [
-            //         {
-            //             id: "membre.expire",
-            //             fullname: "Membre expire",
-            //             missions: [
-            //                 {
-            //                     start: "2016-11-03",
-            //                     end: fakeDateLess30days,
-            //                     status: "independent",
-            //                     employer: "octo",
-            //                 },
-            //             ],
-            //         },
-            //     ])
-            //     .persist();
             const updatedUser = await db
                 .updateTable("users")
                 .where("username", "=", "membre.expire")
@@ -305,7 +221,7 @@ describe("send message on contract end to user", () => {
                 .updateTable("missions")
                 .where("user_id", "=", updatedUser.uuid)
                 .set({
-                    end: fakeDateLess30days,
+                    end: expiredFor30daysDate,
                 })
                 .execute();
             const ovhEmailDeletion = nock(/.*ovh.com/)
@@ -337,24 +253,6 @@ describe("send message on contract end to user", () => {
         });
 
         it("should not delete user secondary_email if suspended less than 30days", async () => {
-            // const url = process.env.USERS_API || "https://beta.gouv.fr";
-            // nock(url)
-            //     .get((uri) => uri.includes("authors.json"))
-            //     .reply(200, [
-            //         {
-            //             id: "julien.dauphant",
-            //             fullname: "Julien Dauphant",
-            //             missions: [
-            //                 {
-            //                     start: "2016-11-03",
-            //                     end: fakeDateLess30days,
-            //                     status: "independent",
-            //                     employer: "octo",
-            //                 },
-            //             ],
-            //         },
-            //     ])
-            //     .persist();
             const today = new Date();
             const todayLess29days = new Date();
             todayLess29days.setDate(today.getDate() - 29);
@@ -372,7 +270,7 @@ describe("send message on contract end to user", () => {
                 .updateTable("missions")
                 .where("user_id", "=", updatedUser.uuid)
                 .set({
-                    end: fakeDateLess30days,
+                    end: expiredFor30daysDate,
                 })
                 .execute();
             const [user1] = await db
@@ -385,14 +283,14 @@ describe("send message on contract end to user", () => {
                 "uneadressesecondaire@gmail.com"
             );
 
-            const todayLess31days = new Date();
-            todayLess31days.setDate(today.getDate() - 31);
             await db
                 .updateTable("users")
                 .where("username", "=", "julien.dauphant")
                 .set({
                     primary_email_status: EmailStatusCode.EMAIL_DELETED,
-                    primary_email_status_updated_at: todayLess31days,
+                    primary_email_status_updated_at: new Date(
+                        expiredFor31daysDate
+                    ),
                     secondary_email: "uneadressesecondaire@gmail.com",
                 })
                 .execute();
@@ -406,33 +304,14 @@ describe("send message on contract end to user", () => {
         });
 
         it("should delete user secondary_email if suspended more than 30days", async () => {
-            // const url = process.env.USERS_API || "https://beta.gouv.fr";
-            // nock(url)
-            //     .get((uri) => uri.includes("authors.json"))
-            //     .reply(200, [
-            //         {
-            //             id: "julien.dauphant",
-            //             fullname: "Julien Dauphant",
-            //             missions: [
-            //                 {
-            //                     start: "2016-11-03",
-            //                     end: fakeDateLess30days,
-            //                     status: "independent",
-            //                     employer: "octo",
-            //                 },
-            //             ],
-            //         },
-            //     ])
-            //     .persist();
-            const today = new Date();
-            const todayLess31days = new Date();
-            todayLess31days.setDate(today.getDate() - 31);
             const updatedUser = await db
                 .updateTable("users")
                 .where("username", "=", "julien.dauphant")
                 .set({
                     primary_email_status: EmailStatusCode.EMAIL_DELETED,
-                    primary_email_status_updated_at: todayLess31days,
+                    primary_email_status_updated_at: new Date(
+                        expiredFor31daysDate
+                    ),
                     secondary_email: "uneadressesecondaire@gmail.com",
                 })
                 .returningAll()
@@ -441,7 +320,7 @@ describe("send message on contract end to user", () => {
                 .updateTable("missions")
                 .where("user_id", "=", updatedUser.uuid)
                 .set({
-                    end: fakeDateLess30days,
+                    end: expiredFor30daysDate,
                 })
                 .execute();
             await deleteSecondaryEmailsForUsers();
@@ -472,7 +351,7 @@ describe("After quitting", () => {
             missions: [
                 {
                     start: "2016-11-03",
-                    end: fakeDateLess1day,
+                    end: expiredFor1dayDate,
                     status: "independent",
                     employer: "octo",
                 },
@@ -484,7 +363,7 @@ describe("After quitting", () => {
             missions: [
                 {
                     start: "2016-11-03",
-                    end: fakeDateLess30days,
+                    end: expiredFor30daysDate,
                     status: "independent",
                     employer: "octo",
                 },
@@ -503,37 +382,8 @@ describe("After quitting", () => {
         sendEmailStub = sinon
             .stub(email, "sendEmail")
             .returns(Promise.resolve(null));
-        clock = sinon.useFakeTimers(new Date(fakeDate));
+        clock = sinon.useFakeTimers(new Date(fakeTodayDate));
         await utils.createUsers(users);
-        //     const url = process.env.USERS_API || "https://beta.gouv.fr";
-        //     nock(url)
-        //         .get((uri) => uri.includes("authors.json"))
-        //         .reply(200, [
-        //             {
-        //                 id: "julien.dauphant",
-        //                 fullname: "Julien Dauphant",
-        //                 missions: [
-        //                     {
-        //                         start: "2016-11-03",
-        //                         end: fakeDateLess1day,
-        //                         status: "independent",
-        //                         employer: "octo",
-        //                     },
-        //                 ],
-        //             },
-        //             {
-        //                 id: "julien.dauphant2",
-        //                 fullname: "Julien Dauphant",
-        //                 missions: [
-        //                     {
-        //                         start: "2016-11-03",
-        //                         end: fakeDateLess30days,
-        //                         status: "independent",
-        //                         employer: "octo",
-        //                     },
-        //                 ],
-        //             },
-        //         ]);
     });
 
     afterEach(async () => {
@@ -548,34 +398,18 @@ describe("After quitting", () => {
         should.equal(test.length, 1);
     });
 
-    it("could delete redirections even for past users", async () => {
+    it("should delete redirections even for past users", async () => {
         const test: unknown[] = await deleteRedirectionsAfterQuitting(true);
         should.equal(test.length, 2);
     });
 
-    it("could delete redirections even for past users", async () => {
+    it("should delete redirections even for past users", async () => {
         const test: unknown[] = await deleteRedirectionsAfterQuitting(true);
         should.equal(test.length, 2);
     });
 
     it("should set email as expired", async () => {
-        const today = new Date(fakeDate);
-        const todayLess31days = new Date();
-        todayLess31days.setDate(today.getDate() - 31);
-        // const userinfos = sinon.stub(betagouv, "usersInfos").returns(
-        //     Promise.resolve([
-        //         {
-        //             id: "membre.actif",
-        //             fullname: "membre actif",
-        //             employer: "Dinum",
-        //             startups: [],
-        //             domaine: "Animation",
-        //             start: "2020-01-01",
-        //             end: todayLess31days.toISOString().split("T")[0],
-        //             missions: [],
-        //         },
-        //     ])
-        // );
+        const today = new Date(fakeTodayDate);
 
         const updatedUser = await db
             .updateTable("users")
@@ -583,7 +417,7 @@ describe("After quitting", () => {
             .set({
                 primary_email: `julien.dauphant@${config.domain}`,
                 primary_email_status: EmailStatusCode.EMAIL_SUSPENDED,
-                primary_email_status_updated_at: todayLess31days,
+                primary_email_status_updated_at: expiredFor31daysDate,
             })
             .returningAll()
             .executeTakeFirstOrThrow();
@@ -592,7 +426,7 @@ describe("After quitting", () => {
             .where("user_id", "=", updatedUser.uuid)
             .set({
                 start: "2018-01-01",
-                end: todayLess31days.toISOString().split("T")[0],
+                end: new Date(expiredFor31daysDate).toISOString().split("T")[0],
             })
             .execute();
         await setEmailExpired();
@@ -616,7 +450,7 @@ describe("After quitting", () => {
                     missions: [
                         {
                             start: "2016-11-03",
-                            end: fakeDateLess30days,
+                            end: expiredFor30daysDate,
                             status: "independent",
                             employer: "octo",
                         },
@@ -652,5 +486,39 @@ describe("After quitting", () => {
         ovhMailingList.isDone().should.be.true;
         mailingListBeta.isDone().should.be.true;
         mailingListAideJeune.isDone().should.be.true;
+    });
+
+    it("should delete matomo user account for expired users", async () => {
+        const matomoClient = new FakeMatomo([
+            {
+                login: "",
+                email: `valid.member@${config.domain}`,
+                alias: "",
+                superuser_access: "",
+                date_registered: "",
+            },
+            // membre expiré
+            {
+                login: "",
+                email: `julien.dauphant2@${config.domain}`,
+                alias: "",
+                superuser_access: "",
+                date_registered: "",
+            },
+        ]);
+        const updatedUser = await db
+            .updateTable("users")
+            .where("username", "=", "julien.dauphant2")
+            .set({
+                primary_email: `julien.dauphant2@${config.domain}`,
+                primary_email_status: EmailStatusCode.EMAIL_DELETED,
+                primary_email_status_updated_at: expiredFor31daysDate,
+            })
+            .returningAll()
+            .executeTakeFirstOrThrow();
+        await deleteServiceAccounts(matomoClient);
+        const users = await matomoClient.getAllUsers();
+        users.length.should.equals(1);
+        users[0].email.should.equals(`valid.member@${config.domain}`);
     });
 });
