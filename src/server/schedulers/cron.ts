@@ -222,13 +222,12 @@ const startupJobs: Job[] = [
 
 const servicesJobs: Job[] = [
     {
-        cronTime: "0 0 5 * * *",
-        onTick: () => {
-            // deleteMatomoAccount
-        },
-        isActive: true,
+        cronTime: "0 0 15 * * *",
+        onTick: deleteMatomoAccount,
+        isActive: !!config.FEATURE_DELETE_MATOMO_ACCOUNT,
         name: "deleteMatomoAccount",
-        description: "deleteMatomoAccount",
+        description:
+            "Supprime les comptes matomos des membres expirés (30 days)",
     },
 ];
 
@@ -433,14 +432,6 @@ export const jobs: Job[] = [
         isActive: !!config.featureDeleteOVHEmailAccounts,
         name: "deleteOVHEmailAcounts",
         description: "Supprime les emails OVH des membres expirés (30 days)",
-    },
-    {
-        cronTime: "0 0 15 * * *",
-        onTick: deleteMatomoAccount,
-        isActive: !!config.FEATURE_DELETE_MATOMO_ACCOUNT,
-        name: "deleteMatomoAccount",
-        description:
-            "Supprime les comptes matomos des membres expirés (30 days)",
     },
     {
         cronTime: "0 0 15 * * *",
