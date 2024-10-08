@@ -27,10 +27,10 @@ export const POST = async (
     { params: { id } }: { params: { id: string } }
 ) => {
     if (id === config.MATTERMOST_WEBHOOK_PING) {
-        await axios.post(
-            `https://mattermost.incubateur.net/hooks/${config.MATTERMOST_WEBHOOK_PING}`,
-            { text: `${config.MATTERMOST_TEAM_PING}` }
-        );
+        return Response.json({
+            text: `${config.MATTERMOST_TEAM_PING}`,
+            response_type: 'comment'
+        });
     } else if (id === config.SIB_WEBHOOK_ID) {
         let sibWebhookBody = (await req.json()) as ISibWebhookBody;
 
