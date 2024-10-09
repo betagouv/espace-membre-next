@@ -1,6 +1,7 @@
 import { differenceInDays, startOfDay } from "date-fns";
 
 import { matomoClient } from "../config/matomo.config";
+import { sentryClient } from "../config/sentry.config";
 import { AccountService, SERVICES } from "../config/services.config";
 import { addEvent } from "@/lib/events";
 import { db } from "@/lib/kysely";
@@ -344,6 +345,10 @@ export async function deleteSecondaryEmailsForUsers(
 
 export async function deleteMatomoAccount() {
     await deleteServiceAccounts(matomoClient);
+}
+
+export async function deleteSentryAccount() {
+    await deleteServiceAccounts(sentryClient);
 }
 
 export async function deleteServiceAccounts(
