@@ -233,7 +233,7 @@ export const asyncFilter = async (arr: Array<any>, predicate) => {
 };
 
 export async function userInfos(
-    params: { username: string } | { uuid: string },
+    params: { username: string } | { uuid: string } | { email: string },
     isCurrentUser: boolean
 ): Promise<memberWrapperSchemaType> {
     try {
@@ -284,7 +284,11 @@ export async function userInfos(
 
         throw new Error(
             `Problème pour récupérer les infos du membre ${
-                "username" in params ? params.username : params.uuid
+                "username" in params
+                    ? params.username
+                    : "uuid" in params
+                    ? params.uuid
+                    : params.email
             }`
         );
     }
