@@ -26,25 +26,25 @@ export class Matomo implements AccountService {
      * @param email - The email of the user
      */
     async getUserByEmail(email: string): Promise<any> {
-        const response = await fetch(
-            `${
-                this.apiUrl
-            }/index.php?module=API&method=UsersManager.getUsers&format=json&filter_limit=1&filter_pattern=${encodeURIComponent(
-                email
-            )}&token_auth=${this.authToken}`
-        );
+        const response = await fetch(`${this.apiUrl}/index.php`, {
+            method: "POST",
+            headers: { "Content-Type": "application/x-www-form-urlencoded" },
+            body: new URLSearchParams({
+                module: "API",
+                method: "UsersManager.getUsers",
+                format: "json",
+                filter_limit: "1",
+                filter_pattern: encodeURIComponent(email),
+                token_auth: this.authToken,
+            }),
+        });
+
         if (!response.ok) {
             throw new Error(`Error fetching user: ${response.statusText}`);
         }
 
         const users = await response.json();
-
-        if (users.length === 0) {
-            console.log(`No user found with email: ${email}`);
-            return null;
-        }
-
-        return users[0]; // Assuming the first user is the match
+        return users.length ? users[0] : null;
     }
 
     /**
@@ -52,25 +52,28 @@ export class Matomo implements AccountService {
      * @param userLogin - The login of the user to delete
      */
     async deleteUserByLogin(userLogin: string): Promise<void> {
-        const response = await fetch(
-            `${
-                this.apiUrl
-            }/index.php?module=API&method=UsersManager.deleteUser&userLogin=${encodeURIComponent(
-                userLogin
-            )}&token_auth=${this.authToken}&format=json`
-        );
+        const response = await fetch(`${this.apiUrl}/index.php`, {
+            method: "POST",
+            headers: { "Content-Type": "application/x-www-form-urlencoded" },
+            body: new URLSearchParams({
+                module: "API",
+                method: "UsersManager.deleteUser",
+                userLogin: encodeURIComponent(userLogin),
+                token_auth: this.authToken,
+                format: "json",
+            }),
+        });
 
         if (!response.ok) {
             throw new Error(`Error deleting user: ${response.statusText}`);
         }
 
         const result = await response.json();
-
-        if (result.result === "success") {
-            console.log(`User with login: ${userLogin} successfully deleted.`);
-        } else {
-            console.log(`Failed to delete user with login: ${userLogin}.`);
-        }
+        console.log(
+            result.result === "success"
+                ? `User with login: ${userLogin} successfully deleted.`
+                : `Failed to delete user with login: ${userLogin}.`
+        );
     }
 
     /**
@@ -88,24 +91,46 @@ export class Matomo implements AccountService {
 
     // Function to fetch all users from Matomo
     async getAllUsers(): Promise<MatomoUser[]> {
-        // API URL for fetching users
-        const url = `${this.apiUrl}/index.php?module=API&method=UsersManager.getUsers&format=JSON&token_auth=${this.authToken}`;
+        let allUsers: MatomoUser[] = [];
+        let offset = 0;
+        const limit = 100; // Adjust the limit per request as needed
 
         try {
-            const response = await fetch(url);
-            if (!response.ok) {
-                throw new Error(
-                    `Error fetching users: ${response.status} ${response.statusText}`
-                );
+            while (true) {
+                const response = await fetch(`${this.apiUrl}/index.php`, {
+                    method: "POST",
+                    headers: {
+                        "Content-Type": "application/x-www-form-urlencoded",
+                    },
+                    body: new URLSearchParams({
+                        module: "API",
+                        method: "UsersManager.getUsers",
+                        format: "json",
+                        token_auth: this.authToken,
+                        filter_limit: String(limit),
+                        filter_offset: String(offset),
+                    }),
+                });
+
+                if (!response.ok) {
+                    throw new Error(
+                        `Error fetching users: ${response.status} ${response.statusText}`
+                    );
+                }
+
+                const users: MatomoUser[] = await response.json();
+                if (users.length === 0) {
+                    break; // Exit the loop if no more users are returned
+                }
+
+                allUsers = allUsers.concat(users);
+                offset += limit;
             }
 
-            const users: MatomoUser[] = await response.json();
-
-            // Optionally, you could add validation or transformation of the data here if needed
-            return users;
+            return allUsers;
         } catch (error) {
             console.error("Failed to fetch Matomo users:", error);
-            throw error; // Re-throw the error after logging
+            throw error;
         }
     }
 }
