@@ -9,6 +9,7 @@ import { Domaine } from "@/models/member";
 import config from "@/server/config";
 import * as email from "@/server/config/email.config";
 import { FakeMatomo, matomoClient } from "@/server/config/matomo.config";
+import { FakeSentryService } from "@/server/config/sentry.config";
 import BetaGouv from "@betagouv";
 import { setEmailExpired } from "@schedulers/setEmailExpired";
 import {
@@ -518,6 +519,34 @@ describe("After quitting", () => {
             .executeTakeFirstOrThrow();
         await deleteServiceAccounts(matomoClient);
         const users = await matomoClient.getAllUsers();
+        users.length.should.equals(1);
+        users[0].email.should.equals(`valid.member@${config.domain}`);
+    });
+
+    it("should delete sentry user account for expired users", async () => {
+        const sentryClient = new FakeSentryService([
+            {
+                email: `valid.member@${config.domain}`,
+                id: "sdasda554",
+            },
+            // membre expiré
+            {
+                email: `julien.dauphant2@${config.domain}`,
+                id: "54sdadadsa",
+            },
+        ]);
+        const updatedUser = await db
+            .updateTable("users")
+            .where("username", "=", "julien.dauphant2")
+            .set({
+                primary_email: `julien.dauphant2@${config.domain}`,
+                primary_email_status: EmailStatusCode.EMAIL_DELETED,
+                primary_email_status_updated_at: expiredFor31daysDate,
+            })
+            .returningAll()
+            .executeTakeFirstOrThrow();
+        await deleteServiceAccounts(sentryClient);
+        const users = await sentryClient.getAllUsers();
         users.length.should.equals(1);
         users[0].email.should.equals(`valid.member@${config.domain}`);
     });
