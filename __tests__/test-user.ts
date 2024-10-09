@@ -1216,34 +1216,6 @@ describe("User", () => {
             });
             it("should create missing email accounts", async () => {
                 utils.cleanMocks();
-                // const url = process.env.USERS_API || "https://beta.gouv.fr";
-                // nock(url)
-                //     .get((uri) => uri.includes("authors.json"))
-                //     .reply(200, [
-                //         {
-                //             id: "membre.actif",
-                //             fullname: "membre Actif",
-                //             missions: [
-                //                 {
-                //                     start: "2016-11-03",
-                //                     status: "independent",
-                //                     employer: "octo",
-                //                 },
-                //             ],
-                //         },
-                //         {
-                //             id: "membre.nouveau",
-                //             fullname: "membre Nouveau",
-                //             missions: [
-                //                 {
-                //                     start: new Date()
-                //                         .toISOString()
-                //                         .split("T")[0],
-                //                 },
-                //             ],
-                //         },
-                //     ])
-                //     .persist();
                 utils.mockSlackGeneral();
                 utils.mockSlackSecretariat();
                 utils.mockOvhTime();
@@ -1305,9 +1277,6 @@ describe("User", () => {
         context("", () => {});
 
         it("should not create email accounts if already created", async () => {
-            // For this case we need to reset the basic nocks in order to return
-            // a different response to indicate that newcomer.test has an
-            // email address
             utils.cleanMocks();
             utils.mockUsers();
             utils.mockSlackGeneral();
@@ -1367,19 +1336,6 @@ describe("User", () => {
                 utils.mockSlackSecretariat();
                 utils.mockOvhTime();
                 utils.mockOvhRedirections();
-                // nock(url)
-                //     .get((uri) => uri.includes("authors.json"))
-                //     .reply(200, [
-                //         {
-                //             id: "membre.nouveau",
-                //             fullname: "membre Nouveau",
-                //             missions: [
-                //                 {
-                //                     start: new Date().toISOString().split("T")[0],
-                //                 },
-                //             ],
-                //         },
-                //     ]);
                 const subscribeSpy = sinon.spy(
                     Betagouv,
                     "subscribeToMailingList"
@@ -1449,23 +1405,6 @@ describe("User", () => {
 
                 it("ovhMailingListUnsubscription should be called", async () => {
                     const url = process.env.USERS_API || "https://beta.gouv.fr";
-
-                    // nock(url)
-                    //     .get((uri) => uri.includes("authors.json"))
-                    //     .reply(200, [
-                    //         {
-                    //             id: "membre.nouveau",
-                    //             fullname: "membre Nouveau",
-                    //             missions: [
-                    //                 {
-                    //                     end: new Date("12/01/1991")
-                    //                         .toISOString()
-                    //                         .split("T")[0],
-                    //                 },
-                    //             ],
-                    //         },
-                    //     ]);
-
                     const newMember = testUsers.find(
                         (user) => user.id === "membre.nouveau"
                     );

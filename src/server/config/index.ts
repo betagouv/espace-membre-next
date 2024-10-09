@@ -99,6 +99,7 @@ const CRON_TASK_ENV_VAR = {
         process.env
             .FEATURE_SEND_MESSAGE_TO_ACTIVE_USERS_WITHOUT_SECONDARY_EMAIL ===
         "true",
+    FEATURE_DELETE_MATOMO_ACCOUNT: process.env.FEATURE_DELETE_MATOMO_ACCOUNT,
     FEATURE_SEND_NEWSLETTER: process.env.FEATURE_SEND_NEWSLETTER === "true",
     visitSenderEmail:
         process.env.VISIT_MAIL_SENDER || "secretariat@beta.gouv.fr",
@@ -113,6 +114,8 @@ const CRON_TASK_ENV_VAR = {
     padURL: process.env.PAD_URL || "https://pad.incubateur.net",
     padEmail: process.env.PAD_USERNAME,
     padPassword: process.env.PAD_PASSWORD,
+    MATOMO_TOKEN: process.env.MATOMO_TOKEN,
+    MATOMO_API_URL: process.env.MATOMO_API_URL,
 };
 
 const REQUIRED_APP_KEY = ["SESSION_SECRET", "REDIS_URL"];

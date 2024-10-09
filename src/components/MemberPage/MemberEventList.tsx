@@ -6,7 +6,10 @@ import { Table } from "@codegouvfr/react-dsfr/Table";
 import { format } from "date-fns";
 import { fr as frDateFns } from "date-fns/locale";
 
-import { EventActionFromDB, EventCodeToReadable } from "@/models/actionEvent";
+import {
+    EventActionFromDB,
+    EventCodeToReadable,
+} from "@/models/actionEvent/actionEvent";
 
 const MemberEventList = ({ userId }) => {
     const [events, setEvents] = useState<EventActionFromDB[]>([]);

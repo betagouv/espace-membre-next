@@ -6,9 +6,8 @@ import * as hstore from "@/lib/hstore";
 import {
     BaseEventAction,
     EventAction,
-    EventActionFromDB,
     EventCode,
-} from "@/models/actionEvent";
+} from "@/models/actionEvent/actionEvent";
 
 export async function addEvent(event: EventAction, trx?: Kysely<DB>) {
     return (trx || db)

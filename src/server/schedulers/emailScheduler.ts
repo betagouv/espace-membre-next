@@ -6,7 +6,11 @@ import { createEmail } from "../controllers/usersController/createEmailForUser";
 import { addEvent } from "@/lib/events";
 import { db } from "@/lib/kysely";
 import { getAllUsersInfo } from "@/lib/kysely/queries/users";
-import { ActionEvent, EventCode } from "@/models/actionEvent";
+import {
+    ActionEvent,
+    EventCode,
+    SYSTEM_NAME,
+} from "@/models/actionEvent/actionEvent";
 import { memberBaseInfoToModel, userInfosToModel } from "@/models/mapper";
 import {
     CommunicationEmailCode,
@@ -100,7 +104,7 @@ export async function setEmailAddressesActive() {
             });
             await addEvent({
                 action_code: EventCode.MEMBER_UNBLOCK_EMAIL,
-                created_by_username: "system",
+                created_by_username: SYSTEM_NAME,
                 action_on_username: user.username,
                 action_metadata: {
                     email: user.primary_email!,
@@ -468,7 +472,7 @@ export async function sendOnboardingVerificationPendingEmail() {
             });
             await addEvent({
                 action_code: EventCode.EMAIL_VERIFICATION_WAITING_SENT,
-                created_by_username: "system",
+                created_by_username: SYSTEM_NAME,
                 action_on_username: user.username,
             });
         }

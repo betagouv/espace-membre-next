@@ -1,5 +1,5 @@
 import { addEvent } from "@/lib/events";
-import { EventCode } from "@/models/actionEvent";
+import { EventCode } from "@/models/actionEvent/actionEvent";
 import config from "@/server/config";
 import BetaGouv from "@betagouv";
 import betagouv from "@betagouv";

@@ -10,7 +10,7 @@ import {
     updateMission,
 } from "@/lib/kysely/queries/missions";
 import { getUserInfos } from "@/lib/kysely/queries/users";
-import { EventCode } from "@/models/actionEvent";
+import { EventCode } from "@/models/actionEvent/actionEvent";
 import {
     memberInfoUpdateSchema,
     memberValidateInfoSchemaType,

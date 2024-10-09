@@ -3,6 +3,7 @@ import { UpdateObjectExpression } from "kysely/dist/cjs/parser/update-set-parser
 
 import { DB } from "@/@types/db"; // generated with `npm run kysely-codegen`
 import { db as database, jsonArrayFrom } from "@/lib/kysely";
+import { EmailStatusCode } from "@/models/member";
 
 export const MEMBER_PROTECTED_INFO: SelectExpression<DB, "users">[] = [
     "users.uuid",
@@ -138,6 +139,25 @@ export async function getAllUsersInfo(db: Kysely<DB> = database) {
 
     const userInfos = await db.executeQuery(query);
 
+    return userInfos.rows;
+}
+
+export async function getAllExpiredUsers(
+    expirationDate: Date,
+    db: Kysely<DB> = database
+) {
+    const query = db
+        .selectFrom("users")
+        .select((eb) => [...MEMBER_PROTECTED_INFO, withMissions(eb)])
+        .where("primary_email", "is not", null)
+        .where("primary_email_status", "in", [
+            EmailStatusCode.EMAIL_DELETED,
+            EmailStatusCode.EMAIL_EXPIRED,
+        ])
+        .where("primary_email_status_updated_at", "<", expirationDate)
+        .compile();
+
+    const userInfos = await db.executeQuery(query);
     return userInfos.rows;
 }
 
