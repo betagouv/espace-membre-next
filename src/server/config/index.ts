@@ -116,6 +116,9 @@ const CRON_TASK_ENV_VAR = {
     padPassword: process.env.PAD_PASSWORD,
     MATOMO_TOKEN: process.env.MATOMO_TOKEN,
     MATOMO_API_URL: process.env.MATOMO_API_URL,
+    SENTRY_API_URL: process.env.SENTRY_API_URL,
+    SENTRY_TOKEN: process.env.SENTRY_TOKEN,
+    SENTRY_ORGANIZATION: process.env.SENTRY_ORGANIZATION,
 };
 
 const REQUIRED_APP_KEY = ["SESSION_SECRET", "REDIS_URL"];
