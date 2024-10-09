@@ -82,23 +82,45 @@ export class SentryService implements AccountService {
 
     // Function to fetch all users from Matomo
     async getAllUsers(): Promise<SentryUser[]> {
-        // Step 1: Get the list of users
-        const usersResponse = await fetch(
-            `${this.apiUrl}/api/0/organizations/${this.org}/members/`,
-            {
+        let allUsers: SentryUser[] = [];
+        let nextPageUrl:
+            | string
+            | null = `${this.apiUrl}/api/0/organizations/${this.org}/members/`;
+
+        while (nextPageUrl) {
+            const usersResponse = await fetch(nextPageUrl, {
                 method: "GET",
                 headers: this.headers,
-            }
-        );
+            });
 
-        if (!usersResponse.ok) {
-            throw new Error(
-                `Failed to fetch users: ${usersResponse.statusText}`
-            );
+            if (!usersResponse.ok) {
+                throw new Error(
+                    `Failed to fetch users: ${usersResponse.statusText}`
+                );
+            }
+
+            const usersData: SentryUser[] = await usersResponse.json();
+            allUsers = allUsers.concat(usersData);
+
+            // Check for pagination in the Link header
+            const linkHeader = usersResponse.headers.get("Link");
+            nextPageUrl = this.getNextPageUrl(linkHeader);
         }
 
-        const usersData: SentryUser[] = await usersResponse.json();
+        return allUsers;
+    }
 
-        return usersData;
+    getNextPageUrl(linkHeader: string | null): string | null {
+        if (!linkHeader) return null;
+
+        const links = linkHeader.split(",");
+        for (let link of links) {
+            const [urlPart, relPart] = link.split(";");
+            if (relPart.includes('rel="next"')) {
+                return urlPart.trim().slice(1, -1); // Remove angle brackets around URL
+            }
+        }
+
+        return null;
     }
 }
