@@ -22,7 +22,7 @@ export const initializeSentry = (app) => {
 export const sentryErrorHandler: ErrorRequestHandler =
     Sentry.Handlers.errorHandler();
 
-interface SentryUser {
+export interface SentryUser {
     id: string;
     email: string;
     name?: string; // Optional
