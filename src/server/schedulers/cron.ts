@@ -51,6 +51,7 @@ import {
     removeEmailsFromMailingList,
     deleteServiceAccounts,
     deleteMatomoAccount,
+    deleteSentryAccount,
 } from "./userContractEndingScheduler";
 import { db } from "@/lib/kysely";
 import config from "@/server/config";
@@ -228,6 +229,14 @@ const servicesJobs: Job[] = [
         name: "deleteMatomoAccount",
         description:
             "Supprime les comptes matomos des membres expirés (30 days)",
+    },
+    {
+        cronTime: "0 0 15 * * *",
+        onTick: deleteSentryAccount,
+        isActive: !!config.FEATURE_DELETE_SENTRY_ACCOUNT,
+        name: "deleteSentryAccount",
+        description:
+            "Supprime les comptes sentry des membres expirés (30 days)",
     },
 ];
 

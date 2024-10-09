@@ -15,7 +15,7 @@ export const initializeSentry = (app) => {
     });
 };
 
-interface SentryUser {
+export interface SentryUser {
     id: string;
     email: string;
     name?: string; // Optional
