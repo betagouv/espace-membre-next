@@ -83,7 +83,6 @@ export class Matomo implements AccountService {
         let allUsers: MatomoUser[] = [];
         let offset = 0;
         const limit = 100;
-
         try {
             while (true) {
                 const response = await fetch(`${this.apiUrl}/index.php`, {

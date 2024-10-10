@@ -610,6 +610,6 @@ describe("After quitting", () => {
         await deleteServiceAccounts(sentryClient);
         const users = await sentryClient.getAllUsers();
         users.length.should.equals(1);
-        users[0].email.should.equals(`valid.member@${config.domain}`);
+        users[0].user.email.should.equals(`valid.member@${config.domain}`);
     });
 });
