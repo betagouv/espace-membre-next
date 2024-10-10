@@ -16,8 +16,8 @@ export function durationBetweenDate(date1: Date, date2: Date) {
     if (duration.hours !== undefined) {
         result += `${duration.hours.toString()}h`;
     }
-    if (duration.seconds !== undefined && duration.seconds > 0) {
-        result += `${duration.seconds.toString().padStart(2, "0")}`;
+    if (duration.minutes !== undefined && duration.minutes > 0) {
+        result += `${duration.minutes.toString().padStart(2, "0")}`;
     }
     return result;
 }
