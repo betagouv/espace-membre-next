@@ -492,7 +492,7 @@ describe("After quitting", () => {
     it("should delete matomo user account for expired users", async () => {
         const matomoClient = new FakeMatomo([
             {
-                login: "",
+                login: `valid.member@${config.domain}`,
                 email: `valid.member@${config.domain}`,
                 alias: "",
                 superuser_access: "",
@@ -500,7 +500,41 @@ describe("After quitting", () => {
             },
             // membre expiré
             {
-                login: "",
+                login: `julien.dauphant2@${config.domain}`,
+                email: `julien.dauphant2@${config.domain}`,
+                alias: "",
+                superuser_access: "",
+                date_registered: "",
+            },
+        ]);
+        const updatedUser = await db
+            .updateTable("users")
+            .where("username", "=", "julien.dauphant2")
+            .set({
+                primary_email: `julien.dauphant2@${config.domain}`,
+                primary_email_status: EmailStatusCode.EMAIL_DELETED,
+                primary_email_status_updated_at: expiredFor31daysDate,
+            })
+            .returningAll()
+            .executeTakeFirstOrThrow();
+        await deleteServiceAccounts(matomoClient);
+        const users = await matomoClient.getAllUsers();
+        users.length.should.equals(1);
+        users[0].email.should.equals(`valid.member@${config.domain}`);
+    });
+
+    it("should delete matomo user account for expired users when login and email are not the same", async () => {
+        const matomoClient = new FakeMatomo([
+            {
+                login: `valid.member@${config.domain}`,
+                email: `valid.member@${config.domain}`,
+                alias: "",
+                superuser_access: "",
+                date_registered: "",
+            },
+            // membre expiré
+            {
+                login: `julien.dauphant2`,
                 email: `julien.dauphant2@${config.domain}`,
                 alias: "",
                 superuser_access: "",
