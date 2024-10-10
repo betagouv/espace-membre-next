@@ -97,23 +97,24 @@ const computeMessageReminder = (reminder, newsletter) => {
         message = `### Participez à la newsletter interne beta.gouv.fr ! :loudspeaker: :
 :wave:  Bonjour, tout le monde ! 
 
-Voici le pad de la semaine ${newsletter.url} !
+La newsletter de la communauté sera désormais envoyée le mardi.
 
-Ce que tu peux partager : 
+Voici le pad à remplir pour contribuer à la prochaine newsletter ${newsletter.url} !
 
-- demandes d'aide ou de contribution
+Ce que tu peux partager :
+
+- des nouveautés sur ton produit
+- des demandes d'aide ou de contribution
 - des événements
 - des formations
 - des nouveautés transverses
 
-Ajoute les au pad de cette semaine !
-
-Le pad sera envoyé jeudi, sous forme d'infolettre à la communauté !`;
+Le pad sera envoyé mardi prochain, sous forme d'infolettre à la communauté !`;
     } else if (reminder === "SECOND_REMINDER") {
         message = `### Participez à la newsletter interne beta.gouv.fr ! :loudspeaker: :
 :wave:  Bonjour, tout le monde ! 
 
-Voici le pad de la semaine ${newsletter.url} !
+Voici le pad à remplir pour contribuer à la prochaine newsletter ${newsletter.url} !
 
 Ce que tu peux partager : 
 
