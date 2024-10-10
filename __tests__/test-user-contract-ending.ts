@@ -507,7 +507,7 @@ describe("After quitting", () => {
                 date_registered: "",
             },
         ]);
-        const updatedUser = await db
+        await db
             .updateTable("users")
             .where("username", "=", "julien.dauphant2")
             .set({
@@ -520,7 +520,7 @@ describe("After quitting", () => {
         await deleteServiceAccounts(matomoClient);
         const users = await matomoClient.getAllUsers();
         users.length.should.equals(1);
-        users[0].email.should.equals(`valid.member@${config.domain}`);
+        users[0].user.email.should.equals(`valid.member@${config.domain}`);
     });
 
     it("should delete matomo user account for expired users when login and email are not the same", async () => {
@@ -541,7 +541,7 @@ describe("After quitting", () => {
                 date_registered: "",
             },
         ]);
-        const updatedUser = await db
+        await db
             .updateTable("users")
             .where("username", "=", "julien.dauphant2")
             .set({
@@ -554,7 +554,7 @@ describe("After quitting", () => {
         await deleteServiceAccounts(matomoClient);
         const users = await matomoClient.getAllUsers();
         users.length.should.equals(1);
-        users[0].email.should.equals(`valid.member@${config.domain}`);
+        users[0].user.should.equals(`valid.member@${config.domain}`);
     });
 
     it("should delete sentry user account for expired users", async () => {
@@ -582,6 +582,6 @@ describe("After quitting", () => {
         await deleteServiceAccounts(sentryClient);
         const users = await sentryClient.getAllUsers();
         users.length.should.equals(1);
-        users[0].email.should.equals(`valid.member@${config.domain}`);
+        users[0].user.email.should.equals(`valid.member@${config.domain}`);
     });
 });

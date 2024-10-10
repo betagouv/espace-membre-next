@@ -13,11 +13,13 @@ export class FakeMatomo implements AccountService {
         this.users = this.users.filter((user) => user.login != userLogin);
         return Promise.resolve();
     }
-    getAllUsers(): Promise<{ email: string; serviceId: string }[]> {
+    getAllUsers(): Promise<
+        { user: { email: string }; serviceUserId: string }[]
+    > {
         return Promise.resolve(
             this.users.map((user) => ({
-                ...user,
-                serviceId: user.login,
+                user: user,
+                serviceUserId: user.login,
             }))
         );
     }

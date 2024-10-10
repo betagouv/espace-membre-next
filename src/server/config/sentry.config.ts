@@ -13,9 +13,14 @@ export class FakeSentryService implements AccountService {
         this.users = this.users.filter((user) => user.id != id);
         return Promise.resolve();
     }
-    getAllUsers(): Promise<{ email: string; serviceId: string }[]> {
+    getAllUsers(): Promise<
+        { user: { email: string }; serviceUserId: string }[]
+    > {
         return Promise.resolve(
-            this.users.map((user) => ({ ...user, serviceId: user.id }))
+            this.users.map((user) => ({
+                user: user,
+                serviceUserId: user.id,
+            }))
         );
     }
     deleteUserByEmail(email: string): Promise<void> {

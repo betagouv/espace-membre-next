@@ -369,15 +369,17 @@ export async function deleteServiceAccounts(
             serviceUser:
                 allServiceUsers.find(
                     (serviceUser) =>
-                        serviceUser.email === expiredUsers.primary_email
+                        serviceUser.user.email === expiredUsers.primary_email
                 ) || null,
         }))
         .filter((expiredUser) => expiredUser.serviceUser);
 
     for (const user of expiredUsersWrappers) {
         try {
-            if (user.serviceUser?.serviceId) {
-                await service.deleteUserByServiceId(user.serviceUser.serviceId);
+            if (user.serviceUser?.serviceUserId) {
+                await service.deleteUserByServiceId(
+                    user.serviceUser.serviceUserId
+                );
                 console.log(
                     `Compte matomo supprimé pour ${user.dbUser.username}`
                 );
@@ -385,7 +387,7 @@ export async function deleteServiceAccounts(
                     created_by_username: SYSTEM_NAME,
                     action_code: EventCode.MEMBER_SERVICE_ACCOUNT_DELETED,
                     action_metadata: {
-                        email: user.serviceUser.email,
+                        email: user.serviceUser.user.email,
                         service: service.name,
                     },
                 });
