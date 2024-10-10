@@ -68,7 +68,7 @@ export class SentryService implements AccountService {
     async deleteUserByEmail(email: string): Promise<void> {
         try {
             const usersData = await this.getAllUsers();
-            const user = usersData.find((user: any) => user.email === email);
+            const user = usersData.find((user) => user.user.email === email);
 
             if (!user) {
                 console.log(`User with email ${email} not found.`);
