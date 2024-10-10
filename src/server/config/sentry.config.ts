@@ -9,8 +9,14 @@ export class FakeSentryService implements AccountService {
     constructor(users: SentryUser[]) {
         this.users = users;
     }
-    getAllUsers(): Promise<{ email: string }[]> {
-        return Promise.resolve(this.users);
+    deleteUserByServiceId(id: string): Promise<void> {
+        this.users = this.users.filter((user) => user.id != id);
+        return Promise.resolve();
+    }
+    getAllUsers(): Promise<{ email: string; serviceId: string }[]> {
+        return Promise.resolve(
+            this.users.map((user) => ({ ...user, serviceId: user.id }))
+        );
     }
     deleteUserByEmail(email: string): Promise<void> {
         this.users = this.users.filter((user) => user.email != email);

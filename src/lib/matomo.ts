@@ -51,7 +51,7 @@ export class Matomo implements AccountService {
      * Delete a user by login using Matomo API
      * @param userLogin - The login of the user to delete
      */
-    async deleteUserByLogin(userLogin: string): Promise<void> {
+    async deleteUserByServiceId(userLogin: string): Promise<void> {
         const response = await fetch(
             `${
                 this.apiUrl
@@ -80,14 +80,14 @@ export class Matomo implements AccountService {
     async deleteUserByEmail(email: string): Promise<void> {
         const user = await this.getUserByEmail(email);
         if (user) {
-            await this.deleteUserByLogin(user.login);
+            await this.deleteUserByServiceId(user.login);
         } else {
             console.log(`No user found with email: ${email}`);
         }
     }
 
     // Function to fetch all users from Matomo
-    async getAllUsers(): Promise<MatomoUser[]> {
+    async getAllUsers(): Promise<(MatomoUser & { serviceId: string })[]> {
         // API URL for fetching users
         const url = `${this.apiUrl}/index.php?module=API&method=UsersManager.getUsers&format=JSON&token_auth=${this.authToken}`;
 
@@ -102,7 +102,10 @@ export class Matomo implements AccountService {
             const users: MatomoUser[] = await response.json();
 
             // Optionally, you could add validation or transformation of the data here if needed
-            return users;
+            return users.map((user) => ({
+                ...user,
+                serviceId: user.login,
+            }));
         } catch (error) {
             console.error("Failed to fetch Matomo users:", error);
             throw error; // Re-throw the error after logging
