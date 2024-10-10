@@ -1,5 +1,5 @@
 exports.up = function (knex) {
-    return knex.schema.createTable("services_account", (table) => {
+    return knex.schema.createTable("service_accounts", (table) => {
         table
             .uuid("uuid")
             .primary()
@@ -12,7 +12,7 @@ exports.up = function (knex) {
 
         // You can add a foreign key constraint to user_id if you have a users table
         table
-            .foreign("startup_id")
+            .foreign("user_id")
             .references("uuid")
             .inTable("users")
             .onDelete("CASCADE");
@@ -22,5 +22,5 @@ exports.up = function (knex) {
 };
 
 exports.down = function (knex) {
-    return knex.schema.dropTable("services_account");
+    return knex.schema.dropTable("service_accounts");
 };
