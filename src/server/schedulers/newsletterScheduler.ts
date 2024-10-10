@@ -116,7 +116,8 @@ Le pad sera envoyé mardi prochain, sous forme d'infolettre à la communauté !`
 Voici le pad à remplir pour contribuer à la prochaine newsletter ${newsletter.url} !
 
 Ce que tu peux partager : 
-- demandes d'aide ou de contribution
+- des nouveautés sur ton produit
+- des demandes d'aide ou de contribution
 - des événements
 - des formations
 - des nouveautés transverses
