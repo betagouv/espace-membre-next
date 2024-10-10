@@ -100,6 +100,7 @@ const CRON_TASK_ENV_VAR = {
             .FEATURE_SEND_MESSAGE_TO_ACTIVE_USERS_WITHOUT_SECONDARY_EMAIL ===
         "true",
     FEATURE_DELETE_MATOMO_ACCOUNT: process.env.FEATURE_DELETE_MATOMO_ACCOUNT,
+    FEATURE_DELETE_SENTRY_ACCOUNT: process.env.FEATURE_DELETE_SENTRY_ACCOUNT,
     FEATURE_SEND_NEWSLETTER: process.env.FEATURE_SEND_NEWSLETTER === "true",
     visitSenderEmail:
         process.env.VISIT_MAIL_SENDER || "secretariat@beta.gouv.fr",
@@ -116,6 +117,9 @@ const CRON_TASK_ENV_VAR = {
     padPassword: process.env.PAD_PASSWORD,
     MATOMO_TOKEN: process.env.MATOMO_TOKEN,
     MATOMO_API_URL: process.env.MATOMO_API_URL,
+    SENTRY_API_URL: process.env.SENTRY_API_URL,
+    SENTRY_TOKEN: process.env.SENTRY_TOKEN,
+    SENTRY_ORGANIZATION: process.env.SENTRY_ORGANIZATION,
 };
 
 const REQUIRED_APP_KEY = ["SESSION_SECRET", "REDIS_URL"];
