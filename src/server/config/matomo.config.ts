@@ -17,7 +17,7 @@ export class FakeMatomo implements AccountService {
         return Promise.resolve(
             this.users.map((user) => ({
                 ...user,
-                serviceId: user.email,
+                serviceId: user.login,
             }))
         );
     }
