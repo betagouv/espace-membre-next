@@ -39,11 +39,12 @@ export class SentryService implements AccountService {
     }
 
     /**
-     * Delete a user by login using Matomo API
+     * Delete a user by login id Sentry API
      * @param userId - The id of the user to delete
      */
     async deleteUserByServiceId(userId: string): Promise<void> {
         // Step 2: Delete the user
+        console.log("LCS DELETE USER BY SERVICE ID", userId);
         const deleteResponse = await fetch(
             `${this.apiUrl}/api/0/organizations/${this.org}/members/${userId}/`,
             {
@@ -80,8 +81,10 @@ export class SentryService implements AccountService {
         }
     }
 
-    // Function to fetch all users from Matomo
-    async getAllUsers(): Promise<(SentryUser & { serviceId: string })[]> {
+    // Function to fetch all users from Sentry
+    async getAllUsers(): Promise<
+        { serviceUserId: string; user: SentryUser }[]
+    > {
         let allUsers: SentryUser[] = [];
         let nextPageUrl:
             | string
@@ -106,10 +109,10 @@ export class SentryService implements AccountService {
             const linkHeader = usersResponse.headers.get("Link");
             nextPageUrl = this.getNextPageUrl(linkHeader);
         }
-
+        // removed pending users
         return allUsers.map((user) => ({
-            ...user,
-            serviceId: user.id,
+            user: user,
+            serviceUserId: user.id,
         }));
     }
 
