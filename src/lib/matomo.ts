@@ -25,7 +25,7 @@ export class Matomo implements AccountService {
      * Fetch user by email using Matomo API
      * @param email - The email of the user
      */
-    async getUserByEmail(email: string): Promise<any> {
+    async getUserByEmail(email: string): Promise<MatomoUser | null> {
         const response = await fetch(`${this.apiUrl}/index.php`, {
             method: "POST",
             headers: { "Content-Type": "application/x-www-form-urlencoded" },
@@ -90,7 +90,9 @@ export class Matomo implements AccountService {
     }
 
     // Function to fetch all users from Matomo
-    async getAllUsers(): Promise<(MatomoUser & { serviceId: string })[]> {
+    async getAllUsers(): Promise<
+        { user: MatomoUser; serviceUserId: string }[]
+    > {
         let allUsers: MatomoUser[] = [];
         let offset = 0;
         const limit = 100; // Adjust the limit per request as needed
@@ -129,8 +131,8 @@ export class Matomo implements AccountService {
 
             // Optionally, you could add validation or transformation of the data here if needed
             return allUsers.map((user) => ({
-                ...user,
-                serviceId: user.login,
+                user: user,
+                serviceUserId: user.login,
             }));
         } catch (error) {
             console.error("Failed to fetch Matomo users:", error);
