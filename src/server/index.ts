@@ -1,3 +1,4 @@
+import * as Sentry from "@sentry/node";
 import bodyParser from "body-parser";
 import compression from "compression";
 import flash from "connect-flash";
@@ -29,7 +30,7 @@ import * as hookController from "@controllers/hookController";
 import * as indexController from "@controllers/indexController";
 //import * as pullRequestsController from "@controllers/pullRequestsController";
 import * as resourceController from "@controllers/resourceController";
-import { initializeSentry, sentryErrorHandler } from "@lib/sentry";
+import { initializeSentry } from "@lib/sentry";
 
 const port = parseInt(process.env.PORT || "8100", 10);
 const dev = process.env.NODE_ENV !== "production";
@@ -121,7 +122,8 @@ const startServer = () => {
         server.all("*", (req, res) => {
             return handle(req, res);
         });
-        server.use(sentryErrorHandler);
+
+        Sentry.setupExpressErrorHandler(server);
 
         return server.listen(port, () =>
             console.log(

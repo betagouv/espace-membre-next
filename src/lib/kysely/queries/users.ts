@@ -23,7 +23,7 @@ export const MEMBER_PROTECTED_INFO: SelectExpression<DB, "users">[] = [
     "users.communication_email",
     "users.email_is_redirection",
     "users.competences",
-];
+] as const;
 
 type GetUserInfosParams =
     | {
@@ -74,7 +74,11 @@ export async function getUserByStartup(
     return (
         db
             .selectFrom("users")
-            .select((eb) => [...MEMBER_PROTECTED_INFO, withMissions(eb)])
+            .select((eb) => [
+                ...MEMBER_PROTECTED_INFO,
+                withMissions(eb),
+                withTeams(eb),
+            ])
             .leftJoin("missions", "missions.user_id", "users.uuid")
             .leftJoin("missions_startups", "missions.uuid", "mission_id")
             .where("missions_startups.startup_id", "=", startupUuid)
@@ -108,7 +112,11 @@ export async function getUserBasicInfo(
 ) {
     let query = db
         .selectFrom("users")
-        .select((eb) => [...MEMBER_PROTECTED_INFO, withMissions(eb)]);
+        .select((eb) => [
+            ...MEMBER_PROTECTED_INFO,
+            withMissions(eb),
+            withTeams(eb),
+        ]);
 
     if ("username" in params) {
         query = query.where("users.username", "=", params.username);
@@ -125,7 +133,8 @@ export async function getUserBasicInfo(
 export async function getAllUsersInfo(db: Kysely<DB> = database) {
     const query = db
         .selectFrom("users")
-        .select((eb) => [...MEMBER_PROTECTED_INFO, withMissions(eb)])
+        .selectAll("users")
+        .select((eb) => [withMissions, withTeams])
         .compile();
 
     const userInfos = await db.executeQuery(query);
@@ -178,14 +187,6 @@ export async function adminGetAllUsersInfos(db: Kysely<DB> = database) {
 
 /* UTILS */
 
-function withUserDetails(eb: ExpressionBuilder<DB, "user_details">) {
-    return eb
-        .selectFrom("user_details")
-        .selectAll()
-        .whereRef("user_details.hash", "=", sql.val<string>("xx"))
-        .as("details");
-}
-
 function withMissions(eb: ExpressionBuilder<DB, "users">) {
     return jsonArrayFrom(
         eb
@@ -219,7 +220,31 @@ function withMissions(eb: ExpressionBuilder<DB, "users">) {
             // .whereRef("missions.uuid", "=", "missions_startups.mission_id")
             .orderBy("missions.start", "asc")
             .groupBy("missions.uuid")
-    ).as("missions");
+    )
+        .$notNull()
+        .as("missions");
+}
+
+function withTeams(eb: ExpressionBuilder<DB, "users">) {
+    return jsonArrayFrom(
+        eb
+            .selectFrom(["teams"])
+            .leftJoin("users_teams", "users_teams.team_id", "teams.uuid")
+            .leftJoin("incubators", "incubators.uuid", "teams.incubator_id")
+            .select([
+                "teams.uuid",
+                "teams.ghid",
+                "teams.mission",
+                "teams.incubator_id",
+                "teams.name",
+                "incubators.title as incubator_title",
+            ])
+            .whereRef("users_teams.user_id", "=", "users.uuid")
+            .orderBy(["incubators.title asc", "teams.name asc"])
+            .groupBy(["teams.uuid", "incubators.title"])
+    )
+        .$notNull()
+        .as("teams");
 }
 
 /** Compute member end date */
@@ -249,7 +274,7 @@ export async function updateUser(
     uuid: string,
     userData: UpdateObjectExpression<DB, "users">,
     db: Kysely<DB> = database
-): Promise<number> {
+) {
     // Insert or update the mission and return the mission ID
     const result = await db
         .updateTable("users")
@@ -264,10 +289,7 @@ export async function updateUser(
     return result.length;
 }
 
-export async function getUserStartups(
-    uuid: string,
-    db: Kysely<DB> = database
-): Promise<{ name: string | null; uuid: string | null }[]> {
+export async function getUserStartups(uuid: string, db: Kysely<DB> = database) {
     const result = await db
         .selectFrom("users")
         .leftJoin("missions", "missions.user_id", "users.uuid")
@@ -277,7 +299,12 @@ export async function getUserStartups(
             "missions.uuid"
         )
         .leftJoin("startups", "startups.uuid", "missions_startups.startup_id")
-        .select(["startups.uuid", "startups.name", "missions.start"])
+        .select([
+            "startups.uuid",
+            "startups.name",
+            "missions.start",
+            "missions.end",
+        ])
         .distinct()
         .where("users.uuid", "=", uuid)
         .where("startups.name", "is not", null)

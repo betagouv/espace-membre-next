@@ -1,3 +1,4 @@
+import * as Sentry from "@sentry/node";
 import axios from "axios";
 import { z } from "zod";
 
@@ -21,6 +22,42 @@ export const MattermostUserSchema = z.object({
     mfa_active: z.boolean(),
     last_activity_at: z.string(),
 });
+
+export const getMattermostUserInfo = async (
+    email: string | null
+): Promise<{
+    mattermostUser: MattermostUser | null;
+    mattermostUserInTeamAndActive: boolean;
+}> => {
+    if (!email) {
+        return {
+            mattermostUser: null,
+            mattermostUserInTeamAndActive: false,
+        };
+    }
+    try {
+        let mattermostUser = email
+            ? await getUserByEmail(email).catch((e) => null)
+            : null;
+        const [mattermostUserInTeamAndActive] = email
+            ? await searchUsers({
+                  term: email,
+                  team_id: config.mattermostTeamId,
+                  allow_inactive: false,
+              }).catch((e) => [])
+            : [];
+        return {
+            mattermostUser,
+            mattermostUserInTeamAndActive,
+        };
+    } catch (e) {
+        Sentry.captureException(e);
+        return {
+            mattermostUser: null,
+            mattermostUserInTeamAndActive: false,
+        };
+    }
+};
 
 export type MattermostUser = z.infer<typeof MattermostUserSchema>;
 

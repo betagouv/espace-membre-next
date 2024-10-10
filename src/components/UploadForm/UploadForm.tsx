@@ -1,15 +1,12 @@
 import { useState, useRef, ChangeEvent } from "react";
 
-import { fr } from "@codegouvfr/react-dsfr";
 import { ButtonProps } from "@codegouvfr/react-dsfr/Button";
 import ButtonsGroup from "@codegouvfr/react-dsfr/ButtonsGroup";
 import Skeleton from "@mui/material/Skeleton/Skeleton";
 import { format } from "date-fns";
 import { PlaceholderValue } from "next/dist/shared/lib/get-img-props";
-import Image from "next/image";
 
-const defaultPlaceholder =
-    "data:image/jpeg;base64,/9j/4AAQSkZJRgABAQACWAJYAAD/2wCEAAgGBgcGBQgHBwcJCQgKDBQNDAsLDBkSEw8UHRofHh0aHBwgJC4nICIsIxwcKDcpLDAxNDQ0Hyc5PTgyPC4zNDIBCQkJDAsMGA0NGDIhHCEyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMv/CABEIAMgAyAMBIgACEQEDEQH/xAAtAAEAAwEBAQAAAAAAAAAAAAAAAwQFAgEHAQEBAAAAAAAAAAAAAAAAAAAAAf/aAAwDAQACEAMQAAAA+vCwAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA8zS9UpCz1UGjbw5TYcdgAAAAAAAGbU98oAAC1p42zAAAAAAACOSMxhQAAHW3hbsAAAAAAAIpapmCgAAPdnF1onAAAAAAAhm8MNNDQAADaztSAAAAAAAAKmbuY5GKAEpozkAAAAAAAAM3QyiEUAt1JzWc9QAAAAAAIyTmjUPeCgAAO9jE6jbZ9wkAAAITqnT8JYigAAAAAAJbFIbMmHrRMBlhWFAAAAAAAAALJGoD//xAA1EAACAQEFBQUHAwUAAAAAAAABAgMRAAQhMDEFEjJAURMgM2FxEBQiQVJygZGhwUJicJKx/9oACAEBAAE/AP8AEEt5ihwZqt9I1s+0WJ+BAPXG3v8AP1X/AFsu0JRqqH8Usm0UPGjL6Y2BBAI0PJM6opZiAo1JtPfHkJCEqn7nvQ3iSA/Car9J0tFKs0YZfyOnI3+UtN2dcFGnnkXBys+5XBhyBNASdBjZ2LuWOpNciBit4jI+ochOaXeT7Tkod2RW6EHkJxW7yD+05Q0z55ViiJetDhhkilRXS0Uiyxh1rQ9c+/it3B6MMq5il1Tzqf3z70u/dnHQV/TKiXchRegz2UMpU6EUNrxd/d2Ub28DphkXa69uN4mig/ryO0E3oVcf0n/uRdI+zuyg6n4j+eRZQ6lW0IobTRGGUocaaHqO9d4u2mCnh1Ppye0fHT7f572zvHf7f55J3SNauwUedr1KJpt5eECg711lEM4ZuEihskiSLVGDDy5CSRIl3nYAWkdpJCzEnHCuRG7RyBlJGONLRyJKu8jAjNknii43APQYm0u0CaiJaeZszs7bzMSepyldkbeViD1FotoEUEq18xaOeKXgcE9DgciWeOEVdvQDU2faLHw0A82xs95mk4nNOgw5BLzNHwuadDjZNosPEQHzXC0U8cwqjeoOo7l5n7COoxc4KLMzOxZiSTqTyisyMGUkEaEWu0/bx1ODjBh7b8xa8kfJQBy1xYreQPkwI9n/xAAUEQEAAAAAAAAAAAAAAAAAAABw/9oACAECAQE/ACn/xAAUEQEAAAAAAAAAAAAAAAAAAABw/9oACAEDAQE/ACn/2Q==";
+import { FichePicture, defaultPlaceholder } from "../FichePicture";
 
 interface UploadFormProps {
     label: string;
@@ -18,7 +15,7 @@ interface UploadFormProps {
     placeholderURL?: PlaceholderValue;
     onChange: (event: ChangeEvent<HTMLInputElement>) => void;
     onDelete: () => void;
-    shape?: "round" | "square";
+    shape?: "round" | "rectangle";
 }
 
 function isRelativeUrl(url) {
@@ -120,22 +117,6 @@ const UploadForm = ({
             priority: "secondary",
         });
     }
-    const imageStyle: React.CSSProperties =
-        shape === "round"
-            ? {
-                  width: "200px",
-                  height: "200px",
-                  position: "relative",
-                  borderRadius: "50%",
-                  overflow: "hidden",
-              }
-            : {
-                  width: "356px",
-                  height: "200px",
-                  position: "relative",
-                  overflow: "hidden",
-                  border: "1px solid #000",
-              };
 
     return (
         <div className="fr-upload-group">
@@ -149,37 +130,17 @@ const UploadForm = ({
                 <Skeleton
                     variant={shape === "round" ? "rounded" : "rectangular"}
                 >
-                    <div
-                        style={imageStyle}
-                        className={fr.cx("fr-mb-1w", "fr-mt-1w")}
-                    >
-                        <Image
-                            src={src}
-                            placeholder={placeholderURL}
-                            alt="Photo de profil de l'utilisateur"
-                            fill={true}
-                            onLoad={() => {
-                                setIsImageLoading(false);
-                            }}
-                            style={{ objectFit: "cover" }}
-                        />
-                    </div>
+                    <FichePicture
+                        shape={shape}
+                        src={src}
+                        placeholder={placeholderURL}
+                        onLoad={() => {
+                            setIsImageLoading(false);
+                        }}
+                    />
                 </Skeleton>
             )}
-            {!isImageLoading && (
-                <div
-                    style={imageStyle}
-                    className={fr.cx("fr-mb-1w", "fr-mt-1w")}
-                >
-                    <Image
-                        src={src}
-                        alt="Photo de profil de l'utilisateur"
-                        fill={true}
-                        style={{ objectFit: "cover" }}
-                    />
-                </div>
-            )}
-
+            {!isImageLoading && <FichePicture shape={shape} src={src} />}
             <input
                 type="file"
                 accept="image/jpeg"

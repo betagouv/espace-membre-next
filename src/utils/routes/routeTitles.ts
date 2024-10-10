@@ -11,6 +11,7 @@ export const routeTitles: {
     accountBadge: () => "Demande de badge",
     accountBadgeRenewal: () => "Renouvellement de badge",
     community: () => "Rechercher un ou une membre",
+    communityMember: () => "Fiche membre",
     communityCreateMember: () => "Créer une fiche membre",
     dashboard: () => "Accueil",
     startupList: () => "Rechercher un produit",

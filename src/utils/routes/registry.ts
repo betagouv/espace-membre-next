@@ -33,7 +33,7 @@ export class LinkRegistry {
 
     public get<RouteName extends keyof (typeof routes)["fr"]>(
         key: RouteName,
-        params: Params<RouteName>,
+        params?: Params<RouteName>,
         options?: GetOptions
     ): string {
         let lang: Lang = this.defaultLang;

@@ -68,13 +68,14 @@ export function memberBaseInfoToMemberPublicInfoModel(
         link: user.link,
         github: user.github,
         missions: user.missions,
+
         primary_email_status: user.primary_email_status,
     };
 }
 
 export function memberPublicInfoToModel(
     user: Awaited<ReturnType<typeof getAllUsersInfo>>[0]
-): memberPublicInfoSchemaType {
+) {
     if (!user) {
         throw new Error("No users");
     }
@@ -101,9 +102,11 @@ export function memberPublicInfoToModel(
         bio: user.bio,
         link: user.link,
         github: user.github,
-        missions: (user?.missions || []).map((mission) =>
-            missionToModel(mission)
-        ),
+        missions: user?.missions || [],
+        teams: user?.teams || [],
+        //.map((mission) =>
+        //     missionToModel(mission)
+        // ),
         // primary_email: true,
         primary_email_status: user.primary_email_status as EmailStatusCode,
     };
@@ -124,7 +127,7 @@ export function memberBaseInfoToModel(
     user:
         | Awaited<ReturnType<typeof getAllUsersInfo>>[0]
         | Awaited<ReturnType<typeof getUserByStartup>>[0]
-): memberBaseInfoSchemaType {
+) {
     if (!user) {
         throw new Error("No users");
     }
@@ -135,6 +138,7 @@ export function memberBaseInfoToModel(
         role: user.role,
         domaine: user.domaine as Domaine,
         bio: user.bio,
+        workplace_insee_code: user.workplace_insee_code,
         link: user.link,
         github: user.github,
         primary_email: user.primary_email,
@@ -154,6 +158,7 @@ export function memberBaseInfoToModel(
         primary_email_status_updated_at: user.primary_email_status_updated_at!,
         email_is_redirection: user.email_is_redirection || false,
         missions: user.missions.map((m) => missionToModel(m)),
+        teams: user.teams,
         competences: (user.competences ? user.competences : []) as string[],
     };
 }
@@ -170,6 +175,7 @@ export function userInfosToModel(
         domaine: user.domaine as Domaine,
         primary_email_status: user.primary_email_status as EmailStatusCode,
         secondary_email: user.secondary_email || "",
+        workplace_insee_code: user.workplace_insee_code,
         gender: user.gender as GenderCode,
         legal_status: user.legal_status as LegalStatus,
         competences: (user.competences ? user.competences : []) as string[],

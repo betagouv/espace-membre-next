@@ -6,7 +6,7 @@ import { BaseInfoUpdate } from "@/components/BaseInfoUpdatePage";
 import { getEventListByUsername } from "@/lib/events";
 import { getAllStartups } from "@/lib/kysely/queries";
 import { getUserInfos } from "@/lib/kysely/queries/users";
-import s3 from "@/lib/s3";
+import { getAvatarUrl } from "@/lib/s3";
 import { memberChangeToModel, userInfosToModel } from "@/models/mapper";
 import { authOptions } from "@/utils/authoptions";
 import { routeTitles } from "@/utils/routes/routeTitles";
@@ -25,17 +25,6 @@ export default async function Page() {
     const dbData = await getUserInfos({ username });
     const userInfos = userInfosToModel(dbData);
     const s3Key = `members/${username}/avatar.jpg`;
-    let hasImage = false;
-    try {
-        await s3
-            .getObject({
-                Key: s3Key,
-            })
-            .promise();
-        hasImage = true;
-    } catch (error) {
-        console.log("No image for user");
-    }
 
     const startups = await getAllStartups();
     const startupOptions = startups.map((startup) => ({
@@ -55,7 +44,7 @@ export default async function Page() {
                 ...userInfos,
             },
         },
-        profileURL: hasImage ? `/api/member/${username}/image` : undefined,
+        profileURL: await getAvatarUrl(username),
         username,
         startupOptions,
     };

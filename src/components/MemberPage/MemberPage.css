@@ -1,0 +1,15 @@
+.MemberPage .tbl-contact thead tr th:first-child {
+    width:200px;
+}
+
+.MemberPage .tbl-missions thead tr th:nth-child(2), 
+.MemberPage .tbl-missions thead tr th:nth-child(3),
+.MemberPage .tbl-missions tbody tr td:nth-child(2), 
+.MemberPage .tbl-missions tbody tr td:nth-child(3)  {
+    width:200px;
+    text-align:center
+}
+
+.MemberPage .tbl-account-status tr th:first-child {
+    width:400px;
+}

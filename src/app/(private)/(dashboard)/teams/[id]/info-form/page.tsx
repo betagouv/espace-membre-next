@@ -37,6 +37,8 @@ export default async function Page(props: Props) {
     if (!session) {
         redirect("/login");
     }
+
+    //todo
     const uuid = props.params.id;
     const dbTeam = await getTeam(uuid);
 
@@ -47,14 +49,9 @@ export default async function Page(props: Props) {
     const members = (await getAllUsersInfo()).map((member) =>
         memberPublicInfoToModel(member)
     );
-    const teamMembers = (
-        await db
-            .selectFrom("users")
-            .select([...MEMBER_PROTECTED_INFO]) // here explicitly get user.uuid otherwise teamMember.uuid=users_teams.uuid
-            .innerJoin("users_teams", "users.uuid", "users_teams.user_id")
-            .where("users_teams.team_id", "=", uuid)
-            .execute()
-    ).map((user) => memberPublicInfoToModel(user));
+    const teamMembers = members.filter((m) =>
+        m.teams.map((t) => t.uuid).includes(uuid)
+    );
 
     const team = teamToModel(dbTeam);
     const componentProps = {
