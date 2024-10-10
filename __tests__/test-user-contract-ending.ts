@@ -526,7 +526,7 @@ describe("After quitting", () => {
     it("should delete matomo user account for expired users when login and email are not the same", async () => {
         const matomoClient = new FakeMatomo([
             {
-                login: `valid.member@${config.domain}`,
+                login: `valid.member`,
                 email: `valid.member@${config.domain}`,
                 alias: "",
                 superuser_access: "",
