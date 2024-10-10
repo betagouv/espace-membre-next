@@ -1,5 +1,4 @@
 import * as Sentry from "@sentry/node";
-import { ErrorRequestHandler } from "express";
 
 import config from "@/server/config";
 
@@ -13,10 +12,4 @@ export const initializeSentry = (app) => {
         dsn: process.env.SENTRY_DSN,
         tracesSampleRate: 1.0,
     });
-
-    app.use(Sentry.Handlers.requestHandler());
-    app.use(Sentry.Handlers.tracingHandler());
 };
-
-export const sentryErrorHandler: ErrorRequestHandler =
-    Sentry.Handlers.errorHandler();

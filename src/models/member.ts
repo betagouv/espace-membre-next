@@ -1,6 +1,7 @@
 import { z } from "zod";
 
 import { missionSchema } from "./mission";
+import { teamSchema } from "./team";
 import {
     EMAIL_PLAN_TYPE,
     OvhRedirectionSchema,
@@ -221,7 +222,7 @@ export const memberSchema = z.object({
         .optional()
         .nullable(),
     teams: z
-        .array(z.string())
+        .array(teamSchema)
         .describe("Liste des équipes incubateurs")
         .optional()
         .nullable(),
@@ -292,7 +293,7 @@ export const memberSchema = z.object({
         .describe(`Status legal de l'entreprise`)
         .optional(),
     workplace_insee_code: z.string().describe("Ville").nullable().optional(),
-    osm_city: z.string().describe("Ville international").nullable().optional(),
+    osm_city: z.string().describe("Ville internationale").nullable().optional(),
     primary_email: z.string().email().nullable(),
     primary_email_status: z.nativeEnum(EmailStatusCode).readonly(),
     primary_email_status_updated_at: z.date().readonly(),
@@ -337,6 +338,7 @@ export const memberBaseInfoSchema = memberSchema.pick({
     link: true,
     github: true,
     missions: true,
+    teams: true,
     primary_email: true,
     primary_email_status: true,
     memberType: true,
@@ -360,7 +362,9 @@ export const memberPublicInfoSchema = memberSchema.pick({
     link: true,
     github: true,
     missions: true,
+    teams: true,
     competences: true,
+    workplace_insee_code: true,
     // primary_email: true,
     primary_email_status: true,
     // communication_email: true,

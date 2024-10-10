@@ -9,7 +9,6 @@ import community from "@gouvfr/dsfr/dist/artwork/pictograms/environment/human-co
 import locationFrance from "@gouvfr/dsfr/dist/artwork/pictograms/map/location-france.svg";
 import { StaticImageData } from "next/image";
 
-
 import { SurveyBox } from "@/components/SurveyBox";
 import { linkRegistry } from "@/utils/routes/registry";
 
@@ -31,10 +30,7 @@ export function DashboardPage(props: DashboardPageProps) {
                         orientation="horizontal"
                         imageUrl={(document as StaticImageData).src}
                         linkProps={{
-                            href: linkRegistry.get(
-                                "accountEditBaseInfo",
-                                undefined
-                            ),
+                            href: linkRegistry.get("account"),
                         }}
                     />
                 </div>
@@ -47,8 +43,7 @@ export function DashboardPage(props: DashboardPageProps) {
                         imageUrl={(mailSend as StaticImageData).src}
                         linkProps={{
                             href: `${linkRegistry.get(
-                                "account",
-                                undefined
+                                "account"
                             )}#email-settings`,
                         }}
                     />
@@ -61,7 +56,7 @@ export function DashboardPage(props: DashboardPageProps) {
                         orientation="horizontal"
                         imageUrl={(document as StaticImageData).src}
                         linkProps={{
-                            href: linkRegistry.get("startupList", undefined),
+                            href: linkRegistry.get("startupList"),
                         }}
                     />
                 </div>
@@ -76,7 +71,7 @@ export function DashboardPage(props: DashboardPageProps) {
                         orientation="horizontal"
                         imageUrl={(community as StaticImageData).src}
                         linkProps={{
-                            href: linkRegistry.get("community", undefined),
+                            href: linkRegistry.get("community"),
                         }}
                     />
                 </div>
@@ -88,10 +83,7 @@ export function DashboardPage(props: DashboardPageProps) {
                         orientation="horizontal"
                         imageUrl={(locationFrance as StaticImageData).src}
                         linkProps={{
-                            href: `${linkRegistry.get(
-                                "account",
-                                undefined
-                            )}#observatory`,
+                            href: `${linkRegistry.get("metabase")}`,
                         }}
                     />
                 </div>
@@ -103,7 +95,7 @@ export function DashboardPage(props: DashboardPageProps) {
                         orientation="horizontal"
                         imageUrl={(school as StaticImageData).src}
                         linkProps={{
-                            href: linkRegistry.get("formationList", undefined),
+                            href: linkRegistry.get("formationList"),
                         }}
                     />
                 </div>
@@ -115,7 +107,7 @@ export function DashboardPage(props: DashboardPageProps) {
                         orientation="horizontal"
                         imageUrl={(mailSend as StaticImageData).src}
                         linkProps={{
-                            href: linkRegistry.get("newsletters", undefined),
+                            href: linkRegistry.get("newsletters"),
                         }}
                     />
                 </div>

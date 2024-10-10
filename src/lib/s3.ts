@@ -50,4 +50,22 @@ if (process.env.NODE_ENV === "test" || process.env.CI) {
     }
 }
 
+export const getAvatarUrl = async (username: string) => {
+    const s3Key = `members/${username}/avatar.jpg`;
+    try {
+        let hasImage = await s3
+            .getObject({
+                Key: s3Key,
+            })
+            .promise()
+            .then(() => true)
+            .catch(() => false);
+
+        const image = hasImage ? `/api/member/${username}/image` : undefined;
+        return image;
+    } catch {
+        return undefined; //"/static/images/ada.jpg";
+    }
+};
+
 export default s3;
