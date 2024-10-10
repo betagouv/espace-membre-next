@@ -9,8 +9,17 @@ export class FakeMatomo implements AccountService {
     constructor(users: MatomoUser[]) {
         this.users = users;
     }
-    getAllUsers(): Promise<{ email: string }[]> {
-        return Promise.resolve(this.users);
+    deleteUserByServiceId(userLogin: string): Promise<void> {
+        this.users = this.users.filter((user) => user.login != userLogin);
+        return Promise.resolve();
+    }
+    getAllUsers(): Promise<{ email: string; serviceId: string }[]> {
+        return Promise.resolve(
+            this.users.map((user) => ({
+                ...user,
+                serviceId: user.email,
+            }))
+        );
     }
     deleteUserByEmail(email: string): Promise<void> {
         this.users = this.users.filter((user) => user.email != email);
