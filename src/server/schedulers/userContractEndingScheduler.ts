@@ -355,37 +355,44 @@ export async function deleteServiceAccounts(
     service: AccountService // Accept any service that implements the AccountService interface
 ) {
     const allServiceUsers = await service.getAllUsers();
-    const allServiceUserEmails = allServiceUsers.map((user) => user.email);
+    // const allServiceUserEmails = allServiceUsers.map((user) => user.email);
     const today = new Date();
     const todayLess30days = new Date();
     todayLess30days.setDate(today.getDate() - 30);
-    const users = (await getAllExpiredUsers(todayLess30days)).map((user) =>
-        memberBaseInfoToModel(user)
+    const expiredUsers = (await getAllExpiredUsers(todayLess30days)).map(
+        (user) => memberBaseInfoToModel(user)
     );
 
-    const expiredUsers = users.filter((user) => {
-        return (
-            user.primary_email &&
-            allServiceUserEmails.includes(user.primary_email)
-        );
-    });
-    for (const user of expiredUsers) {
+    const expiredUsersWrappers = expiredUsers
+        .map((expiredUsers) => ({
+            dbUser: expiredUsers,
+            serviceUser:
+                allServiceUsers.find(
+                    (serviceUser) =>
+                        serviceUser.email === expiredUsers.primary_email
+                ) || null,
+        }))
+        .filter((expiredUser) => expiredUser.serviceUser);
+
+    for (const user of expiredUsersWrappers) {
         try {
-            if (user.primary_email) {
-                await service.deleteUserByEmail(user.primary_email);
-                console.log(`Compte matomo supprimé pour ${user.username}`);
+            if (user.serviceUser?.serviceId) {
+                await service.deleteUserByServiceId(user.serviceUser.serviceId);
+                console.log(
+                    `Compte matomo supprimé pour ${user.dbUser.username}`
+                );
                 await addEvent({
                     created_by_username: SYSTEM_NAME,
                     action_code: EventCode.MEMBER_SERVICE_ACCOUNT_DELETED,
                     action_metadata: {
-                        email: user.primary_email,
+                        email: user.serviceUser.email,
                         service: service.name,
                     },
                 });
             }
         } catch {
             console.log(
-                `Erreur lors de la suppression du compte pour ${user.username}`
+                `Erreur lors de la suppression du compte pour ${user.dbUser.username}`
             );
         }
     }

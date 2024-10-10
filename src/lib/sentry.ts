@@ -42,7 +42,7 @@ export class SentryService implements AccountService {
      * Delete a user by login using Matomo API
      * @param userId - The id of the user to delete
      */
-    async deleteUserById(userId: string): Promise<void> {
+    async deleteUserByServiceId(userId: string): Promise<void> {
         // Step 2: Delete the user
         const deleteResponse = await fetch(
             `${this.apiUrl}/api/0/organizations/${this.org}/members/${userId}/`,
@@ -73,7 +73,7 @@ export class SentryService implements AccountService {
                 console.log(`User with email ${email} not found.`);
                 return;
             }
-            await this.deleteUserById(user.id);
+            await this.deleteUserByServiceId(user.id);
             console.log(`User with email ${email} deleted successfully.`);
         } catch (error) {
             console.error("Error deleting user:", error);
@@ -81,7 +81,7 @@ export class SentryService implements AccountService {
     }
 
     // Function to fetch all users from Matomo
-    async getAllUsers(): Promise<SentryUser[]> {
+    async getAllUsers(): Promise<(SentryUser & { serviceId: string })[]> {
         let allUsers: SentryUser[] = [];
         let nextPageUrl:
             | string
@@ -107,7 +107,10 @@ export class SentryService implements AccountService {
             nextPageUrl = this.getNextPageUrl(linkHeader);
         }
 
-        return allUsers;
+        return allUsers.map((user) => ({
+            ...user,
+            serviceId: user.id,
+        }));
     }
 
     getNextPageUrl(linkHeader: string | null): string | null {
@@ -115,8 +118,11 @@ export class SentryService implements AccountService {
 
         const links = linkHeader.split(",");
         for (let link of links) {
-            const [urlPart, relPart] = link.split(";");
-            if (relPart.includes('rel="next"')) {
+            const [urlPart, relPart, resultPart] = link.split(";");
+            if (
+                relPart.includes('rel="next"') &&
+                resultPart.includes('results="true"')
+            ) {
                 return urlPart.trim().slice(1, -1); // Remove angle brackets around URL
             }
         }
