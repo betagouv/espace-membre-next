@@ -554,7 +554,7 @@ describe("After quitting", () => {
         await deleteServiceAccounts(matomoClient);
         const users = await matomoClient.getAllUsers();
         users.length.should.equals(1);
-        users[0].user.should.equals(`valid.member@${config.domain}`);
+        users[0].user.email.should.equals(`valid.member@${config.domain}`);
     });
 
     it("should delete sentry user account for expired users", async () => {
