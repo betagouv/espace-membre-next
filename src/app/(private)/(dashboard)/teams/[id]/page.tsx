@@ -40,6 +40,7 @@ export default async function Page({ params }: Props) {
     if (!incubator) {
         throw new Error("An incubator should exist of incubator.uuid");
     }
+
     const teamMembers = (
         await db
             .selectFrom("users")
@@ -47,7 +48,13 @@ export default async function Page({ params }: Props) {
             .innerJoin("users_teams", "users.uuid", "users_teams.user_id")
             .where("users_teams.team_id", "=", params.id)
             .execute()
-    ).map((user) => memberPublicInfoToModel(user));
+    ).map((user) =>
+        memberPublicInfoToModel({
+            ...user,
+            missions: [], // for TS
+            teams: [], // for TS
+        })
+    );
     const team = teamToModel(dbTeam);
     return (
         <TeamPage

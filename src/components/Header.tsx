@@ -25,8 +25,7 @@ const MainHeader = () => {
     const adminMattermostLink = linkRegistry.get("adminMattermost", undefined);
     const formationListLink = linkRegistry.get("formationList", undefined);
     const eventsListLink = linkRegistry.get("eventsList", undefined);
-    const quickAccessItems: (React.ReactNode | HeaderProps.QuickAccessItem)[] =
-        [];
+    const quickAccessItems: HeaderProps.QuickAccessItem[] = [];
     if (session) {
         quickAccessItems.push({
             iconId: "fr-icon-account-line",
@@ -68,6 +67,7 @@ const MainHeader = () => {
         },
         text: isLiveChatLoading ? "Chargement..." : "Support",
     });
+
     const nav =
         session?.user &&
         [
@@ -181,7 +181,7 @@ const MainHeader = () => {
             }}
             navigation={nav}
             id="fr-header-header-with-quick-access-items"
-            quickAccessItems={[...quickAccessItems]}
+            quickAccessItems={quickAccessItems}
             serviceTitle="Espace Membre"
             serviceTagline="Communauté beta.gouv.fr"
         />

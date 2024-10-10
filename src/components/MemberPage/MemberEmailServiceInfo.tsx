@@ -100,7 +100,7 @@ const MemberEmailServiceInfo = ({
     useEffect(() => {
         const fetchEvents = async () => {
             if (!userId) return;
-
+            // todo: move to server-side
             setLoading(true);
             try {
                 const response = await fetch(
