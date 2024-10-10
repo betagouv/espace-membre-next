@@ -15,9 +15,6 @@ export const initializeSentry = (app) => {
     });
 };
 
-export const sentryErrorHandler: ErrorRequestHandler =
-    Sentry.Handlers.errorHandler();
-
 export interface SentryUser {
     id: string;
     email: string;
@@ -136,4 +133,3 @@ export class SentryService implements AccountService {
         return null;
     }
 }
-
