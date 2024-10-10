@@ -74,7 +74,7 @@ export class SentryService implements AccountService {
                 console.log(`User with email ${email} not found.`);
                 return;
             }
-            await this.deleteUserByServiceId(user.id);
+            await this.deleteUserByServiceId(user.serviceUserId);
             console.log(`User with email ${email} deleted successfully.`);
         } catch (error) {
             console.error("Error deleting user:", error);
