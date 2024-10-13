@@ -3,7 +3,10 @@ import type { Metadata } from "next";
 import { Community } from "@/components/CommunityPage";
 import { db } from "@/lib/kysely";
 import { getAllStartups } from "@/lib/kysely/queries";
-import { getAllIncubatorsOptions } from "@/lib/kysely/queries/incubators";
+import {
+    getAllIncubatorsOptions,
+    getAllIncubatorsMembers,
+} from "@/lib/kysely/queries/incubators";
 import { getAllUsersInfo } from "@/lib/kysely/queries/users";
 import { competencesList } from "@/models/competences";
 import { memberBaseInfoToModel } from "@/models/mapper";
@@ -22,9 +25,11 @@ export default async function Page() {
     const startups = await getAllStartups();
     const title = routeTitles.community();
 
+    const incubatorMembers = await getAllIncubatorsMembers();
     const props = {
         title,
         incubatorOptions: incubatorOptions,
+        incubatorMembers: incubatorMembers,
         startupOptions: startups.map((startup) => {
             return {
                 value: startup.uuid,
