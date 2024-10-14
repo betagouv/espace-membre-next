@@ -231,7 +231,7 @@ const servicesJobs: Job[] = [
             "Supprime les comptes matomos des membres expirés (30 days)",
     },
     {
-        cronTime: "0 20 15 * * *",
+        cronTime: "0 45 15 * * *",
         onTick: deleteSentryAccount,
         isActive: !!config.FEATURE_DELETE_SENTRY_ACCOUNT,
         name: "deleteSentryAccount",
