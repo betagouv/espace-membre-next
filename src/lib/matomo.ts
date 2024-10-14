@@ -11,6 +11,13 @@ export interface MatomoUser {
     date_registered: string;
 }
 
+export interface MatomoUserAccessDetails {
+    idSite: number;
+    name: string;
+    url: string;
+    accessLevel: "admin" | "view"; // Define access levels you want to check
+}
+
 export class Matomo implements AccountService {
     private apiUrl: string;
     private authToken: string;
@@ -74,6 +81,30 @@ export class Matomo implements AccountService {
                 ? `User with login: ${userLogin} successfully deleted.`
                 : `Failed to delete user with login: ${userLogin}.`
         );
+    }
+
+    /**
+     * fetch a user access by login using Matomo API
+     * @param userLogn - The login of the user to delete
+     */
+    async fetchUserAccess(
+        userLogin: string
+    ): Promise<MatomoUserAccessDetails[]> {
+        const response = await fetch(`${this.apiUrl}/index.php`, {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/x-www-form-urlencoded",
+            },
+            body: new URLSearchParams({
+                module: "API",
+                method: "SitesManager.getSitesWithAdminAccess",
+                format: "JSON",
+                token_auth: this.authToken,
+                userLogin: userLogin,
+            }),
+        });
+
+        return response.json();
     }
 
     // Function to fetch all users from Matomo
