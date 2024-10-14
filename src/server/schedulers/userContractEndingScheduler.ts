@@ -377,6 +377,9 @@ export async function deleteServiceAccounts(
     for (const user of expiredUsersWrappers) {
         try {
             if (user.serviceUser?.serviceUserId) {
+                console.log(
+                    `Suppression du compte matomo pour ${user.dbUser.username}`
+                );
                 await service.deleteUserByServiceId(
                     user.serviceUser.serviceUserId
                 );
