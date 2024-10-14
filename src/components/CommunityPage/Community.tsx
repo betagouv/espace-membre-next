@@ -78,6 +78,7 @@ const getUserRow = ({
         </>,
         // domaine
         <span
+            key="domaine"
             className={fr.cx("fr-link", "fr-link--sm")}
             style={{ cursor: "pointer" }}
             title="Chercher tous les membres de ce domaine"
@@ -90,25 +91,30 @@ const getUserRow = ({
         // teams
         teams.length ? (
             <ul style={{ paddingLeft: 0 }}>
-                {teams.map((s) => (
-                    <li
-                        key={s?.value}
-                        style={{
-                            display: "inline",
-                        }}
-                    >
-                        <Tag
-                            linkProps={{
-                                // @ts-ignore todo
-                                href: (s && s.url) || `/startups/${s?.value}`,
-                            }}
-                            title="Accéder à la fiche"
-                            className={fr.cx("fr-mr-1w", "fr-mb-1w")}
-                        >
-                            {s?.label}
-                        </Tag>
-                    </li>
-                ))}
+                {teams.map(
+                    (s) =>
+                        s && (
+                            <li
+                                key={s.value}
+                                style={{
+                                    display: "inline",
+                                }}
+                            >
+                                <Tag
+                                    linkProps={{
+                                        href:
+                                            // @ts-ignore todo
+                                            (s && s.url) ||
+                                            `/startups/${s?.value}`,
+                                    }}
+                                    title="Accéder à la fiche"
+                                    className={fr.cx("fr-mr-1w", "fr-mb-1w")}
+                                >
+                                    {s?.label}
+                                </Tag>
+                            </li>
+                        )
+                )}
             </ul>
         ) : null,
     ];
