@@ -10,5 +10,4 @@ export interface AccountService {
         { user: { email: string }; serviceUserId: string }[]
     >;
     deleteUserByServiceId(id: string): Promise<void>;
-    deleteUserByEmail(email: string): Promise<void>;
 }

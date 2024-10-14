@@ -23,10 +23,6 @@ export class FakeSentryService implements AccountService {
             }))
         );
     }
-    deleteUserByEmail(email: string): Promise<void> {
-        this.users = this.users.filter((user) => user.email != email);
-        return Promise.resolve();
-    }
 }
 
 export const sentryClient =

@@ -392,9 +392,9 @@ export async function deleteServiceAccounts(
                     },
                 });
             }
-        } catch {
-            console.log(
-                `Erreur lors de la suppression du compte pour ${user.dbUser.username}`
+        } catch (err) {
+            console.error(
+                `Erreur lors de la suppression du compte pour ${user.dbUser.username} : ${err}`
             );
         }
     }

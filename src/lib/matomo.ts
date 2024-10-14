@@ -76,19 +76,6 @@ export class Matomo implements AccountService {
         );
     }
 
-    /**
-     * Delete a user by email.
-     * @param email - The email of the user to delete
-     */
-    async deleteUserByEmail(email: string): Promise<void> {
-        const user = await this.getUserByEmail(email);
-        if (user) {
-            await this.deleteUserByServiceId(user.login);
-        } else {
-            console.log(`No user found with email: ${email}`);
-        }
-    }
-
     // Function to fetch all users from Matomo
     async getAllUsers(): Promise<
         { user: MatomoUser; serviceUserId: string }[]

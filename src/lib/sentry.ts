@@ -61,26 +61,6 @@ export class SentryService implements AccountService {
         console.log(`User with email ${userId} deleted successfully.`);
     }
 
-    /**
-     * Delete a user by email.
-     * @param email - The email of the user to delete
-     */
-    async deleteUserByEmail(email: string): Promise<void> {
-        try {
-            const usersData = await this.getAllUsers();
-            const user = usersData.find((user) => user.user.email === email);
-
-            if (!user) {
-                console.log(`User with email ${email} not found.`);
-                return;
-            }
-            await this.deleteUserByServiceId(user.serviceUserId);
-            console.log(`User with email ${email} deleted successfully.`);
-        } catch (error) {
-            console.error("Error deleting user:", error);
-        }
-    }
-
     // Function to fetch all users from Sentry
     async getAllUsers(): Promise<
         { serviceUserId: string; user: SentryUser }[]
