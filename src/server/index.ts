@@ -26,7 +26,6 @@ import {
 //import routes from "@/routes/routes";
 import config from "@/server/config";
 import { getToken } from "@/server/helpers/session";
-import * as hookController from "@controllers/hookController";
 import * as indexController from "@controllers/indexController";
 //import * as pullRequestsController from "@controllers/pullRequestsController";
 import * as resourceController from "@controllers/resourceController";
@@ -102,22 +101,8 @@ const startServer = () => {
         server.use(newsletterRouter);
         server.use(mapRouter);
 
-        // server.get(
-        //     routes.PULL_REQUEST_GET_PRS,
-        //     pullRequestsController.getAllPullRequests
-        // );
-        // INCUBATORS
-        //server.get(routes.API_PUBLIC_INCUBATORS_GET_ALL, getAllIncubators);
-
-        //sponsors
-        // server.get(routes.API_PUBLIC_SPONSORS_GET_ALL, getAllSponsors);
-
         server.get("/resources", resourceController.getResources);
-        // server.post(
-        //     "/hook/:hookId",
-        //     express.json({ type: "*/*" }),
-        //     hookController.postToHook
-        // );
+
         // Default catch-all handler to allow Next.js to handle all other routes
         server.all("*", (req, res) => {
             return handle(req, res);
