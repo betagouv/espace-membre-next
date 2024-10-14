@@ -4,7 +4,7 @@ fileignoreconfig:
 - filename: src/app/(private)/(dashboard)/account/page.tsx
   checksum: 1c9b1df42135952c43133eb46ccfb97a7f073cfb9ffc1751efd91c62875b436a
 - filename: src/components/CommunityPage/Community.tsx
-  checksum: f1708565ce4b2bb8ac06eb6cd09f271170e1b8fcabfec3e3b84987394173475d
+  checksum: dc3ab9308a1f99026b70342a2ecf7f6c3dffa8c83caef74e44cb244d4cafcf06
 - filename: src/components/CommunityPage/exportToCsv.ts
   checksum: a94d12759ff13fb5a19c266b40ee5762ab7ed4cfb208a17caa62297de955f962
 - filename: src/components/FichePicture.tsx
