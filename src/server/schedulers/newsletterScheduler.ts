@@ -110,7 +110,7 @@ Ce que tu peux partager :
 
 Le pad sera envoyé mardi prochain, sous forme d'infolettre à la communauté !`;
     } else if (reminder === "SECOND_REMINDER") {
-        message = `# Dernière chance pour contribuer à la newsletter interne beta.gouv.fr ! :loudspeaker: 
+        message = `### Dernière chance pour contribuer à la newsletter interne beta.gouv.fr ! :loudspeaker: 
 
 :wave:  Bonjour, tout le monde ! 
 
@@ -122,7 +122,8 @@ Ce que tu peux partager :
 - des événements
 - des formations
 - des nouveautés transverses
-- Ajoute les au pad de cette semaine !
+
+Ajoute les au pad de cette semaine !
 
 **La newsletter sera envoyée à partir de 16h !**`;
     } else {
