@@ -1,6 +1,9 @@
 import chai from "chai";
 
+import utils from "./utils";
 import { db } from "@/lib/kysely";
+import { db } from "@/lib/kysely";
+import { EmailStatusCode } from "@/models/member";
 import config from "@/server/config";
 import { FakeMatomo } from "@/server/config/matomo.config";
 import { syncMatomoAccounts } from "@/server/schedulers/serviceScheduler/syncMatomoAccounts";
@@ -30,16 +33,10 @@ describe("Should sync service accounts", () => {
             [
                 {
                     login: `valid.member@${config.domain}`,
-                    site: 2,
-                    access: "admin",
-                },
-            ],
-            [
-                {
-                    idsite: 2,
-                    name: "un super site",
-                    main_url: "https://unsupersite.com",
-                    type: "website",
+                    idSite: 2,
+                    name: "super site",
+                    url: "https://supersite.com",
+                    accessLevel: "admin",
                 },
             ]
         );
@@ -59,6 +56,8 @@ describe("Should sync service accounts", () => {
         serviceAccount.metadata["sites"][0]["accessLevel"].should.equal(
             "admin"
         );
+        serviceAccount.metadata["sites"][0]["user_id"].should.not.be.null;
+
         const serviceAccountForNoCorrespondingValueInUserTable = await db
             .selectFrom("service_accounts")
             .selectAll()
@@ -69,11 +68,14 @@ describe("Should sync service accounts", () => {
             )
             .executeTakeFirstOrThrow();
         serviceAccountForNoCorrespondingValueInUserTable.should.not.be.null;
+
         matomoClient.userAccess = [
             {
                 login: `valid.member@${config.domain}`,
-                site: 2,
-                access: "view", //access level changed
+                idSite: 2,
+                name: "super site",
+                url: "https://supersite.com",
+                accessLevel: "view", //access level changed
             },
         ];
 

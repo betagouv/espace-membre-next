@@ -8,10 +8,10 @@ export const matomoUserToModel = (
 ): matomoUserSchemaType => {
     const sites: matomoUserSchemaType["metadata"]["sites"] = userMetadata.map(
         (u) => {
-            const site = allWebsites.find((site) => site.idsite === u.site);
+            const site = allWebsites.find((site) => site.idsite === u.idSite);
             return {
-                id: u.site,
-                accessLevel: u.access,
+                id: u.idSite,
+                accessLevel: u.accessLevel,
                 url: site ? site.main_url : undefined,
                 name: site ? site.name : "",
                 type: site?.type as matomoUserSchemaType["metadata"]["sites"][0]["type"],
