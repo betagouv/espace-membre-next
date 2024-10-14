@@ -101,6 +101,8 @@ describe("Should sync service accounts", () => {
             throw new Error("Service account should have metadata");
         }
         // access level should have beem updated
-        serviceAccount.metadata["sites"][0]["accessLevel"].should.equal("view");
+        validMemberAccount.metadata["sites"][0]["accessLevel"].should.equal(
+            "view"
+        );
     });
 });
