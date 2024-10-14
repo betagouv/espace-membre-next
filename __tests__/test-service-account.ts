@@ -1,9 +1,6 @@
 import chai from "chai";
 
-import utils from "./utils";
 import { db } from "@/lib/kysely";
-import { db } from "@/lib/kysely";
-import { EmailStatusCode } from "@/models/member";
 import config from "@/server/config";
 import { FakeMatomo } from "@/server/config/matomo.config";
 import { syncMatomoAccounts } from "@/server/schedulers/serviceScheduler/syncMatomoAccounts";
