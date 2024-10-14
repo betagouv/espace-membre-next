@@ -378,13 +378,13 @@ export async function deleteServiceAccounts(
         try {
             if (user.serviceUser?.serviceUserId) {
                 console.log(
-                    `Suppression du compte matomo pour ${user.dbUser.username}`
+                    `Suppression du compte ${service.name} pour ${user.dbUser.username}`
                 );
                 await service.deleteUserByServiceId(
                     user.serviceUser.serviceUserId
                 );
                 console.log(
-                    `Compte matomo supprimé pour ${user.dbUser.username}`
+                    `Compte ${service.name} supprimé pour ${user.dbUser.username}`
                 );
                 await addEvent({
                     created_by_username: SYSTEM_NAME,
