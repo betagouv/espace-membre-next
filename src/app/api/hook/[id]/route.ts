@@ -26,12 +26,7 @@ export const POST = async (
     req: NextRequest,
     { params: { id } }: { params: { id: string } }
 ) => {
-    if (id === config.MATTERMOST_WEBHOOK_PING) {
-        return Response.json({
-            text: `${config.MATTERMOST_TEAM_PING}`,
-            response_type: 'comment'
-        });
-    } else if (id === config.SIB_WEBHOOK_ID) {
+    if (id === config.SIB_WEBHOOK_ID) {
         let sibWebhookBody = (await req.json()) as ISibWebhookBody;
 
         const message = `:toolbox: Webhook send in blue\n
