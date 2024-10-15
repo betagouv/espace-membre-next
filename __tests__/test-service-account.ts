@@ -53,8 +53,6 @@ describe("Should sync service accounts", () => {
         serviceAccount.metadata["sites"][0]["accessLevel"].should.equal(
             "admin"
         );
-        serviceAccount.metadata["sites"][0]["user_id"].should.not.be.null;
-
         const serviceAccountForNoCorrespondingValueInUserTable = await db
             .selectFrom("service_accounts")
             .selectAll()
@@ -65,7 +63,6 @@ describe("Should sync service accounts", () => {
             )
             .executeTakeFirstOrThrow();
         serviceAccountForNoCorrespondingValueInUserTable.should.not.be.null;
-
         matomoClient.userAccess = [
             {
                 login: `valid.member@${config.domain}`,

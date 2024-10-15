@@ -84,4 +84,8 @@ export async function syncMatomoAccounts(matomoClient: Matomo | FakeMatomo) {
             `Deleted ${deletedResult.numDeletedRows} matomo service_accounts`
         );
     }
+        .execute();
+    console.log(
+        `Inserted or updated ${result[0].numInsertedOrUpdatedRows} matomo users`
+    );
 }
