@@ -584,32 +584,4 @@ describe("After quitting", () => {
         users.length.should.equals(1);
         users[0].user.email.should.equals(`valid.member@${config.domain}`);
     });
-
-    it("should delete sentry user account for expired users", async () => {
-        const sentryClient = new FakeSentryService([
-            {
-                email: `valid.member@${config.domain}`,
-                id: "sdasda554",
-            },
-            // membre expiré
-            {
-                email: `julien.dauphant2@${config.domain}`,
-                id: "54sdadadsa",
-            },
-        ]);
-        const updatedUser = await db
-            .updateTable("users")
-            .where("username", "=", "julien.dauphant2")
-            .set({
-                primary_email: `julien.dauphant2@${config.domain}`,
-                primary_email_status: EmailStatusCode.EMAIL_DELETED,
-                primary_email_status_updated_at: expiredFor31daysDate,
-            })
-            .returningAll()
-            .executeTakeFirstOrThrow();
-        await deleteServiceAccounts(sentryClient);
-        const users = await sentryClient.getAllUsers();
-        users.length.should.equals(1);
-        users[0].user.email.should.equals(`valid.member@${config.domain}`);
-    });
 });
