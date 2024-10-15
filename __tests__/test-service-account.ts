@@ -30,10 +30,16 @@ describe("Should sync service accounts", () => {
             [
                 {
                     login: `valid.member@${config.domain}`,
-                    idSite: 2,
-                    name: "super site",
-                    url: "https://supersite.com",
+                    site: 2,
                     accessLevel: "admin",
+                },
+            ],
+            [
+                {
+                    idsite: 2,
+                    name: "un super site",
+                    main_url: "https://unsupersite.com",
+                    type: "website",
                 },
             ]
         );
@@ -66,9 +72,7 @@ describe("Should sync service accounts", () => {
         matomoClient.userAccess = [
             {
                 login: `valid.member@${config.domain}`,
-                idSite: 2,
-                name: "super site",
-                url: "https://supersite.com",
+                site: 2,
                 accessLevel: "view", //access level changed
             },
         ];

@@ -21,8 +21,13 @@ export interface MatomoSite {
 export interface MatomoUserAccess {
     idSite: number;
     name: string;
-    url: string;
-    accessLevel: "admin" | "view"; // Define access levels you want to check
+    main_url: string;
+    type: string;
+}
+
+export interface MatomoUserAccess {
+    site: number;
+    access: "admin" | "view"; // Define access levels you want to check
 }
 
 export class Matomo implements AccountService {
