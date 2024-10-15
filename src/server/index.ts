@@ -1,4 +1,3 @@
-import * as Sentry from "@sentry/node";
 import bodyParser from "body-parser";
 import compression from "compression";
 import flash from "connect-flash";
