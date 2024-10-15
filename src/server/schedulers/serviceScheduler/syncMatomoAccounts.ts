@@ -1,4 +1,3 @@
-import { metadata } from "@/app/(private)/(dashboard)/community/page";
 import { db } from "@/lib/kysely";
 import { getAllUsersInfo } from "@/lib/kysely/queries/users";
 import { Matomo } from "@/lib/matomo";

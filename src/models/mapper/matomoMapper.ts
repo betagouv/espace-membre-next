@@ -1,5 +1,3 @@
-import { z } from "zod";
-
 import { matomoUserSchemaType } from "../matomo";
 import { MatomoUser, MatomoUserAccess, MatomoSite } from "@/lib/matomo";
 
