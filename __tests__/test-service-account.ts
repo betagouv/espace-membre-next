@@ -1,21 +1,9 @@
-import utils from "./utils";
 import { db } from "@/lib/kysely";
-import { EmailStatusCode } from "@/models/member";
 import config from "@/server/config";
 import { FakeMatomo } from "@/server/config/matomo.config";
 import { syncMatomoAccounts } from "@/server/schedulers/serviceScheduler/syncMatomoAccounts";
 
 describe("Should sync service accounts", () => {
-    let clock;
-    let sendEmailStub;
-    // beforeEach(async () => {
-    //     return await utils.createUsers(users);
-    // });
-
-    // afterEach(async () => {
-    //     await utils.deleteUsers(users);
-    // });
-
     it("should sync matomo users", async () => {
         const matomoClient = new FakeMatomo(
             [
