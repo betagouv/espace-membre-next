@@ -36,8 +36,16 @@ export async function syncMatomoAccounts(matomoClient: Matomo | FakeMatomo) {
         .insertInto("service_accounts")
         .values(usersToInsert)
         .onConflict((oc) => {
-            return oc.doNothing();
+            return oc
+                .column("service_user_id")
+                .column("account_type")
+                .doUpdateSet({
+                    metadata: (eb) => eb.ref("excluded.metadata"),
+                    user_id: (eb) => eb.ref("excluded.user_id"),
+                });
         })
         .execute();
-    console.log(`Insert ${usersToInsert.length} matomo users`);
+    console.log(
+        `Inserted or updated ${result[0].numInsertedOrUpdatedRows} matomo users`
+    );
 }
