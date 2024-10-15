@@ -27,7 +27,7 @@ describe("Should sync service accounts", () => {
                 {
                     login: `valid.member@${config.domain}`,
                     site: 2,
-                    accessLevel: "admin",
+                    access: "admin",
                 },
             ],
             [
@@ -69,7 +69,7 @@ describe("Should sync service accounts", () => {
             {
                 login: `valid.member@${config.domain}`,
                 site: 2,
-                accessLevel: "view", //access level changed
+                access: "view", //access level changed
             },
         ];
 
