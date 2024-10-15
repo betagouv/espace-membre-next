@@ -1,26 +1,28 @@
 import config from ".";
 import { AccountService, SERVICES } from "./services.config";
-import { Matomo, MatomoUser, MatomoUserAccessDetails } from "@/lib/matomo";
+import { Matomo, MatomoSite, MatomoUser, MatomoUserAccess } from "@/lib/matomo";
 
 export class FakeMatomo implements AccountService {
     users: MatomoUser[] = [];
     public name = SERVICES.MATOMO;
-    userAccess: (MatomoUserAccessDetails & { login: MatomoUser["login"] })[];
-
+    userAccess: (MatomoUserAccess & { login: MatomoUser["login"] })[];
+    sites: MatomoSite[] = [];
     constructor(
         users: MatomoUser[],
-        userAccess: (MatomoUserAccessDetails & {
+        userAccess: (MatomoUserAccess & {
             login: MatomoUser["login"];
-        })[] = []
+        })[] = [],
+        sites: MatomoSite[] = []
     ) {
         this.users = users;
         this.userAccess = userAccess;
+        this.sites = sites;
     }
     deleteUserByServiceId(userLogin: string): Promise<void> {
         this.users = this.users.filter((user) => user.login != userLogin);
         return Promise.resolve();
     }
-    fetchUserAccess(userLogin: string): Promise<MatomoUserAccessDetails[]> {
+    fetchUserAccess(userLogin: string): Promise<MatomoUserAccess[]> {
         return Promise.resolve(
             this.userAccess
                 .filter((userAccess) => userAccess.login == userLogin)
@@ -30,6 +32,10 @@ export class FakeMatomo implements AccountService {
                 })
         );
     }
+    getAllSites(): Promise<MatomoSite[]> {
+        return Promise.resolve(this.sites);
+    }
+
     getAllUsers(): Promise<{ user: MatomoUser; serviceUserId: string }[]> {
         return Promise.resolve(
             this.users.map((user) => ({

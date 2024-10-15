@@ -1,10 +1,11 @@
 import { z } from "zod";
 
 const matomoUserAccessSchema = z.object({
-    idSite: z.number(),
-    name: z.string(),
-    url: z.string().url(), // Ensures the URL is valid
+    id: z.number(),
     accessLevel: z.enum(["admin", "view"]), // Restricts accessLevel to "admin" or "view"
+    name: z.string(),
+    type: z.enum(["website", "app"]), // Adjust if you have more types
+    url: z.string().optional(), // Optionalif can be an app
 });
 
 export const matomoUserMetadataSchema = z.object({

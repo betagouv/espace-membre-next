@@ -10,6 +10,7 @@ export async function syncMatomoAccounts(matomoClient: Matomo | FakeMatomo) {
     const dbUsers = (await getAllUsersInfo()).map((user) =>
         memberBaseInfoToModel(user)
     );
+    const allWebsites = await matomoClient.getAllSites();
     const matomoUsers = await Promise.all(
         (
             await matomoClient.getAllUsers()
@@ -17,7 +18,11 @@ export async function syncMatomoAccounts(matomoClient: Matomo | FakeMatomo) {
             const userMetadata = await matomoClient.fetchUserAccess(
                 matomoUser.serviceUserId
             );
-            return matomoUserToModel(matomoUser.user, userMetadata);
+            return matomoUserToModel(
+                matomoUser.user,
+                userMetadata,
+                allWebsites
+            );
         })
     );
     const usersToInsert = matomoUsers.map((matomoUser) => {
