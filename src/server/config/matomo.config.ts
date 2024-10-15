@@ -5,8 +5,6 @@ import { Matomo, MatomoSite, MatomoUser, MatomoUserAccess } from "@/lib/matomo";
 export class FakeMatomo implements AccountService {
     users: MatomoUser[] = [];
     public name = SERVICES.MATOMO;
-    userAccess: (MatomoUserAccessDetails & { login: MatomoUser["login"] })[];
-
     userAccess: (MatomoUserAccess & { login: MatomoUser["login"] })[];
     sites: MatomoSite[] = [];
     constructor(
@@ -24,7 +22,6 @@ export class FakeMatomo implements AccountService {
         this.users = this.users.filter((user) => user.login != userLogin);
         return Promise.resolve();
     }
-
     fetchUserAccess(userLogin: string): Promise<MatomoUserAccess[]> {
         return Promise.resolve(
             this.userAccess
@@ -35,7 +32,6 @@ export class FakeMatomo implements AccountService {
                 })
         );
     }
-
     getAllSites(): Promise<MatomoSite[]> {
         return Promise.resolve(this.sites);
     }
