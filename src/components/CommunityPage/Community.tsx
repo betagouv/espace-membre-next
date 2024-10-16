@@ -393,19 +393,7 @@ export const Community = (props: CommunityProps) => {
 
 const Footer = () => (
     <div className={fr.cx("fr-grid-row", "fr-grid-row--gutters")}>
-        <div className={fr.cx("fr-col-12", "fr-col-lg-4")}>
-            <Tile
-                className={fr.cx("fr-tile--sm")}
-                title="Nouvelle recrue"
-                desc="Invitez un(e) nouveau membre dans votre équipe"
-                orientation="horizontal"
-                imageUrl={(notification as StaticImageData).src}
-                linkProps={{
-                    href: linkRegistry.get("communityCreateMember") || "#",
-                }}
-            />
-        </div>
-        <div className={fr.cx("fr-col-12", "fr-col-lg-4")}>
+        <div className={fr.cx("fr-col-12", "fr-col-lg-6")}>
             <Tile
                 className={fr.cx("fr-tile--sm")}
                 title="Carte de la communauté"
@@ -417,7 +405,7 @@ const Footer = () => (
                 }}
             />
         </div>
-        <div className={fr.cx("fr-col-12", "fr-col-lg-4")}>
+        <div className={fr.cx("fr-col-12", "fr-col-lg-6")}>
             <Tile
                 className={fr.cx("fr-tile--sm")}
                 title="Observatoire de la communauté"
