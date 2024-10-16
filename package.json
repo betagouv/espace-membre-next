@@ -81,6 +81,7 @@
         "react-use": "^17.5.1",
         "rsmq": "^0.12.4",
         "sib-api-v3-sdk": "^8.5.0",
+        "ts-pattern": "^5.5.0",
         "tss-react": "^4.9.4",
         "type-route": "^1.1.0",
         "unescape": "^1.0.1",
