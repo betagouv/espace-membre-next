@@ -1,10 +1,11 @@
 import config from ".";
 import { AccountService, SERVICES } from "./services.config";
-import { SentryService, SentryUser } from "@/lib/sentry";
+import { SentryService, SentryUser, SentryUserDetail } from "@/lib/sentry";
 
 export class FakeSentryService implements AccountService {
     users: SentryUser[] = [];
     public name = SERVICES.SENTRY;
+    teams: SentryUserDetail[];
 
     constructor(users: SentryUser[]) {
         this.users = users;
@@ -12,6 +13,9 @@ export class FakeSentryService implements AccountService {
     deleteUserByServiceId(id: string): Promise<void> {
         this.users = this.users.filter((user) => user.id != id);
         return Promise.resolve();
+    }
+    getUserTeams(): Promise<SentryUserDetail> {
+        return this.teams;
     }
     getAllUsers(): Promise<
         { user: { email: string }; serviceUserId: string }[]

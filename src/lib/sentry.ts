@@ -21,6 +21,69 @@ export interface SentryUser {
     name?: string; // Optional
 }
 
+export interface SentryUserDetail {
+    role?: string;
+    roleName?: string;
+    id: string;
+    email: string;
+    name: string;
+    user: {
+        id: string;
+        name: string;
+        username: string;
+        email: string;
+        avatarUrl: string;
+        isActive: boolean;
+        hasPasswordAuth: boolean;
+        isManaged: boolean;
+        dateJoined: string;
+        lastLogin?: string | null;
+        lastActive?: string | null;
+        isSuperuser: boolean;
+        experiments?: Record<string, any>;
+        emails: {
+            id: string;
+            email: string;
+            is_verified: boolean;
+        }[];
+    };
+    orgRole: string;
+    pending: boolean;
+    expired: boolean;
+    dateCreated: string;
+    inviteStatus: string;
+    // inviterName?: string | null;
+    teams: string[];
+    teamRoles: {
+        teamSlug: string;
+        role: string | null;
+    }[];
+    // orgRoleList: {
+    //   id: string;
+    //   name: string;
+    //   desc: string;
+    //   scopes: string[];
+    //   allowed: boolean;
+    //   isAllowed: boolean;
+    //   isRetired: boolean;
+    //   isTeamRolesAllowed: boolean;
+    //   is_global: boolean;
+    //   isGlobal: boolean;
+    //   minimumTeamRole: string;
+    // }[];
+    // teamRoleList: {
+    //   id: string;
+    //   name: string;
+    //   desc: string;
+    //   scopes: string[];
+    //   allowed: boolean;
+    //   isAllowed: boolean;
+    //   isRetired: boolean;
+    //   isTeamRolesAllowed: boolean;
+    //   isMinimumRoleFor?: string | null;
+    // }[];
+}
+
 export class SentryService implements AccountService {
     private apiUrl: string;
     private authToken: string;
@@ -59,6 +122,21 @@ export class SentryService implements AccountService {
             );
         }
         console.log(`User with email ${userId} deleted successfully.`);
+    }
+
+    // Function to get teams the user belongs to
+    async getUserTeams(userId: string): Promise<SentryUserDetail> {
+        const userTeamsUrl = `${this.apiUrl}/organizations/${this.org}/members/${userId}/`;
+
+        const response = await fetch(userTeamsUrl, {
+            headers: this.headers,
+            method: "GET",
+        });
+
+        if (!response.ok) {
+            throw new Error(`Failed to delete user: ${response.statusText}`);
+        }
+        return await response.json();
     }
 
     // Function to fetch all users from Sentry
