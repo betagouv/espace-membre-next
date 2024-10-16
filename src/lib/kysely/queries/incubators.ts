@@ -1,7 +1,5 @@
-import { sql, ExpressionBuilder } from "kysely";
-
-import { DB } from "@/@types/db"; // generated with `npm run kysely-codegen`
-import { db, jsonArrayFrom } from "@/lib/kysely";
+import { db } from "@/lib/kysely";
+import pAll from "p-all";
 
 /** Return all incubators */
 export function getAllIncubators() {
@@ -28,8 +26,8 @@ export async function getIncubator(uuid: string) {
 
 export async function getAllIncubatorsMembers() {
     const incubs = await getAllIncubators();
-    return Promise.all(
-        incubs.map(async (incub) => {
+    return pAll(
+        incubs.map((incub) => async () => {
             const teamMembers = await db
                 .selectFrom("users")
                 .select(["users.uuid", "users.fullname"])
@@ -55,11 +53,11 @@ export async function getAllIncubatorsMembers() {
                 .where("startups.incubator_id", "=", incub.uuid)
                 .execute();
             return {
-                // ...incub,
                 id: incub.uuid,
                 title: incub.title,
                 members: [...teamMembers, ...startupMembers],
             };
-        })
+        }),
+        { concurrency: 1 }
     );
 }
