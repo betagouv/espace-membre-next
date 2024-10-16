@@ -1,3 +1,5 @@
+import React from "react";
+
 import { DOMAINE_OPTIONS } from "../models/member";
 import AutoComplete from "@/components/AutoComplete";
 

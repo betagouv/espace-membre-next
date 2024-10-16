@@ -36,6 +36,7 @@ export const getUserInformations = async (id) => {
         baseInfo,
         startups,
         mattermostInfo,
+        matomoInfo: undefined,
         emailResponder,
     };
 };
