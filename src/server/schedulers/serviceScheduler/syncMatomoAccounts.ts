@@ -1,3 +1,5 @@
+import _ from "lodash";
+
 import { db } from "@/lib/kysely";
 import { getAllUsersInfo } from "@/lib/kysely/queries/users";
 import { Matomo } from "@/lib/matomo";
@@ -52,4 +54,25 @@ export async function syncMatomoAccounts(matomoClient: Matomo | FakeMatomo) {
     console.log(
         `Inserted or updated ${result[0].numInsertedOrUpdatedRows} matomo users`
     );
+
+    const matomoUserIdsInDb = (
+        await db
+            .selectFrom("service_accounts")
+            .select("service_user_id")
+            .execute()
+    ).map((u) => u.service_user_id);
+    const matomoUserIds = matomoUsers.map(
+        (matomoUser) => matomoUser.service_user_id
+    );
+    const accountsToRemoveFromDb = _.difference(
+        matomoUserIdsInDb,
+        matomoUserIds
+    );
+    if (accountsToRemoveFromDb.length > 0) {
+        // Ensure the array is not empty
+        await db
+            .deleteFrom("service_accounts")
+            .where("service_user_id", "in", accountsToRemoveFromDb)
+            .execute();
+    }
 }
