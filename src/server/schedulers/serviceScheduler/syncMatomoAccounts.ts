@@ -1,4 +1,5 @@
 import _ from "lodash";
+import pAll from "p-all";
 
 import { db } from "@/lib/kysely";
 import { getAllUsersInfo } from "@/lib/kysely/queries/users";
@@ -11,11 +12,12 @@ export async function syncMatomoAccounts(matomoClient: Matomo | FakeMatomo) {
     const dbUsers = (await getAllUsersInfo()).map((user) =>
         memberBaseInfoToModel(user)
     );
+
     const allWebsites = await matomoClient.getAllSites();
-    const matomoUsers = await Promise.all(
-        (
-            await matomoClient.getAllUsers()
-        ).map(async (matomoUser) => {
+    const matomoUsers = await matomoClient.getAllUsers();
+
+    const matomoUsersWithAccessPromises = matomoUsers.map(
+        (matomoUser) => async () => {
             const userMetadata = await matomoClient.fetchUserAccess(
                 matomoUser.serviceUserId
             );
@@ -24,9 +26,13 @@ export async function syncMatomoAccounts(matomoClient: Matomo | FakeMatomo) {
                 userMetadata,
                 allWebsites
             );
-        })
+        }
     );
-    const usersToInsert = matomoUsers.map((matomoUser) => {
+
+    const matomoUsersWithAccess = await pAll(matomoUsersWithAccessPromises, {
+        concurrency: 5,
+    });
+    const usersToInsert = matomoUsersWithAccess.map((matomoUser) => {
         const user = dbUsers.find(
             (user) => user.primary_email === matomoUser.email
         );
@@ -50,9 +56,9 @@ export async function syncMatomoAccounts(matomoClient: Matomo | FakeMatomo) {
                     user_id: (eb) => eb.ref("excluded.user_id"),
                 });
         })
-        .execute();
+        .executeTakeFirstOrThrow();
     console.log(
-        `Inserted or updated ${result[0].numInsertedOrUpdatedRows} matomo users`
+        `Inserted or updated ${result.numInsertedOrUpdatedRows} matomo users`
     );
 
     const matomoUserIdsInDb = (
@@ -62,7 +68,7 @@ export async function syncMatomoAccounts(matomoClient: Matomo | FakeMatomo) {
             .execute()
     ).map((u) => u.service_user_id);
     const matomoUserIds = matomoUsers.map(
-        (matomoUser) => matomoUser.service_user_id
+        (matomoUser) => matomoUser.serviceUserId
     );
     const accountsToRemoveFromDb = _.difference(
         matomoUserIdsInDb,
@@ -70,9 +76,12 @@ export async function syncMatomoAccounts(matomoClient: Matomo | FakeMatomo) {
     );
     if (accountsToRemoveFromDb.length > 0) {
         // Ensure the array is not empty
-        await db
+        const deletedResult = await db
             .deleteFrom("service_accounts")
             .where("service_user_id", "in", accountsToRemoveFromDb)
-            .execute();
+            .executeTakeFirstOrThrow();
+        console.log(
+            `Deleted ${deletedResult.numDeletedRows} matomo service_accounts`
+        );
     }
 }
