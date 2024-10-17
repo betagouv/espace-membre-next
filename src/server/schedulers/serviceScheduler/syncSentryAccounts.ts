@@ -1,4 +1,5 @@
 import _ from "lodash";
+import pAll from "p-all";
 
 import { db } from "@/lib/kysely";
 import { getAllUsersInfo } from "@/lib/kysely/queries/users";
@@ -14,17 +15,21 @@ export async function syncSentryAccounts(
         memberBaseInfoToModel(user)
     );
     const allTeams = await sentryClient.getAllTeams();
-    const sentryUsers = await Promise.all(
-        (
-            await sentryClient.getAllUsers()
-        ).map(async (sentryUser) => {
+    const sentryUsers = await sentryClient.getAllUsers();
+
+    const sentryUsersWithAccessPromises = sentryUsers.map(
+        (sentryUser) => async () => {
             const userMetadata = await sentryClient.fetchUserAccess(
                 sentryUser.serviceUserId
             );
             return sentryUserToModel(sentryUser.user, userMetadata, allTeams);
-        })
+        }
     );
-    const usersToInsert = sentryUsers.map((sentryUser) => {
+
+    const sentryUsersWithAccess = await pAll(sentryUsersWithAccessPromises, {
+        concurrency: 5, // Limit concurrency to 5
+    });
+    const usersToInsert = sentryUsersWithAccess.map((sentryUser) => {
         const user = dbUsers.find(
             (user) => user.primary_email === sentryUser.email
         );
@@ -36,6 +41,7 @@ export async function syncSentryAccounts(
             user_id: user ? user.uuid : null,
         };
     });
+
     const result = await db
         .insertInto("service_accounts")
         .values(usersToInsert)
@@ -60,7 +66,7 @@ export async function syncSentryAccounts(
             .execute()
     ).map((u) => u.service_user_id);
     const sentryUserIds = sentryUsers.map(
-        (sentryUser) => sentryUser.service_user_id
+        (sentryUser) => sentryUser.serviceUserId
     );
     const accountsToRemoveFromDb = _.difference(
         sentryUserIdsInDb,
