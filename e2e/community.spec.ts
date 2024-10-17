@@ -3,36 +3,27 @@ import { test, expect } from "@playwright/test";
 test.use({ storageState: "./playwright-auth-valid.member.json" });
 
 test("search valid community members", async ({ page }) => {
-    // await page.route("**/api/get-users**", async (route) => {
-    //     const response = await route.fetch();
-    //     const json = await response.json();
-    //     expect(json.users.length).toEqual(2);
-    //     await route.fulfill({ response, json });
-    // });
-
     await page.goto("/community");
-    await page
-        .getByPlaceholder("Sélectionne un statut")
-        .fill("Membres actifs");
-    await page
-        .getByRole("option", { name: "Membres Actifs", exact: true })
-        .click();
 
-    const responsePromise = page.waitForResponse((response) => {
-        return true;
-    });
-    await page.getByRole("button").getByText("Chercher").click();
-    await responsePromise;
-    await page.waitForTimeout(100);
+    await page.getByText("Membres actifs uniquement").click();
+
+    await page.waitForTimeout(500);
 
     const rows = await page
-        .getByRole("grid")
-        .locator(".tabulator-tableholder")
+        .getByRole("table")
+        .locator("tbody")
         .getByRole("row");
 
     await expect(await rows.count()).toEqual(1);
-    await expect(
-        rows.nth(0).getByText("valid.member@betagouv.ovh")
-    ).toBeVisible();
+
     await expect(await rows.nth(0).getByText("Valid member")).toBeVisible();
+
+    await page.getByText("Membres actifs uniquement").click();
+
+    const rows2 = await page
+        .getByRole("table")
+        .locator("tbody")
+        .getByRole("row");
+
+    await expect(await rows2.count()).toEqual(4);
 });
