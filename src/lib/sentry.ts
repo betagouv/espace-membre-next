@@ -21,67 +21,34 @@ export interface SentryUser {
     name?: string; // Optional
 }
 
-export interface SentryUserDetail {
-    role?: string;
-    roleName?: string;
+export interface SentryTeam {
+    id: string;
+    slug: string;
+    name: string;
+    memberCount: number;
+    projects: SentryProject[];
+}
+
+export interface SentryProject {
+    id: string;
+    slug: string;
+    name: string;
+    plateform: string;
+}
+
+export interface SentryUserAccess {
+    role: "admin" | "member" | "manager" | "owner";
     id: string;
     email: string;
     name: string;
-    user: {
-        id: string;
-        name: string;
-        username: string;
-        email: string;
-        avatarUrl: string;
-        isActive: boolean;
-        hasPasswordAuth: boolean;
-        isManaged: boolean;
-        dateJoined: string;
-        lastLogin?: string | null;
-        lastActive?: string | null;
-        isSuperuser: boolean;
-        experiments?: Record<string, any>;
-        emails: {
-            id: string;
-            email: string;
-            is_verified: boolean;
-        }[];
-    };
-    orgRole: string;
     pending: boolean;
     expired: boolean;
-    dateCreated: string;
-    inviteStatus: string;
-    // inviterName?: string | null;
-    teams: string[];
+    inviteStatus: "approved" | "pending";
+    teams: string[]; // teams slugs
     teamRoles: {
         teamSlug: string;
-        role: string | null;
+        role: "admin" | "contributor" | null; // role is null if users has highest privelege at organization level
     }[];
-    // orgRoleList: {
-    //   id: string;
-    //   name: string;
-    //   desc: string;
-    //   scopes: string[];
-    //   allowed: boolean;
-    //   isAllowed: boolean;
-    //   isRetired: boolean;
-    //   isTeamRolesAllowed: boolean;
-    //   is_global: boolean;
-    //   isGlobal: boolean;
-    //   minimumTeamRole: string;
-    // }[];
-    // teamRoleList: {
-    //   id: string;
-    //   name: string;
-    //   desc: string;
-    //   scopes: string[];
-    //   allowed: boolean;
-    //   isAllowed: boolean;
-    //   isRetired: boolean;
-    //   isTeamRolesAllowed: boolean;
-    //   isMinimumRoleFor?: string | null;
-    // }[];
 }
 
 export class SentryService implements AccountService {
@@ -107,7 +74,6 @@ export class SentryService implements AccountService {
      */
     async deleteUserByServiceId(userId: string): Promise<void> {
         // Step 2: Delete the user
-        console.log("LCS DELETE USER BY SERVICE ID", userId);
         const deleteResponse = await fetch(
             `${this.apiUrl}/api/0/organizations/${this.org}/members/${userId}/`,
             {
@@ -124,8 +90,11 @@ export class SentryService implements AccountService {
         console.log(`User with email ${userId} deleted successfully.`);
     }
 
-    // Function to get teams the user belongs to
-    async getUserTeams(userId: string): Promise<SentryUserDetail> {
+    /**
+     * fetch a user access by login using Sentry API
+     * @param userId - The login of the user to delete
+     */
+    async fetchUserAccess(userId: string): Promise<SentryUserAccess> {
         const userTeamsUrl = `${this.apiUrl}/organizations/${this.org}/members/${userId}/`;
 
         const response = await fetch(userTeamsUrl, {
@@ -139,7 +108,38 @@ export class SentryService implements AccountService {
         return await response.json();
     }
 
-    // Function to fetch all users from Sentry
+    // Function to get teams the user belongs to
+    async getAllTeams(): Promise<SentryTeam[]> {
+        let nextPageUrl:
+            | string
+            | null = `${this.apiUrl}/organizations/${this.org}/teams`;
+
+        let allTeams: SentryTeam[] = [];
+
+        while (nextPageUrl) {
+            const teamsResponse = await fetch(nextPageUrl, {
+                method: "GET",
+                headers: this.headers,
+            });
+
+            if (!teamsResponse.ok) {
+                throw new Error(
+                    `Failed to fetch teams: ${teamsResponse.statusText}`
+                );
+            }
+
+            const teamsData: SentryTeam[] = await teamsResponse.json();
+            allTeams = allTeams.concat(teamsData);
+
+            // Check for pagination in the Link header
+            const linkHeader = teamsResponse.headers.get("Link");
+            nextPageUrl = this.getNextPageUrl(linkHeader);
+        }
+        // removed pending teams
+        return allTeams;
+    }
+
+    // Function to fetch all teams from Sentry
     async getAllUsers(): Promise<
         { serviceUserId: string; user: SentryUser }[]
     > {

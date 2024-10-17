@@ -1,25 +1,45 @@
 import config from ".";
 import { AccountService, SERVICES } from "./services.config";
-import { SentryService, SentryUser, SentryUserDetail } from "@/lib/sentry";
+import {
+    SentryService,
+    SentryTeam,
+    SentryUser,
+    SentryUserAccess,
+} from "@/lib/sentry";
 
 export class FakeSentryService implements AccountService {
     users: SentryUser[] = [];
     public name = SERVICES.SENTRY;
-    teams: SentryUserDetail[];
+    teams: SentryTeam[];
+    userAccess: (SentryUserAccess & { user_id: SentryUser["id"] })[];
 
-    constructor(users: SentryUser[]) {
+    constructor(
+        users: SentryUser[],
+        teams: SentryTeam[] = [],
+        userAccess: (SentryUserAccess & { user_id: SentryUser["id"] })[] = []
+    ) {
         this.users = users;
+        this.teams = teams;
+        this.userAccess = userAccess;
     }
     deleteUserByServiceId(id: string): Promise<void> {
         this.users = this.users.filter((user) => user.id != id);
         return Promise.resolve();
     }
-    getUserTeams(): Promise<SentryUserDetail> {
-        return this.teams;
+    getAllTeams(): Promise<SentryTeam[]> {
+        return Promise.resolve(this.teams);
     }
-    getAllUsers(): Promise<
-        { user: { email: string }; serviceUserId: string }[]
-    > {
+    fetchUserAccess(userId: string): Promise<SentryUserAccess> {
+        return Promise.resolve(
+            this.userAccess
+                .filter((userAccess) => userAccess.user_id === userId)
+                .map((userAccess) => {
+                    const { user_id, ...rest } = userAccess;
+                    return rest;
+                })[0]
+        );
+    }
+    getAllUsers(): Promise<{ user: SentryUser; serviceUserId: string }[]> {
         return Promise.resolve(
             this.users.map((user) => ({
                 user: user,
