@@ -30,13 +30,17 @@ export const getUserInformations = async (id) => {
         mattermostUserName: mattermostUser && mattermostUser.username,
     };
 
-    const matomoInfo = (
-        await db
-            .selectFrom("service_accounts")
-            .where("user_id", "=", dbUser.uuid)
-            .where("account_type", "=", SERVICES.MATOMO)
-            .execute()
-    ).map((m) => matomoServiceInfoToModel(m));
+    const matomoInfo = await db
+        .selectFrom("service_accounts")
+        .selectAll()
+        .where("user_id", "=", dbUser.uuid)
+        .where("account_type", "=", SERVICES.MATOMO)
+        .executeTakeFirst()
+        .then((account) => {
+            if (account) {
+                return matomoServiceInfoToModel(account);
+            }
+        });
 
     const emailResponder = await betagouv.getResponder(id);
 
