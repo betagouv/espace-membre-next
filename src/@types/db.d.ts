@@ -210,6 +210,16 @@ export interface PullRequests {
   username: string | null;
 }
 
+export interface ServiceAccounts {
+  account_type: string;
+  created_at: Generated<Timestamp>;
+  metadata: Json | null;
+  service_user_id: string;
+  updated_at: Generated<Timestamp>;
+  user_id: string | null;
+  uuid: Generated<string>;
+}
+
 export interface Sessions {
   expires: Timestamp;
   id: Generated<number>;
@@ -408,6 +418,7 @@ export interface DB {
   organizations: Organizations;
   phases: Phases;
   pull_requests: PullRequests;
+  service_accounts: ServiceAccounts;
   sessions: Sessions;
   startup_events: StartupEvents;
   startups: Startups;
