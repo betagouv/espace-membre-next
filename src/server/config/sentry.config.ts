@@ -11,12 +11,12 @@ export class FakeSentryService implements AccountService {
     users: SentryUser[] = [];
     public name = SERVICES.SENTRY;
     teams: SentryTeam[];
-    userAccess: (SentryUserAccess & { user_id: SentryUser["id"] })[];
+    userAccess: SentryUserAccess[];
 
     constructor(
         users: SentryUser[],
         teams: SentryTeam[] = [],
-        userAccess: (SentryUserAccess & { user_id: SentryUser["id"] })[] = []
+        userAccess: SentryUserAccess[] = []
     ) {
         this.users = users;
         this.teams = teams;
@@ -32,10 +32,9 @@ export class FakeSentryService implements AccountService {
     fetchUserAccess(userId: string): Promise<SentryUserAccess> {
         return Promise.resolve(
             this.userAccess
-                .filter((userAccess) => userAccess.user_id === userId)
+                .filter((userAccess) => userAccess.id === userId)
                 .map((userAccess) => {
-                    const { user_id, ...rest } = userAccess;
-                    return rest;
+                    return userAccess;
                 })[0]
         );
     }

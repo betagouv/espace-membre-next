@@ -217,17 +217,24 @@ describe("Should sync services", () => {
                         email: `membre.actif@${config.domain}`,
                         name: "Membre Actif",
                     },
-                    // membre qui n'existe pas, le compte devrait quand meme être sync
+                    // membre qui n'existe pas en bdd, le compte devrait quand meme être sync
                     {
-                        id: "sadadaeerr",
+                        id: "169",
                         email: `membre.quinexistepas@${config.domain}`,
                     },
                 ],
                 [
                     {
-                        id: "",
-                        slug: "",
-                        name: "",
+                        id: "208",
+                        slug: "monservice-prod",
+                        name: "mon service prod",
+                        memberCount: 0,
+                        projects: [],
+                    },
+                    {
+                        id: "209",
+                        slug: "nis2",
+                        name: "nis2",
                         memberCount: 0,
                         projects: [],
                     },
@@ -235,18 +242,28 @@ describe("Should sync services", () => {
                 [
                     {
                         id: "168",
-                        user_id: "",
                         role: "admin",
                         email: `membre.actif@${config.domain}`,
                         name: "",
                         pending: false,
                         expired: false,
                         inviteStatus: "approved",
-                        teams: ["monservicesecurise-prod", "nis2"],
+                        teams: ["monservice-prod", "nis2"],
                         teamRoles: [
-                            { teamSlug: "monservicesecurise-prod", role: null },
+                            { teamSlug: "monservice-prod", role: null },
                             { teamSlug: "nis2", role: null },
                         ],
+                    },
+                    {
+                        id: "169",
+                        role: "admin",
+                        email: `membre.quinexistepas@${config.domain}`,
+                        name: "",
+                        pending: true,
+                        expired: false,
+                        inviteStatus: "approved",
+                        teams: [],
+                        teamRoles: [],
                     },
                 ]
             );
@@ -254,40 +271,46 @@ describe("Should sync services", () => {
             const serviceAccount = await db
                 .selectFrom("service_accounts")
                 .selectAll()
-                .where("service_user_id", "=", "sadad")
+                .where("service_user_id", "=", "168")
                 .executeTakeFirstOrThrow();
             if (!serviceAccount.metadata) {
                 throw new Error("Service account should have metadata");
             }
-            serviceAccount.metadata["teams"][0]["id"].should.equal(2);
-            serviceAccount.metadata["teams"][0]["teamRoles"].should.equal(
-                "admin"
+            serviceAccount.metadata["teams"][0]["slug"].should.equal(
+                "monservice-prod"
             );
+            serviceAccount.metadata["teams"][0]["role"].should.equal("admin");
             const serviceAccountForNoCorrespondingValueInUserTable = await db
                 .selectFrom("service_accounts")
                 .selectAll()
-                .where(
-                    "service_user_id",
-                    "=",
-                    `membre.quinexistepas@${config.domain}`
-                )
+                .where("service_user_id", "=", `169`)
                 .executeTakeFirstOrThrow();
             serviceAccountForNoCorrespondingValueInUserTable.should.not.be.null;
             sentryClient.userAccess = [
                 {
                     id: "168",
-                    user_id: "",
                     role: "member",
                     email: `membre.actif@${config.domain}`,
                     name: "",
                     pending: false,
                     expired: false,
                     inviteStatus: "approved",
-                    teams: ["monservicesecurise-prod", "nis2"],
+                    teams: ["monservice-prod", "nis2"],
                     teamRoles: [
-                        { teamSlug: "monservicesecurise-prod", role: null },
+                        { teamSlug: "monservice-prod", role: "contributor" },
                         { teamSlug: "nis2", role: null },
                     ],
+                },
+                {
+                    id: "169",
+                    role: "admin",
+                    email: `membre.quinexistepas@${config.domain}`,
+                    name: "",
+                    pending: true,
+                    expired: false,
+                    inviteStatus: "approved",
+                    teams: [],
+                    teamRoles: [],
                 },
             ];
             await syncSentryAccounts(sentryClient);
@@ -301,15 +324,126 @@ describe("Should sync services", () => {
             const validMemberAccount = await db
                 .selectFrom("service_accounts")
                 .selectAll()
-                .where("service_user_id", "=", `membre.actif@${config.domain}`)
+                .where("service_user_id", "=", `168`)
                 .executeTakeFirstOrThrow();
             if (!serviceAccount.metadata) {
                 throw new Error("Service account should have metadata");
             }
             // access level should have beem updated
-            validMemberAccount.metadata["teams"][0]["teamRoles"].should.equal(
-                "view"
+            validMemberAccount.metadata["teams"][0]["slug"].should.equal(
+                "monservice-prod"
             );
+            validMemberAccount.metadata["teams"][0]["role"].should.equal(
+                "contributor"
+            );
+        });
+
+        it("should delete sentry users in db if user does not exist anymore in sentry", async () => {
+            const sentryClient = new FakeSentryService(
+                [
+                    {
+                        id: "168",
+                        email: `membre.actif@${config.domain}`,
+                        name: "Membre Actif",
+                    },
+                    // membre qui n'existe pas en bdd, le compte devrait quand meme être sync
+                    {
+                        id: "169",
+                        email: `membre.quinexistepas@${config.domain}`,
+                    },
+                ],
+                [
+                    {
+                        id: "208",
+                        slug: "monservice-prod",
+                        name: "mon service prod",
+                        memberCount: 0,
+                        projects: [],
+                    },
+                    {
+                        id: "209",
+                        slug: "nis2",
+                        name: "nis2",
+                        memberCount: 0,
+                        projects: [],
+                    },
+                ],
+                [
+                    {
+                        id: "168",
+                        role: "admin",
+                        email: `membre.actif@${config.domain}`,
+                        name: "",
+                        pending: false,
+                        expired: false,
+                        inviteStatus: "approved",
+                        teams: ["monservice-prod", "nis2"],
+                        teamRoles: [
+                            { teamSlug: "monservice-prod", role: null },
+                            { teamSlug: "nis2", role: null },
+                        ],
+                    },
+                    {
+                        id: "169",
+                        role: "admin",
+                        email: `membre.quinexistepas@${config.domain}`,
+                        name: "",
+                        pending: true,
+                        expired: false,
+                        inviteStatus: "approved",
+                        teams: [],
+                        teamRoles: [],
+                    },
+                ]
+            );
+            await syncSentryAccounts(sentryClient);
+
+            // validMemberAccount should exist
+            const validMemberAccount = await db
+                .selectFrom("service_accounts")
+                .selectAll()
+                .where("service_user_id", "=", `168`)
+                .where("service_accounts.account_type", "=", "sentry")
+                .executeTakeFirstOrThrow();
+            validMemberAccount.should.exist;
+
+            // membreQuiNexistePasAccount should existe
+            const memberQuiNexistePasAccount = await db
+                .selectFrom("service_accounts")
+                .selectAll()
+                .where("service_user_id", "=", `169`)
+                .where("service_accounts.account_type", "=", "sentry")
+                .executeTakeFirstOrThrow();
+            memberQuiNexistePasAccount.should.exist;
+
+            // we removed membre.actif account from matomo
+            sentryClient.users = [
+                {
+                    id: "169",
+                    email: `membre.quinexistepas@${config.domain}`,
+                },
+            ];
+
+            // validMember account should be deleted during sync
+            await syncSentryAccounts(sentryClient);
+
+            // validMember account should have been deleted from db
+            const validMemberAccountAfterDeletion = await db
+                .selectFrom("service_accounts")
+                .selectAll()
+                .where("service_user_id", "=", `168`)
+                .where("service_accounts.account_type", "=", "sentry")
+                .executeTakeFirst();
+            should.not.exist(validMemberAccountAfterDeletion);
+
+            // membreQuiNexistePasAccount should still exist
+            const memberQuiNexistePasAccountNotDeleted = await db
+                .selectFrom("service_accounts")
+                .selectAll()
+                .where("service_user_id", "=", `169`)
+                .where("service_accounts.account_type", "=", "sentry")
+                .executeTakeFirstOrThrow();
+            memberQuiNexistePasAccountNotDeleted.should.exist;
         });
     });
 });
