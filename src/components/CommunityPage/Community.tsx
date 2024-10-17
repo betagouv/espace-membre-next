@@ -279,8 +279,8 @@ export const Community = (props: CommunityProps) => {
         <>
             <h1>Membres de la communauté</h1>
             <p>
-                Vous pouvez chercher des membres par nom, compétence,
-                thématique, produit ou incubateur
+                Vous pouvez chercher des membres par nom, domaine, compétence,
+                produit ou incubateur.
             </p>
             <AutoComplete
                 multiple={true}
