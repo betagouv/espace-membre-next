@@ -244,11 +244,9 @@ export const Community = (props: CommunityProps) => {
 
     const results = useMemo(
         () =>
-            (filters.length &&
-                props.users
-                    .filter(filterResult)
-                    .sort((a, b) => a.fullname.localeCompare(b.fullname))) ||
-            [],
+            props.users
+                .filter(filterResult)
+                .sort((a, b) => a.fullname.localeCompare(b.fullname)) || [],
         [filters]
     );
 
@@ -280,6 +278,10 @@ export const Community = (props: CommunityProps) => {
     return (
         <>
             <h1>Membres de la communauté</h1>
+            <p>
+                Vous pouvez chercher des membres par nom, compétence,
+                thématique, produit ou incubateur
+            </p>
             <AutoComplete
                 multiple={true}
                 options={searchOptions}
