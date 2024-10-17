@@ -1,4 +1,7 @@
+import { Selectable } from "kysely";
+
 import { matomoUserSchemaType } from "../matomo";
+import { ServiceAccounts } from "@/@types/db";
 import { MatomoUser, MatomoUserAccess, MatomoSite } from "@/lib/matomo";
 
 export const matomoUserToModel = (
@@ -25,5 +28,15 @@ export const matomoUserToModel = (
         metadata: {
             sites,
         },
+    };
+};
+
+export const matomoServiceInfoToModel = (
+    matomoUser: Selectable<ServiceAccounts>
+): matomoUserSchemaType => {
+    return {
+        account_type: "matomo",
+        service_user_id: matomoUser.service_user_id,
+        metadata: matomoUser.metadata as matomoUserSchemaType["metadata"],
     };
 };

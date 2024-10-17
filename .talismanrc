@@ -14,7 +14,7 @@ fileignoreconfig:
 - filename: src/components/MemberPage/MemberPage.tsx
   checksum: d7e1d2aa3b94b36055a1cee44c29b8818cd734c7a454c63e11eb0ad6a6877c56
 - filename: src/components/MemberPage/MemberStatus.tsx
-  checksum: 5a82fcbf387d343df5a3e050d61d511d3596e0816027905dd2e73fdd7a3b0d4e
+  checksum: 643fa02bf415a54eac21af632c05e647dea2958922d5170622e3020b4787a315
 - filename: src/components/SEPhaseSelect.tsx
   checksum: 0415032e0a9fb86957148673924ac6e16bc1ffb4b1851091377d23a200562e5e
 - filename: src/components/SESponsorSelect.tsx
@@ -28,5 +28,6 @@ fileignoreconfig:
 - filename: src/utils/routes/list.ts
   checksum: ebb1c7a8c5fb51e0e49a23f79d1342f177946b4e783154bb265970b672aa2a2c
 scopeconfig:
-    - scope: node
+- scope: node
 version: "1.0"
+.0"

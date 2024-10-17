@@ -1,12 +1,13 @@
 import type { Metadata, ResolvingMetadata } from "next";
 import { getServerSession } from "next-auth/next";
+import { userInfo } from "os";
 
+import { getUserInformations } from "@/app/api/member/getInfo";
 import MemberPage from "@/components/MemberPage/MemberPage";
 import betagouv from "@/server/betagouv";
 import config from "@/server/config";
 import { userInfos } from "@/server/controllers/utils";
 import { authOptions } from "@/utils/authoptions";
-import { getUserInformations } from "@/app/api/member/getInfo";
 
 type Props = {
     params: { id: string };
@@ -66,6 +67,7 @@ export default async function Page({
             emailResponder={userInformations.emailResponder}
             userInfos={userInformations?.baseInfo}
             mattermostInfo={userInformations.mattermostInfo}
+            matomoInfo={userInformations.matomoInfo}
             startups={userInformations.startups}
         />
     );
