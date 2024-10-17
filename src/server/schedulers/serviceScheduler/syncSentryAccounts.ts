@@ -48,9 +48,9 @@ export async function syncSentryAccounts(
                     user_id: (eb) => eb.ref("excluded.user_id"),
                 });
         })
-        .execute();
+        .executeTakeFirst();
     console.log(
-        `Inserted or updated ${result[0].numInsertedOrUpdatedRows} sentry users`
+        `Inserted or updated ${result.numInsertedOrUpdatedRows} sentry users`
     );
 
     const sentryUserIdsInDb = (
@@ -68,9 +68,10 @@ export async function syncSentryAccounts(
     );
     if (accountsToRemoveFromDb.length > 0) {
         // Ensure the array is not empty
-        await db
+        const deletedRes = await db
             .deleteFrom("service_accounts")
             .where("service_user_id", "in", accountsToRemoveFromDb)
-            .execute();
+            .executeTakeFirst();
+        console.log(`Deleted ${deletedRes.numDeletedRows} sentry users`);
     }
 }
