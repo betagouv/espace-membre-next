@@ -13,19 +13,15 @@ export async function syncSentryAccounts(
     const dbUsers = (await getAllUsersInfo()).map((user) =>
         memberBaseInfoToModel(user)
     );
-    const allWebsites = await sentryClient.getAllTeams();
+    const allTeams = await sentryClient.getAllTeams();
     const sentryUsers = await Promise.all(
         (
             await sentryClient.getAllUsers()
         ).map(async (sentryUser) => {
-            const userMetadata = await sentryClient.getUserTeams(
+            const userMetadata = await sentryClient.fetchUserAccess(
                 sentryUser.serviceUserId
             );
-            return sentryUserToModel(
-                sentryUser.user,
-                userMetadata,
-                allWebsites
-            );
+            return sentryUserToModel(sentryUser.user, userMetadata, allTeams);
         })
     );
     const usersToInsert = sentryUsers.map((sentryUser) => {
