@@ -63,7 +63,7 @@
         "lodash": "^4.17.21",
         "markdown-it": "^13.0.2",
         "marked": "^9.1.0",
-        "next": "^14.2.12",
+        "next": "^14.2.15",
         "next-auth": "^4.24.6",
         "node-ical": "^0.18.0",
         "node-talisman": "^1.29.11",
