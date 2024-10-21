@@ -1,21 +1,23 @@
 "use client";
 import React, { useCallback, useMemo, useState } from "react";
-import Tag from "@codegouvfr/react-dsfr/Tag";
-import { fr } from "@codegouvfr/react-dsfr/fr";
-import { CommunityProps } from ".";
-import AutoComplete from "../AutoComplete";
-import Table from "@codegouvfr/react-dsfr/Table";
-import Pagination from "@codegouvfr/react-dsfr/Pagination";
-import Link from "next/link";
-import Checkbox from "@codegouvfr/react-dsfr/Checkbox";
-import { exportToCsv } from "./exportToCsv";
+
 import Button from "@codegouvfr/react-dsfr/Button";
+import Checkbox from "@codegouvfr/react-dsfr/Checkbox";
+import { fr } from "@codegouvfr/react-dsfr/fr";
+import Pagination from "@codegouvfr/react-dsfr/Pagination";
+import Table from "@codegouvfr/react-dsfr/Table";
+import Tag from "@codegouvfr/react-dsfr/Tag";
 import Tile from "@codegouvfr/react-dsfr/Tile";
-import { linkRegistry } from "@/utils/routes/registry";
+import dataviz from "@gouvfr/dsfr/dist/artwork/pictograms/digital/data-visualization.svg";
 import notification from "@gouvfr/dsfr/dist/artwork/pictograms/digital/mail-send.svg";
 import map from "@gouvfr/dsfr/dist/artwork/pictograms/map/map.svg";
-import dataviz from "@gouvfr/dsfr/dist/artwork/pictograms/digital/data-visualization.svg";
 import { StaticImageData } from "next/image";
+import Link from "next/link";
+
+import { CommunityProps } from ".";
+import { exportToCsv } from "./exportToCsv";
+import AutoComplete from "../AutoComplete";
+import { linkRegistry } from "@/utils/routes/registry";
 
 // return if user is still active at community level
 const isActive = (missions: CommunityProps["users"][number]["missions"]) => {
@@ -76,6 +78,7 @@ const getUserRow = ({
                 {user.fullname}
             </Link>
         </>,
+        <>{user.primary_email}</>,
         // domaine
         <span
             key="domaine"
@@ -274,6 +277,7 @@ export const Community = (props: CommunityProps) => {
 
     const pageSize = 25;
     const pageCount = Math.ceil(results.length / pageSize);
+    const headers = ["Nom", "Email", "Domaine", "Équipe(s)"];
 
     return (
         <>
@@ -352,7 +356,7 @@ export const Community = (props: CommunityProps) => {
                                 </Button>
                             </>
                         }
-                        headers={["Nom", "Domaine", "Équipe(s)"]}
+                        headers={headers}
                         data={results
                             .slice(
                                 (currentPage - 1) * pageSize,
