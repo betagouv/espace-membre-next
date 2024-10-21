@@ -11,6 +11,18 @@ export interface MatomoUser {
     date_registered: string;
 }
 
+export interface MatomoSite {
+    idsite: number;
+    name: string;
+    main_url: string;
+    type: string;
+}
+
+export interface MatomoUserAccess {
+    site: number;
+    access: "admin" | "view"; // Define access levels you want to check
+}
+
 export class Matomo implements AccountService {
     private apiUrl: string;
     private authToken: string;
@@ -19,6 +31,49 @@ export class Matomo implements AccountService {
     constructor(apiUrl: string, authToken: string) {
         this.apiUrl = apiUrl;
         this.authToken = authToken;
+    }
+
+    async getAllSites(): Promise<MatomoSite[]> {
+        let allSites: MatomoSite[] = [];
+        let offset = 0;
+        const limit = 100;
+        try {
+            while (true) {
+                const response = await fetch(`${this.apiUrl}/index.php`, {
+                    method: "POST",
+                    headers: {
+                        "Content-Type": "application/x-www-form-urlencoded",
+                    },
+                    body: new URLSearchParams({
+                        module: "API",
+                        method: "SitesManager.getAllSites",
+                        format: "json",
+                        token_auth: this.authToken,
+                        filter_limit: String(limit),
+                        filter_offset: String(offset),
+                    }),
+                });
+
+                if (!response.ok) {
+                    throw new Error(
+                        `Error fetching users: ${response.status} ${response.statusText}`
+                    );
+                }
+
+                const sites: MatomoSite[] = await response.json();
+                if (sites.length === 0) {
+                    break; // Exit the loop if no more users are returned
+                }
+
+                allSites = allSites.concat(sites);
+                offset += limit;
+            }
+
+            return allSites;
+        } catch (error) {
+            console.error("Failed to fetch Matomo sites:", error);
+            throw error;
+        }
     }
 
     /**
@@ -76,6 +131,28 @@ export class Matomo implements AccountService {
         );
     }
 
+    /**
+     * fetch a user access by login using Matomo API
+     * @param userLogn - The login of the user to delete
+     */
+    async fetchUserAccess(userLogin: string): Promise<MatomoUserAccess[]> {
+        const response = await fetch(`${this.apiUrl}/index.php`, {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/x-www-form-urlencoded",
+            },
+            body: new URLSearchParams({
+                module: "API",
+                method: "UsersManager.getSitesAccessFromUser",
+                format: "JSON",
+                token_auth: this.authToken,
+                userLogin: userLogin,
+            }),
+        });
+
+        return response.json();
+    }
+
     // Function to fetch all users from Matomo
     async getAllUsers(): Promise<
         { user: MatomoUser; serviceUserId: string }[]
@@ -83,7 +160,6 @@ export class Matomo implements AccountService {
         let allUsers: MatomoUser[] = [];
         let offset = 0;
         const limit = 100;
-
         try {
             while (true) {
                 const response = await fetch(`${this.apiUrl}/index.php`, {
