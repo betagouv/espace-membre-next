@@ -22,7 +22,6 @@ export const competencesTechniques = [
 ] as const;
 
 export const competencesProduit = [
-    "Communication",
     "Croissance",
     "Facilitation",
     "Intrapreneur(se)",

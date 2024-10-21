@@ -116,7 +116,10 @@ export default function MemberPage({
                     </div>
                     <div className={fr.cx("fr-mt-4w")}>
                         <h3>Missions</h3>
-                        <MemberMissions startups={startups} />
+                        <MemberMissions
+                            startups={startups}
+                            userInfos={userInfos}
+                        />
                     </div>
                 </>
             ),

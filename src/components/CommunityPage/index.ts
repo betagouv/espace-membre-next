@@ -1,6 +1,6 @@
-import { Incubators } from "@/@types/db";
 import { memberBaseInfoSchemaType } from "@/models/member";
 import { Option } from "@/models/misc";
+import { getAllIncubatorsMembers } from "@/lib/kysely/queries/incubators";
 
 export interface CommunityProps {
     users: memberBaseInfoSchemaType[];
@@ -8,6 +8,7 @@ export interface CommunityProps {
     startupOptions: Option[];
     domaineOptions: Option[];
     competenceOptions: Option[];
+    incubatorMembers: Awaited<ReturnType<typeof getAllIncubatorsMembers>>;
 }
 
 export * from "./Community";
