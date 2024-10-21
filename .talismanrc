@@ -29,6 +29,8 @@ fileignoreconfig:
   checksum: a02535588a717719f9e51c324d78779afd8c08fe4904a4aae525b85f8720b0ef
 - filename: src/lib/s3.ts
   checksum: a91be258dbac2f22c916598e597bd8cb4ca640e03dd422653486d6288375e849
+- filename: src/lib/sentry.ts
+  checksum: 035884bbbacf7746760dacc26669a3e4a4558ba2b88c0c7a38ec4327d25d0f3d
 - filename: src/utils/routes/list.ts
   checksum: ebb1c7a8c5fb51e0e49a23f79d1342f177946b4e783154bb265970b672aa2a2c
 scopeconfig:
