@@ -82,7 +82,7 @@ const emailSpamInfoRow = (
         </>,
         match(emailInfos.isBlocked)
             .with(true, () => <Badge severity="error">Oui</Badge>)
-            .otherwise(false, () => <Badge severity="success">Non</Badge>),
+            .otherwise(() => <Badge severity="success">Non</Badge>),
     ];
 };
 
