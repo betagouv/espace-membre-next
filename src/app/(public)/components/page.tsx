@@ -1,18 +1,18 @@
+import { fr } from "@codegouvfr/react-dsfr";
 import type { Metadata } from "next";
 import { redirect } from "next/navigation";
 import { getServerSession } from "next-auth";
-import { fr } from "@codegouvfr/react-dsfr";
 
-import { authOptions } from "@/utils/authoptions";
 import MemberPage, {
     MemberPageProps,
 } from "@/components/MemberPage/MemberPage";
-import { EMAIL_PLAN_TYPE } from "@/models/ovh";
 import {
     CommunicationEmailCode,
     Domaine,
     EmailStatusCode,
 } from "@/models/member";
+import { EMAIL_PLAN_TYPE } from "@/models/ovh";
+import { authOptions } from "@/utils/authoptions";
 
 export const metadata: Metadata = {
     title: `Components Demo`,
@@ -79,6 +79,29 @@ const sampleMember: { member: MemberPageProps } = {
             hasMattermostAccount: true,
             isInactiveOrNotInTeam: false,
             mattermostUserName: "ada.lovelace",
+        },
+        matomoInfo: {
+            email: "unemaildetest@gmail.com",
+            account_type: "matomo",
+            service_user_id: "unemaildetest@gmail.co",
+            metadata: {
+                sites: [
+                    {
+                        id: 46,
+                        url: "https://totobogosss",
+                        name: "supertoto",
+                        type: "website",
+                        accessLevel: "admin",
+                    },
+                    {
+                        id: 47,
+                        url: "https://iiiiii",
+                        name: "supertata",
+                        type: "website",
+                        accessLevel: "admin",
+                    },
+                ],
+            },
         },
         redirections: [{ from: "ada@love.com", id: "42", to: "some@one.com" }],
         authorizations: {

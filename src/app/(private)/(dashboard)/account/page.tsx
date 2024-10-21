@@ -1,15 +1,14 @@
 import type { Metadata } from "next";
 import { redirect } from "next/navigation";
 import { getServerSession } from "next-auth";
-import config from "@/server/config";
-
-import betagouv from "@/server/betagouv";
-import { authOptions } from "@/utils/authoptions";
-import { routeTitles } from "@/utils/routes/routeTitles";
-import MemberPage from "@/components/MemberPage/MemberPage";
-import { userInfos } from "@/server/controllers/utils";
 
 import { getUserInformations } from "@/app/api/member/getInfo";
+import MemberPage from "@/components/MemberPage/MemberPage";
+import betagouv from "@/server/betagouv";
+import config from "@/server/config";
+import { userInfos } from "@/server/controllers/utils";
+import { authOptions } from "@/utils/authoptions";
+import { routeTitles } from "@/utils/routes/routeTitles";
 
 export const metadata: Metadata = {
     title: `${routeTitles.account()} / Espace Membre`,
@@ -56,6 +55,7 @@ export default async function Page() {
             emailResponder={userInformations.emailResponder}
             userInfos={userInformations.baseInfo}
             mattermostInfo={userInformations.mattermostInfo}
+            matomoInfo={userInformations.matomoInfo}
             startups={userInformations.startups}
         />
     );
