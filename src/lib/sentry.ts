@@ -21,6 +21,36 @@ export interface SentryUser {
     name?: string; // Optional
 }
 
+export interface SentryTeam {
+    id: string;
+    slug: string;
+    name: string;
+    memberCount: number;
+    projects: SentryProject[];
+}
+
+export interface SentryProject {
+    id: string;
+    slug: string;
+    name: string;
+    plateform: string;
+}
+
+export interface SentryUserAccess {
+    role: "admin" | "member" | "manager" | "owner";
+    id: string;
+    email: string;
+    name: string;
+    pending: boolean;
+    expired: boolean;
+    inviteStatus: "approved" | "pending";
+    teams: string[]; // teams slugs
+    teamRoles: {
+        teamSlug: string;
+        role: "admin" | "contributor" | null; // role is null if users has highest privelege at organization level
+    }[];
+}
+
 export class SentryService implements AccountService {
     private apiUrl: string;
     private authToken: string;
@@ -44,7 +74,6 @@ export class SentryService implements AccountService {
      */
     async deleteUserByServiceId(userId: string): Promise<void> {
         // Step 2: Delete the user
-        console.log("LCS DELETE USER BY SERVICE ID", userId);
         const deleteResponse = await fetch(
             `${this.apiUrl}/api/0/organizations/${this.org}/members/${userId}/`,
             {
@@ -61,7 +90,56 @@ export class SentryService implements AccountService {
         console.log(`User with email ${userId} deleted successfully.`);
     }
 
-    // Function to fetch all users from Sentry
+    /**
+     * fetch a user access by login using Sentry API
+     * @param userId - The login of the user to delete
+     */
+    async fetchUserAccess(userId: string): Promise<SentryUserAccess> {
+        const userTeamsUrl = `${this.apiUrl}/organizations/${this.org}/members/${userId}/`;
+
+        const response = await fetch(userTeamsUrl, {
+            headers: this.headers,
+            method: "GET",
+        });
+
+        if (!response.ok) {
+            throw new Error(`Failed to delete user: ${response.statusText}`);
+        }
+        return await response.json();
+    }
+
+    // Function to get teams the user belongs to
+    async getAllTeams(): Promise<SentryTeam[]> {
+        let nextPageUrl:
+            | string
+            | null = `${this.apiUrl}/organizations/${this.org}/teams`;
+
+        let allTeams: SentryTeam[] = [];
+
+        while (nextPageUrl) {
+            const teamsResponse = await fetch(nextPageUrl, {
+                method: "GET",
+                headers: this.headers,
+            });
+
+            if (!teamsResponse.ok) {
+                throw new Error(
+                    `Failed to fetch teams: ${teamsResponse.statusText}`
+                );
+            }
+
+            const teamsData: SentryTeam[] = await teamsResponse.json();
+            allTeams = allTeams.concat(teamsData);
+
+            // Check for pagination in the Link header
+            const linkHeader = teamsResponse.headers.get("Link");
+            nextPageUrl = this.getNextPageUrl(linkHeader);
+        }
+        // removed pending teams
+        return allTeams;
+    }
+
+    // Function to fetch all teams from Sentry
     async getAllUsers(): Promise<
         { serviceUserId: string; user: SentryUser }[]
     > {
