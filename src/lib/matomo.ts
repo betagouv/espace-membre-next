@@ -104,8 +104,8 @@ export class Matomo implements AccountService {
         if (!response.ok) {
             throw new Error(`Error fetching user: ${response.statusText}`);
         }
-
         const users = await response.json();
+
         return users.length ? users[0] : null;
     }
 

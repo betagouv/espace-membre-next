@@ -1,23 +1,23 @@
 "use client";
-import { useSession } from "next-auth/react";
-import MarkdownIt from "markdown-it";
 
 import { fr } from "@codegouvfr/react-dsfr";
 import { Tabs } from "@codegouvfr/react-dsfr/Tabs";
+import MarkdownIt from "markdown-it";
+import { useSession } from "next-auth/react";
 
-import { memberWrapperSchemaType } from "@/models/member";
-import { PrivateMemberChangeSchemaType } from "@/models/memberChange";
-import { getUserStartups } from "@/lib/kysely/queries/users";
-
+import { AdminPanel } from "./AdminPanel";
+import EmailContainer from "./Email/EmailContainer";
 import { MemberCard } from "./MemberCard";
 import { MemberContact } from "./MemberContact";
-import { MemberMissions } from "./MemberMissions";
 import { MemberExpirationNotice } from "./MemberExpirationNotice";
-import { AdminPanel } from "./AdminPanel";
+import { MemberMissions } from "./MemberMissions";
 import { MemberStatus } from "./MemberStatus";
-import EmailContainer from "./Email/EmailContainer";
+import { getUserStartups } from "@/lib/kysely/queries/users";
+import { memberWrapperSchemaType } from "@/models/member";
+import { PrivateMemberChangeSchemaType } from "@/models/memberChange";
 
 import "./MemberPage.css";
+import { matomoUserSchemaType } from "@/models/matomo";
 
 const mdParser = new MarkdownIt({
     html: true,
@@ -39,6 +39,7 @@ export interface MemberPageProps {
         isInactiveOrNotInTeam: boolean;
         mattermostUserName?: string | null;
     };
+    matomoInfo?: matomoUserSchemaType;
     isExpired: boolean;
     emailServiceInfo?: {
         primaryEmail?: {
@@ -70,6 +71,7 @@ export default function MemberPage({
     authorizations,
     emailResponder,
     mattermostInfo,
+    matomoInfo,
     isExpired,
     startups,
     changes,
@@ -132,6 +134,7 @@ export default function MemberPage({
                     emailInfos={emailInfos}
                     userInfos={userInfos}
                     mattermostInfo={mattermostInfo}
+                    matomoInfo={matomoInfo}
                     redirections={redirections}
                 />
             ),
