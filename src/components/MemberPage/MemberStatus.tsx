@@ -165,6 +165,39 @@ const matomoInfoRow = (matomo: NonNullable<MemberPageProps["matomoInfo"]>) => {
     ];
 };
 
+const sentryInfoRow = (sentry: NonNullable<MemberPageProps["sentryInfo"]>) => {
+    return [
+        <>Compte Sentry</>,
+        <div key="sentry-info">
+            <Accordion
+                key={"d"}
+                label={
+                    <>
+                        <Badge severity="success">Actif</Badge> - Liste des
+                        accès
+                    </>
+                }
+            >
+                <Table
+                    data={sentry.metadata.teams.map((s) => [
+                        s.slug ? (
+                            <a href={s.slug} target="_blank">
+                                {s.name}
+                            </a>
+                        ) : (
+                            s.name
+                        ),
+                        s.projects.length,
+                        s.role,
+                    ])}
+                    headers={["nom", "projets", "niveau d'accès"]}
+                    fixed
+                />
+            </Accordion>
+        </div>,
+    ];
+};
+
 export const MemberStatus = ({
     isExpired,
     emailInfos,
@@ -172,6 +205,7 @@ export const MemberStatus = ({
     userInfos,
     redirections,
     matomoInfo,
+    sentryInfo,
 }: {
     isExpired: MemberPageProps["isExpired"];
     emailInfos: MemberPageProps["emailInfos"];
@@ -179,6 +213,7 @@ export const MemberStatus = ({
     userInfos: MemberPageProps["userInfos"];
     redirections: MemberPageProps["redirections"];
     matomoInfo: MemberPageProps["matomoInfo"];
+    sentryInfo: MemberPageProps["sentryInfo"];
 }) => {
     const rows = [
         // Account status
@@ -204,6 +239,8 @@ export const MemberStatus = ({
         mattermostInfo && mattermostInfoRow(mattermostInfo),
         // Matomo account status
         matomoInfo && matomoInfoRow(matomoInfo),
+        // Sentry account status
+        sentryInfo && sentryInfoRow(sentryInfo),
     ].filter((z) => !!z);
 
     return (

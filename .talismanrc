@@ -1,7 +1,8 @@
 fileignoreconfig:
-- filename: package-lock.json
-  checksum: 7f5cd4af23287e4bdccc09aee6057303c58f25b47dd3eb475d993dd1284b4e26
-- filename: src/app/(private)/(dashboard)/account/page.tsx
+- filename: src/components/MemberPage/MemberStatus.tsx
+  checksum: 253263acd1b0b171cff9ef858da27e45a7633f6f017291a7f903ee7f88c8d3e1
+version: ""
+ard)/account/page.tsx
   checksum: 1c9b1df42135952c43133eb46ccfb97a7f073cfb9ffc1751efd91c62875b436a
 - filename: src/components/CommunityPage/Community.tsx
   checksum: dc3ab9308a1f99026b70342a2ecf7f6c3dffa8c83caef74e44cb244d4cafcf06

@@ -18,6 +18,7 @@ import { PrivateMemberChangeSchemaType } from "@/models/memberChange";
 
 import "./MemberPage.css";
 import { matomoUserSchemaType } from "@/models/matomo";
+import { sentryUserSchemaType } from "@/models/sentry";
 
 const mdParser = new MarkdownIt({
     html: true,
@@ -40,6 +41,7 @@ export interface MemberPageProps {
         mattermostUserName?: string | null;
     };
     matomoInfo?: matomoUserSchemaType;
+    sentryInfo?: sentryUserSchemaType;
     isExpired: boolean;
     emailServiceInfo?: {
         primaryEmail?: {
@@ -72,6 +74,7 @@ export default function MemberPage({
     emailResponder,
     mattermostInfo,
     matomoInfo,
+    sentryInfo,
     isExpired,
     startups,
     changes,
@@ -135,6 +138,7 @@ export default function MemberPage({
                     userInfos={userInfos}
                     mattermostInfo={mattermostInfo}
                     matomoInfo={matomoInfo}
+                    sentryInfo={sentryInfo}
                     redirections={redirections}
                 />
             ),
