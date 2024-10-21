@@ -55,8 +55,14 @@ const sampleMember: { member: MemberPageProps } = {
                 },
             ],
             teams: [
-                // @ts-ignore todo
-                { name: "Équipe data", incubator_title: "Fabrique de fusées" },
+                {
+                    name: "Équipe data",
+                    ghid: "equipe-data",
+                    // @ts-ignore todo
+                    incubator_title: "Fabrique de fusées",
+                    incubator_id: "fabrique-de-fusee",
+                    uuid: "unduid",
+                },
             ],
             primary_email: "ada@love.com",
             primary_email_status: EmailStatusCode.EMAIL_ACTIVE,

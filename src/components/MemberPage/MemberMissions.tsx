@@ -1,12 +1,11 @@
+import { fr } from "@codegouvfr/react-dsfr/fr";
 import Table from "@codegouvfr/react-dsfr/Table";
 import Tag from "@codegouvfr/react-dsfr/Tag";
-import { fr } from "@codegouvfr/react-dsfr/fr";
-import { linkRegistry } from "@/utils/routes/registry";
-
 import { format } from "date-fns";
 import { fr as frLocale } from "date-fns/locale/fr";
 
 import { MemberPageProps } from "./MemberPage";
+import { linkRegistry } from "@/utils/routes/registry";
 
 export const MemberMissions = ({
     startups,
