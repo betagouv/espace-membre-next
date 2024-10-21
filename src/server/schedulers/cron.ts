@@ -37,6 +37,8 @@ import {
     sendNewsletterAndCreateNewOne,
 } from "./newsletterScheduler";
 import { recreateEmailIfUserActive } from "./recreateEmailIfUserActive";
+import { syncMatomoAccounts } from "./serviceScheduler/syncMatomoAccounts";
+import { syncSentryAccounts } from "./serviceScheduler/syncSentryAccounts";
 import { createMailingListForStartups } from "./startups/createMailingListForStartups";
 import { sendEmailToStartupToUpdatePhase } from "./startups/sendEmailToStartupToUpdatePhase";
 import { unblockEmailsThatAreActive } from "./unblockEmailsThatAreActive";
@@ -53,10 +55,10 @@ import {
     deleteMatomoAccount,
     deleteSentryAccount,
 } from "./userContractEndingScheduler";
+import { matomoClient } from "../config/matomo.config";
+import { sentryClient } from "../config/sentry.config";
 import { db } from "@/lib/kysely";
 import config from "@/server/config";
-import { syncMatomoAccounts } from "@/server/schedulers/serviceScheduler/syncMatomoAccounts";
-import { syncSentryAccounts } from "@/server/schedulers/serviceScheduler/syncSentryAccounts";
 import { setEmailExpired } from "@schedulers/setEmailExpired";
 
 interface Job {
@@ -241,15 +243,15 @@ const servicesJobs: Job[] = [
             "Supprime les comptes sentry des membres expirés (30 days)",
     },
     {
-        cronTime: process.env.SYNC_MATOMO_ACCOUNT_CRON || "0 15 12 * * *",
-        onTick: syncMatomoAccounts,
+        cronTime: process.env.SYNC_MATOMO_ACCOUNT_CRON || "0 30 14 * * *",
+        onTick: () => syncMatomoAccounts(matomoClient),
         isActive: true,
         name: "syncMatomoAccounts",
         description: "Sync les comptes matomo des membres actifs",
     },
     {
-        cronTime: process.env.SYNC_SENTRY_ACCOUNT_CRON || "0 45 12 * * *",
-        onTick: syncSentryAccounts,
+        cronTime: process.env.SYNC_SENTRY_ACCOUNT_CRON || "0 30 14 * * *",
+        onTick: () => syncSentryAccounts(sentryClient),
         isActive: true,
         name: "syncSentryAccounts",
         description: "Sync les comptes sentry des membres actifs",
