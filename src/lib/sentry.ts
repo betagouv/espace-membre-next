@@ -95,15 +95,14 @@ export class SentryService implements AccountService {
      * @param userId - The login of the user to delete
      */
     async fetchUserAccess(userId: string): Promise<SentryUserAccess> {
-        const userTeamsUrl = `${this.apiUrl}/organizations/${this.org}/members/${userId}/`;
-
+        const userTeamsUrl = `${this.apiUrl}/api/0/organizations/${this.org}/members/${userId}/`;
         const response = await fetch(userTeamsUrl, {
             headers: this.headers,
             method: "GET",
         });
 
         if (!response.ok) {
-            throw new Error(`Failed to delete user: ${response.statusText}`);
+            throw new Error(`Failed to get user: ${response.statusText}`);
         }
         return await response.json();
     }
@@ -112,8 +111,7 @@ export class SentryService implements AccountService {
     async getAllTeams(): Promise<SentryTeam[]> {
         let nextPageUrl:
             | string
-            | null = `${this.apiUrl}/organizations/${this.org}/teams`;
-
+            | null = `${this.apiUrl}/api/0/organizations/${this.org}/teams/`;
         let allTeams: SentryTeam[] = [];
 
         while (nextPageUrl) {
