@@ -55,6 +55,8 @@ import {
 } from "./userContractEndingScheduler";
 import { db } from "@/lib/kysely";
 import config from "@/server/config";
+import { syncMatomoAccounts } from "@/server/schedulers/serviceScheduler/syncMatomoAccounts";
+import { syncSentryAccounts } from "@/server/schedulers/serviceScheduler/syncSentryAccounts";
 import { setEmailExpired } from "@schedulers/setEmailExpired";
 
 interface Job {
@@ -237,6 +239,20 @@ const servicesJobs: Job[] = [
         name: "deleteSentryAccount",
         description:
             "Supprime les comptes sentry des membres expirés (30 days)",
+    },
+    {
+        cronTime: process.env.SYNC_MATOMO_ACCOUNT_CRON || "0 15 12 * * *",
+        onTick: syncMatomoAccounts,
+        isActive: true,
+        name: "syncMatomoAccounts",
+        description: "Sync les comptes matomo des membres actifs",
+    },
+    {
+        cronTime: process.env.SYNC_SENTRY_ACCOUNT_CRON || "0 45 12 * * *",
+        onTick: syncSentryAccounts,
+        isActive: true,
+        name: "syncSentryAccounts",
+        description: "Sync les comptes sentry des membres actifs",
     },
 ];
 
