@@ -5,6 +5,7 @@ import { getMattermostUserInfo } from "@/lib/mattermost";
 import { getAvatarUrl } from "@/lib/s3";
 import { memberChangeToModel, memberBaseInfoToModel } from "@/models/mapper";
 import { matomoServiceInfoToModel } from "@/models/mapper/matomoMapper";
+import { sentryServiceInfoToModel } from "@/models/mapper/sentryMapper";
 import betagouv from "@/server/betagouv";
 import { SERVICES } from "@/server/config/services.config";
 
@@ -42,6 +43,18 @@ export const getUserInformations = async (id) => {
             }
         });
 
+    const sentryInfo = await db
+        .selectFrom("service_accounts")
+        .selectAll()
+        .where("user_id", "=", dbUser.uuid)
+        .where("account_type", "=", SERVICES.SENTRY)
+        .executeTakeFirst()
+        .then((account) => {
+            if (account) {
+                return sentryServiceInfoToModel(account);
+            }
+        });
+
     const emailResponder = await betagouv.getResponder(id);
 
     return {
@@ -52,6 +65,7 @@ export const getUserInformations = async (id) => {
         startups,
         mattermostInfo,
         matomoInfo,
+        sentryInfo,
         emailResponder,
     };
 };

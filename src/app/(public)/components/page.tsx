@@ -109,6 +109,42 @@ const sampleMember: { member: MemberPageProps } = {
                 ],
             },
         },
+        sentryInfo: {
+            email: "unemaildetest@gmail.com",
+            account_type: "sentry",
+            service_user_id: "168",
+            metadata: {
+                organisationRole: "admin",
+                pending: false,
+                expired: false,
+                inviteStatus: "approved",
+                teams: [
+                    {
+                        slug: "monservice-prod",
+                        name: "monservice-prod",
+                        id: "123",
+                        role: null,
+                        memberCount: 3,
+                        projects: [
+                            {
+                                name: "projet",
+                                id: "145",
+                                slug: "projet1",
+                                plateform: "typescript",
+                            },
+                        ],
+                    },
+                    {
+                        name: "nis2",
+                        slug: "nis2",
+                        role: null,
+                        id: "124",
+                        memberCount: 3,
+                        projects: [],
+                    },
+                ],
+            },
+        },
         redirections: [{ from: "ada@love.com", id: "42", to: "some@one.com" }],
         authorizations: {
             canCreateEmail: false,

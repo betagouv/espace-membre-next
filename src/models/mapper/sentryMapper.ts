@@ -1,6 +1,7 @@
-import { template } from "lodash";
+import { Selectable } from "kysely";
 
 import { sentryUserSchemaType } from "../sentry";
+import { ServiceAccounts } from "@/@types/db";
 import { SentryUser, SentryUserAccess, SentryTeam } from "@/lib/sentry";
 
 export const sentryUserToModel = (
@@ -48,5 +49,16 @@ export const sentryUserToModel = (
             expired: userMetadata.expired,
             inviteStatus: userMetadata.inviteStatus,
         },
+    };
+};
+
+export const sentryServiceInfoToModel = (
+    sentryUser: Selectable<ServiceAccounts>
+): sentryUserSchemaType => {
+    return {
+        account_type: "sentry",
+        email: "no email fetch",
+        service_user_id: sentryUser.service_user_id,
+        metadata: sentryUser.metadata as sentryUserSchemaType["metadata"],
     };
 };

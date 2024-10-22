@@ -56,6 +56,7 @@ export default async function Page() {
             userInfos={userInformations.baseInfo}
             mattermostInfo={userInformations.mattermostInfo}
             matomoInfo={userInformations.matomoInfo}
+            sentryInfo={userInformations.sentryInfo}
             startups={userInformations.startups}
         />
     );
