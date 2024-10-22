@@ -1,6 +1,6 @@
 fileignoreconfig:
-- filename: src/components/MemberPage/MemberStatus.tsx
-  checksum: 253263acd1b0b171cff9ef858da27e45a7633f6f017291a7f903ee7f88c8d3e1
+- filename: src/components/CommunityPage/Community.tsx
+  checksum: 5e8f61254f178c6991364f6027983fd649c844e1f26ed412a98a404b37e1ffc7
 version: ""
 ard)/account/page.tsx
   checksum: 1c9b1df42135952c43133eb46ccfb97a7f073cfb9ffc1751efd91c62875b436a
