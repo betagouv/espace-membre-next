@@ -6,15 +6,7 @@ import Accordion from "@codegouvfr/react-dsfr/Accordion";
 import Alert from "@codegouvfr/react-dsfr/Alert";
 import Badge from "@codegouvfr/react-dsfr/Badge";
 import Table from "@codegouvfr/react-dsfr/Table";
-
-import frontConfig from "@/frontConfig";
-import { EmailStatusCode } from "@/models/member";
-import {
-    EmailInfos,
-    memberSchemaType,
-    memberWrapperSchemaType,
-} from "@/models/member";
-import { EMAIL_PLAN_TYPE, OvhRedirection, OvhResponder } from "@/models/ovh";
+import { match } from "ts-pattern";
 
 import BlocChangerMotDePasse from "./BlocChangerMotDePasse";
 import BlocConfigurerCommunicationEmail from "./BlocConfigurerCommunicationEmail";
@@ -24,6 +16,14 @@ import BlocCreateEmail from "./BlocCreateEmail";
 import BlocEmailResponder from "./BlocEmailResponder";
 import BlocRedirection from "./BlocRedirection";
 import { WebMailButton } from "./WebMailButton";
+import frontConfig from "@/frontConfig";
+import {
+    EmailInfos,
+    memberSchemaType,
+    memberWrapperSchemaType,
+} from "@/models/member";
+import { EmailStatusCode } from "@/models/member";
+import { EMAIL_PLAN_TYPE, OvhRedirection, OvhResponder } from "@/models/ovh";
 
 function BlocEmailConfiguration({ emailInfos }: { emailInfos: EmailInfos }) {
     interface ServerConf {
@@ -151,32 +151,42 @@ export default function EmailContainer({
                             <a href={`mailto:${emailInfos.email}`}>
                                 {emailInfos.email}
                             </a>
-                            {emailInfos.isPro ? (
-                                <Badge
-                                    small
-                                    className={fr.cx("fr-ml-1w")}
-                                    severity="info"
-                                >
-                                    OVH Pro
-                                </Badge>
-                            ) : emailInfos.isExchange ? (
-                                <Badge
-                                    small
-                                    className={fr.cx("fr-ml-1w")}
-                                    severity="info"
-                                >
-                                    OVH Exchange
-                                </Badge>
-                            ) : emailInfos.emailPlan ===
-                              EMAIL_PLAN_TYPE.EMAIL_PLAN_BASIC ? (
-                                <Badge
-                                    small
-                                    className={fr.cx("fr-ml-1w")}
-                                    severity="info"
-                                >
-                                    OVH MX
-                                </Badge>
-                            ) : null}
+
+                            {match(emailInfos)
+                                .with({ isPro: true }, () => (
+                                    <Badge
+                                        small
+                                        className={fr.cx("fr-ml-1w")}
+                                        severity="info"
+                                    >
+                                        OVH Pro
+                                    </Badge>
+                                ))
+                                .with({ isExchange: true }, () => (
+                                    <Badge
+                                        small
+                                        className={fr.cx("fr-ml-1w")}
+                                        severity="info"
+                                    >
+                                        OVH Exchange
+                                    </Badge>
+                                ))
+                                .with(
+                                    {
+                                        emailPlan:
+                                            EMAIL_PLAN_TYPE.EMAIL_PLAN_BASIC,
+                                    },
+                                    () => (
+                                        <Badge
+                                            small
+                                            className={fr.cx("fr-ml-1w")}
+                                            severity="info"
+                                        >
+                                            OVH MX
+                                        </Badge>
+                                    )
+                                )
+                                .otherwise(() => null)}
                         </span>
                         <br />
                     </>
@@ -220,36 +230,45 @@ export default function EmailContainer({
             )}
             {!emailIsBeingCreated && (
                 <div className={fr.cx("fr-accordions-group")}>
-                    {canCreateEmail &&
-                        ![
+                    {match(userInfos.primary_email_status)
+                        .with(
                             EmailStatusCode.EMAIL_CREATION_WAITING,
                             EmailStatusCode.EMAIL_CREATION_PENDING,
-                        ].includes(userInfos.primary_email_status) && (
-                            <BlocCreateEmail
-                                hasPublicServiceEmail={hasPublicServiceEmail}
-                                userInfos={userInfos}
-                            />
+                            () => null
+                        )
+                        .otherwise(
+                            () =>
+                                canCreateEmail && (
+                                    <BlocCreateEmail
+                                        hasPublicServiceEmail={
+                                            hasPublicServiceEmail
+                                        }
+                                        userInfos={userInfos}
+                                    />
+                                )
                         )}
+
                     {!!emailInfos && (
                         <BlocEmailConfiguration emailInfos={emailInfos} />
                     )}
-                    {!!emailInfos &&
-                        !emailInfos.isExchange &&
-                        !emailInfos.isPro && (
+
+                    {match(emailInfos)
+                        .with({ isExchange: false, isPro: false }, () => (
                             <BlocEmailResponder
                                 username={userInfos.username}
                                 responder={emailResponder}
                             />
-                        )}
+                        ))
+                        .otherwise(() => null)}
+
                     <BlocChangerMotDePasse
                         canChangePassword={canChangePassword}
                         status={userInfos.primary_email_status}
                         userInfos={userInfos}
                     />
 
-                    {!!emailInfos &&
-                        !emailInfos.isExchange &&
-                        !emailInfos.isPro && (
+                    {match(emailInfos)
+                        .with({ isExchange: false, isPro: false }, () => (
                             <BlocRedirection
                                 redirections={emailRedirections}
                                 canCreateRedirection={canCreateRedirection}
@@ -257,15 +276,19 @@ export default function EmailContainer({
                                 isExpired={isExpired}
                                 domain={frontConfig.domain}
                             />
-                        )}
+                        ))
+                        .otherwise(() => null)}
+
                     <BlocConfigurerEmailPrincipal
                         canChangeEmails={canChangeEmails}
                         userInfos={userInfos}
                     />
+
                     <BlocConfigurerEmailSecondaire
                         canChangeEmails={canChangeEmails}
                         secondaryEmail={userInfos.secondary_email}
                     />
+
                     <BlocConfigurerCommunicationEmail userInfos={userInfos} />
                 </div>
             )}

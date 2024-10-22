@@ -58,16 +58,6 @@ const getUserRow = ({
     return [
         // user
         <>
-            {!active && (
-                <i
-                    className={fr.cx(
-                        "fr-icon-close-circle-line",
-                        "fr-icon--sm",
-                        "fr-mr-1w"
-                    )}
-                    title="Compte suspendu"
-                ></i>
-            )}
             <Link
                 className={fr.cx({
                     "fr-text--light": !active,
@@ -75,7 +65,8 @@ const getUserRow = ({
                 title="Accéder à la fiche du membre"
                 href={`/community/${user.username}`}
             >
-                {user.fullname}
+                {/* sometimes we do not have user fullname */}
+                {user.fullname || user.username}
             </Link>
         </>,
         <>{user.primary_email}</>,
