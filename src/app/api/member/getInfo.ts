@@ -5,6 +5,7 @@ import { getMattermostUserInfo } from "@/lib/mattermost";
 import { getAvatarUrl } from "@/lib/s3";
 import { memberChangeToModel, memberBaseInfoToModel } from "@/models/mapper";
 import { matomoServiceInfoToModel } from "@/models/mapper/matomoMapper";
+import { sentryServiceInfoToModel } from "@/models/mapper/sentryMapper";
 import betagouv from "@/server/betagouv";
 import { SERVICES } from "@/server/config/services.config";
 
