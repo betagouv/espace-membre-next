@@ -187,6 +187,18 @@ export const Community = (props: CommunityProps) => {
         [props.startupOptions, props.users]
     );
 
+    // Copy utility function
+    const copyColumnData = (data: string[]) => {
+        const formattedData = data.join("\n");
+        copyToClipboard(formattedData);
+    };
+
+    // Helper to extract column data
+    const getColumnData = (name) => {
+        console.log(results.map((r) => r.primary_email));
+        return results.map((r) => r.primary_email).join("\n");
+    };
+
     const filterResult = useCallback(
         (result: CommunityProps["users"][number]) => {
             if (!filters.length) return true;
@@ -347,7 +359,29 @@ export const Community = (props: CommunityProps) => {
                                 </Button>
                             </>
                         }
-                        headers={headers}
+                        headers={headers.map((header, index) => (
+                            <div key={header}>
+                                {header}
+                                {header === "Email" && (
+                                    <>
+                                        {" "}
+                                        -{" "}
+                                        <Button
+                                            size="small"
+                                            priority="tertiary no outline"
+                                            iconId="fr-icon-clipboard-line"
+                                            onClick={() =>
+                                                copyToClipboard(
+                                                    getColumnData(header)
+                                                )
+                                            }
+                                        >
+                                            {"copier"}
+                                        </Button>
+                                    </>
+                                )}
+                            </div>
+                        ))}
                         data={results
                             .slice(
                                 (currentPage - 1) * pageSize,
@@ -416,3 +450,15 @@ const Footer = () => (
         </div>
     </div>
 );
+
+// Utility function to copy to clipboard
+export const copyToClipboard = (text: string) => {
+    navigator.clipboard.writeText(text).then(
+        () => {
+            alert("Copied to clipboard!");
+        },
+        (err) => {
+            console.error("Could not copy text: ", err);
+        }
+    );
+};
