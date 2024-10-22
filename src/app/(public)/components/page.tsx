@@ -115,7 +115,6 @@ const sampleMember: { member: MemberPageProps } = {
             service_user_id: "168",
             metadata: {
                 organisationRole: "admin",
-                name: "",
                 pending: false,
                 expired: false,
                 inviteStatus: "approved",
