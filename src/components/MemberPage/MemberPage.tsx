@@ -143,14 +143,16 @@ export default function MemberPage({
                 />
             ),
         },
-        canEdit && {
+        {
             label: "Compte email",
             content: (
                 <EmailContainer
+                    canEdit={canEdit}
                     isExpired={isExpired}
                     emailInfos={emailInfos}
                     emailResponder={emailResponder}
                     emailRedirections={redirections}
+                    redirections={redirections}
                     userInfos={userInfos}
                     authorizations={authorizations}
                 ></EmailContainer>

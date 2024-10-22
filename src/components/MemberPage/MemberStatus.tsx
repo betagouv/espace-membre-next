@@ -37,55 +37,6 @@ const ToolTip = ({
     </>
 );
 
-const emailStatusRow = (
-    emailInfos: NonNullable<MemberPageProps["emailInfos"]>,
-    userInfos: MemberPageProps["userInfos"]
-) => {
-    return [
-        <>
-            Statut de l'email <EmailLink email={emailInfos.email} />
-        </>,
-        <>
-            <Badge severity="info" className={fr.cx("fr-mr-1w")}>
-                {match(emailInfos)
-                    .with({ isPro: true }, () => "OVH PRO")
-                    .with({ isExchange: true }, () => "Exchange")
-                    .with(
-                        { emailPlan: EMAIL_PLAN_TYPE.EMAIL_PLAN_BASIC },
-                        () => "OVH MX"
-                    )
-                    .otherwise(() => "?")}
-            </Badge>
-            {match(userInfos.primary_email_status)
-                .with(EmailStatusCode.EMAIL_ACTIVE, () => (
-                    <Badge severity="success">Actif</Badge>
-                ))
-                .otherwise(() => (
-                    <Badge severity="error">
-                        {
-                            EMAIL_STATUS_READABLE_FORMAT[
-                                userInfos.primary_email_status
-                            ]
-                        }
-                    </Badge>
-                ))}
-        </>,
-    ];
-};
-
-const emailSpamInfoRow = (
-    emailInfos: NonNullable<MemberPageProps["emailInfos"]>
-) => {
-    return [
-        <>
-            Email <EmailLink email={emailInfos.email} /> classé en spam OVH
-        </>,
-        match(emailInfos.isBlocked)
-            .with(true, () => <Badge severity="error">Oui</Badge>)
-            .otherwise(() => <Badge severity="success">Non</Badge>),
-    ];
-};
-
 const mattermostInfoRow = (
     mattermostInfo: NonNullable<MemberPageProps["mattermostInfo"]>
 ) => {
@@ -115,20 +66,6 @@ const mattermostInfoRow = (
             .otherwise(() => (
                 <Badge severity="error">Compte introuvable</Badge>
             )),
-    ];
-};
-
-const redirectionRow = (
-    redirection: NonNullable<MemberPageProps["redirections"][0]>
-) => {
-    return [
-        <>
-            Redirection <EmailLink email={redirection.from} /> vers{" "}
-            <EmailLink email={redirection.to} />.
-        </>,
-        <Badge key={redirection.to} severity="success">
-            OK
-        </Badge>,
     ];
 };
 
@@ -229,12 +166,12 @@ export const MemberStatus = ({
                 .with(false, () => <Badge severity="success">Actif</Badge>)
                 .exhaustive(),
         ],
-        // Email status
-        emailInfos && emailStatusRow(emailInfos, userInfos),
-        // Spam status
-        emailInfos && emailSpamInfoRow(emailInfos),
-        // Redirections
-        ...redirections.map((redirection) => redirectionRow(redirection)),
+        // // Email status
+        // emailInfos && emailStatusRow(emailInfos, userInfos),
+        // // Spam status
+        // emailInfos && emailSpamInfoRow(emailInfos),
+        // // Redirections
+        // ...redirections.map((redirection) => redirectionRow(redirection)),
         // Mattermost account status
         mattermostInfo && mattermostInfoRow(mattermostInfo),
         // Matomo account status
