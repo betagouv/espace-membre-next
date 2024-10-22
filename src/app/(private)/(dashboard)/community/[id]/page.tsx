@@ -36,7 +36,7 @@ export default async function Page({
     }
 
     const isAdmin = !!session.user.isAdmin;
-    const canEdit = isAdmin || session.user.id === id;
+    const canEdit = session.user.id === id;
 
     let availableEmailPros: string[] = [];
     if (config.ESPACE_MEMBRE_ADMIN.includes(session.user.id)) {
