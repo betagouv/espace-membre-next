@@ -16,6 +16,8 @@ import BlocCreateEmail from "./BlocCreateEmail";
 import BlocEmailResponder from "./BlocEmailResponder";
 import BlocRedirection from "./BlocRedirection";
 import { WebMailButton } from "./WebMailButton";
+import { MemberPageProps } from "../MemberPage";
+import { ToolTip } from "@/components/Tooltip";
 import frontConfig from "@/frontConfig";
 import {
     EmailInfos,
@@ -23,7 +25,61 @@ import {
     memberWrapperSchemaType,
 } from "@/models/member";
 import { EmailStatusCode } from "@/models/member";
+import { EMAIL_STATUS_READABLE_FORMAT } from "@/models/misc";
 import { EMAIL_PLAN_TYPE, OvhRedirection, OvhResponder } from "@/models/ovh";
+
+const EmailLink = ({ email }: { email: string }) => (
+    <a href={`mailto:${email}`}>{email}</a>
+);
+
+const emailStatusRow = (
+    emailInfos: NonNullable<MemberPageProps["emailInfos"]>,
+    userInfos: MemberPageProps["userInfos"]
+) => {
+    return [
+        <>
+            Statut de l'email <EmailLink email={emailInfos.email} />
+        </>,
+        <>
+            <Badge severity="info" className={fr.cx("fr-mr-1w")}>
+                {match(emailInfos)
+                    .with({ isPro: true }, () => "OVH PRO")
+                    .with({ isExchange: true }, () => "Exchange")
+                    .with(
+                        { emailPlan: EMAIL_PLAN_TYPE.EMAIL_PLAN_BASIC },
+                        () => "OVH MX"
+                    )
+                    .otherwise(() => "?")}
+            </Badge>
+            {match(userInfos.primary_email_status)
+                .with(EmailStatusCode.EMAIL_ACTIVE, () => (
+                    <Badge severity="success">Actif</Badge>
+                ))
+                .otherwise(() => (
+                    <Badge severity="error">
+                        {
+                            EMAIL_STATUS_READABLE_FORMAT[
+                                userInfos.primary_email_status
+                            ]
+                        }
+                    </Badge>
+                ))}
+        </>,
+    ];
+};
+
+const emailSpamInfoRow = (
+    emailInfos: NonNullable<MemberPageProps["emailInfos"]>
+) => {
+    return [
+        <>
+            Email <EmailLink email={emailInfos.email} /> classé en spam OVH
+        </>,
+        match(emailInfos.isBlocked)
+            .with(true, () => <Badge severity="error">Oui</Badge>)
+            .otherwise(() => <Badge severity="success">Non</Badge>),
+    ];
+};
 
 function BlocEmailConfiguration({ emailInfos }: { emailInfos: EmailInfos }) {
     interface ServerConf {
@@ -113,6 +169,20 @@ function BlocEmailConfiguration({ emailInfos }: { emailInfos: EmailInfos }) {
     );
 }
 
+const redirectionRow = (
+    redirection: NonNullable<MemberPageProps["redirections"][0]>
+) => {
+    return [
+        <>
+            Redirection <EmailLink email={redirection.from} /> vers{" "}
+            <EmailLink email={redirection.to} />.
+        </>,
+        <Badge key={redirection.to} severity="success">
+            OK
+        </Badge>,
+    ];
+};
+
 export default function EmailContainer({
     userInfos,
     emailInfos,
@@ -125,19 +195,33 @@ export default function EmailContainer({
         canCreateRedirection,
         hasPublicServiceEmail,
     },
+    redirections,
     isExpired,
+    canEdit,
 }: {
     userInfos: memberSchemaType;
     isExpired: boolean;
     emailInfos: EmailInfos | null;
     emailRedirections: OvhRedirection[];
     emailResponder: OvhResponder | null;
+    redirections: MemberPageProps["redirections"];
     authorizations: memberWrapperSchemaType["authorizations"];
+    canEdit: boolean;
 }) {
     const emailIsBeingCreated = [
         EmailStatusCode.EMAIL_CREATION_WAITING,
         EmailStatusCode.EMAIL_CREATION_PENDING,
     ].includes(userInfos.primary_email_status);
+
+    const rows = [
+        // Email status
+        emailInfos && emailStatusRow(emailInfos, userInfos),
+        // Spam status
+        emailInfos && emailSpamInfoRow(emailInfos),
+        // Redirections
+        ...redirections.map((redirection) => redirectionRow(redirection)),
+    ].filter((z) => !!z);
+
     return (
         <div className="fr-mb-14v">
             <h2>Email</h2>
@@ -228,7 +312,13 @@ export default function EmailContainer({
                     small
                 />
             )}
-            {!emailIsBeingCreated && (
+            <Table
+                className="tbl-account-status"
+                fixed
+                headers={["Service", "Infos"]}
+                data={rows}
+            />
+            {!emailIsBeingCreated && canEdit && (
                 <div className={fr.cx("fr-accordions-group")}>
                     {match(userInfos.primary_email_status)
                         .with(

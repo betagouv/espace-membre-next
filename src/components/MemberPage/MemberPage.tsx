@@ -3,7 +3,6 @@
 import { fr } from "@codegouvfr/react-dsfr";
 import { Tabs } from "@codegouvfr/react-dsfr/Tabs";
 import MarkdownIt from "markdown-it";
-import { useSession } from "next-auth/react";
 
 import { AdminPanel } from "./AdminPanel";
 import EmailContainer from "./Email/EmailContainer";
@@ -130,7 +129,7 @@ export default function MemberPage({
             ),
         },
         {
-            label: "Statut du compte",
+            label: "Statut des comptes",
             content: (
                 <MemberStatus
                     isExpired={isExpired}
@@ -143,14 +142,16 @@ export default function MemberPage({
                 />
             ),
         },
-        canEdit && {
+        {
             label: "Compte email",
             content: (
                 <EmailContainer
+                    canEdit={canEdit}
                     isExpired={isExpired}
                     emailInfos={emailInfos}
                     emailResponder={emailResponder}
                     emailRedirections={redirections}
+                    redirections={redirections}
                     userInfos={userInfos}
                     authorizations={authorizations}
                 ></EmailContainer>
