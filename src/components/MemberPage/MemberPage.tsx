@@ -3,7 +3,6 @@
 import { fr } from "@codegouvfr/react-dsfr";
 import { Tabs } from "@codegouvfr/react-dsfr/Tabs";
 import MarkdownIt from "markdown-it";
-import { useSession } from "next-auth/react";
 
 import { AdminPanel } from "./AdminPanel";
 import EmailContainer from "./Email/EmailContainer";

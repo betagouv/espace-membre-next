@@ -17,6 +17,7 @@ import BlocEmailResponder from "./BlocEmailResponder";
 import BlocRedirection from "./BlocRedirection";
 import { WebMailButton } from "./WebMailButton";
 import { MemberPageProps } from "../MemberPage";
+import { ToolTip } from "@/components/Tooltip";
 import frontConfig from "@/frontConfig";
 import {
     EmailInfos,
@@ -29,30 +30,6 @@ import { EMAIL_PLAN_TYPE, OvhRedirection, OvhResponder } from "@/models/ovh";
 
 const EmailLink = ({ email }: { email: string }) => (
     <a href={`mailto:${email}`}>{email}</a>
-);
-
-const ToolTip = ({
-    id,
-    children,
-}: {
-    id: string;
-    children: React.ReactNode;
-}) => (
-    <>
-        <button
-            aria-describedby={`tooltip-${id}`}
-            className={fr.cx("fr-btn--tooltip", "fr-btn")}
-        >
-            Information contextuelle
-        </button>
-        <span
-            className={fr.cx("fr-tooltip", "fr-placement")}
-            id={`tooltip-${id}`}
-            role="tooltip"
-        >
-            {children}
-        </span>
-    </>
 );
 
 const emailStatusRow = (
@@ -238,26 +215,25 @@ export default function EmailContainer({
 
     const rows = [
         // Account status
-        
-            [
-                <>
-                    Compte beta
-                    <ToolTip id="compte-beta">
-                        Indique si ton compte membre beta.gouv.fr est actif
-                    </ToolTip>
-                </>,
-                match(isExpired)
-                    .with(true, () => <Badge severity="error">Expiré</Badge>)
-                    .with(false, () => <Badge severity="success">Actif</Badge>)
-                    .exhaustive(),
-            ],
-            // Email status
-            emailInfos && emailStatusRow(emailInfos, userInfos),
-            // Spam status
-            emailInfos && emailSpamInfoRow(emailInfos),
-            // Redirections
-            ...redirections.map((redirection) => redirectionRow(redirection)),
-        
+
+        [
+            <>
+                Compte beta
+                <ToolTip id="compte-beta">
+                    Indique si ton compte membre beta.gouv.fr est actif
+                </ToolTip>
+            </>,
+            match(isExpired)
+                .with(true, () => <Badge severity="error">Expiré</Badge>)
+                .with(false, () => <Badge severity="success">Actif</Badge>)
+                .exhaustive(),
+        ],
+        // Email status
+        emailInfos && emailStatusRow(emailInfos, userInfos),
+        // Spam status
+        emailInfos && emailSpamInfoRow(emailInfos),
+        // Redirections
+        ...redirections.map((redirection) => redirectionRow(redirection)),
     ].filter((z) => !!z);
 
     return (

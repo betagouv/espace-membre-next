@@ -5,37 +5,7 @@ import Table from "@codegouvfr/react-dsfr/Table";
 import { match } from "ts-pattern"; // import ts-pattern
 
 import { MemberPageProps } from "./MemberPage";
-import { EmailStatusCode } from "@/models/member";
-import { EMAIL_STATUS_READABLE_FORMAT } from "@/models/misc";
-import { EMAIL_PLAN_TYPE } from "@/models/ovh";
-
-const EmailLink = ({ email }: { email: string }) => (
-    <a href={`mailto:${email}`}>{email}</a>
-);
-
-const ToolTip = ({
-    id,
-    children,
-}: {
-    id: string;
-    children: React.ReactNode;
-}) => (
-    <>
-        <button
-            aria-describedby={`tooltip-${id}`}
-            className={fr.cx("fr-btn--tooltip", "fr-btn")}
-        >
-            Information contextuelle
-        </button>
-        <span
-            className={fr.cx("fr-tooltip", "fr-placement")}
-            id={`tooltip-${id}`}
-            role="tooltip"
-        >
-            {children}
-        </span>
-    </>
-);
+import { ToolTip } from "@/components/Tooltip";
 
 const mattermostInfoRow = (
     mattermostInfo: NonNullable<MemberPageProps["mattermostInfo"]>
@@ -166,12 +136,6 @@ export const MemberStatus = ({
                 .with(false, () => <Badge severity="success">Actif</Badge>)
                 .exhaustive(),
         ],
-        // // Email status
-        // emailInfos && emailStatusRow(emailInfos, userInfos),
-        // // Spam status
-        // emailInfos && emailSpamInfoRow(emailInfos),
-        // // Redirections
-        // ...redirections.map((redirection) => redirectionRow(redirection)),
         // Mattermost account status
         mattermostInfo && mattermostInfoRow(mattermostInfo),
         // Matomo account status
