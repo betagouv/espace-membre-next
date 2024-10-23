@@ -51,7 +51,7 @@ const mattermostInfoRow = (
 };
 
 const emailStatusRow = (
-    emailInfos: NonNullable<MemberPageProps["emailInfos"]>,
+    emailInfos: MemberPageProps["emailInfos"],
     userInfos: MemberPageProps["userInfos"]
 ) => {
     return [
