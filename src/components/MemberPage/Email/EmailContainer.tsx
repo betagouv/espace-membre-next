@@ -214,20 +214,6 @@ export default function EmailContainer({
     ].includes(userInfos.primary_email_status);
 
     const rows = [
-        // Account status
-
-        [
-            <>
-                Compte beta
-                <ToolTip id="compte-beta">
-                    Indique si ton compte membre beta.gouv.fr est actif
-                </ToolTip>
-            </>,
-            match(isExpired)
-                .with(true, () => <Badge severity="error">Expiré</Badge>)
-                .with(false, () => <Badge severity="success">Actif</Badge>)
-                .exhaustive(),
-        ],
         // Email status
         emailInfos && emailStatusRow(emailInfos, userInfos),
         // Spam status
