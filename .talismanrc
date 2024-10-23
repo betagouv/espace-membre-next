@@ -1,6 +1,8 @@
 fileignoreconfig:
-- filename: src/components/CommunityPage/Community.tsx
-  checksum: 5e8f61254f178c6991364f6027983fd649c844e1f26ed412a98a404b37e1ffc7
+- filename: package-lock.json
+  checksum: 98d433596cb1ef3f711bc78e8a6f00b83079c254306042299d929cd9fcc4f7a8
+version: ""
+404b37e1ffc7
 - filename: src/components/CommunityPage/Community.tsx
   checksum: dc3ab9308a1f99026b70342a2ecf7f6c3dffa8c83caef74e44cb244d4cafcf06
 - filename: src/components/CommunityPage/exportToCsv.ts

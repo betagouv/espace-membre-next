@@ -25,6 +25,10 @@ const activeMissionsInMonth = (
     }).length;
 };
 
+const roundToTwoDigits = (value) => {
+    return typeof value === "number" ? value.toFixed(2) : value;
+};
+
 // Get the number of active missions over the past 3 months
 const getActiveMissionStats = (missions: any, domaines?: Domaine[]) => {
     const today = new Date();
@@ -32,6 +36,8 @@ const getActiveMissionStats = (missions: any, domaines?: Domaine[]) => {
     const oneMonthAgo = startOfMonth(subMonths(today, 1));
     const twoMonthsAgo = startOfMonth(subMonths(today, 2));
     const threeMonthsAgo = startOfMonth(subMonths(today, 3));
+    const sixMonthsAgo = startOfMonth(subMonths(today, 6));
+    const twelveMonthsAgo = startOfMonth(subMonths(today, 12));
 
     // Count active missions for the current month and previous three months
     const currentActiveMissions = activeMissionsInMonth(
@@ -55,14 +61,36 @@ const getActiveMissionStats = (missions: any, domaines?: Domaine[]) => {
         domaines
     );
 
+    const sixMonthsAgoMissions = activeMissionsInMonth(
+        missions,
+        sixMonthsAgo,
+        domaines
+    );
+
+    const twelveMonthsAgoMissions = activeMissionsInMonth(
+        missions,
+        twelveMonthsAgo,
+        domaines
+    );
+
     // Determine if the number of missions increased or decreased
     const trend = {
-        current: currentActiveMissions,
-        oneMonthAgo: oneMonthAgoMissions,
-        twoMonthsAgo: twoMonthsAgoMissions,
-        threeMonthsAgo: threeMonthsAgoMissions,
-        changeFromLastMonth: currentActiveMissions - oneMonthAgoMissions,
-        trendOverThreeMonths: currentActiveMissions - threeMonthsAgoMissions,
+        current: roundToTwoDigits(currentActiveMissions),
+        oneMonthAgo: roundToTwoDigits(oneMonthAgoMissions),
+        twoMonthsAgo: roundToTwoDigits(twoMonthsAgoMissions),
+        threeMonthsAgo: roundToTwoDigits(threeMonthsAgoMissions),
+        changeFromLastMonth: roundToTwoDigits(
+            currentActiveMissions - oneMonthAgoMissions
+        ),
+        trendOverThreeMonths: roundToTwoDigits(
+            currentActiveMissions - threeMonthsAgoMissions
+        ),
+        trendOverSixMonths: roundToTwoDigits(
+            currentActiveMissions - sixMonthsAgoMissions
+        ),
+        trendOverTwelveMonths: roundToTwoDigits(
+            currentActiveMissions - twelveMonthsAgoMissions
+        ),
     };
 
     return trend;
@@ -266,10 +294,14 @@ export async function buildStartupDashboardData() {
                 hasIntra,
                 hadCoach,
                 hadIntra,
-                turnoverRateValue,
-                averageMissionDurationValue,
-                renewalRateValue,
-                averageReplacementFrequencyValue,
+                turnoverRateValue: roundToTwoDigits(turnoverRateValue),
+                averageMissionDurationValue: roundToTwoDigits(
+                    averageMissionDurationValue
+                ),
+                renewalRateValue: roundToTwoDigits(renewalRateValue),
+                averageReplacementFrequencyValue: roundToTwoDigits(
+                    averageReplacementFrequencyValue
+                ),
                 devMissionsTrend,
                 bizdevMissionsTrend,
                 activeMember: missionsTrend,
