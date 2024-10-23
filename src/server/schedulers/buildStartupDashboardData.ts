@@ -175,6 +175,72 @@ const averageReplacementFrequency = (
         : 0;
 };
 
+export async function refreshStartupAggregatedData() {
+    const startupAggregatedData = await buildStartupDashboardData();
+    await db.deleteFrom("startup_aggregated_stats").execute();
+    await db
+        .insertInto("startup_aggregated_stats")
+        .values(
+            startupAggregatedData.map((data) => ({
+                uuid: data.uuid,
+                current_phase: data.current_phase,
+                current_phase_start_date: data.current_phase_start_date,
+                has_coach: data.hasCoach,
+                has_intra: data.hasIntra,
+                had_coach: data.hadCoach,
+                had_intra: data.hadIntra,
+                turnover_rate_value: data.turnoverRateValue,
+                average_mission_duration_value:
+                    data.averageMissionDurationValue,
+                renewal_rate_value: data.renewalRateValue,
+                average_replacement_frequency_value:
+                    data.averageReplacementFrequencyValue,
+                // devMissionsTrend values
+                dev_current: data.devMissionsTrend.current,
+                dev_one_month_ago: data.devMissionsTrend.oneMonthAgo,
+                dev_two_months_ago: data.devMissionsTrend.twoMonthsAgo,
+                dev_three_months_ago: data.devMissionsTrend.threeMonthsAgo,
+                dev_change_from_last_month:
+                    data.devMissionsTrend.changeFromLastMonth,
+                dev_trend_over_three_months:
+                    data.devMissionsTrend.trendOverThreeMonths,
+                dev_trend_over_six_months:
+                    data.devMissionsTrend.trendOverSixMonths,
+                dev_trend_over_twelve_months:
+                    data.devMissionsTrend.trendOverTwelveMonths,
+                // bizdevMissionsTrend values
+                bizdev_current: data.bizdevMissionsTrend.current,
+                bizdev_one_month_ago: data.bizdevMissionsTrend.oneMonthAgo,
+                bizdev_two_months_ago: data.bizdevMissionsTrend.twoMonthsAgo,
+                bizdev_three_months_ago:
+                    data.bizdevMissionsTrend.threeMonthsAgo,
+                bizdev_change_from_last_month:
+                    data.bizdevMissionsTrend.changeFromLastMonth,
+                bizdev_trend_over_three_months:
+                    data.bizdevMissionsTrend.trendOverThreeMonths,
+                bizdev_trend_over_six_months:
+                    data.bizdevMissionsTrend.trendOverSixMonths,
+                bizdev_trend_over_twelve_months:
+                    data.bizdevMissionsTrend.trendOverTwelveMonths,
+                // activeMember (missionsTrend values
+                active_member_current: data.activeMember.current,
+                active_member_one_month_ago: data.activeMember.oneMonthAgo,
+                active_member_two_months_ago: data.activeMember.twoMonthsAgo,
+                active_member_three_months_ago:
+                    data.activeMember.threeMonthsAgo,
+                active_member_change_from_last_month:
+                    data.activeMember.changeFromLastMonth,
+                active_member_trend_over_three_months:
+                    data.activeMember.trendOverThreeMonths,
+                active_member_trend_over_six_months:
+                    data.activeMember.trendOverSixMonths,
+                active_member_trend_over_twelve_months:
+                    data.activeMember.trendOverTwelveMonths,
+            }))
+        )
+        .execute();
+}
+
 export async function buildStartupDashboardData() {
     const today = new Date();
 
@@ -229,20 +295,19 @@ export async function buildStartupDashboardData() {
                 (mission) => mission.end && mission.end < today
             );
 
-            const hasCoach = activeRelativeMissions.find(
+            const hasCoach = !!activeRelativeMissions.find(
                 (mission) => mission.domaine === Domaine.COACHING
             );
 
-            const hasIntra = activeRelativeMissions.find(
+            const hasIntra = !!activeRelativeMissions.find(
                 (mission) => mission.domaine === Domaine.INTRAPRENARIAT
             );
 
-            const hadCoach = previousRelativeMissions.find(
+            const hadCoach = !!previousRelativeMissions.find(
                 (mission) => mission.domaine === Domaine.COACHING
             );
 
-            const hadIntra = previousRelativeMissions.find(
-                // Corrected to previousRelativeMissions
+            const hadIntra = !!previousRelativeMissions.find(
                 (mission) => mission.domaine === Domaine.INTRAPRENARIAT
             );
 
