@@ -1,16 +1,10 @@
 fileignoreconfig:
-- filename: src/components/MemberPage/MemberStatus.tsx
-  checksum: 605d6fdbd7f40fd4d4f8e2aaae09f3c9319ec84d435bdb23399a4b5dcce0699c
-version: ""
-ion: ""
-ount/page.tsx
-  checksum: 1c9b1df42135952c43133eb46ccfb97a7f073cfb9ffc1751efd91c62875b436a
-- filename: src/components/CommunityPage/Community.tsx
-  checksum: dc3ab9308a1f99026b70342a2ecf7f6c3dffa8c83caef74e44cb244d4cafcf06
-- filename: src/components/CommunityPage/exportToCsv.ts
-  checksum: a94d12759ff13fb5a19c266b40ee5762ab7ed4cfb208a17caa62297de955f962
-- filename: src/components/FichePicture.tsx
-  checksum: 181275c6da1d9e5d09f75a4bf202f57867f3323cc53f0c698f4b4a773de4fc42
+- filename: src/app/(private)/(dashboard)/admin/signaux-faible-beta/AdminProductClientPage.tsx
+  checksum: a8924d7f6456185db63a9b4f7c0c013d65eacecd5e696472adf6d1f979b38f83
+- filename: src/app/(private)/(dashboard)/admin/signaux-faibles-beta/AdminProductClientPage.tsx
+  checksum: 9c740513497d70e871e4abcad3a9e509ef5b1a0da9db2d0d2d336c19854303b4
+- filename: src/app/(private)/(dashboard)/incubators/[id]/info-form/page.tsx
+  checksum: 1ec9acf039a7d336e710ef7b47c385eb7080293ee2750c2cf99e9056cde7f129
 - filename: src/components/IncubatorForm/IncubatorForm.tsx
   checksum: 267f0f0e491b06862cd957ae86d22baf799a705370673cd24e588391a4613a5a
 - filename: src/components/MemberPage/EmailUpgrade.tsx

@@ -2,7 +2,8 @@ import type { Metadata } from "next";
 import { redirect } from "next/navigation";
 import { getServerSession } from "next-auth/next";
 
-import AdminMattermostClientPage from "./AdminMattermostClientPage";
+import { AdminProductClientPage } from "./AdminProductClientPage";
+import { buildStartupDashboardData } from "@/server/schedulers/buildStartupDashboardData";
 import { authOptions } from "@/utils/authoptions";
 import { routeTitles } from "@/utils/routes/routeTitles";
 
@@ -16,5 +17,6 @@ export default async function Page(props) {
     if (session && !session.user.isAdmin) {
         redirect("/dashboard");
     }
-    return <AdminMattermostClientPage {...props} />;
+    const data = await buildStartupDashboardData();
+    return <AdminProductClientPage data={data} title={""} />;
 }
