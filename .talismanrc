@@ -1,7 +1,8 @@
 fileignoreconfig:
-- filename: src/components/MemberPage/Email/EmailContainer.tsx
-  checksum: cbd3b55db1f872e4fc70b201e43344689d9952f780840cd98781f63e1f36184c
+- filename: src/components/MemberPage/MemberStatus.tsx
+  checksum: 605d6fdbd7f40fd4d4f8e2aaae09f3c9319ec84d435bdb23399a4b5dcce0699c
 version: ""
+ion: ""
 ount/page.tsx
   checksum: 1c9b1df42135952c43133eb46ccfb97a7f073cfb9ffc1751efd91c62875b436a
 - filename: src/components/CommunityPage/Community.tsx

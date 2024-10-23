@@ -2,7 +2,7 @@ import Accordion from "@codegouvfr/react-dsfr/Accordion";
 import Badge from "@codegouvfr/react-dsfr/Badge";
 import { fr } from "@codegouvfr/react-dsfr/fr";
 import Table from "@codegouvfr/react-dsfr/Table";
-import { match } from "ts-pattern"; // import ts-pattern
+import { match } from "ts-pattern";
 
 import { MemberPageProps } from "./MemberPage";
 import { ToolTip } from "@/components/Tooltip";
@@ -18,10 +18,7 @@ const mattermostInfoRow = (
                     info.hasMattermostAccount &&
                     typeof info.mattermostUserName === "string",
                 (info) => (
-                    <>
-                        <Badge severity="info" className={fr.cx("fr-mr-1w")}>
-                            {info.mattermostUserName as string}
-                        </Badge>
+                    <div>
                         {match(info.isInactiveOrNotInTeam)
                             .with(true, () => (
                                 <Badge severity="error">Inactif</Badge>
@@ -30,78 +27,72 @@ const mattermostInfoRow = (
                                 <Badge severity="success">Actif</Badge>
                             ))
                             .exhaustive()}
-                    </>
+                    </div>
                 )
             )
             .otherwise(() => (
                 <Badge severity="error">Compte introuvable</Badge>
             )),
+        match(mattermostInfo)
+            .when(
+                (info) =>
+                    info.hasMattermostAccount &&
+                    typeof info.mattermostUserName === "string",
+                (info) => <>@{info.mattermostUserName}</>
+            )
+            .otherwise(() => null),
     ];
 };
 
 const matomoInfoRow = (matomo: NonNullable<MemberPageProps["matomoInfo"]>) => {
     return [
         <>Compte Matomo</>,
-        <div key="matomo-info">
-            <Accordion
-                key={"d"}
-                label={
-                    <>
-                        <Badge severity="success">Actif</Badge> - Liste des
-                        accès
-                    </>
-                }
-            >
-                <Table
-                    data={matomo.metadata.sites.map((s) => [
-                        s.url ? (
-                            <a href={s.url} target="_blank">
-                                {s.name}
-                            </a>
-                        ) : (
-                            s.name
-                        ),
-                        s.type,
-                        s.accessLevel,
-                    ])}
-                    headers={["nom", "type", "niveau d'accès"]}
-                    fixed
-                />
-            </Accordion>
-        </div>,
+        <Badge key="matomo-status" severity="success">
+            Actif
+        </Badge>,
+        <Accordion key="matomo-access" label={"Liste des accès"}>
+            <Table
+                data={matomo.metadata.sites.map((s) => [
+                    s.url ? (
+                        <a href={s.url} target="_blank">
+                            {s.name}
+                        </a>
+                    ) : (
+                        s.name
+                    ),
+                    s.type,
+                    s.accessLevel,
+                ])}
+                headers={["nom", "type", "niveau d'accès"]}
+                fixed
+            />
+        </Accordion>,
     ];
 };
 
 const sentryInfoRow = (sentry: NonNullable<MemberPageProps["sentryInfo"]>) => {
     return [
         <>Compte Sentry</>,
-        <div key="sentry-info">
-            <Accordion
-                key={"d"}
-                label={
-                    <>
-                        <Badge severity="success">Actif</Badge> - Liste des
-                        accès
-                    </>
-                }
-            >
-                <Table
-                    data={sentry.metadata.teams.map((s) => [
-                        s.slug ? (
-                            <a href={s.slug} target="_blank">
-                                {s.name}
-                            </a>
-                        ) : (
-                            s.name
-                        ),
-                        s.projects.length,
-                        s.role,
-                    ])}
-                    headers={["nom", "projets", "niveau d'accès"]}
-                    fixed
-                />
-            </Accordion>
-        </div>,
+        <Badge key="sentry-status" severity="success">
+            Actif
+        </Badge>,
+        <Accordion key="sentry-info" label={"Liste des accès"}>
+            <Table
+                data={sentry.metadata.teams.map((s) => [
+                    s.slug ? (
+                        <a href={s.slug} target="_blank">
+                            {s.name}
+                        </a>
+                    ) : (
+                        s.name
+                    ),
+                    s.projects.length,
+                    s.role,
+                ])}
+                headers={["nom", "projets", "niveau d'accès"]}
+                fixed
+            />
+        </Accordion>,
     ];
 };
 
@@ -135,6 +126,7 @@ export const MemberStatus = ({
                 .with(true, () => <Badge severity="error">Expiré</Badge>)
                 .with(false, () => <Badge severity="success">Actif</Badge>)
                 .exhaustive(),
+            null,
         ],
         // Mattermost account status
         mattermostInfo && mattermostInfoRow(mattermostInfo),
@@ -147,8 +139,7 @@ export const MemberStatus = ({
     return (
         <Table
             className="tbl-account-status"
-            fixed
-            headers={["Service", "Infos"]}
+            headers={["Service", "Status", "Infos"]}
             data={rows}
         />
     );

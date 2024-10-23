@@ -129,7 +129,7 @@ export default function MemberPage({
             ),
         },
         {
-            label: "Statut du compte",
+            label: "Statut des comptes",
             content: (
                 <MemberStatus
                     isExpired={isExpired}
