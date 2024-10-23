@@ -2,10 +2,13 @@ import Accordion from "@codegouvfr/react-dsfr/Accordion";
 import Badge from "@codegouvfr/react-dsfr/Badge";
 import { fr } from "@codegouvfr/react-dsfr/fr";
 import Table from "@codegouvfr/react-dsfr/Table";
-import { match } from "ts-pattern";
+import { match, P } from "ts-pattern";
 
 import { MemberPageProps } from "./MemberPage";
 import { ToolTip } from "@/components/Tooltip";
+import { EmailStatusCode } from "@/models/member";
+import { EMAIL_PLAN_TYPE } from "@/models/ovh";
+import { EMAIL_TYPES } from "@/server/modules/email";
 
 const mattermostInfoRow = (
     mattermostInfo: NonNullable<MemberPageProps["mattermostInfo"]>
@@ -44,6 +47,216 @@ const mattermostInfoRow = (
                 () =>
                     "Le compte est introuvable : soit il n'existe pas, soit il est désactivé, soit il est lié à une adresse email inconnue."
             ),
+    ];
+};
+
+const emailStatusRow = (
+    emailInfos: NonNullable<MemberPageProps["emailInfos"]>,
+    userInfos: MemberPageProps["userInfos"]
+) => {
+    return [
+        <>Email Beta</>,
+        match(emailInfos)
+            .when(
+                (emailInfos) => !!emailInfos,
+                () => {
+                    return match(userInfos.primary_email_status)
+                        .with(EmailStatusCode.EMAIL_SUSPENDED, () => (
+                            <Badge severity="warning">Suspendu</Badge>
+                        ))
+                        .with(
+                            P.union(
+                                EmailStatusCode.EMAIL_ACTIVE,
+                                EmailStatusCode.EMAIL_REDIRECTION_ACTIVE
+                            ),
+                            () => <Badge severity="success">Actif</Badge>
+                        )
+                        .with(
+                            P.union(
+                                EmailStatusCode.EMAIL_CREATION_WAITING,
+                                EmailStatusCode.EMAIL_CREATION_PENDING,
+                                EmailStatusCode.EMAIL_RECREATION_PENDING,
+                                EmailStatusCode.EMAIL_REDIRECTION_PENDING
+                            ),
+                            () => (
+                                <Badge severity="success">
+                                    Creation en cours
+                                </Badge>
+                            )
+                        )
+                        .with(
+                            P.union(
+                                EmailStatusCode.EMAIL_ACTIVE_AND_PASSWORD_DEFINITION_PENDING,
+                                EmailStatusCode.EMAIL_VERIFICATION_WAITING
+                            ),
+                            () => (
+                                <Badge severity="warning">
+                                    Action nécessaire
+                                </Badge>
+                            )
+                        )
+                        .with(
+                            P.union(
+                                EmailStatusCode.EMAIL_DELETED,
+                                EmailStatusCode.EMAIL_EXPIRED,
+                                EmailStatusCode.EMAIL_UNSET
+                            ),
+                            () => (
+                                <Badge severity="warning">
+                                    Action Nécessaire
+                                </Badge>
+                            )
+                        )
+                        .exhaustive();
+                }
+            )
+            .when(
+                (emailInfos) => !emailInfos,
+                () =>
+                    match(userInfos.primary_email_status)
+                        .with(
+                            P.union(
+                                EmailStatusCode.EMAIL_CREATION_WAITING,
+                                EmailStatusCode.EMAIL_CREATION_PENDING,
+                                EmailStatusCode.EMAIL_RECREATION_PENDING,
+                                EmailStatusCode.EMAIL_REDIRECTION_PENDING
+                            ),
+                            () => (
+                                <Badge severity="success">
+                                    Creation en cours
+                                </Badge>
+                            )
+                        )
+                        .with(
+                            P.union(EmailStatusCode.EMAIL_VERIFICATION_WAITING),
+                            () => (
+                                <Badge severity="warning">
+                                    Action nécessaire
+                                </Badge>
+                            )
+                        )
+                        .with(
+                            P.union(
+                                EmailStatusCode.EMAIL_DELETED,
+                                EmailStatusCode.EMAIL_EXPIRED,
+                                EmailStatusCode.EMAIL_UNSET
+                            ),
+                            () => <>Pas d'email beta</>
+                        )
+                        .otherwise(() => (
+                            <Badge severity="warning">Action nécessaire</Badge>
+                        ))
+            )
+            .otherwise(() => <>Pas d'email beta</>),
+        <>
+            {match(emailInfos)
+                .with({ isPro: true }, () => (
+                    <Badge noIcon={true}>offre OVH PRO</Badge>
+                ))
+                .with({ isExchange: true }, () => (
+                    <Badge noIcon={true}>offre Exchange</Badge>
+                ))
+                .with({ emailPlan: EMAIL_PLAN_TYPE.EMAIL_PLAN_BASIC }, () => (
+                    <Badge noIcon={true}>offre OVH MX</Badge>
+                ))
+                .otherwise(() => "?")}
+            {match(emailInfos)
+                .when(
+                    (emailInfos) => !!emailInfos,
+                    () => {
+                        return match(userInfos.primary_email_status)
+                            .with(EmailStatusCode.EMAIL_SUSPENDED, () => (
+                                <>
+                                    <br />
+                                    Le mot de passe doit etre mis-à-jour afin de
+                                    réactiver le compte
+                                </>
+                            ))
+                            .with(
+                                P.union(
+                                    EmailStatusCode.EMAIL_CREATION_WAITING,
+                                    EmailStatusCode.EMAIL_CREATION_PENDING,
+                                    EmailStatusCode.EMAIL_RECREATION_PENDING,
+                                    EmailStatusCode.EMAIL_REDIRECTION_PENDING
+                                ),
+                                () => (
+                                    <>
+                                        <br />
+                                        La creation de l'email est en cours.
+                                    </>
+                                )
+                            )
+                            .with(
+                                P.union(
+                                    EmailStatusCode.EMAIL_ACTIVE_AND_PASSWORD_DEFINITION_PENDING
+                                ),
+                                () => (
+                                    <>
+                                        <br />
+                                        Le mot de passe doit être défini
+                                    </>
+                                )
+                            )
+                            .with(
+                                P.union(
+                                    EmailStatusCode.EMAIL_DELETED,
+                                    EmailStatusCode.EMAIL_EXPIRED,
+                                    EmailStatusCode.EMAIL_UNSET
+                                ),
+                                () => (
+                                    <>
+                                        <br />
+                                        Un admin doit intervenir. Le compte
+                                        email existe mais est indiqué comme
+                                        supprimé ou non défini dans
+                                        l'espace-membre
+                                    </>
+                                )
+                            )
+                            .otherwise(() => null);
+                    }
+                )
+                .when(
+                    (emailInfos) => !emailInfos,
+                    () =>
+                        match(userInfos.primary_email_status)
+                            .with(
+                                P.union(
+                                    EmailStatusCode.EMAIL_CREATION_WAITING,
+                                    EmailStatusCode.EMAIL_CREATION_PENDING,
+                                    EmailStatusCode.EMAIL_RECREATION_PENDING,
+                                    EmailStatusCode.EMAIL_REDIRECTION_PENDING
+                                ),
+                                () => (
+                                    <Badge severity="success">
+                                        Creation en cours
+                                    </Badge>
+                                )
+                            )
+                            .with(
+                                P.union(
+                                    EmailStatusCode.EMAIL_VERIFICATION_WAITING
+                                ),
+                                () =>
+                                    "Les informations du compte doivent être vérifiés par le membre"
+                            )
+                            .with(
+                                P.union(
+                                    EmailStatusCode.EMAIL_DELETED,
+                                    EmailStatusCode.EMAIL_EXPIRED,
+                                    EmailStatusCode.EMAIL_UNSET
+                                ),
+                                () => null
+                            )
+                            .otherwise(
+                                () =>
+                                    "Un admin doit intervenir, le compte est dans un état innatendu"
+                            )
+                )
+                .otherwise(() => (
+                    <>Pas d'email beta</>
+                ))}
+        </>,
     ];
 };
 
@@ -126,9 +339,10 @@ export const MemberStatus = ({
                 .exhaustive(),
             match(isExpired)
                 .with(true, () => <>Plus de missions en cours.</>)
-                .with(false, () => <>Au moins mission en cours.</>)
+                .with(false, () => <>Au moins une mission en cours.</>)
                 .exhaustive(),
         ],
+        emailStatusRow(emailInfos, userInfos),
         // Mattermost account status
         mattermostInfo && mattermostInfoRow(mattermostInfo),
         // Matomo account status
