@@ -31,7 +31,7 @@ const mattermostInfoRow = (
                 )
             )
             .otherwise(() => (
-                <Badge severity="error">Compte introuvable</Badge>
+                <Badge severity="warning">Compte introuvable</Badge>
             )),
         match(mattermostInfo)
             .when(
@@ -40,7 +40,10 @@ const mattermostInfoRow = (
                     typeof info.mattermostUserName === "string",
                 (info) => <>@{info.mattermostUserName}</>
             )
-            .otherwise(() => null),
+            .otherwise(
+                () =>
+                    "Le compte est introuvable : soit il n'existe pas, soit il est désactivé, soit il est lié à une adresse email inconnue."
+            ),
     ];
 };
 
@@ -116,17 +119,15 @@ export const MemberStatus = ({
     const rows = [
         // Account status
         [
-            <>
-                Compte beta
-                <ToolTip id="compte-beta">
-                    Indique si ton compte membre beta.gouv.fr est actif
-                </ToolTip>
-            </>,
+            <>Compte beta</>,
             match(isExpired)
                 .with(true, () => <Badge severity="error">Expiré</Badge>)
                 .with(false, () => <Badge severity="success">Actif</Badge>)
                 .exhaustive(),
-            null,
+            match(isExpired)
+                .with(true, () => <>Plus de missions en cours.</>)
+                .with(false, () => <>Au moins mission en cours.</>)
+                .exhaustive(),
         ],
         // Mattermost account status
         mattermostInfo && mattermostInfoRow(mattermostInfo),
