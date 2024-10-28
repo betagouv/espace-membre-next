@@ -28,5 +28,5 @@ export default async function Page(props) {
         redirect("/dashboard");
     }
     const newsletter = newsletterToModel(dbNewsletter);
-    return <NewsletterForm newsletter={newsletter}></NewsletterForm>;
+    return <NewsletterForm newsletter={newsletter} />;
 }

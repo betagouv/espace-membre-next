@@ -1,18 +1,19 @@
 "use client";
-import React, { useCallback, useState } from "react";
+import React, { useEffect } from "react";
 
-import Alert from "@codegouvfr/react-dsfr/Alert";
+import { fr } from "@codegouvfr/react-dsfr";
+import { Alert } from "@codegouvfr/react-dsfr/Alert";
+import { Button } from "@codegouvfr/react-dsfr/Button";
 import Input from "@codegouvfr/react-dsfr/Input";
 import { zodResolver } from "@hookform/resolvers/zod";
 import _ from "lodash";
-import { useForm } from "react-hook-form";
+import { useForm, useWatch } from "react-hook-form";
 
 import { updateNewsletter } from "@/app/api/newsletters/actions";
 import {
     newsletterInfoUpdateSchema,
     newsletterInfoUpdateSchemaType,
 } from "@/models/actions/newsletter";
-import { Option } from "@/models/misc";
 import { newsletterSchemaType } from "@/models/newsletter";
 
 // data from secretariat API
@@ -72,6 +73,14 @@ export function NewsletterForm({ newsletter }: NewsletterFormProps) {
             });
     };
 
+    const publishAtValue = useWatch({
+        control,
+        name: `publish_at`,
+    });
+    const publishAtString = publishAtValue
+        ? new Date(publishAtValue).toISOString()
+        : "";
+
     return (
         <>
             <div>
@@ -98,6 +107,7 @@ export function NewsletterForm({ newsletter }: NewsletterFormProps) {
                 >
                     <Input
                         label={"url brevo de la newsletters"}
+                        nativeInputProps={{ ...register("brevo_url") }}
                         state={errors && errors.brevo_url ? "error" : "default"}
                         stateRelatedMessage={
                             errors && errors.brevo_url?.message
@@ -107,6 +117,12 @@ export function NewsletterForm({ newsletter }: NewsletterFormProps) {
                         label={"date de publication"}
                         nativeInputProps={{
                             type: "datetime-local",
+                            onChange: (e) => {
+                                setValue(
+                                    "publish_at",
+                                    new Date(e.target.value)
+                                );
+                            },
                         }}
                         state={
                             errors && errors.publish_at ? "error" : "default"
@@ -114,6 +130,19 @@ export function NewsletterForm({ newsletter }: NewsletterFormProps) {
                         stateRelatedMessage={
                             errors && errors.publish_at?.message
                         }
+                    />
+                    <Button
+                        className={fr.cx("fr-mt-3w")}
+                        disabled={isSaving}
+                        children={
+                            isSubmitting
+                                ? `Enregistrement en cours...`
+                                : `Enregistrer`
+                        }
+                        nativeButtonProps={{
+                            type: "submit",
+                            disabled: !isDirty || isSubmitting,
+                        }}
                     />
                 </form>
             </div>

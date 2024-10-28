@@ -17,9 +17,14 @@ const formatNewsletterTitle = (newsletter) => {
     return newsletter.sent_at
         ? format(newsletter.sent_at, "d MMMM yyyy", { locale: fr })
         : format(
-              add(startOfWeek(newsletter.created_at, { weekStartsOn: 1 }), {
-                  weeks: 1,
-              }),
+              add(
+                  startOfWeek(newsletter.publish_at || newsletter.created_at, {
+                      weekStartsOn: 1,
+                  }),
+                  {
+                      weeks: 1,
+                  }
+              ),
               "d MMMM yyyy",
               { locale: fr }
           );
@@ -53,6 +58,15 @@ export default function NewsletterPage({
                             Infolettre de la semaine du{" "}
                             {formatNewsletterTitle(currentNewsletter)}
                         </h3>
+                        {currentNewsletter.publish_at && (
+                            <p>
+                                Cette infolettre sera publié le :{" "}
+                                {format(
+                                    currentNewsletter.publish_at,
+                                    "dd/MM/yyyy à HH:mm"
+                                )}
+                            </p>
+                        )}
                         <p>Lien de l'infolettre</p>
                         <a
                             href={
