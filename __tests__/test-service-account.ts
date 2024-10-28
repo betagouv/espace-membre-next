@@ -62,6 +62,7 @@ describe("Should sync services", () => {
             const serviceAccount = await db
                 .selectFrom("service_accounts")
                 .selectAll()
+                .where("account_type", "=", "matomo")
                 .where("service_user_id", "=", `valid.member@${config.domain}`)
                 .executeTakeFirstOrThrow();
             if (!serviceAccount.metadata) {
@@ -77,6 +78,7 @@ describe("Should sync services", () => {
             const serviceAccountForNoCorrespondingValueInUserTable = await db
                 .selectFrom("service_accounts")
                 .selectAll()
+                .where("account_type", "=", "matomo")
                 .where(
                     "service_user_id",
                     "=",
@@ -97,6 +99,7 @@ describe("Should sync services", () => {
             const serviceAccounts = await db
                 .selectFrom("service_accounts")
                 .selectAll()
+                .where("account_type", "=", "matomo")
                 .execute();
 
             serviceAccounts.length.should.be.equals(2);
@@ -105,6 +108,7 @@ describe("Should sync services", () => {
                 .selectFrom("service_accounts")
                 .selectAll()
                 .where("service_user_id", "=", `valid.member@${config.domain}`)
+                .where("account_type", "=", "matomo")
                 .executeTakeFirstOrThrow();
             if (!serviceAccount.metadata) {
                 throw new Error("Service account should have metadata");
@@ -157,6 +161,7 @@ describe("Should sync services", () => {
                 .selectFrom("service_accounts")
                 .selectAll()
                 .where("service_user_id", "=", `valid.member@${config.domain}`)
+                .where("account_type", "=", "matomo")
                 .executeTakeFirstOrThrow();
             validMemberAccount.should.exist;
 
@@ -169,6 +174,7 @@ describe("Should sync services", () => {
                     "=",
                     `membre.quinexistepas@${config.domain}`
                 )
+                .where("account_type", "=", "matomo")
                 .executeTakeFirstOrThrow();
             memberQuiNexistePasAccount.should.exist;
 
@@ -191,6 +197,7 @@ describe("Should sync services", () => {
                 .selectFrom("service_accounts")
                 .selectAll()
                 .where("service_user_id", "=", `valid.member@${config.domain}`)
+                .where("account_type", "=", "matomo")
                 .executeTakeFirst();
             should.not.exist(validMemberAccountAfterDeletion);
 
@@ -203,6 +210,7 @@ describe("Should sync services", () => {
                     "=",
                     `membre.quinexistepas@${config.domain}`
                 )
+                .where("account_type", "=", "matomo")
                 .executeTakeFirstOrThrow();
             memberQuiNexistePasAccountNotDeleted.should.exist;
         });
@@ -318,6 +326,7 @@ describe("Should sync services", () => {
             const serviceAccounts = await db
                 .selectFrom("service_accounts")
                 .selectAll()
+                .where("account_type", "=", "sentry")
                 .execute();
 
             serviceAccounts.length.should.be.equals(2);
@@ -325,6 +334,7 @@ describe("Should sync services", () => {
                 .selectFrom("service_accounts")
                 .selectAll()
                 .where("service_user_id", "=", `168`)
+                .where("account_type", "=", "sentry")
                 .executeTakeFirstOrThrow();
             if (!serviceAccount.metadata) {
                 throw new Error("Service account should have metadata");
