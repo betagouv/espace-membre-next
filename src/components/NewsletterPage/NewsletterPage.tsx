@@ -30,7 +30,12 @@ const formatNewsletter = (newsletter: newsletterSchemaType) => [
     newsletter.sent_at
         ? format(newsletter.sent_at, "dd/MM/yyyy à HH:mm")
         : undefined,
-    <a className="fr-link" key="link" href={newsletter.url} target="_blank">
+    <a
+        className="fr-link"
+        key="link"
+        href={newsletter.brevo_url || newsletter.url}
+        target="_blank"
+    >
         Lire
     </a>,
 ];
@@ -49,8 +54,15 @@ export default function NewsletterPage({
                             {formatNewsletterTitle(currentNewsletter)}
                         </h3>
                         <p>Lien de l'infolettre</p>
-                        <a href={currentNewsletter.url} target="_blank">
-                            {currentNewsletter.url}
+                        <a
+                            href={
+                                currentNewsletter.brevo_url ||
+                                currentNewsletter.url
+                            }
+                            target="_blank"
+                        >
+                            {currentNewsletter.brevo_url ||
+                                currentNewsletter.url}
                         </a>
                         <br />
                         <p>
