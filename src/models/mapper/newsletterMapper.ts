@@ -11,5 +11,6 @@ export const newsletterToModel = (
         sent_at: newsletter.sent_at,
         id: newsletter.id,
         url: newsletter.url,
+        brevo_url: newsletter.brevo_url,
     };
 };

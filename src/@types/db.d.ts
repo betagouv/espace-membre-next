@@ -180,6 +180,7 @@ export interface MissionsStartups {
 }
 
 export interface Newsletters {
+  brevo_url: string | null;
   created_at: Generated<Timestamp>;
   id: Generated<string>;
   sent_at: Timestamp | null;
