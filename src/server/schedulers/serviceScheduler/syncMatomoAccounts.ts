@@ -7,6 +7,7 @@ import { Matomo } from "@/lib/matomo";
 import { memberBaseInfoToModel } from "@/models/mapper";
 import { matomoUserToModel } from "@/models/mapper/matomoMapper";
 import { FakeMatomo } from "@/server/config/matomo.config";
+import { SERVICES } from "@/server/config/services.config";
 
 export async function syncMatomoAccounts(matomoClient: Matomo | FakeMatomo) {
     const dbUsers = (await getAllUsersInfo()).map((user) =>
@@ -65,6 +66,7 @@ export async function syncMatomoAccounts(matomoClient: Matomo | FakeMatomo) {
         await db
             .selectFrom("service_accounts")
             .select("service_user_id")
+            .where('account_type', '=', SERVICES.MATOMO)
             .execute()
     ).map((u) => u.service_user_id);
     const matomoUserIds = matomoUsers.map(
