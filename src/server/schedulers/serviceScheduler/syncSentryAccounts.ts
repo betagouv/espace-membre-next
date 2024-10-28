@@ -7,6 +7,7 @@ import { SentryService } from "@/lib/sentry";
 import { memberBaseInfoToModel } from "@/models/mapper";
 import { sentryUserToModel } from "@/models/mapper/sentryMapper";
 import { FakeSentryService } from "@/server/config/sentry.config";
+import { SERVICES } from "@/server/config/services.config";
 
 export async function syncSentryAccounts(
     sentryClient: SentryService | FakeSentryService
@@ -63,6 +64,7 @@ export async function syncSentryAccounts(
         await db
             .selectFrom("service_accounts")
             .select("service_user_id")
+            .where("account_type", "=", SERVICES.SENTRY)
             .execute()
     ).map((u) => u.service_user_id);
     const sentryUserIds = sentryUsers.map(
