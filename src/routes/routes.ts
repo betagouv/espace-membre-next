@@ -90,7 +90,6 @@ class routes {
 
     static LOGOUT: string = "/logout" as const;
     static LOGOUT_API: string = "/api/logout" as const;
-    static NEWSLETTERS_API: string = "/api/newsletters" as const;
     static ACCOUNT_POST_DETAIL_INFO_FORM_API = "/api/account/info" as const;
     static API_UPDATE_BADGE_RENEWAL_REQUEST_STATUS =
         "/api/badge/renewal/status" as const;

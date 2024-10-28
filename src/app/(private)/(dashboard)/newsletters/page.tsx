@@ -1,6 +1,8 @@
 import { Metadata, ResolvingMetadata } from "next";
 
-import NewsletterClientPage from "./NewsletterClientPage";
+import NewsletterPage from "@/components/NewsletterPage/NewsletterPage";
+import { db } from "@/lib/kysely";
+import { newsletterToModel } from "@/models/mapper/newsletterMapper";
 
 type Props = {
     params: { id: string };
@@ -18,6 +20,22 @@ export async function generateMetadata(
     };
 }
 
-export default function Page(props) {
-    return <NewsletterClientPage {...props} />;
+export default async function Page(props) {
+    let allNewsletters = (
+        await db
+            .selectFrom("newsletters")
+            .selectAll()
+            .orderBy("created_at", "desc")
+            .execute()
+    ).map((newsletter) => newsletterToModel(newsletter));
+
+    const currentNewsletter = allNewsletters[0];
+    const previousNewsletters = allNewsletters.slice(1);
+
+    return (
+        <NewsletterPage
+            currentNewsletter={currentNewsletter}
+            newsletters={previousNewsletters}
+        />
+    );
 }
