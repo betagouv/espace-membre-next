@@ -1,9 +1,39 @@
 "use client";
 
+import Table from "@codegouvfr/react-dsfr/Table";
+import { add } from "date-fns/add";
+import { format } from "date-fns/format";
+import { fr } from "date-fns/locale/fr";
+import { startOfWeek } from "date-fns/startOfWeek";
+
+import { newsletterSchemaType } from "@/models/newsletter";
+
 export interface NewsletterPageProps {
-    currentNewsletter: any;
-    newsletters: any;
+    currentNewsletter: newsletterSchemaType;
+    newsletters: newsletterSchemaType[];
 }
+
+const formatNewsletterTitle = (newsletter) => {
+    return newsletter.sent_at
+        ? format(newsletter.sent_at, "d MMMM yyyy", { locale: fr })
+        : format(
+              add(startOfWeek(newsletter.created_at, { weekStartsOn: 1 }), {
+                  weeks: 1,
+              }),
+              "d MMMM yyyy",
+              { locale: fr }
+          );
+};
+
+const formatNewsletter = (newsletter: newsletterSchemaType) => [
+    formatNewsletterTitle(newsletter),
+    newsletter.sent_at
+        ? format(newsletter.sent_at, "dd/MM/yyyy à HH:mm")
+        : undefined,
+    <a className="fr-link" key="link" href={newsletter.url} target="_blank">
+        Lire
+    </a>,
+];
 
 export default function NewsletterPage({
     currentNewsletter,
@@ -11,12 +41,12 @@ export default function NewsletterPage({
 }: NewsletterPageProps) {
     return (
         <>
-            <div className="fr-mb-8v">
+            <div className="frmb-8v">
                 {currentNewsletter && (
                     <div>
                         <h3>
                             Infolettre de la semaine du{" "}
-                            {currentNewsletter.title}
+                            {formatNewsletterTitle(currentNewsletter)}
                         </h3>
                         <p>Lien de l'infolettre</p>
                         <a href={currentNewsletter.url} target="_blank">
@@ -36,38 +66,10 @@ export default function NewsletterPage({
                     {newsletters.length == 0 && (
                         <p>Il n'y a pas d'infolettre dans l'historique</p>
                     )}
-                    <table className="sortable">
-                        <tbody>
-                            {newsletters.map((newsletter, index) => (
-                                <tr key={index}>
-                                    <td>
-                                        <b>{newsletter.title}</b>
-                                    </td>
-                                    <td>
-                                        {newsletter.sent_at && (
-                                            <>
-                                                Envoyée le {newsletter.sent_at},
-                                                validée par{" "}
-                                                {newsletter.validator ||
-                                                    "membre non renseigné"}{" "}
-                                            </>
-                                        )}
-                                        {!newsletter.sent_at && (
-                                            <>non envoyée</>
-                                        )}
-                                    </td>
-                                    <td>
-                                        <a
-                                            href={newsletter.url}
-                                            target="_blank"
-                                        >
-                                            Lire
-                                        </a>
-                                    </td>
-                                </tr>
-                            ))}
-                        </tbody>
-                    </table>
+                    <Table
+                        data={newsletters.map(formatNewsletter)}
+                        headers={["Titre", "Date d'envoi", "Lien"]}
+                    />
                 </div>
             </div>
         </>
