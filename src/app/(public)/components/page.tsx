@@ -30,6 +30,7 @@ const sampleMember: { member: MemberPageProps } = {
             email: "ada@love.com",
             isBlocked: false,
             isPro: true,
+            isExchange: false,
             emailPlan: EMAIL_PLAN_TYPE.EMAIL_PLAN_PRO,
         },
         isExpired: false,
@@ -174,7 +175,7 @@ export default async function Page() {
                     email: sampleMember.member.userInfos.primary_email || "-",
                     isBlocked: true,
                     isPro: true,
-                    isExchange: false
+                    isExchange: false,
                     emailPlan: EMAIL_PLAN_TYPE.EMAIL_PLAN_PRO,
                 }}
                 userInfos={{
