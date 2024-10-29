@@ -280,7 +280,6 @@ const matomoInfoRow = (matomo: NonNullable<MemberPageProps["matomoInfo"]>) => {
                     s.accessLevel,
                 ])}
                 headers={["nom", "type", "niveau d'accès"]}
-                fixed
             />
         </Accordion>,
     ];
@@ -306,7 +305,6 @@ const sentryInfoRow = (sentry: NonNullable<MemberPageProps["sentryInfo"]>) => {
                     s.role,
                 ])}
                 headers={["nom", "projets", "niveau d'accès"]}
-                fixed
             />
         </Accordion>,
     ];
