@@ -1,5 +1,5 @@
 "use client";
-import React, { useEffect } from "react";
+import React from "react";
 
 import { fr } from "@codegouvfr/react-dsfr";
 import { Alert } from "@codegouvfr/react-dsfr/Alert";
@@ -9,7 +9,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import _ from "lodash";
 import { useForm, useWatch } from "react-hook-form";
 
-import { updateNewsletter } from "@/app/api/newsletters/actions";
+import { safeUpdateNewsletter } from "@/app/api/newsletters/actions";
 import {
     newsletterInfoUpdateSchema,
     newsletterInfoUpdateSchemaType,
@@ -52,7 +52,7 @@ export function NewsletterForm({ newsletter }: NewsletterFormProps) {
         setIsSaving(true);
         setAlertMessage(null);
 
-        updateNewsletter(data, newsletter.id)
+        safeUpdateNewsletter(data, newsletter.id)
             .then((resp) => {
                 setIsSaving(false);
                 window.scrollTo({ top: 20, behavior: "smooth" });
@@ -72,14 +72,6 @@ export function NewsletterForm({ newsletter }: NewsletterFormProps) {
                 });
             });
     };
-
-    const publishAtValue = useWatch({
-        control,
-        name: `publish_at`,
-    });
-    const publishAtString = publishAtValue
-        ? new Date(publishAtValue).toISOString()
-        : "";
 
     return (
         <>
