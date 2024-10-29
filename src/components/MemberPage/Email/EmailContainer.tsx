@@ -343,12 +343,15 @@ export default function EmailContainer({
                     )}
 
                     {match(emailInfos)
-                        .with({ isExchange: false, isPro: false }, () => (
-                            <BlocEmailResponder
-                                username={userInfos.username}
-                                responder={emailResponder}
-                            />
-                        ))
+                        .with(
+                            { emailPlan: EMAIL_PLAN_TYPE.EMAIL_PLAN_BASIC },
+                            () => (
+                                <BlocEmailResponder
+                                    username={userInfos.username}
+                                    responder={emailResponder}
+                                />
+                            )
+                        )
                         .otherwise(() => null)}
 
                     <BlocChangerMotDePasse
@@ -358,15 +361,18 @@ export default function EmailContainer({
                     />
 
                     {match(emailInfos)
-                        .with({ isExchange: false, isPro: false }, () => (
-                            <BlocRedirection
-                                redirections={emailRedirections}
-                                canCreateRedirection={canCreateRedirection}
-                                userInfos={userInfos}
-                                isExpired={isExpired}
-                                domain={frontConfig.domain}
-                            />
-                        ))
+                        .with(
+                            { emailPlan: EMAIL_PLAN_TYPE.EMAIL_PLAN_BASIC },
+                            () => (
+                                <BlocRedirection
+                                    redirections={emailRedirections}
+                                    canCreateRedirection={canCreateRedirection}
+                                    userInfos={userInfos}
+                                    isExpired={isExpired}
+                                    domain={frontConfig.domain}
+                                />
+                            )
+                        )
                         .otherwise(() => null)}
 
                     <BlocConfigurerEmailPrincipal
