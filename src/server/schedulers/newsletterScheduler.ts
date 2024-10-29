@@ -5,7 +5,6 @@ import { format } from "date-fns/format";
 import { fr } from "date-fns/locale/fr";
 import { startOfWeek } from "date-fns/startOfWeek";
 import HedgedocApi from "hedgedoc-api";
-import { add } from 'date-fns';
 
 import BetaGouv from "../betagouv";
 import { db } from "@/lib/kysely";
@@ -81,14 +80,13 @@ const createNewsletter = async () => {
     const padUrl = result.request.res.responseUrl;
     const message = `Nouveau pad pour l'infolettre : ${padUrl}`;
 
-const today = new Date();
-const dateIn14Days = add(today, { days: 14 });
+    const today = new Date();
+    const dateIn14Days = add(today, { days: 14 });
     await db
         .insertInto("newsletters")
         .values({
             url: padUrl,
-            publish_at: const dateIn14Days = add(today, { days: 14 });
-
+            publish_at: dateIn14Days,
         })
         .execute();
     await sendInfoToChat({
@@ -140,7 +138,7 @@ Vérifie une dernière fois le contenu du pad ${newsletter.url}. À 16 h, il ser
 };
 
 const REMINDER_NB_DAYS = {
-    FIRST_REMINDER: 7,
+    FIRST_REMINDER: 6,
     SECOND_REMINDER: 1,
     THIRD_REMINDER: 0,
 };
