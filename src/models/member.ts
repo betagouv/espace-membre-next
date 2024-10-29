@@ -305,8 +305,8 @@ export const EmailInfosSchema = z.object({
     email: z.string().email(), // Validation supplémentaire pour vérifier le format de l'email
     isBlocked: z.boolean(),
     emailPlan: z.nativeEnum(EMAIL_PLAN_TYPE),
-    isPro: z.boolean().optional(),
-    isExchange: z.boolean().optional(),
+    isPro: z.boolean(),
+    isExchange: z.boolean(),
 });
 export type EmailInfos = z.infer<typeof EmailInfosSchema>;
 
