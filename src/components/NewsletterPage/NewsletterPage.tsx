@@ -5,6 +5,7 @@ import { add } from "date-fns/add";
 import { format } from "date-fns/format";
 import { fr } from "date-fns/locale/fr";
 import { startOfWeek } from "date-fns/startOfWeek";
+import { useSession } from "next-auth/react";
 
 import { newsletterSchemaType } from "@/models/newsletter";
 
@@ -30,25 +31,40 @@ const formatNewsletterTitle = (newsletter) => {
           );
 };
 
-const formatNewsletter = (newsletter: newsletterSchemaType) => [
-    formatNewsletterTitle(newsletter),
-    newsletter.sent_at
-        ? format(newsletter.sent_at, "dd/MM/yyyy à HH:mm")
-        : undefined,
-    <a
-        className="fr-link"
-        key="link"
-        href={newsletter.brevo_url || newsletter.url}
-        target="_blank"
-    >
-        Lire
-    </a>,
-];
+const formatNewsletter = (newsletter: newsletterSchemaType, isAdmin: boolean) =>
+    [
+        formatNewsletterTitle(newsletter),
+        newsletter.sent_at
+            ? format(newsletter.sent_at, "dd/MM/yyyy à HH:mm")
+            : undefined,
+        <a
+            className="fr-link"
+            key="link"
+            href={newsletter.brevo_url || newsletter.url}
+            target="_blank"
+        >
+            Lire
+        </a>,
+        isAdmin ? (
+            <a
+                className="fr-link"
+                key="link"
+                href={`/admin/newsletters/${newsletter.id}`}
+            >
+                Editer
+            </a>
+        ) : null,
+    ].filter((obj) => obj);
 
 export default function NewsletterPage({
     currentNewsletter,
     newsletters,
 }: NewsletterPageProps) {
+    const { data: session, status } = useSession();
+    const headers = ["Titre", "Date d'envoi", "Lien"];
+    if (session?.user.isAdmin) {
+        headers.push("Edit");
+    }
     return (
         <>
             <div className="frmb-8v">
@@ -93,8 +109,10 @@ export default function NewsletterPage({
                         <p>Il n'y a pas d'infolettre dans l'historique</p>
                     )}
                     <Table
-                        data={newsletters.map(formatNewsletter)}
-                        headers={["Titre", "Date d'envoi", "Lien"]}
+                        data={newsletters.map((n) =>
+                            formatNewsletter(n, !!session?.user.isAdmin)
+                        )}
+                        headers={headers}
                     />
                 </div>
             </div>

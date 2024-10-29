@@ -6,6 +6,8 @@ import { Alert } from "@codegouvfr/react-dsfr/Alert";
 import { Button } from "@codegouvfr/react-dsfr/Button";
 import Input from "@codegouvfr/react-dsfr/Input";
 import { zodResolver } from "@hookform/resolvers/zod";
+import { format } from "date-fns/format";
+import { fr as dateFnsFr } from "date-fns/locale/fr";
 import _ from "lodash";
 import { useForm, useWatch } from "react-hook-form";
 
@@ -33,7 +35,9 @@ export function NewsletterForm({ newsletter }: NewsletterFormProps) {
     } = useForm<newsletterInfoUpdateSchemaType>({
         resolver: zodResolver(newsletterInfoUpdateSchema),
         mode: "onChange",
-        defaultValues: {},
+        defaultValues: {
+            ...newsletter,
+        },
     });
     const [alertMessage, setAlertMessage] = React.useState<{
         title: string;
@@ -58,7 +62,7 @@ export function NewsletterForm({ newsletter }: NewsletterFormProps) {
                 window.scrollTo({ top: 20, behavior: "smooth" });
                 setAlertMessage({
                     title: `Mise à jour effectuée`,
-                    message: `La modification sera visible en ligne d'ici 24 heures.`,
+                    message: `L'envoi de la newsletter a été planifié. L'envoi se fait manuellement mais les messages de rappel, dépendent de la date d'envoi, il sont envoyés 6 jours, 1 jour avant, et le jour même de l'envoi.`,
                     type: "success",
                 });
             })
@@ -93,6 +97,16 @@ export function NewsletterForm({ newsletter }: NewsletterFormProps) {
                         }
                     />
                 )}
+                <h3>
+                    Infolettre du{" "}
+                    {format(
+                        newsletter.sent_at ||
+                            getValues("publish_at") ||
+                            new Date(),
+                        "d MMMM yyyy",
+                        { locale: dateFnsFr }
+                    )}
+                </h3>
                 <form
                     onSubmit={handleSubmit(onSubmit)}
                     aria-label="Modifier les informations du produit"
@@ -105,24 +119,32 @@ export function NewsletterForm({ newsletter }: NewsletterFormProps) {
                             errors && errors.brevo_url?.message
                         }
                     />
-                    <Input
-                        label={"date de publication"}
-                        nativeInputProps={{
-                            type: "datetime-local",
-                            onChange: (e) => {
-                                setValue(
-                                    "publish_at",
-                                    new Date(e.target.value)
-                                );
-                            },
-                        }}
-                        state={
-                            errors && errors.publish_at ? "error" : "default"
-                        }
-                        stateRelatedMessage={
-                            errors && errors.publish_at?.message
-                        }
-                    />
+                    {!newsletter.sent_at && (
+                        <Input
+                            label={"date de publication"}
+                            nativeInputProps={{
+                                type: "datetime-local",
+                                defaultValue: format(
+                                    newsletter.publish_at || new Date(),
+                                    "yyyy-MM-dd'T'HH:mm"
+                                ),
+                                onChange: (e) => {
+                                    setValue(
+                                        "publish_at",
+                                        new Date(e.target.value)
+                                    );
+                                },
+                            }}
+                            state={
+                                errors && errors.publish_at
+                                    ? "error"
+                                    : "default"
+                            }
+                            stateRelatedMessage={
+                                errors && errors.publish_at?.message
+                            }
+                        />
+                    )}
                     <Button
                         className={fr.cx("fr-mt-3w")}
                         disabled={isSaving}
