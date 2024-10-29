@@ -159,7 +159,7 @@ const MainHeader = () => {
     if (session?.user?.isAdmin) {
         nav.push({
             linkProps: {
-                href: "/admin/mattermost",
+                href: "/admin",
                 target: "_self",
             },
             text: "Admin",

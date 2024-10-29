@@ -79,10 +79,14 @@ const createNewsletter = async () => {
     );
     const padUrl = result.request.res.responseUrl;
     const message = `Nouveau pad pour l'infolettre : ${padUrl}`;
+
+    const today = new Date();
+    const dateIn14Days = add(today, { days: 14 });
     await db
         .insertInto("newsletters")
         .values({
             url: padUrl,
+            publish_at: dateIn14Days,
         })
         .execute();
     await sendInfoToChat({
@@ -133,6 +137,12 @@ Vérifie une dernière fois le contenu du pad ${newsletter.url}. À 16 h, il ser
     return message;
 };
 
+const REMINDER_NB_DAYS = {
+    FIRST_REMINDER: -6,
+    SECOND_REMINDER: -1,
+    THIRD_REMINDER: 0,
+};
+
 export async function newsletterReminder(reminder) {
     const currentNewsletter = await db
         .selectFrom("newsletters")
@@ -140,24 +150,15 @@ export async function newsletterReminder(reminder) {
         .where("sent_at", "is", null)
         .executeTakeFirst();
 
-    const lastSentNewsletter = await db
-        .selectFrom("newsletters")
-        .selectAll()
-        .orderBy("sent_at", "desc")
-        .where("sent_at", "is not", null)
-        .executeTakeFirst();
+    if (!currentNewsletter?.publish_at) {
+        // if publish_at is not defined, we do not send reminder
+        return;
+    }
 
-    if (lastSentNewsletter) {
-        const nbOfDays = differenceInDays(
-            new Date(),
-            lastSentNewsletter.sent_at!
-        );
-        if (nbOfDays < config.NEWSLETTER_NUMBER_OF_DAYS_WITH_LAST_NEWSLETTER) {
-            console.log(
-                `Will not sent newsletter : number of days between last newsletter ${nbOfDays}`
-            );
-            return;
-        }
+    const today = new Date();
+    const days = differenceInDays(today, currentNewsletter.publish_at);
+    if (REMINDER_NB_DAYS[reminder] !== days) {
+        return;
     }
 
     if (currentNewsletter) {
@@ -202,30 +203,22 @@ export { createNewsletter };
 export async function sendNewsletterAndCreateNewOne(
     shouldCreatedNewone = true
 ) {
-    const date = new Date();
     const currentNewsletter = await db
         .selectFrom("newsletters")
         .selectAll()
         .where("sent_at", "is", null)
-        .executeTakeFirst();
-    const lastSentNewsletter = await db
-        .selectFrom("newsletters")
-        .selectAll()
-        .orderBy("sent_at", "desc")
-        .where("sent_at", "is not", null)
-        .executeTakeFirst();
+        .executeTakeFirstOrThrow();
 
-    if (lastSentNewsletter) {
-        const nbOfDays = differenceInDays(
-            new Date(),
-            lastSentNewsletter.sent_at!
-        );
-        if (nbOfDays < config.NEWSLETTER_NUMBER_OF_DAYS_WITH_LAST_NEWSLETTER) {
-            return;
-        }
+    if (!currentNewsletter?.publish_at) {
+        // if publish_at is not defined, we do not send newsletter
+        return;
     }
 
-    if (currentNewsletter) {
+    const today = new Date();
+    if (
+        differenceInDays(today, currentNewsletter.publish_at) === 0 &&
+        today.getHours() === currentNewsletter.publish_at.getHours()
+    ) {
         if (config.FEATURE_SEND_NEWSLETTER || process.env.NODE_ENV === "test") {
             const pad = new HedgedocApi(
                 config.padEmail,
@@ -264,7 +257,7 @@ export async function sendNewsletterAndCreateNewOne(
             .updateTable("newsletters")
             .where("id", "=", currentNewsletter.id)
             .set({
-                sent_at: date,
+                sent_at: new Date(),
             })
             .execute();
         if (shouldCreatedNewone) {

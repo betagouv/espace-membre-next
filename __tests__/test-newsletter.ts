@@ -22,6 +22,8 @@ import * as chat from "@infra/chat";
 import {
     createNewsletter,
     getJobOfferContent,
+    newsletterReminder,
+    sendNewsletterAndCreateNewOne,
 } from "@schedulers/newsletterScheduler";
 
 chai.use(chaiHttp);
@@ -50,10 +52,7 @@ const replaceMacroInContent = newsletterScheduler.__get__(
 const computeMessageReminder = newsletterScheduler.__get__(
     "computeMessageReminder"
 );
-const newsletterReminder = newsletterScheduler.__get__("newsletterReminder");
-const sendNewsletterAndCreateNewOne = newsletterScheduler.__get__(
-    "sendNewsletterAndCreateNewOne"
-);
+
 const computeId = newsletterScheduler.__get__("computeId");
 
 const mockNewsletters = [
@@ -90,6 +89,7 @@ const mockNewsletters = [
 const mockNewsletter = {
     url: `${config.padURL}/rewir34984292342sad`,
     created_at: new Date("2021-04-04 00:00:00+00"),
+    publish_at: new Date("2021-04-04 10:30:00+00"),
     id: utils.randomUuid(),
 };
 
@@ -234,7 +234,9 @@ describe("Newsletter", () => {
                 .insertInto("newsletters")
                 .values({ ...mockNewsletter })
                 .execute();
-            clock = sinon.useFakeTimers(new Date("2021-03-01T07:59:59+01:00"));
+            clock = sinon.useFakeTimers(
+                add(mockNewsletter.publish_at, { days: -6 })
+            );
             await newsletterReminder("FIRST_REMINDER");
             slack.firstCall.args[0].text.should.equal(
                 computeMessageReminder("FIRST_REMINDER", mockNewsletter)
@@ -250,7 +252,9 @@ describe("Newsletter", () => {
                 .insertInto("newsletters")
                 .values({ ...mockNewsletter })
                 .execute();
-            clock = sinon.useFakeTimers(new Date("2021-03-04T07:59:59+01:00"));
+            clock = sinon.useFakeTimers(
+                add(mockNewsletter.publish_at, { days: -1 })
+            );
             await newsletterReminder("SECOND_REMINDER");
             slack.firstCall.args[0].text.should.equal(
                 computeMessageReminder("SECOND_REMINDER", mockNewsletter)
@@ -266,7 +270,9 @@ describe("Newsletter", () => {
                 .insertInto("newsletters")
                 .values({ ...mockNewsletter })
                 .execute();
-            clock = sinon.useFakeTimers(new Date("2021-03-04T17:59:59+01:00"));
+            clock = sinon.useFakeTimers(
+                add(mockNewsletter.publish_at, { days: 0 })
+            );
             await newsletterReminder("THIRD_REMINDER");
             slack.firstCall.args[0].text.should.equal(
                 computeMessageReminder("THIRD_REMINDER", mockNewsletter)
@@ -285,8 +291,8 @@ describe("Newsletter", () => {
             slack.restore();
         });
 
-        it("should send newsletter if validated", async () => {
-            const date = new Date("2021-03-05T07:59:59+01:00");
+        it("should send newsletter if publish_at is today and time", async () => {
+            const date = new Date(mockNewsletter.publish_at);
             const dateAsString = format(
                 add(date, { weeks: 2 }),
                 "d MMMM yyyy",
@@ -389,6 +395,28 @@ describe("Newsletter", () => {
                 .where("sent_at", "is not", null)
                 .executeTakeFirstOrThrow();
             newsletter.sent_at.should.not.be.null;
+            clock.restore();
+            sendEmailStub.restore();
+            slack.restore();
+            await knex("newsletters").truncate();
+        });
+
+        it("should not send newsletter if publish_at is not a the right time", async () => {
+            const date = add(new Date(mockNewsletter.publish_at), { hours: 2 });
+            await db
+                .insertInto("newsletters")
+                .values({
+                    ...mockNewsletter,
+                    validator: "julien.dauphant",
+                    sent_at: null,
+                })
+                .execute();
+            const sendEmailStub = sinon
+                .stub(Email, "sendEmail")
+                .returns(Promise.resolve(null));
+            clock = sinon.useFakeTimers(date);
+            await sendNewsletterAndCreateNewOne();
+            sendEmailStub.calledOnce.should.be.false;
             clock.restore();
             sendEmailStub.restore();
             slack.restore();
