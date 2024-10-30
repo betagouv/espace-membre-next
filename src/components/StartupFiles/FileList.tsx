@@ -64,6 +64,7 @@ export const FileList = ({ files }: { files: FilesType }) => {
                     <Link
                         key="title"
                         target="_blank"
+                        download={file.filename}
                         href={`/api/startups/files/download/${file.uuid}`}
                     >
                         {file.title}

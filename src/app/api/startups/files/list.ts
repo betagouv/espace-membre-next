@@ -7,6 +7,7 @@ import { db } from "@/lib/kysely";
 import { authOptions } from "@/utils/authoptions";
 
 const commonFileFields = [
+    "startups_files.filename",
     "startups_files.title",
     "startups_files.uuid",
     "startups_files.size",
