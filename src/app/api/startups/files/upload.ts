@@ -7,6 +7,7 @@ import { DocSchemaType } from "@/models/startupFiles";
 import { authOptions } from "@/utils/authoptions";
 
 const commonFileFields = [
+    "startups_files.filename",
     "startups_files.title",
     "startups_files.uuid",
     "startups_files.size",
