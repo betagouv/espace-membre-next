@@ -1,12 +1,10 @@
 fileignoreconfig:
-- filename: src/components/NewsletterPage/NewsletterPage.tsx
-  checksum: 6b0b2109d112d5302ef35256a2febf53feadf65f5538acee4dce09f0d2da75eb
-version: ""
-96472adf6d1f979b38f83
 - filename: src/app/(private)/(dashboard)/admin/signaux-faibles-beta/AdminProductClientPage.tsx
   checksum: 9c740513497d70e871e4abcad3a9e509ef5b1a0da9db2d0d2d336c19854303b4
 - filename: src/app/(private)/(dashboard)/incubators/[id]/info-form/page.tsx
   checksum: 1ec9acf039a7d336e710ef7b47c385eb7080293ee2750c2cf99e9056cde7f129
+- filename: src/components/CommunityPage/Community.tsx
+  checksum: 5ad762848b814381f9473c7d4ede55fce6dc3ee77ed4c7acfb41d2658fcd9bf7
 - filename: src/components/IncubatorForm/IncubatorForm.tsx
   checksum: 267f0f0e491b06862cd957ae86d22baf799a705370673cd24e588391a4613a5a
 - filename: src/components/MemberPage/EmailUpgrade.tsx
@@ -17,6 +15,8 @@ version: ""
   checksum: d7e1d2aa3b94b36055a1cee44c29b8818cd734c7a454c63e11eb0ad6a6877c56
 - filename: src/components/MemberPage/MemberStatus.tsx
   checksum: 643fa02bf415a54eac21af632c05e647dea2958922d5170622e3020b4787a315
+- filename: src/components/NewsletterPage/NewsletterPage.tsx
+  checksum: 6b0b2109d112d5302ef35256a2febf53feadf65f5538acee4dce09f0d2da75eb
 - filename: src/components/SEPhaseSelect.tsx
   checksum: 0415032e0a9fb86957148673924ac6e16bc1ffb4b1851091377d23a200562e5e
 - filename: src/components/SESponsorSelect.tsx
@@ -34,4 +34,3 @@ version: ""
 scopeconfig:
 - scope: node
 version: "1.0"
-.0"
