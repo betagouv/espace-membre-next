@@ -1,18 +1,26 @@
+import Link from "next/link";
+import { createSerializer } from "nuqs"; // can also be imported from 'nuqs' in client code
+
 import { fr } from "@codegouvfr/react-dsfr/fr";
 import Tag from "@codegouvfr/react-dsfr/Tag";
+import Button from "@codegouvfr/react-dsfr/Button";
 
 import { PrivateMemberChangeSchemaType } from "@/models/memberChange";
+
 import { FichePicture } from "../FichePicture";
 import LastChange from "../LastChange";
 import { MemberPageProps } from "./MemberPage";
-import Button from "@codegouvfr/react-dsfr/Button";
+import { communityQueryParser } from "../CommunityPage/utils";
 
 const getInitials = (fullname: string) => {
     const parts = fullname.split(" ").filter(Boolean);
     return parts.map((p) => p.charAt(0).toUpperCase()).join("");
 };
 
-// first tab
+const serialize = createSerializer({
+    filters: communityQueryParser,
+});
+
 export const MemberCard = ({
     userInfos,
     avatar,
@@ -28,7 +36,20 @@ export const MemberCard = ({
 }) => {
     const heading = (
         <>
-            Domaine: {userInfos.domaine}
+            Domaine:{" "}
+            <Link
+                href={`/community/${serialize({
+                    filters: [
+                        {
+                            type: "domaine",
+                            value: userInfos.domaine,
+                        },
+                    ],
+                })}`}
+                title={`Voir tous les membres de ce domaine`}
+            >
+                {userInfos.domaine}
+            </Link>
             <br />
             {userInfos.teams?.length
                 ? userInfos.teams
@@ -111,7 +132,20 @@ export const MemberCard = ({
                                     display: "inline",
                                 }}
                             >
-                                <Tag className={fr.cx("fr-mr-1w", "fr-mb-1w")}>
+                                <Tag
+                                    linkProps={{
+                                        href: `/community/${serialize({
+                                            filters: [
+                                                {
+                                                    type: "competence",
+                                                    value: c,
+                                                },
+                                            ],
+                                        })}`,
+                                    }}
+                                    title={`Voir tous les membres avec cette compétence`}
+                                    className={fr.cx("fr-mr-1w", "fr-mb-1w")}
+                                >
                                     {c}
                                 </Tag>
                             </li>

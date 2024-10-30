@@ -1,28 +1,26 @@
 "use client";
 import React, { useCallback, useMemo, useState } from "react";
-
 import Button from "@codegouvfr/react-dsfr/Button";
 import Checkbox from "@codegouvfr/react-dsfr/Checkbox";
 import { fr } from "@codegouvfr/react-dsfr/fr";
 import Pagination from "@codegouvfr/react-dsfr/Pagination";
 import Table from "@codegouvfr/react-dsfr/Table";
 import Tag from "@codegouvfr/react-dsfr/Tag";
-import Tile from "@codegouvfr/react-dsfr/Tile";
-import dataviz from "@gouvfr/dsfr/dist/artwork/pictograms/digital/data-visualization.svg";
-import notification from "@gouvfr/dsfr/dist/artwork/pictograms/digital/mail-send.svg";
-import map from "@gouvfr/dsfr/dist/artwork/pictograms/map/map.svg";
-import { StaticImageData } from "next/image";
 import Link from "next/link";
+import { useQueryState } from "nuqs";
+
+import { linkRegistry } from "@/utils/routes/registry";
+import AutoComplete from "../AutoComplete";
 
 import { CommunityProps } from ".";
+import {
+    getStartupsFromMissions,
+    isUserActive,
+    communityQueryParser,
+    type CommunityFilterSchemaType,
+} from "./utils";
 import { exportToCsv } from "./exportToCsv";
-import AutoComplete from "../AutoComplete";
-import { linkRegistry } from "@/utils/routes/registry";
-
-// return if user is still active at community level
-const isActive = (missions: CommunityProps["users"][number]["missions"]) => {
-    return missions.filter((m) => !m.end || m.end > new Date()).length > 0;
-};
+import { Footer } from "./Footer";
 
 // return table row for a given user
 const getUserRow = ({
@@ -37,7 +35,7 @@ const getUserRow = ({
     onDomaineClick: (domaine: string) => void;
 }) => {
     const startups = getStartupsFromMissions(user.missions, startupOptions);
-    const active = isActive(user.missions);
+    const active = isUserActive(user.missions);
 
     const teams: ReturnType<typeof getStartupsFromMissions> & { url?: string } =
         [
@@ -85,100 +83,73 @@ const getUserRow = ({
         // teams
         teams.length ? (
             <ul style={{ paddingLeft: 0 }}>
-                {teams.map(
-                    (s) =>
-                        s && (
-                            <li
-                                key={s.value}
-                                style={{
-                                    display: "inline",
+                {teams
+                    .filter((s) => !!s)
+                    .map((s) => (
+                        <li
+                            key={s.value}
+                            style={{
+                                display: "inline",
+                            }}
+                        >
+                            <Tag
+                                linkProps={{
+                                    href:
+                                        // @ts-ignore todo
+                                        (s && s.url) || `/startups/${s?.value}`,
                                 }}
+                                title="Accéder à la fiche"
+                                className={fr.cx("fr-mr-1w", "fr-mb-1w")}
                             >
-                                <Tag
-                                    linkProps={{
-                                        href:
-                                            // @ts-ignore todo
-                                            (s && s.url) ||
-                                            `/startups/${s?.value}`,
-                                    }}
-                                    title="Accéder à la fiche"
-                                    className={fr.cx("fr-mr-1w", "fr-mb-1w")}
-                                >
-                                    {s?.label}
-                                </Tag>
-                            </li>
-                        )
-                )}
+                                {s.label}
+                            </Tag>
+                        </li>
+                    ))}
             </ul>
         ) : null,
     ];
 };
 
-// list unique active startups from someone missions
-const getStartupsFromMissions = (
-    missions: CommunityProps["users"][number]["missions"],
-    startupOptions: CommunityProps["startupOptions"]
-) => {
-    return (
-        missions
-            // only use active missions
-            .filter((m) => !m.end || new Date(m.end) > new Date())
-            // only missions with startups
-            .filter((m) => m.startups && m.startups.length > 0)
-            // extract startups data
-            .flatMap(
-                (m) =>
-                    m.startups
-                        ?.map((s) => {
-                            // get full startup info
-                            return startupOptions.find((s2) => s2.value === s);
-                        })
-                        .filter(Boolean) || []
-            )
-            // uniquify
-            .filter(
-                (s, i, a) =>
-                    !a.slice(i + 1).find((t) => t?.value === (s && s.value))
-            )
-    );
-};
-
 /* Pure component */
 export const Community = (props: CommunityProps) => {
-    const [filters, setFilters] = useState<any[]>([]);
     const [currentPage, setCurrentPage] = useState(1);
+
+    const [filters, setFilters] = useQueryState(
+        "filters",
+        communityQueryParser
+    );
 
     // autocomplete groups
     const searchOptions = useMemo(
         () => [
             // todo: remove old members
             ...props.users.map((u) => ({
-                type: "user",
+                type: "user" as CommunityFilterSchemaType["type"],
                 group: "Membres",
                 id: u.uuid,
                 label: u.fullname,
             })),
             ...props.domaineOptions.map((d) => ({
-                type: "domaine",
+                type: "domaine" as CommunityFilterSchemaType["type"],
                 group: "Domaines",
-                id: d.value,
+                id: d.label,
                 label: d.label,
             })),
             ...props.competenceOptions.map((d) => ({
-                type: "competence",
+                type: "competence" as CommunityFilterSchemaType["type"],
                 group: "Compétences",
                 id: d.value,
                 label: d.label,
             })),
             ...props.incubatorOptions.map((i) => ({
-                type: "incubator",
+                type: "incubator" as CommunityFilterSchemaType["type"],
                 group: "Incubateur",
                 id: i.value,
                 label: i.label,
             })),
             // todo: remove old startups
             ...props.startupOptions.map((s) => ({
-                type: "startup",
+                type: "startup" as CommunityFilterSchemaType["type"],
                 group: "Startup",
                 id: s.value,
                 label: s.label,
@@ -187,39 +158,43 @@ export const Community = (props: CommunityProps) => {
         [props.startupOptions, props.users]
     );
 
-    // Copy utility function
-    const copyColumnData = (data: string[]) => {
-        const formattedData = data.join("\n");
-        copyToClipboard(formattedData);
-    };
-
-    // Helper to extract column data
     const getColumnData = (name) => {
-        console.log(results.map((r) => r.primary_email));
         return results.map((r) => r.primary_email).join("\n");
     };
 
     const filterResult = useCallback(
         (result: CommunityProps["users"][number]) => {
             if (!filters.length) return true;
-
             return (
                 filters.filter((filter) => {
-                    if (filter.type === "user") {
-                        return filter.id === result.uuid;
-                    } else if (filter.type === "competence") {
+                    if (!filter) {
+                        return true;
+                    } else if (filter.type === "active_only") {
+                        if (filter.value === false) return true;
+                        // test if user has active missions
+                        return isUserActive(result.missions);
+                    } else if (filter.type === "user") {
+                        // test specific user uuid
+                        return filter.value === result.uuid;
+                    } else if (filter.type === "competence" && filter.value) {
+                        // test if user has the given competence
                         const user = props.users.find(
                             (u) => u.uuid === result.uuid
                         );
-                        return user && user.competences?.includes(filter.id);
+                        return (
+                            user &&
+                            user.competences?.includes(filter.value.toString())
+                        );
                     } else if (filter.type === "domaine") {
+                        // test if user has the given domain
                         const user = props.users.find(
                             (u) => u.uuid === result.uuid
                         );
-                        return user && user.domaine === filter.label;
+                        return user && user.domaine === filter.value;
                     } else if (filter.type === "incubator") {
+                        // test if user belongs to given incubator
                         const incubator = props.incubatorMembers.find(
-                            (i) => i.id === filter.id
+                            (i) => i.id === filter.value
                         );
                         return (
                             incubator &&
@@ -227,11 +202,9 @@ export const Community = (props: CommunityProps) => {
                                 .map((m) => m.uuid)
                                 .includes(result.uuid)
                         );
-                    } else if (filter.type === "active_only") {
-                        if (filter.value === false) return true;
-                        const active = isActive(result.missions);
-                        return active;
-                    } else if (filter.type === "startup") {
+                    } else if (filter.type === "startup" && filter.value) {
+                        // test if user had a mission in given startup
+                        // todo: when active_only, only show startup active members
                         const user = props.users.find(
                             (u) => u.uuid === result.uuid
                         );
@@ -239,7 +212,7 @@ export const Community = (props: CommunityProps) => {
                             user &&
                             user.missions
                                 .flatMap((m) => m.startups)
-                                .includes(filter.id)
+                                .includes(filter.value.toString())
                         );
                     }
                 }).length === filters.length // or > 0 for or query
@@ -261,26 +234,34 @@ export const Community = (props: CommunityProps) => {
     };
 
     const onDomaineClick = (domaine: string) => {
-        setFilters((filters) =>
-            [
-                {
-                    type: "active_only",
-                    value: !!filters.find(
-                        (f) => f.type === "active_only" && !!f.value
-                    ),
-                },
-                {
-                    type: "domaine",
-                    label: domaine,
-                },
-            ].filter(Boolean)
-        );
+        setFilters((filters) => [
+            {
+                type: "active_only",
+                value: !!filters.find(
+                    (f) => f.type === "active_only" && !!f.value
+                ),
+            },
+            {
+                type: "domaine",
+                value: domaine,
+            },
+        ]);
         setCurrentPage(1);
     };
 
     const pageSize = 25;
     const pageCount = Math.ceil(results.length / pageSize);
     const headers = ["Nom", "Email", "Domaine", "Équipe(s)"];
+
+    const defaultFilterValue = searchOptions
+        .filter((o) => o.type !== "active_only")
+        .filter((o) =>
+            filters.find(
+                (f) =>
+                    f.type === o.type &&
+                    (o.label === f.value || o.id === f.value)
+            )
+        );
 
     return (
         <>
@@ -294,7 +275,10 @@ export const Community = (props: CommunityProps) => {
                 options={searchOptions}
                 onSelect={(newFilters) => {
                     setFilters((filters) => [
-                        ...newFilters,
+                        ...newFilters.map((f) => ({
+                            type: f.type,
+                            value: f.id || f.label,
+                        })),
                         // keep existing active_only flag
                         {
                             type: "active_only",
@@ -305,8 +289,8 @@ export const Community = (props: CommunityProps) => {
                     ]);
                     setCurrentPage(1);
                 }}
-                defaultValue={filters.filter((f) => f.type !== "active_only")}
-                value={filters.filter((f) => f.type !== "active_only")}
+                defaultValue={defaultFilterValue}
+                value={defaultFilterValue}
                 getOptionKey={(option) =>
                     typeof option === "string"
                         ? option
@@ -325,7 +309,10 @@ export const Community = (props: CommunityProps) => {
                     {
                         label: "Membres actifs uniquement",
                         nativeInputProps: {
-                            onClick: (e) => {
+                            checked: !!filters.find(
+                                (f) => f.type === "active_only" && !!f.value
+                            ),
+                            onChange: (e) => {
                                 const checked = e.currentTarget.checked;
                                 setFilters((filters) => [
                                     ...filters.filter(
@@ -342,43 +329,39 @@ export const Community = (props: CommunityProps) => {
 
             {results.length ? (
                 <>
+                    <h2>
+                        {results.length} résultat
+                        {results.length > 1 ? "s" : ""}
+                        <Button
+                            size="small"
+                            priority="secondary"
+                            className={fr.cx("fr-ml-1w")}
+                            iconId="fr-icon-download-line"
+                            onClick={onDownloadClick}
+                        >
+                            Télécharger
+                        </Button>
+                    </h2>
                     <Table
                         fixed
-                        caption={
-                            <>
-                                {results.length} résultat
-                                {results.length > 1 ? "s" : ""}
-                                <Button
-                                    size="small"
-                                    priority="secondary"
-                                    className={fr.cx("fr-ml-1w")}
-                                    iconId="fr-icon-download-line"
-                                    onClick={onDownloadClick}
-                                >
-                                    Télécharger
-                                </Button>
-                            </>
-                        }
+                        noCaption
                         headers={headers.map((header, index) => (
                             <div key={header}>
                                 {header}
                                 {header === "Email" && (
-                                    <>
-                                        {" "}
-                                        -{" "}
-                                        <Button
-                                            size="small"
-                                            priority="tertiary no outline"
-                                            iconId="fr-icon-clipboard-line"
-                                            onClick={() =>
-                                                copyToClipboard(
-                                                    getColumnData(header)
-                                                )
-                                            }
-                                        >
-                                            {"copier"}
-                                        </Button>
-                                    </>
+                                    <Button
+                                        size="small"
+                                        priority="tertiary no outline"
+                                        iconId="fr-icon-clipboard-line"
+                                        title={`Copier les ${results.length} adresses emails`}
+                                        onClick={() =>
+                                            copyToClipboard(
+                                                getColumnData(header)
+                                            )
+                                        }
+                                    >
+                                        copier
+                                    </Button>
                                 )}
                             </div>
                         ))}
@@ -422,43 +405,14 @@ export const Community = (props: CommunityProps) => {
     );
 };
 
-const Footer = () => (
-    <div className={fr.cx("fr-grid-row", "fr-grid-row--gutters")}>
-        <div className={fr.cx("fr-col-12", "fr-col-lg-6")}>
-            <Tile
-                className={fr.cx("fr-tile--sm")}
-                title="Carte de la communauté"
-                desc="Voir la carte des membres"
-                orientation="horizontal"
-                imageUrl={(map as StaticImageData).src}
-                linkProps={{
-                    href: linkRegistry.get("map"),
-                }}
-            />
-        </div>
-        <div className={fr.cx("fr-col-12", "fr-col-lg-6")}>
-            <Tile
-                className={fr.cx("fr-tile--sm")}
-                title="Observatoire de la communauté"
-                desc="Consulter les stats"
-                orientation="horizontal"
-                imageUrl={(dataviz as StaticImageData).src}
-                linkProps={{
-                    href: linkRegistry.get("metabase"),
-                }}
-            />
-        </div>
-    </div>
-);
-
 // Utility function to copy to clipboard
 export const copyToClipboard = (text: string) => {
     navigator.clipboard.writeText(text).then(
         () => {
-            alert("Copied to clipboard!");
+            alert("Les emails ont été copiés dans le presse-papier");
         },
         (err) => {
-            console.error("Could not copy text: ", err);
+            console.error("Impossible de copier le texte: ", err);
         }
     );
 };

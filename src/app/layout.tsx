@@ -9,7 +9,6 @@ import Link from "next/link";
 import { getServerSession } from "next-auth/next";
 import { NextAppDirEmotionCacheProvider } from "tss-react/next/appDir";
 
-
 import { BreadCrumbProvider } from "./BreadCrumbProvider";
 import ClientSessionProvider from "./context/ClientContextProvider";
 import { defaultColorScheme } from "./defaultColorScheme";
@@ -17,10 +16,10 @@ import { MuiDsfrThemeProvider } from "./MuiDsfrThemeProvider";
 import { StartDsfr } from "./StartDsfr";
 import { Matomo } from "@/app/Matomo";
 import Header from "@/components/Header";
-import { Skiplinks } from '@/components/Skiplinks';
+import { Skiplinks } from "@/components/Skiplinks";
 import { LiveChatProvider } from "@/components/live-chat/LiveChatProvider";
 import { authOptions } from "@/utils/authoptions";
-
+import { NuqsAdapter } from "nuqs/adapters/next/app";
 
 export interface RootLayoutProps {
     workaroundForNextJsPages?: boolean;
@@ -48,36 +47,37 @@ async function MainStructure(props: PropsWithChildren) {
                                     <LiveChatProvider>
                                         <Skiplinks />
                                         <Header />
-
-                                        <div
-                                            className={`fr-container fr-container--fluid ${fr.cx(
-                                                "fr-mb-10v"
-                                            )}`}
-                                            id="root-container"
-                                        >
-                                            {props.children}
-                                        </div>
-                                        <Footer
-                                            accessibility="non compliant"
-                                            contentDescription="Espace Membre est une application permettant aux membres de la communauté beta.gouv.fr d'accéder aux espaces dédiés à la communauté."
-                                            termsLinkProps={{
-                                                href: "#",
-                                            }}
-                                            brandTop={
-                                                <>
-                                                    République
-                                                    <br />
-                                                    Française
-                                                </>
-                                            }
-                                            homeLinkProps={{
-                                                href: "/",
-                                                title: "Accueil - Espace Membre @beta.gouv.fr",
-                                            }}
-                                            websiteMapLinkProps={{
-                                                href: "#",
-                                            }}
-                                        />
+                                        <NuqsAdapter>
+                                            <div
+                                                className={`fr-container fr-container--fluid ${fr.cx(
+                                                    "fr-mb-10v"
+                                                )}`}
+                                                id="root-container"
+                                            >
+                                                {props.children}
+                                            </div>
+                                            <Footer
+                                                accessibility="non compliant"
+                                                contentDescription="Espace Membre est une application permettant aux membres de la communauté beta.gouv.fr d'accéder aux espaces dédiés à la communauté."
+                                                termsLinkProps={{
+                                                    href: "#",
+                                                }}
+                                                brandTop={
+                                                    <>
+                                                        République
+                                                        <br />
+                                                        Française
+                                                    </>
+                                                }
+                                                homeLinkProps={{
+                                                    href: "/",
+                                                    title: "Accueil - Espace Membre @beta.gouv.fr",
+                                                }}
+                                                websiteMapLinkProps={{
+                                                    href: "#",
+                                                }}
+                                            />
+                                        </NuqsAdapter>
                                     </LiveChatProvider>
                                 </BreadCrumbProvider>
                             </MuiDsfrThemeProvider>
