@@ -1,17 +1,21 @@
 import Accordion from "@codegouvfr/react-dsfr/Accordion";
 import Badge from "@codegouvfr/react-dsfr/Badge";
+import Button from "@codegouvfr/react-dsfr/Button";
 import { fr } from "@codegouvfr/react-dsfr/fr";
 import Table from "@codegouvfr/react-dsfr/Table";
 import { match, P } from "ts-pattern";
 
 import { MemberPageProps } from "./MemberPage";
+import { askAccountCreationForService } from "@/app/api/services/actions";
 import { ToolTip } from "@/components/Tooltip";
 import { EmailStatusCode } from "@/models/member";
 import { EMAIL_PLAN_TYPE } from "@/models/ovh";
+import { SERVICES } from "@/server/config/services.config";
 import { EMAIL_TYPES } from "@/server/modules/email";
 
 const mattermostInfoRow = (
-    mattermostInfo: NonNullable<MemberPageProps["mattermostInfo"]>
+    mattermostInfo: NonNullable<MemberPageProps["mattermostInfo"]>,
+    userUuid: string
 ) => {
     return [
         "Compte Mattermost",
@@ -33,9 +37,7 @@ const mattermostInfoRow = (
                     </div>
                 )
             )
-            .otherwise(() => (
-                <Badge severity="warning">Compte introuvable</Badge>
-            )),
+            .otherwise(() => <Badge severity="info">Compte introuvable</Badge>),
         match(mattermostInfo)
             .when(
                 (info) =>
@@ -43,10 +45,33 @@ const mattermostInfoRow = (
                     typeof info.mattermostUserName === "string",
                 (info) => <>@{info.mattermostUserName}</>
             )
-            .otherwise(
-                () =>
-                    "Le compte est introuvable : soit il n'existe pas, soit il est désactivé, soit il est lié à une adresse email inconnue."
-            ),
+            .otherwise(() => (
+                <Button
+                    onClick={async () => {
+                        console.log("LCS DEMNADER UN COUNNT");
+                        try {
+                            await askAccountCreationForService({
+                                userUuid,
+                                password: "dummypassword",
+                                service: SERVICES.MATTERMOST,
+                            });
+                            console.log(
+                                "La creation du compte mattermost est en cours"
+                            );
+                        } catch (e) {
+                            console.log(
+                                "Error caling mattermost account creation"
+                            );
+                        }
+                    }}
+                >
+                    Demander la création d'un compte
+                </Button>
+            )),
+        // .otherwise(
+        //     () =>
+        //         "Le compte est introuvable : soit il n'existe pas, soit il est désactivé, soit il est lié à une adresse email inconnue."
+        // ),
     ];
 };
 
@@ -342,7 +367,7 @@ export const MemberStatus = ({
         ],
         emailStatusRow(emailInfos, userInfos),
         // Mattermost account status
-        mattermostInfo && mattermostInfoRow(mattermostInfo),
+        mattermostInfo && mattermostInfoRow(mattermostInfo, userInfos.uuid),
         // Matomo account status
         matomoInfo && matomoInfoRow(matomoInfo),
         // Sentry account status

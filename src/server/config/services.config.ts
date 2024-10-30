@@ -1,6 +1,7 @@
 export enum SERVICES {
     MATOMO = "matomo",
     SENTRY = "sentry",
+    MATTERMOST = "mattermost",
 }
 
 // Define a generic service interface for deleting accounts

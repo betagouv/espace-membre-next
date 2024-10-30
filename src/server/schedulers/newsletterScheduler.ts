@@ -157,6 +157,7 @@ export async function newsletterReminder(reminder) {
 
     const today = new Date();
     const days = differenceInDays(today, currentNewsletter.publish_at);
+    console.log("LCS NUMBER OF DAYS", days, today);
     if (REMINDER_NB_DAYS[reminder] !== days) {
         return;
     }
