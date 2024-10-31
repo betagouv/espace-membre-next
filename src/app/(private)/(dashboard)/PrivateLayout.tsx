@@ -95,33 +95,33 @@ export function PrivateLayout({ children }: { children: React.ReactNode }) {
             text: routeTitles.accountEditBaseInfo(),
             isActive: hasPathnameThisMatch(pathname, accountEditBaseInfoLink),
         },
-        {
-            linkProps: {
-                href: "#",
-            },
-            text: "Badge",
-            isActive: hasPathnameThisRoot(pathname, accountBadgeLink),
-            expandedByDefault: hasPathnameThisRoot(pathname, accountBadgeLink),
-            items: [
-                {
-                    linkProps: {
-                        href: accountBadgeLink,
-                    },
-                    text: routeTitles.accountBadge(),
-                    isActive: hasPathnameThisMatch(pathname, accountBadgeLink),
-                },
-                {
-                    linkProps: {
-                        href: accountBadgeRenewalLink,
-                    },
-                    text: routeTitles.accountBadgeRenewal(),
-                    isActive: hasPathnameThisMatch(
-                        pathname,
-                        accountBadgeRenewalLink
-                    ),
-                },
-            ],
-        },
+        // {
+        //     linkProps: {
+        //         href: "#",
+        //     },
+        //     text: "Badge",
+        //     isActive: hasPathnameThisRoot(pathname, accountBadgeLink),
+        //     expandedByDefault: hasPathnameThisRoot(pathname, accountBadgeLink),
+        //     items: [
+        //         {
+        //             linkProps: {
+        //                 href: accountBadgeLink,
+        //             },
+        //             text: routeTitles.accountBadge(),
+        //             isActive: hasPathnameThisMatch(pathname, accountBadgeLink),
+        //         },
+        //         {
+        //             linkProps: {
+        //                 href: accountBadgeRenewalLink,
+        //             },
+        //             text: routeTitles.accountBadgeRenewal(),
+        //             isActive: hasPathnameThisMatch(
+        //                 pathname,
+        //                 accountBadgeRenewalLink
+        //             ),
+        //         },
+        //     ],
+        // },
     ];
 
     const startupSubPage: ItemLink[] = [
