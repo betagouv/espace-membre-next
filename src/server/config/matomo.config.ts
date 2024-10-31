@@ -1,6 +1,6 @@
 import config from ".";
-import { AccountService, SERVICES } from "./services.config";
 import { Matomo, MatomoSite, MatomoUser, MatomoUserAccess } from "@/lib/matomo";
+import { AccountService, SERVICES } from "@/models/services";
 
 export class FakeMatomo implements AccountService {
     users: MatomoUser[] = [];

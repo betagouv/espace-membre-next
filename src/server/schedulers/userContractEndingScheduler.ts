@@ -2,7 +2,6 @@ import { differenceInDays, startOfDay } from "date-fns";
 
 import { matomoClient } from "../config/matomo.config";
 import { sentryClient } from "../config/sentry.config";
-import { AccountService, SERVICES } from "../config/services.config";
 import { addEvent } from "@/lib/events";
 import { db } from "@/lib/kysely";
 import {
@@ -19,6 +18,7 @@ import {
     memberBaseInfoSchemaType,
 } from "@/models/member";
 import { OvhRedirection } from "@/models/ovh";
+import { AccountService } from "@/models/services";
 import { sendEmail } from "@/server/config/email.config";
 import BetaGouv from "@betagouv";
 import betagouv from "@betagouv";

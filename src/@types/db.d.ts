@@ -222,8 +222,10 @@ export interface PullRequests {
 export interface ServiceAccounts {
   account_type: string;
   created_at: Generated<Timestamp>;
+  email: string | null;
   metadata: Json | null;
   service_user_id: string;
+  status: string | null;
   updated_at: Generated<Timestamp>;
   user_id: string | null;
   uuid: Generated<string>;

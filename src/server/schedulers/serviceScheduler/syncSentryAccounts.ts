@@ -6,8 +6,8 @@ import { getAllUsersInfo } from "@/lib/kysely/queries/users";
 import { SentryService } from "@/lib/sentry";
 import { memberBaseInfoToModel } from "@/models/mapper";
 import { sentryUserToModel } from "@/models/mapper/sentryMapper";
+import { SERVICES } from "@/models/services";
 import { FakeSentryService } from "@/server/config/sentry.config";
-import { SERVICES } from "@/server/config/services.config";
 
 export async function syncSentryAccounts(
     sentryClient: SentryService | FakeSentryService
@@ -40,6 +40,7 @@ export async function syncSentryAccounts(
             metadata: sentryUser.metadata,
             // we keep the accounts we cannot linked to anyone
             user_id: user ? user.uuid : null,
+            email: sentryUser.email,
         };
     });
 
@@ -48,10 +49,10 @@ export async function syncSentryAccounts(
         .values(usersToInsert)
         .onConflict((oc) => {
             return oc
-                .column("service_user_id")
-                .column("account_type")
+                .columns(["email", "account_type", "service_user_id"]) // Define the conflict targe
                 .doUpdateSet({
                     metadata: (eb) => eb.ref("excluded.metadata"),
+                    service_user_id: (eb) => eb.ref("excluded.service_user_id"),
                     user_id: (eb) => eb.ref("excluded.user_id"),
                 });
         })

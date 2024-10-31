@@ -6,8 +6,8 @@ import { getAllUsersInfo } from "@/lib/kysely/queries/users";
 import { Matomo } from "@/lib/matomo";
 import { memberBaseInfoToModel } from "@/models/mapper";
 import { matomoUserToModel } from "@/models/mapper/matomoMapper";
+import { SERVICES } from "@/models/services";
 import { FakeMatomo } from "@/server/config/matomo.config";
-import { SERVICES } from "@/server/config/services.config";
 
 export async function syncMatomoAccounts(matomoClient: Matomo | FakeMatomo) {
     const dbUsers = (await getAllUsersInfo()).map((user) =>
@@ -41,6 +41,7 @@ export async function syncMatomoAccounts(matomoClient: Matomo | FakeMatomo) {
             account_type: matomoUser.account_type,
             service_user_id: matomoUser.service_user_id,
             metadata: matomoUser.metadata,
+            email: matomoUser.email,
             // we keep the accounts we cannot linked to anyone
             user_id: user ? user.uuid : null,
         };
@@ -50,10 +51,10 @@ export async function syncMatomoAccounts(matomoClient: Matomo | FakeMatomo) {
         .values(usersToInsert)
         .onConflict((oc) => {
             return oc
-                .column("service_user_id")
-                .column("account_type")
+                .columns(["email", "account_type", "service_user_id"]) // Define the conflict targe
                 .doUpdateSet({
                     metadata: (eb) => eb.ref("excluded.metadata"),
+                    service_user_id: (eb) => eb.ref("excluded.service_user_id"),
                     user_id: (eb) => eb.ref("excluded.user_id"),
                 });
         })
@@ -66,7 +67,7 @@ export async function syncMatomoAccounts(matomoClient: Matomo | FakeMatomo) {
         await db
             .selectFrom("service_accounts")
             .select("service_user_id")
-            .where('account_type', '=', SERVICES.MATOMO)
+            .where("account_type", "=", SERVICES.MATOMO)
             .execute()
     ).map((u) => u.service_user_id);
     const matomoUserIds = matomoUsers.map(
