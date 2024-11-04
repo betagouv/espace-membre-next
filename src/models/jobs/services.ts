@@ -22,9 +22,11 @@ export const CreateMatomoAccountDataSchema =
         password: z
             .string()
             .min(6, "Le mot de passe doit contenir au moins 6 caractères"), // Valide que le mot de passe contient au moins 6 caractères
-        sites: z.object({
-            url: z.string(),
-        }),
+        sites: z.array(
+            z.object({
+                url: z.string(),
+            })
+        ),
     }).strict();
 export type CreateMatomoAccountDataSchemaType = z.infer<
     typeof CreateMattermostAccountDataSchema

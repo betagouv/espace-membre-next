@@ -48,6 +48,22 @@ export const askAccountCreationForService = withErrorHandling(
                         "Un email primaire est obligatoire"
                     );
                 }
+                await bossClient.send(
+                    createMatomoServiceAccountTopic,
+                    CreateMatomoAccountDataSchema.parse({
+                        email: user.primary_email,
+                        login: user.primary_email,
+                        password: crypto
+                            .randomBytes(20)
+                            .toString("base64")
+                            .slice(0, -2),
+                        sites: data.sites,
+                    }),
+                    {
+                        retryLimit: 50,
+                        retryBackoff: true,
+                    }
+                );
                 await db
                     .insertInto("service_accounts")
                     .values({
@@ -58,18 +74,6 @@ export const askAccountCreationForService = withErrorHandling(
                         status: ACCOUNT_SERVICE_STATUS.ACCOUNT_CREATION_PENDING,
                     })
                     .execute();
-                await bossClient.send(
-                    createMatomoServiceAccountTopic,
-                    CreateMatomoAccountDataSchema.parse({
-                        email: user.primary_email,
-                        username: user.username,
-                        sites: data.sites,
-                    }),
-                    {
-                        retryLimit: 50,
-                        retryBackoff: true,
-                    }
-                );
             })
             .with(SERVICES.MATTERMOST, async () => {
                 if (!user.primary_email) {
