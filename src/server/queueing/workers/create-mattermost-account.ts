@@ -7,6 +7,8 @@ import {
 } from "@/models/jobs/services";
 import config from "@/server/config";
 
+export const createMatomoServiceAccountTopic = "create-matomo-service-account";
+
 export const createMattermostServiceAccountTopic =
     "create-mattermost-service-account";
 
