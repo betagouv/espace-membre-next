@@ -286,7 +286,7 @@ const newsletterJobs = [
         description: "Rappel mattermost newsletter 1",
     },
     {
-        cronTime: "0 0 8 * * 2",
+        cronTime: process.env.NEWSLETTER_SECOND_REMINDER_TIME || "0 0 8 * * 2",
         onTick: () => newsletterReminder("SECOND_REMINDER"),
         isActive: config.FEATURE_NEWSLETTER,
         name: "newsletterSecondReminderJob",

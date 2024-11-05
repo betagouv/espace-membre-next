@@ -139,7 +139,7 @@ Vérifie une dernière fois le contenu du pad ${newsletter.url}. À 16 h, il ser
 
 const REMINDER_NB_DAYS = {
     FIRST_REMINDER: -6,
-    SECOND_REMINDER: -1,
+    SECOND_REMINDER: 0,
     THIRD_REMINDER: 0,
 };
 
