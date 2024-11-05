@@ -25,6 +25,8 @@ fileignoreconfig:
   checksum: 0415032e0a9fb86957148673924ac6e16bc1ffb4b1851091377d23a200562e5e
 - filename: src/components/SESponsorSelect.tsx
   checksum: ae63a1c0173015ad4e9e904e4f025eecb992aca7ca5c1cbf4086baf16470dfcf
+- filename: src/components/Service/MatomoServiceForm.tsx
+  checksum: 69248b6a0e2995cc94ed93515a6c279a9728c77c8ddd606dd84563f290402dab
 - filename: src/components/StartupForm/TechnoEditor.tsx
   checksum: 1945d388ece9e30e247acfa902436849f78ffcd032047f8c0292173dddc8ea53
 - filename: src/lib/hstore.ts
