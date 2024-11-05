@@ -83,6 +83,7 @@ const MainHeader = () => {
             "/organizations",
             "/metabase",
             "/teams",
+            "/services",
         ].find((url) => pathname.startsWith(url))
             ? [
                   {

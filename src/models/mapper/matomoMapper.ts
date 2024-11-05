@@ -39,7 +39,11 @@ export const matomoServiceInfoToModel = (
     return {
         account_type: "matomo",
         service_user_id: matomoUser.service_user_id,
-        metadata: matomoUser.metadata as matomoUserSchemaType["metadata"],
-        status: matomoUser.status || ACCOUNT_SERVICE_STATUS.ACCOUNT_FOUND,
+        metadata: (matomoUser.metadata || {
+            sites: [],
+        }) as matomoUserSchemaType["metadata"],
+        status:
+            (matomoUser.status as ACCOUNT_SERVICE_STATUS) ||
+            ACCOUNT_SERVICE_STATUS.ACCOUNT_FOUND,
     };
 };

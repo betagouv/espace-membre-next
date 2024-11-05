@@ -29,5 +29,5 @@ export const CreateMatomoAccountDataSchema =
         ),
     }).strict();
 export type CreateMatomoAccountDataSchemaType = z.infer<
-    typeof CreateMattermostAccountDataSchema
+    typeof CreateMatomoAccountDataSchema
 >;

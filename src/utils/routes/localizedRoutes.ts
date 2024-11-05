@@ -243,4 +243,10 @@ export const localizedRoutes = {
             fr: (p) => "/organizations/create-form",
         }
     ),
+    serviceList: defineLocalizedRoute(
+        {},
+        {
+            fr: (p) => "/services",
+        }
+    ),
 };

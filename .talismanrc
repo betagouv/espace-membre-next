@@ -3,8 +3,10 @@ fileignoreconfig:
   checksum: 21970a52bff5b8af047f918a50776bbdefd89c835fc0a15095137ba5fdc694ae
 - filename: src/app/(private)/(dashboard)/incubators/[id]/info-form/page.tsx
   checksum: 1ec9acf039a7d336e710ef7b47c385eb7080293ee2750c2cf99e9056cde7f129
+- filename: src/app/(private)/(dashboard)/services/page.tsx
+  checksum: d5831365d79840fb38be03632d6c58f37c239bade853577164c2149d5b280cb7
 - filename: src/app/api/services/actions.ts
-  checksum: dbd69924309b8053885f7d60afea58ef37f649878c73b3a673d0fcc61075f4cb
+  checksum: 670cdad28f044c7381a68e99cd5a835353ad67098d51bf749978bf4bce46ea16
 - filename: src/components/CommunityPage/Community.tsx
   checksum: 5ad762848b814381f9473c7d4ede55fce6dc3ee77ed4c7acfb41d2658fcd9bf7
 - filename: src/components/IncubatorForm/IncubatorForm.tsx
@@ -27,6 +29,8 @@ fileignoreconfig:
   checksum: 1945d388ece9e30e247acfa902436849f78ffcd032047f8c0292173dddc8ea53
 - filename: src/lib/hstore.ts
   checksum: a02535588a717719f9e51c324d78779afd8c08fe4904a4aae525b85f8720b0ef
+- filename: src/lib/matomo.ts
+  checksum: cbeb7cde7284119eadd0b64cfd126d76797a31ecd57d4d186e33e5e35689b844
 - filename: src/lib/s3.ts
   checksum: a91be258dbac2f22c916598e597bd8cb4ca640e03dd422653486d6288375e849
 - filename: src/lib/sentry.ts

@@ -5,6 +5,7 @@ import { AccountService, SERVICES } from "@/models/services";
 export class FakeMatomo implements AccountService {
     users: MatomoUser[] = [];
     public name = SERVICES.MATOMO;
+    private lastId = 1000; // arbitrary choose to start at 1000
     userAccess: (MatomoUserAccess & { login: MatomoUser["login"] })[];
     sites: MatomoSite[] = [];
     constructor(
@@ -32,6 +33,63 @@ export class FakeMatomo implements AccountService {
                 })
         );
     }
+    createUser(
+        userLogin: string,
+        password: string,
+        email: string,
+        alias: string
+    ): Promise<void> {
+        this.users.push({
+            login: userLogin,
+            email,
+            alias,
+            superuser_access: "",
+            date_registered: "",
+        });
+        return Promise.resolve();
+    }
+
+    getSiteOrCreate(
+        siteName: string,
+        urls: string[],
+        siteType: "website" | "mobileapp" = "website"
+    ): Promise<number> {
+        const existingSite = this.sites.find((s) => s.main_url === urls[0]);
+        if (existingSite) {
+            return Promise.resolve(existingSite.idsite);
+        }
+        return this.createSite(siteName, urls, siteType);
+    }
+
+    createSite(
+        siteName: string,
+        urls: string[],
+        siteType: "website" | "mobileapp" = "website"
+    ): Promise<any> {
+        const newId = this.lastId + 1;
+        this.sites.push({
+            idsite: newId,
+            name: siteName,
+            main_url: urls[0],
+            type: siteType,
+        });
+        this.lastId = newId;
+        return Promise.resolve();
+    }
+
+    async grantUserAccess(userLogin, siteId, access): Promise<any> {
+        this.userAccess.push({
+            idSite: siteId,
+            name: "",
+            main_url: "",
+            type: "",
+            site: siteId,
+            access: access || "admin",
+            login: userLogin,
+        });
+        return Promise.resolve();
+    }
+
     getAllSites(): Promise<MatomoSite[]> {
         return Promise.resolve(this.sites);
     }

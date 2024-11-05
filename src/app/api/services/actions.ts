@@ -12,6 +12,7 @@ import {
     CreateMatomoAccountDataSchema,
 } from "@/models/jobs/services";
 import { ACCOUNT_SERVICE_STATUS, SERVICES } from "@/models/services";
+import { encryptPassword } from "@/server/controllers/utils";
 import { getBossClientInstance } from "@/server/queueing/client";
 import {
     createMattermostServiceAccountTopic,
@@ -53,10 +54,13 @@ export const askAccountCreationForService = withErrorHandling(
                     CreateMatomoAccountDataSchema.parse({
                         email: user.primary_email,
                         login: user.primary_email,
-                        password: crypto
-                            .randomBytes(20)
-                            .toString("base64")
-                            .slice(0, -2),
+                        password: encryptPassword(
+                            data.password ||
+                                crypto
+                                    .randomBytes(20)
+                                    .toString("base64")
+                                    .slice(0, -2)
+                        ),
                         sites: data.sites,
                     }),
                     {
