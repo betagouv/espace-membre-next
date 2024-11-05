@@ -17,7 +17,6 @@ import BlocEmailResponder from "./BlocEmailResponder";
 import BlocRedirection from "./BlocRedirection";
 import { WebMailButton } from "./WebMailButton";
 import { MemberPageProps } from "../MemberPage";
-import { ToolTip } from "@/components/Tooltip";
 import frontConfig from "@/frontConfig";
 import {
     EmailInfos,
@@ -271,6 +270,20 @@ export default function EmailContainer({
                                     )
                                 )
                                 .otherwise(() => null)}
+                            {userInfos.primary_email_status !==
+                                EmailStatusCode.EMAIL_ACTIVE && (
+                                <Badge
+                                    severity="error"
+                                    small
+                                    className={fr.cx("fr-ml-1w")}
+                                >
+                                    {
+                                        EMAIL_STATUS_READABLE_FORMAT[
+                                            userInfos.primary_email_status
+                                        ]
+                                    }
+                                </Badge>
+                            )}
                         </span>
                         <br />
                     </>
