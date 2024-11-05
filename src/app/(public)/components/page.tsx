@@ -1,7 +1,5 @@
 import { fr } from "@codegouvfr/react-dsfr";
 import type { Metadata } from "next";
-import { redirect } from "next/navigation";
-import { getServerSession } from "next-auth";
 
 import MemberPage, {
     MemberPageProps,
@@ -12,7 +10,6 @@ import {
     EmailStatusCode,
 } from "@/models/member";
 import { EMAIL_PLAN_TYPE } from "@/models/ovh";
-import { authOptions } from "@/utils/authoptions";
 
 export const metadata: Metadata = {
     title: `Components Demo`,
