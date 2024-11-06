@@ -72,7 +72,6 @@ export const askAccountCreationForService = withErrorHandling(
                     .insertInto("service_accounts")
                     .values({
                         user_id: user.uuid,
-                        service_user_id: user.username, // todo: there is not service_user_id at this moment
                         email: user.primary_email,
                         account_type: SERVICES.MATOMO,
                         status: ACCOUNT_SERVICE_STATUS.ACCOUNT_CREATION_PENDING,
@@ -89,7 +88,6 @@ export const askAccountCreationForService = withErrorHandling(
                     .insertInto("service_accounts")
                     .values({
                         user_id: user.uuid,
-                        service_user_id: user.username,
                         account_type: SERVICES.MATTERMOST,
                         status: ACCOUNT_SERVICE_STATUS.ACCOUNT_CREATION_PENDING,
                     })
@@ -98,7 +96,6 @@ export const askAccountCreationForService = withErrorHandling(
                     createMattermostServiceAccountTopic,
                     CreateMattermostAccountDataSchema.parse({
                         email: user.primary_email,
-                        username: user.username,
                         password: crypto
                             .randomBytes(20)
                             .toString("base64")

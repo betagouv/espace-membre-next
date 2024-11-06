@@ -173,7 +173,7 @@ export class Matomo implements AccountService {
         password: string,
         email: string,
         alias: string
-    ): Promise<any> {
+    ): Promise<MatomoUser> {
         const response = await fetch(`${this.apiUrl}/index.php`, {
             method: "POST",
             headers: {
@@ -196,7 +196,7 @@ export class Matomo implements AccountService {
             throw new Error(`Failed to create user: ${response.statusText}`);
         }
 
-        return response.json();
+        return ((await response.json()) as { user: MatomoUser }).user;
     }
 
     /**

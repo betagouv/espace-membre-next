@@ -38,15 +38,16 @@ export class FakeMatomo implements AccountService {
         password: string,
         email: string,
         alias: string
-    ): Promise<void> {
-        this.users.push({
+    ): Promise<MatomoUser> {
+        const user = {
             login: userLogin,
             email,
             alias,
             superuser_access: "",
             date_registered: "",
-        });
-        return Promise.resolve();
+        };
+        this.users.push(user);
+        return Promise.resolve(user);
     }
 
     getSiteOrCreate(

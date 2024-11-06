@@ -15,9 +15,9 @@ export const matomoUserMetadataSchema = z.object({
 });
 
 export const matomoUserSchema = z.object({
-    email: z.string().optional(),
+    email: z.string(),
     account_type: z.literal("matomo"),
-    service_user_id: z.string(),
+    service_user_id: z.string().optional(),
     metadata: matomoUserMetadataSchema,
     status: z.nativeEnum(ACCOUNT_SERVICE_STATUS),
 });

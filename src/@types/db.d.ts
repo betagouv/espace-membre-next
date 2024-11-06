@@ -224,7 +224,7 @@ export interface ServiceAccounts {
   created_at: Generated<Timestamp>;
   email: string | null;
   metadata: Json | null;
-  service_user_id: string;
+  service_user_id: string | null;
   status: string | null;
   updated_at: Generated<Timestamp>;
   user_id: string | null;

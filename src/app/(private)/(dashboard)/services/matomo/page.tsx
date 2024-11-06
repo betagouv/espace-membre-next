@@ -82,13 +82,11 @@ export default async function MatomoPage() {
     return (
         <>
             <h1>Compte matomo</h1>
-            <MatomoServiceForm />
-
-            {/* {service_account ? (
+            {service_account ? (
                 <AccountFoundOrPending account={service_account} />
             ) : (
                 <MatomoServiceForm />
-            )} */}
+            )}
         </>
     );
 }
