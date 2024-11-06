@@ -70,7 +70,7 @@ export default function NewsletterPage({
                         </h3>
                         {currentNewsletter.publish_at && (
                             <p>
-                                Cette infolettre sera publié le :{" "}
+                                Cette infolettre sera publiée le :{" "}
                                 {format(
                                     currentNewsletter.publish_at,
                                     "dd/MM/yyyy à HH:mm"
