@@ -253,7 +253,7 @@ describe("Newsletter", () => {
                 .values({ ...mockNewsletter })
                 .execute();
             clock = sinon.useFakeTimers(
-                add(mockNewsletter.publish_at, { days: -1 })
+                add(mockNewsletter.publish_at, { days: 0 })
             );
             await newsletterReminder("SECOND_REMINDER");
             slack.firstCall.args[0].text.should.equal(

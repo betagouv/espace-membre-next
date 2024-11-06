@@ -1,5 +1,6 @@
 "use client";
 
+import { Button } from "@codegouvfr/react-dsfr/Button";
 import Table from "@codegouvfr/react-dsfr/Table";
 import { add } from "date-fns/add";
 import { format } from "date-fns/format";
@@ -15,20 +16,13 @@ export interface NewsletterPageProps {
 }
 
 const formatNewsletterTitle = (newsletter) => {
-    return newsletter.sent_at
-        ? format(newsletter.sent_at, "d MMMM yyyy", { locale: fr })
-        : format(
-              add(
-                  startOfWeek(newsletter.publish_at || newsletter.created_at, {
-                      weekStartsOn: 1,
-                  }),
-                  {
-                      weeks: 1,
-                  }
-              ),
-              "d MMMM yyyy",
-              { locale: fr }
-          );
+    return format(
+        newsletter.sent_at || newsletter.publish_at || newsletter.created_at,
+        "d MMMM yyyy",
+        {
+            locale: fr,
+        }
+    );
 };
 
 const formatNewsletter = (newsletter: newsletterSchemaType, isAdmin: boolean) =>
@@ -76,14 +70,25 @@ export default function NewsletterPage({
                         </h3>
                         {currentNewsletter.publish_at && (
                             <p>
-                                Cette infolettre sera publié le :{" "}
+                                Cette infolettre sera publiée le :{" "}
                                 {format(
                                     currentNewsletter.publish_at,
                                     "dd/MM/yyyy à HH:mm"
                                 )}
                             </p>
                         )}
-                        <p>Lien de l'infolettre</p>
+                        {session?.user.isAdmin && (
+                            <Button
+                                size="small"
+                                priority="secondary"
+                                linkProps={{ href: "/admin/newsletters" }}
+                            >
+                                Editer la date de publication
+                            </Button>
+                        )}
+                        <br />
+                        <br />
+                        <p>Lien de l'infolettre : </p>
                         <a
                             href={
                                 currentNewsletter.brevo_url ||
@@ -94,6 +99,7 @@ export default function NewsletterPage({
                             {currentNewsletter.brevo_url ||
                                 currentNewsletter.url}
                         </a>
+
                         <br />
                         <p>
                             L'infolettre est lue et partagée pendant l'hebdo
