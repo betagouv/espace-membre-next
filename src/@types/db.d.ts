@@ -31,7 +31,7 @@ export type StartupsPhaseEnum = "acceleration" | "alumni" | "construction" | "in
 
 export type Timestamp = ColumnType<Date, Date | string>;
 
-export type UsersDomaineEnum = "Animation" | "Autre" | "Coaching" | "Data" | "Déploiement" | "Design" | "Développement" | "Intraprenariat" | "Produit";
+export type UsersDomaineEnum = "Animation" | "Attributaire" | "Autre" | "Coaching" | "Data" | "Déploiement" | "Design" | "Développement" | "Intraprenariat" | "Produit" | "Support";
 
 export interface Accounts {
   access_token: string | null;
