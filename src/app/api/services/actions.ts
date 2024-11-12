@@ -14,10 +14,7 @@ import {
 import { ACCOUNT_SERVICE_STATUS, SERVICES } from "@/models/services";
 import { encryptPassword } from "@/server/controllers/utils";
 import { getBossClientInstance } from "@/server/queueing/client";
-import {
-    createMattermostServiceAccountTopic,
-    createMatomoServiceAccountTopic,
-} from "@/server/queueing/workers/create-mattermost-account";
+import { createMatomoServiceAccountTopic } from "@/server/queueing/workers/create-matomo-account";
 import { authOptions } from "@/utils/authoptions";
 import {
     AuthorizationError,
@@ -42,73 +39,38 @@ export const askAccountCreationForService = withErrorHandling(
         const user = await getUserBasicInfo({ uuid: session.user.uuid });
         const startups = await getUserStartups(session.user.uuid);
         if (!user) throw new NoDataError("User count not be found");
-        match(service)
-            .with(SERVICES.MATOMO, async () => {
-                if (!user.primary_email) {
-                    throw new ValidationError(
-                        "Un email primaire est obligatoire"
-                    );
+        match(service).with(SERVICES.MATOMO, async () => {
+            if (!user.primary_email) {
+                throw new ValidationError("Un email primaire est obligatoire");
+            }
+            await bossClient.send(
+                createMatomoServiceAccountTopic,
+                CreateMatomoAccountDataSchema.parse({
+                    email: user.primary_email,
+                    login: user.primary_email,
+                    password: encryptPassword(
+                        data.password ||
+                            crypto
+                                .randomBytes(20)
+                                .toString("base64")
+                                .slice(0, -2)
+                    ),
+                    sites: data.sites,
+                }),
+                {
+                    retryLimit: 50,
+                    retryBackoff: true,
                 }
-                await bossClient.send(
-                    createMatomoServiceAccountTopic,
-                    CreateMatomoAccountDataSchema.parse({
-                        email: user.primary_email,
-                        login: user.primary_email,
-                        password: encryptPassword(
-                            data.password ||
-                                crypto
-                                    .randomBytes(20)
-                                    .toString("base64")
-                                    .slice(0, -2)
-                        ),
-                        sites: data.sites,
-                    }),
-                    {
-                        retryLimit: 50,
-                        retryBackoff: true,
-                    }
-                );
-                await db
-                    .insertInto("service_accounts")
-                    .values({
-                        user_id: user.uuid,
-                        email: user.primary_email,
-                        account_type: SERVICES.MATOMO,
-                        status: ACCOUNT_SERVICE_STATUS.ACCOUNT_CREATION_PENDING,
-                    })
-                    .execute();
-            })
-            .with(SERVICES.MATTERMOST, async () => {
-                if (!user.primary_email) {
-                    throw new ValidationError(
-                        "Un email primaire est obligatoire"
-                    );
-                }
-                await db
-                    .insertInto("service_accounts")
-                    .values({
-                        user_id: user.uuid,
-                        account_type: SERVICES.MATTERMOST,
-                        status: ACCOUNT_SERVICE_STATUS.ACCOUNT_CREATION_PENDING,
-                    })
-                    .execute();
-                await bossClient.send(
-                    createMattermostServiceAccountTopic,
-                    CreateMattermostAccountDataSchema.parse({
-                        email: user.primary_email,
-                        password: crypto
-                            .randomBytes(20)
-                            .toString("base64")
-                            .slice(0, -2),
-                        position: `${user.role} @ ${startups
-                            .map((s) => s.name)
-                            .join(",")}`,
-                    }),
-                    {
-                        retryLimit: 50,
-                        retryBackoff: true,
-                    }
-                );
-            });
+            );
+            await db
+                .insertInto("service_accounts")
+                .values({
+                    user_id: user.uuid,
+                    email: user.primary_email,
+                    account_type: SERVICES.MATOMO,
+                    status: ACCOUNT_SERVICE_STATUS.ACCOUNT_CREATION_PENDING,
+                })
+                .execute();
+        });
     }
 );
