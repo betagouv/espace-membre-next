@@ -58,7 +58,10 @@ async function MainStructure(props: PropsWithChildren) {
                                             </div>
                                             <Footer
                                                 accessibility="non compliant"
-                                                contentDescription="Espace Membre est une application permettant aux membres de la communauté beta.gouv.fr d'accéder aux espaces dédiés à la communauté."
+                                                accessibilityLinkProps={{
+                                                    href: "/accessibilite",
+                                                }}
+                                                contentDescription="Espace Membre est une application permettant aux membres de beta.gouv.fr d'accéder aux services et outils de la communauté."
                                                 termsLinkProps={{
                                                     href: "#",
                                                 }}
