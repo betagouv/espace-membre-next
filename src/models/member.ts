@@ -136,6 +136,8 @@ export enum Domaine {
     PRODUIT = "Produit",
     AUTRE = "Autre",
     DATA = "Data",
+    SUPPORT = "Support",
+    ATTRIBUTAIRE = "Attributaire",
 }
 
 type DomaineOption = {
@@ -179,6 +181,14 @@ export const DOMAINE_OPTIONS: DomaineOption[] = [
     {
         key: "DATA",
         name: Domaine.DATA,
+    },
+    {
+        key: "SUPPORT",
+        name: Domaine.SUPPORT,
+    },
+    {
+        key: "ATTRIBUTAIRE",
+        name: Domaine.ATTRIBUTAIRE,
     },
 ];
 
