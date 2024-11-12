@@ -10,6 +10,8 @@ import {
     EmailStatusCode,
 } from "@/models/member";
 import { EMAIL_PLAN_TYPE } from "@/models/ovh";
+import { ACCOUNT_SERVICE_STATUS } from "@/models/services";
+import { authOptions } from "@/utils/authoptions";
 
 export const metadata: Metadata = {
     title: `Components Demo`,
@@ -87,6 +89,7 @@ const sampleMember: { member: MemberPageProps } = {
         matomoInfo: {
             email: "unemaildetest@gmail.com",
             account_type: "matomo",
+            status: ACCOUNT_SERVICE_STATUS.ACCOUNT_FOUND,
             service_user_id: "unemaildetest@gmail.co",
             metadata: {
                 sites: [
