@@ -23,7 +23,6 @@ const AccountFoundOrPending = ({
 }: {
     account: matomoUserSchemaType;
 }) => {
-    console.log(account);
     return (
         <>
             {match(account)
@@ -78,7 +77,6 @@ export default async function MatomoPage() {
         .then((data) => {
             return data ? matomoServiceInfoToModel(data) : undefined;
         });
-
     return (
         <>
             <h1>Compte matomo</h1>

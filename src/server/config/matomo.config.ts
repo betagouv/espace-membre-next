@@ -33,12 +33,17 @@ export class FakeMatomo implements AccountService {
                 })
         );
     }
-    createUser(
-        userLogin: string,
-        password: string,
-        email: string,
-        alias: string
-    ): Promise<MatomoUser> {
+    createUser({
+        userLogin,
+        password,
+        email,
+        alias,
+    }: {
+        userLogin: string;
+        password: string;
+        email: string;
+        alias: string;
+    }): Promise<void> {
         const user = {
             login: userLogin,
             email,
@@ -47,7 +52,7 @@ export class FakeMatomo implements AccountService {
             date_registered: "",
         };
         this.users.push(user);
-        return Promise.resolve(user);
+        return Promise.resolve();
     }
 
     getSiteOrCreate(
@@ -78,15 +83,25 @@ export class FakeMatomo implements AccountService {
         return Promise.resolve();
     }
 
-    async grantUserAccess(userLogin, siteId, access): Promise<any> {
-        this.userAccess.push({
-            idSite: siteId,
-            name: "",
-            main_url: "",
-            type: "",
-            site: siteId,
-            access: access || "admin",
-            login: userLogin,
+    async grantUserAccess({
+        userLogin,
+        idSites,
+        access,
+    }: {
+        userLogin: string;
+        idSites: number[];
+        access: "admin" | "view";
+    }): Promise<void> {
+        idSites.map((id) => {
+            this.userAccess.push({
+                idSite: id,
+                name: "",
+                main_url: "",
+                type: "",
+                site: id,
+                access: access || "admin",
+                login: userLogin,
+            });
         });
         return Promise.resolve();
     }

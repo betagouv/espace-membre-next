@@ -168,12 +168,17 @@ export class Matomo implements AccountService {
      * @param alias - The display name or alias for the new user
      * @returns A Promise resolving to the response from Matomo API
      */
-    async createUser(
-        userLogin: string,
-        password: string,
-        email: string,
-        alias: string
-    ): Promise<MatomoUser> {
+    async createUser({
+        userLogin,
+        password,
+        email,
+        alias,
+    }: {
+        userLogin: string;
+        password: string;
+        email: string;
+        alias: string;
+    }): Promise<void> {
         const response = await fetch(`${this.apiUrl}/index.php`, {
             method: "POST",
             headers: {
@@ -190,13 +195,17 @@ export class Matomo implements AccountService {
                 alias: alias,
             }),
         });
-
         // Check if the response is ok and handle errors
         if (!response.ok) {
             throw new Error(`Failed to create user: ${response.statusText}`);
         }
+        const responseBody = await response.json();
+        // if sucess response body = { result: 'success', message: 'ok' }
+        if (responseBody.result === "error") {
+            throw new Error(`Failed to create user: ${responseBody.result}`);
+        }
 
-        return ((await response.json()) as { user: MatomoUser }).user;
+        return;
     }
 
     /**
@@ -206,7 +215,15 @@ export class Matomo implements AccountService {
      * @param {string} access - The level of access to grant (e.g., "view", "admin")
      * @returns {Promise<any>} A promise resolving to the response from Matomo API
      */
-    async grantUserAccess(userLogin, siteId, access): Promise<any> {
+    async grantUserAccess({
+        userLogin,
+        idSites,
+        access,
+    }: {
+        userLogin: string;
+        idSites: number[];
+        access: "admin" | "view";
+    }): Promise<void> {
         try {
             const response = await fetch(`${this.apiUrl}/index.php`, {
                 method: "POST",
@@ -217,21 +234,22 @@ export class Matomo implements AccountService {
                     module: "API",
                     method: "UsersManager.setUserAccess",
                     format: "JSON",
-                    token_auth: "YOUR_AUTH_TOKEN", // Replace with your Matomo auth token
+                    token_auth: this.authToken,
                     userLogin: userLogin,
-                    idSite: siteId,
+                    idSites: idSites.join(","),
                     access: access,
                 }),
             });
 
-            if (!response.ok) {
+            const responseBody = await response.json();
+            // if sucess response body = { result: 'success', message: 'ok' }
+            if (responseBody.result === "error") {
                 throw new Error(
-                    `Error setting user access: ${response.statusText}`
+                    `Failed to create user: ${responseBody.result}`
                 );
             }
 
-            const result = await response.json();
-            return result;
+            return;
         } catch (error) {
             console.error("Failed to set user access:", error);
             throw error;
@@ -264,7 +282,6 @@ export class Matomo implements AccountService {
                 url: urls[0], // Check the first URL (you can loop for multiple URLs if needed)
             }),
         }).then((response) => response.json());
-
         if (existingSiteId.length > 0) {
             // Site with this URL already exists
             return existingSiteId[0].idsite; // Return the existing site ID
@@ -286,7 +303,6 @@ export class Matomo implements AccountService {
                 type: siteType,
             }),
         });
-
         if (!response.ok) {
             throw new Error(`Failed to create site: ${response.statusText}`);
         }

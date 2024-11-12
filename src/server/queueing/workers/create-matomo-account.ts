@@ -20,32 +20,38 @@ export async function createMatomoServiceAccount(
     );
 
     // throw new Error("Account could not be created");
+    const userLogin = job.data.email;
 
-    const user = await matomoClient.createUser(
-        job.data.email,
-        decryptPassword(job.data.password),
-        job.data.password,
-        job.data.email
-    );
+    const user = await matomoClient.createUser({
+        email: job.data.email,
+        password: decryptPassword(job.data.password),
+        userLogin,
+        alias: job.data.email,
+    });
 
+    const idSites: number[] = [];
     await pAll(
         job.data.sites.map((s) => async () => {
             const siteId = await matomoClient.getSiteOrCreate(s.url, [s.url]);
-            await matomoClient.grantUserAccess(job.data.email, siteId, "admin");
+            idSites.push(siteId);
         })
     );
-
+    await matomoClient.grantUserAccess({
+        userLogin,
+        idSites: idSites,
+        access: "admin",
+    });
     const allWebsites = await matomoClient.getAllSites();
     const userMetadata = await matomoClient.fetchUserAccess(job.data.email);
     const metadata = matomoMetadataToModel(userMetadata, allWebsites);
     const result = await db
         .updateTable("service_accounts")
         .set({
-            service_user_id: user.login,
+            service_user_id: userLogin,
             status: ACCOUNT_SERVICE_STATUS.ACCOUNT_FOUND,
             metadata: JSON.stringify(metadata),
         })
         .executeTakeFirstOrThrow();
 
-    console.log(`the user account has been created for the case`);
+    console.log(`the matomo account has been created for ${userLogin}`);
 }
