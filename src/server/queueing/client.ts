@@ -1,12 +1,10 @@
 import * as Sentry from "@sentry/nextjs";
 import PgBoss from "pg-boss";
 
-import { createMatomoServiceAccount } from "./workers/create-matomo-account";
 import {
+    createMatomoServiceAccount,
     createMatomoServiceAccountTopic,
-    createMattermostServiceAccount,
-    createMattermostServiceAccountTopic,
-} from "./workers/create-mattermost-account";
+} from "./workers/create-matomo-account";
 import { gracefulExit } from "../system";
 import { ErrorWithStatus } from "@/utils/error";
 
@@ -52,10 +50,6 @@ export async function startBossClientInstance(): Promise<PgBoss> {
         initPromise = (async () => {
             await bossClient.start();
             // Bind listeners
-            await bossClient.work(
-                createMattermostServiceAccountTopic,
-                handlerWrapper(createMattermostServiceAccount)
-            );
             await bossClient.work(
                 createMatomoServiceAccountTopic,
                 handlerWrapper(createMatomoServiceAccount)
