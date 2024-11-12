@@ -237,8 +237,6 @@ describe("Newsletter", () => {
             clock = sinon.useFakeTimers(
                 add(mockNewsletter.publish_at, { days: -5 })
             );
-            console.log(mockNewsletter.publish_at);
-            console.log(add(mockNewsletter.publish_at, { days: -6 }));
             await newsletterReminder("FIRST_REMINDER");
             slack.firstCall.args[0].text.should.equal(
                 computeMessageReminder("FIRST_REMINDER", mockNewsletter)
