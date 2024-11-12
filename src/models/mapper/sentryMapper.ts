@@ -62,6 +62,8 @@ export const sentryServiceInfoToModel = (
         email: "no email fetch",
         service_user_id: sentryUser.service_user_id,
         metadata: sentryUser.metadata as sentryUserSchemaType["metadata"],
-        status: sentryUser.status || ACCOUNT_SERVICE_STATUS.ACCOUNT_FOUND,
+        status:
+            (sentryUser.status as ACCOUNT_SERVICE_STATUS) ||
+            ACCOUNT_SERVICE_STATUS.ACCOUNT_FOUND,
     };
 };

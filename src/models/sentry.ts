@@ -29,7 +29,7 @@ const sentryUserMetadataSchema = z.object({
 export const sentryUserSchema = z.object({
     email: z.string(),
     account_type: z.literal("sentry"),
-    service_user_id: z.string(),
+    service_user_id: z.string().nullable(),
     metadata: sentryUserMetadataSchema,
     status: z.nativeEnum(ACCOUNT_SERVICE_STATUS),
 });
