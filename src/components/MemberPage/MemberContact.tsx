@@ -3,9 +3,12 @@ import { ReactNode } from "react";
 import Table from "@codegouvfr/react-dsfr/Table";
 import { fr } from "@codegouvfr/react-dsfr";
 import Badge from "@codegouvfr/react-dsfr/Badge";
+import { match } from "ts-pattern";
 
 import { MemberPageProps } from "./MemberPage";
 import { EMAIL_PLAN_TYPE } from "@/models/ovh";
+import { EMAIL_STATUS_READABLE_FORMAT } from "@/models/misc";
+import { EmailStatusCode } from "@/models/member";
 
 export const MemberContact = ({
     userInfos,
@@ -56,6 +59,20 @@ export const MemberContact = ({
                                 OVH MX
                             </Badge>
                         ) : null)}
+                    {userInfos.primary_email_status !==
+                        EmailStatusCode.EMAIL_ACTIVE && (
+                        <Badge
+                            severity="error"
+                            small
+                            className={fr.cx("fr-ml-1w")}
+                        >
+                            {
+                                EMAIL_STATUS_READABLE_FORMAT[
+                                    userInfos.primary_email_status
+                                ]
+                            }
+                        </Badge>
+                    )}
                 </>
             ),
         });
