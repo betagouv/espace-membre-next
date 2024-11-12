@@ -66,7 +66,6 @@ export default function MatomoServiceForm() {
         })
             .then((resp) => {
                 setIsSaving(false);
-                console.log(resp);
                 window.scrollTo({ top: 20, behavior: "smooth" });
                 setAlertMessage({
                     title: `Mise à jour effectuée`,
