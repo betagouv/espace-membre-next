@@ -114,6 +114,7 @@ const sampleMember: { member: MemberPageProps } = {
             email: "unemaildetest@gmail.com",
             account_type: "sentry",
             service_user_id: "168",
+            status: ACCOUNT_SERVICE_STATUS.ACCOUNT_FOUND,
             metadata: {
                 organisationRole: "admin",
                 pending: false,
