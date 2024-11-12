@@ -37,40 +37,46 @@ export const askAccountCreationForService = withErrorHandling(
         }
         const bossClient = await getBossClientInstance();
         const user = await getUserBasicInfo({ uuid: session.user.uuid });
-        const startups = await getUserStartups(session.user.uuid);
         if (!user) throw new NoDataError("User count not be found");
-        match(service).with(SERVICES.MATOMO, async () => {
-            if (!user.primary_email) {
-                throw new ValidationError("Un email primaire est obligatoire");
-            }
-            await bossClient.send(
-                createMatomoServiceAccountTopic,
-                CreateMatomoAccountDataSchema.parse({
-                    email: user.primary_email,
-                    login: user.primary_email,
-                    password: encryptPassword(
-                        data.password ||
-                            crypto
-                                .randomBytes(20)
-                                .toString("base64")
-                                .slice(0, -2)
-                    ),
-                    sites: data.sites,
-                }),
-                {
-                    retryLimit: 50,
-                    retryBackoff: true,
+        await match(service)
+            .with(SERVICES.MATOMO, async () => {
+                if (!user.primary_email) {
+                    throw new ValidationError(
+                        "Un email primaire est obligatoire"
+                    );
                 }
-            );
-            await db
-                .insertInto("service_accounts")
-                .values({
-                    user_id: user.uuid,
-                    email: user.primary_email,
-                    account_type: SERVICES.MATOMO,
-                    status: ACCOUNT_SERVICE_STATUS.ACCOUNT_CREATION_PENDING,
-                })
-                .execute();
-        });
+                await bossClient.send(
+                    createMatomoServiceAccountTopic,
+                    CreateMatomoAccountDataSchema.parse({
+                        email: user.primary_email,
+                        login: user.primary_email,
+                        password: encryptPassword(
+                            data.password ||
+                                crypto
+                                    .randomBytes(20)
+                                    .toString("base64")
+                                    .slice(0, -2)
+                        ),
+                        sites: data.sites,
+                    }),
+                    {
+                        retryLimit: 50,
+                        retryBackoff: true,
+                    }
+                );
+                await db
+                    .insertInto("service_accounts")
+                    .values({
+                        user_id: user.uuid,
+                        email: user.primary_email,
+                        account_type: SERVICES.MATOMO,
+                        status: ACCOUNT_SERVICE_STATUS.ACCOUNT_CREATION_PENDING,
+                    })
+                    .execute();
+            })
+            .otherwise(() => {
+                // otherwise or exhaustive should be defined otherwise function is not awaited
+                // cf https://github.com/gvergnaud/ts-pattern/issues/163
+            });
     }
 );

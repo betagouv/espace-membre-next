@@ -22,7 +22,7 @@ export async function createMatomoServiceAccount(
     // throw new Error("Account could not be created");
     const userLogin = job.data.email;
 
-    const user = await matomoClient.createUser({
+    await matomoClient.createUser({
         email: job.data.email,
         password: decryptPassword(job.data.password),
         userLogin,
