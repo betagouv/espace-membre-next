@@ -69,7 +69,11 @@ export async function startBossClientInstance(): Promise<PgBoss> {
 
 export async function stopBossClientInstance(): Promise<void> {
     if (initPromise) {
-        await bossClient.stop();
+        await bossClient.stop({
+            // add this to destroy connection at the end of tests
+            graceful: process.env.NODE_ENV === "test" ? false : true,
+            destroy: true,
+        });
     }
 }
 
