@@ -168,6 +168,12 @@ const testUtils = {
         )}:${encodeURIComponent(dbConfig.port || "")}/postgres`;
         const client = new Client({ connectionString: temporaryConnection });
         await db.destroy();
+        await knex.raw(`
+            SELECT pg_terminate_backend(pg_stat_activity.pid)
+            FROM pg_stat_activity
+            WHERE pg_stat_activity.datname = 'secretariat__test'
+              AND pid <> pg_backend_pid();
+        `);
         return knex
             .destroy()
             .then(() => client.connect())
