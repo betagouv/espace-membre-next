@@ -1,6 +1,6 @@
 fileignoreconfig:
-    - filename: package-lock.json
-      checksum: 21970a52bff5b8af047f918a50776bbdefd89c835fc0a15095137ba5fdc694ae
+    - filename: .github/workflows/nodejs.yml
+      checksum: bf0ae31737daf27be68b7d2c4e63e1ef14cb799f1853462fdadcf2422ddd53a2
     - filename: __tests__/test-worker.ts
       checksum: 462f569a2625f2fdb0938f0abc109ed24f0241d9f5592ead16475e2efde0aa47
     - filename: src/app/(private)/(dashboard)/admin/signaux-faibles-beta/AdminProductClientPage.tsx
