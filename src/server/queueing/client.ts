@@ -11,6 +11,7 @@ import { ErrorWithStatus } from "@/utils/error";
 let databaseUrl = process.env.DATABASE_URL || "";
 databaseUrl = databaseUrl.replace("sslmode=prefer", "sslmode=no-verify");
 const bossClient = new PgBoss({
+    application_name: "pg-boss",
     connectionString: databaseUrl,
     newJobCheckIntervalSeconds: 30, // No need to check every 2 seconds as set by default to look at new jobs
     deleteAfterDays: 45, // Give some time before cleaning archives so an issue can be investigated without dealing with database backups
@@ -39,7 +40,6 @@ export async function getBossClientInstance(): Promise<PgBoss> {
     } catch (error) {
         gracefulExit(error as unknown as Error);
     }
-
     return bossClient;
 }
 

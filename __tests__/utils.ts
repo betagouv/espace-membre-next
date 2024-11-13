@@ -169,11 +169,12 @@ const testUtils = {
         const client = new Client({ connectionString: temporaryConnection });
         await db.destroy();
         await knex.raw(`
-            SELECT pg_terminate_backend(pg_stat_activity.pid)
+            SELECT pg_terminate_backend(pid)
             FROM pg_stat_activity
-            WHERE pg_stat_activity.datname = 'secretariat__test'
-              AND pid <> pg_backend_pid();
+            WHERE datname = 'secretariat__test'
+              AND application_name = 'pg-boss';
         `);
+
         return knex
             .destroy()
             .then(() => client.connect())
