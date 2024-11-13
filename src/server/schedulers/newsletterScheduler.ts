@@ -138,7 +138,7 @@ Vérifie une dernière fois le contenu du pad ${newsletter.url}. À 16 h, il ser
 };
 
 const REMINDER_NB_DAYS = {
-    FIRST_REMINDER: -6,
+    FIRST_REMINDER: -5,
     SECOND_REMINDER: 0,
     THIRD_REMINDER: 0,
 };
