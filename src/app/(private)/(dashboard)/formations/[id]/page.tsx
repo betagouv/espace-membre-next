@@ -43,10 +43,14 @@ enum AirtableDomaine {
     "Product Owner" = "Product Owner",
     "Growth Hacker" = "Growth Hacker",
     "Data" = "Data",
+    "Attributaire" = "Attributaire",
+    "Support" = "Support",
 }
 
 const DomaineToAirtableDomaine: Record<Domaine, AirtableDomaine> = {
     [Domaine.INTRAPRENARIAT]: AirtableDomaine.Intrapreneur,
+    [Domaine.SUPPORT]: AirtableDomaine.Support,
+    [Domaine.ATTRIBUTAIRE]: AirtableDomaine.Attributaire,
     [Domaine.ANIMATION]: AirtableDomaine["Animateur.ice"],
     [Domaine.COACHING]: AirtableDomaine.Coach,
     [Domaine.DEPLOIEMENT]: AirtableDomaine["Chargé.e de déploiement"],
