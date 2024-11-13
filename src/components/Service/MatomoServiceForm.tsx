@@ -6,15 +6,7 @@ import { Alert } from "@codegouvfr/react-dsfr/Alert";
 import { Button } from "@codegouvfr/react-dsfr/Button";
 import Input from "@codegouvfr/react-dsfr/Input";
 import { zodResolver } from "@hookform/resolvers/zod";
-import _ from "lodash";
-import {
-    Control,
-    useFieldArray,
-    useWatch,
-    useForm,
-    UseFormRegister,
-    UseFormSetValue,
-} from "react-hook-form";
+import { useFieldArray, useForm } from "react-hook-form";
 
 import { askAccountCreationForService } from "@/app/api/services/actions";
 import {
@@ -27,10 +19,7 @@ export default function MatomoServiceForm() {
     const {
         register,
         handleSubmit,
-        formState: { errors, isDirty, isSubmitting, isValid },
-        setValue,
-        getValues,
-        watch,
+        formState: { isDirty, isSubmitting, isValid },
         control,
     } = useForm<matomoAccountRequestSchemaType>({
         resolver: zodResolver(matomoAccountRequestSchema),
@@ -84,12 +73,7 @@ export default function MatomoServiceForm() {
             });
     };
 
-    const {
-        fields: urlsFields,
-        append: urlsAppend,
-        remove: urlsRemove,
-        update: urlsUpdate,
-    } = useFieldArray({
+    const { fields: urlsFields, append: urlsAppend } = useFieldArray({
         rules: { minLength: 1 },
         control,
         name: "sites",
