@@ -92,7 +92,7 @@ export class FakeMatomo implements AccountService {
         idSites: number[];
         access: "admin" | "view";
     }): Promise<void> {
-        idSites.map((id) => {
+        idSites.forEach((id) => {
             this.userAccess.push({
                 idSite: id,
                 name: "",
