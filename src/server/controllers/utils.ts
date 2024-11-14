@@ -26,7 +26,7 @@ export function encryptPassword(password) {
     const iv = randomBytes(16); // Generate a secure, random IV
 
     const cipher = createCipheriv(
-        "aes-256-cbc",
+        "AES-256-GCM",
         new Uint8Array(Buffer.from(config.PASSWORD_ENCRYPT_KEY!, "hex")),
         new Uint8Array(iv)
     );
@@ -42,7 +42,7 @@ export function decryptPassword(encryptedPassword) {
     const iv = Buffer.from(ivHex, "hex");
 
     const decipher = createDecipheriv(
-        "aes-256-cbc",
+        "AES-256-GCM",
         new Uint8Array(key),
         new Uint8Array(iv)
     );
