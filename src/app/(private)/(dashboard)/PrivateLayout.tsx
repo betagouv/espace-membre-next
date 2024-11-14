@@ -549,20 +549,6 @@ export function PrivateLayout({ children }: { children: React.ReactNode }) {
                         }
                     />
                 )}
-                {!!displayMenuForSubPage(pathname).length && (
-                    <div className="fr-col-12 fr-col-md-3 fr-col-lg-3">
-                        <SideMenu
-                            align="left"
-                            burgerMenuButtonText="Dans cette rubrique"
-                            items={
-                                displayMenuForSubPage(
-                                    pathname
-                                ) as SideMenuProps.Item[]
-                            }
-                            // title="Espace-Membre"
-                        />
-                    </div>
-                )}
                 <div
                     className={`fr-col-12 ${
                         !!displayMenuForSubPage(pathname).length
