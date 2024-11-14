@@ -6,9 +6,7 @@ test.use({ storageState: "./playwright-auth-valid.member.json" });
 
 test("incubator list page", async ({ page }) => {
     await page.goto("/incubators");
-    await expect(
-        page.getByText("Rechercher un incubateur").first()
-    ).toBeVisible();
+    await expect(page.getByText("Rechercher un incubateur")[1]).toBeVisible();
 });
 
 test("incubator detail page and form page", async ({ page }) => {
