@@ -22,6 +22,7 @@ interface IncubatorUpdateProps {
     incubator: incubatorSchemaType;
     sponsorOptions: Option[];
     startupOptions: Option[];
+    logoURL?: string;
 }
 
 /* Pure component */
@@ -89,6 +90,7 @@ export const IncubatorUpdate = (props: IncubatorUpdateProps) => {
                 {(props.incubator && (
                     <IncubatorForm
                         save={save}
+                        logoURL={props.logoURL}
                         incubator={props.incubator}
                         startupOptions={props.startupOptions}
                         sponsorOptions={props.sponsorOptions}
