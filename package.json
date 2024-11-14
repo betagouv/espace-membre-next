@@ -2,6 +2,9 @@
     "name": "espace-membre",
     "version": "0.1.0",
     "private": true,
+    "engines": {
+        "node": "20.10.0"
+    },
     "scripts": {
         "dev": "node --max_old_space_size=8192 -r ts-node/register src/server/server.ts",
         "build:next": "next build",
@@ -58,7 +61,7 @@
         "js-yaml": "^4.1.0",
         "jsonwebtoken": "^9.0.2",
         "juice": "^9.1.0",
-        "knex": "^2.5.1",
+        "knex": "^3.1.0",
         "kysely": "^0.27.4",
         "lodash": "^4.17.21",
         "markdown-it": "^13.0.2",
