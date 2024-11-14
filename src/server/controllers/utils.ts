@@ -1,6 +1,5 @@
 import axios from "axios";
 import crypto, { createCipheriv, createDecipheriv, randomBytes } from "crypto";
-import crypto from "crypto";
 import { compareAsc, startOfDay } from "date-fns";
 import _ from "lodash";
 import nodemailer from "nodemailer";
@@ -22,8 +21,6 @@ export const computeHash = function (username) {
     ); /** Hashing algorithm sha512 */
     return hash.update(username).digest("hex");
 };
-
-const { randomBytes, createCipheriv, createDecipheriv } = crypto;
 
 // Encrypt function
 export function encryptPassword(password) {
