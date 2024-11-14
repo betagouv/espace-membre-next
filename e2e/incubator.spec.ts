@@ -38,7 +38,5 @@ test("incubator detail page and form page", async ({ page }) => {
 
 test("incubator create page", async ({ page }) => {
     await page.goto(`/incubators/create-form`);
-    await expect(
-        page.getByText("Créer une fiche incubateur").first()
-    ).toBeVisible();
+    await expect(page.getByText("Créer une fiche incubateur")[1]).toBeVisible();
 });
