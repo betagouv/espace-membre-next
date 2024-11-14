@@ -22,35 +22,30 @@ export const computeHash = function (username) {
     return hash.update(username).digest("hex");
 };
 
-// Encrypt function
 export function encryptPassword(password) {
-    const iv = randomBytes(12); // Generate a secure, random IV
-    const key = Buffer.from(config.PASSWORD_ENCRYPT_KEY!, "hex");
-    // @ts-ignore
-    const cipher = createCipheriv("AES-256-GCM", key, iv);
+    const iv = randomBytes(16); // Generate a secure, random IV
+
+    const cipher = createCipheriv(
+        "aes-256-cbc",
+        new Uint8Array(Buffer.from(config.PASSWORD_ENCRYPT_KEY!, "hex")),
+        new Uint8Array(iv)
+    );
     let encrypted = cipher.update(password, "utf8", "hex");
     encrypted += cipher.final("hex");
-
-    // Get the authentication tag and include it in the result
-    const authTag = cipher.getAuthTag().toString("hex");
-
-    // Combine IV, encrypted content, and auth tag for decryption
-    return `${iv.toString("hex")}:${encrypted}:${authTag}`;
+    return `${iv.toString("hex")}:${encrypted}`; // Combine iv and encrypted content
 }
 
-// Decrypt function
+// Function to decrypt the password
 export function decryptPassword(encryptedPassword) {
     const key = Buffer.from(config.PASSWORD_ENCRYPT_KEY!, "hex");
-
-    // Split the stored data into IV, encrypted content, and auth tag
-    const [ivHex, encrypted, authTagHex] = encryptedPassword.split(":");
+    const [ivHex, encrypted] = encryptedPassword.split(":");
     const iv = Buffer.from(ivHex, "hex");
-    const authTag = Buffer.from(authTagHex, "hex");
-    // @ts-ignore
-    const decipher = createDecipheriv("AES-256-GCM", key, iv);
-    // @ts-ignore
-    decipher.setAuthTag(authTag); // Set the authentication tag for AES-GCM
 
+    const decipher = createDecipheriv(
+        "aes-256-cbc",
+        new Uint8Array(key),
+        new Uint8Array(iv)
+    );
     let decrypted = decipher.update(encrypted, "hex", "utf8");
     decrypted += decipher.final("utf8");
     return decrypted;
