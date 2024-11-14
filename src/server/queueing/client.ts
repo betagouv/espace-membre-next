@@ -5,8 +5,8 @@ import {
     createMatomoServiceAccount,
     createMatomoServiceAccountTopic,
 } from "./workers/create-matomo-account";
-import { gracefulExit } from "../system";
 import { ErrorWithStatus } from "@/utils/error";
+import { gracefulExit } from "@/utils/gracefulExist";
 
 let databaseUrl = process.env.DATABASE_URL || "";
 databaseUrl = databaseUrl.replace("sslmode=prefer", "sslmode=no-verify");
