@@ -117,83 +117,81 @@ const MainHeader = () => {
                                       undefined
                                   ),
                               },
-                              text: routeTitles.community(),
+                              text: "Membres",
+                          },
+                          {
+                              linkProps: {
+                                  href: startupListLink,
+                              },
+                              isActive: hasPathnameThisRoot(
+                                  pathname,
+                                  startupListLink
+                              ),
+                              text: "Produits",
+                          },
+                          {
+                              linkProps: {
+                                  href: incubatorListLink,
+                              },
+                              isActive: hasPathnameThisRoot(
+                                  pathname,
+                                  incubatorListLink
+                              ),
+                              text: "Incubateur",
                           },
                           {
                               linkProps: {
                                   href: linkRegistry.get(
-                                      "communityCreateMember",
+                                      "organizationList",
                                       undefined
                                   ),
                               },
-                              text: routeTitles.communityCreateMember(),
+                              isActive: hasPathnameThisRoot(
+                                  pathname,
+                                  linkRegistry.get(
+                                      "organizationList",
+                                      undefined
+                                  )
+                              ),
+                              text: "Sponsors",
                           },
                           {
                               linkProps: {
-                                  href: linkRegistry.get("map"),
+                                  href: linkRegistry.get("teamList", undefined),
                               },
-                              text: routeTitles.map(),
+                              text: "Équipe",
+                              isActive: hasPathnameThisRoot(
+                                  pathname,
+                                  linkRegistry.get("teamList", undefined)
+                              ),
                           },
                       ],
-                  },
-                  {
-                      // linkProps: {
-                      //     href: "/startups",
-                      //     target: "_self",
-                      // },
-                      text: "Produits",
-                      isActive: hasPathnameThisRoot(pathname, startupListLink),
-                      menuLinks: [
-                          {
-                              linkProps: {
-                                  href: linkRegistry.get(
-                                      "startupList",
-                                      undefined
-                                  ),
-                              },
-                              text: routeTitles.startupList(),
-                          },
-                          {
-                              linkProps: {
-                                  href: linkRegistry.get(
-                                      "startupCreate",
-                                      undefined
-                                  ),
-                              },
-                              text: routeTitles.startupCreate(),
-                          },
-                      ],
-                  },
-                  {
-                      // linkProps: {
-                      //     href: "/incubators",
-                      //     target: "_self",
-                      // },
-                      text: "Incubateurs",
-                      isActive: hasPathnameThisRoot(
-                          pathname,
-                          incubatorListLink
-                      ),
-                      menuLinks: [
-                          {
-                              linkProps: {
-                                  href: linkRegistry.get(
-                                      "incubatorList",
-                                      undefined
-                                  ),
-                              },
-                              text: routeTitles.incubatorList(),
-                          },
-                          {
-                              linkProps: {
-                                  href: linkRegistry.get(
-                                      "incubatorCreate",
-                                      undefined
-                                  ),
-                              },
-                              text: routeTitles.incubatorCreate(),
-                          },
-                      ],
+                      //   menuLinks: [
+                      //       {
+                      //           linkProps: {
+                      //               href: linkRegistry.get(
+                      //                   "community",
+                      //                   undefined
+                      //               ),
+                      //           },
+                      //           text: routeTitles.community(),
+                      //       },
+                      //       {
+                      //           linkProps: {
+                      //               href: linkRegistry.get(
+                      //                   "communityCreateMember",
+                      //                   undefined
+                      //               ),
+                      //           },
+                      //           text: routeTitles.communityCreateMember(),
+                      //       },
+                      //       {
+                      //           linkProps: {
+                      //               href: linkRegistry.get("map"),
+                      //           },
+                      //           text: routeTitles.map(),
+                      //       },
+                      //   ],
                   },
                   {
                       linkProps: {

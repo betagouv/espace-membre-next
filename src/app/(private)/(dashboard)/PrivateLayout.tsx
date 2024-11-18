@@ -81,310 +81,230 @@ export function PrivateLayout({ children }: { children: React.ReactNode }) {
     const formationDetailLink = linkRegistry.get("formationDetails", undefined);
     const verifyLink = linkRegistry.get("verifyMember", undefined);
 
-    const accountSubPages: ItemLink[] = [
-        {
-            linkProps: {
-                href: accountLink,
-            },
-            text: routeTitles.account(),
-            isActive: hasPathnameThisMatch(pathname, accountLink),
-        },
-        {
-            linkProps: {
-                href: accountEditBaseInfoLink,
-            },
-            text: routeTitles.accountEditBaseInfo(),
-            isActive: hasPathnameThisMatch(pathname, accountEditBaseInfoLink),
-        },
-        // {
-        //     linkProps: {
-        //         href: "#",
-        //     },
-        //     text: "Badge",
-        //     isActive: hasPathnameThisRoot(pathname, accountBadgeLink),
-        //     expandedByDefault: hasPathnameThisRoot(pathname, accountBadgeLink),
-        //     items: [
-        //         {
-        //             linkProps: {
-        //                 href: accountBadgeLink,
-        //             },
-        //             text: routeTitles.accountBadge(),
-        //             isActive: hasPathnameThisMatch(pathname, accountBadgeLink),
-        //         },
-        //         {
-        //             linkProps: {
-        //                 href: accountBadgeRenewalLink,
-        //             },
-        //             text: routeTitles.accountBadgeRenewal(),
-        //             isActive: hasPathnameThisMatch(
-        //                 pathname,
-        //                 accountBadgeRenewalLink
-        //             ),
-        //         },
-        //     ],
-        // },
-    ];
-
-    const startupSubPage: ItemLink[] = [
-        {
-            linkProps: {
-                href: startupCreateLink,
-            },
-            text: routeTitles.startupCreate(),
-            isActive: hasPathnameThisMatch(pathname, startupCreateLink),
-        },
-        {
-            linkProps: {
-                href: currentPage,
-            },
-            dynamic: true,
-            text: currentPage,
-            isActive: hasPathnameThisRegex(
-                pathname,
-                "^/startups/[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$"
-            ),
-        },
-        {
-            linkProps: {
-                href: currentPage,
-            },
-            dynamic: true,
-            text: currentPage,
-            isActive: hasPathnameThisRegex(
-                pathname,
-                "^/startups/[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}/info-form$"
-            ),
-        },
-    ];
-
-    const incubatorSubPage: ItemLink[] = [
-        {
-            linkProps: {
-                href: incubatorListLink,
-            },
-            text: routeTitles.incubatorList(),
-            isActive: hasPathnameThisMatch(pathname, incubatorListLink),
-        },
-        {
-            linkProps: {
-                href: incubatorCreateLink,
-            },
-            text: routeTitles.incubatorCreate(),
-            isActive: hasPathnameThisMatch(pathname, incubatorCreateLink),
-        },
-        {
-            linkProps: {
-                href: currentPage,
-            },
-            dynamic: true,
-            text: currentPage,
-            isActive: hasPathnameThisRegex(
-                pathname,
-                "^/incubators/[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$"
-            ),
-        },
-        {
-            linkProps: {
-                href: currentPage,
-            },
-            dynamic: true,
-            text: currentPage,
-            isActive: hasPathnameThisRegex(
-                pathname,
-                "^/incubators/[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}/info-form$"
-            ),
-        },
-    ];
-
-    const organizationSubPage: ItemLink[] = [
-        {
-            linkProps: {
-                href: organizationListLink,
-            },
-            text: routeTitles.organizationList(),
-            isActive: hasPathnameThisMatch(pathname, organizationListLink),
-        },
-        {
-            linkProps: {
-                href: organizationCreateLink,
-            },
-            text: routeTitles.organizationCreate(),
-            isActive: hasPathnameThisMatch(pathname, organizationCreateLink),
-        },
-        {
-            linkProps: {
-                href: currentPage,
-            },
-            dynamic: true,
-            text: currentPage,
-            isActive: hasPathnameThisRegex(
-                pathname,
-                "^/organizations/[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$"
-            ),
-        },
-        {
-            linkProps: {
-                href: currentPage,
-            },
-            dynamic: true,
-            text: currentPage,
-            isActive: hasPathnameThisRegex(
-                pathname,
-                "^/organizations/[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}/info-form$"
-            ),
-        },
-    ];
-
-    const teamSubPage: ItemLink[] = [
-        {
-            linkProps: {
-                href: teamListLink,
-            },
-            text: routeTitles.teamList(),
-            isActive: hasPathnameThisMatch(pathname, teamListLink),
-        },
-        {
-            linkProps: {
-                href: teamCreateLink,
-            },
-            text: routeTitles.teamCreate(),
-            isActive: hasPathnameThisMatch(pathname, teamCreateLink),
-        },
-        {
-            linkProps: {
-                href: currentPage,
-            },
-            dynamic: true,
-            text: currentPage,
-            isActive: hasPathnameThisRegex(
-                pathname,
-                "^/teams/[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$"
-            ),
-        },
-        {
-            linkProps: {
-                href: currentPage,
-            },
-            dynamic: true,
-            text: currentPage,
-            isActive: hasPathnameThisRegex(
-                pathname,
-                "^/teams/[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}/info-form$"
-            ),
-        },
-    ];
-
     const MenuItems: ItemLink[] = [
-        // {
-        //     linkProps: {
-        //         href: dashboardLink,
-        //     },
-        //     text: "Accueil",
-        //     isActive: hasPathnameThisMatch(pathname, dashboardLink),
-        // },
         {
             isActive: hasPathnameThisMatch(pathname, accountLink),
-            // breadcrumb: {
-            //     href: accountLink,
-            // },
+            href: accountLink,
             text: "Compte",
-            expandedByDefault:
-                Boolean(accountSubPages.find((a) => a.isActive)) ||
-                Boolean(accountSubPages.find((a) => a.expandedByDefault)),
-            items: accountSubPages,
-        },
-        {
-            linkProps: {
-                href: communityLink,
-            },
-            text: "Communauté",
-            isActive: hasPathnameThisMatch(pathname, communityLink),
             items: [
                 {
-                    linkProps: {
-                        href: communityCreateMemberLink,
-                    },
-                    text: routeTitles.communityCreateMember(),
+                    href: accountLink,
+                    text: routeTitles.account(),
+                    isActive: hasPathnameThisMatch(pathname, accountLink),
+                },
+                {
+                    href: accountEditBaseInfoLink,
+                    text: routeTitles.accountEditBaseInfo(),
                     isActive: hasPathnameThisMatch(
                         pathname,
-                        communityCreateMemberLink
-                    ),
-                },
-                {
-                    linkProps: {
-                        href: mapLink,
-                    },
-                    text: routeTitles.map(),
-                    isActive: hasPathnameThisMatch(pathname, mapLink),
-                },
-                {
-                    linkProps: {
-                        href: pathname,
-                    },
-                    text: currentPage,
-                    isActive: hasPathnameThisRegex(
-                        pathname,
-                        "^/community/[a-zA-Z]+.[a-zA-Z]+$"
+                        accountEditBaseInfoLink
                     ),
                 },
             ],
         },
         {
-            linkProps: {
-                href: startupListLink,
-            },
-            text: "Produit",
-            isActive: hasPathnameThisMatch(pathname, startupListLink),
-            items: startupSubPage,
+            href: communityLink,
+            text: "Communauté",
+            isActive: hasPathnameThisMatch(pathname, communityLink),
+            items: [
+                {
+                    href: communityLink,
+                    text: "Membre",
+                    isActive: hasPathnameThisMatch(pathname, communityLink),
+                    items: [
+                        {
+                            href: communityCreateMemberLink,
+                            text: routeTitles.communityCreateMember(),
+                            isActive: hasPathnameThisMatch(
+                                pathname,
+                                communityCreateMemberLink
+                            ),
+                        },
+                        {
+                            href: mapLink,
+                            text: routeTitles.map(),
+                            isActive: hasPathnameThisMatch(pathname, mapLink),
+                        },
+                        {
+                            href: pathname,
+                            text: currentPage,
+                            isActive: hasPathnameThisRegex(
+                                pathname,
+                                "^/community/[a-zA-Z]+.[a-zA-Z]+$"
+                            ),
+                        },
+                    ],
+                },
+                {
+                    href: startupListLink,
+                    text: "Produit",
+                    isActive: hasPathnameThisMatch(pathname, startupListLink),
+                    items: [
+                        {
+                            href: startupCreateLink,
+                            text: routeTitles.startupCreate(),
+                            isActive: hasPathnameThisMatch(
+                                pathname,
+                                startupCreateLink
+                            ),
+                        },
+                        {
+                            href: currentPage,
+                            text: currentPage,
+                            isActive: hasPathnameThisRegex(
+                                pathname,
+                                "^/startups/[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$"
+                            ),
+                        },
+                        {
+                            href: currentPage,
+                            text: currentPage,
+                            isActive: hasPathnameThisRegex(
+                                pathname,
+                                "^/startups/[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}/info-form$"
+                            ),
+                        },
+                    ],
+                },
+                {
+                    href: incubatorListLink,
+                    text: "Incubateur",
+                    isActive: hasPathnameThisMatch(pathname, incubatorListLink),
+                    items: [
+                        // {
+                        //     href: incubatorListLink,
+                        //     text: routeTitles.incubatorList(),
+                        //     isActive: hasPathnameThisMatch(
+                        //         pathname,
+                        //         incubatorListLink
+                        //     ),
+                        // },
+                        {
+                            href: incubatorCreateLink,
+                            text: routeTitles.incubatorCreate(),
+                            isActive: hasPathnameThisMatch(
+                                pathname,
+                                incubatorCreateLink
+                            ),
+                        },
+                        {
+                            href: pathname,
+                            text: currentPage,
+                            isActive: hasPathnameThisRegex(
+                                pathname,
+                                "^/incubators/[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$"
+                            ),
+                        },
+                        {
+                            href: pathname,
+                            text: currentPage,
+                            isActive: hasPathnameThisRegex(
+                                pathname,
+                                "^/incubators/[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}/info-form$"
+                            ),
+                        },
+                    ],
+                },
+                {
+                    href: organizationListLink,
+                    text: "Sponsors",
+                    isActive: hasPathnameThisMatch(
+                        pathname,
+                        organizationListLink
+                    ),
+                    items: [
+                        // {
+                        //     href: organizationListLink,
+                        //     text: routeTitles.organizationList(),
+                        //     isActive: hasPathnameThisMatch(
+                        //         pathname,
+                        //         organizationListLink
+                        //     ),
+                        // },
+                        {
+                            href: organizationCreateLink,
+                            text: routeTitles.organizationCreate(),
+                            isActive: hasPathnameThisMatch(
+                                pathname,
+                                organizationCreateLink
+                            ),
+                        },
+                        {
+                            href: pathname,
+                            text: currentPage,
+                            isActive: hasPathnameThisRegex(
+                                pathname,
+                                "^/organizations/[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$"
+                            ),
+                        },
+                        {
+                            href: pathname,
+                            text: currentPage,
+                            isActive: hasPathnameThisRegex(
+                                pathname,
+                                "^/organizations/[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}/info-form$"
+                            ),
+                        },
+                    ],
+                },
+                {
+                    href: teamListLink,
+                    text: "Équipe",
+                    isActive: hasPathnameThisMatch(pathname, teamListLink),
+                    items: [
+                        // {
+                        //     href: teamListLink,
+                        //     text: routeTitles.teamList(),
+                        //     isActive: hasPathnameThisMatch(
+                        //         pathname,
+                        //         teamListLink
+                        //     ),
+                        // },
+                        {
+                            href: teamCreateLink,
+                            text: routeTitles.teamCreate(),
+                            isActive: hasPathnameThisMatch(
+                                pathname,
+                                teamCreateLink
+                            ),
+                        },
+                        {
+                            href: pathname,
+                            text: currentPage,
+                            isActive: hasPathnameThisRegex(
+                                pathname,
+                                "^/teams/[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$"
+                            ),
+                        },
+                        {
+                            href: pathname,
+                            text: currentPage,
+                            isActive: hasPathnameThisRegex(
+                                pathname,
+                                "^/teams/[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}/info-form$"
+                            ),
+                        },
+                    ],
+                },
+            ],
         },
         {
-            linkProps: {
-                href: startupListLink,
-            },
-            text: "Metabase",
-            isActive: hasPathnameThisMatch(pathname, metabaseLink),
-        },
-        {
-            linkProps: {
-                href: incubatorListLink,
-            },
-            text: "Incubateur",
-            isActive: hasPathnameThisMatch(pathname, incubatorListLink),
-            items: incubatorSubPage,
-        },
-        {
-            linkProps: {
-                href: teamListLink,
-            },
-            text: "Équipe",
-            isActive: hasPathnameThisMatch(pathname, teamListLink),
-            items: teamSubPage,
-        },
-        {
-            linkProps: {
-                href: newsletterLink,
-            },
+            href: newsletterLink,
             text: routeTitles.newsletters(),
             isActive: hasPathnameThisMatch(pathname, newsletterLink),
         },
         {
-            linkProps: {
-                href: eventsLink,
-            },
+            href: eventsLink,
             text: routeTitles.eventsList(),
             isActive: hasPathnameThisMatch(pathname, eventsLink),
         },
         {
-            linkProps: {
-                href: formationLink,
-            },
+            href: formationLink,
             text: routeTitles.formationList(),
             isActive: hasPathnameThisRoot(pathname, formationLink),
             items: [
                 {
-                    linkProps: {
-                        href: pathname,
-                    },
+                    href: pathname,
                     text: currentPage || pathname,
                     isActive: hasPathnameThisRegex(
                         pathname,
@@ -394,41 +314,21 @@ export function PrivateLayout({ children }: { children: React.ReactNode }) {
             ],
         },
         {
-            linkProps: {
-                href: serviceLink,
-            },
+            href: serviceLink,
             text: routeTitles.serviceList(),
             isActive: hasPathnameThisMatch(pathname, serviceLink),
         },
         {
-            linkProps: {
-                href: organizationListLink,
-            },
-            text: "Organisations",
-            isActive: hasPathnameThisMatch(pathname, organizationListLink),
-            items: organizationSubPage,
+            href: adminMattermostLink,
+            text: "Admin",
+            isActive: hasPathnameThisMatch(pathname, adminMattermostLink),
         },
     ];
 
-    if (session?.user?.isAdmin) {
-        MenuItems.push({
-            linkProps: {
-                href: adminMattermostLink,
-            },
-            text: "Admin",
-            isActive: hasPathnameThisMatch(pathname, adminMattermostLink),
-        });
-    }
-
     interface ItemLink {
-        linkProps?: { href: string };
+        href: string;
         text: string;
         isActive: boolean;
-        expandedByDefault?: boolean;
-        breadcrumb?: {
-            href: string;
-        };
-        dynamic?: boolean;
         items?: ItemLink[];
     }
 
@@ -460,16 +360,11 @@ export function PrivateLayout({ children }: { children: React.ReactNode }) {
                         }}
                         segments={tree
                             .slice(0, tree.length - 1)
-                            .filter(
-                                (segment) =>
-                                    segment.linkProps?.href ||
-                                    segment.breadcrumb?.href
-                            )
+                            .filter((segment) => segment.href)
                             .map((segment) => ({
                                 label: segment.text,
                                 linkProps: {
-                                    href: (segment.linkProps?.href ||
-                                        segment.breadcrumb?.href) as string,
+                                    href: segment.href,
                                 },
                             }))}
                     />
