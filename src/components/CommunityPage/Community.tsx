@@ -194,7 +194,7 @@ export const Community = (props: CommunityProps) => {
                     } else if (filter.type === "incubator") {
                         // test if user belongs to given incubator
                         const incubator = props.incubatorMembers.find(
-                            (i) => i.id === filter.value
+                            (i) => i.uuid === filter.value
                         );
                         return (
                             incubator &&

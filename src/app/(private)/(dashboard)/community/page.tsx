@@ -25,6 +25,7 @@ export default async function Page() {
     const title = routeTitles.community();
 
     const incubatorMembers = await getAllIncubatorsMembers();
+
     const props = {
         title,
         incubatorOptions: incubatorOptions,
