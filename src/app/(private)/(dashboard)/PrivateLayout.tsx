@@ -128,13 +128,6 @@ export function PrivateLayout({ children }: { children: React.ReactNode }) {
     const startupSubPage: ItemLink[] = [
         {
             linkProps: {
-                href: startupListLink,
-            },
-            text: routeTitles.startupList(),
-            isActive: hasPathnameThisMatch(pathname, startupListLink),
-        },
-        {
-            linkProps: {
                 href: startupCreateLink,
             },
             text: routeTitles.startupCreate(),
@@ -306,6 +299,35 @@ export function PrivateLayout({ children }: { children: React.ReactNode }) {
             },
             text: "Communauté",
             isActive: hasPathnameThisMatch(pathname, communityLink),
+            items: [
+                {
+                    linkProps: {
+                        href: communityCreateMemberLink,
+                    },
+                    text: routeTitles.communityCreateMember(),
+                    isActive: hasPathnameThisMatch(
+                        pathname,
+                        communityCreateMemberLink
+                    ),
+                },
+                {
+                    linkProps: {
+                        href: mapLink,
+                    },
+                    text: routeTitles.map(),
+                    isActive: hasPathnameThisMatch(pathname, mapLink),
+                },
+                {
+                    linkProps: {
+                        href: pathname,
+                    },
+                    text: currentPage,
+                    isActive: hasPathnameThisRegex(
+                        pathname,
+                        "^/community/[a-zA-Z]+.[a-zA-Z]+$"
+                    ),
+                },
+            ],
         },
         {
             linkProps: {
@@ -313,17 +335,7 @@ export function PrivateLayout({ children }: { children: React.ReactNode }) {
             },
             text: "Produit",
             isActive: hasPathnameThisMatch(pathname, startupListLink),
-            expandedByDefault: Boolean(startupSubPage.find((a) => a.isActive)),
-            items: [
-                ...startupSubPage,
-                {
-                    linkProps: {
-                        href: pathname,
-                    },
-                    text: currentPage || pathname,
-                    isActive: hasPathnameThisRegex(pathname, startupDetailLink),
-                },
-            ],
+            items: startupSubPage,
         },
         {
             linkProps: {
@@ -332,17 +344,14 @@ export function PrivateLayout({ children }: { children: React.ReactNode }) {
             text: "Metabase",
             isActive: hasPathnameThisMatch(pathname, metabaseLink),
         },
-        // {
-        //     linkProps: {
-        //         href: incubatorListLink,
-        //     },
-        //     text: "Incubateur",
-        //     isActive: hasPathnameThisMatch(pathname, incubatorListLink),
-        //     expandedByDefault: Boolean(
-        //         incubatorSubPage.find((a) => a.isActive)
-        //     ),
-        //     items: incubatorSubPage,
-        // },
+        {
+            linkProps: {
+                href: incubatorListLink,
+            },
+            text: "Incubateur",
+            isActive: hasPathnameThisMatch(pathname, incubatorListLink),
+            items: incubatorSubPage,
+        },
         {
             linkProps: {
                 href: teamListLink,
@@ -439,72 +448,6 @@ export function PrivateLayout({ children }: { children: React.ReactNode }) {
         return tree;
     };
 
-    const displayMenuForSubPage = (pathname) => {
-        const getSubMenu = () => {
-            const firstSubPage = pathname.split("/")[1];
-            if (firstSubPage.includes("account")) {
-                return accountSubPages;
-            } else if (firstSubPage.includes("teams")) {
-                return teamSubPage;
-            } else if (firstSubPage.includes("incubators")) {
-                return incubatorSubPage;
-            } else if (firstSubPage.includes("organizations")) {
-                return organizationSubPage;
-            } else if (firstSubPage.includes("startups")) {
-                return startupSubPage;
-            } else if (firstSubPage.includes("community")) {
-                return [
-                    {
-                        linkProps: {
-                            href: communityLink,
-                        },
-                        text: routeTitles.community(),
-                        isActive: hasPathnameThisMatch(pathname, communityLink),
-                    },
-                    {
-                        linkProps: {
-                            href: communityCreateMemberLink,
-                        },
-                        text: routeTitles.communityCreateMember(),
-                        isActive: hasPathnameThisMatch(
-                            pathname,
-                            communityCreateMemberLink
-                        ),
-                    },
-                    {
-                        linkProps: {
-                            href: mapLink,
-                        },
-                        text: routeTitles.map(),
-                        isActive: hasPathnameThisMatch(pathname, mapLink),
-                    },
-                    {
-                        linkProps: {
-                            href: metabaseLink,
-                        },
-                        text: routeTitles.metabase(),
-                        isActive: hasPathnameThisMatch(pathname, mapLink),
-                    },
-                ];
-            } else if (firstSubPage.includes("admin")) {
-                return [
-                    {
-                        linkProps: {
-                            href: communityLink,
-                        },
-                        text: routeTitles.adminMattermost(),
-                        isActive: hasPathnameThisMatch(
-                            pathname,
-                            adminMattermostLink
-                        ),
-                    },
-                ];
-            }
-            return [];
-        };
-        return getSubMenu().filter((menu) => !menu.dynamic);
-    };
-
     const tree = findActiveItem(MenuItems);
     return (
         <>
@@ -549,13 +492,7 @@ export function PrivateLayout({ children }: { children: React.ReactNode }) {
                         }
                     />
                 )}
-                <div
-                    className={`fr-col-12 ${
-                        !!displayMenuForSubPage(pathname).length
-                            ? "fr-col-md-9 fr-col-lg-9"
-                            : "fr-col-md-12 fr-col-lg-12"
-                    }`}
-                >
+                <div className={`fr-col-12 fr-col-md-12 fr-col-lg-12`}>
                     {children}
                 </div>
             </div>
