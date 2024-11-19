@@ -285,7 +285,14 @@ export const Community = (props: CommunityProps) => {
                     )}`}
                     style={{ textAlign: "right" }}
                 >
-                    <Button priority="secondary">Créer un membre</Button>
+                    <Button
+                        linkProps={{
+                            href: "/community/create",
+                        }}
+                        priority="secondary"
+                    >
+                        Créer un membre
+                    </Button>
                 </div>
             </div>
             <p>
