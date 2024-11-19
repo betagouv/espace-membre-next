@@ -7,7 +7,7 @@ test.use({ storageState: "./playwright-auth-valid.member.json" });
 test("incubator list page", async ({ page }) => {
     await page.goto("/incubators");
     await expect(
-        page.getByText("Rechercher un incubateur").nth(1)
+        page.getByText("Rechercher un incubateur").first()
     ).toBeVisible();
 });
 
@@ -39,6 +39,6 @@ test("incubator detail page and form page", async ({ page }) => {
 test("incubator create page", async ({ page }) => {
     await page.goto(`/incubators/create-form`);
     await expect(
-        page.getByText("Créer une fiche incubateur").nth(1)
+        page.getByText("Créer une fiche incubateur").first()
     ).toBeVisible();
 });
