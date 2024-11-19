@@ -51,7 +51,7 @@ export async function getBossClientInstance(
 // We force using a singleton getter because if `.start()` is not called before doing any operation it will
 // fail silently without doing/throwing anything (we also start listening for events before pushing them)
 export async function startBossClientInstance(): Promise<PgBoss> {
-    await getBossClientInstance(async () => {
+    return await getBossClientInstance(async () => {
         await bossClient.work(
             createMatomoServiceAccountTopic,
             handlerWrapper(createMatomoServiceAccount)
