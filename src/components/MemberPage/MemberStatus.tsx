@@ -250,7 +250,7 @@ const emailStatusRow = (
                             )
                             .otherwise(
                                 () =>
-                                    "Un admin doit intervenir, le compte est dans un état innatendu"
+                                    "Un admin doit intervenir, le compte est dans un état inattendu"
                             )
                 )
                 .otherwise(() => (
