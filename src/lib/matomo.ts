@@ -103,7 +103,7 @@ export class Matomo implements AccountService {
 
         if (!response.ok) {
             throw new Error(
-                `Matomo: Error fetching user: ${response.statusText}`
+                `Matomo: Error fetching user ${email}: ${response.statusText}`
             );
         }
         const users = await response.json();
@@ -130,7 +130,7 @@ export class Matomo implements AccountService {
 
         if (!response.ok) {
             throw new Error(
-                `Matomo: Error deleting user: ${response.statusText}`
+                `Matomo: Error deleting user ${userLogin}: ${response.statusText}`
             );
         }
 
@@ -209,7 +209,7 @@ export class Matomo implements AccountService {
         // if sucess response body = { result: 'success', message: 'ok' }
         if (responseBody.result === "error") {
             throw new Error(
-                `Matomo: Failed to create user: ${responseBody.result}`
+                `Matomo: Failed to create user ${userLogin}: ${responseBody.result}`
             );
         }
         console.log(`Matomo: User created with login : ${userLogin}`);
@@ -263,7 +263,7 @@ export class Matomo implements AccountService {
             );
             return;
         } catch (error) {
-            console.error("Failed to set user access:", error);
+            console.error(`Failed to set user access for ${userLogin}:`, error);
             throw error;
         }
     }
@@ -339,7 +339,7 @@ export class Matomo implements AccountService {
         // Check if the response is ok and handle errors
         if (!response.ok) {
             throw new Error(
-                `Matomo : Failed to create site: ${response.statusText}`
+                `Matomo : Failed to create site: ${response.statusText} ${urls.join(',')}`
             );
         }
         console.log(`Matomo: Site created with url : ${urls.join(",")}`);
