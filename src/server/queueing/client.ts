@@ -27,10 +27,15 @@ bossClient.on("error", (error) => {
 
 let initPromise: Promise<void> | null = null;
 
-export async function getBossClientInstance(): Promise<PgBoss> {
+export async function getBossClientInstance(
+    callback?: () => void
+): Promise<PgBoss> {
     if (!initPromise) {
         initPromise = (async () => {
             await bossClient.start();
+            if (callback) {
+                await callback();
+            }
         })();
     }
 
@@ -46,25 +51,12 @@ export async function getBossClientInstance(): Promise<PgBoss> {
 // We force using a singleton getter because if `.start()` is not called before doing any operation it will
 // fail silently without doing/throwing anything (we also start listening for events before pushing them)
 export async function startBossClientInstance(): Promise<PgBoss> {
-    if (!initPromise) {
-        initPromise = (async () => {
-            await bossClient.start();
-            // Bind listeners
-            await bossClient.work(
-                createMatomoServiceAccountTopic,
-                handlerWrapper(createMatomoServiceAccount)
-            );
-        })();
-    }
-
-    // `await` is done outside the condition in case of concurrent init
-    try {
-        await initPromise;
-    } catch (error) {
-        gracefulExit(error as unknown as Error);
-    }
-
-    return bossClient;
+    await getBossClientInstance(async () => {
+        await bossClient.work(
+            createMatomoServiceAccountTopic,
+            handlerWrapper(createMatomoServiceAccount)
+        );
+    });
 }
 
 export async function stopBossClientInstance(): Promise<void> {
