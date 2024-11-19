@@ -137,7 +137,7 @@ const MainHeader = () => {
                                   pathname,
                                   incubatorListLink
                               ),
-                              text: "Incubateur",
+                              text: "Incubateurs",
                           },
                           {
                               linkProps: {
@@ -159,39 +159,13 @@ const MainHeader = () => {
                               linkProps: {
                                   href: linkRegistry.get("teamList", undefined),
                               },
-                              text: "Équipe",
+                              text: "Équipes",
                               isActive: hasPathnameThisRoot(
                                   pathname,
                                   linkRegistry.get("teamList", undefined)
                               ),
                           },
                       ],
-                      //   menuLinks: [
-                      //       {
-                      //           linkProps: {
-                      //               href: linkRegistry.get(
-                      //                   "community",
-                      //                   undefined
-                      //               ),
-                      //           },
-                      //           text: routeTitles.community(),
-                      //       },
-                      //       {
-                      //           linkProps: {
-                      //               href: linkRegistry.get(
-                      //                   "communityCreateMember",
-                      //                   undefined
-                      //               ),
-                      //           },
-                      //           text: routeTitles.communityCreateMember(),
-                      //       },
-                      //       {
-                      //           linkProps: {
-                      //               href: linkRegistry.get("map"),
-                      //           },
-                      //           text: routeTitles.map(),
-                      //       },
-                      //   ],
                   },
                   {
                       linkProps: {

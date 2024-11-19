@@ -2,6 +2,7 @@ import { Metadata } from "next";
 import { redirect } from "next/navigation";
 import { getServerSession } from "next-auth";
 
+import { BreadCrumbFiller } from "@/app/BreadCrumbProvider";
 import { OrganizationUpdate } from "@/components/organization/OrganizationUpdatePage";
 import { db } from "@/lib/kysely";
 import { getOrganization } from "@/lib/kysely/queries/organizations";
@@ -45,6 +46,14 @@ export default async function Page(props: Props) {
     const componentProps = {
         organization,
     };
-
-    return <OrganizationUpdate {...componentProps} />;
+    console.log("LCS TOTO 1", organization.uuid);
+    return (
+        <>
+            <BreadCrumbFiller
+                currentPage={organization.name}
+                currentItemId={organization.uuid}
+            />
+            <OrganizationUpdate {...componentProps} />
+        </>
+    );
 }

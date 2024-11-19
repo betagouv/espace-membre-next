@@ -2,6 +2,7 @@ import { Metadata, ResolvingMetadata } from "next";
 import { redirect } from "next/navigation";
 import { validate } from "uuid";
 
+import { BreadCrumbFiller } from "@/app/BreadCrumbProvider";
 import StartupPage from "@/components/StartupPage/StartupPage";
 import { getEventListByStartupUuid } from "@/lib/events";
 import { db } from "@/lib/kysely";
@@ -65,11 +66,17 @@ export default async function Page({ params }: Props) {
     const changes = await getEventListByStartupUuid(startup.uuid);
 
     return (
-        <StartupPage
-            changes={changes.map((change) => startupChangeToModel(change))}
-            startupInfos={startup}
-            members={startupMembers}
-            phases={phases}
-        />
+        <>
+            <BreadCrumbFiller
+                currentPage={startup.name}
+                currentItemId={startup.uuid}
+            />
+            <StartupPage
+                changes={changes.map((change) => startupChangeToModel(change))}
+                startupInfos={startup}
+                members={startupMembers}
+                phases={phases}
+            />
+        </>
     );
 }

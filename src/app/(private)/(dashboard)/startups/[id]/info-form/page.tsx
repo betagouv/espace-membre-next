@@ -4,6 +4,7 @@ import { getServerSession } from "next-auth";
 import { validate } from "uuid";
 import { z } from "zod";
 
+import { BreadCrumbFiller } from "@/app/BreadCrumbProvider";
 import { StartupInfoUpdate } from "@/components/StartupInfoUpdatePage";
 import { getEventListByStartupUuid } from "@/lib/events";
 import { db } from "@/lib/kysely";
@@ -154,5 +155,13 @@ export default async function Page(props) {
         changes: changes.map((change) => startupChangeToModel(change)),
     };
 
-    return <StartupInfoUpdate {...componentProps} />;
+    return (
+        <>
+            <BreadCrumbFiller
+                currentPage={startup.name}
+                currentItemId={startup.uuid}
+            />
+            <StartupInfoUpdate {...componentProps} />
+        </>
+    );
 }

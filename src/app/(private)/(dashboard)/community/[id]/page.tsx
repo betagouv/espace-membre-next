@@ -56,7 +56,10 @@ export default async function Page({
 
     return (
         <>
-            <BreadCrumbFiller currentPage={user.userInfos.fullname} />
+            <BreadCrumbFiller
+                currentPage={user.userInfos.fullname}
+                currentItemId={user.userInfos.username}
+            />
             <MemberPage
                 isAdmin={isAdmin}
                 canEdit={canEdit}

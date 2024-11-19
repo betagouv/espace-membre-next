@@ -1,6 +1,7 @@
 import { Metadata } from "next";
 import { redirect } from "next/navigation";
 import { getServerSession } from "next-auth";
+import { BreadCrumbFiller } from "@/app/BreadCrumbProvider";
 
 import { TeamUpdate } from "@/components/team/TeamUpdatePage";
 import { db } from "@/lib/kysely";
@@ -66,5 +67,13 @@ export default async function Page(props: Props) {
         teamMembers,
     };
 
-    return <TeamUpdate {...componentProps} />;
+    return (
+        <>
+            <BreadCrumbFiller
+                currentPage={team.name}
+                currentItemId={team.uuid}
+            />
+            <TeamUpdate {...componentProps} />
+        </>
+    );
 }

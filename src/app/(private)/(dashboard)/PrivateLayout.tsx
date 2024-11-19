@@ -27,7 +27,7 @@ export function PrivateLayout({ children }: { children: React.ReactNode }) {
         },
     });
 
-    const { currentPage } = useInfoContext();
+    const { currentPage, currentItemId } = useInfoContext();
     if (status === "loading") {
         return (
             <div className="fr-grid-row fr-grid-row-gutters fr-grid-row--center fr-mb-14v fr-my-4w">
@@ -109,7 +109,7 @@ export function PrivateLayout({ children }: { children: React.ReactNode }) {
             items: [
                 {
                     href: communityLink,
-                    text: "Membre",
+                    text: "Membres",
                     isActive: hasPathnameThisMatch(pathname, communityLink),
                     items: [
                         {
@@ -126,18 +126,31 @@ export function PrivateLayout({ children }: { children: React.ReactNode }) {
                             isActive: hasPathnameThisMatch(pathname, mapLink),
                         },
                         {
-                            href: pathname,
+                            href: () =>
+                                linkRegistry.get("communityMember", {
+                                    username: currentItemId || "",
+                                }),
                             text: currentPage,
                             isActive: hasPathnameThisRegex(
                                 pathname,
-                                "^/community/[a-zA-Z]+.[a-zA-Z]+$"
+                                "^/community/[a-zA-Z]+.[a-zA-Z]+"
                             ),
+                            items: [
+                                {
+                                    href: pathname,
+                                    text: "Mise à jour de la fiche",
+                                    isActive: hasPathnameThisRegex(
+                                        pathname,
+                                        "^/community/[a-zA-Z]+.[a-zA-Z]+/update"
+                                    ),
+                                },
+                            ],
                         },
                     ],
                 },
                 {
                     href: startupListLink,
-                    text: "Produit",
+                    text: "Produits",
                     isActive: hasPathnameThisMatch(pathname, startupListLink),
                     items: [
                         {
@@ -149,36 +162,33 @@ export function PrivateLayout({ children }: { children: React.ReactNode }) {
                             ),
                         },
                         {
-                            href: currentPage,
+                            href: () =>
+                                linkRegistry.get("startupDetails", {
+                                    startupId: currentItemId,
+                                }),
                             text: currentPage,
                             isActive: hasPathnameThisRegex(
                                 pathname,
                                 "^/startups/[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$"
                             ),
-                        },
-                        {
-                            href: currentPage,
-                            text: currentPage,
-                            isActive: hasPathnameThisRegex(
-                                pathname,
-                                "^/startups/[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}/info-form$"
-                            ),
+                            items: [
+                                {
+                                    href: pathname,
+                                    text: "Modifier la fiche",
+                                    isActive: hasPathnameThisRegex(
+                                        pathname,
+                                        "^/startups/[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}/info-form$"
+                                    ),
+                                },
+                            ],
                         },
                     ],
                 },
                 {
                     href: incubatorListLink,
-                    text: "Incubateur",
+                    text: "Incubateurs",
                     isActive: hasPathnameThisMatch(pathname, incubatorListLink),
                     items: [
-                        // {
-                        //     href: incubatorListLink,
-                        //     text: routeTitles.incubatorList(),
-                        //     isActive: hasPathnameThisMatch(
-                        //         pathname,
-                        //         incubatorListLink
-                        //     ),
-                        // },
                         {
                             href: incubatorCreateLink,
                             text: routeTitles.incubatorCreate(),
@@ -188,20 +198,25 @@ export function PrivateLayout({ children }: { children: React.ReactNode }) {
                             ),
                         },
                         {
-                            href: pathname,
+                            href: () =>
+                                linkRegistry.get("incubatorDetails", {
+                                    incubatorId: currentItemId,
+                                }),
                             text: currentPage,
                             isActive: hasPathnameThisRegex(
                                 pathname,
                                 "^/incubators/[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$"
                             ),
-                        },
-                        {
-                            href: pathname,
-                            text: currentPage,
-                            isActive: hasPathnameThisRegex(
-                                pathname,
-                                "^/incubators/[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}/info-form$"
-                            ),
+                            items: [
+                                {
+                                    href: pathname,
+                                    text: currentPage,
+                                    isActive: hasPathnameThisRegex(
+                                        pathname,
+                                        "^/incubators/[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}/info-form$"
+                                    ),
+                                },
+                            ],
                         },
                     ],
                 },
@@ -213,14 +228,6 @@ export function PrivateLayout({ children }: { children: React.ReactNode }) {
                         organizationListLink
                     ),
                     items: [
-                        // {
-                        //     href: organizationListLink,
-                        //     text: routeTitles.organizationList(),
-                        //     isActive: hasPathnameThisMatch(
-                        //         pathname,
-                        //         organizationListLink
-                        //     ),
-                        // },
                         {
                             href: organizationCreateLink,
                             text: routeTitles.organizationCreate(),
@@ -230,36 +237,40 @@ export function PrivateLayout({ children }: { children: React.ReactNode }) {
                             ),
                         },
                         {
-                            href: pathname,
+                            href: () => {
+                                console.log(
+                                    "LCS TOTO",
+                                    currentPage,
+                                    currentItemId
+                                );
+                                return linkRegistry.get("organizationDetails", {
+                                    organizationId:
+                                        currentItemId || currentPage,
+                                });
+                            },
                             text: currentPage,
                             isActive: hasPathnameThisRegex(
                                 pathname,
                                 "^/organizations/[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$"
                             ),
-                        },
-                        {
-                            href: pathname,
-                            text: currentPage,
-                            isActive: hasPathnameThisRegex(
-                                pathname,
-                                "^/organizations/[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}/info-form$"
-                            ),
+                            items: [
+                                {
+                                    href: pathname,
+                                    text: currentPage,
+                                    isActive: hasPathnameThisRegex(
+                                        pathname,
+                                        "^/organizations/[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}/info-form$"
+                                    ),
+                                },
+                            ],
                         },
                     ],
                 },
                 {
                     href: teamListLink,
-                    text: "Équipe",
+                    text: "Équipes",
                     isActive: hasPathnameThisMatch(pathname, teamListLink),
                     items: [
-                        // {
-                        //     href: teamListLink,
-                        //     text: routeTitles.teamList(),
-                        //     isActive: hasPathnameThisMatch(
-                        //         pathname,
-                        //         teamListLink
-                        //     ),
-                        // },
                         {
                             href: teamCreateLink,
                             text: routeTitles.teamCreate(),
@@ -269,20 +280,25 @@ export function PrivateLayout({ children }: { children: React.ReactNode }) {
                             ),
                         },
                         {
-                            href: pathname,
+                            href: () =>
+                                linkRegistry.get("teamDetails", {
+                                    id: currentItemId,
+                                }),
                             text: currentPage,
                             isActive: hasPathnameThisRegex(
                                 pathname,
                                 "^/teams/[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$"
                             ),
-                        },
-                        {
-                            href: pathname,
-                            text: currentPage,
-                            isActive: hasPathnameThisRegex(
-                                pathname,
-                                "^/teams/[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}/info-form$"
-                            ),
+                            items: [
+                                {
+                                    href: pathname,
+                                    text: currentPage,
+                                    isActive: hasPathnameThisRegex(
+                                        pathname,
+                                        "^/teams/[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}/info-form$"
+                                    ),
+                                },
+                            ],
                         },
                     ],
                 },
@@ -326,7 +342,7 @@ export function PrivateLayout({ children }: { children: React.ReactNode }) {
     ];
 
     interface ItemLink {
-        href: string;
+        href: string | (() => string);
         text: string;
         isActive: boolean;
         items?: ItemLink[];
@@ -364,7 +380,10 @@ export function PrivateLayout({ children }: { children: React.ReactNode }) {
                             .map((segment) => ({
                                 label: segment.text,
                                 linkProps: {
-                                    href: segment.href,
+                                    href:
+                                        typeof segment.href === "function"
+                                            ? segment.href()
+                                            : segment.href,
                                 },
                             }))}
                     />

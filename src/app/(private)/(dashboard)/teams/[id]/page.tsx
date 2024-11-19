@@ -1,6 +1,7 @@
 import { Metadata, ResolvingMetadata } from "next";
 import { redirect } from "next/navigation";
 
+import { BreadCrumbFiller } from "@/app/BreadCrumbProvider";
 import TeamPage, { TeamPageProps } from "@/components/team/TeamPage/Team";
 import { db } from "@/lib/kysely";
 import { getIncubator } from "@/lib/kysely/queries/incubators";
@@ -57,10 +58,16 @@ export default async function Page({ params }: Props) {
     );
     const team = teamToModel(dbTeam);
     return (
-        <TeamPage
-            incubator={incubatorToModel(incubator)}
-            teamInfos={team}
-            teamMembers={teamMembers || []}
-        />
+        <>
+            <BreadCrumbFiller
+                currentPage={team.name}
+                currentItemId={team.uuid}
+            />
+            <TeamPage
+                incubator={incubatorToModel(incubator)}
+                teamInfos={team}
+                teamMembers={teamMembers || []}
+            />
+        </>
     );
 }

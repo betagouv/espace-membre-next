@@ -1,6 +1,7 @@
 import { redirect } from "next/navigation";
 import { getServerSession } from "next-auth";
 
+import { BreadCrumbFiller } from "@/app/BreadCrumbProvider";
 import { BaseInfoUpdate } from "@/components/BaseInfoUpdatePage";
 import { getEventListByUsername } from "@/lib/events";
 import { getAllStartups } from "@/lib/kysely/queries";
@@ -72,5 +73,13 @@ export default async function Page({
         username: id,
     };
 
-    return <BaseInfoUpdate {...props} />;
+    return (
+        <>
+            <BreadCrumbFiller
+                currentPage={userInfos.fullname}
+                currentItemId={userInfos.username}
+            />
+            <BaseInfoUpdate {...props} />
+        </>
+    );
 }

@@ -6,7 +6,6 @@ import * as Sentry from "@sentry/nextjs";
 
 import { TeamForm } from "../TeamForm/TeamForm";
 import { updateTeam } from "@/app/api/teams/actions/updateTeam";
-import { BreadCrumbFiller } from "@/app/BreadCrumbProvider";
 import { teamUpdateSchemaType } from "@/models/actions/team";
 import {
     memberBaseInfoSchemaType,
@@ -48,10 +47,6 @@ export const TeamUpdate = (props: TeamUpdateProps) => {
 
     return (
         <>
-            <BreadCrumbFiller
-                currentPage={routeTitles.teamDetailsEdit(props.team.name)}
-            ></BreadCrumbFiller>
-
             <div className={fr.cx("fr-mb-5w")}>
                 <h1>{routeTitles.teamDetailsEdit(props.team.name)}</h1>
 

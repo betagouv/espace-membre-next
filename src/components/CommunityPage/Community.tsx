@@ -1,5 +1,6 @@
 "use client";
 import React, { useCallback, useMemo, useState } from "react";
+
 import Button from "@codegouvfr/react-dsfr/Button";
 import Checkbox from "@codegouvfr/react-dsfr/Checkbox";
 import { fr } from "@codegouvfr/react-dsfr/fr";
@@ -9,18 +10,17 @@ import Tag from "@codegouvfr/react-dsfr/Tag";
 import Link from "next/link";
 import { useQueryState } from "nuqs";
 
-import { linkRegistry } from "@/utils/routes/registry";
-import AutoComplete from "../AutoComplete";
-
 import { CommunityProps } from ".";
+import { exportToCsv } from "./exportToCsv";
+import { Footer } from "./Footer";
 import {
     getStartupsFromMissions,
     isUserActive,
     communityQueryParser,
     type CommunityFilterSchemaType,
 } from "./utils";
-import { exportToCsv } from "./exportToCsv";
-import { Footer } from "./Footer";
+import AutoComplete from "../AutoComplete";
+import { linkRegistry } from "@/utils/routes/registry";
 
 // return table row for a given user
 const getUserRow = ({
@@ -265,7 +265,29 @@ export const Community = (props: CommunityProps) => {
 
     return (
         <>
-            <h1>Membres de la communauté</h1>
+            <div className={`${fr.cx("fr-grid-row")}`}>
+                <div
+                    className={`${fr.cx(
+                        "fr-col-12",
+                        "fr-col-sm-6",
+                        "fr-col-md-6",
+                        "fr-col-lg-6"
+                    )}`}
+                >
+                    <h1>Membres de la communauté</h1>
+                </div>
+                <div
+                    className={`${fr.cx(
+                        "fr-col-12",
+                        "fr-col-sm-6",
+                        "fr-col-md-6",
+                        "fr-col-lg-6"
+                    )}`}
+                    style={{ textAlign: "right" }}
+                >
+                    <Button priority="secondary">Créer un membre</Button>
+                </div>
+            </div>
             <p>
                 Vous pouvez chercher des membres par nom, domaine, compétence,
                 produit ou incubateur.

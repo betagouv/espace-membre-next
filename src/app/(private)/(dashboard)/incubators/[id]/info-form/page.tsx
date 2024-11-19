@@ -2,6 +2,7 @@ import { Metadata } from "next";
 import { redirect } from "next/navigation";
 import { getServerSession } from "next-auth";
 
+import { BreadCrumbFiller } from "@/app/BreadCrumbProvider";
 import { IncubatorUpdate } from "@/components/IncubatorUpdatePage";
 import { db } from "@/lib/kysely";
 import { getIncubator } from "@/lib/kysely/queries/incubators";
@@ -80,5 +81,13 @@ export default async function Page(props: Props) {
         logoURL,
     };
 
-    return <IncubatorUpdate {...componentProps} />;
+    return (
+        <>
+            <BreadCrumbFiller
+                currentPage={incubator.title}
+                currentItemId={incubator.uuid}
+            />
+            <IncubatorUpdate {...componentProps} />
+        </>
+    );
 }

@@ -1,6 +1,7 @@
 import { Metadata, ResolvingMetadata } from "next";
 import { redirect } from "next/navigation";
 
+import { BreadCrumbFiller } from "@/app/BreadCrumbProvider";
 import OrganizationPage from "@/components/organization/OrganizationPage/Organization";
 import { getOrganization } from "@/lib/kysely/queries/organizations";
 import { organizationToModel } from "@/models/mapper";
@@ -29,5 +30,13 @@ export default async function Page({ params }: Props) {
     }
 
     const organization = organizationToModel(dbOrganization);
-    return <OrganizationPage organizationInfos={organization} />;
+    return (
+        <>
+            <BreadCrumbFiller
+                currentPage={organization.name}
+                currentItemId={organization.uuid}
+            />
+            <OrganizationPage organizationInfos={organization} />
+        </>
+    );
 }
