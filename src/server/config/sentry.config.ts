@@ -1,11 +1,11 @@
 import config from ".";
-import { AccountService, SERVICES } from "./services.config";
 import {
     SentryService,
     SentryTeam,
     SentryUser,
     SentryUserAccess,
 } from "@/lib/sentry";
+import { AccountService, SERVICES } from "@/models/services";
 
 export class FakeSentryService implements AccountService {
     users: SentryUser[] = [];

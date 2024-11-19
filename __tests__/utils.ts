@@ -11,6 +11,7 @@ import { db } from "@/lib/kysely";
 import { startupToModel } from "@/models/mapper";
 import { Domaine, EmailStatusCode } from "@/models/member";
 import config from "@/server/config";
+import { stopBossClientInstance } from "@/server/queueing/client";
 import knex from "@db";
 
 const testUtils = {
@@ -168,6 +169,8 @@ const testUtils = {
         )}:${encodeURIComponent(dbConfig.port || "")}/postgres`;
         const client = new Client({ connectionString: temporaryConnection });
         await db.destroy();
+        await stopBossClientInstance();
+
         return knex
             .destroy()
             .then(() => client.connect())

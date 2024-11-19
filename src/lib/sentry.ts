@@ -1,7 +1,7 @@
 import * as Sentry from "@sentry/node";
 
+import { AccountService, SERVICES } from "@/models/services";
 import config from "@/server/config";
-import { AccountService, SERVICES } from "@/server/config/services.config";
 
 export const initializeSentry = (app) => {
     if (!config.sentryDSN) {

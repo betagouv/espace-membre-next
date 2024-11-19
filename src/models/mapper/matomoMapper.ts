@@ -1,16 +1,16 @@
 import { Selectable } from "kysely";
 
 import { matomoUserSchemaType } from "../matomo";
+import { ACCOUNT_SERVICE_STATUS } from "../services";
 import { ServiceAccounts } from "@/@types/db";
 import { MatomoUser, MatomoUserAccess, MatomoSite } from "@/lib/matomo";
 
-export const matomoUserToModel = (
-    matomoUser: MatomoUser,
+export const matomoMetadataToModel = (
     userMetadata: MatomoUserAccess[],
     allWebsites: MatomoSite[]
-): matomoUserSchemaType => {
-    const sites: matomoUserSchemaType["metadata"]["sites"] = userMetadata.map(
-        (u) => {
+): matomoUserSchemaType["metadata"] => {
+    return {
+        sites: userMetadata.map((u) => {
             const site = allWebsites.find((site) => site.idsite === u.site);
             return {
                 id: u.site,
@@ -19,15 +19,25 @@ export const matomoUserToModel = (
                 name: site ? site.name : "",
                 type: site?.type as matomoUserSchemaType["metadata"]["sites"][0]["type"],
             };
-        }
+        }),
+    };
+};
+
+export const matomoUserToModel = (
+    matomoUser: MatomoUser,
+    userMetadata: MatomoUserAccess[],
+    allWebsites: MatomoSite[]
+): matomoUserSchemaType => {
+    const metadata: matomoUserSchemaType["metadata"] = matomoMetadataToModel(
+        userMetadata,
+        allWebsites
     );
     return {
         email: matomoUser.email,
         account_type: "matomo",
         service_user_id: matomoUser.login,
-        metadata: {
-            sites,
-        },
+        metadata,
+        status: ACCOUNT_SERVICE_STATUS.ACCOUNT_FOUND,
     };
 };
 
@@ -36,7 +46,13 @@ export const matomoServiceInfoToModel = (
 ): matomoUserSchemaType => {
     return {
         account_type: "matomo",
-        service_user_id: matomoUser.service_user_id,
-        metadata: matomoUser.metadata as matomoUserSchemaType["metadata"],
+        email: matomoUser.email!,
+        service_user_id: matomoUser.service_user_id || undefined,
+        metadata: (matomoUser.metadata || {
+            sites: [],
+        }) as matomoUserSchemaType["metadata"],
+        status:
+            (matomoUser.status as ACCOUNT_SERVICE_STATUS) ||
+            ACCOUNT_SERVICE_STATUS.ACCOUNT_FOUND,
     };
 };

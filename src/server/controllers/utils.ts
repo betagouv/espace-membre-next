@@ -1,5 +1,5 @@
 import axios from "axios";
-import crypto from "crypto";
+import crypto, { createCipheriv, createDecipheriv, randomBytes } from "crypto";
 import { compareAsc, startOfDay } from "date-fns";
 import _ from "lodash";
 import nodemailer from "nodemailer";
@@ -21,6 +21,35 @@ export const computeHash = function (username) {
     ); /** Hashing algorithm sha512 */
     return hash.update(username).digest("hex");
 };
+
+export function encryptPassword(password) {
+    const iv = randomBytes(16); // Generate a secure, random IV
+
+    const cipher = createCipheriv(
+        "aes-256-cbc",
+        new Uint8Array(Buffer.from(config.PASSWORD_ENCRYPT_KEY!, "hex")),
+        new Uint8Array(iv)
+    );
+    let encrypted = cipher.update(password, "utf8", "hex");
+    encrypted += cipher.final("hex");
+    return `${iv.toString("hex")}:${encrypted}`; // Combine iv and encrypted content
+}
+
+// Function to decrypt the password
+export function decryptPassword(encryptedPassword) {
+    const key = Buffer.from(config.PASSWORD_ENCRYPT_KEY!, "hex");
+    const [ivHex, encrypted] = encryptedPassword.split(":");
+    const iv = Buffer.from(ivHex, "hex");
+
+    const decipher = createDecipheriv(
+        "aes-256-cbc",
+        new Uint8Array(key),
+        new Uint8Array(iv)
+    );
+    let decrypted = decipher.update(encrypted, "hex", "utf8");
+    decrypted += decipher.final("utf8");
+    return decrypted;
+}
 
 const mailTransport = nodemailer.createTransport({
     debug: process.env.MAIL_DEBUG === "true",

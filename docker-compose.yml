@@ -1,7 +1,7 @@
 version: "3"
 services:
     db:
-        image: postgres:12.5
+        image: postgres:14.6
         environment:
             POSTGRES_USER: secretariat
             POSTGRES_PASSWORD: secretariat

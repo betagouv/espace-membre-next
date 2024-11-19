@@ -1,6 +1,7 @@
 import { Selectable } from "kysely";
 
 import { sentryUserSchemaType } from "../sentry";
+import { ACCOUNT_SERVICE_STATUS } from "../services";
 import { ServiceAccounts } from "@/@types/db";
 import { SentryUser, SentryUserAccess, SentryTeam } from "@/lib/sentry";
 
@@ -49,6 +50,7 @@ export const sentryUserToModel = (
             expired: userMetadata.expired,
             inviteStatus: userMetadata.inviteStatus,
         },
+        status: ACCOUNT_SERVICE_STATUS.ACCOUNT_FOUND,
     };
 };
 
@@ -60,5 +62,8 @@ export const sentryServiceInfoToModel = (
         email: "no email fetch",
         service_user_id: sentryUser.service_user_id,
         metadata: sentryUser.metadata as sentryUserSchemaType["metadata"],
+        status:
+            (sentryUser.status as ACCOUNT_SERVICE_STATUS) ||
+            ACCOUNT_SERVICE_STATUS.ACCOUNT_FOUND,
     };
 };

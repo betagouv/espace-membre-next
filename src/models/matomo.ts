@@ -1,5 +1,7 @@
 import { z } from "zod";
 
+import { ACCOUNT_SERVICE_STATUS } from "./services";
+
 const matomoUserAccessSchema = z.object({
     id: z.number(),
     accessLevel: z.enum(["admin", "view"]), // Restricts accessLevel to "admin" or "view"
@@ -13,10 +15,11 @@ export const matomoUserMetadataSchema = z.object({
 });
 
 export const matomoUserSchema = z.object({
-    email: z.string().optional(),
+    email: z.string(),
     account_type: z.literal("matomo"),
-    service_user_id: z.string(),
+    service_user_id: z.string().optional(),
     metadata: matomoUserMetadataSchema,
+    status: z.nativeEnum(ACCOUNT_SERVICE_STATUS),
 });
 
 export type matomoUserSchemaType = z.infer<typeof matomoUserSchema>;

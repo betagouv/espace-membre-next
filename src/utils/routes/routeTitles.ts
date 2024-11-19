@@ -67,4 +67,7 @@ export const routeTitles: {
     teamDetails: function (): string {
         return `Fiche équipe`;
     },
+    serviceList: function (): string {
+        return "Mes outils";
+    },
 };

@@ -104,6 +104,26 @@ export class AdminEmailNotAllowedError extends ErrorWithStatus {
     }
 }
 
+export class JobNotFoundError extends ErrorWithStatus {
+    constructor() {
+        super(ERROR_MESSAGES.MEMBER_ADMIN_EMAIL_ADDRESS_NOT_ALLOWED);
+        this.name = "JobNotFoundError";
+        this.statusCode = 404;
+        // Ensure the prototype chain is correctly set (for older versions of TypeScript/JavaScript)
+        Object.setPrototypeOf(this, JobNotFoundError.prototype);
+    }
+}
+
+export class JobCannotBeReplayedError extends ErrorWithStatus {
+    constructor() {
+        super(ERROR_MESSAGES.MEMBER_ADMIN_EMAIL_ADDRESS_NOT_ALLOWED);
+        this.name = "JobCannotBeReplayed";
+        this.statusCode = 400;
+        // Ensure the prototype chain is correctly set (for older versions of TypeScript/JavaScript)
+        Object.setPrototypeOf(this, JobCannotBeReplayedError.prototype);
+    }
+}
+
 const EXPECTED_ERRORS = [
     AuthorizationError,
     NoDataError,

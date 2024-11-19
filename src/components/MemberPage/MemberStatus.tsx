@@ -1,17 +1,20 @@
+import { useState } from "react";
+
 import Accordion from "@codegouvfr/react-dsfr/Accordion";
 import Badge from "@codegouvfr/react-dsfr/Badge";
-import { fr } from "@codegouvfr/react-dsfr/fr";
+import Button from "@codegouvfr/react-dsfr/Button";
 import Table from "@codegouvfr/react-dsfr/Table";
 import { match, P } from "ts-pattern";
 
 import { MemberPageProps } from "./MemberPage";
-import { ToolTip } from "@/components/Tooltip";
+import { askAccountCreationForService } from "@/app/api/services/actions";
 import { EmailStatusCode } from "@/models/member";
 import { EMAIL_PLAN_TYPE } from "@/models/ovh";
-import { EMAIL_TYPES } from "@/server/modules/email";
+import { ACCOUNT_SERVICE_STATUS, SERVICES } from "@/models/services";
 
 const mattermostInfoRow = (
-    mattermostInfo: NonNullable<MemberPageProps["mattermostInfo"]>
+    mattermostInfo: NonNullable<MemberPageProps["mattermostInfo"]>,
+    userUuid: string
 ) => {
     return [
         "Compte Mattermost",
@@ -33,9 +36,7 @@ const mattermostInfoRow = (
                     </div>
                 )
             )
-            .otherwise(() => (
-                <Badge severity="warning">Compte introuvable</Badge>
-            )),
+            .otherwise(() => <Badge severity="info">Compte introuvable</Badge>),
         match(mattermostInfo)
             .when(
                 (info) =>
@@ -260,28 +261,48 @@ const emailStatusRow = (
     ];
 };
 
-const matomoInfoRow = (matomo: NonNullable<MemberPageProps["matomoInfo"]>) => {
+const MatomoInfoRow = (matomo: MemberPageProps["matomoInfo"]) => {
+    const status = !!matomo ? matomo.status : "unset";
     return [
         <>Compte Matomo</>,
-        <Badge key="matomo-status" severity="success">
-            Actif
-        </Badge>,
-        <Accordion key="matomo-access" label={"Liste des accès"}>
-            <Table
-                data={matomo.metadata.sites.map((s) => [
-                    s.url ? (
-                        <a href={s.url} target="_blank">
-                            {s.name}
-                        </a>
-                    ) : (
-                        s.name
-                    ),
-                    s.type,
-                    s.accessLevel,
-                ])}
-                headers={["nom", "type", "niveau d'accès"]}
-            />
-        </Accordion>,
+        match(status)
+            .with(ACCOUNT_SERVICE_STATUS.ACCOUNT_FOUND, () => (
+                <Badge key="matomo-status" severity="success">
+                    Actif
+                </Badge>
+            ))
+            .with(ACCOUNT_SERVICE_STATUS.ACCOUNT_CREATION_PENDING, () => (
+                <Badge key="matomo-status" severity="info">
+                    Creation en cours
+                </Badge>
+            ))
+            .otherwise(() => <Badge key="matomo-status">Pas de compte</Badge>),
+        !!matomo ? (
+            <Accordion key="matomo-access" label={"Liste des accès"}>
+                <Table
+                    data={matomo.metadata.sites.map((s) => [
+                        s.url ? (
+                            <a href={s.url} target="_blank">
+                                {s.name}
+                            </a>
+                        ) : (
+                            s.name
+                        ),
+                        s.type,
+                        s.accessLevel,
+                    ])}
+                    headers={["nom", "type", "niveau d'accès"]}
+                />
+            </Accordion>
+        ) : (
+            <>
+                Tu n'as pas de compte matomo. Si tu as besoin d'un compte tu
+                peux en faire la demande{" "}
+                <a href="/services/matomo" className="fr-link">
+                    ici
+                </a>
+            </>
+        ),
     ];
 };
 
@@ -342,18 +363,21 @@ export const MemberStatus = ({
         ],
         emailStatusRow(emailInfos, userInfos),
         // Mattermost account status
-        mattermostInfo && mattermostInfoRow(mattermostInfo),
+        mattermostInfo && mattermostInfoRow(mattermostInfo, userInfos.uuid),
         // Matomo account status
-        matomoInfo && matomoInfoRow(matomoInfo),
+        MatomoInfoRow(matomoInfo),
         // Sentry account status
         sentryInfo && sentryInfoRow(sentryInfo),
     ].filter((z) => !!z);
 
     return (
-        <Table
-            className="tbl-account-status"
-            headers={["Service", "Status", "Infos"]}
-            data={rows}
-        />
+        <>
+            Voici les comptes auquel tu as accès.
+            <Table
+                className="tbl-account-status"
+                headers={["Service", "Status", "Infos"]}
+                data={rows}
+            />
+        </>
     );
 };

@@ -1,5 +1,7 @@
 import { z } from "zod";
 
+import { ACCOUNT_SERVICE_STATUS } from "./services";
+
 const sentryUserMetadataSchema = z.object({
     organisationRole: z.enum(["admin", "member", "manager", "owner"]),
     pending: z.boolean(),
@@ -27,8 +29,9 @@ const sentryUserMetadataSchema = z.object({
 export const sentryUserSchema = z.object({
     email: z.string(),
     account_type: z.literal("sentry"),
-    service_user_id: z.string(),
+    service_user_id: z.string().nullable(),
     metadata: sentryUserMetadataSchema,
+    status: z.nativeEnum(ACCOUNT_SERVICE_STATUS),
 });
 
 export type sentryUserSchemaType = z.infer<typeof sentryUserSchema>;

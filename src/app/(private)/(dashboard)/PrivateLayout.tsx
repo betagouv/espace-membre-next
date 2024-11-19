@@ -75,6 +75,7 @@ export function PrivateLayout({ children }: { children: React.ReactNode }) {
     );
     const mapLink = linkRegistry.get("map", undefined);
     const metabaseLink = linkRegistry.get("metabase", undefined);
+    const serviceLink = "/services";
     const formationLink = linkRegistry.get("formationList", undefined);
     const eventsLink = linkRegistry.get("eventsList", undefined);
     const formationDetailLink = linkRegistry.get("formationDetails", undefined);
@@ -382,6 +383,13 @@ export function PrivateLayout({ children }: { children: React.ReactNode }) {
                     ),
                 },
             ],
+        },
+        {
+            linkProps: {
+                href: serviceLink,
+            },
+            text: routeTitles.serviceList(),
+            isActive: hasPathnameThisMatch(pathname, serviceLink),
         },
         {
             linkProps: {
