@@ -63,7 +63,7 @@ export class Matomo implements AccountService {
 
                 if (!response.ok) {
                     throw new Error(
-                        `Error fetching users: ${response.status} ${response.statusText}`
+                        `Matomo: Error fetching users: ${response.status} ${response.statusText}`
                     );
                 }
 
@@ -78,7 +78,7 @@ export class Matomo implements AccountService {
 
             return allSites;
         } catch (error) {
-            console.error("Failed to fetch Matomo sites:", error);
+            console.error("Matomo: Failed to fetch Matomo sites:", error);
             throw error;
         }
     }
@@ -102,7 +102,9 @@ export class Matomo implements AccountService {
         });
 
         if (!response.ok) {
-            throw new Error(`Error fetching user: ${response.statusText}`);
+            throw new Error(
+                `Matomo: Error fetching user: ${response.statusText}`
+            );
         }
         const users = await response.json();
 
@@ -127,14 +129,16 @@ export class Matomo implements AccountService {
         });
 
         if (!response.ok) {
-            throw new Error(`Error deleting user: ${response.statusText}`);
+            throw new Error(
+                `Matomo: Error deleting user: ${response.statusText}`
+            );
         }
 
         const result = await response.json();
         console.log(
             result.result === "success"
-                ? `User with login: ${userLogin} successfully deleted.`
-                : `Failed to delete user with login: ${userLogin}.`
+                ? `Matomo: User with login: ${userLogin} successfully deleted.`
+                : `Matomo: Failed to delete user with login: ${userLogin}.`
         );
     }
 
@@ -197,14 +201,18 @@ export class Matomo implements AccountService {
         });
         // Check if the response is ok and handle errors
         if (!response.ok) {
-            throw new Error(`Failed to create user: ${response.statusText}`);
+            throw new Error(
+                `Matomo: Failed to create user: ${response.statusText}`
+            );
         }
         const responseBody = await response.json();
         // if sucess response body = { result: 'success', message: 'ok' }
         if (responseBody.result === "error") {
-            throw new Error(`Failed to create user: ${responseBody.result}`);
+            throw new Error(
+                `Matomo: Failed to create user: ${responseBody.result}`
+            );
         }
-
+        console.log(`Matomo: User created with login : ${userLogin}`);
         return;
     }
 
@@ -245,10 +253,14 @@ export class Matomo implements AccountService {
             // if sucess response body = { result: 'success', message: 'ok' }
             if (responseBody.result === "error") {
                 throw new Error(
-                    `Failed to create user: ${responseBody.result}`
+                    `Matomo: Failed to create user: ${responseBody.result}`
                 );
             }
-
+            console.log(
+                `Matomo: User access granted : user ${userLogin} get ${access} access to ${idSites.join(
+                    ","
+                )}`
+            );
             return;
         } catch (error) {
             console.error("Failed to set user access:", error);
@@ -283,6 +295,11 @@ export class Matomo implements AccountService {
             }),
         }).then((response) => response.json());
         if (existingSiteId.length > 0) {
+            console.log(
+                `Matomo: Site found with id ${
+                    existingSiteId[0].idsite
+                } for url : ${urls.join(",")}`
+            );
             // Site with this URL already exists
             return existingSiteId[0].idsite; // Return the existing site ID
         }
@@ -319,11 +336,13 @@ export class Matomo implements AccountService {
                 type: siteType,
             }),
         });
-
         // Check if the response is ok and handle errors
         if (!response.ok) {
-            throw new Error(`Failed to create site: ${response.statusText}`);
+            throw new Error(
+                `Matomo : Failed to create site: ${response.statusText}`
+            );
         }
+        console.log(`Matomo: Site created with url : ${urls.join(",")}`);
 
         return response.json();
     }
@@ -354,7 +373,7 @@ export class Matomo implements AccountService {
 
                 if (!response.ok) {
                     throw new Error(
-                        `Error fetching users: ${response.status} ${response.statusText}`
+                        `Matomo: Error fetching users: ${response.status} ${response.statusText}`
                     );
                 }
 
@@ -373,7 +392,7 @@ export class Matomo implements AccountService {
                 serviceUserId: user.login,
             }));
         } catch (error) {
-            console.error("Failed to fetch Matomo users:", error);
+            console.error("Matomo: Failed to fetch Matomo users:", error);
             throw error;
         }
     }
