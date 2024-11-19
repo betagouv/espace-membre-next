@@ -288,26 +288,7 @@ export class Matomo implements AccountService {
         }
 
         // If no site exists, create a new one
-        const response = await fetch(`${this.apiUrl}/index.php`, {
-            method: "POST",
-            headers: {
-                "Content-Type": "application/x-www-form-urlencoded",
-            },
-            body: new URLSearchParams({
-                module: "API",
-                method: "SitesManager.addSite",
-                format: "JSON",
-                token_auth: this.authToken,
-                siteName: siteName,
-                urls: JSON.stringify(urls),
-                type: siteType,
-            }),
-        });
-        if (!response.ok) {
-            throw new Error(`Failed to create site: ${response.statusText}`);
-        }
-
-        const newSite = await response.json();
+        const newSite = await this.createSite(siteName, urls, siteType);
         return newSite.value; // Return the new site ID
     }
 
@@ -322,7 +303,7 @@ export class Matomo implements AccountService {
         siteName: string,
         urls: string[],
         siteType: "website" | "mobileapp" = "website"
-    ): Promise<{ value: string }> {
+    ): Promise<{ value: number }> {
         const response = await fetch(`${this.apiUrl}/index.php`, {
             method: "POST",
             headers: {
