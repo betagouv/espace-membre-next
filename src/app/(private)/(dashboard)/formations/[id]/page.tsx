@@ -123,7 +123,10 @@ export default async function Page({ params }: Props) {
 
     return (
         <>
-            <BreadCrumbFiller currentPage={formation.name}></BreadCrumbFiller>
+            <BreadCrumbFiller
+                currentPage={formation.name}
+                currentItemId={formation.id}
+            ></BreadCrumbFiller>
             <div className="fr-container fr-container--fluid">
                 <h1>{formation.name}</h1>
                 <div className="fr-grid-row fr-grid-row--gutters">
