@@ -1,8 +1,6 @@
 fileignoreconfig:
 - filename: package-lock.json
   checksum: 21970a52bff5b8af047f918a50776bbdefd89c835fc0a15095137ba5fdc694ae
-version: ""
-d70e871e4abcad3a9e509ef5b1a0da9db2d0d2d336c19854303b4
 - filename: src/app/(private)/(dashboard)/incubators/[id]/info-form/page.tsx
   checksum: 1ec9acf039a7d336e710ef7b47c385eb7080293ee2750c2cf99e9056cde7f129
 - filename: src/components/CommunityPage/Community.tsx
@@ -37,6 +35,4 @@ d70e871e4abcad3a9e509ef5b1a0da9db2d0d2d336c19854303b4
   checksum: ebb1c7a8c5fb51e0e49a23f79d1342f177946b4e783154bb265970b672aa2a2c
 scopeconfig:
 - scope: node
-version: "1.0"
- scope: node
 version: "1.0"
