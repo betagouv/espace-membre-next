@@ -595,5 +595,5 @@ function startJobs() {
     console.log(`Started ${activeJobs} / ${jobs.length} cron jobs`);
 }
 
-// startJobs();
+startJobs();
 startBossClientInstance();
