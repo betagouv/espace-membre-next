@@ -133,7 +133,7 @@ export function PrivateLayout({ children }: { children: React.ReactNode }) {
                             text: currentPage,
                             isActive: hasPathnameThisRegex(
                                 pathname,
-                                "^/community/[a-zA-Z]+.[a-zA-Z]+"
+                                "^/community/[a-zA-Z]+.[a-zA-Z]+$"
                             ),
                             items: [
                                 {
@@ -353,7 +353,7 @@ export function PrivateLayout({ children }: { children: React.ReactNode }) {
 
     const findActiveItem = (items: ItemLink[]) => {
         let tree: ItemLink[] = [];
-        items.forEach((i) => {
+        for (const i of items) {
             let childrenTree: ItemLink[] = [];
             if (i.items && i.items.length) {
                 childrenTree = findActiveItem(i.items);
@@ -362,8 +362,9 @@ export function PrivateLayout({ children }: { children: React.ReactNode }) {
                 tree = [i, ...childrenTree];
             } else if (i.isActive) {
                 tree = [i];
+                break;
             }
-        });
+        }
         return tree;
     };
 
