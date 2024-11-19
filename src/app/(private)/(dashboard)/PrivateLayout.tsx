@@ -169,7 +169,7 @@ export function PrivateLayout({ children }: { children: React.ReactNode }) {
                             text: currentPage,
                             isActive: hasPathnameThisRegex(
                                 pathname,
-                                "^/startups/[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$"
+                                "^/startups/[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}"
                             ),
                             items: [
                                 {
@@ -178,6 +178,14 @@ export function PrivateLayout({ children }: { children: React.ReactNode }) {
                                     isActive: hasPathnameThisRegex(
                                         pathname,
                                         "^/startups/[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}/info-form$"
+                                    ),
+                                },
+                                {
+                                    href: pathname,
+                                    text: "Documents",
+                                    isActive: hasPathnameThisRegex(
+                                        pathname,
+                                        "^/startups/[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}/files$"
                                     ),
                                 },
                             ],
@@ -210,7 +218,7 @@ export function PrivateLayout({ children }: { children: React.ReactNode }) {
                             items: [
                                 {
                                     href: pathname,
-                                    text: currentPage,
+                                    text: "Modifier la fiche",
                                     isActive: hasPathnameThisRegex(
                                         pathname,
                                         "^/incubators/[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}/info-form$"
@@ -238,11 +246,6 @@ export function PrivateLayout({ children }: { children: React.ReactNode }) {
                         },
                         {
                             href: () => {
-                                console.log(
-                                    "LCS TOTO",
-                                    currentPage,
-                                    currentItemId
-                                );
                                 return linkRegistry.get("organizationDetails", {
                                     organizationId:
                                         currentItemId || currentPage,
@@ -256,7 +259,7 @@ export function PrivateLayout({ children }: { children: React.ReactNode }) {
                             items: [
                                 {
                                     href: pathname,
-                                    text: currentPage,
+                                    text: "Modifier la fiche",
                                     isActive: hasPathnameThisRegex(
                                         pathname,
                                         "^/organizations/[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}/info-form$"
@@ -282,7 +285,7 @@ export function PrivateLayout({ children }: { children: React.ReactNode }) {
                         {
                             href: () =>
                                 linkRegistry.get("teamDetails", {
-                                    id: currentItemId,
+                                    teamId: currentItemId || currentPage,
                                 }),
                             text: currentPage,
                             isActive: hasPathnameThisRegex(
@@ -292,7 +295,7 @@ export function PrivateLayout({ children }: { children: React.ReactNode }) {
                             items: [
                                 {
                                     href: pathname,
-                                    text: currentPage,
+                                    text: "Modifier la fiche",
                                     isActive: hasPathnameThisRegex(
                                         pathname,
                                         "^/teams/[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}/info-form$"
