@@ -90,7 +90,7 @@
         "tss-react": "^4.9.4",
         "type-route": "^1.1.0",
         "unescape": "^1.0.1",
-        "unzipper": "^0.12.1",
+        "unzipper": "^0.12.3",
         "uuid": "^9.0.1",
         "zod": "^3.22.4"
     },
