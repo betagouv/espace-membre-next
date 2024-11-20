@@ -409,9 +409,7 @@ describe("After quitting", () => {
         should.equal(test.length, 2);
     });
 
-    it("should set email as expired", async () => {
-        const today = new Date(fakeTodayDate);
-
+    it("should set email as expired if email is not from main domain", async () => {
         const updatedUser = await db
             .updateTable("users")
             .where("username", "=", "julien.dauphant")
@@ -436,7 +434,23 @@ describe("After quitting", () => {
             .selectAll()
             .where("username", "=", "julien.dauphant")
             .execute();
-        user.primary_email_status.should.equal(EmailStatusCode.EMAIL_EXPIRED);
+        user.primary_email_status.should.equal(EmailStatusCode.EMAIL_SUSPENDED);
+
+        const updatedUser2 = await db
+            .updateTable("users")
+            .where("username", "=", "julien.dauphant")
+            .set({
+                primary_email: `julien.dauphant@anotherdomain.com`,
+            })
+            .returningAll()
+            .executeTakeFirstOrThrow();
+        await setEmailExpired();
+        const [user2] = await db
+            .selectFrom("users")
+            .selectAll()
+            .where("username", "=", "julien.dauphant")
+            .execute();
+        user2.primary_email_status.should.equal(EmailStatusCode.EMAIL_EXPIRED);
         // userinfos.restore();
     });
 
