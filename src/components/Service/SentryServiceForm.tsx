@@ -4,7 +4,11 @@ import React from "react";
 import { fr } from "@codegouvfr/react-dsfr";
 import { Alert } from "@codegouvfr/react-dsfr/Alert";
 import { Button } from "@codegouvfr/react-dsfr/Button";
+<<<<<<< HEAD
 import { Select } from "@codegouvfr/react-dsfr/Select";
+=======
+import Input from "@codegouvfr/react-dsfr/Input";
+>>>>>>> b68805ca (feat: add sentry create account)
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useFieldArray, useForm } from "react-hook-form";
 
