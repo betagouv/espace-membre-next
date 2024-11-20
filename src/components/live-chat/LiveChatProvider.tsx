@@ -141,6 +141,7 @@ export const LiveChatProvider = ({ children }: PropsWithChildren) => {
             sessionMerge: true,
             locale: "fr",
         });
+        Crisp.chat.show();
 
         // if (sessionIdToResume) {
         //     showLiveChat();
