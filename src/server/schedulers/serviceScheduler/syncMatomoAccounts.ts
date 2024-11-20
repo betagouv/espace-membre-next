@@ -47,23 +47,26 @@ export async function syncMatomoAccounts(matomoClient: Matomo | FakeMatomo) {
             user_id: user ? user.uuid : null,
         };
     });
-    const result = await db
-        .insertInto("service_accounts")
-        .values(usersToInsert)
-        .onConflict((oc) => {
-            return oc
-                .columns(["email", "account_type", "service_user_id"]) // Define the conflict targe
-                .doUpdateSet({
-                    metadata: (eb) => eb.ref("excluded.metadata"),
-                    service_user_id: (eb) => eb.ref("excluded.service_user_id"),
-                    user_id: (eb) => eb.ref("excluded.user_id"),
-                    status: ACCOUNT_SERVICE_STATUS.ACCOUNT_FOUND,
-                });
-        })
-        .executeTakeFirstOrThrow();
-    console.log(
-        `Inserted or updated ${result.numInsertedOrUpdatedRows} matomo users`
-    );
+    if (usersToInsert.length) {
+        const result = await db
+            .insertInto("service_accounts")
+            .values(usersToInsert)
+            .onConflict((oc) => {
+                return oc
+                    .columns(["email", "account_type", "service_user_id"]) // Define the conflict targe
+                    .doUpdateSet({
+                        metadata: (eb) => eb.ref("excluded.metadata"),
+                        service_user_id: (eb) =>
+                            eb.ref("excluded.service_user_id"),
+                        user_id: (eb) => eb.ref("excluded.user_id"),
+                        status: ACCOUNT_SERVICE_STATUS.ACCOUNT_FOUND,
+                    });
+            })
+            .executeTakeFirstOrThrow();
+        console.log(
+            `Inserted or updated ${result.numInsertedOrUpdatedRows} matomo users`
+        );
+    }
 
     const matomoUserIdsInDb = (
         await db

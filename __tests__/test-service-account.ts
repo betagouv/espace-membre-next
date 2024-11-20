@@ -3,6 +3,7 @@ import chai from "chai";
 import testUsers from "./users.json";
 import utils from "./utils";
 import { db } from "@/lib/kysely";
+import { ACCOUNT_SERVICE_STATUS } from "@/models/services";
 import config from "@/server/config";
 import { FakeMatomo } from "@/server/config/matomo.config";
 import { FakeSentryService } from "@/server/config/sentry.config";
@@ -16,6 +17,7 @@ describe("Should sync services", () => {
         utils.cleanMocks();
         utils.mockOvhTime();
         await utils.createUsers(testUsers);
+        await db.deleteFrom("service_accounts").execute();
     });
 
     afterEach(async () => {
@@ -213,6 +215,49 @@ describe("Should sync services", () => {
                 .where("account_type", "=", "matomo")
                 .executeTakeFirstOrThrow();
             memberQuiNexistePasAccountNotDeleted.should.exist;
+        });
+
+        it("should not delete matomo users in db if user account has status pending creation", async () => {
+            const matomoClient = new FakeMatomo(
+                [],
+                [],
+                [
+                    {
+                        idsite: 2,
+                        name: "un super site",
+                        main_url: "https://unsupersite.com",
+                        type: "website",
+                    },
+                ]
+            );
+
+            const user = await db
+                .selectFrom("users")
+                .where("username", "=", "valid.member")
+                .selectAll()
+                .executeTakeFirst();
+
+            await db
+                .insertInto("service_accounts")
+                .values({
+                    service_user_id: `valid.member@${config.domain}`,
+                    account_type: "matomo",
+                    // status: ACCOUNT_SERVICE_STATUS.ACCOUNT_CREATION_PENDING,
+                    user_id: user?.uuid,
+                })
+                .execute();
+
+            // validMember account should be deleted during sync
+            await syncMatomoAccounts(matomoClient);
+
+            // validMember account should have not been deleted from db
+            const validMemberAccountAfterDeletion = await db
+                .selectFrom("service_accounts")
+                .selectAll()
+                .where("service_user_id", "=", `valid.member@${config.domain}`)
+                .where("account_type", "=", "matomo")
+                .executeTakeFirst();
+            should.exist(validMemberAccountAfterDeletion);
         });
     });
 
@@ -454,6 +499,65 @@ describe("Should sync services", () => {
                 .where("service_accounts.account_type", "=", "sentry")
                 .executeTakeFirstOrThrow();
             memberQuiNexistePasAccountNotDeleted.should.exist;
+        });
+
+        it("should not delete sentry users in db if user account has status pending creation", async () => {
+            const sentryClient = new FakeSentryService(
+                [],
+                [
+                    {
+                        id: "208",
+                        slug: "monservice-prod",
+                        name: "mon service prod",
+                        memberCount: 0,
+                        projects: [],
+                    },
+                    {
+                        id: "209",
+                        slug: "nis2",
+                        name: "nis2",
+                        memberCount: 0,
+                        projects: [],
+                    },
+                ],
+                [
+                    {
+                        id: "168",
+                        role: "admin",
+                        email: `membre.actif@${config.domain}`,
+                        name: "",
+                        pending: false,
+                        expired: false,
+                        inviteStatus: "approved",
+                        teams: ["monservice-prod", "nis2"],
+                        teamRoles: [
+                            { teamSlug: "monservice-prod", role: null },
+                            { teamSlug: "nis2", role: null },
+                        ],
+                    },
+                ]
+            );
+
+            await db
+                .insertInto("service_accounts")
+                .values({
+                    service_user_id: `valid.member@${config.domain}`,
+                    account_type: "sentry",
+                    status: ACCOUNT_SERVICE_STATUS.ACCOUNT_CREATION_PENDING,
+                })
+                .execute();
+
+            // validMember account should be deleted during sync
+            await syncSentryAccounts(sentryClient);
+
+            // validMember account should have not been deleted from db
+            const validMemberAccountAfterDeletion = await db
+                .selectFrom("service_accounts")
+                .selectAll()
+                .where("service_user_id", "=", `valid.member@${config.domain}`)
+                .where("account_type", "=", "sentry")
+                .executeTakeFirst();
+            should.exist(validMemberAccountAfterDeletion);
         });
     });
 });
