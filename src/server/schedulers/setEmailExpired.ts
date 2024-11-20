@@ -11,6 +11,7 @@ import * as utils from "@controllers/utils";
 export async function setEmailExpired(
     optionalExpiredUsers?: memberBaseInfoSchemaType[]
 ) {
+    // set email that are not beta.gouv.fr as expired
     let expiredUsers = optionalExpiredUsers;
     let dbUsers: memberBaseInfoSchemaType[] = [];
     if (!expiredUsers) {
@@ -28,7 +29,7 @@ export async function setEmailExpired(
                 user.primary_email_status === EmailStatusCode.EMAIL_SUSPENDED &&
                 user.primary_email_status_updated_at < todayLess30days &&
                 user.primary_email &&
-                user.primary_email.includes(`@${config.domain}`)
+                !user.primary_email.includes(`@${config.domain}`)
         );
     }
     for (const user of dbUsers) {
