@@ -59,7 +59,7 @@ export const sentryServiceInfoToModel = (
 ): sentryUserSchemaType => {
     return {
         account_type: "sentry",
-        email: "no email fetch",
+        email: sentryUser.email || "",
         service_user_id: sentryUser.service_user_id,
         metadata: sentryUser.metadata as sentryUserSchemaType["metadata"],
         status:
