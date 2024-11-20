@@ -290,6 +290,7 @@ export async function deleteOVHEmailAcounts(
                 .where("username", "=", user.username)
                 .set({
                     primary_email_status: EmailStatusCode.EMAIL_DELETED,
+                    primary_email: null,
                 })
                 .execute();
             console.log(`Suppression de l'email ovh pour ${user.username}`);
