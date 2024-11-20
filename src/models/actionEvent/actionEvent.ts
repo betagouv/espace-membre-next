@@ -357,7 +357,8 @@ export type EventPayloads =
     | z.infer<typeof EventMemberUnblockEmailPayload>
     | z.infer<typeof EventOrganizationCreatedPayload>
     | z.infer<typeof EventOrganizationUpdatedPayload>
-    | z.infer<typeof EventServiceAccountDeletedPayload>;
+    | z.infer<typeof EventServiceAccountDeletedPayload>
+    | z.infer<typeof EventMemberEmailExpiredPayload>;
 
 export type EventAction = BaseActionEvent & EventPayloads;
 
