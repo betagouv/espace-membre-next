@@ -13,6 +13,7 @@ export enum EventCode {
     MEMBER_REDIRECTION_DELETED = "MEMBER_REDIRECTION_DELETED",
     MEMBER_EMAIL_CREATED = "MEMBER_EMAIL_CREATED",
     MEMBER_EMAIL_DELETED = "MEMBER_EMAIL_DELETED",
+    MEMBER_EMAIL_EXPIRED = "MEMBER_EMAIL_EXPIRED",
     MEMBER_PASSWORD_UPDATED = "MEMBER_PASSWORD_UPDATED",
     MEMBER_RESPONDER_CREATED = "MEMBER_RESPONDER_CREATED",
     MEMBER_RESPONDER_UPDATED = "MEMBER_RESPONDER_UPDATED",
@@ -70,6 +71,7 @@ export const EventCodeToReadable: Record<EventCode, string> = {
     [EventCode.ORGANIZATION_CREATED]: "Organization créée",
     [EventCode.ORGANIZATION_UPDATED]: "Organization mise à jour",
     [EventCode.MEMBER_SERVICE_ACCOUNT_DELETED]: "Compte de service supprimé",
+    [EventCode.MEMBER_EMAIL_EXPIRED]: "Compte défini comme expiré",
 };
 
 export const SYSTEM_NAME = "system";
@@ -109,6 +111,10 @@ export const EventMemberEmailCreatedPayload = z.object({
 
 export const EventMemberEmailDeletedPayload = z.object({
     action_code: z.literal(EventCode.MEMBER_EMAIL_DELETED),
+});
+
+export const EventMemberEmailExpiredPayload = z.object({
+    action_code: z.literal(EventCode.MEMBER_EMAIL_EXPIRED),
 });
 
 export const EventMemberPasswordUpdatedPayload = z.object({

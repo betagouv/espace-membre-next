@@ -38,6 +38,11 @@ export async function setEmailExpired(
                     primary_email_status: EmailStatusCode.EMAIL_EXPIRED,
                 })
                 .execute();
+            await addEvent({
+                action_code: EventCode.MEMBER_EMAIL_EXPIRED,
+                created_by_username: SYSTEM_NAME,
+                action_on_username: user.username,
+            });
             console.log(
                 `Email principal pour ${user.username} défini comme expiré`
             );
