@@ -6,7 +6,7 @@ import { getAllUsersInfo } from "@/lib/kysely/queries/users";
 import { Matomo } from "@/lib/matomo";
 import { memberBaseInfoToModel } from "@/models/mapper";
 import { matomoUserToModel } from "@/models/mapper/matomoMapper";
-import { SERVICES } from "@/models/services";
+import { ACCOUNT_SERVICE_STATUS, SERVICES } from "@/models/services";
 import { FakeMatomo } from "@/server/config/matomo.config";
 
 export async function syncMatomoAccounts(matomoClient: Matomo | FakeMatomo) {
@@ -42,32 +42,38 @@ export async function syncMatomoAccounts(matomoClient: Matomo | FakeMatomo) {
             service_user_id: matomoUser.service_user_id,
             metadata: matomoUser.metadata,
             email: matomoUser.email,
+            status: ACCOUNT_SERVICE_STATUS.ACCOUNT_FOUND,
             // we keep the accounts we cannot linked to anyone
             user_id: user ? user.uuid : null,
         };
     });
-    const result = await db
-        .insertInto("service_accounts")
-        .values(usersToInsert)
-        .onConflict((oc) => {
-            return oc
-                .columns(["email", "account_type", "service_user_id"]) // Define the conflict targe
-                .doUpdateSet({
-                    metadata: (eb) => eb.ref("excluded.metadata"),
-                    service_user_id: (eb) => eb.ref("excluded.service_user_id"),
-                    user_id: (eb) => eb.ref("excluded.user_id"),
-                });
-        })
-        .executeTakeFirstOrThrow();
-    console.log(
-        `Inserted or updated ${result.numInsertedOrUpdatedRows} matomo users`
-    );
+    if (usersToInsert.length) {
+        const result = await db
+            .insertInto("service_accounts")
+            .values(usersToInsert)
+            .onConflict((oc) => {
+                return oc
+                    .columns(["email", "account_type", "service_user_id"]) // Define the conflict targe
+                    .doUpdateSet({
+                        metadata: (eb) => eb.ref("excluded.metadata"),
+                        service_user_id: (eb) =>
+                            eb.ref("excluded.service_user_id"),
+                        user_id: (eb) => eb.ref("excluded.user_id"),
+                        status: ACCOUNT_SERVICE_STATUS.ACCOUNT_FOUND,
+                    });
+            })
+            .executeTakeFirstOrThrow();
+        console.log(
+            `Inserted or updated ${result.numInsertedOrUpdatedRows} matomo users`
+        );
+    }
 
     const matomoUserIdsInDb = (
         await db
             .selectFrom("service_accounts")
             .select("service_user_id")
             .where("account_type", "=", SERVICES.MATOMO)
+            .where("status", "=", ACCOUNT_SERVICE_STATUS.ACCOUNT_FOUND)
             .execute()
     ).map((u) => u.service_user_id);
     const matomoUserIds = matomoUsers.map(

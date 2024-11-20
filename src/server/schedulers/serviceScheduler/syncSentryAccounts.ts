@@ -6,7 +6,7 @@ import { getAllUsersInfo } from "@/lib/kysely/queries/users";
 import { SentryService } from "@/lib/sentry";
 import { memberBaseInfoToModel } from "@/models/mapper";
 import { sentryUserToModel } from "@/models/mapper/sentryMapper";
-import { SERVICES } from "@/models/services";
+import { ACCOUNT_SERVICE_STATUS, SERVICES } from "@/models/services";
 import { FakeSentryService } from "@/server/config/sentry.config";
 
 export async function syncSentryAccounts(
@@ -38,34 +38,39 @@ export async function syncSentryAccounts(
             account_type: sentryUser.account_type,
             service_user_id: sentryUser.service_user_id,
             metadata: sentryUser.metadata,
+            status: ACCOUNT_SERVICE_STATUS.ACCOUNT_FOUND,
             // we keep the accounts we cannot linked to anyone
             user_id: user ? user.uuid : null,
             email: sentryUser.email,
         };
     });
-
-    const result = await db
-        .insertInto("service_accounts")
-        .values(usersToInsert)
-        .onConflict((oc) => {
-            return oc
-                .columns(["email", "account_type", "service_user_id"]) // Define the conflict targe
-                .doUpdateSet({
-                    metadata: (eb) => eb.ref("excluded.metadata"),
-                    service_user_id: (eb) => eb.ref("excluded.service_user_id"),
-                    user_id: (eb) => eb.ref("excluded.user_id"),
-                });
-        })
-        .executeTakeFirst();
-    console.log(
-        `Inserted or updated ${result.numInsertedOrUpdatedRows} sentry users`
-    );
+    if (usersToInsert.length) {
+        const result = await db
+            .insertInto("service_accounts")
+            .values(usersToInsert)
+            .onConflict((oc) => {
+                return oc
+                    .columns(["email", "account_type", "service_user_id"]) // Define the conflict targe
+                    .doUpdateSet({
+                        metadata: (eb) => eb.ref("excluded.metadata"),
+                        service_user_id: (eb) =>
+                            eb.ref("excluded.service_user_id"),
+                        user_id: (eb) => eb.ref("excluded.user_id"),
+                        status: ACCOUNT_SERVICE_STATUS.ACCOUNT_FOUND,
+                    });
+            })
+            .executeTakeFirst();
+        console.log(
+            `Inserted or updated ${result.numInsertedOrUpdatedRows} sentry users`
+        );
+    }
 
     const sentryUserIdsInDb = (
         await db
             .selectFrom("service_accounts")
             .select("service_user_id")
             .where("account_type", "=", SERVICES.SENTRY)
+            .where("status", "=", ACCOUNT_SERVICE_STATUS.ACCOUNT_FOUND)
             .execute()
     ).map((u) => u.service_user_id);
     const sentryUserIds = sentryUsers.map(
