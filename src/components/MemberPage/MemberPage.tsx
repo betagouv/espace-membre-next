@@ -56,6 +56,7 @@ export interface MemberPageProps {
     startups: Awaited<ReturnType<typeof getUserStartups>>;
     canEdit: boolean;
     isAdmin: boolean;
+    isCurrentUser: boolean;
 }
 
 /*
@@ -80,6 +81,7 @@ export default function MemberPage({
     canEdit,
     isAdmin,
     avatar,
+    isCurrentUser,
 }: MemberPageProps) {
     const tabs = [
         {
@@ -139,6 +141,7 @@ export default function MemberPage({
                     matomoInfo={matomoInfo}
                     sentryInfo={sentryInfo}
                     redirections={redirections}
+                    isCurrentUser={isCurrentUser}
                 />
             ),
         },

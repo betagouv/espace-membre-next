@@ -261,7 +261,10 @@ const emailStatusRow = (
     ];
 };
 
-const MatomoInfoRow = (matomo: MemberPageProps["matomoInfo"]) => {
+const MatomoInfoRow = (
+    matomo: MemberPageProps["matomoInfo"],
+    isCurrentUser: boolean
+) => {
     const status = !!matomo ? matomo.status : "unset";
     return [
         <>Compte Matomo</>,
@@ -294,13 +297,18 @@ const MatomoInfoRow = (matomo: MemberPageProps["matomoInfo"]) => {
                     headers={["nom", "type", "niveau d'accès"]}
                 />
             </Accordion>
-        ) : (
+        ) : isCurrentUser ? (
             <>
                 Tu n'as pas de compte matomo. Si tu as besoin d'un compte tu
                 peux en faire la demande{" "}
                 <a href="/services/matomo" className="fr-link">
                     ici
                 </a>
+            </>
+        ) : (
+            <>
+                Ce membre n'a pas de compte matomo, un demande peut être faite
+                depuis son espace-membre
             </>
         ),
     ];
@@ -339,6 +347,7 @@ export const MemberStatus = ({
     redirections,
     matomoInfo,
     sentryInfo,
+    isCurrentUser,
 }: {
     isExpired: MemberPageProps["isExpired"];
     emailInfos: MemberPageProps["emailInfos"];
@@ -347,6 +356,7 @@ export const MemberStatus = ({
     redirections: MemberPageProps["redirections"];
     matomoInfo: MemberPageProps["matomoInfo"];
     sentryInfo: MemberPageProps["sentryInfo"];
+    isCurrentUser: boolean;
 }) => {
     const rows = [
         // Account status
@@ -365,7 +375,7 @@ export const MemberStatus = ({
         // Mattermost account status
         mattermostInfo && mattermostInfoRow(mattermostInfo, userInfos.uuid),
         // Matomo account status
-        MatomoInfoRow(matomoInfo),
+        MatomoInfoRow(matomoInfo, isCurrentUser),
         // Sentry account status
         sentryInfo && sentryInfoRow(sentryInfo),
     ].filter((z) => !!z);
