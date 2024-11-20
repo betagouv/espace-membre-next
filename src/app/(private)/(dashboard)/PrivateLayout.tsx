@@ -83,26 +83,6 @@ export function PrivateLayout({ children }: { children: React.ReactNode }) {
 
     const MenuItems: ItemLink[] = [
         {
-            isActive: hasPathnameThisMatch(pathname, accountLink),
-            href: accountLink,
-            text: "Compte",
-            items: [
-                {
-                    href: accountLink,
-                    text: routeTitles.account(),
-                    isActive: hasPathnameThisMatch(pathname, accountLink),
-                },
-                {
-                    href: accountEditBaseInfoLink,
-                    text: routeTitles.accountEditBaseInfo(),
-                    isActive: hasPathnameThisMatch(
-                        pathname,
-                        accountEditBaseInfoLink
-                    ),
-                },
-            ],
-        },
-        {
             href: communityLink,
             text: "Communauté",
             isActive: hasPathnameThisMatch(pathname, communityLink),
