@@ -293,6 +293,12 @@ export async function deleteOVHEmailAcounts(
                     primary_email: null,
                 })
                 .execute();
+            await addEvent({
+                action_code: EventCode.MEMBER_EMAIL_DELETED,
+                created_by_username: SYSTEM_NAME,
+                action_on_username: user.username,
+            });
+
             console.log(`Suppression de l'email ovh pour ${user.username}`);
         } catch {
             console.log(

@@ -1,5 +1,7 @@
+import { addEvent } from "@/lib/events";
 import { db } from "@/lib/kysely";
 import { getAllUsersInfo } from "@/lib/kysely/queries/users";
+import { EventCode, SYSTEM_NAME } from "@/models/actionEvent";
 import { memberBaseInfoToModel } from "@/models/mapper";
 import { EmailStatusCode } from "@/models/member";
 import { memberBaseInfoSchemaType } from "@/models/member";
@@ -38,6 +40,11 @@ export async function setEmailExpired(
                     primary_email_status: EmailStatusCode.EMAIL_EXPIRED,
                 })
                 .execute();
+            await addEvent({
+                action_code: EventCode.MEMBER_EMAIL_EXPIRED,
+                created_by_username: SYSTEM_NAME,
+                action_on_username: user.username,
+            });
             console.log(
                 `Email principal pour ${user.username} défini comme expiré`
             );
