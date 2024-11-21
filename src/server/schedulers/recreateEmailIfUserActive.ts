@@ -26,7 +26,7 @@ export async function recreateEmailIfUserActive() {
     for (const dbUser of dbUsers) {
         try {
             await createEmail(dbUser.username, "Secretariat cron");
-            console.log(`Create email for ${dbUser.username}`);
+            console.log(`Recreate email for ${dbUser.username}`);
         } catch (e) {
             console.error(e);
             Sentry.captureException(e);
