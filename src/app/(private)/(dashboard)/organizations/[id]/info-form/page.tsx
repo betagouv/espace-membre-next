@@ -46,7 +46,6 @@ export default async function Page(props: Props) {
     const componentProps = {
         organization,
     };
-    console.log("LCS TOTO 1", organization.uuid);
     return (
         <>
             <BreadCrumbFiller
