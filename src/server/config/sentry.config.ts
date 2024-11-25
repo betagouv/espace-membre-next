@@ -1,7 +1,10 @@
 import config from ".";
 import {
     SentryAddUserToOrgParams,
+<<<<<<< HEAD
     SentryAddUserToTeamParams,
+=======
+>>>>>>> c8eeeb14 (chore: add sentry form interface, and sentry method to add user)
     SentryService,
     SentryTeam,
     SentryUser,
@@ -87,7 +90,11 @@ export class FakeSentryService implements AccountService {
 
         if (!user) {
             return Promise.reject(
+<<<<<<< HEAD
                 new Error(`User with email ${memberId} does not exist.`)
+=======
+                new Error(`User with email ${email} does not exist.`)
+>>>>>>> c8eeeb14 (chore: add sentry form interface, and sentry method to add user)
             );
         }
 

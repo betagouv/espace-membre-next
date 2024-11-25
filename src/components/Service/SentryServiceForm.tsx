@@ -5,10 +5,14 @@ import { fr } from "@codegouvfr/react-dsfr";
 import { Alert } from "@codegouvfr/react-dsfr/Alert";
 import { Button } from "@codegouvfr/react-dsfr/Button";
 <<<<<<< HEAD
+<<<<<<< HEAD
 import { Select } from "@codegouvfr/react-dsfr/Select";
 =======
 import Input from "@codegouvfr/react-dsfr/Input";
 >>>>>>> b68805ca (feat: add sentry create account)
+=======
+import { Select } from "@codegouvfr/react-dsfr/Select";
+>>>>>>> c8eeeb14 (chore: add sentry form interface, and sentry method to add user)
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useFieldArray, useForm } from "react-hook-form";
 
@@ -29,11 +33,15 @@ export default function SentryServiceForm(props: { teams }) {
         resolver: zodResolver(sentryAccountRequestSchema),
         mode: "onChange",
         defaultValues: {
+<<<<<<< HEAD
             teams: [
                 {
                     name: "",
                 },
             ],
+=======
+            teams: [""],
+>>>>>>> c8eeeb14 (chore: add sentry form interface, and sentry method to add user)
         },
     });
     const [alertMessage, setAlertMessage] = React.useState<{
@@ -54,6 +62,10 @@ export default function SentryServiceForm(props: { teams }) {
         setIsSaving(true);
         setAlertMessage(null);
         const service = SERVICES.SENTRY;
+<<<<<<< HEAD
+=======
+        console.log("LCS DATA", data);
+>>>>>>> c8eeeb14 (chore: add sentry form interface, and sentry method to add user)
         const res = await askAccountCreationForService({
             service: service,
             data,
@@ -82,9 +94,13 @@ export default function SentryServiceForm(props: { teams }) {
     });
 
     const addTeamClick = (e) => {
+<<<<<<< HEAD
         teamsAppend({
             name: "",
         });
+=======
+        teamsAppend("");
+>>>>>>> c8eeeb14 (chore: add sentry form interface, and sentry method to add user)
     };
 
     return (
@@ -138,12 +154,18 @@ export default function SentryServiceForm(props: { teams }) {
                                                 //         event.target.value
                                                 //     ),
                                                 // sentryTeam,
+<<<<<<< HEAD
                                                 ...register(
                                                     `teams.${index}.name`,
                                                     {
                                                         required: true,
                                                     }
                                                 ),
+=======
+                                                ...register(`teams.${index}`, {
+                                                    required: true,
+                                                }),
+>>>>>>> c8eeeb14 (chore: add sentry form interface, and sentry method to add user)
                                             }}
                                         >
                                             <option value="" disabled hidden>
