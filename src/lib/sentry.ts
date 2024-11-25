@@ -3,6 +3,15 @@ import * as Sentry from "@sentry/node";
 import { AccountService, SERVICES } from "@/models/services";
 import config from "@/server/config";
 
+export interface SentryAddUserToOrgParams {
+    email: string;
+    teamRoles?: {
+        teamSlug: string;
+        role: "contributor" | "admin";
+    }[];
+    orgRole: "member" | "admin";
+}
+
 export const initializeSentry = (app) => {
     if (!config.sentryDSN) {
         console.log("Sentry DSN not found. Sentry is not initialized.");
@@ -22,6 +31,7 @@ export interface SentryUser {
 }
 
 export interface SentryTeam {
+    members: any;
     id: string;
     slug: string;
     name: string;
@@ -107,13 +117,75 @@ export class SentryService implements AccountService {
         return await response.json();
     }
 
+    async addUserToOrganization({
+        email,
+        teamRoles,
+        orgRole = "member",
+    }: SentryAddUserToOrgParams): Promise<void> {
+        // Add user to the organization
+        const orgMemberResponse = await fetch(
+            `${this.apiUrl}/api/0/organizations/${this.org}/members/`,
+            {
+                method: "POST",
+                headers: this.headers,
+                body: JSON.stringify({
+                    email,
+                    orgRole,
+                    teamRoles: teamRoles,
+                    sendInvite: true,
+                    reinvite: true,
+                }),
+            }
+        );
+
+        if (!orgMemberResponse.ok) {
+            const errorDetails = await orgMemberResponse.json();
+            throw new Error(
+                `Failed to add user ${email} to organization: ${errorDetails.detail}`
+            );
+        }
+    }
+
+    async addUserToTeam({
+        memberId,
+        teamSlug,
+        teamRole,
+    }: {
+        memberId: string;
+        teamSlug: string;
+        teamRole: string;
+    }): Promise<void> {
+        const url = `${this.apiUrl}/api/0/organizations/${this.org}/members/${memberId}/teams/${teamSlug}/`;
+
+        const response = await fetch(url, {
+            method: "POST",
+            headers: {
+                Authorization: `Bearer ${this.authToken}`, // Sentry API token
+                "Content-Type": "application/json",
+            },
+            body: JSON.stringify({
+                teamRole: teamRole,
+            }),
+        });
+
+        if (!response.ok) {
+            const errorData = await response.json();
+            throw new Error(
+                `Failed to add user to team: ${response.status} ${response.statusText}. ${errorData.detail}`
+            );
+        }
+
+        const data = await response.json();
+        console.log(`User ${memberId} successfully added to the team:`, data);
+        return;
+    }
+
     // Function to get teams the user belongs to
     async getAllTeams(): Promise<SentryTeam[]> {
         let nextPageUrl:
             | string
             | null = `${this.apiUrl}/api/0/organizations/${this.org}/teams/`;
         let allTeams: SentryTeam[] = [];
-
         while (nextPageUrl) {
             const teamsResponse = await fetch(nextPageUrl, {
                 method: "GET",

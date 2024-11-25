@@ -4,7 +4,7 @@ import React from "react";
 import { fr } from "@codegouvfr/react-dsfr";
 import { Alert } from "@codegouvfr/react-dsfr/Alert";
 import { Button } from "@codegouvfr/react-dsfr/Button";
-import Input from "@codegouvfr/react-dsfr/Input";
+import { Select } from "@codegouvfr/react-dsfr/Select";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useFieldArray, useForm } from "react-hook-form";
 
@@ -15,7 +15,7 @@ import {
 } from "@/models/actions/service";
 import { SERVICES } from "@/models/services";
 
-export default function SentryServiceForm() {
+export default function SentryServiceForm(props: { teams }) {
     const {
         register,
         handleSubmit,
@@ -25,11 +25,7 @@ export default function SentryServiceForm() {
         resolver: zodResolver(sentryAccountRequestSchema),
         mode: "onChange",
         defaultValues: {
-            sites: [
-                {
-                    url: "",
-                },
-            ],
+            teams: [""],
         },
     });
     const [alertMessage, setAlertMessage] = React.useState<{
@@ -38,8 +34,9 @@ export default function SentryServiceForm() {
         type: "success" | "warning";
     } | null>();
     const [isSaving, setIsSaving] = React.useState(false);
+    const [sentryTeam, setSentryTeam] = React.useState<string | undefined>();
 
-    const onSubmit = (data: sentryAccountRequestSchemaType, e) => {
+    const onSubmit = async (data: sentryAccountRequestSchemaType, e) => {
         if (isSaving) {
             return;
         }
@@ -49,40 +46,36 @@ export default function SentryServiceForm() {
         setIsSaving(true);
         setAlertMessage(null);
         const service = SERVICES.SENTRY;
-        askAccountCreationForService({
+        console.log("LCS DATA", data);
+        const res = await askAccountCreationForService({
             service: service,
             data,
-        })
-            .then((resp) => {
-                setIsSaving(false);
-                window.scrollTo({ top: 20, behavior: "smooth" });
-                setAlertMessage({
-                    title: `Mise à jour effectuée`,
-                    message: "Le compte sentry va être créé",
-                    type: "success",
-                });
-            })
-            .catch((e: any) => {
-                setIsSaving(false);
-                window.scrollTo({ top: 20, behavior: "smooth" });
-                setAlertMessage({
-                    title: "Une erreur est survenue",
-                    message: e.message,
-                    type: "warning",
-                });
+        });
+        if (res.success) {
+            setAlertMessage({
+                title: "Compte sentry en cours de création",
+                message: "",
+                type: "success",
             });
+        } else {
+            setAlertMessage({
+                title: "Une erreur est survenue",
+                message: res.message || "",
+                type: "warning",
+            });
+        }
+        setIsSaving(false);
+        window.scrollTo({ top: 20, behavior: "smooth" });
     };
 
-    const { fields: urlsFields, append: urlsAppend } = useFieldArray({
+    const { fields: teamFields, append: teamsAppend } = useFieldArray({
         rules: { minLength: 1 },
         control,
-        name: "sites",
+        name: "teams",
     });
 
-    const addUrlClick = (e) => {
-        urlsAppend({
-            url: "",
-        });
+    const addTeamClick = (e) => {
+        teamsAppend("");
     };
 
     return (
@@ -116,9 +109,9 @@ export default function SentryServiceForm() {
                                 id="identity-fieldset"
                                 aria-labelledby="identity-fieldset-legend identity-fieldset-messages"
                             >
-                                {urlsFields.map((field, index) => (
+                                {teamFields.map((field, index) => (
                                     <div
-                                        key={field.id}
+                                        key={index}
                                         className={fr.cx(
                                             "fr-fieldset__element",
                                             "fr-col-12",
@@ -128,31 +121,49 @@ export default function SentryServiceForm() {
                                             "fr-col-offset-md-8--right"
                                         )}
                                     >
-                                        <Input
-                                            label={`Url du site ${index + 1}`}
-                                            hintText="Quel équipe souhaite tu rejoindres"
-                                            nativeInputProps={{
-                                                type: "text",
-                                                placeholder:
-                                                    "https://www.toto.beta.gouv.fr",
-                                                ...register(
-                                                    `sites.${index}.url`,
-                                                    {
-                                                        required: true,
-                                                    }
-                                                ), // Register each url input
+                                        <Select
+                                            label="Équipe"
+                                            nativeSelectProps={{
+                                                // onChange: (event) =>
+                                                //     setSentryTeam(
+                                                //         event.target.value
+                                                //     ),
+                                                // sentryTeam,
+                                                ...register(`teams.${index}`, {
+                                                    required: true,
+                                                }),
                                             }}
-                                        />
+                                        >
+                                            <option value="" disabled hidden>
+                                                Selectionnez une option
+                                            </option>
+                                            {props.teams.map((team) => (
+                                                <option
+                                                    key={team.slug}
+                                                    value={team.slug}
+                                                >
+                                                    {team.name}
+                                                </option>
+                                            ))}
+                                        </Select>
                                     </div>
                                 ))}
                                 <Button
+                                    className={fr.cx(
+                                        "fr-fieldset__element",
+                                        "fr-col-12",
+                                        "fr-col-lg-4",
+                                        "fr-col-md-4",
+                                        "fr-col-offset-lg-8--right",
+                                        "fr-col-offset-md-8--right"
+                                    )}
                                     iconId="fr-icon-add-circle-line"
                                     priority="secondary"
                                     size="small"
                                     type="button"
-                                    onClick={addUrlClick}
+                                    onClick={addTeamClick}
                                 >
-                                    Ajouter une url
+                                    Ajouter une équipe
                                 </Button>
                             </fieldset>
                             <Button

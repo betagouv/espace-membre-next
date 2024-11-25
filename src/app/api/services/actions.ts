@@ -7,7 +7,10 @@ import { match } from "ts-pattern";
 import { db } from "@/lib/kysely";
 import { getUserBasicInfo, getUserStartups } from "@/lib/kysely/queries/users";
 import {
+    matomoAccountRequestWrapperSchema,
     matomoAccountRequestWrapperSchemaType,
+    sentryAccountRequestSchema,
+    sentryAccountRequestWrapperSchema,
     sentryAccountRequestWrapperSchemaType,
 } from "@/models/actions/service";
 import {
@@ -46,6 +49,8 @@ export const askAccountCreationForService = withErrorHandling(
         if (!user) throw new NoDataError("User count not be found");
         await match(service)
             .with(SERVICES.MATOMO, async () => {
+                const matomoData =
+                    matomoAccountRequestWrapperSchema["data"].parse(data);
                 if (!user.primary_email) {
                     throw new ValidationError(
                         "Un email primaire est obligatoire"
@@ -57,7 +62,7 @@ export const askAccountCreationForService = withErrorHandling(
                         email: user.primary_email,
                         login: user.primary_email,
                         password: encryptPassword(
-                            data.password ||
+                            matomoData.password ||
                                 crypto
                                     .randomBytes(20)
                                     .toString("base64")
@@ -81,6 +86,7 @@ export const askAccountCreationForService = withErrorHandling(
                     .execute();
             })
             .with(SERVICES.SENTRY, async () => {
+                const sentryData = sentryAccountRequestSchema.parse(data);
                 if (!user.primary_email) {
                     throw new ValidationError(
                         "Un email primaire est obligatoire"
@@ -90,14 +96,7 @@ export const askAccountCreationForService = withErrorHandling(
                     createSentryServiceAccountTopic,
                     CreateSentryAccountDataSchema.parse({
                         email: user.primary_email,
-                        login: user.primary_email,
-                        password: encryptPassword(
-                            data.password ||
-                                crypto
-                                    .randomBytes(20)
-                                    .toString("base64")
-                                    .slice(0, -2)
-                        ),
+                        teams: sentryData.teams,
                     }),
                     {
                         retryLimit: 50,

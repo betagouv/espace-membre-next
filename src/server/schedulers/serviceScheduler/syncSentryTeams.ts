@@ -2,7 +2,7 @@ import { db } from "@/lib/kysely";
 import { SentryService } from "@/lib/sentry";
 import { FakeSentryService } from "@/server/config/sentry.config";
 
-export async function syncSentryAccounts(
+export async function syncSentryTeams(
     sentryClient: SentryService | FakeSentryService
 ) {
     try {
