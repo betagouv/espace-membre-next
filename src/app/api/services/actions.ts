@@ -96,7 +96,7 @@ export const askAccountCreationForService = withErrorHandling(
                     createSentryServiceAccountTopic,
                     CreateSentryAccountDataSchema.parse({
                         email: user.primary_email,
-                        teams: sentryData.teams,
+                        teams: sentryData.teams.map((t) => t.name),
                     }),
                     {
                         retryLimit: 50,

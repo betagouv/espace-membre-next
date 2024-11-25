@@ -15,7 +15,11 @@ export type matomoAccountRequestSchemaType = z.infer<
 >;
 
 export const sentryAccountRequestSchema = z.object({
-    teams: z.array(z.string()),
+    teams: z.array(
+        z.object({
+            name: z.string(),
+        })
+    ),
 });
 
 export type sentryAccountRequestSchemaType = z.infer<

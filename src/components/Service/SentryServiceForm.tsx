@@ -25,7 +25,11 @@ export default function SentryServiceForm(props: { teams }) {
         resolver: zodResolver(sentryAccountRequestSchema),
         mode: "onChange",
         defaultValues: {
-            teams: [""],
+            teams: [
+                {
+                    name: "",
+                },
+            ],
         },
     });
     const [alertMessage, setAlertMessage] = React.useState<{
@@ -75,7 +79,9 @@ export default function SentryServiceForm(props: { teams }) {
     });
 
     const addTeamClick = (e) => {
-        teamsAppend("");
+        teamsAppend({
+            name: "",
+        });
     };
 
     return (
@@ -129,7 +135,7 @@ export default function SentryServiceForm(props: { teams }) {
                                                 //         event.target.value
                                                 //     ),
                                                 // sentryTeam,
-                                                ...register(`teams.${index}`, {
+                                                ...register(`teams.${index}.name`, {
                                                     required: true,
                                                 }),
                                             }}
