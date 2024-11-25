@@ -7,6 +7,7 @@ import { match } from "ts-pattern";
 import { db } from "@/lib/kysely";
 import { getUserBasicInfo, getUserStartups } from "@/lib/kysely/queries/users";
 import {
+    matomoAccountRequestSchema,
     matomoAccountRequestWrapperSchema,
     matomoAccountRequestWrapperSchemaType,
     sentryAccountRequestSchema,
@@ -14,7 +15,6 @@ import {
     sentryAccountRequestWrapperSchemaType,
 } from "@/models/actions/service";
 import {
-    CreateMattermostAccountDataSchema,
     CreateMatomoAccountDataSchema,
     CreateSentryAccountDataSchema,
 } from "@/models/jobs/services";
@@ -49,8 +49,7 @@ export const askAccountCreationForService = withErrorHandling(
         if (!user) throw new NoDataError("User count not be found");
         await match(service)
             .with(SERVICES.MATOMO, async () => {
-                const matomoData =
-                    matomoAccountRequestWrapperSchema["data"].parse(data);
+                const matomoData = matomoAccountRequestSchema.parse(data);
                 if (!user.primary_email) {
                     throw new ValidationError(
                         "Un email primaire est obligatoire"
