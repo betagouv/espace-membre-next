@@ -5,6 +5,10 @@ import {
     createMatomoServiceAccount,
     createMatomoServiceAccountTopic,
 } from "./workers/create-matomo-account";
+import {
+    createSentryServiceAccount,
+    createSentryServiceAccountTopic,
+} from "./workers/create-sentry-account";
 import { ErrorWithStatus } from "@/utils/error";
 import { gracefulExit } from "@/utils/gracefulExist";
 
@@ -55,6 +59,10 @@ export async function startBossClientInstance(): Promise<PgBoss> {
         await bossClient.work(
             createMatomoServiceAccountTopic,
             handlerWrapper(createMatomoServiceAccount)
+        );
+        await bossClient.work(
+            createSentryServiceAccountTopic,
+            handlerWrapper(createSentryServiceAccount)
         );
     });
 }
