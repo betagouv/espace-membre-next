@@ -28,17 +28,21 @@ export default async function MatomoPage() {
             {service_account ? (
                 <AccountDetails
                     account={service_account}
-                    data={service_account.metadata.sites.map((s) => [
-                        s.url ? (
-                            <a href={s.url} target="_blank">
-                                {s.name}
-                            </a>
-                        ) : (
-                            s.name
-                        ),
-                        s.type,
-                        s.accessLevel,
-                    ])}
+                    data={
+                        service_account.metadata
+                            ? service_account.metadata.sites.map((s) => [
+                                  s.url ? (
+                                      <a href={s.url} target="_blank">
+                                          {s.name}
+                                      </a>
+                                  ) : (
+                                      s.name
+                                  ),
+                                  s.type,
+                                  s.accessLevel,
+                              ])
+                            : []
+                    }
                     headers={["nom", "type", "niveau d'accès"]}
                 />
             ) : (
