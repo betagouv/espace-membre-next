@@ -20,8 +20,8 @@ export function EventsList({ events }: { events: CalendarResponse }) {
         .filter(
             ([key, event]) =>
                 event.type === "VEVENT" &&
-                (!event.summary.toLowerCase().includes("formation") ||
-                    !event.summary.toLowerCase().includes("atelier") ||
+                (!event.summary.toLowerCase().includes("formation") &&
+                    !event.summary.toLowerCase().includes("atelier") &&
                     !event.summary.toLowerCase().includes("embarquement"))
         )
         .sort(
