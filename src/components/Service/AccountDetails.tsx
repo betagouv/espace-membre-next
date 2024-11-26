@@ -48,6 +48,10 @@ const AccountDetails = ({ account, data, headers }: AccountDetailsProps) => {
                         />
                     )
                 )
+                .with(
+                    { status: ACCOUNT_SERVICE_STATUS.ACCOUNT_INVITATION_SENT },
+                    () => <>Une invitation t'as été envoyé par email.</>
+                )
                 .otherwise(() => {
                     return null;
                 })}
