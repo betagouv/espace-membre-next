@@ -314,7 +314,7 @@ const MatomoInfoRow = (
     ];
 };
 
-const sentryInfoRow = (sentry: NonNullable<MemberPageProps["sentryInfo"]>) => {
+const sentryInfoRow = (sentry: MemberPageProps["sentryInfo"]) => {
     return [
         <>Compte Sentry</>,
         match(status)
