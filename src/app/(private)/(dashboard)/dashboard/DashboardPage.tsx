@@ -20,9 +20,8 @@ export function DashboardPage(props: DashboardPageProps) {
     return (
         <div className={fr.cx("fr-container", "fr-pb-6w")}>
             <h2>Gérer mon compte</h2>
-            <SurveyBox value={props.surveyCookieValue} />
             <div className={fr.cx("fr-grid-row", "fr-grid-row--gutters")}>
-                <div className={fr.cx("fr-col-12", "fr-col-lg-4")}>
+                <div className={fr.cx("fr-col-12", "fr-col-lg-6")}>
                     <Tile
                         className={fr.cx("fr-tile--sm")}
                         title="Ma fiche membre"
@@ -34,21 +33,7 @@ export function DashboardPage(props: DashboardPageProps) {
                         }}
                     />
                 </div>
-                <div className={fr.cx("fr-col-12", "fr-col-lg-4")}>
-                    <Tile
-                        className={fr.cx("fr-tile--sm")}
-                        title="Email"
-                        desc="Configurer l'accès à mes emails."
-                        orientation="horizontal"
-                        imageUrl={(mailSend as StaticImageData).src}
-                        linkProps={{
-                            href: `${linkRegistry.get(
-                                "account"
-                            )}#email-settings`,
-                        }}
-                    />
-                </div>
-                <div className={fr.cx("fr-col-12", "fr-col-lg-4")}>
+                <div className={fr.cx("fr-col-12", "fr-col-lg-6")}>
                     <Tile
                         className={fr.cx("fr-tile--sm")}
                         title="Fiches produit"
@@ -61,33 +46,9 @@ export function DashboardPage(props: DashboardPageProps) {
                     />
                 </div>
             </div>
-            <h2 className={fr.cx("fr-pt-4w")}>Explorer la communauté</h2>
+            <h2 className={fr.cx("fr-pt-4w")}>Actualités</h2>
             <div className={fr.cx("fr-grid-row", "fr-grid-row--gutters")}>
-                <div className={fr.cx("fr-col-12", "fr-col-lg-6")}>
-                    <Tile
-                        className={fr.cx("fr-tile--sm")}
-                        title="Communauté"
-                        desc="Explorer la communauté"
-                        orientation="horizontal"
-                        imageUrl={(community as StaticImageData).src}
-                        linkProps={{
-                            href: linkRegistry.get("community"),
-                        }}
-                    />
-                </div>
-                <div className={fr.cx("fr-col-12", "fr-col-lg-6")}>
-                    <Tile
-                        className={fr.cx("fr-tile--sm")}
-                        title="Observatoire de la communauté"
-                        desc="Consulter les informations anonymisées sur la communauté (TJM...)."
-                        orientation="horizontal"
-                        imageUrl={(locationFrance as StaticImageData).src}
-                        linkProps={{
-                            href: `${linkRegistry.get("metabase")}`,
-                        }}
-                    />
-                </div>
-                <div className={fr.cx("fr-col-12", "fr-col-lg-6")}>
+                <div className={fr.cx("fr-col-12", "fr-col-lg-4")}>
                     <Tile
                         className={fr.cx("fr-tile--sm")}
                         title="Formations"
@@ -99,15 +60,66 @@ export function DashboardPage(props: DashboardPageProps) {
                         }}
                     />
                 </div>
-                <div className={fr.cx("fr-col-12", "fr-col-lg-6")}>
+                <div className={fr.cx("fr-col-12", "fr-col-lg-4")}>
                     <Tile
                         className={fr.cx("fr-tile--sm")}
-                        title="Actualités"
-                        desc="Lire les dernières infolettres de la communauté."
+                        title="Évènements"
+                        desc="Découvrir les évènements de la communauté."
+                        orientation="horizontal"
+                        imageUrl={(school as StaticImageData).src}
+                        linkProps={{
+                            href: linkRegistry.get("eventsList"),
+                        }}
+                    />
+                </div>
+                <div className={fr.cx("fr-col-12", "fr-col-lg-4")}>
+                    <Tile
+                        className={fr.cx("fr-tile--sm")}
+                        title="Newsletters"
+                        desc="Consultez les dernières infolettres de la communauté"
+                        orientation="horizontal"
+                        imageUrl={(school as StaticImageData).src}
+                        linkProps={{
+                            href: linkRegistry.get("newsletters"),
+                        }}
+                    />
+                </div>
+            </div>
+            <h2 className={fr.cx("fr-pt-4w")}>Explorer la communauté</h2>
+            <div className={fr.cx("fr-grid-row", "fr-grid-row--gutters")}>
+                <div className={fr.cx("fr-col-12", "fr-col-lg-4")}>
+                    <Tile
+                        className={fr.cx("fr-tile--sm")}
+                        title="Communauté"
+                        desc="Explorer la communauté"
+                        orientation="horizontal"
+                        imageUrl={(community as StaticImageData).src}
+                        linkProps={{
+                            href: linkRegistry.get("community"),
+                        }}
+                    />
+                </div>
+                <div className={fr.cx("fr-col-12", "fr-col-lg-4")}>
+                    <Tile
+                        className={fr.cx("fr-tile--sm")}
+                        title="Observatoire"
+                        desc="Consulter les informations anonymisées sur la communauté (TJM...)."
+                        orientation="horizontal"
+                        imageUrl={(locationFrance as StaticImageData).src}
+                        linkProps={{
+                            href: `${linkRegistry.get("metabase")}`,
+                        }}
+                    />
+                </div>
+                <div className={fr.cx("fr-col-12", "fr-col-lg-4")}>
+                    <Tile
+                        className={fr.cx("fr-tile--sm")}
+                        title="Carte des membres"
+                        desc="Les membres partout dans le monde"
                         orientation="horizontal"
                         imageUrl={(mailSend as StaticImageData).src}
                         linkProps={{
-                            href: linkRegistry.get("newsletters"),
+                            href: linkRegistry.get("map"),
                         }}
                     />
                 </div>
