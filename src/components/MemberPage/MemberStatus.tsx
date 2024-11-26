@@ -317,25 +317,45 @@ const MatomoInfoRow = (
 const sentryInfoRow = (sentry: NonNullable<MemberPageProps["sentryInfo"]>) => {
     return [
         <>Compte Sentry</>,
-        <Badge key="sentry-status" severity="success">
-            Actif
-        </Badge>,
-        <Accordion key="sentry-info" label={"Liste des accès"}>
-            <Table
-                data={sentry.metadata.teams.map((s) => [
-                    s.slug ? (
-                        <a href={s.slug} target="_blank">
-                            {s.name}
-                        </a>
-                    ) : (
-                        s.name
-                    ),
-                    s.projects.length,
-                    s.role,
-                ])}
-                headers={["nom", "projets", "niveau d'accès"]}
-            />
-        </Accordion>,
+        match(status)
+            .with(ACCOUNT_SERVICE_STATUS.ACCOUNT_FOUND, () => (
+                <Badge key="sentry-status" severity="success">
+                    Actif
+                </Badge>
+            ))
+            .with(ACCOUNT_SERVICE_STATUS.ACCOUNT_CREATION_PENDING, () => (
+                <Badge key="sentry-status" severity="info">
+                    Creation en cours
+                </Badge>
+            ))
+            .otherwise(() => <Badge key="matomo-status">Pas de compte</Badge>),
+        !!sentry ? (
+            <Accordion key="sentry-info" label={"Liste des accès"}>
+                <Table
+                    data={sentry.metadata.teams.map((s) => [
+                        s.slug ? (
+                            <a href={s.slug} target="_blank">
+                                {s.name}
+                            </a>
+                        ) : (
+                            s.name
+                        ),
+                        s.projects.length,
+                        s.role,
+                    ])}
+                    headers={["nom", "projets", "niveau d'accès"]}
+                />
+            </Accordion>
+        ) : (
+            <>
+                Tu n'as pas de compte sentry. Si tu as besoin d'un compte tu
+                peux en faire la demande{" "}
+                <a href="/services/sentry" className="fr-link">
+                    ici
+                </a>
+            </>
+        ),
+        ,
     ];
 };
 
@@ -377,7 +397,7 @@ export const MemberStatus = ({
         // Matomo account status
         MatomoInfoRow(matomoInfo, isCurrentUser),
         // Sentry account status
-        sentryInfo && sentryInfoRow(sentryInfo),
+        sentryInfoRow(sentryInfo),
     ].filter((z) => !!z);
 
     return (
