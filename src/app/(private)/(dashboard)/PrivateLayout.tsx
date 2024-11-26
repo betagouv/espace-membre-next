@@ -84,94 +84,91 @@ export function PrivateLayout({ children }: { children: React.ReactNode }) {
     const MenuItems: ItemLink[] = [
         {
             href: communityLink,
-            text: "Communauté",
+            text: "Membres",
             isActive: hasPathnameThisMatch(pathname, communityLink),
             items: [
                 {
-                    href: communityLink,
-                    text: "Membres",
-                    isActive: hasPathnameThisMatch(pathname, communityLink),
-                    items: [
-                        {
-                            href: communityCreateMemberLink,
-                            text: routeTitles.communityCreateMember(),
-                            isActive: hasPathnameThisMatch(
-                                pathname,
-                                communityCreateMemberLink
-                            ),
-                        },
-                        {
-                            href: mapLink,
-                            text: routeTitles.map(),
-                            isActive: hasPathnameThisMatch(pathname, mapLink),
-                        },
-                        {
-                            href: () =>
-                                linkRegistry.get("communityMember", {
-                                    username: currentItemId || "",
-                                }),
-                            text: currentPage,
-                            isActive: hasPathnameThisRegex(
-                                pathname,
-                                "^/community/[a-zA-Z]+.[a-zA-Z]+$"
-                            ),
-                            items: [
-                                {
-                                    href: pathname,
-                                    text: "Mise à jour de la fiche",
-                                    isActive: hasPathnameThisRegex(
-                                        pathname,
-                                        "^/community/[a-zA-Z]+.[a-zA-Z]+/update"
-                                    ),
-                                },
-                            ],
-                        },
-                    ],
+                    href: communityCreateMemberLink,
+                    text: routeTitles.communityCreateMember(),
+                    isActive: hasPathnameThisMatch(
+                        pathname,
+                        communityCreateMemberLink
+                    ),
                 },
                 {
-                    href: startupListLink,
-                    text: "Produits",
-                    isActive: hasPathnameThisMatch(pathname, startupListLink),
+                    href: mapLink,
+                    text: routeTitles.map(),
+                    isActive: hasPathnameThisMatch(pathname, mapLink),
+                },
+                {
+                    href: () =>
+                        linkRegistry.get("communityMember", {
+                            username: currentItemId || "",
+                        }),
+                    text: currentPage,
+                    isActive: hasPathnameThisRegex(
+                        pathname,
+                        "^/community/[a-zA-Z]+.[a-zA-Z]+"
+                    ),
                     items: [
                         {
-                            href: startupCreateLink,
-                            text: routeTitles.startupCreate(),
-                            isActive: hasPathnameThisMatch(
-                                pathname,
-                                startupCreateLink
-                            ),
-                        },
-                        {
-                            href: () =>
-                                linkRegistry.get("startupDetails", {
-                                    startupId: currentItemId,
-                                }),
-                            text: currentPage,
+                            href: pathname,
+                            text: "Mise à jour de la fiche",
                             isActive: hasPathnameThisRegex(
                                 pathname,
-                                "^/startups/[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}"
+                                "^/community/[a-zA-Z]+.[a-zA-Z]+/update"
                             ),
-                            items: [
-                                {
-                                    href: pathname,
-                                    text: "Modifier la fiche",
-                                    isActive: hasPathnameThisRegex(
-                                        pathname,
-                                        "^/startups/[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}/info-form$"
-                                    ),
-                                },
-                                {
-                                    href: pathname,
-                                    text: "Documents",
-                                    isActive: hasPathnameThisRegex(
-                                        pathname,
-                                        "^/startups/[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}/files$"
-                                    ),
-                                },
-                            ],
                         },
                     ],
                 },
+            ],
+        },
+        {
+            href: startupListLink,
+            text: "Produits",
+            isActive: hasPathnameThisMatch(pathname, startupListLink),
+            items: [
+                {
+                    href: startupCreateLink,
+                    text: routeTitles.startupCreate(),
+                    isActive: hasPathnameThisMatch(pathname, startupCreateLink),
+                },
+                {
+                    href: () =>
+                        linkRegistry.get("startupDetails", {
+                            startupId: currentItemId,
+                        }),
+                    text: currentPage,
+                    isActive: hasPathnameThisRegex(
+                        pathname,
+                        "^/startups/[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}"
+                    ),
+                    items: [
+                        {
+                            href: pathname,
+                            text: "Modifier la fiche",
+                            isActive: hasPathnameThisRegex(
+                                pathname,
+                                "^/startups/[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}/info-form$"
+                            ),
+                        },
+                        {
+                            href: pathname,
+                            text: "Documents",
+                            isActive: hasPathnameThisRegex(
+                                pathname,
+                                "^/startups/[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}/files$"
+                            ),
+                        },
+                    ],
+                },
+            ],
+        },
+        {
+            href: communityLink,
+            text: "Communauté",
+            isActive: hasPathnameThisMatch(pathname, communityLink),
+            items: [
                 {
                     href: incubatorListLink,
                     text: "Incubateurs",
@@ -284,6 +281,21 @@ export function PrivateLayout({ children }: { children: React.ReactNode }) {
                             ],
                         },
                     ],
+                },
+            ],
+        },
+        {
+            href: accountLink,
+            text: routeTitles.account(),
+            isActive: hasPathnameThisMatch(pathname, accountLink),
+            items: [
+                {
+                    href: accountEditBaseInfoLink,
+                    text: "Modifier ma fiche",
+                    isActive: hasPathnameThisMatch(
+                        pathname,
+                        accountEditBaseInfoLink
+                    ),
                 },
             ],
         },

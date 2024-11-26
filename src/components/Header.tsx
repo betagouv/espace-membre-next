@@ -103,32 +103,36 @@ const MainHeader = () => {
                       isActive: hasPathnameThisRoot(pathname, accountLink),
                   },
                   {
+                      linkProps: {
+                          href: linkRegistry.get("community", undefined),
+                      },
+                      text: "Membres",
                       isActive: hasPathnameThisRoot(pathname, communityLink),
+                  },
+                  {
+                      linkProps: {
+                          href: startupListLink,
+                      },
+                      isActive: hasPathnameThisRoot(pathname, startupListLink),
+                      text: "Produits",
+                  },
+                  {
+                      isActive:
+                          hasPathnameThisRoot(pathname, incubatorListLink) ||
+                          hasPathnameThisRoot(
+                              pathname,
+                              linkRegistry.get("organizationList", undefined)
+                          ) ||
+                          hasPathnameThisRoot(
+                              pathname,
+                              linkRegistry.get("teamList", undefined)
+                          ),
                       //   linkProps: {
                       //       href: "/community",
                       //       target: "_self",
                       //   },
                       text: "Communauté",
                       menuLinks: [
-                          {
-                              linkProps: {
-                                  href: linkRegistry.get(
-                                      "community",
-                                      undefined
-                                  ),
-                              },
-                              text: "Membres",
-                          },
-                          {
-                              linkProps: {
-                                  href: startupListLink,
-                              },
-                              isActive: hasPathnameThisRoot(
-                                  pathname,
-                                  startupListLink
-                              ),
-                              text: "Produits",
-                          },
                           {
                               linkProps: {
                                   href: incubatorListLink,
