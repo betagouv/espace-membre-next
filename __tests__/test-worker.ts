@@ -51,7 +51,9 @@ describe("Service account creation by worker", () => {
                 .where("service_user_id", "=", "membre.actif@betagouv.ovh")
                 .where("account_type", "=", "matomo")
                 .executeTakeFirstOrThrow();
-            result.status?.should.equal(ACCOUNT_SERVICE_STATUS.ACCOUNT_FOUND);
+            result.status?.should.equal(
+                ACCOUNT_SERVICE_STATUS.ACCOUNT_INVITATION_SENT
+            );
         });
     });
 
