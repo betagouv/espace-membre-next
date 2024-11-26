@@ -12,6 +12,13 @@ function htmlize(str = "") {
 
 export function EventsList({ events }: { events: CalendarResponse }) {
     const href = "";
+    const excludedKeywords = [
+        "formation",
+        "atelier",
+        "embarquement",
+        "tester l'accessibilité",
+        "coacher l'accessibilité",
+    ];
     const sortedEvents = Object.entries(events)
         .filter(
             ([key, event]) =>
@@ -20,9 +27,7 @@ export function EventsList({ events }: { events: CalendarResponse }) {
         .filter(
             ([key, event]) =>
                 event.type === "VEVENT" &&
-                (!event.summary.toLowerCase().includes("formation") &&
-                    !event.summary.toLowerCase().includes("atelier") &&
-                    !event.summary.toLowerCase().includes("embarquement"))
+                !excludedKeywords.some(keyword => event.summary.toLowerCase().includes(keyword.toLowerCase()))
         )
         .sort(
             ([key1, event1], [key2, event2]) =>
