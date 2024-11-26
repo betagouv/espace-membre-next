@@ -14,7 +14,7 @@ import { getServiceAccount } from "@/lib/kysely/queries/services";
 import { EventCodeToReadable } from "@/models/actionEvent";
 import { sentryServiceInfoToModel } from "@/models/mapper/sentryMapper";
 import { sentryUserSchemaType } from "@/models/sentry";
-import { SERVICES } from "@/models/services";
+import { ACCOUNT_SERVICE_STATUS, SERVICES } from "@/models/services";
 import config from "@/server/config";
 import { authOptions } from "@/utils/authoptions";
 
