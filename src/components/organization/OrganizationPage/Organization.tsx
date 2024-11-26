@@ -2,7 +2,6 @@
 
 import Button from "@codegouvfr/react-dsfr/Button";
 
-import { BreadCrumbFiller } from "@/app/BreadCrumbProvider";
 import { sponsorSchemaType } from "@/models/sponsor";
 
 export interface OrganizationPageProps {
@@ -14,9 +13,6 @@ export default function OrganizationPage({
 }: OrganizationPageProps) {
     return (
         <>
-            <BreadCrumbFiller
-                currentPage={organizationInfos.name}
-            ></BreadCrumbFiller>
             <div className="fr-mb-8v">
                 <h1>{organizationInfos.name}</h1>
                 <p>

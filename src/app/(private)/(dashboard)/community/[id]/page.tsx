@@ -3,6 +3,7 @@ import { getServerSession } from "next-auth/next";
 import { userInfo } from "os";
 
 import { getUserInformations } from "@/app/api/member/getInfo";
+import { BreadCrumbFiller } from "@/app/BreadCrumbProvider";
 import MemberPage from "@/components/MemberPage/MemberPage";
 import betagouv from "@/server/betagouv";
 import config from "@/server/config";
@@ -54,23 +55,29 @@ export default async function Page({
     }
 
     return (
-        <MemberPage
-            isAdmin={isAdmin}
-            canEdit={canEdit}
-            availableEmailPros={availableEmailPros}
-            authorizations={user.authorizations}
-            emailInfos={user.emailInfos}
-            isExpired={user.isExpired}
-            redirections={user.emailRedirections}
-            avatar={userInformations?.avatar}
-            changes={userInformations?.changes}
-            emailResponder={userInformations.emailResponder}
-            userInfos={userInformations?.baseInfo}
-            mattermostInfo={userInformations.mattermostInfo}
-            matomoInfo={userInformations.matomoInfo}
-            sentryInfo={userInformations.sentryInfo}
-            startups={userInformations.startups}
-            isCurrentUser={false}
-        />
+        <>
+            <BreadCrumbFiller
+                currentPage={user.userInfos.fullname}
+                currentItemId={user.userInfos.username}
+            />
+            <MemberPage
+                isAdmin={isAdmin}
+                canEdit={canEdit}
+                availableEmailPros={availableEmailPros}
+                authorizations={user.authorizations}
+                emailInfos={user.emailInfos}
+                isExpired={user.isExpired}
+                redirections={user.emailRedirections}
+                avatar={userInformations?.avatar}
+                changes={userInformations?.changes}
+                emailResponder={userInformations.emailResponder}
+                userInfos={userInformations?.baseInfo}
+                mattermostInfo={userInformations.mattermostInfo}
+                matomoInfo={userInformations.matomoInfo}
+                sentryInfo={userInformations.sentryInfo}
+                startups={userInformations.startups}
+                isCurrentUser={false}
+            />
+        </>
     );
 }

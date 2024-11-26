@@ -1,6 +1,7 @@
 import { Metadata, ResolvingMetadata } from "next";
 import { redirect } from "next/navigation";
 
+import { BreadCrumbFiller } from "@/app/BreadCrumbProvider";
 import IncubatorPage from "@/components/IncubatorPage/IncubatorPage";
 import { getIncubator } from "@/lib/kysely/queries/incubators";
 import s3 from "@/lib/s3";
@@ -17,9 +18,9 @@ export async function generateMetadata(
     // read route params
     const id = params.id;
 
-    const produit = await getIncubator(id);
+    const incubator = await getIncubator(id);
     return {
-        title: produit ? `Incubateur ${produit.ghid} / Espace Membre` : "",
+        title: incubator ? `Incubateur ${incubator.ghid} / Espace Membre` : "",
     };
 }
 
@@ -30,5 +31,13 @@ export default async function Page({ params }: Props) {
     }
 
     const incubator = incubatorToModel(dbIncubator);
-    return <IncubatorPage incubatorInfos={incubator} />;
+    return (
+        <>
+            <BreadCrumbFiller
+                currentPage={incubator.title}
+                currentItemId={incubator.uuid}
+            />
+            <IncubatorPage incubatorInfos={incubator} />
+        </>
+    );
 }

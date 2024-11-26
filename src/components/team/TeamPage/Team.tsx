@@ -2,7 +2,6 @@
 
 import Button from "@codegouvfr/react-dsfr/Button";
 
-import { BreadCrumbFiller } from "@/app/BreadCrumbProvider";
 import { incubatorSchemaType } from "@/models/incubator";
 import { memberPublicInfoSchemaType } from "@/models/member";
 import { teamSchemaType } from "@/models/team";
@@ -20,7 +19,6 @@ export default function TeamPage({
 }: TeamPageProps) {
     return (
         <>
-            <BreadCrumbFiller currentPage={teamInfos.name}></BreadCrumbFiller>
             <div className="fr-mb-8v">
                 <h1>{teamInfos.name}</h1>
 

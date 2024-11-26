@@ -4,6 +4,7 @@ import { getServerSession } from "next-auth";
 
 import { getStartup } from "@/app/api/startups/actions";
 import { getStartupFiles } from "@/app/api/startups/files/list";
+import { BreadCrumbFiller } from "@/app/BreadCrumbProvider";
 import { StartupFiles } from "@/components/StartupFiles";
 import { authOptions } from "@/utils/authoptions";
 import { routeTitles } from "@/utils/routes/routeTitles";
@@ -34,6 +35,10 @@ export default async function Page(props) {
 
     return (
         <div>
+            <BreadCrumbFiller
+                currentPage={startup.name}
+                currentItemId={startup.uuid}
+            />
             <h1>Documents de {startup.name}</h1>
             <StartupFiles startup={startup} files={files} />
         </div>

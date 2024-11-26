@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { redirect } from "next/navigation";
 import { getServerSession } from "next-auth";
 
+import { BreadCrumbFiller } from "@/app/BreadCrumbProvider";
 import { MemberUpdate } from "@/components/MemberUpdate/MemberUpdate";
 import { getAllStartups } from "@/lib/kysely/queries";
 import { getUserBasicInfo, getUserInfos } from "@/lib/kysely/queries/users";
@@ -47,5 +48,13 @@ export default async function Page({
         startupOptions,
     };
 
-    return <MemberUpdate {...props} />;
+    return (
+        <>
+            <MemberUpdate {...props} />
+            <BreadCrumbFiller
+                currentPage={userInfos.fullname}
+                currentItemId={userInfos.username}
+            />
+        </>
+    );
 }
