@@ -61,11 +61,10 @@ export const askAccountCreationForService = withErrorHandling(
                         email: user.primary_email,
                         login: user.primary_email,
                         password: encryptPassword(
-                            matomoData.password ||
-                                crypto
-                                    .randomBytes(20)
-                                    .toString("base64")
-                                    .slice(0, -2)
+                            crypto
+                                .randomBytes(20)
+                                .toString("base64")
+                                .slice(0, -2)
                         ),
                         sites: data.sites,
                     }),
