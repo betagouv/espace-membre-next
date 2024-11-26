@@ -7,7 +7,7 @@ import { db } from "@/lib/kysely";
 import { getServiceAccount } from "@/lib/kysely/queries/services";
 import { sentryServiceInfoToModel } from "@/models/mapper/sentryMapper";
 import { sentryUserSchemaType } from "@/models/sentry";
-import { ACCOUNT_SERVICE_STATUS, SERVICES } from "@/models/services";
+import { SERVICES } from "@/models/services";
 import config from "@/server/config";
 import { authOptions } from "@/utils/authoptions";
 
@@ -48,21 +48,14 @@ export default async function SentryPage() {
 
             {service_account ? (
                 <>
-                    {service_account.status ===
-                        ACCOUNT_SERVICE_STATUS.ACCOUNT_FOUND && (
-                        <AccountDetails
-                            account={service_account}
-                            data={service_account.metadata.teams.map((team) => [
-                                buildLinkToSentryTeam(team),
-                                team.role,
-                            ])}
-                            headers={["nom", "niveau d'accès"]}
-                        />
-                    )}
-                    {service_account.status ===
-                        ACCOUNT_SERVICE_STATUS.ACCOUNT_INVITATION_SENT && (
-                        <p>Une invitation t'a été envoyée par email</p>
-                    )}
+                    <AccountDetails
+                        account={service_account}
+                        data={service_account.metadata.teams.map((team) => [
+                            buildLinkToSentryTeam(team),
+                            team.role,
+                        ])}
+                        headers={["nom", "niveau d'accès"]}
+                    />
                 </>
             ) : (
                 <SentryServiceForm teams={sentryTeams} />
