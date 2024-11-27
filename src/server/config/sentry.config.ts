@@ -67,7 +67,7 @@ export class FakeSentryService implements AccountService {
             email,
         };
         this.users.push(newUser);
-        return Promise.resolve();
+        return Promise.resolve(newUser);
     }
 
     // New method to add a user to a team
