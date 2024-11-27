@@ -3,11 +3,16 @@ import * as Sentry from "@sentry/node";
 import { AccountService, SERVICES } from "@/models/services";
 import config from "@/server/config";
 
+export enum SentryRole {
+    admin = "admin",
+    contributor = "contributor",
+}
+
 export interface SentryAddUserToOrgParams {
     email: string;
     teamRoles?: {
         teamSlug: string;
-        role: "contributor" | "admin";
+        role: SentryRole;
     }[];
     orgRole: "member" | "admin";
 }
@@ -121,7 +126,7 @@ export class SentryService implements AccountService {
         email,
         teamRoles,
         orgRole = "member",
-    }: SentryAddUserToOrgParams): Promise<void> {
+    }: SentryAddUserToOrgParams): Promise<SentryUser> {
         // Add user to the organization
         const orgMemberResponse = await fetch(
             `${this.apiUrl}/api/0/organizations/${this.org}/members/`,
@@ -144,6 +149,7 @@ export class SentryService implements AccountService {
                 `Failed to add user ${email} to organization: ${errorDetails.detail}`
             );
         }
+        return orgMemberResponse.json();
     }
 
     async addUserToTeam({

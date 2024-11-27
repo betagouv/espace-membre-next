@@ -53,7 +53,7 @@ export class FakeSentryService implements AccountService {
         email,
         teamRoles,
         orgRole = "member",
-    }: SentryAddUserToOrgParams): Promise<void> {
+    }: SentryAddUserToOrgParams): Promise<SentryUser> {
         if (this.users.find((user) => user.email === email)) {
             return Promise.reject(
                 new Error(
