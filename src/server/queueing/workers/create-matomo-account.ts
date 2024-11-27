@@ -46,6 +46,8 @@ export async function createMatomoServiceAccount(
     const metadata = matomoMetadataToModel(userMetadata, allWebsites);
     const result = await db
         .updateTable("service_accounts")
+        .where("account_type", "=", SERVICES.MATOMO)
+        .where("email", "=", job.data.email)
         .set({
             service_user_id: userLogin,
             status: ACCOUNT_SERVICE_STATUS.ACCOUNT_FOUND,
