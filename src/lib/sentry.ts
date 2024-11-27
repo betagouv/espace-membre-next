@@ -4,7 +4,6 @@ import { z } from "zod";
 import { AccountService, SERVICES } from "@/models/services";
 import config from "@/server/config";
 
-<<<<<<< HEAD
 export enum SentryRole {
     admin = "admin",
     contributor = "contributor",
@@ -28,17 +27,6 @@ export interface SentryAddUserToTeamParams {
     teamSlug: string;
 }
 
-=======
-export interface SentryAddUserToOrgParams {
-    email: string;
-    teamRoles?: {
-        teamSlug: string;
-        role: "contributor" | "admin";
-    }[];
-    orgRole: "member" | "admin";
-}
-
->>>>>>> c8eeeb14 (chore: add sentry form interface, and sentry method to add user)
 export const initializeSentry = (app) => {
     if (!config.sentryDSN) {
         console.log("Sentry DSN not found. Sentry is not initialized.");
@@ -145,11 +133,7 @@ export class SentryService implements AccountService {
         email,
         teamRoles,
         orgRole = "member",
-<<<<<<< HEAD
     }: SentryAddUserToOrgParams): Promise<SentryUser> {
-=======
-    }: SentryAddUserToOrgParams): Promise<void> {
->>>>>>> c8eeeb14 (chore: add sentry form interface, and sentry method to add user)
         // Add user to the organization
         const orgMemberResponse = await fetch(
             `${this.apiUrl}/api/0/organizations/${this.org}/members/`,
@@ -159,14 +143,10 @@ export class SentryService implements AccountService {
                 body: JSON.stringify({
                     email,
                     orgRole,
-<<<<<<< HEAD
                     teamRoles: teamRoles.map((t) => ({
                         teamSlug: t.teamSlug,
                         role: t.teamRole,
                     })),
-=======
-                    teamRoles: teamRoles,
->>>>>>> c8eeeb14 (chore: add sentry form interface, and sentry method to add user)
                     sendInvite: true,
                     reinvite: true,
                 }),
@@ -179,7 +159,7 @@ export class SentryService implements AccountService {
                 `Failed to add user ${email} to organization: ${errorDetails.detail}`
             );
         }
-<<<<<<< HEAD
+
         return orgMemberResponse.json();
     }
 
@@ -187,37 +167,21 @@ export class SentryService implements AccountService {
         memberId,
         teamRole,
         teamSlug,
-=======
-    }
-
-    async addUserToTeam({
-        memberId,
-        teamSlug,
-        teamRole,
     }: {
         memberId: string;
         teamSlug: string;
         teamRole: string;
->>>>>>> c8eeeb14 (chore: add sentry form interface, and sentry method to add user)
     }): Promise<void> {
         const url = `${this.apiUrl}/api/0/organizations/${this.org}/members/${memberId}/teams/${teamSlug}/`;
 
         const response = await fetch(url, {
-<<<<<<< HEAD
             method: "PUT",
-=======
-            method: "POST",
->>>>>>> c8eeeb14 (chore: add sentry form interface, and sentry method to add user)
             headers: {
                 Authorization: `Bearer ${this.authToken}`, // Sentry API token
                 "Content-Type": "application/json",
             },
             body: JSON.stringify({
-<<<<<<< HEAD
                 teamRole,
-=======
-                teamRole: teamRole,
->>>>>>> c8eeeb14 (chore: add sentry form interface, and sentry method to add user)
             }),
         });
 
@@ -228,7 +192,6 @@ export class SentryService implements AccountService {
             );
         }
 
-<<<<<<< HEAD
         console.log(
             `Sentry: User ${memberId} changed team role to ${teamRole} in team ${teamSlug}`
         );
@@ -264,10 +227,6 @@ export class SentryService implements AccountService {
                 `Failed to add user to team: ${response.status} ${response.statusText}.`
             );
         }
-=======
-        const data = await response.json();
-        console.log(`User ${memberId} successfully added to the team:`, data);
->>>>>>> c8eeeb14 (chore: add sentry form interface, and sentry method to add user)
         return;
     }
 

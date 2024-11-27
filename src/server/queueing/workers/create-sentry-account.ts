@@ -4,7 +4,10 @@ import PgBoss from "pg-boss";
 import { addEvent } from "@/lib/events";
 import { db } from "@/lib/kysely";
 import { SentryRole } from "@/lib/sentry";
+<<<<<<< HEAD
 import { EventCode } from "@/models/actionEvent";
+=======
+>>>>>>> 159dceaa (chore(createSentryAccount): add user uuid and user email to params)
 import { CreateSentryAccountDataSchemaType } from "@/models/jobs/services";
 import { ACCOUNT_SERVICE_STATUS, SERVICES } from "@/models/services";
 import { sentryClient } from "@/server/config/sentry.config";
@@ -24,7 +27,14 @@ export async function createSentryServiceAccount(
     const user = await sentryClient.addUserToOrganization({
         email: job.data.email,
         orgRole: "member",
+<<<<<<< HEAD
         teamRoles: job.data.teams,
+=======
+        teamRoles: job.data.teams.map((team) => ({
+            teamSlug: team,
+            role: SentryRole.contributor,
+        })),
+>>>>>>> 159dceaa (chore(createSentryAccount): add user uuid and user email to params)
     });
     const result = await db
         .updateTable("service_accounts")
