@@ -199,17 +199,12 @@ export class Matomo implements AccountService {
                 alias: alias,
             }),
         });
-        // Check if the response is ok and handle errors
-        if (!response.ok) {
-            throw new Error(
-                `Matomo: Failed to create user: ${response.statusText}`
-            );
-        }
+
         const responseBody = await response.json();
         // if sucess response body = { result: 'success', message: 'ok' }
         if (responseBody.result === "error") {
             throw new Error(
-                `Matomo: Failed to create user ${userLogin}: ${responseBody.result}`
+                `Matomo: Failed to create user ${userLogin}: ${responseBody.message}`
             );
         }
         console.log(`Matomo: User created with login : ${userLogin}`);
@@ -253,7 +248,9 @@ export class Matomo implements AccountService {
             // if sucess response body = { result: 'success', message: 'ok' }
             if (responseBody.result === "error") {
                 throw new Error(
-                    `Matomo: Failed to create user: ${responseBody.result}`
+                    `Matomo: Failed to grant access to user ${userLogin} with access ${access} ${
+                        responseBody.result
+                    } to ${idSites.join(",")}`
                 );
             }
             console.log(
@@ -321,25 +318,32 @@ export class Matomo implements AccountService {
         urls: string[],
         siteType: "website" | "mobileapp" = "website"
     ): Promise<{ value: number }> {
+        const body = new URLSearchParams({
+            module: "API",
+            method: "SitesManager.addSite",
+            format: "JSON",
+            token_auth: this.authToken,
+            siteName: siteName,
+            type: siteType,
+        });
+
+        // Add each URL dynamically with the correct parameter format (urls[0], urls[1], ...)
+        urls.forEach((url, index) => {
+            body.append(`urls[${index}]`, url);
+        });
         const response = await fetch(`${this.apiUrl}/index.php`, {
             method: "POST",
             headers: {
                 "Content-Type": "application/x-www-form-urlencoded",
             },
-            body: new URLSearchParams({
-                module: "API",
-                method: "SitesManager.addSite",
-                format: "JSON",
-                token_auth: this.authToken,
-                siteName: siteName,
-                urls: JSON.stringify(urls), // URLs should be a JSON array string
-                type: siteType,
-            }),
+            body,
         });
         // Check if the response is ok and handle errors
         if (!response.ok) {
             throw new Error(
-                `Matomo : Failed to create site: ${response.statusText} ${urls.join(',')}`
+                `Matomo : Failed to create site: ${
+                    response.statusText
+                } ${urls.join(",")}`
             );
         }
         console.log(`Matomo: Site created with url : ${urls.join(",")}`);
