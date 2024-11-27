@@ -1,6 +1,10 @@
 import z from "zod";
 
-import { MaintenanceWrapperDataSchema } from "./maintenance";
+import {
+    MaintenanceDataSchema,
+    MaintenanceWrapperDataSchema,
+} from "./maintenance";
+import { SentryRole } from "@/lib/sentry";
 
 export const CreateMattermostAccountDataSchema =
     MaintenanceWrapperDataSchema.extend({
@@ -35,7 +39,9 @@ export type CreateMatomoAccountDataSchemaType = z.infer<
 export const CreateSentryAccountDataSchema =
     MaintenanceWrapperDataSchema.extend({
         teams: z.array(z.string()),
-        email: z.string().email(), // Valide que l'email est bien formaté
+        email: z.string().email(),
+        username: z.string(), // used to logged infortion
+        userUuid: z.string(),
     }).strict();
 export type CreateSentryAccountDataSchemaType = z.infer<
     typeof CreateSentryAccountDataSchema
