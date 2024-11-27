@@ -94,6 +94,8 @@ export const askAccountCreationForService = withErrorHandling(
                     createSentryServiceAccountTopic,
                     CreateSentryAccountDataSchema.parse({
                         email: user.primary_email,
+                        username: user.username,
+                        userUuid: user.uuid,
                         teams: sentryData.teams.map((t) => t.name),
                     }),
                     {
