@@ -105,10 +105,19 @@ describe("Service account creation by worker", () => {
 
     describe("sentry account service consumer", () => {
         let service_accounts;
+        let user;
         before(async function () {
+            await utils.createUsers(testUsers);
+            user = await db
+                .selectFrom("users")
+                .where("username", "=", "membre.actif")
+                .selectAll()
+                .executeTakeFirst();
+
             service_accounts = await db
                 .insertInto("service_accounts")
                 .values({
+                    user_id: user.uuid,
                     email: "membre.actif@betagouv.ovh",
                     account_type: "sentry",
                     status: ACCOUNT_SERVICE_STATUS.ACCOUNT_CREATION_PENDING,
@@ -120,12 +129,16 @@ describe("Service account creation by worker", () => {
                 .deleteFrom("service_accounts")
                 .where("uuid", "=", service_accounts.uuid)
                 .executeTakeFirstOrThrow();
+            await utils.deleteUsers(testUsers);
         });
         it("should create sentry service account", async () => {
+            console.log("toto", user.uuid);
             await createSentryServiceAccount({
                 data: {
                     email: "membre.actif@betagouv.ovh",
                     userLogin: "membre.actif@betagouv.ovh",
+                    username: "membre.actif",
+                    userUuid: user?.uuid,
                     teams: [
                         {
                             teamSlug: "https://beta.gouv.fr",
@@ -138,7 +151,7 @@ describe("Service account creation by worker", () => {
             const result = await db
                 .selectFrom("service_accounts")
                 .selectAll()
-                .where("service_user_id", "=", "membre.actif@betagouv.ovh")
+                .where("user_id", "=", user?.uuid!)
                 .where("account_type", "=", "sentry")
                 .executeTakeFirstOrThrow();
             result.status?.should.equal(
