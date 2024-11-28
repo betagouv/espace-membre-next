@@ -17,3 +17,7 @@ export const PUBLIC_ROUTES = [
     /hook\/*/,
     /onboardingSuccess\/*/,
 ];
+
+export const PROTECTED_ROUTES = [
+    routes.ACCOUNT_GET_INFO_API_PROTECTED,
+]

@@ -8,7 +8,7 @@ import { expressjwt, Request } from "express-jwt";
 import expressSanitizer from "express-sanitizer";
 import next from "next";
 
-import { PUBLIC_ROUTES } from "./config/jwt.config";
+import { PROTECTED_ROUTES, PUBLIC_ROUTES } from "./config/jwt.config";
 //import getAllIncubators from "./controllers/incubatorController/api/getAllIncubators";
 //import getAllSponsors from "./controllers/sponsorController/api/getAllSponsors";
 import { errorHandler } from "./middlewares/errorHandler";
@@ -84,7 +84,7 @@ const startServer = () => {
                         return token;
                     },
                 }).unless({
-                    path: [...PUBLIC_ROUTES],
+                    path: [...PUBLIC_ROUTES, ...PROTECTED_ROUTES],
                 })
             )
         );

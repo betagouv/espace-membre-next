@@ -96,6 +96,8 @@ class routes {
     static ADMIN_SENDINBLUE = "/api/admin/sendinblue" as const;
     static ACCOUNT_UPDATE_INFO_API = "/api/member/:username" as const;
     static ACCOUNT_POST_INFO_API = "/api/member" as const;
+
+    static readonly ACCOUNT_GET_INFO_API_PROTECTED = "/api/member/:username" as const;
 }
 
 export default routes;
