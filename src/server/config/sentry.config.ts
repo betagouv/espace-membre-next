@@ -1,6 +1,7 @@
 import config from ".";
 import {
     SentryAddUserToOrgParams,
+    SentryAddUserToTeamParams,
     SentryService,
     SentryTeam,
     SentryUser,
@@ -71,13 +72,17 @@ export class FakeSentryService implements AccountService {
     }
 
     // New method to add a user to a team
-    addUserToTeam(email: string, teamSlug: string): Promise<void> {
-        const user = this.users.find((u) => u.email === email);
+    addUserToTeam({
+        memberId,
+        teamSlug,
+        teamRole,
+    }: SentryAddUserToTeamParams): Promise<void> {
+        const user = this.users.find((u) => u.id === memberId);
         const team = this.teams.find((t) => t.slug === teamSlug);
 
         if (!user) {
             return Promise.reject(
-                new Error(`User with email ${email} does not exist.`)
+                new Error(`User with email ${memberId} does not exist.`)
             );
         }
 
@@ -87,10 +92,10 @@ export class FakeSentryService implements AccountService {
             );
         }
 
-        if (team.members?.find((member) => member.email === email)) {
+        if (team.members?.find((member) => member.id === memberId)) {
             return Promise.reject(
                 new Error(
-                    `User with email ${email} is already a member of the team ${teamSlug}.`
+                    `User with email ${memberId} is already a member of the team ${teamSlug}.`
                 )
             );
         }

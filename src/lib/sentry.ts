@@ -17,6 +17,12 @@ export interface SentryAddUserToOrgParams {
     orgRole: "member" | "admin";
 }
 
+export interface SentryAddUserToTeamParams {
+    memberId: string;
+    teamRole: SentryRole;
+    teamSlug: string;
+}
+
 export const initializeSentry = (app) => {
     if (!config.sentryDSN) {
         console.log("Sentry DSN not found. Sentry is not initialized.");
@@ -152,14 +158,10 @@ export class SentryService implements AccountService {
         return orgMemberResponse.json();
     }
 
-    async addUserToTeam({
+    async changeMemberRoleInTeam({
         memberId,
-        teamSlug,
         teamRole,
-    }: {
-        memberId: string;
-        teamSlug: string;
-        teamRole: string;
+        teamSlug,
     }): Promise<void> {
         const url = `${this.apiUrl}/api/0/organizations/${this.org}/members/${memberId}/teams/${teamSlug}/`;
 
@@ -169,8 +171,43 @@ export class SentryService implements AccountService {
                 Authorization: `Bearer ${this.authToken}`, // Sentry API token
                 "Content-Type": "application/json",
             },
+        });
+
+        if (teamRole === "admin") {
+        }
+
+        if (!response.ok) {
+            const errorData = await response.json();
+            throw new Error(
+                `Failed to add user to team: ${response.status} ${response.statusText}. ${errorData.detail}`
+            );
+        }
+
+        const data = await response.json();
+        console.log(
+            `Sentry: User ${memberId} successfully added to the team:`,
+            data
+        );
+        return;
+    }
+
+    async addUserToTeam({
+        memberId,
+        teamSlug,
+        teamRole,
+    }: SentryAddUserToTeamParams): Promise<void> {
+        // there is no search api so we have to fetch all users and then filter
+
+        const url = `${this.apiUrl}/api/0/organizations/${this.org}/members/${memberId}/teams/${teamSlug}/`;
+
+        const response = await fetch(url, {
+            method: "PUT",
+            headers: {
+                Authorization: `Bearer ${this.authToken}`, // Sentry API token
+                "Content-Type": "application/json",
+            },
             body: JSON.stringify({
-                teamRole: teamRole,
+                teamRole,
             }),
         });
 
@@ -182,7 +219,10 @@ export class SentryService implements AccountService {
         }
 
         const data = await response.json();
-        console.log(`User ${memberId} successfully added to the team:`, data);
+        console.log(
+            `Sentry: User ${memberId} successfully added to the team:`,
+            data
+        );
         return;
     }
 
