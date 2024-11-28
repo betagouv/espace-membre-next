@@ -8,18 +8,19 @@ export enum SentryRole {
     contributor = "contributor",
 }
 
+interface SentryTeamAccess {
+    teamSlug: string;
+    teamRole: SentryRole;
+}
+
 export interface SentryAddUserToOrgParams {
     email: string;
-    teamRoles?: {
-        teamSlug: string;
-        role: SentryRole;
-    }[];
+    teamRoles?: SentryTeamAccess[];
     orgRole: "member" | "admin";
 }
 
 export interface SentryAddUserToTeamParams {
     memberId: string;
-    teamRole: SentryRole;
     teamSlug: string;
 }
 
@@ -66,10 +67,7 @@ export interface SentryUserAccess {
     expired: boolean;
     inviteStatus: "approved" | "pending";
     teams: string[]; // teams slugs
-    teamRoles: {
-        teamSlug: string;
-        role: "admin" | "contributor" | null; // role is null if users has highest privelege at organization level
-    }[];
+    teamRoles: SentryTeamAccess[];
 }
 
 export class SentryService implements AccountService {
@@ -142,7 +140,10 @@ export class SentryService implements AccountService {
                 body: JSON.stringify({
                     email,
                     orgRole,
-                    teamRoles: teamRoles,
+                    teamRoles: teamRoles?.map((t) => ({
+                        teamSlug: t.teamSlug,
+                        role: t.teamRole,
+                    })),
                     sendInvite: true,
                     reinvite: true,
                 }),
@@ -166,41 +167,6 @@ export class SentryService implements AccountService {
         const url = `${this.apiUrl}/api/0/organizations/${this.org}/members/${memberId}/teams/${teamSlug}/`;
 
         const response = await fetch(url, {
-            method: "POST",
-            headers: {
-                Authorization: `Bearer ${this.authToken}`, // Sentry API token
-                "Content-Type": "application/json",
-            },
-        });
-
-        if (teamRole === "admin") {
-        }
-
-        if (!response.ok) {
-            const errorData = await response.json();
-            throw new Error(
-                `Failed to add user to team: ${response.status} ${response.statusText}. ${errorData.detail}`
-            );
-        }
-
-        const data = await response.json();
-        console.log(
-            `Sentry: User ${memberId} successfully added to the team:`,
-            data
-        );
-        return;
-    }
-
-    async addUserToTeam({
-        memberId,
-        teamSlug,
-        teamRole,
-    }: SentryAddUserToTeamParams): Promise<void> {
-        // there is no search api so we have to fetch all users and then filter
-
-        const url = `${this.apiUrl}/api/0/organizations/${this.org}/members/${memberId}/teams/${teamSlug}/`;
-
-        const response = await fetch(url, {
             method: "PUT",
             headers: {
                 Authorization: `Bearer ${this.authToken}`, // Sentry API token
@@ -218,11 +184,41 @@ export class SentryService implements AccountService {
             );
         }
 
-        const data = await response.json();
         console.log(
-            `Sentry: User ${memberId} successfully added to the team:`,
-            data
+            `Sentry: User ${memberId} changed team role to ${teamRole} in team ${teamSlug}`
         );
+        return;
+    }
+
+    async addUserToTeam({
+        memberId,
+        teamSlug,
+    }: SentryAddUserToTeamParams): Promise<void> {
+        // there is no search api so we have to fetch all users and then filter
+
+        const url = `${this.apiUrl}/api/0/organizations/${this.org}/members/${memberId}/teams/${teamSlug}/`;
+        const response = await fetch(url, {
+            method: "POST",
+            headers: {
+                Authorization: `Bearer ${this.authToken}`, // Sentry API token
+                "Content-Type": "application/json",
+            },
+        });
+        if (response.status === 201) {
+            console.log(
+                `Sentry: User ${memberId} successfully added to the team:`
+            );
+        } else if (response.status === 204) {
+            console.log("Sentry user already in team");
+        } else if (response.status === 202) {
+            console.log(
+                "The member needs permission to join the team and an access request has been generated"
+            );
+        } else {
+            throw new Error(
+                `Failed to add user to team: ${response.status} ${response.statusText}.`
+            );
+        }
         return;
     }
 

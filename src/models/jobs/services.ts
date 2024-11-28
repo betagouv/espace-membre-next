@@ -39,7 +39,12 @@ export type CreateMatomoAccountDataSchemaType = z.infer<
 
 export const CreateSentryAccountDataSchema =
     MaintenanceWrapperDataSchema.extend({
-        teams: z.array(z.string()),
+        teams: z.array(
+            z.object({
+                teamSlug: z.string(),
+                teamRole: z.nativeEnum(SentryRole),
+            })
+        ),
         email: z.string().email(),
         username: z.string(), // used to logged infortion
         userUuid: z.string(),
@@ -50,11 +55,16 @@ export type CreateSentryAccountDataSchemaType = z.infer<
 
 export const UpdateSentryAccountDataSchema =
     MaintenanceWrapperDataSchema.extend({
-        teamSlug: z.string(),
-        teamRole: z.nativeEnum(SentryRole),
-        memberId: z.string(),
+        teams: z.array(
+            z.object({
+                teamSlug: z.string(),
+                teamRole: z.nativeEnum(SentryRole),
+            })
+        ),
+        email: z.string().email(),
         username: z.string(), // used to logged infortion
         userUuid: z.string(),
+        memberId: z.string(),
     }).strict();
 
 export type UpdateSentryAccountDataSchemaType = z.infer<
