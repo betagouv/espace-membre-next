@@ -14,7 +14,7 @@ fileignoreconfig:
 - filename: src/app/(private)/(dashboard)/services/page.tsx
   checksum: d5831365d79840fb38be03632d6c58f37c239bade853577164c2149d5b280cb7
 - filename: src/app/api/member/[username]/route.ts
-  checksum: b916a7e5b269937e25cefbe7ba5d7e837f11ebb63f85d5805820010d802d0db6
+  checksum: a5371c646bc9955b72b6cdb5ee3aef340004a092d9e70bbbe4b308c940880370
 - filename: src/app/api/services/actions.ts
   checksum: 040be9b0d1ae2283fb2c78672b25f1eacc4fc31e72c66d84053b2b3470a62d5b
 - filename: src/components/CommunityPage/Community.tsx
@@ -52,7 +52,7 @@ fileignoreconfig:
 - filename: src/models/member.ts
   checksum: 4d1a75e62ca805faf5bc5b7c83d03064171d4914e6d405a026c141b2ede9ca2c
 - filename: src/server/config/index.ts
-  checksum: a4fdc65120da6a4a6211870ec5e9ac6c886678ea7b1c82f482d87d879139f68c
+  checksum: decf25a6d2cf1fe23fce023ead200a54bc89c7d32896e677cfc5cd9e68a639b4
 - filename: src/utils/routes/list.ts
   checksum: ebb1c7a8c5fb51e0e49a23f79d1342f177946b4e783154bb265970b672aa2a2c
 scopeconfig:

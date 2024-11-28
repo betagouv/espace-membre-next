@@ -1,4 +1,5 @@
 import * as Sentry from "@sentry/node";
+import { NextRequest } from 'next/server';
 import { getServerSession } from "next-auth";
 
 import { safeGetUserPublicInfo } from '../actions';
@@ -9,7 +10,7 @@ import {
     updateUser,
 } from "@/lib/kysely/queries/users";
 import { MattermostUser, getUserByEmail, searchUsers } from "@/lib/mattermost";
-import { isValidApiToken, RouteParamsWithApiKey } from '@/lib/protectedApiToken';
+import { isValidApiToken } from '@/lib/protectedApiToken';
 import {
     memberInfoUpdateSchemaType,
     memberInfoUpdateSchema,
@@ -106,12 +107,14 @@ export async function PUT(
  * Get member with given api key
  */
 export async function GET(
-        _: Request,
-    { params: { username, apiKey } }: RouteParamsWithApiKey< { username: string }>
+    req: NextRequest,
+    { params: { username } }: { params: { username: string } }
 ) {
-    if (!apiKey) {
+    const apiKeyName = "apiKey" as const;
+    if (!req.nextUrl.searchParams.has(apiKeyName)) {
         throw new Error(`Api key is required.`);
     }
+    const apiKey = req.nextUrl.searchParams.get('apiKey') ?? "";
     if (!isValidApiToken(apiKey)) {
         throw new Error(`Invalid api key.`);
     }
