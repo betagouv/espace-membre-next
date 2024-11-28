@@ -1,4 +1,5 @@
 import * as Sentry from "@sentry/node";
+import { HttpStatusCode } from 'axios';
 import { NextRequest } from 'next/server';
 import { getServerSession } from "next-auth";
 
@@ -110,7 +111,14 @@ export async function GET(
     req: NextRequest,
     { params: { username } }: { params: { username: string } }
 ) {
-    return validateApiToken(req) ?? Response.json(await safeGetUserPublicInfo(username));
+    const invalidTokenResponse = validateApiToken(req);
+    if (invalidTokenResponse) return invalidTokenResponse;
+
+    const userInfo = await safeGetUserPublicInfo(username);
+    if (userInfo.success) {
+        return Response.json(userInfo.data);
+    }
+    return Response.json({ error: userInfo.message }, { status: HttpStatusCode.NotFound });
 }
 
 // export async function GET(
