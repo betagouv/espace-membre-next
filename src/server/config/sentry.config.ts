@@ -71,11 +71,16 @@ export class FakeSentryService implements AccountService {
         return Promise.resolve(newUser);
     }
 
+    async changeMemberRoleInTeam({
+        memberId,
+        teamRole,
+        teamSlug,
+    }): Promise<void> {}
+
     // New method to add a user to a team
     addUserToTeam({
         memberId,
         teamSlug,
-        teamRole,
     }: SentryAddUserToTeamParams): Promise<void> {
         const user = this.users.find((u) => u.id === memberId);
         const team = this.teams.find((t) => t.slug === teamSlug);

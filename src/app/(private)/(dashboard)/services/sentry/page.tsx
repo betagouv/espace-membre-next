@@ -1,3 +1,4 @@
+import Table from "@codegouvfr/react-dsfr/Table";
 import { redirect } from "next/navigation";
 import { getServerSession } from "next-auth/next";
 
@@ -42,11 +43,18 @@ export default async function SentryPage() {
         .selectAll()
         .execute();
 
+    const sentryEvents = await db
+        .selectFrom("events")
+        .where("action_on_username", "=", session.user.id)
+        .selectAll()
+        .orderBy("created_at desc")
+        .execute();
+
     return (
         <>
             <h1>Compte Sentry</h1>
 
-            {service_account ? (
+            {!!service_account && (
                 <>
                     <AccountDetails
                         account={service_account}
@@ -61,8 +69,18 @@ export default async function SentryPage() {
                         headers={["nom", "niveau d'accès"]}
                     />
                 </>
-            ) : (
-                <SentryServiceForm teams={sentryTeams} />
+            )}
+            <SentryServiceForm teams={sentryTeams} />
+
+            {!!sentryEvents.length && (
+                <Table
+                    headers={["Code", "Metadata", "Date"]}
+                    data={sentryEvents.map((e) => [
+                        e.action_code,
+                        JSON.stringify(e.action_metadata),
+                        e.created_at.toDateString(),
+                    ])}
+                ></Table>
             )}
         </>
     );

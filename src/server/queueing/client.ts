@@ -9,6 +9,10 @@ import {
     createSentryServiceAccount,
     createSentryServiceAccountTopic,
 } from "./workers/create-sentry-account";
+import {
+    updateSentryServiceAccount,
+    updateSentryServiceAccountTopic,
+} from "./workers/update-sentry-account";
 import { ErrorWithStatus } from "@/utils/error";
 import { gracefulExit } from "@/utils/gracefulExist";
 
@@ -63,6 +67,10 @@ export async function startBossClientInstance(): Promise<PgBoss> {
         await bossClient.work(
             createSentryServiceAccountTopic,
             handlerWrapper(createSentryServiceAccount)
+        );
+        await bossClient.work(
+            updateSentryServiceAccountTopic,
+            handlerWrapper(updateSentryServiceAccount)
         );
     });
 }

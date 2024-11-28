@@ -24,10 +24,7 @@ export async function createSentryServiceAccount(
     const user = await sentryClient.addUserToOrganization({
         email: job.data.email,
         orgRole: "member",
-        teamRoles: job.data.teams.map((team) => ({
-            teamSlug: team,
-            role: SentryRole.contributor,
-        })),
+        teamRoles: job.data.teams,
     });
     const result = await db
         .updateTable("service_accounts")
@@ -43,10 +40,7 @@ export async function createSentryServiceAccount(
         action_code: EventCode.MEMBER_SERVICE_ACCOUNT_CREATED,
         action_metadata: {
             service: SERVICES.SENTRY,
-            teams: job.data.teams.map((team) => ({
-                teamSlug: team,
-                teamRole: SentryRole.contributor,
-            })),
+            teams: job.data.teams,
         },
         action_on_username: job.data.username,
         created_by_username: job.data.username,
