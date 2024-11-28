@@ -1,6 +1,7 @@
 import * as Sentry from "@sentry/node";
 import { getServerSession } from "next-auth";
 
+import { safeGetUserPublicInfo } from '../actions';
 import { updateMember } from "../updateMember";
 import {
     getUserBasicInfo,
@@ -8,6 +9,7 @@ import {
     updateUser,
 } from "@/lib/kysely/queries/users";
 import { MattermostUser, getUserByEmail, searchUsers } from "@/lib/mattermost";
+import { isValidApiToken, RouteParamsWithApiKey } from '@/lib/protectedApiToken';
 import {
     memberInfoUpdateSchemaType,
     memberInfoUpdateSchema,
@@ -23,6 +25,7 @@ import {
 } from "@/server/controllers/utils";
 import { authOptions } from "@/utils/authoptions";
 import { AdminEmailNotAllowedError } from "@/utils/error";
+
 
 const getMattermostUserInfo = async (
     dbUser
@@ -97,6 +100,23 @@ export async function PUT(
         message: `Success`,
         data: dbUser,
     });
+}
+
+/**
+ * Get member with given api key
+ */
+export async function GET(
+        _: Request,
+    { params: { username, apiKey } }: RouteParamsWithApiKey< { username: string }>
+) {
+    if (!apiKey) {
+        throw new Error(`Api key is required.`);
+    }
+    if (!isValidApiToken(apiKey)) {
+        throw new Error(`Invalid api key.`);
+    }
+
+    return Response.json(await safeGetUserPublicInfo(username));
 }
 
 // export async function GET(
