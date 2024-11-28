@@ -44,7 +44,7 @@ fileignoreconfig:
 - filename: src/lib/matomo.ts
   checksum: cbeb7cde7284119eadd0b64cfd126d76797a31ecd57d4d186e33e5e35689b844
 - filename: src/lib/protectedApiToken.ts
-  checksum: 07fc5c7d3c3cabae5b38c11071b26f22f844ffaea049ab9c494043a3efd43d57
+  checksum: 4393d06fa68ff887c69478e5d6b5d0023b9d73deb1c8b5447002f8fb7ea14fce
 - filename: src/lib/s3.ts
   checksum: a91be258dbac2f22c916598e597bd8cb4ca640e03dd422653486d6288375e849
 - filename: src/lib/sentry.ts
@@ -52,7 +52,7 @@ fileignoreconfig:
 - filename: src/models/member.ts
   checksum: 4d1a75e62ca805faf5bc5b7c83d03064171d4914e6d405a026c141b2ede9ca2c
 - filename: src/server/config/index.ts
-  checksum: decf25a6d2cf1fe23fce023ead200a54bc89c7d32896e677cfc5cd9e68a639b4
+  checksum: 9094db66adba4f1653d67358cf7d90809ab3dcc1873234d817ec189ab79c9448
 - filename: src/utils/routes/list.ts
   checksum: ebb1c7a8c5fb51e0e49a23f79d1342f177946b4e783154bb265970b672aa2a2c
 scopeconfig:

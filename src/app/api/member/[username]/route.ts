@@ -10,7 +10,7 @@ import {
     updateUser,
 } from "@/lib/kysely/queries/users";
 import { MattermostUser, getUserByEmail, searchUsers } from "@/lib/mattermost";
-import { isValidApiToken } from '@/lib/protectedApiToken';
+import { validateApiToken } from '@/lib/protectedApiToken';
 import {
     memberInfoUpdateSchemaType,
     memberInfoUpdateSchema,
@@ -110,16 +110,7 @@ export async function GET(
     req: NextRequest,
     { params: { username } }: { params: { username: string } }
 ) {
-    const apiKeyName = "apiKey" as const;
-    if (!req.nextUrl.searchParams.has(apiKeyName)) {
-        throw new Error(`Api key is required.`);
-    }
-    const apiKey = req.nextUrl.searchParams.get('apiKey') ?? "";
-    if (!isValidApiToken(apiKey)) {
-        throw new Error(`Invalid api key.`);
-    }
-
-    return Response.json(await safeGetUserPublicInfo(username));
+    return validateApiToken(req) ?? Response.json(await safeGetUserPublicInfo(username));
 }
 
 // export async function GET(
