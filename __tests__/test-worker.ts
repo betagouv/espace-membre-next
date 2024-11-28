@@ -41,6 +41,7 @@ describe("Service account creation by worker", () => {
                     userLogin: "membre.actif@betagouv.ovh",
                     alias: "membre.actif@betagouv.ovh",
                     sites: ["https://beta.gouv.fr"],
+                    username: "membre.actif",
                 },
             } as unknown as PgBoss.Job<CreateMatomoAccountDataSchemaType>);
 

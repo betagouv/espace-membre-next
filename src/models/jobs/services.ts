@@ -31,6 +31,7 @@ export const CreateMatomoAccountDataSchema =
                 url: z.string(),
             })
         ),
+        username: z.string(),
     }).strict();
 export type CreateMatomoAccountDataSchemaType = z.infer<
     typeof CreateMatomoAccountDataSchema
@@ -45,4 +46,17 @@ export const CreateSentryAccountDataSchema =
     }).strict();
 export type CreateSentryAccountDataSchemaType = z.infer<
     typeof CreateSentryAccountDataSchema
+>;
+
+export const UpdateSentryAccountDataSchema =
+    MaintenanceWrapperDataSchema.extend({
+        teamSlug: z.string(),
+        teamRole: z.nativeEnum(SentryRole),
+        memberId: z.string(),
+        username: z.string(), // used to logged infortion
+        userUuid: z.string(),
+    }).strict();
+
+export type UpdateSentryAccountDataSchemaType = z.infer<
+    typeof UpdateSentryAccountDataSchema
 >;
