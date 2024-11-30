@@ -108,7 +108,7 @@ const startServer = () => {
 
         Sentry.setupExpressErrorHandler(server);
 
-        return server.listen(port, () =>
+        return server.listen(port, "0.0.0.0", () =>
             console.log(
                 `Running on: ${config.protocol}://${config.host}:${port}`
             )

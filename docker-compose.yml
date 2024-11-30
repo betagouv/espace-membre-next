@@ -8,13 +8,20 @@ services:
         ports:
             - "5432:5432"
     maildev:
-        image: maildev/maildev:1.1.0
-        environment:
-            MAILDEV_INCOMING_USER: mailuser
-            MAILDEV_INCOMING_PASS: mailpassword
-        ports:
-            - "1080:80"
-            - "11025:25"
+        image: maildev/maildev:2.0.5
+        platform: linux/arm64
+        command: bin/maildev --smtp 1025 --web 1080 --hide-extensions STARTTLS
+        healthcheck:
+            test: ["CMD", "wget", "--no-verbose", "--tries=1", "--spider", "http://localhost:1080"]
+            interval: 10s
+            timeout: 5s
+            retries: 5
+        deploy:
+            resources:
+                limits:
+                    memory: 256M
+                reservations:
+                    memory: 128M
     redis:
         image: redis:alpine
         command: redis-server --requirepass localpwd
@@ -22,40 +29,24 @@ services:
         restart: always
         ports:
             - 6379:6379
-    # web:
-    #     build: .
-    #     command: bash -c "echo 'first npm install can be a bit long'; npm run migrate; npm run dev"
-    #     depends_on:
-    #         - db
-    #         - maildev
-    #         - redis
-    #     env_file:
-    #         - .env
-    #     environment:
-    #         CHAT_WEBHOOK_URL_GENERAL: "https://example.com"
-    #         CHAT_WEBHOOK_URL_SECRETARIAT: "https://example.com"
-    #         CHAT_WEBHOOK_URL_DINUM: "https://example.com"
-    #         DATABASE_URL: postgres://secretariat:secretariat@db:5432/secretariat
-    #         MAIL_PASS: mailpassword
-    #         NEXT_TELEMETRY_DISABLED: 1
-    #         MAIL_USER: mailuser
-    #         MAIL_HOST: maildev
-    #         MAIL_PORT: 25
-    #         MAIL_IGNORE_TLS: "true"
-    #         MAIL_SENDER: "addresse@localhost"
-    #         SECURE: "false"
-    #         HOSTNAME: localhost
-    #         SESSION_SECRET: "SecretThatShouldChangedInProduction"
-    #         FEATURE_SHOULD_SEND_MESSAGE_TO_AUTHOR: "true"
-    #         REDIS_PORT: 6379
-    #         REDIS_HOST: localhost
-    #         REDIS_PASSWORD: localpwd
-    #         REDIS_EVENT_BUS_STREAM_NAME: eventbus-local
-    #         REDIS_URL: redis://:localpwd@redis:6379
-    #         HASH_SALT: "FakeHashSaltToChangeInProduction"
-    #     ports:
-    #         - "8100:8100"
-    #         - "9229:9229"
-    #     volumes:
-    #         - .:/app
-    #     restart: on-failure
+    web:
+        build: .
+        platform: linux/arm64
+        command: bash -c "npm run migrate && node --max_old_space_size=8192 --inspect=0.0.0.0:9230 -r ts-node/register src/server/server.ts"
+        depends_on:
+            - db
+            - maildev
+            - redis
+        env_file:
+            - .env
+        environment:
+            CHAT_WEBHOOK_URL_GENERAL: "https://example.com"
+            CHAT_WEBHOOK_URL_SECRETARIAT: "https://example.com"
+            CHAT_WEBHOOK_URL_DINUM: "https://example.com"
+            CHAT_WEBHOOK_URL_GIP: "https://example.com"
+        ports:
+            - "8100:8100"
+            - "9230:9230"
+        volumes:
+            - .:/app
+        restart: on-failure

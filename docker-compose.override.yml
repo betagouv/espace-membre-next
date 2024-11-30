@@ -1,0 +1,77 @@
+version: '3.8'
+
+services:
+  web:
+    build:
+      context: .
+      target: development
+      args:
+        - NODE_ENV=development
+    volumes:
+      - .:/app
+      - /app/node_modules
+      - .next:/app/.next
+    environment:
+      - NODE_ENV=development
+      - CHOKIDAR_USEPOLLING=true
+      - WATCHPACK_POLLING=true
+      - NEXT_TELEMETRY_DISABLED=1
+      - NEXTAUTH_SECRET=local-development-secret-do-not-use-in-production
+      - NEXTAUTH_URL=http://localhost:8100
+      - NODE_OPTIONS=--inspect=0.0.0.0:9230 --max_old_space_size=4096
+      - DATABASE_URL=postgresql://secretariat:secretariat@db:5432/secretariat
+      - NEXTAUTH_DATABASE_URL=postgresql://secretariat:secretariat@db:5432/nextauth
+      - REDIS_URL=redis://:localpwd@redis:6379
+      - SMTP_HOST=maildev
+      - SMTP_PORT=1080
+      - SMTP_IGNORE_TLS=true
+      - JWT_SIGNING_PRIVATE_KEY={"kty":"oct","kid":"local-dev-key","alg":"HS256","k":"local-development-key-do-not-use-in-production"}
+      - SEED_FAKE_DATA=true
+    ports:
+      - "8100:8100"
+      - "9230:9230"
+    command: ["sh", "-c", "npm run migrate && npm run seed && npm run dev-import-from-www && node --max_old_space_size=8192 --inspect=0.0.0.0:9230 -r ts-node/register src/server/server.ts"]
+    security_opt:
+      - seccomp:unconfined
+    cap_add:
+      - SYS_PTRACE
+
+  db:
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+      - ./scripts/postgres:/docker-entrypoint-initdb.d
+    environment:
+      - POSTGRES_HOST_AUTH_METHOD=trust
+    command: 
+      - "postgres"
+      - "-c"
+      - "log_statement=all"
+      - "-c"
+      - "log_min_duration_statement=0"
+
+  redis:
+    ports:
+      - "6379:6379"
+    volumes:
+      - redis_data:/data
+    command: redis-server --requirepass localpwd --appendonly yes --save 60 1 --loglevel verbose
+
+  maildev:
+    ports:
+      - "1025:1025"
+      - "1080:1080"
+    environment:
+      - MAILDEV_INCOMING_USER=
+      - MAILDEV_INCOMING_PASS=
+      - MAILDEV_WEB_USER=
+      - MAILDEV_WEB_PASS=
+      - MAILDEV_BASE_PATHNAME=/
+      - MAILDEV_DISABLE_WEB=false
+      - MAILDEV_HIDE_EXTENSIONS=false
+      - MAILDEV_DISABLE_AUTHENTICATION=true
+
+volumes:
+  postgres_data:
+  redis_data:
