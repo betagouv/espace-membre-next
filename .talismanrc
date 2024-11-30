@@ -1,6 +1,6 @@
 fileignoreconfig:
 - filename: .env.test
-  checksum: ea01a41df5c4e0a608e3072afff90ea017885e57f866867239cfffcb36812ac0
+  checksum: 07171a40047c38771624063fb61511998d3961815c3dceb135a1ee6d540f970d
 - filename: .github/workflows/nodejs.yml
   checksum: bf0ae31737daf27be68b7d2c4e63e1ef14cb799f1853462fdadcf2422ddd53a2
 - filename: __tests__/test-worker.ts
@@ -39,6 +39,8 @@ fileignoreconfig:
   checksum: 69248b6a0e2995cc94ed93515a6c279a9728c77c8ddd606dd84563f290402dab
 - filename: src/components/StartupForm/TechnoEditor.tsx
   checksum: 1945d388ece9e30e247acfa902436849f78ffcd032047f8c0292173dddc8ea53
+- filename: src/lib/env.ts
+  checksum: 1ec2fc5a95c4ee5015ca938ece2d9e0b942c770c93df3f688dd02da08d07ae20
 - filename: src/lib/hstore.ts
   checksum: a02535588a717719f9e51c324d78779afd8c08fe4904a4aae525b85f8720b0ef
 - filename: src/lib/matomo.ts
@@ -50,11 +52,11 @@ fileignoreconfig:
 - filename: src/lib/sentry.ts
   checksum: 035884bbbacf7746760dacc26669a3e4a4558ba2b88c0c7a38ec4327d25d0f3d
 - filename: src/middleware.ts
-  checksum: 04f5c95010ef65cfc7e7dcf0f72f986eaaa9e2c345d866238f16fd752645e7a9
+  checksum: 0155c276bc4527f2e181c957801934a834dd1fb5cd697b5e2fc0943ec99c5b0b
 - filename: src/models/member.ts
   checksum: 4d1a75e62ca805faf5bc5b7c83d03064171d4914e6d405a026c141b2ede9ca2c
 - filename: src/server/config/index.ts
-  checksum: fcf5a0a67185d8865545bc436ea7a7bc5d8d09a6f905aebc04d4525e90d38f4a
+  checksum: a2591e8092f663b759ec49f7b51911e17af0f5f22de50b60340827e87755929a
 - filename: src/utils/routes/list.ts
   checksum: ebb1c7a8c5fb51e0e49a23f79d1342f177946b4e783154bb265970b672aa2a2c
 scopeconfig:
