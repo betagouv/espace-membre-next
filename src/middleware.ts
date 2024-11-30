@@ -33,7 +33,7 @@ export async function verifyAuth(req: NextRequest) {
     }
 }
 
-async function verifyProtectedRouteToken(req: NextRequest) {
+function getProtectedRoutesInvalidTokenResponse(req: NextRequest) {
     if (!req.nextUrl.searchParams.has(serverConfig.protectedAPI.paramKeyName)) {
         return Response.json({ error: `Api key is required.` }, { status: HttpStatusCode.UnprocessableEntity });
     }
@@ -46,8 +46,8 @@ async function verifyProtectedRouteToken(req: NextRequest) {
 export async function middleware(req: NextRequest) {
     // control protected routes
     if (req.nextUrl.pathname.startsWith(serverConfig.protectedAPI.routePrefix)) {
-        const errorResponse = verifyProtectedRouteToken(req);
-        if (errorResponse) return errorResponse;
+        const invalidTokenResponse = getProtectedRoutesInvalidTokenResponse(req);
+        if (invalidTokenResponse) return invalidTokenResponse;
     } else {
         // validate the user is authenticated
         const verifiedToken = await verifyAuth(req).catch((err) => {

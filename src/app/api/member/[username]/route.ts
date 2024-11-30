@@ -24,7 +24,6 @@ import {
 import { authOptions } from "@/utils/authoptions";
 import { AdminEmailNotAllowedError } from "@/utils/error";
 
-
 const getMattermostUserInfo = async (
     dbUser
 ): Promise<{
