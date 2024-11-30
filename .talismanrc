@@ -54,7 +54,7 @@ fileignoreconfig:
 - filename: src/models/member.ts
   checksum: 4d1a75e62ca805faf5bc5b7c83d03064171d4914e6d405a026c141b2ede9ca2c
 - filename: src/server/config/index.ts
-  checksum: a6f6d235001f7e12f26b9eeca7a7ff6927509de992d21abfae9e8ac8e294f8a5
+  checksum: fcf5a0a67185d8865545bc436ea7a7bc5d8d09a6f905aebc04d4525e90d38f4a
 - filename: src/utils/routes/list.ts
   checksum: ebb1c7a8c5fb51e0e49a23f79d1342f177946b4e783154bb265970b672aa2a2c
 scopeconfig:

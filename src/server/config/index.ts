@@ -267,6 +267,5 @@ export default {
     S3_GET_HOST: process.env.S3_GET_HOST,
     S3_REGION: process.env.S3_REGION,
     // basic protection for public api routes
-    // PROTECTED_API_KEYS: (process.env.PROTECTED_API_KEYS || "").split(",").map(key => key.trim()).filter(Boolean),
-    PROTECTED_API_KEYS: ["secret"], // tmp test
+    PROTECTED_API_KEYS: (process.env.PROTECTED_API_KEYS || "").split(",").map(key => key.trim()).filter(Boolean),
 };
