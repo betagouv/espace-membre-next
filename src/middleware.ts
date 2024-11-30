@@ -2,8 +2,6 @@ import { HttpStatusCode } from 'axios';
 import { jwtVerify } from "jose";
 import { NextRequest, NextResponse } from "next/server";
 
-import serverConfig from '@/server/config'
-
 interface UserJwtPayload {
     jti: string;
     iat: number;
@@ -33,21 +31,17 @@ export async function verifyAuth(req: NextRequest) {
     }
 }
 
-function getProtectedRoutesInvalidTokenResponse(req: NextRequest) {
-    if (!req.nextUrl.searchParams.has(serverConfig.protectedAPI.paramKeyName)) {
-        return Response.json({ error: `Api key is required.` }, { status: HttpStatusCode.UnprocessableEntity });
-    }
-    const apiKey = req.nextUrl.searchParams.get('apiKey') ?? "";
-    if (!serverConfig.protectedAPI.API_KEYS.includes(apiKey)) {
-        return Response.json({ error: `Invalid api key.` }, { status: HttpStatusCode.Unauthorized });
-    }
-}
-
 export async function middleware(req: NextRequest) {
     // control protected routes
-    if (req.nextUrl.pathname.startsWith(serverConfig.protectedAPI.routePrefix)) {
-        const invalidTokenResponse = getProtectedRoutesInvalidTokenResponse(req);
-        if (invalidTokenResponse) return invalidTokenResponse;
+    if (req.nextUrl.pathname.startsWith("/api/protected/")) {
+        if (!req.nextUrl.searchParams.has("apiKey")) {
+            return new NextResponse(JSON.stringify({ error: { message: "Api key is required." }}), { status: HttpStatusCode.UnprocessableEntity });
+        }
+        const apiKey = req.nextUrl.searchParams.get('apiKey') ?? "";
+        // if (!serverConfig.PROTECTED_API_KEYS.includes(apiKey)) {
+        if (!["secret"].includes(apiKey)) {
+            return new NextResponse(JSON.stringify({ error: { message: "Invalid api key." }}), { status: HttpStatusCode.Unauthorized });
+        }
     } else {
         // validate the user is authenticated
         const verifiedToken = await verifyAuth(req).catch((err) => {
@@ -61,7 +55,7 @@ export async function middleware(req: NextRequest) {
                     JSON.stringify({
                         error: { message: "authentication required" },
                     }),
-                    { status: 401 }
+                    { status: HttpStatusCode.Unauthorized }
                 );
             }
             // otherwise, redirect to the set token page
