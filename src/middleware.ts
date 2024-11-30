@@ -34,12 +34,12 @@ export async function verifyAuth(req: NextRequest) {
 export async function middleware(req: NextRequest) {
     // control protected routes
     if (req.nextUrl.pathname.startsWith("/api/protected/")) {
+        const PROTECTED_API_KEYS = (process.env.PROTECTED_API_KEYS || "").split(",").map(key => key.trim()).filter(Boolean)
         if (!req.nextUrl.searchParams.has("apiKey")) {
             return new NextResponse(JSON.stringify({ error: { message: "Api key is required." }}), { status: HttpStatusCode.UnprocessableEntity });
         }
         const apiKey = req.nextUrl.searchParams.get('apiKey') ?? "";
-        // if (!serverConfig.PROTECTED_API_KEYS.includes(apiKey)) {
-        if (!["secret"].includes(apiKey)) {
+        if (!PROTECTED_API_KEYS.includes(apiKey)) {
             return new NextResponse(JSON.stringify({ error: { message: "Invalid api key." }}), { status: HttpStatusCode.Unauthorized });
         }
     } else {
