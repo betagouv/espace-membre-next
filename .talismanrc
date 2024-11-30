@@ -1,6 +1,6 @@
 fileignoreconfig:
 - filename: .env.test
-  checksum: 29b49d6c90eb72b0f066883b4b7177ad5cbf2e685a3093143cf40091a301d4b0
+  checksum: ea01a41df5c4e0a608e3072afff90ea017885e57f866867239cfffcb36812ac0
 - filename: .github/workflows/nodejs.yml
   checksum: bf0ae31737daf27be68b7d2c4e63e1ef14cb799f1853462fdadcf2422ddd53a2
 - filename: __tests__/test-worker.ts
@@ -49,10 +49,12 @@ fileignoreconfig:
   checksum: a91be258dbac2f22c916598e597bd8cb4ca640e03dd422653486d6288375e849
 - filename: src/lib/sentry.ts
   checksum: 035884bbbacf7746760dacc26669a3e4a4558ba2b88c0c7a38ec4327d25d0f3d
+- filename: src/middleware.ts
+  checksum: f9a5b6480568148122f72304bb0e6072744fc940ccac4a74f698b1747a71ebdc
 - filename: src/models/member.ts
   checksum: 4d1a75e62ca805faf5bc5b7c83d03064171d4914e6d405a026c141b2ede9ca2c
 - filename: src/server/config/index.ts
-  checksum: 9094db66adba4f1653d67358cf7d90809ab3dcc1873234d817ec189ab79c9448
+  checksum: 993ed6df81accf140620d9f1a86a583e17b16438046135f70b78ab50fc022bc1
 - filename: src/utils/routes/list.ts
   checksum: ebb1c7a8c5fb51e0e49a23f79d1342f177946b4e783154bb265970b672aa2a2c
 scopeconfig:

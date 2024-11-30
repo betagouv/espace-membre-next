@@ -1,9 +1,6 @@
 import * as Sentry from "@sentry/node";
-import { HttpStatusCode } from 'axios';
-import { NextRequest } from 'next/server';
 import { getServerSession } from "next-auth";
 
-import { safeGetUserPublicInfo } from '../actions';
 import { updateMember } from "../updateMember";
 import {
     getUserBasicInfo,
@@ -11,7 +8,6 @@ import {
     updateUser,
 } from "@/lib/kysely/queries/users";
 import { MattermostUser, getUserByEmail, searchUsers } from "@/lib/mattermost";
-import { validateApiToken } from '@/lib/protectedApiToken';
 import {
     memberInfoUpdateSchemaType,
     memberInfoUpdateSchema,
@@ -102,23 +98,6 @@ export async function PUT(
         message: `Success`,
         data: dbUser,
     });
-}
-
-/**
- * Get member with given api key
- */
-export async function GET(
-    req: NextRequest,
-    { params: { username } }: { params: { username: string } }
-) {
-    const invalidTokenResponse = validateApiToken(req);
-    if (invalidTokenResponse) return invalidTokenResponse;
-
-    const userInfo = await safeGetUserPublicInfo(username);
-    if (userInfo.success) {
-        return Response.json(userInfo.data);
-    }
-    return Response.json({ error: userInfo.message }, { status: HttpStatusCode.NotFound });
 }
 
 // export async function GET(

@@ -1,5 +1,8 @@
+import { HttpStatusCode } from 'axios';
 import { jwtVerify } from "jose";
 import { NextRequest, NextResponse } from "next/server";
+
+import serverConfig from '@/server/config'
 
 interface UserJwtPayload {
     jti: string;
@@ -30,27 +33,43 @@ export async function verifyAuth(req: NextRequest) {
     }
 }
 
-export async function middleware(req: NextRequest) {
-    // validate the user is authenticated
-    const verifiedToken = await verifyAuth(req).catch((err) => {
-        console.error(err.message);
-    });
+async function verifyProtectedRouteToken(req: NextRequest) {
+    if (!req.nextUrl.searchParams.has(serverConfig.protectedAPI.paramKeyName)) {
+        return Response.json({ error: `Api key is required.` }, { status: HttpStatusCode.UnprocessableEntity });
+    }
+    const apiKey = req.nextUrl.searchParams.get('apiKey') ?? "";
+    if (!serverConfig.protectedAPI.API_KEYS.includes(apiKey)) {
+        return Response.json({ error: `Invalid api key.` }, { status: HttpStatusCode.Unauthorized });
+    }
+}
 
-    if (!verifiedToken) {
-        // if this an API request, respond with JSON
-        if (req.nextUrl.pathname.startsWith("/api/")) {
-            return new NextResponse(
-                JSON.stringify({
-                    error: { message: "authentication required" },
-                }),
-                { status: 401 }
-            );
-        }
-        // otherwise, redirect to the set token page
-        else {
-            return NextResponse.redirect(
-                new URL(`/login?next=${req.url}`, req.url)
-            );
+export async function middleware(req: NextRequest) {
+    // control protected routes
+    if (req.nextUrl.pathname.startsWith(serverConfig.protectedAPI.routePrefix)) {
+        const errorResponse = verifyProtectedRouteToken(req);
+        if (errorResponse) return errorResponse;
+    } else {
+        // validate the user is authenticated
+        const verifiedToken = await verifyAuth(req).catch((err) => {
+            console.error(err.message);
+        });
+
+        if (!verifiedToken) {
+            // if this an API request, respond with JSON
+            if (req.nextUrl.pathname.startsWith("/api/")) {
+                return new NextResponse(
+                    JSON.stringify({
+                        error: { message: "authentication required" },
+                    }),
+                    { status: 401 }
+                );
+            }
+            // otherwise, redirect to the set token page
+            else {
+                return NextResponse.redirect(
+                    new URL(`/login?next=${req.url}`, req.url)
+                );
+            }
         }
     }
 }
