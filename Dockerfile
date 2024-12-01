@@ -1,32 +1,38 @@
 # syntax=docker/dockerfile:1
 
-# Base stage with common dependencies
-FROM node:18-alpine AS base
-
+# Base stage for shared configuration
+FROM node:18 AS base
 WORKDIR /app
 
-# Install system dependencies
-RUN apk add --no-cache \
-    libc6-compat \
-    python3 \
-    make \
-    g++ \
-    postgresql-client \
-    bash
+# Development stage
+FROM base AS development
+ENV NODE_ENV=development
+ENV NEXT_TELEMETRY_DISABLED=1
 
-# Create a non-root user
-RUN addgroup --system --gid 1001 nodejs && \
-    adduser --system --uid 1001 nextjs && \
-    chown -R nextjs:nodejs /app
+# Copy package files and install all dependencies (including devDependencies)
+COPY package*.json ./
+RUN npm install
 
-# Copy the current directory contents into the container at /app
+# Copy application files
 COPY . .
 
-# Switch to 'node' user for security reasons
-USER node
-
-# Inform Docker that the container listens on port 3000 at runtime
-EXPOSE 8100
-
-# Command to run the application
+EXPOSE 8100 9229
 CMD ["npm", "run", "dev"]
+
+# Production stage
+FROM base AS production
+ENV NODE_ENV=production
+ENV NEXT_TELEMETRY_DISABLED=1
+
+# Copy package files and install all dependencies (we need devDependencies for migrations)
+COPY package*.json ./
+RUN npm install
+
+# Copy application files
+COPY . .
+
+# Build the application
+RUN npm run build
+
+EXPOSE 8100
+CMD ["npm", "run", "start"]

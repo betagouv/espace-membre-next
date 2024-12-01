@@ -5,6 +5,7 @@ services:
     build:
       context: .
       target: development
+    command: npm run dev
     volumes:
       - .:/app
       - /app/node_modules
@@ -14,8 +15,6 @@ services:
       - CHOKIDAR_USEPOLLING=true
       - WATCHPACK_POLLING=true
       - NEXT_TELEMETRY_DISABLED=1
-      - NEXTAUTH_SECRET=local-development-secret-do-not-use-in-production
-      - NEXTAUTH_URL=http://localhost:8100
       - NODE_OPTIONS=--max_old_space_size=8192
       - DATABASE_URL=postgresql://secretariat:secretariat@db:5432/secretariat
       - NEXTAUTH_DATABASE_URL=postgresql://secretariat:secretariat@db:5432/nextauth
@@ -24,6 +23,9 @@ services:
       - MAIL_PORT=1025
       - MAIL_IGNORE_TLS=true
       - SEED_FAKE_DATA=true
+      # Development secrets (do not use in production)
+      - NEXTAUTH_SECRET=local-development-secret-do-not-use-in-production
+      - NEXTAUTH_URL=http://localhost:8100
       # Chat webhooks for development
       - CHAT_WEBHOOK_URL_GENERAL=http://localhost:8100/api/chat/webhook/general
       - CHAT_WEBHOOK_URL_SECRETARIAT=http://localhost:8100/api/chat/webhook/secretariat
@@ -32,54 +34,11 @@ services:
     ports:
       - "8100:8100"
       - "9229:9229"
-    command: npm run dev
-    depends_on:
-      - db
-      - redis
-      - maildev
     restart: unless-stopped
 
   db:
-    image: postgres:14.6
-    ports:
-      - "5432:5432"
-    volumes:
-      - postgres_data:/var/lib/postgresql/data
     environment:
-      - POSTGRES_USER=secretariat
-      - POSTGRES_PASSWORD=secretariat
       - POSTGRES_DB=secretariat
-    command: 
-      - "postgres"
-      - "-c"
-      - "log_statement=all"
-      - "-c"
-      - "log_min_duration_statement=0"
-    healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U secretariat"]
-      interval: 5s
-      timeout: 5s
-      retries: 5
-
-  redis:
-    image: redis:alpine
-    ports:
-      - "6379:6379"
-    volumes:
-      - redis_data:/data
-    command: redis-server --requirepass localpwd --loglevel verbose
-    healthcheck:
-      test: ["CMD", "redis-cli", "-a", "localpwd", "ping"]
-      interval: 5s
-      timeout: 5s
-      retries: 5
-
-  maildev:
-    image: maildev/maildev:2.0.5
-    ports:
-      - "1025:1025"
-      - "1080:1080"
-    command: bin/maildev --smtp 1025 --web 1080 --hide-extensions STARTTLS
 
 volumes:
   postgres_data:
