@@ -13,6 +13,10 @@ fileignoreconfig:
       checksum: d5831365d79840fb38be03632d6c58f37c239bade853577164c2149d5b280cb7
     - filename: src/app/api/services/actions.ts
       checksum: 040be9b0d1ae2283fb2c78672b25f1eacc4fc31e72c66d84053b2b3470a62d5b
+    - filename: .env.example
+      checksum: 281f60ca87c2b2d570082fa8397ed7a2b6c3d925d93adc4e233497f6fa8b07e7
+    - filename: docker-compose.override.yml
+      checksum: cbd45ece35f431bee64caf4f750304063fb5383c153b1787d7ac691fb5787644
     - filename: src/components/CommunityPage/Community.tsx
       checksum: 5ad762848b814381f9473c7d4ede55fce6dc3ee77ed4c7acfb41d2658fcd9bf7
     - filename: src/components/IncubatorForm/IncubatorForm.tsx
