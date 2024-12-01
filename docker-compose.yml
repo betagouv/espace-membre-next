@@ -1,4 +1,4 @@
-version: "3"
+version: "3.8"
 services:
     db:
         image: postgres:14.6
@@ -30,7 +30,9 @@ services:
         ports:
             - 6379:6379
     web:
-        build: .
+        build:
+          context: .
+          target: production
         platform: linux/arm64
         command: bash -c "npm run migrate && node --max_old_space_size=8192 --inspect=0.0.0.0:9230 -r ts-node/register src/server/server.ts"
         depends_on:
@@ -40,10 +42,7 @@ services:
         env_file:
             - .env
         environment:
-            CHAT_WEBHOOK_URL_GENERAL: "https://example.com"
-            CHAT_WEBHOOK_URL_SECRETARIAT: "https://example.com"
-            CHAT_WEBHOOK_URL_DINUM: "https://example.com"
-            CHAT_WEBHOOK_URL_GIP: "https://example.com"
+            - NODE_ENV=production
         ports:
             - "8100:8100"
             - "9230:9230"

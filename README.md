@@ -11,8 +11,9 @@ Il existe deux façons de développer l'application : avec Docker (recommandé) 
 Cette méthode est recommandée car elle garantit un environnement cohérent et isolé.
 
 1. Prérequis
-   - Docker et Docker Compose installés sur votre machine
+   - Docker et Docker Compose v2.x installés sur votre machine
    - Git
+   - Au moins 4Go de RAM disponible pour Docker
 
 2. Installation
    ```bash
@@ -23,6 +24,26 @@ Cette méthode est recommandée car elle garantit un environnement cohérent et 
    # Premier démarrage (configure tout automatiquement)
    make setup
    ```
+
+Le processus de setup va automatiquement :
+1. Créer un fichier `.env` à partir de `.env.example`
+2. Construire les images Docker
+3. Démarrer les conteneurs (PostgreSQL, Redis, MailDev, Application)
+4. Attendre que la base de données soit prête
+5. Exécuter les migrations de base de données
+6. Créer les utilisateurs de test (seed)
+7. Importer les données depuis beta.gouv.fr
+
+⚠️ Important : Avant d'exécuter `make setup`, assurez-vous d'avoir au moins 4Go de RAM disponible pour Docker.
+
+Note : Les clés API OVH et le token GitHub ne sont pas nécessaires pour le développement local car :
+- L'application utilise un serveur SMTP de développement (maildev) pour les emails
+- L'import des données se fait via une URL publique de GitHub
+- Les interactions avec l'API OVH sont simulées en développement
+
+Si vous avez besoin d'utiliser les services réels (optionnel) :
+- Pour la gestion des emails @beta.gouv.fr : [Générer clé API OVH](#générer-clé-api-ovh)
+- Pour l'accès à l'API GitHub : créer un token avec les permissions nécessaires
 
 3. Commandes disponibles
 
