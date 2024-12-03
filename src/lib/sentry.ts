@@ -15,7 +15,7 @@ interface SentryTeamAccess {
 
 export interface SentryAddUserToOrgParams {
     email: string;
-    teamRoles?: SentryTeamAccess[];
+    teamRoles: SentryTeamAccess[];
     orgRole: "member" | "admin";
 }
 
@@ -140,7 +140,7 @@ export class SentryService implements AccountService {
                 body: JSON.stringify({
                     email,
                     orgRole,
-                    teamRoles: teamRoles?.map((t) => ({
+                    teamRoles: teamRoles.map((t) => ({
                         teamSlug: t.teamSlug,
                         role: t.teamRole,
                     })),
