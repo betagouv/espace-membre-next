@@ -39,6 +39,8 @@ const sampleMember: { member: MemberPageProps } = {
                 end: new Date("2023-06-01"),
                 name: "Math pour tous",
                 uuid: "42",
+                ghid: null,
+                incubator_id: null,
             },
         ],
         avatar: "/static/images/ada.jpg",
