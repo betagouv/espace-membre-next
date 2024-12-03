@@ -1,4 +1,5 @@
 import crypto from "crypto";
+import { isSameDay, startOfDay } from "date-fns";
 import { add } from "date-fns/add";
 import { differenceInDays } from "date-fns/differenceInDays";
 import { format } from "date-fns/format";
@@ -156,7 +157,10 @@ export async function newsletterReminder(reminder) {
     }
 
     const today = new Date();
-    const days = differenceInDays(today, currentNewsletter.publish_at);
+    const days = differenceInDays(
+        startOfDay(today),
+        startOfDay(currentNewsletter.publish_at)
+    );
     if (REMINDER_NB_DAYS[reminder] !== days) {
         return;
     }
@@ -216,7 +220,7 @@ export async function sendNewsletterAndCreateNewOne(
 
     const today = new Date();
     if (
-        differenceInDays(today, currentNewsletter.publish_at) === 0 &&
+        isSameDay(today, currentNewsletter.publish_at) &&
         today.getHours() === currentNewsletter.publish_at.getHours()
     ) {
         if (config.FEATURE_SEND_NEWSLETTER || process.env.NODE_ENV === "test") {
