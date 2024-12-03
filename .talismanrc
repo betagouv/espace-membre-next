@@ -1,52 +1,64 @@
 fileignoreconfig:
-    - filename: .github/workflows/nodejs.yml
-      checksum: bf0ae31737daf27be68b7d2c4e63e1ef14cb799f1853462fdadcf2422ddd53a2
-    - filename: package-lock.json
-      checksum: add9168b63b1a9219558f2be2378591402a00d394be3bd9102715e43f8278e4f
-    - filename: __tests__/test-worker.ts
-      checksum: 462f569a2625f2fdb0938f0abc109ed24f0241d9f5592ead16475e2efde0aa47
-    - filename: src/app/(private)/(dashboard)/admin/signaux-faibles-beta/AdminProductClientPage.tsx
-      checksum: 9c740513497d70e871e4abcad3a9e509ef5b1a0da9db2d0d2d336c19854303b4
-    - filename: src/app/(private)/(dashboard)/incubators/[id]/info-form/page.tsx
-      checksum: 1ec9acf039a7d336e710ef7b47c385eb7080293ee2750c2cf99e9056cde7f129
-    - filename: src/app/(private)/(dashboard)/services/page.tsx
-      checksum: d5831365d79840fb38be03632d6c58f37c239bade853577164c2149d5b280cb7
-    - filename: src/app/api/services/actions.ts
-      checksum: 040be9b0d1ae2283fb2c78672b25f1eacc4fc31e72c66d84053b2b3470a62d5b
-    - filename: src/components/CommunityPage/Community.tsx
-      checksum: 5ad762848b814381f9473c7d4ede55fce6dc3ee77ed4c7acfb41d2658fcd9bf7
-    - filename: src/components/IncubatorForm/IncubatorForm.tsx
-      checksum: 267f0f0e491b06862cd957ae86d22baf799a705370673cd24e588391a4613a5a
-    - filename: src/components/MemberPage/EmailUpgrade.tsx
-      checksum: 183a72c4974a5bd2e7a3da0d60895480dc6843e158933a221329dd18e586e400
-    - filename: src/components/MemberPage/MemberMissions.tsx
-      checksum: b2f5359c37842b49af49164e11479cc6f106f08b177c2e94ebdb4fcd54f6c9a5
-    - filename: src/components/MemberPage/MemberPage.tsx
-      checksum: d7e1d2aa3b94b36055a1cee44c29b8818cd734c7a454c63e11eb0ad6a6877c56
-    - filename: src/components/MemberPage/MemberStatus.tsx
-      checksum: a828241649413cd89b408f2a74b542e4519ab69c490834ebf8f8e8147d3e14bf
-    - filename: src/components/NewsletterPage/NewsletterPage.tsx
-      checksum: 6b0b2109d112d5302ef35256a2febf53feadf65f5538acee4dce09f0d2da75eb
-    - filename: src/components/SEPhaseSelect.tsx
-      checksum: 0415032e0a9fb86957148673924ac6e16bc1ffb4b1851091377d23a200562e5e
-    - filename: src/components/SESponsorSelect.tsx
-      checksum: ae63a1c0173015ad4e9e904e4f025eecb992aca7ca5c1cbf4086baf16470dfcf
-    - filename: src/components/Service/MatomoServiceForm.tsx
-      checksum: 69248b6a0e2995cc94ed93515a6c279a9728c77c8ddd606dd84563f290402dab
-    - filename: src/components/StartupForm/TechnoEditor.tsx
-      checksum: 1945d388ece9e30e247acfa902436849f78ffcd032047f8c0292173dddc8ea53
-    - filename: src/lib/hstore.ts
-      checksum: a02535588a717719f9e51c324d78779afd8c08fe4904a4aae525b85f8720b0ef
-    - filename: src/lib/matomo.ts
-      checksum: cbeb7cde7284119eadd0b64cfd126d76797a31ecd57d4d186e33e5e35689b844
-    - filename: src/lib/s3.ts
-      checksum: a91be258dbac2f22c916598e597bd8cb4ca640e03dd422653486d6288375e849
-    - filename: src/lib/sentry.ts
-      checksum: 035884bbbacf7746760dacc26669a3e4a4558ba2b88c0c7a38ec4327d25d0f3d
-    - filename: src/models/member.ts
-      checksum: 4d1a75e62ca805faf5bc5b7c83d03064171d4914e6d405a026c141b2ede9ca2c
-    - filename: src/utils/routes/list.ts
-      checksum: ebb1c7a8c5fb51e0e49a23f79d1342f177946b4e783154bb265970b672aa2a2c
+- filename: .env.test
+  checksum: 07171a40047c38771624063fb61511998d3961815c3dceb135a1ee6d540f970d
+- filename: .github/workflows/nodejs.yml
+  checksum: bf0ae31737daf27be68b7d2c4e63e1ef14cb799f1853462fdadcf2422ddd53a2
+- filename: __tests__/test-worker.ts
+  checksum: 462f569a2625f2fdb0938f0abc109ed24f0241d9f5592ead16475e2efde0aa47
+- filename: package-lock.json
+  checksum: add9168b63b1a9219558f2be2378591402a00d394be3bd9102715e43f8278e4f
+- filename: src/app/(private)/(dashboard)/admin/signaux-faibles-beta/AdminProductClientPage.tsx
+  checksum: 9c740513497d70e871e4abcad3a9e509ef5b1a0da9db2d0d2d336c19854303b4
+- filename: src/app/(private)/(dashboard)/incubators/[id]/info-form/page.tsx
+  checksum: 1ec9acf039a7d336e710ef7b47c385eb7080293ee2750c2cf99e9056cde7f129
+- filename: src/app/(private)/(dashboard)/services/page.tsx
+  checksum: d5831365d79840fb38be03632d6c58f37c239bade853577164c2149d5b280cb7
+- filename: src/app/api/member/[username]/route.ts
+  checksum: a5371c646bc9955b72b6cdb5ee3aef340004a092d9e70bbbe4b308c940880370
+- filename: src/app/api/services/actions.ts
+  checksum: 040be9b0d1ae2283fb2c78672b25f1eacc4fc31e72c66d84053b2b3470a62d5b
+- filename: src/components/CommunityPage/Community.tsx
+  checksum: 5ad762848b814381f9473c7d4ede55fce6dc3ee77ed4c7acfb41d2658fcd9bf7
+- filename: src/components/IncubatorForm/IncubatorForm.tsx
+  checksum: 267f0f0e491b06862cd957ae86d22baf799a705370673cd24e588391a4613a5a
+- filename: src/components/MemberPage/EmailUpgrade.tsx
+  checksum: 183a72c4974a5bd2e7a3da0d60895480dc6843e158933a221329dd18e586e400
+- filename: src/components/MemberPage/MemberMissions.tsx
+  checksum: b2f5359c37842b49af49164e11479cc6f106f08b177c2e94ebdb4fcd54f6c9a5
+- filename: src/components/MemberPage/MemberPage.tsx
+  checksum: d7e1d2aa3b94b36055a1cee44c29b8818cd734c7a454c63e11eb0ad6a6877c56
+- filename: src/components/MemberPage/MemberStatus.tsx
+  checksum: a828241649413cd89b408f2a74b542e4519ab69c490834ebf8f8e8147d3e14bf
+- filename: src/components/NewsletterPage/NewsletterPage.tsx
+  checksum: 6b0b2109d112d5302ef35256a2febf53feadf65f5538acee4dce09f0d2da75eb
+- filename: src/components/SEPhaseSelect.tsx
+  checksum: 0415032e0a9fb86957148673924ac6e16bc1ffb4b1851091377d23a200562e5e
+- filename: src/components/SESponsorSelect.tsx
+  checksum: ae63a1c0173015ad4e9e904e4f025eecb992aca7ca5c1cbf4086baf16470dfcf
+- filename: src/components/Service/MatomoServiceForm.tsx
+  checksum: 69248b6a0e2995cc94ed93515a6c279a9728c77c8ddd606dd84563f290402dab
+- filename: src/components/StartupForm/TechnoEditor.tsx
+  checksum: 1945d388ece9e30e247acfa902436849f78ffcd032047f8c0292173dddc8ea53
+- filename: src/lib/env.ts
+  checksum: 1ec2fc5a95c4ee5015ca938ece2d9e0b942c770c93df3f688dd02da08d07ae20
+- filename: src/lib/hstore.ts
+  checksum: a02535588a717719f9e51c324d78779afd8c08fe4904a4aae525b85f8720b0ef
+- filename: src/lib/matomo.ts
+  checksum: cbeb7cde7284119eadd0b64cfd126d76797a31ecd57d4d186e33e5e35689b844
+- filename: src/lib/protectedApiToken.ts
+  checksum: 4393d06fa68ff887c69478e5d6b5d0023b9d73deb1c8b5447002f8fb7ea14fce
+- filename: src/lib/s3.ts
+  checksum: a91be258dbac2f22c916598e597bd8cb4ca640e03dd422653486d6288375e849
+- filename: src/lib/sentry.ts
+  checksum: 035884bbbacf7746760dacc26669a3e4a4558ba2b88c0c7a38ec4327d25d0f3d
+- filename: src/middleware.ts
+  checksum: 0155c276bc4527f2e181c957801934a834dd1fb5cd697b5e2fc0943ec99c5b0b
+- filename: src/models/member.ts
+  checksum: 4d1a75e62ca805faf5bc5b7c83d03064171d4914e6d405a026c141b2ede9ca2c
+- filename: src/server/config/index.ts
+  checksum: a2591e8092f663b759ec49f7b51911e17af0f5f22de50b60340827e87755929a
+- filename: src/utils/routes/list.ts
+  checksum: ebb1c7a8c5fb51e0e49a23f79d1342f177946b4e783154bb265970b672aa2a2c
 scopeconfig:
-    - scope: node
+- scope: node
 version: "1.0"
