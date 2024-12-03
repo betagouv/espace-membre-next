@@ -64,3 +64,7 @@ fileignoreconfig:
 scopeconfig:
     - scope: node
 version: "1.0"
+bb1c7a8c5fb51e0e49a23f79d1342f177946b4e783154bb265970b672aa2a2c
+scopeconfig:
+    - scope: node
+version: "1.0"
