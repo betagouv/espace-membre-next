@@ -1,4 +1,5 @@
 import * as Sentry from "@sentry/node";
+import { z } from "zod";
 
 import { AccountService, SERVICES } from "@/models/services";
 import config from "@/server/config";
@@ -8,10 +9,12 @@ export enum SentryRole {
     contributor = "contributor",
 }
 
-interface SentryTeamAccess {
-    teamSlug: string;
-    teamRole: SentryRole;
-}
+const sentryTeamAccessSchema = z.object({
+    teamSlug: z.string(),
+    teamRole: z.nativeEnum(SentryRole),
+});
+
+export type SentryTeamAccess = z.infer<typeof sentryTeamAccessSchema>;
 
 export interface SentryAddUserToOrgParams {
     email: string;
