@@ -105,7 +105,7 @@ export class FakeMatomo implements AccountService {
                 main_url: "",
                 type: "",
                 site: id,
-                access: access || "admin",
+                access: access || MatomoAccess.admin,
                 login: userLogin,
             });
         });
