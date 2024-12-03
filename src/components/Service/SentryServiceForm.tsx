@@ -135,9 +135,12 @@ export default function SentryServiceForm(props: { teams }) {
                                                 //         event.target.value
                                                 //     ),
                                                 // sentryTeam,
-                                                ...register(`teams.${index}.name`, {
-                                                    required: true,
-                                                }),
+                                                ...register(
+                                                    `teams.${index}.name`,
+                                                    {
+                                                        required: true,
+                                                    }
+                                                ),
                                             }}
                                         >
                                             <option value="" disabled hidden>
