@@ -53,19 +53,16 @@ export const askAccountCreationForService = withErrorHandling(
         | matomoAccountRequestWrapperSchemaType
         | sentryAccountRequestWrapperSchemaType) => {
         // create task
-        console.log("LCS TOTO 1");
         const session = await getServerSession(authOptions);
         if (!session || !session.user.id) {
             throw new AuthorizationError();
         }
         const bossClient = await getBossClientInstance();
         const dbData = await getUserBasicInfo({ username: session.user.id });
-        console.log("LCS TOTO 2");
         if (!dbData) {
             throw new NoDataError();
         }
         const user = memberBaseInfoToModel(dbData);
-        console.log("LCS TOTO 3", service, data);
         await match(service)
             .with(SERVICES.MATOMO, async () => {
                 await createOrUpdateMatomoAccount(
@@ -97,7 +94,6 @@ const createOrUpdateSentryAccount = async (
     if (!user.primary_email) {
         throw new ValidationError("Un email primaire est obligatoire");
     }
-    console.log("LCS TATA");
     const sentryAccount = await db
         .selectFrom("service_accounts")
         .selectAll()
@@ -106,7 +102,6 @@ const createOrUpdateSentryAccount = async (
         .executeTakeFirst();
     const accountAlreadyExists = !!sentryAccount?.service_user_id;
     if (accountAlreadyExists) {
-        console.log("LCS TATA 2");
         const teams = sentryData.teams.map((t) => ({
             teamSlug: t.name,
             teamRole: SentryRole.contributor,
@@ -121,7 +116,6 @@ const createOrUpdateSentryAccount = async (
                 teams,
             })
         );
-        console.log("LCS TATA 3");
 
         await addEvent({
             action_code: EventCode.MEMBER_SERVICE_ACCOUNT_UPDATE_REQUESTED,
@@ -132,7 +126,6 @@ const createOrUpdateSentryAccount = async (
             action_on_username: user.username,
             created_by_username: user.username,
         });
-        console.log("LCS TATA 4");
     } else {
         await bossClient.send(
             createSentryServiceAccountTopic,
