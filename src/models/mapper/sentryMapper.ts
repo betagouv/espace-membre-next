@@ -18,7 +18,7 @@ export const sentryUserToModel = (
             if (team) {
                 const role = userMetadata.teamRoles.find(
                     (t) => t.teamSlug === team.slug
-                )?.role;
+                )?.teamRole;
                 teams.push({
                     id: team.id,
                     role: role
