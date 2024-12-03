@@ -127,7 +127,7 @@ export function memberBaseInfoToModel(
     user:
         | Awaited<ReturnType<typeof getAllUsersInfo>>[0]
         | Awaited<ReturnType<typeof getUserByStartup>>[0]
-) {
+): memberBaseInfoSchemaType {
     if (!user) {
         throw new Error("No users");
     }
@@ -138,7 +138,6 @@ export function memberBaseInfoToModel(
         role: user.role,
         domaine: user.domaine as Domaine,
         bio: user.bio,
-        workplace_insee_code: user.workplace_insee_code,
         link: user.link,
         github: user.github,
         primary_email: user.primary_email,

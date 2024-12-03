@@ -301,9 +301,11 @@ export async function getUserStartups(uuid: string, db: Kysely<DB> = database) {
         .leftJoin("startups", "startups.uuid", "missions_startups.startup_id")
         .select([
             "startups.uuid",
+            "startups.ghid",
             "startups.name",
             "missions.start",
             "missions.end",
+            "startups.incubator_id",
         ])
         .distinct()
         .where("users.uuid", "=", uuid)
