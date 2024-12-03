@@ -101,11 +101,11 @@ const createOrUpdateSentryAccount = async (
         .where("user_id", "=", user.uuid)
         .executeTakeFirst();
     const accountAlreadyExists = !!sentryAccount?.service_user_id;
+    const teams = sentryData.teams.map((t) => ({
+        teamSlug: t.name,
+        teamRole: SentryRole.contributor,
+    }));
     if (accountAlreadyExists) {
-        const teams = sentryData.teams.map((t) => ({
-            teamSlug: t.name,
-            teamRole: SentryRole.contributor,
-        }));
         await bossClient.send(
             updateSentryServiceAccountTopic,
             UpdateSentryAccountDataSchema.parse({
