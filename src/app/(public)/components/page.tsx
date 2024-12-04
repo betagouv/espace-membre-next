@@ -81,7 +81,7 @@ const sampleMember: { member: MemberPageProps } = {
             link: "https://fr.wikipedia.org/wiki/Ada_Lovelace",
         },
         availableEmailPros: [],
-        canEdit: false,
+        isCurrentUser: false,
         emailResponder: null,
         mattermostInfo: {
             hasMattermostAccount: true,
@@ -199,7 +199,7 @@ export default async function Page() {
             <hr />
             <MemberPage
                 {...sampleMember.member}
-                canEdit={true}
+                isCurrentUser={true}
                 emailInfos={{
                     email: sampleMember.member.userInfos.primary_email || "-",
                     isBlocked: false,
@@ -214,7 +214,7 @@ export default async function Page() {
             <MemberPage
                 {...sampleMember.member}
                 isAdmin={true}
-                canEdit={true}
+                isCurrentUser={true}
                 emailInfos={{
                     email: sampleMember.member.userInfos.primary_email || "-",
                     isBlocked: false,

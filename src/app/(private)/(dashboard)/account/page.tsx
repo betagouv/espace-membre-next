@@ -23,9 +23,6 @@ export default async function Page() {
 
     const id = session?.user?.id;
 
-    const isAdmin = !!session.user.isAdmin;
-    const canEdit = true; // can always edit our own content
-
     let availableEmailPros: string[] = [];
     if (config.ESPACE_MEMBRE_ADMIN.includes(session.user.id)) {
         availableEmailPros = await betagouv.getAvailableProEmailInfos();
@@ -41,10 +38,11 @@ export default async function Page() {
         throw new Error("Cannot find user");
     }
 
+    const isAdmin = !!session.user.isAdmin;
+
     return (
         <MemberPage
             isAdmin={isAdmin}
-            canEdit={canEdit}
             availableEmailPros={availableEmailPros}
             authorizations={user.authorizations}
             emailInfos={user.emailInfos}
@@ -58,6 +56,7 @@ export default async function Page() {
             matomoInfo={userInformations.matomoInfo}
             sentryInfo={userInformations.sentryInfo}
             startups={userInformations.startups}
+            sessionUserIsFromIncubatorTeam={false}
             isCurrentUser={true}
         />
     );

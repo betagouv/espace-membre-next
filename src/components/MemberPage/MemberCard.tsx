@@ -1,16 +1,15 @@
-import Link from "next/link";
-import { createSerializer } from "nuqs"; // can also be imported from 'nuqs' in client code
-
+import Button from "@codegouvfr/react-dsfr/Button";
 import { fr } from "@codegouvfr/react-dsfr/fr";
 import Tag from "@codegouvfr/react-dsfr/Tag";
-import Button from "@codegouvfr/react-dsfr/Button";
+import Link from "next/link";
+import { createSerializer } from "nuqs"; // can also be imported from 'nuqs' in client code
+import { match, P } from "ts-pattern";
 
-import { PrivateMemberChangeSchemaType } from "@/models/memberChange";
-
-import { FichePicture } from "../FichePicture";
-import LastChange from "../LastChange";
 import { MemberPageProps } from "./MemberPage";
 import { communityQueryParser } from "../CommunityPage/utils";
+import { FichePicture } from "../FichePicture";
+import LastChange from "../LastChange";
+import { PrivateMemberChangeSchemaType } from "@/models/memberChange";
 
 const getInitials = (fullname: string) => {
     const parts = fullname.split(" ").filter(Boolean);
@@ -26,13 +25,15 @@ export const MemberCard = ({
     avatar,
     changes,
     isAdmin,
-    canEdit,
+    isCurrentUser,
+    sessionUserIsFromIncubatorTeam,
 }: {
     userInfos: MemberPageProps["userInfos"];
     avatar?: string | undefined;
     changes: PrivateMemberChangeSchemaType[];
     isAdmin: boolean;
-    canEdit: boolean;
+    isCurrentUser: boolean;
+    sessionUserIsFromIncubatorTeam: boolean;
 }) => {
     const heading = (
         <>
@@ -59,7 +60,22 @@ export const MemberCard = ({
                 : null}
         </>
     );
-
+    const canEdit = isAdmin || isCurrentUser || sessionUserIsFromIncubatorTeam;
+    const linkToEditPage = match([
+        isAdmin,
+        isCurrentUser,
+        sessionUserIsFromIncubatorTeam,
+    ])
+        .with(
+            [true, P._, P._],
+            () => `/community/${userInfos.username}/admin-update`
+        )
+        .with([false, true, P._], () => `/account/base-info`)
+        .with(
+            [false, false, true],
+            () => `/community/${userInfos.username}/update`
+        )
+        .otherwise(() => "");
     return (
         <div
             className={fr.cx("fr-p-2w", "fr-grid-row")}
@@ -91,15 +107,13 @@ export const MemberCard = ({
                         {userInfos.workplace_insee_code}
                     </span>
                 ) : null}
-                {(isAdmin || canEdit) && (
+                {canEdit && (
                     <Button
                         className=""
                         style={{ marginTop: fr.spacing("2w") }}
                         size="small"
                         linkProps={{
-                            href: isAdmin
-                                ? `/community/${userInfos.username}/admin-update`
-                                : `/account/base-info`,
+                            href: linkToEditPage,
                         }}
                     >
                         Modifier
