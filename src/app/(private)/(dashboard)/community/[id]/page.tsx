@@ -83,7 +83,6 @@ export default async function Page({
                 matomoInfo={userInformations.matomoInfo}
                 sentryInfo={userInformations.sentryInfo}
                 startups={userInformations.startups}
-                isCurrentUser={false}
             />
         </>
     );
