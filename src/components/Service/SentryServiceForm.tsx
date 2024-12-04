@@ -50,7 +50,6 @@ export default function SentryServiceForm(props: { teams }) {
         setIsSaving(true);
         setAlertMessage(null);
         const service = SERVICES.SENTRY;
-        console.log("LCS DATA", data);
         const res = await askAccountCreationForService({
             service: service,
             data,

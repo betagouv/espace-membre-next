@@ -31,7 +31,6 @@ export async function updateSentryServiceAccount(
             });
         })
     );
-    console.log("LCS TEST");
     const result = await db
         .updateTable("service_accounts")
         .set({
