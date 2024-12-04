@@ -72,10 +72,10 @@ export default async function SentryPage() {
                 </>
             )}
 
-            <h2>Demander des accès</h2>
+            <h2 className="fr-mt-8v">Demander des accès</h2>
             <SentryServiceForm teams={sentryTeams} />
 
-            <h2>Historique des événements</h2>
+            <h2 className="fr-mt-8v">Historique des événements</h2>
             {!!sentryEvents.length && (
                 <Table
                     headers={["Code", "Metadata", "Date"]}
