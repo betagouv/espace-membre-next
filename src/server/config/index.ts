@@ -1,7 +1,6 @@
 import { config } from "dotenv";
 
 import { getArrayFromEnv } from "@/lib/env";
-import { incubatorAdminsSchema } from "@/models/admin";
 import { MemberType } from "@/models/member";
 import { EMAIL_PLAN_TYPE } from "@/models/ovh";
 
@@ -202,9 +201,6 @@ export default {
     ESPACE_MEMBRE_ADMIN: process.env.ESPACE_MEMBRE_ADMIN
         ? process.env.ESPACE_MEMBRE_ADMIN.split(",")
         : [],
-    // ESPACE_MEMBRE_INCUBATOR_ADMINS:
-    //     process.env.ESPACE_MEMBRE_INCUBATOR_ADMINS ??
-    //     incubatorAdminsSchema.parse(process.env.ESPACE_MEMBRE_INCUBATOR_ADMINS),
     MAILING_LIST_NEWSLETTER: parseInt(
         getOrThrowError("MAILING_LIST_NEWSLETTER")
     ),
