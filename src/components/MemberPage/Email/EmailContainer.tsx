@@ -196,7 +196,7 @@ export default function EmailContainer({
     },
     redirections,
     isExpired,
-    canEdit,
+    isCurrentUser,
 }: {
     userInfos: memberSchemaType;
     isExpired: boolean;
@@ -205,7 +205,7 @@ export default function EmailContainer({
     emailResponder: OvhResponder | null;
     redirections: MemberPageProps["redirections"];
     authorizations: memberWrapperSchemaType["authorizations"];
-    canEdit: boolean;
+    isCurrentUser: boolean;
 }) {
     const emailIsBeingCreated = [
         EmailStatusCode.EMAIL_CREATION_WAITING,
@@ -331,7 +331,7 @@ export default function EmailContainer({
                 headers={["Service", "Infos"]}
                 data={rows}
             />
-            {!emailIsBeingCreated && canEdit && (
+            {!emailIsBeingCreated && isCurrentUser && (
                 <div className={fr.cx("fr-accordions-group")}>
                     {match(userInfos.primary_email_status)
                         .with(

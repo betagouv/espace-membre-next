@@ -29,3 +29,12 @@ export async function getTeam(uuid: string) {
         .where("uuid", "=", uuid)
         .executeTakeFirst();
 }
+
+export function getTeamsForUser(userUuid: string) {
+    return db
+        .selectFrom("teams")
+        .selectAll()
+        .innerJoin("users_teams", "team_id", "teams.uuid")
+        .where("user_id", "=", userUuid)
+        .execute();
+}
