@@ -61,7 +61,9 @@ export const sentryServiceInfoToModel = (
         account_type: "sentry",
         email: sentryUser.email || "",
         service_user_id: sentryUser.service_user_id,
-        metadata: sentryUser.metadata as sentryUserSchemaType["metadata"],
+        metadata: (sentryUser.metadata || {
+            teams: [],
+        }) as sentryUserSchemaType["metadata"],
         status:
             (sentryUser.status as ACCOUNT_SERVICE_STATUS) ||
             ACCOUNT_SERVICE_STATUS.ACCOUNT_FOUND,
