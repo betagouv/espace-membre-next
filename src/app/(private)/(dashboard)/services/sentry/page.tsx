@@ -6,6 +6,7 @@ import AccountDetails from "@/components/Service/AccountDetails";
 import SentryServiceForm from "@/components/Service/SentryServiceForm";
 import { db } from "@/lib/kysely";
 import { getServiceAccount } from "@/lib/kysely/queries/services";
+import { EventCodeToReadable } from "@/models/actionEvent";
 import { sentryServiceInfoToModel } from "@/models/mapper/sentryMapper";
 import { sentryUserSchemaType } from "@/models/sentry";
 import { ACCOUNT_SERVICE_STATUS, SERVICES } from "@/models/services";
@@ -70,13 +71,16 @@ export default async function SentryPage() {
                     />
                 </>
             )}
+
+            <h2>Demander des accès</h2>
             <SentryServiceForm teams={sentryTeams} />
 
+            <h2>Historique des événements</h2>
             {!!sentryEvents.length && (
                 <Table
                     headers={["Code", "Metadata", "Date"]}
                     data={sentryEvents.map((e) => [
-                        e.action_code,
+                        EventCodeToReadable[e.action_code],
                         JSON.stringify(e.action_metadata),
                         e.created_at.toDateString(),
                     ])}

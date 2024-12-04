@@ -408,6 +408,13 @@ export const MemberStatus = ({
                 headers={["Service", "Status", "Infos"]}
                 data={rows}
             />
+            <Button
+                linkProps={{
+                    href: "/services",
+                }}
+            >
+                Demandes d'accès aux outils
+            </Button>
         </>
     );
 };

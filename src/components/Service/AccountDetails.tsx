@@ -1,5 +1,6 @@
 import { ReactNode } from "react";
 
+import Alert from "@codegouvfr/react-dsfr/Alert";
 import Badge from "@codegouvfr/react-dsfr/Badge";
 import { Table } from "@codegouvfr/react-dsfr/Table";
 import { match } from "ts-pattern";
@@ -29,15 +30,23 @@ const AccountDetails = ({ account, data, headers }: AccountDetailsProps) => {
                 .with(
                     { status: ACCOUNT_SERVICE_STATUS.ACCOUNT_CREATION_PENDING },
                     () => (
-                        <>
-                            La création du compte est en cours, tu recevras un
-                            email quand ce sera bon...
-                        </>
+                        <Alert
+                            title="La création du compte est en cours, tu recevras un
+                            email quand ce sera bon..."
+                            severity="info"
+                        />
                     )
                 )
                 .with(
                     { status: ACCOUNT_SERVICE_STATUS.ACCOUNT_INVITATION_SENT },
-                    () => <>Une invitation t'as été envoyé par email.</>
+                    () => (
+                        <Alert
+                            title={"Une invitation t'as été envoyé par email."}
+                            small={false}
+                            closable={false}
+                            severity="info"
+                        />
+                    )
                 )
                 .otherwise(() => {
                     return null;

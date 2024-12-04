@@ -179,8 +179,8 @@ export default function SentryServiceForm(props: { teams }) {
                                 disabled={isSaving}
                                 children={
                                     isSubmitting
-                                        ? `Enregistrement en cours...`
-                                        : `Enregistrer`
+                                        ? `Enregistrement de la demande...`
+                                        : `Demander les accès`
                                 }
                                 nativeButtonProps={{
                                     type: "submit",
