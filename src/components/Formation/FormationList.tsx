@@ -136,9 +136,7 @@ export default function FormationList({
     };
     const filteredFormations: Formation[] = selectedFilters.length
         ? formations.filter((formation) => {
-              return selectedFilters.reduce((acc, filter) => {
-                  return !!(applyFilter(formation, filter) && acc);
-              }, true);
+              return selectedFilters.every((filter) => applyFilter(formation, filter));
           })
         : formations;
     filteredFormations.sort((a, b) => {
