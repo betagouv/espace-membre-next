@@ -8,7 +8,6 @@ import Input from "@codegouvfr/react-dsfr/Input";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { format } from "date-fns/format";
 import { fr as dateFnsFr } from "date-fns/locale/fr";
-import _ from "lodash";
 import { useForm, useWatch } from "react-hook-form";
 
 import { safeUpdateNewsletter } from "@/app/api/newsletters/actions";

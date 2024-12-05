@@ -13,7 +13,7 @@ import { fr } from "@codegouvfr/react-dsfr";
 import { SearchBar } from "@codegouvfr/react-dsfr/SearchBar";
 import Autocomplete from "@mui/material/Autocomplete";
 import Popper from "@mui/material/Popper";
-import _ from "lodash";
+import debounce from "lodash/debounce";
 import { assert } from "tsafe/assert";
 import { useStyles } from "tss-react/dsfr";
 
@@ -225,7 +225,7 @@ export default function CitySelect({
         callback(data);
     };
     const [loading, setLoading] = useState<boolean>(false);
-    const debounceLoadOptions = useCallback(_.debounce(loadOptions, 500), []);
+    const debounceLoadOptions = useCallback(debounce(loadOptions, 500), []);
     const [search, onSearchChange] = useState("");
     const [inputElement, setInputElement] = useState<HTMLInputElement | null>(
         null

@@ -1,7 +1,6 @@
 "use server";
 
 import slugify from "@sindresorhus/slugify";
-import _ from "lodash";
 import { revalidatePath } from "next/cache";
 import { getServerSession } from "next-auth";
 

@@ -6,7 +6,6 @@ import { Button } from "@codegouvfr/react-dsfr/Button";
 import { fr } from "@codegouvfr/react-dsfr/fr";
 import { Input } from "@codegouvfr/react-dsfr/Input";
 import { zodResolver } from "@hookform/resolvers/zod";
-import _ from "lodash";
 import MarkdownIt from "markdown-it";
 
 import "react-markdown-editor-lite/lib/index.css";
@@ -148,8 +147,8 @@ export function TeamForm(props: TeamFormProps) {
                         : "Équipe créée",
                     message: props.team ? (
                         <>
-                            La modification sera
-                            visible en ligne d'ici 24 heures.
+                            La modification sera visible en ligne d'ici 24
+                            heures.
                         </>
                     ) : (
                         <>L'équipe a bien été créée</>

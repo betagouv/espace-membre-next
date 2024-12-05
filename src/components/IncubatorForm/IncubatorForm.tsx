@@ -6,7 +6,6 @@ import { Button } from "@codegouvfr/react-dsfr/Button";
 import { fr } from "@codegouvfr/react-dsfr/fr";
 import { Input } from "@codegouvfr/react-dsfr/Input";
 import { zodResolver } from "@hookform/resolvers/zod";
-import _ from "lodash";
 import MarkdownIt from "markdown-it";
 import { useForm } from "react-hook-form";
 import MdEditor from "react-markdown-editor-lite";
@@ -133,7 +132,7 @@ export function IncubatorForm(props: IncubatorFormProps) {
         props.incubator
             ? props.incubator.highlighted_startups &&
               props.incubator.highlighted_startups.includes(s.value)
-            : undefined,
+            : undefined
     );
     const [alertMessage, setAlertMessage] = React.useState<{
         title: string;
@@ -146,7 +145,7 @@ export function IncubatorForm(props: IncubatorFormProps) {
         (props) => (
             <BasicFormInput register={register} errors={errors} {...props} />
         ),
-        [register, errors],
+        [register, errors]
     );
     const onSubmit = (data: incubatorUpdateSchemaType, e) => {
         if (isSaving) {
@@ -263,7 +262,7 @@ export function IncubatorForm(props: IncubatorFormProps) {
                                         {
                                             shouldValidate: true,
                                             shouldDirty: true,
-                                        },
+                                        }
                                     );
                                 }}
                             />
@@ -318,7 +317,7 @@ export function IncubatorForm(props: IncubatorFormProps) {
                                         {
                                             shouldValidate: true,
                                             shouldDirty: true,
-                                        },
+                                        }
                                     );
                                 }}
                             />
@@ -380,7 +379,7 @@ export function IncubatorForm(props: IncubatorFormProps) {
                                 {
                                     shouldValidate: true,
                                     shouldDirty: true,
-                                },
+                                }
                             );
                         }}
                         isMulti={true}

@@ -1,5 +1,5 @@
 import axios from "axios";
-import _ from "lodash";
+import sample from "lodash/sample";
 import ovh0 from "ovh";
 import unescape from "unescape";
 
@@ -607,7 +607,7 @@ const betaOVH = {
             throw new Error("No Ovh Pro account available");
         }
 
-        const accountToBeAssigned = _.sample(availableAccounts);
+        const accountToBeAssigned = sample(availableAccounts);
 
         console.log(
             `Assigning Ovh Pro account ${accountToBeAssigned} to ${primaryEmailAddress}`
@@ -656,7 +656,7 @@ const betaOVH = {
             throw new Error("No Exchange account available");
         }
 
-        const accountToBeAssigned = _.sample(availableAccounts);
+        const accountToBeAssigned = sample(availableAccounts);
 
         console.log(
             `Assigning Exchange account ${accountToBeAssigned} to ${primaryEmailAddress}`
