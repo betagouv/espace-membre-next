@@ -41,7 +41,7 @@ const AccountDetails = ({ account, data, headers }: AccountDetailsProps) => {
                     { status: ACCOUNT_SERVICE_STATUS.ACCOUNT_INVITATION_SENT },
                     () => (
                         <Alert
-                            title={"Une invitation t'as été envoyé par email."}
+                            title={"Une invitation t'a été envoyée par email."}
                             small={false}
                             closable={false}
                             severity="info"
