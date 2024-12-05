@@ -1,5 +1,5 @@
 "use client";
-import React, { createContext, useState, useContext, useEffect } from "react";
+import { createContext, useState, useContext, useEffect } from "react";
 
 // Créer un contexte avec une valeur par défaut
 const InfoContext = createContext<{

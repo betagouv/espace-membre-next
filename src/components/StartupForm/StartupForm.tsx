@@ -9,7 +9,7 @@ import { Checkbox } from "@codegouvfr/react-dsfr/Checkbox";
 import { Input } from "@codegouvfr/react-dsfr/Input";
 import { Select } from "@codegouvfr/react-dsfr/Select";
 import { zodResolver } from "@hookform/resolvers/zod";
-import _ from "lodash";
+import difference from "lodash/difference";
 import MarkdownIt from "markdown-it";
 import { useForm } from "react-hook-form";
 import MdEditor from "react-markdown-editor-lite";
@@ -501,7 +501,7 @@ export function StartupForm(props: StartupFormProps) {
                             );
                             // if a new sponsor was created, but it is then removed by the user
                             // we new to remove it from newSponsor
-                            const idsToDelete = _.difference(
+                            const idsToDelete = difference(
                                 newSponsorIds,
                                 selectedSponsorIds
                             );

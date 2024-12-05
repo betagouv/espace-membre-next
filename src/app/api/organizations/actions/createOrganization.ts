@@ -1,6 +1,5 @@
 "use server";
 
-import _ from "lodash";
 import { revalidatePath } from "next/cache";
 import { getServerSession } from "next-auth";
 import { z } from "zod";

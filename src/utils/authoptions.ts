@@ -4,7 +4,7 @@ import EmailProvider from "next-auth/providers/email";
 
 import customPostgresAdapter from "./pgAdpter";
 import { getUserInfos } from "@/lib/kysely/queries/users";
-import { memberBaseInfoToModel } from "@/models/mapper";
+import { memberBaseInfoToModel } from "@/models/mapper/memberMapper";
 import config from "@/server/config";
 import { getAdmin } from "@/server/config/admin.config";
 import { sendEmail } from "@/server/config/email.config";

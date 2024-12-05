@@ -1,4 +1,8 @@
+const withBundleAnalyzer = require("@next/bundle-analyzer")({
+    enabled: process.env.ANALYZE === "true",
+});
 const { withSentryConfig } = require("@sentry/nextjs");
+const ForkTsCheckerWebpackPlugin = require("fork-ts-checker-webpack-plugin");
 
 const cspHeader = `
     default-src 'self';
@@ -30,12 +34,12 @@ const nextConfig = {
             },
         ];
     },
-    experimental: {
-        serverComponentsExternalPackages: ["knex", "sib-api-v3-sdk"],
-        serverActions: {
-            bodySizeLimit: "10mb",
-        },
-    },
+    // experimental: {
+    //     serverComponentsExternalPackages: ["knex", "sib-api-v3-sdk"],
+    //     serverActions: {
+    //         bodySizeLimit: "10mb",
+    //     },
+    // },
     webpack: (config, { isServer }) => {
         if (!isServer) {
             // don't resolve 'fs' module on the client to prevent this error on build --> Error: Can't resolve 'fs'
@@ -43,6 +47,7 @@ const nextConfig = {
                 fs: false,
             };
         }
+        config.plugins.push(new ForkTsCheckerWebpackPlugin());
         config.module.rules.push({
             test: /\.woff2$/,
             type: "asset/resource",
@@ -74,5 +79,20 @@ const sentryWebpackPluginOptions = {
     // https://github.com/getsentry/sentry-webpack-plugin#options.
 };
 
-// Make sure adding Sentry options is the last code to run before exporting
-module.exports = withSentryConfig(nextConfig, sentryWebpackPluginOptions);
+const finalConfig = withSentryConfig(
+    withBundleAnalyzer({
+        ...nextConfig,
+        // webpack: (config, options) => {
+        //     // Custom Webpack configuration
+        //     config.module.rules.push({
+        //         test: /\.svg$/,
+        //         use: ["@svgr/webpack"],
+        //     });
+
+        //     return config;
+        // },
+    }),
+    sentryWebpackPluginOptions
+);
+
+module.exports = finalConfig;

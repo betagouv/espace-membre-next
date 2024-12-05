@@ -1,5 +1,6 @@
 import crypto from "crypto";
-import _ from "lodash";
+import find from "lodash/find";
+import includes from "lodash/includes";
 
 import { addEvent } from "@/lib/events";
 import { db } from "@/lib/kysely";
@@ -128,7 +129,7 @@ async function getEmailCreationParams(username: string): Promise<
     // todo see what to do with startups
     let needsExchange = false;
     for (const startupUuid of latestMission?.startups || []) {
-        const startup = _.find(startupsInfos, { uuid: startupUuid });
+        const startup = find(startupsInfos, { uuid: startupUuid });
         const incubator = startup?.incubator_id;
         if (incubator) {
             const incubatorInfo = await db
@@ -138,7 +139,7 @@ async function getEmailCreationParams(username: string): Promise<
                 .executeTakeFirst();
             if (
                 incubatorInfo &&
-                _.includes(INCUBATORS_USING_EXCHANGE, incubatorInfo.ghid)
+                includes(INCUBATORS_USING_EXCHANGE, incubatorInfo.ghid)
             ) {
                 needsExchange = true;
             }

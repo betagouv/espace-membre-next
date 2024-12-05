@@ -1,5 +1,5 @@
 import { sql } from "kysely";
-import { Account, Awaitable } from "next-auth";
+import { Account } from "next-auth";
 import {
     Adapter,
     AdapterAccount,
@@ -9,7 +9,6 @@ import {
 } from "next-auth/adapters";
 
 import { db } from "@/lib/kysely";
-import betagouv from "@/server/betagouv";
 
 export default function customPostgresAdapter(): Adapter {
     try {

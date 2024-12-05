@@ -1,7 +1,6 @@
 "use client";
-import React from "react";
+import { useState } from "react";
 
-import { fr } from "@codegouvfr/react-dsfr";
 import { Alert } from "@codegouvfr/react-dsfr/Alert";
 import Button from "@codegouvfr/react-dsfr/Button";
 import { ButtonsGroup } from "@codegouvfr/react-dsfr/ButtonsGroup";
@@ -21,9 +20,8 @@ interface Props {
 const ConnectBlock = ({ children }) => {
     return (
         <>
-            <div className={fr.cx("fr-col-md-6")}>
+            <div>
                 <h1
-                    className={fr.cx("fr-mb-1v")}
                     style={{
                         color: "var(--text-action-high-blue-france)",
                     }}
@@ -31,7 +29,6 @@ const ConnectBlock = ({ children }) => {
                     Espace membre
                 </h1>
                 <p
-                    className={fr.cx("fr-text--bold", "fr-text--bold")}
                     style={{
                         color: "var(--text-action-high-blue-france)",
                     }}
@@ -91,18 +88,18 @@ const ConnectBlock = ({ children }) => {
                     width={300}
                 />
             </div>
-            <div className={fr.cx("fr-col-md-6")}>{children}</div>
+            <div>{children}</div>
         </>
     );
 };
 
 /* Pure component */
 export const LoginPage = function (props: Props) {
-    const [formErrors, setFormErrors] = React.useState<string>();
-    const [email, setEmail] = React.useState(props.secondary_email || "");
-    const [isFirstTime, setIsFirstTime] = React.useState(props.secondary_email);
-    const [isSaving, setIsSaving] = React.useState<boolean>(false);
-    const [alertMessage, setAlertMessage] = React.useState<{
+    const [formErrors, setFormErrors] = useState<string>();
+    const [email, setEmail] = useState(props.secondary_email || "");
+    const [isFirstTime, setIsFirstTime] = useState(props.secondary_email);
+    const [isSaving, setIsSaving] = useState<boolean>(false);
+    const [alertMessage, setAlertMessage] = useState<{
         message: string;
         type: "success" | "warning";
         description?: string;
@@ -152,8 +149,8 @@ export const LoginPage = function (props: Props) {
             id="login_form"
             style={{
                 padding: "4rem",
-                backgroundColor:
-                    fr.colors.decisions.background.alt.blueFrance.default,
+                // backgroundColor:
+                //     fr.colors.decisions.background.alt.blueFrance.default,
             }}
         >
             <fieldset
@@ -202,8 +199,8 @@ export const LoginPage = function (props: Props) {
                 ]}
             />
             <hr />
-            <h3 className={fr.cx("fr-mb-1w", "fr-h4")}>Besoin d'aide ?</h3>
-            <p className={fr.cx("fr-text--xs")}>
+            <h3>Besoin d'aide ?</h3>
+            <p>
                 Si tu n'arrives pas à te connecter, consulte cette page pour
                 savoir ce qu'il se passe :{" "}
                 <Link href="/keskispasse">/keskispasse</Link>
@@ -213,7 +210,7 @@ export const LoginPage = function (props: Props) {
 
     return (
         <>
-            <div className={fr.cx("fr-grid-row", "fr-m-4w")}>
+            <div>
                 {!!alertMessage && (
                     <Alert
                         className="fr-mb-8v"
@@ -226,7 +223,7 @@ export const LoginPage = function (props: Props) {
 
                 {!!isFirstTime && (
                     <>
-                        <div className={fr.cx("fr-col-md-12", "fr-p-2w")}>
+                        <div>
                             <center>
                                 <Alert
                                     className="fr-mb-12v"
@@ -260,11 +257,8 @@ export const LoginPage = function (props: Props) {
                 {!isFirstTime && <ConnectBlock>{connectForm}</ConnectBlock>}
             </div>
             {!isFirstTime && (
-                <div
-                    className={fr.cx("fr-grid-row")}
-                    style={{ border: "1px solid #ccc", width: "100%" }}
-                >
-                    <div className={fr.cx("fr-col-md-12", "fr-p-2w")}>
+                <div style={{ border: "1px solid #ccc", width: "100%" }}>
+                    <div>
                         <h2 className="fr-h3">
                             Accueillir une nouvelle recrue ?&nbsp;👋
                         </h2>

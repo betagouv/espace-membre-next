@@ -1,7 +1,7 @@
 "use server";
 
 import slugify from "@sindresorhus/slugify";
-import _ from "lodash";
+import difference from "lodash/difference";
 import { revalidatePath } from "next/cache";
 import { getServerSession } from "next-auth";
 import { z } from "zod";
@@ -290,7 +290,7 @@ export async function updateStartup({
             }
         }
         // delete old sponsor
-        const sponsorsUuidToRemove = _.difference(
+        const sponsorsUuidToRemove = difference(
             previousStartupSponsors.map((s) => s.uuid),
             startupSponsors
         );
@@ -303,7 +303,7 @@ export async function updateStartup({
         }
 
         // add new sponsors
-        const sponsorUuidToAdd = _.difference(
+        const sponsorUuidToAdd = difference(
             startupSponsors,
             previousStartupSponsors.map((s) => s.uuid)
         );
@@ -318,7 +318,7 @@ export async function updateStartup({
         }
 
         // delete old phase
-        const phasesNameToRemove = _.difference(
+        const phasesNameToRemove = difference(
             previousStartupPhases.map((s) => s.name),
             startupPhases.filter((s) => s.name).map((s) => s.name)
         );
@@ -375,7 +375,7 @@ export async function updateStartup({
             .where("startup_id", "=", startupUuid)
             .execute();
 
-        const existingSponsorsUuid = _.difference(
+        const existingSponsorsUuid = difference(
             startupSponsors,
             sponsorsUuidToRemove
         );

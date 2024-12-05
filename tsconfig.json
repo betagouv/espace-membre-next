@@ -1,24 +1,17 @@
 {
     "compilerOptions": {
-        "noErrorTruncation": true,
-        "target": "es2018",
         "lib": ["dom", "dom.iterable", "esnext"],
         "allowJs": true,
         "skipLibCheck": true,
-        "skipDefaultLibCheck": true,
-        "strict": true,
-        "forceConsistentCasingInFileNames": true,
+        "strict": false,
         "noEmit": true,
-        "esModuleInterop": true,
+        "incremental": true,
         "module": "esnext",
+        "esModuleInterop": true,
         "moduleResolution": "node",
         "resolveJsonModule": true,
-        "noImplicitAny": false,
         "isolatedModules": true,
         "jsx": "preserve",
-        "incremental": true,
-        "assumeChangesOnlyAffectDirectDependencies": true,
-        "preserveWatchOutput": true,
         "baseUrl": ".",
         "paths": {
             "@/*": ["./src/*"],
@@ -46,73 +39,6 @@
             }
         ]
     },
-    "ts-node": {
-        "require": ["tsconfig-paths/register"],
-        "transpileOnly": true,
-        "compilerOptions": {
-            "module": "commonjs",
-            "target": "es6",
-            "paths": {
-                "@config": ["./src/config/index.ts"],
-                "@config/*": ["./src/config/*"],
-                "@controllers/*": ["./src/server/controllers/*"],
-                "@components/*": ["./src/server/views/pages/components/*"],
-                "@infra/*": ["./src/server/infra/*"],
-                "@lib/*": ["./src/lib/*"],
-                "@utils/*": ["./src/utils/*"],
-                "@models/*": ["./src/server/models/*"],
-                "@modules/*": ["./src/server/modules/*"],
-                "@node_modules/*": ["node_modules/*"],
-                "@schedulers/*": ["./src/server/schedulers/*"],
-                "@services/*": ["./src/server/services/*"],
-                "@views": ["./src/server/views/index.ts"],
-                "@views/*": ["./src/server/views/*"]
-            },
-            "plugins": [
-                {
-                    "transform": "typescript-transform-paths"
-                }
-            ]
-        }
-    },
-    "ts-mocha": {
-        "require": ["tsconfig-paths/register"],
-        "transpileOnly": true,
-        "compilerOptions": {
-            "module": "commonjs",
-            "target": "es6",
-            "paths": {
-                "@config": ["./src/config/index.ts"],
-                "@config/*": ["./src/config/*"],
-                "@controllers/*": ["./src/server/controllers/*"],
-                "@components/*": ["./src/server/views/pages/components/*"],
-                "@infra/*": ["./src/server/infra/*"],
-                "@lib/*": ["./src/lib/*"],
-                "@utils/*": ["./src/utils/*"],
-                "@models/*": ["./src/server/models/*"],
-                "@modules/*": ["./src/server/modules/*"],
-                "@node_modules/*": ["node_modules/*"],
-                "@schedulers/*": ["./src/server/schedulers/*"],
-                "@services/*": ["./src/server/services/*"],
-                "@views": ["./src/server/views/index.ts"],
-                "@views/*": ["./src/server/views/*"]
-            },
-            "plugins": [
-                {
-                    "transform": "typescript-transform-paths"
-                }
-            ]
-        }
-    },
-    "include": [
-        "next-env.d.ts",
-        "**/*.ts",
-        "**/*.tsx"
-    ],
-    "exclude": [
-        "node_modules",
-        "dist",
-        ".next",
-        "out"
-    ]
+    "include": ["next-env.d.ts", ".next/types/**/*.ts", "**/*.ts", "**/*.tsx"],
+    "exclude": ["node_modules"]
 }

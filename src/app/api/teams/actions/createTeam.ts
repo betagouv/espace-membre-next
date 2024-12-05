@@ -1,10 +1,8 @@
 "use server";
 
 import slugify from "@sindresorhus/slugify";
-import _ from "lodash";
 import { revalidatePath } from "next/cache";
 import { getServerSession } from "next-auth";
-import { z } from "zod";
 
 import { addEvent } from "@/lib/events";
 import { db } from "@/lib/kysely";

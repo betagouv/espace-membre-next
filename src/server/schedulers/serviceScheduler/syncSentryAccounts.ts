@@ -1,4 +1,4 @@
-import _ from "lodash";
+import difference from "lodash/difference";
 import pAll from "p-all";
 
 import { db } from "@/lib/kysely";
@@ -76,10 +76,7 @@ export async function syncSentryAccounts(
     const sentryUserIds = sentryUsers.map(
         (sentryUser) => sentryUser.serviceUserId
     );
-    const accountsToRemoveFromDb = _.difference(
-        sentryUserIdsInDb,
-        sentryUserIds
-    );
+    const accountsToRemoveFromDb = difference(sentryUserIdsInDb, sentryUserIds);
     if (accountsToRemoveFromDb.length > 0) {
         // Ensure the array is not empty
         const deletedRes = await db

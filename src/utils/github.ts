@@ -1,4 +1,4 @@
-import _ from "lodash";
+import deburr from "lodash/deburr";
 
 function hyphenateWhitespace(str) {
     return str.trim().replace(/\s+/g, "-");
@@ -12,7 +12,7 @@ export function createUsername(firstName, lastName) {
     const prepareName = function (str) {
         let normalizedStr = replaceSpecialCharacters(str)
             .split(" ")
-            .map((x) => _.deburr(x.toLowerCase()).replace(/[^a-z\-]/g, ""))
+            .map((x) => deburr(x.toLowerCase()).replace(/[^a-z\-]/g, ""))
             .filter((x) => x); // remove empty value
         normalizedStr = normalizedStr
             .join(".")
