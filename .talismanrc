@@ -13,6 +13,8 @@ fileignoreconfig:
   checksum: 1ec9acf039a7d336e710ef7b47c385eb7080293ee2750c2cf99e9056cde7f129
 - filename: src/app/(private)/(dashboard)/services/page.tsx
   checksum: d5831365d79840fb38be03632d6c58f37c239bade853577164c2149d5b280cb7
+- filename: src/app/(private)/(dashboard)/services/sentry/page.tsx
+  checksum: 685b3f177bb6124655bb439beb6f3cb4ecdbbeb62adeab9e1f56e811a09a9f5b
 - filename: src/app/api/member/[username]/route.ts
   checksum: a5371c646bc9955b72b6cdb5ee3aef340004a092d9e70bbbe4b308c940880370
 - filename: src/app/api/services/actions.ts
