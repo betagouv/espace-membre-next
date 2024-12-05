@@ -1,7 +1,7 @@
 {
     "compilerOptions": {
         "outDir": "./dist",
-        "target": "es6",
+        "target": "es2018",
         "module": "commonjs",
         "jsx": "react-jsx",
         "esModuleInterop": true,
@@ -14,10 +14,11 @@
         "forceConsistentCasingInFileNames": true,
         "allowSyntheticDefaultImports": true,
         "skipLibCheck": true,
-        //
+        "incremental": true,
+        "composite": true,
         "lib": ["esnext", "dom"],
         "typeRoots": ["./src/types", "node_modules/@types"],
-        // "strictNullChecks": true,
+        "strictNullChecks": true,
         "rootDir": "./",
         "inlineSources": true,
         "sourceRoot": "/",
@@ -49,17 +50,11 @@
     },
     "exclude": [
         "node_modules",
-        "**/*.tsx",
-        "static",
-        // "**/*.d.ts",
-        "migrations",
-        "src/app",
-        "src/components",
-        "src/providers",
-        "__tests__",
-        "models",
-        "src/lib",
-        "knexfile.js",
-        "dist"
+        ".next",
+        "out",
+        "dist",
+        "**/*.test.ts",
+        "**/*.spec.ts",
+        "**/__tests__/**"
     ]
 }
