@@ -63,7 +63,7 @@ export default async function SentryPage() {
                     <>
                         <p>
                             Ajout {data.teams.length > 1 ? "aux" : "à l'"}{" "}
-                            équipe :
+                            équipe{data.teams.length > 1 ? "s" : ""} :
                         </p>
                         <ul>
                             {data.teams.map((t, index) => (
