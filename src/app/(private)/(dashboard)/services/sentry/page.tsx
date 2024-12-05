@@ -49,7 +49,7 @@ export default async function SentryPage() {
         .selectFrom("events")
         .where("action_on_username", "=", session.user.id)
         .where("action_code", "like", `%MEMBER_SERVICE%`)
-        // .where(sql`action_metadata -> service`, "=", `sentry`)
+        .where(sql`action_metadata -> 'service'`, "=", `sentry`)
         .selectAll()
         .orderBy("created_at desc")
         .execute();
