@@ -34,12 +34,12 @@ const nextConfig = {
             },
         ];
     },
-    // experimental: {
-    //     serverComponentsExternalPackages: ["knex", "sib-api-v3-sdk"],
-    //     serverActions: {
-    //         bodySizeLimit: "10mb",
-    //     },
-    // },
+    experimental: {
+        serverComponentsExternalPackages: ["knex", "sib-api-v3-sdk"],
+        serverActions: {
+            bodySizeLimit: "10mb",
+        },
+    },
     webpack: (config, { isServer }) => {
         if (!isServer) {
             // don't resolve 'fs' module on the client to prevent this error on build --> Error: Can't resolve 'fs'
