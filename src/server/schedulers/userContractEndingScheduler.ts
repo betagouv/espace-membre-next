@@ -1,4 +1,4 @@
-import { differenceInDays, startOfDay } from "date-fns";
+import { differenceInDays, format, startOfDay } from "date-fns";
 
 import { matomoClient } from "../config/matomo.config";
 import { sentryClient } from "../config/sentry.config";
@@ -126,11 +126,21 @@ const sendMessageOnChatAndEmail = async ({
     jobs: Job[];
     sendToSecondary: boolean;
 }) => {
+    const endDate = user.userInfos.missions
+        .map((m) => m.end)
+        .filter((missionEndDate) => missionEndDate)
+        .sort((dateA, dateB) => dateB!.getTime() - dateA!.getTime())[0];
+    if (!endDate) {
+        throw new Error(
+            "Member should have at leat one mission with a end date"
+        );
+    }
     const variables: EmailEndingContract["variables"] = {
         user: {
             userInfos: user.userInfos,
             mattermostUsername: user.mattermostUsername,
         },
+        endDate: format(endDate, "dd/MM/yyyy"),
         jobs: user.userInfos.domaine
             ? jobs
                   .filter((job) =>
