@@ -4,7 +4,8 @@ import { getServerSession } from "next-auth/next";
 
 import AccountDetails from "@/components/Service/AccountDetails";
 import SentryServiceForm from "@/components/Service/SentryServiceForm";
-import { db } from "@/lib/kysely";
+import * as hstore from "@/lib/hstore";
+import { db, sql } from "@/lib/kysely";
 import { getServiceAccount } from "@/lib/kysely/queries/services";
 import { EventCodeToReadable } from "@/models/actionEvent";
 import { sentryServiceInfoToModel } from "@/models/mapper/sentryMapper";
@@ -48,18 +49,36 @@ export default async function SentryPage() {
         .selectFrom("events")
         .where("action_on_username", "=", session.user.id)
         .where("action_code", "like", `%MEMBER_SERVICE%`)
+        // .where(sql`action_metadata -> service`, "=", `sentry`)
         .selectAll()
         .orderBy("created_at desc")
         .execute();
 
     const formatMetadata = (metadata) => {
-        if ("teams" in metadata) {
-            return `Ajout ${
-                metadata.teams.length ? "aux" : "à l'"
-            } équipe ${metadata.teams.join(",")}`;
-        } else {
-            return JSON.stringify(metadata);
+        if (metadata) {
+            const data = hstore.parse(metadata);
+            console.log(data);
+            if ("teams" in data) {
+                return (
+                    <>
+                        <p>
+                            Ajout {data.teams.length > 1 ? "aux" : "à l'"}{" "}
+                            équipe :
+                        </p>
+                        <ul>
+                            {data.teams.map((t, index) => (
+                                <li key={index}>
+                                    {t.teamSlug} avec le role {t.teamRole}
+                                </li>
+                            ))}
+                        </ul>
+                    </>
+                );
+            } else {
+                return JSON.stringify(data);
+            }
         }
+        return;
     };
 
     return (
