@@ -47,9 +47,21 @@ export default async function SentryPage() {
     const sentryEvents = await db
         .selectFrom("events")
         .where("action_on_username", "=", session.user.id)
+        .where("action_code", "like", `%MEMBER_SERVICE%`)
+        .where("action_metadata", "like", `%sentry%`)
         .selectAll()
         .orderBy("created_at desc")
         .execute();
+
+    const formatMetadata = (metadata) => {
+        if ("teams" in metadata) {
+            return `Ajout ${
+                metadata.teams.length ? "aux" : "à l'"
+            } équipe ${metadata.teams.join(",")}`;
+        } else {
+            return JSON.stringify(metadata);
+        }
+    };
 
     return (
         <>
@@ -81,7 +93,7 @@ export default async function SentryPage() {
                     headers={["Code", "Metadata", "Date"]}
                     data={sentryEvents.map((e) => [
                         EventCodeToReadable[e.action_code],
-                        JSON.stringify(e.action_metadata),
+                        formatMetadata(e.action_metadata),
                         e.created_at.toDateString(),
                     ])}
                 ></Table>
