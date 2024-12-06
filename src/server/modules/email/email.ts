@@ -161,6 +161,7 @@ export type EmailEndingContract = {
         | EMAIL_TYPES.EMAIL_ENDING_CONTRACT_15_DAYS
         | EMAIL_TYPES.EMAIL_ENDING_CONTRACT_2_DAYS;
     variables: {
+        endDate: string;
         user: {
             userInfos: memberBaseInfoSchemaType;
             mattermostUsername: string;
