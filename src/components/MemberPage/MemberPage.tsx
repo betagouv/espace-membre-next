@@ -54,7 +54,7 @@ export interface MemberPageProps {
     };
     changes: PrivateMemberChangeSchemaType[];
     startups: Awaited<ReturnType<typeof getUserStartups>>;
-    canEdit: boolean;
+    sessionUserIsFromIncubatorTeam: boolean;
     isAdmin: boolean;
     isCurrentUser: boolean;
 }
@@ -78,7 +78,7 @@ export default function MemberPage({
     isExpired,
     startups,
     changes,
-    canEdit,
+    sessionUserIsFromIncubatorTeam,
     isAdmin,
     avatar,
     isCurrentUser,
@@ -94,7 +94,10 @@ export default function MemberPage({
                         userInfos={userInfos}
                         changes={changes}
                         isAdmin={isAdmin}
-                        canEdit={canEdit}
+                        isCurrentUser={isCurrentUser}
+                        sessionUserIsFromIncubatorTeam={
+                            sessionUserIsFromIncubatorTeam
+                        }
                     />
                     {userInfos.bio && (
                         <figure className={fr.cx("fr-quote", "fr-mt-2w")}>
@@ -117,7 +120,7 @@ export default function MemberPage({
                             mattermostInfo={mattermostInfo}
                             emailInfos={emailInfos}
                             isAdmin={isAdmin}
-                            canEdit={canEdit}
+                            isCurrentUser={isCurrentUser}
                         />
                     </div>
                     <div className={fr.cx("fr-mt-4w")}>
@@ -149,7 +152,7 @@ export default function MemberPage({
             label: "Compte email",
             content: (
                 <EmailContainer
-                    canEdit={canEdit}
+                    isCurrentUser={isCurrentUser}
                     isExpired={isExpired}
                     emailInfos={emailInfos}
                     emailResponder={emailResponder}

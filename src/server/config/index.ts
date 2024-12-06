@@ -1,6 +1,6 @@
 import { config } from "dotenv";
 
-import { getArrayFromEnv } from '@/lib/env';
+import { getArrayFromEnv } from "@/lib/env";
 import { MemberType } from "@/models/member";
 import { EMAIL_PLAN_TYPE } from "@/models/ovh";
 

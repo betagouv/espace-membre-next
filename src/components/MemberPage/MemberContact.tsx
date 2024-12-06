@@ -1,27 +1,27 @@
 import { ReactNode } from "react";
 
-import Table from "@codegouvfr/react-dsfr/Table";
 import { fr } from "@codegouvfr/react-dsfr";
 import Badge from "@codegouvfr/react-dsfr/Badge";
+import Table from "@codegouvfr/react-dsfr/Table";
 import { match } from "ts-pattern";
 
 import { MemberPageProps } from "./MemberPage";
-import { EMAIL_PLAN_TYPE } from "@/models/ovh";
-import { EMAIL_STATUS_READABLE_FORMAT } from "@/models/misc";
 import { EmailStatusCode } from "@/models/member";
+import { EMAIL_STATUS_READABLE_FORMAT } from "@/models/misc";
+import { EMAIL_PLAN_TYPE } from "@/models/ovh";
 
 export const MemberContact = ({
     userInfos,
     mattermostInfo,
     emailInfos,
     isAdmin,
-    canEdit,
+    isCurrentUser,
 }: {
     userInfos: MemberPageProps["userInfos"];
     mattermostInfo: MemberPageProps["mattermostInfo"];
     emailInfos: MemberPageProps["emailInfos"];
     isAdmin: MemberPageProps["isAdmin"];
-    canEdit: MemberPageProps["canEdit"];
+    isCurrentUser: MemberPageProps["isCurrentUser"];
 }) => {
     const infos: { label: ReactNode; value: ReactNode }[] = [];
     if (userInfos.primary_email) {
@@ -78,7 +78,7 @@ export const MemberContact = ({
         });
     }
 
-    if ((isAdmin || canEdit) && userInfos.secondary_email) {
+    if ((isAdmin || isCurrentUser) && userInfos.secondary_email) {
         infos.push({
             label: (
                 <>
