@@ -1,6 +1,16 @@
 import { z } from "zod";
 
-import { EventServiceAccountDeletedPayload } from "./serviceActionEvent";
+import {
+    EventMatomoAccountCreatedPayload,
+    EventMatomoAccountRequestedPayload,
+    EventMatomoAccountUpdatedPayload,
+    EventMatomoAccountUpdateRequestedPayload,
+    EventSentryAccountCreatedPayload,
+    EventSentryAccountRequestedPayload,
+    EventSentryAccountUpdatedPayload,
+    EventSentryAccountUpdateRequestedPayload,
+    EventServiceAccountDeletedPayload,
+} from "./serviceActionEvent";
 import {
     memberInfoUpdateSchema,
     memberValidateInfoSchema,
@@ -38,6 +48,10 @@ export enum EventCode {
     ORGANIZATION_CREATED = "ORGANIZATION_CREATED",
     ORGANIZATION_UPDATED = "ORGANIZATION_UPDATED",
     MEMBER_SERVICE_ACCOUNT_DELETED = "MEMBER_SERVICE_ACCOUNT_DELETED",
+    MEMBER_SERVICE_ACCOUNT_REQUESTED = "MEMBER_SERVICE_ACCOUNT_REQUESTED",
+    MEMBER_SERVICE_ACCOUNT_CREATED = "MEMBER_SERVICE_ACCOUNT_CREATED",
+    MEMBER_SERVICE_ACCOUNT_UPDATE_REQUESTED = "MEMBER_SERVICE_ACCOUNT_UPDATE_REQUESTED",
+    MEMBER_SERVICE_ACCOUNT_UPDATED = "MEMBER_SERVICE_ACCOUNT_UPDATED",
 }
 
 export const EventCodeToReadable: Record<EventCode, string> = {
@@ -72,6 +86,11 @@ export const EventCodeToReadable: Record<EventCode, string> = {
     [EventCode.ORGANIZATION_UPDATED]: "Organization mise à jour",
     [EventCode.MEMBER_SERVICE_ACCOUNT_DELETED]: "Compte de service supprimé",
     [EventCode.MEMBER_EMAIL_EXPIRED]: "Compte défini comme expiré",
+    [EventCode.MEMBER_SERVICE_ACCOUNT_REQUESTED]: "Compte de service demandé",
+    [EventCode.MEMBER_SERVICE_ACCOUNT_CREATED]: "Compte de service créé",
+    [EventCode.MEMBER_SERVICE_ACCOUNT_UPDATE_REQUESTED]:
+        "Compte de service mise à jour demandée",
+    [EventCode.MEMBER_SERVICE_ACCOUNT_UPDATED]: "Compte de service mis à jour",
 };
 
 export const SYSTEM_NAME = "system";
@@ -358,7 +377,15 @@ export type EventPayloads =
     | z.infer<typeof EventOrganizationCreatedPayload>
     | z.infer<typeof EventOrganizationUpdatedPayload>
     | z.infer<typeof EventServiceAccountDeletedPayload>
-    | z.infer<typeof EventMemberEmailExpiredPayload>;
+    | z.infer<typeof EventMemberEmailExpiredPayload>
+    | z.infer<typeof EventSentryAccountRequestedPayload>
+    | z.infer<typeof EventSentryAccountCreatedPayload>
+    | z.infer<typeof EventSentryAccountUpdateRequestedPayload>
+    | z.infer<typeof EventSentryAccountUpdatedPayload>
+    | z.infer<typeof EventMatomoAccountRequestedPayload>
+    | z.infer<typeof EventMatomoAccountCreatedPayload>
+    | z.infer<typeof EventMatomoAccountUpdateRequestedPayload>
+    | z.infer<typeof EventMatomoAccountUpdatedPayload>;
 
 export type EventAction = BaseActionEvent & EventPayloads;
 

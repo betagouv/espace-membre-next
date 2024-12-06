@@ -1,7 +1,11 @@
 import pAll from "p-all";
 import PgBoss from "pg-boss";
 
+import { addEvent } from "@/lib/events";
 import { db } from "@/lib/kysely";
+import { MatomoAccess } from "@/lib/matomo";
+import { EventCode } from "@/models/actionEvent";
+import { EventMatomoAccountCreatedPayload } from "@/models/actionEvent/serviceActionEvent";
 import { CreateMatomoAccountDataSchemaType } from "@/models/jobs/services";
 import { matomoMetadataToModel } from "@/models/mapper/matomoMapper";
 import { ACCOUNT_SERVICE_STATUS, SERVICES } from "@/models/services";
@@ -39,7 +43,7 @@ export async function createMatomoServiceAccount(
     await matomoClient.grantUserAccess({
         userLogin,
         idSites: idSites,
-        access: "admin",
+        access: MatomoAccess.admin,
     });
     const allWebsites = await matomoClient.getAllSites();
     const userMetadata = await matomoClient.fetchUserAccess(job.data.email);
@@ -54,6 +58,19 @@ export async function createMatomoServiceAccount(
             metadata: JSON.stringify(metadata),
         })
         .executeTakeFirstOrThrow();
+
+    addEvent({
+        action_code: EventCode.MEMBER_SERVICE_ACCOUNT_CREATED,
+        action_metadata: {
+            service: SERVICES.MATOMO,
+            sites: job.data.sites.map((s) => ({
+                url: s.url,
+                access: MatomoAccess.admin,
+            })),
+        },
+        action_on_username: job.data.username,
+        created_by_username: job.data.username,
+    });
 
     console.log(`the matomo account has been created for ${userLogin}`);
 }
