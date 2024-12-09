@@ -11,6 +11,7 @@ export const getAdmin = () => {
     return config.ESPACE_MEMBRE_ADMIN;
 };
 
+// todo: make it simpler
 export const isSessionUserIncubatorTeamAdminForUser = async ({
     user,
     sessionUserUuid,
