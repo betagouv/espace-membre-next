@@ -1,10 +1,17 @@
+import Table from "@codegouvfr/react-dsfr/Table";
 import { redirect } from "next/navigation";
 import { getServerSession } from "next-auth/next";
 
 import AccountDetails from "@/components/Service/AccountDetails";
 import MatomoServiceForm from "@/components/Service/MatomoServiceForm";
+import * as hstore from "@/lib/hstore";
+import { db, sql } from "@/lib/kysely";
 import { getServiceAccount } from "@/lib/kysely/queries/services";
-import { matomoServiceInfoToModel } from "@/models/mapper/matomoMapper";
+import { EventCodeToReadable } from "@/models/actionEvent/actionEvent";
+import {
+    matomoServiceInfoToModel,
+    matomoSiteToModel,
+} from "@/models/mapper/matomoMapper";
 import { SERVICES } from "@/models/services";
 import { authOptions } from "@/utils/authoptions";
 
@@ -21,6 +28,48 @@ export default async function MatomoPage() {
     const service_account = rawAccount
         ? matomoServiceInfoToModel(rawAccount)
         : undefined;
+
+    const matomoSites = await db
+        .selectFrom("matomo_sites")
+        .selectAll()
+        .execute()
+        .then((data) => data.map((d) => matomoSiteToModel(d)));
+
+    const matomoEvents = await db
+        .selectFrom("events")
+        .where("action_on_username", "=", session.user.id)
+        .where("action_code", "like", `%MEMBER_SERVICE%`)
+        .where(sql`action_metadata -> 'service'`, "=", `matomo`)
+        .selectAll()
+        .orderBy("created_at desc")
+        .execute();
+
+    const formatMetadata = (metadata) => {
+        if (metadata) {
+            const data = hstore.parse(metadata);
+            console.log(data);
+            if ("sites" in data) {
+                return (
+                    <>
+                        <p>
+                            Ajout {data.sites.length > 1 ? "aux" : "à l'"}{" "}
+                            équipe{data.sites.length > 1 ? "s" : ""} :
+                        </p>
+                        <ul>
+                            {data.sites.map((t, index) => (
+                                <li key={index}>
+                                    {t.siteSlug} avec le role {t.siteRole}
+                                </li>
+                            ))}
+                        </ul>
+                    </>
+                );
+            } else {
+                return JSON.stringify(data);
+            }
+        }
+        return;
+    };
 
     return (
         <>
@@ -46,7 +95,18 @@ export default async function MatomoPage() {
                     headers={["nom", "type", "niveau d'accès"]}
                 />
             ) : (
-                <MatomoServiceForm />
+                <MatomoServiceForm sites={matomoSites} />
+            )}
+            <h2 className="fr-mt-8v">Historique des événements</h2>
+            {!!matomoEvents.length && (
+                <Table
+                    headers={["Code", "Metadata", "Date"]}
+                    data={matomoEvents.map((e) => [
+                        EventCodeToReadable[e.action_code],
+                        formatMetadata(e.action_metadata),
+                        e.created_at.toDateString(),
+                    ])}
+                ></Table>
             )}
         </>
     );

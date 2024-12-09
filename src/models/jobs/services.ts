@@ -19,22 +19,31 @@ export type CreateMattermostAccountDataSchemaType = z.infer<
     typeof CreateMattermostAccountDataSchema
 >;
 
-export const CreateMatomoAccountDataSchema =
+export const CreateOrUpdateMatomoAccountDataSchema =
     MaintenanceWrapperDataSchema.extend({
         email: z.string().email(), // Valide que l'email est bien formaté
         login: z.string().min(1, "Le nom d'utilisateur est requis"), // Valide que le nom d'utilisateur n'est pas vide
         password: z
             .string()
             .min(6, "Le mot de passe doit contenir au moins 6 caractères"), // Valide que le mot de passe contient au moins 6 caractères
-        sites: z.array(
-            z.object({
-                url: z.string(),
-            })
-        ),
+        sites: z
+            .array(
+                z.object({
+                    id: z.number(),
+                })
+            )
+            .optional(),
+        newSites: z
+            .array(
+                z.object({
+                    url: z.string(),
+                })
+            )
+            .optional(),
         username: z.string(),
     }).strict();
-export type CreateMatomoAccountDataSchemaType = z.infer<
-    typeof CreateMatomoAccountDataSchema
+export type CreateOrUpdateMatomoAccountDataSchemaType = z.infer<
+    typeof CreateOrUpdateMatomoAccountDataSchema
 >;
 
 export const CreateSentryAccountDataSchema =
