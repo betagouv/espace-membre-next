@@ -345,7 +345,7 @@ const sentryInfoRow = (sentry: MemberPageProps["sentryInfo"]) => {
                 </>
             ))
             .with([ACCOUNT_SERVICE_STATUS.ACCOUNT_INVITATION_SENT, P._], () => {
-                <>Une invitation t'a été envoyée par email.</>;
+                return <>Une invitation t'a été envoyée par email.</>;
             })
             .with([ACCOUNT_SERVICE_STATUS.ACCOUNT_FOUND, true], () => (
                 <Accordion key="sentry-info" label={"Liste des accès"}>
@@ -366,10 +366,12 @@ const sentryInfoRow = (sentry: MemberPageProps["sentryInfo"]) => {
                 </Accordion>
             ))
             .otherwise(() => {
-                <p>
-                    Ton compte ne semble pas dans un état attendu tu peux
-                    consulter un admin pour qu'il jette un oeil au problème.
-                </p>;
+                return (
+                    <p>
+                        Ton compte ne semble pas dans un état attendu tu peux
+                        consulter un admin pour qu'il jette un oeil au problème.
+                    </p>
+                );
             }),
     ];
 };
