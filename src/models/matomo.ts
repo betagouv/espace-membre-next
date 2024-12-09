@@ -6,7 +6,7 @@ const matomoUserAccessSchema = z.object({
     id: z.number(),
     accessLevel: z.enum(["admin", "view"]), // Restricts accessLevel to "admin" or "view"
     name: z.string(),
-    type: z.enum(["website", "app"]), // Adjust if you have more types
+    type: z.enum(["website", "app"]),
     url: z.string().optional(), // Optionalif can be an app
 });
 
@@ -23,3 +23,21 @@ export const matomoUserSchema = z.object({
 });
 
 export type matomoUserSchemaType = z.infer<typeof matomoUserSchema>;
+
+export const matomoSiteSchema = z.object({
+    id: z.number(),
+    name: z.string(),
+    type: z.enum(["website", "app"]),
+    url: z.string().optional(),
+});
+
+export type matomoSiteSchemaType = z.infer<typeof matomoSiteSchema>;
+
+export const matomoSiteSchema = z.object({
+    id: z.number(),
+    name: z.string(),
+    type: z.enum(["website", "app"]),
+    url: z.string().optional(),
+});
+
+export type matomoSiteSchemaType = z.infer<typeof matomoSiteSchema>;

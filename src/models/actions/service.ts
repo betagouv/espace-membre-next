@@ -3,11 +3,20 @@ import { z } from "zod";
 import { SERVICES } from "../services";
 
 export const matomoAccountRequestSchema = z.object({
-    sites: z.array(
-        z.object({
-            url: z.string(),
-        })
-    ),
+    sites: z
+        .array(
+            z.object({
+                id: z.number(),
+            })
+        )
+        .optional(),
+    newSites: z
+        .array(
+            z.object({
+                url: z.string(),
+            })
+        )
+        .optional(),
 });
 
 export type matomoAccountRequestSchemaType = z.infer<

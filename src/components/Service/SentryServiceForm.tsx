@@ -38,7 +38,6 @@ export default function SentryServiceForm(props: { teams }) {
         type: "success" | "warning";
     } | null>();
     const [isSaving, setIsSaving] = React.useState(false);
-    const [sentryTeam, setSentryTeam] = React.useState<string | undefined>();
 
     const onSubmit = async (data: sentryAccountRequestSchemaType, e) => {
         if (isSaving) {
