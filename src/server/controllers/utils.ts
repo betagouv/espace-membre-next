@@ -1,7 +1,6 @@
 import axios from "axios";
 import crypto, { createCipheriv, createDecipheriv, randomBytes } from "crypto";
 import { compareAsc, startOfDay } from "date-fns";
-import _ from "lodash";
 import nodemailer from "nodemailer";
 
 import { getUserInfos } from "@/lib/kysely/queries/users";

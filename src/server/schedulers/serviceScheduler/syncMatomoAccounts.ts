@@ -1,4 +1,4 @@
-import _ from "lodash";
+import difference from "lodash/difference";
 import pAll from "p-all";
 
 import { db } from "@/lib/kysely";
@@ -79,10 +79,7 @@ export async function syncMatomoAccounts(matomoClient: Matomo | FakeMatomo) {
     const matomoUserIds = matomoUsers.map(
         (matomoUser) => matomoUser.serviceUserId
     );
-    const accountsToRemoveFromDb = _.difference(
-        matomoUserIdsInDb,
-        matomoUserIds
-    );
+    const accountsToRemoveFromDb = difference(matomoUserIdsInDb, matomoUserIds);
     if (accountsToRemoveFromDb.length > 0) {
         // Ensure the array is not empty
         const deletedResult = await db

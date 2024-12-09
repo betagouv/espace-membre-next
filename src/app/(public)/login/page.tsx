@@ -1,5 +1,5 @@
-import { Metadata } from "next";
 import { redirect } from "next/navigation";
+import { Metadata } from "next/types";
 import { getServerSession } from "next-auth/next";
 
 import { LoginPage } from "@/components/LoginPage";
