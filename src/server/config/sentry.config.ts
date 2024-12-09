@@ -1,5 +1,7 @@
 import config from ".";
 import {
+    SentryAddUserToOrgParams,
+    SentryAddUserToTeamParams,
     SentryService,
     SentryTeam,
     SentryUser,
@@ -45,6 +47,70 @@ export class FakeSentryService implements AccountService {
                 serviceUserId: user.id,
             }))
         );
+    }
+
+    // New method to add a user to the organization
+    addUserToOrganization({
+        email,
+        teamRoles,
+        orgRole = "member",
+    }: SentryAddUserToOrgParams): Promise<SentryUser> {
+        if (this.users.find((user) => user.email === email)) {
+            return Promise.reject(
+                new Error(
+                    `User with email ${email} already exists in the organization.`
+                )
+            );
+        }
+
+        const newUser: SentryUser = {
+            id: `${this.users.length + 1}`, // Mock ID generation
+            email,
+        };
+        this.users.push(newUser);
+        return Promise.resolve(newUser);
+    }
+
+    async changeMemberRoleInTeam({
+        memberId,
+        teamRole,
+        teamSlug,
+    }): Promise<void> {}
+
+    // New method to add a user to a team
+    addUserToTeam({
+        memberId,
+        teamSlug,
+    }: SentryAddUserToTeamParams): Promise<void> {
+        const user = this.users.find((u) => u.id === memberId);
+        const team = this.teams.find((t) => t.slug === teamSlug);
+
+        if (!user) {
+            return Promise.reject(
+                new Error(`User with email ${memberId} does not exist.`)
+            );
+        }
+
+        if (!team) {
+            return Promise.reject(
+                new Error(`Team with slug ${teamSlug} does not exist.`)
+            );
+        }
+
+        if (team.members?.find((member) => member.id === memberId)) {
+            return Promise.reject(
+                new Error(
+                    `User with email ${memberId} is already a member of the team ${teamSlug}.`
+                )
+            );
+        }
+
+        // Add user to the team
+        if (!team.members) {
+            team.members = [];
+        }
+        team.members.push(user);
+        return Promise.resolve();
     }
 }
 

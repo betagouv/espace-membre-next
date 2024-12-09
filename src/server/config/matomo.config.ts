@@ -1,5 +1,11 @@
 import config from ".";
-import { Matomo, MatomoSite, MatomoUser, MatomoUserAccess } from "@/lib/matomo";
+import {
+    Matomo,
+    MatomoAccess,
+    MatomoSite,
+    MatomoUser,
+    MatomoUserAccess,
+} from "@/lib/matomo";
 import { AccountService, SERVICES } from "@/models/services";
 
 export class FakeMatomo implements AccountService {
@@ -90,7 +96,7 @@ export class FakeMatomo implements AccountService {
     }: {
         userLogin: string;
         idSites: number[];
-        access: "admin" | "view";
+        access: MatomoAccess;
     }): Promise<void> {
         idSites.forEach((id) => {
             this.userAccess.push({
@@ -99,7 +105,7 @@ export class FakeMatomo implements AccountService {
                 main_url: "",
                 type: "",
                 site: id,
-                access: access || "admin",
+                access: access || MatomoAccess.admin,
                 login: userLogin,
             });
         });

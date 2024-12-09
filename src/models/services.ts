@@ -7,6 +7,7 @@ export enum SERVICES {
 export enum ACCOUNT_SERVICE_STATUS {
     ACCOUNT_CREATION_PENDING = "ACCOUNT_CREATION_PENDING",
     ACCOUNT_FOUND = "ACCOUNT_FOUND",
+    ACCOUNT_INVITATION_SENT = "ACCOUNT_INVITATION_SENT",
 }
 
 // Define a generic service interface for deleting accounts
