@@ -132,7 +132,7 @@ const sendMessageOnChatAndEmail = async ({
         .sort((dateA, dateB) => dateB!.getTime() - dateA!.getTime())[0];
     if (!endDate) {
         throw new Error(
-            "Member should have at leat one mission with a end date"
+            "Error: Member should have at leat one mission with a end date"
         );
     }
     const variables: EmailEndingContract["variables"] = {
