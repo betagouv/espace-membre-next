@@ -7,6 +7,7 @@ import { BreadCrumbFiller } from "@/app/BreadCrumbProvider";
 import MemberPage from "@/components/MemberPage/MemberPage";
 import betagouv from "@/server/betagouv";
 import config from "@/server/config";
+import { isSessionUserIncubatorTeamAdminForUser } from "@/server/config/admin.config";
 import { userInfos } from "@/server/controllers/utils";
 import { authOptions } from "@/utils/authoptions";
 
@@ -36,9 +37,6 @@ export default async function Page({
         throw new Error(`You don't have the right to access this function`);
     }
 
-    const isAdmin = !!session.user.isAdmin;
-    const canEdit = session.user.id === id;
-
     let availableEmailPros: string[] = [];
     if (config.ESPACE_MEMBRE_ADMIN.includes(session.user.id)) {
         availableEmailPros = await betagouv.getAvailableProEmailInfos();
@@ -54,6 +52,14 @@ export default async function Page({
         throw new Error("Cannot find user");
     }
 
+    const isAdmin = !!session.user.isAdmin;
+    const sessionUserIsFromIncubatorTeam =
+        await isSessionUserIncubatorTeamAdminForUser({
+            user: user.userInfos,
+            sessionUserUuid: session.user.uuid,
+        });
+    const isCurrentUser = session.user.id === id;
+
     return (
         <>
             <BreadCrumbFiller
@@ -62,7 +68,8 @@ export default async function Page({
             />
             <MemberPage
                 isAdmin={isAdmin}
-                canEdit={canEdit}
+                isCurrentUser={isCurrentUser}
+                sessionUserIsFromIncubatorTeam={sessionUserIsFromIncubatorTeam}
                 availableEmailPros={availableEmailPros}
                 authorizations={user.authorizations}
                 emailInfos={user.emailInfos}
@@ -76,7 +83,6 @@ export default async function Page({
                 matomoInfo={userInformations.matomoInfo}
                 sentryInfo={userInformations.sentryInfo}
                 startups={userInformations.startups}
-                isCurrentUser={false}
             />
         </>
     );

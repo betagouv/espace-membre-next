@@ -22,6 +22,7 @@ import {
 } from "@/models/member";
 import betagouv from "@/server/betagouv";
 import config from "@/server/config";
+import { isSessionUserIncubatorTeamAdminForUser } from "@/server/config/admin.config";
 import {
     updateContactEmail,
     addContactsToMailingLists,
@@ -286,6 +287,12 @@ async function updateMemberMissions(
         );
     }
     const previousInfo = memberBaseInfoToModel(dbUser);
+    const sessionUserIsFromIncubatorTeam =
+        !!session.user.isAdmin ||
+        (await isSessionUserIncubatorTeamAdminForUser({
+            user: previousInfo,
+            sessionUserUuid: session.user.uuid,
+        }));
 
     // todo check that it is authorized
     await db.transaction().execute(async (trx) => {
@@ -298,12 +305,13 @@ async function updateMemberMissions(
                     throw new NoDataError("La mission devrait déjà exister");
                 }
                 if (
-                    !mission.end ||
-                    !missionPreviousData.end ||
-                    mission.end < missionPreviousData.end
+                    !sessionUserIsFromIncubatorTeam &&
+                    (!mission.end ||
+                        !missionPreviousData.end ||
+                        mission.end < missionPreviousData.end)
                 ) {
                     throw new ValidationError(
-                        "La nouvelle date de mission doit être supérieur à la précédente."
+                        "Error: La nouvelle date de mission doit être supérieur à la précédente."
                     );
                 }
                 const { uuid, end } = mission;
