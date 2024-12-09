@@ -2,7 +2,7 @@ import Button from "@codegouvfr/react-dsfr/Button";
 import { fr } from "@codegouvfr/react-dsfr/fr";
 import Tag from "@codegouvfr/react-dsfr/Tag";
 import Link from "next/link";
-import { createSerializer } from "nuqs"; // can also be imported from 'nuqs' in client code
+import { createSerializer } from "nuqs";
 import { match, P } from "ts-pattern";
 
 import { MemberPageProps } from "./MemberPage";
