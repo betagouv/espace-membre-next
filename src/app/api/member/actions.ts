@@ -311,7 +311,7 @@ async function updateMemberMissions(
                         mission.end < missionPreviousData.end)
                 ) {
                     throw new ValidationError(
-                        "La nouvelle date de mission doit être supérieur à la précédente."
+                        "Error: La nouvelle date de mission doit être supérieur à la précédente."
                     );
                 }
                 const { uuid, end } = mission;
