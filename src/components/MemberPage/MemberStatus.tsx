@@ -328,34 +328,49 @@ const sentryInfoRow = (sentry: MemberPageProps["sentryInfo"]) => {
                     Creation en cours
                 </Badge>
             ))
+            .with(ACCOUNT_SERVICE_STATUS.ACCOUNT_INVITATION_SENT, () => (
+                <Badge key="sentry-status" severity="info">
+                    Invitation envoyée
+                </Badge>
+            ))
             .otherwise(() => <Badge key="matomo-status">Pas de compte</Badge>),
-        !!sentry ? (
-            <Accordion key="sentry-info" label={"Liste des accès"}>
-                <Table
-                    data={sentry.metadata.teams.map((s) => [
-                        s.slug ? (
-                            <a href={s.slug} target="_blank">
-                                {s.name}
-                            </a>
-                        ) : (
-                            s.name
-                        ),
-                        s.projects.length,
-                        s.role,
-                    ])}
-                    headers={["nom", "projets", "niveau d'accès"]}
-                />
-            </Accordion>
-        ) : (
-            <>
-                Tu n'as pas de compte sentry. Si tu as besoin d'un compte tu
-                peux en faire la demande{" "}
-                <a href="/services/sentry" className="fr-link">
-                    ici
-                </a>
-            </>
-        ),
-        ,
+        match([status, !!sentry])
+            .with([P._, false], () => (
+                <>
+                    Tu n'as pas de compte sentry. Si tu as besoin d'un compte tu
+                    peux en faire la demande{" "}
+                    <a href="/services/sentry" className="fr-link">
+                        ici
+                    </a>
+                </>
+            ))
+            .with([ACCOUNT_SERVICE_STATUS.ACCOUNT_INVITATION_SENT, P._], () => {
+                <>Une invitation t'a été envoyée par email.</>;
+            })
+            .with([ACCOUNT_SERVICE_STATUS.ACCOUNT_FOUND, true], () => (
+                <Accordion key="sentry-info" label={"Liste des accès"}>
+                    <Table
+                        data={sentry!.metadata.teams.map((s) => [
+                            s.slug ? (
+                                <a href={s.slug} target="_blank">
+                                    {s.name}
+                                </a>
+                            ) : (
+                                s.name
+                            ),
+                            s.projects.length,
+                            s.role,
+                        ])}
+                        headers={["nom", "projets", "niveau d'accès"]}
+                    />
+                </Accordion>
+            ))
+            .otherwise(() => {
+                <p>
+                    Ton compte ne semble pas dans un état attendu tu peux
+                    consulter un admin pour qu'il jette un oeil au problème.
+                </p>;
+            }),
     ];
 };
 
