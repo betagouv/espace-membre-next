@@ -365,9 +365,10 @@ const sentryInfoRow = (sentry: MemberPageProps["sentryInfo"]) => {
                     />
                 </Accordion>
             ))
-            .with(ACCOUNT_SERVICE_STATUS.ACCOUNT_CREATION_PENDING, () => (
-                <p>Ton compte va être créé dans quelques instants</p>
-            ))
+            .with(
+                [ACCOUNT_SERVICE_STATUS.ACCOUNT_CREATION_PENDING, P._],
+                () => <p>Ton compte va être créé dans quelques instants</p>
+            )
             .otherwise(() => {
                 return (
                     <p>
