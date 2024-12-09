@@ -4,7 +4,7 @@ import React from "react";
 import { fr } from "@codegouvfr/react-dsfr";
 import { Alert } from "@codegouvfr/react-dsfr/Alert";
 import { Button } from "@codegouvfr/react-dsfr/Button";
-import Input from "@codegouvfr/react-dsfr/Input";
+import { Select } from "@codegouvfr/react-dsfr/Select";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useFieldArray, useForm } from "react-hook-form";
 
@@ -15,11 +15,11 @@ import {
 } from "@/models/actions/service";
 import { SERVICES } from "@/models/services";
 
-export default function MatomoServiceForm() {
+export default function MatomoServiceForm(props: { sites }) {
     const {
         register,
         handleSubmit,
-        formState: { isDirty, isSubmitting, isValid },
+        formState: { errors, isDirty, isSubmitting, isValid },
         control,
     } = useForm<matomoAccountRequestSchemaType>({
         resolver: zodResolver(matomoAccountRequestSchema),
@@ -27,7 +27,7 @@ export default function MatomoServiceForm() {
         defaultValues: {
             sites: [
                 {
-                    url: "",
+                    id: undefined,
                 },
             ],
         },
@@ -39,7 +39,7 @@ export default function MatomoServiceForm() {
     } | null>();
     const [isSaving, setIsSaving] = React.useState(false);
 
-    const onSubmit = (data: matomoAccountRequestSchemaType, e) => {
+    const onSubmit = async (data: matomoAccountRequestSchemaType, e) => {
         if (isSaving) {
             return;
         }
@@ -49,42 +49,38 @@ export default function MatomoServiceForm() {
         setIsSaving(true);
         setAlertMessage(null);
         const service = SERVICES.MATOMO;
-        askAccountCreationForService({
+        const res = await askAccountCreationForService({
             service: service,
             data,
-        })
-            .then((resp) => {
-                setIsSaving(false);
-                window.scrollTo({ top: 20, behavior: "smooth" });
-                setAlertMessage({
-                    title: `Mise à jour effectuée`,
-                    message: "Le compte matomo va être créé",
-                    type: "success",
-                });
-            })
-            .catch((e: any) => {
-                setIsSaving(false);
-                window.scrollTo({ top: 20, behavior: "smooth" });
-                setAlertMessage({
-                    title: "Une erreur est survenue",
-                    message: e.message,
-                    type: "warning",
-                });
+        });
+        if (res.success) {
+            setAlertMessage({
+                title: "Compte matomo en cours de création",
+                message: "",
+                type: "success",
             });
+        } else {
+            setAlertMessage({
+                title: "Une erreur est survenue",
+                message: res.message || "",
+                type: "warning",
+            });
+        }
+        setIsSaving(false);
+        window.scrollTo({ top: 20, behavior: "smooth" });
     };
 
-    const { fields: urlsFields, append: urlsAppend } = useFieldArray({
+    const { fields: siteFields, append: sitesAppend } = useFieldArray({
         rules: { minLength: 1 },
         control,
         name: "sites",
     });
 
-    const addUrlClick = (e) => {
-        urlsAppend({
-            url: "",
+    const addSiteClick = (e) => {
+        sitesAppend({
+            id: undefined,
         });
     };
-
     return (
         <>
             <div>
@@ -116,9 +112,9 @@ export default function MatomoServiceForm() {
                                 id="identity-fieldset"
                                 aria-labelledby="identity-fieldset-legend identity-fieldset-messages"
                             >
-                                {urlsFields.map((field, index) => (
+                                {siteFields.map((field, index) => (
                                     <div
-                                        key={field.id}
+                                        key={index}
                                         className={fr.cx(
                                             "fr-fieldset__element",
                                             "fr-col-12",
@@ -128,31 +124,53 @@ export default function MatomoServiceForm() {
                                             "fr-col-offset-md-8--right"
                                         )}
                                     >
-                                        <Input
-                                            label={`Url du site ${index + 1}`}
-                                            hintText="Ajoute l'url du site : si le site existe déjà tu y seras ajouté, sinon il sera créé"
-                                            nativeInputProps={{
-                                                type: "text",
-                                                placeholder:
-                                                    "https://www.toto.beta.gouv.fr",
+                                        <Select
+                                            label="Site"
+                                            nativeSelectProps={{
+                                                // onChange: (event) =>
+                                                //     setMatomoSite(
+                                                //         event.target.value
+                                                //     ),
+                                                // matomoSite,
                                                 ...register(
-                                                    `sites.${index}.url`,
+                                                    `sites.${index}.id`,
                                                     {
                                                         required: true,
+                                                        valueAsNumber: true,
                                                     }
-                                                ), // Register each url input
+                                                ),
                                             }}
-                                        />
+                                        >
+                                            <option value="" disabled hidden>
+                                                Selectionnez une option
+                                            </option>
+                                            {props.sites.map((site) => (
+                                                <option
+                                                    key={site.id}
+                                                    value={site.id}
+                                                >
+                                                    {site.name} {site.id}
+                                                </option>
+                                            ))}
+                                        </Select>
                                     </div>
                                 ))}
                                 <Button
+                                    className={fr.cx(
+                                        "fr-fieldset__element",
+                                        "fr-col-12",
+                                        "fr-col-lg-4",
+                                        "fr-col-md-4",
+                                        "fr-col-offset-lg-8--right",
+                                        "fr-col-offset-md-8--right"
+                                    )}
                                     iconId="fr-icon-add-circle-line"
                                     priority="secondary"
                                     size="small"
                                     type="button"
-                                    onClick={addUrlClick}
+                                    onClick={addSiteClick}
                                 >
-                                    Ajouter une url
+                                    Ajouter une site
                                 </Button>
                             </fieldset>
                             <Button
@@ -160,8 +178,8 @@ export default function MatomoServiceForm() {
                                 disabled={isSaving}
                                 children={
                                     isSubmitting
-                                        ? `Enregistrement en cours...`
-                                        : `Enregistrer`
+                                        ? `Enregistrement de la demande...`
+                                        : `Demander les accès`
                                 }
                                 nativeButtonProps={{
                                     type: "submit",
