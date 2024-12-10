@@ -29,6 +29,19 @@ export class FakeMatomo implements AccountService {
         this.users = this.users.filter((user) => user.login != userLogin);
         return Promise.resolve();
     }
+    getUserByEmail(
+        email: string
+    ): Promise<MatomoUser | { result: "error"; message: string }> {
+        const user = this.users.find((user) => user.email === email);
+        if (!user) {
+            return Promise.resolve({
+                result: "error",
+                message: `L'utilisateur '${email}' est inexistant.`,
+            });
+        }
+        return Promise.resolve(user);
+    }
+
     fetchUserAccess(userLogin: string): Promise<MatomoUserAccess[]> {
         return Promise.resolve(
             this.userAccess

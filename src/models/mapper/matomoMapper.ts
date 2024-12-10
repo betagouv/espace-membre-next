@@ -1,8 +1,8 @@
 import { Selectable } from "kysely";
 
-import { matomoUserSchemaType } from "../matomo";
+import { matomoSiteSchemaType, matomoUserSchemaType } from "../matomo";
 import { ACCOUNT_SERVICE_STATUS } from "../services";
-import { ServiceAccounts } from "@/@types/db";
+import { MatomoSites, ServiceAccounts } from "@/@types/db";
 import { MatomoUser, MatomoUserAccess, MatomoSite } from "@/lib/matomo";
 
 export const matomoMetadataToModel = (
@@ -54,5 +54,16 @@ export const matomoServiceInfoToModel = (
         status:
             (matomoUser.status as ACCOUNT_SERVICE_STATUS) ||
             ACCOUNT_SERVICE_STATUS.ACCOUNT_FOUND,
+    };
+};
+
+export const matomoSiteToModel = (
+    matomoSite: Selectable<MatomoSites>
+): matomoSiteSchemaType => {
+    return {
+        id: matomoSite.matomo_id,
+        type: matomoSite.type as matomoSiteSchemaType["type"],
+        url: matomoSite.url,
+        name: matomoSite.name,
     };
 };
