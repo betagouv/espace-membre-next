@@ -24,7 +24,6 @@ import {
 } from "./utils";
 import AutoComplete from "../AutoComplete";
 import { linkRegistry } from "@/utils/routes/registry";
-import Head from "@node_modules/next/head";
 
 import communes from "./communes.json";
 
@@ -390,14 +389,7 @@ export const Community = (props: CommunityProps) => {
                     },
                 ]}
             />
-            <Head>
-                <link
-                    rel="stylesheet"
-                    href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
-                    integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY="
-                    crossOrigin=""
-                />
-            </Head>
+
             {results.length ? (
                 <>
                     <h2>

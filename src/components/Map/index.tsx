@@ -43,6 +43,7 @@ export const Map: React.FC<Props> = ({
         <div ref={ref}>
             <MapContainer
                 className={`fr-mx-auto ${styles.map}`}
+                // @ts-ignore TODO: WTH
                 center={centerPosition}
                 zoom={zoom}
                 scrollWheelZoom={false}
@@ -60,6 +61,7 @@ export const Map: React.FC<Props> = ({
                 <TileLayer
                     url="https://data.geopf.fr/wmts?service=WMTS&request=GetTile&version=1.0.0&tilematrixset=PM&tilematrix={z}&tilecol={x}&tilerow={y}&layer=ORTHOIMAGERY.ORTHOPHOTOS&format=image/jpeg&style=normal"
                     //https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
+                    // @ts-ignore TODO: another WTH
                     attribution="&copy; IGN-F/Geoportail"
                 />
             </MapContainer>

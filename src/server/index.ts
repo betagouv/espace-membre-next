@@ -19,7 +19,6 @@ import {
     badgeRouter,
     userRouter,
     userApiRouter,
-    mapRouter,
     setupStaticFiles,
 } from "./routes";
 //import routes from "@/routes/routes";
