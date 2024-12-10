@@ -177,12 +177,6 @@ export const localizedRoutes = {
             fr: (p) => `/newsletters`,
         }
     ),
-    map: defineLocalizedRoute(
-        {},
-        {
-            fr: (p) => `/map`,
-        }
-    ),
     metabase: defineLocalizedRoute(
         {},
         {

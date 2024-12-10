@@ -73,7 +73,6 @@ export function PrivateLayout({ children }: { children: React.ReactNode }) {
         "accountBadgeRenewal",
         undefined
     );
-    const mapLink = linkRegistry.get("map", undefined);
     const metabaseLink = linkRegistry.get("metabase", undefined);
     const serviceLink = "/services";
     const formationLink = linkRegistry.get("formationList", undefined);
@@ -94,11 +93,6 @@ export function PrivateLayout({ children }: { children: React.ReactNode }) {
                         pathname,
                         communityCreateMemberLink
                     ),
-                },
-                {
-                    href: mapLink,
-                    text: routeTitles.map(),
-                    isActive: hasPathnameThisMatch(pathname, mapLink),
                 },
                 {
                     href: () =>

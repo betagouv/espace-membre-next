@@ -1,0 +1,12 @@
+
+.map {
+  width:100%;
+  height: 600px;
+  @media (min-height: 800) {
+    height: 670px;
+  }
+}
+
+.map a {
+  background-image: none;
+}

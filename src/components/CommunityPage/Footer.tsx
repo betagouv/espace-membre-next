@@ -8,19 +8,7 @@ import { linkRegistry } from "@/utils/routes/registry";
 
 export const Footer = () => (
     <div className={fr.cx("fr-grid-row", "fr-grid-row--gutters")}>
-        <div className={fr.cx("fr-col-12", "fr-col-lg-6")}>
-            <Tile
-                className={fr.cx("fr-tile--sm")}
-                title="Carte de la communauté"
-                desc="Voir la carte des membres"
-                orientation="horizontal"
-                imageUrl={(map as StaticImageData).src}
-                linkProps={{
-                    href: linkRegistry.get("map"),
-                }}
-            />
-        </div>
-        <div className={fr.cx("fr-col-12", "fr-col-lg-6")}>
+        <div className={fr.cx("fr-col-12", "fr-col-lg-12")}>
             <Tile
                 className={fr.cx("fr-tile--sm")}
                 title="Observatoire de la communauté"

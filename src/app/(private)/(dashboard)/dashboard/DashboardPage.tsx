@@ -87,7 +87,7 @@ export function DashboardPage(props: DashboardPageProps) {
             </div>
             <h2 className={fr.cx("fr-pt-4w")}>Explorer la communauté</h2>
             <div className={fr.cx("fr-grid-row", "fr-grid-row--gutters")}>
-                <div className={fr.cx("fr-col-12", "fr-col-lg-4")}>
+                <div className={fr.cx("fr-col-12", "fr-col-lg-6")}>
                     <Tile
                         className={fr.cx("fr-tile--sm")}
                         title="Communauté"
@@ -99,7 +99,7 @@ export function DashboardPage(props: DashboardPageProps) {
                         }}
                     />
                 </div>
-                <div className={fr.cx("fr-col-12", "fr-col-lg-4")}>
+                <div className={fr.cx("fr-col-12", "fr-col-lg-6")}>
                     <Tile
                         className={fr.cx("fr-tile--sm")}
                         title="Observatoire"
@@ -108,18 +108,6 @@ export function DashboardPage(props: DashboardPageProps) {
                         imageUrl={(locationFrance as StaticImageData).src}
                         linkProps={{
                             href: `${linkRegistry.get("metabase")}`,
-                        }}
-                    />
-                </div>
-                <div className={fr.cx("fr-col-12", "fr-col-lg-4")}>
-                    <Tile
-                        className={fr.cx("fr-tile--sm")}
-                        title="Carte des membres"
-                        desc="Les membres partout dans le monde"
-                        orientation="horizontal"
-                        imageUrl={(mailSend as StaticImageData).src}
-                        linkProps={{
-                            href: linkRegistry.get("map"),
                         }}
                     />
                 </div>

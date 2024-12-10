@@ -302,7 +302,11 @@ export const memberSchema = z.object({
         )
         .describe(`Status legal de l'entreprise`)
         .optional(),
-    workplace_insee_code: z.string().describe("Ville").nullable().optional(),
+    workplace_insee_code: z
+        .string()
+        .describe("Code postal de la ville")
+        .nullable()
+        .optional(),
     osm_city: z.string().describe("Ville internationale").nullable().optional(),
     primary_email: z.string().email().nullable(),
     primary_email_status: z.nativeEnum(EmailStatusCode).readonly(),
@@ -358,6 +362,7 @@ export const memberBaseInfoSchema = memberSchema.pick({
     email_is_redirection: true,
     updated_at: true,
     competences: true,
+    workplace_insee_code: true,
 });
 
 export type memberBaseInfoSchemaType = z.infer<typeof memberBaseInfoSchema>;
