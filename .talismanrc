@@ -61,6 +61,8 @@ fileignoreconfig:
   checksum: 4d1a75e62ca805faf5bc5b7c83d03064171d4914e6d405a026c141b2ede9ca2c
 - filename: src/server/config/index.ts
   checksum: a2591e8092f663b759ec49f7b51911e17af0f5f22de50b60340827e87755929a
+- filename: src/server/queueing/workers/create-update-matomo-account.ts
+  checksum: 598112766ea826e0c05c38962373358c520d8720ff8faebfbc65ea7f913fff44
 - filename: src/utils/routes/list.ts
   checksum: ebb1c7a8c5fb51e0e49a23f79d1342f177946b4e783154bb265970b672aa2a2c
 scopeconfig:
