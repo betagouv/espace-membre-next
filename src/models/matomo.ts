@@ -32,12 +32,3 @@ export const matomoSiteSchema = z.object({
 });
 
 export type matomoSiteSchemaType = z.infer<typeof matomoSiteSchema>;
-
-export const matomoSiteSchema = z.object({
-    id: z.number(),
-    name: z.string(),
-    type: z.enum(["website", "app"]),
-    url: z.string().optional(),
-});
-
-export type matomoSiteSchemaType = z.infer<typeof matomoSiteSchema>;
