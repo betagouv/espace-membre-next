@@ -6,14 +6,8 @@ export const matomoAccountRequestSchema = z.object({
     sites: z
         .array(
             z.object({
-                id: z.union([z.number(), z.undefined()]), // Allow undefined during form filling
+                id: z.number(),
             })
-        )
-        .refine(
-            (sites) => sites.every((site) => typeof site.id === "number"), // Validate that all `id`s are numbers when submitting
-            {
-                message: "Each site must have a valid numeric ID",
-            }
         )
         .optional(),
     newSites: z

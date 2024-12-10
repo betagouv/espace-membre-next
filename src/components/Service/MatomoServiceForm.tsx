@@ -78,6 +78,7 @@ export default function MatomoServiceForm(props: { sites }) {
 
     const addSiteClick = (e) => {
         sitesAppend({
+            //@ts-ignore id can be undefined when filling but not after submissions
             id: undefined,
         });
     };
