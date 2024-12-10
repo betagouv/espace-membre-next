@@ -317,7 +317,6 @@ const MatomoInfoRow = (
 const sentryInfoRow = (sentry: NonNullable<MemberPageProps["sentryInfo"]>) => {
     return [
         <>Compte Sentry</>,
-<<<<<<< Updated upstream
         <Badge key="sentry-status" severity="success">
             Actif
         </Badge>,
@@ -337,68 +336,6 @@ const sentryInfoRow = (sentry: NonNullable<MemberPageProps["sentryInfo"]>) => {
                 headers={["nom", "projets", "niveau d'accès"]}
             />
         </Accordion>,
-=======
-        match(status)
-            .with(ACCOUNT_SERVICE_STATUS.ACCOUNT_FOUND, () => (
-                <Badge key="sentry-status" severity="success">
-                    Actif
-                </Badge>
-            ))
-            .with(ACCOUNT_SERVICE_STATUS.ACCOUNT_CREATION_PENDING, () => (
-                <Badge key="sentry-status" severity="info">
-                    Création en cours
-                </Badge>
-            ))
-            .with(ACCOUNT_SERVICE_STATUS.ACCOUNT_INVITATION_SENT, () => (
-                <Badge key="sentry-status" severity="info">
-                    Invitation envoyée
-                </Badge>
-            ))
-            .otherwise(() => <Badge key="matomo-status">Pas de compte</Badge>),
-        match([status, !!sentry])
-            .with([P._, false], () => (
-                <>
-                    Tu n'as pas de compte sentry. Si tu as besoin d'un compte tu
-                    peux en faire la demande{" "}
-                    <a href="/services/sentry" className="fr-link">
-                        ici
-                    </a>
-                </>
-            ))
-            .with([ACCOUNT_SERVICE_STATUS.ACCOUNT_INVITATION_SENT, P._], () => {
-                return <>Une invitation t'a été envoyée par email.</>;
-            })
-            .with([ACCOUNT_SERVICE_STATUS.ACCOUNT_FOUND, true], () => (
-                <Accordion key="sentry-info" label={"Liste des accès"}>
-                    <Table
-                        data={sentry!.metadata.teams.map((s) => [
-                            s.slug ? (
-                                <a href={s.slug} target="_blank">
-                                    {s.name}
-                                </a>
-                            ) : (
-                                s.name
-                            ),
-                            s.projects.length,
-                            s.role,
-                        ])}
-                        headers={["nom", "projets", "niveau d'accès"]}
-                    />
-                </Accordion>
-            ))
-            .with(
-                [ACCOUNT_SERVICE_STATUS.ACCOUNT_CREATION_PENDING, P._],
-                () => <p>Ton compte va être créé dans quelques instants</p>
-            )
-            .otherwise(() => {
-                return (
-                    <p>
-                        Ton compte ne semble pas dans un état attendu tu peux
-                        consulter un admin pour qu'il jette un oeil au problème.
-                    </p>
-                );
-            }),
->>>>>>> Stashed changes
     ];
 };
 
