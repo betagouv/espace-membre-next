@@ -47,7 +47,6 @@ export default async function MatomoPage() {
     const formatMetadata = (metadata) => {
         if (metadata) {
             const data = hstore.parse(metadata);
-            console.log(data);
             if ("sites" in data) {
                 return (
                     <>
