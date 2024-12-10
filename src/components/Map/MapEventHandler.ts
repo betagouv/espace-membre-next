@@ -7,7 +7,6 @@ export const MapEventHandler = () => {
     map.on("moveend", (e) => {
         const center = map.getCenter();
         const zoom = map.getZoom();
-        console.log("moveEnd", { center, zoom });
     });
 
     return null;
