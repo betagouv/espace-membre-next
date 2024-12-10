@@ -7,7 +7,7 @@ const cspHeader = `
     style-src 'self' 'unsafe-inline' cdnjs.cloudflare.com unpkg.com https://client.crisp.chat;
     img-src * data: blob: https://client.crisp.chat https://image.crisp.chat https://storage.crisp.chat;
     font-src 'self' data: cdnjs.cloudflare.com https://client.crisp.chat;
-    frame-src 'self' metabase.incubateur.net https://game.crisp.chat;
+    frame-src 'self' *.openstreetmap.fr metabase.incubateur.net https://game.crisp.chat;
     object-src 'none';
     base-uri 'self';
     form-action 'self';

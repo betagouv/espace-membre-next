@@ -18,7 +18,7 @@ fileignoreconfig:
 - filename: src/app/api/services/actions.ts
   checksum: 040be9b0d1ae2283fb2c78672b25f1eacc4fc31e72c66d84053b2b3470a62d5b
 - filename: src/components/CommunityPage/Community.tsx
-  checksum: 5ad762848b814381f9473c7d4ede55fce6dc3ee77ed4c7acfb41d2658fcd9bf7
+  checksum: 50ed5a9ba8e03d4ffc248026cfae6fd6331c84c21b30aaa73c0bf30f22be9e2c
 - filename: src/components/IncubatorForm/IncubatorForm.tsx
   checksum: 267f0f0e491b06862cd957ae86d22baf799a705370673cd24e588391a4613a5a
 - filename: src/components/MemberPage/EmailUpgrade.tsx

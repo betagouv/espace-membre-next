@@ -96,11 +96,6 @@ export function PrivateLayout({ children }: { children: React.ReactNode }) {
                     ),
                 },
                 {
-                    href: mapLink,
-                    text: routeTitles.map(),
-                    isActive: hasPathnameThisMatch(pathname, mapLink),
-                },
-                {
                     href: () =>
                         linkRegistry.get("communityMember", {
                             username: currentItemId || "",

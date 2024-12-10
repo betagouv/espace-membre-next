@@ -9,10 +9,13 @@ import Table from "@codegouvfr/react-dsfr/Table";
 import Tag from "@codegouvfr/react-dsfr/Tag";
 import Link from "next/link";
 import { useQueryState } from "nuqs";
+import { Tabs } from "@codegouvfr/react-dsfr/Tabs";
 
 import { CommunityProps } from ".";
 import { exportToCsv } from "./exportToCsv";
 import { Footer } from "./Footer";
+import { Map } from "../Map";
+
 import {
     getStartupsFromMissions,
     isUserActive,
@@ -21,6 +24,9 @@ import {
 } from "./utils";
 import AutoComplete from "../AutoComplete";
 import { linkRegistry } from "@/utils/routes/registry";
+import Head from "@node_modules/next/head";
+
+import communes from "./communes.json";
 
 // return table row for a given user
 const getUserRow = ({
@@ -263,6 +269,35 @@ export const Community = (props: CommunityProps) => {
             )
         );
 
+    const getDptLatLon = (code) => {
+        const commune = communes.find(
+            (c) => c.code.substring(0, 3) === code.substring(0, 3)
+        );
+        if (commune) {
+            return {
+                lat: parseFloat(commune.geoLoc.lat),
+                lon: parseFloat(commune.geoLoc.lon),
+            };
+        }
+    };
+
+    const points = useMemo(
+        () =>
+            results
+                .filter((r) => !!r.workplace_insee_code)
+                .map((r) => {
+                    const latLon = getDptLatLon(r.workplace_insee_code);
+                    return {
+                        geoLoc: latLon,
+                        label: r.fullname,
+                        href: `/community/${r.username}`,
+                    };
+                }),
+        [results]
+    );
+
+    console.log({ results, points });
+
     return (
         <>
             <div className={`${fr.cx("fr-grid-row")}`}>
@@ -355,7 +390,14 @@ export const Community = (props: CommunityProps) => {
                     },
                 ]}
             />
-
+            <Head>
+                <link
+                    rel="stylesheet"
+                    href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
+                    integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY="
+                    crossOrigin=""
+                />
+            </Head>
             {results.length ? (
                 <>
                     <h2>
@@ -371,53 +413,79 @@ export const Community = (props: CommunityProps) => {
                             Télécharger
                         </Button>
                     </h2>
-                    <Table
-                        fixed
-                        noCaption
-                        headers={headers.map((header, index) => (
-                            <div key={header}>
-                                {header}
-                                {header === "Email" && (
-                                    <Button
-                                        size="small"
-                                        priority="tertiary no outline"
-                                        iconId="fr-icon-clipboard-line"
-                                        title={`Copier les ${results.length} adresses emails`}
-                                        onClick={() =>
-                                            copyToClipboard(
-                                                getColumnData(header)
-                                            )
-                                        }
-                                    >
-                                        copier
-                                    </Button>
-                                )}
-                            </div>
-                        ))}
-                        data={results
-                            .slice(
-                                (currentPage - 1) * pageSize,
-                                (currentPage - 1) * pageSize + pageSize
-                            )
-                            .map((r) =>
-                                getUserRow({
-                                    user: r,
-                                    startupOptions: props.startupOptions,
-                                    incubatorOptions: props.incubatorOptions,
-                                    onDomaineClick: onDomaineClick,
-                                })
-                            )}
-                    />
-                    <Pagination
-                        showFirstLast={false}
-                        count={pageCount}
-                        defaultPage={currentPage}
-                        getPageLinkProps={(number) => ({
-                            href: "#",
-                            onClick: (e) => {
-                                setCurrentPage(number);
+
+                    <Tabs
+                        tabs={[
+                            {
+                                label: "Tableau",
+                                content: (
+                                    <>
+                                        <Table
+                                            fixed
+                                            noCaption
+                                            headers={headers.map(
+                                                (header, index) => (
+                                                    <div key={header}>
+                                                        {header}
+                                                        {header === "Email" && (
+                                                            <Button
+                                                                size="small"
+                                                                priority="tertiary no outline"
+                                                                iconId="fr-icon-clipboard-line"
+                                                                title={`Copier les ${results.length} adresses emails`}
+                                                                onClick={() =>
+                                                                    copyToClipboard(
+                                                                        getColumnData(
+                                                                            header
+                                                                        )
+                                                                    )
+                                                                }
+                                                            >
+                                                                copier
+                                                            </Button>
+                                                        )}
+                                                    </div>
+                                                )
+                                            )}
+                                            data={results
+                                                .slice(
+                                                    (currentPage - 1) *
+                                                        pageSize,
+                                                    (currentPage - 1) *
+                                                        pageSize +
+                                                        pageSize
+                                                )
+                                                .map((r) =>
+                                                    getUserRow({
+                                                        user: r,
+                                                        startupOptions:
+                                                            props.startupOptions,
+                                                        incubatorOptions:
+                                                            props.incubatorOptions,
+                                                        onDomaineClick:
+                                                            onDomaineClick,
+                                                    })
+                                                )}
+                                        />
+                                        <Pagination
+                                            showFirstLast={false}
+                                            count={pageCount}
+                                            defaultPage={currentPage}
+                                            getPageLinkProps={(number) => ({
+                                                href: "#",
+                                                onClick: (e) => {
+                                                    setCurrentPage(number);
+                                                },
+                                            })}
+                                        />
+                                    </>
+                                ),
                             },
-                        })}
+                            {
+                                label: "Carte",
+                                content: <Map points={points} />,
+                            },
+                        ]}
                     />
                 </>
             ) : filters.length ? (
