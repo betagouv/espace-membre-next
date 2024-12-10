@@ -4,7 +4,7 @@ exports.up = async function (knex) {
         table.integer("matomo_id").notNullable().unique(); // Identifiant de site Matomo
         table.uuid("startup_id").nullable(); // UUID lié à la table startups
         table.string("name").notNullable(); // Nom de du site
-        table.text("url").notNullable(); // Nom de du site
+        table.text("url").nullable();
         table.string("type").notNullable(); // Nom de du site
 
         // Clé étrangère vers la table startups
