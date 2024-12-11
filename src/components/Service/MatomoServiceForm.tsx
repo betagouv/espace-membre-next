@@ -150,7 +150,7 @@ export default function MatomoServiceForm(props: { sites }) {
                                                     key={site.id}
                                                     value={site.id}
                                                 >
-                                                    {site.name} {site.id}
+                                                    {site.name}
                                                 </option>
                                             ))}
                                         </Select>
