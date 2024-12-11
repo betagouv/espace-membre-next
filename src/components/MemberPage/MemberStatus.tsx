@@ -317,7 +317,7 @@ const MatomoInfoRow = (
 const sentryInfoRow = (sentry: MemberPageProps["sentryInfo"]) => {
     return [
         <>Compte Sentry</>,
-        match(status)
+        match(sentry && sentry.status)
             .with(ACCOUNT_SERVICE_STATUS.ACCOUNT_FOUND, () => (
                 <Badge key="sentry-status" severity="success">
                     Actif
@@ -334,7 +334,7 @@ const sentryInfoRow = (sentry: MemberPageProps["sentryInfo"]) => {
                 </Badge>
             ))
             .otherwise(() => <Badge key="matomo-status">Pas de compte</Badge>),
-        match([status, !!sentry])
+        match([sentry && sentry.status, !!sentry])
             .with([P._, false], () => (
                 <>
                     Tu n'as pas de compte sentry. Si tu as besoin d'un compte tu
