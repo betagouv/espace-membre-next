@@ -163,9 +163,8 @@ export const Community = (props: CommunityProps) => {
         [props.startupOptions, props.users]
     );
 
-    const getColumnData = (name) => {
-        return results.map((r) => r.primary_email).join("\n");
-    };
+    const getColumnData = (name) =>
+        results.map((r) => r.primary_email).join("\n");
 
     const filterResult = useCallback(
         (result: CommunityProps["users"][number]) => {
@@ -269,9 +268,18 @@ export const Community = (props: CommunityProps) => {
         );
 
     const getDptLatLon = (code) => {
-        const commune = communes.find(
-            (c) => c.code.substring(0, 3) === code.substring(0, 3)
-        );
+        // use 3 digit insee code except for big agglos
+        const commune = communes.find((c) => {
+            const needsDetailedCode =
+                code.startsWith("75") ||
+                code.startsWith("13") ||
+                code.startsWith("69") ||
+                code.startsWith("33");
+            if (needsDetailedCode) {
+                return code === c.code;
+            }
+            return c.code.substring(0, 3) === code.substring(0, 3);
+        });
         if (commune) {
             return {
                 lat: parseFloat(commune.geoLoc.lat),
@@ -286,16 +294,23 @@ export const Community = (props: CommunityProps) => {
                 .filter((r) => !!r.workplace_insee_code)
                 .map((r) => {
                     const latLon = getDptLatLon(r.workplace_insee_code);
-                    return {
-                        geoLoc: latLon,
-                        label: r.fullname,
-                        href: `/community/${r.username}`,
-                    };
-                }),
+                    if (latLon) {
+                        return {
+                            geoLoc: latLon,
+                            label: r.fullname,
+                            content: `
+                                <div class="fr-mb-2w">
+                                    <b>${r.domaine}</b>
+                                    <br />
+                                    ${r.role}
+                                </div>`,
+                            href: `/community/${r.username}`,
+                        };
+                    }
+                })
+                .filter((x) => !!x),
         [results]
     );
-
-    console.log({ results, points });
 
     return (
         <>

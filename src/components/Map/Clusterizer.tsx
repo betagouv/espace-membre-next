@@ -42,19 +42,20 @@ const Clusterizer: React.FC<Props> = ({ points }) => {
                 iconSize: new L.Point(40, 40),
             });
         },
-        maxClusterRadius: 40,
+        maxClusterRadius: 50,
     });
 
     points.forEach((point) => {
-        const { geoLoc, label, href } = point;
-        if (geoLoc) {
+        const { geoLoc, label, href, content } = point;
+        if (geoLoc && geoLoc.lat && geoLoc.lon) {
             let marker = L.marker(new L.LatLng(geoLoc.lat, geoLoc.lon), {
                 alt: label,
             });
 
             const popup = L.popup().setContent(`
         <div>
-          <p class='fr-text--lg fr-text--bold'> ${label} </p> 
+          <p class='fr-text--lg fr-text--bold fr-mb-1w'> ${label} </p> 
+          ${content}
           ${
               href
                   ? `<a class="fr-btn fr-btn--tertiary" href="${href}">

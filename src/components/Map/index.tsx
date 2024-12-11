@@ -1,6 +1,6 @@
 "use client";
 
-import { useRef } from "react";
+import { ReactNode, useRef } from "react";
 import { MapContainer, TileLayer, ZoomControl } from "react-leaflet";
 import { LatLngLiteral } from "leaflet";
 import L from "leaflet";
@@ -13,7 +13,7 @@ import MapZoomHandler from "./MapZoomHandler";
 
 import "leaflet/dist/leaflet.css";
 
-L.Icon.Default.imagePath = "static/images/";
+L.Icon.Default.imagePath = "/static/images/";
 
 export type Point = {
     geoLoc?: {
@@ -21,6 +21,7 @@ export type Point = {
         lon: number;
     };
     label: string;
+    content?: string;
     href?: string;
 };
 
@@ -46,7 +47,7 @@ export const Map: React.FC<Props> = ({
                 // @ts-ignore TODO: WTH
                 center={centerPosition}
                 zoom={zoom}
-                scrollWheelZoom={false}
+                scrollWheelZoom={true}
                 maxZoom={25}
                 minZoom={3}
                 zoomControl={false}
@@ -59,12 +60,11 @@ export const Map: React.FC<Props> = ({
                 <ZoomControl zoomInTitle="Zoomer" zoomOutTitle="Dézoomer" />
 
                 <TileLayer
-url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
+                    url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
                     // @ts-ignore TODO: another WTH
-                    attribution="&copy; IGN-F/Geoportail"
+                    attribution="© OpenStreetMap contributors"
                 />
             </MapContainer>
         </div>
     );
-    /*io*/
 };
