@@ -9,10 +9,13 @@ import Table from "@codegouvfr/react-dsfr/Table";
 import Tag from "@codegouvfr/react-dsfr/Tag";
 import Link from "next/link";
 import { useQueryState } from "nuqs";
+import { Tabs } from "@codegouvfr/react-dsfr/Tabs";
 
 import { CommunityProps } from ".";
 import { exportToCsv } from "./exportToCsv";
 import { Footer } from "./Footer";
+import { Map } from "../Map";
+
 import {
     getStartupsFromMissions,
     isUserActive,
@@ -21,6 +24,8 @@ import {
 } from "./utils";
 import AutoComplete from "../AutoComplete";
 import { linkRegistry } from "@/utils/routes/registry";
+
+import communes from "./communes.json";
 
 // return table row for a given user
 const getUserRow = ({
@@ -158,9 +163,8 @@ export const Community = (props: CommunityProps) => {
         [props.startupOptions, props.users]
     );
 
-    const getColumnData = (name) => {
-        return results.map((r) => r.primary_email).join("\n");
-    };
+    const getColumnData = (name) =>
+        results.map((r) => r.primary_email).join("\n");
 
     const filterResult = useCallback(
         (result: CommunityProps["users"][number]) => {
@@ -262,6 +266,51 @@ export const Community = (props: CommunityProps) => {
                     (o.label === f.value || o.id === f.value)
             )
         );
+
+    const getDptLatLon = (code) => {
+        // use 3 digit insee code except for big agglos
+        const commune = communes.find((c) => {
+            const needsDetailedCode =
+                code.startsWith("75") ||
+                code.startsWith("13") ||
+                code.startsWith("69") ||
+                code.startsWith("33");
+            if (needsDetailedCode) {
+                return code === c.code;
+            }
+            return c.code.substring(0, 3) === code.substring(0, 3);
+        });
+        if (commune) {
+            return {
+                lat: parseFloat(commune.geoLoc.lat),
+                lon: parseFloat(commune.geoLoc.lon),
+            };
+        }
+    };
+
+    const points = useMemo(
+        () =>
+            results
+                .filter((r) => !!r.workplace_insee_code)
+                .map((r) => {
+                    const latLon = getDptLatLon(r.workplace_insee_code);
+                    if (latLon) {
+                        return {
+                            geoLoc: latLon,
+                            label: r.fullname,
+                            content: `
+                                <div class="fr-mb-2w">
+                                    <b>${r.domaine}</b>
+                                    <br />
+                                    ${r.role}
+                                </div>`,
+                            href: `/community/${r.username}`,
+                        };
+                    }
+                })
+                .filter((x) => !!x),
+        [results]
+    );
 
     return (
         <>
@@ -371,53 +420,79 @@ export const Community = (props: CommunityProps) => {
                             Télécharger
                         </Button>
                     </h2>
-                    <Table
-                        fixed
-                        noCaption
-                        headers={headers.map((header, index) => (
-                            <div key={header}>
-                                {header}
-                                {header === "Email" && (
-                                    <Button
-                                        size="small"
-                                        priority="tertiary no outline"
-                                        iconId="fr-icon-clipboard-line"
-                                        title={`Copier les ${results.length} adresses emails`}
-                                        onClick={() =>
-                                            copyToClipboard(
-                                                getColumnData(header)
-                                            )
-                                        }
-                                    >
-                                        copier
-                                    </Button>
-                                )}
-                            </div>
-                        ))}
-                        data={results
-                            .slice(
-                                (currentPage - 1) * pageSize,
-                                (currentPage - 1) * pageSize + pageSize
-                            )
-                            .map((r) =>
-                                getUserRow({
-                                    user: r,
-                                    startupOptions: props.startupOptions,
-                                    incubatorOptions: props.incubatorOptions,
-                                    onDomaineClick: onDomaineClick,
-                                })
-                            )}
-                    />
-                    <Pagination
-                        showFirstLast={false}
-                        count={pageCount}
-                        defaultPage={currentPage}
-                        getPageLinkProps={(number) => ({
-                            href: "#",
-                            onClick: (e) => {
-                                setCurrentPage(number);
+
+                    <Tabs
+                        tabs={[
+                            {
+                                label: "Tableau",
+                                content: (
+                                    <>
+                                        <Table
+                                            fixed
+                                            noCaption
+                                            headers={headers.map(
+                                                (header, index) => (
+                                                    <div key={header}>
+                                                        {header}
+                                                        {header === "Email" && (
+                                                            <Button
+                                                                size="small"
+                                                                priority="tertiary no outline"
+                                                                iconId="fr-icon-clipboard-line"
+                                                                title={`Copier les ${results.length} adresses emails`}
+                                                                onClick={() =>
+                                                                    copyToClipboard(
+                                                                        getColumnData(
+                                                                            header
+                                                                        )
+                                                                    )
+                                                                }
+                                                            >
+                                                                copier
+                                                            </Button>
+                                                        )}
+                                                    </div>
+                                                )
+                                            )}
+                                            data={results
+                                                .slice(
+                                                    (currentPage - 1) *
+                                                        pageSize,
+                                                    (currentPage - 1) *
+                                                        pageSize +
+                                                        pageSize
+                                                )
+                                                .map((r) =>
+                                                    getUserRow({
+                                                        user: r,
+                                                        startupOptions:
+                                                            props.startupOptions,
+                                                        incubatorOptions:
+                                                            props.incubatorOptions,
+                                                        onDomaineClick:
+                                                            onDomaineClick,
+                                                    })
+                                                )}
+                                        />
+                                        <Pagination
+                                            showFirstLast={false}
+                                            count={pageCount}
+                                            defaultPage={currentPage}
+                                            getPageLinkProps={(number) => ({
+                                                href: "#",
+                                                onClick: (e) => {
+                                                    setCurrentPage(number);
+                                                },
+                                            })}
+                                        />
+                                    </>
+                                ),
                             },
-                        })}
+                            {
+                                label: "Carte",
+                                content: <Map points={points} />,
+                            },
+                        ]}
                     />
                 </>
             ) : filters.length ? (

@@ -19,7 +19,6 @@ import {
     badgeRouter,
     userRouter,
     userApiRouter,
-    mapRouter,
     setupStaticFiles,
 } from "./routes";
 //import routes from "@/routes/routes";
@@ -97,7 +96,6 @@ const startServer = () => {
         server.use(adminRouter);
         // server.use(authRouter);
         server.use(badgeRouter);
-        server.use(mapRouter);
 
         server.get("/resources", resourceController.getResources);
 

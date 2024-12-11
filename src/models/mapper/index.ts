@@ -159,6 +159,7 @@ export function memberBaseInfoToModel(
         missions: user.missions.map((m) => missionToModel(m)),
         teams: user.teams,
         competences: (user.competences ? user.competences : []) as string[],
+        workplace_insee_code: user.workplace_insee_code,
     };
 }
 
