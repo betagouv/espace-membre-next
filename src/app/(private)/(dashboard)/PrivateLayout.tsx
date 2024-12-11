@@ -299,7 +299,7 @@ export function PrivateLayout({ children }: { children: React.ReactNode }) {
                 },
                 {
                     href: "/services",
-                    text: "Modifier ma fiche",
+                    text: "Mes outils",
                     isActive: hasPathnameThisMatch(pathname, "/services"),
                     items: [
                         {
