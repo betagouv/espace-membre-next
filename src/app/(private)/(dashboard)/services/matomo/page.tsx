@@ -1,3 +1,4 @@
+import Alert from "@codegouvfr/react-dsfr/Alert";
 import Table from "@codegouvfr/react-dsfr/Table";
 import { redirect } from "next/navigation";
 import { getServerSession } from "next-auth/next";
@@ -73,29 +74,46 @@ export default async function MatomoPage() {
     return (
         <>
             <h1>Compte Matomo</h1>
-            {service_account ? (
-                <AccountDetails
-                    account={service_account}
-                    data={
-                        service_account.metadata
-                            ? service_account.metadata.sites.map((s) => [
-                                  s.url ? (
-                                      <a href={s.url} target="_blank">
-                                          {s.name}
-                                      </a>
-                                  ) : (
-                                      s.name
-                                  ),
-                                  s.type,
-                                  s.accessLevel,
-                              ])
-                            : []
-                    }
-                    headers={["nom", "type", "niveau d'accès"]}
-                />
-            ) : (
-                <MatomoServiceForm sites={matomoSites} />
+            {service_account && (
+                <>
+                    <Alert
+                        small={true}
+                        className={"fr-mb-8v"}
+                        description={
+                            <p>
+                                Ton compte matomo existe. Tu peux définir ton
+                                mot de passe en faisant une réinitialisation de
+                                mot de passe sur{" "}
+                                <a href="https://stats.beta.gouv.fr">
+                                    stats.beta.gouv.fr
+                                </a>
+                            </p>
+                        }
+                        severity="info"
+                    />
+                    <AccountDetails
+                        account={service_account}
+                        data={
+                            service_account.metadata
+                                ? service_account.metadata.sites.map((s) => [
+                                      s.url ? (
+                                          <a href={s.url} target="_blank">
+                                              {s.name}
+                                          </a>
+                                      ) : (
+                                          s.name
+                                      ),
+                                      s.type,
+                                      s.accessLevel,
+                                  ])
+                                : []
+                        }
+                        headers={["nom", "type", "niveau d'accès"]}
+                    />
+                </>
             )}
+            <h2 className="fr-mt-8v">Demander des accès</h2>
+            <MatomoServiceForm sites={matomoSites} />
             <h2 className="fr-mt-8v">Historique des événements</h2>
             {!!matomoEvents.length && (
                 <Table

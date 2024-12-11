@@ -128,11 +128,6 @@ export default function MatomoServiceForm(props: { sites }) {
                                         <Select
                                             label="Site"
                                             nativeSelectProps={{
-                                                // onChange: (event) =>
-                                                //     setMatomoSite(
-                                                //         event.target.value
-                                                //     ),
-                                                // matomoSite,
                                                 ...register(
                                                     `sites.${index}.id`,
                                                     {
