@@ -221,6 +221,14 @@ export default function EmailContainer({
         ...redirections.map((redirection) => redirectionRow(redirection)),
     ].filter((z) => !!z);
 
+    const infoStatus = [
+        EmailStatusCode.EMAIL_RECREATION_PENDING,
+        EmailStatusCode.EMAIL_CREATION_WAITING,
+        EmailStatusCode.EMAIL_CREATION_PENDING,
+        EmailStatusCode.EMAIL_REDIRECTION_PENDING,
+        EmailStatusCode.EMAIL_VERIFICATION_WAITING,
+    ];
+
     return (
         <div className="fr-mb-14v">
             <h2>Email</h2>
@@ -273,7 +281,13 @@ export default function EmailContainer({
                             {userInfos.primary_email_status !==
                                 EmailStatusCode.EMAIL_ACTIVE && (
                                 <Badge
-                                    severity="error"
+                                    severity={
+                                        infoStatus.includes(
+                                            userInfos.primary_email_status
+                                        )
+                                            ? "info"
+                                            : "error"
+                                    }
                                     small
                                     className={fr.cx("fr-ml-1w")}
                                 >

@@ -81,7 +81,7 @@ const emailStatusRow = (
                             ),
                             () => (
                                 <Badge severity="success">
-                                    Creation en cours
+                                    Création en cours
                                 </Badge>
                             )
                         )
@@ -124,7 +124,7 @@ const emailStatusRow = (
                             ),
                             () => (
                                 <Badge severity="success">
-                                    Creation en cours
+                                    Création en cours
                                 </Badge>
                             )
                         )
@@ -230,7 +230,7 @@ const emailStatusRow = (
                                 ),
                                 () => (
                                     <Badge severity="success">
-                                        Creation en cours
+                                        Création en cours
                                     </Badge>
                                 )
                             )
@@ -276,7 +276,7 @@ const MatomoInfoRow = (
             ))
             .with(ACCOUNT_SERVICE_STATUS.ACCOUNT_CREATION_PENDING, () => (
                 <Badge key="matomo-status" severity="info">
-                    Creation en cours
+                    Création en cours
                 </Badge>
             ))
             .otherwise(() => <Badge key="matomo-status">Pas de compte</Badge>),
