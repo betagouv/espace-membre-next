@@ -5,7 +5,7 @@ exports.up = async function (knex) {
         table.uuid("startup_id").nullable(); // UUID lié à la table startups
         table.string("name").notNullable(); // Nom de du site
         table.text("url").nullable();
-        table.string("type").notNullable(); // Nom de du site
+        table.string("type").notNullable(); // Type de du site (ex: website)
 
         // Clé étrangère vers la table startups
         table
