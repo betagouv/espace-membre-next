@@ -43,6 +43,7 @@ export async function createOrUpdateMatomoServiceAccount(
                 alias: job.data.email,
             });
         } else {
+            console.error(`error`, res);
             throw new Error("UnexpectedError");
         }
     }
