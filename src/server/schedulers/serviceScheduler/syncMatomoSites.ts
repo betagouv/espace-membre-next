@@ -23,6 +23,7 @@ export async function syncMatomoSites(matomoClient: Matomo | FakeMatomo) {
                         .column("matomo_id") // Conflict key
                         .doUpdateSet({
                             name: (eb) => eb.ref("excluded.name"),
+                            url: (eb) => eb.ref("excluded.url")
                         })
                 )
                 .execute();

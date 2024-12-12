@@ -210,22 +210,6 @@ const createOrUpdateMatomoAccount = async (
                 retryBackoff: true,
             }
         );
-        await addEvent({
-            action_code: EventCode.MEMBER_SERVICE_ACCOUNT_UPDATE_REQUESTED,
-            action_metadata: {
-                service: SERVICES.MATOMO,
-                sites: (matomoData.sites || []).map((s) => ({
-                    id: s.id,
-                    access: MatomoAccess.admin,
-                })),
-                newSites: (matomoData.newSites || []).map((s) => ({
-                    url: s.url,
-                    access: MatomoAccess.admin,
-                })),
-            },
-            action_on_username: user.username,
-            created_by_username: user.username,
-        });
     } else {
         await bossClient.send(
             createOrUpdateMatomoServiceAccountTopic,
