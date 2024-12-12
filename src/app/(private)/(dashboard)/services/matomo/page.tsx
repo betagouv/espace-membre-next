@@ -58,7 +58,7 @@ export default async function MatomoPage() {
                         <ul>
                             {data.sites.map((t, index) => (
                                 <li key={index}>
-                                    {t.siteSlug} avec le role {t.siteRole}
+                                    {t.siteSlug} avec le rôle {t.siteRole}
                                 </li>
                             ))}
                         </ul>
