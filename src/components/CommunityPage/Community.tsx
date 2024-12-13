@@ -285,6 +285,7 @@ export const Community = (props: CommunityProps) => {
                         };
                     }
                 })
+                .filter((p) => p && p.geoLoc?.lat && p.geoLoc?.lon)
                 .filter((x) => !!x),
         [results]
     );
