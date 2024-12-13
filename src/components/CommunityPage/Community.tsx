@@ -25,8 +25,6 @@ import {
 import AutoComplete from "../AutoComplete";
 import { linkRegistry } from "@/utils/routes/registry";
 
-import communes from "./communes.json";
-
 // return table row for a given user
 const getUserRow = ({
     user,
@@ -267,33 +265,12 @@ export const Community = (props: CommunityProps) => {
             )
         );
 
-    const getDptLatLon = (code) => {
-        // use 3 digit insee code except for big agglos
-        const commune = communes.find((c) => {
-            const needsDetailedCode =
-                code.startsWith("75") ||
-                code.startsWith("13") ||
-                code.startsWith("69") ||
-                code.startsWith("33");
-            if (needsDetailedCode) {
-                return code === c.code;
-            }
-            return c.code.substring(0, 3) === code.substring(0, 3);
-        });
-        if (commune) {
-            return {
-                lat: parseFloat(commune.geoLoc.lat),
-                lon: parseFloat(commune.geoLoc.lon),
-            };
-        }
-    };
-
     const points = useMemo(
         () =>
             results
                 .filter((r) => !!r.workplace_insee_code)
                 .map((r) => {
-                    const latLon = getDptLatLon(r.workplace_insee_code);
+                    const latLon = r.latLon;
                     if (latLon) {
                         return {
                             geoLoc: latLon,
