@@ -468,6 +468,7 @@ export const Community = (props: CommunityProps) => {
                             },
                             {
                                 label: "Carte",
+                                // @ts-ignore todo
                                 content: <Map points={points} />,
                             },
                         ]}
