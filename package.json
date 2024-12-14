@@ -26,7 +26,7 @@
         "dev-import-from-www": "ts-node src/scripts/import-from-www",
         "export-to-www": "./src/scripts/export-to-www.sh",
         "fixme": "node ./node_modules/.bin/fixme -p src",
-        "pg-mermaid": "npx -s pg-mermaid --dbname secretariat --username secretariat -h 127.0.0.1 -p 5432 --password secretariat --excluded-tables accounts badge_requests community knex_migrations knex_migrations_lock login_tokens marrainage marrainage_groups marrainage_groups_members pull_requests sessions startup_aggregated_stats tasks users_startups user_details verification_tokens visits"
+        "pg-mermaid": "npx -s pg-mermaid --dbname secretariat --username secretariat -h 127.0.0.1 -p 5432 --password secretariat --excluded-tables badge_requests community knex_migrations knex_migrations_lock startup_aggregated_stats"
     },
     "dependencies": {
         "@codegouvfr/react-dsfr": "^1.13.6",

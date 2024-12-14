@@ -3,6 +3,21 @@
 ```mermaid
 erDiagram
 
+    accounts {
+        id integer PK "not null"
+        provider character_varying "not null"
+        providerAccountId character_varying "not null"
+        type character_varying "not null"
+        userId character_varying "not null"
+        expires_at bigint "null"
+        access_token text "null"
+        id_token text "null"
+        refresh_token text "null"
+        scope text "null"
+        session_state text "null"
+        token_type text "null"
+    }
+
     events {
         id uuid PK "not null"
         action_on_startup uuid FK "null"
@@ -36,6 +51,30 @@ erDiagram
         short_description text "null"
         website text "null"
         highlighted_startups uuid[] "null"
+    }
+
+    marrainage {
+        username text PK "not null"
+        completed boolean "not null"
+        count integer "not null"
+        last_onboarder text "not null"
+        created_at timestamp_with_time_zone "not null"
+        last_updated timestamp_with_time_zone "not null"
+    }
+
+    marrainage_groups {
+        id integer PK "not null"
+        count integer "not null"
+        onboarder character_varying "null"
+        status character_varying "null"
+        created_at timestamp_with_time_zone "null"
+    }
+
+    marrainage_groups_members {
+        marrainage_group_id bigint PK "not null"
+        username character_varying PK "not null"
+        marrainage_group_id bigint FK "not null"
+        username character_varying FK "not null"
     }
 
     mattermost_member_infos {
@@ -104,6 +143,13 @@ erDiagram
         metadata jsonb "null"
     }
 
+    sessions {
+        id integer PK "not null"
+        sessionToken character_varying "not null"
+        userId character_varying "not null"
+        expires timestamp_with_time_zone "not null"
+    }
+
     startup_events {
         uuid uuid PK "not null"
         startup_id uuid FK "null"
@@ -164,6 +210,16 @@ erDiagram
         startup_id uuid "not null"
     }
 
+    tasks {
+        name text PK "not null"
+        created_at timestamp_with_time_zone "not null"
+        updated_at timestamp_with_time_zone "not null"
+        description text "null"
+        error_message text "null"
+        last_completed timestamp_with_time_zone "null"
+        last_failed timestamp_with_time_zone "null"
+    }
+
     teams {
         uuid uuid PK "not null"
         incubator_id uuid FK "not null"
@@ -216,9 +272,16 @@ erDiagram
         user_id uuid "not null"
     }
 
+    verification_tokens {
+        identifier text PK "not null"
+        token text PK "not null"
+        expires timestamp_with_time_zone "not null"
+    }
+
     formations ||--o{ users_formations : "users_formations(formation_id) -> formations(id)"
     incubators ||--o{ startups : "startups(incubator_id) -> incubators(uuid)"
     incubators ||--o{ teams : "teams(incubator_id) -> incubators(uuid)"
+    marrainage_groups ||--o{ marrainage_groups_members : "marrainage_groups_members(marrainage_group_id) -> marrainage_groups(id)"
     missions ||--o{ missions_startups : "missions_startups(mission_id) -> missions(uuid)"
     organizations ||--o{ incubators : "incubators(owner_id) -> organizations(uuid)"
     organizations ||--o{ startups_organizations : "startups_organizations(organization_id) -> organizations(uuid)"
@@ -229,6 +292,7 @@ erDiagram
     startups ||--o{ startups_files : "startups_files(startup_id) -> startups(uuid)"
     startups ||--o{ startups_organizations : "startups_organizations(startup_id) -> startups(uuid)"
     teams ||--o{ users_teams : "users_teams(team_id) -> teams(uuid)"
+    users ||--o{ marrainage_groups_members : "marrainage_groups_members(username) -> users(username)"
     users ||--o{ missions : "missions(user_id) -> users(uuid)"
     users ||--o{ service_accounts : "service_accounts(user_id) -> users(uuid)"
     users ||--o{ users_formations : "users_formations(username) -> users(username)"
@@ -237,84 +301,114 @@ erDiagram
 
 ## Indexes
 
+### `accounts`
+
+- `accounts_pkey`
+
 ### `events`
 
--   `events_pkey`
+- `events_pkey`
 
 ### `formations`
 
--   `formations_airtable_id_unique`
--   `formations_pkey`
+- `formations_airtable_id_unique`
+- `formations_pkey`
 
 ### `incubators`
 
--   `incubators_ghid_unique`
--   `incubators_pkey`
+- `incubators_ghid_unique`
+- `incubators_pkey`
+
+### `marrainage`
+
+- `marrainage_pkey`
+
+### `marrainage_groups`
+
+- `marrainage_groups_pkey`
+
+### `marrainage_groups_members`
+
+- `marrainage_groups_members_marrainage_group_id_index`
+- `marrainage_groups_members_pkey`
+- `marrainage_groups_members_username_index`
 
 ### `missions`
 
--   `missions_pkey`
+- `missions_pkey`
 
 ### `missions_startups`
 
--   `missions_startups_pkey`
--   `missions_startups_startup_id_mission_id_unique`
+- `missions_startups_pkey`
+- `missions_startups_startup_id_mission_id_unique`
 
 ### `newsletters`
 
--   `newsletters_pkey`
+- `newsletters_pkey`
 
 ### `organizations`
 
--   `organizations_acronym_unique`
--   `organizations_ghid_unique`
--   `organizations_name_unique`
--   `organizations_pkey`
+- `organizations_acronym_unique`
+- `organizations_ghid_unique`
+- `organizations_name_unique`
+- `organizations_pkey`
 
 ### `phases`
 
--   `phases_pkey`
--   `phases_startup_id_name_unique`
+- `phases_pkey`
+- `phases_startup_id_name_unique`
 
 ### `service_accounts`
 
--   `service_accounts_account_type_service_user_id_email_unique`
--   `service_accounts_pkey`
+- `service_accounts_account_type_service_user_id_email_unique`
+- `service_accounts_pkey`
+
+### `sessions`
+
+- `sessions_pkey`
 
 ### `startup_events`
 
--   `startup_events_pkey`
+- `startup_events_pkey`
 
 ### `startups`
 
--   `startups_id_unique`
--   `startups_pkey`
+- `startups_id_unique`
+- `startups_pkey`
 
 ### `startups_files`
 
--   `startups_files_pkey`
+- `startups_files_pkey`
 
 ### `startups_organizations`
 
--   `startups_organizations_pkey`
--   `startups_organizations_startup_id_organization_id_unique`
+- `startups_organizations_pkey`
+- `startups_organizations_startup_id_organization_id_unique`
+
+### `tasks`
+
+- `tasks_pkey`
 
 ### `teams`
 
--   `teams_ghid_unique`
--   `teams_pkey`
+- `teams_ghid_unique`
+- `teams_pkey`
 
 ### `users`
 
--   `users_pkey`
--   `users_uuid_unique`
+- `users_pkey`
+- `users_uuid_unique`
 
 ### `users_formations`
 
--   `users_formations_formation_id_index`
--   `users_formations_username_index`
+- `users_formations_formation_id_index`
+- `users_formations_username_index`
 
 ### `users_teams`
 
--   `users_teams_pkey`
--   `users_teams_user_id_team_id_unique`
+- `users_teams_pkey`
+- `users_teams_user_id_team_id_unique`
+
+### `verification_tokens`
+
+- `verification_tokens_pkey`
