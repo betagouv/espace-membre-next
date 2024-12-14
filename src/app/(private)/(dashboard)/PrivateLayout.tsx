@@ -135,24 +135,22 @@ export function PrivateLayout({ children }: { children: React.ReactNode }) {
                     text: currentPage,
                     isActive: hasPathnameThisRegex(
                         pathname,
-                        "^/startups/[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}"
+                        "^/startups/[^/]+"
                     ),
                     items: [
                         {
-                            href: pathname,
+                            href: linkRegistry.get("startupDetailsEdit", {
+                                startupId: "none",
+                            }),
                             text: "Modifier la fiche",
-                            isActive: hasPathnameThisRegex(
-                                pathname,
-                                "^/startups/[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}/info-form$"
-                            ),
+                            isActive: false,
                         },
                         {
-                            href: pathname,
+                            href: linkRegistry.get("startupDocs", {
+                                startupId: "none",
+                            }),
                             text: "Documents",
-                            isActive: hasPathnameThisRegex(
-                                pathname,
-                                "^/startups/[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}/files$"
-                            ),
+                            isActive: false,
                         },
                     ],
                 },

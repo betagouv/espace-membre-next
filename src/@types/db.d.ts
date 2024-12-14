@@ -303,7 +303,9 @@ export interface Startups {
   dashlord_url: string | null;
   description: string | null;
   ghid: string;
+  has_mobile_app: Generated<boolean | null>;
   incubator_id: string | null;
+  is_private_url: Generated<boolean | null>;
   link: string | null;
   mailing_list: string | null;
   mon_service_securise: boolean | null;
