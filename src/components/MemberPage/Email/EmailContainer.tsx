@@ -15,7 +15,7 @@ import BlocConfigurerEmailSecondaire from "./BlocConfigurerEmailSecondaire";
 import BlocCreateEmail from "./BlocCreateEmail";
 import BlocEmailResponder from "./BlocEmailResponder";
 import BlocRedirection from "./BlocRedirection";
-import { WebMailButton } from "./WebMailButton";
+import { WebMailButtons } from "./WebMailButtons";
 import { MemberPageProps } from "../MemberPage";
 import frontConfig from "@/frontConfig";
 import {
@@ -27,6 +27,7 @@ import { EmailStatusCode } from "@/models/member";
 import { EMAIL_STATUS_READABLE_FORMAT } from "@/models/misc";
 import { EMAIL_PLAN_TYPE, OvhRedirection, OvhResponder } from "@/models/ovh";
 import { BadgeEmailPlan } from "@/components/BadgeEmailPlan";
+import Button from "@codegouvfr/react-dsfr/Button";
 
 const EmailLink = ({ email }: { email: string }) => (
     <a href={`mailto:${email}`}>{email}</a>
@@ -46,7 +47,11 @@ const emailStatusRow = (
                     .with(EMAIL_PLAN_TYPE.EMAIL_PLAN_PRO, () => "OVH PRO")
                     .with(EMAIL_PLAN_TYPE.EMAIL_PLAN_EXCHANGE, () => "Exchange")
                     .with(EMAIL_PLAN_TYPE.EMAIL_PLAN_BASIC, () => "OVH MX")
-                    .otherwise(() => "?")}
+                    .with(
+                        EMAIL_PLAN_TYPE.EMAIL_PLAN_OPI,
+                        () => "Suite numérique"
+                    )
+                    .exhaustive()}
             </Badge>
             {match(userInfos.primary_email_status)
                 .with(EmailStatusCode.EMAIL_ACTIVE, () => (
@@ -88,6 +93,7 @@ function BlocEmailConfiguration({ emailInfos }: { emailInfos: EmailInfos }) {
         pro = "pro",
         exchange = "exchange",
         mx = "mx",
+        opi = "opi",
     }
     const conf: { [key in EmailPlan]: { smtp: ServerConf; imap: ServerConf } } =
         {
@@ -127,12 +133,26 @@ function BlocEmailConfiguration({ emailInfos }: { emailInfos: EmailInfos }) {
                     port: "993",
                 },
             },
+            opi: {
+                smtp: {
+                    server: "smtp.beta.gouv.fr",
+                    method: "TLS",
+                    port: "587",
+                },
+                imap: {
+                    server: "imap.beta.gouv.fr",
+                    method: "SSL",
+                    port: "993",
+                },
+            },
         };
     let plan = "mx";
     if (emailInfos.emailPlan === EMAIL_PLAN_TYPE.EMAIL_PLAN_PRO) {
         plan = "pro";
     } else if (emailInfos.emailPlan === EMAIL_PLAN_TYPE.EMAIL_PLAN_EXCHANGE) {
         plan = "exchange";
+    } else if (emailInfos.emailPlan === EMAIL_PLAN_TYPE.EMAIL_PLAN_OPI) {
+        plan = "opi";
     }
     return (
         <Accordion label="Configurer ton email beta">
@@ -141,7 +161,7 @@ function BlocEmailConfiguration({ emailInfos }: { emailInfos: EmailInfos }) {
                 Mailspring, Microsoft Courier, Gmail, etc) pour recevoir et
                 envoyer des emails. D'avantage d'info ici :{" "}
                 <a
-                    href="https://doc.incubateur.net/communaute/travailler-a-beta-gouv/jutilise-les-outils-de-la-communaute/emails/envoyer-et-recevoir-des-mails-beta.gouv.fr"
+                    href="https://doc.incubateur.net/communaute/les-outils-de-la-communaute/emails"
                     target="_blank"
                     className="button no-margin"
                 >
@@ -227,6 +247,8 @@ export default function EmailContainer({
         EmailStatusCode.EMAIL_VERIFICATION_WAITING,
     ];
 
+    const isMailOPI = emailInfos?.emailPlan === EMAIL_PLAN_TYPE.EMAIL_PLAN_OPI;
+
     return (
         <div className="fr-mb-14v">
             <h2>Email</h2>
@@ -289,29 +311,33 @@ export default function EmailContainer({
             </div>
             <br />
             {!emailIsBeingCreated && emailInfos && (
-                <WebMailButton
-                    isExchange={
-                        emailInfos.emailPlan !==
-                        EMAIL_PLAN_TYPE.EMAIL_PLAN_EXCHANGE
-                    }
-                    className={fr.cx("fr-mb-2w")}
-                />
+                <div className={fr.cx("fr-grid-row")}>
+                    <WebMailButtons plan={emailInfos.emailPlan} />
+                </div>
             )}
             {!!emailIsBeingCreated && (
                 <Alert
-                    description="Ton email @beta.gouv.fr est en train d'être créé, tu recevras un email dès que celui-ci est actif."
+                    description="Ton email @beta.gouv.fr est en train d'être créé, tu recevras un email dès que celui-ci sera actif."
                     severity="info"
                     className={fr.cx("fr-mb-4w")}
                     small
                 />
             )}
-            <Table
-                className="tbl-account-status"
-                fixed
-                headers={["Service", "Infos"]}
-                data={rows}
-            />
-            {!emailIsBeingCreated && isCurrentUser && (
+            {rows.length ? (
+                <Table
+                    className="tbl-account-status"
+                    fixed
+                    headers={["Service", "Infos"]}
+                    data={rows}
+                />
+            ) : null}
+            {isMailOPI && (
+                <>
+                    <BlocEmailConfiguration emailInfos={emailInfos} />
+                    <BlocConfigurerCommunicationEmail userInfos={userInfos} />
+                </>
+            )}
+            {!emailIsBeingCreated && isCurrentUser && !isMailOPI && (
                 <div className={fr.cx("fr-accordions-group")}>
                     {match(userInfos.primary_email_status)
                         .with(
@@ -335,28 +361,14 @@ export default function EmailContainer({
                         <BlocEmailConfiguration emailInfos={emailInfos} />
                     )}
 
-                    {match(emailInfos)
-                        .with(
-                            { emailPlan: EMAIL_PLAN_TYPE.EMAIL_PLAN_BASIC },
-                            () => (
+                    {emailInfos &&
+                        emailInfos.emailPlan ===
+                            EMAIL_PLAN_TYPE.EMAIL_PLAN_BASIC && (
+                            <>
                                 <BlocEmailResponder
                                     username={userInfos.username}
                                     responder={emailResponder}
                                 />
-                            )
-                        )
-                        .otherwise(() => null)}
-
-                    <BlocChangerMotDePasse
-                        canChangePassword={canChangePassword}
-                        status={userInfos.primary_email_status}
-                        userInfos={userInfos}
-                    />
-
-                    {match(emailInfos)
-                        .with(
-                            { emailPlan: EMAIL_PLAN_TYPE.EMAIL_PLAN_BASIC },
-                            () => (
                                 <BlocRedirection
                                     redirections={emailRedirections}
                                     canCreateRedirection={canCreateRedirection}
@@ -364,9 +376,14 @@ export default function EmailContainer({
                                     isExpired={isExpired}
                                     domain={frontConfig.domain}
                                 />
-                            )
-                        )
-                        .otherwise(() => null)}
+                            </>
+                        )}
+
+                    <BlocChangerMotDePasse
+                        canChangePassword={canChangePassword}
+                        status={userInfos.primary_email_status}
+                        userInfos={userInfos}
+                    />
 
                     <BlocConfigurerEmailPrincipal
                         canChangeEmails={canChangeEmails}

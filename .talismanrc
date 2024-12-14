@@ -29,6 +29,10 @@ fileignoreconfig:
   checksum: 50ed5a9ba8e03d4ffc248026cfae6fd6331c84c21b30aaa73c0bf30f22be9e2c
 - filename: src/components/IncubatorForm/IncubatorForm.tsx
   checksum: 267f0f0e491b06862cd957ae86d22baf799a705370673cd24e588391a4613a5a
+- filename: src/components/MemberPage/Email/EmailContainer.tsx
+  checksum: 2c46d4aa4dc8caece9bc7f377178e855562c5321d2b87b24ff32cb307fe6946b
+- filename: src/components/MemberPage/Email/WebMailButtons.tsx
+  checksum: da7b71f65b7519ea53e594910c24d14e3579d32ab1cb9144f32fa81a71c0a497
 - filename: src/components/MemberPage/EmailUpgrade.tsx
   checksum: 183a72c4974a5bd2e7a3da0d60895480dc6843e158933a221329dd18e586e400
 - filename: src/components/MemberPage/MemberMissions.tsx

@@ -202,6 +202,18 @@ export default async function Page() {
                 }}
             />
             <hr />
+            <h2>OPI member</h2>
+            <hr />
+            <MemberPage
+                {...sampleMember.member}
+                isCurrentUser={true}
+                emailInfos={{
+                    email: sampleMember.member.userInfos.primary_email || "-",
+                    isBlocked: false,
+                    emailPlan: EMAIL_PLAN_TYPE.EMAIL_PLAN_OPI,
+                }}
+            />
+            <hr />
             <h2>Admin view</h2>
             <hr />
             <MemberPage

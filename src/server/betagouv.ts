@@ -178,6 +178,8 @@ const betaOVH = {
             );
         };
         const promises: Promise<any>[] = [];
+
+        // todo: ajouter check OPI
         const url = `/email/domain/${config.domain}/account/${id}`;
         promises.push(
             ovh
@@ -215,6 +217,7 @@ const betaOVH = {
                     .catch(errorHandler)
             );
         }
+        // check if OPI
         try {
             return await Promise.all(promises).then((data) => {
                 const emailInfos = data.filter((d) => d)[0];
