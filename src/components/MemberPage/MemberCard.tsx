@@ -60,22 +60,7 @@ export const MemberCard = ({
                 : null}
         </>
     );
-    const canEdit = isAdmin || isCurrentUser || sessionUserIsFromIncubatorTeam;
-    const linkToEditPage = match([
-        isAdmin,
-        isCurrentUser,
-        sessionUserIsFromIncubatorTeam,
-    ])
-        .with(
-            [true, P._, P._],
-            () => `/community/${userInfos.username}/admin-update`
-        )
-        .with([false, true, P._], () => `/account/base-info`)
-        .with(
-            [false, false, true],
-            () => `/community/${userInfos.username}/update`
-        )
-        .otherwise(() => "");
+
     return (
         <div
             className={fr.cx("fr-p-2w", "fr-grid-row")}
@@ -107,18 +92,6 @@ export const MemberCard = ({
                         {userInfos.workplace_insee_code}
                     </span>
                 ) : null}
-                {canEdit && (
-                    <Button
-                        className=""
-                        style={{ marginTop: fr.spacing("2w") }}
-                        size="small"
-                        linkProps={{
-                            href: linkToEditPage,
-                        }}
-                    >
-                        Modifier
-                    </Button>
-                )}
             </div>
             <div className={fr.cx("fr-col")}>
                 <div
