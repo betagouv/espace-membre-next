@@ -11,6 +11,8 @@ fileignoreconfig:
   checksum: 9c740513497d70e871e4abcad3a9e509ef5b1a0da9db2d0d2d336c19854303b4
 - filename: src/app/(private)/(dashboard)/community/communes.json
   checksum: f69dbcbfe5e1e7c1bd9340c7bb3d9de9cbc9d4080363e80d8b4da190fb6ae045
+- filename: src/app/(private)/(dashboard)/dashboard/DashboardPage.tsx
+  checksum: 1521b70f1a0bbeee2f889abc46a503e2256e0e675a6ad4ac5cb78671af9c1ae1
 - filename: src/app/(private)/(dashboard)/incubators/[id]/info-form/page.tsx
   checksum: 1ec9acf039a7d336e710ef7b47c385eb7080293ee2750c2cf99e9056cde7f129
 - filename: src/app/(private)/(dashboard)/services/matomo/page.tsx
