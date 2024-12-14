@@ -38,7 +38,7 @@ const mattermostInfoRow = (
                     </div>
                 )
             )
-            .otherwise(() => <Badge severity="info">Compte introuvable</Badge>),
+            .otherwise(() => <Badge severity="warning">introuvable</Badge>),
         match(mattermostInfo)
             .when(
                 (info) =>

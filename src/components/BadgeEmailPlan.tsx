@@ -21,5 +21,10 @@ export const BadgeEmailPlan = ({ plan }: { plan: EMAIL_PLAN_TYPE }) => {
                 OVH MX
             </Badge>
         ))
+        .with(EMAIL_PLAN_TYPE.EMAIL_PLAN_OPI, () => (
+            <Badge small className={fr.cx("fr-ml-1w")} severity="info">
+                Suite numérique
+            </Badge>
+        ))
         .exhaustive();
 };

@@ -208,6 +208,9 @@ const EmailInfo = function ({ emailInfos, primary_email_status }) {
                     EMAIL_PLAN_TYPE.EMAIL_PLAN_EXCHANGE && (
                     <span>(offre OVH Exchange)</span>
                 )}
+                {emailInfos.emailPlan == EMAIL_PLAN_TYPE.EMAIL_PLAN_OPI && (
+                    <span>(offre Suite numérique)</span>
+                )}
             </p>
             <p>
                 <span className="font-weight-bold">Statut de l'email</span> :{" "}
