@@ -1,5 +1,6 @@
 import { addEvent } from "@/lib/events";
 import { EventCode } from "@/models/actionEvent/actionEvent";
+import { EMAIL_PLAN_TYPE } from "@/models/ovh";
 import config from "@/server/config";
 import BetaGouv from "@betagouv";
 import betagouv from "@betagouv";
@@ -69,7 +70,7 @@ export async function upgradeEmailForUserHandler(req, res, onSuccess, onError) {
             throw new Error(`Le compte "${username}" n'a pas de compte email`);
         }
 
-        if (user.emailInfos.isPro) {
+        if (user.emailInfos.emailPlan === EMAIL_PLAN_TYPE.EMAIL_PLAN_PRO) {
             throw new Error(`Le compte "${username}" est déjà un compte pro.`);
         }
 
