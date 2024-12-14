@@ -11,7 +11,6 @@ import {
 } from "@/models/member";
 import { EMAIL_PLAN_TYPE } from "@/models/ovh";
 import { ACCOUNT_SERVICE_STATUS } from "@/models/services";
-import { authOptions } from "@/utils/authoptions";
 
 export const metadata: Metadata = {
     title: `Components Demo`,
@@ -28,8 +27,6 @@ const sampleMember: { member: MemberPageProps } = {
         emailInfos: {
             email: "ada@love.com",
             isBlocked: false,
-            isPro: true,
-            isExchange: false,
             emailPlan: EMAIL_PLAN_TYPE.EMAIL_PLAN_PRO,
         },
         isExpired: false,
@@ -177,8 +174,6 @@ export default async function Page() {
                 emailInfos={{
                     email: sampleMember.member.userInfos.primary_email || "-",
                     isBlocked: true,
-                    isPro: true,
-                    isExchange: false,
                     emailPlan: EMAIL_PLAN_TYPE.EMAIL_PLAN_PRO,
                 }}
                 userInfos={{
@@ -203,8 +198,6 @@ export default async function Page() {
                 emailInfos={{
                     email: sampleMember.member.userInfos.primary_email || "-",
                     isBlocked: false,
-                    isExchange: true,
-                    isPro: false,
                     emailPlan: EMAIL_PLAN_TYPE.EMAIL_PLAN_EXCHANGE,
                 }}
             />
@@ -218,8 +211,6 @@ export default async function Page() {
                 emailInfos={{
                     email: sampleMember.member.userInfos.primary_email || "-",
                     isBlocked: false,
-                    isPro: false,
-                    isExchange: false,
                     emailPlan: EMAIL_PLAN_TYPE.EMAIL_PLAN_BASIC,
                 }}
             />

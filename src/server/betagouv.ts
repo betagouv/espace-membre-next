@@ -184,8 +184,6 @@ const betaOVH = {
                 .requestPromised("GET", url, {})
                 .then((data: any) => ({
                     ...data,
-                    isPro: false,
-                    isExchange: false,
                     emailPlan: EMAIL_PLAN_TYPE.EMAIL_PLAN_BASIC,
                 }))
                 .catch(errorHandler)
@@ -199,8 +197,6 @@ const betaOVH = {
                     .then((data) => ({
                         ...data,
                         emailPlan: EMAIL_PLAN_TYPE.EMAIL_PLAN_PRO,
-                        isPro: true,
-                        isExchange: false,
                         email: data.primaryEmailAddress,
                     }))
                     .catch(errorHandler)
@@ -214,8 +210,6 @@ const betaOVH = {
                     .then((data) => ({
                         ...data,
                         emailPlan: EMAIL_PLAN_TYPE.EMAIL_PLAN_EXCHANGE,
-                        isExchange: true,
-                        isPro: true,
                         email: data.primaryEmailAddress,
                     }))
                     .catch(errorHandler)

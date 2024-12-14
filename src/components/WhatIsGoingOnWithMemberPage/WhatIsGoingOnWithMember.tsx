@@ -21,6 +21,7 @@ import { EMAIL_STATUS_READABLE_FORMAT } from "@/models/misc";
 import { startupSchemaType } from "@/models/startup";
 import routes from "@/routes/routes";
 import { getLastMission } from "@/utils/member";
+import { EMAIL_PLAN_TYPE } from "@/models/ovh";
 
 enum STEP {
     whichMember = "whichMember",
@@ -197,8 +198,16 @@ const EmailInfo = function ({ emailInfos, primary_email_status }) {
             <p>
                 <span className="font-weight-bold">Email principal</span> :{" "}
                 {emailInfos.email}
-                {emailInfos.isPro && <span>(offre OVH Pro)</span>}
-                {emailInfos.isExchange && <span>(offre OVH Exchange)</span>}
+                {emailInfos.emailPlan == EMAIL_PLAN_TYPE.EMAIL_PLAN_PRO && (
+                    <span>(offre OVH Pro)</span>
+                )}
+                {emailInfos.emailPlan == EMAIL_PLAN_TYPE.EMAIL_PLAN_BASIC && (
+                    <span>(offre OVH MX)</span>
+                )}
+                {emailInfos.emailPlan ==
+                    EMAIL_PLAN_TYPE.EMAIL_PLAN_EXCHANGE && (
+                    <span>(offre OVH Exchange)</span>
+                )}
             </p>
             <p>
                 <span className="font-weight-bold">Statut de l'email</span> :{" "}

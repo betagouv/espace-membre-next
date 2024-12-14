@@ -26,6 +26,7 @@ import {
 import { EmailStatusCode } from "@/models/member";
 import { EMAIL_STATUS_READABLE_FORMAT } from "@/models/misc";
 import { EMAIL_PLAN_TYPE, OvhRedirection, OvhResponder } from "@/models/ovh";
+import { BadgeEmailPlan } from "@/components/BadgeEmailPlan";
 
 const EmailLink = ({ email }: { email: string }) => (
     <a href={`mailto:${email}`}>{email}</a>
@@ -41,13 +42,10 @@ const emailStatusRow = (
         </>,
         <>
             <Badge severity="info" className={fr.cx("fr-mr-1w")}>
-                {match(emailInfos)
-                    .with({ isPro: true }, () => "OVH PRO")
-                    .with({ isExchange: true }, () => "Exchange")
-                    .with(
-                        { emailPlan: EMAIL_PLAN_TYPE.EMAIL_PLAN_BASIC },
-                        () => "OVH MX"
-                    )
+                {match(emailInfos.emailPlan)
+                    .with(EMAIL_PLAN_TYPE.EMAIL_PLAN_PRO, () => "OVH PRO")
+                    .with(EMAIL_PLAN_TYPE.EMAIL_PLAN_EXCHANGE, () => "Exchange")
+                    .with(EMAIL_PLAN_TYPE.EMAIL_PLAN_BASIC, () => "OVH MX")
                     .otherwise(() => "?")}
             </Badge>
             {match(userInfos.primary_email_status)
@@ -131,9 +129,9 @@ function BlocEmailConfiguration({ emailInfos }: { emailInfos: EmailInfos }) {
             },
         };
     let plan = "mx";
-    if (emailInfos.isPro) {
+    if (emailInfos.emailPlan === EMAIL_PLAN_TYPE.EMAIL_PLAN_PRO) {
         plan = "pro";
-    } else if (emailInfos.isExchange) {
+    } else if (emailInfos.emailPlan === EMAIL_PLAN_TYPE.EMAIL_PLAN_EXCHANGE) {
         plan = "exchange";
     }
     return (
@@ -242,42 +240,7 @@ export default function EmailContainer({
                             <a href={`mailto:${emailInfos.email}`}>
                                 {emailInfos.email}
                             </a>
-
-                            {match(emailInfos)
-                                .with({ isPro: true }, () => (
-                                    <Badge
-                                        small
-                                        className={fr.cx("fr-ml-1w")}
-                                        severity="info"
-                                    >
-                                        OVH Pro
-                                    </Badge>
-                                ))
-                                .with({ isExchange: true }, () => (
-                                    <Badge
-                                        small
-                                        className={fr.cx("fr-ml-1w")}
-                                        severity="info"
-                                    >
-                                        OVH Exchange
-                                    </Badge>
-                                ))
-                                .with(
-                                    {
-                                        emailPlan:
-                                            EMAIL_PLAN_TYPE.EMAIL_PLAN_BASIC,
-                                    },
-                                    () => (
-                                        <Badge
-                                            small
-                                            className={fr.cx("fr-ml-1w")}
-                                            severity="info"
-                                        >
-                                            OVH MX
-                                        </Badge>
-                                    )
-                                )
-                                .otherwise(() => null)}
+                            <BadgeEmailPlan plan={emailInfos.emailPlan} />
                             {userInfos.primary_email_status !==
                                 EmailStatusCode.EMAIL_ACTIVE && (
                                 <Badge
@@ -327,7 +290,10 @@ export default function EmailContainer({
             <br />
             {!emailIsBeingCreated && emailInfos && (
                 <WebMailButton
-                    isExchange={!!emailInfos.isExchange}
+                    isExchange={
+                        emailInfos.emailPlan !==
+                        EMAIL_PLAN_TYPE.EMAIL_PLAN_EXCHANGE
+                    }
                     className={fr.cx("fr-mb-2w")}
                 />
             )}
