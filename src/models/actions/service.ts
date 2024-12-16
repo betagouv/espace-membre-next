@@ -3,15 +3,36 @@ import { z } from "zod";
 import { SERVICES } from "../services";
 
 export const matomoAccountRequestSchema = z.object({
-    sites: z.array(
-        z.object({
-            url: z.string(),
-        })
-    ),
+    sites: z
+        .array(
+            z.object({
+                id: z.number(),
+            })
+        )
+        .optional(),
+    newSites: z
+        .array(
+            z.object({
+                url: z.string(),
+            })
+        )
+        .optional(),
 });
 
 export type matomoAccountRequestSchemaType = z.infer<
     typeof matomoAccountRequestSchema
+>;
+
+export const sentryAccountRequestSchema = z.object({
+    teams: z.array(
+        z.object({
+            name: z.string(),
+        })
+    ),
+});
+
+export type sentryAccountRequestSchemaType = z.infer<
+    typeof sentryAccountRequestSchema
 >;
 
 export const matomoAccountRequestWrapperSchema = z.object({
@@ -25,6 +46,7 @@ export type matomoAccountRequestWrapperSchemaType = z.infer<
 
 export const sentryAccountRequestWrapperSchema = z.object({
     service: z.literal(SERVICES.SENTRY),
+    data: sentryAccountRequestSchema,
 });
 
 export type sentryAccountRequestWrapperSchemaType = z.infer<

@@ -291,6 +291,37 @@ export function PrivateLayout({ children }: { children: React.ReactNode }) {
                         accountEditBaseInfoLink
                     ),
                 },
+                {
+                    href: "/services",
+                    text: "Outils",
+                    isActive: hasPathnameThisMatch(pathname, "/services"),
+                    items: [
+                        {
+                            href: "/services/sentry",
+                            text: "Sentry",
+                            isActive: hasPathnameThisMatch(
+                                pathname,
+                                "/services/sentry"
+                            ),
+                        },
+                        {
+                            href: "/services/matomo",
+                            text: "Matomo",
+                            isActive: hasPathnameThisMatch(
+                                pathname,
+                                "/services/matomo"
+                            ),
+                        },
+                        {
+                            href: "/services/mattermost",
+                            text: "Mattermost",
+                            isActive: hasPathnameThisMatch(
+                                pathname,
+                                "/services/mattermost"
+                            ),
+                        },
+                    ],
+                },
             ],
         },
         {

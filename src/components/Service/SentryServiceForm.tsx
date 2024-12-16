@@ -10,24 +10,24 @@ import { useFieldArray, useForm } from "react-hook-form";
 
 import { askAccountCreationForService } from "@/app/api/services/actions";
 import {
-    matomoAccountRequestSchema,
-    matomoAccountRequestSchemaType,
+    sentryAccountRequestSchema,
+    sentryAccountRequestSchemaType,
 } from "@/models/actions/service";
 import { SERVICES } from "@/models/services";
 
-export default function MatomoServiceForm(props: { sites }) {
+export default function SentryServiceForm(props: { teams }) {
     const {
         register,
         handleSubmit,
-        formState: { errors, isDirty, isSubmitting, isValid },
+        formState: { isDirty, isSubmitting, isValid },
         control,
-    } = useForm<matomoAccountRequestSchemaType>({
-        resolver: zodResolver(matomoAccountRequestSchema),
+    } = useForm<sentryAccountRequestSchemaType>({
+        resolver: zodResolver(sentryAccountRequestSchema),
         mode: "onChange",
         defaultValues: {
-            sites: [
+            teams: [
                 {
-                    id: undefined,
+                    name: "",
                 },
             ],
         },
@@ -39,7 +39,7 @@ export default function MatomoServiceForm(props: { sites }) {
     } | null>();
     const [isSaving, setIsSaving] = React.useState(false);
 
-    const onSubmit = async (data: matomoAccountRequestSchemaType, e) => {
+    const onSubmit = async (data: sentryAccountRequestSchemaType, e) => {
         if (isSaving) {
             return;
         }
@@ -48,14 +48,14 @@ export default function MatomoServiceForm(props: { sites }) {
         }
         setIsSaving(true);
         setAlertMessage(null);
-        const service = SERVICES.MATOMO;
+        const service = SERVICES.SENTRY;
         const res = await askAccountCreationForService({
             service: service,
             data,
         });
         if (res.success) {
             setAlertMessage({
-                title: "Compte matomo en cours de création",
+                title: "Compte sentry en cours de création",
                 message: "",
                 type: "success",
             });
@@ -70,18 +70,18 @@ export default function MatomoServiceForm(props: { sites }) {
         window.scrollTo({ top: 20, behavior: "smooth" });
     };
 
-    const { fields: siteFields, append: sitesAppend } = useFieldArray({
+    const { fields: teamFields, append: teamsAppend } = useFieldArray({
         rules: { minLength: 1 },
         control,
-        name: "sites",
+        name: "teams",
     });
 
-    const addSiteClick = (e) => {
-        sitesAppend({
-            //@ts-ignore id can be undefined when filling but not after submissions
-            id: undefined,
+    const addTeamClick = (e) => {
+        teamsAppend({
+            name: "",
         });
     };
+
     return (
         <>
             <div>
@@ -106,14 +106,14 @@ export default function MatomoServiceForm(props: { sites }) {
                     <div className="fr-col-12 fr-col-md-12 fr-col-lg-12">
                         <form
                             onSubmit={handleSubmit(onSubmit)}
-                            aria-label="Demander les accès a un ou plusieurs site matomo"
+                            aria-label="Demander les accès a un ou plusieurs site sentry"
                         >
                             <fieldset
                                 className="fr-mt-5v fr-mb-0v fr-fieldset"
                                 id="identity-fieldset"
                                 aria-labelledby="identity-fieldset-legend identity-fieldset-messages"
                             >
-                                {siteFields.map((field, index) => (
+                                {teamFields.map((field, index) => (
                                     <div
                                         key={index}
                                         className={fr.cx(
@@ -126,13 +126,17 @@ export default function MatomoServiceForm(props: { sites }) {
                                         )}
                                     >
                                         <Select
-                                            label="Site"
+                                            label="Équipe"
                                             nativeSelectProps={{
+                                                // onChange: (event) =>
+                                                //     setSentryTeam(
+                                                //         event.target.value
+                                                //     ),
+                                                // sentryTeam,
                                                 ...register(
-                                                    `sites.${index}.id`,
+                                                    `teams.${index}.name`,
                                                     {
                                                         required: true,
-                                                        valueAsNumber: true,
                                                     }
                                                 ),
                                             }}
@@ -140,12 +144,12 @@ export default function MatomoServiceForm(props: { sites }) {
                                             <option value="" disabled hidden>
                                                 Selectionnez une option
                                             </option>
-                                            {props.sites.map((site) => (
+                                            {props.teams.map((team) => (
                                                 <option
-                                                    key={site.id}
-                                                    value={site.id}
+                                                    key={team.slug}
+                                                    value={team.slug}
                                                 >
-                                                    {site.name}
+                                                    {team.name}
                                                 </option>
                                             ))}
                                         </Select>
@@ -164,9 +168,9 @@ export default function MatomoServiceForm(props: { sites }) {
                                     priority="secondary"
                                     size="small"
                                     type="button"
-                                    onClick={addSiteClick}
+                                    onClick={addTeamClick}
                                 >
-                                    Ajouter une site
+                                    Ajouter une équipe
                                 </Button>
                             </fieldset>
                             <Button

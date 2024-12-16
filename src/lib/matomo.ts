@@ -25,9 +25,14 @@ export interface MatomoUserAccess {
     type: string;
 }
 
+export enum MatomoAccess {
+    "admin" = "admin",
+    "view" = "view",
+}
+
 export interface MatomoUserAccess {
     site: number;
-    access: "admin" | "view"; // Define access levels you want to check
+    access: MatomoAccess; // Define access levels you want to check
 }
 
 export class Matomo implements AccountService {
@@ -87,17 +92,18 @@ export class Matomo implements AccountService {
      * Fetch user by email using Matomo API
      * @param email - The email of the user
      */
-    async getUserByEmail(email: string): Promise<MatomoUser | null> {
+    async getUserByEmail(
+        email: string
+    ): Promise<MatomoUser | { result: "error"; message: string }> {
         const response = await fetch(`${this.apiUrl}/index.php`, {
             method: "POST",
             headers: { "Content-Type": "application/x-www-form-urlencoded" },
             body: new URLSearchParams({
                 module: "API",
-                method: "UsersManager.getUsers",
-                format: "json",
-                filter_limit: "1",
-                filter_pattern: encodeURIComponent(email),
+                method: "UsersManager.getUserByEmail",
+                format: "JSON",
                 token_auth: this.authToken,
+                userEmail: email,
             }),
         });
 
@@ -106,9 +112,7 @@ export class Matomo implements AccountService {
                 `Matomo: Error fetching user ${email}: ${response.statusText}`
             );
         }
-        const users = await response.json();
-
-        return users.length ? users[0] : null;
+        return await response.json();
     }
 
     /**
@@ -155,6 +159,28 @@ export class Matomo implements AccountService {
             body: new URLSearchParams({
                 module: "API",
                 method: "UsersManager.getSitesAccessFromUser",
+                format: "JSON",
+                token_auth: this.authToken,
+                userLogin: userLogin,
+            }),
+        });
+
+        return response.json();
+    }
+
+    /**
+     * fetch a user access by login using Matomo API
+     * @param userLogn - The login of the user to delete
+     */
+    async getUser(userLogin: string): Promise<MatomoUserAccess[]> {
+        const response = await fetch(`${this.apiUrl}/index.php`, {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/x-www-form-urlencoded",
+            },
+            body: new URLSearchParams({
+                module: "API",
+                method: "UsersManager.getUser",
                 format: "JSON",
                 token_auth: this.authToken,
                 userLogin: userLogin,
@@ -225,7 +251,7 @@ export class Matomo implements AccountService {
     }: {
         userLogin: string;
         idSites: number[];
-        access: "admin" | "view";
+        access: MatomoAccess;
     }): Promise<void> {
         try {
             const response = await fetch(`${this.apiUrl}/index.php`, {

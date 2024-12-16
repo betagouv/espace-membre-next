@@ -1,89 +1,129 @@
-import Badge from "@codegouvfr/react-dsfr/Badge";
-import { Stepper } from "@codegouvfr/react-dsfr/Stepper";
-import { Table } from "@codegouvfr/react-dsfr/Table";
-import type { Metadata } from "next";
+import Alert from "@codegouvfr/react-dsfr/Alert";
+import Table from "@codegouvfr/react-dsfr/Table";
 import { redirect } from "next/navigation";
 import { getServerSession } from "next-auth/next";
-import { match } from "ts-pattern";
 
+import AccountDetails from "@/components/Service/AccountDetails";
 import MatomoServiceForm from "@/components/Service/MatomoServiceForm";
-import { db } from "@/lib/kysely";
-import { matomoServiceInfoToModel } from "@/models/mapper/matomoMapper";
-import { matomoUserSchemaType } from "@/models/matomo";
-import { ACCOUNT_SERVICE_STATUS, SERVICES } from "@/models/services";
+import * as hstore from "@/lib/hstore";
+import { db, sql } from "@/lib/kysely";
+import { getServiceAccount } from "@/lib/kysely/queries/services";
+import { EventCodeToReadable } from "@/models/actionEvent/actionEvent";
+import {
+    matomoServiceInfoToModel,
+    matomoSiteToModel,
+} from "@/models/mapper/matomoMapper";
+import { SERVICES } from "@/models/services";
 import { authOptions } from "@/utils/authoptions";
-import { routeTitles } from "@/utils/routes/routeTitles";
-
-export const metadata: Metadata = {
-    title: `${routeTitles.communityCreateMember()} / Espace Membre`,
-};
-
-const AccountFoundOrPending = ({
-    account,
-}: {
-    account: matomoUserSchemaType;
-}) => {
-    return (
-        <>
-            {match(account)
-                .with({ status: ACCOUNT_SERVICE_STATUS.ACCOUNT_FOUND }, () => (
-                    <>
-                        <Badge noIcon severity="success">
-                            Compte actif
-                        </Badge>
-                        <Table
-                            data={account.metadata.sites.map((s) => [
-                                s.url ? (
-                                    <a href={s.url} target="_blank">
-                                        {s.name}
-                                    </a>
-                                ) : (
-                                    s.name
-                                ),
-                                s.type,
-                                s.accessLevel,
-                            ])}
-                            headers={["nom", "type", "niveau d'accès"]}
-                        />
-                    </>
-                ))
-                .with(
-                    { status: ACCOUNT_SERVICE_STATUS.ACCOUNT_CREATION_PENDING },
-                    () => (
-                        <>
-                            La création du compte est en cours, tu recevra un
-                            email quand ce sera bon...
-                        </>
-                    )
-                )
-                .otherwise(() => {
-                    return null;
-                })}
-        </>
-    );
-};
 
 export default async function MatomoPage() {
     const session = await getServerSession(authOptions);
     if (!session) {
         redirect("/login");
     }
-    const service_account = await db
-        .selectFrom("service_accounts")
+
+    const rawAccount = await getServiceAccount(
+        session.user.uuid,
+        SERVICES.MATOMO
+    );
+    const service_account = rawAccount
+        ? matomoServiceInfoToModel(rawAccount)
+        : undefined;
+
+    const matomoSites = await db
+        .selectFrom("matomo_sites")
         .selectAll()
-        .where("user_id", "=", session.user.uuid)
-        .where("account_type", "=", SERVICES.MATOMO)
-        .executeTakeFirst()
-        .then((data) => {
-            return data ? matomoServiceInfoToModel(data) : undefined;
-        });
+        .execute()
+        .then((data) => data.map((d) => matomoSiteToModel(d)));
+
+    const matomoEvents = await db
+        .selectFrom("events")
+        .where("action_on_username", "=", session.user.id)
+        .where("action_code", "like", `%MEMBER_SERVICE%`)
+        .where(sql`action_metadata -> 'service'`, "=", `matomo`)
+        .selectAll()
+        .orderBy("created_at desc")
+        .execute();
+
+    const formatMetadata = (metadata) => {
+        if (metadata) {
+            const data = hstore.parse(metadata);
+            if ("sites" in data) {
+                return (
+                    <>
+                        <p>
+                            Ajout {data.sites.length > 1 ? "aux" : "à l'"}{" "}
+                            équipe{data.sites.length > 1 ? "s" : ""} :
+                        </p>
+                        <ul>
+                            {data.sites.map((t, index) => (
+                                <li key={index}>
+                                    {t.siteSlug} avec le rôle {t.siteRole}
+                                </li>
+                            ))}
+                        </ul>
+                    </>
+                );
+            } else {
+                return JSON.stringify(data);
+            }
+        }
+        return;
+    };
+
     return (
         <>
-            <h1>Compte matomo</h1>
-            {service_account ? (
-                <AccountFoundOrPending account={service_account} />
-            ) : (
-                <MatomoServiceForm />
+            <h1>Compte Matomo</h1>
+            {service_account && (
+                <>
+                    <Alert
+                        small={true}
+                        className={"fr-mb-8v"}
+                        description={
+                            <p>
+                                Ton compte matomo existe. Tu peux définir ton
+                                mot de passe en faisant une réinitialisation de
+                                mot de passe sur{" "}
+                                <a href="https://stats.beta.gouv.fr">
+                                    stats.beta.gouv.fr
+                                </a>
+                            </p>
+                        }
+                        severity="info"
+                    />
+                    <AccountDetails
+                        account={service_account}
+                        data={
+                            service_account.metadata
+                                ? service_account.metadata.sites.map((s) => [
+                                      s.url ? (
+                                          <a href={s.url} target="_blank">
+                                              {s.name}
+                                          </a>
+                                      ) : (
+                                          s.name
+                                      ),
+                                      s.type,
+                                      s.accessLevel,
+                                  ])
+                                : []
+                        }
+                        headers={["nom", "type", "niveau d'accès"]}
+                    />
+                </>
+            )}
+            <h2 className="fr-mt-8v">Demander des accès</h2>
+            <MatomoServiceForm sites={matomoSites} />
+            <h2 className="fr-mt-8v">Historique des événements</h2>
+            {!!matomoEvents.length && (
+                <Table
+                    headers={["Code", "Metadata", "Date"]}
+                    data={matomoEvents.map((e) => [
+                        EventCodeToReadable[e.action_code],
+                        formatMetadata(e.action_metadata),
+                        e.created_at.toDateString(),
+                    ])}
+                ></Table>
             )}
         </>
     );
