@@ -17,7 +17,6 @@ export async function updateSentryServiceAccount(
         job.id,
         job.name
     );
-    console.log(job.data.teams);
     await pAll(
         job.data.teams.map((t) => async () => {
             await sentryClient.addUserToTeam({
