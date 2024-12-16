@@ -22,7 +22,7 @@ import {
     sentryAccountRequestWrapperSchemaType,
 } from "@/models/actions/service";
 import {
-    CreateMatomoAccountDataSchema,
+    CreateOrUpdateMatomoAccountDataSchema,
     CreateSentryAccountDataSchema,
     UpdateSentryAccountDataSchema,
 } from "@/models/jobs/services";
@@ -31,8 +31,8 @@ import { memberBaseInfoSchemaType } from "@/models/member";
 import { ACCOUNT_SERVICE_STATUS, SERVICES } from "@/models/services";
 import { encryptPassword } from "@/server/controllers/utils";
 import { getBossClientInstance } from "@/server/queueing/client";
-import { createMatomoServiceAccountTopic } from "@/server/queueing/workers/create-matomo-account";
 import { createSentryServiceAccountTopic } from "@/server/queueing/workers/create-sentry-account";
+import { createOrUpdateMatomoServiceAccountTopic } from "@/server/queueing/workers/create-update-matomo-account";
 import {
     updateSentryServiceAccount,
     updateSentryServiceAccountTopic,
@@ -170,42 +170,88 @@ const createOrUpdateMatomoAccount = async (
     if (!user.primary_email) {
         throw new ValidationError("Un email primaire est obligatoire");
     }
-    await bossClient.send(
-        createMatomoServiceAccountTopic,
-        CreateMatomoAccountDataSchema.parse({
-            email: user.primary_email,
-            login: user.primary_email,
-            username: user.username,
-            password: encryptPassword(
-                crypto.randomBytes(20).toString("base64").slice(0, -2)
-            ),
-            sites: matomoData.sites,
-        }),
-        {
-            retryLimit: 50,
-            retryBackoff: true,
-        }
-    );
-    await db
-        .insertInto("service_accounts")
-        .values({
-            user_id: user.uuid,
-            email: user.primary_email,
-            account_type: SERVICES.MATOMO,
-            status: ACCOUNT_SERVICE_STATUS.ACCOUNT_CREATION_PENDING,
-        })
-        .execute();
+    const matomoAccount = await db
+        .selectFrom("service_accounts")
+        .selectAll()
+        .where("account_type", "=", SERVICES.MATOMO)
+        .where("user_id", "=", user.uuid)
+        .executeTakeFirst();
+    const matomoAlreadyExists = !!matomoAccount?.service_user_id;
+    if (matomoAlreadyExists) {
+        await addEvent({
+            action_code: EventCode.MEMBER_SERVICE_ACCOUNT_UPDATE_REQUESTED,
+            action_metadata: {
+                service: SERVICES.MATOMO,
+                sites: (matomoData.sites || []).map((s) => ({
+                    id: s.id,
+                    access: MatomoAccess.admin,
+                })),
+                newSites: (matomoData.newSites || []).map((s) => ({
+                    url: s.url,
+                    access: MatomoAccess.admin,
+                })),
+            },
+            action_on_username: user.username,
+            created_by_username: user.username,
+        });
+        await bossClient.send(
+            createOrUpdateMatomoServiceAccountTopic,
+            CreateOrUpdateMatomoAccountDataSchema.parse({
+                email: user.primary_email,
+                login: user.primary_email,
+                username: user.username,
+                password: encryptPassword(
+                    crypto.randomBytes(20).toString("base64").slice(0, -2)
+                ),
+                sites: matomoData.sites,
+            }),
+            {
+                retryLimit: 50,
+                retryBackoff: true,
+            }
+        );
+    } else {
+        await bossClient.send(
+            createOrUpdateMatomoServiceAccountTopic,
+            CreateOrUpdateMatomoAccountDataSchema.parse({
+                email: user.primary_email,
+                login: user.primary_email,
+                username: user.username,
+                password: encryptPassword(
+                    crypto.randomBytes(20).toString("base64").slice(0, -2)
+                ),
+                sites: matomoData.sites,
+            }),
+            {
+                retryLimit: 50,
+                retryBackoff: true,
+            }
+        );
+        await db
+            .insertInto("service_accounts")
+            .values({
+                user_id: user.uuid,
+                email: user.primary_email,
+                account_type: SERVICES.MATOMO,
+                status: ACCOUNT_SERVICE_STATUS.ACCOUNT_CREATION_PENDING,
+            })
+            .execute();
 
-    await addEvent({
-        action_code: EventCode.MEMBER_SERVICE_ACCOUNT_REQUESTED,
-        action_metadata: {
-            service: SERVICES.MATOMO,
-            sites: matomoData.sites.map((s) => ({
-                url: s.url,
-                access: MatomoAccess.admin,
-            })),
-        },
-        action_on_username: user.username,
-        created_by_username: user.username,
-    });
+        await addEvent({
+            action_code: EventCode.MEMBER_SERVICE_ACCOUNT_REQUESTED,
+            action_metadata: {
+                service: SERVICES.MATOMO,
+                sites: (matomoData.sites || []).map((s) => ({
+                    id: s.id,
+                    access: MatomoAccess.admin,
+                })),
+                newSites: (matomoData.newSites || []).map((s) => ({
+                    url: s.url,
+                    access: MatomoAccess.admin,
+                })),
+            },
+            action_on_username: user.username,
+            created_by_username: user.username,
+        });
+    }
 };

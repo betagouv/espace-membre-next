@@ -157,6 +157,17 @@ export interface MarrainageGroupsMembers {
   username: string;
 }
 
+export interface MatomoSites {
+  created_at: Generated<Timestamp>;
+  id: Generated<string>;
+  matomo_id: number;
+  name: string;
+  startup_id: string | null;
+  type: string;
+  updated_at: Generated<Timestamp>;
+  url: string;
+}
+
 export interface MattermostMemberInfos {
   last_activity_at: Timestamp | null;
   mattermost_user_id: string | null;
@@ -469,6 +480,7 @@ export interface DB {
   marrainage: Marrainage;
   marrainage_groups: MarrainageGroups;
   marrainage_groups_members: MarrainageGroupsMembers;
+  matomo_sites: MatomoSites;
   mattermost_member_infos: MattermostMemberInfos;
   missions: Missions;
   missions_startups: MissionsStartups;

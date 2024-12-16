@@ -15,12 +15,22 @@ export const EventServiceAccountDeletedPayload = z.object({
 
 const matomoActionMetadataSchema = z.object({
     service: z.literal(SERVICES.MATOMO),
-    sites: z.array(
-        z.object({
-            url: z.string().url(),
-            access: z.nativeEnum(MatomoAccess),
-        })
-    ),
+    sites: z
+        .array(
+            z.object({
+                id: z.number(),
+                access: z.nativeEnum(MatomoAccess),
+            })
+        )
+        .optional(),
+    newSites: z
+        .array(
+            z.object({
+                url: z.string().url(),
+                access: z.nativeEnum(MatomoAccess),
+            })
+        )
+        .optional(),
 });
 
 const sentryActionMetadataSchema = z.object({
