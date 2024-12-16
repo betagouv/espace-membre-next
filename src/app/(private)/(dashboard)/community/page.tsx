@@ -11,6 +11,7 @@ import { competencesList } from "@/models/competences";
 import { memberBaseInfoToModel } from "@/models/mapper";
 import { DOMAINE_OPTIONS } from "@/models/member";
 import { routeTitles } from "@/utils/routes/routeTitles";
+import communes from "./communes.json";
 
 export const metadata: Metadata = {
     title: `${routeTitles.community()} / Espace Membre`,
@@ -25,6 +26,11 @@ export default async function Page() {
     const title = routeTitles.community();
 
     const incubatorMembers = await getAllIncubatorsMembers();
+
+    const usersWithGeoLoc = users.map((u) => ({
+        ...u,
+        latLon: u.workplace_insee_code && communes[u.workplace_insee_code],
+    }));
 
     const props = {
         title,
@@ -41,7 +47,7 @@ export default async function Page() {
             label: name,
         })),
         competenceOptions: competencesList.map((c) => ({ value: c, label: c })),
-        users,
+        users: usersWithGeoLoc,
     };
 
     return <Community {...props} />;
