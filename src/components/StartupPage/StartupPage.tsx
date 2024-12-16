@@ -4,7 +4,7 @@ import ButtonsGroup from "@codegouvfr/react-dsfr/ButtonsGroup";
 import { Table } from "@codegouvfr/react-dsfr/Table";
 
 import LastChange from "../LastChange";
-import { matomoSiteSchemaType } from "@/models/matomoSites";
+import { matomoSiteSchemaType } from "@/models/matomoSite";
 import { memberBaseInfoSchemaType } from "@/models/member";
 import { sentryTeamSchemaType } from "@/models/sentryTeam";
 import { phaseSchemaType, startupSchemaType } from "@/models/startup";
