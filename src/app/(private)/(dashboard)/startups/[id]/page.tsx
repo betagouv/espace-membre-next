@@ -59,6 +59,17 @@ export default async function Page({ params }: Props) {
             .where("startup_id", "=", dbSe.uuid)
             .execute()
     ).map((phase) => phaseToModel(phase));
+
+    const sentryTeams = await db
+        .selectFrom("sentry_teams")
+        .where("startup_id", "=", params.id)
+        .selectAll()
+        .execute();
+    const matomoSites = await db
+        .selectFrom("matomo_sites")
+        .where("startup_id", "=", params.id)
+        .selectAll()
+        .execute();
     const startup = startupToModel(dbSe);
     const startupMembers = (await getUserByStartup(dbSe.uuid)).map((user) => {
         return memberBaseInfoToModel(user);
@@ -74,6 +85,8 @@ export default async function Page({ params }: Props) {
             <StartupPage
                 changes={changes.map((change) => startupChangeToModel(change))}
                 startupInfos={startup}
+                sentryTeams={sentryTeams}
+                matomoSites={matomoSites}
                 members={startupMembers}
                 phases={phases}
             />

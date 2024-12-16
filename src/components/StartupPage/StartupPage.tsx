@@ -4,7 +4,9 @@ import ButtonsGroup from "@codegouvfr/react-dsfr/ButtonsGroup";
 import { Table } from "@codegouvfr/react-dsfr/Table";
 
 import LastChange from "../LastChange";
+import { matomoSiteSchemaType } from "@/models/matomoSite";
 import { memberBaseInfoSchemaType } from "@/models/member";
+import { sentryTeamSchemaType } from "@/models/sentryTeam";
 import { phaseSchemaType, startupSchemaType } from "@/models/startup";
 import { StartupChangeSchemaType } from "@/models/startupChange";
 import { getLastMissionDate } from "@/utils/member";
@@ -42,6 +44,8 @@ export interface StartupPageProps {
     members: memberBaseInfoSchemaType[];
     phases: phaseSchemaType[];
     changes: StartupChangeSchemaType[];
+    sentryTeams: sentryTeamSchemaType[];
+    matomoSites: matomoSiteSchemaType[];
 }
 
 export default function StartupPage({
@@ -49,6 +53,8 @@ export default function StartupPage({
     members,
     phases,
     changes,
+    matomoSites,
+    sentryTeams,
 }: StartupPageProps) {
     const currentPhase = getCurrentPhase(phases); // todo get current phase
     const activeMembers = members.filter((member) =>
@@ -152,6 +158,39 @@ export default function StartupPage({
                         members={previousMembers}
                         startup_id={startupInfos.uuid}
                     />
+                </Accordion>
+            </div>
+            <div className="fr-mb-4v">
+                <h3>Outils</h3>
+                <Accordion
+                    label="Matomo"
+                    expanded={true}
+                    onExpandedChange={(expanded, e) => {}}
+                >
+                    {!matomoSites.length && (
+                        <p>Aucun site matomo n'est connecté à ce produit</p>
+                    )}
+                    {!!matomoSites.length && (
+                        <Table
+                            data={matomoSites.map((site) => [
+                                site.name,
+                                site.url,
+                                site.type,
+                            ])}
+                            headers={["nom du site", "url", "type"]}
+                        ></Table>
+                    )}
+                </Accordion>
+                <Accordion label="Sentry">
+                    {!sentryTeams.length && (
+                        <p>Aucun équipe sentry n'est connecté à ce produit</p>
+                    )}
+                    {!!sentryTeams.length && (
+                        <Table
+                            data={sentryTeams.map((site) => [site.name])}
+                            headers={["nom de l'équipe"]}
+                        ></Table>
+                    )}
                 </Accordion>
             </div>
         </>
