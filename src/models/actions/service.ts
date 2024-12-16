@@ -14,6 +14,18 @@ export type matomoAccountRequestSchemaType = z.infer<
     typeof matomoAccountRequestSchema
 >;
 
+export const sentryAccountRequestSchema = z.object({
+    teams: z.array(
+        z.object({
+            name: z.string(),
+        })
+    ),
+});
+
+export type sentryAccountRequestSchemaType = z.infer<
+    typeof sentryAccountRequestSchema
+>;
+
 export const matomoAccountRequestWrapperSchema = z.object({
     data: matomoAccountRequestSchema,
     service: z.literal(SERVICES.MATOMO),
@@ -25,6 +37,7 @@ export type matomoAccountRequestWrapperSchemaType = z.infer<
 
 export const sentryAccountRequestWrapperSchema = z.object({
     service: z.literal(SERVICES.SENTRY),
+    data: sentryAccountRequestSchema,
 });
 
 export type sentryAccountRequestWrapperSchemaType = z.infer<

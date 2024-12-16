@@ -1,6 +1,10 @@
 import z from "zod";
 
-import { MaintenanceWrapperDataSchema } from "./maintenance";
+import {
+    MaintenanceDataSchema,
+    MaintenanceWrapperDataSchema,
+} from "./maintenance";
+import { SentryRole } from "@/lib/sentry";
 
 export const CreateMattermostAccountDataSchema =
     MaintenanceWrapperDataSchema.extend({
@@ -27,7 +31,42 @@ export const CreateMatomoAccountDataSchema =
                 url: z.string(),
             })
         ),
+        username: z.string(),
     }).strict();
 export type CreateMatomoAccountDataSchemaType = z.infer<
     typeof CreateMatomoAccountDataSchema
+>;
+
+export const CreateSentryAccountDataSchema =
+    MaintenanceWrapperDataSchema.extend({
+        teams: z.array(
+            z.object({
+                teamSlug: z.string(),
+                teamRole: z.nativeEnum(SentryRole),
+            })
+        ),
+        email: z.string().email(),
+        username: z.string(), // used to logged infortion
+        userUuid: z.string(),
+    }).strict();
+export type CreateSentryAccountDataSchemaType = z.infer<
+    typeof CreateSentryAccountDataSchema
+>;
+
+export const UpdateSentryAccountDataSchema =
+    MaintenanceWrapperDataSchema.extend({
+        teams: z.array(
+            z.object({
+                teamSlug: z.string(),
+                teamRole: z.nativeEnum(SentryRole),
+            })
+        ),
+        email: z.string().email(),
+        username: z.string(), // used to logged infortion
+        userUuid: z.string(),
+        memberId: z.string(),
+    }).strict();
+
+export type UpdateSentryAccountDataSchemaType = z.infer<
+    typeof UpdateSentryAccountDataSchema
 >;
