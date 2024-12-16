@@ -269,9 +269,5 @@ export default {
     S3_REGION: process.env.S3_REGION,
     // basic protection for public api routes
     PROTECTED_API_KEYS: getArrayFromEnv("PROTECTED_API_KEYS"),
-    PROTECTED_API_ALLOWED_ORIGINS: getArrayFromEnv(
-        "PROTECTED_API_ALLOWED_ORIGINS",
-        ["gouv.fr", "ademe.fr"]
-    ),
-    SENTRY_WEBSITE_URL: process.env.SENTRY_WEBSITE_URL,
+    PROTECTED_API_ALLOWED_ORIGINS: getArrayFromEnv("PROTECTED_API_ALLOWED_ORIGINS", ["gouv.fr", "ademe.fr"]),
 };

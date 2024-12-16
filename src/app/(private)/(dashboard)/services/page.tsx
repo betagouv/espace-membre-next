@@ -73,17 +73,6 @@ export default async function Page() {
                                         </Badge>
                                     )
                                 )
-                                .with(
-                                    {
-                                        status: ACCOUNT_SERVICE_STATUS.ACCOUNT_INVITATION_SENT,
-                                    },
-                                    () => (
-                                        <Badge severity="new">
-                                            Tu as reçu une invitation par email
-                                            pour te connecter.
-                                        </Badge>
-                                    )
-                                )
                                 .otherwise(() => (
                                     <Badge noIcon>Pas de compte</Badge>
                                 ))}

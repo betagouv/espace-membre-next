@@ -219,15 +219,6 @@ export interface PullRequests {
   username: string | null;
 }
 
-export interface SentryTeams {
-  created_at: Generated<Timestamp>;
-  id: Generated<string>;
-  name: string;
-  sentry_id: string;
-  startup_id: string | null;
-  updated_at: Generated<Timestamp>;
-}
-
 export interface ServiceAccounts {
   account_type: string;
   created_at: Generated<Timestamp>;
@@ -476,7 +467,6 @@ export interface DB {
   organizations: Organizations;
   phases: Phases;
   pull_requests: PullRequests;
-  sentry_teams: SentryTeams;
   service_accounts: ServiceAccounts;
   sessions: Sessions;
   startup_aggregated_stats: StartupAggregatedStats;
