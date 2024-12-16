@@ -1,4 +1,6 @@
 import Table from "@codegouvfr/react-dsfr/Table";
+import { isAfter } from "date-fns/isAfter";
+import { isBefore } from "date-fns/isBefore";
 import { redirect } from "next/navigation";
 import { getServerSession } from "next-auth/next";
 
@@ -7,6 +9,7 @@ import SentryServiceForm from "@/components/Service/SentryServiceForm";
 import * as hstore from "@/lib/hstore";
 import { db, sql } from "@/lib/kysely";
 import { getServiceAccount } from "@/lib/kysely/queries/services";
+import { getUserStartups } from "@/lib/kysely/queries/users";
 import { EventCodeToReadable } from "@/models/actionEvent";
 import { sentryServiceInfoToModel } from "@/models/mapper/sentryMapper";
 import { sentryUserSchemaType } from "@/models/sentry";
@@ -40,9 +43,21 @@ export default async function SentryPage() {
         ? sentryServiceInfoToModel(rawAccount)
         : undefined;
 
+    const now = new Date();
+    const startups = (await getUserStartups(session.user.uuid)).filter(
+        (startup) => {
+            return isAfter(now, startup.start ?? 0);
+        }
+    );
+
     const sentryTeams = await db
         .selectFrom("sentry_teams")
         .selectAll()
+        .where(
+            "startup_id",
+            "in",
+            startups.map((s) => s.uuid)
+        )
         .execute();
 
     const sentryEvents = await db
