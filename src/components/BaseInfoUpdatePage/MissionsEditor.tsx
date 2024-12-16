@@ -75,8 +75,7 @@ export const Mission = ({
         : "";
 
     const onMissionAutoEndClick = () => {
-        let startDate;
-        startDate = startDateValue ? new Date(startDateValue) : new Date();
+        const startDate = new Date();
         const endDate = addMonths(startDate, 3);
 
         setValue(`${missionArrayKey}.${index}.end`, endDate, {
