@@ -26,6 +26,8 @@ export const startupInfoUpdateSchema = z.object({
         fast: startupSchema.shape.fast,
         thematiques: startupSchema.shape.thematiques,
         description: startupSchema.shape.description,
+        has_mobile_app: startupSchema.shape.has_mobile_app,
+        is_private_url: startupSchema.shape.is_private_url,
     }),
     shot: z
         .instanceof(FileType)

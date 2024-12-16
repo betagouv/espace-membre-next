@@ -286,6 +286,18 @@ export const startupSchema = z.object({
         })
         .min(30)
         .describe("Décrivez votre produit, son public, ses objectifs"),
+    has_mobile_app: z
+        .boolean()
+        .describe("Le produit propose une application mobile")
+        .optional()
+        .nullable(),
+    is_private_url: z
+        .boolean()
+        .describe(
+            "L'application n'est pas accessible au public (accès restreint)"
+        )
+        .optional()
+        .nullable(),
 });
 
 export type startupSchemaType = z.infer<typeof startupSchema>;

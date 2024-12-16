@@ -574,6 +574,32 @@ export function StartupForm(props: StartupFormProps) {
                     </div>
                     {/*[FILE UPLOAD ]<hr />*/}
                     <BasicInput id="link" />
+                    <Checkbox
+                        options={[
+                            {
+                                label: startupInfoUpdateSchema.shape.startup
+                                    .shape.is_private_url.description,
+                                hintText:
+                                    "Cochez cette case si votre application n'est pas accessible sur internet",
+                                nativeInputProps: {
+                                    ...register("startup.is_private_url"),
+                                },
+                            },
+                        ]}
+                    />
+                    <Checkbox
+                        options={[
+                            {
+                                label: startupInfoUpdateSchema.shape.startup
+                                    .shape.has_mobile_app.description,
+                                hintText:
+                                    "Cochez cette case si votre produit propose une application mobile",
+                                nativeInputProps: {
+                                    ...register("startup.has_mobile_app"),
+                                },
+                            },
+                        ]}
+                    />
                     <BasicInput id="repository" />
                     <BasicInput id="dashlord_url" />
 
