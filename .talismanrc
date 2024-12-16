@@ -13,8 +13,6 @@ fileignoreconfig:
   checksum: 1ec9acf039a7d336e710ef7b47c385eb7080293ee2750c2cf99e9056cde7f129
 - filename: src/app/(private)/(dashboard)/services/page.tsx
   checksum: d5831365d79840fb38be03632d6c58f37c239bade853577164c2149d5b280cb7
-- filename: src/app/(private)/(dashboard)/services/sentry/page.tsx
-  checksum: 685b3f177bb6124655bb439beb6f3cb4ecdbbeb62adeab9e1f56e811a09a9f5b
 - filename: src/app/api/member/[username]/route.ts
   checksum: a5371c646bc9955b72b6cdb5ee3aef340004a092d9e70bbbe4b308c940880370
 - filename: src/app/api/services/actions.ts
@@ -30,7 +28,7 @@ fileignoreconfig:
 - filename: src/components/MemberPage/MemberPage.tsx
   checksum: d7e1d2aa3b94b36055a1cee44c29b8818cd734c7a454c63e11eb0ad6a6877c56
 - filename: src/components/MemberPage/MemberStatus.tsx
-  checksum: 474f6e2aac6c83149f61d75e5f4bc65c0cffd2410fcf563ea30e06fcb7fbffcf
+  checksum: f19832e5406549275ade3ca63ee169a16095c29776b88a985ebe395b239b934d
 - filename: src/components/NewsletterPage/NewsletterPage.tsx
   checksum: 6b0b2109d112d5302ef35256a2febf53feadf65f5538acee4dce09f0d2da75eb
 - filename: src/components/SEPhaseSelect.tsx

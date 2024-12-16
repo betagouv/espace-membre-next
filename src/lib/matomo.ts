@@ -25,14 +25,9 @@ export interface MatomoUserAccess {
     type: string;
 }
 
-export enum MatomoAccess {
-    "admin" = "admin",
-    "view" = "view",
-}
-
 export interface MatomoUserAccess {
     site: number;
-    access: MatomoAccess; // Define access levels you want to check
+    access: "admin" | "view"; // Define access levels you want to check
 }
 
 export class Matomo implements AccountService {
@@ -230,7 +225,7 @@ export class Matomo implements AccountService {
     }: {
         userLogin: string;
         idSites: number[];
-        access: MatomoAccess;
+        access: "admin" | "view";
     }): Promise<void> {
         try {
             const response = await fetch(`${this.apiUrl}/index.php`, {

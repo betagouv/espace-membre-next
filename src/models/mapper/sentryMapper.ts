@@ -18,7 +18,7 @@ export const sentryUserToModel = (
             if (team) {
                 const role = userMetadata.teamRoles.find(
                     (t) => t.teamSlug === team.slug
-                )?.teamRole;
+                )?.role;
                 teams.push({
                     id: team.id,
                     role: role
@@ -59,11 +59,9 @@ export const sentryServiceInfoToModel = (
 ): sentryUserSchemaType => {
     return {
         account_type: "sentry",
-        email: sentryUser.email || "",
+        email: "no email fetch",
         service_user_id: sentryUser.service_user_id,
-        metadata: (sentryUser.metadata || {
-            teams: [],
-        }) as sentryUserSchemaType["metadata"],
+        metadata: sentryUser.metadata as sentryUserSchemaType["metadata"],
         status:
             (sentryUser.status as ACCOUNT_SERVICE_STATUS) ||
             ACCOUNT_SERVICE_STATUS.ACCOUNT_FOUND,
