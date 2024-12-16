@@ -86,7 +86,7 @@ export default async function Page({ params }: Props) {
                 changes={changes.map((change) => startupChangeToModel(change))}
                 startupInfos={startup}
                 sentryTeams={sentryTeams}
-                matomoSites={matomoSties}
+                matomoSites={matomoSites}
                 members={startupMembers}
                 phases={phases}
             />
