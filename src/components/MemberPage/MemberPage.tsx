@@ -18,6 +18,8 @@ import { PrivateMemberChangeSchemaType } from "@/models/memberChange";
 import "./MemberPage.css";
 import { matomoUserSchemaType } from "@/models/matomo";
 import { sentryUserSchemaType } from "@/models/sentry";
+import Button from "@codegouvfr/react-dsfr/Button";
+import { match, P } from "ts-pattern";
 
 const mdParser = new MarkdownIt({
     html: true,
@@ -83,6 +85,23 @@ export default function MemberPage({
     avatar,
     isCurrentUser,
 }: MemberPageProps) {
+    const canEdit = isAdmin || isCurrentUser || sessionUserIsFromIncubatorTeam;
+    const linkToEditPage = match([
+        isAdmin,
+        isCurrentUser,
+        sessionUserIsFromIncubatorTeam,
+    ])
+        .with(
+            [true, P._, P._],
+            () => `/community/${userInfos.username}/admin-update`
+        )
+        .with([false, true, P._], () => `/account/base-info`)
+        .with(
+            [false, false, true],
+            () => `/community/${userInfos.username}/update`
+        )
+        .otherwise(() => "");
+
     const tabs = [
         {
             label: "Fiche Membre",
@@ -177,7 +196,22 @@ export default function MemberPage({
     ].filter((x) => !!x); // wth, Boolean doesnt work
     return (
         <div className="fr-mb-8v MemberPage">
-            <h1>{userInfos.fullname}</h1>
+            <h1>
+                {userInfos.fullname}
+                {canEdit && linkToEditPage && (
+                    <Button
+                        className=""
+                        style={{ float: "right" }}
+                        size="small"
+                        priority="secondary"
+                        linkProps={{
+                            href: linkToEditPage,
+                        }}
+                    >
+                        Modifier la fiche
+                    </Button>
+                )}
+            </h1>
             {isExpired && <MemberExpirationNotice userInfos={userInfos} />}
             <Tabs tabs={tabs} />
         </div>
