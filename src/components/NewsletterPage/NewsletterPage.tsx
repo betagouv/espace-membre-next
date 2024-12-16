@@ -102,9 +102,8 @@ export default function NewsletterPage({
 
                         <br />
                         <p>
-                            L'infolettre est lue et partagée pendant l'hebdo
-                            beta.gouv (chaque jeudi à 12h) puis envoyée après
-                            validation à partir de jeudi 18h
+                            L'infolettre est mise en forme par l'équipe d'animation (chaque mardi matin) sur la base des contenus proposés par la communauté sur le pad, puis envoyée 
+                            le mardi à 17h.
                         </p>
                     </div>
                 )}
