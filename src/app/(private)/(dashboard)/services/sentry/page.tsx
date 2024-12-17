@@ -46,19 +46,24 @@ export default async function SentryPage() {
     const now = new Date();
     const startups = (await getUserStartups(session.user.uuid)).filter(
         (startup) => {
-            return isAfter(now, startup.start ?? 0);
+            return (
+                isAfter(now, startup.start ?? 0) &&
+                isBefore(now, startup.end ?? Infinity)
+            );
         }
     );
 
-    const sentryTeams = await db
-        .selectFrom("sentry_teams")
-        .selectAll()
-        .where(
-            "startup_id",
-            "in",
-            startups.map((s) => s.uuid)
-        )
-        .execute();
+    const sentryTeams = !startups.length
+        ? []
+        : await db
+              .selectFrom("sentry_teams")
+              .selectAll()
+              .where(
+                  "startup_id",
+                  "in",
+                  startups.map((s) => s.uuid)
+              )
+              .execute();
 
     const sentryEvents = await db
         .selectFrom("events")

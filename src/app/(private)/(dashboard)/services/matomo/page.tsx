@@ -35,20 +35,25 @@ export default async function MatomoPage() {
     const now = new Date();
     const startups = (await getUserStartups(session.user.uuid)).filter(
         (startup) => {
-            return isAfter(now, startup.start ?? 0);
+            return (
+                isAfter(now, startup.start ?? 0) &&
+                isBefore(now, startup.end ?? Infinity)
+            );
         }
     );
 
-    const matomoSites = await db
-        .selectFrom("matomo_sites")
-        .selectAll()
-        .where(
-            "startup_id",
-            "in",
-            startups.map((s) => s.uuid)
-        )
-        .execute()
-        .then((data) => data.map((d) => matomoSiteToModel(d)));
+    const matomoSites = !startups.length
+        ? []
+        : await db
+              .selectFrom("matomo_sites")
+              .selectAll()
+              .where(
+                  "startup_id",
+                  "in",
+                  startups.map((s) => s.uuid)
+              )
+              .execute()
+              .then((data) => data.map((d) => matomoSiteToModel(d)));
 
     const matomoEvents = await db
         .selectFrom("events")
