@@ -1,5 +1,6 @@
 import Alert from "@codegouvfr/react-dsfr/Alert";
 import Table from "@codegouvfr/react-dsfr/Table";
+import { isAfter, isBefore } from "date-fns";
 import { redirect } from "next/navigation";
 import { getServerSession } from "next-auth/next";
 
@@ -8,6 +9,7 @@ import MatomoServiceForm from "@/components/Service/MatomoServiceForm";
 import * as hstore from "@/lib/hstore";
 import { db, sql } from "@/lib/kysely";
 import { getServiceAccount } from "@/lib/kysely/queries/services";
+import { getUserStartups } from "@/lib/kysely/queries/users";
 import { EventCodeToReadable } from "@/models/actionEvent/actionEvent";
 import {
     matomoServiceInfoToModel,
@@ -30,11 +32,28 @@ export default async function MatomoPage() {
         ? matomoServiceInfoToModel(rawAccount)
         : undefined;
 
-    const matomoSites = await db
-        .selectFrom("matomo_sites")
-        .selectAll()
-        .execute()
-        .then((data) => data.map((d) => matomoSiteToModel(d)));
+    const now = new Date();
+    const startups = (await getUserStartups(session.user.uuid)).filter(
+        (startup) => {
+            return (
+                isAfter(now, startup.start ?? 0) &&
+                isBefore(now, startup.end ?? Infinity)
+            );
+        }
+    );
+
+    const matomoSites = !startups.length
+        ? []
+        : await db
+              .selectFrom("matomo_sites")
+              .selectAll()
+              .where(
+                  "startup_id",
+                  "in",
+                  startups.map((s) => s.uuid)
+              )
+              .execute()
+              .then((data) => data.map((d) => matomoSiteToModel(d)));
 
     const matomoEvents = await db
         .selectFrom("events")

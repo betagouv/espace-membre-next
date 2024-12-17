@@ -1,8 +1,13 @@
 import { fr } from "@codegouvfr/react-dsfr";
 import Badge from "@codegouvfr/react-dsfr/Badge";
 import { Tile } from "@codegouvfr/react-dsfr/Tile";
+import coding from "@gouvfr/dsfr/dist/artwork/pictograms/digital/coding.svg";
+import dataviz from "@gouvfr/dsfr/dist/artwork/pictograms/digital/data-visualization.svg";
 import community from "@gouvfr/dsfr/dist/artwork/pictograms/environment/human-cooperation.svg";
 import locationFrance from "@gouvfr/dsfr/dist/artwork/pictograms/map/location-france.svg";
+import error from "@gouvfr/dsfr/dist/artwork/pictograms/system/error.svg";
+import information from "@gouvfr/dsfr/dist/artwork/pictograms/system/information.svg";
+import errortech from "@gouvfr/dsfr/dist/artwork/pictograms/system/technical-error.svg";
 import { StaticImageData } from "next/image";
 import { redirect } from "next/navigation";
 import { getServerSession } from "next-auth";
@@ -34,25 +39,34 @@ export default async function Page() {
         (s) => s.account_type === SERVICES.MATTERMOST
     );
 
-    const services = {
-        matomo,
-        sentry,
-        mattermost,
-    };
+    const services = [
+        {
+            service: SERVICES.MATOMO,
+            artwork: dataviz,
+        },
+        {
+            service: SERVICES.SENTRY,
+            artwork: error,
+        },
+        // {
+        //     service: mattermost,
+        //     artwork: information,
+        // },
+    ];
     return (
         <div className={fr.cx("fr-container", "fr-pb-6w")}>
             <h2 className={fr.cx("fr-pt-4w")}>Demandes d'accès outils</h2>
-            {Object.values(SERVICES).map((service) => (
+            {services.map((service) => (
                 <div
-                    key={service}
+                    key={service.service}
                     className={fr.cx("fr-grid-row", "fr-grid-row--gutters")}
                 >
                     <div className={fr.cx("fr-col-6")}>
                         <Tile
                             small={true}
                             // className={fr.cx("fr-tile--sm")}
-                            title={capitalizeWords(service)}
-                            desc={match(services[service])
+                            title={capitalizeWords(service.service)}
+                            desc={match(services[service.service])
                                 .with(
                                     {
                                         status: ACCOUNT_SERVICE_STATUS.ACCOUNT_FOUND,
@@ -90,9 +104,9 @@ export default async function Page() {
                             orientation="horizontal"
                             noIcon={true}
                             titleAs="h6"
-                            imageUrl={(community as StaticImageData).src}
+                            imageUrl={(service.artwork as StaticImageData).src}
                             linkProps={{
-                                href: `/services/${service}`,
+                                href: `/services/${service.service}`,
                             }}
                         />
                     </div>
