@@ -35,7 +35,7 @@ export async function verifyAuth(req: NextRequest) {
 
 // Allow having apex domain and subdomains
 // e.g. https://ademe.fr, https://www.ademe.fr, https://subdomain.ademe.fr
-const allowedOrigins = getArrayFromEnv("PROTECTED_API_ALLOWED_ORIGINS", ["gouv.fr", "ademe.fr"]).flatMap((origin) => origin === "*" ? /https:\/\/.*/ : [
+const allowedOrigins = getArrayFromEnv('PROTECTED_API_ALLOWED_ORIGINS', ['gouv.fr', 'ademe.fr']).flatMap((origin) => origin === '*' ? /https:\/\/.*/ : [
     new RegExp(`https://.*\\.${origin}`),
     new RegExp(`https://${origin}`),
 ]);
@@ -57,19 +57,19 @@ function getCorsHeaders(req: NextRequest): Record<string, string> {
 
 export async function middleware(req: NextRequest) {
     // control protected routes
-    if (req.nextUrl.pathname.startsWith("/api/protected/")) {
+    if (req.nextUrl.pathname.startsWith('/api/protected/')) {
         const headers = getCorsHeaders(req);
-        if (req.method === "OPTIONS") { // preflight request
+        if (req.method === 'OPTIONS') { // preflight request
             return NextResponse.json({}, { headers });
         }
 
-        const PROTECTED_API_KEYS = getArrayFromEnv("PROTECTED_API_KEYS")
-        if (!req.nextUrl.searchParams.has("apiKey")) {
-            return NextResponse.json({ error: { message: "Api key is required." }}, { status: HttpStatusCode.UnprocessableEntity, headers });
+        const PROTECTED_API_KEYS = getArrayFromEnv('PROTECTED_API_KEYS')
+        if (!req.headers.has('X-Api-Key')) {
+            return NextResponse.json({ error: { message: 'Api key is required.' }}, { status: HttpStatusCode.UnprocessableEntity, headers });
         }
-        const apiKey = req.nextUrl.searchParams.get('apiKey') ?? "";
+        const apiKey = req.headers.get('X-Api-Key') ?? '';
         if (!PROTECTED_API_KEYS.includes(apiKey)) {
-            return NextResponse.json({ error: { message: "Invalid api key." }}, { status: HttpStatusCode.Unauthorized, headers });
+            return NextResponse.json({ error: { message: 'Invalid api key.' }}, { status: HttpStatusCode.Unauthorized, headers });
         }
 
         const response = NextResponse.next();
