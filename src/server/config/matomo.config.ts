@@ -77,7 +77,7 @@ export class FakeMatomo implements AccountService {
     getSiteOrCreate(
         siteName: string,
         urls: string[],
-        siteType: "website" | "mobileapp" = "website"
+        siteType: MATOMO_SITE_TYPE = MATOMO_SITE_TYPE.website
     ): Promise<number> {
         const existingSite = this.sites.find((s) => s.main_url === urls[0]);
         if (existingSite) {
@@ -89,7 +89,7 @@ export class FakeMatomo implements AccountService {
     createSite(
         siteName: string,
         urls: string[],
-        siteType: "website" | "mobileapp" = "website"
+        siteType: MATOMO_SITE_TYPE = MATOMO_SITE_TYPE.website
     ): Promise<any> {
         const newId = this.lastId + 1;
         this.sites.push({

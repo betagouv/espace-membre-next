@@ -1,5 +1,6 @@
 // matomoClient.ts
 
+import { MATOMO_SITE_TYPE } from "@/models/actions/service";
 import { AccountService, SERVICES } from "@/models/services";
 
 // Define an interface for the Matomo User
@@ -301,7 +302,7 @@ export class Matomo implements AccountService {
     async getSiteOrCreate(
         siteName: string,
         urls: string[],
-        siteType: "website" | "mobileapp" = "website"
+        siteType: MATOMO_SITE_TYPE = "website"
     ): Promise<number> {
         // Check if a site with the given URL already exists
         const existingSiteId = await fetch(`${this.apiUrl}/index.php`, {
@@ -342,7 +343,7 @@ export class Matomo implements AccountService {
     async createSite(
         siteName: string,
         urls: string[],
-        siteType: "website" | "mobileapp" = "website"
+        siteType: MATOMO_SITE_TYPE = MATOMO_SITE_TYPE.website
     ): Promise<{ value: number }> {
         const body = new URLSearchParams({
             module: "API",

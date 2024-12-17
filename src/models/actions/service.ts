@@ -2,6 +2,11 @@ import { z } from "zod";
 
 import { SERVICES } from "../services";
 
+export enum MATOMO_SITE_TYPE {
+    "website" = "website",
+    "mobileapp" = "mobileapp",
+}
+
 export const matomoAccountRequestSchema = z.object({
     sites: z
         .array(
@@ -10,13 +15,11 @@ export const matomoAccountRequestSchema = z.object({
             })
         )
         .optional(),
-    newSites: z
-        .array(
-            z.object({
-                url: z.string(),
-            })
-        )
-        .optional(),
+    newSite: z.object({
+        url: z.string().url(),
+        type: z.nativeEnum(MATOMO_SITE_TYPE),
+        name: z.string().min(1).max(90),
+    }),
 });
 
 export type matomoAccountRequestSchemaType = z.infer<
