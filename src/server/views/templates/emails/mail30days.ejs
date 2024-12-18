@@ -1,0 +1,40 @@
+Bonjour <%= user.userInfos.fullname %> !  
+
+Un petit rappel concernant ta fiche membre chez beta.gouv.fr : lors de sa création ou de sa mise à jour, ta date de fin de mission a été fixée au <%= endDate %>. Cette échéance approche !
+
+## Pourquoi mettre à jour ta date de fin ?  
+Si cette date est incorrecte (par exemple, parce qu’elle a été renseignée provisoirement ou revue depuis), il est important de la mettre à jour dans l’espace membre.  
+Cela garantit que tes accès aux services tels que Mattermost, emails, et autres restent actifs.  
+
+## Comment mettre à jour ta fiche ?  
+Voici les options pour modifier ta date de fin :  
+1. **Depuis ton espace membre** : connecte-toi avec ton mail principal ou secondaire et mets à jour la date.  
+2. **Depuis un autre espace membre** : si besoin, demande à un membre de modifier tes dates de fin de mission en recherchant ta fiche sur son espace membre.
+
+💡 *En général, la nouvelle date de fin doit correspondre à la date du prochain comité d’investissement de ton produit (dans un maximum de 6 mois).*  
+
+Si tu n'y arrives toujours pas, pose ta question sur Mattermost dans le canal `~incubateur-entraide-communauté` ou contacte l’équipe support par email **contact@beta.gouv.fr** ou via le chat support présent sur l'espace membre ou le guide de la communauté.  
+
+## Et si ta mission se termine bientôt ?  
+Si ta mission arrive à son terme, plusieurs opportunités s’offrent à toi :   
+
+<% if (jobs.length) { %>
+- **Consulte les offres disponibles** : Tu trouveras de nombreuses offres sur [Welcome to the Jungle](https://www.welcometothejungle.com) correspondant à ton domaine.  
+<% for (var i =0; i < jobs.length;  i++ ) { %>
+- [<%= jobs[i].title.trim() %>](<%= jobs[i].url %>)
+<% } %>
+
+Tu peux retrouver toutes les offres ici : [welcome to the jungle](https://www.welcometothejungle.com/fr/companies/communaute-beta-gouv)
+
+<% } %> 
+
+<% if (!jobs.length) { %>   
+- **Consulte les offres disponibles** : Tu trouveras de nombreuses offres sur [Welcome to the Jungle](https://www.welcometothejungle.com).   [welcome to the jungle](https://www.welcometothejungle.com/fr/companies/communaute-beta-gouv)
+<% } %>
+
+- **Candidature spontanée** :  
+  - Contacte directement l’équipe qui t’intéresse.  
+  - Propose ton profil sur le canal `~incubateur-mission` sur Mattermost.  
+  - Remplis ce [formulaire de candidature spontanée](https://airtable.com/appXLqSgLFj0Zwjjw/shrzxJlITsisv09L6).  
+
+**Bonne journée et à bientôt !** 😊  
