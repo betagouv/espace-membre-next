@@ -19,7 +19,7 @@ Si tu n'y arrives toujours pas, pose ta question sur Mattermost dans le canal `~
 Si ta mission arrive à son terme, plusieurs opportunités s’offrent à toi :   
 
 <% if (jobs.length) { %>
-- **Consulte les offres disponibles** : Tu trouveras de nombreuses offres sur [Welcome to the Jungle](https://www.welcometothejungle.com) correspondant à ton domaine.  
+- **Consulte les offres disponibles** : 
 <% for (var i =0; i < jobs.length;  i++ ) { %>
 - [<%= jobs[i].title.trim() %>](<%= jobs[i].url %>)
 <% } %>
@@ -29,7 +29,7 @@ Tu peux retrouver toutes les offres ici : [welcome to the jungle](https://www.we
 <% } %> 
 
 <% if (!jobs.length) { %>   
-- **Consulte les offres disponibles** : Tu trouveras de nombreuses offres sur [Welcome to the Jungle](https://www.welcometothejungle.com).   [welcome to the jungle](https://www.welcometothejungle.com/fr/companies/communaute-beta-gouv)
+- **Consulte les offres disponibles** : Tu trouveras de nombreuses offres sur [Welcome to the Jungle](https://www.welcometothejungle.com/fr/companies/communaute-beta-gouv).
 <% } %>
 
 - **Candidature spontanée** :  
