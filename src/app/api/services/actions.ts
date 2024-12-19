@@ -185,7 +185,7 @@ const createOrUpdateMatomoAccount = async (
     const matomoAlreadyExists = !!matomoAccount?.service_user_id;
     const requestId = uuidv4();
 
-    if (matomoAlreadyExists) {
+    const callPgBoss = async () => {
         await bossClient.send(
             createOrUpdateMatomoServiceAccountTopic,
             CreateOrUpdateMatomoAccountDataSchema.parse({
@@ -204,6 +204,10 @@ const createOrUpdateMatomoAccount = async (
                 retryBackoff: true,
             }
         );
+    };
+
+    if (matomoAlreadyExists) {
+        await callPgBoss();
         await addEvent({
             action_code: EventCode.MEMBER_SERVICE_ACCOUNT_UPDATE_REQUESTED,
             action_metadata: {
@@ -227,24 +231,7 @@ const createOrUpdateMatomoAccount = async (
             created_by_username: user.username,
         });
     } else {
-        await bossClient.send(
-            createOrUpdateMatomoServiceAccountTopic,
-            CreateOrUpdateMatomoAccountDataSchema.parse({
-                email: user.primary_email,
-                login: user.primary_email,
-                username: user.username,
-                requestId: requestId,
-                password: encryptPassword(
-                    crypto.randomBytes(20).toString("base64").slice(0, -2)
-                ),
-                sites: matomoData.sites,
-                newSite: matomoData.newSite,
-            }),
-            {
-                retryLimit: 50,
-                retryBackoff: true,
-            }
-        );
+        await callPgBoss();
         await db
             .insertInto("service_accounts")
             .values({
