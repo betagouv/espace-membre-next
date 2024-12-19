@@ -1,12 +1,12 @@
 import { HttpStatusCode } from "axios";
 import {isBefore, isAfter} from "date-fns"
 
-import { isUserActive } from '@/components/CommunityPage/utils';
 import { getAllIncubators } from "@/lib/kysely/queries/incubators";
 import {  getUserBasicInfo, getUserStartups } from "@/lib/kysely/queries/users";
 import { getMattermostUserInfo } from '@/lib/mattermost';
 import { getAvatarUrl } from '@/lib/s3';
 import { memberBaseInfoToModel } from "@/models/mapper";
+import { isUserActive } from '@/utils/member';
 
 export async function GET(
     _: Request,

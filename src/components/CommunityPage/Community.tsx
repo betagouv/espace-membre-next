@@ -6,23 +6,22 @@ import Checkbox from "@codegouvfr/react-dsfr/Checkbox";
 import { fr } from "@codegouvfr/react-dsfr/fr";
 import Pagination from "@codegouvfr/react-dsfr/Pagination";
 import Table from "@codegouvfr/react-dsfr/Table";
+import { Tabs } from "@codegouvfr/react-dsfr/Tabs";
 import Tag from "@codegouvfr/react-dsfr/Tag";
 import Link from "next/link";
 import { useQueryState } from "nuqs";
-import { Tabs } from "@codegouvfr/react-dsfr/Tabs";
 
 import { CommunityProps } from ".";
 import { exportToCsv } from "./exportToCsv";
 import { Footer } from "./Footer";
-import { Map } from "../Map";
-
 import {
     getStartupsFromMissions,
-    isUserActive,
     communityQueryParser,
     type CommunityFilterSchemaType,
 } from "./utils";
 import AutoComplete from "../AutoComplete";
+import { Map } from "../Map";
+import { isUserActive } from '@/utils/member';
 import { linkRegistry } from "@/utils/routes/registry";
 
 // return table row for a given user
