@@ -92,11 +92,9 @@ describe("Service account creation by worker", () => {
                             id: 1,
                         },
                     ],
-                    newSites: [
-                        {
-                            url: "beta.gouv.fr",
-                        },
-                    ],
+                    newSite: {
+                        url: "beta.gouv.fr",
+                    },
                 },
             });
             const account = await db

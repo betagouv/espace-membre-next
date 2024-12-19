@@ -4,6 +4,7 @@ import React from "react";
 import { fr } from "@codegouvfr/react-dsfr";
 import { Alert } from "@codegouvfr/react-dsfr/Alert";
 import { Button } from "@codegouvfr/react-dsfr/Button";
+import { Input } from "@codegouvfr/react-dsfr/Input";
 import { Select } from "@codegouvfr/react-dsfr/Select";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useFieldArray, useForm } from "react-hook-form";
@@ -108,14 +109,55 @@ export default function SentryServiceForm(props: { teams }) {
                             onSubmit={handleSubmit(onSubmit)}
                             aria-label="Demander les accès a un ou plusieurs site sentry"
                         >
-                            <fieldset
-                                className="fr-mt-5v fr-mb-0v fr-fieldset"
-                                id="identity-fieldset"
-                                aria-labelledby="identity-fieldset-legend identity-fieldset-messages"
-                            >
-                                {teamFields.map((field, index) => (
-                                    <div
-                                        key={index}
+                            {!!teamFields.length && (
+                                <fieldset
+                                    className="fr-mt-5v fr-mb-0v fr-fieldset"
+                                    id="identity-fieldset"
+                                    aria-labelledby="identity-fieldset-legend identity-fieldset-messages"
+                                >
+                                    {teamFields.map((field, index) => (
+                                        <div
+                                            key={index}
+                                            className={fr.cx(
+                                                "fr-fieldset__element",
+                                                "fr-col-12",
+                                                "fr-col-lg-4",
+                                                "fr-col-md-4",
+                                                "fr-col-offset-lg-8--right",
+                                                "fr-col-offset-md-8--right"
+                                            )}
+                                        >
+                                            <Select
+                                                label="Équipe"
+                                                nativeSelectProps={{
+                                                    ...register(
+                                                        `teams.${index}.name`,
+                                                        {
+                                                            required: true,
+                                                        }
+                                                    ),
+                                                }}
+                                            >
+                                                <option
+                                                    value=""
+                                                    disabled
+                                                    hidden
+                                                >
+                                                    Selectionnez une option
+                                                </option>
+                                                {props.teams.map((team) => (
+                                                    <option
+                                                        key={team.slug}
+                                                        value={team.slug}
+                                                    >
+                                                        {team.name}
+                                                    </option>
+                                                ))}
+                                            </Select>
+                                        </div>
+                                    ))}
+
+                                    <Button
                                         className={fr.cx(
                                             "fr-fieldset__element",
                                             "fr-col-12",
@@ -124,55 +166,16 @@ export default function SentryServiceForm(props: { teams }) {
                                             "fr-col-offset-lg-8--right",
                                             "fr-col-offset-md-8--right"
                                         )}
+                                        iconId="fr-icon-add-circle-line"
+                                        priority="secondary"
+                                        size="small"
+                                        type="button"
+                                        onClick={addTeamClick}
                                     >
-                                        <Select
-                                            label="Équipe"
-                                            nativeSelectProps={{
-                                                // onChange: (event) =>
-                                                //     setSentryTeam(
-                                                //         event.target.value
-                                                //     ),
-                                                // sentryTeam,
-                                                ...register(
-                                                    `teams.${index}.name`,
-                                                    {
-                                                        required: true,
-                                                    }
-                                                ),
-                                            }}
-                                        >
-                                            <option value="" disabled hidden>
-                                                Selectionnez une option
-                                            </option>
-                                            {props.teams.map((team) => (
-                                                <option
-                                                    key={team.slug}
-                                                    value={team.slug}
-                                                >
-                                                    {team.name}
-                                                </option>
-                                            ))}
-                                        </Select>
-                                    </div>
-                                ))}
-                                <Button
-                                    className={fr.cx(
-                                        "fr-fieldset__element",
-                                        "fr-col-12",
-                                        "fr-col-lg-4",
-                                        "fr-col-md-4",
-                                        "fr-col-offset-lg-8--right",
-                                        "fr-col-offset-md-8--right"
-                                    )}
-                                    iconId="fr-icon-add-circle-line"
-                                    priority="secondary"
-                                    size="small"
-                                    type="button"
-                                    onClick={addTeamClick}
-                                >
-                                    Ajouter une équipe
-                                </Button>
-                            </fieldset>
+                                        Ajouter une équipe
+                                    </Button>
+                                </fieldset>
+                            )}
                             <Button
                                 className={fr.cx("fr-mt-3w")}
                                 disabled={isSaving}

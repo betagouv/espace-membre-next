@@ -1,44 +1,17 @@
 import { Selectable } from "kysely";
 
-import { BADGE_REQUEST, badgeRequestSchemaType } from "../badgeRequests";
-import { incubatorSchemaType } from "../incubator";
-import {
-    Domaine,
-    memberBaseInfoSchema,
-    memberBaseInfoSchemaType,
-    memberPublicInfoSchemaType,
-    memberSchemaType,
-} from "../member";
-import { PrivateMemberChangeSchemaType } from "../memberChange";
-import {
-    SponsorDomaineMinisteriel,
-    sponsorSchemaType,
-    SponsorType,
-} from "../sponsor";
-import {
-    StartupPhase,
-    eventSchemaType,
-    phaseSchemaType,
-    startupSchemaType,
-} from "../startup";
-import { teamSchemaType } from "../team";
-import {
-    BadgeRequests,
-    Events,
-    Incubators,
-    Missions,
-    Organizations,
-    Phases,
-    StartupEvents,
-    Teams,
-    Users,
-} from "@/@types/db";
-import { getStartup } from "@/lib/kysely/queries";
+import { Missions } from "@/@types/db";
 import {
     getAllUsersInfo,
     getUserByStartup,
     getUserInfos,
 } from "@/lib/kysely/queries/users";
+import {
+    Domaine,
+    memberBaseInfoSchema,
+    memberBaseInfoSchemaType,
+    memberSchemaType,
+} from "@/models/member";
 import {
     CommunicationEmailCode,
     EmailStatusCode,
@@ -46,14 +19,6 @@ import {
     LegalStatus,
     MemberType,
 } from "@/models/member";
-
-export function missionToModel(m: Selectable<Missions>) {
-    return {
-        ...m,
-        start: typeof m.start === "string" ? new Date(m.start) : m.start,
-        end: typeof m.end === "string" ? new Date(m.end) : m.end,
-    };
-}
 
 export function memberBaseInfoToMemberPublicInfoModel(
     user: memberBaseInfoSchemaType
@@ -111,18 +76,6 @@ export function memberPublicInfoToModel(
         primary_email_status: user.primary_email_status as EmailStatusCode,
     };
 }
-
-export function phaseToModel(phase: Selectable<Phases>): phaseSchemaType {
-    return {
-        uuid: phase.uuid,
-        end: phase.end,
-        start: phase.start,
-        comment: phase.comment,
-        startup_id: phase.startup_id,
-        name: phase.name as StartupPhase,
-    };
-}
-
 export function memberBaseInfoToModel(
     user:
         | Awaited<ReturnType<typeof getAllUsersInfo>>[0]
@@ -159,7 +112,6 @@ export function memberBaseInfoToModel(
         missions: user.missions.map((m) => missionToModel(m)),
         teams: user.teams,
         competences: (user.competences ? user.competences : []) as string[],
-        workplace_insee_code: user.workplace_insee_code,
     };
 }
 
@@ -193,88 +145,10 @@ export function userInfosToModel(
     };
 }
 
-export function badgeRequestToModel(
-    badgeRequest: Selectable<BadgeRequests>
-): badgeRequestSchemaType {
+export function missionToModel(m: Selectable<Missions>) {
     return {
-        ...badgeRequest,
-        dossier_number: badgeRequest.dossier_number as unknown as number,
-        ds_token: badgeRequest.ds_token!,
-        status: badgeRequest.status as BADGE_REQUEST,
-        id: badgeRequest.id as unknown as number,
-        end_date: badgeRequest.end_date as unknown as Date,
-        start_date: badgeRequest.start_date as unknown as Date,
-        updated_at: badgeRequest.updated_at as unknown as Date,
-        created_at: badgeRequest.created_at as unknown as Date,
-    };
-}
-
-export function incubatorToModel(
-    incubator: Selectable<Incubators>
-): incubatorSchemaType {
-    return {
-        uuid: incubator.uuid,
-        title: incubator.title,
-        owner_id: incubator.owner_id || "",
-        contact: incubator.contact || "",
-        ghid: incubator.ghid || "",
-        address: incubator.address,
-        website: incubator.website || "",
-        github: incubator.github || "",
-        description: incubator.description || "",
-        short_description: incubator.short_description || "",
-        highlighted_startups: incubator.highlighted_startups || [],
-    };
-}
-
-export function organizationToModel(
-    organization: Selectable<Organizations>
-): sponsorSchemaType {
-    return {
-        uuid: organization.uuid,
-        ghid: organization.ghid as string,
-        name: organization.name,
-        acronym: organization.acronym as string,
-        domaine_ministeriel:
-            organization.domaine_ministeriel as SponsorDomaineMinisteriel,
-        type: organization.type as SponsorType,
-    };
-}
-
-export function teamToModel(team: Selectable<Teams>): teamSchemaType {
-    return {
-        uuid: team.uuid,
-        name: team.name,
-        ghid: team.ghid || "",
-        mission: team.mission,
-        incubator_id: team.incubator_id,
-    };
-}
-
-export function memberChangeToModel(
-    memberChange: Selectable<Events>
-): PrivateMemberChangeSchemaType {
-    return {
-        created_at: memberChange.created_at,
-        created_by_username: memberChange.created_by_username,
-    };
-}
-
-export function startupChangeToModel(
-    memberChange: Selectable<Events>
-): PrivateMemberChangeSchemaType {
-    return {
-        created_at: memberChange.created_at,
-        created_by_username: memberChange.created_by_username,
-    };
-}
-
-export function startupEventToModel(
-    startupEvent: Selectable<StartupEvents>
-): eventSchemaType {
-    return {
-        ...startupEvent,
-        startup_id: startupEvent.startup_id as string,
-        name: startupEvent.name as eventSchemaType["name"],
+        ...m,
+        start: typeof m.start === "string" ? new Date(m.start) : m.start,
+        end: typeof m.end === "string" ? new Date(m.end) : m.end,
     };
 }

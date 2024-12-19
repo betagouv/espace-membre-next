@@ -1,4 +1,5 @@
 import { z } from "zod";
+import { missionSchema } from "./mission";
 
 interface Relationship {
     incubator: {
@@ -301,3 +302,20 @@ export const startupSchema = z.object({
 });
 
 export type startupSchemaType = z.infer<typeof startupSchema>;
+
+/*
+ * when getting only the startup of a specific users we get an object
+ * witch is a mix of missions and startups object with the minimal
+ * information about users
+ * */
+
+export const userStartupSchema = z.object({
+    uuid: startupSchema.shape.uuid,
+    ghid: startupSchema.shape.ghid,
+    name: startupSchema.shape.name,
+    end: missionSchema.shape.end,
+    start: missionSchema.shape.start,
+    incubator_id: startupSchema.shape.incubator_id,
+});
+
+export type userStartupSchemaType = z.infer<typeof userStartupSchema>;

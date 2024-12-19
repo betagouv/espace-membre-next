@@ -11,6 +11,7 @@ import {
     team,
 } from "./github-schemas";
 import { importFromZip, MarkdownData } from "./utils";
+import config from "@/server/config";
 import { db } from "@lib/kysely";
 
 const { Readable } = require("stream");
@@ -251,6 +252,7 @@ const insertData = async (markdownData: MarkdownData) => {
                     username: author.attributes.ghid,
                     competences: JSON.stringify(author.attributes.competences),
                     bio: author.body,
+                    primary_email: `${author.attributes.ghid}@${config.domain}`,
                 })
                 .onConflict((oc) => {
                     // update on username conflict
