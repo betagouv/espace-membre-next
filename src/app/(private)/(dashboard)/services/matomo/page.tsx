@@ -1,6 +1,7 @@
 import Alert from "@codegouvfr/react-dsfr/Alert";
 import Button from "@codegouvfr/react-dsfr/Button";
 import Table from "@codegouvfr/react-dsfr/Table";
+import { Selectable } from "@node_modules/kysely/dist/cjs";
 import { isAfter, isBefore } from "date-fns";
 import { redirect } from "next/navigation";
 import { getServerSession } from "next-auth/next";
@@ -53,18 +54,26 @@ export default async function MatomoPage() {
         })
         .map((startup) => userStartupToModel(startup));
 
-    const matomoSites = !startups.length
-        ? []
-        : await db
-              .selectFrom("matomo_sites")
-              .selectAll()
-              .where(
-                  "startup_id",
-                  "in",
-                  startups.map((s) => s.uuid)
-              )
-              .execute()
-              .then((data) => data.map((d) => matomoSiteToModel(d)));
+    let matomoSites: Selectable<"MatomoSite">[] = [];
+
+    if (session.user.isAdmin) {
+        matomoSites = await db
+            .selectFrom("matomo_sites")
+            .selectAll()
+            .execute()
+            .then((data) => data.map((d) => matomoSiteToModel(d)));
+    } else if (startups.length) {
+        matomoSites = await db
+            .selectFrom("matomo_sites")
+            .selectAll()
+            .where(
+                "startup_id",
+                "in",
+                startups.map((s) => s.uuid)
+            )
+            .execute()
+            .then((data) => data.map((d) => matomoSiteToModel(d)));
+    }
 
     const dbMatomoEvents = await db
         .selectFrom("events")
