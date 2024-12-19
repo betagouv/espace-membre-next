@@ -3,12 +3,12 @@ import { ReactNode } from "react";
 import { fr } from "@codegouvfr/react-dsfr";
 import Badge from "@codegouvfr/react-dsfr/Badge";
 import Table from "@codegouvfr/react-dsfr/Table";
-import { match } from "ts-pattern";
 
 import { MemberPageProps } from "./MemberPage";
 import { EmailStatusCode } from "@/models/member";
 import { EMAIL_STATUS_READABLE_FORMAT } from "@/models/misc";
-import { EMAIL_PLAN_TYPE } from "@/models/ovh";
+
+import { BadgeEmailPlan } from "../BadgeEmailPlan";
 
 export const MemberContact = ({
     userInfos,
@@ -32,33 +32,9 @@ export const MemberContact = ({
                     <a href={`mailto:${userInfos.primary_email}`}>
                         {userInfos.primary_email}
                     </a>
-                    {emailInfos &&
-                        (emailInfos.isPro ? (
-                            <Badge
-                                small
-                                className={fr.cx("fr-ml-1w")}
-                                severity="info"
-                            >
-                                OVH Pro
-                            </Badge>
-                        ) : emailInfos.isExchange ? (
-                            <Badge
-                                small
-                                className={fr.cx("fr-ml-1w")}
-                                severity="info"
-                            >
-                                OVH Exchange
-                            </Badge>
-                        ) : emailInfos.emailPlan ===
-                          EMAIL_PLAN_TYPE.EMAIL_PLAN_BASIC ? (
-                            <Badge
-                                small
-                                className={fr.cx("fr-ml-1w")}
-                                severity="info"
-                            >
-                                OVH MX
-                            </Badge>
-                        ) : null)}
+                    {emailInfos && (
+                        <BadgeEmailPlan plan={emailInfos.emailPlan} />
+                    )}
                     {userInfos.primary_email_status !==
                         EmailStatusCode.EMAIL_ACTIVE && (
                         <Badge

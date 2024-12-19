@@ -178,14 +178,14 @@ const betaOVH = {
             );
         };
         const promises: Promise<any>[] = [];
+
+        // todo: ajouter check OPI
         const url = `/email/domain/${config.domain}/account/${id}`;
         promises.push(
             ovh
                 .requestPromised("GET", url, {})
                 .then((data: any) => ({
                     ...data,
-                    isPro: false,
-                    isExchange: false,
                     emailPlan: EMAIL_PLAN_TYPE.EMAIL_PLAN_BASIC,
                 }))
                 .catch(errorHandler)
@@ -199,8 +199,6 @@ const betaOVH = {
                     .then((data) => ({
                         ...data,
                         emailPlan: EMAIL_PLAN_TYPE.EMAIL_PLAN_PRO,
-                        isPro: true,
-                        isExchange: false,
                         email: data.primaryEmailAddress,
                     }))
                     .catch(errorHandler)
@@ -214,13 +212,12 @@ const betaOVH = {
                     .then((data) => ({
                         ...data,
                         emailPlan: EMAIL_PLAN_TYPE.EMAIL_PLAN_EXCHANGE,
-                        isExchange: true,
-                        isPro: true,
                         email: data.primaryEmailAddress,
                     }))
                     .catch(errorHandler)
             );
         }
+        // check if OPI
         try {
             return await Promise.all(promises).then((data) => {
                 const emailInfos = data.filter((d) => d)[0];

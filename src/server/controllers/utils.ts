@@ -272,6 +272,7 @@ export async function userInfos(
                 options: { withDetails: true },
             })
         );
+        // TODO: check if email OPI
         const emailInfos = await BetaGouv.emailInfos(userInfos.username);
         const emailRedirections = await BetaGouv.redirectionsForId({
             from: userInfos.username,
