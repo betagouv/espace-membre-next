@@ -82,14 +82,12 @@ export default async function MatomoPage() {
     for (const event of dbMatomoEvents) {
         if (event.action_metadata) {
             const action_metadata = hstore.parse(event.action_metadata);
-            console.log(action_metadata);
             const eventObj = {
                 action_code: event.action_code,
                 action_metadata: action_metadata,
             };
             const { data, success, error } =
                 EventMatomoAccountPayloadSchema.safeParse(eventObj);
-            console.log(error);
             if (success) {
                 if (data.action_metadata.requestId) {
                     eventDictionnary[data.action_metadata.requestId] =

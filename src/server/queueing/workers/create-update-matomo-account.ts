@@ -54,7 +54,6 @@ export async function createOrUpdateMatomoServiceAccount(
             job.data.newSite.url ? [job.data.newSite.url] : [],
             job.data.newSite.type
         );
-        console.log("LCS CREATE SITE", siteId, typeof siteId);
         idSites.push(siteId);
         await db
             .insertInto("matomo_sites")

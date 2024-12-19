@@ -160,7 +160,6 @@ const AddMatomoServiceForm = ({ setAlertMessage, sites }) => {
         control,
         name: "sites",
     });
-    console.log(errors);
     return (
         <>
             <form
