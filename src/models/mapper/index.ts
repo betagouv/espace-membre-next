@@ -81,20 +81,6 @@ export function memberPublicInfoToModel(
         throw new Error("No users");
     }
     return {
-        // ...user,
-        // communication_email:
-        //     user.communication_email === CommunicationEmailCode.SECONDARY
-        //         ? CommunicationEmailCode.SECONDARY
-        //         : CommunicationEmailCode.PRIMARY,
-        // secondary_email: user.secondary_email || "",
-        // primary_email_status:
-        //     memberBaseInfoSchema.shape.primary_email_status.parse(
-        //         user.primary_email_status
-        //     ),
-        // username: user?.username || "",
-        // domaine: user.domaine as Domaine,
-        // missions: user.missions,
-        //
         uuid: user.uuid,
         username: user.username,
         fullname: user.fullname,
@@ -105,10 +91,6 @@ export function memberPublicInfoToModel(
         github: user.github,
         missions: user?.missions || [],
         teams: user?.teams || [],
-        //.map((mission) =>
-        //     missionToModel(mission)
-        // ),
-        // primary_email: true,
         primary_email_status: user.primary_email_status as EmailStatusCode,
     };
 }
