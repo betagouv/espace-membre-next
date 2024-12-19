@@ -138,6 +138,7 @@ const createOrUpdateSentryAccount = async (
                 username: user.username,
                 userUuid: user.uuid,
                 teams,
+                requestId,
             }),
             {
                 retryLimit: 50,

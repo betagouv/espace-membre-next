@@ -5,6 +5,7 @@ import sinon from "sinon";
 import testUsers from "./users.json";
 import utils from "./utils";
 import { db } from "@/lib/kysely";
+import { MATOMO_SITE_TYPE } from "@/models/actions/service";
 import {
     CreateOrUpdateMatomoAccountDataSchemaType,
     CreateSentryAccountDataSchemaType,
@@ -93,7 +94,9 @@ describe("Service account creation by worker", () => {
                         },
                     ],
                     newSite: {
-                        url: "beta.gouv.fr",
+                        url: "https://beta.gouv.fr",
+                        type: MATOMO_SITE_TYPE.website,
+                        startupId: "startupuuid",
                     },
                 },
             });
