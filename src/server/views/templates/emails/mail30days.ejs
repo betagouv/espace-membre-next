@@ -1,11 +1,25 @@
 Bonjour <%= user.userInfos.fullname %> !  
 
-Un petit mot pour te rappeler que lorsque ta fiche de membre chez beta.gouv.fr a été créée ou mise-à-jour, ta date de fin de mission a été définie pour le <%= endDate %>. Cette date est pour bientôt !
+Un petit rappel concernant ta fiche membre chez beta.gouv.fr : lors de sa création ou de sa mise à jour, ta date de fin de mission a été fixée au <%= endDate %>. Cette échéance approche !
 
-Si la date est incorrecte (tu l’avais peut-être mis sans avoir d’info sur la date réelle de fin, ou alors la date de fin a été revue), [mets-la à jour](https://doc.incubateur.net/communaute/travailler-a-beta-gouv/jutilise-les-outils-de-la-communaute/outils/mise-a-jour-de-mes-informations#comment-mettre-a-jour-mes-dates-de-mission) sur la page de [l'espace membre](https://espace-membre.incubateur.net/account/base-info) pour rester membre de la communauté.
+## Pourquoi mettre à jour ta date de fin ?  
+Si cette date est incorrecte (par exemple, parce qu’elle a été renseignée provisoirement ou revue depuis), il est important de la mettre à jour dans l’espace membre.  
+Cela garantit que tes accès aux services tels que Mattermost, emails, et autres restent actifs.  
+
+## Comment mettre à jour ta fiche ?  
+Voici les options pour modifier ta date de fin :  
+1. **Depuis ton espace membre** : connecte-toi avec ton mail principal ou secondaire et mets à jour la date.  
+2. **Depuis un autre espace membre** : si besoin, demande à un membre de modifier tes dates de fin de mission en recherchant ta fiche sur son espace membre.
+
+💡 *En général, la nouvelle date de fin doit correspondre à la date du prochain comité d’investissement de ton produit (dans un maximum de 6 mois).*  
+
+Si tu n'y arrives toujours pas, pose ta question sur Mattermost dans le canal `~incubateur-entraide-communauté` ou contacte l’équipe support par email **contact@beta.gouv.fr** ou via le chat support présent sur l'espace membre ou le guide de la communauté.  
+
+## Et si ta mission se termine bientôt ?  
+Si ta mission arrive à son terme, plusieurs opportunités s’offrent à toi :   
 
 <% if (jobs.length) { %>
-Si la date est correcte et que ta mission se termine, voici quelques offres actuellements ouvertes qui pourraient correspondre à ton domaine :
+- **Consulte les offres disponibles** : 
 <% for (var i =0; i < jobs.length;  i++ ) { %>
 - [<%= jobs[i].title.trim() %>](<%= jobs[i].url %>)
 <% } %>
@@ -14,17 +28,13 @@ Tu peux retrouver toutes les offres ici : [welcome to the jungle](https://www.we
 
 <% } %> 
 
-
 <% if (!jobs.length) { %>   
-Si la date est correcte et que ta mission se termine, tu peux retrouver toutes les offres sur : [welcome to the jungle](https://www.welcometothejungle.com/fr/companies/communaute-beta-gouv)
+- **Consulte les offres disponibles** : Tu trouveras de nombreuses offres sur [Welcome to the Jungle](https://www.welcometothejungle.com/fr/companies/communaute-beta-gouv).
 <% } %>
 
-Tu peux aussi proposer une candidature spontanée : 
-- En contactant directement l'équipe qui te fait rêver
-- En proposant ton profil sur le canal [~incubateur-embauche](https://mattermost.incubateur.net/betagouv/channels/incubateur-embauche)
-- En laissant tes coordonnées sur ce formulaire de [canditature spontanée](https://airtable.com/shrzxJlITsisv09L6)
+- **Candidature spontanée** :  
+  - Contacte directement l’équipe qui t’intéresse.  
+  - Propose ton profil sur le canal `~incubateur-mission` sur Mattermost.  
+  - Remplis ce [formulaire de candidature spontanée](https://airtable.com/appXLqSgLFj0Zwjjw/shrzxJlITsisv09L6).  
 
-Et enfin, tu peux consulter la documentation sur les bonnes pratiques pour faire un changement de mission :
-https://doc.incubateur.net/communaute/travailler-a-beta-gouv/se-former/changer-de-startup-changer-de-type-de-poste
-
-Bonne journée
+**Bonne journée et à bientôt !** 😊  
