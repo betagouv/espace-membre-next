@@ -18,55 +18,46 @@ const tools = [
     {
         title: "Matomo",
         description: "Analyse de traffic web",
-        imageUrl: (internet as StaticImageData).src,
         href: "https://stats.beta.gouv.fr",
     },
     {
         title: "GRIST",
         description: "Spreadsheets on steroïds",
-        imageUrl: (internet as StaticImageData).src,
         href: "https://grist.numerique.gouv.fr",
     },
     {
         title: "VaultWarden",
         description: "Gestionnaire de mots de passe",
-        imageUrl: (internet as StaticImageData).src,
         href: "https://vaultwarden.incubateur.net",
     },
     {
         title: "Visio",
         description: "Visio-conférences",
-        imageUrl: (internet as StaticImageData).src,
         href: "https://visio.numerique.gouv.fr",
     },
     {
         title: "Pad",
         description: "Pads partageables",
-        imageUrl: (internet as StaticImageData).src,
         href: "https://pad.numerique.gouv.fr",
     },
     {
         title: "France Transfert",
         description: "Envoi de fichiers sécurisé",
-        imageUrl: (internet as StaticImageData).src,
         href: "https://francetransfert.numerique.gouv.fr/upload",
     },
     {
         title: "Sentry",
         description: "Suivi des exceptions techniques",
-        imageUrl: (internet as StaticImageData).src,
         href: "https://sentry.incubateur.net",
     },
     {
         title: "UpDown.io",
         description: "Monitoring de disponibilité",
-        imageUrl: (internet as StaticImageData).src,
         href: "https://updown.io/p/8lotm",
     },
     {
         title: "DashLord",
         description: "Suivi des métriques techniques",
-        imageUrl: (internet as StaticImageData).src,
         href: "https://dashlord.incubateur.net",
     },
 ];
@@ -179,7 +170,7 @@ export function DashboardPage(props: DashboardPageProps) {
                             title={tool.title}
                             desc={tool.description}
                             orientation="horizontal"
-                            imageUrl={tool.imageUrl}
+                            imageUrl={(internet as StaticImageData).src}
                             linkProps={{
                                 href: tool.href,
                             }}
