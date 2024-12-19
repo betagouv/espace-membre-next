@@ -1,10 +1,11 @@
 import { z } from "zod";
 
 import {
-    EventMatomoAccountCreatedPayload,
-    EventMatomoAccountRequestedPayload,
-    EventMatomoAccountUpdatedPayload,
-    EventMatomoAccountUpdateRequestedPayload,
+    // EventMatomoAccountCreatedPayload,
+    EventMatomoAccountPayloadSchema,
+    // EventMatomoAccountRequestedPayload,
+    // EventMatomoAccountUpdatedPayload,
+    // EventMatomoAccountUpdateRequestedPayload,
     EventSentryAccountCreatedPayload,
     EventSentryAccountRequestedPayload,
     EventSentryAccountUpdatedPayload,
@@ -382,10 +383,11 @@ export type EventPayloads =
     | z.infer<typeof EventSentryAccountCreatedPayload>
     | z.infer<typeof EventSentryAccountUpdateRequestedPayload>
     | z.infer<typeof EventSentryAccountUpdatedPayload>
-    | z.infer<typeof EventMatomoAccountRequestedPayload>
-    | z.infer<typeof EventMatomoAccountCreatedPayload>
-    | z.infer<typeof EventMatomoAccountUpdateRequestedPayload>
-    | z.infer<typeof EventMatomoAccountUpdatedPayload>;
+    | z.infer<typeof EventMatomoAccountPayloadSchema>;
+// | z.infer<typeof EventMatomoAccountRequestedPayload>
+// | z.infer<typeof EventMatomoAccountCreatedPayload>
+// | z.infer<typeof EventMatomoAccountUpdateRequestedPayload>
+// | z.infer<typeof EventMatomoAccountUpdatedPayload>;
 
 export type EventAction = BaseActionEvent & EventPayloads;
 

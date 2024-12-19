@@ -23,9 +23,9 @@ export function flatten(target, opts) {
         currentDepth = currentDepth || 1;
         Object.keys(object).forEach(function (key) {
             const value = object[key];
-            const isarray = opts.safe && Array.isArray(value);
-            const type = Object.prototype.toString.call(value);
+            const isarray = Array.isArray(value);
             const isbuffer = isBuffer(value);
+            const type = Object.prototype.toString.call(value);
             const isobject =
                 type === "[object Object]" || type === "[object Array]";
 
@@ -43,7 +43,15 @@ export function flatten(target, opts) {
                 return step(value, newKey, currentDepth + 1);
             }
 
-            output[newKey] = value;
+            if (isarray) {
+                // Mark the key as an array
+                output[newKey + "__isArray"] = true;
+                value.forEach((item, index) => {
+                    step({ [index]: item }, newKey, currentDepth + 1);
+                });
+            } else {
+                output[newKey] = value;
+            }
         });
     }
 
@@ -68,11 +76,8 @@ export function unflatten(target, opts) {
         return target;
     }
 
-    // safely ensure that the key is
-    // an integer.
     function getkey(key) {
         const parsedKey = Number(key);
-
         return isNaN(parsedKey) || key.indexOf(".") !== -1 || opts.object
             ? key
             : parsedKey;
@@ -81,7 +86,6 @@ export function unflatten(target, opts) {
     function addKeys(keyPrefix, recipient, target) {
         return Object.keys(target).reduce(function (result, key) {
             result[keyPrefix + delimiter + key] = target[key];
-
             return result;
         }, recipient);
     }
@@ -99,6 +103,14 @@ export function unflatten(target, opts) {
             return !Object.keys(val).length;
         }
     }
+
+    // Check for `__isArray` markers and handle them appropriately
+    Object.keys(target).forEach((key) => {
+        if (key.endsWith("__isArray")) {
+            const baseKey = key.slice(0, -9); // Remove `__isArray` suffix
+            if (!result[baseKey]) result[baseKey] = [];
+        }
+    });
 
     target = Object.keys(target).reduce(function (result, key) {
         const type = Object.prototype.toString.call(target[key]);
@@ -127,7 +139,6 @@ export function unflatten(target, opts) {
             const isobject =
                 type === "[object Object]" || type === "[object Array]";
 
-            // do not write over falsey, non-undefined values if overwrite is false
             if (
                 !overwrite &&
                 !isobject &&
@@ -151,8 +162,13 @@ export function unflatten(target, opts) {
             }
         }
 
-        // unflatten again for 'messy objects'
-        recipient[key1] = unflatten(target[key], opts);
+        // Check if the current key is part of an array
+        if (key.endsWith("__isArray")) {
+            const baseKey = key.slice(0, -9);
+            if (!result[baseKey]) result[baseKey] = [];
+        } else {
+            recipient[key1] = unflatten(target[key], opts);
+        }
     });
 
     return result;

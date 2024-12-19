@@ -193,32 +193,6 @@ export function userInfosToModel(
     };
 }
 
-export function startupToModel(
-    startup: Awaited<ReturnType<typeof getStartup>>
-) {
-    if (!startup) {
-        throw new Error("No startups");
-    }
-    return {
-        ...startup,
-        mailing_list: startup.mailing_list || undefined,
-        contact: startup.contact || "",
-        incubator_id: startup.incubator_id as string,
-        description: startup.description || "",
-        pitch: startup.pitch || "",
-        techno: (startup.techno && Array.isArray(startup.techno)
-            ? startup.techno
-            : []) as string[],
-        thematiques: (startup.thematiques && Array.isArray(startup.thematiques)
-            ? startup.thematiques
-            : []) as string[],
-        usertypes: (startup.usertypes && Array.isArray(startup.usertypes)
-            ? startup.usertypes
-            : []) as string[],
-        repository: startup.repository || undefined,
-    };
-}
-
 export function badgeRequestToModel(
     badgeRequest: Selectable<BadgeRequests>
 ): badgeRequestSchemaType {

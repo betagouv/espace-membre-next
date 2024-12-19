@@ -49,6 +49,8 @@ fileignoreconfig:
   checksum: 1945d388ece9e30e247acfa902436849f78ffcd032047f8c0292173dddc8ea53
 - filename: src/lib/env.ts
   checksum: 1ec2fc5a95c4ee5015ca938ece2d9e0b942c770c93df3f688dd02da08d07ae20
+- filename: src/lib/flat.ts
+  checksum: 9d85e847b6ea44463e44012471c88fc13e78795881a440664fa694d41b23d5ee
 - filename: src/lib/hstore.ts
   checksum: a02535588a717719f9e51c324d78779afd8c08fe4904a4aae525b85f8720b0ef
 - filename: src/lib/matomo.ts

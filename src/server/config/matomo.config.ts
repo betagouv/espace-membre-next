@@ -6,6 +6,7 @@ import {
     MatomoUser,
     MatomoUserAccess,
 } from "@/lib/matomo";
+import { MATOMO_SITE_TYPE } from "@/models/actions/service";
 import { AccountService, SERVICES } from "@/models/services";
 
 export class FakeMatomo implements AccountService {
@@ -90,7 +91,7 @@ export class FakeMatomo implements AccountService {
         siteName: string,
         urls: string[],
         siteType: MATOMO_SITE_TYPE = MATOMO_SITE_TYPE.website
-    ): Promise<any> {
+    ): Promise<number> {
         const newId = this.lastId + 1;
         this.sites.push({
             idsite: newId,
@@ -99,7 +100,7 @@ export class FakeMatomo implements AccountService {
             type: siteType,
         });
         this.lastId = newId;
-        return Promise.resolve();
+        return Promise.resolve(newId);
     }
 
     async grantUserAccess({

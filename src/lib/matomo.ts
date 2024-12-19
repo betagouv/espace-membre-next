@@ -302,7 +302,7 @@ export class Matomo implements AccountService {
     async getSiteOrCreate(
         siteName: string,
         urls: string[],
-        siteType: MATOMO_SITE_TYPE = "website"
+        siteType: MATOMO_SITE_TYPE = MATOMO_SITE_TYPE.website
     ): Promise<number> {
         // Check if a site with the given URL already exists
         const existingSiteId = await fetch(`${this.apiUrl}/index.php`, {
@@ -330,7 +330,7 @@ export class Matomo implements AccountService {
 
         // If no site exists, create a new one
         const newSite = await this.createSite(siteName, urls, siteType);
-        return newSite.value; // Return the new site ID
+        return newSite; // Return the new site ID
     }
 
     /**
@@ -344,7 +344,7 @@ export class Matomo implements AccountService {
         siteName: string,
         urls: string[],
         siteType: MATOMO_SITE_TYPE = MATOMO_SITE_TYPE.website
-    ): Promise<{ value: number }> {
+    ): Promise<number> {
         const body = new URLSearchParams({
             module: "API",
             method: "SitesManager.addSite",
@@ -375,7 +375,7 @@ export class Matomo implements AccountService {
         }
         console.log(`Matomo: Site created with url : ${urls.join(",")}`);
 
-        return response.json();
+        return (await response.json()).value;
     }
 
     // Function to fetch all users from Matomo
