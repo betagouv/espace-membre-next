@@ -47,6 +47,7 @@ import {
     MemberType,
 } from "@/models/member";
 
+export * from "./startupMapper";
 export function missionToModel(m: Selectable<Missions>) {
     return {
         ...m,
