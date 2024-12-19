@@ -37,7 +37,9 @@ export const CreateMatomoServiceForm = ({
         resolver: zodResolver(matomoAccountRequestSchema),
         mode: "onChange",
         defaultValues: {
-            newSite: {},
+            newSite: {
+                type: MATOMO_SITE_TYPE.website,
+            },
         },
     });
     const router = useRouter();
@@ -77,6 +79,7 @@ export const CreateMatomoServiceForm = ({
         setIsSaving(false);
         window.scrollTo({ top: 20, behavior: "smooth" });
     };
+    console.log("zod errors :", errors);
     return (
         <>
             {!!alertMessage && (
