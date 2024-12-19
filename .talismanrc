@@ -16,7 +16,7 @@ fileignoreconfig:
 - filename: src/app/(private)/(dashboard)/services/matomo/page.tsx
   checksum: 186d7c96c48889c42229c2046a2cc219f0dc5165a15bb1e7166287f6b41f4dc0
 - filename: src/app/(private)/(dashboard)/services/page.tsx
-  checksum: 4468f4a6229bb7c2e974a9895183ae1fce5389f6fbf034c7ebc7fcda075267fe
+  checksum: 6e5763efa45450c3e2c0d30338e7fc045a2f2466e456a3391ec13f7dbc7b40c3
 - filename: src/app/(private)/(dashboard)/services/sentry/page.tsx
   checksum: 685b3f177bb6124655bb439beb6f3cb4ecdbbeb62adeab9e1f56e811a09a9f5b
 - filename: src/app/api/member/[username]/route.ts
