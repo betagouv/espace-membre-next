@@ -1,10 +1,12 @@
-import { Startups } from "@/@types/db";
-import { getUserStartups } from "@/lib/kysely/queries/users";
 import { Selectable } from "kysely";
+
 import { startupSchemaType, userStartupSchemaType } from "../startup";
+import { Startups } from "@/@types/db";
+import { getStartup } from "@/lib/kysely/queries";
+import { getUserStartups } from "@/lib/kysely/queries/users";
 
 export function startupToModel(
-    startup: Selectable<Startups>
+    startup: Awaited<ReturnType<typeof getStartup>>
 ): startupSchemaType {
     if (!startup) {
         throw new Error("No startups");
