@@ -9,10 +9,8 @@ import Input from "@codegouvfr/react-dsfr/Input";
 import { Select } from "@codegouvfr/react-dsfr/Select";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useRouter } from "@node_modules/next/navigation";
-import { useFieldArray, useForm } from "react-hook-form";
+import { useForm } from "react-hook-form";
 
-import { OptionType } from "../AutoComplete";
-import MatomoSiteSelect from "../MatomoSiteSelect";
 import SESelect, { StartupType } from "../SESelect";
 import { askAccountCreationForService } from "@/app/api/services/actions";
 import {
@@ -21,14 +19,12 @@ import {
     matomoAccountRequestSchemaType,
 } from "@/models/actions/service";
 import { AlertMessageType } from "@/models/common";
-import { matomoSiteSchemaType } from "@/models/matomo";
 import { SERVICES } from "@/models/services";
-import { startupSchemaType, userStartupSchemaType } from "@/models/startup";
 
 export const CreateMatomoServiceForm = ({
-    startups,
+    startupOptions,
 }: {
-    startups: userStartupSchemaType[];
+    startupOptions: StartupType[];
 }) => {
     const {
         register,
@@ -81,10 +77,6 @@ export const CreateMatomoServiceForm = ({
         setIsSaving(false);
         window.scrollTo({ top: 20, behavior: "smooth" });
     };
-    const startupOptions: StartupType[] = startups.map((startup) => ({
-        value: startup.uuid,
-        label: startup.name,
-    }));
     return (
         <>
             {!!alertMessage && (
@@ -104,7 +96,7 @@ export const CreateMatomoServiceForm = ({
                     }
                 />
             )}
-            {!startups.length && (
+            {!startupOptions.length && (
                 <Alert
                     small={true}
                     severity="warning"
