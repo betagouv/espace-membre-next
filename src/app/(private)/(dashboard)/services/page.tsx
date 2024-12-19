@@ -41,11 +41,13 @@ export default async function Page() {
 
     const services = [
         {
-            service: SERVICES.MATOMO,
+            account: matomo,
             artwork: dataviz,
+            serviceName: SERVICES.MATOMO,
         },
         {
-            service: SERVICES.SENTRY,
+            account: sentry,
+            serviceName: SERVICES.SENTRY,
             artwork: error,
         },
         // {
@@ -58,15 +60,15 @@ export default async function Page() {
             <h2 className={fr.cx("fr-pt-4w")}>Demandes d'accès outils</h2>
             {services.map((service) => (
                 <div
-                    key={service.service}
+                    key={service.serviceName}
                     className={fr.cx("fr-grid-row", "fr-grid-row--gutters")}
                 >
                     <div className={fr.cx("fr-col-6")}>
                         <Tile
                             small={true}
                             // className={fr.cx("fr-tile--sm")}
-                            title={capitalizeWords(service.service)}
-                            desc={match(services[service.service])
+                            title={capitalizeWords(service.serviceName || "")}
+                            desc={match(service.account)
                                 .with(
                                     {
                                         status: ACCOUNT_SERVICE_STATUS.ACCOUNT_FOUND,
@@ -106,7 +108,7 @@ export default async function Page() {
                             titleAs="h6"
                             imageUrl={(service.artwork as StaticImageData).src}
                             linkProps={{
-                                href: `/services/${service.service}`,
+                                href: `/services/${service.serviceName}`,
                             }}
                         />
                     </div>
