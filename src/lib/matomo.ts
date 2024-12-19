@@ -272,6 +272,7 @@ export class Matomo implements AccountService {
             });
 
             const responseBody = await response.json();
+            console.log(responseBody);
             // if sucess response body = { result: 'success', message: 'ok' }
             if (responseBody.result === "error") {
                 throw new Error(
