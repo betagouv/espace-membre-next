@@ -100,7 +100,13 @@ export default async function MatomoPage() {
         }
     }
 
-    const MATOMO_EVENTS_TO_STATUS: Record<EventCode, string> = {
+    const MATOMO_EVENTS_TO_STATUS: Record<
+        | EventCode.MEMBER_SERVICE_ACCOUNT_REQUESTED
+        | EventCode.MEMBER_SERVICE_ACCOUNT_CREATED
+        | EventCode.MEMBER_SERVICE_ACCOUNT_UPDATE_REQUESTED
+        | EventCode.MEMBER_SERVICE_ACCOUNT_UPDATED,
+        string
+    > = {
         [EventCode.MEMBER_SERVICE_ACCOUNT_REQUESTED]: "en cours",
         [EventCode.MEMBER_SERVICE_ACCOUNT_CREATED]: "compte créé",
         [EventCode.MEMBER_SERVICE_ACCOUNT_UPDATE_REQUESTED]: "en cours",
