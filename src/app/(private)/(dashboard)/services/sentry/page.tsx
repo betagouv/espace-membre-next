@@ -117,6 +117,7 @@ export default async function SentryPage() {
                                   ])
                                 : []
                         }
+                        nbEvents={sentryEvents.length}
                         headers={["nom", "niveau d'accès"]}
                     />
                 </>
