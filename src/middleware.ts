@@ -35,7 +35,7 @@ export async function verifyAuth(req: NextRequest) {
 
 // Allow having apex domain and subdomains
 // e.g. https://ademe.fr, https://www.ademe.fr, https://subdomain.ademe.fr
-const allowedOrigins = getArrayFromEnv('PROTECTED_API_ALLOWED_ORIGINS', ['gouv.fr', 'ademe.fr']).flatMap((origin) => origin === '*' ? /https:\/\/.*/ : [
+const allowedOrigins = getArrayFromEnv('PROTECTED_API_ALLOWED_ORIGINS', ['gouv.fr', 'ademe.fr', 'incubateur.net']).flatMap((origin) => origin === '*' ? /https:\/\/.*/ : [
     new RegExp(`https://.*\\.${origin}`),
     new RegExp(`https://${origin}`),
 ]);

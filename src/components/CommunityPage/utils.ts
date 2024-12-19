@@ -21,13 +21,6 @@ export const communityQueryParser = parseAsArrayOf(
     parseAsJson(communityFilterSchema.parse)
 ).withDefault([]);
 
-// return if user is still active at community level
-export const isUserActive = (
-    missions: CommunityProps["users"][number]["missions"]
-) => {
-    return missions.filter((m) => !m.end || m.end > new Date()).length > 0;
-};
-
 // list unique active startups from someone missions
 export const getStartupsFromMissions = (
     missions: CommunityProps["users"][number]["missions"],
