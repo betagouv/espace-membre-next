@@ -116,9 +116,6 @@ export default async function MatomoPage() {
     const formatMetadata = (
         data: EventMatomoAccountPayloadSchemaType["action_metadata"]
     ) => {
-        // if (metadata) {
-        //     const data = hstore.parse(metadata);
-        //     console.log(data);
         if ("sites" in data && data["sites"] && data["sites"].length) {
             const siteObj = data["sites"].map((site) =>
                 matomoSites.find((matomoSite) => site.id === matomoSite.id)
@@ -190,9 +187,6 @@ export default async function MatomoPage() {
                     />
                 </>
             )}
-            {/* {service_account &&
-                service_account.status ===
-                    ACCOUNT_SERVICE_STATUS.ACCOUNT_FOUND && ( */}
             <Button
                 linkProps={{
                     href: "/services/matomo/request",
@@ -203,18 +197,6 @@ export default async function MatomoPage() {
                     ? "Créer mon compte matomo"
                     : `Faire un nouvelle demande d'accès à un site`}
             </Button>
-            {/* )} */}
-            {/* <h2 className="fr-mt-8v">Historique des événements</h2>
-            {!!matomoEvents.length && (
-                <Table
-                    headers={["Code", "Metadata", "Date"]}
-                    data={matomoEvents.map((e) => [
-                        EventCodeToReadable[e.action_code],
-                        formatMetadata(e.action_metadata),
-                        e.created_at.toDateString(),
-                    ])}
-                ></Table>
-            )} */}
         </>
     );
 }

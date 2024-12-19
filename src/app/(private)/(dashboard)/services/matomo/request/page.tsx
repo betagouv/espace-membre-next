@@ -1,18 +1,11 @@
-import Alert from "@codegouvfr/react-dsfr/Alert";
-import Button from "@codegouvfr/react-dsfr/Button";
-import Table from "@codegouvfr/react-dsfr/Table";
 import { isAfter, isBefore } from "date-fns";
 import { redirect } from "next/navigation";
 import { getServerSession } from "next-auth/next";
 
-import AccountDetails from "@/components/Service/AccountDetails";
 import MatomoServiceForm from "@/components/Service/MatomoServiceForm";
-import * as hstore from "@/lib/hstore";
-import { db, sql } from "@/lib/kysely";
+import { db } from "@/lib/kysely";
 import { getServiceAccount } from "@/lib/kysely/queries/services";
 import { getUserStartups } from "@/lib/kysely/queries/users";
-import { EventCodeToReadable } from "@/models/actionEvent/actionEvent";
-import { startupToModel } from "@/models/mapper";
 import {
     matomoServiceInfoToModel,
     matomoSiteToModel,
@@ -56,16 +49,6 @@ export default async function MatomoPage() {
               )
               .execute()
               .then((data) => data.map((d) => matomoSiteToModel(d)));
-    console.log(matomoSites);
-
-    const matomoEvents = await db
-        .selectFrom("events")
-        .where("action_on_username", "=", session.user.id)
-        .where("action_code", "like", `%MEMBER_SERVICE%`)
-        .where(sql`action_metadata -> 'service'`, "=", `matomo`)
-        .selectAll()
-        .orderBy("created_at desc")
-        .execute();
 
     return (
         <>

@@ -1,7 +1,4 @@
-import { Selectable } from "kysely";
-
 import { startupSchemaType, userStartupSchemaType } from "../startup";
-import { Startups } from "@/@types/db";
 import { getStartup } from "@/lib/kysely/queries";
 import { getUserStartups } from "@/lib/kysely/queries/users";
 

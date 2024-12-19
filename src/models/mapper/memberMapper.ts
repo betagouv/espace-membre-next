@@ -11,8 +11,6 @@ import {
     memberBaseInfoSchema,
     memberBaseInfoSchemaType,
     memberSchemaType,
-} from "@/models/member";
-import {
     CommunicationEmailCode,
     EmailStatusCode,
     GenderCode,
