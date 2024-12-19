@@ -7,20 +7,20 @@ declare module "next-auth" {
             id: string; // Ajoutez l'ID utilisateur ici
             uuid: string;
             name?: string | null;
-            email?: string | null;
+            email: string;
             image?: string | null;
             isAdmin: boolean;
         };
     }
     interface User extends DefaultUser {
         id: string;
-        email?: string;
+        email: string;
         emailVerified: Date | null;
         uuid: string;
     }
     interface AdapterUser {
         id: string;
-        email?: string;
+        email: string;
         emailVerified: Date | null;
         uuid: string;
     }

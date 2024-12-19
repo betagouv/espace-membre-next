@@ -35,7 +35,7 @@ export const stringify = function (data) {
     const hstore = Object.keys(flattenData).map((key) => {
         const keyStr = escape_string(to_string(key));
         const value = flattenData[key];
-        if (value === null) {
+        if (value === null || value === undefined) {
             return `"${keyStr}"=>NULL`;
         } else {
             const valueStr = escape_string(to_string(value));

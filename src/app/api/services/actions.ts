@@ -4,6 +4,7 @@ import crypto from "crypto";
 import { getServerSession } from "next-auth";
 import PgBoss from "pg-boss";
 import { match } from "ts-pattern";
+import { v4 as uuidv4 } from "uuid";
 
 import { addEvent } from "@/lib/events";
 import { db } from "@/lib/kysely";
@@ -105,6 +106,7 @@ const createOrUpdateSentryAccount = async (
         teamSlug: t.name,
         teamRole: SentryRole.contributor,
     }));
+    const requestId = uuidv4();
     if (accountAlreadyExists) {
         await bossClient.send(
             updateSentryServiceAccountTopic,
@@ -114,6 +116,7 @@ const createOrUpdateSentryAccount = async (
                 userUuid: user.uuid,
                 memberId: sentryAccount.service_user_id,
                 teams,
+                requestId,
             })
         );
 
@@ -122,6 +125,7 @@ const createOrUpdateSentryAccount = async (
             action_metadata: {
                 service: SERVICES.SENTRY,
                 teams,
+                requestId,
             },
             action_on_username: user.username,
             created_by_username: user.username,
@@ -134,6 +138,7 @@ const createOrUpdateSentryAccount = async (
                 username: user.username,
                 userUuid: user.uuid,
                 teams,
+                requestId,
             }),
             {
                 retryLimit: 50,
@@ -155,6 +160,7 @@ const createOrUpdateSentryAccount = async (
             action_metadata: {
                 service: SERVICES.SENTRY,
                 teams,
+                requestId,
             },
             action_on_username: user.username,
             created_by_username: user.username,
@@ -177,56 +183,55 @@ const createOrUpdateMatomoAccount = async (
         .where("user_id", "=", user.uuid)
         .executeTakeFirst();
     const matomoAlreadyExists = !!matomoAccount?.service_user_id;
+    const requestId = uuidv4();
+
+    const callPgBoss = async () => {
+        await bossClient.send(
+            createOrUpdateMatomoServiceAccountTopic,
+            CreateOrUpdateMatomoAccountDataSchema.parse({
+                email: user.primary_email,
+                login: user.primary_email,
+                username: user.username,
+                requestId: requestId,
+                password: encryptPassword(
+                    crypto.randomBytes(20).toString("base64").slice(0, -2)
+                ),
+                sites: matomoData.sites,
+                newSite: matomoData.newSite,
+            }),
+            {
+                retryLimit: 50,
+                retryBackoff: true,
+            }
+        );
+    };
+
     if (matomoAlreadyExists) {
+        await callPgBoss();
         await addEvent({
             action_code: EventCode.MEMBER_SERVICE_ACCOUNT_UPDATE_REQUESTED,
             action_metadata: {
                 service: SERVICES.MATOMO,
+                requestId: requestId,
                 sites: (matomoData.sites || []).map((s) => ({
                     id: s.id,
                     access: MatomoAccess.admin,
                 })),
-                newSites: (matomoData.newSites || []).map((s) => ({
-                    url: s.url,
-                    access: MatomoAccess.admin,
-                })),
+                newSite: matomoData.newSite
+                    ? {
+                          url: matomoData.newSite.url,
+                          name: matomoData.newSite.name,
+                          type: matomoData.newSite.type,
+                          access: MatomoAccess.admin,
+                          startupId: matomoData.newSite.startupId,
+                      }
+                    : undefined,
             },
             action_on_username: user.username,
             created_by_username: user.username,
         });
-        await bossClient.send(
-            createOrUpdateMatomoServiceAccountTopic,
-            CreateOrUpdateMatomoAccountDataSchema.parse({
-                email: user.primary_email,
-                login: user.primary_email,
-                username: user.username,
-                password: encryptPassword(
-                    crypto.randomBytes(20).toString("base64").slice(0, -2)
-                ),
-                sites: matomoData.sites,
-            }),
-            {
-                retryLimit: 50,
-                retryBackoff: true,
-            }
-        );
     } else {
-        await bossClient.send(
-            createOrUpdateMatomoServiceAccountTopic,
-            CreateOrUpdateMatomoAccountDataSchema.parse({
-                email: user.primary_email,
-                login: user.primary_email,
-                username: user.username,
-                password: encryptPassword(
-                    crypto.randomBytes(20).toString("base64").slice(0, -2)
-                ),
-                sites: matomoData.sites,
-            }),
-            {
-                retryLimit: 50,
-                retryBackoff: true,
-            }
-        );
+        await callPgBoss();
         await db
             .insertInto("service_accounts")
             .values({
@@ -240,15 +245,21 @@ const createOrUpdateMatomoAccount = async (
         await addEvent({
             action_code: EventCode.MEMBER_SERVICE_ACCOUNT_REQUESTED,
             action_metadata: {
+                requestId: requestId,
                 service: SERVICES.MATOMO,
                 sites: (matomoData.sites || []).map((s) => ({
                     id: s.id,
                     access: MatomoAccess.admin,
                 })),
-                newSites: (matomoData.newSites || []).map((s) => ({
-                    url: s.url,
-                    access: MatomoAccess.admin,
-                })),
+                newSite: matomoData.newSite
+                    ? {
+                          url: matomoData.newSite.url,
+                          name: matomoData.newSite.name,
+                          type: matomoData.newSite.type,
+                          access: MatomoAccess.admin,
+                          startupId: matomoData.newSite.startupId,
+                      }
+                    : undefined,
             },
             action_on_username: user.username,
             created_by_username: user.username,

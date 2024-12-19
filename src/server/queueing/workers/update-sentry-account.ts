@@ -6,6 +6,8 @@ import { UpdateSentryAccountDataSchemaType } from "@/models/jobs/services";
 import { ACCOUNT_SERVICE_STATUS, SERVICES } from "@/models/services";
 import { sentryClient } from "@/server/config/sentry.config";
 import { decryptPassword } from "@/server/controllers/utils";
+import { EventCode } from "@/models/actionEvent";
+import { addEvent } from "@/lib/events";
 
 export const updateSentryServiceAccountTopic = "update-sentry-service-account";
 
@@ -39,6 +41,17 @@ export async function updateSentryServiceAccount(
         .where("account_type", "=", SERVICES.SENTRY)
         .where("user_id", "=", job.data.userUuid)
         .executeTakeFirstOrThrow();
+
+    await addEvent({
+        action_code: EventCode.MEMBER_SERVICE_ACCOUNT_UPDATED,
+        action_metadata: {
+            service: SERVICES.SENTRY,
+            teams: job.data.teams,
+            requestId: job.data.requestId,
+        },
+        action_on_username: job.data.username,
+        created_by_username: job.data.username,
+    });
 
     console.log(`the sentry account has been updated for ${job.data.username}`);
 }

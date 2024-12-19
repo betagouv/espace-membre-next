@@ -48,15 +48,23 @@ export async function createOrUpdateMatomoServiceAccount(
         }
     }
     const idSites: number[] = (job.data.sites || []).map((site) => site.id);
-    if (job.data.newSites) {
-        await pAll(
-            job.data.newSites.map((s) => async () => {
-                const siteId = await matomoClient.getSiteOrCreate(s.url, [
-                    s.url,
-                ]);
-                idSites.push(siteId);
-            })
+    if (job.data.newSite) {
+        const siteId = await matomoClient.createSite(
+            job.data.newSite.name || job.data.newSite.url,
+            job.data.newSite.url ? [job.data.newSite.url] : [],
+            job.data.newSite.type
         );
+        idSites.push(siteId);
+        await db
+            .insertInto("matomo_sites")
+            .values({
+                startup_id: job.data.newSite.startupId,
+                type: job.data.newSite.type,
+                name: job.data.newSite.name || job.data.newSite.url,
+                matomo_id: siteId,
+                url: job.data.newSite.url,
+            })
+            .execute();
     }
     await matomoClient.grantUserAccess({
         userLogin,
@@ -83,10 +91,16 @@ export async function createOrUpdateMatomoServiceAccount(
                 id: s.id,
                 access: MatomoAccess.admin,
             })),
-            newSites: (job.data.newSites || []).map((s) => ({
-                url: s.url,
-                access: MatomoAccess.admin,
-            })),
+            newSite: job.data.newSite
+                ? {
+                      url: job.data.newSite.url,
+                      name: job.data.newSite.name || job.data.newSite.url,
+                      type: job.data.newSite.type,
+                      access: MatomoAccess.admin,
+                      startupId: job.data.newSite.startupId,
+                  }
+                : undefined,
+            requestId: job.data.requestId,
         },
         action_on_username: job.data.username,
         created_by_username: job.data.username,

@@ -309,6 +309,26 @@ export function PrivateLayout({ children }: { children: React.ReactNode }) {
                                 pathname,
                                 "/services/matomo"
                             ),
+                            items: [
+                                {
+                                    href: "/services/matomo/request",
+                                    text: "Ajouter un site",
+                                    isActive: hasPathnameThisMatch(
+                                        pathname,
+                                        "/services/matomo/request"
+                                    ),
+                                    items: [
+                                        {
+                                            href: "/services/matomo/request/new",
+                                            text: "Créer un nouveau site",
+                                            isActive: hasPathnameThisMatch(
+                                                pathname,
+                                                "/services/matomo/request/new"
+                                            ),
+                                        },
+                                    ],
+                                },
+                            ],
                         },
                         {
                             href: "/services/mattermost",
