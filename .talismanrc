@@ -41,6 +41,8 @@ fileignoreconfig:
   checksum: 0415032e0a9fb86957148673924ac6e16bc1ffb4b1851091377d23a200562e5e
 - filename: src/components/SESponsorSelect.tsx
   checksum: ae63a1c0173015ad4e9e904e4f025eecb992aca7ca5c1cbf4086baf16470dfcf
+- filename: src/components/Service/CreateMatomoServiceForm.tsx
+  checksum: 2604444e919b0091b132574a270c719f474947d740f3195a8f078e3d0534fd20
 - filename: src/components/Service/MatomoServiceForm.tsx
   checksum: ef5418a9df94947e6fb2671f05916a50ad8dcfeb39ad02b8ac3e40a9529de8d7
 - filename: src/components/Service/SentryServiceForm.tsx
