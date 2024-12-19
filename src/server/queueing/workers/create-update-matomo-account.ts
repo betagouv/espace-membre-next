@@ -49,7 +49,8 @@ export async function createOrUpdateMatomoServiceAccount(
     }
     const idSites: number[] = (job.data.sites || []).map((site) => site.id);
     if (job.data.newSite) {
-        const siteId = await matomoClient.createSite(
+        // matomo doesn't check website unicity
+        const siteId = await matomoClient.getSiteOrCreate(
             job.data.newSite.name || job.data.newSite.url,
             job.data.newSite.url ? [job.data.newSite.url] : [],
             job.data.newSite.type
