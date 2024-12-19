@@ -106,13 +106,6 @@ export async function updatePasswordForUserHandler(
                     primary_email_status_updated_at: new Date(),
                 })
                 .execute();
-            await db
-                .updateTable("user_details")
-                .where("hash", "=", utils.computeHash(username))
-                .set({
-                    active: true,
-                })
-                .execute();
         }
         const message = `À la demande de ${req.auth.id} sur <${secretariatUrl}>, je change le mot de passe pour ${username}.`;
         await BetaGouv.sendInfoToChat(message);

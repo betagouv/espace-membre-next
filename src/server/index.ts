@@ -26,7 +26,6 @@ import config from "@/server/config";
 import { getToken } from "@/server/helpers/session";
 import * as indexController from "@controllers/indexController";
 //import * as pullRequestsController from "@controllers/pullRequestsController";
-import * as resourceController from "@controllers/resourceController";
 import { initializeSentry } from "@lib/sentry";
 
 const port = parseInt(process.env.PORT || "8100", 10);
@@ -96,8 +95,6 @@ const startServer = () => {
         server.use(adminRouter);
         // server.use(authRouter);
         server.use(badgeRouter);
-
-        server.get("/resources", resourceController.getResources);
 
         // Default catch-all handler to allow Next.js to handle all other routes
         server.all("*", (req, res) => {

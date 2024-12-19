@@ -194,8 +194,6 @@ export default {
     githubToken: process.env.GITHUB_TOKEN,
     githubOrganizationName: process.env.GITHUB_ORGANIZATION_NAME || "betagouv",
     githubOrgAdminToken: process.env.GITHUB_ORG_ADMIN_TOKEN,
-    githubRepository: process.env.GITHUB_REPOSITORY || "beta.gouv.fr",
-    githubFork: getOrThrowError("GITHUB_FORK"),
     defaultLoggedInRedirectUrl: "/account",
     sentryDSN: process.env.SENTRY_DSN || false,
     ESPACE_MEMBRE_ADMIN: process.env.ESPACE_MEMBRE_ADMIN
@@ -235,8 +233,6 @@ export default {
         : 10,
     OVH_EMAIL_PRO_NAME: process.env.OVH_EMAIL_PRO_NAME,
     OVH_EMAIL_EXCHANGE_NAME: process.env.OVH_EMAIL_EXCHANGE_NAME,
-    investigationReportsIframeURL:
-        process.env.INVESTIGATION_REPORTS_IFRAME_URL || "",
     incubateurMailingListName:
         process.env.INCUBATEUR_MAILING_LIST_NAME || "incubateur",
     JOBS_API: process.env.JOBS_API || "https://beta.gouv.fr/api/v2.5/jobs.json",

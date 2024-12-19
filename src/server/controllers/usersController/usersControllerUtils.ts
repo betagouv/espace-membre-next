@@ -29,13 +29,7 @@ export async function setEmailActive(username) {
             primary_email_status_updated_at: new Date(),
         })
         .execute();
-    await db
-        .updateTable("user_details")
-        .where("hash", "=", utils.computeHash(username))
-        .set({
-            active: true,
-        })
-        .execute();
+
     console.log(`Email actif pour ${user.username}`);
     if (shouldSendEmailCreatedEmail) {
         await sendEmailCreatedEmail(username);
@@ -57,13 +51,6 @@ export async function setEmailRedirectionActive(username) {
         .set({
             primary_email_status: EmailStatusCode.EMAIL_REDIRECTION_ACTIVE,
             primary_email_status_updated_at: new Date(),
-        })
-        .execute();
-    await db
-        .updateTable("user_details")
-        .where("hash", "=", utils.computeHash(username))
-        .set({
-            active: true,
         })
         .execute();
     console.log(`Email actif pour ${user.username}`);

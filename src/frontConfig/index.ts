@@ -65,7 +65,6 @@ export default {
     CHATWOOT_WEBSITE_TOKEN: process.env.NEXT_PUBLIC_CHATWOOT_WEBSITE_TOKEN,
     NEXT_PUBLIC_CHAT_SUPPORT_SERVICE:
         process.env.NEXT_PUBLIC_CHAT_SUPPORT_SERVICE,
-    githubRepository: process.env.GITHUB_REPOSITORY,
     SPONSOR_API:
         process.env.NEXT_PUBLIC_SPONSOR_API ||
         "https://beta.gouv.fr/api/v2.6/sponsors.json",
