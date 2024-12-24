@@ -19,27 +19,12 @@ export const AdminPanel = ({
     availableEmailPros: MemberPageProps["availableEmailPros"];
     authorizations: MemberPageProps["authorizations"];
 }) => {
-    const shouldDisplayUpgrade = Boolean(
-        availableEmailPros.length &&
-            emailInfos &&
-            !emailInfos.isPro &&
-            !emailInfos.isExchange
-    );
     return (
         <div className="fr-mb-8v">
             <h2>Actions admin</h2>
             <h3>Emails</h3>
             <ChangeSecondaryEmail userInfos={userInfos}></ChangeSecondaryEmail>
-            {shouldDisplayUpgrade && (
-                <Accordion label="Passer en compte pro">
-                    {shouldDisplayUpgrade && (
-                        <EmailUpgrade
-                            availableEmailPros={availableEmailPros}
-                            userInfos={userInfos}
-                        />
-                    )}
-                </Accordion>
-            )}
+
             {!emailInfos &&
                 ![
                     EmailStatusCode.EMAIL_CREATION_WAITING,

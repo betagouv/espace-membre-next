@@ -2,6 +2,7 @@ import { db } from "@/lib/kysely";
 import { getUserInfos } from "@/lib/kysely/queries/users";
 import { userInfosToModel } from "@/models/mapper";
 import { EmailStatusCode } from "@/models/member";
+import { EMAIL_PLAN_TYPE } from "@/models/ovh";
 import config from "@/server/config";
 import { sendEmail } from "@/server/config/email.config";
 import betagouv from "@betagouv";
@@ -80,9 +81,11 @@ export async function sendEmailCreatedEmail(username) {
     }
     try {
         const emailInfos = await betagouv.emailInfos(username);
-        if (emailInfos?.isPro) {
+        if (emailInfos?.emailPlan === EMAIL_PLAN_TYPE.EMAIL_PLAN_PRO) {
             emailUrl = "https://pro1.mail.ovh.net/";
-        } else if (emailInfos?.isExchange) {
+        } else if (
+            emailInfos?.emailPlan === EMAIL_PLAN_TYPE.EMAIL_PLAN_EXCHANGE
+        ) {
             emailUrl = "https://ex.mail.ovh.net/";
         }
     } catch (e) {

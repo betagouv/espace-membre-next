@@ -13,6 +13,7 @@ export enum EMAIL_PLAN_TYPE {
     EMAIL_PLAN_PRO = "EMAIL_PLAN_PRO",
     EMAIL_PLAN_EXCHANGE = "EMAIL_PLAN_EXCHANGE",
     EMAIL_PLAN_BASIC = "EMAIL_PLAN_BASIC",
+    EMAIL_PLAN_OPI = "EMAIL_PLAN_OPI",
 }
 // Interface OvhMailingList
 export const OvhMailingListSchema = z.object({
