@@ -4,6 +4,7 @@ import {
     MaintenanceDataSchema,
     MaintenanceWrapperDataSchema,
 } from "./maintenance";
+import { MATOMO_SITE_TYPE } from "../actions/service";
 import { SentryRole } from "@/lib/sentry";
 
 export const CreateMattermostAccountDataSchema =
@@ -14,6 +15,7 @@ export const CreateMattermostAccountDataSchema =
             .string()
             .min(6, "Le mot de passe doit contenir au moins 6 caractères"), // Valide que le mot de passe contient au moins 6 caractères
         position: z.string().min(2, "Le role est requis"),
+        requestId: z.string().uuid(),
     }).strict();
 export type CreateMattermostAccountDataSchemaType = z.infer<
     typeof CreateMattermostAccountDataSchema
@@ -33,14 +35,16 @@ export const CreateOrUpdateMatomoAccountDataSchema =
                 })
             )
             .optional(),
-        newSites: z
-            .array(
-                z.object({
-                    url: z.string(),
-                })
-            )
+        newSite: z
+            .object({
+                url: z.string(),
+                name: z.string().optional(),
+                type: z.nativeEnum(MATOMO_SITE_TYPE),
+                startupId: z.string(),
+            })
             .optional(),
         username: z.string(),
+        requestId: z.string().uuid(),
     }).strict();
 export type CreateOrUpdateMatomoAccountDataSchemaType = z.infer<
     typeof CreateOrUpdateMatomoAccountDataSchema
@@ -57,6 +61,7 @@ export const CreateSentryAccountDataSchema =
         email: z.string().email(),
         username: z.string(), // used to logged infortion
         userUuid: z.string(),
+        requestId: z.string().uuid(),
     }).strict();
 export type CreateSentryAccountDataSchemaType = z.infer<
     typeof CreateSentryAccountDataSchema
@@ -74,6 +79,7 @@ export const UpdateSentryAccountDataSchema =
         username: z.string(), // used to logged infortion
         userUuid: z.string(),
         memberId: z.string(),
+        requestId: z.string().uuid(),
     }).strict();
 
 export type UpdateSentryAccountDataSchemaType = z.infer<

@@ -47,6 +47,7 @@ import {
     MemberType,
 } from "@/models/member";
 
+export * from "./startupMapper";
 export function missionToModel(m: Selectable<Missions>) {
     return {
         ...m,
@@ -80,20 +81,6 @@ export function memberPublicInfoToModel(
         throw new Error("No users");
     }
     return {
-        // ...user,
-        // communication_email:
-        //     user.communication_email === CommunicationEmailCode.SECONDARY
-        //         ? CommunicationEmailCode.SECONDARY
-        //         : CommunicationEmailCode.PRIMARY,
-        // secondary_email: user.secondary_email || "",
-        // primary_email_status:
-        //     memberBaseInfoSchema.shape.primary_email_status.parse(
-        //         user.primary_email_status
-        //     ),
-        // username: user?.username || "",
-        // domaine: user.domaine as Domaine,
-        // missions: user.missions,
-        //
         uuid: user.uuid,
         username: user.username,
         fullname: user.fullname,
@@ -104,10 +91,6 @@ export function memberPublicInfoToModel(
         github: user.github,
         missions: user?.missions || [],
         teams: user?.teams || [],
-        //.map((mission) =>
-        //     missionToModel(mission)
-        // ),
-        // primary_email: true,
         primary_email_status: user.primary_email_status as EmailStatusCode,
     };
 }
@@ -190,32 +173,6 @@ export function userInfosToModel(
         missions: (user?.missions || []).map((mission) =>
             missionToModel(mission)
         ),
-    };
-}
-
-export function startupToModel(
-    startup: Awaited<ReturnType<typeof getStartup>>
-) {
-    if (!startup) {
-        throw new Error("No startups");
-    }
-    return {
-        ...startup,
-        mailing_list: startup.mailing_list || undefined,
-        contact: startup.contact || "",
-        incubator_id: startup.incubator_id as string,
-        description: startup.description || "",
-        pitch: startup.pitch || "",
-        techno: (startup.techno && Array.isArray(startup.techno)
-            ? startup.techno
-            : []) as string[],
-        thematiques: (startup.thematiques && Array.isArray(startup.thematiques)
-            ? startup.thematiques
-            : []) as string[],
-        usertypes: (startup.usertypes && Array.isArray(startup.usertypes)
-            ? startup.usertypes
-            : []) as string[],
-        repository: startup.repository || undefined,
     };
 }
 

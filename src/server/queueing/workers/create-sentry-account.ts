@@ -41,6 +41,7 @@ export async function createSentryServiceAccount(
         action_metadata: {
             service: SERVICES.SENTRY,
             teams: job.data.teams,
+            requestId: job.data.requestId,
         },
         action_on_username: job.data.username,
         created_by_username: job.data.username,

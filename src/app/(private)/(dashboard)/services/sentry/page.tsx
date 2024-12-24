@@ -1,4 +1,5 @@
 import Table from "@codegouvfr/react-dsfr/Table";
+import { Selectable } from "@node_modules/kysely/dist/cjs";
 import { isAfter } from "date-fns/isAfter";
 import { isBefore } from "date-fns/isBefore";
 import { redirect } from "next/navigation";
@@ -53,17 +54,21 @@ export default async function SentryPage() {
         }
     );
 
-    const sentryTeams = !startups.length
-        ? []
-        : await db
-              .selectFrom("sentry_teams")
-              .selectAll()
-              .where(
-                  "startup_id",
-                  "in",
-                  startups.map((s) => s.uuid)
-              )
-              .execute();
+    let sentryTeams: Selectable<"SentryTeams">[] = [];
+
+    if (session.user.isAdmin) {
+        sentryTeams = await db.selectFrom("sentry_teams").selectAll().execute();
+    } else if (startups.length) {
+        sentryTeams = await db
+            .selectFrom("sentry_teams")
+            .selectAll()
+            .where(
+                "startup_id",
+                "in",
+                startups.map((s) => s.uuid)
+            )
+            .execute();
+    }
 
     const sentryEvents = await db
         .selectFrom("events")
@@ -117,6 +122,7 @@ export default async function SentryPage() {
                                   ])
                                 : []
                         }
+                        nbEvents={sentryEvents.length}
                         headers={["nom", "niveau d'accès"]}
                     />
                 </>

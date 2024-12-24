@@ -6,6 +6,7 @@ import {  getUserBasicInfo, getUserStartups } from "@/lib/kysely/queries/users";
 import { getMattermostUserInfo } from '@/lib/mattermost';
 import { getAvatarUrl } from '@/lib/s3';
 import { memberBaseInfoToModel } from "@/models/mapper";
+import { isUserActive } from '@/utils/member';
 
 export async function GET(
     _: Request,
@@ -22,6 +23,7 @@ export async function GET(
     const member = memberBaseInfoToModel(dbUser);
     const avatar = await getAvatarUrl(dbUser.username);
     const mattermost = await getMattermostUserInfo(dbUser?.primary_email) ?? null;
+    const isActive = isUserActive(member.missions);
 
     const teams = member.teams
             ? member.teams.map((team) => {
@@ -54,5 +56,6 @@ export async function GET(
         mattermost,
         teams,
         startups,
+        isActive,
     });
 }
