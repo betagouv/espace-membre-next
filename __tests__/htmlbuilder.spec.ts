@@ -297,9 +297,9 @@ describe("Test EMAIL_ENDING_CONTRACT", () => {
                 jobs: [job],
             },
         });
-        emailBody.should.include(`le 11/12/2024`);
+        emailBody.should.include(`au 11/12/2024`);
         emailBody.should.include(`Bonjour Julien Dauphant`);
-        emailBody.should.include("Un petit mot pour te rappeler");
+        emailBody.should.include("Un petit rappel concernant ta fiche membre chez beta.gouv.fr");
         emailBody.should.include(job.url);
     });
 });
