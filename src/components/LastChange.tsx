@@ -10,23 +10,31 @@ import { CSSProperties } from "react";
 export const LastChange = ({
     changes,
     style,
+    as = "p",
 }: {
     changes: PrivateMemberChangeSchemaType[] | StartupChangeSchemaType[];
     style?: CSSProperties;
-}) =>
-    (changes.length && (
-        <p
-            style={{ color: "var(--text-mention-grey)", ...(style || {}) }}
-            className={fr.cx("fr-text--xs")}
-        >
-            Dernière modification le{" "}
-            {format(changes[0].created_at, "d MMMM yyyy", { locale: frLocale })}{" "}
-            par{" "}
-            <Link href={`/community/${changes[0].created_by_username}`}>
-                {changes[0].created_by_username}
-            </Link>
-        </p>
-    )) ||
-    null;
+    as?: React.ElementType;
+}) => {
+    const Component = as;
+    return (
+        (changes && changes.length && (
+            <Component
+                style={{ color: "var(--text-mention-grey)", ...(style || {}) }}
+                className={fr.cx("fr-text--xs")}
+            >
+                Dernière modification le{" "}
+                {format(changes[0].created_at, "d MMMM yyyy", {
+                    locale: frLocale,
+                })}{" "}
+                par{" "}
+                <Link href={`/community/${changes[0].created_by_username}`}>
+                    {changes[0].created_by_username}
+                </Link>
+            </Component>
+        )) ||
+        null
+    );
+};
 
 export default LastChange;
