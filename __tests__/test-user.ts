@@ -1174,7 +1174,7 @@ describe("User", () => {
 
     describe("cronjob", () => {
         before(async () => {
-            await knex("marrainage").truncate();
+            //await knex("marrainage").truncate();
         });
         let betagouvCreateEmail;
         beforeEach((done) => {
@@ -1240,7 +1240,7 @@ describe("User", () => {
                 const ovhEmailCreation = nock(/.*ovh.com/)
                     .post(/^.*email\/domain\/.*\/account/)
                     .reply(200);
-                await knex("login_tokens").truncate();
+                //await knex("login_tokens").truncate();
                 await db
                     .updateTable("users")
                     .where("username", "=", newMember.id)
@@ -1478,7 +1478,7 @@ describe("User", () => {
                 const ovhRedirectionCreation = nock(/.*ovh.com/)
                     .post(/^.*email\/domain\/.*\/redirection/)
                     .reply(200);
-                await knex("login_tokens").truncate();
+                //await knex("login_tokens").truncate();
                 const newMember = testUsers.find(
                     (user) => user.id === "membre.nouveau"
                 );

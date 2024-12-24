@@ -1,4 +1,6 @@
 fileignoreconfig:
+- filename: .env.development
+  checksum: 49e0e95ed5977f2cc0a6e218c866fcd6620957bbb35bf844b662db8494a0d62a
 - filename: .env.test
   checksum: 07171a40047c38771624063fb61511998d3961815c3dceb135a1ee6d540f970d
 - filename: .github/workflows/nodejs.yml
