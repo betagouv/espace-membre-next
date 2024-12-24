@@ -6,7 +6,7 @@ import Table from "@codegouvfr/react-dsfr/Table";
 import Tag from "@codegouvfr/react-dsfr/Tag";
 import Link from "next/link";
 import { format } from "date-fns";
-import { frenchSmallDate } from "@utils/date";
+import { frenchSmallDate } from "@/utils/date";
 
 import "./FileList.css";
 import { revalidatePath } from "next/cache";
