@@ -1,4 +1,6 @@
 "use client";
+
+import { ReactElement } from "react";
 import Accordion from "@codegouvfr/react-dsfr/Accordion";
 import { Table } from "@codegouvfr/react-dsfr/Table";
 import { Tabs } from "@codegouvfr/react-dsfr/Tabs";
@@ -8,13 +10,18 @@ import MarkdownIt from "markdown-it";
 import { matomoSiteSchemaType } from "@/models/matomoSite";
 import { memberBaseInfoSchemaType } from "@/models/member";
 import { sentryTeamSchemaType } from "@/models/sentryTeam";
-import { phaseSchemaType, startupSchemaType } from "@/models/startup";
+import {
+    phaseSchemaType,
+    StartupPhase,
+    startupSchemaType,
+} from "@/models/startup";
 import { StartupChangeSchemaType } from "@/models/startupChange";
 import { getCurrentPhase } from "@/utils/startup";
 import { StartupHeader } from "./StartupHeader";
 import { MemberTable } from "./MemberTable";
 import { getStartupFiles } from "@/app/api/startups/files/list";
 import { StartupFiles } from "../StartupFiles";
+import { Badge } from "@codegouvfr/react-dsfr/Badge";
 
 const mdParser = new MarkdownIt(/* Markdown-it options */);
 
@@ -84,16 +91,35 @@ export default function StartupPage({
                             Contacter l'équipe
                         </a>
                     </div>
-                    <MemberTable
-                        members={activeMembers}
-                        startup_id={startupInfos.uuid}
-                    />
-                    <Accordion label="Anciens membres">
+                    {(activeMembers.length && (
                         <MemberTable
-                            members={previousMembers}
+                            members={activeMembers}
                             startup_id={startupInfos.uuid}
                         />
-                    </Accordion>
+                    )) || (
+                        <div className={fr.cx("fr-my-4w")}>
+                            <i
+                                className={fr.cx(
+                                    "fr-icon--sm",
+                                    "fr-icon-warning-fill"
+                                )}
+                            />{" "}
+                            Aucun membre actif actuellement.
+                        </div>
+                    )}
+                    {(previousMembers.length && (
+                        <Accordion
+                            label="Anciens membres"
+                            expanded={true}
+                            onExpandedChange={() => {}}
+                        >
+                            <MemberTable
+                                members={previousMembers}
+                                startup_id={startupInfos.uuid}
+                            />
+                        </Accordion>
+                    )) ||
+                        null}
                 </>
             ),
         },
@@ -104,7 +130,12 @@ export default function StartupPage({
                     <Table
                         headers={["Nom", "Valeur"]}
                         data={[
-                            ["Phase", currentPhase],
+                            startupInfos.link && [
+                                "URL du produit",
+                                <a href={startupInfos.link} target="_blank">
+                                    {startupInfos.link}
+                                </a>,
+                            ],
                             [
                                 "Fiche beta.gouv.fr",
                                 <a
@@ -124,6 +155,7 @@ export default function StartupPage({
                                     {startupInfos.repository}
                                 </a>,
                             ],
+
                             [
                                 "Contact",
                                 <a href={`mailtor:${startupInfos.contact}`}>
@@ -210,35 +242,12 @@ export default function StartupPage({
                     changes={changes}
                     incubator={incubator}
                     sponsors={sponsors}
+                    currentPhase={currentPhase}
                 />
 
                 <div className={fr.cx("fr-col-12")}>
                     <Tabs tabs={tabs}></Tabs>
                 </div>
-
-                {/* <p className="fr-text--sm" style={{ fontStyle: "italic" }}>
-                    Une information n'est pas à jour ?
-                </p>
-                <ButtonsGroup
-                    inlineLayoutWhen="always"
-                    buttons={[
-                        {
-                            children: "Mettre à jour les infos",
-                            iconId: "fr-icon-edit-fill",
-                            linkProps: {
-                                href: `/startups/${startupInfos.uuid}/info-form`,
-                            },
-                        },
-                        {
-                            children: "Gérer les documents",
-                            iconId: "fr-icon-file-add-line",
-                            linkProps: {
-                                href: `/startups/${startupInfos.uuid}/files`,
-                            },
-                            priority: "secondary",
-                        },
-                    ]}
-                ></ButtonsGroup> */}
             </div>
         </>
     );
