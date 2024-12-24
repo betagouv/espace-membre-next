@@ -1,20 +1,66 @@
 import { Button } from "@codegouvfr/react-dsfr/Button";
+import { Badge } from "@codegouvfr/react-dsfr/Badge";
 import { Tag } from "@codegouvfr/react-dsfr/Tag";
 import { fr } from "@codegouvfr/react-dsfr/fr";
 
 import LastChange from "../LastChange";
 
 import { StartupPageProps } from "./StartupPage";
+import { StartupPhase } from "@/models/startup";
+import { ReactElement } from "@node_modules/@types/react";
+
+const BadgePhase = ({
+    phase,
+    className,
+}: {
+    phase: StartupPhase | null;
+    className?: string;
+}) => {
+    const phases: Record<StartupPhase, ReactElement> = {
+        investigation: (
+            <Badge severity="new" className={className}>
+                Succès
+            </Badge>
+        ),
+        construction: (
+            <Badge severity="info" className={className}>
+                Succès
+            </Badge>
+        ),
+        acceleration: (
+            <Badge severity="info" className={className}>
+                Accéleration
+            </Badge>
+        ),
+        transfer: (
+            <Badge severity="success" className={className}>
+                Transféré
+            </Badge>
+        ),
+        success: (
+            <Badge severity="success" className={className}>
+                Succès
+            </Badge>
+        ),
+        alumni: (
+            <Badge severity="warning" className={className}>
+                Partenariat abandonné
+            </Badge>
+        ),
+    };
+    return (phase && phases[phase]) || null;
+};
 
 export function StartupHeader({
     startupInfos,
     changes,
     incubator,
     sponsors,
+    currentPhase,
 }: Pick<
     StartupPageProps,
     "startupInfos" | "changes" | "incubator" | "sponsors"
->) {
+> & { currentPhase: StartupPhase | null }) {
     return (
         <>
             <div className={fr.cx("fr-col-12")}>
@@ -22,7 +68,9 @@ export function StartupHeader({
                     {startupInfos.name}
                     <Button
                         priority="secondary"
-                        linkProps={{ href: `/startups/${startupInfos.uuid}` }}
+                        linkProps={{
+                            href: `/startups/${startupInfos.uuid}/info-form`,
+                        }}
                         style={{ float: "right" }}
                     >
                         Modifier la fiche
@@ -39,16 +87,30 @@ export function StartupHeader({
                 </div>
             </div>
             <div className={fr.cx("fr-col-12")}>
+                <BadgePhase
+                    phase={currentPhase}
+                    className={fr.cx("fr-mr-2w")}
+                />
                 {startupInfos.link && (
-                    <a target="_blank" href={startupInfos.link}>
+                    <a
+                        target="_blank"
+                        href={startupInfos.link}
+                        className={fr.cx("fr-mr-2w")}
+                    >
                         {startupInfos.link}
                     </a>
                 )}
-                <LastChange
+                <a
+                    target="_blank"
+                    href={`https://beta.gouv.fr/startups/${startupInfos.ghid}`}
+                >
+                    Voir la fiche sur beta.gouv.fr
+                </a>
+                {/* <LastChange
                     as="span"
                     style={{ marginLeft: 10 }}
                     changes={changes}
-                />
+                /> */}
             </div>
             <div className={fr.cx("fr-col-12")}>
                 {incubator && (
@@ -97,16 +159,6 @@ export function StartupHeader({
                         </Tag>
                     ))) ||
                     null}
-            </div>
-            <div className={fr.cx("fr-col-12")}>
-                <Button priority="secondary">Modifier la fiche</Button>
-                <a
-                    target="_blank"
-                    className={fr.cx("fr-ml-2w")}
-                    href={`https://beta.gouv.fr/startups/${startupInfos.ghid}`}
-                >
-                    Voir la fiche sur beta.gouv.fr
-                </a>
             </div>
         </>
     );
