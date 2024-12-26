@@ -100,12 +100,6 @@ export function StartupHeader({
                         {startupInfos.link}
                     </a>
                 )}
-                <a
-                    target="_blank"
-                    href={`https://beta.gouv.fr/startups/${startupInfos.ghid}`}
-                >
-                    Voir la fiche sur beta.gouv.fr
-                </a>
                 {/* <LastChange
                     as="span"
                     style={{ marginLeft: 10 }}

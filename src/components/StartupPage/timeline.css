@@ -1,0 +1,33 @@
+.startup-timeline {
+  display: flex;
+  margin: 30px 0;
+}
+
+.startup-timeline > p {
+  border-top: 0.5rem solid var(--background-contrast-grey);
+  flex: 1 0 auto;
+  margin: 3px;
+  padding: 5px;
+}
+
+@media screen and (max-width: 768px) {
+  .startup-timeline {
+    display: block;
+  }
+  .startup-timeline > p {
+    width: 200px;
+    margin-bottom: 2rem;
+  }
+}
+
+.startup-timeline > p.active {
+  border-color: var(--background-action-low-blue-france);
+}
+
+.startup-timeline > p.success {
+  border-color: var(--background-action-low-green-emeraude);
+}
+
+.startup-timeline > p.finished {
+  border-color: var(--background-action-low-red-marianne);
+}
