@@ -100,6 +100,12 @@ export default async function Page({ params }: Props) {
     });
     const changes = await getEventListByStartupUuid(startup.uuid);
     const files = await getStartupFiles({ uuid: startup.uuid });
+    const events = await db
+        .selectFrom("startup_events")
+        .where("startup_id", "=", startup.uuid)
+        .selectAll()
+        .orderBy("date", "asc")
+        .execute();
     return (
         <>
             <BreadCrumbFiller
@@ -116,6 +122,7 @@ export default async function Page({ params }: Props) {
                 members={startupMembers}
                 phases={phases}
                 files={files}
+                events={events}
             />
         </>
     );
