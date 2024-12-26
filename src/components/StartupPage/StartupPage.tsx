@@ -1,29 +1,23 @@
 "use client";
 
-import { ReactElement } from "react";
-import Accordion from "@codegouvfr/react-dsfr/Accordion";
-import { Table } from "@codegouvfr/react-dsfr/Table";
 import { Tabs } from "@codegouvfr/react-dsfr/Tabs";
 import { fr } from "@codegouvfr/react-dsfr/fr";
-import MarkdownIt from "markdown-it";
 
 import { matomoSiteSchemaType } from "@/models/matomoSite";
 import { memberBaseInfoSchemaType } from "@/models/member";
 import { sentryTeamSchemaType } from "@/models/sentryTeam";
-import {
-    phaseSchemaType,
-    StartupPhase,
-    startupSchemaType,
-} from "@/models/startup";
+import { phaseSchemaType, startupSchemaType } from "@/models/startup";
 import { StartupChangeSchemaType } from "@/models/startupChange";
 import { getCurrentPhase } from "@/utils/startup";
 import { StartupHeader } from "./StartupHeader";
-import { MemberTable } from "./MemberTable";
 import { getStartupFiles } from "@/app/api/startups/files/list";
 import { StartupFiles } from "../StartupFiles";
-import { Badge } from "@codegouvfr/react-dsfr/Badge";
 
-const mdParser = new MarkdownIt(/* Markdown-it options */);
+import "./timeline.css";
+import { StartupMembers } from "./StartupMembers";
+import { StartupDescription } from "./StartupDescription";
+import { StartupTools } from "./StartupTools";
+import { StartupHistory } from "./StartupHistory";
 
 export interface StartupPageProps {
     startupInfos: startupSchemaType;
@@ -44,6 +38,13 @@ export interface StartupPageProps {
         acronym: string | null;
     }[];
     files: Awaited<ReturnType<typeof getStartupFiles>>;
+    events: {
+        uuid: string;
+        name: string;
+        comment: string | null;
+        startup_id: string | null;
+        date: Date;
+    }[];
 }
 
 export default function StartupPage({
@@ -56,125 +57,25 @@ export default function StartupPage({
     incubator,
     sponsors,
     files,
+    events,
 }: StartupPageProps) {
     const currentPhase = getCurrentPhase(phases); // todo get current phase
-    const activeMembers = members.filter((member) =>
-        member.missions.find(
-            (m) =>
-                m.startups?.includes(startupInfos.uuid) &&
-                (!m.end || m.end >= new Date())
-        )
-    );
-    const previousMembers = members.filter((member) =>
-        member.missions.find(
-            (m) =>
-                m.startups?.includes(startupInfos.uuid) &&
-                m.end &&
-                m.end < new Date()
-        )
-    );
 
     const tabs = [
         {
             label: "Équipe",
             isDefault: true,
             content: (
-                <>
-                    <div className={fr.cx("fr-mb-2w")}>
-                        <a href={`mailto:${startupInfos.contact}`}>
-                            <i
-                                className={fr.cx(
-                                    "fr-icon--sm",
-                                    "fr-icon-mail-fill"
-                                )}
-                            />{" "}
-                            Contacter l'équipe
-                        </a>
-                    </div>
-                    {(activeMembers.length && (
-                        <MemberTable
-                            members={activeMembers}
-                            startup_id={startupInfos.uuid}
-                        />
-                    )) || (
-                        <div className={fr.cx("fr-my-4w")}>
-                            <i
-                                className={fr.cx(
-                                    "fr-icon--sm",
-                                    "fr-icon-warning-fill"
-                                )}
-                            />{" "}
-                            Aucun membre actif actuellement.
-                        </div>
-                    )}
-                    {(previousMembers.length && (
-                        <Accordion
-                            label="Anciens membres"
-                            expanded={true}
-                            onExpandedChange={() => {}}
-                        >
-                            <MemberTable
-                                members={previousMembers}
-                                startup_id={startupInfos.uuid}
-                            />
-                        </Accordion>
-                    )) ||
-                        null}
-                </>
+                <StartupMembers members={members} startupInfos={startupInfos} />
             ),
         },
         {
             label: "Description",
-            content: (
-                <>
-                    <Table
-                        headers={["Nom", "Valeur"]}
-                        data={[
-                            startupInfos.link && [
-                                "URL du produit",
-                                <a href={startupInfos.link} target="_blank">
-                                    {startupInfos.link}
-                                </a>,
-                            ],
-                            [
-                                "Fiche beta.gouv.fr",
-                                <a
-                                    href={`https://beta.gouv.fr/startups/${startupInfos.ghid}`}
-                                    target="_blank"
-                                >
-                                    https://beta.gouv.fr/startups/
-                                    {startupInfos.ghid}
-                                </a>,
-                            ],
-                            startupInfos.repository && [
-                                "Code source",
-                                <a
-                                    href={startupInfos.repository}
-                                    target="_blank"
-                                >
-                                    {startupInfos.repository}
-                                </a>,
-                            ],
-
-                            [
-                                "Contact",
-                                <a href={`mailtor:${startupInfos.contact}`}>
-                                    {startupInfos.contact}
-                                </a>,
-                            ],
-                        ].filter((x) => !!x)}
-                    />
-                    <div
-                        dangerouslySetInnerHTML={{
-                            __html: mdParser.render(startupInfos.description),
-                        }}
-                    />
-                </>
-            ),
+            content: <StartupDescription startupInfos={startupInfos} />,
         },
         {
             label: "Historique",
-            content: "[TODO]",
+            content: <StartupHistory phases={phases} events={events} />,
         },
         {
             label: "Standards",
@@ -183,54 +84,15 @@ export default function StartupPage({
         {
             label: "Outils",
             content: (
-                <div className="fr-mb-4v">
-                    <h3>Outils</h3>
-                    <Accordion
-                        label="Matomo"
-                        expanded={true}
-                        onExpandedChange={(expanded, e) => {}}
-                    >
-                        {!matomoSites.length && (
-                            <p>Aucun site matomo n'est connecté à ce produit</p>
-                        )}
-                        {!!matomoSites.length && (
-                            <Table
-                                data={matomoSites.map((site) => [
-                                    site.name,
-                                    site.url,
-                                    site.type,
-                                ])}
-                                headers={["nom du site", "url", "type"]}
-                            ></Table>
-                        )}
-                    </Accordion>
-                    <Accordion
-                        label="Sentry"
-                        expanded={true}
-                        onExpandedChange={(expanded, e) => {}}
-                    >
-                        {!sentryTeams.length && (
-                            <p>
-                                Aucun équipe sentry n'est connecté à ce produit
-                            </p>
-                        )}
-                        {!!sentryTeams.length && (
-                            <Table
-                                data={sentryTeams.map((site) => [site.name])}
-                                headers={["nom de l'équipe"]}
-                            ></Table>
-                        )}
-                    </Accordion>
-                </div>
+                <StartupTools
+                    matomoSites={matomoSites}
+                    sentryTeams={sentryTeams}
+                />
             ),
         },
         {
             label: "Documents",
-            content: (
-                <>
-                    <StartupFiles startup={startupInfos} files={files} />
-                </>
-            ),
+            content: <StartupFiles startup={startupInfos} files={files} />,
         },
     ];
 
