@@ -8,16 +8,17 @@ import { memberBaseInfoSchemaType } from "@/models/member";
 import { sentryTeamSchemaType } from "@/models/sentryTeam";
 import { phaseSchemaType, startupSchemaType } from "@/models/startup";
 import { StartupChangeSchemaType } from "@/models/startupChange";
-import { getCurrentPhase } from "@/utils/startup";
-import { StartupHeader } from "./StartupHeader";
 import { getStartupFiles } from "@/app/api/startups/files/list";
-import { StartupFiles } from "../StartupFiles";
+import { getCurrentPhase } from "@/utils/startup";
 
 import "./timeline.css";
+import { StartupHeader } from "./StartupHeader";
 import { StartupMembers } from "./StartupMembers";
 import { StartupDescription } from "./StartupDescription";
-import { StartupTools } from "./StartupTools";
 import { StartupHistory } from "./StartupHistory";
+import { StartupStandards } from "./StartupStandards";
+import { StartupTools } from "./StartupTools";
+import { StartupFiles } from "../StartupFiles";
 
 export interface StartupPageProps {
     startupInfos: startupSchemaType;
@@ -79,7 +80,7 @@ export default function StartupPage({
         },
         {
             label: "Standards",
-            content: "[TODO]",
+            content: <StartupStandards startupInfos={startupInfos} />,
         },
         {
             label: "Outils",
@@ -97,20 +98,18 @@ export default function StartupPage({
     ];
 
     return (
-        <>
-            <div className={fr.cx("fr-grid-row", "fr-grid-row--gutters")}>
-                <StartupHeader
-                    startupInfos={startupInfos}
-                    changes={changes}
-                    incubator={incubator}
-                    sponsors={sponsors}
-                    currentPhase={currentPhase}
-                />
+        <div className={fr.cx("fr-grid-row", "fr-grid-row--gutters")}>
+            <StartupHeader
+                startupInfos={startupInfos}
+                changes={changes}
+                incubator={incubator}
+                sponsors={sponsors}
+                currentPhase={currentPhase}
+            />
 
-                <div className={fr.cx("fr-col-12")}>
-                    <Tabs tabs={tabs}></Tabs>
-                </div>
+            <div className={fr.cx("fr-col-12")}>
+                <Tabs tabs={tabs}></Tabs>
             </div>
-        </>
+        </div>
     );
 }
