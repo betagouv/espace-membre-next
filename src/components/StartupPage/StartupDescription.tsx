@@ -1,14 +1,25 @@
+import { startupSchemaType } from "@/models/startup";
 import { Table } from "@codegouvfr/react-dsfr/Table";
 import MarkdownIt from "markdown-it";
 
 const mdParser = new MarkdownIt(/* Markdown-it options */);
 
-export const StartupDescription = ({ startupInfos }) => {
+export const StartupDescription = ({
+    startupInfos,
+}: {
+    startupInfos: startupSchemaType;
+}) => {
     return (
         <>
             <Table
                 headers={["Nom", "Valeur"]}
                 data={[
+                    [
+                        "Contact",
+                        <a key="4" href={`mailto:${startupInfos.contact}`}>
+                            {startupInfos.contact}
+                        </a>,
+                    ],
                     startupInfos.link && [
                         "URL du produit",
                         <a key="1" href={startupInfos.link} target="_blank">
@@ -36,12 +47,9 @@ export const StartupDescription = ({ startupInfos }) => {
                             {startupInfos.repository}
                         </a>,
                     ],
-
-                    [
-                        "Contact",
-                        <a key="4" href={`mailto:${startupInfos.contact}`}>
-                            {startupInfos.contact}
-                        </a>,
+                    startupInfos.techno && [
+                        "Technologies",
+                        startupInfos.techno.join(", "),
                     ],
                 ].filter((x) => !!x)}
             />
