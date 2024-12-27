@@ -58,7 +58,7 @@ fileignoreconfig:
 - filename: src/components/StartupPage/MemberTable.tsx
   checksum: f1d168517e132fc962db2091298455c70fb127033724cd0409ce69359677e28c
 - filename: src/components/StartupPage/StartupDescription.tsx
-  checksum: bb36c940748b1da5281bdd6d5cebcd40ad79f62f64425076585269dfa3a3ddd0
+  checksum: 20dacf741b7701cb6f5c5d47ec5645fb79dbbd7eb6317df333a347cbba7512ec
 - filename: src/components/StartupPage/StartupHeader.tsx
   checksum: 8c2e104723a070f57d47f4b34be20f8ae794e0e36c203cf8507d8e60f221286f
 - filename: src/components/StartupPage/StartupHistory.tsx
