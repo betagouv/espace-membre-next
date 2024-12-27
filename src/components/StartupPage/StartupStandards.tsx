@@ -3,7 +3,7 @@ import { Accordion } from "@codegouvfr/react-dsfr/Accordion";
 import { fr } from "@codegouvfr/react-dsfr/fr";
 import { startupSchemaType } from "@/models/startup";
 
-const OK = ({}) => (
+const OK = () => (
     <i
         className={fr.cx("fr-icon--sm", "fr-icon-checkbox-line")}
         style={{
@@ -12,7 +12,7 @@ const OK = ({}) => (
     />
 );
 
-const NOK = ({}) => (
+const NOK = () => (
     <i
         className={fr.cx("fr-icon--sm", "fr-icon-warning-line")}
         style={{
