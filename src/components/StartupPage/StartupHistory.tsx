@@ -18,17 +18,12 @@ export const StartupHistory = ({
                     const startupPhase = phases.find(
                         (p) => p.name === StartupPhase[phase]
                     );
-                    const color = startupPhase
-                        ? ["success", "transfer"].includes(StartupPhase[phase])
-                            ? "success"
-                            : "active"
-                        : "";
                     if (
                         (StartupPhase[phase] === "transfer" ||
                             StartupPhase[phase] === "alumni") &&
                         !startupPhase
                     )
-                        return null;
+                        return null; // n'affiche pas les phases de transfert et alumni si elles n'existent pas
                     return (
                         <p
                             className={`${startupPhase ? "active" : ""} ${
