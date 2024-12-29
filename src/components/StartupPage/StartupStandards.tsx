@@ -27,7 +27,7 @@ const AccessibilityBadge = ({ status }: { status?: string | null }) => {
         status === "totalement conforme"
             ? "success"
             : status === "partiellement conforme"
-            ? "warning"
+            ? "info"
             : "error";
     return <Badge severity={severity}>{status || "inconnu"}</Badge>;
 };

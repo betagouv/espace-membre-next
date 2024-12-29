@@ -47,10 +47,11 @@ export const StartupDescription = ({
                             {startupInfos.repository}
                         </a>,
                     ],
-                    startupInfos.techno && [
-                        "Technologies",
-                        startupInfos.techno.join(", "),
-                    ],
+                    startupInfos.techno &&
+                        startupInfos.techno.length && [
+                            "Technologies",
+                            startupInfos.techno.join(", "),
+                        ],
                 ].filter((x) => !!x)}
             />
             <div
