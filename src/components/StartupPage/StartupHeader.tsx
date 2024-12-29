@@ -65,7 +65,7 @@ export function StartupHeader({
                 {incubator && (
                     <Tag
                         iconId="fr-icon-building-line"
-                        className={fr.cx("fr-mr-1w")}
+                        className={fr.cx("fr-mr-1w", "fr-mb-1w")}
                         linkProps={{ href: `/incubators/${incubator.uuid}` }}
                     >
                         {incubator.title}
@@ -76,7 +76,7 @@ export function StartupHeader({
                         <Tag
                             key={sponsor.uuid}
                             iconId="fr-icon-money-euro-box-line"
-                            className={fr.cx("fr-mr-1w")}
+                            className={fr.cx("fr-mr-1w", "fr-mb-1w")}
                             linkProps={{
                                 href: `/organizations/${sponsor.uuid}`,
                             }}
@@ -94,7 +94,7 @@ export function StartupHeader({
                             small
                             key={usertype}
                             iconId="fr-icon-user-line"
-                            className={fr.cx("fr-mr-1w")}
+                            className={fr.cx("fr-mr-1w", "fr-mb-1w")}
                         >
                             {usertype}
                         </Tag>
@@ -106,7 +106,7 @@ export function StartupHeader({
                             small
                             key={thematique}
                             iconId="fr-icon-file-line"
-                            className={fr.cx("fr-mr-1w")}
+                            className={fr.cx("fr-mr-1w", "fr-mb-1w")}
                         >
                             {thematique}
                         </Tag>
