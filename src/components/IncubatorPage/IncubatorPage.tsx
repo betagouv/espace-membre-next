@@ -1,20 +1,43 @@
-"use client";
+import Link from "next/link";
 
 import Button from "@codegouvfr/react-dsfr/Button";
+import Table from "@codegouvfr/react-dsfr/Table";
 
 import { incubatorSchemaType } from "@/models/incubator";
 
+import { getIncubatorStartups } from "@/lib/kysely/queries/incubators";
+
+import MarkdownIt from "markdown-it";
+import { BadgePhase } from "../StartupPage/BadgePhase";
+
+const mdParser = new MarkdownIt(/* Markdown-it options */);
+
 export interface IncubatorPageProps {
     incubatorInfos: incubatorSchemaType;
+    startups: Awaited<ReturnType<typeof getIncubatorStartups>>;
 }
 
-export default function IncubatorPage({ incubatorInfos }: IncubatorPageProps) {
+export default function IncubatorPage({
+    incubatorInfos,
+    startups,
+}: IncubatorPageProps) {
     return (
         <>
             <div className="fr-mb-8v">
-                <h1>{incubatorInfos.title}</h1>
+                <h1>
+                    {incubatorInfos.title}{" "}
+                    <Button
+                        style={{ float: "right" }}
+                        priority="secondary"
+                        linkProps={{
+                            href: `/incubators/${incubatorInfos.uuid}/info-form`,
+                        }}
+                    >
+                        Modifier la fiche
+                    </Button>
+                </h1>
                 <p>
-                    <span>
+                    {/* <span>
                         Fiche GitHub :{" "}
                         <a
                             className="fr-link"
@@ -39,7 +62,7 @@ export default function IncubatorPage({ incubatorInfos }: IncubatorPageProps) {
                             "Non renseigné"
                         )}
                     </span>
-                    <br />
+                    <br /> */}
                     <span>
                         Contact :{" "}
                         {incubatorInfos.contact && (
@@ -50,17 +73,23 @@ export default function IncubatorPage({ incubatorInfos }: IncubatorPageProps) {
                     </span>
                     <br />
                 </p>
-                <p className="fr-text--sm" style={{ fontStyle: "italic" }}>
-                    Une information n'est pas à jour ?
-                </p>
-                <Button
-                    linkProps={{
-                        href: `/incubators/${incubatorInfos.uuid}/info-form`,
-                    }}
-                >
-                    ✏️ Mettre à jour les infos
-                </Button>
             </div>
+            <div
+                dangerouslySetInnerHTML={{
+                    __html: mdParser.render(incubatorInfos.description),
+                }}
+            />
+            <br />
+            <br />
+            <h2>Produits numériques</h2>
+            <Table
+                headers={["Nom", "Phase", "Pitch"]}
+                data={startups.map((s) => [
+                    <Link href={`/startups/${s.uuid}`}>{s.name}</Link>,
+                    (s.phase && <BadgePhase phase={s.phase} />) || "-",
+                    s.pitch,
+                ])}
+            />
         </>
     );
 }

@@ -1,55 +1,10 @@
 import { Button } from "@codegouvfr/react-dsfr/Button";
-import { Badge } from "@codegouvfr/react-dsfr/Badge";
 import { Tag } from "@codegouvfr/react-dsfr/Tag";
 import { fr } from "@codegouvfr/react-dsfr/fr";
 
-import LastChange from "../LastChange";
-
 import { StartupPageProps } from "./StartupPage";
 import { StartupPhase } from "@/models/startup";
-import { ReactElement } from "@node_modules/@types/react";
-
-const BadgePhase = ({
-    phase,
-    className,
-}: {
-    phase: StartupPhase | null;
-    className?: string;
-}) => {
-    const phases: Record<StartupPhase, ReactElement> = {
-        investigation: (
-            <Badge severity="new" className={className}>
-                Succès
-            </Badge>
-        ),
-        construction: (
-            <Badge severity="info" className={className}>
-                Succès
-            </Badge>
-        ),
-        acceleration: (
-            <Badge severity="info" className={className}>
-                Accéleration
-            </Badge>
-        ),
-        transfer: (
-            <Badge severity="success" className={className}>
-                Transféré
-            </Badge>
-        ),
-        success: (
-            <Badge severity="success" className={className}>
-                Succès
-            </Badge>
-        ),
-        alumni: (
-            <Badge severity="warning" className={className}>
-                Partenariat abandonné
-            </Badge>
-        ),
-    };
-    return (phase && phases[phase]) || null;
-};
+import { BadgePhase } from "./BadgePhase";
 
 export function StartupHeader({
     startupInfos,
@@ -111,6 +66,7 @@ export function StartupHeader({
                     <Tag
                         iconId="fr-icon-building-line"
                         className={fr.cx("fr-mr-1w")}
+                        linkProps={{ href: `/incubators/${incubator.uuid}` }}
                     >
                         {incubator.title}
                     </Tag>
@@ -121,6 +77,9 @@ export function StartupHeader({
                             key={sponsor.uuid}
                             iconId="fr-icon-money-euro-box-line"
                             className={fr.cx("fr-mr-1w")}
+                            linkProps={{
+                                href: `/organizations/${sponsor.uuid}`,
+                            }}
                         >
                             {sponsor.name}
                             {sponsor.acronym && ` (${sponsor.acronym})`}
