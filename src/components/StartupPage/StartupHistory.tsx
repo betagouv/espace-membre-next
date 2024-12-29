@@ -30,7 +30,12 @@ export const StartupHistory = ({
                     )
                         return null;
                     return (
-                        <p className={color} key={phase}>
+                        <p
+                            className={`${startupPhase ? "active" : ""} ${
+                                StartupPhase[phase]
+                            }`}
+                            key={phase}
+                        >
                             <span className="fr-text--bold">
                                 {PHASE_READABLE_NAME[StartupPhase[phase]]}
                             </span>

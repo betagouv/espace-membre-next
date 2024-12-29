@@ -1,5 +1,6 @@
 import { Table } from "@codegouvfr/react-dsfr/Table";
 import { Accordion } from "@codegouvfr/react-dsfr/Accordion";
+import { Badge } from "@codegouvfr/react-dsfr/Badge";
 import { fr } from "@codegouvfr/react-dsfr/fr";
 import { startupSchemaType } from "@/models/startup";
 
@@ -21,6 +22,16 @@ const NOK = () => (
     />
 );
 
+const AccessibilityBadge = ({ status }: { status?: string | null }) => {
+    const severity =
+        status === "totalement conforme"
+            ? "success"
+            : status === "partiellement conforme"
+            ? "warning"
+            : "error";
+    return <Badge severity={severity}>{status || "inconnu"}</Badge>;
+};
+
 export const StartupStandards = ({
     startupInfos,
 }: {
@@ -39,7 +50,9 @@ export const StartupStandards = ({
                     data={[
                         [
                             "Déclaration d'accessibilité",
-                            startupInfos.accessibility_status,
+                            <AccessibilityBadge
+                                status={startupInfos.accessibility_status}
+                            />,
                         ],
                     ]}
                 />

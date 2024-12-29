@@ -85,7 +85,9 @@ export default function IncubatorPage({
             <Table
                 headers={["Nom", "Phase", "Pitch"]}
                 data={startups.map((s) => [
-                    <Link href={`/startups/${s.uuid}`}>{s.name}</Link>,
+                    <Link key="link" href={`/startups/${s.uuid}`}>
+                        {s.name}
+                    </Link>,
                     (s.phase && <BadgePhase phase={s.phase} />) || "-",
                     s.pitch,
                 ])}
