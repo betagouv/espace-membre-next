@@ -29,10 +29,6 @@ fileignoreconfig:
   checksum: 50ed5a9ba8e03d4ffc248026cfae6fd6331c84c21b30aaa73c0bf30f22be9e2c
 - filename: src/components/IncubatorForm/IncubatorForm.tsx
   checksum: 267f0f0e491b06862cd957ae86d22baf799a705370673cd24e588391a4613a5a
-- filename: src/components/MemberPage/Email/EmailContainer.tsx
-  checksum: 2c46d4aa4dc8caece9bc7f377178e855562c5321d2b87b24ff32cb307fe6946b
-- filename: src/components/MemberPage/Email/WebMailButtons.tsx
-  checksum: da7b71f65b7519ea53e594910c24d14e3579d32ab1cb9144f32fa81a71c0a497
 - filename: src/components/MemberPage/EmailUpgrade.tsx
   checksum: 183a72c4974a5bd2e7a3da0d60895480dc6843e158933a221329dd18e586e400
 - filename: src/components/MemberPage/MemberMissions.tsx
@@ -65,6 +61,8 @@ fileignoreconfig:
   checksum: 35d84702b7a958ce3577a9341f165cc4de6991822f17b531853a27af6a079ef8
 - filename: src/components/StartupPage/StartupMembers.tsx
   checksum: 65fe7aa4422087fa3ba23e06f1f436ffa268b8b8fb0a9370d1f0f61ff0ffb10e
+- filename: src/components/organization/OrganizationPage/Organization.tsx
+  checksum: 926d2f0e8cd232f07253a68c005268078414385afd946debd5fea271989e82aa
 - filename: src/lib/env.ts
   checksum: 1ec2fc5a95c4ee5015ca938ece2d9e0b942c770c93df3f688dd02da08d07ae20
 - filename: src/lib/flat.ts

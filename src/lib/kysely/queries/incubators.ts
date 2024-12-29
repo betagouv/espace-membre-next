@@ -28,23 +28,16 @@ export function getIncubatorStartups(uuid: string) {
                 .select("name")
                 .whereRef("phases.startup_id", "=", "startups.uuid")
                 .where((eb) =>
-                    eb.or([
-                        eb("phases.end", "is", null),
-                        eb(
-                            "phases.end",
-                            "=",
-                            eb
-                                .selectFrom("phases")
-                                .select(eb.fn.max("phases.end").as("max_end"))
-                                .whereRef(
-                                    "phases.startup_id",
-                                    "=",
-                                    "startups.uuid"
-                                )
+                    eb(
+                        "phases.start",
+                        "=",
+                        eb
+                            .selectFrom("phases")
+                            .select(eb.fn.max("phases.start").as("max_start"))
+                            .whereRef("phases.startup_id", "=", "startups.uuid")
 
-                                .limit(1)
-                        ),
-                    ])
+                            .limit(1)
+                    )
                 )
                 .orderBy("start", "desc")
                 .limit(1)

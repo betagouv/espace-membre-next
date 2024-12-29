@@ -20,14 +20,22 @@
   }
 }
 
-.startup-timeline > p.active {
+
+
+.startup-timeline > p.active.investigation,
+.startup-timeline > p.active.construction,
+.startup-timeline > p.active.acceleration {
   border-color: var(--background-action-low-blue-france);
 }
 
-.startup-timeline > p.success {
+.startup-timeline > p.active.success {
   border-color: var(--background-action-low-green-emeraude);
 }
 
-.startup-timeline > p.finished {
+.startup-timeline > p.active.finished {
+  border-color: var(--background-action-low-red-marianne);
+}
+
+.startup-timeline > p.active.alumni {
   border-color: var(--background-action-low-red-marianne);
 }

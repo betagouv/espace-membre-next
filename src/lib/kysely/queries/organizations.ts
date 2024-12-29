@@ -14,11 +14,48 @@ export async function getAllOrganizationsOptions() {
     }));
 }
 
-/** Return all organizations */
+/** Return organization details */
 export async function getOrganization(uuid: string) {
     return await db
         .selectFrom("organizations")
         .selectAll()
         .where("uuid", "=", uuid)
         .executeTakeFirst();
+}
+
+/** Return organization startups */
+export async function getOrganizationStartups(uuid: string) {
+    return db
+        .selectFrom("startups")
+        .select(({ selectFrom }) => [
+            "startups.uuid",
+            "name",
+            "pitch",
+            "ghid",
+            selectFrom("phases")
+                .select("name")
+                .whereRef("phases.startup_id", "=", "startups.uuid")
+                .where((eb) =>
+                    eb(
+                        "phases.start",
+                        "=",
+                        eb
+                            .selectFrom("phases")
+                            .select(eb.fn.max("phases.start").as("max_start"))
+                            .whereRef("phases.startup_id", "=", "startups.uuid")
+                            .limit(1)
+                    )
+                )
+                .orderBy("start", "desc")
+                .limit(1)
+                .as("phase"),
+        ])
+        .leftJoin(
+            "startups_organizations",
+            "startups_organizations.startup_id",
+            "startups.uuid"
+        )
+        .where("startups_organizations.organization_id", "=", uuid)
+        .orderBy("name")
+        .execute();
 }
