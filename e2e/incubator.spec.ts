@@ -21,7 +21,7 @@ test("incubator detail page and form page", async ({ page }) => {
         .executeTakeFirst();
     await page.goto(`/incubators/${incubator?.uuid}`);
     await expect(page.getByText("Mon super incubateur").first()).toBeVisible();
-    await page.getByText("✏️ Mettre à jour les infos").first().click();
+    await page.getByText("Modifier la fiche").first().click();
     await page.waitForURL(`/incubators/${incubator?.uuid}/info-form`);
     await expect(
         page
