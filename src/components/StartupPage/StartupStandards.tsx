@@ -51,6 +51,7 @@ export const StartupStandards = ({
                         [
                             "Déclaration d'accessibilité",
                             <AccessibilityBadge
+                                key="badge"
                                 status={startupInfos.accessibility_status}
                             />,
                         ],
