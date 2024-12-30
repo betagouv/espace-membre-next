@@ -3,7 +3,10 @@ import { redirect } from "next/navigation";
 
 import { BreadCrumbFiller } from "@/app/BreadCrumbProvider";
 import OrganizationPage from "@/components/organization/OrganizationPage/Organization";
-import { getOrganization } from "@/lib/kysely/queries/organizations";
+import {
+    getOrganization,
+    getOrganizationStartups,
+} from "@/lib/kysely/queries/organizations";
 import { organizationToModel } from "@/models/mapper";
 
 type Props = {
@@ -30,13 +33,17 @@ export default async function Page({ params }: Props) {
     }
 
     const organization = organizationToModel(dbOrganization);
+    const startups = await getOrganizationStartups(organization.uuid);
     return (
         <>
             <BreadCrumbFiller
                 currentPage={organization.name}
                 currentItemId={organization.uuid}
             />
-            <OrganizationPage organizationInfos={organization} />
+            <OrganizationPage
+                organizationInfos={organization}
+                startups={startups}
+            />
         </>
     );
 }

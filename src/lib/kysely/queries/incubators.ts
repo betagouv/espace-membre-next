@@ -1,4 +1,5 @@
 import { db, jsonArrayFrom } from "@/lib/kysely";
+import { StartupPhase } from "@/models/startup";
 
 /** Return all incubators */
 export function getAllIncubators() {
@@ -12,6 +13,39 @@ export async function getAllIncubatorsOptions() {
         value: incub.uuid,
         label: `${incub.title} ${incub.ghid ? `(${incub.ghid})` : ""}`,
     }));
+}
+
+/** Return incubator startups */
+export function getIncubatorStartups(uuid: string) {
+    return db
+        .selectFrom("startups")
+        .select(({ selectFrom }) => [
+            "uuid",
+            "name",
+            "pitch",
+            "ghid",
+            selectFrom("phases")
+                .select("name")
+                .whereRef("phases.startup_id", "=", "startups.uuid")
+                .where((eb) =>
+                    eb(
+                        "phases.start",
+                        "=",
+                        eb
+                            .selectFrom("phases")
+                            .select(eb.fn.max("phases.start").as("max_start"))
+                            .whereRef("phases.startup_id", "=", "startups.uuid")
+
+                            .limit(1)
+                    )
+                )
+                .orderBy("start", "desc")
+                .limit(1)
+                .as("phase"),
+        ])
+        .where("incubator_id", "=", uuid)
+        .orderBy("name")
+        .execute();
 }
 
 /** Return all incubators */

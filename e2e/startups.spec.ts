@@ -14,7 +14,7 @@ test("search and edit valid product", async ({ page }) => {
         await page.getByRole("heading").getByText("Startup 1")
     ).toBeVisible();
 
-    await page.getByRole("link").getByText("Mettre à jour les infos").click();
+    await page.getByRole("link").getByText("Modifier la fiche").click();
 
     await expect(
         await page
