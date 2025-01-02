@@ -232,7 +232,7 @@ export default function CommunityCreateMemberPage(props: BaseInfoUpdateProps) {
                                 >
                                     <Input
                                         label="Email (obligatoire)"
-                                        hintText="Saisissez votre adresse email (celle de votre administration si vous en avez une ; votre email personnel sinon)."
+                                        hintText="Saisissez l'adresse email de la personne à inviter (celle de son administration si elle en a une ; son email personnel sinon)."
                                         nativeInputProps={{
                                             placeholder:
                                                 "ex: grace.hopper@gmail.com",
