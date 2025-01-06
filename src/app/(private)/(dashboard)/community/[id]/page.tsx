@@ -10,6 +10,7 @@ import config from "@/server/config";
 import { isSessionUserIncubatorTeamAdminForUser } from "@/server/config/admin.config";
 import { userInfos } from "@/server/controllers/utils";
 import { authOptions } from "@/utils/authoptions";
+import Button from "@codegouvfr/react-dsfr/Button";
 
 type Props = {
     params: { id: string };
@@ -43,8 +44,22 @@ export default async function Page({
     }
 
     // compile some account informations
-    const user = await userInfos({ username: id }, session.user.id === id);
-
+    let user;
+    try {
+        user = await userInfos({ username: id }, session.user.id === id);
+    } catch (e: any) {
+        return (
+            <>
+                <BreadCrumbFiller currentPage="Invalide" currentItemId={null} />
+                <h1>Ce membre est inconnu dans la communauté ou invalide</h1>
+                <p>{(e && e.toString()) || ""}</p>
+                <br />
+                <Button linkProps={{ href: `/community` }}>
+                    Explorer la communauté
+                </Button>
+            </>
+        );
+    }
     // compile some other infos
     const userInformations = await getUserInformations(id);
 
