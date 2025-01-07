@@ -152,21 +152,7 @@ export const StartupStandards = ({
                 <Table
                     fixed
                     headers={["Nom", "Statut"]}
-                    data={[
-                        [
-                            "Audit de risque",
-                            startupInfos.analyse_risques ? <OK /> : <NOK />,
-                        ],
-                        [
-                            "MonServiceSécurisé",
-                            startupInfos.mon_service_securise ? (
-                                <OK />
-                            ) : (
-                                <NOK />
-                            ),
-                            ,
-                        ],
-                    ]}
+                    data={[["Analyse AIPD", "-"]]}
                 />
             </Accordion>
             <Accordion
