@@ -4,7 +4,7 @@ import { fr } from "@codegouvfr/react-dsfr/fr";
 
 import { memberBaseInfoSchemaType } from "@/models/member";
 
-import { getLastMissionDate } from "@/utils/member";
+import { getLastMissionDate, getFirstMissionDate } from "@/utils/member";
 
 export function MemberTable({
     members,
@@ -16,20 +16,25 @@ export function MemberTable({
     return (
         <Table
             fixed
-            data={members.map(
-                (member: memberBaseInfoSchemaType, index: number) => [
+            data={members
+                .sort((a, b) => a.fullname.localeCompare(b.fullname))
+                .map((member: memberBaseInfoSchemaType, index: number) => [
                     <a key={index} href={`/community/${member.username}`}>
                         {member.fullname}
                     </a>,
                     member.role,
+                    getFirstMissionDate(
+                        member.missions.filter((mission) =>
+                            (mission.startups || []).includes(startup_id)
+                        )
+                    ) || "",
                     getLastMissionDate(
                         member.missions.filter((mission) =>
                             (mission.startups || []).includes(startup_id)
                         )
                     ) || "",
-                ]
-            )}
-            headers={["Nom", "Role", "Date de fin"]}
+                ])}
+            headers={["Nom", "Role", "Date d'arrivée", "Date de fin"]}
         />
     );
 }
