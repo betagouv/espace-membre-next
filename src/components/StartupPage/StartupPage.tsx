@@ -110,7 +110,10 @@ export default function StartupPage({
             <div className={fr.cx("fr-col-12")}>
                 <Tabs tabs={tabs}></Tabs>
             </div>
-            <div className={fr.cx("fr-col-12")} style={{ textAlign: "center" }}>
+            <div
+                className={fr.cx("fr-col-12", "fr-mt-4w")}
+                style={{ textAlign: "center" }}
+            >
                 <Button
                     priority="secondary"
                     linkProps={{
