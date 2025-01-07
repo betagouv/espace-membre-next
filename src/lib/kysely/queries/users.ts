@@ -82,6 +82,7 @@ export async function getUserByStartup(
             .leftJoin("missions", "missions.user_id", "users.uuid")
             .leftJoin("missions_startups", "missions.uuid", "mission_id")
             .where("missions_startups.startup_id", "=", startupUuid)
+            .groupBy(MEMBER_PROTECTED_INFO)
             // .select((eb) => [
             //     "users.uuid",
             //     ...MEMBER_PROTECTED_INFO,
