@@ -214,6 +214,23 @@ export default function MemberPage({
             </h1>
             {isExpired && <MemberExpirationNotice userInfos={userInfos} />}
             <Tabs tabs={tabs} />
+            {canEdit && linkToEditPage && (
+                <div
+                    className={fr.cx("fr-col-12", "fr-mt-4w")}
+                    style={{ textAlign: "center" }}
+                >
+                    <Button
+                        className=""
+                        size="small"
+                        priority="secondary"
+                        linkProps={{
+                            href: linkToEditPage,
+                        }}
+                    >
+                        Modifier la fiche
+                    </Button>
+                </div>
+            )}
         </div>
     );
 }
