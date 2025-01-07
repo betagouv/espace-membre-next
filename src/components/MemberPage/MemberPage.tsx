@@ -216,12 +216,11 @@ export default function MemberPage({
             <Tabs tabs={tabs} />
             {canEdit && linkToEditPage && (
                 <div
-                    className={fr.cx("fr-col-12")}
+                    className={fr.cx("fr-col-12", "fr-mt-4w")}
                     style={{ textAlign: "center" }}
                 >
                     <Button
                         className=""
-                        style={{ float: "right" }}
                         size="small"
                         priority="secondary"
                         linkProps={{
