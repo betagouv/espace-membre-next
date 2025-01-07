@@ -1,6 +1,7 @@
 "use client";
 
 import { Tabs } from "@codegouvfr/react-dsfr/Tabs";
+import { Button } from "@codegouvfr/react-dsfr/Button";
 import { fr } from "@codegouvfr/react-dsfr/fr";
 
 import { matomoSiteSchemaType } from "@/models/matomoSite";
@@ -61,7 +62,6 @@ export default function StartupPage({
     events,
 }: StartupPageProps) {
     const currentPhase = getCurrentPhase(phases); // todo get current phase
-
     const tabs = [
         {
             label: "Équipe",
@@ -109,6 +109,16 @@ export default function StartupPage({
 
             <div className={fr.cx("fr-col-12")}>
                 <Tabs tabs={tabs}></Tabs>
+            </div>
+            <div className={fr.cx("fr-col-12")} style={{ textAlign: "center" }}>
+                <Button
+                    priority="secondary"
+                    linkProps={{
+                        href: `/startups/${startupInfos.uuid}/info-form`,
+                    }}
+                >
+                    Modifier la fiche
+                </Button>
             </div>
         </div>
     );
