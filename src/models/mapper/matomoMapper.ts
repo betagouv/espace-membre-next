@@ -63,7 +63,7 @@ export const matomoSiteToModel = (
     return {
         id: matomoSite.matomo_id,
         type: matomoSite.type as matomoSiteSchemaType["type"],
-        url: matomoSite.url,
+        url: matomoSite.url || "",
         name: matomoSite.name,
     };
 };

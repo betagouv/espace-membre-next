@@ -12,6 +12,8 @@ import { EmailStatusCode } from "@/models/member";
 import { EMAIL_PLAN_TYPE } from "@/models/ovh";
 import { ACCOUNT_SERVICE_STATUS, SERVICES } from "@/models/services";
 
+import { BadgeEmailPlan } from "../BadgeEmailPlan";
+
 const mattermostInfoRow = (
     mattermostInfo: NonNullable<MemberPageProps["mattermostInfo"]>,
     userUuid: string
@@ -36,7 +38,7 @@ const mattermostInfoRow = (
                     </div>
                 )
             )
-            .otherwise(() => <Badge severity="info">Compte introuvable</Badge>),
+            .otherwise(() => <Badge severity="warning">introuvable</Badge>),
         match(mattermostInfo)
             .when(
                 (info) =>
@@ -150,17 +152,8 @@ const emailStatusRow = (
             )
             .otherwise(() => <>Pas d'email beta</>),
         <>
-            {match(emailInfos)
-                .with({ isPro: true }, () => (
-                    <Badge noIcon={true}>offre OVH PRO</Badge>
-                ))
-                .with({ isExchange: true }, () => (
-                    <Badge noIcon={true}>offre Exchange</Badge>
-                ))
-                .with({ emailPlan: EMAIL_PLAN_TYPE.EMAIL_PLAN_BASIC }, () => (
-                    <Badge noIcon={true}>offre OVH MX</Badge>
-                ))
-                .otherwise(() => "?")}
+            {emailInfos && <BadgeEmailPlan plan={emailInfos.emailPlan} />}
+
             {match(emailInfos)
                 .when(
                     (emailInfos) => !!emailInfos,

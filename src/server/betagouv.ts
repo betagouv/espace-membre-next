@@ -5,6 +5,7 @@ import unescape from "unescape";
 
 import { getAllUsersInfo } from "@/lib/kysely/queries/users";
 import { Job, JobWTTJ } from "@/models/job";
+import { getDinumEmail } from "@/lib/kysely/queries/dinum";
 import { memberBaseInfoToModel, userInfosToModel } from "@/models/mapper";
 import { memberBaseInfoSchemaType } from "@/models/member";
 import { EmailInfos } from "@/models/member";
@@ -178,14 +179,23 @@ const betaOVH = {
             );
         };
         const promises: Promise<any>[] = [];
+
+        const email = `${id}@${config.domain}`;
+        const dinumEmail = await getDinumEmail(email);
+
+        if (dinumEmail) {
+            return {
+                email,
+                emailPlan: EMAIL_PLAN_TYPE.EMAIL_PLAN_OPI,
+                isBlocked: false,
+            };
+        }
         const url = `/email/domain/${config.domain}/account/${id}`;
         promises.push(
             ovh
                 .requestPromised("GET", url, {})
                 .then((data: any) => ({
                     ...data,
-                    isPro: false,
-                    isExchange: false,
                     emailPlan: EMAIL_PLAN_TYPE.EMAIL_PLAN_BASIC,
                 }))
                 .catch(errorHandler)
@@ -199,8 +209,6 @@ const betaOVH = {
                     .then((data) => ({
                         ...data,
                         emailPlan: EMAIL_PLAN_TYPE.EMAIL_PLAN_PRO,
-                        isPro: true,
-                        isExchange: false,
                         email: data.primaryEmailAddress,
                     }))
                     .catch(errorHandler)
@@ -214,13 +222,12 @@ const betaOVH = {
                     .then((data) => ({
                         ...data,
                         emailPlan: EMAIL_PLAN_TYPE.EMAIL_PLAN_EXCHANGE,
-                        isExchange: true,
-                        isPro: true,
                         email: data.primaryEmailAddress,
                     }))
                     .catch(errorHandler)
             );
         }
+        // check if OPI
         try {
             return await Promise.all(promises).then((data) => {
                 const emailInfos = data.filter((d) => d)[0];
@@ -496,6 +503,11 @@ const betaOVH = {
               }
             | { from?: string; to: string }
     ): Promise<OvhRedirection[]> => {
+        const email = `${query.from}@${config.domain}`;
+        const isDinumEmail = await getDinumEmail(email);
+        if (isDinumEmail) {
+            return [];
+        }
         if (!query.from && !query.to) {
             throw new Error("paramètre 'from' ou 'to' manquant");
         }
