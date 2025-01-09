@@ -22,6 +22,7 @@ import { startupSchemaType } from "@/models/startup";
 import routes from "@/routes/routes";
 import { getLastMission } from "@/utils/member";
 import { EMAIL_PLAN_TYPE } from "@/models/ovh";
+import { BadgeEmailPlan } from "@/components/BadgeEmailPlan";
 
 enum STEP {
     whichMember = "whichMember",
@@ -198,19 +199,7 @@ const EmailInfo = function ({ emailInfos, primary_email_status }) {
             <p>
                 <span className="font-weight-bold">Email principal</span> :{" "}
                 {emailInfos.email}
-                {emailInfos.emailPlan == EMAIL_PLAN_TYPE.EMAIL_PLAN_PRO && (
-                    <span>(offre OVH Pro)</span>
-                )}
-                {emailInfos.emailPlan == EMAIL_PLAN_TYPE.EMAIL_PLAN_BASIC && (
-                    <span>(offre OVH MX)</span>
-                )}
-                {emailInfos.emailPlan ==
-                    EMAIL_PLAN_TYPE.EMAIL_PLAN_EXCHANGE && (
-                    <span>(offre OVH Exchange)</span>
-                )}
-                {emailInfos.emailPlan == EMAIL_PLAN_TYPE.EMAIL_PLAN_OPI && (
-                    <span>(offre Suite numérique)</span>
-                )}
+                <BadgeEmailPlan plan={emailInfos.emailPlan} />
             </p>
             <p>
                 <span className="font-weight-bold">Statut de l'email</span> :{" "}
