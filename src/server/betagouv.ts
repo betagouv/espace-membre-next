@@ -5,6 +5,7 @@ import unescape from "unescape";
 
 import { getAllUsersInfo } from "@/lib/kysely/queries/users";
 import { Job, JobWTTJ } from "@/models/job";
+import { getDinumEmail } from "@/lib/kysely/queries/dinum";
 import { memberBaseInfoToModel, userInfosToModel } from "@/models/mapper";
 import { memberBaseInfoSchemaType } from "@/models/member";
 import { EmailInfos } from "@/models/member";
@@ -179,7 +180,16 @@ const betaOVH = {
         };
         const promises: Promise<any>[] = [];
 
-        // todo: ajouter check OPI
+        const email = `${id}@${config.domain}`;
+        const dinumEmail = await getDinumEmail(email);
+
+        if (dinumEmail) {
+            return {
+                email,
+                emailPlan: EMAIL_PLAN_TYPE.EMAIL_PLAN_OPI,
+                isBlocked: false,
+            };
+        }
         const url = `/email/domain/${config.domain}/account/${id}`;
         promises.push(
             ovh
@@ -493,6 +503,11 @@ const betaOVH = {
               }
             | { from?: string; to: string }
     ): Promise<OvhRedirection[]> => {
+        const email = `${query.from}@${config.domain}`;
+        const isDinumEmail = await getDinumEmail(email);
+        if (isDinumEmail) {
+            return [];
+        }
         if (!query.from && !query.to) {
             throw new Error("paramètre 'from' ou 'to' manquant");
         }

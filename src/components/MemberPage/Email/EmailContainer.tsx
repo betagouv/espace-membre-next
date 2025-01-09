@@ -89,71 +89,71 @@ function BlocEmailConfiguration({ emailInfos }: { emailInfos: EmailInfos }) {
         method: string;
         port: string;
     }
-    enum EmailPlan {
-        pro = "pro",
-        exchange = "exchange",
-        mx = "mx",
-        opi = "opi",
-    }
-    const conf: { [key in EmailPlan]: { smtp: ServerConf; imap: ServerConf } } =
-        {
-            pro: {
-                smtp: {
-                    server: "pro1.mail.ovh.net",
-                    method: "TLS",
-                    port: "587",
-                },
-                imap: {
-                    server: "pro1.mail.ovh.net",
-                    method: "SSL",
-                    port: "993",
-                },
-            },
-            exchange: {
-                smtp: {
-                    server: "ex3.mail.ovh.fr",
-                    method: "TLS",
-                    port: "587",
-                },
-                imap: {
-                    server: "ex3.mail.ovh.net",
-                    method: "SSL",
-                    port: "993",
-                },
-            },
-            mx: {
-                smtp: {
-                    server: "ssl0.ovh.net",
-                    method: "TLS",
-                    port: "587",
-                },
-                imap: {
-                    server: "ssl0.ovh.net",
-                    method: "SSL",
-                    port: "993",
-                },
-            },
-            opi: {
-                smtp: {
-                    server: "smtp.beta.gouv.fr",
-                    method: "TLS",
-                    port: "587",
-                },
-                imap: {
-                    server: "imap.beta.gouv.fr",
-                    method: "SSL",
-                    port: "993",
-                },
-            },
+    const conf: {
+        [key in EMAIL_PLAN_TYPE]: {
+            smtp: ServerConf;
+            imap: ServerConf;
+            documentation: string;
         };
-    let plan = "mx";
-    if (emailInfos.emailPlan === EMAIL_PLAN_TYPE.EMAIL_PLAN_PRO) {
-        plan = "pro";
-    } else if (emailInfos.emailPlan === EMAIL_PLAN_TYPE.EMAIL_PLAN_EXCHANGE) {
-        plan = "exchange";
-    } else if (emailInfos.emailPlan === EMAIL_PLAN_TYPE.EMAIL_PLAN_OPI) {
-        plan = "opi";
-    }
+    } = {
+        [EMAIL_PLAN_TYPE.EMAIL_PLAN_PRO]: {
+            documentation:
+                "https://doc.incubateur.net/communaute/les-outils-de-la-communaute/emails/emails-ovh-pro",
+            smtp: {
+                server: "pro1.mail.ovh.net",
+                method: "TLS",
+                port: "587",
+            },
+            imap: {
+                server: "pro1.mail.ovh.net",
+                method: "SSL",
+                port: "993",
+            },
+        },
+        [EMAIL_PLAN_TYPE.EMAIL_PLAN_EXCHANGE]: {
+            documentation:
+                "https://help.ovhcloud.com/csm/fr-exchange-macos-mailapp-configuration?id=kb_article_view&sysparm_article=KB0053382",
+            smtp: {
+                server: "ex3.mail.ovh.fr",
+                method: "TLS",
+                port: "587",
+            },
+            imap: {
+                server: "ex3.mail.ovh.net",
+                method: "SSL",
+                port: "993",
+            },
+        },
+        [EMAIL_PLAN_TYPE.EMAIL_PLAN_BASIC]: {
+            documentation:
+                "https://doc.incubateur.net/communaute/les-outils-de-la-communaute/emails/envoyer-et-recevoir-des-emails-beta.gouv.fr-avec-loffre-ovh-mx-plan",
+            smtp: {
+                server: "ssl0.ovh.net",
+                method: "TLS",
+                port: "587",
+            },
+            imap: {
+                server: "ssl0.ovh.net",
+                method: "SSL",
+                port: "993",
+            },
+        },
+        [EMAIL_PLAN_TYPE.EMAIL_PLAN_OPI]: {
+            documentation:
+                "https://documentation.beta.numerique.gouv.fr/doc/mes-comptes-emails-ixeb6GFqjk",
+            smtp: {
+                server: "smtp.beta.gouv.fr",
+                method: "TLS",
+                port: "587",
+            },
+            imap: {
+                server: "imap.beta.gouv.fr",
+                method: "SSL",
+                port: "993",
+            },
+        },
+    };
+    const planConf = conf[emailInfos.emailPlan];
     return (
         <Accordion label="Configurer ton email beta">
             <p>
@@ -161,7 +161,7 @@ function BlocEmailConfiguration({ emailInfos }: { emailInfos: EmailInfos }) {
                 Mailspring, Microsoft Courier, Gmail, etc) pour recevoir et
                 envoyer des emails. D'avantage d'info ici :{" "}
                 <a
-                    href="https://doc.incubateur.net/communaute/les-outils-de-la-communaute/emails"
+                    href={planConf.documentation}
                     target="_blank"
                     className="button no-margin"
                 >
@@ -173,9 +173,9 @@ function BlocEmailConfiguration({ emailInfos }: { emailInfos: EmailInfos }) {
                     key={confType}
                     caption={confType}
                     data={[
-                        ["Serveur", conf[plan][confType].server],
-                        ["Port", conf[plan][confType].port],
-                        ["Méthode de chiffrement", conf[plan][confType].method],
+                        ["Serveur", planConf[confType].server],
+                        ["Port", planConf[confType].port],
+                        ["Méthode de chiffrement", planConf[confType].method],
                         [`Nom d'utilisateur`, emailInfos.email],
                         ["Mot de passe", "Le mot de passe de ton email"],
                     ]}
