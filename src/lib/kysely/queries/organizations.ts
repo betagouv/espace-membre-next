@@ -14,7 +14,7 @@ export async function getAllOrganizationsOptions() {
     }));
 }
 
-/** Return organization details */
+/** Return organization by id */
 export async function getOrganization(uuid: string) {
     return await db
         .selectFrom("organizations")
