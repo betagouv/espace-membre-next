@@ -48,6 +48,7 @@ export default function IncubatorPage({
                         [
                             "Fiche beta.gouv.fr",
                             <a
+                                key="link"
                                 href={`https://beta.gouv.fr/incubateurs/${incubatorInfos.ghid}.html`}
                             >
                                 {incubatorInfos.ghid}
@@ -55,13 +56,17 @@ export default function IncubatorPage({
                         ],
                         incubatorInfos.contact && [
                             "Contact",
-                            <a href={`mailto:${incubatorInfos.contact}`}>
+                            <a
+                                key="link"
+                                href={`mailto:${incubatorInfos.contact}`}
+                            >
                                 {incubatorInfos.contact}
                             </a>,
                         ],
                         incubatorInfos.owner_id && [
                             "Sponsor",
                             <a
+                                key="link"
                                 href={`/organizations/${incubatorInfos.owner_id}`}
                             >
                                 {incubatorInfos.organization_name}
@@ -69,7 +74,7 @@ export default function IncubatorPage({
                         ],
                         incubatorInfos.github && [
                             "Code source",
-                            <a href={incubatorInfos.github}>
+                            <a key="link" href={incubatorInfos.github}>
                                 {incubatorInfos.github}
                             </a>,
                         ],
@@ -83,6 +88,7 @@ export default function IncubatorPage({
                             {t.name?.replace(/\s/g, " ")}
                         </Link>,
                         <div
+                            key="mission"
                             dangerouslySetInnerHTML={{
                                 __html: mdParser.render(t.mission),
                             }}
