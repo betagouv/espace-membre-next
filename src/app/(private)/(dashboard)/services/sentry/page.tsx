@@ -1,7 +1,7 @@
 import Table from "@codegouvfr/react-dsfr/Table";
-import { Selectable } from "@node_modules/kysely/dist/cjs";
 import { isAfter } from "date-fns/isAfter";
 import { isBefore } from "date-fns/isBefore";
+import { Selectable } from "kysely/dist/cjs";
 import { redirect } from "next/navigation";
 import { getServerSession } from "next-auth/next";
 

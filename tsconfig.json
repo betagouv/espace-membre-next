@@ -2,7 +2,11 @@
     "compilerOptions": {
         "noErrorTruncation": true,
         "target": "es5",
-        "lib": ["dom", "dom.iterable", "esnext"],
+        "lib": [
+            "dom",
+            "dom.iterable",
+            "esnext"
+        ],
         "allowJs": true,
         "skipLibCheck": true,
         "strict": true,
@@ -18,24 +22,57 @@
         "incremental": true,
         "baseUrl": ".",
         "paths": {
-            "@/*": ["./src/*"],
-            "@config": ["src/server/config/index.ts"],
-            "@config/*": ["src/server/config/*"],
-            "@controllers/*": ["./src/server/controllers/*"],
-            "@components/*": ["./src/server/views/pages/components/*"],
-            "@infra/*": ["./src/server/infra/*"],
-            "@lib/*": ["src/lib/*"],
-            "@utils/*": ["src/utils/*"],
-            "@models/*": ["./src/server/models/*"],
-            "@modules/*": ["./src/server/modules/*"],
-            "@node_modules/*": ["node_modules/*"],
-            "@schedulers/*": ["./src/server/schedulers/*"],
-            "@services/*": ["./src/server/services/*"],
-            "@views": ["./src/server/views/index.ts"],
-            "@views/*": ["./src/server/views/*"],
-            "@db": ["./src/server/db/index.ts"],
-            "@db/*": ["./src/server/db/*"],
-            "@betagouv": ["./src/server/betagouv.ts"]
+            "@/*": [
+                "./src/*"
+            ],
+            "@config": [
+                "src/server/config/index.ts"
+            ],
+            "@config/*": [
+                "src/server/config/*"
+            ],
+            "@controllers/*": [
+                "./src/server/controllers/*"
+            ],
+            "@components/*": [
+                "./src/server/views/pages/components/*"
+            ],
+            "@infra/*": [
+                "./src/server/infra/*"
+            ],
+            "@lib/*": [
+                "src/lib/*"
+            ],
+            "@utils/*": [
+                "src/utils/*"
+            ],
+            "@models/*": [
+                "./src/server/models/*"
+            ],
+            "@modules/*": [
+                "./src/server/modules/*"
+            ],
+            "@schedulers/*": [
+                "./src/server/schedulers/*"
+            ],
+            "@services/*": [
+                "./src/server/services/*"
+            ],
+            "@views": [
+                "./src/server/views/index.ts"
+            ],
+            "@views/*": [
+                "./src/server/views/*"
+            ],
+            "@db": [
+                "./src/server/db/index.ts"
+            ],
+            "@db/*": [
+                "./src/server/db/*"
+            ],
+            "@betagouv": [
+                "./src/server/betagouv.ts"
+            ]
         },
         "plugins": [
             {
@@ -44,26 +81,53 @@
         ]
     },
     "ts-node": {
-        "require": ["tsconfig-paths/register"],
+        "require": [
+            "tsconfig-paths/register"
+        ],
         "transpileOnly": true,
         "compilerOptions": {
             "module": "commonjs",
             "target": "es6",
             "paths": {
-                "@config": ["./src/config/index.ts"],
-                "@config/*": ["./src/config/*"],
-                "@controllers/*": ["./src/server/controllers/*"],
-                "@components/*": ["./src/server/views/pages/components/*"],
-                "@infra/*": ["./src/server/infra/*"],
-                "@lib/*": ["./src/lib/*"],
-                "@utils/*": ["./src/utils/*"],
-                "@models/*": ["./src/server/models/*"],
-                "@modules/*": ["./src/server/modules/*"],
-                "@node_modules/*": ["node_modules/*"],
-                "@schedulers/*": ["./src/server/schedulers/*"],
-                "@services/*": ["./src/server/services/*"],
-                "@views": ["./src/server/views/index.ts"],
-                "@views/*": ["./src/server/views/*"]
+                "@config": [
+                    "./src/config/index.ts"
+                ],
+                "@config/*": [
+                    "./src/config/*"
+                ],
+                "@controllers/*": [
+                    "./src/server/controllers/*"
+                ],
+                "@components/*": [
+                    "./src/server/views/pages/components/*"
+                ],
+                "@infra/*": [
+                    "./src/server/infra/*"
+                ],
+                "@lib/*": [
+                    "./src/lib/*"
+                ],
+                "@utils/*": [
+                    "./src/utils/*"
+                ],
+                "@models/*": [
+                    "./src/server/models/*"
+                ],
+                "@modules/*": [
+                    "./src/server/modules/*"
+                ],
+                "@schedulers/*": [
+                    "./src/server/schedulers/*"
+                ],
+                "@services/*": [
+                    "./src/server/services/*"
+                ],
+                "@views": [
+                    "./src/server/views/index.ts"
+                ],
+                "@views/*": [
+                    "./src/server/views/*"
+                ]
             },
             "plugins": [
                 {
@@ -73,26 +137,53 @@
         }
     },
     "ts-mocha": {
-        "require": ["tsconfig-paths/register"],
+        "require": [
+            "tsconfig-paths/register"
+        ],
         "transpileOnly": true,
         "compilerOptions": {
             "module": "commonjs",
             "target": "es6",
             "paths": {
-                "@config": ["./src/config/index.ts"],
-                "@config/*": ["./src/config/*"],
-                "@controllers/*": ["./src/server/controllers/*"],
-                "@components/*": ["./src/server/views/pages/components/*"],
-                "@infra/*": ["./src/server/infra/*"],
-                "@lib/*": ["./src/lib/*"],
-                "@utils/*": ["./src/utils/*"],
-                "@models/*": ["./src/server/models/*"],
-                "@modules/*": ["./src/server/modules/*"],
-                "@node_modules/*": ["node_modules/*"],
-                "@schedulers/*": ["./src/server/schedulers/*"],
-                "@services/*": ["./src/server/services/*"],
-                "@views": ["./src/server/views/index.ts"],
-                "@views/*": ["./src/server/views/*"]
+                "@config": [
+                    "./src/config/index.ts"
+                ],
+                "@config/*": [
+                    "./src/config/*"
+                ],
+                "@controllers/*": [
+                    "./src/server/controllers/*"
+                ],
+                "@components/*": [
+                    "./src/server/views/pages/components/*"
+                ],
+                "@infra/*": [
+                    "./src/server/infra/*"
+                ],
+                "@lib/*": [
+                    "./src/lib/*"
+                ],
+                "@utils/*": [
+                    "./src/utils/*"
+                ],
+                "@models/*": [
+                    "./src/server/models/*"
+                ],
+                "@modules/*": [
+                    "./src/server/modules/*"
+                ],
+                "@schedulers/*": [
+                    "./src/server/schedulers/*"
+                ],
+                "@services/*": [
+                    "./src/server/services/*"
+                ],
+                "@views": [
+                    "./src/server/views/index.ts"
+                ],
+                "@views/*": [
+                    "./src/server/views/*"
+                ]
             },
             "plugins": [
                 {
@@ -108,5 +199,7 @@
         "types.d.ts",
         ".next/types/**/*.ts"
     ],
-    "exclude": ["node_modules"]
+    "exclude": [
+        "node_modules"
+    ]
 }

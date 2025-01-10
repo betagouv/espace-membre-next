@@ -1,8 +1,8 @@
 import Alert from "@codegouvfr/react-dsfr/Alert";
 import Button from "@codegouvfr/react-dsfr/Button";
 import Table from "@codegouvfr/react-dsfr/Table";
-import { Selectable } from "@node_modules/kysely/dist/cjs";
 import { isAfter, isBefore } from "date-fns";
+import { Selectable } from "kysely/dist/cjs";
 import { redirect } from "next/navigation";
 import { getServerSession } from "next-auth/next";
 
