@@ -7,6 +7,7 @@ import IncubatorPage from "@/components/IncubatorPage/IncubatorPage";
 import {
     getIncubator,
     getIncubatorStartups,
+    getIncubatorTeams,
 } from "@/lib/kysely/queries/incubators";
 import { incubatorToModel } from "@/models/mapper";
 
@@ -35,13 +36,18 @@ export default async function Page({ params }: Props) {
 
     const incubator = incubatorToModel(dbIncubator);
     const startups = await getIncubatorStartups(incubator.uuid);
+    const teams = await getIncubatorTeams(incubator.uuid);
     return (
         <>
             <BreadCrumbFiller
                 currentPage={incubator.title}
                 currentItemId={incubator.uuid}
             />
-            <IncubatorPage incubatorInfos={incubator} startups={startups} />
+            <IncubatorPage
+                incubatorInfos={incubator}
+                startups={startups}
+                teams={teams}
+            />
         </>
     );
 }

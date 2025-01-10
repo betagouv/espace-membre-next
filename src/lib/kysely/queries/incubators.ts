@@ -52,9 +52,23 @@ export function getIncubatorStartups(uuid: string) {
 export async function getIncubator(uuid: string) {
     return await db
         .selectFrom("incubators")
-        .selectAll()
-        .where("uuid", "=", uuid)
-        .executeTakeFirst();
+        .leftJoin("organizations", "organizations.uuid", "incubators.owner_id")
+        .select([
+            "incubators.title",
+            "incubators.uuid",
+            "incubators.description",
+            "incubators.contact",
+            "incubators.short_description",
+            "incubators.ghid",
+            "incubators.github",
+            "incubators.owner_id",
+            "incubators.address",
+            "incubators.highlighted_startups",
+            "incubators.website",
+            "organizations.name as organization_name",
+        ])
+        .where("incubators.uuid", "=", uuid)
+        .executeTakeFirstOrThrow();
 }
 
 export async function getAllIncubatorsMembers() {
@@ -103,5 +117,15 @@ export async function getAllIncubatorsMembers() {
                     )
             ).as("members"),
         ])
+        .execute();
+}
+
+export function getIncubatorTeams(uuid: string) {
+    return db
+        .selectFrom("incubators")
+        .leftJoin("teams", "teams.incubator_id", "incubators.uuid")
+        .select(["teams.name", "teams.mission", "teams.uuid"])
+        .where("incubators.uuid", "=", uuid)
+        .orderBy("teams.name")
         .execute();
 }

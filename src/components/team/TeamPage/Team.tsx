@@ -5,6 +5,7 @@ import Button from "@codegouvfr/react-dsfr/Button";
 import { incubatorSchemaType } from "@/models/incubator";
 import { memberPublicInfoSchemaType } from "@/models/member";
 import { teamSchemaType } from "@/models/team";
+import Link from "next/link";
 
 export interface TeamPageProps {
     teamInfos: teamSchemaType;
@@ -23,7 +24,9 @@ export default function TeamPage({
                 <h1>{teamInfos.name}</h1>
 
                 <h2>Incubateur :</h2>
-                {incubator.title}
+                <Link href={`/incubators/${incubator.uuid}`}>
+                    {incubator.title}
+                </Link>
                 <br />
                 <br />
                 <h2>Mission : </h2>
