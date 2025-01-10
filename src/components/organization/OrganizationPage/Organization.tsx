@@ -31,17 +31,17 @@ export default function OrganizationPage({
                         Modifier la fiche
                     </Button>
                 </h1>
-                <p>
-                    <span>Acronyme : {organizationInfos.acronym}</span>
-                    <br />
-                    <span>
-                        Domaine ministeriel :{" "}
-                        {organizationInfos.domaine_ministeriel}
-                    </span>
-                    <br />
-                    <span>Type de sponsor : {organizationInfos.type}</span>
-                    <br />
-                </p>
+                <Table
+                    headers={["Nom", "Description"]}
+                    data={[
+                        ["Acronyme", organizationInfos.acronym],
+                        ["Type de sponsor", organizationInfos.type],
+                        [
+                            "Domaine ministeriel",
+                            organizationInfos.domaine_ministeriel,
+                        ],
+                    ]}
+                />
             </div>
             <h2>Produits numériques</h2>
             <Table
