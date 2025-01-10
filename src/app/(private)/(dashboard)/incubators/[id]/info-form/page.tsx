@@ -34,11 +34,7 @@ export default async function Page(props: Props) {
         redirect("/login");
     }
     const uuid = props.params.id;
-    const dbIncubator = await db
-        .selectFrom("incubators")
-        .selectAll()
-        .where("uuid", "=", uuid)
-        .executeTakeFirst();
+    const dbIncubator = await getIncubator(uuid);
 
     if (!dbIncubator) {
         redirect("/incubators");
