@@ -7,7 +7,7 @@ export const matomoSiteSchema = z
         name: z.string(),
         startup_id: z.string().nullable(), // Nullable string
         type: z.string(),
-        url: z.string().url(), // Valid URL
+        url: z.string().url().nullable(), // Valid URL
     })
     .strip();
 

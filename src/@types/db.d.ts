@@ -80,6 +80,14 @@ export interface Community {
   service: number | null;
 }
 
+export interface DinumEmails {
+  created_at: Generated<Timestamp>;
+  email: string;
+  status: string | null;
+  updated_at: Generated<Timestamp>;
+  uuid: Generated<string>;
+}
+
 export interface Events {
   action_code: string;
   action_metadata: string | null;
@@ -127,14 +135,6 @@ export interface KnexMigrationsLock {
   is_locked: number | null;
 }
 
-export interface LoginTokens {
-  created_at: Generated<Timestamp>;
-  email: string;
-  expires_at: Timestamp;
-  token: string;
-  username: string;
-}
-
 export interface Marrainage {
   completed: Generated<boolean>;
   count: Generated<number>;
@@ -165,7 +165,7 @@ export interface MatomoSites {
   startup_id: string | null;
   type: string;
   updated_at: Generated<Timestamp>;
-  url: string;
+  url: string | null;
 }
 
 export interface MattermostMemberInfos {
@@ -217,17 +217,6 @@ export interface Phases {
   start: Timestamp;
   startup_id: string;
   uuid: Generated<string>;
-}
-
-export interface PullRequests {
-  created_at: Generated<Timestamp>;
-  info: Json | null;
-  startup: string | null;
-  status: Generated<string | null>;
-  type: Generated<string | null>;
-  updated_at: Generated<Timestamp>;
-  url: Generated<string | null>;
-  username: string | null;
 }
 
 export interface SentryTeams {
@@ -398,16 +387,6 @@ export interface Teams {
   uuid: Generated<string>;
 }
 
-export interface UserDetails {
-  active: boolean | null;
-  average_nb_of_days: number | null;
-  domaine: string | null;
-  gender: Generated<string | null>;
-  hash: string;
-  nb_days_at_beta: number | null;
-  tjm: number | null;
-}
-
 export interface Users {
   avatar: string | null;
   average_nb_of_days: number | null;
@@ -442,11 +421,6 @@ export interface UsersFormations {
   username: string | null;
 }
 
-export interface UsersStartups {
-  startup_id: string;
-  user_id: string;
-}
-
 export interface UsersTeams {
   team_id: string;
   user_id: string;
@@ -459,26 +433,16 @@ export interface VerificationTokens {
   token: string;
 }
 
-export interface Visits {
-  created_at: Generated<Timestamp>;
-  date: Timestamp;
-  fullname: string;
-  id: Generated<number>;
-  number: string;
-  referent: string;
-  requester: string;
-}
-
 export interface DB {
   accounts: Accounts;
   badge_requests: BadgeRequests;
   community: Community;
+  dinum_emails: DinumEmails;
   events: Events;
   formations: Formations;
   incubators: Incubators;
   knex_migrations: KnexMigrations;
   knex_migrations_lock: KnexMigrationsLock;
-  login_tokens: LoginTokens;
   marrainage: Marrainage;
   marrainage_groups: MarrainageGroups;
   marrainage_groups_members: MarrainageGroupsMembers;
@@ -489,7 +453,6 @@ export interface DB {
   newsletters: Newsletters;
   organizations: Organizations;
   phases: Phases;
-  pull_requests: PullRequests;
   sentry_teams: SentryTeams;
   service_accounts: ServiceAccounts;
   sessions: Sessions;
@@ -500,11 +463,8 @@ export interface DB {
   startups_organizations: StartupsOrganizations;
   tasks: Tasks;
   teams: Teams;
-  user_details: UserDetails;
   users: Users;
   users_formations: UsersFormations;
-  users_startups: UsersStartups;
   users_teams: UsersTeams;
   verification_tokens: VerificationTokens;
-  visits: Visits;
 }
