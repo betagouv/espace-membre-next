@@ -12,10 +12,16 @@ const enum IncubatorIncludes {
     MEMBERS = 'members'
 }
 
+const IncubatorIncludesSchema = z.union([z.literal(IncubatorIncludes.STARTUPS), z.literal(IncubatorIncludes.MEMBERS)], {
+  message: "Inclusion non valide",
+});
 const queryInput = z.object({
-    includes: z.array(z.union([z.literal(IncubatorIncludes.STARTUPS), z.literal(IncubatorIncludes.MEMBERS)], {
-        message: "Inclusion non valide"
-    })).refine(items => new Set(items).size === items.length, "Il ne peut y avoir plusieurs inclusions identiques.").optional()
+  includes: z
+    .array(IncubatorIncludesSchema)
+    .or(IncubatorIncludesSchema)
+    .transform(value => (Array.isArray(value) ? value : [value]))
+    .refine(items => new Set(items).size === items.length, "Il ne peut y avoir plusieurs inclusions identiques.")
+    .optional(),
 });
 
 export const GET = async (req: NextRequest) => {
