@@ -57,7 +57,7 @@ export function convertSearchParamsToRecord(
   searchParams: URLSearchParams,
 ): Record<string, SearchParamsValueType | SearchParamsValueType[]> {
   const result: Record<string, SearchParamsValueType | SearchParamsValueType[]> = {};
-   searchParams.entries().forEach(([key, value]) => {
+   Array.from(searchParams.entries()).forEach(([key, value]) => {
     let valueToSet: SearchParamsValueType;
     if (value === "true") {
       valueToSet = true;
