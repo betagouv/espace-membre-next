@@ -79,6 +79,8 @@ fileignoreconfig:
   checksum: 598112766ea826e0c05c38962373358c520d8720ff8faebfbc65ea7f913fff44
 - filename: src/utils/routes/list.ts
   checksum: ebb1c7a8c5fb51e0e49a23f79d1342f177946b4e783154bb265970b672aa2a2c
+- filename: src/utils/url.ts
+  checksum: 6c0989d85371d5071d9dcaa141e1c35b10f7124a3628deef443a4a1ccacfa34f
 scopeconfig:
 - scope: node
 version: "1.0"

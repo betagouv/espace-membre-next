@@ -20,4 +20,6 @@ export const PUBLIC_ROUTES = [
 
 export const PROTECTED_ROUTES = [
     /api\/protected\/member\/*/,
+    /api\/protected\/startup\/*/,
+    /api\/protected\/incubator\/*/,
 ]

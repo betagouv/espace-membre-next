@@ -1,17 +1,17 @@
 import React, { useCallback, useState } from "react";
 
+import { fr } from "@codegouvfr/react-dsfr";
+import { UseAutocompleteProps } from "@mui/base";
+import { InternalStandardProps as StandardProps } from "@mui/material";
 import {
     AutocompleteValue as MuiAutocompleteValue,
     createFilterOptions,
 } from "@mui/material/Autocomplete";
-import { fr } from "@node_modules/@codegouvfr/react-dsfr";
-import { UseAutocompleteProps } from "@node_modules/@mui/base";
-import { InternalStandardProps as StandardProps } from "@node_modules/@mui/material";
 import MuiAutocomplete, {
     AutocompleteRenderInputParams,
-} from "@node_modules/@mui/material/Autocomplete";
-import { ChipProps, ChipTypeMap } from "@node_modules/@mui/material/Chip";
-import TextField from "@node_modules/@mui/material/TextField";
+} from "@mui/material/Autocomplete";
+import { ChipProps, ChipTypeMap } from "@mui/material/Chip";
+import TextField from "@mui/material/TextField";
 
 type AutoCompleteValue<
     Value,
