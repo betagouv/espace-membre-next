@@ -245,9 +245,7 @@ export default function MemberPage({
                 <Tabs
                     tabs={tabs}
                     onTabChange={(obj) => {
-                        router.push(`#${tabs[obj.tabIndex].tabId}`, undefined, {
-                            shallow: true,
-                        });
+                        router.push(`#${tabs[obj.tabIndex].tabId}`);
                     }}
                 />
             )}
