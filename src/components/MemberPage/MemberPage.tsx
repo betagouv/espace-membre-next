@@ -176,7 +176,7 @@ export default function MemberPage({
         {
             label: "Statut des comptes",
             tabId: "statut-comptes",
-            isDefault: hash === "status-comptes",
+            isDefault: hash === "statut-comptes",
 
             content: (
                 <MemberStatus
