@@ -1,8 +1,13 @@
 "use client";
 
+import { useState, useEffect } from "react";
+
 import { fr } from "@codegouvfr/react-dsfr";
+import Button from "@codegouvfr/react-dsfr/Button";
 import { Tabs } from "@codegouvfr/react-dsfr/Tabs";
+import { useRouter } from "@node_modules/next/navigation";
 import MarkdownIt from "markdown-it";
+import { match, P } from "ts-pattern";
 
 import { AdminPanel } from "./AdminPanel";
 import EmailContainer from "./Email/EmailContainer";
@@ -18,8 +23,6 @@ import { PrivateMemberChangeSchemaType } from "@/models/memberChange";
 import "./MemberPage.css";
 import { matomoUserSchemaType } from "@/models/matomo";
 import { sentryUserSchemaType } from "@/models/sentry";
-import Button from "@codegouvfr/react-dsfr/Button";
-import { match, P } from "ts-pattern";
 
 const mdParser = new MarkdownIt({
     html: true,
@@ -85,6 +88,24 @@ export default function MemberPage({
     avatar,
     isCurrentUser,
 }: MemberPageProps) {
+    const router = useRouter();
+    const [hash, setHash] = useState<null | string>(null);
+
+    useEffect(() => {
+        // Get the current hash value
+        setHash(window.location.hash.replace("#", ""));
+
+        // Optional: Listen for hash changes
+        const onHashChange = () => {
+            setHash(window.location.hash.replace("#", ""));
+        };
+
+        window.addEventListener("hashchange", onHashChange);
+
+        return () => {
+            window.removeEventListener("hashchange", onHashChange);
+        };
+    }, []);
     const canEdit = isAdmin || isCurrentUser || sessionUserIsFromIncubatorTeam;
     const linkToEditPage = match([
         isAdmin,
@@ -101,11 +122,11 @@ export default function MemberPage({
             () => `/community/${userInfos.username}/update`
         )
         .otherwise(() => "");
-
     const tabs = [
         {
             label: "Fiche Membre",
-            isDefault: true,
+            isDefault: hash === "fiche-membre",
+            tabId: "fiche-membre",
             content: (
                 <>
                     <MemberCard
@@ -154,6 +175,9 @@ export default function MemberPage({
         },
         {
             label: "Statut des comptes",
+            tabId: "statut-comptes",
+            isDefault: hash === "status-comptes",
+
             content: (
                 <MemberStatus
                     isExpired={isExpired}
@@ -169,6 +193,8 @@ export default function MemberPage({
         },
         {
             label: "Compte email",
+            tabId: "compte-email",
+            isDefault: hash === "compte-email",
             content: (
                 <EmailContainer
                     isCurrentUser={isCurrentUser}
@@ -184,6 +210,8 @@ export default function MemberPage({
         },
         isAdmin && {
             label: "Admin",
+            tabId: "admin",
+            isDefault: hash === "admin",
             content: (
                 <AdminPanel
                     authorizations={authorizations}
@@ -213,7 +241,33 @@ export default function MemberPage({
                 )}
             </h1>
             {isExpired && <MemberExpirationNotice userInfos={userInfos} />}
-            <Tabs tabs={tabs} />
+            {hash !== null && (
+                <Tabs
+                    tabs={tabs}
+                    onTabChange={(obj) => {
+                        router.push(`#${tabs[obj.tabIndex].tabId}`, undefined, {
+                            shallow: true,
+                        });
+                    }}
+                />
+            )}
+            {canEdit && linkToEditPage && (
+                <div
+                    className={fr.cx("fr-col-12", "fr-mt-4w")}
+                    style={{ textAlign: "center" }}
+                >
+                    <Button
+                        className=""
+                        size="small"
+                        priority="secondary"
+                        linkProps={{
+                            href: linkToEditPage,
+                        }}
+                    >
+                        Modifier la fiche
+                    </Button>
+                </div>
+            )}
         </div>
     );
 }
