@@ -1084,27 +1084,41 @@ describe("User", () => {
         });
     });
 
-    describe("Post delete /api/users/:username/email/delete authenticated", () => {
-        let getToken;
+    describe("Email delete", () => {
         let isPublicServiceEmailStub;
+        let getServerSessionStub;
 
         beforeEach(async () => {
-            getToken = sinon.stub(session, "getToken");
-            getToken.returns(utils.getJWT("membre.actif"));
-            await utils.createUsers(testUsers);
+            getServerSessionStub = sinon
+                .stub(nextAuth, "getServerSession")
+                .resolves({});
             isPublicServiceEmailStub = sinon
                 .stub(controllerUtils, "isPublicServiceEmail")
                 .returns(Promise.resolve(true));
+            await utils.createUsers(testUsers);
         });
 
         afterEach(async () => {
-            getToken.restore();
-            await utils.deleteUsers(testUsers);
+            getServerSessionStub.restore();
             isPublicServiceEmailStub.restore();
+            await utils.deleteUsers(testUsers);
         });
 
-        it("Deleting email should ask OVH to delete all redirections", (done) => {
+        it("Deleting email should ask OVH to delete all redirections", async () => {
             nock.cleanAll();
+            const user = await db
+                .selectFrom("users")
+                .selectAll()
+                .where("username", "=", "membre.expire")
+                .executeTakeFirstOrThrow();
+            const mockSession = {
+                user: {
+                    id: "membre.expire",
+                    isAdmin: false,
+                    uuid: user.uuid,
+                },
+            };
+            getServerSessionStub.resolves(mockSession);
 
             nock(/.*ovh.com/)
                 .get(/^.*email\/domain\/.*\/redirection/)
@@ -1133,28 +1147,48 @@ describe("User", () => {
                 .delete(/^.*email\/domain\/.*\/redirection\/123123/)
                 .reply(200);
 
-            chai.request(app)
-                .post("/api/users/membre.expire/email/delete")
-                .end((err, res) => {
-                    ovhRedirectionDeletion.isDone().should.be.true;
-                    done();
-                });
+            await deleteEmailForUser({ username: "membre.expire" });
+            ovhRedirectionDeletion.isDone().should.be.true;
         });
 
-        it("should not allow email deletion for active users", (done) => {
+        it("should not allow email deletion for active users", async () => {
             const ovhEmailDeletion = nock(/.*ovh.com/)
                 .delete(/^.*email\/domain\/.*\/account\/membre.expire/)
                 .reply(200);
-
-            chai.request(app)
-                .post("/api/users/membre.actif/email/delete")
-                .end((err, res) => {
-                    ovhEmailDeletion.isDone().should.be.false;
-                    done();
-                });
+            const user = await db
+                .selectFrom("users")
+                .selectAll()
+                .where("username", "=", "membre.expire")
+                .executeTakeFirstOrThrow();
+            const mockSession = {
+                user: {
+                    id: "membre.actif",
+                    isAdmin: false,
+                    uuid: user.uuid,
+                },
+            };
+            getServerSessionStub.resolves(mockSession);
+            try {
+                await deleteEmailForUser({ username: "membre.actif" });
+            } catch (e) {
+                ovhEmailDeletion.isDone().should.be.false;
+            }
         });
 
-        it("should not allow email deletion for another user if active", (done) => {
+        it("should not allow email deletion for another user if active", async () => {
+            const user = await db
+                .selectFrom("users")
+                .selectAll()
+                .where("username", "=", "membre.nouveau")
+                .executeTakeFirstOrThrow();
+            const mockSession = {
+                user: {
+                    id: "membre.nouveau",
+                    isAdmin: false,
+                    uuid: user.uuid,
+                },
+            };
+            getServerSessionStub.resolves(mockSession);
             nock.cleanAll();
 
             const ovhEmailDeletion = nock(/.*ovh.com/)
@@ -1169,17 +1203,28 @@ describe("User", () => {
             utils.mockSlackGeneral();
             utils.mockSlackSecretariat();
 
-            getToken.returns(utils.getJWT("membre.nouveau"));
-            chai.request(app)
-                .post("/api/users/membre.actif/email/delete")
-                .end((err, res) => {
-                    ovhEmailDeletion.isDone().should.be.false;
-                    done();
-                });
+            try {
+                await deleteEmailForUser({ username: "membre.actif" });
+            } catch (e) {
+                ovhEmailDeletion.isDone().should.be.false;
+            }
         });
 
-        it("should allow email deletion for requester even if active", (done) => {
+        it("should allow email deletion for requester even if active", async () => {
             nock.cleanAll();
+            const user = await db
+                .selectFrom("users")
+                .selectAll()
+                .where("username", "=", "membre.actif")
+                .executeTakeFirstOrThrow();
+            const mockSession = {
+                user: {
+                    id: "membre.actif",
+                    isAdmin: false,
+                    uuid: user.uuid,
+                },
+            };
+            getServerSessionStub.resolves(mockSession);
 
             nock(/.*ovh.com/)
                 .get(/^.*email\/domain\/.*\/redirection/)
@@ -1212,12 +1257,11 @@ describe("User", () => {
                 .delete(/^.*email\/domain\/.*\/redirection\/123123/)
                 .reply(200);
 
-            chai.request(app)
-                .post("/api/users/membre.actif/email/delete")
-                .end((err, res) => {
-                    ovhRedirectionDeletion.isDone().should.be.true;
-                    done();
-                });
+            try {
+                await deleteEmailForUser({ username: "membre.actif" });
+            } catch (e) {
+                ovhRedirectionDeletion.isDone().should.be.true;
+            }
         });
     });
 
