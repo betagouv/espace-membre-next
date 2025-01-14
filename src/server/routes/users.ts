@@ -14,11 +14,11 @@ apiRouter.post(
     express.json({ type: "*/*" }),
     usersController.deleteEmailForUserApi
 );
-apiRouter.put(
-    routes.USER_UPDATE_PRIMARY_EMAIL_API,
-    express.json({ type: "*/*" }),
-    usersController.managePrimaryEmailForUserApi
-);
+// apiRouter.put(
+//     routes.USER_UPDATE_PRIMARY_EMAIL_API,
+//     express.json({ type: "*/*" }),
+//     usersController.managePrimaryEmailForUserApi
+// );
 apiRouter.post(
     routes.USER_UPDATE_SECONDARY_EMAIL_API,
     express.json({ type: "*/*" }),

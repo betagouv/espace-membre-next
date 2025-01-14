@@ -46,7 +46,7 @@ class routes {
     static USER_UPDATE_SECONDARY_EMAIL_API =
         "/api/users/:username/secondary_email" as const;
     static USER_UPDATE_PRIMARY_EMAIL_API =
-        "/api/users/:username/primary_email" as const;
+        "/api/member/:username/primary_email" as const;
     static USER_UPGRADE_EMAIL_API =
         "/api/users/:username/email-upgrade" as const;
     static USER_CREATE_EMAIL_API = "/api/users/:username/create-email" as const;
