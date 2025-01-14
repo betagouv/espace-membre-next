@@ -782,36 +782,43 @@ describe("User", () => {
         });
     });
 
-    describe("POST /users/:username/secondary_email", () => {
-        let getToken;
+    describe("Test manage secondary email", () => {
         let isPublicServiceEmailStub;
+        let getServerSessionStub;
+        let user;
+        const manageSecondaryEmailForUser = proxyquire(
+            "@/app/api/member/actions",
+            {
+                "next/cache": {
+                    revalidatePath: sinon.stub(),
+                },
+            }
+        ).manageSecondaryEmailForUser;
 
         beforeEach(async () => {
-            getToken = sinon.stub(session, "getToken");
-            getToken.returns(utils.getJWT("membre.nouveau"));
-            await utils.createUsers(testUsers);
             isPublicServiceEmailStub = sinon
                 .stub(controllerUtils, "isPublicServiceEmail")
                 .returns(Promise.resolve(true));
-        });
+            getServerSessionStub = sinon
+                .stub(nextAuth, "getServerSession")
+                .resolves({});
 
+            await utils.createUsers(testUsers);
+            user = await db
+                .selectFrom("users")
+                .selectAll()
+                .where("username", "=", "membre.nouveau")
+                .executeTakeFirstOrThrow();
+            const mockSession = {
+                user: { id: "membre.nouveau", isAdmin: false, uuid: user.uuid },
+            };
+            getServerSessionStub.resolves(mockSession);
+        });
         afterEach(async () => {
-            getToken.restore();
+            sinon.restore();
             await utils.deleteUsers(testUsers);
             isPublicServiceEmailStub.restore();
-        });
-        it("should return 200 to add secondary email", async () => {
-            const username = "membre.nouveau";
-            const secondaryEmail = "membre.nouveau.perso@example.com";
-            const res = await chai
-                .request(app)
-                .post("/api/users/membre.nouveau/secondary_email")
-                .type("form")
-                .send({
-                    username,
-                    secondaryEmail,
-                });
-            res.should.have.status(200);
+            await utils.deleteUsers(testUsers);
         });
 
         it("should add secondary email", async () => {
@@ -823,14 +830,11 @@ describe("User", () => {
                 .selectAll()
                 .where("username", "=", "membre.nouveau")
                 .execute();
-            await chai
-                .request(app)
-                .post(`/api/users/${username}/secondary_email`)
-                .type("form")
-                .send({
-                    username,
-                    secondaryEmail,
-                });
+            await manageSecondaryEmailForUser({
+                username,
+                secondaryEmail,
+            });
+
             const dbNewRes = await db
                 .selectFrom("users")
                 .selectAll()
@@ -852,14 +856,10 @@ describe("User", () => {
                     secondary_email: secondaryEmail,
                 })
                 .execute();
-            await chai
-                .request(app)
-                .post(`/api/users/${username}/secondary_email/`)
-                .type("form")
-                .send({
-                    username,
-                    secondaryEmail: newSecondaryEmail,
-                });
+            await manageSecondaryEmailForUser({
+                username,
+                secondaryEmail: newSecondaryEmail,
+            });
             const dbNewRes = await db
                 .selectFrom("users")
                 .selectAll()
@@ -880,9 +880,7 @@ describe("User", () => {
     describe("Test action managePrimaryEmailForUser", () => {
         let mattermostGetUserByEmailStub;
         let isPublicServiceEmailStub;
-        let getToken;
         let getServerSessionStub;
-        let PUT;
         let user;
         const managePrimaryEmailForUser = proxyquire(
             "@/app/api/member/actions",
@@ -900,8 +898,6 @@ describe("User", () => {
             isPublicServiceEmailStub = sinon
                 .stub(controllerUtils, "isPublicServiceEmail")
                 .returns(Promise.resolve(true));
-            getToken = sinon.stub(session, "getToken");
-            getToken.returns(utils.getJWT("membre.nouveau"));
             getServerSessionStub = sinon
                 .stub(nextAuth, "getServerSession")
                 .resolves({});
@@ -918,7 +914,6 @@ describe("User", () => {
             await utils.deleteUsers(testUsers);
             mattermostGetUserByEmailStub.restore();
             isPublicServiceEmailStub.restore();
-            getToken.restore();
             await utils.deleteUsers(testUsers);
         });
 

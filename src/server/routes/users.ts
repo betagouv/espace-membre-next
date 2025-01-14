@@ -19,11 +19,11 @@ const apiRouter = express.Router();
 //     express.json({ type: "*/*" }),
 //     usersController.managePrimaryEmailForUserApi
 // );
-apiRouter.post(
-    routes.USER_UPDATE_SECONDARY_EMAIL_API,
-    express.json({ type: "*/*" }),
-    usersController.manageSecondaryEmailForUserApi
-);
+// apiRouter.post(
+//     routes.USER_UPDATE_SECONDARY_EMAIL_API,
+//     express.json({ type: "*/*" }),
+//     usersController.manageSecondaryEmailForUserApi
+// );
 apiRouter.post(
     routes.USER_UPDATE_PASSWORD_API,
     express.json({ type: "*/*" }),

@@ -476,7 +476,6 @@ export async function deleteEmailForUser({ username }: { username: string }) {
         console.log(
             `Redirection des emails de ${username} vers ${config.leavesEmail} (à la demande de ${session.user.id})`
         );
-        let redirectUrl;
         if (isCurrentUser) {
             cookies().set("next-auth.session-token", "", {
                 maxAge: -1,
@@ -490,6 +489,64 @@ export async function deleteEmailForUser({ username }: { username: string }) {
         }
     } catch (err) {
         console.error(err);
+    }
+}
+
+export async function manageSecondaryEmailForUser({
+    username,
+    secondaryEmail,
+}: {
+    username: string;
+    secondaryEmail: string;
+}) {
+    const session = await getServerSession(authOptions);
+    if (!session || !session.user.id) {
+        throw new AuthorizationError();
+    }
+    const isCurrentUser = session.user.id === username;
+
+    const user = await userInfos({ username }, isCurrentUser);
+    if (!isCurrentUser && !user.isExpired) {
+        throw new Error(
+            `Le compte "${username}" n'est pas expiré, vous ne pouvez pas supprimer ce compte.`
+        );
+    }
+
+    if (
+        user.authorizations.canChangeEmails ||
+        config.ESPACE_MEMBRE_ADMIN.includes(session.user.id)
+    ) {
+        const user = await db
+            .selectFrom("users")
+            .select("secondary_email")
+            .where("username", "=", username)
+            .executeTakeFirst();
+
+        if (!user) {
+            throw new Error("Users not found");
+        }
+
+        await db
+            .updateTable("users")
+            .set({
+                secondary_email: secondaryEmail,
+            })
+            .where("username", "=", username)
+            .execute();
+
+        await addEvent({
+            action_code: EventCode.MEMBER_SECONDARY_EMAIL_UPDATED,
+            created_by_username: session.user.id,
+            action_on_username: username,
+            action_metadata: {
+                value: secondaryEmail,
+                old_value: user.secondary_email || "",
+            },
+        });
+
+        console.log(
+            `${session.user.id} a mis à jour son adresse mail secondaire.`
+        );
     }
 }
 
@@ -522,3 +579,7 @@ export const safeDeleteEmailForUser = withErrorHandling<
     UnwrapPromise<ReturnType<typeof deleteEmailForUser>>,
     Parameters<typeof deleteEmailForUser>
 >(deleteEmailForUser);
+export const safeManageSecondaryEmailForUser = withErrorHandling<
+    UnwrapPromise<ReturnType<typeof manageSecondaryEmailForUser>>,
+    Parameters<typeof manageSecondaryEmailForUser>
+>(manageSecondaryEmailForUser);
