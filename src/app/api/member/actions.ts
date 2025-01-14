@@ -1,6 +1,7 @@
 "use server";
 
 import { revalidatePath } from "next/cache";
+import { cookies } from "next/headers";
 import { getServerSession } from "next-auth/next";
 
 import { addEvent } from "@/lib/events";
@@ -18,6 +19,7 @@ import {
 } from "@/models/mapper";
 import {
     CommunicationEmailCode,
+    EmailStatusCode,
     memberWrapperPublicInfoSchemaType,
 } from "@/models/member";
 import betagouv from "@/server/betagouv";
@@ -33,6 +35,7 @@ import {
     isPublicServiceEmail,
     isAdminEmail,
     userInfos,
+    buildBetaEmail,
 } from "@/server/controllers/utils";
 import { Contact, MAILING_LIST_TYPE } from "@/server/modules/email";
 import { authOptions } from "@/utils/authoptions";
@@ -423,6 +426,73 @@ export async function managePrimaryEmailForUser({
     return;
 }
 
+export async function deleteEmailForUser({ username }: { username: string }) {
+    const session = await getServerSession(authOptions);
+    if (!session || !session.user.id) {
+        throw new AuthorizationError();
+    }
+    const isCurrentUser = session.user.id === username;
+
+    try {
+        const user = await userInfos({ username }, isCurrentUser);
+        if (!isCurrentUser && !user.isExpired) {
+            throw new Error(
+                `Le compte "${username}" n'est pas expiré, vous ne pouvez pas supprimer ce compte.`
+            );
+        }
+
+        await betagouv.sendInfoToChat(
+            `Suppression de compte de ${username} (à la demande de ${session.user.id})`
+        );
+        await addEvent({
+            action_code: EventCode.MEMBER_EMAIL_DELETED,
+            created_by_username: session.user.id,
+            action_on_username: username,
+        });
+        if (user.emailRedirections && user.emailRedirections.length > 0) {
+            await betagouv.requestRedirections(
+                "DELETE",
+                user.emailRedirections.map((x) => x.id)
+            );
+            console.log(
+                `Suppression des redirections de l'email de ${username} (à la demande de ${session.user.id})`
+            );
+        }
+
+        await betagouv.createRedirection(
+            buildBetaEmail(username),
+            config.leavesEmail,
+            false
+        );
+        await db
+            .updateTable("users")
+            .set({
+                secondary_email: null,
+                primary_email: null,
+                primary_email_status: EmailStatusCode.EMAIL_UNSET,
+            })
+            .where("username", "=", username)
+            .execute();
+        console.log(
+            `Redirection des emails de ${username} vers ${config.leavesEmail} (à la demande de ${session.user.id})`
+        );
+        let redirectUrl;
+        if (isCurrentUser) {
+            cookies().set("next-auth.session-token", "", {
+                maxAge: -1,
+                path: "/",
+            });
+            // Optionally, clear other cookies related to authentication
+            cookies().set("__Secure-next-auth.session-token", "", {
+                maxAge: -1,
+                path: "/",
+            });
+        }
+    } catch (err) {
+        console.error(err);
+    }
+}
+
 export const safeUpdateMemberMissions = withErrorHandling(updateMemberMissions);
 export const safeGetUserPublicInfo = withErrorHandling<
     UnwrapPromise<ReturnType<typeof getUserPublicInfo>>,
@@ -448,3 +518,7 @@ export const safeManagePrimaryEmailForUser = withErrorHandling<
     UnwrapPromise<ReturnType<typeof managePrimaryEmailForUser>>,
     Parameters<typeof managePrimaryEmailForUser>
 >(managePrimaryEmailForUser);
+export const safeDeleteEmailForUser = withErrorHandling<
+    UnwrapPromise<ReturnType<typeof deleteEmailForUser>>,
+    Parameters<typeof deleteEmailForUser>
+>(deleteEmailForUser);

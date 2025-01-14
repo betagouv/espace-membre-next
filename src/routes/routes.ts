@@ -37,7 +37,7 @@ class routes {
     static ONBOARDING_ACTION_API = "/api/onboarding" as const;
     // users
     static USER_CREATE_EMAIL = "/users/:username/email" as const;
-    static USER_DELETE_EMAIL_API = "/api/users/:username/email/delete" as const;
+    // static USER_DELETE_EMAIL_API = "/api/users/:username/email/delete" as const;
     static USER_CREATE_REDIRECTION_API =
         "/api/users/:username/redirections" as const;
     static USER_DELETE_REDIRECTION_API =

@@ -9,11 +9,11 @@ const apiRouter = express.Router();
 // users
 // router.post(routes.USER_CREATE_EMAIL, usersController.createEmailForUser);
 
-apiRouter.post(
-    routes.USER_DELETE_EMAIL_API,
-    express.json({ type: "*/*" }),
-    usersController.deleteEmailForUserApi
-);
+// apiRouter.post(
+//     routes.USER_DELETE_EMAIL_API,
+//     express.json({ type: "*/*" }),
+//     usersController.deleteEmailForUserApi
+// );
 // apiRouter.put(
 //     routes.USER_UPDATE_PRIMARY_EMAIL_API,
 //     express.json({ type: "*/*" }),

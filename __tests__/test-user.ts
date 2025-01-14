@@ -26,7 +26,14 @@ import {
     unsubscribeEmailAddresses,
 } from "@schedulers/emailScheduler";
 
+const deleteEmailForUser = proxyquire("@/app/api/member/actions", {
+    "next/cache": {
+        revalidatePath: sinon.stub(),
+    },
+}).deleteEmailForUser;
+
 chai.use(chaiHttp);
+const { expect } = chai;
 
 describe("User", () => {
     let ovhPasswordNock;
@@ -675,24 +682,34 @@ describe("User", () => {
         });
     });
 
-    describe("POST /users/:username/email/delete unauthenticated", () => {
-        it("should return an Unauthorized error", (done) => {
-            chai.request(app)
-                .post("/api/users/membre.parti/email/delete")
-                .end((err, res) => {
-                    res.should.have.status(401);
-                    done();
+    describe("Delete user email when unauthenticated", () => {
+        let getServerSessionStub;
+        beforeEach(() => {
+            getServerSessionStub = sinon
+                .stub(nextAuth, "getServerSession")
+                .resolves(undefined);
+        });
+        afterEach(() => {
+            getServerSessionStub.restore();
+        });
+        it("should return an Unauthorized error", async () => {
+            try {
+                await deleteEmailForUser({
+                    username: "membre.parti",
                 });
+            } catch (err) {
+                expect(err).to.be.an("error");
+            }
         });
     });
 
-    describe("POST /user/:username/email/delete", () => {
-        let getToken;
+    describe("Delete user email", () => {
         let isPublicServiceEmailStub;
-
+        let getServerSessionStub;
         beforeEach(async () => {
-            getToken = sinon.stub(session, "getToken");
-            getToken.returns(utils.getJWT("membre.actif"));
+            getServerSessionStub = sinon
+                .stub(nextAuth, "getServerSession")
+                .resolves({});
             isPublicServiceEmailStub = sinon
                 .stub(controllerUtils, "isPublicServiceEmail")
                 .returns(Promise.resolve(true));
@@ -700,11 +717,24 @@ describe("User", () => {
         });
 
         afterEach(async () => {
-            getToken.restore();
+            getServerSessionStub.restore();
             isPublicServiceEmailStub.restore();
             await utils.deleteUsers(testUsers);
         });
         it("should keep the user in database secretariat", async () => {
+            const user = await db
+                .selectFrom("users")
+                .selectAll()
+                .where("username", "=", "membre.actif")
+                .executeTakeFirstOrThrow();
+            const mockSession = {
+                user: {
+                    id: "membre.actif",
+                    isAdmin: false,
+                    uuid: user.uuid,
+                },
+            };
+            getServerSessionStub.resolves(mockSession);
             const addRedirection = nock(/.*ovh.com/)
                 .post(/^.*email\/domain\/.*\/redirection/)
                 .reply(200);
@@ -715,9 +745,7 @@ describe("User", () => {
                 .where("username", "=", "membre.actif")
                 .execute();
             dbRes.length.should.equal(1);
-            await chai
-                .request(app)
-                .post("/api/users/membre.actif/email/delete");
+            await deleteEmailForUser({ username: "membre.actif" });
             const dbNewRes = await db
                 .selectFrom("users")
                 .selectAll()
@@ -727,7 +755,15 @@ describe("User", () => {
             addRedirection.isDone().should.be.true;
         });
 
-        it("should ask OVH to redirect to the departs email", (done) => {
+        it("should ask OVH to redirect to the departs email", async () => {
+            const mockSession = {
+                user: {
+                    id: "membre.actif",
+                    isAdmin: false,
+                    uuid: "membre.actif",
+                },
+            };
+            getServerSessionStub.resolves(mockSession);
             const expectedRedirectionBody = (body) => {
                 return (
                     body.from === `membre.actif@${config.domain}` &&
@@ -741,13 +777,8 @@ describe("User", () => {
                     expectedRedirectionBody
                 )
                 .reply(200);
-
-            chai.request(app)
-                .post("/api/users/membre.actif/email/delete")
-                .end((err, res) => {
-                    ovhRedirectionDepartureEmail.isDone().should.be.true;
-                    done();
-                });
+            await deleteEmailForUser({ username: "membre.actif" });
+            ovhRedirectionDepartureEmail.isDone().should.be.true;
         });
     });
 

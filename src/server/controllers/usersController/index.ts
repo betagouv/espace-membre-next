@@ -1,5 +1,4 @@
 export * from "./createRedirectionForUser";
-export * from "./deleteEmailForUser";
 export * from "./deleteRedirectionForUser";
 export * from "./manageSecondaryEmailForUser";
 export * from "./updatePasswordForUser";
