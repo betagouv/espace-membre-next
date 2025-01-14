@@ -5,6 +5,7 @@ import { fr } from "@codegouvfr/react-dsfr/fr";
 import { StartupPageProps } from "./StartupPage";
 import { StartupPhase } from "@/models/startup";
 import { BadgePhase } from "./BadgePhase";
+import LastChange from "../LastChange";
 
 export function StartupHeader({
     startupInfos,
@@ -55,11 +56,6 @@ export function StartupHeader({
                         {startupInfos.link}
                     </a>
                 )}
-                {/* <LastChange
-                    as="span"
-                    style={{ marginLeft: 10 }}
-                    changes={changes}
-                /> */}
             </div>
             <div className={fr.cx("fr-col-12")}>
                 {incubator && (

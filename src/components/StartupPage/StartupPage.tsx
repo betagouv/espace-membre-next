@@ -20,6 +20,7 @@ import { StartupHistory } from "./StartupHistory";
 import { StartupStandards } from "./StartupStandards";
 import { StartupTools } from "./StartupTools";
 import { StartupFiles } from "../StartupFiles";
+import LastChange from "../LastChange";
 
 export interface StartupPageProps {
     startupInfos: startupSchemaType;
@@ -122,6 +123,9 @@ export default function StartupPage({
                 >
                     Modifier la fiche
                 </Button>
+                <br />
+                <br />
+                <LastChange changes={changes} />
             </div>
         </div>
     );
