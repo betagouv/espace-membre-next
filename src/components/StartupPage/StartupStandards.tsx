@@ -60,6 +60,7 @@ const TableStandards = ({ data, headers }) => {
                         if (row[1] === null) {
                             return (
                                 <tr
+                                    key="row"
                                     data-fr-js-table-row="true"
                                     style={{
                                         backgroundColor: "transparent",
@@ -76,6 +77,7 @@ const TableStandards = ({ data, headers }) => {
                         }
                         return (
                             <tr
+                                key="details"
                                 data-fr-js-table-row="true"
                                 style={{
                                     backgroundColor:
