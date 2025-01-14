@@ -23,6 +23,7 @@ import { PrivateMemberChangeSchemaType } from "@/models/memberChange";
 import "./MemberPage.css";
 import { matomoUserSchemaType } from "@/models/matomo";
 import { sentryUserSchemaType } from "@/models/sentry";
+import LastChange from "../LastChange";
 
 const mdParser = new MarkdownIt({
     html: true,
@@ -249,11 +250,12 @@ export default function MemberPage({
                     }}
                 />
             )}
-            {canEdit && linkToEditPage && (
-                <div
-                    className={fr.cx("fr-col-12", "fr-mt-4w")}
-                    style={{ textAlign: "center" }}
-                >
+
+            <div
+                className={fr.cx("fr-col-12", "fr-mt-4w")}
+                style={{ textAlign: "center" }}
+            >
+                {canEdit && linkToEditPage && (
                     <Button
                         className=""
                         size="small"
@@ -264,8 +266,11 @@ export default function MemberPage({
                     >
                         Modifier la fiche
                     </Button>
-                </div>
-            )}
+                )}
+                <br />
+                <br />
+                <LastChange changes={changes} />
+            </div>
         </div>
     );
 }
