@@ -5,7 +5,7 @@ import { useState, useEffect } from "react";
 import { fr } from "@codegouvfr/react-dsfr";
 import Button from "@codegouvfr/react-dsfr/Button";
 import { Tabs } from "@codegouvfr/react-dsfr/Tabs";
-import { useRouter } from "@node_modules/next/navigation";
+import { useRouter } from "next/navigation";
 import MarkdownIt from "markdown-it";
 import { match, P } from "ts-pattern";
 
