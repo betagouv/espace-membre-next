@@ -30,13 +30,15 @@ fileignoreconfig:
 - filename: src/app/api/member/actions/deleteRedirectionForUser.ts
   checksum: deddb6b63051856b44a031e097f4614a1ff42d97ac49f1bc1d21f28ed377d7d1
 - filename: src/app/api/member/actions/updatePasswordForUser.ts
-  checksum: e5dfe046df657e12314a68876b3d2261275f6b8437c8d7862d3fafe30a352c63
+  checksum: f0f76c8fc4094fb1a0ae2fa456dcf72b0d2481dbe4cfd8632241306d9b63c2d3
 - filename: src/app/api/services/actions.ts
   checksum: 80f4cffcc5861befdb98c676df064595dae5c318349c45059ba87fe20e96f2a2
 - filename: src/components/CommunityPage/Community.tsx
   checksum: 50ed5a9ba8e03d4ffc248026cfae6fd6331c84c21b30aaa73c0bf30f22be9e2c
 - filename: src/components/IncubatorForm/IncubatorForm.tsx
   checksum: 267f0f0e491b06862cd957ae86d22baf799a705370673cd24e588391a4613a5a
+- filename: src/components/MemberPage/Email/BlocChangerMotDePasse.tsx
+  checksum: 12b1f4da4512e1ff7fe8f89e9131d582272d5f0a1a3119507a4b1f11d3501948
 - filename: src/components/MemberPage/Email/EmailContainer.tsx
   checksum: 2c46d4aa4dc8caece9bc7f377178e855562c5321d2b87b24ff32cb307fe6946b
 - filename: src/components/MemberPage/Email/WebMailButtons.tsx

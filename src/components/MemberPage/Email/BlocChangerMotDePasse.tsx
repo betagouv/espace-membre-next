@@ -10,6 +10,7 @@ import Button from "@codegouvfr/react-dsfr/Button";
 import { fr } from "@codegouvfr/react-dsfr/fr";
 import axios from "axios";
 
+import { safeUpdatePasswordForUser, updatePasswordForUser } from "@/app/api/member/actions/updatePasswordForUser";
 import { EmailStatusCode, memberBaseInfoSchemaType } from "@/models/member";
 import routes, { computeRoute } from "@/routes/routes";
 
@@ -25,40 +26,25 @@ function PasswordChange({ username }: { username: string }) {
         e.preventDefault();
         setIsSaving(true);
         setAlertMessage(undefined);
-        axios
-            .post(
-                computeRoute(
-                    routes.USER_UPDATE_PASSWORD_API.replace(
-                        ":username",
-                        username
-                    )
-                ),
-                {
-                    new_password: password,
-                },
-                {
-                    withCredentials: true,
-                }
-            )
-            .then(() => {
-                setTimeout(() => {
-                    // timeout to let user understand that function ran
-                    setIsSaving(false);
-                    setAlertMessage({
-                        title: `Mot de passe mis à jour avec succès`,
-                        message: `Ton mot de passe a été mis à jour, tu peux maintenant l'utiliser sur le webmail ou dans ton client email.`,
-                        type: "success",
-                    });
-                }, 1000);
-            })
-            .catch((err) => {
+        const resp = await safeUpdatePasswordForUser({ username, new_password: password })
+        if (resp.success) { 
+            setTimeout(() => {
+                // timeout to let user understand that function ran
+                setIsSaving(false);
+                setAlertMessage({
+                    title: `Mot de passe mis à jour avec succès`,
+                    message: `Ton mot de passe a été mis à jour, tu peux maintenant l'utiliser sur le webmail ou dans ton client email.`,
+                    type: "success",
+                });
+            }, 1000);
+        } else {
                 setIsSaving(false);
                 setAlertMessage({
                     title: "Une erreur est survenue",
                     message: `Réessayer plus tard, si l'erreur persiste contacter espace-membre@beta.gouv.fr. Erreur : ${err?.response?.data?.error}`,
                     type: "warning",
                 });
-            });
+                
     };
     const onPasswordChange = (e) => {
         setPassword(e.target.value);

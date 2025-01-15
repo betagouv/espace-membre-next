@@ -5,6 +5,10 @@ import Button from "@codegouvfr/react-dsfr/Button";
 import Input from "@codegouvfr/react-dsfr/Input";
 import axios from "axios";
 
+import {
+    createEmail,
+    safeCreateEmail,
+} from "@/app/api/member/actions/createEmailForUser";
 import { memberSchemaType } from "@/models/member";
 import routes, { computeRoute } from "@/routes/routes";
 
@@ -26,19 +30,22 @@ export default function BlocCreateEmail({
                 className="no-margin"
                 onSubmit={async (e) => {
                     e.preventDefault();
-                    try {
-                        await axios.post(
-                            computeRoute(routes.USER_CREATE_EMAIL_API).replace(
-                                ":username",
-                                userInfos.username
-                            ),
-                            {},
-                            {
-                                withCredentials: true,
-                            }
-                        );
+                    const resp = await safeCreateEmail({
+                        username: userInfos.username,
+                    });
+                    // await axios.post(
+                    //     computeRoute(routes.USER_CREATE_EMAIL_API).replace(
+                    //         ":username",
+                    //         userInfos.username
+                    //     ),
+                    //     {},
+                    //     {
+                    //         withCredentials: true,
+                    //     }
+                    // );
+                    if (resp.success) {
                         alert("Ton email a bien été créé.");
-                    } catch (e) {
+                    } else {
                         alert(
                             `Ton email n'a pas pu être créé suite à une erreur.`
                         );

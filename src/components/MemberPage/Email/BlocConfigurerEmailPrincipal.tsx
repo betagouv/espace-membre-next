@@ -6,6 +6,7 @@ import Button from "@codegouvfr/react-dsfr/Button";
 import Input from "@codegouvfr/react-dsfr/Input";
 import axios from "axios";
 
+import { managePrimaryEmailForUser } from "@/app/api/member/actions";
 import { memberBaseInfoSchemaType } from "@/models/member";
 import routes, { computeRoute } from "@/routes/routes";
 
@@ -41,32 +42,18 @@ export default function BlocConfigurerEmailPrincipal({
             {canChangeEmails && (
                 <form
                     method="POST"
-                    onSubmit={(e) => {
+                    onSubmit={async (e) => {
                         e.preventDefault();
                         const confirmed = confirm(
                             "Êtes-vous vraiment certain(e) de vouloir changer cet email ?"
                         );
                         if (confirmed) {
                             setIsSaving(true);
-                            axios
-                                .put(
-                                    computeRoute(
-                                        routes.USER_UPDATE_PRIMARY_EMAIL_API
-                                    ).replace(":username", userInfos.username),
-                                    {
-                                        primaryEmail: value,
-                                    },
-                                    {
-                                        withCredentials: true,
-                                    }
-                                )
-                                .then((resp) => {
-                                    setIsSaving(false);
-                                })
-                                .catch((err) => {
-                                    setIsSaving(false);
-                                    console.error(err);
-                                });
+                            const resp = await managePrimaryEmailForUser({
+                                username: userInfos.username,
+                                primaryEmail: value,
+                            });
+                            setIsSaving(false);
                         }
                     }}
                 >

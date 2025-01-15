@@ -59,3 +59,8 @@ export async function deleteRedirectionForUser({
         throw new Error(`Erreur pour supprimer la redirection: ${err}`);
     }
 }
+
+export const safeDeleteRedirectionForUser = withErrorHandling<
+    UnwrapPromise<ReturnType<typeof deleteRedirectionForUser>>,
+    Parameters<typeof deleteRedirectionForUser>
+>(deleteRedirectionForUser);

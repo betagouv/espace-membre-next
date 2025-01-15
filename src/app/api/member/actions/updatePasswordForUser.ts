@@ -10,7 +10,11 @@ import betagouv from "@/server/betagouv";
 import config from "@/server/config";
 import { buildBetaEmail, userInfos } from "@/server/controllers/utils";
 import { authOptions } from "@/utils/authoptions";
-import { AuthorizationError } from "@/utils/error";
+import {
+    AuthorizationError,
+    UnwrapPromise,
+    withErrorHandling,
+} from "@/utils/error";
 
 export async function updatePasswordForUser({
     username,
@@ -87,3 +91,8 @@ export async function updatePasswordForUser({
     const message = `À la demande de ${session.user.id} sur <${secretariatUrl}>, je change le mot de passe pour ${username}.`;
     await betagouv.sendInfoToChat(message);
 }
+
+export const safeUpdatePasswordForUser = withErrorHandling<
+    UnwrapPromise<ReturnType<typeof updatePasswordForUser>>,
+    Parameters<typeof updatePasswordForUser>
+>(updatePasswordForUser);

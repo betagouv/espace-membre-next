@@ -15,7 +15,7 @@ export async function createEmail({
     to_email,
 }: {
     username: string;
-    to_email: string;
+    to_email?: string;
 }) {
     const session = await getServerSession(authOptions);
     if (!session || !session.user.id) {
@@ -24,3 +24,8 @@ export async function createEmail({
 
     await createEmailForUser({ username }, session.user.id);
 }
+
+export const safeCreateEmail = withErrorHandling<
+    UnwrapPromise<ReturnType<typeof createEmail>>,
+    Parameters<typeof createEmail>
+>(createEmail);

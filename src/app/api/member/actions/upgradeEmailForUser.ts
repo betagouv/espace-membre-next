@@ -15,7 +15,7 @@ import {
     withErrorHandling,
 } from "@/utils/error";
 
-export async function upgradeEmailForUserHandler({
+export async function upgradeEmailForUser({
     username,
     password,
 }: {
@@ -76,3 +76,8 @@ export async function upgradeEmailForUserHandler({
         action_on_username: username,
     });
 }
+
+export const safeUpgradeEmailForUser = withErrorHandling<
+    UnwrapPromise<ReturnType<typeof upgradeEmailForUser>>,
+    Parameters<typeof upgradeEmailForUser>
+>(upgradeEmailForUser);

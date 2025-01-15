@@ -12,6 +12,7 @@ import { useRouter } from "next/navigation";
 import { useLiveChat } from "../live-chat/useLiveChat";
 import MemberSelect from "../MemberSelect";
 import { safeGetUserPublicInfo } from "@/app/api/member/actions";
+import { safeCreateEmail } from "@/app/api/member/actions/createEmailForUser";
 import { BadgeEmailPlan } from "@/components/BadgeEmailPlan";
 import { EmailStatusCode } from "@/models/member";
 import {
@@ -868,13 +869,11 @@ export const CreateEmailScreen = function (props) {
             return;
         }
         try {
-            const api = routes.USER_CREATE_EMAIL_API.replace(
-                ":username",
-                props.user.userInfos.id
-            );
             setIsSaving(false);
-            const res = await axios.post(api, {});
-            if (res.status === 200) {
+            const resp = await safeCreateEmail({
+                username: props.user.userInfos.id,
+            });
+            if (resp.success) {
                 props.next();
             } else {
                 throw new Error("Email was not created");
