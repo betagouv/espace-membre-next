@@ -11,18 +11,18 @@ import { useRouter } from "next/navigation";
 
 import { useLiveChat } from "../live-chat/useLiveChat";
 import MemberSelect from "../MemberSelect";
-import { safeGetUserPublicInfo } from "@/app/api/member";
+import { safeGetUserPublicInfo } from "@/app/api/member/actions";
+import { BadgeEmailPlan } from "@/components/BadgeEmailPlan";
 import { EmailStatusCode } from "@/models/member";
 import {
     memberPublicInfoSchemaType,
     memberWrapperPublicInfoSchemaType,
 } from "@/models/member";
 import { EMAIL_STATUS_READABLE_FORMAT } from "@/models/misc";
+import { EMAIL_PLAN_TYPE } from "@/models/ovh";
 import { startupSchemaType } from "@/models/startup";
 import routes from "@/routes/routes";
 import { getLastMission } from "@/utils/member";
-import { EMAIL_PLAN_TYPE } from "@/models/ovh";
-import { BadgeEmailPlan } from "@/components/BadgeEmailPlan";
 
 enum STEP {
     whichMember = "whichMember",

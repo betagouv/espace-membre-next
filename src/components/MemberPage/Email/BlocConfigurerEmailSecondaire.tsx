@@ -6,7 +6,7 @@ import Button from "@codegouvfr/react-dsfr/Button";
 import Input from "@codegouvfr/react-dsfr/Input";
 import { useSession } from "next-auth/react";
 
-import { safeChangeSecondaryEmailForUser } from "@/app/api/member";
+import { safeChangeSecondaryEmailForUser } from "@/app/api/member/actions";
 
 export default function BlocConfigurerEmailSecondaire({
     canChangeEmails,

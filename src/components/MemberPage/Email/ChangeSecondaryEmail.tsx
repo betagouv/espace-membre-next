@@ -1,10 +1,12 @@
-import { safeChangeSecondaryEmailForUser } from "@/app/api/member";
-import { memberBaseInfoSchemaType } from "@/models/member";
+import { useState } from "react";
+
 import Accordion from "@codegouvfr/react-dsfr/Accordion";
 import Alert from "@codegouvfr/react-dsfr/Alert";
 import Button from "@codegouvfr/react-dsfr/Button";
 import Input from "@codegouvfr/react-dsfr/Input";
-import { useState } from "react";
+
+import { safeChangeSecondaryEmailForUser } from "@/app/api/member/actions";
+import { memberBaseInfoSchemaType } from "@/models/member";
 
 export const ChangeSecondaryEmail = ({
     userInfos,

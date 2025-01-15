@@ -11,7 +11,7 @@ import { useSession } from "next-auth/react";
 import { useForm } from "react-hook-form";
 
 import { MissionsEditor } from "../BaseInfoUpdatePage/MissionsEditor";
-import { safeUpdateMemberMissions } from "@/app/api/member";
+import { safeUpdateMemberMissions } from "@/app/api/member/actions";
 import {
     updateMemberMissionsSchema,
     updateMemberMissionsSchemaType,
