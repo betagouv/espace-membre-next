@@ -14,13 +14,7 @@ import { PROTECTED_ROUTES, PUBLIC_ROUTES } from "./config/jwt.config";
 import { errorHandler } from "./middlewares/errorHandler";
 import { rateLimiter } from "./middlewares/rateLimiter";
 import { setupSessionMiddleware } from "./middlewares/sessionMiddleware";
-import {
-    adminRouter,
-    badgeRouter,
-    userRouter,
-    userApiRouter,
-    setupStaticFiles,
-} from "./routes";
+import { adminRouter, badgeRouter, setupStaticFiles } from "./routes";
 //import routes from "@/routes/routes";
 import config from "@/server/config";
 import { getToken } from "@/server/helpers/session";
@@ -90,10 +84,7 @@ const startServer = () => {
 
         //ROUTES
         server.get("/", indexController.getIndex);
-        server.use(userRouter);
-        server.use(userApiRouter);
         server.use(adminRouter);
-        // server.use(authRouter);
         server.use(badgeRouter);
 
         // Default catch-all handler to allow Next.js to handle all other routes
