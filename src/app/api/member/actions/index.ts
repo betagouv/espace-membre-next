@@ -1,7 +1,7 @@
 "use server";
 
-import * as Sentry from "@sentry/nextjs";
 import { revalidatePath } from "next/cache";
+import { cookies } from "next/headers";
 import { getServerSession } from "next-auth/next";
 
 import { addEvent } from "@/lib/events";
@@ -9,6 +9,7 @@ import { db } from "@/lib/kysely";
 import { createMission, updateMission } from "@/lib/kysely/queries/missions";
 import { getUserBasicInfo, getUserInfos } from "@/lib/kysely/queries/users";
 import { getUserByEmail, MattermostUser, searchUsers } from "@/lib/mattermost";
+import * as mattermost from "@/lib/mattermost";
 import { EventCode } from "@/models/actionEvent/actionEvent";
 import { updateMemberMissionsSchemaType } from "@/models/actions/member";
 import { UpdateOvhResponder } from "@/models/actions/ovh";
@@ -18,6 +19,7 @@ import {
 } from "@/models/mapper";
 import {
     CommunicationEmailCode,
+    EmailStatusCode,
     memberWrapperPublicInfoSchemaType,
 } from "@/models/member";
 import betagouv from "@/server/betagouv";
@@ -28,7 +30,13 @@ import {
     addContactsToMailingLists,
     removeContactsFromMailingList,
 } from "@/server/config/email.config";
-import { capitalizeWords, userInfos } from "@/server/controllers/utils";
+import {
+    capitalizeWords,
+    isPublicServiceEmail,
+    isAdminEmail,
+    userInfos,
+    buildBetaEmail,
+} from "@/server/controllers/utils";
 import { Contact, MAILING_LIST_TYPE } from "@/server/modules/email";
 import { authOptions } from "@/utils/authoptions";
 import {
@@ -38,6 +46,7 @@ import {
     ValidationError,
     OVHError,
     withErrorHandling,
+    AdminEmailNotAllowedError,
 } from "@/utils/error";
 
 async function changeSecondaryEmailForUser(
@@ -339,6 +348,208 @@ async function updateMemberMissions(
     revalidatePath("/community/[id]", "layout");
 }
 
+export async function managePrimaryEmailForUser({
+    username,
+    primaryEmail,
+}: {
+    username: string;
+    primaryEmail: string;
+}): Promise<void> {
+    const session = await getServerSession(authOptions);
+    if (!session || !session.user.id) {
+        throw new AuthorizationError();
+    }
+    const isCurrentUser = session?.user.id === username;
+    const user = await userInfos({ username }, isCurrentUser);
+    if (!user.authorizations.canChangeEmails) {
+        throw new Error(
+            `L'utilisateur n'est pas autorisé à changer l'email primaire`
+        );
+    }
+    const primaryEmailIsPublicServiceEmail = await isPublicServiceEmail(
+        primaryEmail
+    );
+    if (!primaryEmailIsPublicServiceEmail) {
+        throw new Error(
+            `L'email renseigné n'est pas un email de service public`
+        );
+    }
+    if (isAdminEmail(primaryEmail)) {
+        throw new AdminEmailNotAllowedError();
+    }
+
+    if (user.userInfos.primary_email?.includes(config.domain)) {
+        await betagouv.createRedirection(
+            user.userInfos.primary_email,
+            primaryEmail,
+            false
+        );
+        try {
+            await betagouv.deleteEmail(
+                user.userInfos.primary_email.split("@")[0]
+            );
+        } catch (e) {
+            console.log(e, "Email is possibly already deleted");
+        }
+    } else {
+        try {
+            await mattermost.getUserByEmail(primaryEmail);
+        } catch {
+            throw new Error(
+                `L'email n'existe pas dans mattermost, pour utiliser cette adresse comme adresse principale ton compte mattermost doit aussi utiliser cette adresse.`
+            );
+        }
+    }
+    await db
+        .updateTable("users")
+        .where("username", "=", username)
+        .set({
+            primary_email: primaryEmail,
+            username,
+        })
+        .execute();
+
+    await addEvent({
+        action_code: EventCode.MEMBER_PRIMARY_EMAIL_UPDATED,
+        created_by_username: session.user.id,
+        action_on_username: username,
+        action_metadata: {
+            value: primaryEmail,
+            old_value: user
+                ? user.userInfos.primary_email || undefined
+                : undefined,
+        },
+    });
+
+    console.log(`${session?.user.id} a mis à jour son adresse mail primaire.`);
+    revalidatePath("/community/[id]", "layout");
+    return;
+}
+
+export async function deleteEmailForUser({ username }: { username: string }) {
+    const session = await getServerSession(authOptions);
+    if (!session || !session.user.id) {
+        throw new AuthorizationError();
+    }
+    const isCurrentUser = session.user.id === username;
+
+    try {
+        const user = await userInfos({ username }, isCurrentUser);
+        if (!isCurrentUser && !user.isExpired) {
+            throw new Error(
+                `Le compte "${username}" n'est pas expiré, vous ne pouvez pas supprimer ce compte.`
+            );
+        }
+
+        await betagouv.sendInfoToChat(
+            `Suppression de compte de ${username} (à la demande de ${session.user.id})`
+        );
+        await addEvent({
+            action_code: EventCode.MEMBER_EMAIL_DELETED,
+            created_by_username: session.user.id,
+            action_on_username: username,
+        });
+        if (user.emailRedirections && user.emailRedirections.length > 0) {
+            await betagouv.requestRedirections(
+                "DELETE",
+                user.emailRedirections.map((x) => x.id)
+            );
+            console.log(
+                `Suppression des redirections de l'email de ${username} (à la demande de ${session.user.id})`
+            );
+        }
+
+        await betagouv.createRedirection(
+            buildBetaEmail(username),
+            config.leavesEmail,
+            false
+        );
+        await db
+            .updateTable("users")
+            .set({
+                secondary_email: null,
+                primary_email: null,
+                primary_email_status: EmailStatusCode.EMAIL_UNSET,
+            })
+            .where("username", "=", username)
+            .execute();
+        console.log(
+            `Redirection des emails de ${username} vers ${config.leavesEmail} (à la demande de ${session.user.id})`
+        );
+        if (isCurrentUser) {
+            cookies().set("next-auth.session-token", "", {
+                maxAge: -1,
+                path: "/",
+            });
+            // Optionally, clear other cookies related to authentication
+            cookies().set("__Secure-next-auth.session-token", "", {
+                maxAge: -1,
+                path: "/",
+            });
+        }
+    } catch (err) {
+        console.error(err);
+    }
+}
+
+export async function manageSecondaryEmailForUser({
+    username,
+    secondaryEmail,
+}: {
+    username: string;
+    secondaryEmail: string;
+}) {
+    const session = await getServerSession(authOptions);
+    if (!session || !session.user.id) {
+        throw new AuthorizationError();
+    }
+    const isCurrentUser = session.user.id === username;
+
+    const user = await userInfos({ username }, isCurrentUser);
+    if (!isCurrentUser && !user.isExpired) {
+        throw new Error(
+            `Le compte "${username}" n'est pas expiré, vous ne pouvez pas supprimer ce compte.`
+        );
+    }
+
+    if (
+        user.authorizations.canChangeEmails ||
+        config.ESPACE_MEMBRE_ADMIN.includes(session.user.id)
+    ) {
+        const user = await db
+            .selectFrom("users")
+            .select("secondary_email")
+            .where("username", "=", username)
+            .executeTakeFirst();
+
+        if (!user) {
+            throw new Error("Users not found");
+        }
+
+        await db
+            .updateTable("users")
+            .set({
+                secondary_email: secondaryEmail,
+            })
+            .where("username", "=", username)
+            .execute();
+
+        await addEvent({
+            action_code: EventCode.MEMBER_SECONDARY_EMAIL_UPDATED,
+            created_by_username: session.user.id,
+            action_on_username: username,
+            action_metadata: {
+                value: secondaryEmail,
+                old_value: user.secondary_email || "",
+            },
+        });
+
+        console.log(
+            `${session.user.id} a mis à jour son adresse mail secondaire.`
+        );
+    }
+}
+
 export const safeUpdateMemberMissions = withErrorHandling(updateMemberMissions);
 export const safeGetUserPublicInfo = withErrorHandling<
     UnwrapPromise<ReturnType<typeof getUserPublicInfo>>,
@@ -360,3 +571,15 @@ export const safeUpdateCommunicationEmail = withErrorHandling<
     UnwrapPromise<ReturnType<typeof updateCommunicationEmail>>,
     Parameters<typeof updateCommunicationEmail>
 >(updateCommunicationEmail);
+export const safeManagePrimaryEmailForUser = withErrorHandling<
+    UnwrapPromise<ReturnType<typeof managePrimaryEmailForUser>>,
+    Parameters<typeof managePrimaryEmailForUser>
+>(managePrimaryEmailForUser);
+export const safeDeleteEmailForUser = withErrorHandling<
+    UnwrapPromise<ReturnType<typeof deleteEmailForUser>>,
+    Parameters<typeof deleteEmailForUser>
+>(deleteEmailForUser);
+export const safeManageSecondaryEmailForUser = withErrorHandling<
+    UnwrapPromise<ReturnType<typeof manageSecondaryEmailForUser>>,
+    Parameters<typeof manageSecondaryEmailForUser>
+>(manageSecondaryEmailForUser);

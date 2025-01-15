@@ -1,9 +1,4 @@
-export * from "./createRedirectionForUser";
-export * from "./deleteEmailForUser";
-export * from "./deleteRedirectionForUser";
-export * from "./managePrimaryEmailForUser";
-export * from "./manageSecondaryEmailForUser";
-export * from "./updatePasswordForUser";
+// export * from "./createRedirectionForUser";
 export * from "./usersControllerUtils";
 export * from "./upgradeEmailForUser";
 export * from "./api/createEmail";
