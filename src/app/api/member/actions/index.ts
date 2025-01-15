@@ -47,6 +47,7 @@ import {
     OVHError,
     withErrorHandling,
     AdminEmailNotAllowedError,
+    BusinessError,
 } from "@/utils/error";
 
 async function changeSecondaryEmailForUser(
@@ -362,15 +363,13 @@ export async function managePrimaryEmailForUser({
     const isCurrentUser = session?.user.id === username;
     const user = await userInfos({ username }, isCurrentUser);
     if (!user.authorizations.canChangeEmails) {
-        throw new Error(
-            `L'utilisateur n'est pas autorisé à changer l'email primaire`
-        );
+        throw new AuthorizationError();
     }
     const primaryEmailIsPublicServiceEmail = await isPublicServiceEmail(
         primaryEmail
     );
     if (!primaryEmailIsPublicServiceEmail) {
-        throw new Error(
+        throw new BusinessError(
             `L'email renseigné n'est pas un email de service public`
         );
     }
@@ -395,7 +394,7 @@ export async function managePrimaryEmailForUser({
         try {
             await mattermost.getUserByEmail(primaryEmail);
         } catch {
-            throw new Error(
+            throw new BusinessError(
                 `L'email n'existe pas dans mattermost, pour utiliser cette adresse comme adresse principale ton compte mattermost doit aussi utiliser cette adresse.`
             );
         }
@@ -436,7 +435,7 @@ export async function deleteEmailForUser({ username }: { username: string }) {
     try {
         const user = await userInfos({ username }, isCurrentUser);
         if (!isCurrentUser && !user.isExpired) {
-            throw new Error(
+            throw new BusinessError(
                 `Le compte "${username}" n'est pas expiré, vous ne pouvez pas supprimer ce compte.`
             );
         }
@@ -507,7 +506,7 @@ export async function manageSecondaryEmailForUser({
 
     const user = await userInfos({ username }, isCurrentUser);
     if (!isCurrentUser && !user.isExpired) {
-        throw new Error(
+        throw new BusinessError(
             `Le compte "${username}" n'est pas expiré, vous ne pouvez pas supprimer ce compte.`
         );
     }
@@ -523,7 +522,7 @@ export async function manageSecondaryEmailForUser({
             .executeTakeFirst();
 
         if (!user) {
-            throw new Error("Users not found");
+            throw new BusinessError("Users not found");
         }
 
         await db
