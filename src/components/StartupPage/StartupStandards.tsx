@@ -138,6 +138,7 @@ export const StartupStandards = ({
                     [
                         "Audit tech",
                         <BooleanBadge
+                            key="badge"
                             value={startupInfos.tech_audit_url}
                             validText="Oui"
                             invalidText="Non"
