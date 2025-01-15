@@ -8,6 +8,7 @@ import sinon from "sinon";
 import testUsers from "./users.json";
 import utils from "./utils";
 import { createRedirectionForUser } from "@/app/api/member/actions/createRedirectionForUser";
+import { updatePasswordForUser } from "@/app/api/member/actions/updatePasswordForUser";
 import { db } from "@/lib/kysely";
 import * as mattermost from "@/lib/mattermost";
 import { Domaine, EmailStatusCode } from "@/models/member";
@@ -477,7 +478,7 @@ describe("User", () => {
         });
     });
 
-    describe("POST /users/:username/password unauthenticated", () => {
+    describe("Test update password server action unauthenticated", () => {
         beforeEach(async () => {
             await utils.createUsers(testUsers);
         });
@@ -487,65 +488,72 @@ describe("User", () => {
             await utils.deleteUsers(testUsers);
         });
 
-        it("should return an Unauthorized error", (done) => {
-            chai.request(app)
-                .post("/api/users/membre.actif/password")
-                .type("form")
-                .send({
+        it("should return an Unauthorized error", async () => {
+            try {
+                await updatePasswordForUser({
+                    username: "membre.actif",
                     new_password: "Test_Password_1234",
-                })
-                .end((err, res) => {
-                    res.should.have.status(401);
-                    done();
                 });
+            } catch (e) {
+                expect(e).to.be.an("error");
+            }
         });
-        it("should not allow a password change", (done) => {
+        it("should not allow a password change", async () => {
             ovhPasswordNock = nock(/.*ovh.com/)
                 .post(/^.*email\/domain\/.*\/account\/.*\/changePassword/)
                 .reply(200);
 
-            chai.request(app)
-                .post("/api/users/membre.actif/password")
-                .type("form")
-                .send({
+            try {
+                await updatePasswordForUser({
                     new_password: "Test_Password_1234",
-                })
-                .end((err, res) => {
-                    ovhPasswordNock.isDone().should.be.false;
-                    done();
+                    username: "membre.actif",
                 });
+            } catch (e) {
+                ovhPasswordNock.isDone().should.be.false;
+            }
         });
     });
 
-    describe("POST /api/users/:username/password authenticated", () => {
-        let getToken;
+    describe("Test update password server action authenticated", () => {
+        let getServerSessionStub;
         let isPublicServiceEmailStub;
+        let user;
+
         beforeEach(async () => {
-            getToken = sinon.stub(session, "getToken");
-            getToken.returns(utils.getJWT("membre.actif"));
             isPublicServiceEmailStub = sinon
                 .stub(controllerUtils, "isPublicServiceEmail")
                 .returns(Promise.resolve(true));
-            await utils.createUsers(testUsers);
-        });
+            getServerSessionStub = sinon
+                .stub(nextAuth, "getServerSession")
+                .resolves({});
 
+            await utils.createUsers(testUsers);
+            user = await db
+                .selectFrom("users")
+                .selectAll()
+                .where("username", "=", "membre.actif")
+                .executeTakeFirstOrThrow();
+        });
         afterEach(async () => {
-            getToken.restore();
+            sinon.restore();
+            await utils.deleteUsers(testUsers);
             isPublicServiceEmailStub.restore();
             await utils.deleteUsers(testUsers);
         });
 
         it("should send error if user does not exist", async () => {
-            const res = await chai
-                .request(app)
-                .post("/api/users/membre.actif/password")
-                .type("form")
-                .send({
+            const mockSession = {
+                user: { id: "membre.actif", isAdmin: false, uuid: user.uuid },
+            };
+            getServerSessionStub.resolves(mockSession);
+            try {
+                await updatePasswordForUser({
                     new_password: "Test_Password_1234",
-                })
-                .redirects(0);
-            // .end((err, res) => {
-            res.should.have.status(500);
+                    username: "membre.onthetom",
+                });
+            } catch (e) {
+                expect(e).to.be.an("error");
+            }
             // res.header.location.should.equal("/community/membre.actif");
             // done();
             // });
@@ -558,7 +566,11 @@ describe("User", () => {
             utils.mockSlackSecretariat();
             utils.mockOvhTime();
             utils.mockOvhRedirections();
-            const username = "membre.nouveau";
+            const mockSession = {
+                user: { id: "membre.actif", isAdmin: false, uuid: user.uuid },
+            };
+            getServerSessionStub.resolves(mockSession);
+            const username = "membre.actif";
             await db
                 .updateTable("users")
                 .where("username", "=", username)
@@ -568,21 +580,21 @@ describe("User", () => {
                 .get(/^.*email\/domain\/.*\/account\/.*/)
                 .reply(200, {
                     accountName: username,
-                    email: "membre.nouveau@example.com",
+                    email: "membre.actif@example.com",
                 })
                 .persist();
 
             ovhPasswordNock = nock(/.*ovh.com/)
                 .post(/^.*email\/domain\/.*\/account\/.*\/changePassword/)
                 .reply(200);
-            getToken.returns(utils.getJWT(`${username}`));
-            await chai
-                .request(app)
-                .post(`/api/users/${username}/password`)
-                .type("form")
-                .send({
+            try {
+                await updatePasswordForUser({
+                    username,
                     new_password: "Test_Password_1234",
                 });
+            } catch (e) {
+                expect(e).to.be.an("error");
+            }
             ovhPasswordNock.isDone().should.be.true;
         });
         it("should perform a password change and pass status to active if status was suspended", async () => {
@@ -593,7 +605,11 @@ describe("User", () => {
             utils.mockSlackSecretariat();
             utils.mockOvhTime();
             utils.mockOvhRedirections();
-            const username = "membre.nouveau";
+            const username = "membre.actif";
+            const mockSession = {
+                user: { id: "membre.actif", isAdmin: false, uuid: user.uuid },
+            };
+            getServerSessionStub.resolves(mockSession);
             await db
                 .updateTable("users")
                 .where("username", "=", username)
@@ -605,96 +621,100 @@ describe("User", () => {
                 .get(/^.*email\/domain\/.*\/account\/.*/)
                 .reply(200, {
                     accountName: username,
-                    email: "membre.nouveau@example.com",
+                    email: "membre.actif@example.com",
                 })
                 .persist();
 
             ovhPasswordNock = nock(/.*ovh.com/)
                 .post(/^.*email\/domain\/.*\/account\/.*\/changePassword/)
                 .reply(200);
-            getToken.returns(utils.getJWT(`${username}`));
-            await chai
-                .request(app)
-                .post(`/api/users/${username}/password`)
-                .type("form")
-                .send({
-                    new_password: "Test_Password_1234",
-                });
+            await updatePasswordForUser({
+                new_password: "Test_Password_1234",
+                username: username,
+            });
+
             ovhPasswordNock.isDone().should.be.true;
-            const user = await db
+            const user2 = await db
                 .selectFrom("users")
                 .selectAll()
                 .where("username", "=", username)
-                .executeTakeFirst();
-            user.primary_email_status.should.be.equal(
+                .executeTakeFirstOrThrow();
+            user2.primary_email_status.should.be.equal(
                 EmailStatusCode.EMAIL_ACTIVE
             );
         });
 
-        it("should not allow a password change from delegate", (done) => {
+        it("should not allow a password change from delegate", async () => {
+            const mockSession = {
+                user: { id: "membre.actif", isAdmin: false, uuid: user.uuid },
+            };
+            getServerSessionStub.resolves(mockSession);
+
             ovhPasswordNock = nock(/.*ovh.com/)
                 .post(/^.*email\/domain\/.*\/account\/.*\/changePassword/)
                 .reply(200);
-
-            chai.request(app)
-                .post("/api/users/membre.nouveau/password")
-                .type("form")
-                .send({
+            try {
+                await updatePasswordForUser({
                     new_password: "Test_Password_1234",
-                })
-                .end((err, res) => {
-                    ovhPasswordNock.isDone().should.be.false;
-                    done();
+                    username: "membre.nouveau",
                 });
+            } catch (e) {
+                expect(e).to.be.an("error");
+            }
         });
-        it("should not allow a password change from expired user", (done) => {
+        it("should not allow a password change from expired user", async () => {
             ovhPasswordNock = nock(/.*ovh.com/)
                 .post(/^.*email\/domain\/.*\/account\/.*\/changePassword/)
                 .reply(200);
-            getToken.returns(utils.getJWT("membre.expire"));
+            user = await db
+                .selectFrom("users")
+                .selectAll()
+                .where("username", "=", "membre.expire")
+                .executeTakeFirstOrThrow();
+            const mockSession = {
+                user: { id: "membre.expire", isAdmin: false, uuid: user.uuid },
+            };
+            getServerSessionStub.resolves(mockSession);
 
-            chai.request(app)
-                .post("/api/users/membre.expire/password")
-                .type("form")
-                .send({
+            try {
+                await updatePasswordForUser({
                     new_password: "Test_Password_1234",
-                })
-                .end((err, res) => {
-                    ovhPasswordNock.isDone().should.be.false;
-                    done();
+                    username: "membre.expire",
                 });
+            } catch (e) {
+                ovhPasswordNock.isDone().should.be.false;
+            }
         });
-        it("should not allow a password shorter than 9 characters", (done) => {
+        it("should not allow a password shorter than 9 characters", async () => {
             ovhPasswordNock = nock(/.*ovh.com/)
                 .post(/^.*email\/domain\/.*\/account\/.*\/changePassword/)
                 .reply(200);
-
-            chai.request(app)
-                .post("/api/users/membre.actif/password")
-                .type("form")
-                .send({
+            const mockSession = {
+                user: { id: "membre.actif", isAdmin: false, uuid: user.uuid },
+            };
+            getServerSessionStub.resolves(mockSession);
+            try {
+                await updatePasswordForUser({
                     new_password: "12345678",
-                })
-                .end((err, res) => {
-                    ovhPasswordNock.isDone().should.be.false;
-                    done();
+                    username: "membre.actif",
                 });
+            } catch (e) {
+                ovhPasswordNock.isDone().should.be.false;
+            }
         });
-        it("should not allow a password longer than 30 characters", (done) => {
+        it("should not allow a password longer than 30 characters", async () => {
             ovhPasswordNock = nock(/.*ovh.com/)
                 .post(/^.*email\/domain\/.*\/account\/.*\/changePassword/)
                 .reply(200);
 
-            chai.request(app)
-                .post("/api/users/membre.actif/password")
-                .type("form")
-                .send({
+            try {
+                await updatePasswordForUser({
                     new_password: "1234567890123456789012345678901",
-                })
-                .end((err, res) => {
-                    ovhPasswordNock.isDone().should.be.false;
-                    done();
+                    username: "membre.actif",
                 });
+            } catch (e) {
+                ovhPasswordNock.isDone().should.be.false;
+            }
         });
     });
 

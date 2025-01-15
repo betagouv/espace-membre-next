@@ -24,11 +24,11 @@ const apiRouter = express.Router();
 //     express.json({ type: "*/*" }),
 //     usersController.manageSecondaryEmailForUserApi
 // );
-apiRouter.post(
-    routes.USER_UPDATE_PASSWORD_API,
-    express.json({ type: "*/*" }),
-    usersController.updatePasswordForUserApi
-);
+// apiRouter.post(
+//     routes.USER_UPDATE_PASSWORD_API,
+//     express.json({ type: "*/*" }),
+//     usersController.updatePasswordForUserApi
+// );
 apiRouter.delete(
     routes.USER_DELETE_REDIRECTION_API,
     express.json({ type: "*/*" }),

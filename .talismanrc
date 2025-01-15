@@ -5,6 +5,8 @@ fileignoreconfig:
   checksum: 07171a40047c38771624063fb61511998d3961815c3dceb135a1ee6d540f970d
 - filename: .github/workflows/nodejs.yml
   checksum: bf0ae31737daf27be68b7d2c4e63e1ef14cb799f1853462fdadcf2422ddd53a2
+- filename: __tests__/test-user.ts
+  checksum: 855d1520858d599dd95ebfd6b9845ad2f5df76307915568b8f5b558cec12a9b1
 - filename: __tests__/test-worker.ts
   checksum: 462f569a2625f2fdb0938f0abc109ed24f0241d9f5592ead16475e2efde0aa47
 - filename: package-lock.json
