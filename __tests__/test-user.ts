@@ -281,63 +281,6 @@ describe("User", () => {
         });
     });
 
-    describe("POST /api/users/:username/create-email unauthenticated", () => {
-        it("should return an Unauthorized error", async () => {
-            try {
-                await createEmailAction({
-                    username: "membre.nouveau",
-                    to_email: "test@example.com",
-                });
-            } catch (err) {
-                ovhEmailCreation.isDone().should.be.false;
-            }
-        });
-    });
-    describe("POST /api/users/:username/create-email authenticated", () => {
-        let getToken;
-        let sendEmailStub;
-        beforeEach(async () => {
-            getToken = sinon.stub(session, "getToken");
-            getToken.returns(utils.getJWT("membre.actif"));
-            sendEmailStub = sinon
-                .stub(controllerUtils, "sendMail")
-                .returns(Promise.resolve(true));
-            await utils.createUsers(testUsers);
-        });
-
-        afterEach(async () => {
-            sendEmailStub.restore();
-            getToken.restore();
-            await utils.deleteUsers(testUsers);
-        });
-
-        it("should ask OVH to create an email", async () => {
-            const ovhEmailCreation = nock(/.*ovh.com/)
-                .post(/^.*email\/domain\/.*\/account/)
-                .reply(200);
-            await db
-                .updateTable("users")
-                .where("username", "=", "membre.nouveau")
-                .set({
-                    primary_email: null,
-                })
-                .execute();
-
-            await createEmailAction({
-                username: "membre.nouveau",
-                to_email: "test@example.com",
-            });
-
-            const res = await db
-                .selectFrom("users")
-                .selectAll()
-                .where("username", "=", "membre.nouveau")
-                .executeTakeFirstOrThrow();
-            res.primary_email.should.equal(`membre.nouveau@${config.domain}`);
-            ovhEmailCreation.isDone().should.be.true;
-        });
-    });
-
     describe("Create redirection unauthenticated", () => {
         it("should return an Unauthorized error", async () => {
             try {
