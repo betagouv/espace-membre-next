@@ -11,7 +11,7 @@ import { useRouter } from "next/navigation";
 
 import { useLiveChat } from "../live-chat/useLiveChat";
 import MemberSelect from "../MemberSelect";
-import { safeGetUserPublicInfo } from "@/app/api/member/actions";
+import { safeGetUserPublicInfo } from "@/app/api/member";
 import { EmailStatusCode } from "@/models/member";
 import {
     memberPublicInfoSchemaType,

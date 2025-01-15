@@ -1,4 +1,4 @@
-import { safeChangeSecondaryEmailForUser } from "@/app/api/member/actions";
+import { safeChangeSecondaryEmailForUser } from "@/app/api/member";
 import { memberBaseInfoSchemaType } from "@/models/member";
 import Accordion from "@codegouvfr/react-dsfr/Accordion";
 import Alert from "@codegouvfr/react-dsfr/Alert";

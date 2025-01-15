@@ -5,7 +5,7 @@ import Alert from "@codegouvfr/react-dsfr/Alert";
 import Button from "@codegouvfr/react-dsfr/Button";
 import { RadioButtons } from "@codegouvfr/react-dsfr/RadioButtons";
 
-import { safeUpdateCommunicationEmail } from "@/app/api/member/actions";
+import { safeUpdateCommunicationEmail } from "@/app/api/member";
 import {
     CommunicationEmailCode,
     memberBaseInfoSchemaType,

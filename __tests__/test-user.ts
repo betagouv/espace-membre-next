@@ -7,6 +7,7 @@ import sinon from "sinon";
 
 import testUsers from "./users.json";
 import utils from "./utils";
+import { createRedirectionForUser } from "@/app/api/member/actions/createRedirectionForUser";
 import { db } from "@/lib/kysely";
 import * as mattermost from "@/lib/mattermost";
 import { Domaine, EmailStatusCode } from "@/models/member";
@@ -296,91 +297,106 @@ describe("User", () => {
         });
     });
 
-    describe("POST /api/users/:username/redirections unauthenticated", () => {
-        it("should return an Unauthorized error", (done) => {
-            chai.request(app)
-                .post("/api/users/membre.parti/redirections")
-                .type("form")
-                .send({
-                    to_email: "test@example.com",
-                })
-                .end((err, res) => {
-                    res.should.have.status(401);
-                    done();
+    describe("Create redirection unauthenticated", () => {
+        it("should return an Unauthorized error", async () => {
+            try {
+                await createRedirectionForUser({
+                    username: "membre.actif",
+                    to_email: "toto@gmail.com",
                 });
+            } catch (err) {
+                expect(err).to.be.an("error");
+            }
         });
     });
 
-    describe("POST /api/users/:username/redirections authenticated", () => {
-        let getToken;
+    describe("Create redirection authenticated", () => {
+        let getServerSessionStub;
         let isPublicServiceEmailStub;
+        let user;
 
         beforeEach(async () => {
-            getToken = sinon.stub(session, "getToken");
-            getToken.returns(utils.getJWT("membre.actif"));
             isPublicServiceEmailStub = sinon
                 .stub(controllerUtils, "isPublicServiceEmail")
                 .returns(Promise.resolve(true));
-            await utils.createUsers(testUsers);
-        });
+            getServerSessionStub = sinon
+                .stub(nextAuth, "getServerSession")
+                .resolves({});
 
+            await utils.createUsers(testUsers);
+            user = await db
+                .selectFrom("users")
+                .selectAll()
+                .where("username", "=", "membre.actif")
+                .executeTakeFirstOrThrow();
+        });
         afterEach(async () => {
-            getToken.restore();
+            sinon.restore();
+            await utils.deleteUsers(testUsers);
             isPublicServiceEmailStub.restore();
             await utils.deleteUsers(testUsers);
         });
 
-        it("should ask OVH to create a redirection", (done) => {
+        it("should ask OVH to create a redirection", async () => {
+            const mockSession = {
+                user: { id: "membre.actif", isAdmin: false, uuid: user.uuid },
+            };
+            getServerSessionStub.resolves(mockSession);
+
             isPublicServiceEmailStub.returns(Promise.resolve(true));
 
             const ovhRedirectionCreation = nock(/.*ovh.com/)
                 .post(/^.*email\/domain\/.*\/redirection/)
                 .reply(200);
 
-            chai.request(app)
-                .post("/api/users/membre.actif/redirections")
-                .type("form")
-                .send({
-                    to_email: "test@example.com",
-                })
-                .end((err, res) => {
-                    ovhRedirectionCreation.isDone().should.be.true;
-                    done();
-                });
+            await createRedirectionForUser({
+                to_email: "test@example.com",
+                username: "membre.actif",
+            });
+
+            ovhRedirectionCreation.isDone().should.be.true;
         });
 
-        it("should not allow redirection creation from delegate", (done) => {
+        it("should not allow redirection creation from delegate", async () => {
+            const mockSession = {
+                user: { id: "membre.actif", isAdmin: false, uuid: user.uuid },
+            };
+            getServerSessionStub.resolves(mockSession);
             const ovhRedirectionCreation = nock(/.*ovh.com/)
                 .post(/^.*email\/domain\/.*\/redirection/)
                 .reply(200);
 
-            chai.request(app)
-                .post("/api/users/membre.nouveau/redirections")
-                .type("form")
-                .send({
+            try {
+                await createRedirectionForUser({
                     to_email: "test@example.com",
-                })
-                .end((err, res) => {
-                    ovhRedirectionCreation.isDone().should.be.false;
-                    done();
+                    username: "membre.nouveau",
                 });
+            } catch (e) {
+                ovhRedirectionCreation.isDone().should.be.false;
+            }
         });
 
-        it("should not allow redirection creation from expired users", (done) => {
+        it("should not allow redirection creation from expired users", async () => {
             const ovhRedirectionCreation = nock(/.*ovh.com/)
                 .post(/^.*email\/domain\/.*\/redirection/)
                 .reply(200);
-            getToken.returns(utils.getJWT("membre.expire"));
-            chai.request(app)
-                .post("/api/users/membre.expire/redirections")
-                .type("form")
-                .send({
+            user = await db
+                .selectFrom("users")
+                .selectAll()
+                .where("username", "=", "membre.expire")
+                .executeTakeFirstOrThrow();
+            const mockSession = {
+                user: { id: "membre.expire", isAdmin: false, uuid: user.uuid },
+            };
+            getServerSessionStub.resolves(mockSession);
+            try {
+                await createRedirectionForUser({
                     to_email: "test@example.com",
-                })
-                .end((err, res) => {
-                    ovhRedirectionCreation.isDone().should.be.false;
-                    done();
+                    username: "membre.expire",
                 });
+            } catch (e) {
+                ovhRedirectionCreation.isDone().should.be.false;
+            }
         });
     });
 

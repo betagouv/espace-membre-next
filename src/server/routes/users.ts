@@ -34,11 +34,7 @@ apiRouter.delete(
     express.json({ type: "*/*" }),
     usersController.deleteRedirectionForUserApi
 );
-apiRouter.post(
-    routes.USER_CREATE_REDIRECTION_API,
-    express.json({ type: "*/*" }),
-    usersController.createRedirectionForUserApi
-);
+
 apiRouter.post(
     routes.USER_UPGRADE_EMAIL_API,
     express.json({ type: "*/*" }),

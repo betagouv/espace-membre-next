@@ -1,4 +1,4 @@
-export * from "./createRedirectionForUser";
+// export * from "./createRedirectionForUser";
 export * from "./deleteRedirectionForUser";
 export * from "./updatePasswordForUser";
 export * from "./usersControllerUtils";

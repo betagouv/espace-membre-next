@@ -8,7 +8,7 @@ import { Input } from "@codegouvfr/react-dsfr/Input";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 
-import { safeSetEmailResponder } from "@/app/api/member/actions";
+import { safeSetEmailResponder } from "@/app/api/member";
 import {
     UpdateOvhResponder,
     UpdateOvhResponderSchema,
