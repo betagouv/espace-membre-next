@@ -28,7 +28,7 @@ export const EmailUpgrade = ({
         if (resp.success) {
             alert(`Le compte sera upgradé d'ici quelques minutes`);
         } else {
-            console.error(e);
+            console.error(resp.message);
             alert("Une erreur est survenue");
         }
     };
