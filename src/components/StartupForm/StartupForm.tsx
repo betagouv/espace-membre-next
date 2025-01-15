@@ -602,6 +602,34 @@ export function StartupForm(props: StartupFormProps) {
                     />
                     <BasicInput id="repository" />
                     <BasicInput id="dashlord_url" />
+                    <Checkbox
+                        options={[
+                            {
+                                label: startupInfoUpdateSchema.shape.startup
+                                    .shape.dsfr_required.description,
+                                hintText:
+                                    "Cochez cette case si le design systeme doir s'appliquer à votre produit",
+                                nativeInputProps: {
+                                    ...register("startup.dsfr_required"),
+                                },
+                            },
+                        ]}
+                    />
+                    <Checkbox
+                        options={[
+                            {
+                                label: startupInfoUpdateSchema.shape.startup
+                                    .shape.dsfr_implemented.description,
+                                hintText:
+                                    "Cochez cette case si le design systeme a été implémenté sur votre produit",
+                                nativeInputProps: {
+                                    ...register("startup.dsfr_implemented"),
+                                },
+                            },
+                        ]}
+                    />
+                    <BasicInput id="tech_audit_url" />
+                    <BasicInput id="ecodesign_url" />
 
                     <SelectAccessibilityStatus
                         value={props.startup?.accessibility_status}

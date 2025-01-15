@@ -74,8 +74,9 @@ export default function StartupPage({
 
     useEffect(() => {
         if (window.location.hash) {
-            // Get the current hash value
             setHash(window.location.hash.replace("#", ""));
+        } else {
+            setHash(tabs[0].tabId);
         }
         window.addEventListener("hashchange", onHashChange);
 

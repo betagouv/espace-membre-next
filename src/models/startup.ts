@@ -299,6 +299,24 @@ export const startupSchema = z.object({
         )
         .optional()
         .nullable(),
+    dsfr_required: z
+        .boolean()
+        .describe("Le design-système de l'état est requis pour ce produit")
+        .optional(),
+    dsfr_implemented: z
+        .boolean()
+        .describe("Le design-système de l'état est implémenté sur ce produit")
+        .optional(),
+    tech_audit_url: z
+        .string()
+        .describe("Url de l'audit technique")
+        .optional()
+        .nullable(),
+    ecodesign_url: z
+        .string()
+        .describe("Url de la déclaration d'écoconception")
+        .optional()
+        .nullable(),
 });
 
 export type startupSchemaType = z.infer<typeof startupSchema>;

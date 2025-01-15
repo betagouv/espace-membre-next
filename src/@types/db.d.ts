@@ -302,6 +302,9 @@ export interface Startups {
   created_at: Generated<Timestamp>;
   dashlord_url: string | null;
   description: string | null;
+  dsfr_implemented: Generated<boolean | null>;
+  dsfr_required: Generated<boolean | null>;
+  ecodesign_url: string | null;
   ghid: string;
   has_mobile_app: Generated<boolean | null>;
   incubator_id: string | null;
@@ -314,6 +317,7 @@ export interface Startups {
   repository: string | null;
   stats: boolean | null;
   stats_url: string | null;
+  tech_audit_url: string | null;
   techno: Json | null;
   thematiques: Json | null;
   updated_at: Generated<Timestamp>;
