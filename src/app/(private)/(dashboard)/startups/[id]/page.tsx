@@ -14,6 +14,7 @@ import {
     startupChangeToModel,
     startupToModel,
 } from "@/models/mapper";
+import { getStartupFiles } from "@/app/api/startups/files/list";
 
 type Props = {
     params: { id: string };
@@ -34,7 +35,7 @@ export async function generateMetadata(
     }
     const produit = await getStartup(query);
     return {
-        title: produit ? `Produit ${produit.ghid} / Espace Membre` : "",
+        title: produit ? `${produit.name} / Espace Membre` : "",
     };
 }
 
@@ -59,7 +60,30 @@ export default async function Page({ params }: Props) {
             .where("startup_id", "=", dbSe.uuid)
             .execute()
     ).map((phase) => phaseToModel(phase));
-
+    const incubator = await db
+        .selectFrom("incubators")
+        .select([
+            "incubators.title",
+            "incubators.short_description",
+            "incubators.ghid",
+            "incubators.uuid",
+        ])
+        .where("uuid", "=", dbSe.incubator_id)
+        .executeTakeFirstOrThrow();
+    const sponsors = await db
+        .selectFrom("organizations")
+        .leftJoin(
+            "startups_organizations",
+            "startups_organizations.organization_id",
+            "organizations.uuid"
+        )
+        .select([
+            "organizations.name",
+            "organizations.acronym",
+            "organizations.uuid",
+        ])
+        .where("startups_organizations.startup_id", "=", dbSe.uuid)
+        .execute();
     const sentryTeams = await db
         .selectFrom("sentry_teams")
         .where("startup_id", "=", params.id)
@@ -75,7 +99,13 @@ export default async function Page({ params }: Props) {
         return memberBaseInfoToModel(user);
     });
     const changes = await getEventListByStartupUuid(startup.uuid);
-
+    const files = await getStartupFiles({ uuid: startup.uuid });
+    const events = await db
+        .selectFrom("startup_events")
+        .where("startup_id", "=", startup.uuid)
+        .selectAll()
+        .orderBy("date", "asc")
+        .execute();
     return (
         <>
             <BreadCrumbFiller
@@ -85,10 +115,14 @@ export default async function Page({ params }: Props) {
             <StartupPage
                 changes={changes.map((change) => startupChangeToModel(change))}
                 startupInfos={startup}
+                incubator={incubator}
+                sponsors={sponsors}
                 sentryTeams={sentryTeams}
                 matomoSites={matomoSites}
                 members={startupMembers}
                 phases={phases}
+                files={files}
+                events={events}
             />
         </>
     );

@@ -1,4 +1,5 @@
 import { db, jsonArrayFrom } from "@/lib/kysely";
+import { StartupPhase } from "@/models/startup";
 
 /** Return all incubators */
 export function getAllIncubators() {
@@ -14,13 +15,60 @@ export async function getAllIncubatorsOptions() {
     }));
 }
 
+/** Return incubator startups */
+export function getIncubatorStartups(uuid: string) {
+    return db
+        .selectFrom("startups")
+        .select(({ selectFrom }) => [
+            "uuid",
+            "name",
+            "pitch",
+            "ghid",
+            selectFrom("phases")
+                .select("name")
+                .whereRef("phases.startup_id", "=", "startups.uuid")
+                .where((eb) =>
+                    eb(
+                        "phases.start",
+                        "=",
+                        eb
+                            .selectFrom("phases")
+                            .select(eb.fn.max("phases.start").as("max_start"))
+                            .whereRef("phases.startup_id", "=", "startups.uuid")
+
+                            .limit(1)
+                    )
+                )
+                .orderBy("start", "desc")
+                .limit(1)
+                .as("phase"),
+        ])
+        .where("incubator_id", "=", uuid)
+        .orderBy("name")
+        .execute();
+}
+
 /** Return all incubators */
 export async function getIncubator(uuid: string) {
     return await db
         .selectFrom("incubators")
-        .selectAll()
-        .where("uuid", "=", uuid)
-        .executeTakeFirst();
+        .leftJoin("organizations", "organizations.uuid", "incubators.owner_id")
+        .select([
+            "incubators.title",
+            "incubators.uuid",
+            "incubators.description",
+            "incubators.contact",
+            "incubators.short_description",
+            "incubators.ghid",
+            "incubators.github",
+            "incubators.owner_id",
+            "incubators.address",
+            "incubators.highlighted_startups",
+            "incubators.website",
+            "organizations.name as organization_name",
+        ])
+        .where("incubators.uuid", "=", uuid)
+        .executeTakeFirstOrThrow();
 }
 
 export async function getAllIncubatorsMembers() {
@@ -69,5 +117,15 @@ export async function getAllIncubatorsMembers() {
                     )
             ).as("members"),
         ])
+        .execute();
+}
+
+export function getIncubatorTeams(uuid: string) {
+    return db
+        .selectFrom("incubators")
+        .leftJoin("teams", "teams.incubator_id", "incubators.uuid")
+        .select(["teams.name", "teams.mission", "teams.uuid"])
+        .where("incubators.uuid", "=", uuid)
+        .orderBy("teams.name")
         .execute();
 }
