@@ -113,7 +113,13 @@ export const StartupStandards = ({
             <TableStandards
                 headers={["Nom", "Statut", "Commentaire"]}
                 data={[
-                    [<h3 key="title">Accessibilité</h3>, null, null],
+                    [
+                        <h3 className={fr.cx("fr-text--md")} key="title">
+                            Accessibilité
+                        </h3>,
+                        null,
+                        null,
+                    ],
                     [
                         "Déclaration d'accessibilité",
                         <BooleanBadge
@@ -122,7 +128,7 @@ export const StartupStandards = ({
                             validText="Publiée"
                             invalidText="Non publiée"
                         />,
-                        "La déclaration d'accessibilité est obligatoire dès la mise en ligne",
+                        "La déclaration d'accessibilité est obligatoire dès la mise en ligne.",
                     ],
                     [
                         "Conformité",
@@ -130,16 +136,22 @@ export const StartupStandards = ({
                             key="badge"
                             status={startupInfos.accessibility_status}
                         />,
-                        "L'audit de conformité doit être réalisé avant la sortie d'accéleration",
+                        "L'audit de conformité doit être réalisé avant la sortie d'accéleration.",
                     ],
-                    [<h3 key="title">Qualité logicielle</h3>, null, null],
+                    [
+                        <h3 className={fr.cx("fr-text--md")} key="title">
+                            Qualité logicielle
+                        </h3>,
+                        null,
+                        null,
+                    ],
                     [
                         "Suivi DashLord",
                         <BooleanBadge
                             key="badge"
                             value={startupInfos.dashlord_url}
                         />,
-                        "Le suivi DashLord est obligatoire dès la mise en ligne",
+                        "Le suivi DashLord est obligatoire dès la mise en ligne.",
                     ],
                     [
                         "Audit tech",
@@ -149,10 +161,16 @@ export const StartupStandards = ({
                         //     invalidText="Non"
                         // />,
                         "à venir",
-                        "L'audit tech est obligaroire dès la conception",
+                        "L'audit tech est obligatoire dès la conception.",
                     ],
                     //["Audit tech", "TODO", "TODO"],
-                    [<h3 key="title">Transparence</h3>, null, null],
+                    [
+                        <h3 className={fr.cx("fr-text--md")} key="title">
+                            Transparence
+                        </h3>,
+                        null,
+                        null,
+                    ],
                     [
                         "Publication des statistiques d'impact",
                         <BooleanBadge
@@ -161,7 +179,7 @@ export const StartupStandards = ({
                             validText="Publié"
                             invalidText="Non publié"
                         />,
-                        "La page /stats doit être publiée dès la mise en ligne",
+                        "La page /stats doit être publiée dès la mise en ligne.",
                     ],
                     [
                         "Publication du budget",
@@ -171,7 +189,7 @@ export const StartupStandards = ({
                             validText="Publié"
                             invalidText="Non publié"
                         />,
-                        "La page /budget doit être publiée dès la mise en ligne",
+                        "La page /budget doit être publiée dès la mise en ligne.",
                     ],
                     [
                         "Publication des codes sources",
@@ -181,20 +199,24 @@ export const StartupStandards = ({
                             validText="Publié"
                             invalidText="Non publié"
                         />,
-                        "Le code source doit être ouvert dès la mise en ligne",
-                    ],
-                    [<h3 key="title">Qualité du support</h3>, null, null],
-                    [
-                        "Les utilisateurs peuvent faire des retours facilement",
-                        "à venir",
-                        "",
+                        "Le code source doit être ouvert dès la mise en ligne.",
                     ],
                     [
-                        "Le support répond à chaque demande d'un utilisateur",
-                        "à venir",
-                        "",
+                        <h3 className={fr.cx("fr-text--md")} key="title">
+                            Qualité du support
+                        </h3>,
+                        null,
+                        null,
                     ],
-                    [<h3 key="title">Sécurité</h3>, null, null],
+                    ["Aide joignable", "à venir", ""],
+                    ["Réponse rapide", "à venir", ""],
+                    [
+                        <h3 className={fr.cx("fr-text--md")} key="title">
+                            Sécurité
+                        </h3>,
+                        null,
+                        null,
+                    ],
                     [
                         "Audit de risque",
                         <BooleanBadge
@@ -203,7 +225,7 @@ export const StartupStandards = ({
                             validText="Oui"
                             invalidText="Non"
                         />,
-                        "L'analyse de risque doit être lancée pendant la phase d'accélération",
+                        "L'analyse de risque doit être lancée pendant la phase d'accélération.",
                     ],
                     [
                         "Utilise MonServiceSécurisé",
@@ -213,20 +235,37 @@ export const StartupStandards = ({
                             validText="Oui"
                             invalidText="Non"
                         />,
-                        "L'inscription à MonServiceSécurisé doit être lancée en fin de constructions",
+                        "L'inscription à MonServiceSécurisé doit être lancée en fin de construction.",
                     ],
-                    [<h3 key="title">Données personnelles</h3>, null, null],
-                    ["Analyse AIPD", "à venir", ""],
-                    ["Conformité des mentions légales", "à venir", ""],
-                    [<h3 key="title">Design</h3>, null, null],
                     [
-                        "Priorise les fonctionnalités grâce aux retours utilisateurs",
+                        <h3 className={fr.cx("fr-text--md")} key="title">
+                            Données personnelles
+                        </h3>,
+                        null,
+                        null,
+                    ],
+                    [
+                        "Analyse AIPD",
                         "à venir",
-                        "",
+                        "Analyse d’impact relative à la protection des données (AIPD).",
+                    ],
+                    ["Conformité des mentions légales", "à venir", ""],
+                    [
+                        <h3 className={fr.cx("fr-text--md")} key="title">
+                            Design
+                        </h3>,
+                        null,
+                        null,
                     ],
                     ["Utilise le système de design de l'Etat", "à venir", ""],
-                    [<h3 key="title">Éco-conception</h3>, null, null],
-                    ["Démarche d'éco-conception engagée", "à venir", ""],
+                    [
+                        <h3 className={fr.cx("fr-text--md")} key="title">
+                            Éco-conception
+                        </h3>,
+                        null,
+                        null,
+                    ],
+                    ["Déclaration d'écoconception", "à venir", ""],
                 ]}
             />
         </>

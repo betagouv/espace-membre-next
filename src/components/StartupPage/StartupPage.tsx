@@ -21,6 +21,8 @@ import { StartupStandards } from "./StartupStandards";
 import { StartupTools } from "./StartupTools";
 import { StartupFiles } from "../StartupFiles";
 import LastChange from "../LastChange";
+import { useRouter } from "next/navigation";
+import { useEffect, useState } from "react";
 
 export interface StartupPageProps {
     startupInfos: startupSchemaType;
@@ -62,29 +64,58 @@ export default function StartupPage({
     files,
     events,
 }: StartupPageProps) {
+    const router = useRouter();
+    const [hash, setHash] = useState<null | string>(null);
+
+    // Optional: Listen for hash changes
+    const onHashChange = () => {
+        setHash(window.location.hash.replace("#", ""));
+    };
+
+    useEffect(() => {
+        if (window.location.hash) {
+            // Get the current hash value
+            setHash(window.location.hash.replace("#", ""));
+        }
+        window.addEventListener("hashchange", onHashChange);
+
+        return () => {
+            window.removeEventListener("hashchange", onHashChange);
+        };
+    }, []);
+
     const currentPhase = getCurrentPhase(phases); // todo get current phase
     const tabs = [
         {
             label: "Équipe",
-            isDefault: true,
+            tabId: "team",
+            isDefault: hash === "team",
             content: (
                 <StartupMembers members={members} startupInfos={startupInfos} />
             ),
         },
         {
             label: "Description",
+            tabId: "description",
+            isDefault: hash === "description",
             content: <StartupDescription startupInfos={startupInfos} />,
         },
         {
             label: "Historique",
+            tabId: "events",
+            isDefault: hash === "events",
             content: <StartupHistory phases={phases} events={events} />,
         },
         {
             label: "Standards",
+            tabId: "standards",
+            isDefault: hash === "standards",
             content: <StartupStandards startupInfos={startupInfos} />,
         },
         {
             label: "Outils",
+            tabId: "tools",
+            isDefault: hash === "tools",
             content: (
                 <StartupTools
                     matomoSites={matomoSites}
@@ -94,6 +125,8 @@ export default function StartupPage({
         },
         {
             label: "Documents",
+            tabId: "documents",
+            isDefault: hash === "documents",
             content: <StartupFiles startup={startupInfos} files={files} />,
         },
     ];
@@ -109,7 +142,14 @@ export default function StartupPage({
             />
 
             <div className={fr.cx("fr-col-12")}>
-                <Tabs tabs={tabs}></Tabs>
+                {hash && (
+                    <Tabs
+                        tabs={tabs}
+                        onTabChange={(obj) => {
+                            router.push(`#${tabs[obj.tabIndex].tabId}`);
+                        }}
+                    ></Tabs>
+                )}
             </div>
             <div
                 className={fr.cx("fr-col-12", "fr-mt-4w")}
