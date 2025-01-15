@@ -6,24 +6,6 @@ import { startupSchemaType } from "@/models/startup";
 
 import "./standards.css";
 
-const OK = () => (
-    <i
-        className={fr.cx("fr-icon--sm", "fr-icon-checkbox-line")}
-        style={{
-            color: "var(--text-default-success)",
-        }}
-    />
-);
-
-const NOK = () => (
-    <i
-        className={fr.cx("fr-icon--sm", "fr-icon-warning-line")}
-        style={{
-            color: "var(--text-default-error)",
-        }}
-    />
-);
-
 const AccessibilityBadge = ({ status }: { status?: string | null }) => {
     const severity =
         status === "totalement conforme"
@@ -155,12 +137,11 @@ export const StartupStandards = ({
                     ],
                     [
                         "Audit tech",
-                        // <BooleanBadge
-                        //     value={false}
-                        //     validText="Oui"
-                        //     invalidText="Non"
-                        // />,
-                        "à venir",
+                        <BooleanBadge
+                            value={startupInfos.tech_audit_url}
+                            validText="Oui"
+                            invalidText="Non"
+                        />,
                         "L'audit tech est obligatoire dès la conception.",
                     ],
                     //["Audit tech", "TODO", "TODO"],
@@ -257,7 +238,20 @@ export const StartupStandards = ({
                         null,
                         null,
                     ],
-                    ["Utilise le système de design de l'Etat", "à venir", ""],
+                    [
+                        "Utilise le système de design de l'Etat",
+                        startupInfos.dsfr_required ? (
+                            <BooleanBadge
+                                key="badge"
+                                value={startupInfos.dsfr_implemented}
+                                validText="Oui"
+                                invalidText="Non"
+                            />
+                        ) : (
+                            <Badge severity="success">Non concerné</Badge>
+                        ),
+                        "Le système de design est obligatoire pour les sites internets officiels.",
+                    ],
                     [
                         <h3 className={fr.cx("fr-text--md")} key="title">
                             Éco-conception
@@ -265,7 +259,16 @@ export const StartupStandards = ({
                         null,
                         null,
                     ],
-                    ["Déclaration d'écoconception", "à venir", ""],
+                    [
+                        "Déclaration d'écoconception",
+                        <BooleanBadge
+                            key="badge"
+                            value={startupInfos.ecodesign_url}
+                            validText="Publiée"
+                            invalidText="Non publiée"
+                        />,
+                        "La déclaration d'écoconception est recommandée dès la mise en ligne.",
+                    ],
                 ]}
             />
         </>
