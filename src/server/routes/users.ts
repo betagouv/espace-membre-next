@@ -29,11 +29,11 @@ const apiRouter = express.Router();
 //     express.json({ type: "*/*" }),
 //     usersController.updatePasswordForUserApi
 // );
-apiRouter.delete(
-    routes.USER_DELETE_REDIRECTION_API,
-    express.json({ type: "*/*" }),
-    usersController.deleteRedirectionForUserApi
-);
+// apiRouter.delete(
+//     routes.USER_DELETE_REDIRECTION_API,
+//     express.json({ type: "*/*" }),
+//     usersController.deleteRedirectionForUserApi
+// );
 
 apiRouter.post(
     routes.USER_UPGRADE_EMAIL_API,

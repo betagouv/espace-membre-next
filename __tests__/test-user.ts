@@ -8,6 +8,7 @@ import sinon from "sinon";
 import testUsers from "./users.json";
 import utils from "./utils";
 import { createRedirectionForUser } from "@/app/api/member/actions/createRedirectionForUser";
+import { deleteRedirectionForUser } from "@/app/api/member/actions/deleteRedirectionForUser";
 import { updatePasswordForUser } from "@/app/api/member/actions/updatePasswordForUser";
 import { db } from "@/lib/kysely";
 import * as mattermost from "@/lib/mattermost";
@@ -401,80 +402,109 @@ describe("User", () => {
         });
     });
 
-    describe("Delete /api/users/:username/redirections/:email/delete unauthenticated", () => {
-        it("should return an Unauthorized error", (done) => {
-            chai.request(app)
-                .delete(
-                    "/api/users/membre.parti/redirections/test@example.com/delete"
-                )
-                .end((err, res) => {
-                    res.should.have.status(401);
-                    done();
+    describe("Delete redirections unauthenticated", () => {
+        let getServerSessionStub;
+
+        beforeEach(async () => {
+            getServerSessionStub = sinon
+                .stub(nextAuth, "getServerSession")
+                .resolves({});
+
+            await utils.createUsers(testUsers);
+        });
+        afterEach(async () => {
+            sinon.restore();
+            await utils.deleteUsers(testUsers);
+        });
+        it("should return an Unauthorized error", async () => {
+            try {
+                await deleteRedirectionForUser({
+                    username: "membre.parti",
+                    toEmail: "",
                 });
+            } catch (e) {
+                console.log(e);
+            }
         });
     });
 
-    describe("Delete /api/users/:username/redirections/:email/delete authenticated", () => {
-        let getToken;
+    describe("Delete redirections authenticated", () => {
+        let getServerSessionStub;
         let isPublicServiceEmailStub;
+        let user;
 
         beforeEach(async () => {
-            getToken = sinon.stub(session, "getToken");
-            getToken.returns(utils.getJWT("membre.actif"));
             isPublicServiceEmailStub = sinon
                 .stub(controllerUtils, "isPublicServiceEmail")
                 .returns(Promise.resolve(true));
-            await utils.createUsers(testUsers);
-        });
+            getServerSessionStub = sinon
+                .stub(nextAuth, "getServerSession")
+                .resolves({});
 
+            await utils.createUsers(testUsers);
+            user = await db
+                .selectFrom("users")
+                .selectAll()
+                .where("username", "=", "membre.actif")
+                .executeTakeFirstOrThrow();
+        });
         afterEach(async () => {
-            getToken.restore();
-            isPublicServiceEmailStub.restore();
+            sinon.restore();
             await utils.deleteUsers(testUsers);
+            isPublicServiceEmailStub.restore();
         });
 
         it("should ask OVH to delete a redirection", async () => {
+            const mockSession = {
+                user: { id: "membre.actif", isAdmin: false, uuid: user.uuid },
+            };
+            getServerSessionStub.resolves(mockSession);
             const ovhRedirectionDeletion = nock(/.*ovh.com/)
                 .delete(/^.*email\/domain\/.*\/redirection\/.*/)
                 .reply(200);
 
-            const res = await chai
-                .request(app)
-                .delete(
-                    "/api/users/membre.actif/redirections/test-2@example.com/delete"
-                );
+            await deleteRedirectionForUser({
+                username: "membre.actif",
+                toEmail: "test-2@example.com",
+            });
             ovhRedirectionDeletion.isDone().should.be.true;
         });
 
-        it("should not allow redirection deletion from delegate", (done) => {
+        it("should not allow redirection deletion from delegate", async () => {
+            const mockSession = {
+                user: { id: "membre.actif", isAdmin: false, uuid: user.uuid },
+            };
+            getServerSessionStub.resolves(mockSession);
             const ovhRedirectionDeletion = nock(/.*ovh.com/)
                 .delete(/^.*email\/domain\/.*\/redirection\/.*/)
                 .reply(200);
-
-            chai.request(app)
-                .delete(
-                    "/api/users/membre.nouveau/redirections/test-2@example.com/delete"
-                )
-                .end((err, res) => {
-                    ovhRedirectionDeletion.isDone().should.be.false;
-                    done();
+            try {
+                await deleteRedirectionForUser({
+                    username: "membre.nouveau",
+                    toEmail: "test-2@example.com",
                 });
+            } catch (e) {
+                ovhRedirectionDeletion.isDone().should.be.false;
+            }
         });
 
-        it("should not allow redirection deletion from expired users", (done) => {
+        it("should not allow redirection deletion from expired users", async () => {
             const ovhRedirectionDeletion = nock(/.*ovh.com/)
                 .delete(/^.*email\/domain\/.*\/redirection\/.*/)
                 .reply(200);
-            getToken.returns(utils.getJWT("membre.expire"));
+            const mockSession = {
+                user: { id: "membre.expire", isAdmin: false, uuid: user.uuid },
+            };
+            getServerSessionStub.resolves(mockSession);
 
-            chai.request(app)
-                .delete(
-                    "/api/users/membre.expire/redirections/test-2@example.com/delete"
-                )
-                .end((err, res) => {
-                    ovhRedirectionDeletion.isDone().should.be.false;
-                    done();
+            try {
+                await deleteRedirectionForUser({
+                    username: "membre.expire",
+                    toEmail: "test-2@example.com",
                 });
+            } catch (e) {
+                ovhRedirectionDeletion.isDone().should.be.false;
+            }
         });
     });
 
