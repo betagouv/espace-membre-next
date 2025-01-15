@@ -47,7 +47,7 @@ function PasswordChange({ username }: { username: string }) {
             setIsSaving(false);
             setAlertMessage({
                 title: "Une erreur est survenue",
-                message: `Réessayer plus tard, si l'erreur persiste contacter espace-membre@beta.gouv.fr. Erreur : ${err?.response?.data?.error}`,
+                message: `Réessayer plus tard, si l'erreur persiste contacter espace-membre@beta.gouv.fr. Erreur : ${resp.message}`,
                 type: "warning",
             });
         }
