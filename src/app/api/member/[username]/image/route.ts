@@ -2,10 +2,10 @@ import { NextResponse } from "next/server";
 
 import s3 from "@/lib/s3";
 
-export const dynamic = "force-dynamic";
+export const revalidate = 3600; // 1 hour
 
 export const GET = async (
-    req: Request,
+    _: Request,
     { params: { username } }: { params: { username: string } }
 ) => {
     if (!username) {
