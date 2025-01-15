@@ -80,32 +80,49 @@ export default function IncubatorPage({
                         ],
                     ].filter((a) => !!a)}
                 ></Table>
-                <h2>Équipes</h2>
-                <Table
-                    headers={["Nom", "Mission"]}
-                    data={teams.map((t) => [
-                        <Link key="link" href={`/teams/${t.uuid}`}>
-                            {t.name?.replace(/\s/g, " ")}
-                        </Link>,
-                        <div
-                            key="mission"
-                            dangerouslySetInnerHTML={{
-                                __html: mdParser.render(t.mission),
-                            }}
-                        />,
-                    ])}
-                />
-                <h2>Produits numériques</h2>
-                <Table
-                    headers={["Nom", "Phase", "Pitch"]}
-                    data={startups.map((s) => [
-                        <Link key="link" href={`/startups/${s.uuid}`}>
-                            {s.name}
-                        </Link>,
-                        (s.phase && <BadgePhase phase={s.phase} />) || "-",
-                        s.pitch,
-                    ])}
-                />
+                {(teams.length && (
+                    <>
+                        <h2>Équipes</h2>
+                        <Table
+                            headers={["Nom", "Mission"]}
+                            data={teams.map((t) => [
+                                <Link key="link" href={`/teams/${t.uuid}`}>
+                                    {t.name?.replace(/\s/g, " ")}
+                                </Link>,
+                                (t.mission && (
+                                    <div
+                                        key="mission"
+                                        dangerouslySetInnerHTML={{
+                                            __html:
+                                                mdParser.render(t.mission) ||
+                                                "",
+                                        }}
+                                    />
+                                )) ||
+                                    "",
+                            ])}
+                        />
+                    </>
+                )) ||
+                    null}
+
+                {(startups.length && (
+                    <>
+                        <h2>Produits numériques</h2>
+                        <Table
+                            headers={["Nom", "Phase", "Pitch"]}
+                            data={startups.map((s) => [
+                                <Link key="link" href={`/startups/${s.uuid}`}>
+                                    {s.name}
+                                </Link>,
+                                (s.phase && <BadgePhase phase={s.phase} />) ||
+                                    "-",
+                                s.pitch,
+                            ])}
+                        />
+                    </>
+                )) ||
+                    null}
             </div>
         </>
     );
