@@ -10,7 +10,10 @@ import Button from "@codegouvfr/react-dsfr/Button";
 import { fr } from "@codegouvfr/react-dsfr/fr";
 import axios from "axios";
 
-import { safeUpdatePasswordForUser, updatePasswordForUser } from "@/app/api/member/actions/updatePasswordForUser";
+import {
+    safeUpdatePasswordForUser,
+    updatePasswordForUser,
+} from "@/app/api/member/actions/updatePasswordForUser";
 import { EmailStatusCode, memberBaseInfoSchemaType } from "@/models/member";
 import routes, { computeRoute } from "@/routes/routes";
 
@@ -22,12 +25,15 @@ function PasswordChange({ username }: { username: string }) {
         message: NonNullable<React.ReactNode>;
         type: AlertProps.Severity;
     }>();
-    const onSubmit = (e) => {
+    const onSubmit = async (e) => {
         e.preventDefault();
         setIsSaving(true);
         setAlertMessage(undefined);
-        const resp = await safeUpdatePasswordForUser({ username, new_password: password })
-        if (resp.success) { 
+        const resp = await safeUpdatePasswordForUser({
+            username,
+            new_password: password,
+        });
+        if (resp.success) {
             setTimeout(() => {
                 // timeout to let user understand that function ran
                 setIsSaving(false);
@@ -38,13 +44,13 @@ function PasswordChange({ username }: { username: string }) {
                 });
             }, 1000);
         } else {
-                setIsSaving(false);
-                setAlertMessage({
-                    title: "Une erreur est survenue",
-                    message: `Réessayer plus tard, si l'erreur persiste contacter espace-membre@beta.gouv.fr. Erreur : ${err?.response?.data?.error}`,
-                    type: "warning",
-                });
-                
+            setIsSaving(false);
+            setAlertMessage({
+                title: "Une erreur est survenue",
+                message: `Réessayer plus tard, si l'erreur persiste contacter espace-membre@beta.gouv.fr. Erreur : ${err?.response?.data?.error}`,
+                type: "warning",
+            });
+        }
     };
     const onPasswordChange = (e) => {
         setPassword(e.target.value);

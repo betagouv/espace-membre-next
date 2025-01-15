@@ -38,7 +38,7 @@ fileignoreconfig:
 - filename: src/components/IncubatorForm/IncubatorForm.tsx
   checksum: 267f0f0e491b06862cd957ae86d22baf799a705370673cd24e588391a4613a5a
 - filename: src/components/MemberPage/Email/BlocChangerMotDePasse.tsx
-  checksum: 12b1f4da4512e1ff7fe8f89e9131d582272d5f0a1a3119507a4b1f11d3501948
+  checksum: 9ee37641aebd9381fccbe0b967e5f2b8a546760824e62ed3a564f50752fdae1f
 - filename: src/components/MemberPage/Email/EmailContainer.tsx
   checksum: 2c46d4aa4dc8caece9bc7f377178e855562c5321d2b87b24ff32cb307fe6946b
 - filename: src/components/MemberPage/Email/WebMailButtons.tsx
