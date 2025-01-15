@@ -33,7 +33,6 @@ export const getFirstMissionDate = (
     const sortedMissions = missions.sort(
         (a, b) => a.start.getTime() - b.start.getTime()
     );
-    console.log({ missions, sortedMissions });
     return (
         (sortedMissions &&
             sortedMissions.length &&

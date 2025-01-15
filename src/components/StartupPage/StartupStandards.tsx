@@ -34,7 +34,7 @@ const AccessibilityBadge = ({ status }: { status?: string | null }) => {
     return <Badge severity={severity}>{status || "inconnu"}</Badge>;
 };
 
-// custom table for custom styles
+// custom table for custom styling
 const TableStandards = ({ data, headers }) => {
     return (
         <div
@@ -55,12 +55,11 @@ const TableStandards = ({ data, headers }) => {
                     </tr>
                 </thead>
                 <tbody>
-                    {data.map((row) => {
-                        console.log({ row });
+                    {data.map((row, i) => {
                         if (row[1] === null) {
                             return (
                                 <tr
-                                    key="row"
+                                    key={"title-" + row[0] + i}
                                     data-fr-js-table-row="true"
                                     style={{
                                         backgroundColor: "transparent",
@@ -77,7 +76,7 @@ const TableStandards = ({ data, headers }) => {
                         }
                         return (
                             <tr
-                                key="details"
+                                key={row[0] + 1}
                                 data-fr-js-table-row="true"
                                 style={{
                                     backgroundColor:
@@ -96,6 +95,13 @@ const TableStandards = ({ data, headers }) => {
     );
 };
 
+const BooleanBadge = ({ value, validText = "Actif", invalidText = "Absent" }) =>
+    !!value ? (
+        <Badge severity="success">{validText}</Badge>
+    ) : (
+        <Badge severity="error">{invalidText}</Badge>
+    );
+
 export const StartupStandards = ({
     startupInfos,
 }: {
@@ -105,20 +111,15 @@ export const StartupStandards = ({
         <TableStandards
             headers={["Nom", "Statut", "Commentaire"]}
             data={[
-                [
-                    <>
-                        <b>Accessibilité</b>
-                    </>,
-                    null,
-                    null,
-                ],
+                [<b key="title">Accessibilité</b>, null, null],
                 [
                     "Déclaration d'accessibilité",
-                    startupInfos.accessibility_status ? (
-                        <Badge severity="success">Publiée</Badge>
-                    ) : (
-                        <Badge severity="error">Non publiée</Badge>
-                    ),
+                    <BooleanBadge
+                        key="badge"
+                        value={startupInfos.accessibility_status}
+                        validText="Publiée"
+                        invalidText="Non publiée"
+                    />,
                     "La déclaration d'accessibilité est obligatoire dès la mise en ligne",
                 ],
                 [
@@ -127,114 +128,100 @@ export const StartupStandards = ({
                         key="badge"
                         status={startupInfos.accessibility_status}
                     />,
-                    "L'audit de conformité doit être réalisé avant la sortie d'incubation",
+                    "L'audit de conformité doit être réalisé avant la sortie d'accéleration",
                 ],
-                [
-                    <>
-                        <b>Qualité logicielle</b>
-                    </>,
-                    null,
-                    null,
-                ],
+                [<b key="title">Qualité logicielle</b>, null, null],
                 [
                     "Suivi DashLord",
-                    startupInfos.dashlord_url ? <OK /> : <NOK />,
-                    "TODO",
+                    <BooleanBadge value={startupInfos.dashlord_url} />,
+                    "Le suivi DashLord est obligatoire dès la mise en ligne",
                 ],
-                ["Audit tech", "TODO", "TODO"],
                 [
-                    <>
-                        <b>Transparence</b>
-                    </>,
-                    null,
-                    null,
+                    "Audit tech",
+                    // <BooleanBadge
+                    //     value={false}
+                    //     validText="Oui"
+                    //     invalidText="Non"
+                    // />,
+                    "à venir",
+                    "L'audit tech est obligaroire dès la conception",
                 ],
+                //["Audit tech", "TODO", "TODO"],
+                [<b key="title">Transparence</b>, null, null],
                 [
                     "Publication des statistiques d'impact",
-                    startupInfos.stats_url ? <OK /> : <NOK />,
-                    "TODO",
+                    <BooleanBadge
+                        key="badge"
+                        value={startupInfos.stats_url}
+                        validText="Publié"
+                        invalidText="Non publié"
+                    />,
+                    "La page /stats doit être publiée dès la mise en ligne",
                 ],
                 [
                     "Publication du budget",
-                    startupInfos.budget_url ? <OK /> : <NOK />,
-                    "TODO",
+                    <BooleanBadge
+                        key="badge"
+                        value={startupInfos.budget_url}
+                        validText="Publié"
+                        invalidText="Non publié"
+                    />,
+                    "La page /budget doit être publiée dès la mise en ligne",
                 ],
                 [
                     "Publication des codes sources",
-                    startupInfos.repository ? <OK /> : <NOK />,
-                    "TODO",
+                    <BooleanBadge
+                        key="badge"
+                        value={startupInfos.repository}
+                        validText="Publié"
+                        invalidText="Non publié"
+                    />,
+                    "Le code source doit être ouvert dès la mise en ligne",
                 ],
-                [
-                    <>
-                        <b>Qualité du support</b>
-                    </>,
-                    null,
-                    null,
-                ],
+                [<b key="title">Qualité du support</b>, null, null],
                 [
                     "Les utilisateurs peuvent faire des retours facilement",
-                    "TODO",
-                    "TODO",
+                    "à venir",
+                    "",
                 ],
                 [
                     "Le support répond à chaque demande d'un utilisateur",
-                    "TODO",
-                    "TODO",
+                    "à venir",
+                    "",
                 ],
-                [
-                    <>
-                        <b>Sécurité</b>
-                    </>,
-                    null,
-                    null,
-                ],
+                [<b key="title">Sécurité</b>, null, null],
                 [
                     "Audit de risque",
-                    startupInfos.analyse_risques ? <OK /> : <NOK />,
-                    "TODO",
+                    <BooleanBadge
+                        key="badge"
+                        value={startupInfos.analyse_risques}
+                        validText="Oui"
+                        invalidText="Non"
+                    />,
+                    "L'analyse de risque doit être lancée pendant la phase d'accélération",
                 ],
                 [
                     "Utilise MonServiceSécurisé",
-                    startupInfos.mon_service_securise ? <OK /> : <NOK />,
-                    "TODO",
+                    <BooleanBadge
+                        key="badge"
+                        value={startupInfos.mon_service_securise}
+                        validText="Oui"
+                        invalidText="Non"
+                    />,
+                    "L'inscription à MonServiceSécurisé doit être lancée en fin de constructions",
                 ],
-                [
-                    <>
-                        <b>Données personnelles</b>
-                    </>,
-                    null,
-                    null,
-                ],
-                ["Analyse AIPD", "TODO", "TODO"],
-                [
-                    <>
-                        <b>Design</b>
-                    </>,
-                    null,
-                    null,
-                ],
+                [<b key="title">Données personnelles</b>, null, null],
+                ["Analyse AIPD", "à venir", ""],
+                ["Conformité des mentions légales", "à venir", ""],
+                [<b key="title">Design</b>, null, null],
                 [
                     "Priorise les fonctionnalités grâce aux retours utilisateurs",
-                    "TODO",
-                    "TODO",
+                    "à venir",
+                    "",
                 ],
-                ["Utilise le système de design de l'Etat", "TODO", "TODO"],
-                [
-                    <>
-                        <b>Données personnelles</b>
-                    </>,
-                    null,
-                    null,
-                ],
-                ["Analyse AIPD", "TODO", "TODO"],
-                [
-                    <>
-                        <b>Éco-conception</b>
-                    </>,
-                    null,
-                    null,
-                ],
-                ["Démarche d'éco-conception engagée", "TODO", "TODO"],
+                ["Utilise le système de design de l'Etat", "à venir", ""],
+                [<b key="title">Éco-conception</b>, null, null],
+                ["Démarche d'éco-conception engagée", "à venir", ""],
             ]}
         />
     );
