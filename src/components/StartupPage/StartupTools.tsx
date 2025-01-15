@@ -4,10 +4,11 @@ import { Table } from "@codegouvfr/react-dsfr/Table";
 export const StartupTools = ({ matomoSites, sentryTeams }) => {
     return (
         <div className="fr-mb-4v">
-            <h3>Outils</h3>
+            <h2>Outils</h2>
             <Accordion
                 label="Matomo"
                 expanded={true}
+                titleAs="h3"
                 onExpandedChange={(expanded, e) => {}}
             >
                 {!matomoSites.length && (
@@ -27,6 +28,7 @@ export const StartupTools = ({ matomoSites, sentryTeams }) => {
             <Accordion
                 label="Sentry"
                 expanded={true}
+                titleAs="h3"
                 onExpandedChange={(expanded, e) => {}}
             >
                 {!sentryTeams.length && (

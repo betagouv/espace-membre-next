@@ -64,10 +64,17 @@ export const StartupMembers = ({ startupInfos, members }) => {
                 </a>
             </div>
             {(activeMembers.length && (
-                <MemberTable
-                    members={activeMembers}
-                    startup_id={startupInfos.uuid}
-                />
+                <Accordion
+                    titleAs="h2"
+                    label="Membres actifs"
+                    expanded={true}
+                    onExpandedChange={() => {}}
+                >
+                    <MemberTable
+                        members={activeMembers}
+                        startup_id={startupInfos.uuid}
+                    />
+                </Accordion>
             )) || (
                 <div className={fr.cx("fr-my-4w")}>
                     <i
@@ -78,8 +85,9 @@ export const StartupMembers = ({ startupInfos, members }) => {
             )}
             {(previousMembers.length && (
                 <Accordion
+                    titleAs="h2"
                     label="Anciens membres"
-                    expanded={true}
+                    expanded={activeMembers.length === 0}
                     onExpandedChange={() => {}}
                 >
                     <MemberTable

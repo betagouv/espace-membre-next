@@ -14,8 +14,6 @@ import { uploadStartupFile } from "../../app/api/startups/files/upload";
 import { getStartupFiles } from "@/app/api/startups/files/list";
 import { DocSchemaType } from "@/models/startupFiles";
 
-
-
 function DocsDropZone({ onDrop, reset }) {
     const inputRef = useRef<HTMLInputElement | null>(null);
 
@@ -108,7 +106,7 @@ export const StartupFiles = ({
         pendingFiles.length > fileIndex && pendingFiles[fileIndex];
     return (
         <>
-            <CallOut title="Documents du produit" titleAs="p">
+            <CallOut title="Documents du produit" titleAs="h2">
                 Déposez et retrouvez ici les documents relatifs à la vie du
                 produit. <br />
                 Ces documents sont accessibles à{" "}

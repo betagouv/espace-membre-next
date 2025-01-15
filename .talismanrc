@@ -64,7 +64,7 @@ fileignoreconfig:
 - filename: src/components/StartupPage/StartupMembers.tsx
   checksum: 65fe7aa4422087fa3ba23e06f1f436ffa268b8b8fb0a9370d1f0f61ff0ffb10e
 - filename: src/components/StartupPage/StartupStandards.tsx
-  checksum: d20bfbab1b5d3e3f49b9d1456e20f9f9f591527a2db55396aa9abed23b13ec1a
+  checksum: 700b07279c8a4b4825ef41b67f5b7be5774447f704cc55ee98e92dc171c8408e
 - filename: src/components/organization/OrganizationPage/Organization.tsx
   checksum: 926d2f0e8cd232f07253a68c005268078414385afd946debd5fea271989e82aa
 - filename: src/lib/env.ts

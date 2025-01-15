@@ -19,19 +19,21 @@ export function StartupHeader({
 > & { currentPhase: StartupPhase | null }) {
     return (
         <>
-            <div className={fr.cx("fr-col-12")}>
-                <h1 className={fr.cx("fr-mb-0")}>
+            <div className={fr.cx("fr-col-12")} style={{ display: "flex" }}>
+                <h1 style={{ flex: " 1 0 auto" }} className={fr.cx("fr-mb-0")}>
                     {startupInfos.name}
-                    <Button
-                        priority="secondary"
-                        linkProps={{
-                            href: `/startups/${startupInfos.uuid}/info-form`,
-                        }}
-                        style={{ float: "right" }}
-                    >
-                        Modifier la fiche
-                    </Button>
                 </h1>
+                <Button
+                    priority="secondary"
+                    linkProps={{
+                        href: `/startups/${startupInfos.uuid}/info-form`,
+                    }}
+                    style={{ float: "right" }}
+                >
+                    Modifier la fiche
+                </Button>
+            </div>
+            <div className={fr.cx("fr-col-12")}>
                 <div
                     className={fr.cx("fr-text--lg", "fr-text--bold")}
                     style={{
