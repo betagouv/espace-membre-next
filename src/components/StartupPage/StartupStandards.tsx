@@ -135,7 +135,10 @@ export const StartupStandards = ({
                     [<h3 key="title">Qualité logicielle</h3>, null, null],
                     [
                         "Suivi DashLord",
-                        <BooleanBadge value={startupInfos.dashlord_url} />,
+                        <BooleanBadge
+                            key="badge"
+                            value={startupInfos.dashlord_url}
+                        />,
                         "Le suivi DashLord est obligatoire dès la mise en ligne",
                     ],
                     [
