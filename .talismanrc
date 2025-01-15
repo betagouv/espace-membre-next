@@ -27,6 +27,8 @@ fileignoreconfig:
   checksum: a5371c646bc9955b72b6cdb5ee3aef340004a092d9e70bbbe4b308c940880370
 - filename: src/app/api/member/actions/createRedirectionForUser.ts
   checksum: 12c54f94e0d66d8e3d51b9e9dd7032a1757c50fc85733b29befe9c0162fe3251
+- filename: src/app/api/member/actions/updatePasswordForUser.ts
+  checksum: e5dfe046df657e12314a68876b3d2261275f6b8437c8d7862d3fafe30a352c63
 - filename: src/app/api/services/actions.ts
   checksum: 80f4cffcc5861befdb98c676df064595dae5c318349c45059ba87fe20e96f2a2
 - filename: src/components/CommunityPage/Community.tsx
