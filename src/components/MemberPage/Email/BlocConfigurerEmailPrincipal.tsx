@@ -6,7 +6,10 @@ import Button from "@codegouvfr/react-dsfr/Button";
 import Input from "@codegouvfr/react-dsfr/Input";
 import axios from "axios";
 
-import { managePrimaryEmailForUser } from "@/app/api/member/actions";
+import {
+    managePrimaryEmailForUser,
+    safeManagePrimaryEmailForUser,
+} from "@/app/api/member/actions";
 import { memberBaseInfoSchemaType } from "@/models/member";
 import routes, { computeRoute } from "@/routes/routes";
 
@@ -49,10 +52,15 @@ export default function BlocConfigurerEmailPrincipal({
                         );
                         if (confirmed) {
                             setIsSaving(true);
-                            const resp = await managePrimaryEmailForUser({
+                            const resp = await safeManagePrimaryEmailForUser({
                                 username: userInfos.username,
                                 primaryEmail: value,
                             });
+                            if (resp.success) {
+                                alert("Ton email a bien été mis à jour.");
+                            } else {
+                                alert(resp.message);
+                            }
                             setIsSaving(false);
                         }
                     }}
