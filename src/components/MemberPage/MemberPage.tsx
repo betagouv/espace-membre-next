@@ -225,22 +225,20 @@ export default function MemberPage({
     ].filter((x) => !!x); // wth, Boolean doesnt work
     return (
         <div className="fr-mb-8v MemberPage">
-            <h1>
-                {userInfos.fullname}
-                {canEdit && linkToEditPage && (
-                    <Button
-                        className=""
-                        style={{ float: "right" }}
-                        size="small"
-                        priority="secondary"
-                        linkProps={{
-                            href: linkToEditPage,
-                        }}
-                    >
-                        Modifier la fiche
-                    </Button>
-                )}
-            </h1>
+            <div className={fr.cx("fr-mb-4w")} style={{ display: "flex" }}>
+                <h1 style={{ flex: " 1 0 auto" }} className={fr.cx("fr-mb-0")}>
+                    {userInfos.fullname}
+                </h1>
+                <Button
+                    priority="secondary"
+                    linkProps={{
+                        href: linkToEditPage,
+                    }}
+                    style={{ float: "right" }}
+                >
+                    Modifier la fiche
+                </Button>
+            </div>
             {isExpired && <MemberExpirationNotice userInfos={userInfos} />}
             {hash !== null && (
                 <Tabs

@@ -108,121 +108,124 @@ export const StartupStandards = ({
     startupInfos: startupSchemaType;
 }) => {
     return (
-        <TableStandards
-            headers={["Nom", "Statut", "Commentaire"]}
-            data={[
-                [<b key="title">Accessibilité</b>, null, null],
-                [
-                    "Déclaration d'accessibilité",
-                    <BooleanBadge
-                        key="badge"
-                        value={startupInfos.accessibility_status}
-                        validText="Publiée"
-                        invalidText="Non publiée"
-                    />,
-                    "La déclaration d'accessibilité est obligatoire dès la mise en ligne",
-                ],
-                [
-                    "Conformité",
-                    <AccessibilityBadge
-                        key="badge"
-                        status={startupInfos.accessibility_status}
-                    />,
-                    "L'audit de conformité doit être réalisé avant la sortie d'accéleration",
-                ],
-                [<b key="title">Qualité logicielle</b>, null, null],
-                [
-                    "Suivi DashLord",
-                    <BooleanBadge value={startupInfos.dashlord_url} />,
-                    "Le suivi DashLord est obligatoire dès la mise en ligne",
-                ],
-                [
-                    "Audit tech",
-                    // <BooleanBadge
-                    //     value={false}
-                    //     validText="Oui"
-                    //     invalidText="Non"
-                    // />,
-                    "à venir",
-                    "L'audit tech est obligaroire dès la conception",
-                ],
-                //["Audit tech", "TODO", "TODO"],
-                [<b key="title">Transparence</b>, null, null],
-                [
-                    "Publication des statistiques d'impact",
-                    <BooleanBadge
-                        key="badge"
-                        value={startupInfos.stats_url}
-                        validText="Publié"
-                        invalidText="Non publié"
-                    />,
-                    "La page /stats doit être publiée dès la mise en ligne",
-                ],
-                [
-                    "Publication du budget",
-                    <BooleanBadge
-                        key="badge"
-                        value={startupInfos.budget_url}
-                        validText="Publié"
-                        invalidText="Non publié"
-                    />,
-                    "La page /budget doit être publiée dès la mise en ligne",
-                ],
-                [
-                    "Publication des codes sources",
-                    <BooleanBadge
-                        key="badge"
-                        value={startupInfos.repository}
-                        validText="Publié"
-                        invalidText="Non publié"
-                    />,
-                    "Le code source doit être ouvert dès la mise en ligne",
-                ],
-                [<b key="title">Qualité du support</b>, null, null],
-                [
-                    "Les utilisateurs peuvent faire des retours facilement",
-                    "à venir",
-                    "",
-                ],
-                [
-                    "Le support répond à chaque demande d'un utilisateur",
-                    "à venir",
-                    "",
-                ],
-                [<b key="title">Sécurité</b>, null, null],
-                [
-                    "Audit de risque",
-                    <BooleanBadge
-                        key="badge"
-                        value={startupInfos.analyse_risques}
-                        validText="Oui"
-                        invalidText="Non"
-                    />,
-                    "L'analyse de risque doit être lancée pendant la phase d'accélération",
-                ],
-                [
-                    "Utilise MonServiceSécurisé",
-                    <BooleanBadge
-                        key="badge"
-                        value={startupInfos.mon_service_securise}
-                        validText="Oui"
-                        invalidText="Non"
-                    />,
-                    "L'inscription à MonServiceSécurisé doit être lancée en fin de constructions",
-                ],
-                [<b key="title">Données personnelles</b>, null, null],
-                ["Analyse AIPD", "à venir", ""],
-                ["Conformité des mentions légales", "à venir", ""],
-                [<b key="title">Design</b>, null, null],
-                [
-                    "Priorise les fonctionnalités grâce aux retours utilisateurs",
-                    "à venir",
-                    "",
-                ],
-                ["Utilise le système de design de l'Etat", "à venir", ""],
-                [<b key="title">Éco-conception</b>, null, null],
-                ["Démarche d'éco-conception engagée", "à venir", ""],
-            ]}
-        />
+        <>
+            <h2>Standards</h2>
+            <TableStandards
+                headers={["Nom", "Statut", "Commentaire"]}
+                data={[
+                    [<h3 key="title">Accessibilité</h3>, null, null],
+                    [
+                        "Déclaration d'accessibilité",
+                        <BooleanBadge
+                            key="badge"
+                            value={startupInfos.accessibility_status}
+                            validText="Publiée"
+                            invalidText="Non publiée"
+                        />,
+                        "La déclaration d'accessibilité est obligatoire dès la mise en ligne",
+                    ],
+                    [
+                        "Conformité",
+                        <AccessibilityBadge
+                            key="badge"
+                            status={startupInfos.accessibility_status}
+                        />,
+                        "L'audit de conformité doit être réalisé avant la sortie d'accéleration",
+                    ],
+                    [<h3 key="title">Qualité logicielle</h3>, null, null],
+                    [
+                        "Suivi DashLord",
+                        <BooleanBadge value={startupInfos.dashlord_url} />,
+                        "Le suivi DashLord est obligatoire dès la mise en ligne",
+                    ],
+                    [
+                        "Audit tech",
+                        // <BooleanBadge
+                        //     value={false}
+                        //     validText="Oui"
+                        //     invalidText="Non"
+                        // />,
+                        "à venir",
+                        "L'audit tech est obligaroire dès la conception",
+                    ],
+                    //["Audit tech", "TODO", "TODO"],
+                    [<h3 key="title">Transparence</h3>, null, null],
+                    [
+                        "Publication des statistiques d'impact",
+                        <BooleanBadge
+                            key="badge"
+                            value={startupInfos.stats_url}
+                            validText="Publié"
+                            invalidText="Non publié"
+                        />,
+                        "La page /stats doit être publiée dès la mise en ligne",
+                    ],
+                    [
+                        "Publication du budget",
+                        <BooleanBadge
+                            key="badge"
+                            value={startupInfos.budget_url}
+                            validText="Publié"
+                            invalidText="Non publié"
+                        />,
+                        "La page /budget doit être publiée dès la mise en ligne",
+                    ],
+                    [
+                        "Publication des codes sources",
+                        <BooleanBadge
+                            key="badge"
+                            value={startupInfos.repository}
+                            validText="Publié"
+                            invalidText="Non publié"
+                        />,
+                        "Le code source doit être ouvert dès la mise en ligne",
+                    ],
+                    [<h3 key="title">Qualité du support</h3>, null, null],
+                    [
+                        "Les utilisateurs peuvent faire des retours facilement",
+                        "à venir",
+                        "",
+                    ],
+                    [
+                        "Le support répond à chaque demande d'un utilisateur",
+                        "à venir",
+                        "",
+                    ],
+                    [<h3 key="title">Sécurité</h3>, null, null],
+                    [
+                        "Audit de risque",
+                        <BooleanBadge
+                            key="badge"
+                            value={startupInfos.analyse_risques}
+                            validText="Oui"
+                            invalidText="Non"
+                        />,
+                        "L'analyse de risque doit être lancée pendant la phase d'accélération",
+                    ],
+                    [
+                        "Utilise MonServiceSécurisé",
+                        <BooleanBadge
+                            key="badge"
+                            value={startupInfos.mon_service_securise}
+                            validText="Oui"
+                            invalidText="Non"
+                        />,
+                        "L'inscription à MonServiceSécurisé doit être lancée en fin de constructions",
+                    ],
+                    [<h3 key="title">Données personnelles</h3>, null, null],
+                    ["Analyse AIPD", "à venir", ""],
+                    ["Conformité des mentions légales", "à venir", ""],
+                    [<h3 key="title">Design</h3>, null, null],
+                    [
+                        "Priorise les fonctionnalités grâce aux retours utilisateurs",
+                        "à venir",
+                        "",
+                    ],
+                    ["Utilise le système de design de l'Etat", "à venir", ""],
+                    [<h3 key="title">Éco-conception</h3>, null, null],
+                    ["Démarche d'éco-conception engagée", "à venir", ""],
+                ]}
+            />
+        </>
     );
 };

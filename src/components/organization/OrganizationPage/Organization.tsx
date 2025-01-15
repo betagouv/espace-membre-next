@@ -1,5 +1,6 @@
 import Link from "next/link";
 
+import { fr } from "@codegouvfr/react-dsfr";
 import Button from "@codegouvfr/react-dsfr/Button";
 import Table from "@codegouvfr/react-dsfr/Table";
 import { sponsorSchemaType } from "@/models/sponsor";
@@ -19,18 +20,26 @@ export default function OrganizationPage({
     return (
         <>
             <div className="fr-mb-8v">
-                <h1>
-                    {organizationInfos.name}{" "}
+                <div
+                    className={fr.cx("fr-col-12", "fr-mb-4w")}
+                    style={{ display: "flex" }}
+                >
+                    <h1
+                        style={{ flex: " 1 0 auto" }}
+                        className={fr.cx("fr-mb-0")}
+                    >
+                        {organizationInfos.name}
+                    </h1>
                     <Button
+                        priority="secondary"
                         linkProps={{
                             href: `/organizations/${organizationInfos.uuid}/info-form`,
                         }}
                         style={{ float: "right" }}
-                        priority="secondary"
                     >
                         Modifier la fiche
                     </Button>
-                </h1>
+                </div>
                 <Table
                     headers={["Nom", "Description"]}
                     data={[

@@ -1,4 +1,5 @@
 import Button from "@codegouvfr/react-dsfr/Button";
+import { fr } from "@codegouvfr/react-dsfr";
 import Link from "next/link";
 import { incubatorSchemaType } from "@/models/incubator";
 
@@ -30,18 +31,26 @@ export default function IncubatorPage({
     return (
         <>
             <div className="fr-mb-8v">
-                <h1>
-                    {incubatorInfos.title}
+                <div
+                    className={fr.cx("fr-col-12", "fr-mb-4w")}
+                    style={{ display: "flex" }}
+                >
+                    <h1
+                        style={{ flex: " 1 0 auto" }}
+                        className={fr.cx("fr-mb-0")}
+                    >
+                        {incubatorInfos.title}
+                    </h1>
                     <Button
+                        priority="secondary"
                         linkProps={{
                             href: `/incubators/${incubatorInfos.uuid}/info-form`,
                         }}
-                        priority="secondary"
                         style={{ float: "right" }}
                     >
                         Modifier la fiche
                     </Button>
-                </h1>
+                </div>
                 <Table
                     headers={["Nom", "Description"]}
                     data={[
