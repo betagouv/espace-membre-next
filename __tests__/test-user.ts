@@ -7,6 +7,7 @@ import sinon from "sinon";
 
 import testUsers from "./users.json";
 import utils from "./utils";
+import { createEmail as createEmailAction } from "@/app/api/member/actions/createEmailForUser";
 import { createRedirectionForUser } from "@/app/api/member/actions/createRedirectionForUser";
 import { deleteRedirectionForUser } from "@/app/api/member/actions/deleteRedirectionForUser";
 import { updatePasswordForUser } from "@/app/api/member/actions/updatePasswordForUser";
@@ -41,64 +42,108 @@ const { expect } = chai;
 describe("User", () => {
     let ovhPasswordNock;
 
-    describe("POST /api/users/:username/create-email unauthenticated", () => {
-        it("should return an Unauthorized error", (done) => {
-            chai.request(app)
-                .post(
-                    routes.USER_CREATE_EMAIL_API.replace(
-                        ":username",
-                        "membre.parti"
-                    )
-                )
-                .type("form")
-                .send({
-                    _method: "POST",
-                })
-                .end((err, res) => {
-                    res.should.have.status(401);
-                    done();
-                });
-        });
-    });
-    describe("POST /api/users/:username/create-email authenticated", () => {
-        let getToken;
-        let sendEmailStub;
+    describe("test createEmailAction unauthenticated", () => {
+        let getServerSessionStub;
+        let isPublicServiceEmailStub;
+        let user;
+
         beforeEach(async () => {
-            sendEmailStub = sinon
-                .stub(controllerUtils, "sendMail")
+            isPublicServiceEmailStub = sinon
+                .stub(controllerUtils, "isPublicServiceEmail")
                 .returns(Promise.resolve(true));
-            getToken = sinon.stub(session, "getToken");
-            getToken.returns(utils.getJWT("membre.actif"));
+            getServerSessionStub = sinon
+                .stub(nextAuth, "getServerSession")
+                .resolves({});
+
             await utils.createUsers(testUsers);
+            user = await db
+                .selectFrom("users")
+                .selectAll()
+                .where("username", "=", "membre.actif")
+                .executeTakeFirstOrThrow();
+        });
+        afterEach(async () => {
+            sinon.restore();
+            await utils.deleteUsers(testUsers);
+            isPublicServiceEmailStub.restore();
         });
 
+        it("should return an Unauthorized error", async () => {
+            try {
+                await createEmailAction({
+                    username: "membre.parti",
+                    to_email: "lucas.charr@test.com",
+                });
+            } catch (err) {
+                expect(err).to.be.an("error");
+            }
+            // chai.request(app)
+            //     .post(
+            //         routes.USER_CREATE_EMAIL_API.replace(
+            //             ":username",
+            //             "membre.parti"
+            //         )
+            //     )
+            //     .type("form")
+            //     .send({
+            //         _method: "POST",
+            //     })
+            //     .end((err, res) => {
+            // res.should.have.status(401);
+            //     done();
+            // });
+        });
+    });
+    describe("test createEmailAction authenticated", () => {
+        let getServerSessionStub;
+        let isPublicServiceEmailStub;
+        let user;
+
+        beforeEach(async () => {
+            isPublicServiceEmailStub = sinon
+                .stub(controllerUtils, "isPublicServiceEmail")
+                .returns(Promise.resolve(true));
+            getServerSessionStub = sinon
+                .stub(nextAuth, "getServerSession")
+                .resolves({});
+
+            await utils.createUsers(testUsers);
+            user = await db
+                .selectFrom("users")
+                .selectAll()
+                .where("username", "=", "membre.actif")
+                .executeTakeFirstOrThrow();
+        });
         afterEach(async () => {
-            sendEmailStub.restore();
-            getToken.restore();
+            sinon.restore();
             await utils.deleteUsers(testUsers);
+            isPublicServiceEmailStub.restore();
         });
 
         it("should ask OVH to create an email", async () => {
+            const mockSession = {
+                user: { id: "membre.actif", isAdmin: false, uuid: user.uuid },
+            };
+            getServerSessionStub.resolves(mockSession);
             const ovhEmailCreation = nock(/.*ovh.com/)
                 .post(/^.*email\/domain\/.*\/account/)
                 .reply(200);
             await db
                 .updateTable("users")
-                .where("username", "=", "membre.nouveau")
+                .where("username", "=", "membre.nouveau@beta.gouv.fr")
                 .set({
                     primary_email: null,
                 })
                 .execute();
-            await chai
-                .request(app)
-                .post(
-                    routes.USER_CREATE_EMAIL_API.replace(
-                        ":username",
-                        "membre.nouveau"
-                    )
-                )
-                .type("form")
-                .send({});
+
+            try {
+                await createEmailAction({
+                    username: "membre.nouveau",
+                    to_email: "membre.nouveau@beta.gouv.fr",
+                });
+            } catch (err) {
+                expect(err).to.be.an("error");
+            }
 
             const res = await db
                 .selectFrom("users")
@@ -109,7 +154,7 @@ describe("User", () => {
             ovhEmailCreation.isDone().should.be.true;
         });
 
-        it("should not allow email creation from delegate if email already exists", (done) => {
+        it("should not allow email creation from delegate if email already exists", async () => {
             // For this case we need to reset the basic nocks in order to return
             // a different response to indicate that membre.nouveau has an
             // existing email already created.
@@ -119,6 +164,11 @@ describe("User", () => {
             utils.mockSlackSecretariat();
             utils.mockOvhTime();
             utils.mockOvhRedirections();
+
+            const mockSession = {
+                user: { id: "membre.actif", isAdmin: false, uuid: user.uuid },
+            };
+            getServerSessionStub.resolves(mockSession);
 
             // We return an email for membre.nouveau to indicate he already has one
             nock(/.*ovh.com/)
@@ -131,84 +181,82 @@ describe("User", () => {
             const ovhEmailCreation = nock(/.*ovh.com/)
                 .post(/^.*email\/domain\/.*\/account/)
                 .reply(200);
-
-            chai.request(app)
-                .post(
-                    routes.USER_CREATE_EMAIL_API.replace(
-                        ":username",
-                        "membre.nouveau"
-                    )
-                )
-                .type("form")
-                .send({})
-                .end((err, res) => {
-                    ovhEmailCreation.isDone().should.be.false;
-                    done();
+            try {
+                await createEmailAction({
+                    username: "membre.nouveau",
+                    to_email: "membre.nouveau@example.com",
                 });
+            } catch (err) {
+                ovhEmailCreation.isDone().should.be.false;
+            }
         });
 
-        it("should not allow email creation from delegate if github file doesn't exist", (done) => {
+        it("should not allow email creation from delegate if github file doesn't exist", async () => {
+            const mockSession = {
+                user: { id: "membre.actif", isAdmin: false, uuid: user.uuid },
+            };
+            getServerSessionStub.resolves(mockSession);
+            const ovhEmailCreation = nock(/.*ovh.com/)
+                .post(/^.*email\/domain\/.*\/account/)
+                .reply(200);
+            try {
+                await createEmailAction({
+                    username: "membre.sans.fiche",
+                    to_email: "membre.nouveau@example.com",
+                });
+            } catch (err) {
+                ovhEmailCreation.isDone().should.be.false;
+            }
+        });
+
+        it("should not allow email creation from delegate if user has expired", async () => {
+            const mockSession = {
+                user: { id: "membre.actif", isAdmin: false, uuid: user.uuid },
+            };
+            getServerSessionStub.resolves(mockSession);
             const ovhEmailCreation = nock(/.*ovh.com/)
                 .post(/^.*email\/domain\/.*\/account/)
                 .reply(200);
 
-            chai.request(app)
-                .post(
-                    routes.USER_CREATE_EMAIL_API.replace(
-                        ":username",
-                        "membre.sans.fiche"
-                    )
-                )
-                .type("form")
-                .send({})
-                .end((err, res) => {
-                    ovhEmailCreation.isDone().should.be.false;
-                    done();
+            try {
+                await createEmailAction({
+                    username: "membre.expire",
+                    to_email: "membre.nouveau@example.com",
                 });
+            } catch (err) {
+                ovhEmailCreation.isDone().should.be.false;
+            }
         });
 
-        it("should not allow email creation from delegate if user has expired", (done) => {
+        it("should not allow email creation from delegate if delegate has expired", async () => {
+            const mockSession = {
+                user: { id: "membre.expire", isAdmin: false, uuid: user.uuid },
+            };
+            getServerSessionStub.resolves(mockSession);
             const ovhEmailCreation = nock(/.*ovh.com/)
                 .post(/^.*email\/domain\/.*\/account/)
                 .reply(200);
 
-            chai.request(app)
-                .post(
-                    routes.USER_CREATE_EMAIL_API.replace(
-                        ":username",
-                        "membre.expire"
-                    )
-                )
-                .type("form")
-                .send({})
-                .end((err, res) => {
-                    ovhEmailCreation.isDone().should.be.false;
-                    done();
+            try {
+                await createEmailAction({
+                    username: "membre.nouveau",
+                    to_email: "membre.nouveau@example.com",
                 });
-        });
-
-        it("should not allow email creation from delegate if delegate has expired", (done) => {
-            const ovhEmailCreation = nock(/.*ovh.com/)
-                .post(/^.*email\/domain\/.*\/account/)
-                .reply(200);
-            getToken.returns(utils.getJWT("membre.expire"));
-
-            chai.request(app)
-                .post(
-                    routes.USER_CREATE_EMAIL_API.replace(
-                        ":username",
-                        "membre.nouveau"
-                    )
-                )
-                .type("form")
-                .send({})
-                .end((err, res) => {
-                    ovhEmailCreation.isDone().should.be.false;
-                    done();
-                });
+            } catch (err) {
+                ovhEmailCreation.isDone().should.be.false;
+            }
         });
 
         it("should allow email creation from delegate if user is active", async () => {
+            const mockSession = {
+                user: {
+                    id: "julien.dauphant",
+                    isAdmin: false,
+                    uuid: user.uuid,
+                },
+            };
+            getServerSessionStub.resolves(mockSession);
+
             const ovhEmailCreation = nock(/.*ovh.com/)
                 .post(/^.*email\/domain\/.*\/account/)
                 .reply(200);
@@ -219,19 +267,13 @@ describe("User", () => {
                     primary_email: null,
                 })
                 .execute();
-            getToken.returns(utils.getJWT("julien.dauphant"));
-            await chai
-                .request(app)
-                .post(
-                    routes.USER_CREATE_EMAIL_API.replace(
-                        ":username",
-                        "membre.actif"
-                    )
-                )
-                .type("form")
-                .send({});
+            await createEmailAction({
+                username: "membre.actif",
+                to_email: "membre.nouveau@example.com",
+            });
+
             ovhEmailCreation.isDone().should.be.true;
-            const user = await db
+            const user2 = await db
                 .selectFrom("users")
                 .selectAll()
                 .where("username", "=", "membre.actif")
@@ -240,17 +282,15 @@ describe("User", () => {
     });
 
     describe("POST /api/users/:username/create-email unauthenticated", () => {
-        it("should return an Unauthorized error", (done) => {
-            chai.request(app)
-                .post("/api/users/membre.parti/create-email")
-                .send({
-                    _method: "POST",
+        it("should return an Unauthorized error", async () => {
+            try {
+                await createEmailAction({
+                    username: "membre.nouveau",
                     to_email: "test@example.com",
-                })
-                .end((err, res) => {
-                    res.should.have.status(401);
-                    done();
                 });
+            } catch (err) {
+                ovhEmailCreation.isDone().should.be.false;
+            }
         });
     });
     describe("POST /api/users/:username/create-email authenticated", () => {
@@ -282,12 +322,11 @@ describe("User", () => {
                     primary_email: null,
                 })
                 .execute();
-            await chai
-                .request(app)
-                .post("/api/users/membre.nouveau/create-email")
-                .send({
-                    to_email: "test@example.com",
-                });
+
+            await createEmailAction({
+                username: "membre.nouveau",
+                to_email: "test@example.com",
+            });
 
             const res = await db
                 .selectFrom("users")

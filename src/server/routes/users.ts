@@ -35,15 +35,15 @@ const apiRouter = express.Router();
 //     usersController.deleteRedirectionForUserApi
 // );
 
-apiRouter.post(
-    routes.USER_UPGRADE_EMAIL_API,
-    express.json({ type: "*/*" }),
-    usersController.upgradeEmailForUserApi
-);
-apiRouter.post(
-    routes.USER_CREATE_EMAIL_API,
-    express.json({ type: "*/*" }),
-    usersController.createEmailApi
-);
+// apiRouter.post(
+//     routes.USER_UPGRADE_EMAIL_API,
+//     express.json({ type: "*/*" }),
+//     usersController.upgradeEmailForUserApi
+// );
+// apiRouter.post(
+//     routes.USER_CREATE_EMAIL_API,
+//     express.json({ type: "*/*" }),
+//     usersController.createEmailApi
+// );
 
 export { router as userRouter, apiRouter as userApiRouter };
