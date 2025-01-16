@@ -1,9 +1,7 @@
+"use server";
+
 import { getServerSession } from "next-auth/next";
 
-import { db } from "@/lib/kysely";
-import { MattermostUser } from "@/lib/mattermost";
-import { EmailStatusCode } from "@/models/member";
-import config from "@/server/config";
 import { getMattermostUsers } from "@/server/controllers/adminController";
 import { authOptions } from "@/utils/authoptions";
 import {
