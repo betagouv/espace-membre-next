@@ -78,6 +78,12 @@ export const EVENTS_ORDERED_LIST = [
     StartupEvent.EVENT_END,
 ];
 
+export const DSFR_STATUSES = [
+    "Le DSFR est implémenté",
+    "Le DSFR est implémenté partiellement",
+    "Refonte prévue",
+    "Service non soumis au DSFR",
+] as const;
 // export interface Startup {
 //     github?: string;
 //     website?: string;
@@ -299,13 +305,9 @@ export const startupSchema = z.object({
         )
         .optional()
         .nullable(),
-    dsfr_required: z
-        .boolean()
-        .describe("Le design-système de l'état est requis pour ce produit")
-        .optional(),
-    dsfr_implemented: z
-        .boolean()
-        .describe("Le design-système de l'état est implémenté sur ce produit")
+    dsfr_status: z
+        .enum(DSFR_STATUSES)
+        .describe("Implémentation du design systeme de l'état")
         .optional(),
     tech_audit_url: z
         .string()

@@ -302,8 +302,7 @@ export interface Startups {
   created_at: Generated<Timestamp>;
   dashlord_url: string | null;
   description: string | null;
-  dsfr_implemented: Generated<boolean | null>;
-  dsfr_required: Generated<boolean | null>;
+  dsfr_status: string | null;
   ecodesign_url: string | null;
   ghid: string;
   has_mobile_app: Generated<boolean | null>;

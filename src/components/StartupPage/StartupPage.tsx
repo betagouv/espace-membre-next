@@ -1,5 +1,8 @@
 "use client";
 
+import { useRouter } from "next/navigation";
+import { useEffect, useState } from "react";
+
 import { Tabs } from "@codegouvfr/react-dsfr/Tabs";
 import { Button } from "@codegouvfr/react-dsfr/Button";
 import { fr } from "@codegouvfr/react-dsfr/fr";
@@ -12,7 +15,6 @@ import { StartupChangeSchemaType } from "@/models/startupChange";
 import { getStartupFiles } from "@/app/api/startups/files/list";
 import { getCurrentPhase } from "@/utils/startup";
 
-import "./timeline.css";
 import { StartupHeader } from "./StartupHeader";
 import { StartupMembers } from "./StartupMembers";
 import { StartupDescription } from "./StartupDescription";
@@ -21,8 +23,9 @@ import { StartupStandards } from "./StartupStandards";
 import { StartupTools } from "./StartupTools";
 import { StartupFiles } from "../StartupFiles";
 import LastChange from "../LastChange";
-import { useRouter } from "next/navigation";
-import { useEffect, useState } from "react";
+import { FicheHeader } from "../FicheHeader";
+
+import "./timeline.css";
 
 export interface StartupPageProps {
     startupInfos: startupSchemaType;
@@ -134,6 +137,10 @@ export default function StartupPage({
 
     return (
         <div className={fr.cx("fr-grid-row", "fr-grid-row--gutters")}>
+            <FicheHeader
+                label={startupInfos.name}
+                editLink={`/startups/${startupInfos.uuid}/info-form`}
+            />
             <StartupHeader
                 startupInfos={startupInfos}
                 changes={changes}

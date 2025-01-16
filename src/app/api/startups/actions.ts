@@ -400,10 +400,7 @@ export async function updateStartup({
                         incubator_id: previousStartupData.incubator_id || "",
                         contact: previousStartupData.contact || "",
                         description: previousStartupData.description || "",
-                        dsfr_required:
-                            previousStartupData.dsfr_required || false,
-                        dsfr_implemented:
-                            previousStartupData.dsfr_implemented || false,
+                        dsfr_status: previousStartupData.dsfr_status || "",
                         techno: previousStartupData.techno as string[],
                         thematiques:
                             previousStartupData.thematiques as string[],

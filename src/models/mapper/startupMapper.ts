@@ -25,8 +25,7 @@ export function startupToModel(
             ? startup.usertypes
             : []) as string[],
         repository: startup.repository || undefined,
-        dsfr_required: !!startup.dsfr_required,
-        dsfr_implemented: !!startup.dsfr_implemented,
+        dsfr_status: startup.dsfr_status || "",
     };
 }
 

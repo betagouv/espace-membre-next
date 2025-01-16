@@ -1,8 +1,9 @@
-import { Table } from "@codegouvfr/react-dsfr/Table";
-import { Accordion } from "@codegouvfr/react-dsfr/Accordion";
+import { match } from "ts-pattern";
+
 import { Badge } from "@codegouvfr/react-dsfr/Badge";
 import { fr } from "@codegouvfr/react-dsfr/fr";
-import { startupSchemaType } from "@/models/startup";
+
+import { DSFR_STATUSES, startupSchemaType } from "@/models/startup";
 
 import "./standards.css";
 
@@ -145,7 +146,6 @@ export const StartupStandards = ({
                         />,
                         "L'audit tech est obligatoire dès la conception.",
                     ],
-                    //["Audit tech", "TODO", "TODO"],
                     [
                         <h3 className={fr.cx("fr-text--md")} key="title">
                             Transparence
@@ -240,18 +240,48 @@ export const StartupStandards = ({
                         null,
                     ],
                     [
-                        "Utilise le système de design de l'Etat",
-                        startupInfos.dsfr_required ? (
-                            <BooleanBadge
-                                key="badge"
-                                value={startupInfos.dsfr_implemented}
-                                validText="Oui"
-                                invalidText="Non"
-                            />
-                        ) : (
-                            <Badge severity="success">Non concerné</Badge>
-                        ),
-                        "Le système de design est obligatoire pour les sites internets officiels.",
+                        "Utilisation du système de design de l'Etat",
+                        // match
+                        match(startupInfos.dsfr_status)
+                            .with("Le DSFR est implémenté", () => (
+                                <BooleanBadge
+                                    key="badge"
+                                    value={true}
+                                    validText="Oui"
+                                />
+                            ))
+                            .with(
+                                "Le DSFR est implémenté partiellement",
+                                () => (
+                                    <BooleanBadge
+                                        key="badge"
+                                        value={true}
+                                        validText="Partiellement"
+                                    />
+                                )
+                            )
+                            .with("Refonte prévue", () => (
+                                <BooleanBadge
+                                    key="badge"
+                                    value={false}
+                                    invalidText="Refonte prévue"
+                                />
+                            ))
+                            .with("Service non soumis au DSFR", () => (
+                                <BooleanBadge
+                                    key="badge"
+                                    value={true}
+                                    validText="Non soumis"
+                                />
+                            ))
+                            .otherwise(() => (
+                                <BooleanBadge
+                                    key="badge"
+                                    value={false}
+                                    invalidText="Inconnu"
+                                />
+                            )),
+                        "Le système de design est obligatoire pour les sites internets de la marque-état.",
                     ],
                     [
                         <h3 className={fr.cx("fr-text--md")} key="title">

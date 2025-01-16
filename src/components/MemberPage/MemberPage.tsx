@@ -24,6 +24,7 @@ import "./MemberPage.css";
 import { matomoUserSchemaType } from "@/models/matomo";
 import { sentryUserSchemaType } from "@/models/sentry";
 import LastChange from "../LastChange";
+import { FicheHeader } from "../FicheHeader";
 
 const mdParser = new MarkdownIt({
     html: true,
@@ -123,6 +124,7 @@ export default function MemberPage({
             () => `/community/${userInfos.username}/update`
         )
         .otherwise(() => "");
+
     const tabs = [
         {
             label: "Fiche Membre",
@@ -223,22 +225,14 @@ export default function MemberPage({
             ),
         },
     ].filter((x) => !!x); // wth, Boolean doesnt work
+
     return (
         <div className="fr-mb-8v MemberPage">
-            <div className={fr.cx("fr-mb-4w")} style={{ display: "flex" }}>
-                <h1 style={{ flex: " 1 0 auto" }} className={fr.cx("fr-mb-0")}>
-                    {userInfos.fullname}
-                </h1>
-                <Button
-                    priority="secondary"
-                    linkProps={{
-                        href: linkToEditPage,
-                    }}
-                    style={{ float: "right" }}
-                >
-                    Modifier la fiche
-                </Button>
-            </div>
+            <FicheHeader
+                label={userInfos.fullname}
+                editLink={canEdit && linkToEditPage}
+            />
+            <br />
             {isExpired && <MemberExpirationNotice userInfos={userInfos} />}
             {hash !== null && (
                 <Tabs

@@ -1,45 +1,34 @@
 import Link from "next/link";
 
-import { fr } from "@codegouvfr/react-dsfr";
-import Button from "@codegouvfr/react-dsfr/Button";
 import Table from "@codegouvfr/react-dsfr/Table";
 import { sponsorSchemaType } from "@/models/sponsor";
-import { getOrganizationStartups } from "@/lib/kysely/queries/organizations";
+import {
+    getOrganizationStartups,
+    getOrganizationIncubators,
+} from "@/lib/kysely/queries/organizations";
 
 import { BadgePhase } from "../../StartupPage/BadgePhase";
+import { FicheHeader } from "@/components/FicheHeader";
 
 export interface OrganizationPageProps {
     organizationInfos: sponsorSchemaType;
     startups: Awaited<ReturnType<typeof getOrganizationStartups>>;
+    incubators: Awaited<ReturnType<typeof getOrganizationIncubators>>;
 }
 
 export default function OrganizationPage({
     organizationInfos,
     startups,
+    incubators,
 }: OrganizationPageProps) {
     return (
         <>
             <div className="fr-mb-8v">
-                <div
-                    className={fr.cx("fr-col-12", "fr-mb-4w")}
-                    style={{ display: "flex" }}
-                >
-                    <h1
-                        style={{ flex: " 1 0 auto" }}
-                        className={fr.cx("fr-mb-0")}
-                    >
-                        {organizationInfos.name}
-                    </h1>
-                    <Button
-                        priority="secondary"
-                        linkProps={{
-                            href: `/organizations/${organizationInfos.uuid}/info-form`,
-                        }}
-                        style={{ float: "right" }}
-                    >
-                        Modifier la fiche
-                    </Button>
-                </div>
+                <FicheHeader
+                    label={organizationInfos.name}
+                    editLink={`/organizations/${organizationInfos.uuid}/info-form`}
+                />
+                <br />
                 <Table
                     headers={["Nom", "Description"]}
                     data={[
@@ -52,17 +41,35 @@ export default function OrganizationPage({
                     ]}
                 />
             </div>
-            <h2>Produits numériques</h2>
-            <Table
-                headers={["Nom", "Phase", "Pitch"]}
-                data={startups.map((s) => [
-                    <Link key="link" href={`/startups/${s.uuid}`}>
-                        {s.name}
-                    </Link>,
-                    (s.phase && <BadgePhase phase={s.phase} />) || "-",
-                    s.pitch,
-                ])}
-            />
+            {incubators.length ? (
+                <>
+                    <h2>Incubateurs de services numériques</h2>
+                    <Table
+                        headers={["Nom", "Description"]}
+                        data={incubators.map((i) => [
+                            <Link key="link" href={`/incubators/${i.uuid}`}>
+                                {i.title}
+                            </Link>,
+                            i.short_description,
+                        ])}
+                    />
+                </>
+            ) : null}
+            {startups.length ? (
+                <>
+                    <h2>Produits numériques</h2>
+                    <Table
+                        headers={["Nom", "Phase", "Pitch"]}
+                        data={startups.map((s) => [
+                            <Link key="link" href={`/startups/${s.uuid}`}>
+                                {s.name}
+                            </Link>,
+                            (s.phase && <BadgePhase phase={s.phase} />) || "-",
+                            s.pitch,
+                        ])}
+                    />
+                </>
+            ) : null}
         </>
     );
 }

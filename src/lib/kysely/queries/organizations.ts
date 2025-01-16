@@ -23,6 +23,15 @@ export async function getOrganization(uuid: string) {
         .executeTakeFirst();
 }
 
+/** Return organization incubators */
+export async function getOrganizationIncubators(uuid: string) {
+    return await db
+        .selectFrom("incubators")
+        .selectAll()
+        .where("owner_id", "=", uuid)
+        .execute();
+}
+
 /** Return organization startups */
 export async function getOrganizationStartups(uuid: string) {
     return db
@@ -32,6 +41,7 @@ export async function getOrganizationStartups(uuid: string) {
             "name",
             "pitch",
             "ghid",
+            // phase actuelle
             selectFrom("phases")
                 .select("name")
                 .whereRef("phases.startup_id", "=", "startups.uuid")

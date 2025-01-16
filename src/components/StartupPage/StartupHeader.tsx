@@ -1,11 +1,9 @@
-import { Button } from "@codegouvfr/react-dsfr/Button";
 import { Tag } from "@codegouvfr/react-dsfr/Tag";
 import { fr } from "@codegouvfr/react-dsfr/fr";
 
 import { StartupPageProps } from "./StartupPage";
 import { StartupPhase } from "@/models/startup";
 import { BadgePhase } from "./BadgePhase";
-import LastChange from "../LastChange";
 
 export function StartupHeader({
     startupInfos,
@@ -19,20 +17,6 @@ export function StartupHeader({
 > & { currentPhase: StartupPhase | null }) {
     return (
         <>
-            <div className={fr.cx("fr-col-12")} style={{ display: "flex" }}>
-                <h1 style={{ flex: " 1 0 auto" }} className={fr.cx("fr-mb-0")}>
-                    {startupInfos.name}
-                </h1>
-                <Button
-                    priority="secondary"
-                    linkProps={{
-                        href: `/startups/${startupInfos.uuid}/info-form`,
-                    }}
-                    style={{ float: "right" }}
-                >
-                    Modifier la fiche
-                </Button>
-            </div>
             <div className={fr.cx("fr-col-12")}>
                 <div
                     className={fr.cx("fr-text--lg", "fr-text--bold")}

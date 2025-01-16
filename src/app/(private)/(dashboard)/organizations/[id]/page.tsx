@@ -6,6 +6,7 @@ import OrganizationPage from "@/components/organization/OrganizationPage/Organiz
 import {
     getOrganization,
     getOrganizationStartups,
+    getOrganizationIncubators,
 } from "@/lib/kysely/queries/organizations";
 import { organizationToModel } from "@/models/mapper";
 
@@ -34,6 +35,7 @@ export default async function Page({ params }: Props) {
 
     const organization = organizationToModel(dbOrganization);
     const startups = await getOrganizationStartups(organization.uuid);
+    const incubators = await getOrganizationIncubators(organization.uuid);
     return (
         <>
             <BreadCrumbFiller
@@ -43,6 +45,7 @@ export default async function Page({ params }: Props) {
             <OrganizationPage
                 organizationInfos={organization}
                 startups={startups}
+                incubators={incubators}
             />
         </>
     );

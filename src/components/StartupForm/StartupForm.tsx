@@ -33,6 +33,7 @@ import {
 import { Option } from "@/models/misc";
 import { sponsorSchemaType } from "@/models/sponsor";
 import {
+    DSFR_STATUSES,
     StartupEvent,
     StartupPhase,
     eventSchemaType,
@@ -414,7 +415,7 @@ export function StartupForm(props: StartupFormProps) {
                                     DEFAULT_CONTENT
                                 }
                                 style={{
-                                    height: "500px",
+                                    height: "600px",
                                     marginTop: "0.5rem",
                                 }}
                                 plugins={[
@@ -460,27 +461,22 @@ export function StartupForm(props: StartupFormProps) {
                     <Select
                         label={
                             startupInfoUpdateSchema.shape.startup.shape
-                                .incubator_id.description
+                                .dsfr_status.description
                         }
-                        nativeSelectProps={register("startup.incubator_id")}
-                        hint="Structure dans laquelle est portée votre produit"
+                        nativeSelectProps={register("startup.dsfr_status")}
+                        hint="Statut du système de design de l'état"
                         state={
-                            errors?.startup?.incubator_id ? "error" : "default"
+                            errors?.startup?.dsfr_status ? "error" : "default"
                         }
                         stateRelatedMessage={
-                            errors?.startup?.incubator_id?.message
+                            errors?.startup?.dsfr_status?.message
                         }
                     >
                         <option value="" disabled hidden>
-                            Séléctionnez un incubateur
+                            Séléctionnez le statut
                         </option>
-                        {props.incubatorOptions.map((incubator) => (
-                            <option
-                                value={incubator.value}
-                                key={incubator.value}
-                            >
-                                {incubator.label}
-                            </option>
+                        {DSFR_STATUSES.map((status) => (
+                            <option key={status}>{status}</option>
                         ))}
                     </Select>
 
@@ -606,28 +602,16 @@ export function StartupForm(props: StartupFormProps) {
                         options={[
                             {
                                 label: startupInfoUpdateSchema.shape.startup
-                                    .shape.dsfr_required.description,
+                                    .shape.dsfr_status.description,
                                 hintText:
-                                    "Cochez cette case si le design systeme doir s'appliquer à votre produit",
+                                    "Indiquez le statut d'implémentation du design système de l'état",
                                 nativeInputProps: {
-                                    ...register("startup.dsfr_required"),
+                                    ...register("startup.dsfr_status"),
                                 },
                             },
                         ]}
                     />
-                    <Checkbox
-                        options={[
-                            {
-                                label: startupInfoUpdateSchema.shape.startup
-                                    .shape.dsfr_implemented.description,
-                                hintText:
-                                    "Cochez cette case si le design systeme a été implémenté sur votre produit",
-                                nativeInputProps: {
-                                    ...register("startup.dsfr_implemented"),
-                                },
-                            },
-                        ]}
-                    />
+
                     <BasicInput id="tech_audit_url" />
                     <BasicInput id="ecodesign_url" />
 
