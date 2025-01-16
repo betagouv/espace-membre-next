@@ -5,9 +5,9 @@ import sinon from "sinon";
 
 import testUsers from "./users.json";
 import utils from "./utils";
-import { getMattermostAdminPageData } from "@/app/api/member/admin/actions/getMattermostAdmin";
-import { getMattermostUsersInfo } from "@/app/api/member/admin/actions/getMattermostUsersInfo";
-import { sendMessageToUsersOnChat } from "@/app/api/member/admin/actions/sendMattermostMessage";
+import { getMattermostAdminPageData } from "@/app/api/admin/actions/getMattermostAdmin";
+import { getMattermostUsersInfo } from "@/app/api/admin/actions/getMattermostUsersInfo";
+import { sendMessageToUsersOnChat } from "@/app/api/admin/actions/sendMattermostMessage";
 import { db } from "@/lib/kysely";
 import routes from "@/routes/routes";
 import config from "@/server/config";
