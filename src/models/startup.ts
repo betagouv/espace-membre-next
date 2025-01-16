@@ -226,7 +226,7 @@ export const startupSchema = z.object({
     link: z.string().describe("URL du site web").optional().nullable(),
     repository: z
         .string()
-        .describe("URL du repository GitHub")
+        .describe("URL du repository pour le code source")
         .optional()
         .nullable(),
     accessibility_status: z.string().optional().nullable(),
