@@ -25,11 +25,11 @@ class routes {
     static WHAT_IS_GOING_ON_WITH_MEMBER = "/que-se-passe-t-il" as const;
     static WHAT_IS_GOING_ON_WITH_MEMBER_SIMPLE = "/keskispasse" as const;
     // ADMIN
-    static ADMIN_MATTERMOST_API = "/api/admin/mattermost" as const;
-    static ADMIN_MATTERMOST_MESSAGE_API =
-        "/api/admin/mattermost/message/users" as const;
-    static ADMIN_MATTERMOST_SEND_MESSAGE =
-        "/api/admin/mattermost/send-message" as const;
+    // static ADMIN_MATTERMOST_API = "/api/admin/mattermost" as const;
+    // static ADMIN_MATTERMOST_MESSAGE_API =
+    //     "/api/admin/mattermost/message/users" as const;
+    // static ADMIN_MATTERMOST_SEND_MESSAGE =
+    //     "/api/admin/mattermost/send-message" as const;
     // onboarding
     static ONBOARDING = "/onboarding" as const;
     static ONBOARDING_API = "/api/onboarding" as const;

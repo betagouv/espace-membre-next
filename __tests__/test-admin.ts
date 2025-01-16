@@ -5,7 +5,7 @@ import sinon from "sinon";
 
 import testUsers from "./users.json";
 import utils from "./utils";
-import { getMattermostAdminPageData } from "@/app/api/admin/actions/getMattermostAdmin";
+import { getMattermostInfo } from "@/app/api/admin/actions/getMattermostAdmin";
 import { getMattermostUsersInfo } from "@/app/api/admin/actions/getMattermostUsersInfo";
 import { sendMessageToUsersOnChat } from "@/app/api/admin/actions/sendMattermostMessage";
 import { db } from "@/lib/kysely";
@@ -54,7 +54,7 @@ describe("Test Admin", () => {
 
             it("should return a forbidden error if user not in admin", async () => {
                 try {
-                    await getMattermostAdminPageData();
+                    await getMattermostInfo();
                 } catch (err) {
                     assert(err instanceof Error);
                     assert.strictEqual(
@@ -127,7 +127,7 @@ describe("Test Admin", () => {
                 const getMattermostUsersWithStatus = sinon
                     .stub(mattermostScheduler, "getMattermostUsersWithStatus")
                     .returns(Promise.resolve([]));
-                const res = await getMattermostAdminPageData();
+                const res = await getMattermostInfo();
                 getAdminStub.restore();
                 getMattermostUsersWithStatus.restore();
             });

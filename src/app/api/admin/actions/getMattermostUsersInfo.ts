@@ -5,7 +5,11 @@ import { getServerSession } from "next-auth/next";
 import { MattermostUser } from "@/models/mattermost";
 import { getMattermostUsers } from "@/server/controllers/adminController";
 import { authOptions } from "@/utils/authoptions";
-import { AuthorizationError } from "@/utils/error";
+import {
+    AuthorizationError,
+    UnwrapPromise,
+    withErrorHandling,
+} from "@/utils/error";
 
 export const getMattermostUsersInfo = async ({
     fromBeta,
@@ -33,3 +37,8 @@ export const getMattermostUsersInfo = async ({
         users,
     };
 };
+
+export const safeGetMattermostUsersInfo = withErrorHandling<
+    UnwrapPromise<ReturnType<typeof getMattermostUsersInfo>>,
+    Parameters<typeof getMattermostUsersInfo>
+>(getMattermostUsersInfo);

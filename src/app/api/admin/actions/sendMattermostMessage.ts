@@ -6,7 +6,11 @@ import { EmailStatusCode } from "@/models/member";
 import config from "@/server/config";
 import { getMattermostUsers } from "@/server/controllers/adminController";
 import { authOptions } from "@/utils/authoptions";
-import { AuthorizationError } from "@/utils/error";
+import {
+    AuthorizationError,
+    UnwrapPromise,
+    withErrorHandling,
+} from "@/utils/error";
 import { getUserWithParams, sendInfoToChat } from "@infra/chat";
 
 const sendMessageToChannel = async ({
@@ -115,3 +119,8 @@ export const sendMessageToUsersOnChat = async ({
         }`,
     };
 };
+
+export const safeSendMessageToUsersOnChat = withErrorHandling<
+    UnwrapPromise<ReturnType<typeof sendMessageToUsersOnChat>>,
+    Parameters<typeof sendMessageToUsersOnChat>
+>(sendMessageToUsersOnChat);

@@ -5,14 +5,18 @@ import { getServerSession } from "next-auth/next";
 import { MattermostChannel } from "@/lib/mattermost";
 import config from "@/server/config";
 import { authOptions } from "@/utils/authoptions";
-import { AuthorizationError } from "@/utils/error";
+import {
+    AuthorizationError,
+    UnwrapPromise,
+    withErrorHandling,
+} from "@/utils/error";
 import { getAllChannels } from "@infra/chat";
 import {
     MattermostUserWithStatus,
     getMattermostUsersWithStatus,
 } from "@schedulers/mattermostScheduler/removeBetaAndParnersUsersFromCommunityTeam";
 
-export async function getMattermostAdminPageData() {
+export async function getMattermostInfo() {
     const session = await getServerSession(authOptions);
     if (!session || !session.user.id) {
         throw new AuthorizationError();
@@ -49,3 +53,8 @@ export async function getMattermostAdminPageData() {
         throw err;
     }
 }
+
+export const safeGetMattermostInfo = withErrorHandling<
+    UnwrapPromise<ReturnType<typeof getMattermostInfo>>,
+    Parameters<typeof getMattermostInfo>
+>(getMattermostInfo);
