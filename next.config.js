@@ -36,6 +36,12 @@ const nextConfig = {
             bodySizeLimit: "10mb",
         },
     },
+    rewrites: async () => [
+        {
+            source: "/api/public/member/:username/image",
+            destination: "/api/member/:username/image",
+        }
+    ],
     webpack: (config, { isServer }) => {
         if (!isServer) {
             // don't resolve 'fs' module on the client to prevent this error on build --> Error: Can't resolve 'fs'

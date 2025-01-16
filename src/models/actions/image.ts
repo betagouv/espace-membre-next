@@ -5,6 +5,7 @@ export const imagePostApiSchema = z.object({
     fileRelativeObjType: z.enum(["member", "startup", "incubator"]),
     fileObjIdentifier: z.string(),
     fileType: z.enum(["image/jpeg"]),
+    revalidateMemberImage: z.boolean().optional(),
 });
 
 export type imagePostApiSchemaType = z.infer<typeof imagePostApiSchema>;
