@@ -306,7 +306,7 @@ export const startupSchema = z.object({
         .optional()
         .nullable(),
     dsfr_status: z
-        .enum(DSFR_STATUSES)
+        .union([z.enum(DSFR_STATUSES), z.string()])
         .describe("Implémentation du design systeme de l'état")
         .optional(),
     tech_audit_url: z
