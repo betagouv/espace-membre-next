@@ -1,20 +1,66 @@
-"use client";
-
+"use client"; // due to linkRegistry
 import { fr } from "@codegouvfr/react-dsfr";
 import { Tile } from "@codegouvfr/react-dsfr/Tile";
 import school from "@gouvfr/dsfr/dist/artwork/pictograms/buildings/school.svg";
-import mailSend from "@gouvfr/dsfr/dist/artwork/pictograms/digital/mail-send.svg";
 import document from "@gouvfr/dsfr/dist/artwork/pictograms/document/document.svg";
 import community from "@gouvfr/dsfr/dist/artwork/pictograms/environment/human-cooperation.svg";
 import locationFrance from "@gouvfr/dsfr/dist/artwork/pictograms/map/location-france.svg";
+import internet from "@gouvfr/dsfr/dist/artwork/pictograms/digital/internet.svg";
 import { StaticImageData } from "next/image";
 
-import { SurveyBox } from "@/components/SurveyBox";
 import { linkRegistry } from "@/utils/routes/registry";
 
 export interface DashboardPageProps {
     surveyCookieValue: string | null;
 }
+
+const tools = [
+    {
+        title: "Matomo",
+        description: "Analyse de traffic web",
+        href: "https://stats.beta.gouv.fr",
+    },
+    {
+        title: "GRIST",
+        description: "Spreadsheets on steroïds",
+        href: "https://grist.numerique.gouv.fr",
+    },
+    {
+        title: "VaultWarden",
+        description: "Gestionnaire de mots de passe",
+        href: "https://vaultwarden.incubateur.net",
+    },
+    {
+        title: "Visio",
+        description: "Visio-conférences",
+        href: "https://visio.numerique.gouv.fr",
+    },
+    {
+        title: "Pad",
+        description: "Pads partageables",
+        href: "https://pad.numerique.gouv.fr",
+    },
+    {
+        title: "France Transfert",
+        description: "Envoi de fichiers sécurisé",
+        href: "https://francetransfert.numerique.gouv.fr/upload",
+    },
+    {
+        title: "Sentry",
+        description: "Suivi des exceptions techniques",
+        href: "https://sentry.incubateur.net",
+    },
+    {
+        title: "UpDown.io",
+        description: "Monitoring de disponibilité",
+        href: "https://updown.io/p/8lotm",
+    },
+    {
+        title: "DashLord",
+        description: "Suivi des métriques techniques",
+        href: "https://dashlord.incubateur.net",
+    },
+];
 
 export function DashboardPage(props: DashboardPageProps) {
     return (
@@ -111,6 +157,26 @@ export function DashboardPage(props: DashboardPageProps) {
                         }}
                     />
                 </div>
+            </div>
+            <h2 className={fr.cx("fr-pt-4w")}>Outils</h2>
+            <div className={fr.cx("fr-grid-row", "fr-grid-row--gutters")}>
+                {tools.map((tool) => (
+                    <div
+                        key={tool.title}
+                        className={fr.cx("fr-col-12", "fr-col-lg-4")}
+                    >
+                        <Tile
+                            className={fr.cx("fr-tile--sm")}
+                            title={tool.title}
+                            desc={tool.description}
+                            orientation="horizontal"
+                            imageUrl={(internet as StaticImageData).src}
+                            linkProps={{
+                                href: tool.href,
+                            }}
+                        />
+                    </div>
+                ))}
             </div>
         </div>
     );
