@@ -24,7 +24,7 @@ export default function TeamPage({
             <div className="fr-mb-8v">
                 <FicheHeader
                     label={teamInfos.name}
-                    editLink={`/organizations/${teamInfos.uuid}/info-form`}
+                    editLink={`/teams/${teamInfos.uuid}/info-form`}
                 />
                 <br />
 
