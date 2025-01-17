@@ -1,7 +1,7 @@
 import { format } from "date-fns";
 import { fr } from "date-fns/locale/fr";
 
-import { memberSchemaType } from '@/models/member';
+import { memberSchemaType } from "@/models/member";
 import { missionSchemaType } from "@/models/mission";
 
 export const getLastMission = (
@@ -27,11 +27,23 @@ export const getLastMissionDate = (
     return null;
 };
 
+export const getFirstMissionDate = (
+    missions: missionSchemaType[]
+): string | null => {
+    const sortedMissions = missions.sort(
+        (a, b) => a.start.getTime() - b.start.getTime()
+    );
+    return (
+        (sortedMissions &&
+            sortedMissions.length &&
+            format(sortedMissions[0].start, "d MMMM yyyy", { locale: fr })) ||
+        null
+    );
+};
+
 /**
  * Return if user is still active at community level
  */
-export const isUserActive = (
-    missions: memberSchemaType["missions"]
-) => {
+export const isUserActive = (missions: memberSchemaType["missions"]) => {
     return missions.filter((m) => !m.end || m.end > new Date()).length > 0;
 };

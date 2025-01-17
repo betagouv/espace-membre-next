@@ -78,6 +78,12 @@ export const EVENTS_ORDERED_LIST = [
     StartupEvent.EVENT_END,
 ];
 
+export const DSFR_STATUSES = [
+    "Le DSFR est implémenté",
+    "Le DSFR est implémenté partiellement",
+    "Refonte prévue",
+    "Service non soumis au DSFR",
+] as const;
 // export interface Startup {
 //     github?: string;
 //     website?: string;
@@ -220,7 +226,7 @@ export const startupSchema = z.object({
     link: z.string().describe("URL du site web").optional().nullable(),
     repository: z
         .string()
-        .describe("URL du repository GitHub")
+        .describe("URL du repository pour le code source")
         .optional()
         .nullable(),
     accessibility_status: z.string().optional().nullable(),
@@ -297,6 +303,20 @@ export const startupSchema = z.object({
         .describe(
             "L'application n'est pas accessible au public (accès restreint)"
         )
+        .optional()
+        .nullable(),
+    dsfr_status: z
+        .union([z.enum(DSFR_STATUSES), z.string()])
+        .describe("Implémentation du design systeme de l'état")
+        .optional(),
+    tech_audit_url: z
+        .string()
+        .describe("Url de l'audit technique")
+        .optional()
+        .nullable(),
+    ecodesign_url: z
+        .string()
+        .describe("Url de la déclaration d'écoconception")
         .optional()
         .nullable(),
 });

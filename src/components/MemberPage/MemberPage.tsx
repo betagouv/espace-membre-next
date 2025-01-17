@@ -23,6 +23,8 @@ import { PrivateMemberChangeSchemaType } from "@/models/memberChange";
 import "./MemberPage.css";
 import { matomoUserSchemaType } from "@/models/matomo";
 import { sentryUserSchemaType } from "@/models/sentry";
+import LastChange from "../LastChange";
+import { FicheHeader } from "../FicheHeader";
 
 const mdParser = new MarkdownIt({
     html: true,
@@ -122,6 +124,7 @@ export default function MemberPage({
             () => `/community/${userInfos.username}/update`
         )
         .otherwise(() => "");
+
     const tabs = [
         {
             label: "Fiche Membre",
@@ -222,24 +225,14 @@ export default function MemberPage({
             ),
         },
     ].filter((x) => !!x); // wth, Boolean doesnt work
+
     return (
         <div className="fr-mb-8v MemberPage">
-            <h1>
-                {userInfos.fullname}
-                {canEdit && linkToEditPage && (
-                    <Button
-                        className=""
-                        style={{ float: "right" }}
-                        size="small"
-                        priority="secondary"
-                        linkProps={{
-                            href: linkToEditPage,
-                        }}
-                    >
-                        Modifier la fiche
-                    </Button>
-                )}
-            </h1>
+            <FicheHeader
+                label={userInfos.fullname}
+                editLink={canEdit && linkToEditPage}
+            />
+            <br />
             {isExpired && <MemberExpirationNotice userInfos={userInfos} />}
             {hash !== null && (
                 <Tabs
@@ -249,11 +242,12 @@ export default function MemberPage({
                     }}
                 />
             )}
-            {canEdit && linkToEditPage && (
-                <div
-                    className={fr.cx("fr-col-12", "fr-mt-4w")}
-                    style={{ textAlign: "center" }}
-                >
+
+            <div
+                className={fr.cx("fr-col-12", "fr-mt-4w")}
+                style={{ textAlign: "center" }}
+            >
+                {canEdit && linkToEditPage && (
                     <Button
                         className=""
                         size="small"
@@ -264,8 +258,11 @@ export default function MemberPage({
                     >
                         Modifier la fiche
                     </Button>
-                </div>
-            )}
+                )}
+                <br />
+                <br />
+                <LastChange changes={changes} />
+            </div>
         </div>
     );
 }
