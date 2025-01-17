@@ -31,7 +31,7 @@
     "dependencies": {
         "@codegouvfr/react-dsfr": "^1.13.6",
         "@emotion/styled": "^11.11.0",
-        "@gouvfr/dsfr": "^1.12.1",
+        "@gouvfr/dsfr": "^1.13.0",
         "@hookform/resolvers": "^3.3.4",
         "@mui/material": "^5.15.10",
         "@octokit/rest": "^20.0.2",
