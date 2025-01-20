@@ -365,7 +365,7 @@ export const jobs: Job[] = [
             "Add pending users to mailing-list and set email as active",
     },
     {
-        cronTime: "0 */8 * * * *",
+        cronTime: "0 */2 * * * *",
         onTick: sendOnboardingVerificationPendingEmail,
         isActive: true,
         name: "sendOnboardingVerificationPendingEmail",
