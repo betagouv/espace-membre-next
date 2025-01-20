@@ -7,9 +7,10 @@
     },
     "scripts": {
         "dev": "next dev -p 8100",
-        "build": "next build && npm run build:server",
+        "build": "npm run build:next && npm run build:server",
         "build:server": "ttsc -p tsconfig.server.json",
-        "start": "next start -p 8100",
+        "build:next": "next build",
+        "start": "NODE_ENV=production next start --port ${PORT-3000}",
         "lint": "next lint",
         "migrate": "knex migrate:latest --esm",
         "rolldown": "knex migrate:down --esm",
