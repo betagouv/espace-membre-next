@@ -116,7 +116,7 @@ export default function MemberPage({
         // Scroll to the element with the corresponding id when the tab changes
         const hash = window.location.hash.slice(1);
         if (hash) {
-            const element = document.getElementById(tab);
+            const element = document.getElementById(hash);
             if (element) {
                 element.scrollIntoView({ behavior: "smooth" });
             }

@@ -188,9 +188,11 @@ const emailStatusRow = (
                                         Le mot de passe doit être défini. Rendez
                                         vous dans{" "}
                                         <Link
-                                            href={"#password?tab=compte-email"}
+                                            href={
+                                                "/account?tab=compte-email#password"
+                                            }
                                         >
-                                            Changer mon mot
+                                            Changer mon mot de passe
                                         </Link>
                                     </>
                                 )
