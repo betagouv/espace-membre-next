@@ -27,20 +27,20 @@ export default function SignClientPage() {
         const searchParams = parsedUrl.searchParams || "";
         const callbackUrl = searchParams.get("callbackUrl") || "";
         let redirectionUrl = "/dashboard";
-        if (callbackUrl) {
-            try {
-                // Try to construct a new URL. This will succeed for both absolute and relative URLs.
-                const parsedUrl = new URL(callbackUrl, hostname); // Use current origin if URL is relative.
+        // if (callbackUrl) {
+        //     try {
+        //         // Try to construct a new URL. This will succeed for both absolute and relative URLs.
+        //         const parsedUrl = new URL(callbackUrl, hostname); // Use current origin if URL is relative.
 
-                // If the URL is absolute, replace its origin with the current hostname
-                const fullUrl = `${hostname}${parsedUrl.pathname}${parsedUrl.search}${parsedUrl.hash}`;
-                // Navigate to the constructed URL
-                redirectionUrl = fullUrl;
-            } catch (e) {
-                // In case of any error, fallback to redirecting to a default page
-                console.error("Invalid URL provided:", e);
-            }
-        }
+        //         // If the URL is absolute, replace its origin with the current hostname
+        //         const fullUrl = `${hostname}${parsedUrl.pathname}${parsedUrl.search}${parsedUrl.hash}`;
+        //         // Navigate to the constructed URL
+        //         redirectionUrl = fullUrl;
+        //     } catch (e) {
+        //         // In case of any error, fallback to redirecting to a default page
+        //         console.error("Invalid URL provided:", e);
+        //     }
+        // }
         window.location.href = redirectionUrl;
     }
 
