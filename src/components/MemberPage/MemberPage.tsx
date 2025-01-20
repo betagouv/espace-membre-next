@@ -111,6 +111,18 @@ export default function MemberPage({
             window.removeEventListener("popstate", onSearchParamsChange);
         };
     }, []);
+
+    useEffect(() => {
+        // Scroll to the element with the corresponding id when the tab changes
+        const hash = window.location.hash.slice(1);
+        if (hash) {
+            const element = document.getElementById(tab);
+            if (element) {
+                element.scrollIntoView({ behavior: "smooth" });
+            }
+        }
+    }, [tab]);
+
     const canEdit = isAdmin || isCurrentUser || sessionUserIsFromIncubatorTeam;
     const linkToEditPage = match([
         isAdmin,
@@ -250,7 +262,14 @@ export default function MemberPage({
                 <Tabs
                     tabs={tabs}
                     onTabChange={(obj) => {
-                        router.push(`#${tabs[obj.tabIndex].tabId}`);
+                        const searchParams = new URLSearchParams(
+                            window.location.search
+                        );
+                        searchParams.set("tab", tabs[obj.tabIndex].tabId);
+                        const newUrl = `${
+                            window.location.pathname
+                        }?${searchParams.toString()}`;
+                        window.history.pushState({}, "", newUrl); // Update the URL without reloading the page
                     }}
                 />
             )}
