@@ -30,6 +30,7 @@ jobs:
                   OVH_APP_KEY: ${{ secrets.OVH_APP_KEY }}
                   OVH_APP_SECRET: ${{ secrets.OVH_APP_SECRET }}
                   OVH_CONSUMER_KEY: ${{ secrets.OVH_CONSUMER_KEY }}
+                  PORT: 8100
             - name: Wait
               uses: cygnetdigital/wait_for_response@v2.0.0
               with:
