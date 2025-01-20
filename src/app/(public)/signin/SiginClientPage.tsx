@@ -35,8 +35,7 @@ export default function SignClientPage() {
                 // If the URL is absolute, replace its origin with the current hostname
                 const fullUrl = `${hostname}${parsedUrl.pathname}${parsedUrl.search}${parsedUrl.hash}`;
                 // Navigate to the constructed URL
-                // redirectionUrl = fullUrl;
-                console.log(fullUrl);
+                redirectionUrl = fullUrl;
             } catch (e) {
                 // In case of any error, fallback to redirecting to a default page
                 console.error("Invalid URL provided:", e);
@@ -68,9 +67,9 @@ export default function SignClientPage() {
         document.location = "/";
     };
 
-    // React.useEffect(() => {
-    //     if (typeof window !== "undefined") onSubmit();
-    // }, [onSubmit]);
+    React.useEffect(() => {
+        if (typeof window !== "undefined") onSubmit();
+    }, [onSubmit]);
 
     return (
         <div>
