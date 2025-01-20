@@ -3,9 +3,9 @@ import _ from "lodash";
 import ovh0 from "ovh";
 import unescape from "unescape";
 
+import { getDinumEmail } from "@/lib/kysely/queries/dinum";
 import { getAllUsersInfo } from "@/lib/kysely/queries/users";
 import { Job, JobWTTJ } from "@/models/job";
-import { getDinumEmail } from "@/lib/kysely/queries/dinum";
 import { memberBaseInfoToModel, userInfosToModel } from "@/models/mapper";
 import { memberBaseInfoSchemaType } from "@/models/member";
 import { EmailInfos } from "@/models/member";
