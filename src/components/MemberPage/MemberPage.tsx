@@ -5,8 +5,8 @@ import { useState, useEffect } from "react";
 import { fr } from "@codegouvfr/react-dsfr";
 import Button from "@codegouvfr/react-dsfr/Button";
 import { Tabs } from "@codegouvfr/react-dsfr/Tabs";
-import { useRouter } from "next/navigation";
 import MarkdownIt from "markdown-it";
+import { useRouter } from "next/navigation";
 import { match, P } from "ts-pattern";
 
 import { AdminPanel } from "./AdminPanel";
@@ -89,23 +89,40 @@ export default function MemberPage({
     isCurrentUser,
 }: MemberPageProps) {
     const router = useRouter();
-    const [hash, setHash] = useState<null | string>(null);
+    const [tab, setTab] = useState<null | string>(null);
 
     useEffect(() => {
-        // Get the current hash value
-        setHash(window.location.hash.replace("#", ""));
+        // Get the initial tab from the URL's search parameters
+        const searchParams = new URLSearchParams(window.location.search);
+        setTab(searchParams.get("tab") || "");
 
-        // Optional: Listen for hash changes
-        const onHashChange = () => {
-            setHash(window.location.hash.replace("#", ""));
+        // Function to handle searchParams changes
+        const onSearchParamsChange = () => {
+            const updatedSearchParams = new URLSearchParams(
+                window.location.search
+            );
+            setTab(updatedSearchParams.get("tab") || "");
         };
 
-        window.addEventListener("hashchange", onHashChange);
+        // Listen for changes in the URL
+        window.addEventListener("popstate", onSearchParamsChange);
 
         return () => {
-            window.removeEventListener("hashchange", onHashChange);
+            window.removeEventListener("popstate", onSearchParamsChange);
         };
     }, []);
+
+    useEffect(() => {
+        // Scroll to the element with the corresponding id when the tab changes
+        const hash = window.location.hash.slice(1);
+        if (hash) {
+            const element = document.getElementById(hash);
+            if (element) {
+                element.scrollIntoView({ behavior: "smooth" });
+            }
+        }
+    }, [tab]);
+
     const canEdit = isAdmin || isCurrentUser || sessionUserIsFromIncubatorTeam;
     const linkToEditPage = match([
         isAdmin,
@@ -125,7 +142,7 @@ export default function MemberPage({
     const tabs = [
         {
             label: "Fiche Membre",
-            isDefault: hash === "fiche-membre",
+            isDefault: tab === "fiche-membre",
             tabId: "fiche-membre",
             content: (
                 <>
@@ -176,7 +193,7 @@ export default function MemberPage({
         {
             label: "Statut des comptes",
             tabId: "statut-comptes",
-            isDefault: hash === "statut-comptes",
+            isDefault: tab === "statut-comptes",
 
             content: (
                 <MemberStatus
@@ -194,7 +211,7 @@ export default function MemberPage({
         {
             label: "Compte email",
             tabId: "compte-email",
-            isDefault: hash === "compte-email",
+            isDefault: tab === "compte-email",
             content: (
                 <EmailContainer
                     isCurrentUser={isCurrentUser}
@@ -211,7 +228,7 @@ export default function MemberPage({
         isAdmin && {
             label: "Admin",
             tabId: "admin",
-            isDefault: hash === "admin",
+            isDefault: tab === "admin",
             content: (
                 <AdminPanel
                     authorizations={authorizations}
@@ -241,11 +258,18 @@ export default function MemberPage({
                 )}
             </h1>
             {isExpired && <MemberExpirationNotice userInfos={userInfos} />}
-            {hash !== null && (
+            {tab !== null && (
                 <Tabs
                     tabs={tabs}
                     onTabChange={(obj) => {
-                        router.push(`#${tabs[obj.tabIndex].tabId}`);
+                        const searchParams = new URLSearchParams(
+                            window.location.search
+                        );
+                        searchParams.set("tab", tabs[obj.tabIndex].tabId);
+                        const newUrl = `${
+                            window.location.pathname
+                        }?${searchParams.toString()}`;
+                        window.history.pushState({}, "", newUrl); // Update the URL without reloading the page
                     }}
                 />
             )}
