@@ -38,7 +38,7 @@ fileignoreconfig:
 - filename: src/components/MemberPage/MemberPage.tsx
   checksum: d7e1d2aa3b94b36055a1cee44c29b8818cd734c7a454c63e11eb0ad6a6877c56
 - filename: src/components/MemberPage/MemberStatus.tsx
-  checksum: 474f6e2aac6c83149f61d75e5f4bc65c0cffd2410fcf563ea30e06fcb7fbffcf
+  checksum: d053268f66c3b28d6571780acf2fabfa335646c79ad17138dbd224fa653f2fce
 - filename: src/components/NewsletterPage/NewsletterPage.tsx
   checksum: 6b0b2109d112d5302ef35256a2febf53feadf65f5538acee4dce09f0d2da75eb
 - filename: src/components/SEPhaseSelect.tsx
