@@ -54,7 +54,7 @@ export default async function SentryPage() {
         }
     );
 
-    let sentryTeams: Selectable<"SentryTeams">[] = [];
+    let sentryTeams: { name: string }[] = [];
 
     if (session.user.isAdmin) {
         sentryTeams = await db.selectFrom("sentry_teams").selectAll().execute();
