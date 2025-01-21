@@ -124,6 +124,7 @@ export default function SentryServiceForm({
                                             label: team.name,
                                             value: team.name,
                                         }))}
+                                        placeholder="Sélectionner une ou plusieurs équipes"
                                         isMulti={true}
                                         onChange={(selectedTeams) => {
                                             setValue(
