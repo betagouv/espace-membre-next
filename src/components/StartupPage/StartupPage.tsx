@@ -1,43 +1,31 @@
 "use client";
-import Accordion from "@codegouvfr/react-dsfr/Accordion";
-import ButtonsGroup from "@codegouvfr/react-dsfr/ButtonsGroup";
-import { Table } from "@codegouvfr/react-dsfr/Table";
 
-import LastChange from "../LastChange";
+import { useRouter } from "next/navigation";
+import { useEffect, useState } from "react";
+
+import { Tabs } from "@codegouvfr/react-dsfr/Tabs";
+import { Button } from "@codegouvfr/react-dsfr/Button";
+import { fr } from "@codegouvfr/react-dsfr/fr";
+
 import { matomoSiteSchemaType } from "@/models/matomoSite";
 import { memberBaseInfoSchemaType } from "@/models/member";
 import { sentryTeamSchemaType } from "@/models/sentryTeam";
 import { phaseSchemaType, startupSchemaType } from "@/models/startup";
 import { StartupChangeSchemaType } from "@/models/startupChange";
-import { getLastMissionDate } from "@/utils/member";
+import { getStartupFiles } from "@/app/api/startups/files/list";
 import { getCurrentPhase } from "@/utils/startup";
 
-function MemberTable({
-    members,
-    startup_id,
-}: {
-    members: memberBaseInfoSchemaType[];
-    startup_id: string;
-}) {
-    return (
-        <Table
-            data={members.map(
-                (member: memberBaseInfoSchemaType, index: number) => [
-                    <a key={index} href={`/community/${member.username}`}>
-                        {member.fullname}
-                    </a>,
-                    member.role,
-                    getLastMissionDate(
-                        member.missions.filter((mission) =>
-                            (mission.startups || []).includes(startup_id)
-                        )
-                    ) || "",
-                ]
-            )}
-            headers={["Nom", "Role", "Date de fin"]}
-        />
-    );
-}
+import { StartupHeader } from "./StartupHeader";
+import { StartupMembers } from "./StartupMembers";
+import { StartupDescription } from "./StartupDescription";
+import { StartupHistory } from "./StartupHistory";
+import { StartupStandards } from "./StartupStandards";
+import { StartupTools } from "./StartupTools";
+import { StartupFiles } from "../StartupFiles";
+import LastChange from "../LastChange";
+import { FicheHeader } from "../FicheHeader";
+
+import "./timeline.css";
 
 export interface StartupPageProps {
     startupInfos: startupSchemaType;
@@ -46,6 +34,25 @@ export interface StartupPageProps {
     changes: StartupChangeSchemaType[];
     sentryTeams: sentryTeamSchemaType[];
     matomoSites: matomoSiteSchemaType[];
+    incubator: {
+        title: string;
+        uuid: string;
+        ghid: string | null;
+        short_description: string | null;
+    };
+    sponsors: {
+        uuid: string;
+        name: string;
+        acronym: string | null;
+    }[];
+    files: Awaited<ReturnType<typeof getStartupFiles>>;
+    events: {
+        uuid: string;
+        name: string;
+        comment: string | null;
+        startup_id: string | null;
+        date: Date;
+    }[];
 }
 
 export default function StartupPage({
@@ -55,144 +62,119 @@ export default function StartupPage({
     changes,
     matomoSites,
     sentryTeams,
+    incubator,
+    sponsors,
+    files,
+    events,
 }: StartupPageProps) {
-    const currentPhase = getCurrentPhase(phases); // todo get current phase
-    const activeMembers = members.filter((member) =>
-        member.missions.find(
-            (m) =>
-                m.startups?.includes(startupInfos.uuid) &&
-                (!m.end || m.end >= new Date())
-        )
-    );
-    const previousMembers = members.filter((member) =>
-        member.missions.find(
-            (m) =>
-                m.startups?.includes(startupInfos.uuid) &&
-                m.end &&
-                m.end < new Date()
-        )
-    );
-    return (
-        <>
-            <div className="fr-mb-8v">
-                <h1>{startupInfos.name}</h1>
-                <LastChange changes={changes} />
-                <p>
-                    <span>
-                        Fiche GitHub :{" "}
-                        <a
-                            className="fr-link"
-                            target="_blank"
-                            href={`https://github.com/betagouv/beta.gouv.fr/blob/master/content/_startups/${startupInfos.ghid}.md`}
-                        >
-                            {startupInfos.name}
-                        </a>
-                    </span>
-                    <br />
-                    <span>
-                        Repository :{" "}
-                        {startupInfos.repository ? (
-                            <a
-                                className="fr-link"
-                                target="_blank"
-                                href={startupInfos.repository}
-                            >
-                                {startupInfos.repository}
-                            </a>
-                        ) : (
-                            "Non renseigné"
-                        )}
-                    </span>
-                    <br />
-                    <span>
-                        Contact :{" "}
-                        {startupInfos.contact && (
-                            <a href={`mailto:${startupInfos.contact}`}>
-                                {startupInfos.contact}
-                            </a>
-                        )}
-                    </span>
-                    <br />
-                    <span>Phase : {currentPhase}</span>
-                    <br />
-                </p>
-                <p className="fr-text--sm" style={{ fontStyle: "italic" }}>
-                    Une information n'est pas à jour ?
-                </p>
-                <ButtonsGroup
-                    inlineLayoutWhen="always"
-                    buttons={[
-                        {
-                            children: "Mettre à jour les infos",
-                            iconId: "fr-icon-edit-fill",
-                            linkProps: {
-                                href: `/startups/${startupInfos.uuid}/info-form`,
-                            },
-                        },
-                        {
-                            children: "Gérer les documents",
-                            iconId: "fr-icon-file-add-line",
-                            linkProps: {
-                                href: `/startups/${startupInfos.uuid}/files`,
-                            },
-                            priority: "secondary",
-                        },
-                    ]}
-                ></ButtonsGroup>
-            </div>
+    const router = useRouter();
+    const [hash, setHash] = useState<null | string>(null);
 
-            <div className="fr-mb-4v">
-                <h3>Membres</h3>
-                <Accordion
-                    label="Membres actuels"
-                    expanded={true}
-                    onExpandedChange={(expanded, e) => {}}
-                >
-                    <MemberTable
-                        members={activeMembers}
-                        startup_id={startupInfos.uuid}
-                    />
-                </Accordion>
-                <Accordion label="Membres précédents">
-                    <MemberTable
-                        members={previousMembers}
-                        startup_id={startupInfos.uuid}
-                    />
-                </Accordion>
+    // Optional: Listen for hash changes
+    const onHashChange = () => {
+        setHash(window.location.hash.replace("#", ""));
+    };
+
+    useEffect(() => {
+        if (window.location.hash) {
+            setHash(window.location.hash.replace("#", ""));
+        } else {
+            setHash(tabs[0].tabId);
+        }
+        window.addEventListener("hashchange", onHashChange);
+
+        return () => {
+            window.removeEventListener("hashchange", onHashChange);
+        };
+    }, []);
+
+    const currentPhase = getCurrentPhase(phases); // todo get current phase
+    const tabs = [
+        {
+            label: "Équipe",
+            tabId: "team",
+            isDefault: hash === "team",
+            content: (
+                <StartupMembers members={members} startupInfos={startupInfos} />
+            ),
+        },
+        {
+            label: "Description",
+            tabId: "description",
+            isDefault: hash === "description",
+            content: <StartupDescription startupInfos={startupInfos} />,
+        },
+        {
+            label: "Historique",
+            tabId: "events",
+            isDefault: hash === "events",
+            content: <StartupHistory phases={phases} events={events} />,
+        },
+        {
+            label: "Standards",
+            tabId: "standards",
+            isDefault: hash === "standards",
+            content: <StartupStandards startupInfos={startupInfos} />,
+        },
+        {
+            label: "Outils",
+            tabId: "tools",
+            isDefault: hash === "tools",
+            content: (
+                <StartupTools
+                    matomoSites={matomoSites}
+                    sentryTeams={sentryTeams}
+                />
+            ),
+        },
+        {
+            label: "Documents",
+            tabId: "documents",
+            isDefault: hash === "documents",
+            content: <StartupFiles startup={startupInfos} files={files} />,
+        },
+    ];
+
+    return (
+        <div className={fr.cx("fr-grid-row", "fr-grid-row--gutters")}>
+            <FicheHeader
+                label={startupInfos.name}
+                editLink={`/startups/${startupInfos.uuid}/info-form`}
+            />
+            <StartupHeader
+                startupInfos={startupInfos}
+                changes={changes}
+                incubator={incubator}
+                sponsors={sponsors}
+                currentPhase={currentPhase}
+            />
+
+            <div className={fr.cx("fr-col-12")}>
+                {hash && (
+                    <Tabs
+                        tabs={tabs}
+                        onTabChange={(obj) => {
+                            router.push(`#${tabs[obj.tabIndex].tabId}`);
+                        }}
+                    ></Tabs>
+                )}
             </div>
-            <div className="fr-mb-4v">
-                <h3>Outils</h3>
-                <Accordion
-                    label="Matomo"
-                    expanded={true}
-                    onExpandedChange={(expanded, e) => {}}
+            <div
+                className={fr.cx("fr-col-12", "fr-mt-4w")}
+                style={{ textAlign: "center" }}
+            >
+                <Button
+                    priority="secondary"
+                    linkProps={{
+                        href: `/startups/${startupInfos.uuid}/info-form`,
+                    }}
                 >
-                    {!matomoSites.length && (
-                        <p>Aucun site matomo n'est connecté à ce produit</p>
-                    )}
-                    {!!matomoSites.length && (
-                        <Table
-                            data={matomoSites.map((site) => [
-                                site.name,
-                                site.url,
-                                site.type,
-                            ])}
-                            headers={["nom du site", "url", "type"]}
-                        ></Table>
-                    )}
-                </Accordion>
-                <Accordion label="Sentry">
-                    {!sentryTeams.length && (
-                        <p>Aucun équipe sentry n'est connecté à ce produit</p>
-                    )}
-                    {!!sentryTeams.length && (
-                        <Table
-                            data={sentryTeams.map((site) => [site.name])}
-                            headers={["nom de l'équipe"]}
-                        ></Table>
-                    )}
-                </Accordion>
+                    Modifier la fiche
+                </Button>
+                <br />
+                <br />
+                <LastChange changes={changes} />
             </div>
-        </>
+        </div>
     );
 }

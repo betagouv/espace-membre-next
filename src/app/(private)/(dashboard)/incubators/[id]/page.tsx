@@ -3,8 +3,12 @@ import { redirect } from "next/navigation";
 
 import { BreadCrumbFiller } from "@/app/BreadCrumbProvider";
 import IncubatorPage from "@/components/IncubatorPage/IncubatorPage";
-import { getIncubator } from "@/lib/kysely/queries/incubators";
-import s3 from "@/lib/s3";
+
+import {
+    getIncubator,
+    getIncubatorStartups,
+    getIncubatorTeams,
+} from "@/lib/kysely/queries/incubators";
 import { incubatorToModel } from "@/models/mapper";
 
 type Props = {
@@ -31,13 +35,19 @@ export default async function Page({ params }: Props) {
     }
 
     const incubator = incubatorToModel(dbIncubator);
+    const startups = await getIncubatorStartups(incubator.uuid);
+    const teams = await getIncubatorTeams(incubator.uuid);
     return (
         <>
             <BreadCrumbFiller
                 currentPage={incubator.title}
                 currentItemId={incubator.uuid}
             />
-            <IncubatorPage incubatorInfos={incubator} />
+            <IncubatorPage
+                incubatorInfos={incubator}
+                startups={startups}
+                teams={teams}
+            />
         </>
     );
 }

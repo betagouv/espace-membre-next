@@ -19,7 +19,6 @@ import {
     NoDataError,
     StartupUniqueConstraintViolationError,
     UnwrapPromise,
-    ValidationError,
     withErrorHandling,
 } from "@/utils/error";
 
@@ -400,6 +399,7 @@ export async function updateStartup({
                         incubator_id: previousStartupData.incubator_id || "",
                         contact: previousStartupData.contact || "",
                         description: previousStartupData.description || "",
+                        dsfr_status: previousStartupData.dsfr_status || "",
                         techno: previousStartupData.techno as string[],
                         thematiques:
                             previousStartupData.thematiques as string[],

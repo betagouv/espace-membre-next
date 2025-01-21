@@ -46,6 +46,7 @@ import {
     LegalStatus,
     MemberType,
 } from "@/models/member";
+import { getIncubator } from "@/lib/kysely/queries/incubators";
 
 export * from "./startupMapper";
 export function missionToModel(m: Selectable<Missions>) {
@@ -193,10 +194,10 @@ export function badgeRequestToModel(
 }
 
 export function incubatorToModel(
-    incubator: Selectable<Incubators>
+    incubator: Awaited<ReturnType<typeof getIncubator>>
 ): incubatorSchemaType {
     return {
-        uuid: incubator.uuid,
+        uuid: incubator.uuid || "",
         title: incubator.title,
         owner_id: incubator.owner_id || "",
         contact: incubator.contact || "",
@@ -207,6 +208,7 @@ export function incubatorToModel(
         description: incubator.description || "",
         short_description: incubator.short_description || "",
         highlighted_startups: incubator.highlighted_startups || [],
+        organization_name: incubator.organization_name || "",
     };
 }
 
