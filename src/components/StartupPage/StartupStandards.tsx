@@ -1,6 +1,7 @@
 import { match } from "ts-pattern";
 
 import { Badge } from "@codegouvfr/react-dsfr/Badge";
+import { Alert } from "@codegouvfr/react-dsfr/Alert";
 import { fr } from "@codegouvfr/react-dsfr/fr";
 
 import { DSFR_STATUSES, startupSchemaType } from "@/models/startup";
@@ -93,6 +94,13 @@ export const StartupStandards = ({
     return (
         <>
             <h2>Standards</h2>
+            {!startupInfos.link && (
+                <Alert
+                    severity="info"
+                    title="Ce produit n'a pas d'URL publique."
+                    description="Certains critères, vérifiés automatiquement, ne sont pas disponibles."
+                />
+            )}
             <TableStandards
                 headers={["Nom", "Statut", "Commentaire"]}
                 data={[
