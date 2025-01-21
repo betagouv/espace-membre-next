@@ -490,7 +490,32 @@ export function StartupForm(props: StartupFormProps) {
                         )}
                     </div>
                     <hr />
-
+                    <Select
+                        label={
+                            startupInfoUpdateSchema.shape.startup.shape
+                                .incubator_id.description
+                        }
+                        nativeSelectProps={register("startup.incubator_id")}
+                        hint="Structure dans laquelle est portée votre produit"
+                        state={
+                            errors?.startup?.incubator_id ? "error" : "default"
+                        }
+                        stateRelatedMessage={
+                            errors?.startup?.incubator_id?.message
+                        }
+                    >
+                        <option value="" disabled hidden>
+                            Séléctionnez un incubateur
+                        </option>
+                        {props.incubatorOptions.map((incubator) => (
+                            <option
+                                value={incubator.value}
+                                key={incubator.value}
+                            >
+                                {incubator.label}
+                            </option>
+                        ))}
+                    </Select>
                     <SponsorBlock
                         sponsors={sponsors}
                         allSponsors={allSponsors}
