@@ -44,11 +44,13 @@ export type matomoAccountRequestSchemaType = z.infer<
 >;
 
 export const sentryAccountRequestSchema = z.object({
-    teams: z.array(
-        z.object({
-            name: z.string(),
-        })
-    ),
+    teams: z
+        .array(
+            z.object({
+                name: z.string(),
+            })
+        )
+        .min(1, { message: "Au moins une équipe est nécessaire." }),
 });
 
 export type sentryAccountRequestSchemaType = z.infer<
