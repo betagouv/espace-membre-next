@@ -49,15 +49,17 @@ export const MemberContact = ({
                             }
                         </Badge>
                     )}
-                    {userInfos.primary_email_status ===
-                        EmailStatusCode.EMAIL_VERIFICATION_WAITING && (
-                        <span>
-                            Le mot de passe doit être défini. Rendez vous dans{" "}
-                            <a href={"/account?tab=compte-email#password"}>
-                                Changer mon mot de passe
-                            </a>
-                        </span>
-                    )}
+                    {isCurrentUser &&
+                        userInfos.primary_email_status ===
+                            EmailStatusCode.EMAIL_ACTIVE_AND_PASSWORD_DEFINITION_PENDING && (
+                            <span>
+                                Le mot de passe doit être défini. Rendez vous
+                                dans{" "}
+                                <a href={"/account?tab=compte-email#password"}>
+                                    Changer mon mot de passe
+                                </a>
+                            </span>
+                        )}
                 </>
             ),
         });

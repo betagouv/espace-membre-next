@@ -5,6 +5,7 @@ import { fr } from "@codegouvfr/react-dsfr";
 import Accordion from "@codegouvfr/react-dsfr/Accordion";
 import Alert from "@codegouvfr/react-dsfr/Alert";
 import Badge from "@codegouvfr/react-dsfr/Badge";
+import Button from "@codegouvfr/react-dsfr/Button";
 import Table from "@codegouvfr/react-dsfr/Table";
 import { match } from "ts-pattern";
 
@@ -17,6 +18,7 @@ import BlocEmailResponder from "./BlocEmailResponder";
 import BlocRedirection from "./BlocRedirection";
 import { WebMailButtons } from "./WebMailButtons";
 import { MemberPageProps } from "../MemberPage";
+import { BadgeEmailPlan } from "@/components/BadgeEmailPlan";
 import frontConfig from "@/frontConfig";
 import {
     EmailInfos,
@@ -26,8 +28,6 @@ import {
 import { EmailStatusCode } from "@/models/member";
 import { EMAIL_STATUS_READABLE_FORMAT } from "@/models/misc";
 import { EMAIL_PLAN_TYPE, OvhRedirection, OvhResponder } from "@/models/ovh";
-import { BadgeEmailPlan } from "@/components/BadgeEmailPlan";
-import Button from "@codegouvfr/react-dsfr/Button";
 
 const EmailLink = ({ email }: { email: string }) => (
     <a href={`mailto:${email}`}>{email}</a>
@@ -66,6 +66,15 @@ const emailStatusRow = (
                         }
                     </Badge>
                 ))}
+            {userInfos.primary_email_status ===
+                EmailStatusCode.EMAIL_ACTIVE_AND_PASSWORD_DEFINITION_PENDING && (
+                <span>
+                    Le mot de passe doit être défini. Rendez vous dans{" "}
+                    <a href={"/account?tab=compte-email#password"}>
+                        Changer mon mot de passe
+                    </a>
+                </span>
+            )}
         </>,
     ];
 };
