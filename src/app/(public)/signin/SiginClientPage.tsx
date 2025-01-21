@@ -67,6 +67,10 @@ export default function SignClientPage() {
         document.location = "/";
     };
 
+    React.useEffect(() => {
+        if (typeof window !== "undefined") onSubmit();
+    }, [onSubmit]);
+
     return (
         <div>
             <p className={fr.cx("fr-mt-10v")}>
