@@ -132,6 +132,7 @@ export default async function SentryPage() {
             <SentryServiceForm teams={sentryTeams} />
 
             <h2 className="fr-mt-8v">Historique des événements</h2>
+            {!sentryEvents.length && <p>Pas d'événements pour l'instant</p>}
             {!!sentryEvents.length && (
                 <Table
                     headers={["Code", "Metadata", "Date"]}
