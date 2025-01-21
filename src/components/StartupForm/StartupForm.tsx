@@ -224,6 +224,8 @@ export function StartupForm(props: StartupFormProps) {
         !!props.startup?.analyse_risques ||
         !!props.startup?.analyse_risques_url ||
         !!getValues("startup.analyse_risques");
+    if (Object.keys(errors).length)
+        console.error("Validation errors :", errors);
     return (
         <>
             <div>
