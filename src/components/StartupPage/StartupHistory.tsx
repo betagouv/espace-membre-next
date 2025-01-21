@@ -53,6 +53,7 @@ export const StartupHistory = ({
                 <>
                     <h2>Évènements marquants</h2>
                     <Table
+                        className="table-xs-col1"
                         headers={["Date", "Description"]}
                         fixed
                         data={events.map((e) => [
