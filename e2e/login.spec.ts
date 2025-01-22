@@ -175,7 +175,7 @@ test("valid login sends magic link and but the callback url is changed to be evi
     fragmentUrl.searchParams.set("callbackUrl", "//evil.com");
 
     // Rebuild the full URL with the modified callbackUrl
-    const modifiedHref = `${baseUrl}#${fragmentUrl.toString()}`;
+    const modifiedHref = `${baseUrl}?${fragmentUrl.toString()}`;
     // Navigate to the modified URL
     await page.goto(modifiedHref);
     await page.getByText("Me connecter").first().click();
@@ -233,7 +233,7 @@ test(`valid login sends magic link and but the callback url is changed to be evi
     fragmentUrl.searchParams.set("callbackUrl", `/\\evil.com`);
 
     // Rebuild the full URL with the modified callbackUrl
-    const modifiedHref = `${baseUrl}#${fragmentUrl.toString()}`;
+    const modifiedHref = `${baseUrl}?${fragmentUrl.toString()}`;
     // Navigate to the modified URL
     await page.goto(modifiedHref);
     await page.getByText("Me connecter").first().click();
