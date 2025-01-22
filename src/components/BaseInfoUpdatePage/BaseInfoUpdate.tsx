@@ -56,6 +56,7 @@ const postMemberData = async ({
             fileRelativeObjType: "member",
             fileObjIdentifier: username,
             fileType: "image/jpeg",
+            revalidateMemberImage: true,
         };
         const response = await fetch("/api/image", {
             method: "POST",
@@ -91,6 +92,7 @@ const postMemberData = async ({
                 fileRelativeObjType: "member",
                 fileObjIdentifier: username,
                 fileIdentifier: "avatar",
+                revalidateMemberImage: true,
             }),
         });
     }

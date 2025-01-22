@@ -13,7 +13,7 @@ export const PUBLIC_ROUTES = [
     routes.ONBOARDING_ACTION,
     // /api\/auth\/*/,
     /api\/auth(?:\/|$)/,
-    /api\/public\/users\/*/,
+    /api\/public\/*/,
     /hook\/*/,
     /onboardingSuccess\/*/,
 ];

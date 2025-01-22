@@ -27,7 +27,7 @@ test("team detail page and form page", async ({ page }) => {
         .executeTakeFirst();
     await page.goto(`/teams/${team?.uuid}`);
     await expect(page.getByText("Ma super team").first()).toBeVisible();
-    await page.getByText("✏️ Mettre à jour les infos").first().click();
+    await page.getByText("Modifier la fiche").first().click();
     await page.waitForURL(`/teams/${team?.uuid}/info-form`);
     await expect(
         page.getByText("Modifier la fiche équipe de Ma super team").first()

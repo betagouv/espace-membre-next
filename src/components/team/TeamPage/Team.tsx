@@ -5,6 +5,8 @@ import Button from "@codegouvfr/react-dsfr/Button";
 import { incubatorSchemaType } from "@/models/incubator";
 import { memberPublicInfoSchemaType } from "@/models/member";
 import { teamSchemaType } from "@/models/team";
+import Link from "next/link";
+import { FicheHeader } from "@/components/FicheHeader";
 
 export interface TeamPageProps {
     teamInfos: teamSchemaType;
@@ -20,10 +22,16 @@ export default function TeamPage({
     return (
         <>
             <div className="fr-mb-8v">
-                <h1>{teamInfos.name}</h1>
+                <FicheHeader
+                    label={teamInfos.name}
+                    editLink={`/teams/${teamInfos.uuid}/info-form`}
+                />
+                <br />
 
                 <h2>Incubateur :</h2>
-                {incubator.title}
+                <Link href={`/incubators/${incubator.uuid}`}>
+                    {incubator.title}
+                </Link>
                 <br />
                 <br />
                 <h2>Mission : </h2>
@@ -58,16 +66,6 @@ export default function TeamPage({
                         en ajouter en éditant la fiche.
                     </p>
                 )}
-                <p className="fr-text--sm" style={{ fontStyle: "italic" }}>
-                    Une information n'est pas à jour ?
-                </p>
-                <Button
-                    linkProps={{
-                        href: `/teams/${teamInfos.uuid}/info-form`,
-                    }}
-                >
-                    ✏️ Mettre à jour les infos
-                </Button>
             </div>
         </>
     );

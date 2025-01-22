@@ -25,7 +25,7 @@ test("organization detail page and form page", async ({ page }) => {
         .executeTakeFirst();
     await page.goto(`/organizations/${organization?.uuid}`);
     await expect(page.getByText("Mon super sponsor").first()).toBeVisible();
-    await page.getByText("✏️ Mettre à jour les infos").first().click();
+    await page.getByText("Modifier la fiche").first().click();
     await page.waitForURL(`/organizations/${organization?.uuid}/info-form`);
     await expect(
         page.getByText("Modifier la fiche de Mon super sponsor").first()

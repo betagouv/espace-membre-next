@@ -1,3 +1,4 @@
+import { revalidatePath } from 'next/cache';
 import { NextRequest, NextResponse } from "next/server";
 import { getServerSession } from "next-auth/next";
 import { z } from "zod";
@@ -6,11 +7,12 @@ import { z } from "zod";
 
 import { getFileName } from "./utils";
 import s3 from "@/lib/s3";
+import { imagePostApiSchemaType } from '@/models/actions/image';
 import { authOptions } from "@/utils/authoptions";
 
 export async function DELETE(req: NextRequest) {
-    const { fileIdentifier, fileRelativeObjType, fileObjIdentifier } =
-        await req.json();
+    const { fileIdentifier, fileRelativeObjType, fileObjIdentifier, revalidateMemberImage } =
+        await req.json() as imagePostApiSchemaType;
     const session = await getServerSession(authOptions);
 
     if (
@@ -48,6 +50,10 @@ export async function DELETE(req: NextRequest) {
             { message: "Error deleting image" },
             { status: 500 }
         );
+    } finally {
+        if (revalidateMemberImage && fileRelativeObjType === "member") {
+            revalidatePath(`/api/member/${fileObjIdentifier}/image`);
+        }
     }
 }
 
@@ -62,8 +68,8 @@ export async function POST(req: NextRequest) {
             }
         );
     }
-    const { fileObjIdentifier, fileRelativeObjType, fileType, fileIdentifier } =
-        await req.json();
+    const { fileObjIdentifier, fileRelativeObjType, fileType, fileIdentifier, revalidateMemberImage } =
+        await req.json() as imagePostApiSchemaType;
 
     const session = await getServerSession(authOptions);
 
@@ -98,6 +104,10 @@ export async function POST(req: NextRequest) {
                 status: 500,
             }
         );
+    } finally {
+        if (revalidateMemberImage && fileRelativeObjType === "member") {
+            revalidatePath(`/api/member/${fileObjIdentifier}/image`);
+        }
     }
 }
 

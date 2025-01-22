@@ -54,7 +54,7 @@ export default async function SentryPage() {
         }
     );
 
-    let sentryTeams: Selectable<"SentryTeams">[] = [];
+    let sentryTeams: { name: string }[] = [];
 
     if (session.user.isAdmin) {
         sentryTeams = await db.selectFrom("sentry_teams").selectAll().execute();
@@ -132,6 +132,7 @@ export default async function SentryPage() {
             <SentryServiceForm teams={sentryTeams} />
 
             <h2 className="fr-mt-8v">Historique des événements</h2>
+            {!sentryEvents.length && <p>Pas d'événements pour l'instant</p>}
             {!!sentryEvents.length && (
                 <Table
                     headers={["Code", "Metadata", "Date"]}

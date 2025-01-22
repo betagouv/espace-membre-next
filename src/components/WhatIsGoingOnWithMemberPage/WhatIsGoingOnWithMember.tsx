@@ -1247,7 +1247,6 @@ export const WhatIsGoingOnWithMember = function (
                             <li>
                                 Fais un renouvellement de mot de passe :{" "}
                                 <a
-                                    className="fr-link"
                                     href="https://mattermost.incubateur.net/reset_password"
                                     target={"_blank"}
                                 >

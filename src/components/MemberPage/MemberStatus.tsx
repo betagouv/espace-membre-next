@@ -1,18 +1,16 @@
-import { useState } from "react";
-
 import Accordion from "@codegouvfr/react-dsfr/Accordion";
 import Badge from "@codegouvfr/react-dsfr/Badge";
 import Button from "@codegouvfr/react-dsfr/Button";
 import Table from "@codegouvfr/react-dsfr/Table";
+import Link from "next/link";
 import { match, P } from "ts-pattern";
 
 import { MemberPageProps } from "./MemberPage";
+import { BadgeEmailPlan } from "../BadgeEmailPlan";
 import { askAccountCreationForService } from "@/app/api/services/actions";
 import { EmailStatusCode } from "@/models/member";
 import { EMAIL_PLAN_TYPE } from "@/models/ovh";
 import { ACCOUNT_SERVICE_STATUS, SERVICES } from "@/models/services";
-
-import { BadgeEmailPlan } from "../BadgeEmailPlan";
 
 const mattermostInfoRow = (
     mattermostInfo: NonNullable<MemberPageProps["mattermostInfo"]>,
@@ -187,7 +185,15 @@ const emailStatusRow = (
                                 () => (
                                     <>
                                         <br />
-                                        Le mot de passe doit être défini
+                                        Le mot de passe doit être défini. Rendez
+                                        vous dans{" "}
+                                        <a
+                                            href={
+                                                "/account?tab=compte-email#password"
+                                            }
+                                        >
+                                            Changer mon mot de passe
+                                        </a>
                                     </>
                                 )
                             )
@@ -292,11 +298,11 @@ const MatomoInfoRow = (
             </Accordion>
         ) : isCurrentUser ? (
             <>
-                Tu n'as pas de compte matomo. Si tu as besoin d'un compte tu
-                peux en faire la demande{" "}
-                <a href="/services/matomo" className="fr-link">
-                    ici
+                "Tu n'as pas de compte Matomo. Si tu en as besoin, tu peux{" "}
+                <a href="/services/matomo">
+                    faire une demande de compte Matomo
                 </a>
+                .
             </>
         ) : (
             <>
@@ -330,11 +336,11 @@ const sentryInfoRow = (sentry: MemberPageProps["sentryInfo"]) => {
         match([sentry && sentry.status, !!sentry])
             .with([P._, false], () => (
                 <>
-                    Tu n'as pas de compte sentry. Si tu as besoin d'un compte tu
-                    peux en faire la demande{" "}
-                    <a href="/services/sentry" className="fr-link">
-                        ici
+                    "Tu n'as pas de compte Sentry. Si tu en as besoin, tu peux{" "}
+                    <a href="/services/sentry">
+                        faire une demande de compte Sentry
                     </a>
+                    .
                 </>
             ))
             .with([ACCOUNT_SERVICE_STATUS.ACCOUNT_INVITATION_SENT, P._], () => {

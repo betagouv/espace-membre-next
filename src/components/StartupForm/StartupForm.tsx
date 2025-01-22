@@ -1,7 +1,6 @@
 "use client";
 import React, { useCallback, useState } from "react";
 
-import "react-markdown-editor-lite/lib/index.css";
 import { fr } from "@codegouvfr/react-dsfr";
 import { Alert } from "@codegouvfr/react-dsfr/Alert";
 import { Button } from "@codegouvfr/react-dsfr/Button";
@@ -33,12 +32,15 @@ import {
 import { Option } from "@/models/misc";
 import { sponsorSchemaType } from "@/models/sponsor";
 import {
+    DSFR_STATUSES,
     StartupEvent,
     StartupPhase,
     eventSchemaType,
     phaseSchemaType,
     startupSchemaType,
 } from "@/models/startup";
+
+import "react-markdown-editor-lite/lib/index.css";
 
 MdEditor.use(MdEditorCustomHeaderPlugin);
 
@@ -222,6 +224,8 @@ export function StartupForm(props: StartupFormProps) {
         !!props.startup?.analyse_risques ||
         !!props.startup?.analyse_risques_url ||
         !!getValues("startup.analyse_risques");
+    if (Object.keys(errors).length)
+        console.error("Validation errors :", errors);
     return (
         <>
             <div>
@@ -246,6 +250,8 @@ export function StartupForm(props: StartupFormProps) {
                     onSubmit={handleSubmit(onSubmit)}
                     aria-label="Modifier les informations du produit"
                 >
+                    <h2>Informations</h2>
+
                     <BasicInput
                         id="name"
                         placeholder="ex: Démarches simplifiées"
@@ -263,7 +269,33 @@ export function StartupForm(props: StartupFormProps) {
                         placeholder="ex: contact@[startup].beta.gouv.fr"
                         hintText={`Préférer un email générique plutôt que le mail d'une personne de l'équipe.`}
                     />
-
+                    <BasicInput id="link" />
+                    <Checkbox
+                        options={[
+                            {
+                                label: startupInfoUpdateSchema.shape.startup
+                                    .shape.is_private_url.description,
+                                hintText:
+                                    "Cochez cette case si votre application n'est pas accessible sur internet",
+                                nativeInputProps: {
+                                    ...register("startup.is_private_url"),
+                                },
+                            },
+                        ]}
+                    />
+                    <Checkbox
+                        options={[
+                            {
+                                label: startupInfoUpdateSchema.shape.startup
+                                    .shape.has_mobile_app.description,
+                                hintText:
+                                    "Cochez cette case si votre produit propose une application mobile",
+                                nativeInputProps: {
+                                    ...register("startup.has_mobile_app"),
+                                },
+                            },
+                        ]}
+                    />
                     <div
                         className={`fr-input-group ${
                             errors?.startup?.thematiques
@@ -336,6 +368,7 @@ export function StartupForm(props: StartupFormProps) {
                             }}
                         />
                     </div>
+
                     {frontConfig.FEATURE_SHOW_UPLOAD_IMAGE_PRODUCT_WIDGET && (
                         <>
                             {/* <hr />
@@ -414,7 +447,7 @@ export function StartupForm(props: StartupFormProps) {
                                     DEFAULT_CONTENT
                                 }
                                 style={{
-                                    height: "500px",
+                                    height: "600px",
                                     marginTop: "0.5rem",
                                 }}
                                 plugins={[
@@ -483,7 +516,6 @@ export function StartupForm(props: StartupFormProps) {
                             </option>
                         ))}
                     </Select>
-
                     <SponsorBlock
                         sponsors={sponsors}
                         allSponsors={allSponsors}
@@ -531,6 +563,7 @@ export function StartupForm(props: StartupFormProps) {
                             });
                         }}
                     />
+                    <h2>Vie du produit</h2>
                     <div
                         className={`fr-input-group ${
                             errors.startupPhases ? "fr-input-group--error" : ""
@@ -573,35 +606,29 @@ export function StartupForm(props: StartupFormProps) {
                         />
                     </div>
                     {/*[FILE UPLOAD ]<hr />*/}
-                    <BasicInput id="link" />
-                    <Checkbox
-                        options={[
-                            {
-                                label: startupInfoUpdateSchema.shape.startup
-                                    .shape.is_private_url.description,
-                                hintText:
-                                    "Cochez cette case si votre application n'est pas accessible sur internet",
-                                nativeInputProps: {
-                                    ...register("startup.is_private_url"),
-                                },
-                            },
-                        ]}
-                    />
-                    <Checkbox
-                        options={[
-                            {
-                                label: startupInfoUpdateSchema.shape.startup
-                                    .shape.has_mobile_app.description,
-                                hintText:
-                                    "Cochez cette case si votre produit propose une application mobile",
-                                nativeInputProps: {
-                                    ...register("startup.has_mobile_app"),
-                                },
-                            },
-                        ]}
-                    />
-                    <BasicInput id="repository" />
-                    <BasicInput id="dashlord_url" />
+
+                    <h2>Standards beta.gouv.fr</h2>
+                    <Select
+                        label={
+                            startupInfoUpdateSchema.shape.startup.shape
+                                .dsfr_status.description
+                        }
+                        nativeSelectProps={register("startup.dsfr_status")}
+                        hint="Statut du système de design de l'état"
+                        state={
+                            errors?.startup?.dsfr_status ? "error" : "default"
+                        }
+                        stateRelatedMessage={
+                            errors?.startup?.dsfr_status?.message
+                        }
+                    >
+                        <option value="" disabled>
+                            Séléctionnez le statut
+                        </option>
+                        {DSFR_STATUSES.map((status) => (
+                            <option key={status}>{status}</option>
+                        ))}
+                    </Select>
 
                     <SelectAccessibilityStatus
                         value={props.startup?.accessibility_status}
@@ -612,6 +639,14 @@ export function StartupForm(props: StartupFormProps) {
                             )
                         }
                     />
+
+                    <BasicInput id="stats_url" />
+                    <BasicInput id="budget_url" />
+                    <BasicInput id="repository" />
+                    <BasicInput id="dashlord_url" />
+                    <BasicInput id="tech_audit_url" />
+                    <BasicInput id="ecodesign_url" />
+
                     <Checkbox
                         options={[
                             {
@@ -642,8 +677,6 @@ export function StartupForm(props: StartupFormProps) {
                     {hasAnalyseDeRisque && (
                         <BasicInput id="analyse_risques_url" />
                     )}
-                    <BasicInput id="stats_url" />
-                    <BasicInput id="budget_url" />
 
                     <Button
                         className={fr.cx("fr-mt-3w")}

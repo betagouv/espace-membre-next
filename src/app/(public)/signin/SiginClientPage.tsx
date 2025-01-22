@@ -45,8 +45,9 @@ export default function SignClientPage() {
     }
 
     const onSubmit = React.useCallback(async () => {
-        const url =
-            window !== undefined ? window.location.hash.split("#")[1] : null;
+        const parsedUrl = new URL(window.location.href);
+        const searchParams = parsedUrl.search || "";
+        const url = `${window.location.origin}/api/auth/callback/email${searchParams}`;
         setError("");
         if (url) {
             try {

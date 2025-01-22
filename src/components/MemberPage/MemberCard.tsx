@@ -1,14 +1,11 @@
-import Button from "@codegouvfr/react-dsfr/Button";
 import { fr } from "@codegouvfr/react-dsfr/fr";
 import Tag from "@codegouvfr/react-dsfr/Tag";
 import Link from "next/link";
 import { createSerializer } from "nuqs";
-import { match, P } from "ts-pattern";
 
 import { MemberPageProps } from "./MemberPage";
 import { communityQueryParser } from "../CommunityPage/utils";
 import { FichePicture } from "../FichePicture";
-import LastChange from "../LastChange";
 import { PrivateMemberChangeSchemaType } from "@/models/memberChange";
 
 const getInitials = (fullname: string) => {
@@ -140,15 +137,6 @@ export const MemberCard = ({
                     </ul>
                 )) ||
                     null}
-
-                <LastChange
-                    changes={changes}
-                    style={{
-                        textAlign: "right",
-                        marginBottom: fr.spacing("1v"),
-                        marginTop: fr.spacing("4w"),
-                    }}
-                />
             </div>
         </div>
     );

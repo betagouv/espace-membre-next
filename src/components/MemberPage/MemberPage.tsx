@@ -1,8 +1,13 @@
 "use client";
 
+import { useState, useEffect } from "react";
+
 import { fr } from "@codegouvfr/react-dsfr";
+import Button from "@codegouvfr/react-dsfr/Button";
 import { Tabs } from "@codegouvfr/react-dsfr/Tabs";
 import MarkdownIt from "markdown-it";
+import { useRouter } from "next/navigation";
+import { match, P } from "ts-pattern";
 
 import { AdminPanel } from "./AdminPanel";
 import EmailContainer from "./Email/EmailContainer";
@@ -18,8 +23,8 @@ import { PrivateMemberChangeSchemaType } from "@/models/memberChange";
 import "./MemberPage.css";
 import { matomoUserSchemaType } from "@/models/matomo";
 import { sentryUserSchemaType } from "@/models/sentry";
-import Button from "@codegouvfr/react-dsfr/Button";
-import { match, P } from "ts-pattern";
+import LastChange from "../LastChange";
+import { FicheHeader } from "../FicheHeader";
 
 const mdParser = new MarkdownIt({
     html: true,
@@ -85,6 +90,41 @@ export default function MemberPage({
     avatar,
     isCurrentUser,
 }: MemberPageProps) {
+    const router = useRouter();
+    const [tab, setTab] = useState<null | string>(null);
+
+    useEffect(() => {
+        // Get the initial tab from the URL's search parameters
+        const searchParams = new URLSearchParams(window.location.search);
+        setTab(searchParams.get("tab") || "");
+
+        // Function to handle searchParams changes
+        const onSearchParamsChange = () => {
+            const updatedSearchParams = new URLSearchParams(
+                window.location.search
+            );
+            setTab(updatedSearchParams.get("tab") || "");
+        };
+
+        // Listen for changes in the URL
+        window.addEventListener("popstate", onSearchParamsChange);
+
+        return () => {
+            window.removeEventListener("popstate", onSearchParamsChange);
+        };
+    }, []);
+
+    useEffect(() => {
+        // Scroll to the element with the corresponding id when the tab changes
+        const hash = window.location.hash.slice(1);
+        if (hash) {
+            const element = document.getElementById(hash);
+            if (element) {
+                element.scrollIntoView({ behavior: "smooth" });
+            }
+        }
+    }, [tab]);
+
     const canEdit = isAdmin || isCurrentUser || sessionUserIsFromIncubatorTeam;
     const linkToEditPage = match([
         isAdmin,
@@ -105,7 +145,8 @@ export default function MemberPage({
     const tabs = [
         {
             label: "Fiche Membre",
-            isDefault: true,
+            isDefault: tab === "fiche-membre",
+            tabId: "fiche-membre",
             content: (
                 <>
                     <MemberCard
@@ -154,6 +195,9 @@ export default function MemberPage({
         },
         {
             label: "Statut des comptes",
+            tabId: "statut-comptes",
+            isDefault: tab === "statut-comptes",
+
             content: (
                 <MemberStatus
                     isExpired={isExpired}
@@ -169,6 +213,8 @@ export default function MemberPage({
         },
         {
             label: "Compte email",
+            tabId: "compte-email",
+            isDefault: tab === "compte-email",
             content: (
                 <EmailContainer
                     isCurrentUser={isCurrentUser}
@@ -184,6 +230,8 @@ export default function MemberPage({
         },
         isAdmin && {
             label: "Admin",
+            tabId: "admin",
+            isDefault: tab === "admin",
             content: (
                 <AdminPanel
                     authorizations={authorizations}
@@ -194,14 +242,38 @@ export default function MemberPage({
             ),
         },
     ].filter((x) => !!x); // wth, Boolean doesnt work
+
     return (
         <div className="fr-mb-8v MemberPage">
-            <h1>
-                {userInfos.fullname}
+            <FicheHeader
+                label={userInfos.fullname}
+                editLink={canEdit && linkToEditPage}
+            />
+            <br />
+            {isExpired && <MemberExpirationNotice userInfos={userInfos} />}
+            {tab !== null && (
+                <Tabs
+                    tabs={tabs}
+                    onTabChange={(obj) => {
+                        const searchParams = new URLSearchParams(
+                            window.location.search
+                        );
+                        searchParams.set("tab", tabs[obj.tabIndex].tabId);
+                        const newUrl = `${
+                            window.location.pathname
+                        }?${searchParams.toString()}`;
+                        window.history.pushState({}, "", newUrl); // Update the URL without reloading the page
+                    }}
+                />
+            )}
+
+            <div
+                className={fr.cx("fr-col-12", "fr-mt-4w")}
+                style={{ textAlign: "center" }}
+            >
                 {canEdit && linkToEditPage && (
                     <Button
                         className=""
-                        style={{ float: "right" }}
                         size="small"
                         priority="secondary"
                         linkProps={{
@@ -211,9 +283,10 @@ export default function MemberPage({
                         Modifier la fiche
                     </Button>
                 )}
-            </h1>
-            {isExpired && <MemberExpirationNotice userInfos={userInfos} />}
-            <Tabs tabs={tabs} />
+                <br />
+                <br />
+                <LastChange changes={changes} />
+            </div>
         </div>
     );
 }
