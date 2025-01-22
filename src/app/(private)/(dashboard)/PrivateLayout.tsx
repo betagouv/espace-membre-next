@@ -301,6 +301,26 @@ export function PrivateLayout({ children }: { children: React.ReactNode }) {
                                 pathname,
                                 "/services/sentry"
                             ),
+                            items: [
+                                {
+                                    href: "/services/sentry/request",
+                                    text: "Ajouter une équipe",
+                                    isActive: hasPathnameThisMatch(
+                                        pathname,
+                                        "/services/sentry/request"
+                                    ),
+                                    items: [
+                                        {
+                                            href: "/services/sentry/request/new",
+                                            text: "Créer une nouvelle équipe",
+                                            isActive: hasPathnameThisMatch(
+                                                pathname,
+                                                "/services/sentry/request/new"
+                                            ),
+                                        },
+                                    ],
+                                },
+                            ],
                         },
                         {
                             href: "/services/matomo",

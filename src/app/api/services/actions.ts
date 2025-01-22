@@ -25,6 +25,7 @@ import {
 import {
     CreateOrUpdateMatomoAccountDataSchema,
     CreateSentryAccountDataSchema,
+    CreateSentryTeamDataSchema,
     UpdateSentryAccountDataSchema,
 } from "@/models/jobs/services";
 import { memberBaseInfoToModel } from "@/models/mapper";
@@ -33,6 +34,7 @@ import { ACCOUNT_SERVICE_STATUS, SERVICES } from "@/models/services";
 import { encryptPassword } from "@/server/controllers/utils";
 import { getBossClientInstance } from "@/server/queueing/client";
 import { createSentryServiceAccountTopic } from "@/server/queueing/workers/create-sentry-account";
+import { createSentryTeamTopic } from "@/server/queueing/workers/create-sentry-team";
 import { createOrUpdateMatomoServiceAccountTopic } from "@/server/queueing/workers/create-update-matomo-account";
 import {
     updateSentryServiceAccount,
@@ -107,6 +109,18 @@ const createOrUpdateSentryAccount = async (
         teamRole: SentryRole.contributor,
     }));
     const requestId = uuidv4();
+    if (sentryData.newTeam) {
+        await bossClient.send(
+            createSentryTeamTopic,
+            CreateSentryTeamDataSchema.parse({
+                email: user.primary_email,
+                username: user.username,
+                userUuid: user.uuid,
+                requestId,
+                startupId: sentryData.newTeam.startupId,
+            })
+        );
+    }
     if (accountAlreadyExists) {
         await bossClient.send(
             updateSentryServiceAccountTopic,

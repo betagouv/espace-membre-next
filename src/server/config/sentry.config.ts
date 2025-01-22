@@ -40,6 +40,25 @@ export class FakeSentryService implements AccountService {
                 })[0]
         );
     }
+    createSentryTeam({
+        teamName,
+        teamSlug,
+    }: {
+        teamName: string;
+        teamSlug: string;
+    }): Promise<SentryTeam> {
+        const newTeam: SentryTeam = {
+            id: `${this.teams.length + 1}`,
+            name: teamName,
+            slug: teamSlug,
+            members: undefined,
+            memberCount: 0,
+            projects: [],
+        };
+        this.teams.push(newTeam);
+        return Promise.resolve(newTeam);
+    }
+
     getAllUsers(): Promise<{ user: SentryUser; serviceUserId: string }[]> {
         return Promise.resolve(
             this.users.map((user) => ({

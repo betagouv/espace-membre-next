@@ -24,7 +24,7 @@ fileignoreconfig:
 - filename: src/app/(private)/(dashboard)/services/page.tsx
   checksum: 6e5763efa45450c3e2c0d30338e7fc045a2f2466e456a3391ec13f7dbc7b40c3
 - filename: src/app/(private)/(dashboard)/services/sentry/page.tsx
-  checksum: 685b3f177bb6124655bb439beb6f3cb4ecdbbeb62adeab9e1f56e811a09a9f5b
+  checksum: 137c4f3f172c74a1b0c104bff7540202801801d877d74f674ad72c3ba4b1a9cc
 - filename: src/app/api/member/[username]/route.ts
   checksum: a5371c646bc9955b72b6cdb5ee3aef340004a092d9e70bbbe4b308c940880370
 - filename: src/app/api/services/actions.ts

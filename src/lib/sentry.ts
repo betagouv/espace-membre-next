@@ -193,6 +193,31 @@ export class SentryService implements AccountService {
         return;
     }
 
+    async createSentryTeam({ teamName, teamSlug }): Promise<void> {
+        const url = `${this.apiUrl}/api/0/organizations/${this.org}/teams/`;
+        const response = await fetch(url, {
+            method: "PUT",
+            headers: {
+                Authorization: `Bearer ${this.authToken}`, // Sentry API token
+                "Content-Type": "application/json",
+            },
+            body: JSON.stringify({
+                slug: teamSlug,
+                name: teamName,
+            }),
+        });
+
+        if (!response.ok) {
+            const errorData = await response.json();
+            throw new Error(
+                `Failed to create team: ${response.status} ${response.statusText}. ${errorData.detail}`
+            );
+        }
+
+        console.log(`Sentry: team ${teamName} created in team ${teamSlug}`);
+        return;
+    }
+
     async addUserToTeam({
         memberId,
         teamSlug,

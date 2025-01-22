@@ -76,6 +76,19 @@ export const EventSentryAccountUpdatedPayload = z.object({
     action_metadata: sentryActionMetadataSchema,
 });
 
+export const EventSentryCreateTeamPayload = z.object({
+    action_code: z.literal(EventCode.MEMBER_SERVICE_TEAM_CREATED),
+    action_metadata: z.object({
+        service: z.literal(SERVICES.SENTRY),
+        requestId: z.string().uuid(),
+        startupId: z.string(),
+        team: z.object({
+            teamName: z.string(),
+            teamSlug: z.string(),
+        }),
+    }),
+});
+
 // Matomo
 // export const EventMatomoAccountRequestedPayload = z.object({
 //     action_code: z.literal(EventCode.MEMBER_SERVICE_ACCOUNT_REQUESTED),

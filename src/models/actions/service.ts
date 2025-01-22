@@ -51,6 +51,11 @@ export const sentryAccountRequestSchema = z.object({
             })
         )
         .min(1, { message: "Au moins une équipe est nécessaire." }),
+    newTeam: z
+        .object({
+            startupId: z.string(),
+        })
+        .optional(),
 });
 
 export type sentryAccountRequestSchemaType = z.infer<
