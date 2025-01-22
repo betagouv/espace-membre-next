@@ -165,19 +165,15 @@ test("valid login sends magic link and but the callback url is changed to be evi
         throw new Error("Magic link not found in the email.");
     }
 
-    // Parse the URL and fragment (the part after the #)
-    const [baseUrl, fragment] = originalHref.split("#");
-
     // Parse the fragment as a URL
-    const fragmentUrl = new URL(fragment);
+    const modifiedHref = new URL(originalHref);
 
     // Modify the callbackUrl parameter
-    fragmentUrl.searchParams.set("callbackUrl", "//evil.com");
+    modifiedHref.searchParams.set("callbackUrl", "//evil.com");
 
     // Rebuild the full URL with the modified callbackUrl
-    const modifiedHref = `${baseUrl}?${fragmentUrl.toString()}`;
     // Navigate to the modified URL
-    await page.goto(modifiedHref);
+    await page.goto(modifiedHref.toString());
     await page.getByText("Me connecter").first().click();
     await page.waitForURL("/dashboard");
     const url = new URL(page.url());
@@ -224,18 +220,19 @@ test(`valid login sends magic link and but the callback url is changed to be evi
     }
 
     // Parse the URL and fragment (the part after the #)
-    const [baseUrl, fragment] = originalHref.split("#");
+    // const [baseUrl, fragment] = originalHref.split("#");
 
-    // Parse the fragment as a URL
-    const fragmentUrl = new URL(fragment);
+    // // Parse the fragment as a URL
+    // const fragmentUrl = new URL(fragment);
+    const modifiedHref = new URL(originalHref);
 
     // Modify the callbackUrl parameter
-    fragmentUrl.searchParams.set("callbackUrl", `/\\evil.com`);
+    modifiedHref.searchParams.set("callbackUrl", `/\\evil.com`);
 
     // Rebuild the full URL with the modified callbackUrl
-    const modifiedHref = `${baseUrl}?${fragmentUrl.toString()}`;
+    // const modifiedHref = `${baseUrl}?${fragmentUrl.toString()}`;
     // Navigate to the modified URL
-    await page.goto(modifiedHref);
+    await page.goto(modifiedHref.toString());
     await page.getByText("Me connecter").first().click();
     await page.waitForURL("/dashboard");
     const url = new URL(page.url());
