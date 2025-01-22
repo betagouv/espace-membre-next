@@ -11,6 +11,7 @@ import {
     EventSentryAccountUpdatedPayload,
     EventSentryAccountUpdateRequestedPayload,
     EventServiceAccountDeletedPayload,
+    EventSentryCreateTeamPayload,
 } from "./serviceActionEvent";
 import {
     memberInfoUpdateSchema,
@@ -53,6 +54,7 @@ export enum EventCode {
     MEMBER_SERVICE_ACCOUNT_CREATED = "MEMBER_SERVICE_ACCOUNT_CREATED",
     MEMBER_SERVICE_ACCOUNT_UPDATE_REQUESTED = "MEMBER_SERVICE_ACCOUNT_UPDATE_REQUESTED",
     MEMBER_SERVICE_ACCOUNT_UPDATED = "MEMBER_SERVICE_ACCOUNT_UPDATED",
+    MEMBER_SERVICE_TEAM_CREATED = "MEMBER_SERVICE_TEAM_CREATED",
 }
 
 export const EventCodeToReadable: Record<EventCode, string> = {
@@ -92,6 +94,7 @@ export const EventCodeToReadable: Record<EventCode, string> = {
     [EventCode.MEMBER_SERVICE_ACCOUNT_UPDATE_REQUESTED]:
         "Compte de service mise à jour demandée",
     [EventCode.MEMBER_SERVICE_ACCOUNT_UPDATED]: "Compte de service mis à jour",
+    [EventCode.MEMBER_SERVICE_TEAM_CREATED]: "Equipe sentry créée",
 };
 
 export const SYSTEM_NAME = "system";
@@ -383,6 +386,7 @@ export type EventPayloads =
     | z.infer<typeof EventSentryAccountCreatedPayload>
     | z.infer<typeof EventSentryAccountUpdateRequestedPayload>
     | z.infer<typeof EventSentryAccountUpdatedPayload>
+    | z.infer<typeof EventSentryCreateTeamPayload>
     | z.infer<typeof EventMatomoAccountPayloadSchema>;
 // | z.infer<typeof EventMatomoAccountRequestedPayload>
 // | z.infer<typeof EventMatomoAccountCreatedPayload>

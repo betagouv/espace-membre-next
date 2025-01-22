@@ -1,28 +1,278 @@
+// "use client";
+// import React, { useState } from "react";
+
+// import { fr } from "@codegouvfr/react-dsfr";
+// import { Alert } from "@codegouvfr/react-dsfr/Alert";
+// import { Button } from "@codegouvfr/react-dsfr/Button";
+// import { Select } from "@codegouvfr/react-dsfr/Select";
+// import { zodResolver } from "@hookform/resolvers/zod";
+// import { useFieldArray, useForm } from "react-hook-form";
+
+// import { askAccountCreationForService } from "@/app/api/services/actions";
+// import AutoComplete, { OptionType } from "@/components/AutoComplete";
+// import {
+//     sentryAccountRequestSchema,
+//     sentryAccountRequestSchemaType,
+// } from "@/models/actions/service";
+// import { SERVICES } from "@/models/services";
+
+// export default function SentryServiceForm({
+//     teams,
+// }: {
+//     teams: {
+//         name: string;
+//     }[];
+// }) {
+//     const {
+//         handleSubmit,
+//         setValue,
+//         formState: { isDirty, isSubmitting, isValid, errors },
+//         control,
+//     } = useForm<sentryAccountRequestSchemaType>({
+//         resolver: zodResolver(sentryAccountRequestSchema),
+//         mode: "onChange",
+//         defaultValues: {
+//             teams: [],
+//         },
+//     });
+//     const [alertMessage, setAlertMessage] = React.useState<{
+//         title: string;
+//         message: NonNullable<React.ReactNode>;
+//         type: "success" | "warning";
+//     } | null>();
+//     const [isSaving, setIsSaving] = React.useState(false);
+
+//     const onSubmit = async (data: sentryAccountRequestSchemaType, e) => {
+//         if (isSaving) {
+//             return;
+//         }
+//         if (!isValid) {
+//             return;
+//         }
+//         setIsSaving(true);
+//         setAlertMessage(null);
+//         const service = SERVICES.SENTRY;
+//         const res = await askAccountCreationForService({
+//             service: service,
+//             data,
+//         });
+//         if (res.success) {
+//             setAlertMessage({
+//                 title: "Compte sentry en cours de création",
+//                 message: "",
+//                 type: "success",
+//             });
+//         } else {
+//             setAlertMessage({
+//                 title: "Une erreur est survenue",
+//                 message: res.message || "",
+//                 type: "warning",
+//             });
+//         }
+//         setIsSaving(false);
+//         window.scrollTo({ top: 20, behavior: "smooth" });
+//     };
+
+//     return (
+//         <>
+//             <div>
+//                 {!!alertMessage && (
+//                     <Alert
+//                         className="fr-mb-8v"
+//                         severity={alertMessage.type}
+//                         closable={false}
+//                         title={alertMessage.title}
+//                         description={
+//                             alertMessage.message ? (
+//                                 <div
+//                                     dangerouslySetInnerHTML={{
+//                                         __html: alertMessage.message,
+//                                     }}
+//                                 />
+//                             ) : undefined
+//                         }
+//                     />
+//                 )}
+//                 <div className="fr-grid-row fr-grid-row-gutters">
+//                     <div className="fr-col-12 fr-col-md-12 fr-col-lg-12">
+//                         {!!Object.keys(errors).length && (
+//                             <p className="fr-error-text">
+//                                 Des erreurs inattendues dans le formulaire
+//                             </p>
+//                         )}
+//                         <form
+//                             onSubmit={handleSubmit(onSubmit)}
+//                             aria-label="Demander les accès a un ou plusieurs team sentry"
+//                         >
+//                             <fieldset
+//                                 className="fr-mt-5v fr-mb-0v fr-fieldset"
+//                                 id="identity-fieldset"
+//                                 aria-labelledby="identity-fieldset-legend identity-fieldset-messages"
+//                             >
+//                                 <div
+//                                     className={fr.cx(
+//                                         "fr-fieldset__element",
+//                                         "fr-col-12",
+//                                         "fr-col-lg-4",
+//                                         "fr-col-md-4",
+//                                         "fr-col-offset-lg-8--right",
+//                                         "fr-col-offset-md-8--right"
+//                                     )}
+//                                 >
+//                                     <SentryTeamSelect
+//                                         sentryTeams={teams.map((team) => ({
+//                                             label: team.name,
+//                                             value: team.name,
+//                                         }))}
+//                                         placeholder="Sélectionner une ou plusieurs équipes"
+//                                         isMulti={true}
+//                                         onChange={(selectedTeams) => {
+//                                             setValue(
+//                                                 "teams",
+//                                                 selectedTeams.map((team) => ({
+//                                                     name: team.value,
+//                                                 })),
+//                                                 {
+//                                                     shouldValidate: true,
+//                                                     shouldDirty: true,
+//                                                 }
+//                                             );
+//                                         }}
+//                                     ></SentryTeamSelect>
+//                                     {errors &&
+//                                         errors.teams &&
+//                                         errors.teams.message && (
+//                                             <p className="fr-error-text">
+//                                                 {errors.teams.message}
+//                                             </p>
+//                                         )}
+//                                 </div>
+//                             </fieldset>
+//                             <Button
+//                                 className={fr.cx("fr-mt-3w")}
+//                                 disabled={isSaving}
+//                                 children={
+//                                     isSubmitting
+//                                         ? `Enregistrement de la demande...`
+//                                         : `Demander les accès`
+//                                 }
+//                                 nativeButtonProps={{
+//                                     type: "submit",
+//                                     disabled: !isDirty || isSubmitting,
+//                                 }}
+//                             />
+//                         </form>
+//                     </div>
+//                 </div>
+//             </div>
+//         </>
+//     );
+// }
+
 "use client";
 import React, { useState } from "react";
 
 import { fr } from "@codegouvfr/react-dsfr";
 import { Alert } from "@codegouvfr/react-dsfr/Alert";
 import { Button } from "@codegouvfr/react-dsfr/Button";
+import Input from "@codegouvfr/react-dsfr/Input";
 import { Select } from "@codegouvfr/react-dsfr/Select";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useFieldArray, useForm } from "react-hook-form";
 
+import AutoComplete, { OptionType } from "../AutoComplete";
+import SESelect, { StartupType } from "../SESelect";
 import { askAccountCreationForService } from "@/app/api/services/actions";
-import AutoComplete, { OptionType } from "@/components/AutoComplete";
 import {
     sentryAccountRequestSchema,
     sentryAccountRequestSchemaType,
 } from "@/models/actions/service";
+import { AlertMessageType } from "@/models/common";
 import { SERVICES } from "@/models/services";
+import { startupSchemaType, userStartupSchemaType } from "@/models/startup";
 
-export default function SentryServiceForm({
-    teams,
-}: {
-    teams: {
-        name: string;
-    }[];
+export default function SentryServiceForm(props: {
+    teams: SentryTeamType[];
+    userStartups: userStartupSchemaType[];
+    createAccount: boolean;
+    userEmail?: string;
 }) {
+    const [alertMessage, setAlertMessage] =
+        React.useState<AlertMessageType | null>();
+
+    return (
+        <>
+            <div>
+                {!!alertMessage && (
+                    <Alert
+                        className="fr-mb-8v"
+                        severity={alertMessage.type}
+                        closable={false}
+                        title={alertMessage.title}
+                        description={
+                            alertMessage.message ? (
+                                <div
+                                    dangerouslySetInnerHTML={{
+                                        __html: alertMessage.message,
+                                    }}
+                                />
+                            ) : undefined
+                        }
+                    />
+                )}
+                <div className="fr-grid-row fr-grid-row-gutters">
+                    <div className="fr-col-12 fr-col-md-6 fr-col-lg-6">
+                        {!props.createAccount && (
+                            <>
+                                <p>
+                                    Ton compte sentry sera créé avec ton adresse{" "}
+                                    <b>{props.userEmail}.</b>
+                                    <br />
+                                    Tu dois le rattacher à une équipe
+                                    enregistrée sur sentry.
+                                </p>
+                            </>
+                        )}
+                        <h3 className="fr-h5">
+                            Accèder à une équipe existante
+                        </h3>
+                        {!props.teams.length && (
+                            <p>
+                                Nous n'avons pas enregistré d'équipe sentry
+                                existant pour les produits sur lesquels tu
+                                travailles actuellemment. Si pourtant des
+                                équipes existent merci de nous le signaler en
+                                envoyant un message dans le chatbot crips
+                                présent sur cette page.
+                            </p>
+                        )}
+                        {!!props.teams.length && (
+                            <AddSentryServiceForm
+                                teams={props.teams}
+                                setAlertMessage={setAlertMessage}
+                            />
+                        )}
+                        <p className="fr-hr-or fr-mt-4w">ou</p>
+                        <h3 className="fr-h5">Créer un nouvelle équipe</h3>
+                        <p>
+                            Si il n'existe pas encore de team pour le team que
+                            tu veux ajouter. Tu peux la créer
+                        </p>
+                        <Button
+                            linkProps={{
+                                href: "/services/sentry/request/new",
+                            }}
+                        >
+                            Créer une nouvelle équipe
+                        </Button>
+                    </div>
+                </div>
+            </div>
+        </>
+    );
+}
+
+const AddSentryServiceForm = ({ setAlertMessage, teams }) => {
     const {
         handleSubmit,
         setValue,
@@ -35,11 +285,7 @@ export default function SentryServiceForm({
             teams: [],
         },
     });
-    const [alertMessage, setAlertMessage] = React.useState<{
-        title: string;
-        message: NonNullable<React.ReactNode>;
-        type: "success" | "warning";
-    } | null>();
+
     const [isSaving, setIsSaving] = React.useState(false);
 
     const onSubmit = async (data: sentryAccountRequestSchemaType, e) => {
@@ -75,99 +321,68 @@ export default function SentryServiceForm({
 
     return (
         <>
-            <div>
-                {!!alertMessage && (
-                    <Alert
-                        className="fr-mb-8v"
-                        severity={alertMessage.type}
-                        closable={false}
-                        title={alertMessage.title}
-                        description={
-                            alertMessage.message ? (
-                                <div
-                                    dangerouslySetInnerHTML={{
-                                        __html: alertMessage.message,
-                                    }}
-                                />
-                            ) : undefined
-                        }
-                    />
-                )}
-                <div className="fr-grid-row fr-grid-row-gutters">
-                    <div className="fr-col-12 fr-col-md-12 fr-col-lg-12">
-                        {!!Object.keys(errors).length && (
-                            <p className="fr-error-text">
-                                Des erreurs inattendues dans le formulaire
-                            </p>
-                        )}
-                        <form
-                            onSubmit={handleSubmit(onSubmit)}
-                            aria-label="Demander les accès a un ou plusieurs site sentry"
+            <form
+                onSubmit={handleSubmit(onSubmit)}
+                aria-label="Demander les accès a un ou plusieurs team sentry"
+            >
+                {!!teams.length && (
+                    <>
+                        <fieldset
+                            className="fr-mt-5v fr-mb-0v fr-fieldset"
+                            id="identity-fieldset"
+                            aria-labelledby="identity-fieldset-legend identity-fieldset-messages"
                         >
-                            <fieldset
-                                className="fr-mt-5v fr-mb-0v fr-fieldset"
-                                id="identity-fieldset"
-                                aria-labelledby="identity-fieldset-legend identity-fieldset-messages"
+                            <div
+                                className={fr.cx(
+                                    "fr-fieldset__element",
+                                    "fr-col-12",
+                                    "fr-col-lg-10",
+                                    "fr-col-md-10",
+                                    "fr-col-offset-lg-2--right",
+                                    "fr-col-offset-md-2--right"
+                                )}
                             >
-                                <div
-                                    className={fr.cx(
-                                        "fr-fieldset__element",
-                                        "fr-col-12",
-                                        "fr-col-lg-4",
-                                        "fr-col-md-4",
-                                        "fr-col-offset-lg-8--right",
-                                        "fr-col-offset-md-8--right"
-                                    )}
-                                >
-                                    <SentryTeamSelect
-                                        sentryTeams={teams.map((team) => ({
-                                            label: team.name,
-                                            value: team.name,
-                                        }))}
-                                        placeholder="Sélectionner une ou plusieurs équipes"
-                                        isMulti={true}
-                                        onChange={(selectedTeams) => {
-                                            setValue(
-                                                "teams",
-                                                selectedTeams.map((team) => ({
-                                                    name: team.value,
-                                                })),
-                                                {
-                                                    shouldValidate: true,
-                                                    shouldDirty: true,
-                                                }
-                                            );
-                                        }}
-                                    ></SentryTeamSelect>
-                                    {errors &&
-                                        errors.teams &&
-                                        errors.teams.message && (
-                                            <p className="fr-error-text">
-                                                {errors.teams.message}
-                                            </p>
-                                        )}
-                                </div>
-                            </fieldset>
-                            <Button
-                                className={fr.cx("fr-mt-3w")}
-                                disabled={isSaving}
-                                children={
-                                    isSubmitting
-                                        ? `Enregistrement de la demande...`
-                                        : `Demander les accès`
-                                }
-                                nativeButtonProps={{
-                                    type: "submit",
-                                    disabled: !isDirty || isSubmitting,
-                                }}
-                            />
-                        </form>
-                    </div>
-                </div>
-            </div>
+                                <SentryTeamSelect
+                                    sentryTeams={teams.map((team) => ({
+                                        label: team.name,
+                                        value: team.name,
+                                    }))}
+                                    placeholder="Sélectionner une ou plusieurs équipes"
+                                    isMulti={true}
+                                    onChange={(selectedTeams) => {
+                                        setValue(
+                                            "teams",
+                                            selectedTeams.map((team) => ({
+                                                name: team.value,
+                                            })),
+                                            {
+                                                shouldValidate: true,
+                                                shouldDirty: true,
+                                            }
+                                        );
+                                    }}
+                                ></SentryTeamSelect>
+                            </div>
+                        </fieldset>
+                        <Button
+                            // className={fr.cx("fr-mt-3w")}
+                            disabled={isSaving}
+                            children={
+                                isSubmitting
+                                    ? `Enregistrement de la demande...`
+                                    : `Demander les accès`
+                            }
+                            nativeButtonProps={{
+                                type: "submit",
+                                disabled: !isDirty || isSubmitting,
+                            }}
+                        />
+                    </>
+                )}
+            </form>
         </>
     );
-}
+};
 
 export type SentryTeamType = OptionType<false> & {
     value: string;
