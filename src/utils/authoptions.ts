@@ -13,11 +13,12 @@ import { getJwtTokenForUser } from "@/server/helpers/session";
 import { EMAIL_TYPES } from "@/server/modules/email";
 
 async function sendVerificationRequest(params) {
-    const { identifier, url, provider, theme } = params;
+    const { identifier, url } = params;
+    const urlObj = new URL(url);
     await sendEmail({
         type: EMAIL_TYPES.LOGIN_EMAIL,
         variables: {
-            loginUrlWithToken: `${process.env.NEXTAUTH_URL}/signin#${url}`,
+            loginUrlWithToken: `${process.env.NEXTAUTH_URL}/signin${urlObj.search}`,
         },
         toEmail: [identifier],
     });

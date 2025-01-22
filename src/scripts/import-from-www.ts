@@ -24,6 +24,7 @@ const insertData = async (markdownData: MarkdownData) => {
     await db.deleteFrom("phases").execute();
     await db.deleteFrom("startups_organizations").execute();
     await db.deleteFrom("startup_events").execute();
+    await db.deleteFrom("events").execute();
     await db.deleteFrom("startups").execute();
     await db.deleteFrom("incubators").execute();
     await db.deleteFrom("organizations").execute();
