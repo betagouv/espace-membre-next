@@ -123,3 +123,17 @@ export const EventMatomoAccountPayloadSchema = z.object({
 export type EventMatomoAccountPayloadSchemaType = z.infer<
     typeof EventMatomoAccountPayloadSchema
 >;
+
+export const EventSentryAccountPayloadSchema = z.object({
+    action_code: z.enum([
+        EventCode.MEMBER_SERVICE_ACCOUNT_REQUESTED,
+        EventCode.MEMBER_SERVICE_ACCOUNT_CREATED,
+        EventCode.MEMBER_SERVICE_ACCOUNT_UPDATE_REQUESTED,
+        EventCode.MEMBER_SERVICE_ACCOUNT_UPDATED,
+    ]),
+    action_metadata: sentryActionMetadataSchema,
+});
+
+export type EventSentryAccountPayloadSchemaType = z.infer<
+    typeof EventSentryAccountPayloadSchema
+>;
