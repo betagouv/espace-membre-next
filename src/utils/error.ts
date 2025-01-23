@@ -13,11 +13,7 @@ export const ERROR_MESSAGES = {
             : "Un produit avec le même nom existe déjà",
     MEMBER_UNIQUE_CONSTRAINT: (name?: string) =>
         name
-            ? `Un utilisateur avec le même nom "${name}" existe déjà. Tu peux consulter sa fiche sur <a target="_blank" href="/community/${slugify(
-                  name
-              )}">https://${config.host}/community/${slugify(
-                  name
-              )}</a>. S'il s'agit d'un homomyme, ajoute la première lettre du deuxième prenom de la personne à la suite de son prénom. Ex: Ophélie => Ophélie M.`
+            ? `Un utilisateur avec le même nom "${name}" existe déjà. Tu peux consulter sa fiche sur <a target="_blank" href="/community/${name}">https://${config.host}/community/${name}</a>. S'il s'agit d'un homomyme, ajoute la première lettre du deuxième prenom de la personne à la suite de son prénom. Ex: Ophélie => Ophélie M.`
             : "Un utilisateur avec le même nom existe déjà",
     AUTHORIZATION_ERROR: "You don’t have the right to access this function.",
     STARTUP_INSERT_FAILED:
