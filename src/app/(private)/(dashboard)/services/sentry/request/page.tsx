@@ -59,7 +59,6 @@ export default async function SentryRequestPage() {
                     label: s.name,
                     value: s.sentry_id,
                 }))}
-                userStartups={startups}
                 createAccount={false}
             />
         </>
