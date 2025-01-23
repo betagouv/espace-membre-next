@@ -24,12 +24,9 @@ export const CreateSentryServiceForm = ({
     startupOptions: StartupType[];
 }) => {
     const {
-        register,
         handleSubmit,
         formState: { errors, isDirty, isSubmitting, isValid },
-        control,
         setValue,
-        watch,
     } = useForm<sentryAccountRequestSchemaType>({
         resolver: zodResolver(sentryAccountRequestSchema),
         mode: "onChange",
@@ -56,11 +53,6 @@ export const CreateSentryServiceForm = ({
         });
         if (res.success) {
             router.push("/services/sentry");
-            // setAlertMessage({
-            //     title: "Compte sentry en cours de création",
-            //     message: "",
-            //     type: "success",
-            // });
         } else {
             setAlertMessage({
                 title: "Une erreur est survenue",
