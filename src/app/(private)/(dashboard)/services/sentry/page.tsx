@@ -37,7 +37,7 @@ const buildLinkToSentryTeam = (
     );
 };
 
-export default async function SentryPage() {
+export default async function SentryRequestPage() {
     const session = await getServerSession(authOptions);
     if (!session) {
         redirect("/login");

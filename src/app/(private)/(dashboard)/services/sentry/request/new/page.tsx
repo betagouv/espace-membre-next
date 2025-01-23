@@ -17,11 +17,6 @@ export default async function NewSentryPage() {
         redirect("/login");
     }
 
-    const rawAccount = await getServiceAccount(
-        session.user.uuid,
-        SERVICES.SENTRY
-    );
-
     const now = new Date();
     const startups = session.user.isAdmin
         ? await getAllStartups()
@@ -33,7 +28,6 @@ export default async function NewSentryPage() {
                   );
               })
               .map((startup) => userStartupToModel(startup));
-    console.log("LCS Toto", startups);
 
     const startupOptions: StartupType[] = startups.map((startup) => ({
         value: startup.uuid,
