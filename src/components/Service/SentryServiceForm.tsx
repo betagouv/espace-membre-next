@@ -15,11 +15,9 @@ import {
 } from "@/models/actions/service";
 import { AlertMessageType } from "@/models/common";
 import { SERVICES } from "@/models/services";
-import { userStartupSchemaType } from "@/models/startup";
 
 export default function SentryServiceForm(props: {
     teams: SentryTeamType[];
-    userStartups: userStartupSchemaType[];
     createAccount: boolean;
     userEmail?: string;
 }) {
