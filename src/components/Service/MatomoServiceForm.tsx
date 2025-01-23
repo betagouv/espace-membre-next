@@ -4,28 +4,22 @@ import React from "react";
 import { fr } from "@codegouvfr/react-dsfr";
 import { Alert } from "@codegouvfr/react-dsfr/Alert";
 import { Button } from "@codegouvfr/react-dsfr/Button";
-import Input from "@codegouvfr/react-dsfr/Input";
-import { Select } from "@codegouvfr/react-dsfr/Select";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useFieldArray, useForm } from "react-hook-form";
 
-import { OptionType } from "../AutoComplete";
 import MatomoSiteSelect from "../MatomoSiteSelect";
-import SESelect, { StartupType } from "../SESelect";
 import { askAccountCreationForService } from "@/app/api/services/actions";
 import {
-    MATOMO_SITE_TYPE,
     matomoAccountRequestSchema,
     matomoAccountRequestSchemaType,
 } from "@/models/actions/service";
 import { AlertMessageType } from "@/models/common";
 import { matomoSiteSchemaType } from "@/models/matomo";
 import { SERVICES } from "@/models/services";
-import { startupSchemaType, userStartupSchemaType } from "@/models/startup";
+import { userStartupSchemaType } from "@/models/startup";
 
 export default function MatomoServiceForm(props: {
     sites: matomoSiteSchemaType[];
-    userStartups: userStartupSchemaType[];
     createAccount: boolean;
     userEmail?: string;
 }) {
