@@ -17,11 +17,6 @@ export default async function NewMatomoPage() {
         redirect("/login");
     }
 
-    const rawAccount = await getServiceAccount(
-        session.user.uuid,
-        SERVICES.MATOMO
-    );
-
     const now = new Date();
     const startups = session.user.isAdmin
         ? await getAllStartups()
