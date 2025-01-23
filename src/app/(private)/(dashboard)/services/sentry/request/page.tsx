@@ -14,7 +14,7 @@ import { userStartupToModel } from "@/models/mapper/startupMapper";
 import { SERVICES } from "@/models/services";
 import { authOptions } from "@/utils/authoptions";
 
-export default async function SentryPage() {
+export default async function SentryRequestPage() {
     const session = await getServerSession(authOptions);
     if (!session) {
         redirect("/login");
@@ -54,7 +54,14 @@ export default async function SentryPage() {
         <>
             {!!service_account && <h1>Ajouter un accès a un site sentry</h1>}
             {!service_account && <h1>Créer mon compte sentry</h1>}
-            <SentryServiceForm teams={sentryTeams} />
+            <SentryServiceForm
+                teams={sentryTeams.map((s) => ({
+                    label: s.name,
+                    value: s.sentry_id,
+                }))}
+                userStartups={startups}
+                createAccount={false}
+            />
         </>
     );
 }
