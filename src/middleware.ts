@@ -1,8 +1,8 @@
-import { HttpStatusCode } from 'axios';
+import { HttpStatusCode } from "axios";
 import { jwtVerify } from "jose";
 import { NextRequest, NextResponse } from "next/server";
 
-import { getArrayFromEnv } from './lib/env';
+import { getArrayFromEnv } from "./lib/env";
 
 interface UserJwtPayload {
     jti: string;
@@ -35,45 +35,64 @@ export async function verifyAuth(req: NextRequest) {
 
 // Allow having apex domain and subdomains
 // e.g. https://ademe.fr, https://www.ademe.fr, https://subdomain.ademe.fr
-const allowedOrigins = getArrayFromEnv('PROTECTED_API_ALLOWED_ORIGINS', ['gouv.fr', 'ademe.fr', 'incubateur.net']).flatMap((origin) => origin === '*' ? /https:\/\/.*/ : [
-    new RegExp(`https://.*\\.${origin}`),
-    new RegExp(`https://${origin}`),
-]);
+const allowedOrigins = getArrayFromEnv("PROTECTED_API_ALLOWED_ORIGINS", [
+    "gouv.fr",
+    "ademe.fr",
+    "incubateur.net",
+]).flatMap((origin) =>
+    origin === "*"
+        ? /https:\/\/.*/
+        : [
+              new RegExp(`https://.*\\.${origin}`),
+              new RegExp(`https://${origin}`),
+          ]
+);
 
 const corsOptions = {
-  'Access-Control-Allow-Methods': 'GET, POST, PUT, DELETE, OPTIONS',
-  'Access-Control-Allow-Headers': '*',
-}
+    "Access-Control-Allow-Methods": "GET, POST, PUT, DELETE, OPTIONS",
+    "Access-Control-Allow-Headers": "*",
+};
 
 function getCorsHeaders(req: NextRequest): Record<string, string> {
-    const origin = req.headers.get('origin') ?? '';
-    const isAllowedOrigin = allowedOrigins.some((allowedOrigin) => allowedOrigin.test(origin));
+    const origin = req.headers.get("origin") ?? "";
+    const isAllowedOrigin = allowedOrigins.some((allowedOrigin) =>
+        allowedOrigin.test(origin)
+    );
 
     return {
-            ...(isAllowedOrigin && { 'Access-Control-Allow-Origin': origin }),
-            ...corsOptions,
-        };
+        ...(isAllowedOrigin && { "Access-Control-Allow-Origin": origin }),
+        ...corsOptions,
+    };
 }
 
 export async function middleware(req: NextRequest) {
     // control protected routes
-    if (req.nextUrl.pathname.startsWith('/api/protected/')) {
+    if (req.nextUrl.pathname.startsWith("/api/protected/")) {
         const headers = getCorsHeaders(req);
-        if (req.method === 'OPTIONS') { // preflight request
+        if (req.method === "OPTIONS") {
+            // preflight request
             return NextResponse.json({}, { headers });
         }
 
-        const PROTECTED_API_KEYS = getArrayFromEnv('PROTECTED_API_KEYS')
-        if (!req.headers.has('X-Api-Key')) {
-            return NextResponse.json({ error: { message: 'Api key is required.' }}, { status: HttpStatusCode.UnprocessableEntity, headers });
+        const PROTECTED_API_KEYS = getArrayFromEnv("PROTECTED_API_KEYS");
+        if (!req.headers.has("X-Api-Key")) {
+            return NextResponse.json(
+                { error: { message: "Api key is required." } },
+                { status: HttpStatusCode.UnprocessableEntity, headers }
+            );
         }
-        const apiKey = req.headers.get('X-Api-Key') ?? '';
+        const apiKey = req.headers.get("X-Api-Key") ?? "";
         if (!PROTECTED_API_KEYS.includes(apiKey)) {
-            return NextResponse.json({ error: { message: 'Invalid api key.' }}, { status: HttpStatusCode.Unauthorized, headers });
+            return NextResponse.json(
+                { error: { message: "Invalid api key." } },
+                { status: HttpStatusCode.Unauthorized, headers }
+            );
         }
 
         const response = NextResponse.next();
-        Object.entries(headers).forEach(([key, value]) => response.headers.set(key, value));
+        Object.entries(headers).forEach(([key, value]) =>
+            response.headers.set(key, value)
+        );
         return response;
     }
 
@@ -113,6 +132,6 @@ export const config = {
          * - favicon.ico, sitemap.xml, robots.txt (metadata files)
          */
         // "/dashboard",
-        "/((?!keskispasse|components|login|signin|api/hook|api/auth|api/public|static/|_next/static|_next/image|favicon.ico|sitemap.xml|robots.txt).*)",
+        "/((?!accessibilite|keskispasse|components|login|signin|api/hook|api/auth|api/public|static/|_next/static|_next/image|favicon.ico|sitemap.xml|robots.txt).*)",
     ],
 };
