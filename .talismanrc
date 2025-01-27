@@ -88,7 +88,7 @@ fileignoreconfig:
 - filename: src/lib/sentry.ts
   checksum: 035884bbbacf7746760dacc26669a3e4a4558ba2b88c0c7a38ec4327d25d0f3d
 - filename: src/middleware.ts
-  checksum: 49bd32aabfde512674c57660edc4b286a423397c01100cd45fbf58791d7f300b
+  checksum: 1ac7177d4d39cf4624f97642cea78396708e11e8e486874f1ff2c5928f017024
 - filename: src/models/member.ts
   checksum: 4d1a75e62ca805faf5bc5b7c83d03064171d4914e6d405a026c141b2ede9ca2c
 - filename: src/server/config/index.ts
