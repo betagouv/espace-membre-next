@@ -5,9 +5,8 @@ import { getServerSession } from "next-auth";
 import { BreadCrumbFiller } from "@/app/BreadCrumbProvider";
 import { MemberUpdate } from "@/components/MemberUpdate/MemberUpdate";
 import { getAllStartups } from "@/lib/kysely/queries";
-import { getUserBasicInfo, getUserInfos } from "@/lib/kysely/queries/users";
-import { memberBaseInfoToModel, userInfosToModel } from "@/models/mapper";
-import { memberSchema } from "@/models/member";
+import { getUserBasicInfo } from "@/lib/kysely/queries/users";
+import { memberBaseInfoToModel } from "@/models/mapper";
 import { authOptions } from "@/utils/authoptions";
 import { routeTitles } from "@/utils/routes/routeTitles";
 
@@ -37,11 +36,20 @@ export default async function Page({
         value: startup.uuid,
         label: startup.name || "",
     }));
+
+    // if there is no current or future mission (or no mission at all)
+    const hasActiveMission = !!userInfos.missions.find((m) =>
+        m.end ? new Date(m.end) >= new Date() : !m.end
+    );
+
+    // members cannot edit active users directly. call a team member
+    if (!session?.user.isAdmin && hasActiveMission) {
+        redirect(`/community/${id}`);
+    }
+
     if (!userInfos) {
         redirect("/errors");
     }
-
-    // // todo: to make TS happy
 
     const props = {
         userInfos,

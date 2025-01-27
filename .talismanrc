@@ -5,8 +5,12 @@ fileignoreconfig:
   checksum: 07171a40047c38771624063fb61511998d3961815c3dceb135a1ee6d540f970d
 - filename: .github/workflows/nodejs.yml
   checksum: bf0ae31737daf27be68b7d2c4e63e1ef14cb799f1853462fdadcf2422ddd53a2
+- filename: .github/workflows/playwright.yml
+  checksum: 38ba47ef852e85e51e9e97d635c6b55b63db8940a3c33f2546fa8386c3311a3d
 - filename: __tests__/test-worker.ts
   checksum: 462f569a2625f2fdb0938f0abc109ed24f0241d9f5592ead16475e2efde0aa47
+- filename: e2e/api.spec.ts
+  checksum: f93e923d390704aa2e2be776ceb7b9f2ffc9c59a9d1100346e12754ab4ee7d7c
 - filename: package-lock.json
   checksum: add9168b63b1a9219558f2be2378591402a00d394be3bd9102715e43f8278e4f
 - filename: src/app/(private)/(dashboard)/admin/signaux-faibles-beta/AdminProductClientPage.tsx
