@@ -2,11 +2,11 @@
 
 import { useState, useEffect } from "react";
 
+import { useRouter } from "next/navigation";
 import { fr } from "@codegouvfr/react-dsfr";
 import Button from "@codegouvfr/react-dsfr/Button";
 import { Tabs } from "@codegouvfr/react-dsfr/Tabs";
 import MarkdownIt from "markdown-it";
-import { useRouter } from "next/navigation";
 import { match, P } from "ts-pattern";
 
 import { AdminPanel } from "./AdminPanel";
@@ -19,12 +19,12 @@ import { MemberStatus } from "./MemberStatus";
 import { getUserStartups } from "@/lib/kysely/queries/users";
 import { memberWrapperSchemaType } from "@/models/member";
 import { PrivateMemberChangeSchemaType } from "@/models/memberChange";
-
-import "./MemberPage.css";
 import { matomoUserSchemaType } from "@/models/matomo";
 import { sentryUserSchemaType } from "@/models/sentry";
 import LastChange from "../LastChange";
 import { FicheHeader } from "../FicheHeader";
+
+import "./MemberPage.css";
 
 const mdParser = new MarkdownIt({
     html: true,
@@ -91,39 +91,23 @@ export default function MemberPage({
     isCurrentUser,
 }: MemberPageProps) {
     const router = useRouter();
-    const [tab, setTab] = useState<null | string>(null);
+
+    const [tab, setTab] = useState<string>(
+        window.location.hash.replace("#", "") || "team"
+    );
+
+    const onHashChange = () => {
+        setTab(window.location.hash.replace("#", ""));
+    };
 
     useEffect(() => {
-        // Get the initial tab from the URL's search parameters
-        const searchParams = new URLSearchParams(window.location.search);
-        setTab(searchParams.get("tab") || "");
-
-        // Function to handle searchParams changes
-        const onSearchParamsChange = () => {
-            const updatedSearchParams = new URLSearchParams(
-                window.location.search
-            );
-            setTab(updatedSearchParams.get("tab") || "");
-        };
-
         // Listen for changes in the URL
-        window.addEventListener("popstate", onSearchParamsChange);
+        window.addEventListener("popstate", onHashChange);
 
         return () => {
-            window.removeEventListener("popstate", onSearchParamsChange);
+            window.removeEventListener("popstate", onHashChange);
         };
     }, []);
-
-    useEffect(() => {
-        // Scroll to the element with the corresponding id when the tab changes
-        const hash = window.location.hash.slice(1);
-        if (hash) {
-            const element = document.getElementById(hash);
-            if (element) {
-                element.scrollIntoView({ behavior: "smooth" });
-            }
-        }
-    }, [tab]);
 
     const canEdit = isAdmin || isCurrentUser || sessionUserIsFromIncubatorTeam;
     const linkToEditPage = match([
@@ -251,22 +235,12 @@ export default function MemberPage({
             />
             <br />
             {isExpired && <MemberExpirationNotice userInfos={userInfos} />}
-            {tab !== null && (
-                <Tabs
-                    tabs={tabs}
-                    onTabChange={(obj) => {
-                        const searchParams = new URLSearchParams(
-                            window.location.search
-                        );
-                        searchParams.set("tab", tabs[obj.tabIndex].tabId);
-                        const newUrl = `${
-                            window.location.pathname
-                        }?${searchParams.toString()}`;
-                        window.history.pushState({}, "", newUrl); // Update the URL without reloading the page
-                    }}
-                />
-            )}
-
+            <Tabs
+                tabs={tabs}
+                onTabChange={(obj) => {
+                    router.push(`#${tabs[obj.tabIndex].tabId}`);
+                }}
+            />
             <div
                 className={fr.cx("fr-col-12", "fr-mt-4w")}
                 style={{ textAlign: "center" }}
