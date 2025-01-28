@@ -76,6 +76,18 @@ export const EventSentryAccountUpdatedPayload = z.object({
     action_metadata: sentryActionMetadataSchema,
 });
 
+export const EventSentryCreateTeamRequestedTeamPayload = z.object({
+    action_code: z.literal(EventCode.MEMBER_SERVICE_TEAM_CREATION_REQUESTED),
+    action_metadata: z.object({
+        service: z.literal(SERVICES.SENTRY),
+        requestId: z.string().uuid(),
+        startupId: z.string(),
+        team: z.object({
+            teamSlug: z.string(),
+        }),
+    }),
+});
+
 export const EventSentryCreateTeamPayload = z.object({
     action_code: z.literal(EventCode.MEMBER_SERVICE_TEAM_CREATED),
     action_metadata: z.object({
