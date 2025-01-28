@@ -90,7 +90,7 @@ fileignoreconfig:
 - filename: src/middleware.ts
   checksum: 1ac7177d4d39cf4624f97642cea78396708e11e8e486874f1ff2c5928f017024
 - filename: src/models/member.ts
-  checksum: 4d1a75e62ca805faf5bc5b7c83d03064171d4914e6d405a026c141b2ede9ca2c
+  checksum: bd0f22c5efa62fd1388ac16c1ba321e393ede1e06d86f66d3561e556c098feb0
 - filename: src/server/config/index.ts
   checksum: a2591e8092f663b759ec49f7b51911e17af0f5f22de50b60340827e87755929a
 - filename: src/server/queueing/workers/create-update-matomo-account.ts

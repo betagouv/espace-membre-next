@@ -47,6 +47,7 @@ export enum LegalStatus {
     SA = "SA",
     SASU = "SASU",
     SNC = "SNC",
+    salarie_agence = "salarie_agence",
 }
 
 export enum CommunicationEmailCode {
@@ -123,6 +124,10 @@ export const statusOptions: {
     {
         key: "SNC",
         name: "SNC",
+    },
+    {
+        key: "salarie_agence",
+        name: "Salarié(e) d'une agence de l'état (ex: ADEME, france-travail...)",
     },
 ];
 
