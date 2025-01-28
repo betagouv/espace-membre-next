@@ -68,7 +68,6 @@ class routes {
     static SIGNIN: string = "/signin" as const;
     static SIGNIN_API: string = "/api/signin" as const;
     static API_UPDATE_BADGE_STATUS: string;
-    static API_PUBLIC_SPONSORS_GET_ALL: string = "/api/sponsors" as const;
 
     static GET_USER: string = "/community/:username" as const;
     static GET_COMMUNITY: string = "/community" as const;

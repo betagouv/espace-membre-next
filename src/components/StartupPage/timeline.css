@@ -39,3 +39,8 @@
 .startup-timeline > p.active.alumni {
   border-color: var(--background-action-low-red-marianne);
 }
+
+.table-xs-col1 thead th:first-child {
+  width: 150px;
+}
+

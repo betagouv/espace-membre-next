@@ -47,8 +47,8 @@ export const MemberMissions = ({
               ]
     );
 
-    console.log("missions", missions);
-    console.log("userInfos.missions", userInfos.missions);
+    //console.log("missions", missions);
+    //console.log("userInfos.missions", userInfos.missions);
 
     return (
         (missions.length && (
@@ -65,7 +65,7 @@ export const MemberMissions = ({
                                 href: mission.url,
                             }}
                         >
-                            {mission.name}
+                            {mission.name || "inconnue"}
                         </Tag>
                     ) : (
                         "-"

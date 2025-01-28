@@ -102,7 +102,7 @@ function RootLayout(props: PropsWithChildren<RootLayoutProps>) {
     }
 
     return (
-        <html lang="fr" {...getHtmlAttributes({ defaultColorScheme })}>
+        <html {...getHtmlAttributes({ defaultColorScheme, lang: "fr" })}>
             <MainStructure {...props} />
         </html>
     );

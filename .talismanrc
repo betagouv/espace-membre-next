@@ -7,8 +7,12 @@ fileignoreconfig:
   checksum: bf0ae31737daf27be68b7d2c4e63e1ef14cb799f1853462fdadcf2422ddd53a2
 - filename: __tests__/test-user.ts
   checksum: 855d1520858d599dd95ebfd6b9845ad2f5df76307915568b8f5b558cec12a9b1
+- filename: .github/workflows/playwright.yml
+  checksum: 38ba47ef852e85e51e9e97d635c6b55b63db8940a3c33f2546fa8386c3311a3d
 - filename: __tests__/test-worker.ts
   checksum: 462f569a2625f2fdb0938f0abc109ed24f0241d9f5592ead16475e2efde0aa47
+- filename: e2e/api.spec.ts
+  checksum: f93e923d390704aa2e2be776ceb7b9f2ffc9c59a9d1100346e12754ab4ee7d7c
 - filename: package-lock.json
   checksum: add9168b63b1a9219558f2be2378591402a00d394be3bd9102715e43f8278e4f
 - filename: src/app/(private)/(dashboard)/admin/signaux-faibles-beta/AdminProductClientPage.tsx
@@ -98,9 +102,9 @@ fileignoreconfig:
 - filename: src/lib/sentry.ts
   checksum: 035884bbbacf7746760dacc26669a3e4a4558ba2b88c0c7a38ec4327d25d0f3d
 - filename: src/middleware.ts
-  checksum: 0cfb47778eb5cebdd1353f3c2ce3c14f21c71e2343fb33a6914820d97726b49c
+  checksum: 1ac7177d4d39cf4624f97642cea78396708e11e8e486874f1ff2c5928f017024
 - filename: src/models/member.ts
-  checksum: 4d1a75e62ca805faf5bc5b7c83d03064171d4914e6d405a026c141b2ede9ca2c
+  checksum: bd0f22c5efa62fd1388ac16c1ba321e393ede1e06d86f66d3561e556c098feb0
 - filename: src/server/config/index.ts
   checksum: a2591e8092f663b759ec49f7b51911e17af0f5f22de50b60340827e87755929a
 - filename: src/server/queueing/workers/create-update-matomo-account.ts

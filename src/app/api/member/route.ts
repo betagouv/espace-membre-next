@@ -14,7 +14,10 @@ import {
     MemberUniqueConstraintViolationError,
     withHttpErrorHandling,
 } from "@/utils/error";
-import { createUsername } from "@/utils/github";
+import slugify from "@sindresorhus/slugify";
+
+const createUsername = (firstName, lastName) =>
+    `${slugify(firstName)}.${slugify(lastName)}`;
 
 export const POST = withHttpErrorHandling(async (req: Request) => {
     const session = await getServerSession(authOptions);

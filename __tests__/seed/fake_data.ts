@@ -109,6 +109,14 @@ const populateUsers = async (knex) => {
             role: "Développement",
         },
         {
+            uuid: "13dd9fed-9c84-432c-a566-f785702147fc",
+            username: "another.member",
+            fullname: "Another member",
+            primary_email: "another.member@betagouv.ovh",
+            domaine: "Autre",
+            role: "Coaching",
+        },
+        {
             uuid: "df843689-1eba-42d6-9f64-3806d8306cab",
             username: "expired.member",
             fullname: "Expired member",
@@ -141,6 +149,13 @@ const populateUsers = async (knex) => {
         user_id: "23dd9fed-9c84-432c-a566-f785702147fc",
         start: new Date("2023-01-01"),
         end: new Date("2030-03-01"),
+    });
+
+    // add a valid mission for another.member
+    await knex("missions").insert({
+        user_id: "13dd9fed-9c84-432c-a566-f785702147fc",
+        start: new Date("2023-05-01"),
+        end: new Date("2030-07-01"),
     });
 
     // add an expired mission for expired.member

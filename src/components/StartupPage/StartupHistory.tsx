@@ -7,6 +7,14 @@ import { Table } from "@codegouvfr/react-dsfr/Table";
 
 import "./timeline.css";
 
+const getEventComment = (e) => {
+    let comment = "";
+    if (e.name === "committee") comment += "Comité d'investissement";
+    if (e.name === "national_impact") comment += "Impact national ✨";
+    if (e.name === "fast") comment += "FAST: ";
+    if (e.comment) comment += e.comment;
+    return comment;
+};
 export const StartupHistory = ({
     phases,
     events,
@@ -45,11 +53,12 @@ export const StartupHistory = ({
                 <>
                     <h2>Évènements marquants</h2>
                     <Table
+                        className="table-xs-col1"
                         headers={["Date", "Description"]}
                         fixed
                         data={events.map((e) => [
                             frenchSmallDate(e.date),
-                            e.comment,
+                            getEventComment(e),
                         ])}
                     />
                 </>

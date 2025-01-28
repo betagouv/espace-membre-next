@@ -136,6 +136,6 @@ export const config = {
          * - favicon.ico, sitemap.xml, robots.txt (metadata files)
          */
         // "/dashboard",
-        "/((?!keskispasse|components|login|signin|api/hook|api/auth|api/public|static/|_next/static|_next/image|favicon.ico|sitemap.xml|robots.txt).*)",
+        "/((?!accessibilite|keskispasse|components|login|signin|api/hook|api/auth|api/public|static/|_next/static|_next/image|favicon.ico|sitemap.xml|robots.txt).*)",
     ],
 };
