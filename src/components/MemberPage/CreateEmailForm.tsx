@@ -1,8 +1,12 @@
-import { memberBaseInfoSchemaType } from "@/models/member";
-import routes, { computeRoute } from "@/routes/routes";
+import { useState } from "react";
+
 import { Alert } from "@codegouvfr/react-dsfr/Alert";
 import { Button } from "@codegouvfr/react-dsfr/Button";
-import { useState } from "react";
+
+import { safeCreateEmail } from "@/app/api/member/actions/createEmailForUser";
+import { memberBaseInfoSchemaType } from "@/models/member";
+import routes, { computeRoute } from "@/routes/routes";
+import { createEmailForUser } from "@/server/controllers/usersController/createEmailForUser";
 
 export const CreateEmailForm = ({
     userInfos,
@@ -20,26 +24,15 @@ export const CreateEmailForm = ({
     const onSubmit = async (e) => {
         e.preventDefault();
         try {
-            const response = await fetch(
-                computeRoute(
-                    routes.USER_CREATE_EMAIL_API.replace(
-                        ":username",
-                        userInfos.username
-                    )
-                ),
-                {
-                    method: "POST",
-                    credentials: "include", // This is equivalent to `withCredentials: true`
-                    headers: {
-                        "Content-Type": "application/json",
-                    },
-                    body: JSON.stringify({}),
-                }
-            );
-
-            if (!response.ok) {
-                const body = await response.json();
-                throw new Error(body.errors);
+            const response = await safeCreateEmail({
+                username: userInfos.username,
+            });
+            if (!response.success) {
+                setAlertMessage({
+                    title: `Une erreur est survenue`,
+                    message: `${response.message}`,
+                    type: "warning",
+                });
             }
 
             setAlertMessage({
