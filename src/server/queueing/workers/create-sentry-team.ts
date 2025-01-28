@@ -1,9 +1,11 @@
+import slugify from "@sindresorhus/slugify";
 import pAll from "p-all";
 import PgBoss from "pg-boss";
 
 import { addEvent } from "@/lib/events";
 import { db } from "@/lib/kysely";
 import { getStartup } from "@/lib/kysely/queries";
+import { teamAlreadyExistsError } from "@/lib/sentry";
 import { EventCode } from "@/models/actionEvent";
 import { CreateSentryTeamDataSchemaType } from "@/models/jobs/services";
 import { ACCOUNT_SERVICE_STATUS, SERVICES } from "@/models/services";
@@ -23,9 +25,16 @@ export async function createSentryTeam(
     }
     const team = {
         teamName: startup.name,
-        teamSlug: startup.ghid,
+        teamSlug: slugify(startup.name),
     };
-    await sentryClient.createSentryTeam(team);
+    try {
+        await sentryClient.createSentryTeam(team);
+    } catch (error) {
+        if (error === teamAlreadyExistsError) {
+        } else {
+            throw Error;
+        }
+    }
 
     await addEvent({
         action_code: EventCode.MEMBER_SERVICE_TEAM_CREATED,
@@ -39,5 +48,5 @@ export async function createSentryTeam(
         created_by_username: job.data.username,
     });
 
-    console.log(`the sentry account has been created for ${job.data.username}`);
+    console.log(`l'équipe a été créé ${team.teamName}`);
 }

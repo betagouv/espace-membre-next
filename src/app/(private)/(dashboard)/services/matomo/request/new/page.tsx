@@ -17,7 +17,7 @@ export default async function NewMatomoPage() {
     const now = new Date();
     const startups = session.user.isAdmin
         ? await getAllStartups()
-        : (await getUserStartupsActive(session.user.id)).map((startup) =>
+        : (await getUserStartupsActive(session.user.uuid)).map((startup) =>
               userStartupToModel(startup)
           );
 
