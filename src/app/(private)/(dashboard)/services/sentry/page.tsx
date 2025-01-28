@@ -1,3 +1,4 @@
+import Alert from "@codegouvfr/react-dsfr/Alert";
 import Button from "@codegouvfr/react-dsfr/Button";
 import Table from "@codegouvfr/react-dsfr/Table";
 import { isAfter, isBefore } from "date-fns";
@@ -151,6 +152,15 @@ export default async function SentryRequestPage() {
             return JSON.stringify(data);
         }
     };
+
+    const pendingStatus = [
+        EventCode.MEMBER_SERVICE_ACCOUNT_REQUESTED,
+        EventCode.MEMBER_SERVICE_ACCOUNT_UPDATE_REQUESTED,
+    ];
+    const isLastEventPending = dbSentryEvents.length
+        ? !!pendingStatus.includes(dbSentryEvents[0].action_code as EventCode)
+        : false;
+
     return (
         <>
             <h1>Compte Sentry</h1>
@@ -195,16 +205,30 @@ export default async function SentryRequestPage() {
                     />
                 </>
             )}
-            <Button
-                linkProps={{
-                    href: "/services/sentry/request",
-                }}
-                className="fr-mt-2w"
-            >
-                {!service_account
-                    ? "Créer mon compte sentry"
-                    : `Faire un nouvelle demande d'accès à un site`}
-            </Button>
+            <Alert
+                severity="info"
+                small={true}
+                description={`Tu as une demande en cours, celle-ci doit être terminé avant d'en fait une autre.`}
+            />
+            {!isLastEventPending && (
+                <Button
+                    linkProps={{
+                        href: "/services/sentry/request",
+                    }}
+                    className="fr-mt-2w"
+                >
+                    {!service_account
+                        ? "Créer mon compte sentry"
+                        : `Faire une nouvelle demande d'accès à une équipe`}
+                </Button>
+            )}
+            {!!isLastEventPending && (
+                <Button disabled={true} className="fr-mt-2w">
+                    {!service_account
+                        ? "Créer mon compte sentry"
+                        : `Faire une nouvelle demande d'accès à une équipe`}
+                </Button>
+            )}
         </>
     );
 }

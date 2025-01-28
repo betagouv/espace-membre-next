@@ -202,7 +202,7 @@ export default async function MatomoPage() {
             >
                 {!service_account
                     ? "Créer mon compte matomo"
-                    : `Faire un nouvelle demande d'accès à un site`}
+                    : `Faire une nouvelle demande d'accès à un site`}
             </Button>
         </>
     );

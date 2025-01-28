@@ -19,7 +19,7 @@ import { SERVICES } from "@/models/services";
 export default function SentryServiceForm(props: {
     teams: SentryTeamType[];
     createAccount: boolean;
-    userEmail?: string;
+    userEmail: string;
 }) {
     const [alertMessage, setAlertMessage] =
         React.useState<AlertMessageType | null>();
@@ -62,12 +62,11 @@ export default function SentryServiceForm(props: {
                         </h3>
                         {!props.teams.length && (
                             <p>
-                                Nous n'avons pas enregistré d'équipe sentry
-                                existant pour les produits sur lesquels tu
-                                travailles actuellemment. Si pourtant des
-                                équipes existent merci de nous le signaler en
-                                envoyant un message dans le chatbot crips
-                                présent sur cette page.
+                                Nous n'avons pas d'équipe sentry enregistrée
+                                pour les produits sur lesquels tu travailles
+                                actuellemment. Si pourtant une équipe existe
+                                merci de nous le signaler en envoyant un message
+                                dans le chatbot crips présent sur cette page.
                             </p>
                         )}
                         {!!props.teams.length && (
@@ -77,10 +76,10 @@ export default function SentryServiceForm(props: {
                             />
                         )}
                         <p className="fr-hr-or fr-mt-4w">ou</p>
-                        <h3 className="fr-h5">Créer un nouvelle équipe</h3>
+                        <h3 className="fr-h5">Créer une nouvelle équipe</h3>
                         <p>
-                            Si il n'existe pas encore de team pour le team que
-                            tu veux ajouter. Tu peux la créer
+                            Si il n'existe pas encore d'équipe sentry pour ton
+                            produit tu peux la créer :
                         </p>
                         <Button
                             linkProps={{

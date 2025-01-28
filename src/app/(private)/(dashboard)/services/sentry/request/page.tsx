@@ -55,6 +55,7 @@ export default async function SentryRequestPage() {
             {!!service_account && <h1>Ajouter un accès a un site sentry</h1>}
             {!service_account && <h1>Créer mon compte sentry</h1>}
             <SentryServiceForm
+                userEmail={session.user.email}
                 teams={sentryTeams.map((s) => ({
                     label: s.name,
                     value: s.sentry_id,

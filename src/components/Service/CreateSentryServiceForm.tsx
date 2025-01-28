@@ -10,9 +10,11 @@ import { useRouter } from "next/navigation";
 import { useForm } from "react-hook-form";
 
 import SESelect, { StartupType } from "../SESelect";
+import ZodErrorDisplay from "../ZodErrorDisplay/ZodErrorDisplay";
 import { askAccountCreationForService } from "@/app/api/services/actions";
 import {
-    sentryAccountRequestSchema,
+    sentryAccountCreateRequestSchema,
+    sentryAccountCreateRequestSchemaType,
     sentryAccountRequestSchemaType,
 } from "@/models/actions/service";
 import { AlertMessageType } from "@/models/common";
@@ -27,8 +29,8 @@ export const CreateSentryServiceForm = ({
         handleSubmit,
         formState: { errors, isDirty, isSubmitting, isValid },
         setValue,
-    } = useForm<sentryAccountRequestSchemaType>({
-        resolver: zodResolver(sentryAccountRequestSchema),
+    } = useForm<sentryAccountCreateRequestSchemaType>({
+        resolver: zodResolver(sentryAccountCreateRequestSchema),
         mode: "onChange",
         defaultValues: {},
     });
@@ -37,7 +39,7 @@ export const CreateSentryServiceForm = ({
     const [alertMessage, setAlertMessage] =
         React.useState<AlertMessageType | null>();
     console.log(startupOptions);
-    const onSubmit = async (data: sentryAccountRequestSchemaType, e) => {
+    const onSubmit = async (data: sentryAccountCreateRequestSchemaType, e) => {
         if (isSaving) {
             return;
         }
@@ -126,7 +128,9 @@ export const CreateSentryServiceForm = ({
                             isMulti={false}
                             placeholder={`Sélectionne un produits`}
                             startups={startupOptions}
-                            label="Produit dont tu veux suivre les erreurs"
+                            label="Produit que tu veux suivre"
+                            state={errors.newTeam ? "error" : "default"}
+                            stateMessageRelated={errors.newTeam?.message}
                         />
                     </div>
                 </fieldset>
