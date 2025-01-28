@@ -1,18 +1,12 @@
-import pAll from "p-all";
 import PgBoss from "pg-boss";
 
 import { addEvent } from "@/lib/events";
 import { db } from "@/lib/kysely";
-import {
-    SentryError,
-    SentryRole,
-    userAlreadyHaveDefinedRoleOrTeamDoesNotExist,
-} from "@/lib/sentry";
+import { userAlreadyHaveDefinedRoleOrTeamDoesNotExist } from "@/lib/sentry";
 import { EventCode } from "@/models/actionEvent";
 import { CreateSentryAccountDataSchemaType } from "@/models/jobs/services";
 import { ACCOUNT_SERVICE_STATUS, SERVICES } from "@/models/services";
 import { sentryClient } from "@/server/config/sentry.config";
-import { decryptPassword } from "@/server/controllers/utils";
 
 export const createSentryServiceAccountTopic = "create-sentry-service-account";
 

@@ -43,22 +43,6 @@ export type matomoAccountRequestSchemaType = z.infer<
     typeof matomoAccountRequestSchema
 >;
 
-// export const sentryAccountRequestSchema = z.object({
-//     teams: z
-//         .array(
-//             z.object({
-//                 name: z.string(),
-//             })
-//         )
-//         .min(1, { message: "Au moins une équipe est nécessaire." })
-//         .optional(),
-//     newTeam: z
-//         .object({
-//             startupId: z.string(),
-//         })
-//         .optional(),
-// });
-
 export const sentryAccountCreateRequestSchema = z.object({
     newTeam: z.object({
         startupId: z.string().uuid(),

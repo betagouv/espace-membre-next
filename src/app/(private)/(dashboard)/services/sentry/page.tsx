@@ -96,22 +96,20 @@ export default async function SentryRequestPage() {
         string,
         EventSentryAccountPayloadSchemaType[]
     > = {};
-    for (const event of dbSentryEvents) {
-        if (event.action_metadata) {
-            const action_metadata = hstore.parse(event.action_metadata);
-            const eventObj = {
-                action_code: event.action_code,
-                action_metadata: action_metadata,
-            };
-            const { data, success, error } =
-                EventSentryAccountPayloadSchema.safeParse(eventObj);
-            if (success) {
-                if (data.action_metadata.requestId) {
-                    eventDictionnary[data.action_metadata.requestId] =
-                        eventDictionnary[data.action_metadata.requestId] || [];
-                    eventDictionnary[data.action_metadata.requestId].push(data);
-                }
-            }
+    for (const event of dbSentryEvents.filter(
+        (event) => event.action_metadata
+    )) {
+        const action_metadata = hstore.parse(event.action_metadata);
+        const eventObj = {
+            action_code: event.action_code,
+            action_metadata: action_metadata,
+        };
+        const { data, success } =
+            EventSentryAccountPayloadSchema.safeParse(eventObj);
+        if (success && data.action_metadata.requestId) {
+            eventDictionnary[data.action_metadata.requestId] =
+                eventDictionnary[data.action_metadata.requestId] || [];
+            eventDictionnary[data.action_metadata.requestId].push(data);
         }
     }
 
@@ -131,7 +129,7 @@ export default async function SentryRequestPage() {
     const formatMetadata = (
         data: EventSentryAccountPayloadSchemaType["action_metadata"]
     ) => {
-        if ("teams" in data && data["teams"] && data["teams"].length) {
+        if ("teams" in data && data["teams"]?.length) {
             const siteObj = data["teams"].map((site) =>
                 sentryTeams.find(
                     (sentrySite) => site.teamSlug === sentrySite.id
@@ -160,6 +158,10 @@ export default async function SentryRequestPage() {
     const isLastEventPending = dbSentryEvents.length
         ? !!pendingStatus.includes(dbSentryEvents[0].action_code as EventCode)
         : false;
+
+    const buttonLabel = !service_account
+        ? "Créer mon compte sentry"
+        : `Faire une nouvelle demande d'accès à une équipe`;
 
     return (
         <>
@@ -217,16 +219,12 @@ export default async function SentryRequestPage() {
                     }}
                     className="fr-mt-2w"
                 >
-                    {!service_account
-                        ? "Créer mon compte sentry"
-                        : `Faire une nouvelle demande d'accès à une équipe`}
+                    {buttonLabel}
                 </Button>
             )}
             {!!isLastEventPending && (
                 <Button disabled={true} className="fr-mt-2w">
-                    {!service_account
-                        ? "Créer mon compte sentry"
-                        : `Faire une nouvelle demande d'accès à une équipe`}
+                    {buttonLabel}
                 </Button>
             )}
         </>

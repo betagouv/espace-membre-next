@@ -25,73 +25,67 @@ export default function SentryServiceForm(props: {
         React.useState<AlertMessageType | null>();
 
     return (
-        <>
-            <div>
-                {!!alertMessage && (
-                    <Alert
-                        className="fr-mb-8v"
-                        severity={alertMessage.type}
-                        closable={false}
-                        title={alertMessage.title}
-                        description={
-                            alertMessage.message ? (
-                                <div
-                                    dangerouslySetInnerHTML={{
-                                        __html: alertMessage.message,
-                                    }}
-                                />
-                            ) : undefined
-                        }
-                    />
-                )}
-                <div className="fr-grid-row fr-grid-row-gutters">
-                    <div className="fr-col-12 fr-col-md-6 fr-col-lg-6">
-                        {!props.createAccount && (
-                            <>
-                                <p>
-                                    Ton compte sentry sera créé avec ton adresse{" "}
-                                    <b>{props.userEmail}.</b>
-                                    <br />
-                                    Tu dois le rattacher à une équipe
-                                    enregistrée sur sentry.
-                                </p>
-                            </>
-                        )}
-                        <h3 className="fr-h5">
-                            Accèder à une équipe existante
-                        </h3>
-                        {!props.teams.length && (
-                            <p>
-                                Nous n'avons pas d'équipe sentry enregistrée
-                                pour les produits sur lesquels tu travailles
-                                actuellemment. Si pourtant une équipe existe
-                                merci de nous le signaler en envoyant un message
-                                dans le chatbot crips présent sur cette page.
-                            </p>
-                        )}
-                        {!!props.teams.length && (
-                            <AddSentryServiceForm
-                                teams={props.teams}
-                                setAlertMessage={setAlertMessage}
+        <div>
+            {!!alertMessage && (
+                <Alert
+                    className="fr-mb-8v"
+                    severity={alertMessage.type}
+                    closable={false}
+                    title={alertMessage.title}
+                    description={
+                        alertMessage.message ? (
+                            <div
+                                dangerouslySetInnerHTML={{
+                                    __html: alertMessage.message,
+                                }}
                             />
-                        )}
-                        <p className="fr-hr-or fr-mt-4w">ou</p>
-                        <h3 className="fr-h5">Créer une nouvelle équipe</h3>
+                        ) : undefined
+                    }
+                />
+            )}
+            <div className="fr-grid-row fr-grid-row-gutters">
+                <div className="fr-col-12 fr-col-md-6 fr-col-lg-6">
+                    {!props.createAccount && (
                         <p>
-                            Si il n'existe pas encore d'équipe sentry pour ton
-                            produit tu peux la créer :
+                            Ton compte sentry sera créé avec ton adresse{" "}
+                            <b>{props.userEmail}.</b>
+                            <br />
+                            Tu dois le rattacher à une équipe enregistrée sur
+                            sentry.
                         </p>
-                        <Button
-                            linkProps={{
-                                href: "/services/sentry/request/new",
-                            }}
-                        >
-                            Créer une nouvelle équipe
-                        </Button>
-                    </div>
+                    )}
+                    <h3 className="fr-h5">Accèder à une équipe existante</h3>
+                    {!props.teams.length && (
+                        <p>
+                            Nous n'avons pas d'équipe sentry enregistrée pour
+                            les produits sur lesquels tu travailles
+                            actuellemment. Si pourtant une équipe existe merci
+                            de nous le signaler en envoyant un message dans le
+                            chatbot crips présent sur cette page.
+                        </p>
+                    )}
+                    {!!props.teams.length && (
+                        <AddSentryServiceForm
+                            teams={props.teams}
+                            setAlertMessage={setAlertMessage}
+                        />
+                    )}
+                    <p className="fr-hr-or fr-mt-4w">ou</p>
+                    <h3 className="fr-h5">Créer une nouvelle équipe</h3>
+                    <p>
+                        Si il n'existe pas encore d'équipe sentry pour ton
+                        produit tu peux la créer :
+                    </p>
+                    <Button
+                        linkProps={{
+                            href: "/services/sentry/request/new",
+                        }}
+                    >
+                        Créer une nouvelle équipe
+                    </Button>
                 </div>
             </div>
-        </>
+        </div>
     );
 }
 
@@ -99,7 +93,7 @@ const AddSentryServiceForm = ({ setAlertMessage, teams }) => {
     const {
         handleSubmit,
         setValue,
-        formState: { isDirty, isSubmitting, isValid, errors },
+        formState: { isDirty, isSubmitting, isValid },
         control,
     } = useForm<sentryAccountRequestSchemaType>({
         resolver: zodResolver(sentryAccountRequestSchema),

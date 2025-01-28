@@ -14,7 +14,6 @@ export default async function NewMatomoPage() {
         redirect("/login");
     }
 
-    const now = new Date();
     const startups = session.user.isAdmin
         ? await getAllStartups()
         : (await getUserStartupsActive(session.user.uuid)).map((startup) =>
