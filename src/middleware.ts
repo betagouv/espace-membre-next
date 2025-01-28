@@ -117,6 +117,10 @@ export async function middleware(req: NextRequest) {
                 new URL(`/login?next=${req.url}`, req.url)
             );
         }
+    } else {
+        if (req.nextUrl.pathname === "/") {
+            return NextResponse.redirect(new URL("/dashboard", req.url));
+        }
     }
 }
 
