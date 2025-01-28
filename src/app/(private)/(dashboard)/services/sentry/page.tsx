@@ -207,11 +207,6 @@ export default async function SentryRequestPage() {
                     />
                 </>
             )}
-            <Alert
-                severity="info"
-                small={true}
-                description={`Tu as une demande en cours, celle-ci doit être terminé avant d'en fait une autre.`}
-            />
             {!isLastEventPending && (
                 <Button
                     linkProps={{
@@ -223,9 +218,16 @@ export default async function SentryRequestPage() {
                 </Button>
             )}
             {!!isLastEventPending && (
-                <Button disabled={true} className="fr-mt-2w">
-                    {buttonLabel}
-                </Button>
+                <>
+                    <Alert
+                        severity="info"
+                        small={true}
+                        description={`Tu as une demande en cours, celle-ci doit être terminé avant d'en fait une autre.`}
+                    />
+                    <Button disabled={true} className="fr-mt-2w">
+                        {buttonLabel}
+                    </Button>
+                </>
             )}
         </>
     );
