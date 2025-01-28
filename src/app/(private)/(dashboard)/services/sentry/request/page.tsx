@@ -2,29 +2,29 @@ import { isAfter, isBefore } from "date-fns";
 import { redirect } from "next/navigation";
 import { getServerSession } from "next-auth/next";
 
-import MatomoServiceForm from "@/components/Service/MatomoServiceForm";
+import SentryServiceForm from "@/components/Service/SentryServiceForm";
 import { db } from "@/lib/kysely";
 import { getServiceAccount } from "@/lib/kysely/queries/services";
 import { getUserStartups } from "@/lib/kysely/queries/users";
 import {
-    matomoServiceInfoToModel,
-    matomoSiteToModel,
-} from "@/models/mapper/matomoMapper";
+    sentryServiceInfoToModel,
+    sentryTeamToModel,
+} from "@/models/mapper/sentryMapper";
 import { userStartupToModel } from "@/models/mapper/startupMapper";
 import { SERVICES } from "@/models/services";
 import { authOptions } from "@/utils/authoptions";
 
-export default async function MatomoPage() {
+export default async function SentryRequestPage() {
     const session = await getServerSession(authOptions);
     if (!session) {
         redirect("/login");
     }
     const rawAccount = await getServiceAccount(
         session.user.uuid,
-        SERVICES.MATOMO
+        SERVICES.SENTRY
     );
     const service_account = rawAccount
-        ? matomoServiceInfoToModel(rawAccount)
+        ? sentryServiceInfoToModel(rawAccount)
         : undefined;
 
     const now = new Date();
@@ -37,10 +37,10 @@ export default async function MatomoPage() {
         })
         .map((startup) => userStartupToModel(startup));
 
-    const matomoSites = !startups.length
+    const sentryTeams = !startups.length
         ? []
         : await db
-              .selectFrom("matomo_sites")
+              .selectFrom("sentry_teams")
               .selectAll()
               .where(
                   "startup_id",
@@ -48,16 +48,19 @@ export default async function MatomoPage() {
                   startups.map((s) => s.uuid)
               )
               .execute()
-              .then((data) => data.map((d) => matomoSiteToModel(d)));
+              .then((data) => data.map((d) => sentryTeamToModel(d)));
 
     return (
         <>
-            {!!service_account && <h1>Ajouter un accès a un site matomo</h1>}
-            {!service_account && <h1>Créer mon compte matomo</h1>}
-            <MatomoServiceForm
+            {!!service_account && <h1>Ajouter un accès a un site sentry</h1>}
+            {!service_account && <h1>Créer mon compte sentry</h1>}
+            <SentryServiceForm
                 userEmail={session.user.email}
-                createAccount={!!service_account}
-                sites={matomoSites}
+                teams={sentryTeams.map((s) => ({
+                    label: s.name,
+                    value: s.sentry_id,
+                }))}
+                createAccount={false}
             />
         </>
     );

@@ -1,13 +1,13 @@
 import pAll from "p-all";
 import PgBoss from "pg-boss";
 
+import { addEvent } from "@/lib/events";
 import { db } from "@/lib/kysely";
+import { EventCode } from "@/models/actionEvent";
 import { UpdateSentryAccountDataSchemaType } from "@/models/jobs/services";
 import { ACCOUNT_SERVICE_STATUS, SERVICES } from "@/models/services";
 import { sentryClient } from "@/server/config/sentry.config";
 import { decryptPassword } from "@/server/controllers/utils";
-import { EventCode } from "@/models/actionEvent";
-import { addEvent } from "@/lib/events";
 
 export const updateSentryServiceAccountTopic = "update-sentry-service-account";
 
@@ -32,7 +32,7 @@ export async function updateSentryServiceAccount(
             });
         })
     );
-    const result = await db
+    await db
         .updateTable("service_accounts")
         .set({
             service_user_id: job.data.memberId,

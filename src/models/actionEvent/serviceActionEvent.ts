@@ -76,6 +76,31 @@ export const EventSentryAccountUpdatedPayload = z.object({
     action_metadata: sentryActionMetadataSchema,
 });
 
+export const EventSentryCreateTeamRequestedTeamPayload = z.object({
+    action_code: z.literal(EventCode.MEMBER_SERVICE_TEAM_CREATION_REQUESTED),
+    action_metadata: z.object({
+        service: z.literal(SERVICES.SENTRY),
+        requestId: z.string().uuid(),
+        startupId: z.string(),
+        team: z.object({
+            teamSlug: z.string(),
+        }),
+    }),
+});
+
+export const EventSentryCreateTeamPayload = z.object({
+    action_code: z.literal(EventCode.MEMBER_SERVICE_TEAM_CREATED),
+    action_metadata: z.object({
+        service: z.literal(SERVICES.SENTRY),
+        requestId: z.string().uuid(),
+        startupId: z.string(),
+        team: z.object({
+            teamName: z.string(),
+            teamSlug: z.string(),
+        }),
+    }),
+});
+
 // Matomo
 // export const EventMatomoAccountRequestedPayload = z.object({
 //     action_code: z.literal(EventCode.MEMBER_SERVICE_ACCOUNT_REQUESTED),
@@ -109,4 +134,18 @@ export const EventMatomoAccountPayloadSchema = z.object({
 
 export type EventMatomoAccountPayloadSchemaType = z.infer<
     typeof EventMatomoAccountPayloadSchema
+>;
+
+export const EventSentryAccountPayloadSchema = z.object({
+    action_code: z.enum([
+        EventCode.MEMBER_SERVICE_ACCOUNT_REQUESTED,
+        EventCode.MEMBER_SERVICE_ACCOUNT_CREATED,
+        EventCode.MEMBER_SERVICE_ACCOUNT_UPDATE_REQUESTED,
+        EventCode.MEMBER_SERVICE_ACCOUNT_UPDATED,
+    ]),
+    action_metadata: sentryActionMetadataSchema,
+});
+
+export type EventSentryAccountPayloadSchemaType = z.infer<
+    typeof EventSentryAccountPayloadSchema
 >;

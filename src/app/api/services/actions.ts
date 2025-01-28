@@ -1,5 +1,6 @@
 "use server";
 
+import slugify from "@sindresorhus/slugify";
 import crypto from "crypto";
 import { getServerSession } from "next-auth";
 import PgBoss from "pg-boss";
@@ -8,6 +9,7 @@ import { v4 as uuidv4 } from "uuid";
 
 import { addEvent } from "@/lib/events";
 import { db } from "@/lib/kysely";
+import { getStartup } from "@/lib/kysely/queries";
 import { getUserBasicInfo, getUserStartups } from "@/lib/kysely/queries/users";
 import { MatomoAccess } from "@/lib/matomo";
 import { SentryRole } from "@/lib/sentry";
@@ -15,16 +17,15 @@ import { EventCode } from "@/models/actionEvent";
 import {
     matomoAccountRequestSchema,
     matomoAccountRequestSchemaType,
-    matomoAccountRequestWrapperSchema,
     matomoAccountRequestWrapperSchemaType,
     sentryAccountRequestSchema,
     sentryAccountRequestSchemaType,
-    sentryAccountRequestWrapperSchema,
     sentryAccountRequestWrapperSchemaType,
 } from "@/models/actions/service";
 import {
     CreateOrUpdateMatomoAccountDataSchema,
     CreateSentryAccountDataSchema,
+    CreateSentryTeamDataSchema,
     UpdateSentryAccountDataSchema,
 } from "@/models/jobs/services";
 import { memberBaseInfoToModel } from "@/models/mapper";
@@ -33,6 +34,7 @@ import { ACCOUNT_SERVICE_STATUS, SERVICES } from "@/models/services";
 import { encryptPassword } from "@/server/controllers/utils";
 import { getBossClientInstance } from "@/server/queueing/client";
 import { createSentryServiceAccountTopic } from "@/server/queueing/workers/create-sentry-account";
+import { createSentryTeamTopic } from "@/server/queueing/workers/create-sentry-team";
 import { createOrUpdateMatomoServiceAccountTopic } from "@/server/queueing/workers/create-update-matomo-account";
 import {
     updateSentryServiceAccount,
@@ -102,11 +104,50 @@ const createOrUpdateSentryAccount = async (
         .where("user_id", "=", user.uuid)
         .executeTakeFirst();
     const accountAlreadyExists = !!sentryAccount?.service_user_id;
-    const teams = sentryData.teams.map((t) => ({
-        teamSlug: t.name,
-        teamRole: SentryRole.contributor,
-    }));
+    const teams =
+        "teams" in sentryData && sentryData.teams
+            ? sentryData.teams.map((t) => ({
+                  teamSlug: slugify(t.name),
+                  teamRole: SentryRole.contributor,
+              }))
+            : [];
     const requestId = uuidv4();
+    if ("newTeam" in sentryData && sentryData.newTeam) {
+        const startup = await getStartup({
+            uuid: sentryData.newTeam.startupId,
+        });
+        if (!startup) {
+            throw new NoDataError("Startup not found");
+        }
+        await bossClient.send(
+            createSentryTeamTopic,
+            CreateSentryTeamDataSchema.parse({
+                email: user.primary_email,
+                username: user.username,
+                userUuid: user.uuid,
+                requestId,
+                startupId: sentryData.newTeam.startupId,
+            })
+        );
+        const newTeam = {
+            teamSlug: slugify(startup.name),
+            teamRole: SentryRole.admin,
+        };
+        teams.push(newTeam);
+        await addEvent({
+            action_code: EventCode.MEMBER_SERVICE_TEAM_CREATION_REQUESTED,
+            action_metadata: {
+                service: SERVICES.SENTRY,
+                startupId: sentryData.newTeam.startupId,
+                requestId: requestId,
+                team: {
+                    teamSlug: newTeam.teamSlug,
+                },
+            },
+            action_on_username: user.username,
+            created_by_username: user.username,
+        });
+    }
     if (accountAlreadyExists) {
         await bossClient.send(
             updateSentryServiceAccountTopic,
@@ -145,15 +186,17 @@ const createOrUpdateSentryAccount = async (
                 retryBackoff: true,
             }
         );
-        await db
-            .insertInto("service_accounts")
-            .values({
-                user_id: user.uuid,
-                email: user.primary_email,
-                account_type: SERVICES.SENTRY,
-                status: ACCOUNT_SERVICE_STATUS.ACCOUNT_CREATION_PENDING,
-            })
-            .execute();
+        if (!sentryAccount) {
+            await db
+                .insertInto("service_accounts")
+                .values({
+                    user_id: user.uuid,
+                    email: user.primary_email,
+                    account_type: SERVICES.SENTRY,
+                    status: ACCOUNT_SERVICE_STATUS.ACCOUNT_CREATION_PENDING,
+                })
+                .execute();
+        }
 
         await addEvent({
             action_code: EventCode.MEMBER_SERVICE_ACCOUNT_REQUESTED,

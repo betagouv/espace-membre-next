@@ -43,7 +43,17 @@ export type matomoAccountRequestSchemaType = z.infer<
     typeof matomoAccountRequestSchema
 >;
 
-export const sentryAccountRequestSchema = z.object({
+export const sentryAccountCreateRequestSchema = z.object({
+    newTeam: z.object({
+        startupId: z.string().uuid(),
+    }),
+});
+
+export type sentryAccountCreateRequestSchemaType = z.infer<
+    typeof sentryAccountCreateRequestSchema
+>;
+
+export const sentryAccountJoinTeamRequestSchema = z.object({
     teams: z
         .array(
             z.object({
@@ -52,6 +62,11 @@ export const sentryAccountRequestSchema = z.object({
         )
         .min(1, { message: "Au moins une équipe est nécessaire." }),
 });
+
+export const sentryAccountRequestSchema = z.union([
+    sentryAccountJoinTeamRequestSchema,
+    sentryAccountCreateRequestSchema,
+]);
 
 export type sentryAccountRequestSchemaType = z.infer<
     typeof sentryAccountRequestSchema
@@ -68,7 +83,10 @@ export type matomoAccountRequestWrapperSchemaType = z.infer<
 
 export const sentryAccountRequestWrapperSchema = z.object({
     service: z.literal(SERVICES.SENTRY),
-    data: sentryAccountRequestSchema,
+    data: z.union([
+        sentryAccountCreateRequestSchema,
+        sentryAccountJoinTeamRequestSchema,
+    ]),
 });
 
 export type sentryAccountRequestWrapperSchemaType = z.infer<
