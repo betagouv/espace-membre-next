@@ -3,12 +3,12 @@ import { ReactNode } from "react";
 import { fr } from "@codegouvfr/react-dsfr";
 import Badge from "@codegouvfr/react-dsfr/Badge";
 import Table from "@codegouvfr/react-dsfr/Table";
+import Link from "next/link";
 
 import { MemberPageProps } from "./MemberPage";
+import { BadgeEmailPlan } from "../BadgeEmailPlan";
 import { EmailStatusCode } from "@/models/member";
 import { EMAIL_STATUS_READABLE_FORMAT } from "@/models/misc";
-
-import { BadgeEmailPlan } from "../BadgeEmailPlan";
 
 export const MemberContact = ({
     userInfos,
@@ -49,6 +49,17 @@ export const MemberContact = ({
                             }
                         </Badge>
                     )}
+                    {isCurrentUser &&
+                        userInfos.primary_email_status ===
+                            EmailStatusCode.EMAIL_ACTIVE_AND_PASSWORD_DEFINITION_PENDING && (
+                            <span>
+                                Le mot de passe doit être défini. Rendez vous
+                                dans{" "}
+                                <a href={"/account?tab=compte-email#password"}>
+                                    Changer mon mot de passe
+                                </a>
+                            </span>
+                        )}
                 </>
             ),
         });

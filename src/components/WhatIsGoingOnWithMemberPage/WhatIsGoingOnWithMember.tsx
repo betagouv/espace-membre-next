@@ -12,17 +12,18 @@ import { useRouter } from "next/navigation";
 import { useLiveChat } from "../live-chat/useLiveChat";
 import MemberSelect from "../MemberSelect";
 import { safeGetUserPublicInfo } from "@/app/api/member/actions";
+import { safeCreateEmail } from "@/app/api/member/actions/createEmailForUser";
+import { BadgeEmailPlan } from "@/components/BadgeEmailPlan";
 import { EmailStatusCode } from "@/models/member";
 import {
     memberPublicInfoSchemaType,
     memberWrapperPublicInfoSchemaType,
 } from "@/models/member";
 import { EMAIL_STATUS_READABLE_FORMAT } from "@/models/misc";
+import { EMAIL_PLAN_TYPE } from "@/models/ovh";
 import { startupSchemaType } from "@/models/startup";
 import routes from "@/routes/routes";
 import { getLastMission } from "@/utils/member";
-import { EMAIL_PLAN_TYPE } from "@/models/ovh";
-import { BadgeEmailPlan } from "@/components/BadgeEmailPlan";
 
 enum STEP {
     whichMember = "whichMember",
@@ -868,13 +869,11 @@ export const CreateEmailScreen = function (props) {
             return;
         }
         try {
-            const api = routes.USER_CREATE_EMAIL_API.replace(
-                ":username",
-                props.user.userInfos.id
-            );
             setIsSaving(false);
-            const res = await axios.post(api, {});
-            if (res.status === 200) {
+            const resp = await safeCreateEmail({
+                username: props.user.userInfos.id,
+            });
+            if (resp.success) {
                 props.next();
             } else {
                 throw new Error("Email was not created");
@@ -1248,7 +1247,6 @@ export const WhatIsGoingOnWithMember = function (
                             <li>
                                 Fais un renouvellement de mot de passe :{" "}
                                 <a
-                                    className="fr-link"
                                     href="https://mattermost.incubateur.net/reset_password"
                                     target={"_blank"}
                                 >
