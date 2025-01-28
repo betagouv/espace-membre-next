@@ -14,7 +14,6 @@ import { askAccountCreationForService } from "@/app/api/services/actions";
 import {
     sentryAccountCreateRequestSchema,
     sentryAccountCreateRequestSchemaType,
-    sentryAccountRequestSchemaType,
 } from "@/models/actions/service";
 import { AlertMessageType } from "@/models/common";
 import { SERVICES } from "@/models/services";

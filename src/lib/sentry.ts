@@ -161,7 +161,7 @@ export class SentryService implements AccountService {
             return response.json();
         } else {
             const contentType = response.headers.get("Content-Type");
-            if (contentType && contentType.includes("application/json")) {
+            if (contentType?.includes("application/json")) {
                 const errorData = await response.json();
                 throw new Error(
                     `Failed to add user to organization: ${response.status} ${response.statusText}. ${errorData.detail}`
@@ -202,7 +202,7 @@ export class SentryService implements AccountService {
             );
         } else {
             const contentType = response.headers.get("Content-Type");
-            if (contentType && contentType.includes("application/json")) {
+            if (contentType?.includes("application/json")) {
                 const errorData = await response.json();
                 throw new Error(
                     `Failed to changed user role : ${response.status} ${response.statusText}. ${errorData.detail}`
@@ -240,7 +240,7 @@ export class SentryService implements AccountService {
             return response.json();
         } else {
             const contentType = response.headers.get("Content-Type");
-            if (contentType && contentType.includes("application/json")) {
+            if (contentType?.includes("application/json")) {
                 const errorData = await response.json();
                 throw new Error(
                     `Failed to create team: ${response.status} ${response.statusText}. ${errorData.detail}`

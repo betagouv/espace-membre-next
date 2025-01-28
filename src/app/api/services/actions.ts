@@ -17,11 +17,9 @@ import { EventCode } from "@/models/actionEvent";
 import {
     matomoAccountRequestSchema,
     matomoAccountRequestSchemaType,
-    matomoAccountRequestWrapperSchema,
     matomoAccountRequestWrapperSchemaType,
     sentryAccountRequestSchema,
     sentryAccountRequestSchemaType,
-    sentryAccountRequestWrapperSchema,
     sentryAccountRequestWrapperSchemaType,
 } from "@/models/actions/service";
 import {

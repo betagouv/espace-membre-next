@@ -1,14 +1,12 @@
 import slugify from "@sindresorhus/slugify";
-import pAll from "p-all";
 import PgBoss from "pg-boss";
 
 import { addEvent } from "@/lib/events";
-import { db } from "@/lib/kysely";
 import { getStartup } from "@/lib/kysely/queries";
 import { teamAlreadyExistsError } from "@/lib/sentry";
 import { EventCode } from "@/models/actionEvent";
 import { CreateSentryTeamDataSchemaType } from "@/models/jobs/services";
-import { ACCOUNT_SERVICE_STATUS, SERVICES } from "@/models/services";
+import { SERVICES } from "@/models/services";
 import { sentryClient } from "@/server/config/sentry.config";
 import { NoDataError } from "@/utils/error";
 
