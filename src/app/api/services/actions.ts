@@ -131,9 +131,23 @@ const createOrUpdateSentryAccount = async (
                 startupId: sentryData.newTeam.startupId,
             })
         );
-        teams.push({
+        const newTeam = {
             teamSlug: slugify(startup.name),
             teamRole: SentryRole.admin,
+        };
+        teams.push(newTeam);
+        await addEvent({
+            action_code: EventCode.MEMBER_SERVICE_TEAM_CREATION_REQUESTED,
+            action_metadata: {
+                service: SERVICES.SENTRY,
+                startupId: sentryData.newTeam.startupId,
+                requestId: requestId,
+                team: {
+                    teamSlug: newTeam.teamSlug,
+                },
+            },
+            action_on_username: user.username,
+            created_by_username: user.username,
         });
     }
     if (accountAlreadyExists) {

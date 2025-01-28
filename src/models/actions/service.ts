@@ -61,7 +61,7 @@ export type matomoAccountRequestSchemaType = z.infer<
 
 export const sentryAccountCreateRequestSchema = z.object({
     newTeam: z.object({
-        startupId: z.string(),
+        startupId: z.string().uuid(),
     }),
 });
 
