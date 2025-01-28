@@ -127,7 +127,7 @@ export const statusOptions: {
     },
     {
         key: "salarie_agence",
-        name: "Salarié(e) d'une agence de l'état (ex: ADEME, france-travail...)",
+        name: "Agent d'un opérateur de l'Etat (ADEME, France Travail...)",
     },
 ];
 
