@@ -10,7 +10,7 @@ import { AuthorizationError } from "@/utils/error";
 
 export async function unblockMemberEmailAddress(email: string) {
     const session = await getServerSession(authOptions);
-    if (!session || !session.user.id || !session.user.isAdmin) {
+    if (!session?.user?.id || !session?.user?.isAdmin) {
         throw new AuthorizationError();
     }
     const res = await smtpBlockedContactsEmailDelete({
@@ -22,7 +22,7 @@ export async function unblockMemberEmailAddress(email: string) {
 
 export async function unblockMemberEmailAddressFromCampaign(email: string) {
     const session = await getServerSession(authOptions);
-    if (!session || !session.user.id || !session.user.isAdmin) {
+    if (!session?.user?.id || !session?.user?.isAdmin) {
         throw new AuthorizationError();
     }
 

@@ -9,6 +9,9 @@ import Select from "@codegouvfr/react-dsfr/Select";
 import axios from "axios";
 
 import { AdminMattermostUser } from "./AdminMattermostUser";
+import { safeGetMattermostUsersInfo } from "@/app/api/admin/actions/getMattermostUsersInfo";
+import { safeSendMessageToUsersOnChat } from "@/app/api/admin/actions/sendMattermostMessage";
+import { MattermostUser } from "@/lib/mattermost";
 import { memberBaseInfoSchemaType } from "@/models/member";
 import routes, { computeRoute } from "@/routes/routes";
 
@@ -32,7 +35,9 @@ const css = ".panel { min-height: 400px; }"; // to have enough space to display 
 
 /* Pure component */
 export const AdminMattermost = (props: AdminMattermostProps) => {
-    const [usersForMessage, setUsersForMessage] = useState([]);
+    const [usersForMessage, setUsersForMessage] = useState<MattermostUser[]>(
+        []
+    );
     const [channel, setChannel] = useState("town-square");
     const [messageType, setMessageType] = useState("channel");
     const [includeEmails, setIncludeEmails] = useState("");
@@ -62,24 +67,24 @@ export const AdminMattermost = (props: AdminMattermostProps) => {
 
     const updateQuery = async () => {
         const params = {
-            excludeEmails,
-            includeEmails,
+            excludeEmails: excludeEmails.split(",").filter((email) => email),
+            includeEmails: includeEmails.split(",").filter((email) => email),
             fromBeta,
         };
         const queryParamsString = Object.keys(params)
             .map((key) => key + "=" + params[key])
             .join("&");
         try {
-            const usersForMessage = await axios
-                .get(
-                    `${computeRoute(
-                        routes.ADMIN_MATTERMOST_MESSAGE_API
-                    )}?${queryParamsString}`,
-                    {
-                        withCredentials: true,
-                    }
-                )
-                .then((resp) => resp.data.users);
+            const usersForMessage = await safeGetMattermostUsersInfo(
+                params
+            ).then((resp) => {
+                if (resp.success) {
+                    return resp.data.users;
+                } else {
+                    alert("Impossible de récupérer la liste d'utilisateur");
+                }
+                return [];
+            });
             setUsersForMessage(usersForMessage);
         } catch (e) {}
     };
@@ -88,8 +93,8 @@ export const AdminMattermost = (props: AdminMattermostProps) => {
         return {
             fromBeta,
             prod,
-            includeEmails,
-            excludeEmails,
+            includeEmails: includeEmails.split(",").filter((email) => email),
+            excludeEmails: excludeEmails.split(",").filter((email) => email),
             text,
             channel: messageType === "channel" ? channel : undefined,
         };
@@ -110,28 +115,24 @@ export const AdminMattermost = (props: AdminMattermostProps) => {
                 }`
             ) === true
         ) {
-            const res = await axios.post(
-                computeRoute(routes.ADMIN_MATTERMOST_SEND_MESSAGE),
-                buildParams(true),
-                {
-                    withCredentials: true,
-                }
-            );
-            alert(`${res.data.message}`);
+            const res = await safeSendMessageToUsersOnChat(buildParams(true));
+            if (res.success) {
+                alert(`Message envoyé`);
+            } else {
+                alert(`Echec de l'envoi du message`);
+            }
         } else {
             alert(`Le message n'a pas été envoyé`);
         }
     };
     const sendTest = async () => {
         try {
-            const res = await axios.post(
-                computeRoute(routes.ADMIN_MATTERMOST_SEND_MESSAGE),
-                buildParams(false),
-                {
-                    withCredentials: true,
-                }
-            );
-            alert(`${res.data.message}`);
+            const res = await safeSendMessageToUsersOnChat(buildParams(false));
+            if (res.success) {
+                alert(`Message envoyé`);
+            } else {
+                alert(`Echec de l'envoi du message`);
+            }
         } catch (e) {
             console.error("Erreur");
         }
