@@ -34,7 +34,13 @@ export default function BlocRedirection({
     const [keepCopy, setKeepCopy] = React.useState<boolean>(false);
     const [isSaving, setIsSaving] = React.useState<boolean>(false);
     return (
-        <Accordion label="Rediriger vers une autre adresse mail">
+        <Accordion
+            label={
+                <span id="redirection">
+                    Rediriger vers une autre adresse mail
+                </span>
+            }
+        >
             <p>
                 🚨 Il n'est pas recommandé d'utiliser les redirections :{" "}
                 <b>certains de tes messages seront perdus</b>. Mais une
