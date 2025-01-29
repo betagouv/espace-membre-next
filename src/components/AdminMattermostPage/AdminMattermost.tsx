@@ -119,7 +119,7 @@ export const AdminMattermost = (props: AdminMattermostProps) => {
             if (res.success) {
                 alert(`Message envoyé`);
             } else {
-                alert(`Echec de l'envoie du message`);
+                alert(`Echec de l'envoi du message`);
             }
         } else {
             alert(`Le message n'a pas été envoyé`);
