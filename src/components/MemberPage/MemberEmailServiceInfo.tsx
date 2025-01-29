@@ -5,7 +5,7 @@ import Button from "@codegouvfr/react-dsfr/Button";
 import {
     unblockMemberEmailAddress,
     unblockMemberEmailAddressFromCampaign,
-} from "@/app/api/admin/action";
+} from "@/app/api/admin/actions";
 import {
     brevoEmailInfoDataSchema,
     brevoEmailInfoDataSchemaType,
