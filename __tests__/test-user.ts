@@ -1,6 +1,7 @@
 import chai from "chai";
 import chaiHttp from "chai-http";
 import nock from "nock";
+import proxyquire from "proxyquire";
 import sinon from "sinon";
 
 import testUsers from "./users.json";
@@ -13,7 +14,6 @@ import { db } from "@/lib/kysely";
 import * as mattermost from "@/lib/mattermost";
 import { Domaine, EmailStatusCode } from "@/models/member";
 import { EMAIL_PLAN_TYPE } from "@/models/ovh";
-import routes from "@/routes/routes";
 import config from "@/server/config";
 import { createEmail } from "@/server/controllers/usersController/createEmailForUser";
 import * as session from "@/server/helpers/session";
@@ -21,7 +21,6 @@ import app from "@/server/index";
 import betagouv from "@betagouv";
 import Betagouv from "@betagouv";
 import * as controllerUtils from "@controllers/utils";
-import knex from "@db";
 import {
     createEmailAddresses,
     createRedirectionEmailAdresses,
@@ -931,7 +930,7 @@ describe("User", () => {
         let getServerSessionStub;
         let user;
         const managePrimaryEmailForUser = proxyquire(
-            "@/app/api/member/actions",
+            "@/app/api/member/actions/managePrimaryEmailForUser",
             {
                 "next/cache": {
                     revalidatePath: sinon.stub(),
