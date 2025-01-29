@@ -54,6 +54,7 @@ export default function BlocRedirection({
                         {canCreateRedirection && (
                             <form
                                 onSubmit={async (e) => {
+                                    e.preventDefault();
                                     const resp =
                                         await safeDeleteRedirectionForUser({
                                             username: userInfos.username,
