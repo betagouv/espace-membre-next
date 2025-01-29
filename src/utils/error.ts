@@ -24,7 +24,13 @@ export const ERROR_MESSAGES = {
 };
 // errors.ts
 
-export class ErrorWithStatus extends Error {
+export class BusinessError extends Error {
+    constructor(message: string) {
+        super(message);
+    }
+}
+
+export class ErrorWithStatus extends BusinessError {
     statusCode: number;
     constructor(message: string) {
         super(message);
@@ -148,7 +154,7 @@ export function withErrorHandling<T, Args extends any[]>(
                 success: true,
             };
         } catch (error) {
-            if (isExpectedError(error)) {
+            if (isExpectedError(error) || error instanceof BusinessError) {
                 console.log("Expected error", error);
 
                 // Return a standardized error response
