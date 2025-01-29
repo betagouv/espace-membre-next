@@ -33,16 +33,6 @@ export default function BlocCreateEmail({
                     const resp = await safeCreateEmail({
                         username: userInfos.username,
                     });
-                    // await axios.post(
-                    //     computeRoute(routes.USER_CREATE_EMAIL_API).replace(
-                    //         ":username",
-                    //         userInfos.username
-                    //     ),
-                    //     {},
-                    //     {
-                    //         withCredentials: true,
-                    //     }
-                    // );
                     if (resp.success) {
                         alert("Ton email a bien été créé.");
                     } else {
