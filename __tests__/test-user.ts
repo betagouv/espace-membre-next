@@ -1,5 +1,6 @@
 import chai from "chai";
 import chaiHttp from "chai-http";
+import * as nextAuth from "next-auth/next";
 import nock from "nock";
 import proxyquire from "proxyquire";
 import sinon from "sinon";
@@ -14,6 +15,7 @@ import { db } from "@/lib/kysely";
 import * as mattermost from "@/lib/mattermost";
 import { Domaine, EmailStatusCode } from "@/models/member";
 import { EMAIL_PLAN_TYPE } from "@/models/ovh";
+import routes from "@/routes/routes";
 import config from "@/server/config";
 import { createEmail } from "@/server/controllers/usersController/createEmailForUser";
 import * as session from "@/server/helpers/session";
@@ -923,14 +925,13 @@ describe("User", () => {
         });
     });
 
-    describe("PUT /api/users/:username/primary_email", () => {
+    describe("Test action managePrimaryEmailForUser", () => {
         let mattermostGetUserByEmailStub;
         let isPublicServiceEmailStub;
-        let getToken;
         let getServerSessionStub;
         let user;
         const managePrimaryEmailForUser = proxyquire(
-            "@/app/api/member/actions/managePrimaryEmailForUser",
+            "@/app/api/member/actions",
             {
                 "next/cache": {
                     revalidatePath: sinon.stub(),
@@ -945,33 +946,38 @@ describe("User", () => {
             isPublicServiceEmailStub = sinon
                 .stub(controllerUtils, "isPublicServiceEmail")
                 .returns(Promise.resolve(true));
-            getToken = sinon.stub(session, "getToken");
-            getToken.returns(utils.getJWT("membre.nouveau"));
             getServerSessionStub = sinon
                 .stub(nextAuth, "getServerSession")
                 .resolves({});
 
             await utils.createUsers(testUsers);
+            user = await db
+                .selectFrom("users")
+                .selectAll()
+                .where("username", "=", "membre.nouveau")
+                .executeTakeFirstOrThrow();
         });
         afterEach(async () => {
+            sinon.restore();
+            await utils.deleteUsers(testUsers);
             mattermostGetUserByEmailStub.restore();
             isPublicServiceEmailStub.restore();
             await utils.deleteUsers(testUsers);
         });
 
         it("should not update primary email if user is not current user", async () => {
+            const mockSession = {
+                user: { id: "anyuser", isAdmin: false, uuid: "anyuser-uuid" },
+            };
+            getServerSessionStub.resolves(mockSession);
             const username = "membre.nouveau";
             const primaryEmail = "membre.nouveau.new@example.com";
-            getToken.returns(utils.getJWT("julien.dauphant"));
+            try {
+                await managePrimaryEmailForUser({ username, primaryEmail });
+            } catch (e) {
+                console.log(e);
+            }
 
-            await chai
-                .request(app)
-                .put(`/api/users/${username}/primary_email/`)
-                .type("form")
-                .send({
-                    username,
-                    primaryEmail: primaryEmail,
-                });
             isPublicServiceEmailStub.called.should.be.true;
             mattermostGetUserByEmailStub.calledTwice.should.be.false;
         });
@@ -980,23 +986,29 @@ describe("User", () => {
             const username = "membre.nouveau";
             const primaryEmail = "membre.nouveau.new@example.com";
             isPublicServiceEmailStub.returns(Promise.resolve(false));
-            getToken.returns(utils.getJWT("membre.nouveau"));
 
-            await chai
-                .request(app)
-                .put(`/api/users/${username}/primary_email/`)
-                .type("form")
-                .send({
-                    username,
-                    primaryEmail: primaryEmail,
-                });
+            const user = await db
+                .selectFrom("users")
+                .selectAll()
+                .where("username", "=", "membre.nouveau")
+                .executeTakeFirstOrThrow();
+
+            const mockSession = {
+                user: { id: "membre.nouveau", isAdmin: false, uuid: user.uuid },
+            };
+            getServerSessionStub.resolves(mockSession);
+
+            try {
+                await managePrimaryEmailForUser({ username, primaryEmail });
+            } catch (e) {
+                console.log(e);
+            }
             const dbNewRes = await db
                 .selectFrom("users")
                 .selectAll()
                 .where("username", "=", "membre.nouveau")
-                .execute();
-            dbNewRes.length.should.equal(1);
-            dbNewRes[0].primary_email.should.not.equal(primaryEmail);
+                .executeTakeFirstOrThrow();
+            dbNewRes.primary_email?.should.not.equal(primaryEmail);
             isPublicServiceEmailStub.called.should.be.true;
             mattermostGetUserByEmailStub.calledOnce.should.be.false;
         });
@@ -1006,7 +1018,11 @@ describe("User", () => {
             mattermostGetUserByEmailStub.returns(Promise.reject("404 error"));
             const username = "membre.nouveau";
             const primaryEmail = "membre.nouveau.new@example.com";
-            getToken.returns(utils.getJWT("membre.nouveau"));
+            const mockSession = {
+                user: { id: "membre.nouveau", isAdmin: false, uuid: user.uuid },
+            };
+            getServerSessionStub.resolves(mockSession);
+
             await db
                 .updateTable("users")
                 .where("username", "=", "membre.nouveau")
@@ -1015,21 +1031,17 @@ describe("User", () => {
                 })
                 .execute();
 
-            const res = await chai
-                .request(app)
-                .put(`/api/users/${username}/primary_email/`)
-                .type("form")
-                .send({
-                    username,
-                    primaryEmail: primaryEmail,
-                });
+            try {
+                await managePrimaryEmailForUser({ username, primaryEmail });
+            } catch (e) {
+                console.log(e);
+            }
             const dbNewRes = await db
                 .selectFrom("users")
                 .selectAll()
                 .where("username", "=", "membre.nouveau")
-                .execute();
-            dbNewRes.length.should.equal(1);
-            dbNewRes[0].primary_email.should.not.equal(primaryEmail);
+                .executeTakeFirstOrThrow();
+            dbNewRes.primary_email?.should.not.equal(primaryEmail);
 
             mattermostGetUserByEmailStub.calledOnce.should.be.true;
 
@@ -1047,7 +1059,11 @@ describe("User", () => {
             mattermostGetUserByEmailStub.returns(Promise.reject("404 error"));
             const username = "membre.nouveau";
             const primaryEmail = "admin@otherdomaine.gouv.fr";
-            getToken.returns(utils.getJWT("membre.nouveau"));
+            const mockSession = {
+                user: { id: "membre.nouveau", isAdmin: false, uuid: user.uuid },
+            };
+            getServerSessionStub.resolves(mockSession);
+
             await db
                 .updateTable("users")
                 .where("username", "=", "membre.nouveau")
@@ -1056,21 +1072,15 @@ describe("User", () => {
                 })
                 .execute();
 
-            await chai
-                .request(app)
-                .put(`/api/users/${username}/primary_email/`)
-                .type("form")
-                .send({
-                    username,
-                    primaryEmail: primaryEmail,
-                });
+            try {
+                await managePrimaryEmailForUser({ username, primaryEmail });
+            } catch (e) {}
             const dbNewRes = await db
                 .selectFrom("users")
                 .selectAll()
                 .where("username", "=", "membre.nouveau")
-                .execute();
-            dbNewRes.length.should.equal(1);
-            dbNewRes[0].primary_email.should.equal(
+                .executeTakeFirstOrThrow();
+            dbNewRes.primary_email?.should.equal(
                 `membre.nouveau@${config.domain}`
             );
             await db
@@ -1093,23 +1103,19 @@ describe("User", () => {
                 .returns(Promise.resolve(true));
             const username = "membre.nouveau";
             const primaryEmail = "membre.nouveau.new@example.com";
-            getToken.returns(utils.getJWT("membre.nouveau"));
+            const mockSession = {
+                user: { id: "membre.nouveau", isAdmin: false, uuid: user.uuid },
+            };
+            getServerSessionStub.resolves(mockSession);
 
-            const res = await chai
-                .request(app)
-                .put(`/api/users/${username}/primary_email/`)
-                .type("form")
-                .send({
-                    username,
-                    primaryEmail: primaryEmail,
-                });
+            await managePrimaryEmailForUser({ username, primaryEmail });
+
             const dbNewRes = await db
                 .selectFrom("users")
                 .selectAll()
                 .where("username", "=", "membre.nouveau")
-                .execute();
-            dbNewRes.length.should.equal(1);
-            dbNewRes[0].primary_email.should.equal(primaryEmail);
+                .executeTakeFirstOrThrow();
+            dbNewRes.primary_email?.should.equal(primaryEmail);
             await db
                 .updateTable("users")
                 .where("username", "=", "membre.nouveau")
