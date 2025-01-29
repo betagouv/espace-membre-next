@@ -931,7 +931,7 @@ describe("User", () => {
         let getServerSessionStub;
         let user;
         const managePrimaryEmailForUser = proxyquire(
-            "@/app/api/member/actions",
+            "@/app/api/member/actions/managePrimaryEmailForUser",
             {
                 "next/cache": {
                     revalidatePath: sinon.stub(),
