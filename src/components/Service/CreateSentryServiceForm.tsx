@@ -36,7 +36,6 @@ export const CreateSentryServiceForm = ({
     const [isSaving, setIsSaving] = React.useState(false);
     const [alertMessage, setAlertMessage] =
         React.useState<AlertMessageType | null>();
-    console.log(startupOptions);
     const onSubmit = async (data: sentryAccountCreateRequestSchemaType, e) => {
         if (isSaving) {
             return;
