@@ -13,11 +13,12 @@ import routes, { computeRoute } from "@/routes/routes";
 
 export default function Page() {
     const [data, setData] = useState({});
-    const [isLoading] = useState(true);
+    const [isLoading, setIsLoading] = useState(true);
     useEffect(() => {
         async function fetchData() {
             const res = await safeGetMattermostInfo();
             setData(res.data || {});
+            setIsLoading(false);
         }
         fetchData();
     }, []);
