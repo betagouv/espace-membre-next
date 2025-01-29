@@ -15,7 +15,6 @@ import { errorHandler } from "./middlewares/errorHandler";
 import { rateLimiter } from "./middlewares/rateLimiter";
 import { setupSessionMiddleware } from "./middlewares/sessionMiddleware";
 import {
-    adminRouter,
     badgeRouter,
     userRouter,
     userApiRouter,
