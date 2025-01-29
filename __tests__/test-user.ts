@@ -34,12 +34,15 @@ const deleteEmailForUser = proxyquire("@/app/api/member/actions/index", {
     "next/cache": {
         revalidatePath: sinon.stub(),
     },
+    "next/headers": {
+        cookies: sinon.stub(),
+    },
 }).deleteEmailForUser;
 
 chai.use(chaiHttp);
 const { expect } = chai;
 
-describe("User", () => {
+describe("Test user relative actions", () => {
     let ovhPasswordNock;
 
     describe("test createEmailAction unauthenticated", () => {
