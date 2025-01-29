@@ -180,7 +180,7 @@ export class SentryService implements AccountService {
         teamRole,
         teamSlug,
     }): Promise<void> {
-        const url = `${this.apiUrl}/api/0/organizations/${this.org}/members/${memberId}/teams/totolasticot/`;
+        const url = `${this.apiUrl}/api/0/organizations/${this.org}/members/${memberId}/teams/${teamSlug}/`;
         const response = await fetch(url, {
             method: "PUT",
             headers: {
