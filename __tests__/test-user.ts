@@ -30,7 +30,7 @@ import {
     unsubscribeEmailAddresses,
 } from "@schedulers/emailScheduler";
 
-const deleteEmailForUser = proxyquire("@/app/api/member/actions", {
+const deleteEmailForUser = proxyquire("@/app/api/member/actions/index", {
     "next/cache": {
         revalidatePath: sinon.stub(),
     },
@@ -835,7 +835,7 @@ describe("User", () => {
         let getServerSessionStub;
         let user;
         const manageSecondaryEmailForUser = proxyquire(
-            "@/app/api/member/actions",
+            "@/app/api/member/actions/index",
             {
                 "next/cache": {
                     revalidatePath: sinon.stub(),

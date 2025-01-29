@@ -494,7 +494,6 @@ export const safeUpdateCommunicationEmail = withErrorHandling<
     UnwrapPromise<ReturnType<typeof updateCommunicationEmail>>,
     Parameters<typeof updateCommunicationEmail>
 >(updateCommunicationEmail);
-
 export const safeDeleteEmailForUser = withErrorHandling<
     UnwrapPromise<ReturnType<typeof deleteEmailForUser>>,
     Parameters<typeof deleteEmailForUser>
