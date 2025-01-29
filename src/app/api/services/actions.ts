@@ -121,13 +121,19 @@ const createOrUpdateSentryAccount = async (
         }
         await bossClient.send(
             createSentryTeamTopic,
-            CreateSentryTeamDataSchema.parse({
-                email: user.primary_email,
-                username: user.username,
-                userUuid: user.uuid,
-                requestId,
-                startupId: sentryData.newTeam.startupId,
-            })
+            CreateSentryTeamDataSchema.parse(
+                {
+                    email: user.primary_email,
+                    username: user.username,
+                    userUuid: user.uuid,
+                    requestId,
+                    startupId: sentryData.newTeam.startupId,
+                },
+                {
+                    retryLimit: 50,
+                    retryBackoff: true,
+                }
+            )
         );
         const newTeam = {
             teamSlug: slugify(startup.name),
@@ -151,14 +157,20 @@ const createOrUpdateSentryAccount = async (
     if (accountAlreadyExists) {
         await bossClient.send(
             updateSentryServiceAccountTopic,
-            UpdateSentryAccountDataSchema.parse({
-                email: user.primary_email,
-                username: user.username,
-                userUuid: user.uuid,
-                memberId: sentryAccount.service_user_id,
-                teams,
-                requestId,
-            })
+            UpdateSentryAccountDataSchema.parse(
+                {
+                    email: user.primary_email,
+                    username: user.username,
+                    userUuid: user.uuid,
+                    memberId: sentryAccount.service_user_id,
+                    teams,
+                    requestId,
+                },
+                {
+                    retryLimit: 50,
+                    retryBackoff: true,
+                }
+            )
         );
 
         await addEvent({
