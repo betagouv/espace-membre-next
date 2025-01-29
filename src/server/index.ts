@@ -92,7 +92,6 @@ const startServer = () => {
         server.get("/", indexController.getIndex);
         server.use(userRouter);
         server.use(userApiRouter);
-        server.use(adminRouter);
         // server.use(authRouter);
         server.use(badgeRouter);
 

@@ -5,7 +5,6 @@ import sinon from "sinon";
 
 import testUsers from "./users.json";
 import utils from "./utils";
-import { getMattermostInfo } from "@/app/api/admin/actions/getMattermostAdmin";
 import { getMattermostUsersInfo } from "@/app/api/admin/actions/getMattermostUsersInfo";
 import { sendMessageToUsersOnChat } from "@/app/api/admin/actions/sendMattermostMessage";
 import { db } from "@/lib/kysely";
@@ -17,6 +16,8 @@ import app from "@/server/index";
 import * as sendMattermostMessage from "@controllers/adminController/sendMattermostMessage";
 import * as chat from "@infra/chat";
 import * as mattermostScheduler from "@schedulers/mattermostScheduler/removeBetaAndParnersUsersFromCommunityTeam";
+
+import { getMattermostInfo } from "@/app/api/admin/actions/getMattermostAdmin";
 
 chai.use(chaiHttp);
 
