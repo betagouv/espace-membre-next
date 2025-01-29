@@ -123,7 +123,7 @@ export default async function SentryRequestPage() {
         [EventCode.MEMBER_SERVICE_ACCOUNT_REQUESTED]: "en cours",
         [EventCode.MEMBER_SERVICE_ACCOUNT_CREATED]: "compte créé",
         [EventCode.MEMBER_SERVICE_ACCOUNT_UPDATE_REQUESTED]: "en cours",
-        [EventCode.MEMBER_SERVICE_ACCOUNT_UPDATED]: "site ajouté",
+        [EventCode.MEMBER_SERVICE_ACCOUNT_UPDATED]: "équipe ajouté",
     };
 
     const formatMetadata = (
@@ -137,7 +137,7 @@ export default async function SentryRequestPage() {
             );
             return (
                 <>
-                    Ajout {data.teams.length > 1 ? "des" : "du"} site
+                    Ajout {data.teams.length > 1 ? "des" : "de l'"} équipe
                     {data.teams.length > 1 ? "s" : ""}{" "}
                     {siteObj.map((site) => site?.name).join(", ")}
                     {data.teams.length > 1 ? "s" : ""}
