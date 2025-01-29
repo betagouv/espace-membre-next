@@ -344,6 +344,8 @@ const getChanges = async (markdownData) => {
                     ...dbStartup2,
                 });
 
+                updated.link = dbStartup2.link || "";
+
                 // hack for validation
                 updated.phases =
                     updated.phases &&
