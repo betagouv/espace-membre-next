@@ -33,13 +33,13 @@ export const CreateEmailForm = ({
                     message: `${response.message}`,
                     type: "warning",
                 });
+            } else {
+                setAlertMessage({
+                    title: `L'email est en cours de création`,
+                    message: `L'email est en train d'être créé. ${userInfos.fullname} recevra un message dès que celui-ci sera actif.`,
+                    type: "success",
+                });
             }
-
-            setAlertMessage({
-                title: `L'email est en cours de création`,
-                message: `L'email est en train d'être créé. ${userInfos.fullname} recevra un message dès que celui-ci sera actif.`,
-                type: "success",
-            });
         } catch (e) {
             if (e instanceof Error) {
                 setAlertMessage({
