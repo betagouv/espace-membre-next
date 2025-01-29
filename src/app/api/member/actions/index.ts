@@ -349,72 +349,6 @@ async function updateMemberMissions(
     revalidatePath("/community/[id]", "layout");
 }
 
-export async function deleteEmailForUser({ username }: { username: string }) {
-    const session = await getServerSession(authOptions);
-    if (!session || !session.user.id) {
-        throw new AuthorizationError();
-    }
-    const isCurrentUser = session.user.id === username;
-
-    try {
-        const user = await userInfos({ username }, isCurrentUser);
-        if (!isCurrentUser && !user.isExpired) {
-            throw new BusinessError(
-                `Le compte "${username}" n'est pas expiré, vous ne pouvez pas supprimer ce compte.`
-            );
-        }
-
-        await betagouv.sendInfoToChat(
-            `Suppression de compte de ${username} (à la demande de ${session.user.id})`
-        );
-        await addEvent({
-            action_code: EventCode.MEMBER_EMAIL_DELETED,
-            created_by_username: session.user.id,
-            action_on_username: username,
-        });
-        if (user.emailRedirections && user.emailRedirections.length > 0) {
-            await betagouv.requestRedirections(
-                "DELETE",
-                user.emailRedirections.map((x) => x.id)
-            );
-            console.log(
-                `Suppression des redirections de l'email de ${username} (à la demande de ${session.user.id})`
-            );
-        }
-
-        await betagouv.createRedirection(
-            buildBetaEmail(username),
-            config.leavesEmail,
-            false
-        );
-        await db
-            .updateTable("users")
-            .set({
-                secondary_email: null,
-                primary_email: null,
-                primary_email_status: EmailStatusCode.EMAIL_UNSET,
-            })
-            .where("username", "=", username)
-            .execute();
-        console.log(
-            `Redirection des emails de ${username} vers ${config.leavesEmail} (à la demande de ${session.user.id})`
-        );
-        if (isCurrentUser) {
-            cookies().set("next-auth.session-token", "", {
-                maxAge: -1,
-                path: "/",
-            });
-            // Optionally, clear other cookies related to authentication
-            cookies().set("__Secure-next-auth.session-token", "", {
-                maxAge: -1,
-                path: "/",
-            });
-        }
-    } catch (err) {
-        console.error(err);
-    }
-}
-
 export async function manageSecondaryEmailForUser({
     username,
     secondaryEmail,
@@ -494,10 +428,6 @@ export const safeUpdateCommunicationEmail = withErrorHandling<
     UnwrapPromise<ReturnType<typeof updateCommunicationEmail>>,
     Parameters<typeof updateCommunicationEmail>
 >(updateCommunicationEmail);
-export const safeDeleteEmailForUser = withErrorHandling<
-    UnwrapPromise<ReturnType<typeof deleteEmailForUser>>,
-    Parameters<typeof deleteEmailForUser>
->(deleteEmailForUser);
 export const safeManageSecondaryEmailForUser = withErrorHandling<
     UnwrapPromise<ReturnType<typeof manageSecondaryEmailForUser>>,
     Parameters<typeof manageSecondaryEmailForUser>
