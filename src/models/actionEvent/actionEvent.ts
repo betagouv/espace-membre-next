@@ -1,11 +1,7 @@
 import { z } from "zod";
 
 import {
-    // EventMatomoAccountCreatedPayload,
     EventMatomoAccountPayloadSchema,
-    // EventMatomoAccountRequestedPayload,
-    // EventMatomoAccountUpdatedPayload,
-    // EventMatomoAccountUpdateRequestedPayload,
     EventSentryAccountCreatedPayload,
     EventSentryAccountRequestedPayload,
     EventSentryAccountUpdatedPayload,
@@ -13,6 +9,7 @@ import {
     EventServiceAccountDeletedPayload,
     EventSentryCreateTeamPayload,
     EventSentryCreateTeamRequestedTeamPayload,
+    EventSentryAccountUpdateFailedUserDoesNotExistPayload,
 } from "./serviceActionEvent";
 import {
     memberInfoUpdateSchema,
@@ -57,6 +54,7 @@ export enum EventCode {
     MEMBER_SERVICE_ACCOUNT_UPDATED = "MEMBER_SERVICE_ACCOUNT_UPDATED",
     MEMBER_SERVICE_TEAM_CREATED = "MEMBER_SERVICE_TEAM_CREATED",
     MEMBER_SERVICE_TEAM_CREATION_REQUESTED = "MEMBER_SERVICE_TEAM_CREATION_REQUESTED",
+    MEMBER_SERVICE_ACCOUNT_UPDATE_FAILED_USER_DOES_NOT_EXIST = "MEMBER_SERVICE_ACCOUNT_UPDATE_FAILED_USER_DOES_NOT_EXIST",
 }
 
 export const EventCodeToReadable: Record<EventCode, string> = {
@@ -99,6 +97,8 @@ export const EventCodeToReadable: Record<EventCode, string> = {
     [EventCode.MEMBER_SERVICE_TEAM_CREATED]: "Equipe sentry créée",
     [EventCode.MEMBER_SERVICE_TEAM_CREATION_REQUESTED]:
         "Equipe sentry demandée",
+    [EventCode.MEMBER_SERVICE_ACCOUNT_UPDATE_FAILED_USER_DOES_NOT_EXIST]:
+        "Mise à jour du compte sentry échouée. L'utilisateur n'existe pas.",
 };
 
 export const SYSTEM_NAME = "system";
@@ -392,11 +392,8 @@ export type EventPayloads =
     | z.infer<typeof EventSentryAccountUpdatedPayload>
     | z.infer<typeof EventSentryCreateTeamPayload>
     | z.infer<typeof EventSentryCreateTeamRequestedTeamPayload>
+    | z.infer<typeof EventSentryAccountUpdateFailedUserDoesNotExistPayload>
     | z.infer<typeof EventMatomoAccountPayloadSchema>;
-// | z.infer<typeof EventMatomoAccountRequestedPayload>
-// | z.infer<typeof EventMatomoAccountCreatedPayload>
-// | z.infer<typeof EventMatomoAccountUpdateRequestedPayload>
-// | z.infer<typeof EventMatomoAccountUpdatedPayload>;
 
 export type EventAction = BaseActionEvent & EventPayloads;
 

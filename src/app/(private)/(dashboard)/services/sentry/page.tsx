@@ -117,13 +117,16 @@ export default async function SentryRequestPage() {
         | EventCode.MEMBER_SERVICE_ACCOUNT_REQUESTED
         | EventCode.MEMBER_SERVICE_ACCOUNT_CREATED
         | EventCode.MEMBER_SERVICE_ACCOUNT_UPDATE_REQUESTED
-        | EventCode.MEMBER_SERVICE_ACCOUNT_UPDATED,
+        | EventCode.MEMBER_SERVICE_ACCOUNT_UPDATED
+        | EventCode.MEMBER_SERVICE_ACCOUNT_UPDATE_FAILED_USER_DOES_NOT_EXIST,
         string
     > = {
         [EventCode.MEMBER_SERVICE_ACCOUNT_REQUESTED]: "en cours",
         [EventCode.MEMBER_SERVICE_ACCOUNT_CREATED]: "compte créé",
         [EventCode.MEMBER_SERVICE_ACCOUNT_UPDATE_REQUESTED]: "en cours",
-        [EventCode.MEMBER_SERVICE_ACCOUNT_UPDATED]: "équipe ajouté",
+        [EventCode.MEMBER_SERVICE_ACCOUNT_UPDATED]: "équipe ajoutée",
+        [EventCode.MEMBER_SERVICE_ACCOUNT_UPDATE_FAILED_USER_DOES_NOT_EXIST]:
+            "Mise à jour échouée. L'utilisateur n'existe pas.",
     };
 
     const formatMetadata = (

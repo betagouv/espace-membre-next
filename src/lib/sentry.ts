@@ -124,6 +124,9 @@ export class SentryService implements AccountService {
             method: "GET",
         });
 
+        if (response.status === 404) {
+            throw userNotFound;
+        }
         if (!response.ok) {
             throw new Error(`Failed to get user: ${response.statusText}`);
         }
@@ -409,4 +412,9 @@ export const teamAlreadyExistsError = new SentryError(
 export const userAlreadyHaveDefinedRoleOrTeamDoesNotExist = new SentryError(
     "userAlreadyHaveDefinedRoleOrTeamDoesNotExist",
     "User already have defined role or team dost not exist"
+);
+
+export const userNotFound = new SentryError(
+    "userDoesNotExist",
+    "User does not exist"
 );
