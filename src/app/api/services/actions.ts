@@ -14,7 +14,6 @@ import { getStartup } from "@/lib/kysely/queries";
 import { getServiceAccount } from "@/lib/kysely/queries/services";
 import {
     getUserBasicInfo,
-    getUserStartups,
     getUserStartupsActive,
 } from "@/lib/kysely/queries/users";
 import { MatomoAccess } from "@/lib/matomo";
