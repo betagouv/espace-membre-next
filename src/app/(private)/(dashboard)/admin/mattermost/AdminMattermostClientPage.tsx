@@ -4,6 +4,7 @@ import { useEffect, useState } from "react";
 import axios from "axios";
 import type { Metadata } from "next";
 
+import { safeGetMattermostInfo } from "@/app/api/admin/actions/getMattermostAdmin";
 import {
     AdminMattermost,
     AdminMattermostProps,
@@ -12,16 +13,14 @@ import routes, { computeRoute } from "@/routes/routes";
 
 export default function Page() {
     const [data, setData] = useState({});
-    const [isLoading, setLoading] = useState(true);
+    const [isLoading, setIsLoading] = useState(true);
     useEffect(() => {
-        axios
-            .get(computeRoute(routes.ADMIN_MATTERMOST_API), {
-                withCredentials: true,
-            })
-            .then((res) => {
-                setData(res.data);
-                setLoading(false);
-            });
+        async function fetchData() {
+            const res = await safeGetMattermostInfo();
+            setData(res.data || {});
+            setIsLoading(false);
+        }
+        fetchData();
     }, []);
 
     if (isLoading) return <p>Chargement...</p>;
