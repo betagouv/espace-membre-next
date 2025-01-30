@@ -10,7 +10,7 @@ import AccountDetails from "@/components/Service/AccountDetails";
 import * as hstore from "@/lib/hstore";
 import { db, sql } from "@/lib/kysely";
 import { getServiceAccount } from "@/lib/kysely/queries/services";
-import { getUserStartups } from "@/lib/kysely/queries/users";
+import { getUserStartupsActive } from "@/lib/kysely/queries/users";
 import { EventCode } from "@/models/actionEvent/actionEvent";
 import {
     EventSentryAccountPayloadSchema,
