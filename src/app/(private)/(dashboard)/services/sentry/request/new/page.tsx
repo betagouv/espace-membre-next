@@ -1,14 +1,14 @@
 import { redirect } from "next/navigation";
 import { getServerSession } from "next-auth/next";
 
-import { CreateMatomoServiceForm } from "@/components/Service/CreateMatomoServiceForm";
+import { CreateSentryServiceForm } from "@/components/Service/CreateSentryServiceForm";
 import { StartupType } from "@/components/SESelect";
 import { getAllStartups } from "@/lib/kysely/queries";
 import { getUserStartupsActive } from "@/lib/kysely/queries/users";
 import { userStartupToModel } from "@/models/mapper/startupMapper";
 import { authOptions } from "@/utils/authoptions";
 
-export default async function NewMatomoPage() {
+export default async function NewSentryPage() {
     const session = await getServerSession(authOptions);
     if (!session) {
         redirect("/login");
@@ -27,8 +27,8 @@ export default async function NewMatomoPage() {
 
     return (
         <>
-            <h1>Ajouter un accès a un site matomo</h1>
-            <CreateMatomoServiceForm startupOptions={startupOptions} />
+            <h1>Ajouter un accès a une équipe sentry</h1>
+            <CreateSentryServiceForm startupOptions={startupOptions} />
         </>
     );
 }

@@ -13,6 +13,7 @@ export async function syncSentryTeams(
         const sentryTeamsToInsert = sentryTeams.map((team) => ({
             sentry_id: team.id, // Assuming the Sentry team object has an `id`
             name: team.name, // Assuming the Sentry team object has a `name`
+            slug: team.slug,
         }));
         if (sentryTeamsToInsert.length) {
             await db

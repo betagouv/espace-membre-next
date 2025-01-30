@@ -67,6 +67,18 @@ export type CreateSentryAccountDataSchemaType = z.infer<
     typeof CreateSentryAccountDataSchema
 >;
 
+export const CreateSentryTeamDataSchema = MaintenanceWrapperDataSchema.extend({
+    startupId: z.string(),
+    userUuid: z.string(),
+    email: z.string().email(),
+    username: z.string(), // used to logged infortion
+    requestId: z.string().uuid(),
+}).strict();
+
+export type CreateSentryTeamDataSchemaType = z.infer<
+    typeof CreateSentryTeamDataSchema
+>;
+
 export const UpdateSentryAccountDataSchema =
     MaintenanceWrapperDataSchema.extend({
         teams: z.array(

@@ -58,7 +58,6 @@ export default async function MatomoPage() {
                 userEmail={session.user.email}
                 createAccount={!!service_account}
                 sites={matomoSites}
-                userStartups={startups}
             />
         </>
     );
