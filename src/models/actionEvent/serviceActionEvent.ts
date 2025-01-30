@@ -95,7 +95,6 @@ export const EventSentryAccountUpdateFailedUserDoesNotExistPayload = z.object({
     action_metadata: z.object({
         service: z.literal(SERVICES.SENTRY),
         requestId: z.string().uuid(),
-        startupId: z.string(),
         teams: z.array(
             z.object({
                 teamSlug: z.string(),
