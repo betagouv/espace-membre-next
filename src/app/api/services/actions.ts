@@ -12,7 +12,11 @@ import { addEvent } from "@/lib/events";
 import { db } from "@/lib/kysely";
 import { getStartup } from "@/lib/kysely/queries";
 import { getServiceAccount } from "@/lib/kysely/queries/services";
-import { getUserBasicInfo, getUserStartups } from "@/lib/kysely/queries/users";
+import {
+    getUserBasicInfo,
+    getUserStartups,
+    getUserStartupsActive,
+} from "@/lib/kysely/queries/users";
 import { MatomoAccess } from "@/lib/matomo";
 import { SentryRole } from "@/lib/sentry";
 import { EventCode } from "@/models/actionEvent";
@@ -101,7 +105,7 @@ const createOrUpdateSentryAccount = async (
     if (!user.primary_email) {
         throw new ValidationError("Un email primaire est obligatoire");
     }
-    const userStartups = (await getUserStartups(user.uuid)).map(
+    const userStartups = (await getUserStartupsActive(user.uuid)).map(
         (startup) => startup.uuid
     );
     const startupsByTeamName = (

@@ -54,17 +54,11 @@ export default async function SentryRequestPage() {
         : undefined;
 
     const now = new Date();
-    const startups = (await getUserStartups(session.user.uuid))
-        .filter((startup) => {
-            return (
-                isAfter(now, startup.start ?? 0) &&
-                isBefore(now, startup.end ?? Infinity)
-            );
-        })
-        .map((startup) => userStartupToModel(startup));
+    const startups = (await getUserStartupsActive(session.user.uuid)).map(
+        (startup) => userStartupToModel(startup)
+    );
 
     let sentryTeams: sentryTeamSchemaType[] = [];
-
     if (session.user.isAdmin) {
         sentryTeams = await db
             .selectFrom("sentry_teams")
