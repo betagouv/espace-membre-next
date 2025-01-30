@@ -5,6 +5,7 @@ export const sentryTeamSchema = z
         id: z.string(),
         name: z.string(),
         sentry_id: z.string(),
+        slug: z.string(),
         startup_id: z.string().nullable(), // Nullable string
     })
     .strip();

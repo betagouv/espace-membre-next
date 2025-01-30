@@ -2,6 +2,7 @@
 
 import slugify from "@sindresorhus/slugify";
 import crypto from "crypto";
+import _ from "lodash";
 import { getServerSession } from "next-auth";
 import PgBoss from "pg-boss";
 import { match } from "ts-pattern";
@@ -79,7 +80,8 @@ export const askAccountCreationForService = withErrorHandling(
                 await createOrUpdateSentryAccount(
                     user,
                     sentryAccountRequestSchema.parse(data),
-                    bossClient
+                    bossClient,
+                    session.user.isAdmin
                 );
             })
 
@@ -93,10 +95,45 @@ export const askAccountCreationForService = withErrorHandling(
 const createOrUpdateSentryAccount = async (
     user: memberBaseInfoSchemaType,
     sentryData: sentryAccountRequestSchemaType,
-    bossClient: PgBoss
+    bossClient: PgBoss,
+    isAdmin: boolean = false
 ) => {
     if (!user.primary_email) {
         throw new ValidationError("Un email primaire est obligatoire");
+    }
+    const userStartups = (await getUserStartups(user.uuid)).map(
+        (startup) => startup.uuid
+    );
+    const startupsByTeamName = (
+        "teams" in sentryData
+            ? await db
+                  .selectFrom("sentry_teams")
+                  .where(
+                      "slug",
+                      "in",
+                      sentryData.teams.map((t) => t.slug)
+                  )
+                  .selectAll()
+                  .execute()
+            : []
+    ).map((team) => team.startup_id);
+
+    const allRequestedStartupAreAuthorized = _.every(
+        startupsByTeamName,
+        (item) => _.includes(userStartups, item)
+    );
+    const newTeamStartupIsAuthorized =
+        !("newTeam" in sentryData) ||
+        userStartups.includes(sentryData.newTeam.startupId);
+
+    const canRequestAccessToStartup: boolean =
+        isAdmin ||
+        (allRequestedStartupAreAuthorized && newTeamStartupIsAuthorized);
+
+    if (!canRequestAccessToStartup) {
+        throw new AuthorizationError(
+            "User does not work for at leat one of the provided teams"
+        );
     }
     const sentryAccount = await getServiceAccount(user.uuid, SERVICES.SENTRY);
     const accountAlreadyExists = !!sentryAccount?.service_user_id;
@@ -104,7 +141,7 @@ const createOrUpdateSentryAccount = async (
     const teams =
         "teams" in sentryData && sentryData.teams
             ? sentryData.teams.map((t) => ({
-                  teamSlug: slugify(t.name),
+                  teamSlug: t.slug,
                   teamRole: SentryRole.contributor,
               }))
             : [];

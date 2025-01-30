@@ -58,7 +58,7 @@ export default async function SentryRequestPage() {
                 userEmail={session.user.email}
                 teams={sentryTeams.map((s) => ({
                     label: s.name,
-                    value: s.sentry_id,
+                    value: s.slug,
                 }))}
                 createAccount={false}
             />

@@ -55,6 +55,19 @@ export interface SentryTeam {
     projects: SentryProject[];
 }
 
+export interface CreateSentryTeamResponse {
+    id: string;
+    slug: string;
+    name: string;
+    dateCreated: string; // ISO 8601 date string
+    isMember: boolean;
+    teamRole: "admin" | "member" | "owner" | string;
+    access: string[]; // Liste des permissions
+    hasAccess: boolean;
+    isPending: boolean;
+    memberCount: number;
+}
+
 export interface SentryProject {
     id: string;
     slug: string;
@@ -240,7 +253,10 @@ export class SentryService implements AccountService {
         return;
     }
 
-    async createSentryTeam({ teamName, teamSlug }): Promise<void> {
+    async createSentryTeam({
+        teamName,
+        teamSlug,
+    }): Promise<CreateSentryTeamResponse> {
         // it sends 404 error when sentryTeam already exists
         const url = `${this.apiUrl}/api/0/organizations/${this.org}/teams/`;
         const response = await fetch(url, {
@@ -292,7 +308,7 @@ export class SentryService implements AccountService {
         });
         if (response.status === 201) {
             console.log(
-                `Sentry: User ${memberId} successfully added to the team:`
+                `Sentry: User ${memberId} successfully added to the team: ${teamSlug}`
             );
         } else if (response.status === 204) {
             console.log("Sentry user already in team");

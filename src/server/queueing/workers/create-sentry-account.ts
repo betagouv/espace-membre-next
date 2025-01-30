@@ -49,7 +49,6 @@ export async function createSentryServiceAccount(
             }
         }
     }
-    await sentryClient.regenerateInviteForUser({ sentryUserId: serviceUserId });
     await db
         .updateTable("service_accounts")
         .set({

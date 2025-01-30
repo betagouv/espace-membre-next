@@ -57,7 +57,7 @@ export const sentryAccountJoinTeamRequestSchema = z.object({
     teams: z
         .array(
             z.object({
-                name: z.string(),
+                slug: z.string(),
             })
         )
         .min(1, { message: "Au moins une équipe est nécessaire." }),

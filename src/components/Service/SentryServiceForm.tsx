@@ -14,6 +14,7 @@ import {
     sentryAccountRequestSchemaType,
 } from "@/models/actions/service";
 import { AlertMessageType } from "@/models/common";
+import { Option } from "@/models/misc";
 import { SERVICES } from "@/models/services";
 
 export default function SentryServiceForm(props: {
@@ -89,7 +90,13 @@ export default function SentryServiceForm(props: {
     );
 }
 
-const AddSentryServiceForm = ({ setAlertMessage, teams }) => {
+const AddSentryServiceForm = ({
+    setAlertMessage,
+    teams,
+}: {
+    setAlertMessage: any;
+    teams: Option[];
+}) => {
     const {
         handleSubmit,
         setValue,
@@ -135,7 +142,6 @@ const AddSentryServiceForm = ({ setAlertMessage, teams }) => {
         setIsSaving(false);
         window.scrollTo({ top: 20, behavior: "smooth" });
     };
-
     return (
         <>
             <form
@@ -160,17 +166,14 @@ const AddSentryServiceForm = ({ setAlertMessage, teams }) => {
                                 )}
                             >
                                 <SentryTeamSelect
-                                    sentryTeams={teams.map((team) => ({
-                                        label: team.name,
-                                        value: team.name,
-                                    }))}
+                                    sentryTeams={teams}
                                     placeholder="Sélectionner une ou plusieurs équipes"
                                     isMulti={true}
                                     onChange={(selectedTeams) => {
                                         setValue(
                                             "teams",
                                             selectedTeams.map((team) => ({
-                                                name: team.value,
+                                                slug: team.value,
                                             })),
                                             {
                                                 shouldValidate: true,
@@ -237,6 +240,14 @@ function SentryTeamSelect({
         defaultValue ? (defaultValue as SentryTeamType[]) : undefined
     );
 
+    const autoCompleteProps = {
+        style: {
+            marginTop: "0.5rem",
+        },
+        placeholder,
+        options: sentryTeams,
+        optionKeyField: "value",
+    };
     return (
         <div className="fr-select-group">
             <label className="fr-label">
@@ -244,12 +255,11 @@ function SentryTeamSelect({
                 {!!hint && <span className="fr-hint-text">{hint}</span>}
             </label>
             <AutoComplete
-                placeholder={placeholder}
                 multiple={isMulti}
-                options={sentryTeams}
                 onSelect={onTagsChange}
                 onBlur={onBlur}
                 defaultValue={initialValue}
+                {...autoCompleteProps}
                 // sx={{ width: "500px" }}
             />
             {!!state && !!stateMessageRelated && (

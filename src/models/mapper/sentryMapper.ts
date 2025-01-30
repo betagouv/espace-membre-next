@@ -1,3 +1,4 @@
+import slugify from "@sindresorhus/slugify";
 import { Selectable } from "kysely";
 
 import { sentryUserSchemaType } from "../sentry";
@@ -78,6 +79,7 @@ export const sentryTeamToModel = (
         id: sentryTeam.id,
         sentry_id: sentryTeam.sentry_id,
         name: sentryTeam.name,
+        slug: sentryTeam.slug || slugify(sentryTeam.name), // TODO make slug required once sync sentry cron ran in prod
         startup_id: sentryTeam.startup_id,
     };
 };

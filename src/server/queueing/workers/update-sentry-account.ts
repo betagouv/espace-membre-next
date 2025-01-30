@@ -37,9 +37,7 @@ export async function updateSentryServiceAccount(
                 });
             })
         );
-        await sentryClient.regenerateInviteForUser({
-            sentryUserId: job.data.memberId,
-        });
+
         await db
             .updateTable("service_accounts")
             .set({
