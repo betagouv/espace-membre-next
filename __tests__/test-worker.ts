@@ -1,3 +1,5 @@
+import { subDays, addDays } from "date-fns";
+import { isToday } from "date-fns";
 import PgBoss from "pg-boss";
 import proxyquire from "proxyquire";
 import sinon from "sinon";
@@ -117,6 +119,8 @@ describe("Service account creation by worker", () => {
         let service_accounts;
         let user;
         let newStartup;
+        let mission;
+        let missionStartup;
         before(async function () {
             await utils.createUsers(testUsers);
             user = await db
@@ -142,6 +146,23 @@ describe("Service account creation by worker", () => {
                 })
                 .returning("uuid")
                 .executeTakeFirstOrThrow();
+            mission = await db
+                .insertInto("missions")
+                .values({
+                    user_id: user.uuid,
+                    start: subDays(new Date(), 3),
+                    end: addDays(new Date(), 45),
+                })
+                .returning("missions.uuid")
+                .executeTakeFirstOrThrow();
+            missionStartup = await db
+                .insertInto("missions_startups")
+                .values({
+                    startup_id: newStartup.uuid,
+                    mission_id: mission.uuid,
+                })
+                .returning("uuid")
+                .executeTakeFirstOrThrow();
         });
         after(async function () {
             await db
@@ -152,6 +173,14 @@ describe("Service account creation by worker", () => {
             await db
                 .deleteFrom("startups")
                 .where("uuid", "=", newStartup.uuid)
+                .execute();
+            await db
+                .deleteFrom("missions_startups")
+                .where("uuid", "=", missionStartup.uuid)
+                .execute();
+            await db
+                .deleteFrom("missions")
+                .where("uuid", "=", mission.uuid)
                 .execute();
         });
         it("should create sentry service account", async () => {
@@ -210,6 +239,8 @@ describe("Service account creation by worker", () => {
 
     describe("sentry account producer", () => {
         let newStartup;
+        let mission;
+        let missionStartup;
         before(async () => {
             await utils.createUsers(testUsers);
             newStartup = await db
@@ -220,12 +251,42 @@ describe("Service account creation by worker", () => {
                 })
                 .returning("uuid")
                 .executeTakeFirstOrThrow();
+            const user = await db
+                .selectFrom("users")
+                .where("username", "=", "membre.actif")
+                .selectAll()
+                .executeTakeFirstOrThrow();
+            mission = await db
+                .insertInto("missions")
+                .values({
+                    user_id: user.uuid,
+                    start: subDays(new Date(), 3),
+                    end: addDays(new Date(), 45),
+                })
+                .returning("missions.uuid")
+                .executeTakeFirstOrThrow();
+            missionStartup = await db
+                .insertInto("missions_startups")
+                .values({
+                    startup_id: newStartup.uuid,
+                    mission_id: mission.uuid,
+                })
+                .returning("uuid")
+                .executeTakeFirstOrThrow();
         });
         after(async () => {
             await utils.deleteUsers(testUsers);
             await db
                 .deleteFrom("startups")
                 .where("uuid", "=", newStartup.uuid)
+                .execute();
+            await db
+                .deleteFrom("missions_startups")
+                .where("uuid", "=", missionStartup.uuid)
+                .execute();
+            await db
+                .deleteFrom("missions")
+                .where("uuid", "=", mission.uuid)
                 .execute();
         });
 
@@ -255,7 +316,7 @@ describe("Service account creation by worker", () => {
                 data: {
                     teams: [
                         {
-                            name: "beta.gouv.fr",
+                            slug: "beta.gouv.fr",
                         },
                     ],
                 },
