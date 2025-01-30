@@ -6,12 +6,16 @@ import Button from "@codegouvfr/react-dsfr/Button";
 import { Checkbox } from "@codegouvfr/react-dsfr/Checkbox";
 import { Input } from "@codegouvfr/react-dsfr/Input";
 import axios from "axios";
+import { use } from "chai";
 
+import { safeCreateRedirectionForUser } from "@/app/api/member/actions/createRedirectionForUser";
+import { safeDeleteRedirectionForUser } from "@/app/api/member/actions/deleteRedirectionForUser";
 import {
     memberBaseInfoSchemaType,
     memberWrapperSchemaType,
 } from "@/models/member";
 import routes, { computeRoute } from "@/routes/routes";
+import { userInfos } from "@/server/controllers/utils";
 
 export default function BlocRedirection({
     redirections,
@@ -30,7 +34,13 @@ export default function BlocRedirection({
     const [keepCopy, setKeepCopy] = React.useState<boolean>(false);
     const [isSaving, setIsSaving] = React.useState<boolean>(false);
     return (
-        <Accordion label="Rediriger vers une autre adresse mail">
+        <Accordion
+            label={
+                <span id="redirection">
+                    Rediriger vers une autre adresse mail
+                </span>
+            }
+        >
             <p>
                 🚨 Il n'est pas recommandé d'utiliser les redirections :{" "}
                 <b>certains de tes messages seront perdus</b>. Mais une
@@ -43,26 +53,18 @@ export default function BlocRedirection({
                         {redirection.to}
                         {canCreateRedirection && (
                             <form
-                                className="redirection-form"
-                                method="POST"
                                 onSubmit={async (e) => {
                                     e.preventDefault();
-                                    try {
-                                        await axios.delete(
-                                            computeRoute(
-                                                routes.USER_DELETE_REDIRECTION_API
-                                            )
-                                                .replace(
-                                                    ":username",
-                                                    userInfos.username
-                                                )
-                                                .replace(
-                                                    ":email",
-                                                    redirection.to
-                                                ),
-                                            { withCredentials: true }
-                                        );
-                                    } catch (e) {}
+                                    const resp =
+                                        await safeDeleteRedirectionForUser({
+                                            username: userInfos.username,
+                                            toEmail: redirection.to,
+                                        });
+                                    if (resp.success) {
+                                        alert("Redirection supprimée");
+                                    } else {
+                                        alert("Erreur lors de la suppression");
+                                    }
                                 }}
                             >
                                 <Button
@@ -83,21 +85,15 @@ export default function BlocRedirection({
                     onSubmit={async (e) => {
                         e.preventDefault();
                         setIsSaving(true);
-                        try {
-                            await axios.post(
-                                computeRoute(
-                                    routes.USER_CREATE_REDIRECTION_API
-                                ).replace(":username", userInfos.username),
-                                {
-                                    to_email: toEmail,
-                                    keepCopy,
-                                },
-                                {
-                                    withCredentials: true,
-                                }
-                            );
-                        } catch (e) {
-                            console.error(e);
+                        const resp = await safeCreateRedirectionForUser({
+                            to_email: toEmail,
+                            keep_copy: true,
+                            username: userInfos.username,
+                        });
+                        if (resp.success) {
+                            alert("Redirection créée");
+                        } else {
+                            alert("Erreur lors de la création");
                         }
                         setIsSaving(false);
                     }}

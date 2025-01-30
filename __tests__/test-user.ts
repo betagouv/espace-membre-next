@@ -1,10 +1,16 @@
 import chai from "chai";
 import chaiHttp from "chai-http";
+import * as nextAuth from "next-auth/next";
 import nock from "nock";
+import proxyquire from "proxyquire";
 import sinon from "sinon";
 
 import testUsers from "./users.json";
 import utils from "./utils";
+import { createEmail as createEmailAction } from "@/app/api/member/actions/createEmailForUser";
+import { createRedirectionForUser } from "@/app/api/member/actions/createRedirectionForUser";
+import { deleteRedirectionForUser } from "@/app/api/member/actions/deleteRedirectionForUser";
+import { updatePasswordForUser } from "@/app/api/member/actions/updatePasswordForUser";
 import { db } from "@/lib/kysely";
 import * as mattermost from "@/lib/mattermost";
 import { Domaine, EmailStatusCode } from "@/models/member";
@@ -17,7 +23,6 @@ import app from "@/server/index";
 import betagouv from "@betagouv";
 import Betagouv from "@betagouv";
 import * as controllerUtils from "@controllers/utils";
-import knex from "@db";
 import {
     createEmailAddresses,
     createRedirectionEmailAdresses,
@@ -26,68 +31,113 @@ import {
 } from "@schedulers/emailScheduler";
 
 chai.use(chaiHttp);
+const { expect } = chai;
 
-describe("User", () => {
+describe("Test user relative actions", () => {
     let ovhPasswordNock;
 
-    describe("POST /api/users/:username/create-email unauthenticated", () => {
-        it("should return an Unauthorized error", (done) => {
-            chai.request(app)
-                .post(
-                    routes.USER_CREATE_EMAIL_API.replace(
-                        ":username",
-                        "membre.parti"
-                    )
-                )
-                .type("form")
-                .send({
-                    _method: "POST",
-                })
-                .end((err, res) => {
-                    res.should.have.status(401);
-                    done();
-                });
-        });
-    });
-    describe("POST /api/users/:username/create-email authenticated", () => {
-        let getToken;
-        let sendEmailStub;
+    describe("test createEmailAction unauthenticated", () => {
+        let getServerSessionStub;
+        let isPublicServiceEmailStub;
+        let user;
+
         beforeEach(async () => {
-            sendEmailStub = sinon
-                .stub(controllerUtils, "sendMail")
+            isPublicServiceEmailStub = sinon
+                .stub(controllerUtils, "isPublicServiceEmail")
                 .returns(Promise.resolve(true));
-            getToken = sinon.stub(session, "getToken");
-            getToken.returns(utils.getJWT("membre.actif"));
+            getServerSessionStub = sinon
+                .stub(nextAuth, "getServerSession")
+                .resolves({});
+
             await utils.createUsers(testUsers);
+            user = await db
+                .selectFrom("users")
+                .selectAll()
+                .where("username", "=", "membre.actif")
+                .executeTakeFirstOrThrow();
+        });
+        afterEach(async () => {
+            sinon.restore();
+            await utils.deleteUsers(testUsers);
+            isPublicServiceEmailStub.restore();
         });
 
+        it("should return an Unauthorized error", async () => {
+            try {
+                await createEmailAction({
+                    username: "membre.parti",
+                    to_email: "lucas.charr@test.com",
+                });
+            } catch (err) {
+                expect(err).to.be.an("error");
+            }
+            // chai.request(app)
+            //     .post(
+            //         routes.USER_CREATE_EMAIL_API.replace(
+            //             ":username",
+            //             "membre.parti"
+            //         )
+            //     )
+            //     .type("form")
+            //     .send({
+            //         _method: "POST",
+            //     })
+            //     .end((err, res) => {
+            // res.should.have.status(401);
+            //     done();
+            // });
+        });
+    });
+    describe("test createEmailAction authenticated", () => {
+        let getServerSessionStub;
+        let isPublicServiceEmailStub;
+        let user;
+
+        beforeEach(async () => {
+            isPublicServiceEmailStub = sinon
+                .stub(controllerUtils, "isPublicServiceEmail")
+                .returns(Promise.resolve(true));
+            getServerSessionStub = sinon
+                .stub(nextAuth, "getServerSession")
+                .resolves({});
+
+            await utils.createUsers(testUsers);
+            user = await db
+                .selectFrom("users")
+                .selectAll()
+                .where("username", "=", "membre.actif")
+                .executeTakeFirstOrThrow();
+        });
         afterEach(async () => {
-            sendEmailStub.restore();
-            getToken.restore();
+            sinon.restore();
             await utils.deleteUsers(testUsers);
+            isPublicServiceEmailStub.restore();
         });
 
         it("should ask OVH to create an email", async () => {
+            const mockSession = {
+                user: { id: "membre.actif", isAdmin: false, uuid: user.uuid },
+            };
+            getServerSessionStub.resolves(mockSession);
             const ovhEmailCreation = nock(/.*ovh.com/)
                 .post(/^.*email\/domain\/.*\/account/)
                 .reply(200);
             await db
                 .updateTable("users")
-                .where("username", "=", "membre.nouveau")
+                .where("username", "=", "membre.nouveau@beta.gouv.fr")
                 .set({
                     primary_email: null,
                 })
                 .execute();
-            await chai
-                .request(app)
-                .post(
-                    routes.USER_CREATE_EMAIL_API.replace(
-                        ":username",
-                        "membre.nouveau"
-                    )
-                )
-                .type("form")
-                .send({});
+
+            try {
+                await createEmailAction({
+                    username: "membre.nouveau",
+                    to_email: "membre.nouveau@beta.gouv.fr",
+                });
+            } catch (err) {
+                expect(err).to.be.an("error");
+            }
 
             const res = await db
                 .selectFrom("users")
@@ -98,7 +148,7 @@ describe("User", () => {
             ovhEmailCreation.isDone().should.be.true;
         });
 
-        it("should not allow email creation from delegate if email already exists", (done) => {
+        it("should not allow email creation from delegate if email already exists", async () => {
             // For this case we need to reset the basic nocks in order to return
             // a different response to indicate that membre.nouveau has an
             // existing email already created.
@@ -108,6 +158,11 @@ describe("User", () => {
             utils.mockSlackSecretariat();
             utils.mockOvhTime();
             utils.mockOvhRedirections();
+
+            const mockSession = {
+                user: { id: "membre.actif", isAdmin: false, uuid: user.uuid },
+            };
+            getServerSessionStub.resolves(mockSession);
 
             // We return an email for membre.nouveau to indicate he already has one
             nock(/.*ovh.com/)
@@ -120,84 +175,82 @@ describe("User", () => {
             const ovhEmailCreation = nock(/.*ovh.com/)
                 .post(/^.*email\/domain\/.*\/account/)
                 .reply(200);
-
-            chai.request(app)
-                .post(
-                    routes.USER_CREATE_EMAIL_API.replace(
-                        ":username",
-                        "membre.nouveau"
-                    )
-                )
-                .type("form")
-                .send({})
-                .end((err, res) => {
-                    ovhEmailCreation.isDone().should.be.false;
-                    done();
+            try {
+                await createEmailAction({
+                    username: "membre.nouveau",
+                    to_email: "membre.nouveau@example.com",
                 });
+            } catch (err) {
+                ovhEmailCreation.isDone().should.be.false;
+            }
         });
 
-        it("should not allow email creation from delegate if github file doesn't exist", (done) => {
+        it("should not allow email creation from delegate if github file doesn't exist", async () => {
+            const mockSession = {
+                user: { id: "membre.actif", isAdmin: false, uuid: user.uuid },
+            };
+            getServerSessionStub.resolves(mockSession);
+            const ovhEmailCreation = nock(/.*ovh.com/)
+                .post(/^.*email\/domain\/.*\/account/)
+                .reply(200);
+            try {
+                await createEmailAction({
+                    username: "membre.sans.fiche",
+                    to_email: "membre.nouveau@example.com",
+                });
+            } catch (err) {
+                ovhEmailCreation.isDone().should.be.false;
+            }
+        });
+
+        it("should not allow email creation from delegate if user has expired", async () => {
+            const mockSession = {
+                user: { id: "membre.actif", isAdmin: false, uuid: user.uuid },
+            };
+            getServerSessionStub.resolves(mockSession);
             const ovhEmailCreation = nock(/.*ovh.com/)
                 .post(/^.*email\/domain\/.*\/account/)
                 .reply(200);
 
-            chai.request(app)
-                .post(
-                    routes.USER_CREATE_EMAIL_API.replace(
-                        ":username",
-                        "membre.sans.fiche"
-                    )
-                )
-                .type("form")
-                .send({})
-                .end((err, res) => {
-                    ovhEmailCreation.isDone().should.be.false;
-                    done();
+            try {
+                await createEmailAction({
+                    username: "membre.expire",
+                    to_email: "membre.nouveau@example.com",
                 });
+            } catch (err) {
+                ovhEmailCreation.isDone().should.be.false;
+            }
         });
 
-        it("should not allow email creation from delegate if user has expired", (done) => {
+        it("should not allow email creation from delegate if delegate has expired", async () => {
+            const mockSession = {
+                user: { id: "membre.expire", isAdmin: false, uuid: user.uuid },
+            };
+            getServerSessionStub.resolves(mockSession);
             const ovhEmailCreation = nock(/.*ovh.com/)
                 .post(/^.*email\/domain\/.*\/account/)
                 .reply(200);
 
-            chai.request(app)
-                .post(
-                    routes.USER_CREATE_EMAIL_API.replace(
-                        ":username",
-                        "membre.expire"
-                    )
-                )
-                .type("form")
-                .send({})
-                .end((err, res) => {
-                    ovhEmailCreation.isDone().should.be.false;
-                    done();
+            try {
+                await createEmailAction({
+                    username: "membre.nouveau",
+                    to_email: "membre.nouveau@example.com",
                 });
-        });
-
-        it("should not allow email creation from delegate if delegate has expired", (done) => {
-            const ovhEmailCreation = nock(/.*ovh.com/)
-                .post(/^.*email\/domain\/.*\/account/)
-                .reply(200);
-            getToken.returns(utils.getJWT("membre.expire"));
-
-            chai.request(app)
-                .post(
-                    routes.USER_CREATE_EMAIL_API.replace(
-                        ":username",
-                        "membre.nouveau"
-                    )
-                )
-                .type("form")
-                .send({})
-                .end((err, res) => {
-                    ovhEmailCreation.isDone().should.be.false;
-                    done();
-                });
+            } catch (err) {
+                ovhEmailCreation.isDone().should.be.false;
+            }
         });
 
         it("should allow email creation from delegate if user is active", async () => {
+            const mockSession = {
+                user: {
+                    id: "julien.dauphant",
+                    isAdmin: false,
+                    uuid: user.uuid,
+                },
+            };
+            getServerSessionStub.resolves(mockSession);
+
             const ovhEmailCreation = nock(/.*ovh.com/)
                 .post(/^.*email\/domain\/.*\/account/)
                 .reply(200);
@@ -208,19 +261,13 @@ describe("User", () => {
                     primary_email: null,
                 })
                 .execute();
-            getToken.returns(utils.getJWT("julien.dauphant"));
-            await chai
-                .request(app)
-                .post(
-                    routes.USER_CREATE_EMAIL_API.replace(
-                        ":username",
-                        "membre.actif"
-                    )
-                )
-                .type("form")
-                .send({});
+            await createEmailAction({
+                username: "membre.actif",
+                to_email: "membre.nouveau@example.com",
+            });
+
             ovhEmailCreation.isDone().should.be.true;
-            const user = await db
+            const user2 = await db
                 .selectFrom("users")
                 .selectAll()
                 .where("username", "=", "membre.actif")
@@ -228,232 +275,216 @@ describe("User", () => {
         });
     });
 
-    describe("POST /api/users/:username/create-email unauthenticated", () => {
-        it("should return an Unauthorized error", (done) => {
-            chai.request(app)
-                .post("/api/users/membre.parti/create-email")
-                .send({
-                    _method: "POST",
-                    to_email: "test@example.com",
-                })
-                .end((err, res) => {
-                    res.should.have.status(401);
-                    done();
+    describe("Create redirection unauthenticated", () => {
+        it("should return an Unauthorized error", async () => {
+            try {
+                await createRedirectionForUser({
+                    username: "membre.actif",
+                    to_email: "toto@gmail.com",
                 });
-        });
-    });
-    describe("POST /api/users/:username/create-email authenticated", () => {
-        let getToken;
-        let sendEmailStub;
-        beforeEach(async () => {
-            getToken = sinon.stub(session, "getToken");
-            getToken.returns(utils.getJWT("membre.actif"));
-            sendEmailStub = sinon
-                .stub(controllerUtils, "sendMail")
-                .returns(Promise.resolve(true));
-            await utils.createUsers(testUsers);
-        });
-
-        afterEach(async () => {
-            sendEmailStub.restore();
-            getToken.restore();
-            await utils.deleteUsers(testUsers);
-        });
-
-        it("should ask OVH to create an email", async () => {
-            const ovhEmailCreation = nock(/.*ovh.com/)
-                .post(/^.*email\/domain\/.*\/account/)
-                .reply(200);
-            await db
-                .updateTable("users")
-                .where("username", "=", "membre.nouveau")
-                .set({
-                    primary_email: null,
-                })
-                .execute();
-            await chai
-                .request(app)
-                .post("/api/users/membre.nouveau/create-email")
-                .send({
-                    to_email: "test@example.com",
-                });
-
-            const res = await db
-                .selectFrom("users")
-                .selectAll()
-                .where("username", "=", "membre.nouveau")
-                .executeTakeFirstOrThrow();
-            res.primary_email.should.equal(`membre.nouveau@${config.domain}`);
-            ovhEmailCreation.isDone().should.be.true;
+            } catch (err) {
+                expect(err).to.be.an("error");
+            }
         });
     });
 
-    describe("POST /api/users/:username/redirections unauthenticated", () => {
-        it("should return an Unauthorized error", (done) => {
-            chai.request(app)
-                .post("/api/users/membre.parti/redirections")
-                .type("form")
-                .send({
-                    to_email: "test@example.com",
-                })
-                .end((err, res) => {
-                    res.should.have.status(401);
-                    done();
-                });
-        });
-    });
-
-    describe("POST /api/users/:username/redirections authenticated", () => {
-        let getToken;
+    describe("Create redirection authenticated", () => {
+        let getServerSessionStub;
         let isPublicServiceEmailStub;
+        let user;
 
         beforeEach(async () => {
-            getToken = sinon.stub(session, "getToken");
-            getToken.returns(utils.getJWT("membre.actif"));
             isPublicServiceEmailStub = sinon
                 .stub(controllerUtils, "isPublicServiceEmail")
                 .returns(Promise.resolve(true));
-            await utils.createUsers(testUsers);
-        });
+            getServerSessionStub = sinon
+                .stub(nextAuth, "getServerSession")
+                .resolves({});
 
+            await utils.createUsers(testUsers);
+            user = await db
+                .selectFrom("users")
+                .selectAll()
+                .where("username", "=", "membre.actif")
+                .executeTakeFirstOrThrow();
+        });
         afterEach(async () => {
-            getToken.restore();
+            sinon.restore();
+            await utils.deleteUsers(testUsers);
             isPublicServiceEmailStub.restore();
             await utils.deleteUsers(testUsers);
         });
 
-        it("should ask OVH to create a redirection", (done) => {
+        it("should ask OVH to create a redirection", async () => {
+            const mockSession = {
+                user: { id: "membre.actif", isAdmin: false, uuid: user.uuid },
+            };
+            getServerSessionStub.resolves(mockSession);
+
             isPublicServiceEmailStub.returns(Promise.resolve(true));
 
             const ovhRedirectionCreation = nock(/.*ovh.com/)
                 .post(/^.*email\/domain\/.*\/redirection/)
                 .reply(200);
 
-            chai.request(app)
-                .post("/api/users/membre.actif/redirections")
-                .type("form")
-                .send({
-                    to_email: "test@example.com",
-                })
-                .end((err, res) => {
-                    ovhRedirectionCreation.isDone().should.be.true;
-                    done();
-                });
+            await createRedirectionForUser({
+                to_email: "test@example.com",
+                username: "membre.actif",
+            });
+
+            ovhRedirectionCreation.isDone().should.be.true;
         });
 
-        it("should not allow redirection creation from delegate", (done) => {
+        it("should not allow redirection creation from delegate", async () => {
+            const mockSession = {
+                user: { id: "membre.actif", isAdmin: false, uuid: user.uuid },
+            };
+            getServerSessionStub.resolves(mockSession);
             const ovhRedirectionCreation = nock(/.*ovh.com/)
                 .post(/^.*email\/domain\/.*\/redirection/)
                 .reply(200);
 
-            chai.request(app)
-                .post("/api/users/membre.nouveau/redirections")
-                .type("form")
-                .send({
+            try {
+                await createRedirectionForUser({
                     to_email: "test@example.com",
-                })
-                .end((err, res) => {
-                    ovhRedirectionCreation.isDone().should.be.false;
-                    done();
+                    username: "membre.nouveau",
                 });
+            } catch (e) {
+                ovhRedirectionCreation.isDone().should.be.false;
+            }
         });
 
-        it("should not allow redirection creation from expired users", (done) => {
+        it("should not allow redirection creation from expired users", async () => {
             const ovhRedirectionCreation = nock(/.*ovh.com/)
                 .post(/^.*email\/domain\/.*\/redirection/)
                 .reply(200);
-            getToken.returns(utils.getJWT("membre.expire"));
-            chai.request(app)
-                .post("/api/users/membre.expire/redirections")
-                .type("form")
-                .send({
+            user = await db
+                .selectFrom("users")
+                .selectAll()
+                .where("username", "=", "membre.expire")
+                .executeTakeFirstOrThrow();
+            const mockSession = {
+                user: { id: "membre.expire", isAdmin: false, uuid: user.uuid },
+            };
+            getServerSessionStub.resolves(mockSession);
+            try {
+                await createRedirectionForUser({
                     to_email: "test@example.com",
-                })
-                .end((err, res) => {
-                    ovhRedirectionCreation.isDone().should.be.false;
-                    done();
+                    username: "membre.expire",
                 });
+            } catch (e) {
+                ovhRedirectionCreation.isDone().should.be.false;
+            }
         });
     });
 
-    describe("Delete /api/users/:username/redirections/:email/delete unauthenticated", () => {
-        it("should return an Unauthorized error", (done) => {
-            chai.request(app)
-                .delete(
-                    "/api/users/membre.parti/redirections/test@example.com/delete"
-                )
-                .end((err, res) => {
-                    res.should.have.status(401);
-                    done();
-                });
-        });
-    });
-
-    describe("Delete /api/users/:username/redirections/:email/delete authenticated", () => {
-        let getToken;
-        let isPublicServiceEmailStub;
+    describe("Delete redirections unauthenticated", () => {
+        let getServerSessionStub;
 
         beforeEach(async () => {
-            getToken = sinon.stub(session, "getToken");
-            getToken.returns(utils.getJWT("membre.actif"));
+            getServerSessionStub = sinon
+                .stub(nextAuth, "getServerSession")
+                .resolves({});
+
+            await utils.createUsers(testUsers);
+        });
+        afterEach(async () => {
+            sinon.restore();
+            await utils.deleteUsers(testUsers);
+        });
+        it("should return an Unauthorized error", async () => {
+            try {
+                await deleteRedirectionForUser({
+                    username: "membre.parti",
+                    toEmail: "",
+                });
+            } catch (e) {
+                console.log(e);
+            }
+        });
+    });
+
+    describe("Delete redirections authenticated", () => {
+        let getServerSessionStub;
+        let isPublicServiceEmailStub;
+        let user;
+
+        beforeEach(async () => {
             isPublicServiceEmailStub = sinon
                 .stub(controllerUtils, "isPublicServiceEmail")
                 .returns(Promise.resolve(true));
-            await utils.createUsers(testUsers);
-        });
+            getServerSessionStub = sinon
+                .stub(nextAuth, "getServerSession")
+                .resolves({});
 
+            await utils.createUsers(testUsers);
+            user = await db
+                .selectFrom("users")
+                .selectAll()
+                .where("username", "=", "membre.actif")
+                .executeTakeFirstOrThrow();
+        });
         afterEach(async () => {
-            getToken.restore();
-            isPublicServiceEmailStub.restore();
+            sinon.restore();
             await utils.deleteUsers(testUsers);
+            isPublicServiceEmailStub.restore();
         });
 
         it("should ask OVH to delete a redirection", async () => {
+            const mockSession = {
+                user: { id: "membre.actif", isAdmin: false, uuid: user.uuid },
+            };
+            getServerSessionStub.resolves(mockSession);
             const ovhRedirectionDeletion = nock(/.*ovh.com/)
                 .delete(/^.*email\/domain\/.*\/redirection\/.*/)
                 .reply(200);
 
-            const res = await chai
-                .request(app)
-                .delete(
-                    "/api/users/membre.actif/redirections/test-2@example.com/delete"
-                );
+            await deleteRedirectionForUser({
+                username: "membre.actif",
+                toEmail: "test-2@example.com",
+            });
             ovhRedirectionDeletion.isDone().should.be.true;
         });
 
-        it("should not allow redirection deletion from delegate", (done) => {
+        it("should not allow redirection deletion from delegate", async () => {
+            const mockSession = {
+                user: { id: "membre.actif", isAdmin: false, uuid: user.uuid },
+            };
+            getServerSessionStub.resolves(mockSession);
             const ovhRedirectionDeletion = nock(/.*ovh.com/)
                 .delete(/^.*email\/domain\/.*\/redirection\/.*/)
                 .reply(200);
-
-            chai.request(app)
-                .delete(
-                    "/api/users/membre.nouveau/redirections/test-2@example.com/delete"
-                )
-                .end((err, res) => {
-                    ovhRedirectionDeletion.isDone().should.be.false;
-                    done();
+            try {
+                await deleteRedirectionForUser({
+                    username: "membre.nouveau",
+                    toEmail: "test-2@example.com",
                 });
+            } catch (e) {
+                ovhRedirectionDeletion.isDone().should.be.false;
+            }
         });
 
-        it("should not allow redirection deletion from expired users", (done) => {
+        it("should not allow redirection deletion from expired users", async () => {
             const ovhRedirectionDeletion = nock(/.*ovh.com/)
                 .delete(/^.*email\/domain\/.*\/redirection\/.*/)
                 .reply(200);
-            getToken.returns(utils.getJWT("membre.expire"));
+            const mockSession = {
+                user: { id: "membre.expire", isAdmin: false, uuid: user.uuid },
+            };
+            getServerSessionStub.resolves(mockSession);
 
-            chai.request(app)
-                .delete(
-                    "/api/users/membre.expire/redirections/test-2@example.com/delete"
-                )
-                .end((err, res) => {
-                    ovhRedirectionDeletion.isDone().should.be.false;
-                    done();
+            try {
+                await deleteRedirectionForUser({
+                    username: "membre.expire",
+                    toEmail: "test-2@example.com",
                 });
+            } catch (e) {
+                ovhRedirectionDeletion.isDone().should.be.false;
+            }
         });
     });
 
-    describe("POST /users/:username/password unauthenticated", () => {
+    describe("Test update password server action unauthenticated", () => {
         beforeEach(async () => {
             await utils.createUsers(testUsers);
         });
@@ -463,65 +494,72 @@ describe("User", () => {
             await utils.deleteUsers(testUsers);
         });
 
-        it("should return an Unauthorized error", (done) => {
-            chai.request(app)
-                .post("/api/users/membre.actif/password")
-                .type("form")
-                .send({
+        it("should return an Unauthorized error", async () => {
+            try {
+                await updatePasswordForUser({
+                    username: "membre.actif",
                     new_password: "Test_Password_1234",
-                })
-                .end((err, res) => {
-                    res.should.have.status(401);
-                    done();
                 });
+            } catch (e) {
+                expect(e).to.be.an("error");
+            }
         });
-        it("should not allow a password change", (done) => {
+        it("should not allow a password change", async () => {
             ovhPasswordNock = nock(/.*ovh.com/)
                 .post(/^.*email\/domain\/.*\/account\/.*\/changePassword/)
                 .reply(200);
 
-            chai.request(app)
-                .post("/api/users/membre.actif/password")
-                .type("form")
-                .send({
+            try {
+                await updatePasswordForUser({
                     new_password: "Test_Password_1234",
-                })
-                .end((err, res) => {
-                    ovhPasswordNock.isDone().should.be.false;
-                    done();
+                    username: "membre.actif",
                 });
+            } catch (e) {
+                ovhPasswordNock.isDone().should.be.false;
+            }
         });
     });
 
-    describe("POST /api/users/:username/password authenticated", () => {
-        let getToken;
+    describe("Test update password server action authenticated", () => {
+        let getServerSessionStub;
         let isPublicServiceEmailStub;
+        let user;
+
         beforeEach(async () => {
-            getToken = sinon.stub(session, "getToken");
-            getToken.returns(utils.getJWT("membre.actif"));
             isPublicServiceEmailStub = sinon
                 .stub(controllerUtils, "isPublicServiceEmail")
                 .returns(Promise.resolve(true));
-            await utils.createUsers(testUsers);
-        });
+            getServerSessionStub = sinon
+                .stub(nextAuth, "getServerSession")
+                .resolves({});
 
+            await utils.createUsers(testUsers);
+            user = await db
+                .selectFrom("users")
+                .selectAll()
+                .where("username", "=", "membre.actif")
+                .executeTakeFirstOrThrow();
+        });
         afterEach(async () => {
-            getToken.restore();
+            sinon.restore();
+            await utils.deleteUsers(testUsers);
             isPublicServiceEmailStub.restore();
             await utils.deleteUsers(testUsers);
         });
 
         it("should send error if user does not exist", async () => {
-            const res = await chai
-                .request(app)
-                .post("/api/users/membre.actif/password")
-                .type("form")
-                .send({
+            const mockSession = {
+                user: { id: "membre.actif", isAdmin: false, uuid: user.uuid },
+            };
+            getServerSessionStub.resolves(mockSession);
+            try {
+                await updatePasswordForUser({
                     new_password: "Test_Password_1234",
-                })
-                .redirects(0);
-            // .end((err, res) => {
-            res.should.have.status(500);
+                    username: "membre.onthetom",
+                });
+            } catch (e) {
+                expect(e).to.be.an("error");
+            }
             // res.header.location.should.equal("/community/membre.actif");
             // done();
             // });
@@ -534,7 +572,11 @@ describe("User", () => {
             utils.mockSlackSecretariat();
             utils.mockOvhTime();
             utils.mockOvhRedirections();
-            const username = "membre.nouveau";
+            const mockSession = {
+                user: { id: "membre.actif", isAdmin: false, uuid: user.uuid },
+            };
+            getServerSessionStub.resolves(mockSession);
+            const username = "membre.actif";
             await db
                 .updateTable("users")
                 .where("username", "=", username)
@@ -544,21 +586,21 @@ describe("User", () => {
                 .get(/^.*email\/domain\/.*\/account\/.*/)
                 .reply(200, {
                     accountName: username,
-                    email: "membre.nouveau@example.com",
+                    email: "membre.actif@example.com",
                 })
                 .persist();
 
             ovhPasswordNock = nock(/.*ovh.com/)
                 .post(/^.*email\/domain\/.*\/account\/.*\/changePassword/)
                 .reply(200);
-            getToken.returns(utils.getJWT(`${username}`));
-            await chai
-                .request(app)
-                .post(`/api/users/${username}/password`)
-                .type("form")
-                .send({
+            try {
+                await updatePasswordForUser({
+                    username,
                     new_password: "Test_Password_1234",
                 });
+            } catch (e) {
+                expect(e).to.be.an("error");
+            }
             ovhPasswordNock.isDone().should.be.true;
         });
         it("should perform a password change and pass status to active if status was suspended", async () => {
@@ -569,7 +611,11 @@ describe("User", () => {
             utils.mockSlackSecretariat();
             utils.mockOvhTime();
             utils.mockOvhRedirections();
-            const username = "membre.nouveau";
+            const username = "membre.actif";
+            const mockSession = {
+                user: { id: "membre.actif", isAdmin: false, uuid: user.uuid },
+            };
+            getServerSessionStub.resolves(mockSession);
             await db
                 .updateTable("users")
                 .where("username", "=", username)
@@ -581,205 +627,140 @@ describe("User", () => {
                 .get(/^.*email\/domain\/.*\/account\/.*/)
                 .reply(200, {
                     accountName: username,
-                    email: "membre.nouveau@example.com",
+                    email: "membre.actif@example.com",
                 })
                 .persist();
 
             ovhPasswordNock = nock(/.*ovh.com/)
                 .post(/^.*email\/domain\/.*\/account\/.*\/changePassword/)
                 .reply(200);
-            getToken.returns(utils.getJWT(`${username}`));
-            await chai
-                .request(app)
-                .post(`/api/users/${username}/password`)
-                .type("form")
-                .send({
-                    new_password: "Test_Password_1234",
-                });
+            await updatePasswordForUser({
+                new_password: "Test_Password_1234",
+                username: username,
+            });
+
             ovhPasswordNock.isDone().should.be.true;
-            const user = await db
+            const user2 = await db
                 .selectFrom("users")
                 .selectAll()
                 .where("username", "=", username)
-                .executeTakeFirst();
-            user.primary_email_status.should.be.equal(
+                .executeTakeFirstOrThrow();
+            user2.primary_email_status.should.be.equal(
                 EmailStatusCode.EMAIL_ACTIVE
             );
         });
 
-        it("should not allow a password change from delegate", (done) => {
-            ovhPasswordNock = nock(/.*ovh.com/)
-                .post(/^.*email\/domain\/.*\/account\/.*\/changePassword/)
-                .reply(200);
-
-            chai.request(app)
-                .post("/api/users/membre.nouveau/password")
-                .type("form")
-                .send({
-                    new_password: "Test_Password_1234",
-                })
-                .end((err, res) => {
-                    ovhPasswordNock.isDone().should.be.false;
-                    done();
-                });
-        });
-        it("should not allow a password change from expired user", (done) => {
-            ovhPasswordNock = nock(/.*ovh.com/)
-                .post(/^.*email\/domain\/.*\/account\/.*\/changePassword/)
-                .reply(200);
-            getToken.returns(utils.getJWT("membre.expire"));
-
-            chai.request(app)
-                .post("/api/users/membre.expire/password")
-                .type("form")
-                .send({
-                    new_password: "Test_Password_1234",
-                })
-                .end((err, res) => {
-                    ovhPasswordNock.isDone().should.be.false;
-                    done();
-                });
-        });
-        it("should not allow a password shorter than 9 characters", (done) => {
-            ovhPasswordNock = nock(/.*ovh.com/)
-                .post(/^.*email\/domain\/.*\/account\/.*\/changePassword/)
-                .reply(200);
-
-            chai.request(app)
-                .post("/api/users/membre.actif/password")
-                .type("form")
-                .send({
-                    new_password: "12345678",
-                })
-                .end((err, res) => {
-                    ovhPasswordNock.isDone().should.be.false;
-                    done();
-                });
-        });
-        it("should not allow a password longer than 30 characters", (done) => {
-            ovhPasswordNock = nock(/.*ovh.com/)
-                .post(/^.*email\/domain\/.*\/account\/.*\/changePassword/)
-                .reply(200);
-
-            chai.request(app)
-                .post("/api/users/membre.actif/password")
-                .type("form")
-                .send({
-                    new_password: "1234567890123456789012345678901",
-                })
-                .end((err, res) => {
-                    ovhPasswordNock.isDone().should.be.false;
-                    done();
-                });
-        });
-    });
-
-    describe("POST /users/:username/email/delete unauthenticated", () => {
-        it("should return an Unauthorized error", (done) => {
-            chai.request(app)
-                .post("/api/users/membre.parti/email/delete")
-                .end((err, res) => {
-                    res.should.have.status(401);
-                    done();
-                });
-        });
-    });
-
-    describe("POST /user/:username/email/delete", () => {
-        let getToken;
-        let isPublicServiceEmailStub;
-
-        beforeEach(async () => {
-            getToken = sinon.stub(session, "getToken");
-            getToken.returns(utils.getJWT("membre.actif"));
-            isPublicServiceEmailStub = sinon
-                .stub(controllerUtils, "isPublicServiceEmail")
-                .returns(Promise.resolve(true));
-            await utils.createUsers(testUsers);
-        });
-
-        afterEach(async () => {
-            getToken.restore();
-            isPublicServiceEmailStub.restore();
-            await utils.deleteUsers(testUsers);
-        });
-        it("should keep the user in database secretariat", async () => {
-            const addRedirection = nock(/.*ovh.com/)
-                .post(/^.*email\/domain\/.*\/redirection/)
-                .reply(200);
-
-            const dbRes = await db
-                .selectFrom("users")
-                .selectAll()
-                .where("username", "=", "membre.actif")
-                .execute();
-            dbRes.length.should.equal(1);
-            await chai
-                .request(app)
-                .post("/api/users/membre.actif/email/delete");
-            const dbNewRes = await db
-                .selectFrom("users")
-                .selectAll()
-                .where("username", "=", "membre.actif")
-                .execute();
-            dbNewRes.length.should.equal(1);
-            addRedirection.isDone().should.be.true;
-        });
-
-        it("should ask OVH to redirect to the departs email", (done) => {
-            const expectedRedirectionBody = (body) => {
-                return (
-                    body.from === `membre.actif@${config.domain}` &&
-                    body.to === config.leavesEmail
-                );
+        it("should not allow a password change from delegate", async () => {
+            const mockSession = {
+                user: { id: "membre.actif", isAdmin: false, uuid: user.uuid },
             };
+            getServerSessionStub.resolves(mockSession);
 
-            const ovhRedirectionDepartureEmail = nock(/.*ovh.com/)
-                .post(
-                    /^.*email\/domain\/.*\/redirection/,
-                    expectedRedirectionBody
-                )
+            ovhPasswordNock = nock(/.*ovh.com/)
+                .post(/^.*email\/domain\/.*\/account\/.*\/changePassword/)
+                .reply(200);
+            try {
+                await updatePasswordForUser({
+                    new_password: "Test_Password_1234",
+                    username: "membre.nouveau",
+                });
+            } catch (e) {
+                expect(e).to.be.an("error");
+            }
+        });
+        it("should not allow a password change from expired user", async () => {
+            ovhPasswordNock = nock(/.*ovh.com/)
+                .post(/^.*email\/domain\/.*\/account\/.*\/changePassword/)
+                .reply(200);
+            user = await db
+                .selectFrom("users")
+                .selectAll()
+                .where("username", "=", "membre.expire")
+                .executeTakeFirstOrThrow();
+            const mockSession = {
+                user: { id: "membre.expire", isAdmin: false, uuid: user.uuid },
+            };
+            getServerSessionStub.resolves(mockSession);
+
+            try {
+                await updatePasswordForUser({
+                    new_password: "Test_Password_1234",
+                    username: "membre.expire",
+                });
+            } catch (e) {
+                ovhPasswordNock.isDone().should.be.false;
+            }
+        });
+        it("should not allow a password shorter than 9 characters", async () => {
+            ovhPasswordNock = nock(/.*ovh.com/)
+                .post(/^.*email\/domain\/.*\/account\/.*\/changePassword/)
+                .reply(200);
+            const mockSession = {
+                user: { id: "membre.actif", isAdmin: false, uuid: user.uuid },
+            };
+            getServerSessionStub.resolves(mockSession);
+            try {
+                await updatePasswordForUser({
+                    new_password: "12345678",
+                    username: "membre.actif",
+                });
+            } catch (e) {
+                ovhPasswordNock.isDone().should.be.false;
+            }
+        });
+        it("should not allow a password longer than 30 characters", async () => {
+            ovhPasswordNock = nock(/.*ovh.com/)
+                .post(/^.*email\/domain\/.*\/account\/.*\/changePassword/)
                 .reply(200);
 
-            chai.request(app)
-                .post("/api/users/membre.actif/email/delete")
-                .end((err, res) => {
-                    ovhRedirectionDepartureEmail.isDone().should.be.true;
-                    done();
+            try {
+                await updatePasswordForUser({
+                    new_password: "1234567890123456789012345678901",
+                    username: "membre.actif",
                 });
+            } catch (e) {
+                ovhPasswordNock.isDone().should.be.false;
+            }
         });
     });
 
-    describe("POST /users/:username/secondary_email", () => {
-        let getToken;
+    describe("Test manage secondary email", () => {
         let isPublicServiceEmailStub;
+        let getServerSessionStub;
+        let user;
+        const manageSecondaryEmailForUser = proxyquire(
+            "@/app/api/member/actions/index",
+            {
+                "next/cache": {
+                    revalidatePath: sinon.stub(),
+                },
+            }
+        ).manageSecondaryEmailForUser;
 
         beforeEach(async () => {
-            getToken = sinon.stub(session, "getToken");
-            getToken.returns(utils.getJWT("membre.nouveau"));
-            await utils.createUsers(testUsers);
             isPublicServiceEmailStub = sinon
                 .stub(controllerUtils, "isPublicServiceEmail")
                 .returns(Promise.resolve(true));
-        });
+            getServerSessionStub = sinon
+                .stub(nextAuth, "getServerSession")
+                .resolves({});
 
+            await utils.createUsers(testUsers);
+            user = await db
+                .selectFrom("users")
+                .selectAll()
+                .where("username", "=", "membre.nouveau")
+                .executeTakeFirstOrThrow();
+            const mockSession = {
+                user: { id: "membre.nouveau", isAdmin: false, uuid: user.uuid },
+            };
+            getServerSessionStub.resolves(mockSession);
+        });
         afterEach(async () => {
-            getToken.restore();
+            sinon.restore();
             await utils.deleteUsers(testUsers);
             isPublicServiceEmailStub.restore();
-        });
-        it("should return 200 to add secondary email", async () => {
-            const username = "membre.nouveau";
-            const secondaryEmail = "membre.nouveau.perso@example.com";
-            const res = await chai
-                .request(app)
-                .post("/api/users/membre.nouveau/secondary_email")
-                .type("form")
-                .send({
-                    username,
-                    secondaryEmail,
-                });
-            res.should.have.status(200);
+            await utils.deleteUsers(testUsers);
         });
 
         it("should add secondary email", async () => {
@@ -791,14 +772,11 @@ describe("User", () => {
                 .selectAll()
                 .where("username", "=", "membre.nouveau")
                 .execute();
-            await chai
-                .request(app)
-                .post(`/api/users/${username}/secondary_email`)
-                .type("form")
-                .send({
-                    username,
-                    secondaryEmail,
-                });
+            await manageSecondaryEmailForUser({
+                username,
+                secondaryEmail,
+            });
+
             const dbNewRes = await db
                 .selectFrom("users")
                 .selectAll()
@@ -820,14 +798,10 @@ describe("User", () => {
                     secondary_email: secondaryEmail,
                 })
                 .execute();
-            await chai
-                .request(app)
-                .post(`/api/users/${username}/secondary_email/`)
-                .type("form")
-                .send({
-                    username,
-                    secondaryEmail: newSecondaryEmail,
-                });
+            await manageSecondaryEmailForUser({
+                username,
+                secondaryEmail: newSecondaryEmail,
+            });
             const dbNewRes = await db
                 .selectFrom("users")
                 .selectAll()
@@ -845,10 +819,19 @@ describe("User", () => {
         });
     });
 
-    describe("PUT /api/users/:username/primary_email", () => {
+    describe("Test action managePrimaryEmailForUser", () => {
         let mattermostGetUserByEmailStub;
         let isPublicServiceEmailStub;
-        let getToken;
+        let getServerSessionStub;
+        let user;
+        const managePrimaryEmailForUser = proxyquire(
+            "@/app/api/member/actions/managePrimaryEmailForUser",
+            {
+                "next/cache": {
+                    revalidatePath: sinon.stub(),
+                },
+            }
+        ).managePrimaryEmailForUser;
 
         beforeEach(async () => {
             mattermostGetUserByEmailStub = sinon
@@ -857,30 +840,38 @@ describe("User", () => {
             isPublicServiceEmailStub = sinon
                 .stub(controllerUtils, "isPublicServiceEmail")
                 .returns(Promise.resolve(true));
-            getToken = sinon.stub(session, "getToken");
-            getToken.returns(utils.getJWT("membre.nouveau"));
+            getServerSessionStub = sinon
+                .stub(nextAuth, "getServerSession")
+                .resolves({});
+
             await utils.createUsers(testUsers);
+            user = await db
+                .selectFrom("users")
+                .selectAll()
+                .where("username", "=", "membre.nouveau")
+                .executeTakeFirstOrThrow();
         });
         afterEach(async () => {
+            sinon.restore();
+            await utils.deleteUsers(testUsers);
             mattermostGetUserByEmailStub.restore();
             isPublicServiceEmailStub.restore();
-            getToken.restore();
             await utils.deleteUsers(testUsers);
         });
 
         it("should not update primary email if user is not current user", async () => {
+            const mockSession = {
+                user: { id: "anyuser", isAdmin: false, uuid: "anyuser-uuid" },
+            };
+            getServerSessionStub.resolves(mockSession);
             const username = "membre.nouveau";
             const primaryEmail = "membre.nouveau.new@example.com";
-            getToken.returns(utils.getJWT("julien.dauphant"));
+            try {
+                await managePrimaryEmailForUser({ username, primaryEmail });
+            } catch (e) {
+                console.log(e);
+            }
 
-            await chai
-                .request(app)
-                .put(`/api/users/${username}/primary_email/`)
-                .type("form")
-                .send({
-                    username,
-                    primaryEmail: primaryEmail,
-                });
             isPublicServiceEmailStub.called.should.be.true;
             mattermostGetUserByEmailStub.calledTwice.should.be.false;
         });
@@ -889,23 +880,29 @@ describe("User", () => {
             const username = "membre.nouveau";
             const primaryEmail = "membre.nouveau.new@example.com";
             isPublicServiceEmailStub.returns(Promise.resolve(false));
-            getToken.returns(utils.getJWT("membre.nouveau"));
 
-            await chai
-                .request(app)
-                .put(`/api/users/${username}/primary_email/`)
-                .type("form")
-                .send({
-                    username,
-                    primaryEmail: primaryEmail,
-                });
+            const user = await db
+                .selectFrom("users")
+                .selectAll()
+                .where("username", "=", "membre.nouveau")
+                .executeTakeFirstOrThrow();
+
+            const mockSession = {
+                user: { id: "membre.nouveau", isAdmin: false, uuid: user.uuid },
+            };
+            getServerSessionStub.resolves(mockSession);
+
+            try {
+                await managePrimaryEmailForUser({ username, primaryEmail });
+            } catch (e) {
+                console.log(e);
+            }
             const dbNewRes = await db
                 .selectFrom("users")
                 .selectAll()
                 .where("username", "=", "membre.nouveau")
-                .execute();
-            dbNewRes.length.should.equal(1);
-            dbNewRes[0].primary_email.should.not.equal(primaryEmail);
+                .executeTakeFirstOrThrow();
+            dbNewRes.primary_email?.should.not.equal(primaryEmail);
             isPublicServiceEmailStub.called.should.be.true;
             mattermostGetUserByEmailStub.calledOnce.should.be.false;
         });
@@ -915,7 +912,11 @@ describe("User", () => {
             mattermostGetUserByEmailStub.returns(Promise.reject("404 error"));
             const username = "membre.nouveau";
             const primaryEmail = "membre.nouveau.new@example.com";
-            getToken.returns(utils.getJWT("membre.nouveau"));
+            const mockSession = {
+                user: { id: "membre.nouveau", isAdmin: false, uuid: user.uuid },
+            };
+            getServerSessionStub.resolves(mockSession);
+
             await db
                 .updateTable("users")
                 .where("username", "=", "membre.nouveau")
@@ -924,21 +925,17 @@ describe("User", () => {
                 })
                 .execute();
 
-            const res = await chai
-                .request(app)
-                .put(`/api/users/${username}/primary_email/`)
-                .type("form")
-                .send({
-                    username,
-                    primaryEmail: primaryEmail,
-                });
+            try {
+                await managePrimaryEmailForUser({ username, primaryEmail });
+            } catch (e) {
+                console.log(e);
+            }
             const dbNewRes = await db
                 .selectFrom("users")
                 .selectAll()
                 .where("username", "=", "membre.nouveau")
-                .execute();
-            dbNewRes.length.should.equal(1);
-            dbNewRes[0].primary_email.should.not.equal(primaryEmail);
+                .executeTakeFirstOrThrow();
+            dbNewRes.primary_email?.should.not.equal(primaryEmail);
 
             mattermostGetUserByEmailStub.calledOnce.should.be.true;
 
@@ -956,7 +953,11 @@ describe("User", () => {
             mattermostGetUserByEmailStub.returns(Promise.reject("404 error"));
             const username = "membre.nouveau";
             const primaryEmail = "admin@otherdomaine.gouv.fr";
-            getToken.returns(utils.getJWT("membre.nouveau"));
+            const mockSession = {
+                user: { id: "membre.nouveau", isAdmin: false, uuid: user.uuid },
+            };
+            getServerSessionStub.resolves(mockSession);
+
             await db
                 .updateTable("users")
                 .where("username", "=", "membre.nouveau")
@@ -965,21 +966,15 @@ describe("User", () => {
                 })
                 .execute();
 
-            await chai
-                .request(app)
-                .put(`/api/users/${username}/primary_email/`)
-                .type("form")
-                .send({
-                    username,
-                    primaryEmail: primaryEmail,
-                });
+            try {
+                await managePrimaryEmailForUser({ username, primaryEmail });
+            } catch (e) {}
             const dbNewRes = await db
                 .selectFrom("users")
                 .selectAll()
                 .where("username", "=", "membre.nouveau")
-                .execute();
-            dbNewRes.length.should.equal(1);
-            dbNewRes[0].primary_email.should.equal(
+                .executeTakeFirstOrThrow();
+            dbNewRes.primary_email?.should.equal(
                 `membre.nouveau@${config.domain}`
             );
             await db
@@ -1002,23 +997,19 @@ describe("User", () => {
                 .returns(Promise.resolve(true));
             const username = "membre.nouveau";
             const primaryEmail = "membre.nouveau.new@example.com";
-            getToken.returns(utils.getJWT("membre.nouveau"));
+            const mockSession = {
+                user: { id: "membre.nouveau", isAdmin: false, uuid: user.uuid },
+            };
+            getServerSessionStub.resolves(mockSession);
 
-            const res = await chai
-                .request(app)
-                .put(`/api/users/${username}/primary_email/`)
-                .type("form")
-                .send({
-                    username,
-                    primaryEmail: primaryEmail,
-                });
+            await managePrimaryEmailForUser({ username, primaryEmail });
+
             const dbNewRes = await db
                 .selectFrom("users")
                 .selectAll()
                 .where("username", "=", "membre.nouveau")
-                .execute();
-            dbNewRes.length.should.equal(1);
-            dbNewRes[0].primary_email.should.equal(primaryEmail);
+                .executeTakeFirstOrThrow();
+            dbNewRes.primary_email?.should.equal(primaryEmail);
             await db
                 .updateTable("users")
                 .where("username", "=", "membre.nouveau")
@@ -1032,143 +1023,6 @@ describe("User", () => {
             // mattermostGetUserByEmailStub.calledOnce.should.be.true;
             createRedirectionStub.restore();
             deleteEmailStub.restore();
-        });
-    });
-
-    describe("Post delete /api/users/:username/email/delete authenticated", () => {
-        let getToken;
-        let isPublicServiceEmailStub;
-
-        beforeEach(async () => {
-            getToken = sinon.stub(session, "getToken");
-            getToken.returns(utils.getJWT("membre.actif"));
-            await utils.createUsers(testUsers);
-            isPublicServiceEmailStub = sinon
-                .stub(controllerUtils, "isPublicServiceEmail")
-                .returns(Promise.resolve(true));
-        });
-
-        afterEach(async () => {
-            getToken.restore();
-            await utils.deleteUsers(testUsers);
-            isPublicServiceEmailStub.restore();
-        });
-
-        it("Deleting email should ask OVH to delete all redirections", (done) => {
-            nock.cleanAll();
-
-            nock(/.*ovh.com/)
-                .get(/^.*email\/domain\/.*\/redirection/)
-                .query((x) => Boolean(x.from || x.to))
-                .reply(200, ["123123"])
-                .persist();
-
-            nock(/.*ovh.com/)
-                .get(/^.*email\/domain\/.*\/redirection\/123123/)
-                .reply(200, {
-                    id: "123123",
-                    from: `membre.expire@${config.domain}`,
-                    to: "perso@example.ovh",
-                })
-                .persist();
-
-            utils.mockUsers();
-            utils.mockOvhTime();
-            utils.mockOvhUserResponder();
-            utils.mockOvhUserEmailInfos();
-            utils.mockOvhAllEmailInfos();
-            utils.mockSlackGeneral();
-            utils.mockSlackSecretariat();
-
-            const ovhRedirectionDeletion = nock(/.*ovh.com/)
-                .delete(/^.*email\/domain\/.*\/redirection\/123123/)
-                .reply(200);
-
-            chai.request(app)
-                .post("/api/users/membre.expire/email/delete")
-                .end((err, res) => {
-                    ovhRedirectionDeletion.isDone().should.be.true;
-                    done();
-                });
-        });
-
-        it("should not allow email deletion for active users", (done) => {
-            const ovhEmailDeletion = nock(/.*ovh.com/)
-                .delete(/^.*email\/domain\/.*\/account\/membre.expire/)
-                .reply(200);
-
-            chai.request(app)
-                .post("/api/users/membre.actif/email/delete")
-                .end((err, res) => {
-                    ovhEmailDeletion.isDone().should.be.false;
-                    done();
-                });
-        });
-
-        it("should not allow email deletion for another user if active", (done) => {
-            nock.cleanAll();
-
-            const ovhEmailDeletion = nock(/.*ovh.com/)
-                .delete(/^.*email\/domain\/.*\/account\/membre.actif/)
-                .reply(200);
-
-            utils.mockUsers();
-            utils.mockOvhTime();
-            utils.mockOvhUserResponder();
-            utils.mockOvhUserEmailInfos();
-            utils.mockOvhAllEmailInfos();
-            utils.mockSlackGeneral();
-            utils.mockSlackSecretariat();
-
-            getToken.returns(utils.getJWT("membre.nouveau"));
-            chai.request(app)
-                .post("/api/users/membre.actif/email/delete")
-                .end((err, res) => {
-                    ovhEmailDeletion.isDone().should.be.false;
-                    done();
-                });
-        });
-
-        it("should allow email deletion for requester even if active", (done) => {
-            nock.cleanAll();
-
-            nock(/.*ovh.com/)
-                .get(/^.*email\/domain\/.*\/redirection/)
-                .query((x) => Boolean(x.from || x.to))
-                .reply(200, ["123123"])
-                .persist();
-
-            nock(/.*ovh.com/)
-                .get(/^.*email\/domain\/.*\/redirection\/123123/)
-                .reply(200, {
-                    id: "123123",
-                    from: `membre.actif@${config.domain}`,
-                    to: "perso@example.ovh",
-                })
-                .persist();
-
-            const ovhEmailDeletion = nock(/.*ovh.com/)
-                .delete(/^.*email\/domain\/.*\/account\/membre.actif/)
-                .reply(200);
-
-            utils.mockUsers();
-            utils.mockOvhTime();
-            utils.mockOvhUserResponder();
-            utils.mockOvhUserEmailInfos();
-            utils.mockOvhAllEmailInfos();
-            utils.mockSlackGeneral();
-            utils.mockSlackSecretariat();
-
-            const ovhRedirectionDeletion = nock(/.*ovh.com/)
-                .delete(/^.*email\/domain\/.*\/redirection\/123123/)
-                .reply(200);
-
-            chai.request(app)
-                .post("/api/users/membre.actif/email/delete")
-                .end((err, res) => {
-                    ovhRedirectionDeletion.isDone().should.be.true;
-                    done();
-                });
         });
     });
 

@@ -1,22 +1,18 @@
-import Accordion from "@codegouvfr/react-dsfr/Accordion";
-import { EmailStatusCode } from "@/models/member";
+import { CreateEmailForm } from "./CreateEmailForm";
 import { ChangeSecondaryEmail } from "./Email/ChangeSecondaryEmail";
 import MemberBrevoEventList from "./MemberBrevoEventList";
+import MemberEmailServiceInfo from "./MemberEmailServiceInfo";
 import MemberEventList from "./MemberEventList";
 import { MemberPageProps } from "./MemberPage";
-import { EmailUpgrade } from "./EmailUpgrade";
-import { CreateEmailForm } from "./CreateEmailForm";
-import MemberEmailServiceInfo from "./MemberEmailServiceInfo";
+import { EmailStatusCode } from "@/models/member";
 
 export const AdminPanel = ({
     userInfos,
     emailInfos,
-    availableEmailPros,
     authorizations,
 }: {
     userInfos: MemberPageProps["userInfos"];
     emailInfos: MemberPageProps["emailInfos"];
-    availableEmailPros: MemberPageProps["availableEmailPros"];
     authorizations: MemberPageProps["authorizations"];
 }) => {
     return (

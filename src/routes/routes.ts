@@ -35,24 +35,6 @@ class routes {
     static ONBOARDING_API = "/api/onboarding" as const;
     static ONBOARDING_ACTION = "/onboarding" as const;
     static ONBOARDING_ACTION_API = "/api/onboarding" as const;
-    // users
-    static USER_CREATE_EMAIL = "/users/:username/email" as const;
-    static USER_DELETE_EMAIL_API = "/api/users/:username/email/delete" as const;
-    static USER_CREATE_REDIRECTION_API =
-        "/api/users/:username/redirections" as const;
-    static USER_DELETE_REDIRECTION_API =
-        "/api/users/:username/redirections/:email/delete" as const;
-    static USER_UPDATE_PASSWORD_API = "/api/users/:username/password" as const;
-    static USER_UPDATE_SECONDARY_EMAIL_API =
-        "/api/users/:username/secondary_email" as const;
-    static USER_UPDATE_PRIMARY_EMAIL_API =
-        "/api/users/:username/primary_email" as const;
-    static USER_UPGRADE_EMAIL_API =
-        "/api/users/:username/email-upgrade" as const;
-    static USER_CREATE_EMAIL_API = "/api/users/:username/create-email" as const;
-    static API_GET_PUBLIC_USER_INFO = "/api/public/users/:username" as const;
-    static USER_SET_EMAIL_RESPONDER_API =
-        "/api/account/set_email_responder" as const;
     // static USER_DELETE_EMAIL_RESPONDER_API =
     //     "/api/account/delete_email_responder" as const;
     // static USER_UPDATE_COMMUNICATION_EMAIL_API =
