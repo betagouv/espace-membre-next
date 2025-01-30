@@ -90,6 +90,17 @@ export class FakeSentryService implements AccountService {
         return Promise.resolve(newUser);
     }
 
+    async regenerateInviteForUser({
+        sentryUserId,
+    }: {
+        sentryUserId: string;
+    }): Promise<{ regenerate: boolean; reinvite: boolean }> {
+        return Promise.resolve({
+            regenerate: true,
+            reinvite: true,
+        });
+    }
+
     async changeMemberRoleInTeam({
         memberId,
         teamRole,

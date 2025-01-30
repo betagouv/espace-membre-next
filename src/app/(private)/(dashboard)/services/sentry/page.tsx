@@ -1,3 +1,4 @@
+import { fr } from "@codegouvfr/react-dsfr";
 import Alert from "@codegouvfr/react-dsfr/Alert";
 import Button from "@codegouvfr/react-dsfr/Button";
 import Table from "@codegouvfr/react-dsfr/Table";
@@ -169,25 +170,40 @@ export default async function SentryRequestPage() {
     return (
         <>
             <h1>Compte Sentry</h1>
-            {!!service_account && (
-                <>
-                    <AccountDetails
-                        account={service_account}
-                        data={
-                            service_account.metadata
-                                ? service_account.metadata.teams.map((team) => [
-                                      buildLinkToSentryTeam(team),
-                                      team.role,
-                                  ])
-                                : []
-                        }
-                        nbEvents={dbSentryEvents.length}
-                        headers={["nom", "niveau d'accès"]}
-                    />
-                </>
-            )}
-            {!service_account && <p>Tu n'as pas encore de compte sentry.</p>}
-
+            <div
+                className={fr.cx(
+                    "fr-grid-row",
+                    "fr-grid-row--gutters",
+                    "fr-mb-2w"
+                )}
+            >
+                <div
+                    className={fr.cx("fr-col-12", "fr-col-md-6", "fr-col-lg-6")}
+                >
+                    {!!service_account && (
+                        <>
+                            <AccountDetails
+                                account={service_account}
+                                data={
+                                    service_account.metadata
+                                        ? service_account.metadata.teams.map(
+                                              (team) => [
+                                                  buildLinkToSentryTeam(team),
+                                                  team.role,
+                                              ]
+                                          )
+                                        : []
+                                }
+                                nbEvents={dbSentryEvents.length}
+                                headers={["nom", "niveau d'accès"]}
+                            />
+                        </>
+                    )}
+                    {!service_account && (
+                        <p>Tu n'as pas encore de compte sentry.</p>
+                    )}
+                </div>
+            </div>
             {!!Object.keys(eventDictionnary).length && (
                 <>
                     <h2 className="fr-h5">Mes demandes : </h2>
@@ -222,11 +238,23 @@ export default async function SentryRequestPage() {
             )}
             {!!isLastEventPending && (
                 <>
-                    <Alert
-                        severity="info"
-                        small={true}
-                        description={`Tu as une demande en cours, celle-ci doit être terminé avant d'en fait une autre.`}
-                    />
+                    <div
+                        className={fr.cx("fr-grid-row", "fr-grid-row--gutters")}
+                    >
+                        <div
+                            className={fr.cx(
+                                "fr-col-12",
+                                "fr-col-md-6",
+                                "fr-col-lg-6"
+                            )}
+                        >
+                            <Alert
+                                severity="info"
+                                small={true}
+                                description={`Tu as une demande en cours, celle-ci doit être terminé avant d'en fait une autre.`}
+                            />
+                        </div>
+                    </div>
                     <Button disabled={true} className="fr-mt-2w">
                         {buttonLabel}
                     </Button>

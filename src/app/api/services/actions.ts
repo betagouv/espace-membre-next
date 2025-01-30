@@ -98,8 +98,9 @@ const createOrUpdateSentryAccount = async (
     if (!user.primary_email) {
         throw new ValidationError("Un email primaire est obligatoire");
     }
-    const sentryAccount = await getServiceAccount(user.uuid, SERVICES.MATOMO);
+    const sentryAccount = await getServiceAccount(user.uuid, SERVICES.SENTRY);
     const accountAlreadyExists = !!sentryAccount?.service_user_id;
+
     const teams =
         "teams" in sentryData && sentryData.teams
             ? sentryData.teams.map((t) => ({
