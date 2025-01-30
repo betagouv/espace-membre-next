@@ -133,6 +133,25 @@ export class SentryService implements AccountService {
         return await response.json();
     }
 
+    async regenerateInviteForUser({
+        sentryUserId,
+    }: {
+        sentryUserId: string;
+    }): Promise<{ regenerate: boolean; reinvite: boolean }> {
+        const res = await fetch(
+            `${this.apiUrl}/api/0/organizations/${this.org}/members/${sentryUserId}/`,
+            {
+                headers: this.headers,
+                body: JSON.stringify({
+                    regenerate: true,
+                    reinvite: true,
+                }),
+                method: "PUT",
+            }
+        );
+        return res.json();
+    }
+
     async addUserToOrganization({
         email,
         teamRoles,
