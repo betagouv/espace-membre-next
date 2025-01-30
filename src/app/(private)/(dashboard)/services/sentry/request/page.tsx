@@ -5,7 +5,7 @@ import { getServerSession } from "next-auth/next";
 import SentryServiceForm from "@/components/Service/SentryServiceForm";
 import { db } from "@/lib/kysely";
 import { getServiceAccount } from "@/lib/kysely/queries/services";
-import { getUserStartups } from "@/lib/kysely/queries/users";
+import { getUserStartupsActive } from "@/lib/kysely/queries/users";
 import {
     sentryServiceInfoToModel,
     sentryTeamToModel,
@@ -28,14 +28,9 @@ export default async function SentryRequestPage() {
         : undefined;
 
     const now = new Date();
-    const startups = (await getUserStartups(session.user.uuid))
-        .filter((startup) => {
-            return (
-                isAfter(now, startup.start ?? 0) &&
-                isBefore(now, startup.end ?? Infinity)
-            );
-        })
-        .map((startup) => userStartupToModel(startup));
+    const startups = (await getUserStartupsActive(session.user.uuid)).map(
+        (startup) => userStartupToModel(startup)
+    );
 
     const sentryTeams = !startups.length
         ? []
