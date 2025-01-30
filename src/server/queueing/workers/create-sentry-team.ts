@@ -2,6 +2,7 @@ import slugify from "@sindresorhus/slugify";
 import PgBoss from "pg-boss";
 
 import { addEvent } from "@/lib/events";
+import { db } from "@/lib/kysely";
 import { getStartup } from "@/lib/kysely/queries";
 import { teamAlreadyExistsError } from "@/lib/sentry";
 import { EventCode } from "@/models/actionEvent";
@@ -26,25 +27,34 @@ export async function createSentryTeam(
         teamSlug: slugify(startup.name),
     };
     try {
-        await sentryClient.createSentryTeam(team);
+        const resp = await sentryClient.createSentryTeam(team);
+        await db
+            .insertInto("sentry_teams")
+            .values({
+                name: resp.name,
+                sentry_id: resp.id,
+                startup_id: job.data.startupId,
+                slug: team.teamSlug,
+            })
+            .execute();
+
+        await addEvent({
+            action_code: EventCode.MEMBER_SERVICE_TEAM_CREATED,
+            action_metadata: {
+                service: SERVICES.SENTRY,
+                startupId: job.data.startupId,
+                team,
+                requestId: job.data.requestId,
+            },
+            action_on_username: job.data.username,
+            created_by_username: job.data.username,
+        });
+        console.log(`l'équipe a été créé ${team.teamName}`);
     } catch (error) {
         if (error === teamAlreadyExistsError) {
+            console.log(`l'équipe ${team.teamName} existe déjà`);
         } else {
-            throw Error;
+            throw error;
         }
     }
-
-    await addEvent({
-        action_code: EventCode.MEMBER_SERVICE_TEAM_CREATED,
-        action_metadata: {
-            service: SERVICES.SENTRY,
-            startupId: job.data.startupId,
-            team,
-            requestId: job.data.requestId,
-        },
-        action_on_username: job.data.username,
-        created_by_username: job.data.username,
-    });
-
-    console.log(`l'équipe a été créé ${team.teamName}`);
 }

@@ -224,6 +224,7 @@ export interface SentryTeams {
   id: Generated<string>;
   name: string;
   sentry_id: string;
+  slug: string | null;
   startup_id: string | null;
   updated_at: Generated<Timestamp>;
 }

@@ -1,5 +1,6 @@
 import config from ".";
 import {
+    CreateSentryTeamResponse,
     SentryAddUserToOrgParams,
     SentryAddUserToTeamParams,
     SentryService,
@@ -46,7 +47,7 @@ export class FakeSentryService implements AccountService {
     }: {
         teamName: string;
         teamSlug: string;
-    }): Promise<SentryTeam> {
+    }): Promise<CreateSentryTeamResponse> {
         const newTeam: SentryTeam = {
             id: `${this.teams.length + 1}`,
             name: teamName,
@@ -56,7 +57,16 @@ export class FakeSentryService implements AccountService {
             projects: [],
         };
         this.teams.push(newTeam);
-        return Promise.resolve(newTeam);
+        return Promise.resolve({
+            ...newTeam,
+            dateCreated: new Date().toISOString(),
+            isMember: true,
+            teamRole: "member",
+            hasAccess: true,
+            isPending: false,
+            isTeamAdmin: false,
+            access: [],
+        });
     }
 
     getAllUsers(): Promise<{ user: SentryUser; serviceUserId: string }[]> {
