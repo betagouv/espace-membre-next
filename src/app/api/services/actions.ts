@@ -10,6 +10,7 @@ import { v4 as uuidv4 } from "uuid";
 import { addEvent } from "@/lib/events";
 import { db } from "@/lib/kysely";
 import { getStartup } from "@/lib/kysely/queries";
+import { getServiceAccount } from "@/lib/kysely/queries/services";
 import { getUserBasicInfo, getUserStartups } from "@/lib/kysely/queries/users";
 import { MatomoAccess } from "@/lib/matomo";
 import { SentryRole } from "@/lib/sentry";
@@ -97,12 +98,7 @@ const createOrUpdateSentryAccount = async (
     if (!user.primary_email) {
         throw new ValidationError("Un email primaire est obligatoire");
     }
-    const sentryAccount = await db
-        .selectFrom("service_accounts")
-        .selectAll()
-        .where("account_type", "=", SERVICES.SENTRY)
-        .where("user_id", "=", user.uuid)
-        .executeTakeFirst();
+    const sentryAccount = await getServiceAccount(user.uuid, SERVICES.MATOMO);
     const accountAlreadyExists = !!sentryAccount?.service_user_id;
     const teams =
         "teams" in sentryData && sentryData.teams
