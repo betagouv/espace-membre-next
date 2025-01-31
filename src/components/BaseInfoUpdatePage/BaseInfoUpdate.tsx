@@ -372,7 +372,11 @@ export const BaseInfoUpdate = (props: BaseInfoUpdateProps) => {
                     </h2>
                     <p>
                         ⚠️ Ces valeurs servent à alimenter l'
-                        <Link href="/metabase" target="_blank">
+                        <Link
+                            href="/metabase"
+                            target="_blank"
+                            title="observatoire de la communauté - ouvre une nouvelle fenêtre"
+                        >
                             observatoire de la communauté
                         </Link>
                         . Elles sont confidentielles et anonymisées mis à part

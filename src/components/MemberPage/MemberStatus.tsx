@@ -422,7 +422,7 @@ export const MemberStatus = ({
 
     return (
         <>
-            Voici les comptes auquel tu as accès.
+            <h2>Liste des accès.</h2>
             <Table
                 className="tbl-account-status"
                 headers={["Service", "Status", "Infos"]}
