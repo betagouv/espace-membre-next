@@ -56,7 +56,7 @@ export async function syncSentryAccounts(
                         service_user_id: (eb) =>
                             eb.ref("excluded.service_user_id"),
                         user_id: (eb) => eb.ref("excluded.user_id"),
-                        status: ACCOUNT_SERVICE_STATUS.ACCOUNT_FOUND,
+                        status: (eb) => eb.ref("excluded.status"),
                     });
             })
             .executeTakeFirst();
