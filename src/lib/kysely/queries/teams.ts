@@ -38,3 +38,11 @@ export function getTeamsForUser(userUuid: string) {
         .where("user_id", "=", userUuid)
         .execute();
 }
+
+export function getTeamsForIncubator(incubatorId: string) {
+    return db
+        .selectFrom("teams")
+        .selectAll()
+        .where("incubator_id", "=", incubatorId)
+        .execute();
+}

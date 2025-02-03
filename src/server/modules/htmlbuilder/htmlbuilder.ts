@@ -58,6 +58,7 @@ const TEMPLATES_BY_TYPE: Record<EmailProps["type"], string | null> = {
         "./src/server/views/templates/emails/prPendingToTeam.ejs",
     EMAIL_VERIFICATION_WAITING:
         "./src/server/views/templates/emails/verificationWaiting.ejs",
+    EMAIL_NEW_MEMBER_VALIDATION: null,
 };
 
 const SUBJECTS_BY_TYPE: Record<EmailProps["type"], string | SubjectFunction> = {
@@ -104,6 +105,7 @@ const SUBJECTS_BY_TYPE: Record<EmailProps["type"], string | SubjectFunction> = {
     EMAIL_FORUM_REMINDER: "",
     EMAIL_TEST: "",
     EMAIL_VERIFICATION_WAITING: "Bienvenue chez BetaGouv 🙂",
+    EMAIL_NEW_MEMBER_VALIDATION: "",
 };
 
 const MARKDOWN_BY_TYPE: Record<EmailProps["type"], boolean> = {
@@ -134,6 +136,7 @@ const MARKDOWN_BY_TYPE: Record<EmailProps["type"], boolean> = {
     EMAIL_FORUM_REMINDER: false,
     EMAIL_TEST: false,
     EMAIL_VERIFICATION_WAITING: false,
+    EMAIL_NEW_MEMBER_VALIDATION: false,
 };
 
 const htmlBuilder: HtmlBuilderType = {

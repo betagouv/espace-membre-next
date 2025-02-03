@@ -199,7 +199,7 @@ export const DOMAINE_OPTIONS: DomaineOption[] = [
 
 export const memberSchema = z.object({
     // modify info schema
-    uuid: z.string({}).readonly(),
+    uuid: z.string({}).uuid().readonly(),
     username: z.string({}).readonly(),
     fullname: z
         .string({

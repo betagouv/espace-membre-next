@@ -32,6 +32,7 @@ export enum EMAIL_TYPES {
     EMAIL_FORUM_REMINDER = "EMAIL_FORUM_REMINDER",
     EMAIL_TEST = "EMAIL_TEST",
     EMAIL_VERIFICATION_WAITING = "EMAIL_VERIFICATION_WAITING",
+    EMAIL_NEW_MEMBER_VALIDATION = "EMAIL_NEW_MEMBER_VALIDATION",
 }
 
 export type SubjectFunction = {
@@ -271,6 +272,14 @@ export type EmailVerificationWaiting = {
     };
 };
 
+export type EmailNewMemberValidation = {
+    type: EMAIL_TYPES.EMAIL_NEW_MEMBER_VALIDATION;
+    variables: {
+        userInfos: memberBaseInfoSchemaType;
+        startup: string;
+    };
+};
+
 export type EmailVariants =
     | EmailMarrainageNewcomer
     | EmailMarrainageOnboarder
@@ -295,7 +304,8 @@ export type EmailVariants =
     | EmailForumReminder
     | EmailTest
     | EmailPRPendingToTeam
-    | EmailVerificationWaiting;
+    | EmailVerificationWaiting
+    | EmailNewMemberValidation;
 
 export type EmailProps = BaseEmail & EmailVariants;
 
