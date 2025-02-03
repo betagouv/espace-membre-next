@@ -7,25 +7,23 @@ import { Button } from "@codegouvfr/react-dsfr/Button";
 import Input from "@codegouvfr/react-dsfr/Input";
 import Select from "@codegouvfr/react-dsfr/Select";
 import { zodResolver } from "@hookform/resolvers/zod";
-import * as Sentry from "@sentry/nextjs";
-import { add, addMonths } from "date-fns";
+import { add } from "date-fns";
 import { useFieldArray, useForm } from "react-hook-form";
 
 import { Mission } from "@/components/BaseInfoUpdatePage/MissionsEditor";
+import SEIncubateurSelect from "@/components/SEIncubateurSelect";
 import {
     createMemberSchema,
     createMemberSchemaType,
 } from "@/models/actions/member";
 import { DOMAINE_OPTIONS, Domaine } from "@/models/member";
-import { Status } from "@/models/mission";
+import { Option } from "@/models/misc";
 import routes, { computeRoute } from "@/routes/routes";
 
 // data from secretariat API
 export interface BaseInfoUpdateProps {
-    startupOptions: {
-        value: string;
-        label: string;
-    }[];
+    startupOptions: Option[];
+    incubatorOptions: Option[];
 }
 
 export default function CommunityCreateMemberPage(props: BaseInfoUpdateProps) {
@@ -53,6 +51,7 @@ export default function CommunityCreateMemberPage(props: BaseInfoUpdateProps) {
         handleSubmit,
         formState: { errors, isDirty, isSubmitting, isValid },
         setValue,
+        trigger,
         getValues,
         control,
         watch,
@@ -61,6 +60,8 @@ export default function CommunityCreateMemberPage(props: BaseInfoUpdateProps) {
         mode: "onChange",
         defaultValues,
     });
+
+    const createMemberSchemaSchemaShape = createMemberSchema.shape;
     const { fields: missionsFields } = useFieldArray({
         rules: { minLength: 1 },
         control,
@@ -118,6 +119,7 @@ export default function CommunityCreateMemberPage(props: BaseInfoUpdateProps) {
         document.body.scrollIntoView();
     };
 
+    const newMemberMission = missionsFields[0];
     return (
         <>
             <h1>Créer une fiche membre</h1>
@@ -168,7 +170,7 @@ export default function CommunityCreateMemberPage(props: BaseInfoUpdateProps) {
                                 >
                                     <Input
                                         label={
-                                            createMemberSchema.shape.member
+                                            createMemberSchemaSchemaShape.member
                                                 .shape.firstname.description +
                                             " (obligatoire)"
                                         }
@@ -200,7 +202,7 @@ export default function CommunityCreateMemberPage(props: BaseInfoUpdateProps) {
                                 >
                                     <Input
                                         label={
-                                            createMemberSchema.shape.member
+                                            createMemberSchemaSchemaShape.member
                                                 .shape.lastname.description +
                                             " (obligatoire)"
                                         }
@@ -305,8 +307,12 @@ export default function CommunityCreateMemberPage(props: BaseInfoUpdateProps) {
                                         isMulti={false}
                                         control={control}
                                         register={register}
+                                        trigger={trigger}
                                         setValue={setValue}
                                         startupOptions={props.startupOptions}
+                                        incubatorOptions={
+                                            props.incubatorOptions
+                                        }
                                         errors={
                                             errors.missions
                                                 ? errors.missions[0]
@@ -325,6 +331,40 @@ export default function CommunityCreateMemberPage(props: BaseInfoUpdateProps) {
                                     ></Mission>
                                 </div>
                             </fieldset>
+                            {/* {!newMemberMission?.startups && (
+                                <fieldset
+                                    className="fr-mt-5v fr-mb-0v fr-fieldset"
+                                    id="identity-fieldset"
+                                    aria-labelledby="identity-fieldset-legend identity-fieldset-messages"
+                                >
+                                    <div className="fr-fieldset__element">
+                                        <SEIncubateurSelect
+                                            label="Incubateurs"
+                                            placeholder="Sélectionne un incubateur"
+                                            incubatorOptions={
+                                                props.incubatorOptions
+                                            }
+                                            onChange={(e, incubator) => {
+                                                if (incubator) {
+                                                    setValue(
+                                                        `incubator`,
+                                                        incubator.value
+                                                    );
+                                                }
+                                            }}
+                                            isMulti={false}
+                                        />
+                                        {errors?.incubator?.message && (
+                                            <p
+                                                id="text-input-error-desc-error"
+                                                className="fr-error-text"
+                                            >
+                                                {errors.incubator.message}
+                                            </p>
+                                        )}
+                                    </div>
+                                </fieldset>
+                            )} */}
                             <Button
                                 className={fr.cx("fr-mt-3w")}
                                 children={

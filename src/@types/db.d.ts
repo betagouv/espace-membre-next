@@ -178,6 +178,7 @@ export interface Missions {
   employer: string | null;
   end: Timestamp | null;
   id: Generated<number>;
+  incubator_id: string | null;
   start: Timestamp;
   status: MissionsStatusEnum | null;
   user_id: string | null;

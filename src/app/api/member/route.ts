@@ -1,3 +1,4 @@
+import slugify from "@sindresorhus/slugify";
 import { revalidatePath } from "next/cache";
 import { getServerSession } from "next-auth";
 
@@ -14,7 +15,6 @@ import {
     MemberUniqueConstraintViolationError,
     withHttpErrorHandling,
 } from "@/utils/error";
-import slugify from "@sindresorhus/slugify";
 
 const createUsername = (firstName, lastName) =>
     `${slugify(firstName)}.${slugify(lastName)}`;

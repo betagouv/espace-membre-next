@@ -17,15 +17,13 @@ import {
     updateMemberMissionsSchemaType,
 } from "@/models/actions/member";
 import { EmailStatusCode, memberBaseInfoSchemaType } from "@/models/member";
+import { Option } from "@/models/misc";
 import routes, { computeRoute } from "@/routes/routes";
-
 // data from secretariat API
 export interface BaseInfoUpdateProps {
     userInfos: memberBaseInfoSchemaType;
-    startupOptions: {
-        value: string;
-        label: string;
-    }[];
+    startupOptions: Option[];
+    incubatorOptions: Option[];
 }
 
 export const MemberUpdate = ({
@@ -41,6 +39,7 @@ export const MemberUpdate = ({
         handleSubmit,
         formState: { errors, isDirty, isSubmitting, isValid },
         setValue,
+        trigger,
         control,
     } = useForm<updateMemberMissionsSchemaType>({
         resolver: zodResolver(updateMemberMissionsSchema),
@@ -119,8 +118,10 @@ export const MemberUpdate = ({
                     </p>
                     <MissionsEditor
                         control={control}
+                        trigger={trigger}
                         setValue={setValue}
                         register={register}
+                        incubatorOptions={incubatorOptions}
                         startupOptions={startupOptions}
                         errors={errors.missions || []}
                     />
