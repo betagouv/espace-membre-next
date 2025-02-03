@@ -52,7 +52,9 @@ export const sentryUserToModel = (
             expired: userMetadata.expired,
             inviteStatus: userMetadata.inviteStatus,
         },
-        status: ACCOUNT_SERVICE_STATUS.ACCOUNT_FOUND,
+        status: userMetadata.pending
+            ? ACCOUNT_SERVICE_STATUS.ACCOUNT_INVITATION_PENDING
+            : ACCOUNT_SERVICE_STATUS.ACCOUNT_FOUND,
     };
 };
 
