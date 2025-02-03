@@ -223,7 +223,7 @@ export const startupSchema = z.object({
         })
         .min(1)
         .describe("Email de contact du produit"),
-    link: z.string().describe("URL du site web").optional().nullable(),
+    link: z.string().url().describe("URL du site web").optional().nullable(),
     repository: z
         .string()
         .describe("URL du repository pour le code source")
