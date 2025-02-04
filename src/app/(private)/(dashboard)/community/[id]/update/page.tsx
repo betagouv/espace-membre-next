@@ -45,7 +45,7 @@ export default async function Page({
 
      const sessionUserIsFromIncubatorTeam =
         await isSessionUserIncubatorTeamAdminForUser({
-            user: user.userInfos,
+            user: userInfos,
             sessionUserUuid: session.user.uuid,
         });
     // members cannot edit active users directly. Call admin or team member.
