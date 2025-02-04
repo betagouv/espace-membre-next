@@ -83,6 +83,7 @@ export const createMemberSchema = z.object({
                 }),
             })
             .email()
+            .transform((email) => email.toLowerCase())
             .describe("Email"),
         domaine: memberSchema.shape.domaine,
     }),
