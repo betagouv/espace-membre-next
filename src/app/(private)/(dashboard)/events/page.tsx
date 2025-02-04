@@ -38,7 +38,7 @@ export default async function Page() {
                         className={fr.cx("fr-ml-2w")}
                         href="https://calendar.google.com/calendar/ical/0ieonqap1r5jeal5ugeuhoovlg%40group.calendar.google.com/public/basic.ics"
                         target="_blank"
-                        title="Lien vers le fichier iCal de l'agenda public - ouvre une nouvelle fenêtre"
+                        title="Fichier iCal de l'agenda public - ouvre une nouvelle fenêtre"
                     >
                         <span className={fr.cx("fr-icon-download-line")}></span>
                         Lien vers le fichier iCal
