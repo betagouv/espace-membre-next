@@ -36,6 +36,14 @@ const formatNewsletter = (newsletter: newsletterSchemaType, isAdmin: boolean) =>
             key="link"
             href={newsletter.brevo_url || newsletter.url}
             target="_blank"
+            title={`Lire${
+                newsletter.sent_at
+                    ? ` l'édition du ${format(
+                          newsletter.sent_at,
+                          "dd/MM/yyyy à HH:mm"
+                      )}`
+                    : ""
+            } - ouvre une nouvelle fenêtre`}
         >
             Lire
         </a>,
@@ -88,22 +96,32 @@ export default function NewsletterPage({
                         )}
                         <br />
                         <br />
-                        <p>Lien de l'infolettre : </p>
-                        <a
-                            href={
-                                currentNewsletter.brevo_url ||
-                                currentNewsletter.url
-                            }
-                            target="_blank"
-                        >
-                            {currentNewsletter.brevo_url ||
-                                currentNewsletter.url}
-                        </a>
-
-                        <br />
                         <p>
-                            L'infolettre est mise en forme par l'équipe d'animation (chaque mardi matin) sur la base des contenus proposés par la communauté sur le pad, puis envoyée 
-                            le mardi à 17h.
+                            Lien de l'infolettre :{" "}
+                            <a
+                                href={
+                                    currentNewsletter.brevo_url ||
+                                    currentNewsletter.url
+                                }
+                                target="_blank"
+                                title={
+                                    (currentNewsletter.publish_at &&
+                                        `Lire l'édition du ${format(
+                                            currentNewsletter.publish_at,
+                                            "dd/MM/yyyy à HH:mm"
+                                        )} - ouvre une nouvelle fenêtre`) ||
+                                    `Lire la prochaine édition - ouvre une nouvelle fenêtre`
+                                }
+                            >
+                                {currentNewsletter.brevo_url ||
+                                    currentNewsletter.url}
+                            </a>
+                        </p>
+                        <p>
+                            L'infolettre est mise en forme par l'équipe
+                            d'animation (chaque mardi matin) sur la base des
+                            contenus proposés par la communauté sur le pad, puis
+                            envoyée le mardi à 17h.
                         </p>
                     </div>
                 )}
