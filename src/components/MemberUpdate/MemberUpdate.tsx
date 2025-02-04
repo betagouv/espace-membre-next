@@ -29,6 +29,7 @@ export interface BaseInfoUpdateProps {
 export const MemberUpdate = ({
     userInfos,
     startupOptions,
+    incubatorOptions,
 }: BaseInfoUpdateProps) => {
     const defaultValues: updateMemberMissionsSchemaType = {
         missions: userInfos.missions,

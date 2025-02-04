@@ -123,8 +123,8 @@ export const Mission = ({
                         <Input
                             label={
                                 labels.start ||
-                                missionSchema.sourceType()._def.shape().start
-                                    .description + " (obligatoire)"
+                                missionSchema.shape.start.description +
+                                    " (obligatoire)"
                             }
                             hintText="Date de début"
                             nativeInputProps={{
@@ -148,8 +148,8 @@ export const Mission = ({
                         <Input
                             label={
                                 labels.end ||
-                                missionSchema.sourceType()._def.shape().end
-                                    .description + " (obligatoire)"
+                                missionSchema.shape.end.description +
+                                    " (obligatoire)"
                             }
                             nativeInputProps={{
                                 style: { width: 200 },
@@ -186,8 +186,8 @@ export const Mission = ({
                     <Input
                         label={
                             labels.employer ||
-                            missionSchema.sourceType()._def.shape().employer
-                                .description + " (obligatoire)"
+                            missionSchema.shape.employer.description +
+                                " (obligatoire)"
                         }
                         nativeInputProps={{
                             placeholder: "ex: Scopyleft",
@@ -200,8 +200,8 @@ export const Mission = ({
                     <Select
                         label={
                             labels.status ||
-                            missionSchema.sourceType()._def.shape().status
-                                .description + " (obligatoire)"
+                            missionSchema.shape.status.description +
+                                " (obligatoire)"
                         }
                         nativeSelectProps={{
                             ...register(`${missionArrayKey}.${index}.status`),
