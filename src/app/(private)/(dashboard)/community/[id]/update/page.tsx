@@ -7,6 +7,7 @@ import { MemberUpdate } from "@/components/MemberUpdate/MemberUpdate";
 import { getAllStartups } from "@/lib/kysely/queries";
 import { getUserBasicInfo } from "@/lib/kysely/queries/users";
 import { memberBaseInfoToModel } from "@/models/mapper";
+import { isSessionUserIncubatorTeamAdminForUser } from "@/server/config/admin.config";
 import { authOptions } from "@/utils/authoptions";
 import { routeTitles } from "@/utils/routes/routeTitles";
 
@@ -42,8 +43,13 @@ export default async function Page({
         m.end ? new Date(m.end) >= new Date() : !m.end
     );
 
-    // members cannot edit active users directly. call a team member
-    if (!session?.user.isAdmin && hasActiveMission) {
+     const sessionUserIsFromIncubatorTeam =
+        await isSessionUserIncubatorTeamAdminForUser({
+            user: user.userInfos,
+            sessionUserUuid: session.user.uuid,
+        });
+    // members cannot edit active users directly. Call admin or team member.
+    if (hasActiveMission && !session?.user.isAdmin && !sessionUserIsFromIncubatorTeam) {
         redirect(`/community/${id}`);
     }
 
