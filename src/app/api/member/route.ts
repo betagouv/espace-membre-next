@@ -6,8 +6,14 @@ import { db } from "@/lib/kysely";
 import { createMission } from "@/lib/kysely/queries/missions";
 import { getUserInfos } from "@/lib/kysely/queries/users";
 import { createMemberSchema } from "@/models/actions/member";
+import { SendNewMemberValidationEmailSchema } from "@/models/jobs/member";
 import { EmailStatusCode } from "@/models/member";
 import { isPublicServiceEmail, isAdminEmail } from "@/server/controllers/utils";
+import { getBossClientInstance } from "@/server/queueing/client";
+import {
+    sendNewMemberValidationEmail,
+    sendNewMemberValidationEmailTopic,
+} from "@/server/queueing/workers/send-validation-email";
 import { authOptions } from "@/utils/authoptions";
 import {
     AdminEmailNotAllowedError,
@@ -69,6 +75,14 @@ export const POST = withHttpErrorHandling(async (req: Request) => {
                 revalidatePath("/community", "layout");
                 return dbUser;
             });
+        // send validation email
+        const bossClient = await getBossClientInstance();
+        await bossClient.send(
+            sendNewMemberValidationEmailTopic,
+            SendNewMemberValidationEmailSchema.parse({
+                userId: dbUser.uuid,
+            })
+        );
     } catch (error: any) {
         if (
             error.message.includes(

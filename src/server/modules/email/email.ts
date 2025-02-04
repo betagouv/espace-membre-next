@@ -1,6 +1,9 @@
 // import { DBUser, DBUserWithEmailsAndMattermostUsername } from "@/models/dbUser";
 import { Job } from "@/models/job";
-import { memberBaseInfoSchemaType } from "@/models/member";
+import {
+    memberBaseInfoSchemaType,
+    memberPublicInfoSchemaType,
+} from "@/models/member";
 import { StartupPhase } from "@/models/startup";
 
 export enum EMAIL_TYPES {
@@ -275,7 +278,7 @@ export type EmailVerificationWaiting = {
 export type EmailNewMemberValidation = {
     type: EMAIL_TYPES.EMAIL_NEW_MEMBER_VALIDATION;
     variables: {
-        userInfos: memberBaseInfoSchemaType;
+        userInfos: memberPublicInfoSchemaType;
         startup: string;
     };
 };

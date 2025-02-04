@@ -1,5 +1,6 @@
 import * as Sentry from "@sentry/nextjs";
 import slugify from "@sindresorhus/slugify";
+import { CustomError as LibraryCustomError } from "ts-custom-error";
 
 import { ActionResponse } from "@/@types/serverAction";
 import config from "@/server/config";
@@ -23,6 +24,31 @@ export const ERROR_MESSAGES = {
     // Add more error messages as needed
 };
 // errors.ts
+// TODO replace ErrorWithStatus by businessError
+export class CustomError extends LibraryCustomError {
+    public constructor(public readonly code: string, message: string = "") {
+        super(message);
+    }
+
+    public json(): object {
+        return {
+            code: this.code,
+            message: this.message,
+        };
+    }
+}
+
+export class UnexpectedError extends CustomError {}
+
+export class BusinessError extends CustomError {
+    public constructor(
+        code: string,
+        message: string = "",
+        public readonly httpCode?: number
+    ) {
+        super(code, message);
+    }
+}
 
 export class ErrorWithStatus extends Error {
     statusCode: number;
@@ -128,6 +154,7 @@ const EXPECTED_ERRORS = [
     StartupUniqueConstraintViolationError,
     MemberUniqueConstraintViolationError,
     AdminEmailNotAllowedError,
+    BusinessError,
 ];
 
 function isExpectedError(error: unknown): error is ErrorWithStatus {
@@ -186,7 +213,7 @@ export function withHttpErrorHandling<Args extends any[]>(
                         message: error.message,
                     },
                     {
-                        status: error.statusCode,
+                        status: error.statusCode || 400,
                     }
                 );
             } else {
