@@ -9,6 +9,7 @@ import { MemberPageProps } from "./MemberPage";
 import { BadgeEmailPlan } from "../BadgeEmailPlan";
 import { askAccountCreationForService } from "@/app/api/services/actions";
 import { EmailStatusCode } from "@/models/member";
+import { EMAIL_STATUS_READABLE_FORMAT } from "@/models/misc";
 import { EMAIL_PLAN_TYPE } from "@/models/ovh";
 import { ACCOUNT_SERVICE_STATUS, SERVICES } from "@/models/services";
 
@@ -88,7 +89,8 @@ const emailStatusRow = (
                         .with(
                             P.union(
                                 EmailStatusCode.EMAIL_ACTIVE_AND_PASSWORD_DEFINITION_PENDING,
-                                EmailStatusCode.EMAIL_VERIFICATION_WAITING
+                                EmailStatusCode.EMAIL_VERIFICATION_WAITING,
+                                EmailStatusCode.MEMBER_VALIDATION_WAITING
                             ),
                             () => (
                                 <Badge severity="warning">
@@ -210,6 +212,20 @@ const emailStatusRow = (
                                         email existe mais est indiqué comme
                                         supprimé ou non défini dans
                                         l'espace-membre
+                                    </>
+                                )
+                            )
+                            .with(
+                                EmailStatusCode.MEMBER_VALIDATION_WAITING,
+                                () => (
+                                    <>
+                                        <br />
+                                        {
+                                            EMAIL_STATUS_READABLE_FORMAT[
+                                                EmailStatusCode
+                                                    .MEMBER_VALIDATION_WAITING
+                                            ]
+                                        }
                                     </>
                                 )
                             )

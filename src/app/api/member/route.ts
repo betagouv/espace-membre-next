@@ -2,9 +2,11 @@ import slugify from "@sindresorhus/slugify";
 import { revalidatePath } from "next/cache";
 import { getServerSession } from "next-auth";
 
+import { addEvent } from "@/lib/events";
 import { db } from "@/lib/kysely";
 import { createMission } from "@/lib/kysely/queries/missions";
 import { getUserInfos } from "@/lib/kysely/queries/users";
+import { EventCode } from "@/models/actionEvent";
 import { createMemberSchema } from "@/models/actions/member";
 import { SendNewMemberValidationEmailSchema } from "@/models/jobs/member";
 import { EmailStatusCode } from "@/models/member";
@@ -51,7 +53,7 @@ export const POST = withHttpErrorHandling(async (req: Request) => {
                         username,
                         role: "",
                         primary_email_status:
-                            EmailStatusCode.EMAIL_VERIFICATION_WAITING,
+                            EmailStatusCode.MEMBER_VALIDATION_WAITING,
                     })
                     .returning("uuid")
                     .executeTakeFirstOrThrow();
@@ -83,6 +85,15 @@ export const POST = withHttpErrorHandling(async (req: Request) => {
                 userId: dbUser.uuid,
             })
         );
+        await addEvent({
+            created_by_username: session.user.id,
+            action_on_username: dbUser.uuid,
+            action_code: EventCode.MEMBER_CREATED,
+            action_metadata: {
+                member,
+                missions,
+            },
+        });
     } catch (error: any) {
         if (
             error.message.includes(
