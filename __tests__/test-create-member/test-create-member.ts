@@ -3,8 +3,8 @@ import { createMocks } from "node-mocks-http";
 import proxyquire from "proxyquire";
 import sinon from "sinon";
 
-import testUsers from "./users.json";
-import utils from "./utils";
+import testUsers from "../users.json";
+import utils from "../utils";
 import { db } from "@/lib/kysely";
 import { createMemberSchemaType } from "@/models/actions/member";
 import { Domaine, EmailStatusCode } from "@/models/member";
