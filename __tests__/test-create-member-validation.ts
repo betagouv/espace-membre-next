@@ -7,6 +7,7 @@ import utils from "./utils";
 import { db } from "@/lib/kysely";
 import { Domaine, EmailStatusCode } from "@/models/member";
 import { AuthorizationError, BusinessError } from "@/utils/error";
+import { EventCode } from "@/models/actionEvent";
 
 describe(`A new member cannot be validated by someone who is not an a team member`, () => {
     let sendEmailStub, getServerSessionStub, sendNewMemberValidationEmail;
@@ -192,6 +193,26 @@ describe(`A new member cannot be validated by someone who is not an a team membe
             EmailStatusCode.EMAIL_VERIFICATION_WAITING
         );
         // try to do the action a second time
+        try {
+            await validateNewMember({ memberUuid: newUser.uuid });
+        } catch (error) {
+            error.should.be.instanceof(BusinessError);
+            (error as BusinessError).code.should.be.equals(
+                "userAlreadyValided"
+            );
+        }
+        await db
+            .deleteFrom("events")
+            .where("action_on_username", "=", newUser.username)
+            .where("action_code", "=", EventCode.MEMBER_VALIDATED)
+            .execute();
+        await db
+            .updateTable("users")
+            .set({
+                primary_email_status: EmailStatusCode.EMAIL_ACTIVE,
+            })
+            .where("uuid", "=", newUser.uuid)
+            .execute();
         try {
             await validateNewMember({ memberUuid: newUser.uuid });
         } catch (error) {
