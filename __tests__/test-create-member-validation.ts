@@ -1,29 +1,23 @@
 import { addDays, subDays } from "date-fns";
-import PgBoss from "pg-boss";
 import proxyquire from "proxyquire";
 import sinon from "sinon";
 
-import testUsers from "../users.json";
-import utils from "../utils";
+import testUsers from "./users.json";
+import utils from "./utils";
 import { db } from "@/lib/kysely";
-import { getUserBasicInfo } from "@/lib/kysely/queries/users";
-import { SendNewMemberValidationEmailSchemaType } from "@/models/jobs/member";
-import { memberPublicInfoToModel } from "@/models/mapper";
 import { Domaine, EmailStatusCode } from "@/models/member";
-import { EMAIL_TYPES } from "@/server/modules/email";
+import { AuthorizationError, BusinessError } from "@/utils/error";
 
-describe(`A new member cannot be validated by someone who is not an incubator's team member`, () => {
+describe(`A new member cannot be validated by someone who is not an a team member`, () => {
     let sendEmailStub, getServerSessionStub, sendNewMemberValidationEmail;
     let newUser,
-        newIncubatorA,
         newIncubatorB,
         newMission,
-        newStartupMissionConnexion,
         newStartup,
         teamA,
-        teamB,
         userA,
-        userB;
+        userB,
+        newStartupMissionConnexion;
     beforeEach(async () => {
         getServerSessionStub = sinon.stub();
         await utils.createUsers(testUsers);
@@ -42,6 +36,7 @@ describe(`A new member cannot be validated by someone who is not an incubator's 
             })
             .returningAll()
             .executeTakeFirstOrThrow();
+
         newUser = await db
             .insertInto("users")
             .values({
@@ -50,6 +45,7 @@ describe(`A new member cannot be validated by someone who is not an incubator's 
                 role: "Cheffe",
                 username: "annie.mation",
                 domaine: Domaine.ANIMATION,
+                primary_email_status: EmailStatusCode.MEMBER_VALIDATION_WAITING,
             })
             .returningAll()
             .executeTakeFirstOrThrow();
@@ -87,7 +83,7 @@ describe(`A new member cannot be validated by someone who is not an incubator's 
             .insertInto("teams")
             .values({
                 name: "Dinum Team",
-                incubator_id: newIncubatorA.uuid,
+                incubator_id: newIncubatorB.uuid,
             })
             .returningAll()
             .executeTakeFirstOrThrow();
@@ -114,35 +110,31 @@ describe(`A new member cannot be validated by someone who is not an incubator's 
             .execute();
         await db
             .deleteFrom("incubators")
-            .where("uuid", "=", newIncubatorA.uuid)
-            .execute();
-        await db
-            .deleteFrom("incubators")
             .where("uuid", "=", newIncubatorB.uuid)
             .execute();
         await db.deleteFrom("teams").where("uuid", "=", teamA.uuid).execute();
-        await db.deleteFrom("teams").where("uuid", "=", teamB.uuid).execute();
         await db.deleteFrom("users").where("uuid", "=", newUser.uuid).execute();
         await db
             .deleteFrom("missions")
             .where("uuid", "=", newMission.uuid)
             .execute();
     });
-    it("should send forbidden error if an unthorized member try to validate link", async function (_) {
-        const validateUser = proxyquire("@/api/member/actions", {
-            "next-auth": { getServerSession: getServerSessionStub },
-            "@/server/config/email.config": { sendEmail: sendEmailStub },
-        }).validateUser;
-        try {
-            await validateUser({ userId: newUser.id });
-        } catch (error) {
-            if (error instanceof Error) {
-                error.message = "You should be connected to do this action";
+    it("should send forbidden error if an unlogged user try to validate link", async function () {
+        const validateNewMember = proxyquire(
+            "@/app/api/member/actions/validateNewMember",
+            {
+                "next-auth/next": { getServerSession: getServerSessionStub },
+                "@/server/config/email.config": { sendEmail: sendEmailStub },
             }
+        ).validateNewMember;
+        try {
+            await validateNewMember({ memberUuid: newUser.id });
+        } catch (error) {
+            error.should.be.instanceof(AuthorizationError);
         }
         const updatedUser = await db
             .selectFrom("users")
-            .where("username", "=", newUser.id)
+            .where("uuid", "=", newUser.uuid)
             .selectAll()
             .executeTakeFirstOrThrow();
         updatedUser?.primary_email_status?.should.equals(
@@ -152,52 +144,61 @@ describe(`A new member cannot be validated by someone who is not an incubator's 
     it("should send forbidden error if an unthorized member try to validate link", async function () {
         getServerSessionStub = sinon.stub();
         const mockSession = {
-            user: { id: userB.ghid, isAdmin: false, uuid: userB.uuid },
+            user: { id: userB.username, isAdmin: false, uuid: userB.uuid },
         };
         getServerSessionStub.resolves(mockSession);
-        const validateUser = proxyquire("@/api/member/actions", {
-            "next-auth": { getServerSession: getServerSessionStub },
-            "@/server/config/email.config": { sendEmail: sendEmailStub },
-        }).validateUser;
-        try {
-            await validateUser({ userId: newUser.id });
-        } catch (error) {
-            if (error instanceof Error) {
-                error.message = `You should be a member of the incubator's team to do this action`;
+        const validateNewMember = proxyquire(
+            "@/app/api/member/actions/validateNewMember",
+            {
+                "next-auth/next": { getServerSession: getServerSessionStub },
+                "@/server/config/email.config": { sendEmail: sendEmailStub },
             }
+        ).validateNewMember;
+        try {
+            await validateNewMember({ memberUuid: newUser.uuid });
+        } catch (error) {
+            error.should.be.instanceof(AuthorizationError);
         }
         const updatedUser = await db
             .selectFrom("users")
-            .where("username", "=", newUser.id)
+            .where("uuid", "=", newUser.uuid)
             .selectAll()
             .executeTakeFirstOrThrow();
         updatedUser?.primary_email_status?.should.equals(
             EmailStatusCode.MEMBER_VALIDATION_WAITING
         );
     });
-    it("should send authorized member of incubator teams to validation user", async function (_) {
+    it("should send authorized member of incubator teams to validation user", async function () {
         const mockSession = {
-            user: { id: userA.ghid, isAdmin: false, uuid: userA.uuid },
+            user: { id: userA.username, isAdmin: false, uuid: userA.uuid },
         };
         getServerSessionStub.resolves(mockSession);
-        const validateUser = proxyquire("@/api/member/actions", {
-            "next-auth": { getServerSession: getServerSessionStub },
-            "@/server/config/email.config": { sendEmail: sendEmailStub },
-        }).validateUser;
-        try {
-            await validateUser({ userId: newUser.id });
-        } catch (error) {
-            if (error instanceof Error) {
-                error.message = `You should be a member of the incubator's team to do this action`;
+        const validateNewMember = proxyquire(
+            "@/app/api/member/actions/validateNewMember",
+            {
+                "next-auth/next": { getServerSession: getServerSessionStub },
+                "@/server/config/email.config": { sendEmail: sendEmailStub },
             }
-        }
+        ).validateNewMember;
+
+        await validateNewMember({ memberUuid: newUser.uuid });
+
         const updatedUser = await db
             .selectFrom("users")
-            .where("username", "=", newUser.id)
+            .where("uuid", "=", newUser.uuid)
             .selectAll()
             .executeTakeFirstOrThrow();
         updatedUser?.primary_email_status?.should.equals(
             EmailStatusCode.EMAIL_VERIFICATION_WAITING
         );
+        // try to do the action a second time
+        try {
+            await validateNewMember({ memberUuid: newUser.uuid });
+        } catch (error) {
+            error.should.be.instanceof(BusinessError);
+            (error as BusinessError).code.should.be.equals(
+                "userIsNotWaitingValidation"
+            );
+        }
     });
 });

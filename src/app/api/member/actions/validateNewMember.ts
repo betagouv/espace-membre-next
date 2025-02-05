@@ -20,7 +20,7 @@ const validateNewMemberSchema = z.object({
 });
 type validateNewMemberSchemaType = z.infer<typeof validateNewMemberSchema>;
 
-async function validateNewMember({
+export async function validateNewMember({
     memberUuid,
 }: validateNewMemberSchemaType): Promise<void> {
     const session = await getServerSession(authOptions);
@@ -34,6 +34,15 @@ async function validateNewMember({
             `No user found for id : ${memberUuid}`
         );
     }
+    if (
+        rawData.primary_email_status !==
+        EmailStatusCode.MEMBER_VALIDATION_WAITING
+    ) {
+        throw new BusinessError(
+            "userIsNotWaitingValidation",
+            `User : ${memberUuid} is not waiting validation`
+        );
+    }
     const newMember = memberBaseInfoToModel(rawData);
     const sessionUserIsFromIncubatorTeam =
         !!session.user.isAdmin ||
@@ -42,7 +51,9 @@ async function validateNewMember({
             sessionUserUuid: session.user.uuid,
         }));
     if (!sessionUserIsFromIncubatorTeam) {
-        throw new AuthorizationError();
+        throw new AuthorizationError(
+            "You are not a in the required incubator's team"
+        );
     }
 
     // todo check that it is authorized
