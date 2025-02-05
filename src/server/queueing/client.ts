@@ -10,10 +10,14 @@ import {
     createOrUpdateMatomoServiceAccountTopic,
 } from "./workers/create-update-matomo-account";
 import {
+    sendNewMemberValidationEmail,
+    sendNewMemberValidationEmailTopic,
+} from "./workers/send-validation-email";
+import {
     updateSentryServiceAccount,
     updateSentryServiceAccountTopic,
 } from "./workers/update-sentry-account";
-import { ErrorWithStatus } from "@/utils/error";
+import { BusinessError, ErrorWithStatus } from "@/utils/error";
 import { gracefulExit } from "@/utils/gracefulExist";
 
 let databaseUrl = process.env.DATABASE_URL || "";
@@ -72,6 +76,10 @@ export async function startBossClientInstance(): Promise<PgBoss> {
             updateSentryServiceAccountTopic,
             handlerWrapper(updateSentryServiceAccount)
         );
+        await bossClient.work(
+            sendNewMemberValidationEmailTopic,
+            handlerWrapper(sendNewMemberValidationEmail)
+        );
     });
 }
 
@@ -96,7 +104,10 @@ export function handlerWrapper<ReqData>(
 
             // Wrapping to report error is required since there is no working way to watch job changes easily with `work()` method
             // Ref: https://github.com/timgit/pg-boss/issues/273#issuecomment-1788162895
-            if (!(error instanceof ErrorWithStatus)) {
+            if (
+                !(error instanceof ErrorWithStatus) ||
+                !(error instanceof BusinessError)
+            ) {
                 Sentry.withScope(function (scope) {
                     // Gather retry errors for the same event at the same place in Sentry
                     scope.setFingerprint(["pgboss", job.id]);
