@@ -61,6 +61,7 @@ export class ErrorWithStatus extends CustomError {
 export class AuthorizationError extends ErrorWithStatus {
     constructor(message: string = ERROR_MESSAGES.AUTHORIZATION_ERROR) {
         super(message);
+        this.message = message;
         this.statusCode = 403;
     }
 }
