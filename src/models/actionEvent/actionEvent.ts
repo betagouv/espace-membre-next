@@ -55,6 +55,7 @@ export enum EventCode {
     MEMBER_SERVICE_ACCOUNT_UPDATE_REQUESTED = "MEMBER_SERVICE_ACCOUNT_UPDATE_REQUESTED",
     MEMBER_SERVICE_ACCOUNT_UPDATED = "MEMBER_SERVICE_ACCOUNT_UPDATED",
     MEMBER_CREATED = "MEMBER_CREATED",
+    MEMBER_VALIDATED = "MEMBER_VALIDATED",
 }
 
 export const EventCodeToReadable: Record<EventCode, string> = {
@@ -95,6 +96,7 @@ export const EventCodeToReadable: Record<EventCode, string> = {
         "Compte de service mise à jour demandée",
     [EventCode.MEMBER_SERVICE_ACCOUNT_UPDATED]: "Compte de service mis à jour",
     [EventCode.MEMBER_CREATED]: "Membre créé",
+    [EventCode.MEMBER_VALIDATED]: "Membre validé",
 };
 
 export const SYSTEM_NAME = "system";
@@ -360,6 +362,10 @@ export const EventMemberCreatedPayload = z.object({
     }),
 });
 
+export const EventMemberValidatedPayload = z.object({
+    action_code: z.literal(EventCode.MEMBER_VALIDATED),
+});
+
 export type EventPayloads =
     | z.infer<typeof EventMemberCommunicationEmailUpdatePayload>
     | z.infer<typeof EventMemberBaseInfoUpdatedPayload>
@@ -395,7 +401,8 @@ export type EventPayloads =
     | z.infer<typeof EventSentryAccountUpdateRequestedPayload>
     | z.infer<typeof EventSentryAccountUpdatedPayload>
     | z.infer<typeof EventMatomoAccountPayloadSchema>
-    | z.infer<typeof EventMemberCreatedPayload>;
+    | z.infer<typeof EventMemberCreatedPayload>
+    | z.infer<typeof EventMemberValidatedPayload>;
 // | z.infer<typeof EventMatomoAccountRequestedPayload>
 // | z.infer<typeof EventMatomoAccountCreatedPayload>
 // | z.infer<typeof EventMatomoAccountUpdateRequestedPayload>

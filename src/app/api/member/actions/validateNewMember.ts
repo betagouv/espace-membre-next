@@ -3,8 +3,11 @@
 import { getServerSession } from "next-auth/next";
 import { z } from "zod";
 
+import { addEvent } from "@/lib/events";
 import { db } from "@/lib/kysely";
 import { getUserBasicInfo } from "@/lib/kysely/queries/users";
+import { EventCode } from "@/models/actionEvent";
+import { validateNewMemberSchemaType } from "@/models/actions/member";
 import { memberBaseInfoToModel } from "@/models/mapper";
 import { EmailStatusCode } from "@/models/member";
 import { isSessionUserIncubatorTeamAdminForUser } from "@/server/config/admin.config";
@@ -14,11 +17,6 @@ import {
     BusinessError,
     withErrorHandling,
 } from "@/utils/error";
-
-const validateNewMemberSchema = z.object({
-    memberUuid: z.string().uuid(),
-});
-type validateNewMemberSchemaType = z.infer<typeof validateNewMemberSchema>;
 
 export async function validateNewMember({
     memberUuid,
@@ -32,6 +30,21 @@ export async function validateNewMember({
         throw new BusinessError(
             "userNotFound",
             `No user found for id : ${memberUuid}`
+        );
+    }
+
+    const event = await db
+        .selectFrom("events")
+        .selectAll()
+        .where("action_on_username", "=", rawData.username)
+        .where("action_code", "=", EventCode.MEMBER_VALIDATED)
+        .orderBy("created_at desc")
+        .executeTakeFirst();
+
+    if (event) {
+        throw new BusinessError(
+            "userAlreadyValided",
+            `Le nouveau membre a été validé par ${event.created_by_username}`
         );
     }
     if (
@@ -64,6 +77,12 @@ export async function validateNewMember({
             primary_email_status: EmailStatusCode.EMAIL_VERIFICATION_WAITING,
         })
         .execute();
+
+    await addEvent({
+        created_by_username: session.user.id,
+        action_code: EventCode.MEMBER_VALIDATED,
+        action_on_username: newMember.username,
+    });
 }
 
 export const safeValidateNewMember = withErrorHandling(validateNewMember);

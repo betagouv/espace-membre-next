@@ -100,3 +100,10 @@ export const updateMemberMissionsSchema = z.object({
 export type updateMemberMissionsSchemaType = z.infer<
     typeof updateMemberMissionsSchema
 >;
+
+export const validateNewMemberSchema = z.object({
+    memberUuid: z.string().uuid(),
+});
+export type validateNewMemberSchemaType = z.infer<
+    typeof validateNewMemberSchema
+>;
