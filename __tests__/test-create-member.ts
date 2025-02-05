@@ -28,13 +28,9 @@ const createMemberObj: createMemberSchemaType = {
 describe("Test creating new user flow", () => {
     let sendStub, bossClientStub, getServerSessionStub, createNewMemberHandler;
     beforeEach(async () => {
-        // isPublicServiceEmailStub = sinon
-        //     .stub(controllerUtils, "isPublicServiceEmail")
-        //     .returns(Promise.resolve(true));
         getServerSessionStub = sinon.stub();
         await utils.createUsers(testUsers);
         sendStub = sinon.stub().resolves(); // Resolves like a real async function
-        // Stub the return value of getBossClientInstance
         bossClientStub = { send: sendStub };
         // Use proxyquire to replace bossClient module
         createNewMemberHandler = proxyquire("@/app/api/member/route", {
@@ -52,7 +48,6 @@ describe("Test creating new user flow", () => {
     });
 
     afterEach(async () => {
-        // getToken.restore();
         await utils.deleteUsers(testUsers);
     });
 
@@ -63,15 +58,12 @@ describe("Test creating new user flow", () => {
         getServerSessionStub.resolves(mockSession);
         const { req } = createMocks({
             method: "POST",
-            query: {
-                ...createMemberObj,
-            },
             json: async () => ({
                 ...createMemberObj,
             }),
         });
 
-        const res = await createNewMemberHandler(req, {
+        await createNewMemberHandler(req, {
             params: {
                 ...createMemberObj,
             },

@@ -44,9 +44,6 @@ describe("PUT /api/member[username]/info-update", () => {
         getServerSessionStub.resolves(mockSession);
         const { req } = createMocks({
             method: "PUT",
-            query: {
-                id: "1",
-            },
             json: async () => ({
                 ...user,
             }),

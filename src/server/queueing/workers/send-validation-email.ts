@@ -29,14 +29,20 @@ export async function sendNewMemberValidationEmail(
         );
     }
     const newMember = memberPublicInfoToModel(memberDbData);
-
     const userMissions = await db
         .selectFrom("missions")
         .selectAll()
-        .where("start", ">", now)
-        .where("end", "<", now)
+        // Todo should we verify that mission is active or in the futur ?
+        // .where("start", ">", now)
+        // .where("end", "<", now)
         .where("user_id", "=", data.userId)
         .execute();
+    if (!userMissions.length) {
+        throw new BusinessError(
+            "NoActiveMissionForUser",
+            `User ${data.userId} does not have any missions`
+        );
+    }
     const userStartups = (await getUserStartups(data.userId)).filter(
         (startup) => {
             return (
@@ -48,13 +54,21 @@ export async function sendNewMemberValidationEmail(
     // todo incubator_id might change to be another params send in object "job"
     const missionIncubators = userMissions
         .map((m) => m.incubator_id)
-        .filter((incubator) => !!incubator);
-    const startupIncubators = userStartups.map(
-        (startup) => startup.incubator_id
-    );
-    const incubatorIds = [...missionIncubators, ...startupIncubators];
+        .filter((incubator): incubator is string => !!incubator);
+    const startupIncubators = userStartups
+        .map((startup) => startup.incubator_id)
+        .filter((incubator): incubator is string => !!incubator);
 
-    for (const incubatorId in incubatorIds) {
+    const incubatorIds = Array.from(
+        new Set([...missionIncubators, ...startupIncubators])
+    );
+    if (!incubatorIds.length) {
+        throw new BusinessError(
+            "NewMemberDoesNotHaveIncubators",
+            `NewMember ${data.userId} is not linked to any incubators`
+        );
+    }
+    for (const incubatorId of incubatorIds) {
         const incubator = await db
             .selectFrom("incubators")
             .selectAll()
@@ -70,7 +84,7 @@ export async function sendNewMemberValidationEmail(
         if (!membersForTeam.length) {
             throw new BusinessError(
                 "validationMemberListIsEmpty",
-                `There is no member in animation team for incubator ${incubatorId}`
+                `There is no member in animation teams for incubator ${incubatorId}`
             );
         }
         const memberEmails = Array.from(
