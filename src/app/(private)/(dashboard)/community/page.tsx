@@ -1,6 +1,9 @@
 import type { Metadata } from "next";
 
-import { Community } from "@/components/CommunityPage";
+// import { Community } from "@/components/CommunityPage";
+import dynamic from "next/dynamic";
+
+import communes from "./communes.json";
 import { getAllStartups } from "@/lib/kysely/queries";
 import {
     getAllIncubatorsOptions,
@@ -11,7 +14,10 @@ import { competencesList } from "@/models/competences";
 import { memberBaseInfoToModel } from "@/models/mapper";
 import { DOMAINE_OPTIONS } from "@/models/member";
 import { routeTitles } from "@/utils/routes/routeTitles";
-import communes from "./communes.json";
+
+const Community = dynamic(() => import("@/components/CommunityPage"), {
+    ssr: false,
+});
 
 export const metadata: Metadata = {
     title: `${routeTitles.community()} / Espace Membre`,
