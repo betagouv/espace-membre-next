@@ -1,7 +1,8 @@
 "use client";
 
 import { useRouter } from "next/navigation";
-import { useEffect, useState } from "react";
+import { useMemo, useTransition } from "react";
+import { useQueryState } from "nuqs";
 
 import { Tabs } from "@codegouvfr/react-dsfr/Tabs";
 import { Button } from "@codegouvfr/react-dsfr/Button";
@@ -67,69 +68,65 @@ export default function StartupPage({
     files,
     events,
 }: StartupPageProps) {
-    const router = useRouter();
-    const [tab, setTab] = useState<string>(
-        window.location.hash.replace("#", "") || "team"
-    );
-
-    const onHashChange = () => {
-        setTab(window.location.hash.replace("#", ""));
-    };
-
-    useEffect(() => {
-        window.addEventListener("hashchange", onHashChange);
-
-        return () => {
-            window.removeEventListener("hashchange", onHashChange);
-        };
-    }, []);
+    const [_, startTransition] = useTransition();
+    const [tab, setTab] = useQueryState("tab", {
+        defaultValue: "team",
+        startTransition,
+    });
 
     const currentPhase = getCurrentPhase(phases); // todo get current phase
-    const tabs = [
-        {
-            label: "Équipe",
-            tabId: "team",
-            isDefault: tab === "team",
-            content: (
-                <StartupMembers members={members} startupInfos={startupInfos} />
-            ),
-        },
-        {
-            label: "Description",
-            tabId: "description",
-            isDefault: tab === "description",
-            content: <StartupDescription startupInfos={startupInfos} />,
-        },
-        {
-            label: "Historique",
-            tabId: "events",
-            isDefault: tab === "events",
-            content: <StartupHistory phases={phases} events={events} />,
-        },
-        {
-            label: "Standards",
-            tabId: "standards",
-            isDefault: tab === "standards",
-            content: <StartupStandards startupInfos={startupInfos} />,
-        },
-        {
-            label: "Outils",
-            tabId: "tools",
-            isDefault: tab === "tools",
-            content: (
-                <StartupTools
-                    matomoSites={matomoSites}
-                    sentryTeams={sentryTeams}
-                />
-            ),
-        },
-        {
-            label: "Documents",
-            tabId: "documents",
-            isDefault: tab === "documents",
-            content: <StartupFiles startup={startupInfos} files={files} />,
-        },
-    ];
+
+    const tabs = useMemo(
+        () => [
+            {
+                label: "Équipe",
+                tabId: "team",
+                isDefault: tab === "team",
+                content: (
+                    <StartupMembers
+                        members={members}
+                        startupInfos={startupInfos}
+                    />
+                ),
+            },
+            {
+                label: "Description",
+                tabId: "description",
+                isDefault: tab === "description",
+                content: <StartupDescription startupInfos={startupInfos} />,
+            },
+            {
+                label: "Historique",
+                tabId: "events",
+                isDefault: tab === "events",
+                content: <StartupHistory phases={phases} events={events} />,
+            },
+            {
+                label: "Standards",
+                tabId: "standards",
+                isDefault: tab === "standards",
+                content: <StartupStandards startupInfos={startupInfos} />,
+            },
+            {
+                label: "Outils",
+                tabId: "tools",
+                isDefault: tab === "tools",
+                content: (
+                    <StartupTools
+                        matomoSites={matomoSites}
+                        sentryTeams={sentryTeams}
+                    />
+                ),
+            },
+            {
+                label: "Documents",
+                tabId: "documents",
+                isDefault: tab === "documents",
+                content: <StartupFiles startup={startupInfos} files={files} />,
+            },
+        ],
+        [tab]
+    );
 
     return (
         <div className={fr.cx("fr-grid-row", "fr-grid-row--gutters")}>
@@ -148,10 +145,11 @@ export default function StartupPage({
             <div className={fr.cx("fr-col-12")}>
                 <Tabs
                     tabs={tabs}
-                    onTabChange={(obj) => {
-                        router.push(`#${tabs[obj.tabIndex].tabId}`);
-                    }}
-                ></Tabs>
+                    selectedTabId={tab}
+                    onTabChange={(newTab) => setTab(newTab)}
+                >
+                    {tabs.find((t) => t.tabId === tab)?.content}
+                </Tabs>
             </div>
             <div
                 className={fr.cx("fr-col-12", "fr-mt-4w")}

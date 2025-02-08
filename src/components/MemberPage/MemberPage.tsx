@@ -1,8 +1,8 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useMemo, useTransition } from "react";
+import { useQueryState } from "nuqs";
 
-import { useRouter } from "next/navigation";
 import { fr } from "@codegouvfr/react-dsfr";
 import Button from "@codegouvfr/react-dsfr/Button";
 import { Tabs } from "@codegouvfr/react-dsfr/Tabs";
@@ -25,6 +25,7 @@ import LastChange from "../LastChange";
 import { FicheHeader } from "../FicheHeader";
 
 import "./MemberPage.css";
+import Link from "next/link";
 
 const mdParser = new MarkdownIt({
     html: true,
@@ -90,24 +91,11 @@ export default function MemberPage({
     avatar,
     isCurrentUser,
 }: MemberPageProps) {
-    const router = useRouter();
-
-    const [tab, setTab] = useState<string>(
-        window.location.hash.replace("#", "") || "team"
-    );
-
-    const onHashChange = () => {
-        setTab(window.location.hash.replace("#", ""));
-    };
-
-    useEffect(() => {
-        // Listen for changes in the URL
-        window.addEventListener("popstate", onHashChange);
-
-        return () => {
-            window.removeEventListener("popstate", onHashChange);
-        };
-    }, []);
+    const [_, startTransition] = useTransition();
+    const [tab, setTab] = useQueryState("tab", {
+        defaultValue: "fiche-membre",
+        startTransition,
+    });
 
     const canEdit = isAdmin || isCurrentUser || sessionUserIsFromIncubatorTeam;
     const linkToEditPage = match([
@@ -126,106 +114,119 @@ export default function MemberPage({
         )
         .otherwise(() => "");
 
-    const tabs = [
-        {
-            label: "Fiche Membre",
-            isDefault: tab === "fiche-membre",
-            tabId: "fiche-membre",
-            content: (
-                <>
-                    <MemberCard
-                        avatar={avatar}
-                        userInfos={userInfos}
-                        changes={changes}
-                        isAdmin={isAdmin}
-                        isCurrentUser={isCurrentUser}
-                        sessionUserIsFromIncubatorTeam={
-                            sessionUserIsFromIncubatorTeam
-                        }
-                    />
-                    {userInfos.bio && (
-                        <figure className={fr.cx("fr-quote", "fr-mt-2w")}>
-                            <blockquote
-                                dangerouslySetInnerHTML={{
-                                    // todo: check secu
-                                    __html: mdParser
-                                        .render(userInfos.bio.trim())
-                                        .replace(/^<p>/, "")
-                                        .replace(/<\/p>$/, ""),
-                                }}
+    const tabs = useMemo(
+        () =>
+            [
+                {
+                    label: "Fiche Membre",
+                    isDefault: tab === "fiche-membre",
+                    tabId: "fiche-membre",
+                    content: (
+                        <>
+                            <MemberCard
+                                avatar={avatar}
+                                userInfos={userInfos}
+                                changes={changes}
+                                isAdmin={isAdmin}
+                                isCurrentUser={isCurrentUser}
+                                sessionUserIsFromIncubatorTeam={
+                                    sessionUserIsFromIncubatorTeam
+                                }
                             />
-                            <figcaption></figcaption>
-                        </figure>
-                    )}
-                    <div className={fr.cx("fr-mt-4w")}>
-                        <h3>Contact</h3>
-                        <MemberContact
+                            {userInfos.bio && (
+                                <figure
+                                    className={fr.cx("fr-quote", "fr-mt-2w")}
+                                >
+                                    <blockquote
+                                        dangerouslySetInnerHTML={{
+                                            // todo: check secu
+                                            __html: mdParser
+                                                .render(userInfos.bio.trim())
+                                                .replace(/^<p>/, "")
+                                                .replace(/<\/p>$/, ""),
+                                        }}
+                                    />
+                                    <figcaption></figcaption>
+                                </figure>
+                            )}
+                            <div className={fr.cx("fr-mt-4w")}>
+                                <h3>Contact</h3>
+                                <MemberContact
+                                    userInfos={userInfos}
+                                    mattermostInfo={mattermostInfo}
+                                    emailInfos={emailInfos}
+                                    isAdmin={isAdmin}
+                                    isCurrentUser={isCurrentUser}
+                                />
+                            </div>
+                            <div className={fr.cx("fr-mt-4w")}>
+                                <h3>Missions</h3>
+                                <MemberMissions
+                                    startups={startups}
+                                    userInfos={userInfos}
+                                />
+                            </div>
+                            {/* <Button
+                                onClick={() => {
+                                    setTab("statut-comptes");
+                                    router.push("?tab=statut-comptes#target");
+                                }}
+                            >
+                                example internal link
+                            </Button> */}
+                        </>
+                    ),
+                },
+                {
+                    label: "Statut des comptes",
+                    tabId: "statut-comptes",
+                    isDefault: tab === "statut-comptes",
+                    content: (
+                        <MemberStatus
+                            isExpired={isExpired}
+                            emailInfos={emailInfos}
                             userInfos={userInfos}
                             mattermostInfo={mattermostInfo}
-                            emailInfos={emailInfos}
-                            isAdmin={isAdmin}
+                            matomoInfo={matomoInfo}
+                            sentryInfo={sentryInfo}
+                            redirections={redirections}
                             isCurrentUser={isCurrentUser}
                         />
-                    </div>
-                    <div className={fr.cx("fr-mt-4w")}>
-                        <h3>Missions</h3>
-                        <MemberMissions
-                            startups={startups}
+                    ),
+                },
+                {
+                    label: "Compte email",
+                    tabId: "compte-email",
+                    isDefault: tab === "compte-email",
+                    content: (
+                        <EmailContainer
+                            isCurrentUser={isCurrentUser}
+                            isExpired={isExpired}
+                            emailInfos={emailInfos}
+                            emailResponder={emailResponder}
+                            emailRedirections={redirections}
+                            redirections={redirections}
                             userInfos={userInfos}
+                            authorizations={authorizations}
+                        ></EmailContainer>
+                    ),
+                },
+                isAdmin && {
+                    label: "Admin",
+                    tabId: "admin",
+                    isDefault: tab === "admin",
+                    content: (
+                        <AdminPanel
+                            authorizations={authorizations}
+                            availableEmailPros={availableEmailPros}
+                            userInfos={userInfos}
+                            emailInfos={emailInfos}
                         />
-                    </div>
-                </>
-            ),
-        },
-        {
-            label: "Statut des comptes",
-            tabId: "statut-comptes",
-            isDefault: tab === "statut-comptes",
-
-            content: (
-                <MemberStatus
-                    isExpired={isExpired}
-                    emailInfos={emailInfos}
-                    userInfos={userInfos}
-                    mattermostInfo={mattermostInfo}
-                    matomoInfo={matomoInfo}
-                    sentryInfo={sentryInfo}
-                    redirections={redirections}
-                    isCurrentUser={isCurrentUser}
-                />
-            ),
-        },
-        {
-            label: "Compte email",
-            tabId: "compte-email",
-            isDefault: tab === "compte-email",
-            content: (
-                <EmailContainer
-                    isCurrentUser={isCurrentUser}
-                    isExpired={isExpired}
-                    emailInfos={emailInfos}
-                    emailResponder={emailResponder}
-                    emailRedirections={redirections}
-                    redirections={redirections}
-                    userInfos={userInfos}
-                    authorizations={authorizations}
-                ></EmailContainer>
-            ),
-        },
-        isAdmin && {
-            label: "Admin",
-            tabId: "admin",
-            isDefault: tab === "admin",
-            content: (
-                <AdminPanel
-                    authorizations={authorizations}
-                    availableEmailPros={availableEmailPros}
-                    userInfos={userInfos}
-                    emailInfos={emailInfos}
-                />
-            ),
-        },
-    ].filter((x) => !!x); // wth, Boolean doesnt work
+                    ),
+                },
+            ].filter((x) => !!x), // wth, Boolean doesnt work
+        [tab]
+    );
 
     return (
         <div className="fr-mb-8v MemberPage">
@@ -236,11 +237,16 @@ export default function MemberPage({
             <br />
             {isExpired && <MemberExpirationNotice userInfos={userInfos} />}
             <Tabs
-                tabs={tabs}
-                onTabChange={(obj) => {
-                    router.push(`#${tabs[obj.tabIndex].tabId}`);
+                selectedTabId={tab}
+                tabs={[...tabs]}
+                onTabChange={(newTab) => {
+                    if (tab !== newTab) {
+                        setTab(newTab);
+                    }
                 }}
-            />
+            >
+                {tabs.find((t) => t.tabId === tab)?.content}
+            </Tabs>
             <div
                 className={fr.cx("fr-col-12", "fr-mt-4w")}
                 style={{ textAlign: "center" }}
