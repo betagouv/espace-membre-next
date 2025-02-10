@@ -224,7 +224,7 @@ export function DashboardPage(props: DashboardPageProps) {
             </div>
             <h2 className={fr.cx("fr-pt-4w")}>Les derniers membres</h2>
             <div className={fr.cx("fr-grid-row", "fr-grid-row--gutters")}>
-                {props.latestMembers.slice(0, 16).map((m) => (
+                {props.latestMembers.slice(0, 9).map((m) => (
                     <div
                         key={m.uuid}
                         className={fr.cx("fr-col-12", "fr-col-lg-4")}
