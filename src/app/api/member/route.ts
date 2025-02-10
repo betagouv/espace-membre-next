@@ -1,7 +1,9 @@
 import slugify from "@sindresorhus/slugify";
+import { Selectable } from "kysely/dist/cjs/util/column-type";
 import { revalidatePath } from "next/cache";
 import { getServerSession } from "next-auth";
 
+import { Users } from "@/@types/db";
 import { addEvent } from "@/lib/events";
 import { db } from "@/lib/kysely";
 import { getUserTeamsIncubators } from "@/lib/kysely/queries/incubators";
@@ -79,48 +81,38 @@ export const POST = withHttpErrorHandling(async (req: Request) => {
             session.user.uuid,
             missions
         );
-    let dbUser;
     try {
-        dbUser = await db
-            .transaction()
-            .execute(async (trx) => {
-                const user = await trx
-                    .insertInto("users")
-                    .values({
-                        domaine: member.domaine,
-                        secondary_email: member.email,
-                        fullname: `${member.firstname} ${member.lastname}`,
-                        username,
-                        role: "",
-                        // if session user is from incubator team, member is valided straight away
-                        primary_email_status:
-                            sessionUserIsMemberOfUserIncubatorTeams ||
-                            session.user.isAdmin
-                                ? EmailStatusCode.EMAIL_VERIFICATION_WAITING
-                                : EmailStatusCode.MEMBER_VALIDATION_WAITING,
-                    })
-                    .returning("uuid")
-                    .executeTakeFirstOrThrow();
-                for (const mission of missions) {
-                    // Now, use the same transaction to link to an organization
-                    await createMission(
-                        {
-                            ...mission,
-                            user_id: user.uuid,
-                        },
-                        trx
-                    );
-                }
-                return user;
-            })
-            .then(async (res) => {
-                const dbUser = await getUserInfos({
-                    uuid: res.uuid,
-                    options: { withDetails: true },
-                });
-                revalidatePath("/community", "layout");
-                return dbUser;
-            });
+        const dbUser = await db.transaction().execute(async (trx) => {
+            const user = await trx
+                .insertInto("users")
+                .values({
+                    domaine: member.domaine,
+                    secondary_email: member.email,
+                    fullname: `${member.firstname} ${member.lastname}`,
+                    username,
+                    role: "",
+                    // if session user is from incubator team, member is valided straight away
+                    primary_email_status:
+                        sessionUserIsMemberOfUserIncubatorTeams ||
+                        session.user.isAdmin
+                            ? EmailStatusCode.EMAIL_VERIFICATION_WAITING
+                            : EmailStatusCode.MEMBER_VALIDATION_WAITING,
+                })
+                .returning("uuid")
+                .executeTakeFirstOrThrow();
+            for (const mission of missions) {
+                // Now, use the same transaction to link to an organization
+                await createMission(
+                    {
+                        ...mission,
+                        user_id: user.uuid,
+                    },
+                    trx
+                );
+            }
+            return user;
+        });
+        );
         if (
             !(sessionUserIsMemberOfUserIncubatorTeams || session.user.isAdmin)
         ) {
