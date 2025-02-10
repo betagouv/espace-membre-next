@@ -244,7 +244,7 @@ export const memberSchema = z.object({
         .nullable(),
     missions: z
         .array(missionSchema)
-        .min(0, "Vous devez définir au moins une mission"),
+        .min(1, "Vous devez définir au moins une mission"),
     startups: z.array(z.string()).optional().nullable(),
     previously: z.array(z.string()).optional().nullable(),
     domaine: z.nativeEnum(

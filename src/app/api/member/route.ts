@@ -41,11 +41,13 @@ const isSessionUserMemberOfUserIncubatorTeams = async function (
         (incubator) => incubator.uuid
     );
     const userStartups = userMissions.flatMap((m) => m.startups || []);
-    const startupIncubators = await db
-        .selectFrom("startups")
-        .where("startups.uuid", "in", userStartups)
-        .selectAll()
-        .execute();
+    const startupIncubators = userStartups.length
+        ? await db
+              .selectFrom("startups")
+              .where("uuid", "in", userStartups)
+              .selectAll()
+              .execute()
+        : [];
     // todo incubator_id might change to be another params send in object "job"
     const missionIncubatorIds = userMissions
         .map((m) => m.incubator_id)
@@ -53,7 +55,6 @@ const isSessionUserMemberOfUserIncubatorTeams = async function (
     const startupIncubatorIds = startupIncubators
         .map((m) => m.incubator_id)
         .filter((incubator): incubator is string => !!incubator);
-
     const incubatorIds = Array.from(
         new Set([...missionIncubatorIds, ...startupIncubatorIds])
     );

@@ -5,20 +5,13 @@ import sinon from "sinon";
 import testUsers from "./users.json";
 import utils from "./utils";
 import { db } from "@/lib/kysely";
+import { EventCode } from "@/models/actionEvent";
 import { Domaine, EmailStatusCode } from "@/models/member";
 import { AuthorizationError, BusinessError } from "@/utils/error";
-import { EventCode } from "@/models/actionEvent";
 
 describe(`A new member cannot be validated by someone who is not an a team member`, () => {
     let sendEmailStub, getServerSessionStub, sendNewMemberValidationEmail;
-    let newUser,
-        newIncubatorB,
-        newMission,
-        newStartup,
-        teamA,
-        userA,
-        userB,
-        newStartupMissionConnexion;
+    let newUser, newIncubatorB, newMission, newStartup, teamA, userA, userB;
     beforeEach(async () => {
         getServerSessionStub = sinon.stub();
         await utils.createUsers(testUsers);
