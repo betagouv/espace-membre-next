@@ -4,12 +4,17 @@ import { getServerSession } from "next-auth";
 
 import { addEvent } from "@/lib/events";
 import { db } from "@/lib/kysely";
+import { getUserTeamsIncubators } from "@/lib/kysely/queries/incubators";
 import { createMission } from "@/lib/kysely/queries/missions";
 import { getUserInfos } from "@/lib/kysely/queries/users";
 import { EventCode } from "@/models/actionEvent";
-import { createMemberSchema } from "@/models/actions/member";
+import {
+    createMemberSchema,
+    createMemberSchemaType,
+} from "@/models/actions/member";
 import { SendNewMemberValidationEmailSchema } from "@/models/jobs/member";
 import { EmailStatusCode } from "@/models/member";
+import { isSessionUserIncubatorTeamAdminForUser } from "@/server/config/admin.config";
 import { isPublicServiceEmail, isAdminEmail } from "@/server/controllers/utils";
 import { getBossClientInstance } from "@/server/queueing/client";
 import {
@@ -27,6 +32,35 @@ import {
 const createUsername = (firstName, lastName) =>
     `${slugify(firstName)}.${slugify(lastName)}`;
 
+const isSessionUserMemberOfUserIncubatorTeams = async function (
+    sessionUserUuid: string,
+    userMissions: createMemberSchemaType["missions"]
+): Promise<boolean> {
+    const sessionUserIncubators = await getUserTeamsIncubators(sessionUserUuid);
+    const sessionUserIncubatorIds = sessionUserIncubators.map(
+        (incubator) => incubator.uuid
+    );
+    const userStartups = userMissions.flatMap((m) => m.startups || []);
+    const startupIncubators = await db
+        .selectFrom("startups")
+        .where("startups.uuid", "in", userStartups)
+        .selectAll()
+        .execute();
+    // todo incubator_id might change to be another params send in object "job"
+    const missionIncubatorIds = userMissions
+        .map((m) => m.incubator_id)
+        .filter((incubator): incubator is string => !!incubator);
+    const startupIncubatorIds = startupIncubators
+        .map((m) => m.incubator_id)
+        .filter((incubator): incubator is string => !!incubator);
+
+    const incubatorIds = Array.from(
+        new Set([...missionIncubatorIds, ...startupIncubatorIds])
+    );
+
+    return incubatorIds.some((el) => sessionUserIncubatorIds.includes(el));
+};
+
 export const POST = withHttpErrorHandling(async (req: Request) => {
     const session = await getServerSession(authOptions);
     if (!session || !session.user.id) {
@@ -39,6 +73,11 @@ export const POST = withHttpErrorHandling(async (req: Request) => {
         throw new AdminEmailNotAllowedError();
     }
     const username = createUsername(member.firstname, member.lastname);
+    const sessionUserIsMemberOfUserIncubatorTeams =
+        await isSessionUserMemberOfUserIncubatorTeams(
+            session.user.uuid,
+            missions
+        );
     let dbUser;
     try {
         dbUser = await db
@@ -52,8 +91,12 @@ export const POST = withHttpErrorHandling(async (req: Request) => {
                         fullname: `${member.firstname} ${member.lastname}`,
                         username,
                         role: "",
+                        // if session user is from incubator team, member is valided straight away
                         primary_email_status:
-                            EmailStatusCode.MEMBER_VALIDATION_WAITING,
+                            sessionUserIsMemberOfUserIncubatorTeams ||
+                            session.user.isAdmin
+                                ? EmailStatusCode.EMAIL_VERIFICATION_WAITING
+                                : EmailStatusCode.MEMBER_VALIDATION_WAITING,
                     })
                     .returning("uuid")
                     .executeTakeFirstOrThrow();
@@ -77,14 +120,18 @@ export const POST = withHttpErrorHandling(async (req: Request) => {
                 revalidatePath("/community", "layout");
                 return dbUser;
             });
-        // send validation email
-        const bossClient = await getBossClientInstance();
-        await bossClient.send(
-            sendNewMemberValidationEmailTopic,
-            SendNewMemberValidationEmailSchema.parse({
-                userId: dbUser.uuid,
-            })
-        );
+        if (
+            !(sessionUserIsMemberOfUserIncubatorTeams || session.user.isAdmin)
+        ) {
+            // send validation email
+            const bossClient = await getBossClientInstance();
+            await bossClient.send(
+                sendNewMemberValidationEmailTopic,
+                SendNewMemberValidationEmailSchema.parse({
+                    userId: dbUser.uuid,
+                })
+            );
+        }
         await addEvent({
             created_by_username: session.user.id,
             action_on_username: dbUser.uuid,

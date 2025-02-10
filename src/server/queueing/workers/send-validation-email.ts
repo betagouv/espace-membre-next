@@ -32,9 +32,6 @@ export async function sendNewMemberValidationEmail(
     const userMissions = await db
         .selectFrom("missions")
         .selectAll()
-        // Todo should we verify that mission is active or in the futur ?
-        // .where("start", ">", now)
-        // .where("end", "<", now)
         .where("user_id", "=", data.userId)
         .execute();
     if (!userMissions.length) {
