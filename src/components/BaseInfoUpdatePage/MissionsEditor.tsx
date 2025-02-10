@@ -20,7 +20,12 @@ import SESelect from "../SESelect";
 import { userStatusOptions } from "@/frontConfig";
 import { HasMissions } from "@/models/member";
 import { Option } from "@/models/misc";
-import { Status, missionSchema, missionSchemaType } from "@/models/mission";
+import {
+    Status,
+    missionSchema,
+    missionSchemaShape,
+    missionSchemaType,
+} from "@/models/mission";
 
 export const Mission = ({
     index,

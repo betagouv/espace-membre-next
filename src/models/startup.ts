@@ -1,6 +1,6 @@
 import { z } from "zod";
 
-import { missionSchema, missionSchemaShape } from "./mission";
+import { missionSchemaShape } from "./mission";
 
 interface Relationship {
     incubator: {
