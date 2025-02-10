@@ -80,6 +80,8 @@ export const missionSchema = z
                 "L'incubateur est obligatoire si aucune startup n'est définie dans la mission.",
             path: ["incubator_id"], // Attach error to incubator
         }
-    )._def.schema;
+    );
 
 export type missionSchemaType = z.infer<typeof missionSchema>;
+// if we use _def.schema on to define missionSchema, when missionSchema.parse is called, refined is not called
+export const missionSchemaShape = missionSchema._def.schema.shape;

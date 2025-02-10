@@ -1,5 +1,6 @@
 import { z } from "zod";
-import { missionSchema } from "./mission";
+
+import { missionSchema, missionSchemaShape } from "./mission";
 
 interface Relationship {
     incubator: {
@@ -342,8 +343,8 @@ export const userStartupSchema = z.object({
     uuid: startupSchema.shape.uuid,
     ghid: startupSchema.shape.ghid,
     name: startupSchema.shape.name,
-    end: missionSchema.shape.end,
-    start: missionSchema.shape.start,
+    end: missionSchemaShape.end,
+    start: missionSchemaShape.start,
     incubator_id: startupSchema.shape.incubator_id,
 });
 

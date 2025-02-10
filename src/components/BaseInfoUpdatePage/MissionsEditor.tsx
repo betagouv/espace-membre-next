@@ -123,7 +123,7 @@ export const Mission = ({
                         <Input
                             label={
                                 labels.start ||
-                                missionSchema.shape.start.description +
+                                missionSchemaShape.start.description +
                                     " (obligatoire)"
                             }
                             hintText="Date de début"
@@ -148,7 +148,7 @@ export const Mission = ({
                         <Input
                             label={
                                 labels.end ||
-                                missionSchema.shape.end.description +
+                                missionSchemaShape.end.description +
                                     " (obligatoire)"
                             }
                             nativeInputProps={{
@@ -186,7 +186,7 @@ export const Mission = ({
                     <Input
                         label={
                             labels.employer ||
-                            missionSchema.shape.employer.description +
+                            missionSchemaShape.employer.description +
                                 " (obligatoire)"
                         }
                         nativeInputProps={{
@@ -200,7 +200,7 @@ export const Mission = ({
                     <Select
                         label={
                             labels.status ||
-                            missionSchema.shape.status.description +
+                            missionSchemaShape.status.description +
                                 " (obligatoire)"
                         }
                         nativeSelectProps={{
