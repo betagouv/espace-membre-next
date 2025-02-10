@@ -225,11 +225,12 @@ export const startupSchema = z.object({
         .describe("Email de contact du produit"),
     link: z
         .string()
+        .describe("URL du site web")
         .url({
             message:
                 "L'URL fournie doit respecter le format suivant : https://exemple.com",
         })
-        .describe("URL du site web")
+        .or(z.literal(""))
         .optional()
         .nullable(),
     repository: z

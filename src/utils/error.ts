@@ -50,7 +50,7 @@ export class BusinessError extends CustomError {
     }
 }
 
-export class ErrorWithStatus extends CustomError {
+export class ErrorWithStatus extends BusinessError {
     statusCode: number;
     constructor(message: string) {
         super(message);
@@ -166,7 +166,7 @@ export function withErrorHandling<T, Args extends any[]>(
                 success: true,
             };
         } catch (error) {
-            if (isExpectedError(error)) {
+            if (isExpectedError(error) || error instanceof BusinessError) {
                 console.log("Expected error", error);
 
                 // Return a standardized error response

@@ -174,7 +174,7 @@ export default function MemberPage({
                         </figure>
                     )}
                     <div className={fr.cx("fr-mt-4w")}>
-                        <h3>Contact</h3>
+                        <h2>Contact</h2>
                         <MemberContact
                             userInfos={userInfos}
                             mattermostInfo={mattermostInfo}
@@ -184,7 +184,7 @@ export default function MemberPage({
                         />
                     </div>
                     <div className={fr.cx("fr-mt-4w")}>
-                        <h3>Missions</h3>
+                        <h2>Missions</h2>
                         <MemberMissions
                             startups={startups}
                             userInfos={userInfos}
@@ -235,7 +235,6 @@ export default function MemberPage({
             content: (
                 <AdminPanel
                     authorizations={authorizations}
-                    availableEmailPros={availableEmailPros}
                     userInfos={userInfos}
                     emailInfos={emailInfos}
                 />

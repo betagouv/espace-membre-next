@@ -21,7 +21,13 @@ export default function BlocConfigurerEmailSecondaire({
         type: "success" | "warning";
     } | null>();
     return (
-        <Accordion label="Configurer mon email secondaire">
+        <Accordion
+            label={
+                <span id="secondary-email">
+                    Configurer mon email secondaire
+                </span>
+            }
+        >
             <p>
                 L'email secondaire est utile pour récupérer son mot de passe ou
                 garder contact après ton départ.
