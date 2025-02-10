@@ -11,7 +11,14 @@ import { AuthorizationError, BusinessError } from "@/utils/error";
 
 describe(`A new member cannot be validated by someone who is not an a team member`, () => {
     let sendEmailStub, getServerSessionStub, sendNewMemberValidationEmail;
-    let newUser, newIncubatorB, newMission, newStartup, teamA, userA, userB;
+    let newUser,
+        newIncubatorB,
+        newMission,
+        newStartup,
+        teamA,
+        userA,
+        userB,
+        newStartupMissionConnexion;
     beforeEach(async () => {
         getServerSessionStub = sinon.stub();
         await utils.createUsers(testUsers);
