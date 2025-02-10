@@ -331,40 +331,6 @@ export default function CommunityCreateMemberPage(props: BaseInfoUpdateProps) {
                                     ></Mission>
                                 </div>
                             </fieldset>
-                            {/* {!newMemberMission?.startups && (
-                                <fieldset
-                                    className="fr-mt-5v fr-mb-0v fr-fieldset"
-                                    id="identity-fieldset"
-                                    aria-labelledby="identity-fieldset-legend identity-fieldset-messages"
-                                >
-                                    <div className="fr-fieldset__element">
-                                        <SEIncubateurSelect
-                                            label="Incubateurs"
-                                            placeholder="Sélectionne un incubateur"
-                                            incubatorOptions={
-                                                props.incubatorOptions
-                                            }
-                                            onChange={(e, incubator) => {
-                                                if (incubator) {
-                                                    setValue(
-                                                        `incubator`,
-                                                        incubator.value
-                                                    );
-                                                }
-                                            }}
-                                            isMulti={false}
-                                        />
-                                        {errors?.incubator?.message && (
-                                            <p
-                                                id="text-input-error-desc-error"
-                                                className="fr-error-text"
-                                            >
-                                                {errors.incubator.message}
-                                            </p>
-                                        )}
-                                    </div>
-                                </fieldset>
-                            )} */}
                             <Button
                                 className={fr.cx("fr-mt-3w")}
                                 children={

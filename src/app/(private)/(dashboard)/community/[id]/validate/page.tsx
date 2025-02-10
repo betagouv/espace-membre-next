@@ -55,7 +55,7 @@ export default async function Page({
                 return (
                     <Alert
                         severity="info"
-                        title="Fiche membre déjà validé"
+                        title="Fiche membre déjà validée"
                         description={error.message}
                     />
                 );
@@ -64,7 +64,7 @@ export default async function Page({
         return (
             <Alert
                 severity="error"
-                title="Un error est survenue lors de la validation"
+                title="Une erreur est survenue lors de la validation"
                 description={(error as Error).message}
             />
         );
@@ -73,7 +73,7 @@ export default async function Page({
         <Alert
             severity="success"
             title="Fiche membre validé"
-            description={`La fiche membre de ${user.userInfos.fullname} a été validée par toto`}
+            description={`La fiche membre de ${user.userInfos.fullname} a été validée par ${session.user.id}`}
         />
     );
 }
