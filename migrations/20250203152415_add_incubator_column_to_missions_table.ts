@@ -11,6 +11,6 @@ exports.up = function (knex) {
 
 exports.down = function (knex) {
     return knex.schema.alterTable("missions", (table) => {
-        table.dropColumn("incubator");
+        table.dropColumn("incubator_id");
     });
 };
