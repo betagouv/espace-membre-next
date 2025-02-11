@@ -20,7 +20,7 @@ export const sendNewMemberValidationEmailTopic =
 export async function sendNewMemberValidationEmail(
     job: PgBoss.Job<SendNewMemberValidationEmailSchemaType>
 ) {
-    const data = SendNewMemberValidationEmailSchema.parse(job);
+    const data = SendNewMemberValidationEmailSchema.parse(job.data);
     const now = new Date();
     const memberDbData = await getUserBasicInfo({ uuid: data.userId });
     if (!memberDbData) {

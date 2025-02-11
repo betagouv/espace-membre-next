@@ -122,7 +122,11 @@ export const POST = withHttpErrorHandling(async (req: Request) => {
                 sendNewMemberValidationEmailTopic,
                 SendNewMemberValidationEmailSchema.parse({
                     userId: dbUser.uuid,
-                })
+                }),
+                {
+                    retryLimit: 50,
+                    retryBackoff: true,
+                }
             );
         }
         await addEvent({
