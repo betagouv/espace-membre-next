@@ -1,5 +1,3 @@
-"use client";
-
 import { MjmlButton, MjmlText } from "@luma-team/mjml-react";
 
 import { EmailNewMemberValidation } from "@/server/modules/email";

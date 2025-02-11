@@ -2,11 +2,11 @@ import { renderToMjml } from "@luma-team/mjml-react";
 import ejs from "ejs";
 import { mjml2html } from "mjml";
 
-import * as mdtohtml from "@/lib/mdtohtml";
 import {
     MemberValidationEmail,
     MemberValidationEmailTitle,
 } from "@/components/memberValidationEmail";
+import * as mdtohtml from "@/lib/mdtohtml";
 import { BusinessError } from "@/utils/error";
 import {
     EmailNewMemberValidation,
@@ -169,7 +169,7 @@ const htmlBuilder: HtmlBuilderType = {
                 }
             }
 
-            const rawHtmlVersion = transformResult.html;
+            const rawHtmlVersion = mjmlHtmlContent; //transformResult.html;
             // const plaintextVersion = convertHtmlEmailToText(rawHtmlVersion);
             content = rawHtmlVersion;
         }
