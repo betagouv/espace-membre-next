@@ -137,6 +137,9 @@ export const POST = withHttpErrorHandling(async (req: Request) => {
                 missions,
             },
         });
+        return Response.json({
+            uuid: dbUser.uuid,
+        });
     } catch (error: any) {
         if (
             error.message.includes(
@@ -150,5 +153,4 @@ export const POST = withHttpErrorHandling(async (req: Request) => {
         console.error("Unexpected error:", error);
         throw error;
     }
-    return Response.json({});
 });
