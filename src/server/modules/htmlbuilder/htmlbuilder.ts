@@ -17,7 +17,7 @@ import {
 
 const TEMPLATES_BY_TYPE: Record<
     EmailProps["type"],
-    string | null | ((params) => JSX.Element)
+    string | null | ((params) => React.JSX.Element)
 > = {
     MARRAINAGE_NEWCOMER_EMAIL:
         "./src/server/views/templates/emails/marrainage/marrainageByGroupNewcomerEmail.ejs",

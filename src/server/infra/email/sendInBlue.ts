@@ -17,6 +17,7 @@ import {
     Contact,
     EmailVariants,
 } from "@modules/email";
+import React from "react";
 
 const TEMPLATE_ID_BY_TYPE: Record<EmailProps["type"], number> = {
     MARRAINAGE_NEWCOMER_EMAIL: 0,
@@ -60,7 +61,7 @@ type SendEmailFromSendinblueDeps = {
               renderSubjectForType(params: EmailVariants): string;
               templates: Record<
                   EmailProps["type"],
-                  string | null | ((params) => JSX.Element)
+                  string | null | ((params) => React.JSX.Element)
               >;
           }
         | undefined;
@@ -84,7 +85,7 @@ type SendinblueDeps = {
               renderSubjectForType(params: EmailVariants): string;
               templates: Record<
                   EmailProps["type"],
-                  string | null | ((params) => JSX.Element)
+                  string | null | ((params) => React.JSX.Element)
               >;
           }
         | undefined;
