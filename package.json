@@ -34,6 +34,7 @@
         "@gouvfr/dsfr": "^1.12.1",
         "@hookform/resolvers": "^3.3.4",
         "@luma-team/mjml-react": "^0.2.1",
+        "@mui/base": "^5.0.0-beta.69",
         "@mui/material": "^5.15.10",
         "@octokit/rest": "^20.0.2",
         "@sentry/nextjs": "^8.32.0",
