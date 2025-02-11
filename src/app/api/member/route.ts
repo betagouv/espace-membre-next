@@ -112,7 +112,6 @@ export const POST = withHttpErrorHandling(async (req: Request) => {
             }
             return user;
         });
-        );
         if (
             !(sessionUserIsMemberOfUserIncubatorTeams || session.user.isAdmin)
         ) {
