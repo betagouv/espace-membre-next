@@ -1,19 +1,24 @@
+import { renderToMjml } from "@luma-team/mjml-react";
 import ejs from "ejs";
+import { mjml2html } from "mjml";
 
 import * as mdtohtml from "@/lib/mdtohtml";
 import {
-    EmailOnboardingReferent,
-    EmailNewsletter,
+    MemberValidationEmail,
+    MemberValidationEmailTitle,
+} from "@/server/views/templates/emails/memberValidationEmail/memberValidationEmail";
+import { BusinessError } from "@/utils/error";
+import {
+    EmailNewMemberValidation,
     EmailProps,
     HtmlBuilderType,
     SubjectFunction,
-    EmailNewMemberPR,
-    EmailStartupEnterConstructionPhase,
-    EmailStartupEnterAccelerationPhase,
-    EmailPRPendingToTeam,
 } from "@modules/email";
 
-const TEMPLATES_BY_TYPE: Record<EmailProps["type"], string | null> = {
+const TEMPLATES_BY_TYPE: Record<
+    EmailProps["type"],
+    string | null | ((params) => JSX.Element)
+> = {
     MARRAINAGE_NEWCOMER_EMAIL:
         "./src/server/views/templates/emails/marrainage/marrainageByGroupNewcomerEmail.ejs",
     MARRAINAGE_ONBOARDER_EMAIL:
@@ -58,7 +63,9 @@ const TEMPLATES_BY_TYPE: Record<EmailProps["type"], string | null> = {
         "./src/server/views/templates/emails/prPendingToTeam.ejs",
     EMAIL_VERIFICATION_WAITING:
         "./src/server/views/templates/emails/verificationWaiting.ejs",
-    EMAIL_NEW_MEMBER_VALIDATION: null,
+    EMAIL_NEW_MEMBER_VALIDATION: (
+        params: EmailNewMemberValidation["variables"]
+    ) => MemberValidationEmail(params),
 };
 
 const SUBJECTS_BY_TYPE: Record<EmailProps["type"], string | SubjectFunction> = {
@@ -105,7 +112,7 @@ const SUBJECTS_BY_TYPE: Record<EmailProps["type"], string | SubjectFunction> = {
     EMAIL_FORUM_REMINDER: "",
     EMAIL_TEST: "",
     EMAIL_VERIFICATION_WAITING: "Bienvenue chez BetaGouv 🙂",
-    EMAIL_NEW_MEMBER_VALIDATION: "",
+    EMAIL_NEW_MEMBER_VALIDATION: MemberValidationEmailTitle(),
 };
 
 const MARKDOWN_BY_TYPE: Record<EmailProps["type"], boolean> = {
@@ -141,9 +148,33 @@ const MARKDOWN_BY_TYPE: Record<EmailProps["type"], boolean> = {
 
 const htmlBuilder: HtmlBuilderType = {
     renderContentForType: async ({ type, variables }) => {
-        let content = await ejs.renderFile(TEMPLATES_BY_TYPE[type], variables);
-        if (MARKDOWN_BY_TYPE[type]) {
-            content = mdtohtml.renderHtmlFromMd(content);
+        let content: string;
+        if (TEMPLATES_BY_TYPE[type] === null) {
+            throw new BusinessError(
+                "noEmailTemplateExists",
+                `Il n'y pas de template d'email pour ${type}`
+            );
+        } else if (typeof TEMPLATES_BY_TYPE[type] === "string") {
+            // use legacy ejs file rendering
+            content = await ejs.renderFile(TEMPLATES_BY_TYPE[type], variables);
+            if (MARKDOWN_BY_TYPE[type]) {
+                content = mdtohtml.renderHtmlFromMd(content);
+            }
+        } else {
+            // use mjml
+            const mjmlHtmlContent = renderToMjml(
+                TEMPLATES_BY_TYPE[type](variables)
+            );
+            const transformResult = mjml2html(mjmlHtmlContent);
+            if (transformResult.errors) {
+                for (const err of transformResult.errors) {
+                    throw err;
+                }
+            }
+
+            const rawHtmlVersion = transformResult.html;
+            // const plaintextVersion = convertHtmlEmailToText(rawHtmlVersion);
+            content = rawHtmlVersion;
         }
         return content;
     },

@@ -3,13 +3,19 @@ import { isBefore } from "date-fns/isBefore";
 import PgBoss from "pg-boss";
 
 import { db } from "@/lib/kysely";
+import { getIncubator } from "@/lib/kysely/queries/incubators";
 import { getUsersByIncubatorId } from "@/lib/kysely/queries/teams";
 import { getUserBasicInfo, getUserStartups } from "@/lib/kysely/queries/users";
 import {
     SendNewMemberValidationEmailSchema,
     SendNewMemberValidationEmailSchemaType,
 } from "@/models/jobs/member";
-import { memberPublicInfoToModel } from "@/models/mapper";
+import {
+    incubatorToModel,
+    memberPublicInfoToModel,
+    userStartupToModel,
+} from "@/models/mapper";
+import config from "@/server/config";
 import { sendEmail } from "@/server/config/email.config";
 import { EMAIL_TYPES } from "@/server/modules/email";
 import { BusinessError, NoDataError } from "@/utils/error";
@@ -66,11 +72,7 @@ export async function sendNewMemberValidationEmail(
         );
     }
     for (const incubatorId of incubatorIds) {
-        const incubator = await db
-            .selectFrom("incubators")
-            .selectAll()
-            .where("uuid", "=", incubatorId)
-            .executeTakeFirst();
+        const incubator = await getIncubator(incubatorId);
         if (!incubator) {
             throw new BusinessError(
                 "incubatorDoesNotExist",
@@ -95,8 +97,12 @@ export async function sendNewMemberValidationEmail(
             toEmail: memberEmails,
             type: EMAIL_TYPES.EMAIL_NEW_MEMBER_VALIDATION,
             variables: {
-                newMember,
-                incubatorName: incubator.title,
+                startups: userStartups.map((startup) =>
+                    userStartupToModel(startup)
+                ),
+                incubator: incubatorToModel(incubator),
+                userInfos: newMember,
+                validationLink: `${config.protocol}://${config.host}/community/${newMember.username}/validate`,
             },
         });
         console.log(

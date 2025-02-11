@@ -1,6 +1,7 @@
 import SibApiV3Sdk from "sib-api-v3-sdk";
 
 import config from "@/server/config";
+import { BusinessError } from "@/utils/error";
 import { objectArrayToCSV } from "@controllers/utils";
 import {
     EmailProps,
@@ -57,7 +58,10 @@ type SendEmailFromSendinblueDeps = {
               renderFile(url: string, params: any): Promise<string>;
               renderContentForType(params: EmailVariants): Promise<string>;
               renderSubjectForType(params: EmailVariants): string;
-              templates: Record<EmailProps["type"], string | null>;
+              templates: Record<
+                  EmailProps["type"],
+                  string | null | ((params) => JSX.Element)
+              >;
           }
         | undefined;
 };
@@ -78,7 +82,10 @@ type SendinblueDeps = {
               renderFile(url: string, params: any): Promise<string>;
               renderContentForType(params: EmailVariants): Promise<string>;
               renderSubjectForType(params: EmailVariants): string;
-              templates: Record<EmailProps["type"], string | null>;
+              templates: Record<
+                  EmailProps["type"],
+                  string | null | ((params) => JSX.Element)
+              >;
           }
         | undefined;
 };
@@ -194,14 +201,22 @@ export const makeSendCampaignEmail = ({
             if (!htmlBuilder || forceTemplate) {
                 templateId = TEMPLATE_ID_BY_TYPE[type];
                 if (!templateId) {
-                    throw new Error("Cannot find template for type " + type);
+                    throw new BusinessError(
+                        "noCampaignBrevoTemplateExists",
+                        `Il n'y a pas de template email brevo de campagne pour : ${type}`
+                    );
                 }
             } else {
                 const templateURL = htmlBuilder.templates[type];
-                if (templateURL) {
+                if (templateURL && typeof templateURL === "string") {
                     html = await htmlBuilder.renderFile(templateURL, {
                         ...variables,
                     });
+                } else {
+                    throw new BusinessError(
+                        "noCampaignTemplateExists",
+                        `Il n'y a pas de template email de campagne pour : ${type}`
+                    );
                 }
             }
         }
