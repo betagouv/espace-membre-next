@@ -6,7 +6,7 @@ import * as mdtohtml from "@/lib/mdtohtml";
 import {
     MemberValidationEmail,
     MemberValidationEmailTitle,
-} from "@/server/views/templates/emails/memberValidationEmail/memberValidationEmail";
+} from "@/components/memberValidationEmail";
 import { BusinessError } from "@/utils/error";
 import {
     EmailNewMemberValidation,
