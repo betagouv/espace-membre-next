@@ -1,6 +1,6 @@
 import { renderToMjml } from "@luma-team/mjml-react";
 import ejs from "ejs";
-import { mjml2html } from "mjml";
+// import { mjml2html } from "mjml";
 
 import * as mdtohtml from "@/lib/mdtohtml";
 // import {
@@ -162,14 +162,14 @@ const htmlBuilder: HtmlBuilderType = {
             const mjmlHtmlContent = renderToMjml(
                 TEMPLATES_BY_TYPE[type](variables)
             );
-            const transformResult = mjml2html(mjmlHtmlContent);
-            if (transformResult.errors) {
-                for (const err of transformResult.errors) {
-                    throw err;
-                }
-            }
+            // // const transformResult = mjml2html(mjmlHtmlContent);
+            // if (transformResult.errors) {
+            //     for (const err of transformResult.errors) {
+            //         throw err;
+            //     }
+            // }
 
-            const rawHtmlVersion = transformResult.html;
+            const rawHtmlVersion = mjmlHtmlContent; //transformResult.html;
             // const plaintextVersion = convertHtmlEmailToText(rawHtmlVersion);
             content = rawHtmlVersion;
         }
