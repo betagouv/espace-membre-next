@@ -1,7 +1,8 @@
 fileignoreconfig:
-- filename: __tests__/test-user.ts
-  checksum: 07c826456ef7ceac6a6ce6708764123c8052c002289f99f9afbbd2ace0f01745
-- filename: __tests__/test-worker.ts
+- filename: package-lock.json
+  checksum: 786f1be52ea21b3b9cfdebcd580d2cc5736ae2628d149e8c1f3d29d6137db61b
+version: ""
+ame: __tests__/test-worker.ts
   checksum: 462f569a2625f2fdb0938f0abc109ed24f0241d9f5592ead16475e2efde0aa47
 - filename: e2e/api.spec.ts
   checksum: f93e923d390704aa2e2be776ceb7b9f2ffc9c59a9d1100346e12754ab4ee7d7c
