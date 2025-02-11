@@ -19,6 +19,8 @@ a3d
   checksum: 9c740513497d70e871e4abcad3a9e509ef5b1a0da9db2d0d2d336c19854303b4
 - filename: src/app/(private)/(dashboard)/community/communes.json
   checksum: f69dbcbfe5e1e7c1bd9340c7bb3d9de9cbc9d4080363e80d8b4da190fb6ae045
+- filename: src/app/(private)/(dashboard)/dashboard/page.tsx
+  checksum: 7e4937c9492db99b0dedc48da2be20b8e122838cbf3fef6857e0d0d4717b2b3c
 - filename: src/app/(private)/(dashboard)/incubators/[id]/info-form/page.tsx
   checksum: 1ec9acf039a7d336e710ef7b47c385eb7080293ee2750c2cf99e9056cde7f129
 - filename: src/app/(private)/(dashboard)/services/matomo/page.tsx
@@ -39,6 +41,8 @@ a3d
   checksum: 80f4cffcc5861befdb98c676df064595dae5c318349c45059ba87fe20e96f2a2
 - filename: src/components/CommunityPage/Community.tsx
   checksum: 50ed5a9ba8e03d4ffc248026cfae6fd6331c84c21b30aaa73c0bf30f22be9e2c
+- filename: src/components/Dashboard/DashboardPage.tsx
+  checksum: 38c58703d285c7cf19a6740c33166a0ebf7f270da1bfe3b1afc90ee760af0374
 - filename: src/components/IncubatorForm/IncubatorForm.tsx
   checksum: 267f0f0e491b06862cd957ae86d22baf799a705370673cd24e588391a4613a5a
 - filename: src/components/IncubatorPage/IncubatorPage.tsx
