@@ -5,16 +5,13 @@ import school from "@gouvfr/dsfr/dist/artwork/pictograms/buildings/school.svg";
 import document from "@gouvfr/dsfr/dist/artwork/pictograms/document/document.svg";
 import community from "@gouvfr/dsfr/dist/artwork/pictograms/environment/human-cooperation.svg";
 import locationFrance from "@gouvfr/dsfr/dist/artwork/pictograms/map/location-france.svg";
-import startupIcon from "@gouvfr/dsfr/dist/artwork/pictograms/system/success.svg";
-import memberIcon from "@gouvfr/dsfr/dist/artwork/pictograms/digital/avatar.svg";
 import { StaticImageData } from "next/image";
 
-import { SurveyBox } from "@/components/SurveyBox";
 import { linkRegistry } from "@/utils/routes/registry";
 import { getLatests as getLatestsProducts } from "@/lib/kysely/queries/startups";
 import { getLatests as getLatestsMembers } from "@/lib/kysely/queries/users";
 import { Badge } from "@codegouvfr/react-dsfr/Badge";
-import Link from "next/link";
+import Button from "@codegouvfr/react-dsfr/Button";
 
 type LatestProductsReturnType = Awaited<ReturnType<typeof getLatestsProducts>>;
 type LatestMembersReturnType = Awaited<ReturnType<typeof getLatestsMembers>>;
@@ -34,20 +31,17 @@ const CardProduct = ({
         className={fr.cx("fr-tile--sm")}
         title={product.name}
         desc={product.pitch}
-        enlargeLinkOrButton={false}
+        enlargeLinkOrButton={true}
         orientation="horizontal"
-        imageUrl={(startupIcon as StaticImageData).src}
         linkProps={{
             href: linkRegistry.get("startupDetails", {
                 startupId: product.uuid,
             }),
         }}
-        detail={
-            <Link href={`/incubators/${product.incubatorUuid}`}>
-                <Badge noIcon severity="info" as="span">
-                    {product.incubator}
-                </Badge>
-            </Link>
+        start={
+            <Badge noIcon severity="error" as="span">
+                {product.incubator}
+            </Badge>
         }
     />
 );
@@ -74,26 +68,18 @@ const CardMember = ({
             </>
         }
         start={
-            <Badge noIcon severity="new" as="span">
-                Domaine: {member.domaine}
-            </Badge>
-        }
-        detail={
             <span style={{ display: "flex", flexDirection: "column" }}>
                 {member.startups.map((s) => (
                     <span key={s.uuid} className={fr.cx("fr-mb-1v")}>
-                        <Link href={`/startups/${s.uuid}`}>
-                            <Badge noIcon severity="info" as="span">
-                                {s.name}
-                            </Badge>
-                        </Link>
+                        <Badge noIcon severity="info" as="span">
+                            {s.name}
+                        </Badge>
                     </span>
                 ))}
             </span>
         }
-        enlargeLinkOrButton={false}
+        enlargeLinkOrButton={true}
         orientation="horizontal"
-        imageUrl={member.avatar || (memberIcon as StaticImageData).src}
         linkProps={{
             href: linkRegistry.get("communityMember", {
                 username: member.username,
@@ -198,52 +184,59 @@ export function DashboardPage(props: DashboardPageProps) {
                     />
                 </div>
             </div>
-            <h2 className={fr.cx("fr-pt-4w")}>Les derniers produits</h2>
-            <div className={fr.cx("fr-grid-row", "fr-grid-row--gutters")}>
-                {props.latestProducts.slice(0, 6).map((p) => (
+            <div
+                className={fr.cx(
+                    "fr-grid-row",
+                    "fr-grid-row--gutters",
+                    "fr-mt-6w"
+                )}
+                style={{
+                    background: "linear-gradient( #ececfe, #f5f5fe )",
+                }}
+            >
+                <div className={fr.cx("fr-col-6")}>
+                    <h2 className={fr.cx("fr-pt-4w")}>Les derniers produits</h2>
                     <div
-                        key={p.uuid}
-                        className={fr.cx("fr-col-12", "fr-col-lg-6")}
+                        className={fr.cx("fr-grid-row", "fr-grid-row--gutters")}
                     >
-                        <CardProduct product={p} />
+                        {props.latestProducts.slice(0, 5).map((p) => (
+                            <div key={p.uuid} className={fr.cx("fr-col-12")}>
+                                <CardProduct product={p} />
+                            </div>
+                        ))}
+                        <div className={fr.cx("fr-col-12")}>
+                            <Button
+                                priority="secondary"
+                                linkProps={{
+                                    href: linkRegistry.get("startupList"),
+                                }}
+                            >
+                                Explorer les produits →
+                            </Button>
+                        </div>
                     </div>
-                ))}
-                <div className={fr.cx("fr-col-12")}>
-                    <Tile
-                        className={fr.cx("fr-tile--sm")}
-                        title={"Tous les produits"}
-                        desc={"Découvrir tous les produits"}
-                        enlargeLinkOrButton={true}
-                        imageUrl={(document as StaticImageData).src}
-                        orientation="horizontal"
-                        linkProps={{
-                            href: linkRegistry.get("startupList"),
-                        }}
-                    />
                 </div>
-            </div>
-            <h2 className={fr.cx("fr-pt-4w")}>Les derniers membres</h2>
-            <div className={fr.cx("fr-grid-row", "fr-grid-row--gutters")}>
-                {props.latestMembers.slice(0, 9).map((m) => (
+                <div className={fr.cx("fr-col-6")}>
+                    <h2 className={fr.cx("fr-pt-4w")}>Les derniers membres</h2>
                     <div
-                        key={m.uuid}
-                        className={fr.cx("fr-col-12", "fr-col-lg-4")}
+                        className={fr.cx("fr-grid-row", "fr-grid-row--gutters")}
                     >
-                        <CardMember member={m} />
+                        {props.latestMembers.slice(0, 5).map((m) => (
+                            <div key={m.uuid} className={fr.cx("fr-col-12")}>
+                                <CardMember member={m} />
+                            </div>
+                        ))}
+                        <div className={fr.cx("fr-col-12")}>
+                            <Button
+                                priority="secondary"
+                                linkProps={{
+                                    href: linkRegistry.get("community"),
+                                }}
+                            >
+                                Explorer les membres →
+                            </Button>
+                        </div>
                     </div>
-                ))}
-                <div className={fr.cx("fr-col-12")}>
-                    <Tile
-                        className={fr.cx("fr-tile--sm")}
-                        title={"Tous les membres"}
-                        desc={"Découvrir tous les membres"}
-                        imageUrl={(community as StaticImageData).src}
-                        enlargeLinkOrButton={true}
-                        orientation="horizontal"
-                        linkProps={{
-                            href: linkRegistry.get("community"),
-                        }}
-                    />
                 </div>
             </div>
         </div>

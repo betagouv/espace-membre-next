@@ -33,6 +33,8 @@ fileignoreconfig:
   checksum: 80f4cffcc5861befdb98c676df064595dae5c318349c45059ba87fe20e96f2a2
 - filename: src/components/CommunityPage/Community.tsx
   checksum: 50ed5a9ba8e03d4ffc248026cfae6fd6331c84c21b30aaa73c0bf30f22be9e2c
+- filename: src/components/Dashboard/DashboardPage.tsx
+  checksum: 38c58703d285c7cf19a6740c33166a0ebf7f270da1bfe3b1afc90ee760af0374
 - filename: src/components/IncubatorForm/IncubatorForm.tsx
   checksum: 267f0f0e491b06862cd957ae86d22baf799a705370673cd24e588391a4613a5a
 - filename: src/components/IncubatorPage/IncubatorPage.tsx
