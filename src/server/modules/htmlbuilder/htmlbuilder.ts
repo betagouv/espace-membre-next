@@ -1,6 +1,6 @@
 // import { renderToMjml } from "@luma-team/mjml-react";
 import ejs from "ejs";
-// import { mjml2html } from "mjml";
+import { mjml2html } from "mjml";
 
 import * as mdtohtml from "@/lib/mdtohtml";
 // import {
