@@ -154,7 +154,9 @@ describe("Test creating new user flow : sending email", () => {
 
     it("should send email to all members of incubator's teams", async () => {
         await sendNewMemberValidationEmail({
-            userId: newUser.uuid,
+            data: {
+                userId: newUser.uuid,
+            },
         } as unknown as PgBoss.Job<SendNewMemberValidationEmailSchemaType>);
         const memberDbData = await getUserBasicInfo({ uuid: newUser.uuid });
         [
