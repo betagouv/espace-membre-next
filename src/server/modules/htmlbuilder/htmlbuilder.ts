@@ -2,11 +2,11 @@ import { renderToMjml } from "@luma-team/mjml-react";
 import ejs from "ejs";
 import { mjml2html } from "mjml";
 
+import * as mdtohtml from "@/lib/mdtohtml";
 import {
     MemberValidationEmail,
     MemberValidationEmailTitle,
-} from "@/components/memberValidationEmail";
-import * as mdtohtml from "@/lib/mdtohtml";
+} from "@/server/views/templates/emails/memberValidationEmail/memberValidationEmail";
 import { BusinessError } from "@/utils/error";
 import {
     EmailNewMemberValidation,
