@@ -15,10 +15,7 @@ import {
     SubjectFunction,
 } from "@modules/email";
 
-const TEMPLATES_BY_TYPE: Record<
-    EmailProps["type"],
-    string | null | ((params) => React.JSX.Element)
-> = {
+const TEMPLATES_BY_TYPE: Record<EmailProps["type"], string | null | any> = {
     MARRAINAGE_NEWCOMER_EMAIL:
         "./src/server/views/templates/emails/marrainage/marrainageByGroupNewcomerEmail.ejs",
     MARRAINAGE_ONBOARDER_EMAIL:

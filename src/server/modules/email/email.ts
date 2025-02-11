@@ -50,10 +50,7 @@ export type SubjectFunction = {
 
 export type HtmlBuilderType = {
     renderFile(url: string, params: any): Promise<string>;
-    templates: Record<
-        EmailProps["type"],
-        string | null | ((params) => React.JSX.Element)
-    >;
+    templates: Record<EmailProps["type"], string | null | any>;
     subjects: Record<EmailProps["type"], string | SubjectFunction>;
     renderContentForType: (params: EmailVariants) => Promise<string>;
     renderSubjectForType: (params: EmailVariants) => string;

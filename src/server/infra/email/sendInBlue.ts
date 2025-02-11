@@ -59,10 +59,7 @@ type SendEmailFromSendinblueDeps = {
               renderFile(url: string, params: any): Promise<string>;
               renderContentForType(params: EmailVariants): Promise<string>;
               renderSubjectForType(params: EmailVariants): string;
-              templates: Record<
-                  EmailProps["type"],
-                  string | null | ((params) => React.JSX.Element)
-              >;
+              templates: Record<EmailProps["type"], string | null | any>;
           }
         | undefined;
 };
@@ -83,10 +80,7 @@ type SendinblueDeps = {
               renderFile(url: string, params: any): Promise<string>;
               renderContentForType(params: EmailVariants): Promise<string>;
               renderSubjectForType(params: EmailVariants): string;
-              templates: Record<
-                  EmailProps["type"],
-                  string | null | ((params) => React.JSX.Element)
-              >;
+              templates: Record<EmailProps["type"], string | null | any>;
           }
         | undefined;
 };
