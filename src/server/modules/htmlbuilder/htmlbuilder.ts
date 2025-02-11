@@ -3,10 +3,10 @@ import ejs from "ejs";
 import { mjml2html } from "mjml";
 
 import * as mdtohtml from "@/lib/mdtohtml";
-// import {
-//     MemberValidationEmail,
-//     MemberValidationEmailTitle,
-// } from "@/components/memberValidationEmail";
+import {
+    MemberValidationEmail,
+    MemberValidationEmailTitle,
+} from "@/components/memberValidationEmail";
 import { BusinessError } from "@/utils/error";
 import {
     EmailNewMemberValidation,
@@ -62,7 +62,7 @@ const TEMPLATES_BY_TYPE: Record<EmailProps["type"], string | null | any> = {
         "./src/server/views/templates/emails/verificationWaiting.ejs",
     EMAIL_NEW_MEMBER_VALIDATION: (
         params: EmailNewMemberValidation["variables"]
-    ) => "",
+    ) => MemberValidationEmail(params),
 };
 
 const SUBJECTS_BY_TYPE: Record<EmailProps["type"], string | SubjectFunction> = {
@@ -109,7 +109,7 @@ const SUBJECTS_BY_TYPE: Record<EmailProps["type"], string | SubjectFunction> = {
     EMAIL_FORUM_REMINDER: "",
     EMAIL_TEST: "",
     EMAIL_VERIFICATION_WAITING: "Bienvenue chez BetaGouv 🙂",
-    EMAIL_NEW_MEMBER_VALIDATION: "",
+    EMAIL_NEW_MEMBER_VALIDATION: MemberValidationEmailTitle(),
 };
 
 const MARKDOWN_BY_TYPE: Record<EmailProps["type"], boolean> = {
@@ -159,19 +159,19 @@ const htmlBuilder: HtmlBuilderType = {
             }
         } else {
             // use mjml
-            // const mjmlHtmlContent = renderToMjml(
-            //     TEMPLATES_BY_TYPE[type](variables)
-            // );
-            // // // const transformResult = mjml2html(mjmlHtmlContent);
-            // // if (transformResult.errors) {
-            // //     for (const err of transformResult.errors) {
-            // //         throw err;
-            // //     }
-            // // }
+            const mjmlHtmlContent = renderToMjml(
+                TEMPLATES_BY_TYPE[type](variables)
+            );
+            const transformResult = mjml2html(mjmlHtmlContent);
+            if (transformResult.errors) {
+                for (const err of transformResult.errors) {
+                    throw err;
+                }
+            }
 
-            // const rawHtmlVersion = mjmlHtmlContent; //transformResult.html;
+            const rawHtmlVersion = transformResult.html;
             // const plaintextVersion = convertHtmlEmailToText(rawHtmlVersion);
-            content = ""; //rawHtmlVersion;
+            content = rawHtmlVersion;
         }
         return content;
     },
