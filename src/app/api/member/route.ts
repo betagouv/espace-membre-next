@@ -150,5 +150,5 @@ export const POST = withHttpErrorHandling(async (req: Request) => {
         console.error("Unexpected error:", error);
         throw error;
     }
-    return Response.json(dbUser);
+    return Response.json({});
 });
