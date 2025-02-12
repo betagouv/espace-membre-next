@@ -7,25 +7,24 @@ import { Button } from "@codegouvfr/react-dsfr/Button";
 import Input from "@codegouvfr/react-dsfr/Input";
 import Select from "@codegouvfr/react-dsfr/Select";
 import { zodResolver } from "@hookform/resolvers/zod";
-import * as Sentry from "@sentry/nextjs";
-import { add, addMonths } from "date-fns";
+import { add } from "date-fns";
 import { useFieldArray, useForm } from "react-hook-form";
 
 import { Mission } from "@/components/BaseInfoUpdatePage/MissionsEditor";
+import SEIncubateurSelect from "@/components/SEIncubateurSelect";
 import {
+    createMemberResponseSchema,
     createMemberSchema,
     createMemberSchemaType,
 } from "@/models/actions/member";
 import { DOMAINE_OPTIONS, Domaine } from "@/models/member";
-import { Status } from "@/models/mission";
+import { Option } from "@/models/misc";
 import routes, { computeRoute } from "@/routes/routes";
 
 // data from secretariat API
 export interface BaseInfoUpdateProps {
-    startupOptions: {
-        value: string;
-        label: string;
-    }[];
+    startupOptions: Option[];
+    incubatorOptions: Option[];
 }
 
 export default function CommunityCreateMemberPage(props: BaseInfoUpdateProps) {
@@ -53,6 +52,7 @@ export default function CommunityCreateMemberPage(props: BaseInfoUpdateProps) {
         handleSubmit,
         formState: { errors, isDirty, isSubmitting, isValid },
         setValue,
+        trigger,
         getValues,
         control,
         watch,
@@ -61,6 +61,8 @@ export default function CommunityCreateMemberPage(props: BaseInfoUpdateProps) {
         mode: "onChange",
         defaultValues,
     });
+
+    const createMemberSchemaSchemaShape = createMemberSchema.shape;
     const { fields: missionsFields } = useFieldArray({
         rules: { minLength: 1 },
         control,
@@ -101,11 +103,14 @@ export default function CommunityCreateMemberPage(props: BaseInfoUpdateProps) {
         setIsSaving(false);
         const data = await response.json();
         if (response.ok) {
+            const responseData = createMemberResponseSchema.parse(data);
             setSuccess(true);
             setAlertMessage({
                 title: "C'est presque bon !",
                 type: "info",
-                message: `${firstname} ${lastname} va recevoir un email pour l'inviter à se connecter à l'espace membre et compléter sa fiche`,
+                message: responseData.validated
+                    ? `${firstname} ${lastname} va recevoir un email pour l'inviter à se connecter à l'espace membre et compléter sa fiche`
+                    : `La fiche de ${firstname} ${lastname} est en attente de validation par un membre de l'équipe transverse de son incubateur.`,
             });
         } else {
             setSuccess(false);
@@ -118,6 +123,7 @@ export default function CommunityCreateMemberPage(props: BaseInfoUpdateProps) {
         document.body.scrollIntoView();
     };
 
+    const newMemberMission = missionsFields[0];
     return (
         <>
             <h1>Créer une fiche membre</h1>
@@ -168,7 +174,7 @@ export default function CommunityCreateMemberPage(props: BaseInfoUpdateProps) {
                                 >
                                     <Input
                                         label={
-                                            createMemberSchema.shape.member
+                                            createMemberSchemaSchemaShape.member
                                                 .shape.firstname.description +
                                             " (obligatoire)"
                                         }
@@ -200,7 +206,7 @@ export default function CommunityCreateMemberPage(props: BaseInfoUpdateProps) {
                                 >
                                     <Input
                                         label={
-                                            createMemberSchema.shape.member
+                                            createMemberSchemaSchemaShape.member
                                                 .shape.lastname.description +
                                             " (obligatoire)"
                                         }
@@ -305,8 +311,12 @@ export default function CommunityCreateMemberPage(props: BaseInfoUpdateProps) {
                                         isMulti={false}
                                         control={control}
                                         register={register}
+                                        trigger={trigger}
                                         setValue={setValue}
                                         startupOptions={props.startupOptions}
+                                        incubatorOptions={
+                                            props.incubatorOptions
+                                        }
                                         errors={
                                             errors.missions
                                                 ? errors.missions[0]

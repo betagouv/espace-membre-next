@@ -31,7 +31,12 @@ const nextConfig = {
         ];
     },
     experimental: {
-        serverComponentsExternalPackages: ["knex", "sib-api-v3-sdk"],
+        serverComponentsExternalPackages: [
+            "knex",
+            "sib-api-v3-sdk",
+            "mjml",
+            "@luma-team/mjml-react",
+        ],
         serverActions: {
             bodySizeLimit: "10mb",
         },

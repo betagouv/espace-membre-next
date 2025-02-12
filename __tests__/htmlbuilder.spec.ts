@@ -4,8 +4,10 @@ import sinon from "sinon";
 import testUsers from "./users.json";
 import htmlBuilder from "../src/server/modules/htmlbuilder/htmlbuilder";
 import * as mdtohtml from "@/lib/mdtohtml";
+import { incubatorSchemaType } from "@/models/incubator";
 import { Job } from "@/models/job";
 import { Domaine, memberBaseInfoSchemaType } from "@/models/member";
+import { userStartupSchemaType } from "@/models/startup";
 import {
     EmailMarrainageNewcomer,
     EmailMarrainageOnboarder,
@@ -299,7 +301,9 @@ describe("Test EMAIL_ENDING_CONTRACT", () => {
         });
         emailBody.should.include(`au 11/12/2024`);
         emailBody.should.include(`Bonjour Julien Dauphant`);
-        emailBody.should.include("Un petit rappel concernant ta fiche membre chez beta.gouv.fr");
+        emailBody.should.include(
+            "Un petit rappel concernant ta fiche membre chez beta.gouv.fr"
+        );
         emailBody.should.include(job.url);
     });
 });
@@ -597,6 +601,31 @@ describe(`Test EMAIL_VERIFICATION_WAITING`, () => {
             variables: {
                 secretariatUrl,
                 secondaryEmail: "toto@gmail.com",
+            },
+        });
+        emailBody.should.include(secretariatUrl);
+    });
+});
+
+describe(`Test EMAIL_NEW_MEMBER_VALIDATION`, () => {
+    it(`email EMAIL_NEW_MEMBER_VALIDATION`, async () => {
+        const secretariatUrl: string = "http://secretariat-url";
+
+        const emailBody: string = await htmlBuilder.renderContentForType({
+            type: EMAIL_TYPES.EMAIL_NEW_MEMBER_VALIDATION,
+            variables: {
+                validationLink: secretariatUrl,
+                userInfos: {
+                    fullname: "Jean Paul",
+                } as memberBaseInfoSchemaType,
+                startups: [
+                    {
+                        name: "Une startup",
+                    } as userStartupSchemaType,
+                ],
+                incubator: {
+                    title: "un super incubateur",
+                } as incubatorSchemaType,
             },
         });
         emailBody.should.include(secretariatUrl);

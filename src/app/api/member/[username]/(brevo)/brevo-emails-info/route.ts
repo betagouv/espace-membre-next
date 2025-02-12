@@ -5,7 +5,6 @@ import { brevoEmailInfoDataSchema } from "@/models/brevoInfo";
 import {
     getAllTransacBlockedContacts,
     getContactInfo,
-    getTransacBlockedContacts,
 } from "@/server/infra/email/sendInBlue";
 import { authOptions } from "@/utils/authoptions";
 import { AuthorizationError, withHttpErrorHandling } from "@/utils/error";

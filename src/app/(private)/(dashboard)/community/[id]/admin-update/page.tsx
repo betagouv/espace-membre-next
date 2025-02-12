@@ -5,6 +5,7 @@ import { BreadCrumbFiller } from "@/app/BreadCrumbProvider";
 import { BaseInfoUpdate } from "@/components/BaseInfoUpdatePage";
 import { getEventListByUsername } from "@/lib/events";
 import { getAllStartups } from "@/lib/kysely/queries";
+import { getAllIncubatorsOptions } from "@/lib/kysely/queries/incubators";
 import { getUserInfos } from "@/lib/kysely/queries/users";
 import s3 from "@/lib/s3";
 import { memberChangeToModel, userInfosToModel } from "@/models/mapper";
@@ -49,7 +50,7 @@ export default async function Page({
     }
     const dbData = await getUserInfos({ username: id });
     const userInfos = userInfosToModel(dbData);
-
+    const incubatorOptions = await getAllIncubatorsOptions();
     const startups = await getAllStartups();
     const startupOptions = startups.map((startup) => ({
         value: startup.uuid,
@@ -71,6 +72,7 @@ export default async function Page({
         profileURL: hasImage ? s3Key : undefined,
         startupOptions,
         username: id,
+        incubatorOptions,
     };
 
     return (

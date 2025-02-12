@@ -11,18 +11,28 @@ import {
     useWatch,
     UseFormRegister,
     UseFormSetValue,
+    UseFormTrigger,
 } from "react-hook-form";
+import { FieldErrors } from "react-hook-form";
 
+import SEIncubateurSelect from "../SEIncubateurSelect";
 import SESelect from "../SESelect";
 import { userStatusOptions } from "@/frontConfig";
 import { HasMissions } from "@/models/member";
-import { Status, missionSchema, missionSchemaType } from "@/models/mission";
+import { Option } from "@/models/misc";
+import {
+    Status,
+    missionSchema,
+    missionSchemaShape,
+    missionSchemaType,
+} from "@/models/mission";
 
 export const Mission = ({
     index,
     register,
     control,
     setValue,
+    trigger,
     mission,
     missionsRemove,
     startupOptions,
@@ -30,15 +40,17 @@ export const Mission = ({
     isMulti,
     labels = {},
     missionArrayKey = "missions",
+    incubatorOptions,
 }: {
     index: number;
-    register: any;
-    control: any;
-    setValue: any;
+    register: UseFormRegister<HasMissions>;
+    control: Control<HasMissions>;
+    setValue: UseFormSetValue<HasMissions>;
+    trigger: UseFormTrigger<HasMissions>;
     mission?: missionSchemaType;
     missionsRemove: any;
-    startupOptions: any;
-    errors: any;
+    startupOptions: Option[];
+    errors: any; //FieldErrors<HasMissions>;
     isMulti: boolean;
     labels?: {
         employer?: string;
@@ -47,6 +59,7 @@ export const Mission = ({
         end?: string;
     };
     missionArrayKey?: string;
+    incubatorOptions: Option[];
 }) => {
     const missionErrors = errors;
     const defaultState = (field) => ({
@@ -115,7 +128,7 @@ export const Mission = ({
                         <Input
                             label={
                                 labels.start ||
-                                missionSchema.shape.start.description +
+                                missionSchemaShape.start.description +
                                     " (obligatoire)"
                             }
                             hintText="Date de début"
@@ -140,7 +153,7 @@ export const Mission = ({
                         <Input
                             label={
                                 labels.end ||
-                                missionSchema.shape.end.description +
+                                missionSchemaShape.end.description +
                                     " (obligatoire)"
                             }
                             nativeInputProps={{
@@ -178,7 +191,7 @@ export const Mission = ({
                     <Input
                         label={
                             labels.employer ||
-                            missionSchema.shape.employer.description +
+                            missionSchemaShape.employer.description +
                                 " (obligatoire)"
                         }
                         nativeInputProps={{
@@ -192,12 +205,12 @@ export const Mission = ({
                     <Select
                         label={
                             labels.status ||
-                            missionSchema.shape.status.description +
+                            missionSchemaShape.status.description +
                                 " (obligatoire)"
                         }
                         nativeSelectProps={{
                             ...register(`${missionArrayKey}.${index}.status`),
-                            defaultValue: mission ? mission.status : "",
+                            defaultValue: mission?.status ?? "",
                         }}
                         {...defaultState("status")}
                     >
@@ -221,7 +234,7 @@ export const Mission = ({
                                   mission.startups.includes(s.value)
                                 : undefined
                         )}
-                        onChange={(startups) => {
+                        onChange={(startups: Option[]) => {
                             setValue(
                                 `${missionArrayKey}.${index}.startups`,
                                 startups.map((startup) => startup.value),
@@ -230,6 +243,7 @@ export const Mission = ({
                                     shouldDirty: true,
                                 }
                             );
+                            trigger(`${missionArrayKey}.${index}.incubator_id`);
                         }}
                         isMulti={true}
                         placeholder={`Sélectionne un ou plusieurs produits`}
@@ -237,6 +251,37 @@ export const Mission = ({
                         label="Produits concernés par la mission :"
                         {...defaultState("startups")}
                     />
+                </div>
+            </div>
+            <div className={fr.cx("fr-grid-row", "fr-grid-row--gutters")}>
+                <div className={fr.cx("fr-col-12")}>
+                    <SEIncubateurSelect
+                        label="Incubateur"
+                        hint="L'incubateur est obligatoire si aucune startup n'est définie dans la mission."
+                        placeholder="Sélectionne un incubateur"
+                        incubatorOptions={incubatorOptions}
+                        onChange={(e, incubator) => {
+                            setValue(
+                                `${missionArrayKey}.${index}.incubator_id`,
+                                incubator ? incubator.value : undefined,
+                                {
+                                    shouldValidate: true,
+                                    shouldDirty: true,
+                                }
+                            );
+                            // revalidate startups fields
+                            trigger(`${missionArrayKey}.${index}.startups`);
+                        }}
+                        isMulti={false}
+                    />
+                    {errors?.incubator_id?.message && (
+                        <p
+                            id="text-input-error-desc-error"
+                            className="fr-error-text"
+                        >
+                            {errors.incubator_id.message}
+                        </p>
+                    )}
                 </div>
             </div>
         </div>
@@ -248,14 +293,18 @@ export const MissionsEditor = ({
     errors,
     register,
     setValue,
+    trigger,
     startupOptions,
+    incubatorOptions,
     missionArrayKey = "missions",
 }: {
     control: Control<HasMissions>;
     errors?: Record<string, any>;
     register: UseFormRegister<HasMissions>;
     setValue: UseFormSetValue<HasMissions>;
-    startupOptions: any;
+    trigger: UseFormTrigger<HasMissions>;
+    startupOptions: Option[];
+    incubatorOptions: Option[];
     missionArrayKey?: string;
 }) => {
     const {
@@ -291,10 +340,12 @@ export const MissionsEditor = ({
                     isMulti={true}
                     key={mission.id}
                     index={index}
+                    trigger={trigger}
                     mission={mission as unknown as missionSchemaType}
                     control={control}
                     register={register}
                     setValue={setValue}
+                    incubatorOptions={incubatorOptions}
                     missionArrayKey={missionArrayKey}
                     missionsRemove={() => missionsRemove(index)}
                     startupOptions={startupOptions}

@@ -4,6 +4,7 @@ import { getServerSession } from "next-auth";
 
 import AccountVerifyClientPage from "./AccountVerifyClientPage";
 import { getAllStartups } from "@/lib/kysely/queries";
+import { getAllIncubatorsOptions } from "@/lib/kysely/queries/incubators";
 import { getUserInfos } from "@/lib/kysely/queries/users";
 import { userInfosToModel } from "@/models/mapper";
 import { authOptions } from "@/utils/authoptions";
@@ -52,10 +53,12 @@ export default async function AccountVerifyPage() {
             label: startup.name,
         };
     });
+    const incubatorOptions = await getAllIncubatorsOptions();
 
     return (
         <AccountVerifyClientPage
             member={member}
+            incubatorOptions={incubatorOptions}
             startupOptions={startupOptions}
         />
     );
