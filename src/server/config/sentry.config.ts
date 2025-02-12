@@ -1,5 +1,6 @@
 import config from ".";
 import {
+    CreateSentryTeamResponse,
     SentryAddUserToOrgParams,
     SentryAddUserToTeamParams,
     SentryService,
@@ -40,6 +41,34 @@ export class FakeSentryService implements AccountService {
                 })[0]
         );
     }
+    createSentryTeam({
+        teamName,
+        teamSlug,
+    }: {
+        teamName: string;
+        teamSlug: string;
+    }): Promise<CreateSentryTeamResponse> {
+        const newTeam: SentryTeam = {
+            id: `${this.teams.length + 1}`,
+            name: teamName,
+            slug: teamSlug,
+            members: undefined,
+            memberCount: 0,
+            projects: [],
+        };
+        this.teams.push(newTeam);
+        return Promise.resolve({
+            ...newTeam,
+            dateCreated: new Date().toISOString(),
+            isMember: true,
+            teamRole: "member",
+            hasAccess: true,
+            isPending: false,
+            isTeamAdmin: false,
+            access: [],
+        });
+    }
+
     getAllUsers(): Promise<{ user: SentryUser; serviceUserId: string }[]> {
         return Promise.resolve(
             this.users.map((user) => ({
@@ -69,6 +98,17 @@ export class FakeSentryService implements AccountService {
         };
         this.users.push(newUser);
         return Promise.resolve(newUser);
+    }
+
+    async regenerateInviteForUser({
+        sentryUserId,
+    }: {
+        sentryUserId: string;
+    }): Promise<{ regenerate: boolean; reinvite: boolean }> {
+        return Promise.resolve({
+            regenerate: true,
+            reinvite: true,
+        });
     }
 
     async changeMemberRoleInTeam({

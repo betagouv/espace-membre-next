@@ -1,3 +1,5 @@
+import { isAfter } from "date-fns/isAfter";
+import { isBefore } from "date-fns/isBefore";
 import { sql, ExpressionBuilder, Kysely, SelectExpression } from "kysely";
 import { UpdateObjectExpression } from "kysely/dist/cjs/parser/update-set-parser";
 
@@ -42,20 +44,8 @@ export async function getUserInfos(
 ) {
     let query = db
         .selectFrom("users")
-        // .leftJoin(
-        //     "user_details",
-        //     "user_details.hash",
-        //     computeHash(params.username)
-        // )
         .selectAll("users")
         .select((eb) => [withEndDate, withMissions]);
-    // .$if(!!params.options?.withDetails, (qb) =>
-    //     qb.leftJoin(
-    //         "user_details",
-    //         "user_details.hash",
-    //         computeHash(params.username)
-    //     ).
-    // )
     if ("username" in params) {
         query = query.where("users.username", "=", params.username);
     } else {
@@ -71,39 +61,18 @@ export async function getUserByStartup(
     startupUuid: string,
     db: Kysely<DB> = database
 ) {
-    return (
-        db
-            .selectFrom("users")
-            .select((eb) => [
-                ...MEMBER_PROTECTED_INFO,
-                withMissions(eb),
-                withTeams(eb),
-            ])
-            .leftJoin("missions", "missions.user_id", "users.uuid")
-            .leftJoin("missions_startups", "missions.uuid", "mission_id")
-            .where("missions_startups.startup_id", "=", startupUuid)
-            .groupBy(MEMBER_PROTECTED_INFO)
-            // .select((eb) => [
-            //     "users.uuid",
-            //     ...MEMBER_PROTECTED_INFO,
-            //     // "users.username",
-            //     // "users.fullname",
-            //     // "users.role",
-            //     // "users.domaine",
-            //     // "users.bio",
-            //     // "users.link",
-            //     // "users.github",
-            //     // "users.member_type",
-            //     // "users.primary_email",
-            //     // "users.secondary_email",
-            //     // "users.primary_email_status",
-            //     // "primary_email_status_updated_at",
-            //     // "users.communication_email",
-            //     // "users.email_is_redirection",
-            //     withMissions(eb),
-            // ])
-            .execute()
-    );
+    return db
+        .selectFrom("users")
+        .select((eb) => [
+            ...MEMBER_PROTECTED_INFO,
+            withMissions(eb),
+            withTeams(eb),
+        ])
+        .leftJoin("missions", "missions.user_id", "users.uuid")
+        .leftJoin("missions_startups", "missions.uuid", "mission_id")
+        .where("missions_startups.startup_id", "=", startupUuid)
+        .groupBy(MEMBER_PROTECTED_INFO)
+        .execute();
 }
 
 /** Return member informations */
@@ -166,20 +135,8 @@ export async function getAllExpiredUsers(
 export async function adminGetAllUsersInfos(db: Kysely<DB> = database) {
     let query = db
         .selectFrom("users")
-        // .leftJoin(
-        //     "user_details",
-        //     "user_details.hash",
-        //     computeHash(params.username)
-        // )
         .selectAll("users")
         .select((eb) => [withEndDate, withMissions]);
-    // .$if(!!params.options?.withDetails, (qb) =>
-    //     qb.leftJoin(
-    //         "user_details",
-    //         "user_details.hash",
-    //         computeHash(params.username)
-    //     ).
-    // )
 
     const userInfos = await db.executeQuery(query);
 
@@ -218,7 +175,6 @@ function withMissions(eb: ExpressionBuilder<DB, "users">) {
                 ),
             ])
             .whereRef("missions.user_id", "=", "users.uuid")
-            // .whereRef("missions.uuid", "=", "missions_startups.mission_id")
             .orderBy("missions.start", "asc")
             .groupBy("missions.uuid")
     )
@@ -253,7 +209,6 @@ function withEndDate(
     eb: ExpressionBuilder<DB, "users">,
     db: Kysely<DB> = database
 ) {
-    // return MAX(missions.end) if there is no superior start date. NULL otherwise.
     return eb
         .selectFrom("missions")
         .select((eb2) => [
@@ -319,4 +274,18 @@ export async function getUserStartups(uuid: string, db: Kysely<DB> = database) {
     }
 
     return result;
+}
+
+export async function getUserStartupsActive(
+    uuid: string,
+    db: Kysely<DB> = database
+) {
+    const now = new Date();
+    return getUserStartups(uuid).then((startups) =>
+        startups.filter(
+            (startup) =>
+                isAfter(now, startup.start ?? 0) &&
+                isBefore(now, startup.end ?? Infinity)
+        )
+    );
 }

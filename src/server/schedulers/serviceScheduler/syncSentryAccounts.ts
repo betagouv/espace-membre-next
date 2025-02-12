@@ -38,7 +38,7 @@ export async function syncSentryAccounts(
             account_type: sentryUser.account_type,
             service_user_id: sentryUser.service_user_id,
             metadata: sentryUser.metadata,
-            status: ACCOUNT_SERVICE_STATUS.ACCOUNT_FOUND,
+            status: sentryUser.status,
             // we keep the accounts we cannot linked to anyone
             user_id: user ? user.uuid : null,
             email: sentryUser.email,
@@ -56,7 +56,7 @@ export async function syncSentryAccounts(
                         service_user_id: (eb) =>
                             eb.ref("excluded.service_user_id"),
                         user_id: (eb) => eb.ref("excluded.user_id"),
-                        status: ACCOUNT_SERVICE_STATUS.ACCOUNT_FOUND,
+                        status: (eb) => eb.ref("excluded.status"),
                     });
             })
             .executeTakeFirst();

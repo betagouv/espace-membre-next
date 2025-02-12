@@ -2,6 +2,7 @@ import { Metadata, ResolvingMetadata } from "next";
 import { redirect } from "next/navigation";
 import { validate } from "uuid";
 
+import { getStartupFiles } from "@/app/api/startups/files/list";
 import { BreadCrumbFiller } from "@/app/BreadCrumbProvider";
 import StartupPage from "@/components/StartupPage/StartupPage";
 import { getEventListByStartupUuid } from "@/lib/events";
@@ -14,7 +15,7 @@ import {
     startupChangeToModel,
     startupToModel,
 } from "@/models/mapper";
-import { getStartupFiles } from "@/app/api/startups/files/list";
+import { sentryTeamToModel } from "@/models/mapper/sentryMapper";
 
 type Props = {
     params: { id: string };
@@ -84,11 +85,13 @@ export default async function Page({ params }: Props) {
         ])
         .where("startups_organizations.startup_id", "=", dbSe.uuid)
         .execute();
-    const sentryTeams = await db
-        .selectFrom("sentry_teams")
-        .where("startup_id", "=", params.id)
-        .selectAll()
-        .execute();
+    const sentryTeams = (
+        await db
+            .selectFrom("sentry_teams")
+            .where("startup_id", "=", params.id)
+            .selectAll()
+            .execute()
+    ).map(sentryTeamToModel);
     const matomoSites = await db
         .selectFrom("matomo_sites")
         .where("startup_id", "=", params.id)

@@ -1,8 +1,10 @@
+import slugify from "@sindresorhus/slugify";
 import { Selectable } from "kysely";
 
 import { sentryUserSchemaType } from "../sentry";
+import { sentryTeamSchemaType } from "../sentryTeam";
 import { ACCOUNT_SERVICE_STATUS } from "../services";
-import { ServiceAccounts } from "@/@types/db";
+import { SentryTeams, ServiceAccounts } from "@/@types/db";
 import { SentryUser, SentryUserAccess, SentryTeam } from "@/lib/sentry";
 
 export const sentryUserToModel = (
@@ -50,7 +52,9 @@ export const sentryUserToModel = (
             expired: userMetadata.expired,
             inviteStatus: userMetadata.inviteStatus,
         },
-        status: ACCOUNT_SERVICE_STATUS.ACCOUNT_FOUND,
+        status: userMetadata.pending
+            ? ACCOUNT_SERVICE_STATUS.ACCOUNT_INVITATION_PENDING
+            : ACCOUNT_SERVICE_STATUS.ACCOUNT_FOUND,
     };
 };
 
@@ -67,5 +71,17 @@ export const sentryServiceInfoToModel = (
         status:
             (sentryUser.status as ACCOUNT_SERVICE_STATUS) ||
             ACCOUNT_SERVICE_STATUS.ACCOUNT_FOUND,
+    };
+};
+
+export const sentryTeamToModel = (
+    sentryTeam: Selectable<SentryTeams>
+): sentryTeamSchemaType => {
+    return {
+        id: sentryTeam.id,
+        sentry_id: sentryTeam.sentry_id,
+        name: sentryTeam.name,
+        slug: sentryTeam.slug || slugify(sentryTeam.name), // TODO make slug required once sync sentry cron ran in prod
+        startup_id: sentryTeam.startup_id,
     };
 };
