@@ -9,7 +9,7 @@ import { EventCode } from "@/models/actionEvent";
 import { Domaine, EmailStatusCode } from "@/models/member";
 import { AuthorizationError, BusinessError } from "@/utils/error";
 
-describe(`A new member cannot be validated by someone who is not an a team member`, () => {
+describe(`Test creating new user flow : A new member cannot be validated by someone who is not an a team member`, () => {
     let sendEmailStub, getServerSessionStub, sendNewMemberValidationEmail;
     let newUser,
         newIncubatorB,

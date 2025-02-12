@@ -48,6 +48,7 @@
         "compilerOptions": {
             "module": "commonjs",
             "target": "es6",
+            "jsx": "react-jsx",
             "paths": {
                 "@config": ["./src/config/index.ts"],
                 "@config/*": ["./src/config/*"],
@@ -76,6 +77,7 @@
         "compilerOptions": {
             "module": "commonjs",
             "target": "es6",
+            "jsx": "react-jsx",
             "paths": {
                 "@config": ["./src/config/index.ts"],
                 "@config/*": ["./src/config/*"],

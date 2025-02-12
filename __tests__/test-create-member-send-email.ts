@@ -6,10 +6,15 @@ import sinon from "sinon";
 import testUsers from "./users.json";
 import utils from "./utils";
 import { db } from "@/lib/kysely";
-import { getUserBasicInfo } from "@/lib/kysely/queries/users";
+import { getUserBasicInfo, getUserStartups } from "@/lib/kysely/queries/users";
 import { SendNewMemberValidationEmailSchemaType } from "@/models/jobs/member";
-import { memberPublicInfoToModel } from "@/models/mapper";
+import {
+    incubatorToModel,
+    memberPublicInfoToModel,
+    userStartupToModel,
+} from "@/models/mapper";
 import { Domaine } from "@/models/member";
+import config from "@/server/config";
 import { EMAIL_TYPES } from "@/server/modules/email";
 
 describe("Test creating new user flow : sending email", () => {
@@ -159,24 +164,31 @@ describe("Test creating new user flow : sending email", () => {
             },
         } as unknown as PgBoss.Job<SendNewMemberValidationEmailSchemaType>);
         const memberDbData = await getUserBasicInfo({ uuid: newUser.uuid });
+        const startups = (await getUserStartups(newUser.uuid)).map((s) =>
+            userStartupToModel(s)
+        );
         [
             sendEmailStub.firstCall.args[0],
             sendEmailStub.secondCall.args[0],
         ].should.have.deep.members([
             {
-                toEmail: [userB.primary_email],
-                type: EMAIL_TYPES.EMAIL_NEW_MEMBER_VALIDATION,
-                variables: {
-                    newMember: memberPublicInfoToModel(memberDbData),
-                    incubatorName: newIncubatorB.title,
-                },
-            },
-            {
                 toEmail: [userA.primary_email],
                 type: EMAIL_TYPES.EMAIL_NEW_MEMBER_VALIDATION,
                 variables: {
-                    newMember: memberPublicInfoToModel(memberDbData),
-                    incubatorName: newIncubatorA.title,
+                    userInfos: memberPublicInfoToModel(memberDbData),
+                    incubator: incubatorToModel(newIncubatorA),
+                    validationLink: `http://${config.host}/community/annie.mation/validate`,
+                    startups,
+                },
+            },
+            {
+                toEmail: [userB.primary_email],
+                type: EMAIL_TYPES.EMAIL_NEW_MEMBER_VALIDATION,
+                variables: {
+                    userInfos: memberPublicInfoToModel(memberDbData),
+                    incubator: incubatorToModel(newIncubatorB),
+                    validationLink: `http://${config.host}/community/annie.mation/validate`,
+                    startups,
                 },
             },
         ]);
