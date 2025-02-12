@@ -33,7 +33,7 @@ describe("Test creating new user flow", () => {
         newIncubatorA = await db
             .insertInto("incubators")
             .values({
-                title: "un autre incubator",
+                title: "incubator A",
             })
             .returningAll()
             .executeTakeFirstOrThrow();
@@ -50,13 +50,6 @@ describe("Test creating new user flow", () => {
             .selectFrom("users")
             .where("username", "=", "membre.actif")
             .selectAll()
-            .executeTakeFirstOrThrow();
-        newIncubatorA = await db
-            .insertInto("incubators")
-            .values({
-                title: "incubator A",
-            })
-            .returningAll()
             .executeTakeFirstOrThrow();
         await db
             .insertInto("users_teams")
@@ -296,43 +289,6 @@ describe("Test creating new user flow", () => {
                     },
                 }
             ).sendNewMemberValidationEmail;
-        });
-
-        it("should create new user without validation when session user is from incubator team", async () => {
-            const mockSession = {
-                user: {
-                    id: "anyuser",
-                    isAdmin: false,
-                    uuid: userInATeamFromIncubatorA.uuid,
-                },
-            };
-            getServerSessionStub.resolves(mockSession);
-            const { req } = createMocks({
-                method: "POST",
-                json: async () => ({
-                    ...createMemberObj,
-                }),
-            });
-
-            await createNewMemberHandler(req, {
-                params: {},
-            });
-            sendStub.called.should.be.false;
-            const newDbUser = await db
-                .selectFrom("users")
-                .selectAll()
-                .where("username", "=", "annie.mation")
-                .executeTakeFirst();
-            expect(newDbUser).to.exist;
-            expect(newDbUser?.primary_email_status).to.equals(
-                EmailStatusCode.EMAIL_VERIFICATION_WAITING
-            );
-            const newDbMission = await db
-                .selectFrom("missions")
-                .selectAll()
-                .where("user_id", "=", newDbUser?.uuid!)
-                .executeTakeFirst();
-            expect(newDbMission).to.exist;
         });
 
         it("should create new user without validation when session user is from incubator team", async () => {
