@@ -25,14 +25,10 @@ import { isUserActive } from "@/utils/member";
 import { linkRegistry } from "@/utils/routes/registry";
 
 // to fix ReferenceError: window is not defined
-const Map = dynamic(() => import("../Map"), {
-    ssr: false, // Set to false if the component should only load on the client
+const MapComponent = dynamic(() => import("../Map").then((mod) => mod.Map), {
+    loading: () => <p>Loading...</p>,
+    ssr: false,
 });
-
-export default function Page() {
-    return <Map />;
-}
-
 // return table row for a given user
 const getUserRow = ({
     user,
@@ -477,9 +473,7 @@ export const Community = (props: CommunityProps) => {
                             {
                                 label: "Carte",
                                 // @ts-ignore todo
-                                content: typeof window !== "undefined" ?? (
-                                    <Map points={points} />
-                                ),
+                                content: <MapComponent points={points} />,
                             },
                         ]}
                     />
