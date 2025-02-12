@@ -113,6 +113,14 @@ export function PrivateLayout({ children }: { children: React.ReactNode }) {
                                 "^/community/[a-zA-Z]+.[a-zA-Z]+/update"
                             ),
                         },
+                        {
+                            href: pathname,
+                            text: "Validation de la fiche",
+                            isActive: hasPathnameThisRegex(
+                                pathname,
+                                "^/community/[a-zA-Z]+.[a-zA-Z]+/validate"
+                            ),
+                        },
                     ],
                 },
             ],

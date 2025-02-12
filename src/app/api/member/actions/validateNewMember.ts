@@ -1,7 +1,6 @@
 "use server";
 
 import { getServerSession } from "next-auth/next";
-import { z } from "zod";
 
 import { addEvent } from "@/lib/events";
 import { db } from "@/lib/kysely";
@@ -29,7 +28,7 @@ export async function validateNewMember({
     if (!rawData) {
         throw new BusinessError(
             "userNotFound",
-            `No user found for id : ${memberUuid}`
+            `Aucun utilisateur trouver pour l'identifiant : ${memberUuid}`
         );
     }
 
@@ -53,7 +52,7 @@ export async function validateNewMember({
     ) {
         throw new BusinessError(
             "userIsNotWaitingValidation",
-            `User : ${memberUuid} is not waiting validation`
+            `${rawData.fullname} (identifiant:${memberUuid}) n'est pas en attente de validation`
         );
     }
     const newMember = memberBaseInfoToModel(rawData);
@@ -64,8 +63,9 @@ export async function validateNewMember({
             sessionUserUuid: session.user.uuid,
         }));
     if (!sessionUserIsFromIncubatorTeam) {
-        throw new AuthorizationError(
-            "You are not a in the required incubator's team"
+        throw new BusinessError(
+            "sessionUserNotAdminOrNotInRequiredIncubatorTeam",
+            "Tu n'a pas les droits pour valider ce membre. Tu n'es pas dans l'équipe transverse de l'incubateur dont ce membre fait partie."
         );
     }
 
