@@ -5,7 +5,6 @@ import { getServerSession } from "next-auth/next";
 
 import { validateNewMember } from "@/app/api/member/actions/validateNewMember";
 import { BreadCrumbFiller } from "@/app/BreadCrumbProvider";
-import { memberWrapperSchemaType } from "@/models/member";
 import { userInfos } from "@/server/controllers/utils";
 import { authOptions } from "@/utils/authoptions";
 import { BusinessError } from "@/utils/error";
@@ -36,46 +35,55 @@ export default async function Page({
         throw new Error(`You don't have the right to access this function`);
     }
     // compile some account informations
-    let user: memberWrapperSchemaType;
+
     try {
-        user = await userInfos({ username: id }, session.user.id === id);
+        const user = await userInfos({ username: id }, session.user.id === id);
+        let alert: JSX.Element;
+        // validate server side
+        try {
+            await validateNewMember({
+                memberUuid: user?.userInfos.uuid,
+            });
+            alert = (
+                <Alert
+                    severity="success"
+                    title="Fiche membre validé"
+                    description={`La fiche membre de ${user.userInfos.fullname} a été validée par ${session.user.id}`}
+                />
+            );
+        } catch (error) {
+            if (error instanceof BusinessError) {
+                const businessError = error as BusinessError;
+                if (businessError.code === "userAlreadyValided") {
+                    alert = (
+                        <Alert
+                            severity="info"
+                            title="Fiche membre déjà validée"
+                            description={error.message}
+                        />
+                    );
+                }
+            }
+            alert = (
+                <Alert
+                    severity="error"
+                    title="Une erreur est survenue lors de la validation"
+                    description={(error as Error).message}
+                />
+            );
+        }
+        return (
+            <>
+                <BreadCrumbFiller
+                    currentPage={user.userInfos.fullname}
+                    currentItemId={user.userInfos.uuid}
+                />
+                {alert}
+            </>
+        );
     } catch (e: any) {
         return <InvalideUserComponent error={e}></InvalideUserComponent>;
     }
-
-    // validate server side
-    try {
-        const message = await validateNewMember({
-            memberUuid: user?.userInfos.uuid,
-        });
-    } catch (error) {
-        if (error instanceof BusinessError) {
-            const businessError = error as BusinessError;
-            if (businessError.code === "userAlreadyValided") {
-                return (
-                    <Alert
-                        severity="info"
-                        title="Fiche membre déjà validée"
-                        description={error.message}
-                    />
-                );
-            }
-        }
-        return (
-            <Alert
-                severity="error"
-                title="Une erreur est survenue lors de la validation"
-                description={(error as Error).message}
-            />
-        );
-    }
-    return (
-        <Alert
-            severity="success"
-            title="Fiche membre validé"
-            description={`La fiche membre de ${user.userInfos.fullname} a été validée par ${session.user.id}`}
-        />
-    );
 }
 
 const InvalideUserComponent = ({ error }) => (
