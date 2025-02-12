@@ -1,28 +1,22 @@
 import slugify from "@sindresorhus/slugify";
-import { Selectable } from "kysely/dist/cjs/util/column-type";
 import { revalidatePath } from "next/cache";
 import { getServerSession } from "next-auth";
 
-import { Users } from "@/@types/db";
 import { addEvent } from "@/lib/events";
 import { db } from "@/lib/kysely";
 import { getUserTeamsIncubators } from "@/lib/kysely/queries/incubators";
 import { createMission } from "@/lib/kysely/queries/missions";
-import { getUserInfos } from "@/lib/kysely/queries/users";
 import { EventCode } from "@/models/actionEvent";
 import {
+    createMemberResponseSchemaType,
     createMemberSchema,
     createMemberSchemaType,
 } from "@/models/actions/member";
 import { SendNewMemberValidationEmailSchema } from "@/models/jobs/member";
 import { EmailStatusCode } from "@/models/member";
-import { isSessionUserIncubatorTeamAdminForUser } from "@/server/config/admin.config";
 import { isPublicServiceEmail, isAdminEmail } from "@/server/controllers/utils";
 import { getBossClientInstance } from "@/server/queueing/client";
-import {
-    sendNewMemberValidationEmail,
-    sendNewMemberValidationEmailTopic,
-} from "@/server/queueing/workers/send-validation-email";
+import { sendNewMemberValidationEmailTopic } from "@/server/queueing/workers/send-validation-email";
 import { authOptions } from "@/utils/authoptions";
 import {
     AdminEmailNotAllowedError,
@@ -82,6 +76,8 @@ export const POST = withHttpErrorHandling(async (req: Request) => {
             missions
         );
     try {
+        const userIsValidatedStraightAway =
+            sessionUserIsMemberOfUserIncubatorTeams || session.user.isAdmin;
         const dbUser = await db.transaction().execute(async (trx) => {
             const user = await trx
                 .insertInto("users")
@@ -92,11 +88,9 @@ export const POST = withHttpErrorHandling(async (req: Request) => {
                     username,
                     role: "",
                     // if session user is from incubator team, member is valided straight away
-                    primary_email_status:
-                        sessionUserIsMemberOfUserIncubatorTeams ||
-                        session.user.isAdmin
-                            ? EmailStatusCode.EMAIL_VERIFICATION_WAITING
-                            : EmailStatusCode.MEMBER_VALIDATION_WAITING,
+                    primary_email_status: userIsValidatedStraightAway
+                        ? EmailStatusCode.EMAIL_VERIFICATION_WAITING
+                        : EmailStatusCode.MEMBER_VALIDATION_WAITING,
                 })
                 .returning("uuid")
                 .executeTakeFirstOrThrow();
@@ -112,9 +106,7 @@ export const POST = withHttpErrorHandling(async (req: Request) => {
             }
             return user;
         });
-        if (
-            !(sessionUserIsMemberOfUserIncubatorTeams || session.user.isAdmin)
-        ) {
+        if (!userIsValidatedStraightAway) {
             // send validation email
             const bossClient = await getBossClientInstance();
             await bossClient.send(
@@ -137,9 +129,12 @@ export const POST = withHttpErrorHandling(async (req: Request) => {
                 missions,
             },
         });
-        return Response.json({
+        let response: createMemberResponseSchemaType = {
             uuid: dbUser.uuid,
-        });
+            validated: userIsValidatedStraightAway,
+        };
+        revalidatePath("/community", "layout");
+        return Response.json(response);
     } catch (error: any) {
         if (
             error.message.includes(

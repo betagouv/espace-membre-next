@@ -135,20 +135,8 @@ export function getUserTeamsIncubators(uuid: string) {
         .selectFrom("users")
         .leftJoin("users_teams", "users_teams.user_id", "users.uuid")
         .leftJoin("teams", "users_teams.team_id", "teams.uuid")
-        .leftJoin("incubators", "teams.incubator_id", "incubator_id")
-        .select([
-            "incubators.title",
-            "incubators.uuid",
-            "incubators.description",
-            "incubators.contact",
-            "incubators.short_description",
-            "incubators.ghid",
-            "incubators.github",
-            "incubators.owner_id",
-            "incubators.address",
-            "incubators.highlighted_startups",
-            "incubators.website",
-        ])
+        .leftJoin("incubators", "teams.incubator_id", "incubators.uuid")
+        .selectAll(["incubators"])
         .where("users.uuid", "=", uuid)
         .execute();
 }

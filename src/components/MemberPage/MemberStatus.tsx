@@ -258,6 +258,13 @@ const emailStatusRow = (
                             )
                             .with(
                                 P.union(
+                                    EmailStatusCode.MEMBER_VALIDATION_WAITING
+                                ),
+                                () =>
+                                    "La fiche doit être validée par un admin ou un membre de l'équipe transverse de l'incubateur"
+                            )
+                            .with(
+                                P.union(
                                     EmailStatusCode.EMAIL_DELETED,
                                     EmailStatusCode.EMAIL_EXPIRED,
                                     EmailStatusCode.EMAIL_UNSET

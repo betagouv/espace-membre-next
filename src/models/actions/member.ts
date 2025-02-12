@@ -92,6 +92,16 @@ export const createMemberSchema = z.object({
 
 export type createMemberSchemaType = z.infer<typeof createMemberSchema>;
 
+export const createMemberResponseSchema = z
+    .object({
+        uuid: z.string().uuid(),
+        validated: z.boolean(),
+    })
+    .strict();
+export type createMemberResponseSchemaType = z.infer<
+    typeof createMemberResponseSchema
+>;
+
 export const updateMemberMissionsSchema = z.object({
     missions: memberSchema.shape.missions,
     memberUuid: memberSchema.shape.uuid,

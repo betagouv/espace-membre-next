@@ -13,6 +13,7 @@ import { useFieldArray, useForm } from "react-hook-form";
 import { Mission } from "@/components/BaseInfoUpdatePage/MissionsEditor";
 import SEIncubateurSelect from "@/components/SEIncubateurSelect";
 import {
+    createMemberResponseSchema,
     createMemberSchema,
     createMemberSchemaType,
 } from "@/models/actions/member";
@@ -102,11 +103,14 @@ export default function CommunityCreateMemberPage(props: BaseInfoUpdateProps) {
         setIsSaving(false);
         const data = await response.json();
         if (response.ok) {
+            const responseData = createMemberResponseSchema.parse(data);
             setSuccess(true);
             setAlertMessage({
                 title: "C'est presque bon !",
                 type: "info",
-                message: `${firstname} ${lastname} va recevoir un email pour l'inviter à se connecter à l'espace membre et compléter sa fiche`,
+                message: responseData.validated
+                    ? `${firstname} ${lastname} va recevoir un email pour l'inviter à se connecter à l'espace membre et compléter sa fiche`
+                    : `La fiche de ${firstname} ${lastname} est en attente de validation par un membre de l'équipe transverse de son incubateur.`,
             });
         } else {
             setSuccess(false);
