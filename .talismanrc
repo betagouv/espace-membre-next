@@ -1,11 +1,10 @@
 fileignoreconfig:
-- filename: package-lock.json
-  checksum: 10d7f0464448e66b54e76330e7d1dd9b6b94ce21508d9e8c59a31f59e72309b7
+- filename: __tests__/htmlbuilder.spec.ts
+  checksum: b5a1619df6d19ab4e1dfe36bcfeda327cfe85c52f077db82a5e0842230f94305
+- filename: src/server/views/templates/emails/memberValidationEmail/memberValidationEmail.tsx
+  checksum: 719ab0555ac1bae0adcfa7599a577f5b957f255be75f6b80f505694a4f2be2e5
 version: ""
-ame: __tests__/test-worker.ts
-  checksum: 462f569a2625f2fdb0938f0abc109ed24f0241d9f5592ead16475e2efde0aa47
-- filename: e2e/api.spec.ts
-  checksum: f93e923d390704aa2e2be776ceb7b9f2ffc9c59a9d1100346e12754ab4ee7d7c
+c59a9d1100346e12754ab4ee7d7c
 - filename: package-lock.json
   checksum: add9168b63b1a9219558f2be2378591402a00d394be3bd9102715e43f8278e4f
 - filename: src/app/(private)/(dashboard)/admin/signaux-faibles-beta/AdminProductClientPage.tsx
