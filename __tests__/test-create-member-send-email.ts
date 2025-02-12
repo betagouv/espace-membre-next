@@ -177,7 +177,7 @@ describe("Test creating new user flow : sending email", () => {
                 variables: {
                     userInfos: memberPublicInfoToModel(memberDbData),
                     incubator: incubatorToModel(newIncubatorA),
-                    validationLink: `http://${config.host}/community/annie.mation/validate`,
+                    validationLink: `${config.protocol}://${config.host}/community/annie.mation/validate`,
                     startups,
                 },
             },
@@ -187,7 +187,7 @@ describe("Test creating new user flow : sending email", () => {
                 variables: {
                     userInfos: memberPublicInfoToModel(memberDbData),
                     incubator: incubatorToModel(newIncubatorB),
-                    validationLink: `http://${config.host}/community/annie.mation/validate`,
+                    validationLink: `${config.protocol}://${config.host}/community/annie.mation/validate`,
                     startups,
                 },
             },
