@@ -13,12 +13,6 @@ import frontConfig from "@/frontConfig";
 export default function SignClientPage() {
     const [error, setError] = React.useState<string>("");
     const { status, data: session } = useSession();
-    // useEffect(() => {
-    //     // Ensure this runs only on the client-side
-    //     if (status === "authenticated" && typeof window !== "undefined") {
-    //         window.location.href = "/dashboard";
-    //     }
-    // }, [status]);
 
     function navigateToNextPage(loginURL: string) {
         const hostname = window.location.origin;
