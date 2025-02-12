@@ -158,7 +158,10 @@ describe(`Test creating new user flow : A new member cannot be validated by some
         try {
             await validateNewMember({ memberUuid: newUser.uuid });
         } catch (error) {
-            error.should.be.instanceof(AuthorizationError);
+            error.should.be.instanceof(BusinessError);
+            (error as BusinessError).code.should.be.equals(
+                "sessionUserNotAdminOrNotInRequiredIncubatorTeam"
+            );
         }
         const updatedUser = await db
             .selectFrom("users")
