@@ -1,4 +1,4 @@
-import { MjmlButton, MjmlText } from "@luma-team/mjml-react";
+import { MjmlButton, MjmlText, Mjml } from "@luma-team/mjml-react";
 
 import { EmailNewMemberValidation } from "@/server/modules/email";
 
@@ -12,7 +12,7 @@ export function MemberValidationEmail(
     const title = MemberValidationEmailTitle();
 
     return (
-        <>
+        <Mjml>
             <MjmlText>
                 <h1>{title}</h1>
                 <p>Bonjour,</p>
@@ -48,6 +48,6 @@ export function MemberValidationEmail(
                 Valider le membre
             </MjmlButton>
             <MjmlText></MjmlText>
-        </>
+        </Mjml>
     );
 }
