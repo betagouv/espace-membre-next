@@ -169,7 +169,7 @@ const htmlBuilder: HtmlBuilderType = {
                 }
             }
 
-            const rawHtmlVersion = mjmlHtmlContent; //transformResult.html;
+            const rawHtmlVersion = transformResult.html;
             // const plaintextVersion = convertHtmlEmailToText(rawHtmlVersion);
             content = rawHtmlVersion;
         }
