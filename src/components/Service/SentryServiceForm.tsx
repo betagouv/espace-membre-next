@@ -62,7 +62,7 @@ export default function SentryServiceForm(props: {
                             les produits sur lesquels tu travailles
                             actuellemment. Si pourtant une équipe existe merci
                             de nous le signaler en envoyant un message dans le
-                            chatbot crips présent sur cette page.
+                            chatbot crisp présent sur cette page.
                         </p>
                     )}
                     {!!props.teams.length && (
