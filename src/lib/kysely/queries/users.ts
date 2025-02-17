@@ -130,13 +130,15 @@ export async function getUserBasicInfo(
     return (userInfos.rows.length && userInfos.rows[0]) || undefined;
 }
 
-/** Return member informations */
-export async function getAllUsersInfo(db: Kysely<DB> = database) {
-    const query = db
+export const getAllUsersInfoQuery = (db: Kysely<DB> = database) =>
+    db
         .selectFrom("users")
         .selectAll("users")
-        .select((eb) => [withMissions, withTeams])
-        .compile();
+        .select((eb) => [withMissions, withTeams]);
+
+/** Return member informations */
+export async function getAllUsersInfo(db: Kysely<DB> = database) {
+    const query = getAllUsersInfoQuery(db).compile();
 
     const userInfos = await db.executeQuery(query);
 
@@ -248,6 +250,28 @@ function withTeams(eb: ExpressionBuilder<DB, "users">) {
         .as("teams");
 }
 
+function withStartups(eb: ExpressionBuilder<DB, "users">) {
+    return jsonArrayFrom(
+        eb
+            .selectFrom(["startups"])
+            .leftJoin(
+                "missions_startups",
+                "missions_startups.startup_id",
+                "startups.uuid"
+            )
+            .leftJoin(
+                "missions",
+                "missions.uuid",
+                "missions_startups.mission_id"
+            )
+            .select(["startups.uuid", "startups.name"])
+            .whereRef("missions.user_id", "=", "users.uuid")
+            .groupBy(["startups.uuid"])
+    )
+        .$notNull()
+        .as("startups");
+}
+
 /** Compute member end date */
 function withEndDate(
     eb: ExpressionBuilder<DB, "users">,
@@ -320,3 +344,11 @@ export async function getUserStartups(uuid: string, db: Kysely<DB> = database) {
 
     return result;
 }
+
+export const getLatests = (db: Kysely<DB> = database) => {
+    return getAllUsersInfoQuery(db)
+        .select((eb) => [withStartups(eb)])
+        .orderBy("users.created_at", "desc")
+        .limit(10)
+        .execute();
+};
