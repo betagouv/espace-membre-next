@@ -218,7 +218,7 @@ export function DashboardPage(props: DashboardPageProps) {
                     </div>
                 </div>
                 <div className={fr.cx("fr-col-6")}>
-                    <h2 className={fr.cx("fr-pt-4w")}>Les derniers membres</h2>
+                    <h2 className={fr.cx("fr-pt-4w")}>Nouveaux membres</h2>
                     <div
                         className={fr.cx("fr-grid-row", "fr-grid-row--gutters")}
                     >
