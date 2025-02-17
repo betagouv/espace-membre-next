@@ -82,7 +82,7 @@ export async function validateNewMember({
         (await isSessionUserIncubatorTeamAdminForUser({
             user: newMember,
             sessionUserUuid: session.user.uuid,
-            incubator_id,
+            incubator_id: incubator_id || undefined,
         }));
     if (!sessionUserIsFromIncubatorTeam) {
         throw new BusinessError(
