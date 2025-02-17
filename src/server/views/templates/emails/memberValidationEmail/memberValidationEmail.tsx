@@ -42,7 +42,7 @@ export function MemberValidationEmail(
                                 Une nouvelle fiche membre a été créée avec une
                                 mission qui concerne ton incubateur. Merci de
                                 valider cette fiche si tu es au courant de
-                                l'arrivé de cette personne.
+                                l'arrivée de cette personne.
                             </p>
                             <p>
                                 <ul>
