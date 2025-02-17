@@ -24,8 +24,8 @@ export function MemberValidationEmail(
     return (
         <Mjml>
             <MjmlHead>
-                <MjmlTitle>Last Minute Offer</MjmlTitle>
-                <MjmlPreview>Last Minute Offer...</MjmlPreview>
+                <MjmlTitle></MjmlTitle>
+                <MjmlPreview></MjmlPreview>
             </MjmlHead>
             <MjmlBody width={500}>
                 <MjmlSection>

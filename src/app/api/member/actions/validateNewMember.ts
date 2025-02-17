@@ -87,7 +87,7 @@ export async function validateNewMember({
     if (!sessionUserIsFromIncubatorTeam) {
         throw new BusinessError(
             "sessionUserNotAdminOrNotInRequiredIncubatorTeam",
-            "Tu n'a pas les droits pour valider ce membre. Tu n'es pas dans l'équipe transverse de l'incubateur dont ce membre fait partie."
+            "Tu n'as pas les droits pour valider ce membre. Tu n'es pas dans l'équipe transverse de l'incubateur dont ce membre fait partie."
         );
     }
 
