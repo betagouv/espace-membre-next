@@ -188,7 +188,8 @@ export function DashboardPage(props: DashboardPageProps) {
                 className={fr.cx(
                     "fr-grid-row",
                     "fr-grid-row--gutters",
-                    "fr-mt-6w"
+                    "fr-mt-6w",
+                    "fr-px-6w"
                 )}
                 style={{
                     background: "linear-gradient( #ececfe, #f5f5fe )",
