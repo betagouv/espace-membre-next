@@ -235,7 +235,6 @@ export default function MemberPage({
             content: (
                 <AdminPanel
                     authorizations={authorizations}
-                    availableEmailPros={availableEmailPros}
                     userInfos={userInfos}
                     emailInfos={emailInfos}
                 />
