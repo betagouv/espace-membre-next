@@ -115,6 +115,7 @@ export const POST = withHttpErrorHandling(async (req: Request) => {
                 sendNewMemberValidationEmailTopic,
                 SendNewMemberValidationEmailSchema.parse({
                     userId: dbUser.uuid,
+                    incubator_id,
                 }),
                 {
                     retryLimit: 50,

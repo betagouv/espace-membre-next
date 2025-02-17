@@ -55,15 +55,15 @@ export async function sendNewMemberValidationEmail(
         }
     );
     // todo incubator_id might change to be another params send in object "job"
-    const missionIncubators = userMissions
-        .map((m) => m.incubator_id)
-        .filter((incubator): incubator is string => !!incubator);
-    const startupIncubators = userStartups
+
+    const startupIncubatorIds = userStartups
         .map((startup) => startup.incubator_id)
         .filter((incubator): incubator is string => !!incubator);
 
     const incubatorIds = Array.from(
-        new Set([...missionIncubators, ...startupIncubators])
+        new Set(
+            [data.incubator_id, ...startupIncubatorIds].filter((id) => !!id)
+        )
     );
     if (!incubatorIds.length) {
         throw new BusinessError(
