@@ -195,7 +195,7 @@ export function DashboardPage(props: DashboardPageProps) {
                     background: "linear-gradient( #ececfe, #f5f5fe )",
                 }}
             >
-                <div className={fr.cx("fr-col-6")}>
+                <div className={fr.cx("fr-col-12", "fr-col-lg-6")}>
                     <h2 className={fr.cx("fr-pt-4w")}>Nouveaux produits</h2>
                     <div
                         className={fr.cx("fr-grid-row", "fr-grid-row--gutters")}
@@ -217,7 +217,7 @@ export function DashboardPage(props: DashboardPageProps) {
                         </div>
                     </div>
                 </div>
-                <div className={fr.cx("fr-col-6")}>
+                <div className={fr.cx("fr-col-12", "fr-col-lg-6")}>
                     <h2 className={fr.cx("fr-pt-4w")}>Nouveaux membres</h2>
                     <div
                         className={fr.cx("fr-grid-row", "fr-grid-row--gutters")}
