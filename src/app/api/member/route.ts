@@ -124,7 +124,7 @@ export const POST = withHttpErrorHandling(async (req: Request) => {
         }
         await addEvent({
             created_by_username: session.user.id,
-            action_on_username: dbUser.username,
+            action_on_username: username,
             action_code: EventCode.MEMBER_CREATED,
             action_metadata: {
                 member,
