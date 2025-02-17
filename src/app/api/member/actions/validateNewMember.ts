@@ -2,10 +2,10 @@
 
 import { getServerSession } from "next-auth/next";
 
-import { addEvent } from "@/lib/events";
+import { addEvent, getLastEvent } from "@/lib/events";
 import { db } from "@/lib/kysely";
 import { getUserBasicInfo } from "@/lib/kysely/queries/users";
-import { EventCode } from "@/models/actionEvent";
+import { EventCode, EventMemberCreatedPayload } from "@/models/actionEvent";
 import { validateNewMemberSchemaType } from "@/models/actions/member";
 import { memberBaseInfoToModel } from "@/models/mapper";
 import { EmailStatusCode } from "@/models/member";
@@ -32,6 +32,27 @@ export async function validateNewMember({
         );
     }
 
+    const eventMemberCreated = await getLastEvent(
+        rawData.username,
+        EventCode.MEMBER_CREATED
+    );
+    if (!eventMemberCreated) {
+        throw new BusinessError(
+            "userMemberCreatedEventNotFound",
+            `L'événement de création du membre n'as pas été trouvé pour ${memberUuid}.`
+        );
+    }
+    const eventMemberCreatedData =
+        EventMemberCreatedPayload.safeParse(eventMemberCreated);
+    if (!eventMemberCreatedData.success) {
+        console.log(eventMemberCreatedData.error);
+        throw new BusinessError(
+            "eventMemberCreatedEventDoesNotHaveTheExpectedFormat",
+            `L'événement de création du membre ${memberUuid} n'as pas le format attendu.`
+        );
+    }
+    const incubator_id =
+        eventMemberCreatedData.data.action_metadata.incubator_id;
     const event = await db
         .selectFrom("events")
         .selectAll()
@@ -61,6 +82,7 @@ export async function validateNewMember({
         (await isSessionUserIncubatorTeamAdminForUser({
             user: newMember,
             sessionUserUuid: session.user.uuid,
+            incubator_id,
         }));
     if (!sessionUserIsFromIncubatorTeam) {
         throw new BusinessError(

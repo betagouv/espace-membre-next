@@ -5,7 +5,6 @@ import { getServerSession } from "next-auth";
 import { BreadCrumbFiller } from "@/app/BreadCrumbProvider";
 import { MemberUpdate } from "@/components/MemberUpdate/MemberUpdate";
 import { getAllStartups } from "@/lib/kysely/queries";
-import { getAllIncubatorsOptions } from "@/lib/kysely/queries/incubators";
 import { getUserBasicInfo } from "@/lib/kysely/queries/users";
 import { memberBaseInfoToModel } from "@/models/mapper";
 import { isSessionUserIncubatorTeamAdminForUser } from "@/server/config/admin.config";
@@ -39,20 +38,23 @@ export default async function Page({
         value: startup.uuid,
         label: startup.name || "",
     }));
-    const incubatorOptions = await getAllIncubatorsOptions();
 
     // if there is no current or future mission (or no mission at all)
     const hasActiveMission = !!userInfos.missions.find((m) =>
         m.end ? new Date(m.end) >= new Date() : !m.end
     );
 
-     const sessionUserIsFromIncubatorTeam =
+    const sessionUserIsFromIncubatorTeam =
         await isSessionUserIncubatorTeamAdminForUser({
             user: userInfos,
             sessionUserUuid: session.user.uuid,
         });
     // members cannot edit active users directly. Call admin or team member.
-    if (hasActiveMission && !session?.user.isAdmin && !sessionUserIsFromIncubatorTeam) {
+    if (
+        hasActiveMission &&
+        !session?.user.isAdmin &&
+        !sessionUserIsFromIncubatorTeam
+    ) {
         redirect(`/community/${id}`);
     }
 
@@ -63,7 +65,6 @@ export default async function Page({
     const props = {
         userInfos,
         startupOptions,
-        incubatorOptions,
     };
 
     return (

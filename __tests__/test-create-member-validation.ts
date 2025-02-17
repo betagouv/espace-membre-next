@@ -1,9 +1,12 @@
 import { addDays, subDays } from "date-fns";
+import { Selectable } from "kysely";
 import proxyquire from "proxyquire";
 import sinon from "sinon";
 
 import testUsers from "./users.json";
 import utils from "./utils";
+import { Events, Users, Missions } from "@/@types/db";
+import { addEvent } from "@/lib/events";
 import { db } from "@/lib/kysely";
 import { EventCode } from "@/models/actionEvent";
 import { Domaine, EmailStatusCode } from "@/models/member";
@@ -11,14 +14,15 @@ import { AuthorizationError, BusinessError } from "@/utils/error";
 
 describe(`Test creating new user flow : A new member cannot be validated by someone who is not an a team member`, () => {
     let sendEmailStub, getServerSessionStub, sendNewMemberValidationEmail;
-    let newUser,
+    let newUser: Selectable<Users>,
         newIncubatorB,
-        newMission,
+        newMission: Selectable<Missions>,
         newStartup,
         teamA,
-        userA,
-        userB,
-        newStartupMissionConnexion;
+        userA: Selectable<Users>,
+        userB: Selectable<Users>,
+        newStartupMissionConnexion,
+        event: Selectable<Events>;
     beforeEach(async () => {
         getServerSessionStub = sinon.stub();
         await utils.createUsers(testUsers);
@@ -101,6 +105,27 @@ describe(`Test creating new user flow : A new member cannot be validated by some
             .where("username", "=", "julien.dauphant")
             .selectAll()
             .executeTakeFirstOrThrow();
+
+        event = await addEvent({
+            created_by_username: userB.username,
+            action_on_username: newUser.username,
+            action_code: EventCode.MEMBER_CREATED,
+            action_metadata: {
+                member: {
+                    ...newUser,
+                    domaine: Domaine.ANIMATION,
+                    email: newUser.secondary_email!,
+                    firstname: "un nom",
+                    lastname: "un nom de famille",
+                },
+                missions: [
+                    {
+                        ...newMission,
+                    },
+                ],
+                incubator_id: newIncubatorB.uuid,
+            },
+        });
     });
 
     afterEach(async () => {
@@ -119,6 +144,7 @@ describe(`Test creating new user flow : A new member cannot be validated by some
             .deleteFrom("missions")
             .where("uuid", "=", newMission.uuid)
             .execute();
+        await db.deleteFrom("events").where("id", "=", event.id).execute();
     });
     it("should send forbidden error if an unlogged user try to validate link", async function () {
         const validateNewMember = proxyquire(

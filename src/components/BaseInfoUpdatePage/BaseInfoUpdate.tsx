@@ -36,7 +36,6 @@ export interface BaseInfoUpdateProps {
     changes: PrivateMemberChangeSchemaType[];
     formData: memberInfoUpdateSchemaType;
     startupOptions: Option[];
-    incubatorOptions: Option[];
     username: string;
 }
 
@@ -362,7 +361,6 @@ export const BaseInfoUpdate = (props: BaseInfoUpdateProps) => {
                         trigger={trigger}
                         register={register}
                         missionArrayKey="member.missions"
-                        incubatorOptions={props.incubatorOptions}
                         startupOptions={props.startupOptions}
                         errors={errors.member?.missions || []}
                     />

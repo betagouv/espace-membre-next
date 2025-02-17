@@ -30,7 +30,8 @@ const createUsername = (firstName, lastName) =>
 
 const isSessionUserMemberOfUserIncubatorTeams = async function (
     sessionUserUuid: string,
-    userMissions: createMemberSchemaType["missions"]
+    userMissions: createMemberSchemaType["missions"],
+    incubator_id: createMemberSchemaType["incubator_id"]
 ): Promise<boolean> {
     const sessionUserIncubators = await getUserTeamsIncubators(sessionUserUuid);
     const sessionUserIncubatorIds = sessionUserIncubators.map(
@@ -44,16 +45,15 @@ const isSessionUserMemberOfUserIncubatorTeams = async function (
               .selectAll()
               .execute()
         : [];
-    // todo incubator_id might change to be another params send in object "job"
-    const missionIncubatorIds = userMissions
-        .map((m) => m.incubator_id)
-        .filter((incubator): incubator is string => !!incubator);
+    console.log(startupIncubators);
     const startupIncubatorIds = startupIncubators
         .map((m) => m.incubator_id)
         .filter((incubator): incubator is string => !!incubator);
-    const incubatorIds = Array.from(
-        new Set([...missionIncubatorIds, ...startupIncubatorIds])
-    );
+
+    const incubatorIds = Array.from(new Set([...startupIncubatorIds]));
+    if (incubator_id && !incubatorIds.includes(incubator_id)) {
+        incubatorIds.push(incubator_id);
+    }
 
     return incubatorIds.some((el) => sessionUserIncubatorIds.includes(el));
 };
@@ -64,7 +64,8 @@ export const POST = withHttpErrorHandling(async (req: Request) => {
         throw new AuthorizationError();
     }
     const rawdata = await req.json();
-    const { member, missions } = createMemberSchema.parse(rawdata);
+    const { member, missions, incubator_id } =
+        createMemberSchema.parse(rawdata);
     const hasPublicServiceEmail = await isPublicServiceEmail(member.email);
     if (hasPublicServiceEmail && isAdminEmail(member.email)) {
         throw new AdminEmailNotAllowedError();
@@ -73,7 +74,8 @@ export const POST = withHttpErrorHandling(async (req: Request) => {
     const sessionUserIsMemberOfUserIncubatorTeams =
         await isSessionUserMemberOfUserIncubatorTeams(
             session.user.uuid,
-            missions
+            missions,
+            incubator_id
         );
     try {
         const userIsValidatedStraightAway =
@@ -127,6 +129,7 @@ export const POST = withHttpErrorHandling(async (req: Request) => {
             action_metadata: {
                 member,
                 missions,
+                incubator_id,
             },
         });
         let response: createMemberResponseSchemaType = {

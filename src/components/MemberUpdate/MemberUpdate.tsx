@@ -23,13 +23,11 @@ import routes, { computeRoute } from "@/routes/routes";
 export interface BaseInfoUpdateProps {
     userInfos: memberBaseInfoSchemaType;
     startupOptions: Option[];
-    incubatorOptions: Option[];
 }
 
 export const MemberUpdate = ({
     userInfos,
     startupOptions,
-    incubatorOptions,
 }: BaseInfoUpdateProps) => {
     const defaultValues: updateMemberMissionsSchemaType = {
         missions: userInfos.missions,
@@ -122,7 +120,6 @@ export const MemberUpdate = ({
                         trigger={trigger}
                         setValue={setValue}
                         register={register}
-                        incubatorOptions={incubatorOptions}
                         startupOptions={startupOptions}
                         errors={errors.missions || []}
                     />

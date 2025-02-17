@@ -62,7 +62,7 @@ export default function CommunityCreateMemberPage(props: BaseInfoUpdateProps) {
         defaultValues,
     });
 
-    const createMemberSchemaSchemaShape = createMemberSchema.shape;
+    const createMemberSchemaSchemaShape = createMemberSchema._def.schema.shape;
     const { fields: missionsFields } = useFieldArray({
         rules: { minLength: 1 },
         control,
@@ -314,9 +314,6 @@ export default function CommunityCreateMemberPage(props: BaseInfoUpdateProps) {
                                         trigger={trigger}
                                         setValue={setValue}
                                         startupOptions={props.startupOptions}
-                                        incubatorOptions={
-                                            props.incubatorOptions
-                                        }
                                         errors={
                                             errors.missions
                                                 ? errors.missions[0]
@@ -333,6 +330,39 @@ export default function CommunityCreateMemberPage(props: BaseInfoUpdateProps) {
                                         mission={missionsFields[0]}
                                         missionsRemove={undefined}
                                     ></Mission>
+                                </div>
+                                <div className="fr-fieldset__element">
+                                    <SEIncubateurSelect
+                                        label="Incubateur"
+                                        hint="L'incubateur est obligatoire si aucune startup n'est définie dans la mission."
+                                        placeholder="Sélectionne un incubateur"
+                                        incubatorOptions={
+                                            props.incubatorOptions
+                                        }
+                                        onChange={(e, incubator) => {
+                                            setValue(
+                                                `incubator_id`,
+                                                incubator
+                                                    ? incubator.value
+                                                    : undefined,
+                                                {
+                                                    shouldValidate: true,
+                                                    shouldDirty: true,
+                                                }
+                                            );
+                                            // revalidate startups fields
+                                            trigger(`missions.0.startups`);
+                                        }}
+                                        isMulti={false}
+                                    />
+                                    {errors?.incubator_id?.message && (
+                                        <p
+                                            id="text-input-error-desc-error"
+                                            className="fr-error-text"
+                                        >
+                                            {errors.incubator_id.message}
+                                        </p>
+                                    )}
                                 </div>
                             </fieldset>
                             <Button

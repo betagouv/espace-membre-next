@@ -57,38 +57,55 @@ export type memberValidateInfoSchemaType = z.infer<
     typeof memberValidateInfoSchema
 >;
 
-export const createMemberSchema = z.object({
-    member: z.object({
-        // to create user in
-        firstname: z
-            .string({
-                errorMap: (issue, ctx) => ({
-                    message: "Le prénom est obligatoire",
-                }),
-            })
-            .describe("Prénom")
-            .min(1),
-        lastname: z
-            .string({
-                errorMap: (issue, ctx) => ({
-                    message: "Le Nom est obligatoire",
-                }),
-            })
-            .describe("Nom")
-            .min(1),
-        email: z
-            .string({
-                errorMap: (issue, ctx) => ({
-                    message: "L'email est obligatoire",
-                }),
-            })
-            .email()
-            .transform((email) => email.toLowerCase())
-            .describe("Email"),
-        domaine: memberSchema.shape.domaine,
-    }),
-    missions: memberSchema.shape.missions,
-});
+export const createMemberSchema = z
+    .object({
+        member: z.object({
+            // to create user in
+            firstname: z
+                .string({
+                    errorMap: (issue, ctx) => ({
+                        message: "Le prénom est obligatoire",
+                    }),
+                })
+                .describe("Prénom")
+                .min(1),
+            lastname: z
+                .string({
+                    errorMap: (issue, ctx) => ({
+                        message: "Le Nom est obligatoire",
+                    }),
+                })
+                .describe("Nom")
+                .min(1),
+            email: z
+                .string({
+                    errorMap: (issue, ctx) => ({
+                        message: "L'email est obligatoire",
+                    }),
+                })
+                .email()
+                .transform((email) => email.toLowerCase())
+                .describe("Email"),
+            domaine: memberSchema.shape.domaine,
+        }),
+        missions: memberSchema.shape.missions,
+        incubator_id: z.string().uuid().optional(),
+    })
+    .refine(
+        (data) => {
+            // Check if any mission contains a "startup"
+            const hasStartup = !!data.missions[0].startups?.length;
+            // If no startup is present, incubator must be required
+            return hasStartup || !!data.incubator_id;
+        },
+        {
+            message:
+                "L'incubateur est obligatoire si aucune startup n'est définie dans la mission.",
+            path: ["incubator_id"], // Attach error to incubator
+        }
+    );
+
+export const createMemberSchemaShape = createMemberSchema._def.schema.shape;
 
 export type createMemberSchemaType = z.infer<typeof createMemberSchema>;
 

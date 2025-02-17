@@ -19,6 +19,7 @@ import {
 } from "../actions/member";
 import { startupInfoUpdateSchema } from "../actions/startup";
 import { CommunicationEmailCode } from "@/models/member";
+import { incubator } from "dist/src/scripts/github-schemas";
 
 export enum EventCode {
     MEMBER_REDIRECTION_CREATED = "MEMBER_REDIRECTION_CREATED",
@@ -357,8 +358,9 @@ export const EventTeamUpdatedPayload = z.object({
 export const EventMemberCreatedPayload = z.object({
     action_code: z.literal(EventCode.MEMBER_CREATED),
     action_metadata: z.object({
-        member: createMemberSchema.shape.member,
-        missions: createMemberSchema.shape.missions,
+        member: createMemberSchema._def.schema.shape.member,
+        missions: createMemberSchema._def.schema.shape.missions,
+        incubator_id: createMemberSchema._def.schema.shape.incubator_id,
     }),
 });
 

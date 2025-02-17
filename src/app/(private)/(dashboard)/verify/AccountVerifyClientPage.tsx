@@ -32,7 +32,6 @@ import routes, { computeRoute } from "@/routes/routes";
 // data from secretariat API
 export interface AccountVerifyClientPageProps {
     startupOptions: Option[];
-    incubatorOptions: Option[];
     member: memberSchemaType;
 }
 
@@ -70,7 +69,6 @@ const postMemberData = async ({ values, sessionUsername }) => {
 export default function AccountVerifyClientPage({
     member,
     startupOptions,
-    incubatorOptions,
 }: AccountVerifyClientPageProps) {
     const router = useRouter();
 
@@ -376,9 +374,6 @@ export default function AccountVerifyClientPage({
                                                     trigger={trigger}
                                                     startupOptions={
                                                         startupOptions
-                                                    }
-                                                    incubatorOptions={
-                                                        incubatorOptions
                                                     }
                                                     errors={
                                                         errors.missions

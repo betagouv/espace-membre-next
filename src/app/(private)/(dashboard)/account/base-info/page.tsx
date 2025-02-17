@@ -5,7 +5,6 @@ import { getServerSession } from "next-auth";
 import { BaseInfoUpdate } from "@/components/BaseInfoUpdatePage";
 import { getEventListByUsername } from "@/lib/events";
 import { getAllStartups } from "@/lib/kysely/queries";
-import { getAllIncubatorsOptions } from "@/lib/kysely/queries/incubators";
 import { getUserInfos } from "@/lib/kysely/queries/users";
 import { getAvatarUrl } from "@/lib/s3";
 import { memberChangeToModel, userInfosToModel } from "@/models/mapper";
@@ -32,7 +31,6 @@ export default async function Page() {
         value: startup.uuid,
         label: startup.name || "",
     }));
-    const incubatorOptions = await getAllIncubatorsOptions();
     if (!userInfos) {
         redirect("/errors");
     }
@@ -46,7 +44,6 @@ export default async function Page() {
                 ...userInfos,
             },
         },
-        incubatorOptions,
         profileURL: await getAvatarUrl(username),
         username,
         startupOptions,

@@ -15,7 +15,6 @@ import {
 } from "react-hook-form";
 import { FieldErrors } from "react-hook-form";
 
-import SEIncubateurSelect from "../SEIncubateurSelect";
 import SESelect from "../SESelect";
 import { userStatusOptions } from "@/frontConfig";
 import { HasMissions } from "@/models/member";
@@ -40,7 +39,6 @@ export const Mission = ({
     isMulti,
     labels = {},
     missionArrayKey = "missions",
-    incubatorOptions,
 }: {
     index: number;
     register: UseFormRegister<HasMissions>;
@@ -59,7 +57,6 @@ export const Mission = ({
         end?: string;
     };
     missionArrayKey?: string;
-    incubatorOptions: Option[];
 }) => {
     const missionErrors = errors;
     const defaultState = (field) => ({
@@ -243,7 +240,6 @@ export const Mission = ({
                                     shouldDirty: true,
                                 }
                             );
-                            trigger(`${missionArrayKey}.${index}.incubator_id`);
                         }}
                         isMulti={true}
                         placeholder={`Sélectionne un ou plusieurs produits`}
@@ -251,37 +247,6 @@ export const Mission = ({
                         label="Produits concernés par la mission :"
                         {...defaultState("startups")}
                     />
-                </div>
-            </div>
-            <div className={fr.cx("fr-grid-row", "fr-grid-row--gutters")}>
-                <div className={fr.cx("fr-col-12")}>
-                    <SEIncubateurSelect
-                        label="Incubateur"
-                        hint="L'incubateur est obligatoire si aucune startup n'est définie dans la mission."
-                        placeholder="Sélectionne un incubateur"
-                        incubatorOptions={incubatorOptions}
-                        onChange={(e, incubator) => {
-                            setValue(
-                                `${missionArrayKey}.${index}.incubator_id`,
-                                incubator ? incubator.value : undefined,
-                                {
-                                    shouldValidate: true,
-                                    shouldDirty: true,
-                                }
-                            );
-                            // revalidate startups fields
-                            trigger(`${missionArrayKey}.${index}.startups`);
-                        }}
-                        isMulti={false}
-                    />
-                    {errors?.incubator_id?.message && (
-                        <p
-                            id="text-input-error-desc-error"
-                            className="fr-error-text"
-                        >
-                            {errors.incubator_id.message}
-                        </p>
-                    )}
                 </div>
             </div>
         </div>
@@ -295,7 +260,6 @@ export const MissionsEditor = ({
     setValue,
     trigger,
     startupOptions,
-    incubatorOptions,
     missionArrayKey = "missions",
 }: {
     control: Control<HasMissions>;
@@ -304,7 +268,6 @@ export const MissionsEditor = ({
     setValue: UseFormSetValue<HasMissions>;
     trigger: UseFormTrigger<HasMissions>;
     startupOptions: Option[];
-    incubatorOptions: Option[];
     missionArrayKey?: string;
 }) => {
     const {
@@ -345,7 +308,6 @@ export const MissionsEditor = ({
                     control={control}
                     register={register}
                     setValue={setValue}
-                    incubatorOptions={incubatorOptions}
                     missionArrayKey={missionArrayKey}
                     missionsRemove={() => missionsRemove(index)}
                     startupOptions={startupOptions}
