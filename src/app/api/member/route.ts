@@ -45,7 +45,6 @@ const isSessionUserMemberOfUserIncubatorTeams = async function (
               .selectAll()
               .execute()
         : [];
-    console.log(startupIncubators);
     const startupIncubatorIds = startupIncubators
         .map((m) => m.incubator_id)
         .filter((incubator): incubator is string => !!incubator);

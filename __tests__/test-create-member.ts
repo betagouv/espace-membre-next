@@ -193,6 +193,7 @@ describe("Test creating new user flow", () => {
         expect(newDbMission).to.exist;
         sendStub.firstCall.args[1].should.deep.equal({
             userId: newDbUser?.uuid,
+            incubator_id: undefined,
         });
     });
 
@@ -236,6 +237,7 @@ describe("Test creating new user flow", () => {
         expect(newDbMission).to.exist;
         sendStub.firstCall.args[1].should.deep.equal({
             userId: newDbUser?.uuid,
+            incubator_id: undefined,
         });
     });
 

@@ -5,8 +5,10 @@ import sinon from "sinon";
 
 import testUsers from "./users.json";
 import utils from "./utils";
+import { addEvent } from "@/lib/events";
 import { db } from "@/lib/kysely";
 import { getUserBasicInfo, getUserStartups } from "@/lib/kysely/queries/users";
+import { EventCode } from "@/models/actionEvent";
 import { SendNewMemberValidationEmailSchemaType } from "@/models/jobs/member";
 import {
     incubatorToModel,
@@ -25,6 +27,7 @@ describe("Test creating new user flow : sending email", () => {
         newMission,
         newStartupMissionConnexion,
         newStartup,
+        event,
         teamA,
         teamB,
         userA,
@@ -72,7 +75,6 @@ describe("Test creating new user flow : sending email", () => {
             .values({
                 start: subDays(new Date(), 3),
                 end: addDays(new Date(), 4),
-                incubator_id: newIncubatorA.uuid,
                 user_id: newUser.uuid,
             })
             .returningAll()
@@ -132,6 +134,26 @@ describe("Test creating new user flow : sending email", () => {
                 team_id: teamB.uuid,
             })
             .execute();
+        event = await addEvent({
+            created_by_username: userB.username,
+            action_on_username: newUser.username,
+            action_code: EventCode.MEMBER_CREATED,
+            action_metadata: {
+                member: {
+                    ...newUser,
+                    domaine: Domaine.ANIMATION,
+                    email: newUser.secondary_email!,
+                    firstname: "un nom",
+                    lastname: "un nom de famille",
+                },
+                missions: [
+                    {
+                        ...newMission,
+                    },
+                ],
+                incubator_id: newIncubatorA.uuid,
+            },
+        });
     });
 
     afterEach(async () => {
@@ -155,12 +177,14 @@ describe("Test creating new user flow : sending email", () => {
             .deleteFrom("missions")
             .where("uuid", "=", newMission.uuid)
             .execute();
+        await db.deleteFrom("events").where("id", "=", event.id).execute();
     });
 
     it("should send email to all members of incubator's teams", async () => {
         await sendNewMemberValidationEmail({
             data: {
                 userId: newUser.uuid,
+                incubator_id: newIncubatorA.uuid,
             },
         } as unknown as PgBoss.Job<SendNewMemberValidationEmailSchemaType>);
         const memberDbData = await getUserBasicInfo({ uuid: newUser.uuid });
