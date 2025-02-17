@@ -62,7 +62,9 @@ export async function sendNewMemberValidationEmail(
 
     const incubatorIds = Array.from(
         new Set(
-            [data.incubator_id, ...startupIncubatorIds].filter((id) => !!id)
+            [data.incubator_id, ...startupIncubatorIds].filter(
+                (id): id is string => typeof id === "string"
+            )
         )
     );
     if (!incubatorIds.length) {

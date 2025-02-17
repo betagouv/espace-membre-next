@@ -62,6 +62,7 @@ export default function CommunityCreateMemberPage(props: BaseInfoUpdateProps) {
         defaultValues,
     });
 
+    const createMemberSchemaShape = createMemberSchema._def.schema.shape;
     const { fields: missionsFields } = useFieldArray({
         rules: { minLength: 1 },
         control,
@@ -173,8 +174,8 @@ export default function CommunityCreateMemberPage(props: BaseInfoUpdateProps) {
                                 >
                                     <Input
                                         label={
-                                            createMemberSchemaSchemaShape.member
-                                                .shape.firstname.description +
+                                            createMemberSchemaShape.member.shape
+                                                .firstname.description +
                                             " (obligatoire)"
                                         }
                                         nativeInputProps={{
@@ -205,8 +206,8 @@ export default function CommunityCreateMemberPage(props: BaseInfoUpdateProps) {
                                 >
                                     <Input
                                         label={
-                                            createMemberSchemaSchemaShape.member
-                                                .shape.lastname.description +
+                                            createMemberSchemaShape.member.shape
+                                                .lastname.description +
                                             " (obligatoire)"
                                         }
                                         nativeInputProps={{
