@@ -19,7 +19,6 @@ import {
 } from "../actions/member";
 import { startupInfoUpdateSchema } from "../actions/startup";
 import { CommunicationEmailCode } from "@/models/member";
-import { incubator } from "dist/src/scripts/github-schemas";
 
 export enum EventCode {
     MEMBER_REDIRECTION_CREATED = "MEMBER_REDIRECTION_CREATED",

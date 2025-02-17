@@ -105,8 +105,6 @@ export const createMemberSchema = z
         }
     );
 
-export const createMemberSchemaShape = createMemberSchema._def.schema.shape;
-
 export type createMemberSchemaType = z.infer<typeof createMemberSchema>;
 
 export const createMemberResponseSchema = z
