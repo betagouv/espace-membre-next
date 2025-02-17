@@ -98,9 +98,7 @@ const AccountDetails = ({
                         />
                     )
                 )
-                .otherwise(() => {
-                    return null;
-                })}
+                .exhaustive()}
         </>
     );
 };
