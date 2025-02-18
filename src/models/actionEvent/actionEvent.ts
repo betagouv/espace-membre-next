@@ -367,7 +367,7 @@ export const EventMemberCreatedPayload = z.object({
         member: createMemberSchema._def.schema.shape.member,
         missions: createMemberSchema._def.schema.shape.missions,
         incubator_id:
-            createMemberSchema._def.schema.shape.incubator_id.nullable(),
+            createMemberSchema._def.schema.shape.incubator_id.optional(),
     }),
 });
 
