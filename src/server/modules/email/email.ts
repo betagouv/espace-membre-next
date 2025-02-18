@@ -5,7 +5,6 @@ import { Job } from "@/models/job";
 import {
     memberBaseInfoSchemaType,
     memberPublicInfoSchemaType,
-    memberPublicInfoSchemaType,
 } from "@/models/member";
 import { missionSchemaType } from "@/models/mission";
 import {
@@ -44,7 +43,6 @@ export enum EMAIL_TYPES {
     EMAIL_TEST = "EMAIL_TEST",
     EMAIL_VERIFICATION_WAITING = "EMAIL_VERIFICATION_WAITING",
     EMAIL_NEW_MEMBER_VALIDATION = "EMAIL_NEW_MEMBER_VALIDATION",
-    EMAIL_TEAM_COMPOSITION = "EMAIL_TEAM_COMPOSITION",
     EMAIL_TEAM_COMPOSITION = "EMAIL_TEAM_COMPOSITION",
 }
 

@@ -18,6 +18,7 @@
         "incremental": true,
         "baseUrl": ".",
         "paths": {
+            "@sbook/*": [".storybook/*"],
             "@/*": ["./src/*"],
             "@config": ["src/server/config/index.ts"],
             "@config/*": ["src/server/config/*"],
@@ -105,7 +106,9 @@
         "**/*.ts",
         "**/*.tsx",
         "types.d.ts",
-        ".next/types/**/*.ts"
+        ".next/types/**/*.ts",
+        ".storybook/**/*.ts",
+        ".storybook/**/*.tsx"
     ],
-    "exclude": ["node_modules"]
+    "exclude": ["node_modules", "build", "dist", ".next"]
 }
