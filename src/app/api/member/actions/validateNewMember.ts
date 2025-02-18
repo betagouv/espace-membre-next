@@ -64,7 +64,7 @@ export async function validateNewMember({
     if (event) {
         throw new BusinessError(
             "userAlreadyValided",
-            `Le nouveau membre a été validé par ${event.created_by_username}`
+            `Le nouveau membre a déjà été validé par ${event.created_by_username}`
         );
     }
     if (

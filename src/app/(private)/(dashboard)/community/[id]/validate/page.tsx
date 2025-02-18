@@ -52,6 +52,13 @@ export default async function Page({
                 />
             );
         } catch (error) {
+            alert = (
+                <Alert
+                    severity="error"
+                    title="Une erreur est survenue lors de la validation"
+                    description={(error as Error).message}
+                />
+            );
             if (error instanceof BusinessError) {
                 const businessError = error as BusinessError;
                 if (businessError.code === "userAlreadyValided") {
@@ -64,13 +71,6 @@ export default async function Page({
                     );
                 }
             }
-            alert = (
-                <Alert
-                    severity="error"
-                    title="Une erreur est survenue lors de la validation"
-                    description={(error as Error).message}
-                />
-            );
         }
         return (
             <>
