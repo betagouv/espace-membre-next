@@ -80,6 +80,13 @@ export async function startBossClientInstance(): Promise<PgBoss> {
             sendNewMemberValidationEmailTopic,
             handlerWrapper(sendNewMemberValidationEmail)
         );
+        // cron tasks
+        await bossClient.schedule(
+            sendEmailToTeamsToCheckOnTeamComposition,
+            `0 3 * * *`,
+            undefined,
+            { tz: "Europe/Paris" }
+        ); // At night to save performance
     });
 }
 

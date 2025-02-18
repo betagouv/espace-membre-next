@@ -24,8 +24,8 @@ export function MemberValidationEmail(
     return (
         <Mjml>
             <MjmlHead>
-                <MjmlTitle>Nouveau membre à valider</MjmlTitle>
-                <MjmlPreview>Une nouvelle fiche membre a été créée avec une mission qui concerne ton incubateur</MjmlPreview>
+                <MjmlTitle>Last Minute Offer</MjmlTitle>
+                <MjmlPreview>Last Minute Offer...</MjmlPreview>
             </MjmlHead>
             <MjmlBody width={500}>
                 <MjmlSection>
@@ -42,7 +42,7 @@ export function MemberValidationEmail(
                                 Une nouvelle fiche membre a été créée avec une
                                 mission qui concerne ton incubateur. Merci de
                                 valider cette fiche si tu es au courant de
-                                l'arrivée de cette personne.
+                                l'arrivé de cette personne.
                             </p>
                             <p>
                                 <ul>

@@ -2,6 +2,7 @@ import { Metadata, ResolvingMetadata } from "next";
 import { redirect } from "next/navigation";
 import { validate } from "uuid";
 
+import { getStartupFiles } from "@/app/api/startups/files/list";
 import { BreadCrumbFiller } from "@/app/BreadCrumbProvider";
 import StartupPage from "@/components/StartupPage/StartupPage";
 import { getEventListByStartupUuid } from "@/lib/events";
@@ -14,7 +15,6 @@ import {
     startupChangeToModel,
     startupToModel,
 } from "@/models/mapper";
-import { getStartupFiles } from "@/app/api/startups/files/list";
 
 type Props = {
     params: { id: string };

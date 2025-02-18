@@ -24,12 +24,7 @@ const nextConfig = {
                 headers: [
                     {
                         key: "Content-Security-Policy",
-                        value:
-                            process.env.NODE_ENV === "production"
-                                ? cspHeader.replace(/\n/g, "")
-                                : cspHeader
-                                      .replace("upgrade-insecure-requests;", "")
-                                      .replace(/\n/g, ""),
+                        value: cspHeader.replace(/\n/g, ""),
                     },
                 ],
             },
