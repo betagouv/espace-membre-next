@@ -8,6 +8,7 @@ import Pagination from "@codegouvfr/react-dsfr/Pagination";
 import Table from "@codegouvfr/react-dsfr/Table";
 import { Tabs } from "@codegouvfr/react-dsfr/Tabs";
 import Tag from "@codegouvfr/react-dsfr/Tag";
+import dynamic from "next/dynamic";
 import Link from "next/link";
 import { useQueryState } from "nuqs";
 
@@ -20,10 +21,14 @@ import {
     type CommunityFilterSchemaType,
 } from "./utils";
 import AutoComplete from "../AutoComplete";
-import { Map } from "../Map";
-import { isUserActive } from '@/utils/member';
+import { isUserActive } from "@/utils/member";
 import { linkRegistry } from "@/utils/routes/registry";
 
+// to fix ReferenceError: window is not defined
+const MapComponent = dynamic(() => import("../Map").then((mod) => mod.Map), {
+    loading: () => <p>Loading...</p>,
+    ssr: false,
+});
 // return table row for a given user
 const getUserRow = ({
     user,
@@ -468,7 +473,7 @@ export const Community = (props: CommunityProps) => {
                             {
                                 label: "Carte",
                                 // @ts-ignore todo
-                                content: <Map points={points} />,
+                                content: <MapComponent points={points} />,
                             },
                         ]}
                     />

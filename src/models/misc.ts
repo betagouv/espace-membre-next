@@ -27,6 +27,8 @@ export const EMAIL_STATUS_READABLE_FORMAT: Record<EmailStatusCode, string> = {
         "Le membre doit se connecter à l'espace-membre et vérifier ses informations avant que tu puisses lui créer un compte.",
     [EmailStatusCode.EMAIL_CREATION_WAITING]:
         "La création de l'email est en cours",
+    [EmailStatusCode.MEMBER_VALIDATION_WAITING]:
+        "En attente de la validation par un responsable transverse",
 };
 
 export interface FormErrorResponse {

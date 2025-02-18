@@ -13,24 +13,6 @@ export const metadata: Metadata = {
     title: `${routeTitles.verifyMember()} / Espace Membre`,
 };
 
-// async function fetchGithubPageData(username: string, ref: string = "master") {
-//     const { attributes, body } = await fetchGithubMarkdown({
-//         ref,
-//         schema: memberSchema,
-//         path: `content/_authors/${username}.md`,
-//         // allow some empty fields on input for legacy. todo: move to zod preprocess ?
-//         overrides: (values) => ({
-//             domaine: values.domaine || [],
-//             bio: values.body || "",
-//             startups: values.startups || [],
-//         }),
-//     });
-
-//     return {
-//         ...attributes,
-//     };
-// }
-
 export default async function AccountVerifyPage() {
     const session = await getServerSession(authOptions);
 
@@ -40,12 +22,8 @@ export default async function AccountVerifyPage() {
 
     const username = session.user.id;
 
-    // const formData = await fetchGithubPageData(username, "master");
-
-    // const startups = await betagouv.startupsInfos();
     const startups = await getAllStartups();
     const member = userInfosToModel(await getUserInfos({ username }));
-    // const missions = await db.selectFrom("missions").selectAll().execute();
     const startupOptions = startups.map((startup) => {
         return {
             value: startup.uuid,

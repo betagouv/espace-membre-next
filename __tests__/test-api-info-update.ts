@@ -1,10 +1,13 @@
 import { add } from "date-fns";
+import { Selectable } from "kysely";
 import { createMocks } from "node-mocks-http";
 import proxyquire from "proxyquire";
 import sinon from "sinon";
 
 import testUsers from "./users.json";
 import utils from "./utils";
+import { Startups } from "@/@types/db";
+import { db } from "@/lib/kysely";
 import { Status } from "@/models/mission";
 
 let user = {
@@ -24,17 +27,30 @@ let user = {
 describe("PUT /api/member[username]/info-update", () => {
     let getServerSessionStub;
     let PUT;
+    let startup: Selectable<Startups>;
     beforeEach(async () => {
         getServerSessionStub = sinon.stub();
         PUT = proxyquire("@/app/api/member/[username]/info-update/route", {
             "next-auth": { getServerSession: getServerSessionStub },
         }).PUT;
         await utils.createUsers(testUsers);
+        startup = await db
+            .insertInto("startups")
+            .values({
+                name: "un super startup",
+                ghid: "un-super-startup",
+            })
+            .returningAll()
+            .executeTakeFirstOrThrow();
     });
 
     afterEach(async () => {
         sinon.restore();
         await utils.deleteUsers(testUsers);
+        await db
+            .deleteFrom("startups")
+            .where("uuid", "=", startup.uuid)
+            .execute();
     });
 
     it("should return error if user is not authorized", async () => {
@@ -44,11 +60,14 @@ describe("PUT /api/member[username]/info-update", () => {
         getServerSessionStub.resolves(mockSession);
         const { req } = createMocks({
             method: "PUT",
-            query: {
-                id: "1",
-            },
             json: async () => ({
                 ...user,
+                missions: [
+                    {
+                        ...user.missions[0],
+                        startups: [startup.uuid],
+                    },
+                ],
             }),
         });
 
@@ -75,6 +94,12 @@ describe("PUT /api/member[username]/info-update", () => {
             },
             json: async () => ({
                 ...user,
+                missions: [
+                    {
+                        ...user.missions[0],
+                        startups: [startup.uuid],
+                    },
+                ],
             }),
         });
 
@@ -101,6 +126,12 @@ describe("PUT /api/member[username]/info-update", () => {
             },
             json: async () => ({
                 ...user,
+                missions: [
+                    {
+                        ...user.missions[0],
+                        startups: [startup.uuid],
+                    },
+                ],
             }),
         });
 
@@ -125,7 +156,15 @@ describe("PUT /api/member[username]/info-update", () => {
             query: {
                 id: "1",
             },
-            json: async () => user,
+            json: async () => ({
+                ...user,
+                missions: [
+                    {
+                        ...user.missions[0],
+                        startups: [startup.uuid],
+                    },
+                ],
+            }),
         });
 
         const res: Response = await PUT(req, {

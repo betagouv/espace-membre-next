@@ -33,6 +33,7 @@ export default async function Page({
     const userInfos = memberBaseInfoToModel(dbData);
 
     const startups = await getAllStartups();
+
     const startupOptions = startups.map((startup) => ({
         value: startup.uuid,
         label: startup.name || "",
@@ -43,13 +44,17 @@ export default async function Page({
         m.end ? new Date(m.end) >= new Date() : !m.end
     );
 
-     const sessionUserIsFromIncubatorTeam =
+    const sessionUserIsFromIncubatorTeam =
         await isSessionUserIncubatorTeamAdminForUser({
             user: userInfos,
             sessionUserUuid: session.user.uuid,
         });
     // members cannot edit active users directly. Call admin or team member.
-    if (hasActiveMission && !session?.user.isAdmin && !sessionUserIsFromIncubatorTeam) {
+    if (
+        hasActiveMission &&
+        !session?.user.isAdmin &&
+        !sessionUserIsFromIncubatorTeam
+    ) {
         redirect(`/community/${id}`);
     }
 

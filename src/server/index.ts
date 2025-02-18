@@ -52,7 +52,9 @@ const startServer = () => {
         // server.set("views", path.join(__dirname, "./views/templates")); // the code is running in directory "dist".
 
         // MIDDLEWARES
-        initializeSentry(server);
+        if (process.env.NODE_ENV === "production") {
+            initializeSentry(server);
+        }
         setupStaticFiles(server);
         setupSessionMiddleware(server);
         server.use("/api", excludeApiAuthMiddleware(compression()));

@@ -27,18 +27,15 @@ import {
 import { statusOptions } from "@/models/member";
 import { DOMAINE_OPTIONS, memberSchema } from "@/models/member";
 import { PrivateMemberChangeSchemaType } from "@/models/memberChange";
+import { Option } from "@/models/misc";
 import routes, { computeRoute } from "@/routes/routes";
 import { routeTitles } from "@/utils/routes/routeTitles";
-
 // data from secretariat API
 export interface BaseInfoUpdateProps {
     profileURL?: string;
     changes: PrivateMemberChangeSchemaType[];
     formData: memberInfoUpdateSchemaType;
-    startupOptions: {
-        value: string;
-        label: string;
-    }[];
+    startupOptions: Option[];
     username: string;
 }
 
@@ -120,6 +117,7 @@ export const BaseInfoUpdate = (props: BaseInfoUpdateProps) => {
         handleSubmit,
         formState: { errors, isDirty, isSubmitting, isValid },
         setValue,
+        trigger,
         control,
         getValues,
     } = useForm<memberInfoUpdateSchemaType>({
@@ -360,6 +358,7 @@ export const BaseInfoUpdate = (props: BaseInfoUpdateProps) => {
                     <MissionsEditor
                         control={control}
                         setValue={setValue}
+                        trigger={trigger}
                         register={register}
                         missionArrayKey="member.missions"
                         startupOptions={props.startupOptions}

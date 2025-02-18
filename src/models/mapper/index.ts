@@ -34,8 +34,10 @@ import {
     Users,
 } from "@/@types/db";
 import { getStartup } from "@/lib/kysely/queries";
+import { getIncubator } from "@/lib/kysely/queries/incubators";
 import {
     getAllUsersInfo,
+    getUserBasicInfo,
     getUserByStartup,
     getUserInfos,
 } from "@/lib/kysely/queries/users";
@@ -46,7 +48,6 @@ import {
     LegalStatus,
     MemberType,
 } from "@/models/member";
-import { getIncubator } from "@/lib/kysely/queries/incubators";
 
 export * from "./startupMapper";
 export function missionToModel(m: Selectable<Missions>) {
@@ -76,7 +77,9 @@ export function memberBaseInfoToMemberPublicInfoModel(
 }
 
 export function memberPublicInfoToModel(
-    user: Awaited<ReturnType<typeof getAllUsersInfo>>[0]
+    user:
+        | Awaited<ReturnType<typeof getAllUsersInfo>>[0]
+        | Awaited<ReturnType<typeof getUserBasicInfo>>
 ) {
     if (!user) {
         throw new Error("No users");

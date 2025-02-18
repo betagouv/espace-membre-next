@@ -24,14 +24,24 @@ const nextConfig = {
                 headers: [
                     {
                         key: "Content-Security-Policy",
-                        value: cspHeader.replace(/\n/g, ""),
+                        value:
+                            process.env.NODE_ENV === "production"
+                                ? cspHeader.replace(/\n/g, "")
+                                : cspHeader
+                                      .replace("upgrade-insecure-requests;", "")
+                                      .replace(/\n/g, ""),
                     },
                 ],
             },
         ];
     },
     experimental: {
-        serverComponentsExternalPackages: ["knex", "sib-api-v3-sdk"],
+        serverComponentsExternalPackages: [
+            "knex",
+            "sib-api-v3-sdk",
+            "mjml",
+            "@luma-team/mjml-react",
+        ],
         serverActions: {
             bodySizeLimit: "10mb",
         },

@@ -68,3 +68,5 @@ export const missionSchema = z.object({
 });
 
 export type missionSchemaType = z.infer<typeof missionSchema>;
+// if we use _def.schema on to define missionSchema, when missionSchema.parse is called, refined is not called
+export const missionSchemaShape = missionSchema.shape;

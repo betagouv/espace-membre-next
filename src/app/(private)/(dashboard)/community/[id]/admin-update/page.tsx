@@ -49,7 +49,6 @@ export default async function Page({
     }
     const dbData = await getUserInfos({ username: id });
     const userInfos = userInfosToModel(dbData);
-
     const startups = await getAllStartups();
     const startupOptions = startups.map((startup) => ({
         value: startup.uuid,
