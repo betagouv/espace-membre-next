@@ -161,7 +161,6 @@ const AddSentryServiceForm = ({
                                     "fr-col-12",
                                     "fr-col-lg-10",
                                     "fr-col-md-10",
-                                    "fr-col-offset-lg-2--right",
                                     "fr-col-offset-md-2--right"
                                 )}
                             >
