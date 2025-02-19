@@ -412,7 +412,6 @@ export type EventPayloads =
     | z.infer<typeof EventSentryCreateTeamPayload>
     | z.infer<typeof EventSentryCreateTeamRequestedTeamPayload>
     | z.infer<typeof EventSentryAccountUpdateFailedUserDoesNotExistPayload>
-    | z.infer<typeof EventMatomoAccountPayloadSchema>;
     | z.infer<typeof EventMatomoAccountPayloadSchema>
     | z.infer<typeof EventMemberCreatedPayload>
     | z.infer<typeof EventMemberValidatedPayload>;
