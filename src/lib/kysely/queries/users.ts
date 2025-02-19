@@ -7,25 +7,25 @@ import { DB } from "@/@types/db"; // generated with `npm run kysely-codegen`
 import { db as database, jsonArrayFrom } from "@/lib/kysely";
 import { EmailStatusCode } from "@/models/member";
 
-// export const MEMBER_PROTECTED_INFO: SelectExpression<DB, "users">[] = [
-//     "users.uuid",
-//     "users.updated_at",
-//     "users.username",
-//     "users.fullname",
-//     "users.role",
-//     "users.domaine",
-//     "users.bio",
-//     "users.link",
-//     "users.github",
-//     "users.member_type",
-//     "users.primary_email",
-//     "users.secondary_email",
-//     "users.primary_email_status",
-//     "users.primary_email_status_updated_at",
-//     "users.communication_email",
-//     "users.email_is_redirection",
-//     "users.competences",
-// ] as const;
+export const MEMBER_PROTECTED_INFO: SelectExpression<DB, "users">[] = [
+    "users.uuid",
+    "users.updated_at",
+    "users.username",
+    "users.fullname",
+    "users.role",
+    "users.domaine",
+    "users.bio",
+    "users.link",
+    "users.github",
+    "users.member_type",
+    "users.primary_email",
+    "users.secondary_email",
+    "users.primary_email_status",
+    "users.primary_email_status_updated_at",
+    "users.communication_email",
+    "users.email_is_redirection",
+    "users.competences",
+] as const;
 
 type GetUserInfosParams =
     | {
@@ -45,7 +45,7 @@ export async function getUserInfos(
     let query = db
         .selectFrom("users")
         .selectAll("users")
-        .select((eb) => [withEndDate, withMissions]);
+        .select((eb) => [withEndDate, withMissions, withTeams]);
     if ("username" in params) {
         query = query.where("users.username", "=", params.username);
     } else {
@@ -61,34 +61,12 @@ export async function getUsersByStartup(
     startupUuid: string,
     db: Kysely<DB> = database
 ) {
-    return (
-        protectedDataSelect(db)
-            .select((eb) => [withMissions(eb), withTeams(eb)])
-            .leftJoin("missions", "missions.user_id", "users.uuid")
-            .leftJoin("missions_startups", "missions.uuid", "mission_id")
-            .where("missions_startups.startup_id", "=", startupUuid)
-            // .groupBy(MEMBER_PROTECTED_INFO)
-            // .select((eb) => [
-            //     "users.uuid",
-            //     ...MEMBER_PROTECTED_INFO,
-            //     // "users.username",
-            //     // "users.fullname",
-            //     // "users.role",
-            //     // "users.domaine",
-            //     // "users.bio",
-            //     // "users.link",
-            //     // "users.github",
-            //     // "users.member_type",
-            //     // "users.primary_email",
-            //     // "users.secondary_email",
-            //     // "users.primary_email_status",
-            //     // "primary_email_status_updated_at",
-            //     // "users.communication_email",
-            //     // "users.email_is_redirection",
-            //     withMissions(eb),
-            // ])
-            .execute()
-    );
+    return protectedDataSelect(db)
+        .select((eb) => [withMissions(eb), withTeams(eb)])
+        .leftJoin("missions", "missions.user_id", "users.uuid")
+        .leftJoin("missions_startups", "missions.uuid", "mission_id")
+        .where("missions_startups.startup_id", "=", startupUuid)
+        .execute();
 }
 
 /** Return member informations */
@@ -112,6 +90,12 @@ export async function getUserBasicInfo(
     return (userInfos.rows.length && userInfos.rows[0]) || undefined;
 }
 
+export const getAllUsersInfoQuery = (db: Kysely<DB> = database) =>
+    db
+        .selectFrom("users")
+        .selectAll("users")
+        .select((eb) => [withMissions, withTeams]);
+
 /** Return member informations */
 export async function getAllUsersInfo(db: Kysely<DB> = database) {
     const query = db
@@ -130,7 +114,7 @@ export async function getAllExpiredUsers(
     db: Kysely<DB> = database
 ) {
     const query = protectedDataSelect(db)
-        .select((eb) => [withMissions(eb)])
+        .select((eb) => [withMissions(eb), withTeams(eb)])
         .where("primary_email", "is not", null)
         .where("primary_email_status", "in", [
             EmailStatusCode.EMAIL_DELETED,
@@ -214,6 +198,28 @@ function withTeams(eb: ExpressionBuilder<DB, "users">) {
     )
         .$notNull()
         .as("teams");
+}
+
+function withStartups(eb: ExpressionBuilder<DB, "users">) {
+    return jsonArrayFrom(
+        eb
+            .selectFrom(["startups"])
+            .leftJoin(
+                "missions_startups",
+                "missions_startups.startup_id",
+                "startups.uuid"
+            )
+            .leftJoin(
+                "missions",
+                "missions.uuid",
+                "missions_startups.mission_id"
+            )
+            .select(["startups.uuid", "startups.name"])
+            .whereRef("missions.user_id", "=", "users.uuid")
+            .groupBy(["startups.uuid"])
+    )
+        .$notNull()
+        .as("startups");
 }
 
 /** Compute member end date */
@@ -308,6 +314,7 @@ const protectedDataSelect = (db: Kysely<DB> = database) =>
             "users.primary_email_status_updated_at",
             "users.communication_email",
             "users.email_is_redirection",
+            "users.workplace_insee_code",
             "users.competences",
         ]);
 export async function getUserStartupsActive(

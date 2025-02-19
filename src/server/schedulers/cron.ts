@@ -58,6 +58,7 @@ import {
 import { matomoClient } from "../config/matomo.config";
 import { sentryClient } from "../config/sentry.config";
 import { startBossClientInstance } from "../queueing/client";
+import { startBossCronJobs } from "../queueing/schedule";
 import { db } from "@/lib/kysely";
 import config from "@/server/config";
 import { setEmailExpired } from "@schedulers/setEmailExpired";
@@ -596,3 +597,4 @@ function startJobs() {
 }
 startJobs();
 startBossClientInstance();
+startBossCronJobs();

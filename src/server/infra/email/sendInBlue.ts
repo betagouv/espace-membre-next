@@ -16,8 +16,8 @@ import {
     UpdateContactEmailProps,
     Contact,
     EmailVariants,
+    EMAIL_TYPES,
 } from "@modules/email";
-import React from "react";
 
 const TEMPLATE_ID_BY_TYPE: Record<EmailProps["type"], number> = {
     MARRAINAGE_NEWCOMER_EMAIL: 0,
@@ -48,6 +48,7 @@ const TEMPLATE_ID_BY_TYPE: Record<EmailProps["type"], number> = {
     EMAIL_PR_PENDING_TO_TEAM: 0,
     EMAIL_VERIFICATION_WAITING: 0,
     EMAIL_NEW_MEMBER_VALIDATION: 0,
+    [EMAIL_TYPES.EMAIL_TEAM_COMPOSITION]: 0,
 };
 
 type SendEmailFromSendinblueDeps = {

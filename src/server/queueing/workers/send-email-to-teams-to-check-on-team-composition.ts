@@ -8,8 +8,9 @@ import { memberBaseInfoSchemaType } from "@/models/member";
 import config from "@/server/config";
 import { sendEmail } from "@/server/config/email.config";
 import { EMAIL_TYPES } from "@modules/email";
-export const sendNewMemberValidationEmailTopic =
-    "send-new-member-validation-email";
+
+export const sendEmailToTeamsToCheckOnTeamCompositionTopic =
+    "send-email-to-teams-to-check-on-team-composition";
 
 export async function sendEmailToTeamsToCheckOnTeamComposition(
     job: PgBoss.Job<void>
@@ -48,7 +49,7 @@ export async function sendEmailToTeamsToCheckOnTeamComposition(
                 ): member is {
                     member: memberBaseInfoSchemaType;
                     activeMission: memberBaseInfoSchemaType["missions"][0];
-                } => typeof member !== null
+                } => member !== null
             );
         try {
             await sendEmail({

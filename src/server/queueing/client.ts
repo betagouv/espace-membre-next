@@ -14,6 +14,10 @@ import {
     createOrUpdateMatomoServiceAccountTopic,
 } from "./workers/create-update-matomo-account";
 import {
+    sendEmailToTeamsToCheckOnTeamComposition,
+    sendEmailToTeamsToCheckOnTeamCompositionTopic,
+} from "./workers/send-email-to-teams-to-check-on-team-composition";
+import {
     sendNewMemberValidationEmail,
     sendNewMemberValidationEmailTopic,
 } from "./workers/send-validation-email";
@@ -88,13 +92,10 @@ export async function startBossClientInstance(): Promise<PgBoss> {
             sendNewMemberValidationEmailTopic,
             handlerWrapper(sendNewMemberValidationEmail)
         );
-        // cron tasks
-        await bossClient.schedule(
-            sendEmailToTeamsToCheckOnTeamComposition,
-            `0 3 * * *`,
-            undefined,
-            { tz: "Europe/Paris" }
-        ); // At night to save performance
+        await bossClient.work(
+            sendEmailToTeamsToCheckOnTeamCompositionTopic,
+            handlerWrapper(sendEmailToTeamsToCheckOnTeamComposition)
+        );
     });
 }
 
