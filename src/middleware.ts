@@ -113,8 +113,9 @@ export async function middleware(req: NextRequest) {
         }
         // otherwise, redirect to the set token page
         else {
+            // /!\ redirecting to pathname as req.url always use localhost:3000 as hostname
             return NextResponse.redirect(
-                new URL(`/login?next=${req.url}`, req.url)
+                new URL(`/login?next=${req.nextUrl.pathname}`, req.url)
             );
         }
     }

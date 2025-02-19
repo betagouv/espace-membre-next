@@ -9,6 +9,8 @@ import { UpdateSentryAccountDataSchemaType } from "@/models/jobs/services";
 import { ACCOUNT_SERVICE_STATUS, SERVICES } from "@/models/services";
 import { sentryClient } from "@/server/config/sentry.config";
 import { decryptPassword } from "@/server/controllers/utils";
+import { EventCode } from "@/models/actionEvent";
+import { addEvent } from "@/lib/events";
 
 export const updateSentryServiceAccountTopic = "update-sentry-service-account";
 

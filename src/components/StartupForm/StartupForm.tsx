@@ -100,6 +100,7 @@ function BasicFormInput({
     [some: string]: any;
 }) {
     const fieldShape = startupInfoUpdateSchema.shape["startup"].shape[id];
+    const error = errors["startup"] && errors["startup"][id];
     return (
         (fieldShape && (
             <Input
@@ -108,14 +109,8 @@ function BasicFormInput({
                     placeholder,
                     ...register(`startup.${id}`),
                 }}
-                state={
-                    errors["startup"] && errors["startup"][id]
-                        ? "error"
-                        : "default"
-                }
-                stateRelatedMessage={
-                    errors["startup"] && errors["startup"]?.message
-                }
+                state={!!error ? "error" : "default"}
+                stateRelatedMessage={error?.message}
                 {...(props ? props : {})}
             />
         )) || <>Not found in schema: {id}</>

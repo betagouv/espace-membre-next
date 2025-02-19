@@ -11,18 +11,27 @@ import {
     useWatch,
     UseFormRegister,
     UseFormSetValue,
+    UseFormTrigger,
 } from "react-hook-form";
+import { FieldErrors } from "react-hook-form";
 
 import SESelect from "../SESelect";
 import { userStatusOptions } from "@/frontConfig";
 import { HasMissions } from "@/models/member";
-import { Status, missionSchema, missionSchemaType } from "@/models/mission";
+import { Option } from "@/models/misc";
+import {
+    Status,
+    missionSchema,
+    missionSchemaShape,
+    missionSchemaType,
+} from "@/models/mission";
 
 export const Mission = ({
     index,
     register,
     control,
     setValue,
+    trigger,
     mission,
     missionsRemove,
     startupOptions,
@@ -32,13 +41,14 @@ export const Mission = ({
     missionArrayKey = "missions",
 }: {
     index: number;
-    register: any;
-    control: any;
-    setValue: any;
+    register: UseFormRegister<HasMissions>;
+    control: Control<HasMissions>;
+    setValue: UseFormSetValue<HasMissions>;
+    trigger: UseFormTrigger<HasMissions>;
     mission?: missionSchemaType;
     missionsRemove: any;
-    startupOptions: any;
-    errors: any;
+    startupOptions: Option[];
+    errors: any; //FieldErrors<HasMissions>;
     isMulti: boolean;
     labels?: {
         employer?: string;
@@ -115,7 +125,7 @@ export const Mission = ({
                         <Input
                             label={
                                 labels.start ||
-                                missionSchema.shape.start.description +
+                                missionSchemaShape.start.description +
                                     " (obligatoire)"
                             }
                             hintText="Date de début"
@@ -140,7 +150,7 @@ export const Mission = ({
                         <Input
                             label={
                                 labels.end ||
-                                missionSchema.shape.end.description +
+                                missionSchemaShape.end.description +
                                     " (obligatoire)"
                             }
                             nativeInputProps={{
@@ -178,7 +188,7 @@ export const Mission = ({
                     <Input
                         label={
                             labels.employer ||
-                            missionSchema.shape.employer.description +
+                            missionSchemaShape.employer.description +
                                 " (obligatoire)"
                         }
                         nativeInputProps={{
@@ -192,12 +202,12 @@ export const Mission = ({
                     <Select
                         label={
                             labels.status ||
-                            missionSchema.shape.status.description +
+                            missionSchemaShape.status.description +
                                 " (obligatoire)"
                         }
                         nativeSelectProps={{
                             ...register(`${missionArrayKey}.${index}.status`),
-                            defaultValue: mission ? mission.status : "",
+                            defaultValue: mission?.status ?? "",
                         }}
                         {...defaultState("status")}
                     >
@@ -221,7 +231,7 @@ export const Mission = ({
                                   mission.startups.includes(s.value)
                                 : undefined
                         )}
-                        onChange={(startups) => {
+                        onChange={(startups: Option[]) => {
                             setValue(
                                 `${missionArrayKey}.${index}.startups`,
                                 startups.map((startup) => startup.value),
@@ -248,6 +258,7 @@ export const MissionsEditor = ({
     errors,
     register,
     setValue,
+    trigger,
     startupOptions,
     missionArrayKey = "missions",
 }: {
@@ -255,7 +266,8 @@ export const MissionsEditor = ({
     errors?: Record<string, any>;
     register: UseFormRegister<HasMissions>;
     setValue: UseFormSetValue<HasMissions>;
-    startupOptions: any;
+    trigger: UseFormTrigger<HasMissions>;
+    startupOptions: Option[];
     missionArrayKey?: string;
 }) => {
     const {
@@ -291,6 +303,7 @@ export const MissionsEditor = ({
                     isMulti={true}
                     key={mission.id}
                     index={index}
+                    trigger={trigger}
                     mission={mission as unknown as missionSchemaType}
                     control={control}
                     register={register}

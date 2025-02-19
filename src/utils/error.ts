@@ -1,5 +1,6 @@
 import * as Sentry from "@sentry/nextjs";
 import slugify from "@sindresorhus/slugify";
+import { CustomError as LibraryCustomError } from "ts-custom-error";
 
 import { ActionResponse } from "@/@types/serverAction";
 import config from "@/server/config";
@@ -23,8 +24,33 @@ export const ERROR_MESSAGES = {
     // Add more error messages as needed
 };
 // errors.ts
+// TODO replace ErrorWithStatus by businessError
+export class CustomError extends LibraryCustomError {
+    public constructor(public readonly code: string, message: string = "") {
+        super(message);
+    }
 
-export class ErrorWithStatus extends Error {
+    public json(): object {
+        return {
+            code: this.code,
+            message: this.message,
+        };
+    }
+}
+
+export class UnexpectedError extends CustomError {}
+
+export class BusinessError extends CustomError {
+    public constructor(
+        code: string,
+        message: string = "",
+        public readonly httpCode?: number
+    ) {
+        super(code, message);
+    }
+}
+
+export class ErrorWithStatus extends BusinessError {
     statusCode: number;
     constructor(message: string) {
         super(message);
@@ -35,7 +61,7 @@ export class ErrorWithStatus extends Error {
 export class AuthorizationError extends ErrorWithStatus {
     constructor(message: string = ERROR_MESSAGES.AUTHORIZATION_ERROR) {
         super(message);
-        this.name = "AuthorizationError";
+        this.message = message;
         this.statusCode = 403;
     }
 }
@@ -43,7 +69,6 @@ export class AuthorizationError extends ErrorWithStatus {
 export class NoDataError extends ErrorWithStatus {
     constructor(message: string = "Data could not be found") {
         super(message);
-        this.name = "NoDataError";
         this.statusCode = 404;
     }
 }
@@ -51,7 +76,6 @@ export class NoDataError extends ErrorWithStatus {
 export class OVHError extends ErrorWithStatus {
     constructor(message: string = "Erreur OVH") {
         super(message);
-        this.name = "OVHError";
         this.statusCode = 502;
     }
 }
@@ -59,7 +83,6 @@ export class OVHError extends ErrorWithStatus {
 export class ValidationError extends ErrorWithStatus {
     constructor(message: string = "Validation failed") {
         super(message);
-        this.name = "ValidationError";
         this.statusCode = 400;
     }
 }
@@ -68,7 +91,6 @@ export class StartupUniqueConstraintViolationError extends ErrorWithStatus {
     constructor(startupName?: string) {
         const message = ERROR_MESSAGES.STARTUP_UNIQUE_CONSTRAINT(startupName);
         super(message);
-        this.name = "StartupUniqueConstraintViolationError";
         this.statusCode = 409;
     }
 }
@@ -77,7 +99,6 @@ export class MemberUniqueConstraintViolationError extends ErrorWithStatus {
     constructor(username?: string) {
         const message = ERROR_MESSAGES.MEMBER_UNIQUE_CONSTRAINT(username);
         super(message);
-        this.name = "MemberUniqueConstraintViolationError";
         this.statusCode = 409;
     }
 }
@@ -85,7 +106,6 @@ export class MemberUniqueConstraintViolationError extends ErrorWithStatus {
 export class StartupInsertFailedError extends ErrorWithStatus {
     constructor() {
         super(ERROR_MESSAGES.STARTUP_INSERT_FAILED);
-        this.name = "StartupInsertFailedError";
         this.statusCode = 409;
     }
 }
@@ -93,7 +113,6 @@ export class StartupInsertFailedError extends ErrorWithStatus {
 export class AdminEmailNotAllowedError extends ErrorWithStatus {
     constructor() {
         super(ERROR_MESSAGES.MEMBER_ADMIN_EMAIL_ADDRESS_NOT_ALLOWED);
-        this.name = "AdminEmailNotAllowedError";
         this.statusCode = 403;
         // Ensure the prototype chain is correctly set (for older versions of TypeScript/JavaScript)
         Object.setPrototypeOf(this, AdminEmailNotAllowedError.prototype);
@@ -103,7 +122,6 @@ export class AdminEmailNotAllowedError extends ErrorWithStatus {
 export class JobNotFoundError extends ErrorWithStatus {
     constructor() {
         super(ERROR_MESSAGES.MEMBER_ADMIN_EMAIL_ADDRESS_NOT_ALLOWED);
-        this.name = "JobNotFoundError";
         this.statusCode = 404;
         // Ensure the prototype chain is correctly set (for older versions of TypeScript/JavaScript)
         Object.setPrototypeOf(this, JobNotFoundError.prototype);
@@ -113,7 +131,6 @@ export class JobNotFoundError extends ErrorWithStatus {
 export class JobCannotBeReplayedError extends ErrorWithStatus {
     constructor() {
         super(ERROR_MESSAGES.MEMBER_ADMIN_EMAIL_ADDRESS_NOT_ALLOWED);
-        this.name = "JobCannotBeReplayed";
         this.statusCode = 400;
         // Ensure the prototype chain is correctly set (for older versions of TypeScript/JavaScript)
         Object.setPrototypeOf(this, JobCannotBeReplayedError.prototype);
@@ -128,6 +145,7 @@ const EXPECTED_ERRORS = [
     StartupUniqueConstraintViolationError,
     MemberUniqueConstraintViolationError,
     AdminEmailNotAllowedError,
+    BusinessError,
 ];
 
 function isExpectedError(error: unknown): error is ErrorWithStatus {
@@ -148,7 +166,7 @@ export function withErrorHandling<T, Args extends any[]>(
                 success: true,
             };
         } catch (error) {
-            if (isExpectedError(error)) {
+            if (isExpectedError(error) || error instanceof BusinessError) {
                 console.log("Expected error", error);
 
                 // Return a standardized error response
@@ -186,7 +204,7 @@ export function withHttpErrorHandling<Args extends any[]>(
                         message: error.message,
                     },
                     {
-                        status: error.statusCode,
+                        status: error.statusCode || 400,
                     }
                 );
             } else {

@@ -1,7 +1,16 @@
 // import { DBUser, DBUserWithEmailsAndMattermostUsername } from "@/models/dbUser";
+import { StartupsPhaseEnum } from "@/@types/db";
+import { incubatorSchemaType } from "@/models/incubator";
 import { Job } from "@/models/job";
-import { memberBaseInfoSchemaType } from "@/models/member";
-import { StartupPhase } from "@/models/startup";
+import {
+    memberBaseInfoSchemaType,
+    memberPublicInfoSchemaType,
+} from "@/models/member";
+import {
+    StartupPhase,
+    startupSchemaType,
+    userStartupSchemaType,
+} from "@/models/startup";
 
 export enum EMAIL_TYPES {
     MARRAINAGE_NEWCOMER_EMAIL = "MARRAINAGE_NEWCOMER_EMAIL",
@@ -32,6 +41,7 @@ export enum EMAIL_TYPES {
     EMAIL_FORUM_REMINDER = "EMAIL_FORUM_REMINDER",
     EMAIL_TEST = "EMAIL_TEST",
     EMAIL_VERIFICATION_WAITING = "EMAIL_VERIFICATION_WAITING",
+    EMAIL_NEW_MEMBER_VALIDATION = "EMAIL_NEW_MEMBER_VALIDATION",
 }
 
 export type SubjectFunction = {
@@ -40,7 +50,7 @@ export type SubjectFunction = {
 
 export type HtmlBuilderType = {
     renderFile(url: string, params: any): Promise<string>;
-    templates: Record<EmailProps["type"], string | null>;
+    templates: Record<EmailProps["type"], string | null | any>;
     subjects: Record<EmailProps["type"], string | SubjectFunction>;
     renderContentForType: (params: EmailVariants) => Promise<string>;
     renderSubjectForType: (params: EmailVariants) => string;
@@ -133,10 +143,11 @@ export type EmailOnboardingReferent = {
 export type EmailCreatedEmail = {
     type: EMAIL_TYPES.EMAIL_CREATED_EMAIL;
     variables: {
-        email: string;
-        secondaryEmail: string;
+        email: string | null;
+        secondaryEmail: string | null;
         secretariatUrl: string;
         mattermostInvitationLink: string;
+        emailUrl: string;
     };
 };
 
@@ -175,10 +186,7 @@ export type EmailNoMoreContract = {
         | EMAIL_TYPES.EMAIL_NO_MORE_CONTRACT_1_DAY
         | EMAIL_TYPES.EMAIL_NO_MORE_CONTRACT_30_DAY;
     variables: {
-        user: {
-            userInfos: memberBaseInfoSchemaType;
-            mattermostUsername: string;
-        };
+        user: memberBaseInfoSchemaType;
     };
 };
 
@@ -233,10 +241,9 @@ export type EmailStartupAskPhase = {
     type: EMAIL_TYPES.EMAIL_STARTUP_ASK_PHASE;
     variables: {
         startup: string;
-        phase:
-            | StartupPhase.PHASE_ACCELERATION
-            | StartupPhase.PHASE_CONSTRUCTION
-            | StartupPhase.PHASE_INVESTIGATION;
+        readablePhase: string;
+        link: string;
+        phase: StartupsPhaseEnum;
     };
 };
 
@@ -271,6 +278,16 @@ export type EmailVerificationWaiting = {
     };
 };
 
+export type EmailNewMemberValidation = {
+    type: EMAIL_TYPES.EMAIL_NEW_MEMBER_VALIDATION;
+    variables: {
+        userInfos: memberPublicInfoSchemaType;
+        startups: userStartupSchemaType[];
+        incubator: incubatorSchemaType;
+        validationLink: string;
+    };
+};
+
 export type EmailVariants =
     | EmailMarrainageNewcomer
     | EmailMarrainageOnboarder
@@ -295,14 +312,15 @@ export type EmailVariants =
     | EmailForumReminder
     | EmailTest
     | EmailPRPendingToTeam
-    | EmailVerificationWaiting;
+    | EmailVerificationWaiting
+    | EmailNewMemberValidation;
 
 export type EmailProps = BaseEmail & EmailVariants;
 
-export type SendEmailProps = {
+export type SendEmailProps = EmailProps & {
     subject?: string;
-    type: EmailProps["type"];
-    variables: EmailProps["variables"];
+    // type: EmailProps["type"];
+    // variables: EmailProps["variables"];
     forceTemplate?: boolean;
     toEmail: string[];
     extraParams?: Record<string, string>;

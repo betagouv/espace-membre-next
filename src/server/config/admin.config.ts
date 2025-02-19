@@ -15,9 +15,11 @@ export const getAdmin = () => {
 export const isSessionUserIncubatorTeamAdminForUser = async ({
     user,
     sessionUserUuid,
+    incubator_id,
 }: {
     user: memberBaseInfoSchemaType;
     sessionUserUuid: string;
+    incubator_id?: string;
 }): Promise<boolean> => {
     const member = user;
 
@@ -49,14 +51,17 @@ export const isSessionUserIncubatorTeamAdminForUser = async ({
         };
     });
     const userIncubators = Array.from(
-        new Set([
-            ...startups
-                .filter((startup) => startup.isCurrent && startup.incubator)
-                .map((startup) => startup.incubator?.uuid),
-            ...teams
-                .filter((team) => team.incubator)
-                .map((team) => team.incubator?.uuid),
-        ])
+        new Set(
+            [
+                incubator_id,
+                ...startups
+                    .filter((startup) => startup.isCurrent && startup.incubator)
+                    .map((startup) => startup.incubator?.uuid),
+                ...teams
+                    .filter((team) => team.incubator)
+                    .map((team) => team.incubator?.uuid),
+            ].filter((id) => !!id)
+        )
     );
     const sessionUserIncubators = (await getTeamsForUser(sessionUserUuid)).map(
         (teams) => teams.incubator_id

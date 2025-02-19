@@ -12,6 +12,7 @@ import {
     EventSentryAccountUpdateFailedUserDoesNotExistPayload,
 } from "./serviceActionEvent";
 import {
+    createMemberSchema,
     memberInfoUpdateSchema,
     memberValidateInfoSchema,
 } from "../actions/member";
@@ -55,6 +56,8 @@ export enum EventCode {
     MEMBER_SERVICE_TEAM_CREATED = "MEMBER_SERVICE_TEAM_CREATED",
     MEMBER_SERVICE_TEAM_CREATION_REQUESTED = "MEMBER_SERVICE_TEAM_CREATION_REQUESTED",
     MEMBER_SERVICE_ACCOUNT_UPDATE_FAILED_USER_DOES_NOT_EXIST = "MEMBER_SERVICE_ACCOUNT_UPDATE_FAILED_USER_DOES_NOT_EXIST",
+    MEMBER_CREATED = "MEMBER_CREATED",
+    MEMBER_VALIDATED = "MEMBER_VALIDATED",
 }
 
 export const EventCodeToReadable: Record<EventCode, string> = {
@@ -99,6 +102,8 @@ export const EventCodeToReadable: Record<EventCode, string> = {
         "Equipe sentry demandée",
     [EventCode.MEMBER_SERVICE_ACCOUNT_UPDATE_FAILED_USER_DOES_NOT_EXIST]:
         "Mise à jour du compte sentry échouée. L'utilisateur n'existe pas.",
+    [EventCode.MEMBER_CREATED]: "Membre créé",
+    [EventCode.MEMBER_VALIDATED]: "Membre validé",
 };
 
 export const SYSTEM_NAME = "system";
@@ -356,6 +361,20 @@ export const EventTeamUpdatedPayload = z.object({
     }),
 });
 
+export const EventMemberCreatedPayload = z.object({
+    action_code: z.literal(EventCode.MEMBER_CREATED),
+    action_metadata: z.object({
+        member: createMemberSchema._def.schema.shape.member,
+        missions: createMemberSchema._def.schema.shape.missions,
+        incubator_id:
+            createMemberSchema._def.schema.shape.incubator_id.nullable(),
+    }),
+});
+
+export const EventMemberValidatedPayload = z.object({
+    action_code: z.literal(EventCode.MEMBER_VALIDATED),
+});
+
 export type EventPayloads =
     | z.infer<typeof EventMemberCommunicationEmailUpdatePayload>
     | z.infer<typeof EventMemberBaseInfoUpdatedPayload>
@@ -394,6 +413,9 @@ export type EventPayloads =
     | z.infer<typeof EventSentryCreateTeamRequestedTeamPayload>
     | z.infer<typeof EventSentryAccountUpdateFailedUserDoesNotExistPayload>
     | z.infer<typeof EventMatomoAccountPayloadSchema>;
+    | z.infer<typeof EventMatomoAccountPayloadSchema>
+    | z.infer<typeof EventMemberCreatedPayload>
+    | z.infer<typeof EventMemberValidatedPayload>;
 
 export type EventAction = BaseActionEvent & EventPayloads;
 

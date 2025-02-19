@@ -27,6 +27,7 @@ export enum EmailStatusCode {
     EMAIL_REDIRECTION_ACTIVE = "EMAIL_REDIRECTION_ACTIVE",
     EMAIL_VERIFICATION_WAITING = "EMAIL_VERIFICATION_WAITING",
     EMAIL_CREATION_WAITING = "EMAIL_CREATION_WAITING", // email will be created
+    MEMBER_VALIDATION_WAITING = "MEMBER_VALIDATION_WAITING",
 }
 
 export enum GenderCode {
@@ -199,7 +200,7 @@ export const DOMAINE_OPTIONS: DomaineOption[] = [
 
 export const memberSchema = z.object({
     // modify info schema
-    uuid: z.string({}).readonly(),
+    uuid: z.string({}).uuid().readonly(),
     username: z.string({}).readonly(),
     fullname: z
         .string({
@@ -243,7 +244,7 @@ export const memberSchema = z.object({
         .nullable(),
     missions: z
         .array(missionSchema)
-        .min(0, "Vous devez définir au moins une mission"),
+        .min(1, "Vous devez définir au moins une mission"),
     startups: z.array(z.string()).optional().nullable(),
     previously: z.array(z.string()).optional().nullable(),
     domaine: z.nativeEnum(

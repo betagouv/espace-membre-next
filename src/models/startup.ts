@@ -1,5 +1,6 @@
 import { z } from "zod";
-import { missionSchema } from "./mission";
+
+import { missionSchemaShape } from "./mission";
 
 interface Relationship {
     incubator: {
@@ -223,11 +224,14 @@ export const startupSchema = z.object({
         })
         .min(1)
         .describe("Email de contact du produit"),
-    link: z.string()
-        .url({
-          message: "L'URL fournie doit respecter le format suivant : https://exemple.com",
-        })
+    link: z
+        .string()
         .describe("URL du site web")
+        .url({
+            message:
+                "L'URL fournie doit respecter le format suivant : https://exemple.com",
+        })
+        .or(z.literal(""))
         .optional()
         .nullable(),
     repository: z
@@ -339,8 +343,8 @@ export const userStartupSchema = z.object({
     uuid: startupSchema.shape.uuid,
     ghid: startupSchema.shape.ghid,
     name: startupSchema.shape.name,
-    end: missionSchema.shape.end,
-    start: missionSchema.shape.start,
+    end: missionSchemaShape.end,
+    start: missionSchemaShape.start,
     incubator_id: startupSchema.shape.incubator_id,
 });
 

@@ -26,14 +26,12 @@ import {
     memberSchema,
     memberSchemaType,
 } from "@/models/member";
+import { Option } from "@/models/misc";
 import routes, { computeRoute } from "@/routes/routes";
 
 // data from secretariat API
 export interface AccountVerifyClientPageProps {
-    startupOptions: {
-        value: string;
-        label: string;
-    }[];
+    startupOptions: Option[];
     member: memberSchemaType;
 }
 
@@ -79,6 +77,7 @@ export default function AccountVerifyClientPage({
         handleSubmit,
         formState: { errors, isDirty, isSubmitting, isValid },
         setValue,
+        trigger,
         control,
     } = useForm<memberValidateInfoSchemaType>({
         resolver: zodResolver(memberValidateInfoSchema),
@@ -372,6 +371,7 @@ export default function AccountVerifyClientPage({
                                                     control={control}
                                                     register={register}
                                                     setValue={setValue}
+                                                    trigger={trigger}
                                                     startupOptions={
                                                         startupOptions
                                                     }

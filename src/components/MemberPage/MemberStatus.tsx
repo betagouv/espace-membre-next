@@ -7,6 +7,8 @@ import { match, P } from "ts-pattern";
 import { MemberPageProps } from "./MemberPage";
 import { BadgeEmailPlan } from "../BadgeEmailPlan";
 import { EmailStatusCode } from "@/models/member";
+import { EMAIL_STATUS_READABLE_FORMAT } from "@/models/misc";
+import { EMAIL_PLAN_TYPE } from "@/models/ovh";
 import { ACCOUNT_SERVICE_STATUS, SERVICES } from "@/models/services";
 
 const mattermostInfoRow = (
@@ -85,7 +87,8 @@ const emailStatusRow = (
                         .with(
                             P.union(
                                 EmailStatusCode.EMAIL_ACTIVE_AND_PASSWORD_DEFINITION_PENDING,
-                                EmailStatusCode.EMAIL_VERIFICATION_WAITING
+                                EmailStatusCode.EMAIL_VERIFICATION_WAITING,
+                                EmailStatusCode.MEMBER_VALIDATION_WAITING
                             ),
                             () => (
                                 <Badge severity="warning">
@@ -210,6 +213,20 @@ const emailStatusRow = (
                                     </>
                                 )
                             )
+                            .with(
+                                EmailStatusCode.MEMBER_VALIDATION_WAITING,
+                                () => (
+                                    <>
+                                        <br />
+                                        {
+                                            EMAIL_STATUS_READABLE_FORMAT[
+                                                EmailStatusCode
+                                                    .MEMBER_VALIDATION_WAITING
+                                            ]
+                                        }
+                                    </>
+                                )
+                            )
                             .otherwise(() => null);
                     }
                 )
@@ -236,6 +253,13 @@ const emailStatusRow = (
                                 ),
                                 () =>
                                     "Les informations du compte doivent être vérifiés par le membre"
+                            )
+                            .with(
+                                P.union(
+                                    EmailStatusCode.MEMBER_VALIDATION_WAITING
+                                ),
+                                () =>
+                                    "La fiche doit être validée par un admin ou un membre de l'équipe transverse de l'incubateur"
                             )
                             .with(
                                 P.union(
@@ -419,7 +443,7 @@ export const MemberStatus = ({
 
     return (
         <>
-            Voici les comptes auquel tu as accès.
+            <h2>Liste des accès.</h2>
             <Table
                 className="tbl-account-status"
                 headers={["Service", "Status", "Infos"]}

@@ -38,3 +38,31 @@ export function getTeamsForUser(userUuid: string) {
         .where("user_id", "=", userUuid)
         .execute();
 }
+
+export function getTeamsForIncubator(incubatorId: string) {
+    return db
+        .selectFrom("teams")
+        .selectAll()
+        .where("incubator_id", "=", incubatorId)
+        .execute();
+}
+
+export function getUsersByIncubatorId(incubatorId: string) {
+    return db
+        .selectFrom("users")
+        .innerJoin("users_teams", "users.uuid", "users_teams.user_id")
+        .innerJoin("teams", "users_teams.team_id", "teams.uuid")
+        .innerJoin("incubators", "teams.incubator_id", "incubators.uuid")
+        .where("teams.incubator_id", "=", incubatorId)
+        .select([
+            "users.uuid",
+            "users.primary_email",
+            "users.fullname",
+            "users.username",
+            "users.email_verified",
+            "users.role",
+            "users.avatar",
+            "teams.name as team_name",
+        ])
+        .execute();
+}

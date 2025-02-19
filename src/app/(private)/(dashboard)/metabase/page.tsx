@@ -6,7 +6,6 @@ import { getServerSession } from "next-auth";
 import { authOptions } from "@/utils/authoptions";
 import { routeTitles } from "@/utils/routes/routeTitles";
 
-
 export const metadata: Metadata = {
     title: `${routeTitles.metabase()} / Espace Membre`,
 };
@@ -37,6 +36,7 @@ export default async function Page() {
     return (
         <>
             <iframe
+                title="Statistiques sur la communauté"
                 src={iframeUrl}
                 width="100%"
                 height="5000"

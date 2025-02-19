@@ -1,4 +1,5 @@
 import { Kysely } from "kysely";
+import { ZodSchema } from "zod";
 
 import { db } from "./kysely";
 import { DB } from "@/@types/db"; // generated with `npm run kysely-codegen`
@@ -18,7 +19,32 @@ export async function addEvent(event: EventAction, trx?: Kysely<DB>) {
                 ? hstore.stringify(event["action_metadata"])
                 : undefined,
         })
-        .execute();
+        .returningAll()
+        .executeTakeFirstOrThrow();
+}
+
+export async function getLastEvent(
+    username: string,
+    action_code: EventCode,
+    trx?: Kysely<DB>
+): Promise<EventAction | null> {
+    const event = await db
+        .selectFrom("events")
+        .selectAll()
+        .where("action_on_username", "=", username)
+        .where("action_code", "=", action_code)
+        .orderBy("created_at desc")
+        .executeTakeFirst();
+    return event
+        ? ({
+              ...event,
+              action_code: event.action_code as EventAction["action_code"],
+              action_on_username: event.action_on_username || undefined,
+              action_metadata: event.action_metadata
+                  ? hstore.parse(event.action_metadata)
+                  : {},
+          } as EventAction)
+        : null;
 }
 
 export async function addActionEvent<T extends EventCode>(

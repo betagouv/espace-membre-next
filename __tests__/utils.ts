@@ -1,4 +1,5 @@
 import jwt from "jsonwebtoken";
+import { Selectable } from "kysely/dist/cjs/util/column-type";
 import nock from "nock";
 import { Client } from "pg";
 import { parse } from "pg-connection-string";
@@ -6,7 +7,7 @@ import { v4 as uuidv4 } from "uuid";
 
 import testStartups from "./startups.json";
 import testUsers from "./users.json";
-import { UsersDomaineEnum } from "@/@types/db";
+import { Startups, UsersDomaineEnum } from "@/@types/db";
 import { db } from "@/lib/kysely";
 import { startupToModel } from "@/models/mapper";
 import { Domaine, EmailStatusCode } from "@/models/member";
@@ -185,6 +186,21 @@ const testUtils = {
     randomUuid: function randomUuid() {
         return uuidv4();
     },
+    createStartup: async function (
+        incubator_id: string,
+        name: string
+    ): Promise<Selectable<Startups>> {
+        const insertedStartup = await db
+            .insertInto("startups")
+            .values({
+                ghid: name,
+                name: name,
+                incubator_id,
+            })
+            .returningAll()
+            .executeTakeFirstOrThrow();
+        return insertedStartup;
+    },
     createUsers: async (
         users: {
             start?: string;
@@ -205,6 +221,7 @@ const testUtils = {
                     | "a-startup-at-gip"
                     | "a-startup-at-dinum"
                     | "anotherstartup"
+                    | "test-startup"
                 )[];
                 employer?: string;
             }[];

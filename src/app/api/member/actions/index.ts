@@ -1,7 +1,7 @@
 "use server";
 
-import * as Sentry from "@sentry/nextjs";
 import { revalidatePath } from "next/cache";
+import { cookies } from "next/headers";
 import { getServerSession } from "next-auth/next";
 
 import { addEvent } from "@/lib/events";
@@ -9,6 +9,7 @@ import { db } from "@/lib/kysely";
 import { createMission, updateMission } from "@/lib/kysely/queries/missions";
 import { getUserBasicInfo, getUserInfos } from "@/lib/kysely/queries/users";
 import { getUserByEmail, MattermostUser, searchUsers } from "@/lib/mattermost";
+import * as mattermost from "@/lib/mattermost";
 import { EventCode } from "@/models/actionEvent/actionEvent";
 import { updateMemberMissionsSchemaType } from "@/models/actions/member";
 import { UpdateOvhResponder } from "@/models/actions/ovh";
@@ -18,6 +19,7 @@ import {
 } from "@/models/mapper";
 import {
     CommunicationEmailCode,
+    EmailStatusCode,
     memberWrapperPublicInfoSchemaType,
 } from "@/models/member";
 import betagouv from "@/server/betagouv";
@@ -28,7 +30,13 @@ import {
     addContactsToMailingLists,
     removeContactsFromMailingList,
 } from "@/server/config/email.config";
-import { capitalizeWords, userInfos } from "@/server/controllers/utils";
+import {
+    capitalizeWords,
+    isPublicServiceEmail,
+    isAdminEmail,
+    userInfos,
+    buildBetaEmail,
+} from "@/server/controllers/utils";
 import { Contact, MAILING_LIST_TYPE } from "@/server/modules/email";
 import { authOptions } from "@/utils/authoptions";
 import {
@@ -38,6 +46,8 @@ import {
     ValidationError,
     OVHError,
     withErrorHandling,
+    AdminEmailNotAllowedError,
+    BusinessError,
 } from "@/utils/error";
 
 async function changeSecondaryEmailForUser(
@@ -339,6 +349,64 @@ async function updateMemberMissions(
     revalidatePath("/community/[id]", "layout");
 }
 
+export async function manageSecondaryEmailForUser({
+    username,
+    secondaryEmail,
+}: {
+    username: string;
+    secondaryEmail: string;
+}) {
+    const session = await getServerSession(authOptions);
+    if (!session || !session.user.id) {
+        throw new AuthorizationError();
+    }
+    const isCurrentUser = session.user.id === username;
+
+    const user = await userInfos({ username }, isCurrentUser);
+    if (!isCurrentUser && !user.isExpired) {
+        throw new BusinessError(
+            `Le compte "${username}" n'est pas expiré, vous ne pouvez pas supprimer ce compte.`
+        );
+    }
+
+    if (
+        user.authorizations.canChangeEmails ||
+        config.ESPACE_MEMBRE_ADMIN.includes(session.user.id)
+    ) {
+        const user = await db
+            .selectFrom("users")
+            .select("secondary_email")
+            .where("username", "=", username)
+            .executeTakeFirst();
+
+        if (!user) {
+            throw new BusinessError("Users not found");
+        }
+
+        await db
+            .updateTable("users")
+            .set({
+                secondary_email: secondaryEmail,
+            })
+            .where("username", "=", username)
+            .execute();
+
+        await addEvent({
+            action_code: EventCode.MEMBER_SECONDARY_EMAIL_UPDATED,
+            created_by_username: session.user.id,
+            action_on_username: username,
+            action_metadata: {
+                value: secondaryEmail,
+                old_value: user.secondary_email || "",
+            },
+        });
+
+        console.log(
+            `${session.user.id} a mis à jour son adresse mail secondaire.`
+        );
+    }
+}
+
 export const safeUpdateMemberMissions = withErrorHandling(updateMemberMissions);
 export const safeGetUserPublicInfo = withErrorHandling<
     UnwrapPromise<ReturnType<typeof getUserPublicInfo>>,
@@ -360,3 +428,7 @@ export const safeUpdateCommunicationEmail = withErrorHandling<
     UnwrapPromise<ReturnType<typeof updateCommunicationEmail>>,
     Parameters<typeof updateCommunicationEmail>
 >(updateCommunicationEmail);
+export const safeManageSecondaryEmailForUser = withErrorHandling<
+    UnwrapPromise<ReturnType<typeof manageSecondaryEmailForUser>>,
+    Parameters<typeof manageSecondaryEmailForUser>
+>(manageSecondaryEmailForUser);

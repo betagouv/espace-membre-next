@@ -129,3 +129,14 @@ export function getIncubatorTeams(uuid: string) {
         .orderBy("teams.name")
         .execute();
 }
+
+export function getUserTeamsIncubators(uuid: string) {
+    return db
+        .selectFrom("users")
+        .leftJoin("users_teams", "users_teams.user_id", "users.uuid")
+        .leftJoin("teams", "users_teams.team_id", "teams.uuid")
+        .leftJoin("incubators", "teams.incubator_id", "incubators.uuid")
+        .selectAll(["incubators"])
+        .where("users.uuid", "=", uuid)
+        .execute();
+}
