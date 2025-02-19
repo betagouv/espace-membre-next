@@ -28,6 +28,11 @@
         "fixme": "node ./node_modules/.bin/fixme -p src",
         "pg-mermaid": "npx -s pg-mermaid --dbname secretariat --username secretariat -h 127.0.0.1 -p 5432 --password secretariat --excluded-tables badge_requests community knex_migrations knex_migrations_lock startup_aggregated_stats"
     },
+    "config": {
+        "commitizen": {
+            "path": "./node_modules/cz-conventional-changelog"
+        }
+    },
     "dependencies": {
         "@codegouvfr/react-dsfr": "^1.13.6",
         "@emotion/styled": "^11.11.0",
@@ -44,12 +49,14 @@
         "airtable": "^0.12.2",
         "aws-sdk": "^2.1664.0",
         "axios": "^1.7.7",
+        "commitizen": "^4.3.1",
         "compression": "^1.7.4",
         "connect-flash": "^0.1.1",
         "connect-redis": "^6.1.3",
         "cookie-parser": "^1.4.7",
         "crisp-sdk-web": "^1.0.25",
         "cron": "^2.4.4",
+        "cz-conventional-changelog": "^3.3.0",
         "date-fns": "^3.3.1",
         "deep-object-diff": "^1.1.9",
         "ejs": "^3.1.9",
@@ -104,6 +111,8 @@
     },
     "devDependencies": {
         "@babel/preset-env": "^7.23.9",
+        "@commitlint/cli": "^19.7.1",
+        "@commitlint/config-conventional": "^19.7.1",
         "@hookform/devtools": "^4.3.1",
         "@playwright/test": "^1.48.0",
         "@testing-library/jest-dom": "^6.4.2",
