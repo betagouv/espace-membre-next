@@ -1,19 +1,19 @@
 import { Meta, StoryFn } from "@storybook/react";
+import { addDays } from "date-fns/addDays";
+import { subDays } from "date-fns/subDays";
 
+import {
+    TeamCompositionEmail,
+    TeamCompositionEmailTitle,
+} from "./teamCompositionEmail";
+import { Domaine, EmailStatusCode } from "@/models/member";
+import { commonEmailsParameters } from "@/server/views/utils/email";
 import {
     withEmailClientOverviewFactory,
     withEmailRenderer,
 } from "@sbook/email";
 import { StoryHelperFactory } from "@sbook/helpers";
 import { playFindEmailStructure } from "@sbook/testing";
-import { commonEmailsParameters } from "@/server/views/utils/email";
-import {
-    TeamCompositionEmail,
-    TeamCompositionEmailTitle,
-} from "./teamCompositionEmail";
-import { Domaine, EmailStatusCode } from "@/models/member";
-import { subDays } from "date-fns/subDays";
-import { addDays } from "date-fns/addDays";
 
 type ComponentType = typeof TeamCompositionEmail;
 const { generateMetaDefault, prepareStory } =
@@ -118,10 +118,10 @@ CompleteStory.args = {
                 workplace_insee_code: "12345",
             },
             activeMission: {
-                start: new Date(),
+                start: subDays(new Date(), 50),
                 uuid: "active-mission-uuid",
                 status: "service",
-                end: new Date(),
+                end: addDays(new Date(), 15),
                 employer: "Employer Super",
                 startups: ["Startup1", "Startup2"],
             },

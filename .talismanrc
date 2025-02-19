@@ -94,16 +94,16 @@ fileignoreconfig:
 - filename: src/server/views/templates/emails/memberValidationEmail/memberValidationEmail.tsx
   checksum: d927d56d534024f2f271a955a467df69d7246646143ec80364dbc4fd3eacf380
 - filename: src/server/views/templates/emails/teamCompositionEmail/teamCompositionEmail.tsx
-  checksum: 514785a4c566f65115f1b5321e0d01b44f73ead61a12e71ca2a51f7d820b6ba5
+  checksum: 8ec5495ed8db0f139a082bf0162e23cb05b0125b394abf63e447aca293dfcdbb
 - filename: src/utils/routes/list.ts
   checksum: ebb1c7a8c5fb51e0e49a23f79d1342f177946b4e783154bb265970b672aa2a2c
 - filename: src/utils/url.ts
-  checksum: 6c0989d85371d5071d9dcaa141e1c35b10f7124a3628deef443a4a1ccacfa34f
+  checksum: 21d2da1f85cc6ce2cc3324248e3c44ad84a6775f6c1cc8435e7cfa164824b853
 scopeconfig:
 - scope: node
 version: "1.0"
-alidationEmail/memberValidationEmail.tsx
-      checksum: d927d56d534024f2f271a955a467df69d7246646143ec80364dbc4fd3eacf380
+ompositionEmail/teamCompositionEmail.tsx
+      checksum: 514785a4c566f65115f1b5321e0d01b44f73ead61a12e71ca2a51f7d820b6ba5
     - filename: src/utils/routes/list.ts
       checksum: ebb1c7a8c5fb51e0e49a23f79d1342f177946b4e783154bb265970b672aa2a2c
     - filename: src/utils/url.ts

@@ -12,10 +12,10 @@ import {
 import { format } from "date-fns";
 import { fr } from "date-fns/locale";
 
-import { EmailTeamComposition } from "@/server/modules/email";
 import { StandardLayout } from "@/components/emails/layouts/StandardEmail";
+import { EmailTeamComposition } from "@/server/modules/email";
 export function TeamCompositionEmailTitle() {
-    return `Vérifies les membres de ton équipe`;
+    return `Vérifies les membres de ton équipe.`;
 }
 
 export function TeamCompositionEmail(props: EmailTeamComposition["variables"]) {
@@ -28,43 +28,83 @@ export function TeamCompositionEmail(props: EmailTeamComposition["variables"]) {
                 <p>Bonjour,</p>
                 <p>
                     Tu reçois cet email car tu fais partie de l'équipe :{" "}
-                    {props.startup.name}
+                    {props.startup.name}.
                 </p>
-                <p>Voici les membres actuellements dans ton équipe.</p>
-                {props.activeMembers.map((activeMember, index) => (
-                    <ul key={index}>
-                        <li>Prénom Nom : {activeMember.member.fullname}</li>
-                        <li>Role : {activeMember.member.role}</li>
-                        <li>Domaine : {activeMember.member.domaine}</li>
-                        <li>
-                            Début de mission :{" "}
-                            {format(
-                                activeMember.activeMission.start,
-                                "dd/MM/yyyy",
-                                { locale: fr }
-                            )}
-                            {}
-                        </li>
-                        <li>
-                            Fin de mission :{" "}
-                            {!!activeMember.activeMission.end &&
-                                `${format(
-                                    activeMember.activeMission.end,
+                <p>Voici les membres actuellements dans ton équipe : </p>
+                {/* {props.activeMembers.map((activeMember, index) => (
+                    <>
+                        <p>{activeMember.member.fullname}</p>
+                        <ul key={index}>
+                            <li>Role : {activeMember.member.role}</li>
+                            <li>
+                                Début de mission :{" "}
+                                {format(
+                                    activeMember.activeMission.start,
                                     "dd/MM/yyyy",
                                     { locale: fr }
-                                )}`}
-                            {!activeMember.activeMission.end &&
-                                `Pas de date de fin`}
-                        </li>
-                        <li>
-                            Employer : {activeMember.activeMission.employer}
-                        </li>
-                    </ul>
-                ))}
+                                )}
+                                {}
+                            </li>
+                            <li>
+                                Fin de mission :{" "}
+                                {!!activeMember.activeMission.end &&
+                                    `${format(
+                                        activeMember.activeMission.end,
+                                        "dd/MM/yyyy",
+                                        { locale: fr }
+                                    )}`}
+                                {!activeMember.activeMission.end &&
+                                    `Pas de date de fin`}
+                            </li>
+                            <li>
+                                Employer : {activeMember.activeMission.employer}
+                            </li>
+                        </ul>
+                        <hr />
+                    </>
+                ))} */}
+                <table className="member-info" style={{ width: "100%" }}>
+                    <thead>
+                        <tr>
+                            <th>Nom</th>
+                            <th>Rôle</th>
+                            <th>Mission</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {props.activeMembers.map((activeMember, index) => (
+                            <tr key={index}>
+                                <td style={{ width: "25%" }}>
+                                    {activeMember.member.fullname}
+                                </td>
+                                <td style={{ width: "40%" }}>
+                                    {activeMember.member.role}
+                                </td>
+                                <td style={{ width: "35%" }}>
+                                    Début :{" "}
+                                    {format(
+                                        activeMember.activeMission.start,
+                                        "dd/MM/yyyy",
+                                        { locale: fr }
+                                    )}{" "}
+                                    <br />
+                                    Fin:{" "}
+                                    {!!activeMember.activeMission.end
+                                        ? format(
+                                              activeMember.activeMission.end,
+                                              "dd/MM/yyyy",
+                                              { locale: fr }
+                                          )
+                                        : "Pas de date de fin"}
+                                </td>
+                            </tr>
+                        ))}
+                    </tbody>
+                </table>
             </MjmlText>
             <MjmlText>
                 <p>
-                    Si tes informations ne sont pas à jour tu peux les mettres à
+                    Si tes informations ne sont pas à jour tu peux les mettre à
                     jour en cliquant sur le bouton ci-dessous.
                 </p>
             </MjmlText>
@@ -72,12 +112,12 @@ export function TeamCompositionEmail(props: EmailTeamComposition["variables"]) {
                 Changer mes informations
             </MjmlButton>
             <MjmlText>
-                <hr />
+                <p className="fr-hr-or">ou</p>
             </MjmlText>
             <MjmlText>
                 <p>
                     Si un des autres membres n'est plus dans l'équipe tu peux le
-                    signaler aux responsables de ton incubateur
+                    signaler aux responsables de ton incubateur.
                 </p>
             </MjmlText>
             <MjmlText></MjmlText>

@@ -1,3 +1,5 @@
+import { PropsWithChildren } from "react";
+
 import {
     Mjml,
     MjmlAll,
@@ -16,7 +18,6 @@ import {
     MjmlTitle,
     MjmlWrapper,
 } from "@luma-team/mjml-react";
-import { PropsWithChildren } from "react";
 
 import emailCss from "./standard.email.scss?raw";
 import storybookCss from "./standard.storybook.scss?raw";
@@ -114,7 +115,7 @@ export function StandardLayout(props: PropsWithChildren<StandardLayoutProps>) {
                                     Espace-membre beta.gouv.fr
                                 </MjmlText>
                                 <MjmlText fontSize={16} paddingTop={2}>
-                                    La communauté beta.gouv.fr
+                                    Communauté beta.gouv.fr
                                 </MjmlText>
                             </MjmlColumn>
                         </MjmlGroup>
