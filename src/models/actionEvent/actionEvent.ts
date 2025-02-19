@@ -1,16 +1,15 @@
 import { z } from "zod";
 
 import {
-    // EventMatomoAccountCreatedPayload,
     EventMatomoAccountPayloadSchema,
-    // EventMatomoAccountRequestedPayload,
-    // EventMatomoAccountUpdatedPayload,
-    // EventMatomoAccountUpdateRequestedPayload,
     EventSentryAccountCreatedPayload,
     EventSentryAccountRequestedPayload,
     EventSentryAccountUpdatedPayload,
     EventSentryAccountUpdateRequestedPayload,
     EventServiceAccountDeletedPayload,
+    EventSentryCreateTeamPayload,
+    EventSentryCreateTeamRequestedTeamPayload,
+    EventSentryAccountUpdateFailedUserDoesNotExistPayload,
 } from "./serviceActionEvent";
 import {
     createMemberSchema,
@@ -54,6 +53,9 @@ export enum EventCode {
     MEMBER_SERVICE_ACCOUNT_CREATED = "MEMBER_SERVICE_ACCOUNT_CREATED",
     MEMBER_SERVICE_ACCOUNT_UPDATE_REQUESTED = "MEMBER_SERVICE_ACCOUNT_UPDATE_REQUESTED",
     MEMBER_SERVICE_ACCOUNT_UPDATED = "MEMBER_SERVICE_ACCOUNT_UPDATED",
+    MEMBER_SERVICE_TEAM_CREATED = "MEMBER_SERVICE_TEAM_CREATED",
+    MEMBER_SERVICE_TEAM_CREATION_REQUESTED = "MEMBER_SERVICE_TEAM_CREATION_REQUESTED",
+    MEMBER_SERVICE_ACCOUNT_UPDATE_FAILED_USER_DOES_NOT_EXIST = "MEMBER_SERVICE_ACCOUNT_UPDATE_FAILED_USER_DOES_NOT_EXIST",
     MEMBER_CREATED = "MEMBER_CREATED",
     MEMBER_VALIDATED = "MEMBER_VALIDATED",
 }
@@ -95,6 +97,11 @@ export const EventCodeToReadable: Record<EventCode, string> = {
     [EventCode.MEMBER_SERVICE_ACCOUNT_UPDATE_REQUESTED]:
         "Compte de service mise à jour demandée",
     [EventCode.MEMBER_SERVICE_ACCOUNT_UPDATED]: "Compte de service mis à jour",
+    [EventCode.MEMBER_SERVICE_TEAM_CREATED]: "Equipe sentry créée",
+    [EventCode.MEMBER_SERVICE_TEAM_CREATION_REQUESTED]:
+        "Equipe sentry demandée",
+    [EventCode.MEMBER_SERVICE_ACCOUNT_UPDATE_FAILED_USER_DOES_NOT_EXIST]:
+        "Mise à jour du compte sentry échouée. L'utilisateur n'existe pas.",
     [EventCode.MEMBER_CREATED]: "Membre créé",
     [EventCode.MEMBER_VALIDATED]: "Membre validé",
 };
@@ -402,13 +409,12 @@ export type EventPayloads =
     | z.infer<typeof EventSentryAccountCreatedPayload>
     | z.infer<typeof EventSentryAccountUpdateRequestedPayload>
     | z.infer<typeof EventSentryAccountUpdatedPayload>
+    | z.infer<typeof EventSentryCreateTeamPayload>
+    | z.infer<typeof EventSentryCreateTeamRequestedTeamPayload>
+    | z.infer<typeof EventSentryAccountUpdateFailedUserDoesNotExistPayload>
     | z.infer<typeof EventMatomoAccountPayloadSchema>
     | z.infer<typeof EventMemberCreatedPayload>
     | z.infer<typeof EventMemberValidatedPayload>;
-// | z.infer<typeof EventMatomoAccountRequestedPayload>
-// | z.infer<typeof EventMatomoAccountCreatedPayload>
-// | z.infer<typeof EventMatomoAccountUpdateRequestedPayload>
-// | z.infer<typeof EventMatomoAccountUpdatedPayload>;
 
 export type EventAction = BaseActionEvent & EventPayloads;
 

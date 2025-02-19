@@ -1,3 +1,5 @@
+import { isAfter } from "date-fns/isAfter";
+import { isBefore } from "date-fns/isBefore";
 import { sql, ExpressionBuilder, Kysely, SelectExpression } from "kysely";
 import { UpdateObjectExpression } from "kysely/dist/cjs/parser/update-set-parser";
 
@@ -42,20 +44,8 @@ export async function getUserInfos(
 ) {
     let query = db
         .selectFrom("users")
-        // .leftJoin(
-        //     "user_details",
-        //     "user_details.hash",
-        //     computeHash(params.username)
-        // )
         .selectAll("users")
         .select((eb) => [withEndDate, withMissions]);
-    // .$if(!!params.options?.withDetails, (qb) =>
-    //     qb.leftJoin(
-    //         "user_details",
-    //         "user_details.hash",
-    //         computeHash(params.username)
-    //     ).
-    // )
     if ("username" in params) {
         query = query.where("users.username", "=", params.username);
     } else {
@@ -157,20 +147,8 @@ export async function getAllExpiredUsers(
 export async function adminGetAllUsersInfos(db: Kysely<DB> = database) {
     let query = db
         .selectFrom("users")
-        // .leftJoin(
-        //     "user_details",
-        //     "user_details.hash",
-        //     computeHash(params.username)
-        // )
         .selectAll("users")
         .select((eb) => [withEndDate, withMissions]);
-    // .$if(!!params.options?.withDetails, (qb) =>
-    //     qb.leftJoin(
-    //         "user_details",
-    //         "user_details.hash",
-    //         computeHash(params.username)
-    //     ).
-    // )
 
     const userInfos = await db.executeQuery(query);
 
@@ -209,7 +187,6 @@ function withMissions(eb: ExpressionBuilder<DB, "users">) {
                 ),
             ])
             .whereRef("missions.user_id", "=", "users.uuid")
-            // .whereRef("missions.uuid", "=", "missions_startups.mission_id")
             .orderBy("missions.start", "asc")
             .groupBy("missions.uuid")
     )
@@ -244,7 +221,6 @@ function withEndDate(
     eb: ExpressionBuilder<DB, "users">,
     db: Kysely<DB> = database
 ) {
-    // return MAX(missions.end) if there is no superior start date. NULL otherwise.
     return eb
         .selectFrom("missions")
         .select((eb2) => [
@@ -334,3 +310,24 @@ const protectedDataSelect = (db: Kysely<DB> = database) =>
             "users.email_is_redirection",
             "users.competences",
         ]);
+export async function getUserStartupsActive(
+    uuid: string,
+    db: Kysely<DB> = database
+) {
+    const now = new Date();
+    return getUserStartups(uuid).then((startups) =>
+        startups.filter(
+            (startup) =>
+                isAfter(now, startup.start ?? 0) &&
+                isBefore(now, startup.end ?? Infinity)
+        )
+    );
+}
+
+export const getLatests = (db: Kysely<DB> = database) => {
+    return getAllUsersInfoQuery(db)
+        .select((eb) => [withStartups(eb)])
+        .orderBy("users.created_at", "desc")
+        .limit(10)
+        .execute();
+};

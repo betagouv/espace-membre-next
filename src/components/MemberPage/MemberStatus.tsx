@@ -2,12 +2,10 @@ import Accordion from "@codegouvfr/react-dsfr/Accordion";
 import Badge from "@codegouvfr/react-dsfr/Badge";
 import Button from "@codegouvfr/react-dsfr/Button";
 import Table from "@codegouvfr/react-dsfr/Table";
-import Link from "next/link";
 import { match, P } from "ts-pattern";
 
 import { MemberPageProps } from "./MemberPage";
 import { BadgeEmailPlan } from "../BadgeEmailPlan";
-import { askAccountCreationForService } from "@/app/api/services/actions";
 import { EmailStatusCode } from "@/models/member";
 import { EMAIL_STATUS_READABLE_FORMAT } from "@/models/misc";
 import { EMAIL_PLAN_TYPE } from "@/models/ovh";

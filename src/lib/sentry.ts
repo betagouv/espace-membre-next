@@ -1,4 +1,5 @@
 import * as Sentry from "@sentry/node";
+import { CustomError as LibraryCustomError } from "ts-custom-error";
 import { z } from "zod";
 
 import { AccountService, SERVICES } from "@/models/services";
@@ -52,6 +53,19 @@ export interface SentryTeam {
     name: string;
     memberCount: number;
     projects: SentryProject[];
+}
+
+export interface CreateSentryTeamResponse {
+    id: string;
+    slug: string;
+    name: string;
+    dateCreated: string; // ISO 8601 date string
+    isMember: boolean;
+    teamRole: "admin" | "member" | "owner" | string;
+    access: string[]; // Liste des permissions
+    hasAccess: boolean;
+    isPending: boolean;
+    memberCount: number;
 }
 
 export interface SentryProject {
@@ -123,10 +137,32 @@ export class SentryService implements AccountService {
             method: "GET",
         });
 
+        if (response.status === 404) {
+            throw userNotFound;
+        }
         if (!response.ok) {
             throw new Error(`Failed to get user: ${response.statusText}`);
         }
         return await response.json();
+    }
+
+    async regenerateInviteForUser({
+        sentryUserId,
+    }: {
+        sentryUserId: string;
+    }): Promise<{ regenerate: boolean; reinvite: boolean }> {
+        const res = await fetch(
+            `${this.apiUrl}/api/0/organizations/${this.org}/members/${sentryUserId}/`,
+            {
+                headers: this.headers,
+                body: JSON.stringify({
+                    regenerate: true,
+                    reinvite: true,
+                }),
+                method: "PUT",
+            }
+        );
+        return res.json();
     }
 
     async addUserToOrganization({
@@ -135,7 +171,9 @@ export class SentryService implements AccountService {
         orgRole = "member",
     }: SentryAddUserToOrgParams): Promise<SentryUser> {
         // Add user to the organization
-        const orgMemberResponse = await fetch(
+        // it sents 404 errors if an invitation is pending
+        // it send a 200 response if wrong params sent without any other information
+        const response = await fetch(
             `${this.apiUrl}/api/0/organizations/${this.org}/members/`,
             {
                 method: "POST",
@@ -145,7 +183,7 @@ export class SentryService implements AccountService {
                     orgRole,
                     teamRoles: teamRoles.map((t) => ({
                         teamSlug: t.teamSlug,
-                        role: t.teamRole,
+                        role: t.teamRole, // role 'admin' is never taken into account by sentry
                     })),
                     sendInvite: true,
                     reinvite: true,
@@ -153,13 +191,23 @@ export class SentryService implements AccountService {
             }
         );
 
-        if (!orgMemberResponse.ok) {
-            const errorDetails = await orgMemberResponse.json();
-            throw new Error(
-                `Failed to add user ${email} to organization: ${errorDetails.detail}`
-            );
+        if (response.status === 201) {
+            console.log("User add to organization", teamRoles, orgRole);
+            return response.json();
+        } else {
+            const contentType = response.headers.get("Content-Type");
+            if (contentType?.includes("application/json")) {
+                const errorData = await response.json();
+                throw new Error(
+                    `Failed to add user to organization: ${response.status} ${response.statusText}. ${errorData.detail}`
+                );
+            } else {
+                // Handle non-JSON response if needed, or return the raw text
+                throw new Error(
+                    `Failed to add user ${email} to organization: ${response.status} ${response.statusText}`
+                );
+            }
         }
-        return orgMemberResponse.json();
     }
 
     async changeMemberRoleInTeam({
@@ -168,7 +216,6 @@ export class SentryService implements AccountService {
         teamSlug,
     }): Promise<void> {
         const url = `${this.apiUrl}/api/0/organizations/${this.org}/members/${memberId}/teams/${teamSlug}/`;
-
         const response = await fetch(url, {
             method: "PUT",
             headers: {
@@ -180,17 +227,69 @@ export class SentryService implements AccountService {
             }),
         });
 
-        if (!response.ok) {
-            const errorData = await response.json();
-            throw new Error(
-                `Failed to add user to team: ${response.status} ${response.statusText}. ${errorData.detail}`
+        if (response.status === 404) {
+            throw userAlreadyHaveDefinedRoleOrTeamDoesNotExist;
+        }
+        if (response.status === 200) {
+            await response.json();
+            console.log(
+                `Sentry: User ${memberId} changed team role to ${teamRole} in team ${teamSlug}`
             );
+        } else {
+            const contentType = response.headers.get("Content-Type");
+            if (contentType?.includes("application/json")) {
+                const errorData = await response.json();
+                throw new Error(
+                    `Failed to changed user role : ${response.status} ${response.statusText}. ${errorData.detail}`
+                );
+            } else {
+                // Handle non-JSON response if needed, or return the raw text
+                throw new Error(
+                    `Failed to changed user role : ${response.status} ${response.statusText}`
+                );
+            }
         }
 
-        console.log(
-            `Sentry: User ${memberId} changed team role to ${teamRole} in team ${teamSlug}`
-        );
         return;
+    }
+
+    async createSentryTeam({
+        teamName,
+        teamSlug,
+    }): Promise<CreateSentryTeamResponse> {
+        // it sends 404 error when sentryTeam already exists
+        const url = `${this.apiUrl}/api/0/organizations/${this.org}/teams/`;
+        const response = await fetch(url, {
+            method: "POST",
+            headers: {
+                Authorization: `Bearer ${this.authToken}`, // Sentry API token
+                "Content-Type": "application/json",
+            },
+            body: JSON.stringify({
+                slug: teamSlug,
+                name: teamName,
+            }),
+        });
+        if (response.status === 404) {
+            throw teamAlreadyExistsError;
+        }
+        if (response.status === 201) {
+            console.log(`Sentry: team ${teamName} created in team ${teamSlug}`);
+            return response.json();
+        } else {
+            const contentType = response.headers.get("Content-Type");
+            if (contentType?.includes("application/json")) {
+                const errorData = await response.json();
+                throw new Error(
+                    `Failed to create team: ${response.status} ${response.statusText}. ${errorData.detail}`
+                );
+            } else {
+                // Handle non-JSON response if needed, or return the raw text
+                throw new Error(
+                    `Failed to create team: ${response.status} ${response.statusText}`
+                );
+            }
+        }
     }
 
     async addUserToTeam({
@@ -209,7 +308,7 @@ export class SentryService implements AccountService {
         });
         if (response.status === 201) {
             console.log(
-                `Sentry: User ${memberId} successfully added to the team:`
+                `Sentry: User ${memberId} successfully added to the team: ${teamSlug}`
             );
         } else if (response.status === 204) {
             console.log("Sentry user already in team");
@@ -306,3 +405,51 @@ export class SentryService implements AccountService {
         return null;
     }
 }
+
+export class CustomError extends LibraryCustomError {
+    public constructor(public readonly code: string, message: string = "") {
+        super(message);
+    }
+
+    public json(): object {
+        return {
+            code: this.code,
+            message: this.message,
+        };
+    }
+}
+
+const t = (key: string) => {
+    return key;
+};
+
+export class UnexpectedError extends CustomError {}
+
+export class SentryError extends CustomError {
+    public constructor(
+        code: string,
+        message: string = "",
+        public readonly httpCode?: number
+    ) {
+        super(code, message);
+    }
+
+    public cloneWithHttpCode(httpCode: number): SentryError {
+        return new SentryError(this.code, this.message, httpCode);
+    }
+}
+
+export const teamAlreadyExistsError = new SentryError(
+    "teamAlreadyExists",
+    "Sentry team already exists"
+);
+
+export const userAlreadyHaveDefinedRoleOrTeamDoesNotExist = new SentryError(
+    "userAlreadyHaveDefinedRoleOrTeamDoesNotExist",
+    "User already have defined role or team dost not exist"
+);
+
+export const userNotFound = new SentryError(
+    "userDoesNotExist",
+    "User does not exist"
+);

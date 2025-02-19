@@ -15,6 +15,7 @@ import {
     startupChangeToModel,
     startupToModel,
 } from "@/models/mapper";
+import { sentryTeamToModel } from "@/models/mapper/sentryMapper";
 
 type Props = {
     params: { id: string };
@@ -84,11 +85,13 @@ export default async function Page({ params }: Props) {
         ])
         .where("startups_organizations.startup_id", "=", dbSe.uuid)
         .execute();
-    const sentryTeams = await db
-        .selectFrom("sentry_teams")
-        .where("startup_id", "=", params.id)
-        .selectAll()
-        .execute();
+    const sentryTeams = (
+        await db
+            .selectFrom("sentry_teams")
+            .where("startup_id", "=", params.id)
+            .selectAll()
+            .execute()
+    ).map(sentryTeamToModel);
     const matomoSites = await db
         .selectFrom("matomo_sites")
         .where("startup_id", "=", params.id)

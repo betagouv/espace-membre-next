@@ -64,11 +64,6 @@ export const CreateMatomoServiceForm = ({
         });
         if (res.success) {
             router.push("/services/matomo");
-            // setAlertMessage({
-            //     title: "Compte matomo en cours de création",
-            //     message: "",
-            //     type: "success",
-            // });
         } else {
             setAlertMessage({
                 title: "Une erreur est survenue",
