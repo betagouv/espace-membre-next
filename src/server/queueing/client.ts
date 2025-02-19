@@ -6,6 +6,10 @@ import {
     createSentryServiceAccountTopic,
 } from "./workers/create-sentry-account";
 import {
+    createSentryTeam,
+    createSentryTeamTopic,
+} from "./workers/create-sentry-team";
+import {
     createOrUpdateMatomoServiceAccount,
     createOrUpdateMatomoServiceAccountTopic,
 } from "./workers/create-update-matomo-account";
@@ -71,6 +75,10 @@ export async function startBossClientInstance(): Promise<PgBoss> {
         await bossClient.work(
             createSentryServiceAccountTopic,
             handlerWrapper(createSentryServiceAccount)
+        );
+        await bossClient.work(
+            createSentryTeamTopic,
+            handlerWrapper(createSentryTeam)
         );
         await bossClient.work(
             updateSentryServiceAccountTopic,

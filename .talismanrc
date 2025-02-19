@@ -20,7 +20,7 @@ c59a9d1100346e12754ab4ee7d7c
 - filename: src/app/(private)/(dashboard)/services/page.tsx
   checksum: 6e5763efa45450c3e2c0d30338e7fc045a2f2466e456a3391ec13f7dbc7b40c3
 - filename: src/app/(private)/(dashboard)/services/sentry/page.tsx
-  checksum: 685b3f177bb6124655bb439beb6f3cb4ecdbbeb62adeab9e1f56e811a09a9f5b
+  checksum: 137c4f3f172c74a1b0c104bff7540202801801d877d74f674ad72c3ba4b1a9cc
 - filename: src/app/api/member/[username]/route.ts
   checksum: a5371c646bc9955b72b6cdb5ee3aef340004a092d9e70bbbe4b308c940880370
 - filename: src/app/api/member/actions/createRedirectionForUser.ts
@@ -60,7 +60,7 @@ c59a9d1100346e12754ab4ee7d7c
 - filename: src/components/Service/MatomoServiceForm.tsx
   checksum: ef5418a9df94947e6fb2671f05916a50ad8dcfeb39ad02b8ac3e40a9529de8d7
 - filename: src/components/Service/SentryServiceForm.tsx
-  checksum: 307be70802eff94d3cff17bbed737672d154a8f70f6781608fc0dfef9128fe78
+  checksum: e3d7f5c86f3cbf6a33d84bdd036847acb722687f10500b2a967c7028054065d9
 - filename: src/components/StartupForm/StartupForm.tsx
   checksum: 9825dfaa4fa13ba67d83dc61318030777da59cdce8b9bc8225092ae69b12711a
 - filename: src/components/StartupForm/TechnoEditor.tsx
@@ -92,7 +92,7 @@ c59a9d1100346e12754ab4ee7d7c
 - filename: src/lib/s3.ts
   checksum: a91be258dbac2f22c916598e597bd8cb4ca640e03dd422653486d6288375e849
 - filename: src/lib/sentry.ts
-  checksum: 035884bbbacf7746760dacc26669a3e4a4558ba2b88c0c7a38ec4327d25d0f3d
+  checksum: db61b0ab0428b72335b6814ac09bedd8064a0b6f48cfcaac88971ae728cc5744
 - filename: src/middleware.ts
   checksum: 1ac7177d4d39cf4624f97642cea78396708e11e8e486874f1ff2c5928f017024
 - filename: src/models/member.ts
