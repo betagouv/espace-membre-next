@@ -217,7 +217,7 @@ const testUtils = {
                 start: string;
                 end?: string;
                 status?: string;
-                startups: (
+                startups?: (
                     | "a-startup-at-gip"
                     | "a-startup-at-dinum"
                     | "anotherstartup"
