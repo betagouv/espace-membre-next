@@ -317,6 +317,7 @@ const protectedDataSelect = (db: Kysely<DB> = database) =>
             "users.workplace_insee_code",
             "users.competences",
         ]);
+
 export async function getUserStartupsActive(
     uuid: string,
     db: Kysely<DB> = database
@@ -338,3 +339,4 @@ export const getLatests = (db: Kysely<DB> = database) => {
         .limit(10)
         .execute();
 };
+
