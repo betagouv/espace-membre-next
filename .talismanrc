@@ -1,7 +1,8 @@
 fileignoreconfig:
-- filename: src/utils/webpack.ts
-  checksum: 151681dfc85c362a9fcc8c9b7b268ffa350dd08feffbaf0b5732bd6dd984e4dc
+- filename: package-lock.json
+  checksum: 257b228a3d1698dd1fb09312433bfbafa9fdf703e9ef968e57b6476c5f1ab862
 version: ""
+""
 /app/(private)/(dashboard)/admin/signaux-faibles-beta/AdminProductClientPage.tsx
   checksum: 9c740513497d70e871e4abcad3a9e509ef5b1a0da9db2d0d2d336c19854303b4
 - filename: src/app/(private)/(dashboard)/community/communes.json
