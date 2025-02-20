@@ -1,4 +1,6 @@
 const { withSentryConfig } = require("@sentry/nextjs");
+const path = require("path");
+const tsImport = require("ts-import");
 
 const cspHeader = `
     default-src 'self';
@@ -15,6 +17,21 @@ const cspHeader = `
     upgrade-insecure-requests;
 `;
 
+const tsImportLoadOptions = {
+    mode: tsImport.LoadMode.Compile,
+    compilerOptions: {
+        paths: {
+            // [IMPORTANT] Paths are not working, we modified inside files to use relative ones where needed
+            //'@ad/*': ['./*'],
+        },
+    },
+};
+
+const { applyRawQueryParserOnNextjsCssModule } = tsImport.loadSync(
+    path.resolve(__dirname, `./src/utils/webpack.ts`),
+    tsImportLoadOptions
+);
+
 /** @type {import('next').NextConfig} */
 const nextConfig = {
     async headers() {
@@ -24,12 +41,7 @@ const nextConfig = {
                 headers: [
                     {
                         key: "Content-Security-Policy",
-                        value:
-                            process.env.NODE_ENV === "production"
-                                ? cspHeader.replace(/\n/g, "")
-                                : cspHeader
-                                      .replace("upgrade-insecure-requests;", "")
-                                      .replace(/\n/g, ""),
+                        value: cspHeader.replace(/\n/g, ""),
                     },
                 ],
             },
@@ -59,6 +71,14 @@ const nextConfig = {
                 fs: false,
             };
         }
+
+        // Inject a style loader when we want to use `foo.scss?raw` for backend processing (like emails)
+        applyRawQueryParserOnNextjsCssModule(config.module.rules);
+
+        config.module.rules.push({
+            test: /\.(txt|html)$/i,
+            use: "raw-loader",
+        });
         config.module.rules.push({
             test: /\.woff2$/,
             type: "asset/resource",

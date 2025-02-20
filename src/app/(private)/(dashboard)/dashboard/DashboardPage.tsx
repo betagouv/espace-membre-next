@@ -1,92 +1,20 @@
 "use client";
+
 import { fr } from "@codegouvfr/react-dsfr";
 import { Tile } from "@codegouvfr/react-dsfr/Tile";
 import school from "@gouvfr/dsfr/dist/artwork/pictograms/buildings/school.svg";
+import mailSend from "@gouvfr/dsfr/dist/artwork/pictograms/digital/mail-send.svg";
 import document from "@gouvfr/dsfr/dist/artwork/pictograms/document/document.svg";
 import community from "@gouvfr/dsfr/dist/artwork/pictograms/environment/human-cooperation.svg";
 import locationFrance from "@gouvfr/dsfr/dist/artwork/pictograms/map/location-france.svg";
 import { StaticImageData } from "next/image";
 
+import { SurveyBox } from "@/components/SurveyBox";
 import { linkRegistry } from "@/utils/routes/registry";
-import { getLatests as getLatestsProducts } from "@/lib/kysely/queries/startups";
-import { getLatests as getLatestsMembers } from "@/lib/kysely/queries/users";
-import { Badge } from "@codegouvfr/react-dsfr/Badge";
-import Button from "@codegouvfr/react-dsfr/Button";
-
-type LatestProductsReturnType = Awaited<ReturnType<typeof getLatestsProducts>>;
-type LatestMembersReturnType = Awaited<ReturnType<typeof getLatestsMembers>>;
 
 export interface DashboardPageProps {
     surveyCookieValue: string | null;
-    latestProducts: LatestProductsReturnType;
-    latestMembers: LatestMembersReturnType;
 }
-
-const CardProduct = ({
-    product,
-}: {
-    product: LatestProductsReturnType[number];
-}) => (
-    <Tile
-        className={fr.cx("fr-tile--sm")}
-        title={product.name}
-        desc={product.pitch}
-        enlargeLinkOrButton={true}
-        orientation="horizontal"
-        linkProps={{
-            href: linkRegistry.get("startupDetails", {
-                startupId: product.uuid,
-            }),
-        }}
-        start={
-            <Badge noIcon severity="error" as="span">
-                {product.incubator}
-            </Badge>
-        }
-    />
-);
-
-const CardMember = ({
-    member,
-}: {
-    member: LatestMembersReturnType[number];
-}) => (
-    <Tile
-        key={member.uuid}
-        className={fr.cx("fr-tile--sm")}
-        title={member.fullname}
-        desc={
-            <>
-                {member.role}
-                <br />
-                <span
-                    style={{ display: "block" }}
-                    className={fr.cx("fr-text--light", "fr-mb-1w")}
-                >
-                    {member.bio}
-                </span>
-            </>
-        }
-        start={
-            <span style={{ display: "flex", flexDirection: "column" }}>
-                {member.startups.map((s) => (
-                    <span key={s.uuid} className={fr.cx("fr-mb-1v")}>
-                        <Badge noIcon severity="info" as="span">
-                            {s.name}
-                        </Badge>
-                    </span>
-                ))}
-            </span>
-        }
-        enlargeLinkOrButton={true}
-        orientation="horizontal"
-        linkProps={{
-            href: linkRegistry.get("communityMember", {
-                username: member.username,
-            }),
-        }}
-    />
-);
 
 export function DashboardPage(props: DashboardPageProps) {
     return (
@@ -182,62 +110,6 @@ export function DashboardPage(props: DashboardPageProps) {
                             href: `${linkRegistry.get("metabase")}`,
                         }}
                     />
-                </div>
-            </div>
-            <div
-                className={fr.cx(
-                    "fr-grid-row",
-                    "fr-grid-row--gutters",
-                    "fr-mt-6w",
-                    "fr-px-6w"
-                )}
-                style={{
-                    background: "linear-gradient( #ececfe, #f5f5fe )",
-                }}
-            >
-                <div className={fr.cx("fr-col-12", "fr-col-lg-6")}>
-                    <h2 className={fr.cx("fr-pt-4w")}>Nouveaux produits</h2>
-                    <div
-                        className={fr.cx("fr-grid-row", "fr-grid-row--gutters")}
-                    >
-                        {props.latestProducts.slice(0, 5).map((p) => (
-                            <div key={p.uuid} className={fr.cx("fr-col-12")}>
-                                <CardProduct product={p} />
-                            </div>
-                        ))}
-                        <div className={fr.cx("fr-col-12")}>
-                            <Button
-                                priority="secondary"
-                                linkProps={{
-                                    href: linkRegistry.get("startupList"),
-                                }}
-                            >
-                                Explorer les produits →
-                            </Button>
-                        </div>
-                    </div>
-                </div>
-                <div className={fr.cx("fr-col-12", "fr-col-lg-6")}>
-                    <h2 className={fr.cx("fr-pt-4w")}>Nouveaux membres</h2>
-                    <div
-                        className={fr.cx("fr-grid-row", "fr-grid-row--gutters")}
-                    >
-                        {props.latestMembers.slice(0, 5).map((m) => (
-                            <div key={m.uuid} className={fr.cx("fr-col-12")}>
-                                <CardMember member={m} />
-                            </div>
-                        ))}
-                        <div className={fr.cx("fr-col-12")}>
-                            <Button
-                                priority="secondary"
-                                linkProps={{
-                                    href: linkRegistry.get("community"),
-                                }}
-                            >
-                                Explorer les membres →
-                            </Button>
-                        </div>
-                    </div>
                 </div>
             </div>
         </div>

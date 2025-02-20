@@ -38,7 +38,7 @@ import { getIncubator } from "@/lib/kysely/queries/incubators";
 import {
     getAllUsersInfo,
     getUserBasicInfo,
-    getUserByStartup,
+    getUsersByStartup,
     getUserInfos,
 } from "@/lib/kysely/queries/users";
 import {
@@ -113,7 +113,7 @@ export function phaseToModel(phase: Selectable<Phases>): phaseSchemaType {
 export function memberBaseInfoToModel(
     user:
         | Awaited<ReturnType<typeof getAllUsersInfo>>[0]
-        | Awaited<ReturnType<typeof getUserByStartup>>[0]
+        | Awaited<ReturnType<typeof getUsersByStartup>>[0]
 ): memberBaseInfoSchemaType {
     if (!user) {
         throw new Error("No users");
