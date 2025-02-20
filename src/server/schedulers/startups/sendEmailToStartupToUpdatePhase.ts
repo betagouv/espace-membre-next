@@ -19,7 +19,7 @@ export const sendEmailToStartupToUpdatePhase = async (
             await db
                 .selectFrom("startups")
                 .selectAll()
-                .where("mailing_list", "is not", "null")
+                .where("mailing_list", "is not", null)
                 .execute()
         ).map((startup) => startupToModel(startup));
     // .whereIn("current_phase", ACTIVE_PHASES)

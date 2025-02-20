@@ -40,66 +40,30 @@
         "plugins": [
             {
                 "name": "next"
+            },
+            {
+                "name": "typescript-plugin-css-modules"
             }
         ]
     },
     "ts-node": {
-        "require": ["tsconfig-paths/register"],
+        "require": ["tsconfig-paths/register", "./__tests__/raw-loader.js"],
+        "files": true,
         "transpileOnly": true,
         "compilerOptions": {
+            "allowSyntheticDefaultImports": true,
             "module": "commonjs",
             "target": "es6",
-            "jsx": "react-jsx",
-            "paths": {
-                "@config": ["./src/config/index.ts"],
-                "@config/*": ["./src/config/*"],
-                "@controllers/*": ["./src/server/controllers/*"],
-                "@components/*": ["./src/server/views/pages/components/*"],
-                "@infra/*": ["./src/server/infra/*"],
-                "@lib/*": ["./src/lib/*"],
-                "@utils/*": ["./src/utils/*"],
-                "@models/*": ["./src/server/models/*"],
-                "@modules/*": ["./src/server/modules/*"],
-                "@schedulers/*": ["./src/server/schedulers/*"],
-                "@services/*": ["./src/server/services/*"],
-                "@views": ["./src/server/views/index.ts"],
-                "@views/*": ["./src/server/views/*"]
+            "jsx": "react-jsx"
+        },
+        "plugins": [
+            {
+                "transform": "typescript-transform-paths"
             },
-            "plugins": [
-                {
-                    "transform": "typescript-transform-paths"
-                }
-            ]
-        }
-    },
-    "ts-mocha": {
-        "require": ["tsconfig-paths/register"],
-        "transpileOnly": true,
-        "compilerOptions": {
-            "module": "commonjs",
-            "target": "es6",
-            "jsx": "react-jsx",
-            "paths": {
-                "@config": ["./src/config/index.ts"],
-                "@config/*": ["./src/config/*"],
-                "@controllers/*": ["./src/server/controllers/*"],
-                "@components/*": ["./src/server/views/pages/components/*"],
-                "@infra/*": ["./src/server/infra/*"],
-                "@lib/*": ["./src/lib/*"],
-                "@utils/*": ["./src/utils/*"],
-                "@models/*": ["./src/server/models/*"],
-                "@modules/*": ["./src/server/modules/*"],
-                "@schedulers/*": ["./src/server/schedulers/*"],
-                "@services/*": ["./src/server/services/*"],
-                "@views": ["./src/server/views/index.ts"],
-                "@views/*": ["./src/server/views/*"]
-            },
-            "plugins": [
-                {
-                    "transform": "typescript-transform-paths"
-                }
-            ]
-        }
+            {
+                "name": "typescript-plugin-css-modules"
+            }
+        ]
     },
     "include": [
         "next-env.d.ts",

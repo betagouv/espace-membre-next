@@ -19,10 +19,9 @@ export async function sendEmailToTeamsToCheckOnTeamComposition(
         await db
             .selectFrom("startups")
             .selectAll()
-            .where("mailing_list", "is not", "null")
+            .where("mailing_list", "is not", null)
             .execute()
     ).map((startup) => startupToModel(startup));
-
     console.log(`Will send email to ${startups.length} mailing lists`);
     const now = new Date();
     for (const startup of startups) {
@@ -59,7 +58,7 @@ export async function sendEmailToTeamsToCheckOnTeamComposition(
                     startup: startup,
                     memberAccountLink: `${config.protocol}://${config.host}/account/base-info`,
                 },
-                toEmail: [`${startup.mailing_list}@beta.gouv.fr`],
+                toEmail: [`${startup.mailing_list}@${config.domain}`],
             });
         } catch (e) {
             console.error(e);

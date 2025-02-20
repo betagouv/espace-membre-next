@@ -274,11 +274,13 @@ const testUtils = {
                             .values({
                                 ghid: startup,
                                 name: startup,
+                                mailing_list: `${startup}`,
                             })
                             .onConflict((oc) => {
                                 return oc.column("ghid").doUpdateSet({
                                     ghid: startup,
                                     name: startup,
+                                    mailing_list: `${startup}`,
                                 });
                             })
                             .returningAll()
