@@ -20,6 +20,7 @@
         "inlineSources": true,
         "sourceRoot": "/",
         "baseUrl": "./",
+        "require": ["tsconfig-paths/register", "./__tests__/raw-loader.js"],
         "paths": {
             "@/*": ["src/*"],
             "@config": ["src/config/index.ts"],
