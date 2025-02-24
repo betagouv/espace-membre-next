@@ -24,7 +24,7 @@ check_server_and_init() {
   timeout=15
   counter=0
 
-  host="$HOSTNAME:$PORT"
+  host="$FULL_HOSTNAME"
   healthcheck_url="http://$host"
 
   while true; do
@@ -46,7 +46,7 @@ check_server_and_init() {
     sleep 1
     counter=$((counter+1))
   done
-
+    echo "Will curl init"
   curl http://$host/api/init
 }
 
