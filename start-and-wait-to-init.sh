@@ -24,7 +24,7 @@ check_server_and_init() {
   timeout=15
   counter=0
 
-  host="$HOSTNAME:$PORT"
+  host="localhost:$PORT"
   healthcheck_url="http://$host"
 
   while true; do
