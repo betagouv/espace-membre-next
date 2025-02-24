@@ -1,6 +1,6 @@
 fileignoreconfig:
 - filename: package-lock.json
-  checksum: 257b228a3d1698dd1fb09312433bfbafa9fdf703e9ef968e57b6476c5f1ab862
+  checksum: 61b3bceb48bed801abe564d6fc981e24968025bb11ce068aafe7298fe5bfb0c2
 version: ""
 ""
 /app/(private)/(dashboard)/admin/signaux-faibles-beta/AdminProductClientPage.tsx

@@ -47,7 +47,7 @@
         ]
     },
     "ts-node": {
-        "require": ["tsconfig-paths/register", "./__tests__/raw-loader.js"],
+        "require": ["tsconfig-paths/register", "./build-helpers/raw-loader.js"],
         "files": true,
         "transpileOnly": true,
         "compilerOptions": {

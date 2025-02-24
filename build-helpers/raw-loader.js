@@ -1,8 +1,12 @@
 const fs = require("fs");
 const path = require("path");
 const REQUIRE_PATH_TEST = /\.scss$/;
-// ts-node is used by ts-mocha for test purpose
-//scss?raw file are not supported by ts-node. This script load scss?raw file using fs.readFileSync
+/*  ts-node is used by ts-mocha for test purpose
+scss?raw file are not supported by ts-node. This script load scss?raw file using fs.readFileSync 
+we can use it also when dry running a script that use scss with node 
+ie: node -r ./build-helpers/raw-loader.js dist/src/server/scripts/runSendEmail.js
+*/
+
 /* eslint-disable no-underscore-dangle */
 
 /**

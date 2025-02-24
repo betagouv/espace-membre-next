@@ -47,6 +47,9 @@ const nextConfig = {
             },
         ];
     },
+    sassOptions: {
+        silenceDeprecations: ["legacy-js-api"], // Needed until `sass` v2
+    },
     experimental: {
         serverComponentsExternalPackages: [
             "knex",

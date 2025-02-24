@@ -26,7 +26,7 @@ import {
     updateSentryServiceAccountTopic,
 } from "./workers/update-sentry-account";
 import { BusinessError, ErrorWithStatus } from "@/utils/error";
-import { gracefulExit } from "@/utils/gracefulExist";
+import { gracefulExit } from "@/utils/systemExit";
 
 let databaseUrl = process.env.DATABASE_URL || "";
 databaseUrl = databaseUrl.replace("sslmode=prefer", "sslmode=no-verify");
