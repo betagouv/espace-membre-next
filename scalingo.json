@@ -16,7 +16,7 @@
         "NEXTAUTH_URL": {
             "generator": "url"
         },
-        "HOSTNAME": {
+        "FULL_HOSTNAME": {
             "generator": "template",
             "template": "%APP%.osc-fr1.scalingo.io"
         }

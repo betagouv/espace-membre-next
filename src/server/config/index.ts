@@ -141,7 +141,7 @@ export default {
     SESSION_COOKIE_NAME: "espaceMembreCookieName",
     secure: isSecure,
     protocol: isSecure ? "https" : "http",
-    host: process.env.HOSTNAME,
+    host: process.env.FULL_HOSTNAME,
     port: parseInt(process.env.PORT || "3000", 10),
     CHATWOOT_ID: process.env.CHATWOOT_ID,
     CHATWOOT_IGNORE_EMAILS: (process.env.CHATWOOT_IGNORE_EMAILS || "").split(
