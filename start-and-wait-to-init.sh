@@ -25,7 +25,7 @@ check_server_and_init() {
   counter=0
 
   host="$FULL_HOSTNAME"
-  healthcheck_url="http://$host"
+  healthcheck_url="https://$host"
 
   while true; do
     response=$(curl --write-out %{http_code} --silent --output /dev/null "$healthcheck_url")
@@ -47,7 +47,7 @@ check_server_and_init() {
     counter=$((counter+1))
   done
     echo "Will curl init"
-  curl http://$host/api/init
+  curl https://$host/api/init
 }
 
 # In parallel wait for the server readiness to init some services
