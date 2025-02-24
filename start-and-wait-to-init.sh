@@ -21,10 +21,10 @@ stop_server() {
 trap stop_server INT
 
 check_server_and_init() {
-  timeout=15
+  timeout=60
   counter=0
 
-  host="$FULL_HOSTNAME:$POST"
+  host="$HOSTNAME:$PORT"
   healthcheck_url="http://$host"
 
   while true; do
