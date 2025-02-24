@@ -6,7 +6,7 @@
 #
 
 echo "Start the server in background"
-NODE_ENV=production node dist/src/server/server.js &
+node dist/src/server/server.js &
 
 # Store the server process ID
 next_pid=$!
@@ -24,7 +24,7 @@ check_server_and_init() {
   timeout=15
   counter=0
 
-  host="$HOSTNAME"
+  host="$HOSTNAME:$PORT"
   healthcheck_url="http://$host"
 
   while true; do
