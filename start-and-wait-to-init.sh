@@ -47,7 +47,7 @@ check_server_and_init() {
   done
 
   echo "Will curl init"
-  curl http://$host/api/init
+  curl -L http://$host/api/init
 }
 
 # In parallel wait for the server readiness to init some services
