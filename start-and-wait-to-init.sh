@@ -46,7 +46,7 @@ check_server_and_init() {
     sleep 1
     counter=$((counter+1))
   done
-    echo "Will curl init"
+  echo "Will curl init"
   curl http://$host/api/init
 }
 
