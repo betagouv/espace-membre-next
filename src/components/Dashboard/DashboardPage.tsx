@@ -1,5 +1,7 @@
 "use client";
 import { fr } from "@codegouvfr/react-dsfr";
+import { Badge } from "@codegouvfr/react-dsfr/Badge";
+import Button from "@codegouvfr/react-dsfr/Button";
 import { Tile } from "@codegouvfr/react-dsfr/Tile";
 import school from "@gouvfr/dsfr/dist/artwork/pictograms/buildings/school.svg";
 import document from "@gouvfr/dsfr/dist/artwork/pictograms/document/document.svg";
@@ -7,11 +9,10 @@ import community from "@gouvfr/dsfr/dist/artwork/pictograms/environment/human-co
 import locationFrance from "@gouvfr/dsfr/dist/artwork/pictograms/map/location-france.svg";
 import { StaticImageData } from "next/image";
 
-import { linkRegistry } from "@/utils/routes/registry";
-import { getLatests as getLatestsProducts } from "@/lib/kysely/queries/startups";
 import { getLatests as getLatestsMembers } from "@/lib/kysely/queries/users";
-import { Badge } from "@codegouvfr/react-dsfr/Badge";
-import Button from "@codegouvfr/react-dsfr/Button";
+import { linkRegistry } from "@/utils/routes/registry";
+
+import { getLatests as getLatestsProducts } from "@/lib/kysely/queries/startups";
 
 type LatestProductsReturnType = Awaited<ReturnType<typeof getLatestsProducts>>;
 type LatestMembersReturnType = Awaited<ReturnType<typeof getLatestsMembers>>;

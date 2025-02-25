@@ -103,7 +103,9 @@ export async function middleware(req: NextRequest) {
 
     if (!verifiedToken) {
         // if this an API request, respond with JSON
-        if (req.nextUrl.pathname.startsWith("/api/")) {
+        if (req.nextUrl.pathname === "/api/init") {
+            return NextResponse.next();
+        } else if (req.nextUrl.pathname.startsWith("/api/")) {
             return new NextResponse(
                 JSON.stringify({
                     error: { message: "authentication required" },
@@ -113,9 +115,8 @@ export async function middleware(req: NextRequest) {
         }
         // otherwise, redirect to the set token page
         else {
-            // /!\ redirecting to pathname as req.url always use localhost:3000 as hostname
             return NextResponse.redirect(
-                new URL(`/login?next=${req.nextUrl.pathname}`, req.url)
+                new URL(`/login?next=${req.url}`, req.url)
             );
         }
     }

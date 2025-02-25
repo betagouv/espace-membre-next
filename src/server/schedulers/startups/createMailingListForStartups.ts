@@ -1,7 +1,7 @@
 import { generateMailingListName } from ".";
 import { db } from "@/lib/kysely";
 import { getAllStartups } from "@/lib/kysely/queries";
-import { getUserByStartup } from "@/lib/kysely/queries/users";
+import { getUsersByStartup } from "@/lib/kysely/queries/users";
 import { phaseToModel, startupToModel } from "@/models/mapper";
 import { CommunicationEmailCode } from "@/models/member";
 import { memberBaseInfoSchema } from "@/models/member";
@@ -18,7 +18,7 @@ const addAndRemoveMemberToMailingListForStartup = async (
     startup: startupSchemaType
 ) => {
     const mailingListName = generateMailingListName(startup);
-    const startupMembers = (await getUserByStartup(startup.uuid)).map(
+    const startupMembers = (await getUsersByStartup(startup.uuid)).map(
         (user) => {
             return memberBaseInfoSchema.parse(user);
         }

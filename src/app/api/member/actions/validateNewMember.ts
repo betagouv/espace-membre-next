@@ -64,7 +64,7 @@ export async function validateNewMember({
     if (event) {
         throw new BusinessError(
             "userAlreadyValided",
-            `Le nouveau membre a déjà été validé par ${event.created_by_username}`
+            `Le nouveau membre a été validé par ${event.created_by_username}`
         );
     }
     if (
@@ -82,12 +82,12 @@ export async function validateNewMember({
         (await isSessionUserIncubatorTeamAdminForUser({
             user: newMember,
             sessionUserUuid: session.user.uuid,
-            incubator_id: incubator_id || undefined,
+            incubator_id,
         }));
     if (!sessionUserIsFromIncubatorTeam) {
         throw new BusinessError(
             "sessionUserNotAdminOrNotInRequiredIncubatorTeam",
-            "Tu n'as pas les droits pour valider ce membre. Tu n'es pas dans l'équipe transverse de l'incubateur dont ce membre fait partie."
+            "Tu n'a pas les droits pour valider ce membre. Tu n'es pas dans l'équipe transverse de l'incubateur dont ce membre fait partie."
         );
     }
 

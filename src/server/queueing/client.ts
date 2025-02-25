@@ -14,6 +14,10 @@ import {
     createOrUpdateMatomoServiceAccountTopic,
 } from "./workers/create-update-matomo-account";
 import {
+    sendEmailToTeamsToCheckOnTeamComposition,
+    sendEmailToTeamsToCheckOnTeamCompositionTopic,
+} from "./workers/send-email-to-teams-to-check-on-team-composition";
+import {
     sendNewMemberValidationEmail,
     sendNewMemberValidationEmailTopic,
 } from "./workers/send-validation-email";
@@ -22,7 +26,7 @@ import {
     updateSentryServiceAccountTopic,
 } from "./workers/update-sentry-account";
 import { BusinessError, ErrorWithStatus } from "@/utils/error";
-import { gracefulExit } from "@/utils/gracefulExist";
+import { gracefulExit } from "@/utils/systemExit";
 
 let databaseUrl = process.env.DATABASE_URL || "";
 databaseUrl = databaseUrl.replace("sslmode=prefer", "sslmode=no-verify");
@@ -87,6 +91,10 @@ export async function startBossClientInstance(): Promise<PgBoss> {
         await bossClient.work(
             sendNewMemberValidationEmailTopic,
             handlerWrapper(sendNewMemberValidationEmail)
+        );
+        await bossClient.work(
+            sendEmailToTeamsToCheckOnTeamCompositionTopic,
+            handlerWrapper(sendEmailToTeamsToCheckOnTeamComposition)
         );
     });
 }
