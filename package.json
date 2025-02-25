@@ -14,8 +14,6 @@
         "build": "npm run build:next && npm run build:server-esbuild",
         "start": "NODE_ENV=production node dist/src/server/server.js",
         "lint": "next lint",
-        "dev:storybook": "only-include-used-icons && npm run dev:storybook:command",
-        "dev:storybook:command": "storybook dev -p 6006 --no-open",
         "migrate": "knex migrate:latest --esm",
         "rolldown": "knex migrate:down --esm",
         "makeMigration": "knex migrate:make -x ts --esm",
@@ -30,9 +28,7 @@
         "dev-import-from-www": "ts-node src/scripts/import-from-www",
         "export-to-www": "./src/scripts/export-to-www.sh",
         "fixme": "node ./node_modules/.bin/fixme -p src",
-        "pg-mermaid": "npx -s pg-mermaid --dbname secretariat --username secretariat -h 127.0.0.1 -p 5432 --password secretariat --excluded-tables badge_requests community knex_migrations knex_migrations_lock startup_aggregated_stats",
-        "storybook": "storybook dev -p 6006",
-        "build-storybook": "storybook build"
+        "pg-mermaid": "npx -s pg-mermaid --dbname secretariat --username secretariat -h 127.0.0.1 -p 5432 --password secretariat --excluded-tables badge_requests community knex_migrations knex_migrations_lock startup_aggregated_stats"
     },
     "config": {
         "commitizen": {
