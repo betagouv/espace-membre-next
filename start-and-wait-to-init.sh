@@ -27,7 +27,7 @@ check_server_and_init() {
 
   while true; do
     response=$(curl --write-out %{http_code} --silent --output /dev/null "$healthcheck_url")
-    if [ "$response" = "200" ]; then
+    if [ "$response" = "200" ] || [ "$response" = "301" ]; then
       echo "Server is ready. Proceeding to init..."
       break
     fi
