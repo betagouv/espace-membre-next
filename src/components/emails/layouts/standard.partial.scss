@@ -61,6 +61,11 @@ h2 {
     margin-left: .75rem
 }
 
+.member-info th, .member-info td {
+ border: 1px solid #000;
+ padding: 10px;
+}
+
 @mixin darkStyle {
   a {
     color: #8585f6 !important;
@@ -103,9 +108,11 @@ h2 {
   td {
     border-color: #fff !important;
   }
+  .member-info th, .member-info td {
+    border-color: #fff !important;
+    color: #cecece !important;
+  }
+  
+  color: #cecece !important;
 }
 
-.member-info th, .member-info td {
-    border: 1px solid #000;
-    padding: 10px;
-}
