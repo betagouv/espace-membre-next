@@ -20,7 +20,7 @@ check_server_and_init() {
   timeout=60
   counter=0
 
-  host="${HOSTNAME:PORT}"
+  host="$HOSTNAME:$PORT"
   healthcheck_url="http://$host"
 
   echo "Healthcheck URL: $healthcheck_url"
