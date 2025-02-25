@@ -1,32 +1,16 @@
 {
-    "extends": [
-        "next/core-web-vitals",
-        "plugin:storybook/recommended"
-    ],
-    "plugins": [
-        "import"
-    ],
+    "extends": "next/core-web-vitals",
+    "plugins": ["import"],
     "rules": {
-        "indent": [
-            "off",
-            4
-        ],
+        "indent": ["off", 4],
         "react/no-unescaped-entities": "off",
         "react/no-children-prop": "off",
         "import/order": [
             "warn",
             {
                 "groups": [
-                    [
-                        "builtin",
-                        "external"
-                    ],
-                    [
-                        "internal",
-                        "parent",
-                        "sibling",
-                        "index"
-                    ]
+                    ["builtin", "external"],
+                    ["internal", "parent", "sibling", "index"]
                 ],
                 "pathGroups": [
                     {
@@ -35,9 +19,7 @@
                         "position": "before"
                     }
                 ],
-                "pathGroupsExcludedImportTypes": [
-                    "builtin"
-                ],
+                "pathGroupsExcludedImportTypes": ["builtin"],
                 "newlines-between": "always",
                 "alphabetize": {
                     "order": "asc",
