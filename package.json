@@ -11,7 +11,7 @@
         "build:server": "ttsc -p tsconfig.server.json && npm run copy-scss",
         "build:server-esbuild": "node build.js",
         "copy-scss": "copyfiles \"src/**/*.scss\" dist",
-        "build": "npm run build:next && npm run server-esbuild",
+        "build": "npm run build:next && npm run build:server-esbuild",
         "start": "NODE_ENV=production node dist/src/server/server.js",
         "lint": "next lint",
         "dev:storybook": "only-include-used-icons && npm run dev:storybook:command",
