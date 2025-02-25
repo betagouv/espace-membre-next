@@ -1,9 +1,5 @@
 #!/bin/sh
-
-#
-# We trigger an init endpoint to set up all async processes like cron scheduling
-# because unfortunately Next.js does not provide a proper way to use a startup callback
-#
+set -x
 
 echo "Start the server in background"
 node dist/src/server/server.js &
@@ -24,12 +20,15 @@ check_server_and_init() {
   timeout=60
   counter=0
 
-  host="$HOSTNAME:$PORT"
+  host="${HOSTNAME:-localhost}:${PORT:-3000}"
   healthcheck_url="http://$host"
+
+  echo "Healthcheck URL: $healthcheck_url"
 
   while true; do
     response=$(curl --write-out %{http_code} --silent --output /dev/null "$healthcheck_url")
     if [ "$response" = "200" ]; then
+      echo "Server is ready. Proceeding to init..."
       break
     fi
 
@@ -41,11 +40,12 @@ check_server_and_init() {
       exit 1
     fi
 
-    echo "the Next.js server is not yet ready on $healthcheck_url"
+    echo "The Next.js server is not yet ready on $healthcheck_url"
 
     sleep 1
     counter=$((counter+1))
   done
+
   echo "Will curl init"
   curl http://$host/api/init
 }
