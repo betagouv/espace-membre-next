@@ -3,7 +3,13 @@ import { NextResponse } from "next/server";
 import { scheduleCronTasks } from "@/server/queueing/schedule";
 import { gracefulExit, registerGracefulExit } from "@/utils/systemExit";
 
-let init = false;
+declare global {
+    var init: boolean | undefined;
+}
+
+// Make it unique singleton across Next.js module compilations
+export let init = global.init || false;
+if (process.env.NODE_ENV !== "production") global.init = init;
 
 export async function GET() {
     if (!init) {
