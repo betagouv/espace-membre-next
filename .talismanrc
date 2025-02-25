@@ -1,10 +1,7 @@
 fileignoreconfig:
-- filename: .env.test
-  checksum: 03acf8c53141e07a3749fe2f041587598d8ce48a175c472c37afad011c8834e6
-version: ""
-ion: ""
-""
-/app/(private)/(dashboard)/admin/signaux-faibles-beta/AdminProductClientPage.tsx
+- filename: build.js
+  checksum: be1a95c1aaa7a0917770830c4900dd8d5056dbe42fcae4f9320bc5c0c6d56dff
+- filename: package-lock.json
   checksum: 9c740513497d70e871e4abcad3a9e509ef5b1a0da9db2d0d2d336c19854303b4
 - filename: src/app/(private)/(dashboard)/community/communes.json
   checksum: f69dbcbfe5e1e7c1bd9340c7bb3d9de9cbc9d4080363e80d8b4da190fb6ae045
@@ -101,12 +98,15 @@ ion: ""
 - filename: src/utils/routes/list.ts
   checksum: ebb1c7a8c5fb51e0e49a23f79d1342f177946b4e783154bb265970b672aa2a2c
 - filename: src/utils/url.ts
-  checksum: 21d2da1f85cc6ce2cc3324248e3c44ad84a6775f6c1cc8435e7cfa164824b853
+  checksum: 6c0989d85371d5071d9dcaa141e1c35b10f7124a3628deef443a4a1ccacfa34f
 scopeconfig:
 - scope: node
 version: "1.0"
-ompositionEmail/teamCompositionEmail.tsx
-      checksum: 514785a4c566f65115f1b5321e0d01b44f73ead61a12e71ca2a51f7d820b6ba5
+447aca293dfcdbb
+    - filename: src/utils/routes/list.ts
+      checksum: ebb1c7a8c5fb51e0e49a23f79d1342f177946b4e783154bb265970b672aa2a2c
+    - filename: src/utils/url.ts
+      checksum: 21d2da1f85cc6ce2cc3324248e3c44ad84a6775f6c1cc8435e7cfa164824b853
     - filename: src/utils/routes/list.ts
       checksum: ebb1c7a8c5fb51e0e49a23f79d1342f177946b4e783154bb265970b672aa2a2c
     - filename: src/utils/url.ts
