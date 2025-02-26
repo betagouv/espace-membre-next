@@ -31,38 +31,6 @@ export function TeamCompositionEmail(props: EmailTeamComposition["variables"]) {
                     {props.startup.name}.
                 </p>
                 <p>Voici les membres actuellements dans ton équipe : </p>
-                {/* {props.activeMembers.map((activeMember, index) => (
-                    <>
-                        <p>{activeMember.member.fullname}</p>
-                        <ul key={index}>
-                            <li>Role : {activeMember.member.role}</li>
-                            <li>
-                                Début de mission :{" "}
-                                {format(
-                                    activeMember.activeMission.start,
-                                    "dd/MM/yyyy",
-                                    { locale: fr }
-                                )}
-                                {}
-                            </li>
-                            <li>
-                                Fin de mission :{" "}
-                                {!!activeMember.activeMission.end &&
-                                    `${format(
-                                        activeMember.activeMission.end,
-                                        "dd/MM/yyyy",
-                                        { locale: fr }
-                                    )}`}
-                                {!activeMember.activeMission.end &&
-                                    `Pas de date de fin`}
-                            </li>
-                            <li>
-                                Employer : {activeMember.activeMission.employer}
-                            </li>
-                        </ul>
-                        <hr />
-                    </>
-                ))} */}
                 <table className="member-info" style={{ width: "100%" }}>
                     <thead>
                         <tr>

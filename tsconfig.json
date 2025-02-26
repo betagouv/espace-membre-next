@@ -18,7 +18,6 @@
         "incremental": true,
         "baseUrl": ".",
         "paths": {
-            "@sbook/*": [".storybook/*"],
             "@/*": ["./src/*"],
             "@config": ["src/server/config/index.ts"],
             "@config/*": ["src/server/config/*"],
