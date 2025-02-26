@@ -13,7 +13,13 @@
         }
     ],
     "env": {
+        "APP_BASE_URL": {
+            "generator": "url"
+        },
         "NEXTAUTH_URL": {
+            "generator": "url"
+        },
+        "NEXT_PUBLIC_APP_BASE_URL": {
             "generator": "url"
         },
         "FULL_HOSTNAME": {
