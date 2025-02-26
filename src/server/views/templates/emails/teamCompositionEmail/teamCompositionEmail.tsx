@@ -30,7 +30,7 @@ export function TeamCompositionEmail(props: EmailTeamComposition["variables"]) {
                     Tu reçois cet email car tu fais partie de l'équipe :{" "}
                     {props.startup.name}.
                 </p>
-                <p>Voici les membres actuellements dans ton équipe : </p>
+                <p>Voici les membres actuellement dans ton équipe : </p>
                 <table className="member-info" style={{ width: "100%" }}>
                     <thead>
                         <tr>
