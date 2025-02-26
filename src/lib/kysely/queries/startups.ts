@@ -32,7 +32,7 @@ WITH recent_events AS (
                ELSE NULL 
            END AS startup_id
     FROM events e, EACH(hstore(e.action_metadata)) AS kv
-    WHERE e.created_at <= NOW() - INTERVAL '${numberOfMonths} months'
+    WHERE e.created_at >= NOW() - INTERVAL '${numberOfMonths} months'
     AND kv.key LIKE 'value.missions.%.startups.%'
     AND EXISTS (
         SELECT 1

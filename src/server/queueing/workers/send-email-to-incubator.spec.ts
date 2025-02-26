@@ -1,23 +1,25 @@
+import { addDays, addDays, subDays } from "date-fns";
 import { Selectable } from "kysely";
 import PgBoss from "pg-boss";
 import proxyquire from "proxyquire";
 import sinon from "sinon";
 
 import { Users } from "@/@types/db";
+import { addEvent } from "@/lib/events";
 import { db } from "@/lib/kysely";
 import { getUserByStartup } from "@/lib/kysely/queries/users";
+import { EventCode } from "@/models/actionEvent";
 import {
     incubatorToModel,
     memberBaseInfoToModel,
     memberPublicInfoToModel,
     startupToModel,
 } from "@/models/mapper";
+import { Domaine } from "@/models/member";
 import config from "@/server/config";
 import { EMAIL_TYPES } from "@/server/modules/email";
 import testUsers from "__tests__/users.json";
 import utils from "__tests__/utils";
-import { addDays, subDays } from "date-fns";
-import { Domaine } from "@/models/member";
 
 describe("sendEmailToIncubatorTeam()", () => {
     let sendEmailStub, getServerSessionStub, sendEmailToIncubatorTeam;
@@ -181,6 +183,76 @@ describe("sendEmailToIncubatorTeam()", () => {
                     },
                 ],
             },
+        });
+    });
+
+    it("should send listing startup to incubator teams", async () => {
+        await sendEmailToIncubatorTeam({
+            data: {},
+        } as unknown as PgBoss.Job<void>);
+        const startup = await db
+            .selectFrom("startups")
+            .selectAll()
+            .where("name", "=", "seconda-startup-name")
+            .executeTakeFirstOrThrow();
+        const usersByStartup = await getUserByStartup(startup.uuid);
+        sendEmailStub.firstCall.args[0].should.deep.equal({
+            toEmail: [userB.primary_email],
+            type: EMAIL_TYPES.EMAIL_STARTUP_MEMBERS_DID_NOT_CHANGE_IN_X_MONTHS,
+            variables: {
+                incubator: incubatorToModel(newIncubatorB),
+                startupWrappers: [
+                    {
+                        startup: startupToModel(startup),
+                        activeMembers: 1,
+                        lastModification: startup.updated_at,
+                    },
+                ],
+            },
+        });
+    });
+    describe("adding an event on startup name", async () => {
+        beforeEach(async () => {
+            await addEvent({
+                action_code: EventCode.MEMBER_BASE_INFO_UPDATED,
+                action_on_username: newUser.username,
+                created_by_username: newUser.username,
+                action_metadata: {
+                    value: {
+                        missions: [
+                            {
+                                startups: [newStartup.uuid],
+                                start: new Date(),
+                                end: new Date(),
+                            },
+                        ],
+                        domaine: newUser.domaine,
+                        fullname: newUser.fullname,
+                        role: newUser.role,
+                        secondary_email: newUser.secondary_email,
+                    },
+                    old_value: {
+                        missions: [
+                            {
+                                startups: [newStartup.uuid],
+                                start: new Date(),
+                                end: addDays(new Date(), 3),
+                            },
+                        ],
+                        domaine: newUser.domaine,
+                        fullname: newUser.fullname,
+                        role: newUser.role,
+                        secondary_email: newUser.secondary_email,
+                    },
+                },
+            });
+        });
+        afterEach(async () => {});
+        it("should not send email if startup has an event withn last 3 months", async () => {
+            await sendEmailToIncubatorTeam({
+                data: {},
+            } as unknown as PgBoss.Job<void>);
+            sendEmailStub.called.should.be.false;
         });
     });
 });
