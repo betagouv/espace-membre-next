@@ -46,8 +46,7 @@ export async function getUserInfos(
     let query = db
         .selectFrom("users")
         .selectAll("users")
-        .select((eb) => [withEndDate, withMissions, withTeams])
-        .groupBy(MEMBER_PROTECTED_INFO);
+        .select((eb) => [withEndDate, withMissions, withTeams]);
     if ("username" in params) {
         query = query.where("users.username", "=", params.username);
     } else {
@@ -309,27 +308,6 @@ export async function getUserStartups(uuid: string, db: Kysely<DB> = database) {
 
     return result;
 }
-
-const MEMBER_PROTECTED_INFO = [
-    "users.uuid",
-    "users.updated_at",
-    "users.username",
-    "users.fullname",
-    "users.role",
-    "users.domaine",
-    "users.bio",
-    "users.link",
-    "users.github",
-    "users.member_type",
-    "users.primary_email",
-    "users.secondary_email",
-    "users.primary_email_status",
-    "users.primary_email_status_updated_at",
-    "users.communication_email",
-    "users.email_is_redirection",
-    "users.workplace_insee_code",
-    "users.competences",
-];
 
 const protectedDataSelect = (db: Kysely<DB> = database) =>
     db
