@@ -15,7 +15,7 @@ import { fr } from "date-fns/locale";
 import { StandardLayout } from "@/components/emails/layouts/StandardEmail";
 import { EmailTeamComposition } from "@/server/modules/email";
 export function TeamCompositionEmailTitle() {
-    return `Vérifies les membres de ton équipe.`;
+    return `Vérifie les membres de ton équipe.`;
 }
 
 export function TeamCompositionEmail(props: EmailTeamComposition["variables"]) {
