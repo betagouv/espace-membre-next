@@ -43,7 +43,7 @@ jobs:
                   MAIL_USER: fakeuser
                   MAIL_SENDER: fake@localhost
                   DATABASE_URL: postgres://postgres:postgres@localhost:5432/postgres
-                  FULL_HOSTNAME: localhost:8100
+                  HOSTNAME: localhost:8100
                   HASH_SALT: fakesaltfortestenv
                   GITHUB_FORK: dummy-github-fork
                   MAILING_LIST_NEWSLETTER: 0
@@ -68,7 +68,7 @@ jobs:
                   MAIL_USER: fakeuser
                   MAIL_SENDER: fake@localhost
                   DATABASE_URL: postgres://postgres:postgres@localhost:5432/postgres
-                  FULL_HOSTNAME: localhost:8100
+                  HOSTNAME: localhost:8100
                   HASH_SALT: fakesaltfortestenv
                   GITHUB_FORK: dummy-github-fork
                   MAILING_LIST_NEWSLETTER: 0

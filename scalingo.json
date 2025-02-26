@@ -22,7 +22,7 @@
         "NEXT_PUBLIC_APP_BASE_URL": {
             "generator": "url"
         },
-        "FULL_HOSTNAME": {
+        "HOSTNAME": {
             "generator": "template",
             "template": "%APP%.osc-fr1.scalingo.io"
         }
