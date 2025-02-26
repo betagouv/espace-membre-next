@@ -18,16 +18,3 @@ export async function gracefulExit(error?: Error) {
         process.exit(error ? 1 : 0);
     }
 }
-
-export function registerGracefulExit() {
-    // Register the event listener for termination signals
-    ["SIGINT", "SIGTERM"].forEach((signal) => {
-        process.on(signal, () => {
-            console.log(
-                `a "${signal}" signal has been received by the program and it's being handled`
-            );
-
-            gracefulExit();
-        });
-    });
-}
