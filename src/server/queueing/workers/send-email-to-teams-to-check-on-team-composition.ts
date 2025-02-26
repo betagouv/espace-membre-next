@@ -62,18 +62,14 @@ export async function sendEmailToTeamsToCheckOnTeamComposition(
                     activeMission: memberBaseInfoSchemaType["missions"][0];
                 } => member !== null
             );
-        try {
-            await sendEmail({
-                type: EMAIL_TYPES.EMAIL_TEAM_COMPOSITION,
-                variables: {
-                    activeMembers: activeStartupMembers,
-                    startup: startup,
-                    memberAccountLink: `${config.protocol}://${config.host}/account/base-info`,
-                },
-                toEmail: [`${startup.mailing_list}@${config.domain}`],
-            });
-        } catch (e) {
-            console.error(e);
-        }
+          await sendEmail({
+              type: EMAIL_TYPES.EMAIL_TEAM_COMPOSITION,
+              variables: {
+                  activeMembers: activeStartupMembers,
+                  startup: startup,
+                  memberAccountLink: `${config.protocol}://${config.host}/account/base-info`,
+              },
+              toEmail: [`${startup.mailing_list}@${config.domain}`],
+          });
     }
 }
