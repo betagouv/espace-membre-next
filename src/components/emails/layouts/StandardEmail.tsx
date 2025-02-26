@@ -72,9 +72,7 @@ export function StandardLayout(props: PropsWithChildren<StandardLayoutProps>) {
                     ></MjmlButton>
                 </MjmlAttributes>
                 <MjmlStyle>
-                    {isStorybookEnvironment
-                        ? storybookCss
-                        : emailCssWithAdjustedUrls}
+                    {emailCssWithAdjustedUrls}
                 </MjmlStyle>
                 <MjmlRaw>
                     {!isStorybookEnvironment && (
