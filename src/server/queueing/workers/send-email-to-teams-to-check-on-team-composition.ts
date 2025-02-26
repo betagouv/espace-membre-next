@@ -1,7 +1,7 @@
 import PgBoss from "pg-boss";
 
 import { db } from "@/lib/kysely";
-import { getUsersByStartup } from "@/lib/kysely/queries/users";
+import { getUserByStartup } from "@/lib/kysely/queries/users";
 import { memberBaseInfoToModel } from "@/models/mapper";
 import { startupToModel } from "@/models/mapper";
 import { memberBaseInfoSchemaType } from "@/models/member";
@@ -25,7 +25,7 @@ export async function sendEmailToTeamsToCheckOnTeamComposition(
     console.log(`Will send email to ${startups.length} mailing lists`);
     const now = new Date();
     for (const startup of startups) {
-        const activeStartupMembers = (await getUsersByStartup(startup.uuid))
+        const activeStartupMembers = (await getUserByStartup(startup.uuid))
             .map((user) => {
                 const member = memberBaseInfoToModel(user);
                 const activeMission = member.missions.find((mission) => {

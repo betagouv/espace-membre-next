@@ -8,7 +8,7 @@ import StartupPage from "@/components/StartupPage/StartupPage";
 import { getEventListByStartupUuid } from "@/lib/events";
 import { db } from "@/lib/kysely";
 import { getStartup } from "@/lib/kysely/queries";
-import { getUsersByStartup } from "@/lib/kysely/queries/users";
+import { getUserByStartup } from "@/lib/kysely/queries/users";
 import {
     memberBaseInfoToModel,
     phaseToModel,
@@ -98,7 +98,7 @@ export default async function Page({ params }: Props) {
         .selectAll()
         .execute();
     const startup = startupToModel(dbSe);
-    const startupMembers = (await getUsersByStartup(dbSe.uuid)).map((user) => {
+    const startupMembers = (await getUserByStartup(dbSe.uuid)).map((user) => {
         return memberBaseInfoToModel(user);
     });
     const changes = await getEventListByStartupUuid(startup.uuid);

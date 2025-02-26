@@ -5,7 +5,7 @@ import sinon from "sinon";
 
 import { Users } from "@/@types/db";
 import { db } from "@/lib/kysely";
-import { getUsersByStartup } from "@/lib/kysely/queries/users";
+import { getUserByStartup } from "@/lib/kysely/queries/users";
 import {
     memberBaseInfoToModel,
     memberPublicInfoToModel,
@@ -47,7 +47,7 @@ describe("sendEmailToTeamsToCheckOnTeamComposition()", () => {
             .selectAll()
             .where("name", "=", "test-startup")
             .executeTakeFirstOrThrow();
-        const usersByStartup = await getUsersByStartup(startup.uuid);
+        const usersByStartup = await getUserByStartup(startup.uuid);
         sendEmailStub.firstCall.args[0].should.deep.equal({
             toEmail: [`${startup.mailing_list}@${config.domain}`],
             type: EMAIL_TYPES.EMAIL_TEAM_COMPOSITION,
