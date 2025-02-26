@@ -20,10 +20,7 @@ const cspHeader = `
 const tsImportLoadOptions = {
     mode: tsImport.LoadMode.Compile,
     compilerOptions: {
-        paths: {
-            // [IMPORTANT] Paths are not working, we modified inside files to use relative ones where needed
-            //'@ad/*': ['./*'],
-        },
+        paths: {},
     },
 };
 
@@ -41,7 +38,12 @@ const nextConfig = {
                 headers: [
                     {
                         key: "Content-Security-Policy",
-                        value: cspHeader.replace(/\n/g, ""),
+                        value:
+                            process.env.NODE_ENV === "production"
+                                ? cspHeader.replace(/\n/g, "")
+                                : cspHeader
+                                      .replace("upgrade-insecure-requests;", "")
+                                      .replace(/\n/g, ""),
                     },
                 ],
             },
