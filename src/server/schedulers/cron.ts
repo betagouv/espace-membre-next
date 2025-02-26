@@ -57,6 +57,7 @@ import {
 } from "./userContractEndingScheduler";
 import { matomoClient } from "../config/matomo.config";
 import { sentryClient } from "../config/sentry.config";
+import { startBossClientInstance } from "../queueing/client";
 import { db } from "@/lib/kysely";
 import config from "@/server/config";
 import { setEmailExpired } from "@schedulers/setEmailExpired";
@@ -594,3 +595,4 @@ function startJobs() {
     console.log(`Started ${activeJobs} / ${jobs.length} cron jobs`);
 }
 startJobs();
+startBossClientInstance();

@@ -8,10 +8,9 @@
     "scripts": {
         "dev": "node --max_old_space_size=8192 -r ts-node/register src/server/server.ts",
         "build:next": "next build",
-        "build:server": "ttsc -p tsconfig.server.json && npm run copy-scss",
-        "build:server-esbuild": "node build.js",
+        "build:server": "ttsc -p tsconfig.server.json",
         "copy-scss": "copyfiles \"src/**/*.scss\" dist",
-        "build": "npm run build:next && npm run build:server-esbuild",
+        "build": "npm run build:next && npm run build:server",
         "start": "NODE_ENV=production node dist/src/server/server.js",
         "lint": "next lint",
         "migrate": "knex migrate:latest --esm",

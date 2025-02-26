@@ -19,16 +19,11 @@ import {
     MjmlWrapper,
 } from "@luma-team/mjml-react";
 
-import emailCss from "./standard.email.scss?raw";
 import { getBaseUrl } from "@/utils/url";
 
 // We avoided using React context hook here for simplicity
 const isStorybookEnvironment: boolean =
     process.env.STORYBOOK_ENVIRONMENT === "true";
-
-const emailCssWithAdjustedUrls = isStorybookEnvironment
-    ? emailCss
-    : emailCss.replace(/\/assets\//g, `${getBaseUrl()}/assets/`);
 
 export const quotedReplyMarkerClass: string = "quoted-reply-marker";
 
@@ -71,9 +66,6 @@ export function StandardLayout(props: PropsWithChildren<StandardLayoutProps>) {
                         padding="8px 16px"
                     ></MjmlButton>
                 </MjmlAttributes>
-                <MjmlStyle>
-                    {emailCssWithAdjustedUrls}
-                </MjmlStyle>
                 <MjmlRaw>
                     {!isStorybookEnvironment && (
                         <>
