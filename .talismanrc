@@ -1,7 +1,8 @@
 fileignoreconfig:
-- filename: build.js
-  checksum: be1a95c1aaa7a0917770830c4900dd8d5056dbe42fcae4f9320bc5c0c6d56dff
 - filename: package-lock.json
+  checksum: e8ab779fc8fdbf1f46a33306b37387ce252f735b07469f0dbcd75a316a8f9599
+version: ""
+ock.json
   checksum: 9c740513497d70e871e4abcad3a9e509ef5b1a0da9db2d0d2d336c19854303b4
 - filename: src/app/(private)/(dashboard)/community/communes.json
   checksum: f69dbcbfe5e1e7c1bd9340c7bb3d9de9cbc9d4080363e80d8b4da190fb6ae045
