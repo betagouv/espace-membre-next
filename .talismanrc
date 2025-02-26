@@ -1,7 +1,8 @@
 fileignoreconfig:
-- filename: src/lib/kysely/queries/startups.ts
-  checksum: 347f4d4647c8aed16d2b7d53863a8f57d991c1bed204d984c95e63380a594e25
 - filename: src/server/views/templates/emails/startupMembersDidNotChangeInXMonthsEmail/startupMembersDidNotChangeInXMonthsEmail.tsx
+  checksum: b6ebf2bcf51fcb9b8f8e3308389d0ac3df537e82f597b8a94e5c88c2660deeb3
+version: ""
+bersDidNotChangeInXMonthsEmail.tsx
   checksum: b6ebf2bcf51fcb9b8f8e3308389d0ac3df537e82f597b8a94e5c88c2660deeb3
 version: ""
 45
