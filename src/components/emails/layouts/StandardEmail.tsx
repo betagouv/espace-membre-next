@@ -11,7 +11,6 @@ import {
     MjmlGroup,
     MjmlHead,
     MjmlImage,
-    MjmlRaw,
     MjmlSection,
     MjmlStyle,
     MjmlText,
@@ -20,12 +19,6 @@ import {
 } from "@luma-team/mjml-react";
 
 import { getBaseUrl } from "@/utils/url";
-
-// We avoided using React context hook here for simplicity
-const isStorybookEnvironment: boolean =
-    process.env.STORYBOOK_ENVIRONMENT === "true";
-
-export const quotedReplyMarkerClass: string = "quoted-reply-marker";
 
 export interface StandardLayoutProps {
     title: string;
@@ -66,20 +59,66 @@ export function StandardLayout(props: PropsWithChildren<StandardLayoutProps>) {
                         padding="8px 16px"
                     ></MjmlButton>
                 </MjmlAttributes>
-                <MjmlRaw>
-                    {!isStorybookEnvironment && (
-                        <>
-                            <meta name="color-scheme" content="light dark" />
-                            <meta
-                                name="supported-color-schemes"
-                                content="light dark"
-                            />
-                        </>
-                    )}
-                </MjmlRaw>
+                <MjmlStyle>
+                    {`hr {
+                        color: #000000; // Otherwise it's grey
+                        }
+
+                        th {
+                        background: none !important; // Prevent the heading column/row to have a color
+                        }
+
+                        a {
+                        color: #000091;
+                        text-underline-offset: 3px;
+                        }
+
+                        h1,
+                        h2 {
+                        // Bigger headings were rendering all tight on multiple lines
+                        line-height: 1.2em;
+                        }
+
+                        // dsfr hr
+                        .fr-hr-or {
+                            font-size: .875rem;
+                            line-height: 1.5rem;
+                            text-transform: uppercase;
+                            font-weight: 700;
+                            display: flex;
+                            flex-direction: row;
+                            align-items: center;
+                            justify-content: center;
+                            flex-wrap: nowrap;
+                        }
+
+                        .fr-hr-or:after,.fr-hr-or:before {
+                            content: "";
+                            display: inline-flex;
+                            height: 1px;
+                            width: 40%;
+                            background-color: #000000;
+                            --idle: transparent;
+                            --hover: #000000;
+                            --active: #000000;
+                        }
+
+                        .fr-hr-or:before {
+                            margin-right: .75rem
+                        }
+
+                        .fr-hr-or:after {
+                            margin-left: .75rem
+                        }
+
+                        .member-info th, .member-info td {
+                        border: 1px solid #000;
+                        padding: 10px;
+                        }`}
+                </MjmlStyle>
             </MjmlHead>
             <MjmlBody width={500}>
-                <MjmlWrapper cssClass={`light-body ${quotedReplyMarkerClass}`}>
+                <MjmlWrapper cssClass={`light-body`}>
                     <MjmlSection>
                         <MjmlGroup>
                             <MjmlColumn
@@ -90,7 +129,7 @@ export function StandardLayout(props: PropsWithChildren<StandardLayoutProps>) {
                                 {/* `MjmlColumn` width must be a percentage (ref: https://github.com/mjmlio/mjml/issues/2489) */}
                                 {/* TODO: upload images on our own CDN, or use public folder of the app... */}
                                 <MjmlImage
-                                    src={`${getBaseUrl()}/static/images/home-illustration.png#${quotedReplyMarkerClass}`}
+                                    src={`${getBaseUrl()}/static/images/home-illustration.png`}
                                     alt="logo"
                                     paddingRight={0}
                                 />
