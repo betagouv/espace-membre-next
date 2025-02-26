@@ -20,7 +20,6 @@ import {
 } from "@luma-team/mjml-react";
 
 import emailCss from "./standard.email.scss?raw";
-import storybookCss from "./standard.storybook.scss?raw";
 import { getBaseUrl } from "@/utils/url";
 
 // We avoided using React context hook here for simplicity

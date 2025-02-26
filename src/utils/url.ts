@@ -54,35 +54,32 @@ export function hasPathnameThisRegex(
 
 type SearchParamsValueType = boolean | number | string | null;
 export function convertSearchParamsToRecord(
-    searchParams: URLSearchParams
+  searchParams: URLSearchParams,
 ): Record<string, SearchParamsValueType | SearchParamsValueType[]> {
-    const result: Record<
-        string,
-        SearchParamsValueType | SearchParamsValueType[]
-    > = {};
-    Array.from(searchParams.entries()).forEach(([key, value]) => {
-        let valueToSet: SearchParamsValueType;
-        if (value === "true") {
-            valueToSet = true;
-        } else if (value === "false") {
-            valueToSet = false;
-        } else if (value === "null") {
-            valueToSet = null;
-        } else if (!isNaN(Number(value))) {
-            valueToSet = Number(value);
-        } else {
-            valueToSet = value;
-        }
+  const result: Record<string, SearchParamsValueType | SearchParamsValueType[]> = {};
+   Array.from(searchParams.entries()).forEach(([key, value]) => {
+    let valueToSet: SearchParamsValueType;
+    if (value === "true") {
+      valueToSet = true;
+    } else if (value === "false") {
+      valueToSet = false;
+    } else if (value === "null") {
+      valueToSet = null;
+    } else if (!isNaN(Number(value))) {
+      valueToSet = Number(value);
+    } else {
+      valueToSet = value;
+    }
 
-        if (key in result) {
-            if (Array.isArray(result[key])) {
-                result[key].push(valueToSet);
-            } else {
-                result[key] = [result[key], valueToSet];
-            }
-        } else {
-            result[key] = valueToSet;
-        }
-    });
-    return result;
+    if (key in result) {
+      if (Array.isArray(result[key])) {
+        result[key].push(valueToSet);
+      } else {
+        result[key] = [result[key], valueToSet];
+      }
+    } else {
+      result[key] = valueToSet;
+    }
+  })
+  return result;
 }
