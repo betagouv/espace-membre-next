@@ -1,12 +1,13 @@
 import PgBoss from "pg-boss";
 
 import { db } from "@/lib/kysely";
-import { getUserByStartup } from "@/lib/kysely/queries/users";
+import { getUsersByStartupIds } from "@/lib/kysely/queries/users";
 import { memberBaseInfoToModel } from "@/models/mapper";
 import { startupToModel } from "@/models/mapper";
 import { memberBaseInfoSchemaType } from "@/models/member";
 import config from "@/server/config";
 import { sendEmail } from "@/server/config/email.config";
+import { BusinessError } from "@/utils/error";
 import { EMAIL_TYPES } from "@modules/email";
 
 export const sendEmailToTeamsToCheckOnTeamCompositionTopic =
@@ -24,15 +25,26 @@ export async function sendEmailToTeamsToCheckOnTeamComposition(
     ).map((startup) => startupToModel(startup));
     console.log(`Will send email to ${startups.length} mailing lists`);
     const now = new Date();
-    for (const startup of startups) {
-        const activeStartupMembers = (await getUserByStartup(startup.uuid))
+    const usersByStartup = await getUsersByStartupIds(
+        startups.map((startup) => startup.uuid)
+    );
+    for (const startup_id in usersByStartup) {
+        const startup = startups.find((startup) => startup.uuid === startup_id);
+        if (!startup) {
+            throw new BusinessError(
+                "startupShouldExists",
+                "Startup should exists"
+            );
+        }
+        const users = usersByStartup[startup_id];
+        const activeStartupMembers = users
             .map((user) => {
                 const member = memberBaseInfoToModel(user);
                 const activeMission = member.missions.find((mission) => {
                     return (
                         now >= mission.start &&
                         (!mission.end || now <= mission.end) &&
-                        mission.startups?.includes(startup.uuid)
+                        mission.startups?.includes(startup_id)
                     );
                 });
                 if (!activeMission) return null; // Explicitly return null if no mission
