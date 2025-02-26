@@ -3,7 +3,7 @@ import { StartupPhase } from "@/models/startup";
 
 /** Return all incubators */
 export function getAllIncubators() {
-    return db.selectFrom("incubators").selectAll().execute();
+    return selectIncubator().execute();
 }
 
 /** Return all incubators */
@@ -48,9 +48,8 @@ export function getIncubatorStartups(uuid: string) {
         .execute();
 }
 
-/** Return all incubators */
-export async function getIncubator(uuid: string) {
-    return await db
+function selectIncubator() {
+    return db
         .selectFrom("incubators")
         .leftJoin("organizations", "organizations.uuid", "incubators.owner_id")
         .select([
@@ -66,7 +65,12 @@ export async function getIncubator(uuid: string) {
             "incubators.highlighted_startups",
             "incubators.website",
             "organizations.name as organization_name",
-        ])
+        ]);
+}
+
+/** Return all incubators */
+export async function getIncubator(uuid: string) {
+    return await selectIncubator()
         .where("incubators.uuid", "=", uuid)
         .executeTakeFirstOrThrow();
 }
