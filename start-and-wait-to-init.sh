@@ -1,6 +1,4 @@
 #!/bin/sh
-set -x
-
 echo "Start the server in background"
 node dist/src/server/server.js &
 
