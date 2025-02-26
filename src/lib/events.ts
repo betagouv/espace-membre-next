@@ -90,3 +90,20 @@ export async function getEventListByStartupUuid(startupUuid: string) {
             : {},
     }));
 }
+
+export async function getLastEventListStartupUuids(startupUuids: string[]) {
+    const eventList = await db
+        .selectFrom("events")
+        .selectAll()
+        .where("action_on_startup", "in", startupUuids)
+        .distinctOn(["action_on_startup"]) // Keep only the latest per startup
+        .orderBy("action_on_startup") // Required for DISTINCT ON
+        .orderBy("created_at", "desc") // Ensure latest event is chosen
+        .execute();
+    return eventList.map((event) => ({
+        ...event,
+        action_metadata: event.action_metadata
+            ? hstore.parse(event.action_metadata)
+            : {},
+    }));
+}

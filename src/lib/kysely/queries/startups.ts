@@ -1,5 +1,5 @@
 import { raw } from "express";
-import { Selectable } from "kysely";
+import { CompiledQuery, Selectable } from "kysely";
 
 import { Startups } from "@/@types/db";
 import { db, sql } from "@/lib/kysely";
@@ -23,7 +23,8 @@ export const getLatests = () =>
 export async function getStartupsWithAnyUpdateForThePastXMonthsRaw(
     numberOfMonths: number = 3
 ): Promise<Selectable<Startups>[]> {
-    const rawQuery = sql`
+    const rawQuery = CompiledQuery.raw(
+        `
 WITH recent_events AS (
     SELECT DISTINCT e.action_on_username, 
            CASE 
@@ -62,13 +63,18 @@ final_startups AS (
 SELECT s.*
 FROM startups s
 LEFT JOIN final_startups fs ON s.uuid = fs.startup_id
-WHERE fs.startup_id IS NULL;
-`.execute(db);
-
-    // const result = await db.executeQuery(rawQuery);
-    return (await rawQuery).rows as Selectable<Startups>[];
+WHERE fs.startup_id IS NULL AND NOT EXISTS (
+        SELECT 1 
+        FROM phases p 
+        WHERE p.startup_id = s.uuid 
+        AND (p.name = 'transfer' OR p.name = 'success' OR p.name = 'alumni')
+    );
+`,
+        []
+    );
+    const result = await db.executeQuery<Selectable<Startups>>(rawQuery);
+    return result.rows;
 }
-
 // export function getStartupsWithAnyUpdateForThePastXMonths() {
 //     const result = db
 //         .selectFrom("events e")
