@@ -20,6 +20,7 @@ import {
     EMAIL_TYPES,
     EmailNewMemberValidation,
     EmailProps,
+    EmailStartupMembersDidNotChangeInXMonths,
     EmailTeamComposition,
     HtmlBuilderType,
     SubjectFunction,
