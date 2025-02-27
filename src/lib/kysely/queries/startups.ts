@@ -1,8 +1,7 @@
-import { raw } from "express";
 import { CompiledQuery, Selectable } from "kysely";
 
 import { Startups } from "@/@types/db";
-import { db, sql } from "@/lib/kysely";
+import { db } from "@/lib/kysely";
 
 export const getLatests = () =>
     db
@@ -23,6 +22,10 @@ export const getLatests = () =>
 export async function getStartupsWithAnyUpdateForThePastXMonthsRaw(
     numberOfMonths: number = 3
 ): Promise<Selectable<Startups>[]> {
+    // select all users event relative to a change in mission within the last 3 months
+    // then find the relative startups base on joining users => users_missions => missions_startups and startup table
+    // let's name this "A" representing all startups that have user events within last 3 months
+    // then we do the diff between All Startups and A, to get all startups with any update within last 3 months
     const rawQuery = CompiledQuery.raw(
         `
 WITH recent_events AS (
@@ -75,58 +78,3 @@ WHERE fs.startup_id IS NULL AND NOT EXISTS (
     const result = await db.executeQuery<Selectable<Startups>>(rawQuery);
     return result.rows;
 }
-// export function getStartupsWithAnyUpdateForThePastXMonths() {
-//     const result = db
-//         .selectFrom("events e")
-//         .distinct()
-//         .innerJoin(
-//             sql`each(hstore(e.action_metadata))`.as("kv"),
-//             "kv.key",
-//             sql`like 'value.missions.%.startups.%'`
-//         )
-//         .select([
-//             "e.action_on_username",
-//             sql`CASE WHEN kv.value ~* '^[0-9a-fA-F-]{36}$' THEN kv.value::UUID ELSE NULL END`.as(
-//                 "startup_id"
-//             ),
-//         ])
-//         .where("e.created_at", "<=", sql`now() - interval '3 months'`)
-//         .whereExists(
-//             db
-//                 .selectOne()
-//                 .from(sql`each(hstore(e.action_metadata))`.as("old_kv"))
-//                 .whereRaw("old_kv.key LIKE concat(?, kv.key)", ["old_value."])
-//                 .whereRaw("old_kv.value IS DISTINCT FROM kv.value")
-//         )
-//         .as("recent_events")
-//         .join("users u", "u.username", "recent_events.action_on_username")
-//         .select(["u.uuid as user_id", "recent_events.startup_id"])
-//         .whereNotNull("recent_events.startup_id")
-//         .distinct()
-//         .as("users_filtered")
-//         .join("missions um", "users_filtered.user_id", "um.user_id")
-//         .select([
-//             "um.user_id",
-//             "um.uuid as mission_id",
-//             "users_filtered.startup_id",
-//         ])
-//         .distinct()
-//         .as("user_missions")
-//         .join(
-//             "missions_startups ms",
-//             "user_missions.mission_id",
-//             "ms.mission_id"
-//         )
-//         .select(["ms.startup_id"])
-//         .distinct()
-//         .as("mission_startups")
-//         .selectFrom("mission_startups")
-//         .select(["startup_id"])
-//         .distinct()
-//         .as("final_startups")
-//         .leftJoin("startups s", "s.uuid", "final_startups.startup_id")
-//         .whereNull("final_startups.startup_id")
-//         .select(["s.*"]);
-
-//     return await result.execute();
-// }
