@@ -1,7 +1,10 @@
+import { addMonths } from "date-fns/addMonths";
 import { z } from "zod";
 
 import { FileType } from "@/lib/file";
 import { memberSchema } from "@/models/member";
+
+const sixMonthsFromNow = addMonths(new Date());
 
 export const memberInfoUpdateSchema = z.object({
     member: z.object({
@@ -12,7 +15,19 @@ export const memberInfoUpdateSchema = z.object({
         github: memberSchema.shape.github,
         competences: memberSchema.shape.competences,
         teams: memberSchema.shape.teams,
-        missions: memberSchema.shape.missions,
+        missions: memberSchema.shape.missions.refine(
+            (missions) =>
+                missions.every(
+                    (mission) =>
+                        (!mission.end ||
+                            new Date(mission.end) <= sixMonthsFromNow) &&
+                        mission.status !== "admin"
+                ),
+            {
+                message:
+                    "La date de fin mission ne peut pas être supérieure à 6 mois dans le futur.",
+            }
+        ),
         domaine: memberSchema.shape.domaine,
         bio: memberSchema.shape.bio,
         memberType: memberSchema.shape.memberType,
