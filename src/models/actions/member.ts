@@ -4,7 +4,7 @@ import { z } from "zod";
 import { FileType } from "@/lib/file";
 import { memberSchema } from "@/models/member";
 
-const sixMonthsFromNow = addMonths(new Date());
+const sixMonthsFromNow = addMonths(new Date(), 6);
 
 export const memberInfoUpdateSchema = z.object({
     member: z.object({
