@@ -15,19 +15,21 @@ export const memberInfoUpdateSchema = z.object({
         github: memberSchema.shape.github,
         competences: memberSchema.shape.competences,
         teams: memberSchema.shape.teams,
-        missions: memberSchema.shape.missions.refine(
-            (missions) =>
-                missions.every(
-                    (mission) =>
-                        (!mission.end ||
-                            new Date(mission.end) <= sixMonthsFromNow) &&
-                        mission.status !== "admin"
-                ),
-            {
-                message:
-                    "La date de fin mission ne peut pas être supérieure à 6 mois dans le futur.",
-            }
-        ),
+        missions: memberSchema.shape.missions.superRefine((missions, ctx) => {
+            missions.forEach((mission, index) => {
+                if (
+                    (!mission.end || mission.end > sixMonthsFromNow) &&
+                    mission.status !== "admin"
+                ) {
+                    ctx.addIssue({
+                        code: z.ZodIssueCode.custom,
+                        message:
+                            "La date de fin de mission ne peut pas être supérieure à 6 mois dans le futur.",
+                        path: [index, "end"], // Points to the specific mission's 'end' field
+                    });
+                }
+            });
+        }),
         domaine: memberSchema.shape.domaine,
         bio: memberSchema.shape.bio,
         memberType: memberSchema.shape.memberType,
