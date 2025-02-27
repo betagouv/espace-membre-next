@@ -20,7 +20,9 @@ export async function sendEmailToTeamsToCheckOnTeamComposition(
         await db
             .selectFrom("startups")
             .selectAll()
+            .leftJoin("phases", "phases.startup_id", "startups.uuid")
             .where("mailing_list", "is not", null)
+            .where("phases.name", "in", ["transfer", "alumni", "success"])
             .execute()
     ).map((startup) => startupToModel(startup));
     console.log(`Will send email to ${startups.length} mailing lists`);
@@ -62,14 +64,14 @@ export async function sendEmailToTeamsToCheckOnTeamComposition(
                     activeMission: memberBaseInfoSchemaType["missions"][0];
                 } => member !== null
             );
-          await sendEmail({
-              type: EMAIL_TYPES.EMAIL_TEAM_COMPOSITION,
-              variables: {
-                  activeMembers: activeStartupMembers,
-                  startup: startup,
-                  memberAccountLink: `${config.protocol}://${config.host}/account/base-info`,
-              },
-              toEmail: [`${startup.mailing_list}@${config.domain}`],
-          });
+        await sendEmail({
+            type: EMAIL_TYPES.EMAIL_TEAM_COMPOSITION,
+            variables: {
+                activeMembers: activeStartupMembers,
+                startup: startup,
+                memberAccountLink: `${config.protocol}://${config.host}/account/base-info`,
+            },
+            toEmail: [`${startup.mailing_list}@${config.domain}`],
+        });
     }
 }

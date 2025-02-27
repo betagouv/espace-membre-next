@@ -98,6 +98,10 @@ Lorsqu'on utilise un autre domaine OVH (par exemple, un domain bac-à-sable pour
 
 Les tâches CRON sont gérées par une app scalingo dédiée via le [Procfile](./Procfile)
 
+La listes des cron sont dans les fichiers :
+./src/server/scheduler/cron.ts
+./src/server/queueing/schedule.ts
+
 ### Configuration de production
 
 | enabled | fréquence                                  | code                                                   | description                                                                                  |
@@ -154,3 +158,4 @@ Les tâches CRON sont gérées par une app scalingo dédiée via le [Procfile](.
 | ✅      | 10:00 am 1 th                              | sendMessageToActiveUsersWithoutSecondaryEmail          | Send message to active user without secondary email to update secondary email                |
 | ✅      | 15:00                                      | deleteMatomoAccount                                    | Delete matomo account                                                                        |
 | ✅      | 15:00                                      | deleteSentryAccount                                    | Delete sentry account                                                                        |
+| ✅      | 0 8 1,2,3,4,5,6,7 \*/3 1                   | sendEmailToTeamsToCheckOnTeamComposition               | Send recap email to startups team every 3 months                                             |
