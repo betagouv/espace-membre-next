@@ -22,10 +22,11 @@ export const getLatests = () =>
 export async function getStartupsWithAnyUpdateForThePastXMonthsRaw(
     numberOfMonths: number = 3
 ): Promise<Selectable<Startups>[]> {
-    // select all users event relative to a change in mission within the last 3 months
-    // then find the relative startups base on joining users => users_missions => missions_startups and startup table
-    // let's name this "A" representing all startups that have user events within last 3 months
-    // then we do the diff between All Startups and A, to get all startups with any update within last 3 months
+    // Select all user events related to mission changes within the last 3 months
+    // Then find the associated startups by navigating through users => users_missions => missions_startups => startups table
+    // We'll refer to this result set as "A", representing all startups with user events in the past 3 months
+    // Finally, calculate the difference between All Startups and A to obtain all startups with any updates in the last 3 months
+
     const rawQuery = CompiledQuery.raw(
         `
 WITH recent_events AS (
