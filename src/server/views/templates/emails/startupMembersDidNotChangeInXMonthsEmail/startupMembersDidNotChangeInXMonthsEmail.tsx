@@ -25,7 +25,7 @@ export function StartupMembersDidNotChangeInXMonthsEmail(
                     {props.incubator.title}.
                 </p>
                 <p>
-                    Les équipes suivantes non pas changées depuis 3 mois, tu
+                    Les équipes suivantes n'ont pas changé depuis 3 mois, tu
                     peux vérifier via l'espace-membre que leurs informations
                     sont bien à jour.
                 </p>
