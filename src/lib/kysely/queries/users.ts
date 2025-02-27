@@ -193,28 +193,6 @@ function withMissions(eb: ExpressionBuilder<DB, "users">) {
         .as("missions");
 }
 
-function withStartups(eb: ExpressionBuilder<DB, "users">) {
-    return jsonArrayFrom(
-        eb
-            .selectFrom(["startups"])
-            .leftJoin(
-                "missions_startups",
-                "missions_startups.startup_id",
-                "startups.uuid"
-            )
-            .leftJoin(
-                "missions",
-                "missions.uuid",
-                "missions_startups.mission_id"
-            )
-            .select(["startups.uuid", "startups.name"])
-            .whereRef("missions.user_id", "=", "users.uuid")
-            .groupBy(["startups.uuid"])
-    )
-        .$notNull()
-        .as("startups");
-}
-
 function withTeams(eb: ExpressionBuilder<DB, "users">) {
     return jsonArrayFrom(
         eb
@@ -330,28 +308,6 @@ export async function getUserStartups(uuid: string, db: Kysely<DB> = database) {
 
     return result;
 }
-
-export async function getUserStartupsActive(
-    uuid: string,
-    db: Kysely<DB> = database
-) {
-    const now = new Date();
-    return getUserStartups(uuid).then((startups) =>
-        startups.filter(
-            (startup) =>
-                isAfter(now, startup.start ?? 0) &&
-                isBefore(now, startup.end ?? Infinity)
-        )
-    );
-}
-
-export const getLatests = (db: Kysely<DB> = database) => {
-    return getAllUsersInfoQuery(db)
-        .select((eb) => [withStartups(eb)])
-        .orderBy("users.created_at", "desc")
-        .limit(10)
-        .execute();
-};
 
 const protectedDataSelect = (db: Kysely<DB> = database) =>
     db
