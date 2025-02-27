@@ -158,4 +158,4 @@ La listes des cron sont dans les fichiers :
 | ✅      | 10:00 am 1 th                              | sendMessageToActiveUsersWithoutSecondaryEmail          | Send message to active user without secondary email to update secondary email                |
 | ✅      | 15:00                                      | deleteMatomoAccount                                    | Delete matomo account                                                                        |
 | ✅      | 15:00                                      | deleteSentryAccount                                    | Delete sentry account                                                                        |
-| ✅      | 0 8 1,2,3,4,5,6,7 \*/3 1                   | sendEmailToTeamsToCheckOnTeamComposition               | Send recap email to startups team every 3 months                                             |
+| ✅      | 1st monday every 3 months                  | sendEmailToTeamsToCheckOnTeamComposition               | Send recap email to startups team every 3 months                                             |
