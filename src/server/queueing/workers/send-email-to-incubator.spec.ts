@@ -22,12 +22,13 @@ import testUsers from "__tests__/users.json";
 import utils from "__tests__/utils";
 
 describe("sendEmailToIncubatorTeam()", () => {
-    let sendEmailStub, sendEmailToIncubatorTeam;
+    let sendEmailStub, getServerSessionStub, sendEmailToIncubatorTeam;
     let newUser,
         newIncubatorA,
         newIncubatorB,
         newMission,
         newStartup,
+        newStartupMissionConnexion,
         teamA,
         teamB;
     let userA: Selectable<Users>, userB: Selectable<Users>;
@@ -248,7 +249,7 @@ describe("sendEmailToIncubatorTeam()", () => {
         afterEach(async () => {
             await db.deleteFrom("events").execute();
         });
-        it("should not send email if startup has an event withn last 3 months", async () => {
+        it("should not send email if startup has an event within last 3 months", async () => {
             await sendEmailToIncubatorTeam({
                 data: {},
             } as unknown as PgBoss.Job<void>);
