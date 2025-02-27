@@ -7,8 +7,8 @@ export async function scheduleCronTasks() {
     // cron tasks
     await bossClient.schedule(
         sendEmailToTeamsToCheckOnTeamCompositionTopic,
-        `0 3 1 */3 *`, // Runs at 03:00 AM on the 1st day of every 3rd month
+        `0 8 1 */3 1`, // Runs at 08:00 AM on monday every 3rd month
         undefined,
         { tz: "Europe/Paris" }
-    ); // At night to save performance
+    );
 }
