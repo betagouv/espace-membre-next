@@ -45,7 +45,8 @@ test("cannot add date with more than 6 months if status is independant", async (
         .selectOption("Indépendant");
     await page
         .getByLabel("Date de fin de mission (obligatoire)")
-        .fill(format(dateIn8Months, "dd/MM/yyyy"));
+        .fill(format(dateIn8Months, "yyyy-MM-dd"));
+    await page.waitForTimeout(100);
 
     await page.getByText("Enregistrer").click();
 
