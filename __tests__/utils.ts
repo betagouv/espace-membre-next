@@ -286,6 +286,15 @@ const testUtils = {
                             .returningAll()
                             .executeTakeFirstOrThrow();
                         await db
+                            .insertInto("phases")
+                            .values({
+                                startup_id: insertedStartup.uuid,
+                                name: "acceleration",
+                                start: new Date(),
+                            })
+                            .onConflict((oc) => oc.doNothing())
+                            .execute();
+                        await db
                             .insertInto("missions_startups")
                             .values({
                                 mission_id: insertedRow.uuid,

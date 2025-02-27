@@ -16,15 +16,26 @@ export const sendEmailToTeamsToCheckOnTeamCompositionTopic =
 export async function sendEmailToTeamsToCheckOnTeamComposition(
     job: PgBoss.Job<void>
 ) {
-    const startups = await (
+    const startups = (
         await db
             .selectFrom("startups")
-            .selectAll()
-            .leftJoin("phases", "phases.startup_id", "startups.uuid")
+            .selectAll(["startups"])
+            .leftJoin("phases", (join) =>
+                join
+                    .onRef("phases.startup_id", "=", "startups.uuid")
+                    .on("phases.name", "in", ["success", "transfer", "alumni"])
+            )
             .where("mailing_list", "is not", null)
-            .where("phases.name", "in", ["transfer", "alumni", "success"])
+            .where("phases.name", "is", null)
             .execute()
     ).map((startup) => startupToModel(startup));
+
+    if (!startups.length) {
+        console.log(
+            `There is no startups in active startups with mailing list`
+        );
+        return;
+    }
     console.log(`Will send email to ${startups.length} mailing lists`);
     const now = new Date();
     const usersByStartup = await getUsersByStartupIds(
