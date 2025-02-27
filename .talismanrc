@@ -1,18 +1,11 @@
 fileignoreconfig:
-- filename: __tests__/htmlbuilder.spec.ts
-  checksum: b5a1619df6d19ab4e1dfe36bcfeda327cfe85c52f077db82a5e0842230f94305
-- filename: src/server/views/templates/emails/memberValidationEmail/memberValidationEmail.tsx
-  checksum: 719ab0555ac1bae0adcfa7599a577f5b957f255be75f6b80f505694a4f2be2e5
-version: ""
-c59a9d1100346e12754ab4ee7d7c
 - filename: package-lock.json
-  checksum: add9168b63b1a9219558f2be2378591402a00d394be3bd9102715e43f8278e4f
-- filename: src/app/(private)/(dashboard)/admin/signaux-faibles-beta/AdminProductClientPage.tsx
+  checksum: e8ab779fc8fdbf1f46a33306b37387ce252f735b07469f0dbcd75a316a8f9599
+version: ""
+ock.json
   checksum: 9c740513497d70e871e4abcad3a9e509ef5b1a0da9db2d0d2d336c19854303b4
 - filename: src/app/(private)/(dashboard)/community/communes.json
   checksum: f69dbcbfe5e1e7c1bd9340c7bb3d9de9cbc9d4080363e80d8b4da190fb6ae045
-- filename: src/app/(private)/(dashboard)/dashboard/page.tsx
-  checksum: 7e4937c9492db99b0dedc48da2be20b8e122838cbf3fef6857e0d0d4717b2b3c
 - filename: src/app/(private)/(dashboard)/incubators/[id]/info-form/page.tsx
   checksum: 1ec9acf039a7d336e710ef7b47c385eb7080293ee2750c2cf99e9056cde7f129
 - filename: src/app/(private)/(dashboard)/services/matomo/page.tsx
@@ -34,7 +27,7 @@ c59a9d1100346e12754ab4ee7d7c
 - filename: src/components/CommunityPage/Community.tsx
   checksum: 50ed5a9ba8e03d4ffc248026cfae6fd6331c84c21b30aaa73c0bf30f22be9e2c
 - filename: src/components/Dashboard/DashboardPage.tsx
-  checksum: 38c58703d285c7cf19a6740c33166a0ebf7f270da1bfe3b1afc90ee760af0374
+  checksum: 75bfae226e0e1ef37d90f40938d0b2f73cc0ea554b7f69c4245f68179719f559
 - filename: src/components/IncubatorForm/IncubatorForm.tsx
   checksum: 267f0f0e491b06862cd957ae86d22baf799a705370673cd24e588391a4613a5a
 - filename: src/components/IncubatorPage/IncubatorPage.tsx
@@ -103,6 +96,8 @@ c59a9d1100346e12754ab4ee7d7c
   checksum: 598112766ea826e0c05c38962373358c520d8720ff8faebfbc65ea7f913fff44
 - filename: src/server/views/templates/emails/memberValidationEmail/memberValidationEmail.tsx
   checksum: d927d56d534024f2f271a955a467df69d7246646143ec80364dbc4fd3eacf380
+- filename: src/server/views/templates/emails/teamCompositionEmail/teamCompositionEmail.tsx
+  checksum: 8ec5495ed8db0f139a082bf0162e23cb05b0125b394abf63e447aca293dfcdbb
 - filename: src/utils/routes/list.ts
   checksum: ebb1c7a8c5fb51e0e49a23f79d1342f177946b4e783154bb265970b672aa2a2c
 - filename: src/utils/url.ts
@@ -110,12 +105,14 @@ c59a9d1100346e12754ab4ee7d7c
 scopeconfig:
 - scope: node
 version: "1.0"
-ls/member.ts
-      checksum: bd0f22c5efa62fd1388ac16c1ba321e393ede1e06d86f66d3561e556c098feb0
-    - filename: src/server/config/index.ts
-      checksum: a2591e8092f663b759ec49f7b51911e17af0f5f22de50b60340827e87755929a
-    - filename: src/server/queueing/workers/create-update-matomo-account.ts
-      checksum: 598112766ea826e0c05c38962373358c520d8720ff8faebfbc65ea7f913fff44
+name: src/utils/routes/list.ts
+      checksum: ebb1c7a8c5fb51e0e49a23f79d1342f177946b4e783154bb265970b672aa2a2c
+    - filename: src/utils/url.ts
+      checksum: 6c0989d85371d5071d9dcaa141e1c35b10f7124a3628deef443a4a1ccacfa34f
+    - filename: src/utils/routes/list.ts
+      checksum: ebb1c7a8c5fb51e0e49a23f79d1342f177946b4e783154bb265970b672aa2a2c
+    - filename: src/utils/url.ts
+      checksum: 21d2da1f85cc6ce2cc3324248e3c44ad84a6775f6c1cc8435e7cfa164824b853
     - filename: src/utils/routes/list.ts
       checksum: ebb1c7a8c5fb51e0e49a23f79d1342f177946b4e783154bb265970b672aa2a2c
     - filename: src/utils/url.ts

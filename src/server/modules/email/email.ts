@@ -6,6 +6,7 @@ import {
     memberBaseInfoSchemaType,
     memberPublicInfoSchemaType,
 } from "@/models/member";
+import { missionSchemaType } from "@/models/mission";
 import {
     StartupPhase,
     startupSchemaType,
@@ -42,6 +43,7 @@ export enum EMAIL_TYPES {
     EMAIL_TEST = "EMAIL_TEST",
     EMAIL_VERIFICATION_WAITING = "EMAIL_VERIFICATION_WAITING",
     EMAIL_NEW_MEMBER_VALIDATION = "EMAIL_NEW_MEMBER_VALIDATION",
+    EMAIL_TEAM_COMPOSITION = "EMAIL_TEAM_COMPOSITION",
 }
 
 export type SubjectFunction = {
@@ -288,6 +290,18 @@ export type EmailNewMemberValidation = {
     };
 };
 
+export type EmailTeamComposition = {
+    type: EMAIL_TYPES.EMAIL_TEAM_COMPOSITION;
+    variables: {
+        activeMembers: {
+            member: memberPublicInfoSchemaType;
+            activeMission: missionSchemaType;
+        }[];
+        startup: startupSchemaType;
+        memberAccountLink: string;
+    };
+};
+
 export type EmailVariants =
     | EmailMarrainageNewcomer
     | EmailMarrainageOnboarder
@@ -313,7 +327,8 @@ export type EmailVariants =
     | EmailTest
     | EmailPRPendingToTeam
     | EmailVerificationWaiting
-    | EmailNewMemberValidation;
+    | EmailNewMemberValidation
+    | EmailTeamComposition;
 
 export type EmailProps = BaseEmail & EmailVariants;
 
