@@ -63,12 +63,6 @@ export function StartupMembersDidNotChangeInXMonthsEmail(
                     </tbody>
                 </table>
             </MjmlText>
-            <MjmlText>
-                <p>
-                    Si les informations ne sont pas à jour tu peux les mettres à
-                    jour via l'espace-membre.
-                </p>
-            </MjmlText>
             <MjmlText></MjmlText>
         </StandardLayout>
     );
