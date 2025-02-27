@@ -22,14 +22,12 @@ import testUsers from "__tests__/users.json";
 import utils from "__tests__/utils";
 
 describe("sendEmailToIncubatorTeam()", () => {
-    let sendEmailStub, getServerSessionStub, sendEmailToIncubatorTeam;
+    let sendEmailStub, sendEmailToIncubatorTeam;
     let newUser,
         newIncubatorA,
         newIncubatorB,
         newMission,
-        newStartupMissionConnexion,
         newStartup,
-        event,
         teamA,
         teamB;
     let userA: Selectable<Users>, userB: Selectable<Users>;
@@ -247,7 +245,9 @@ describe("sendEmailToIncubatorTeam()", () => {
                 },
             });
         });
-        afterEach(async () => {});
+        afterEach(async () => {
+            await db.deleteFrom("events").execute();
+        });
         it("should not send email if startup has an event withn last 3 months", async () => {
             await sendEmailToIncubatorTeam({
                 data: {},
