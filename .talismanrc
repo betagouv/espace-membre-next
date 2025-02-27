@@ -1,11 +1,4 @@
 fileignoreconfig:
-- filename: src/server/views/templates/emails/startupMembersDidNotChangeInXMonthsEmail/startupMembersDidNotChangeInXMonthsEmail.tsx
-  checksum: b6ebf2bcf51fcb9b8f8e3308389d0ac3df537e82f597b8a94e5c88c2660deeb3
-version: ""
-bersDidNotChangeInXMonthsEmail.tsx
-  checksum: b6ebf2bcf51fcb9b8f8e3308389d0ac3df537e82f597b8a94e5c88c2660deeb3
-version: ""
-45
 - filename: src/app/(private)/(dashboard)/incubators/[id]/info-form/page.tsx
   checksum: 1ec9acf039a7d336e710ef7b47c385eb7080293ee2750c2cf99e9056cde7f129
 - filename: src/app/(private)/(dashboard)/services/matomo/page.tsx

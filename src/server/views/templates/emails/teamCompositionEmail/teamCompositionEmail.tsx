@@ -72,8 +72,7 @@ export function TeamCompositionEmail(props: EmailTeamComposition["variables"]) {
             </MjmlText>
             <MjmlText>
                 <p>
-                    Si tes informations ne sont pas à jour tu peux les mettre à
-                    jour en cliquant sur le bouton ci-dessous.
+                    Si tes informations ne sont pas à jour, tu peux les modifier en cliquant sur le bouton ci-dessous.
                 </p>
             </MjmlText>
             <MjmlButton href={props.memberAccountLink}>
