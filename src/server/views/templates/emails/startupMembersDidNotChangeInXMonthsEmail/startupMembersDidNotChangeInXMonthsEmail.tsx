@@ -1,10 +1,9 @@
-import { MjmlButton, MjmlText } from "@luma-team/mjml-react";
+import { MjmlText } from "@luma-team/mjml-react";
 import { format } from "date-fns";
-import { fr } from "date-fns/locale";
 
 import { StandardLayout } from "@/components/emails/layouts/StandardEmail";
-import config from "@/server/config";
 import { EmailStartupMembersDidNotChangeInXMonths } from "@/server/modules/email";
+import { getBaseUrl } from "@/utils/url";
 
 export function StartupMembersDidNotChangeInXMonthsEmailTitle() {
     return `Vérifie les produits de ton incubateur.`;
@@ -42,7 +41,9 @@ export function StartupMembersDidNotChangeInXMonthsEmail(
                             <tr key={index}>
                                 <td style={{ width: "40%" }}>
                                     <a
-                                        href={`${config.protocol}://${config.host}/startups/${wrapper.startup.ghid}`}
+                                        href={`${getBaseUrl()}/startups/${
+                                            wrapper.startup.ghid
+                                        }`}
                                     >
                                         {wrapper.startup.name}
                                     </a>
