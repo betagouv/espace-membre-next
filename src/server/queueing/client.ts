@@ -14,6 +14,10 @@ import {
     createOrUpdateMatomoServiceAccountTopic,
 } from "./workers/create-update-matomo-account";
 import {
+    sendEmailToIncubatorTeam,
+    sendEmailToIncubatorTeamTopic,
+} from "./workers/send-email-to-incubator";
+import {
     sendEmailToTeamsToCheckOnTeamComposition,
     sendEmailToTeamsToCheckOnTeamCompositionTopic,
 } from "./workers/send-email-to-teams-to-check-on-team-composition";
@@ -95,6 +99,10 @@ export async function startBossClientInstance(): Promise<PgBoss> {
         await bossClient.work(
             sendEmailToTeamsToCheckOnTeamCompositionTopic,
             handlerWrapper(sendEmailToTeamsToCheckOnTeamComposition)
+        );
+        await bossClient.work(
+            sendEmailToIncubatorTeamTopic,
+            handlerWrapper(sendEmailToIncubatorTeam)
         );
     });
 }
