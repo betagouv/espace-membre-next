@@ -16,6 +16,7 @@ import {
     EMAIL_TYPES,
     EmailNewMemberValidation,
     EmailProps,
+    EmailStartupNewMemberArrival,
     EmailTeamComposition,
     HtmlBuilderType,
     SubjectFunction,
@@ -72,6 +73,9 @@ const TEMPLATES_BY_TYPE: Record<EmailProps["type"], string | null | any> = {
     [EMAIL_TYPES.EMAIL_TEAM_COMPOSITION]: (
         params: EmailTeamComposition["variables"]
     ) => TeamCompositionEmail(params),
+    [EMAIL_TYPES.EMAIL_STARTUP_NEW_MEMBER_ARRIVAL]: (
+        params: EmailStartupNewMemberArrival["variables"]
+    ) => StartupNewMemberArrivalEmail(params),
 };
 
 const SUBJECTS_BY_TYPE: Record<EmailProps["type"], string | SubjectFunction> = {
@@ -120,6 +124,8 @@ const SUBJECTS_BY_TYPE: Record<EmailProps["type"], string | SubjectFunction> = {
     EMAIL_VERIFICATION_WAITING: "Bienvenue chez BetaGouv 🙂",
     EMAIL_NEW_MEMBER_VALIDATION: MemberValidationEmailTitle(),
     [EMAIL_TYPES.EMAIL_TEAM_COMPOSITION]: TeamCompositionEmailTitle(),
+    [EMAIL_TYPES.EMAIL_STARTUP_NEW_MEMBER_ARRIVAL]:
+        StartupNewMemberArrivalEmailTitle(),
 };
 
 const MARKDOWN_BY_TYPE: Record<EmailProps["type"], boolean> = {
@@ -152,6 +158,7 @@ const MARKDOWN_BY_TYPE: Record<EmailProps["type"], boolean> = {
     EMAIL_VERIFICATION_WAITING: false,
     EMAIL_NEW_MEMBER_VALIDATION: false,
     [EMAIL_TYPES.EMAIL_TEAM_COMPOSITION]: false,
+    [EMAIL_TYPES.EMAIL_STARTUP_NEW_MEMBER_ARRIVAL]: false,
 };
 
 const htmlBuilder: HtmlBuilderType = {

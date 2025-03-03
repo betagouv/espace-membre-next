@@ -39,6 +39,7 @@ export enum EMAIL_TYPES {
     EMAIL_STARTUP_ENTER_ACCELERATION_PHASE = "EMAIL_STARTUP_ENTER_ACCELERATION_PHASE",
     EMAIL_STARTUP_ENTER_INVESTIGATION_PHASE = "EMAIL_STARTUP_ENTER_INVESTIGATION_PHASE",
     EMAIL_STARTUP_ASK_PHASE = "EMAIL_STARTUP_ASK_PHASE",
+    EMAIL_STARTUP_NEW_MEMBER_ARRIVAL = "EMAIL_STARTUP_NEW_MEMBER_ARRIVAL",
     EMAIL_FORUM_REMINDER = "EMAIL_FORUM_REMINDER",
     EMAIL_TEST = "EMAIL_TEST",
     EMAIL_VERIFICATION_WAITING = "EMAIL_VERIFICATION_WAITING",
@@ -302,6 +303,14 @@ export type EmailTeamComposition = {
     };
 };
 
+export type EmailStartupNewMemberArrival = {
+    type: EMAIL_TYPES.EMAIL_STARTUP_NEW_MEMBER_ARRIVAL;
+    variables: {
+        startup: userStartupSchemaType;
+        userInfos: memberPublicInfoSchemaType;
+    };
+};
+
 export type EmailVariants =
     | EmailMarrainageNewcomer
     | EmailMarrainageOnboarder
@@ -328,7 +337,8 @@ export type EmailVariants =
     | EmailPRPendingToTeam
     | EmailVerificationWaiting
     | EmailNewMemberValidation
-    | EmailTeamComposition;
+    | EmailTeamComposition
+    | EmailStartupNewMemberArrival;
 
 export type EmailProps = BaseEmail & EmailVariants;
 

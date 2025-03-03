@@ -293,6 +293,7 @@ export async function getUserStartups(uuid: string, db: Kysely<DB> = database) {
             "startups.ghid",
             "startups.name",
             "missions.start",
+            "startups.mailing_list",
             "missions.end",
             "startups.incubator_id",
         ])
