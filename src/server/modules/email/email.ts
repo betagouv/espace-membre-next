@@ -310,6 +310,7 @@ export type EmailStartupMembersDidNotChangeInXMonths = {
             startup: startupSchemaType;
             activeMembers: number;
             lastModification?: Date;
+            currentPhase: string;
         }[];
         incubator: incubatorSchemaType;
     };

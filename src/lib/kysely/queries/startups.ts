@@ -2,6 +2,7 @@ import { CompiledQuery, Selectable } from "kysely";
 
 import { Startups } from "@/@types/db";
 import { db } from "@/lib/kysely";
+import { StartupPhase } from "@/models/startup";
 
 export const getLatests = () =>
     db
@@ -21,7 +22,7 @@ export const getLatests = () =>
 
 export async function getStartupsWithAnyUpdateForThePastXMonthsRaw(
     numberOfMonths: number = 3
-): Promise<Selectable<Startups>[]> {
+): Promise<Selectable<Startups & { current_phase: StartupPhase }>[]> {
     // Select all user events related to mission changes within the last 3 months
     // Then find the associated startups by navigating through users => users_missions => missions_startups => startups table
     // We'll refer to this result set as "A", representing all startups with user events in the past 3 months
@@ -64,9 +65,14 @@ mission_startups AS (
 final_startups AS (
     SELECT DISTINCT startup_id FROM mission_startups
 )
-SELECT s.*
+SELECT s.*, p.name as current_phase
 FROM startups s
 LEFT JOIN final_startups fs ON s.uuid = fs.startup_id
+JOIN (
+    SELECT DISTINCT ON (startup_id) *
+    FROM phase
+    ORDER BY startup_id, start DESC
+) p ON s.id = p.startup_id
 WHERE fs.startup_id IS NULL AND NOT EXISTS (
         SELECT 1 
         FROM phases p 
@@ -76,6 +82,8 @@ WHERE fs.startup_id IS NULL AND NOT EXISTS (
 `,
         []
     );
-    const result = await db.executeQuery<Selectable<Startups>>(rawQuery);
+    const result = await db.executeQuery<
+        Selectable<Startups & { current_phase: StartupPhase }>
+    >(rawQuery);
     return result.rows;
 }

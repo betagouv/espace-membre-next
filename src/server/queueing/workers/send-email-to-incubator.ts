@@ -13,6 +13,7 @@ import {
     startupToModel,
 } from "@/models/mapper";
 import { memberBaseInfoSchemaType } from "@/models/member";
+import { PHASE_READABLE_NAME, StartupPhase } from "@/models/startup";
 import config from "@/server/config";
 import { sendEmail } from "@/server/config/email.config";
 import { BusinessError } from "@/utils/error";
@@ -90,13 +91,12 @@ export async function sendEmailToIncubatorTeam(job: PgBoss.Job<void>) {
                                 }
                             )
                     ).length,
+                    currentPhase: PHASE_READABLE_NAME[s.current_phase],
                     // on donne la date du dernier evenement lié à la SE sinon on prend la date de l'update en bdd
                     lastModification:
                         lastEvents.find(
                             (event) => event.action_on_startup === s.uuid
-                        )?.created_at ||
-                        startups.find((startup) => startup.uuid === s.uuid)
-                            ?.updated_at,
+                        )?.created_at || s.updated_at,
                 })),
             },
             toEmail: memberEmails,
