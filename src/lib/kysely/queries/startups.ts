@@ -68,11 +68,11 @@ final_startups AS (
 SELECT s.*, p.name as current_phase
 FROM startups s
 LEFT JOIN final_startups fs ON s.uuid = fs.startup_id
-JOIN (
+LEFT JOIN (
     SELECT DISTINCT ON (startup_id) *
-    FROM phase
+    FROM phases
     ORDER BY startup_id, start DESC
-) p ON s.id = p.startup_id
+) p ON s.uuid = p.startup_id
 WHERE fs.startup_id IS NULL AND NOT EXISTS (
         SELECT 1 
         FROM phases p 

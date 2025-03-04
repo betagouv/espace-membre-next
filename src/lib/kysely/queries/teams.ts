@@ -53,6 +53,16 @@ export function getUsersByIncubatorId(incubatorId: string) {
         .innerJoin("users_teams", "users.uuid", "users_teams.user_id")
         .innerJoin("teams", "users_teams.team_id", "teams.uuid")
         .innerJoin("incubators", "teams.incubator_id", "incubators.uuid")
+        .leftJoin(
+            (eb) =>
+                eb
+                    .selectFrom("missions")
+                    .distinctOn("user_id") // Ensures only one row per user
+                    .select(["user_id", "end"])
+                    .orderBy(["user_id", "end desc"]) // Sort per user, picking the latest
+                    .as("latest_missions"),
+            (join) => join.onRef("latest_missions.user_id", "=", "users.uuid")
+        )
         .where("teams.incubator_id", "=", incubatorId)
         .select([
             "users.uuid",

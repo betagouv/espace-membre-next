@@ -16,6 +16,7 @@ import {
     startupToModel,
 } from "@/models/mapper";
 import { Domaine } from "@/models/member";
+import { PHASE_READABLE_NAME } from "@/models/startup";
 import config from "@/server/config";
 import { EMAIL_TYPES } from "@/server/modules/email";
 import testUsers from "__tests__/users.json";
@@ -165,10 +166,21 @@ describe("sendEmailToIncubatorTeam()", () => {
         } as unknown as PgBoss.Job<void>);
         const startup = await db
             .selectFrom("startups")
-            .selectAll()
+            .innerJoin(
+                (eb) =>
+                    eb
+                        .selectFrom("phases")
+                        .distinctOn("startup_id")
+                        .select(["name as current_phase", "startup_id"])
+                        .orderBy(["startup_id", "phases.start desc"])
+                        .as("latest_phase"),
+                (join) =>
+                    join.onRef("latest_phase.startup_id", "=", "startups.uuid")
+            )
+            .selectAll(["startups"])
+            .select(["latest_phase.current_phase as current_phase"])
             .where("name", "=", "seconda-startup-name")
             .executeTakeFirstOrThrow();
-        const usersByStartup = await getUserByStartup(startup.uuid);
         sendEmailStub.firstCall.args[0].should.deep.equal({
             toEmail: [userB.primary_email],
             type: EMAIL_TYPES.EMAIL_STARTUP_MEMBERS_DID_NOT_CHANGE_IN_X_MONTHS,
@@ -179,6 +191,8 @@ describe("sendEmailToIncubatorTeam()", () => {
                         startup: startupToModel(startup),
                         activeMembers: 1,
                         lastModification: startup.updated_at,
+                        currentPhase:
+                            PHASE_READABLE_NAME[startup.current_phase],
                     },
                 ],
             },
@@ -191,10 +205,21 @@ describe("sendEmailToIncubatorTeam()", () => {
         } as unknown as PgBoss.Job<void>);
         const startup = await db
             .selectFrom("startups")
-            .selectAll()
+            .innerJoin(
+                (eb) =>
+                    eb
+                        .selectFrom("phases")
+                        .distinctOn("startup_id")
+                        .select(["name as current_phase", "startup_id"])
+                        .orderBy(["startup_id", "phases.start desc"])
+                        .as("latest_phase"),
+                (join) =>
+                    join.onRef("latest_phase.startup_id", "=", "startups.uuid")
+            )
+            .selectAll(["startups"])
+            .select(["latest_phase.current_phase as current_phase"])
             .where("name", "=", "seconda-startup-name")
             .executeTakeFirstOrThrow();
-        const usersByStartup = await getUserByStartup(startup.uuid);
         sendEmailStub.firstCall.args[0].should.deep.equal({
             toEmail: [userB.primary_email],
             type: EMAIL_TYPES.EMAIL_STARTUP_MEMBERS_DID_NOT_CHANGE_IN_X_MONTHS,
@@ -205,6 +230,8 @@ describe("sendEmailToIncubatorTeam()", () => {
                         startup: startupToModel(startup),
                         activeMembers: 1,
                         lastModification: startup.updated_at,
+                        currentPhase:
+                            PHASE_READABLE_NAME[startup.current_phase],
                     },
                 ],
             },
