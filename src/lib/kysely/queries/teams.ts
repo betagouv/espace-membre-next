@@ -47,7 +47,7 @@ export function getTeamsForIncubator(incubatorId: string) {
         .execute();
 }
 
-export function getUsersByIncubatorId(incubatorId: string) {
+export function getIncubatorTeamMembers(incubatorId: string) {
     return db
         .selectFrom("users")
         .innerJoin("users_teams", "users.uuid", "users_teams.user_id")

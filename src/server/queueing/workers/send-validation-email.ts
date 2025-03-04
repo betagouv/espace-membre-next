@@ -4,7 +4,7 @@ import PgBoss from "pg-boss";
 
 import { db } from "@/lib/kysely";
 import { getIncubator } from "@/lib/kysely/queries/incubators";
-import { getUsersByIncubatorId } from "@/lib/kysely/queries/teams";
+import { getIncubatorTeamMembers } from "@/lib/kysely/queries/teams";
 import { getUserBasicInfo, getUserStartups } from "@/lib/kysely/queries/users";
 import {
     SendNewMemberValidationEmailSchema,
@@ -81,7 +81,7 @@ export async function sendNewMemberValidationEmail(
                 `The provided incubator id ${incubatorId} does not exist. Incubator might have been deleted`
             );
         }
-        const membersForTeam = await getUsersByIncubatorId(incubatorId);
+        const membersForTeam = await getIncubatorTeamMembers(incubatorId);
         if (!membersForTeam.length) {
             throw new BusinessError(
                 "validationMemberListIsEmpty",

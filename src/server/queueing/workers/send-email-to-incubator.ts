@@ -5,7 +5,7 @@ import PgBoss from "pg-boss";
 import { getLastEventListStartupUuids } from "@/lib/events";
 import { getAllIncubators } from "@/lib/kysely/queries/incubators";
 import { getStartupsWithAnyUpdateForThePastXMonthsRaw } from "@/lib/kysely/queries/startups";
-import { getUsersByIncubatorId } from "@/lib/kysely/queries/teams";
+import { getIncubatorTeamMembers } from "@/lib/kysely/queries/teams";
 import { getUsersByStartupIds } from "@/lib/kysely/queries/users";
 import {
     incubatorToModel,
@@ -48,7 +48,7 @@ export async function sendEmailToIncubatorTeam(job: PgBoss.Job<void>) {
             );
             continue;
         }
-        const membersForTeam = await getUsersByIncubatorId(incubatorId);
+        const membersForTeam = await getIncubatorTeamMembers(incubatorId);
         if (!membersForTeam.length) {
             // send error to sentry and continue
             Sentry.captureException(
