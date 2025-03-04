@@ -324,6 +324,11 @@ export const startupSchema = z.object({
         .describe("Url de l'audit technique")
         .optional()
         .nullable(),
+    roadmap_url: z
+        .string()
+        .describe("Url de la roadmap ou tickets")
+        .optional()
+        .nullable(),
     ecodesign_url: z
         .string()
         .describe("Url de la déclaration d'écoconception")

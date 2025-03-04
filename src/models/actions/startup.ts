@@ -30,6 +30,7 @@ export const startupInfoUpdateSchema = z.object({
         is_private_url: startupSchema.shape.is_private_url,
         dsfr_status: startupSchema.shape.dsfr_status,
         tech_audit_url: startupSchema.shape.tech_audit_url,
+        roadmap_url: startupSchema.shape.roadmap_url,
         ecodesign_url: startupSchema.shape.ecodesign_url,
     }),
     shot: z

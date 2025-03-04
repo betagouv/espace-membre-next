@@ -315,6 +315,7 @@ export interface Startups {
   name: string;
   pitch: string | null;
   repository: string | null;
+  roadmap_url: string | null;
   stats: boolean | null;
   stats_url: string | null;
   tech_audit_url: string | null;
