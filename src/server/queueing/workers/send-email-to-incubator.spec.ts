@@ -1,4 +1,4 @@
-import { addDays, addDays, subDays } from "date-fns";
+import { addDays, subDays } from "date-fns";
 import { Selectable } from "kysely";
 import PgBoss from "pg-boss";
 import proxyquire from "proxyquire";
@@ -7,17 +7,10 @@ import sinon from "sinon";
 import { Users } from "@/@types/db";
 import { addEvent } from "@/lib/events";
 import { db } from "@/lib/kysely";
-import { getUserByStartup } from "@/lib/kysely/queries/users";
 import { EventCode } from "@/models/actionEvent";
-import {
-    incubatorToModel,
-    memberBaseInfoToModel,
-    memberPublicInfoToModel,
-    startupToModel,
-} from "@/models/mapper";
+import { incubatorToModel, startupToModel } from "@/models/mapper";
 import { Domaine } from "@/models/member";
 import { PHASE_READABLE_NAME } from "@/models/startup";
-import config from "@/server/config";
 import { EMAIL_TYPES } from "@/server/modules/email";
 import testUsers from "__tests__/users.json";
 import utils from "__tests__/utils";

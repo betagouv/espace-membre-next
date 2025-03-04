@@ -12,9 +12,7 @@ import {
     memberBaseInfoToModel,
     startupToModel,
 } from "@/models/mapper";
-import { memberBaseInfoSchemaType } from "@/models/member";
-import { PHASE_READABLE_NAME, StartupPhase } from "@/models/startup";
-import config from "@/server/config";
+import { PHASE_READABLE_NAME } from "@/models/startup";
 import { sendEmail } from "@/server/config/email.config";
 import { BusinessError } from "@/utils/error";
 import { EMAIL_TYPES } from "@modules/email";
