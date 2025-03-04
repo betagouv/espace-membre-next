@@ -182,7 +182,7 @@ export const StartupStandards = ({
                         "La page /budget doit être publiée dès la mise en ligne.",
                     ],
                     [
-                        "Publication du la roadmap",
+                        "Publication de la roadmap",
                         <BooleanBadge
                             key="badge"
                             value={startupInfos.roadmap_url}
