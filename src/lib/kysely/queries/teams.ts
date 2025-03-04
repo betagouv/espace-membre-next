@@ -63,6 +63,7 @@ export function getIncubatorTeamMembers(incubatorId: string) {
                     .as("latest_missions"),
             (join) => join.onRef("latest_missions.user_id", "=", "users.uuid")
         )
+        .where("latest_missions.end", ">=", new Date())
         .where("teams.incubator_id", "=", incubatorId)
         .select([
             "users.uuid",
