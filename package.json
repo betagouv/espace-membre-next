@@ -36,7 +36,7 @@
         "@luma-team/mjml-react": "^0.2.1",
         "@mui/base": "^5.0.0-beta.69",
         "@mui/material": "^5.15.10",
-        "@octokit/rest": "^20.0.2",
+        "@octokit/rest": "^20.1.2",
         "@sentry/nextjs": "^8.32.0",
         "@sentry/node": "^8.32.0",
         "@sindresorhus/slugify": "^1.1.0",
