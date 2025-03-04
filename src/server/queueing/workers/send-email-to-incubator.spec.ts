@@ -16,18 +16,16 @@ import testUsers from "__tests__/users.json";
 import utils from "__tests__/utils";
 
 describe("sendEmailToIncubatorTeam()", () => {
-    let sendEmailStub, getServerSessionStub, sendEmailToIncubatorTeam;
+    let sendEmailStub, sendEmailToIncubatorTeam;
     let newUser,
         newIncubatorA,
         newIncubatorB,
         newMission,
         newStartup,
-        newStartupMissionConnexion,
         teamA,
         teamB;
     let userA: Selectable<Users>, userB: Selectable<Users>;
     beforeEach(async () => {
-        getServerSessionStub = sinon.stub();
         await utils.createUsers(testUsers);
         sendEmailStub = sinon.stub().resolves(); // Resolves like a real async function
         // Use proxyquire to replace bossClient module
@@ -79,7 +77,7 @@ describe("sendEmailToIncubatorTeam()", () => {
             "seconda-startup-name"
         );
         // the mission is also link to a startup and to another incubator
-        newStartupMissionConnexion = await db
+        await db
             .insertInto("missions_startups")
             .values({
                 mission_id: newMission.uuid,
