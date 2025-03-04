@@ -48,6 +48,7 @@ export function getTeamsForIncubator(incubatorId: string) {
 }
 
 export function getIncubatorTeamMembers(incubatorId: string) {
+    const today = new Date();
     return db
         .selectFrom("users")
         .innerJoin("users_teams", "users.uuid", "users_teams.user_id")
@@ -58,12 +59,14 @@ export function getIncubatorTeamMembers(incubatorId: string) {
                 eb
                     .selectFrom("missions")
                     .distinctOn("user_id") // Ensures only one row per user
-                    .select(["user_id", "end"])
+                    .select(["user_id", "end", "start"])
+                    .where("start", "<=", today)
+                    .where("end", ">=", today)
                     .orderBy(["user_id", "end desc"]) // Sort per user, picking the latest
                     .as("latest_missions"),
             (join) => join.onRef("latest_missions.user_id", "=", "users.uuid")
         )
-        .where("latest_missions.end", ">=", new Date())
+        .where("latest_missions.end", ">=", today)
         .where("teams.incubator_id", "=", incubatorId)
         .select([
             "users.uuid",
