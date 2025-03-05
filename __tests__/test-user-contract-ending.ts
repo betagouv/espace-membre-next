@@ -1,8 +1,10 @@
 import chai from "chai";
+import { addDays } from "date-fns";
 import nock from "nock";
 import sinon from "sinon";
 
 import utils from "./utils";
+import { FakeDataInterface } from "./utils/fakeData";
 import { db } from "@/lib/kysely";
 import { EmailStatusCode } from "@/models/member";
 import { Domaine } from "@/models/member";
@@ -23,67 +25,70 @@ import {
 } from "@schedulers/userContractEndingScheduler";
 
 const should = chai.should();
-const fakeTodayDate = "2020-01-01T09:59:59+01:00";
-const expiredFor1dayDate = "2019-12-31";
-const expiredFor15daysDate = "2020-01-16";
-const willExpireIn30daysDate = "2020-01-31";
-const expiredFor30daysDate = "2019-12-02";
-const expiredFor31daysDate = "2019-12-01";
+const fakeTodayDate = new Date("2020-01-01T09:59:59+01:00");
+const expiredFor1dayDate = new Date("2019-12-31");
+const expiredFor15daysDate = new Date("2020-01-16");
+const willExpireIn30daysDate = new Date("2020-01-31");
+const expiredFor30daysDate = new Date("2019-12-02");
+const expiredFor31daysDate = new Date("2019-12-01");
 
-const betaGouvUsers = [
-    {
-        id: "membre.actif",
-        fullname: "Membre Actif",
-        missions: [
-            {
-                start: "2016-11-03",
-                status: "independent",
-                employer: "octo",
-            },
-        ],
-    },
-    {
-        id: "membre.expire",
-        fullname: "Membre Expiré",
-        missions: [
-            {
-                start: "2016-11-03",
-                end: "2017-11-02",
-                status: "independent",
-                employer: "octo",
-            },
-        ],
-    },
-    {
-        id: "membre.quipart",
-        fullname: "membre quipart",
-        github: "test-github",
-        primary_email: "membre.quipart@modernisation.gouv.fr",
-        missions: [
-            {
-                start: "2016-11-03",
-                end: expiredFor15daysDate,
-                status: "independent",
-                employer: "octo",
-            },
-        ],
-    },
-    {
-        id: "membre.quipart.30days",
-        fullname: "membre quipart",
-        github: "test-github",
-        domaine: "Développement",
-        primary_email: `membre.quipart.30days@${config.domain}`,
-        missions: [
-            {
-                start: "2016-11-03",
-                end: willExpireIn30daysDate,
-                status: "independent",
-                employer: "octo",
-            },
-        ],
-    },
-];
+const betaGouvUsers: FakeDataInterface = {
+    users: [
+        {
+            username: "membre.actif",
+            fullname: "Membre Actif",
+            missions: [
+                {
+                    start: new Date("2016-11-03"),
+                    end: addDays(new Date(), 400),
+                    status: "independent",
+                    employer: "octo",
+                },
+            ],
+        },
+        {
+            username: "membre.expire",
+            fullname: "Membre Expiré",
+            missions: [
+                {
+                    start: new Date("2016-11-03"),
+                    end: new Date("2017-11-02"),
+                    status: "independent",
+                    employer: "octo",
+                },
+            ],
+        },
+        {
+            username: "membre.quipart",
+            fullname: "membre quipart",
+            github: "test-github",
+            primary_email: "membre.quipart@modernisation.gouv.fr",
+            missions: [
+                {
+                    start: new Date("2016-11-03"),
+                    end: expiredFor15daysDate,
+                    status: "independent",
+                    employer: "octo",
+                },
+            ],
+        },
+        {
+            username: "membre.quipart.30days",
+            fullname: "membre quipart",
+            github: "test-github",
+            domaine: Domaine.DEVELOPPEMENT,
+            primary_email: `membre.quipart.30days@${config.domain}`,
+            missions: [
+                {
+                    start: new Date("2016-11-03"),
+                    end: willExpireIn30daysDate,
+                    status: "independent",
+                    employer: "octo",
+                },
+            ],
+        },
+    ],
+};
 
 const mattermostUsers = [
     {
@@ -179,24 +184,25 @@ describe("send message on contract end to user", () => {
             "membre.quipart@modernisation.gouv.fr,membre.emailsecondary@gmail.com";
     });
     describe("Test sending j+x day email", () => {
-        const users = [
-            {
-                secondary_email: "uneadressesecondaire@gmail.com",
-                username: "julien.dauphant",
-                id: "julien.dauphant",
-                fullname: "Julien Dauphant",
-                role: "",
-                domaine: Domaine.ANIMATION,
-                missions: [
-                    {
-                        start: "2016-11-03",
-                        end: expiredFor1dayDate,
-                        status: "independent",
-                        employer: "octo",
-                    },
-                ],
-            },
-        ];
+        const users: FakeDataInterface = {
+            users: [
+                {
+                    secondary_email: "uneadressesecondaire@gmail.com",
+                    username: "julien.dauphant",
+                    fullname: "Julien Dauphant",
+                    role: "",
+                    domaine: Domaine.ANIMATION,
+                    missions: [
+                        {
+                            start: new Date("2016-11-03"),
+                            end: expiredFor1dayDate,
+                            status: "independent",
+                            employer: "octo",
+                        },
+                    ],
+                },
+            ],
+        };
         beforeEach(async () => {
             await utils.createData(users);
         });
@@ -345,32 +351,34 @@ describe("send message on contract end to user", () => {
 describe("After quitting", () => {
     let clock;
     let sendEmailStub;
-    let users = [
-        {
-            id: "julien.dauphant",
-            fullname: "Julien Dauphant",
-            missions: [
-                {
-                    start: "2016-11-03",
-                    end: expiredFor1dayDate,
-                    status: "independent",
-                    employer: "octo",
-                },
-            ],
-        },
-        {
-            id: "julien.dauphant2",
-            fullname: "Julien Dauphant",
-            missions: [
-                {
-                    start: "2016-11-03",
-                    end: expiredFor30daysDate,
-                    status: "independent",
-                    employer: "octo",
-                },
-            ],
-        },
-    ];
+    let users: FakeDataInterface = {
+        users: [
+            {
+                username: "julien.dauphant",
+                fullname: "Julien Dauphant",
+                missions: [
+                    {
+                        start: new Date("2016-11-03"),
+                        end: expiredFor1dayDate,
+                        status: "independent",
+                        employer: "octo",
+                    },
+                ],
+            },
+            {
+                username: "julien.dauphant2",
+                fullname: "Julien Dauphant",
+                missions: [
+                    {
+                        start: new Date("2016-11-03"),
+                        end: expiredFor30daysDate,
+                        status: "independent",
+                        employer: "octo",
+                    },
+                ],
+            },
+        ],
+    };
     beforeEach(async () => {
         utils.cleanMocks();
         utils.mockSlackGeneral();
