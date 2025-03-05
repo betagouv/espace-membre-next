@@ -1042,22 +1042,22 @@ describe("Test user relative actions", () => {
         describe("", () => {
             const users = [
                 {
-                    id: "membre.actif",
+                    username: "membre.actif",
                     fullname: "membre Actif",
                     missions: [
                         {
-                            start: "2016-11-03",
+                            start: new Date("2016-11-03"),
                             status: "independent",
                             employer: "octo",
                         },
                     ],
                 },
                 {
-                    id: "membre.nouveau",
+                    username: "membre.nouveau",
                     fullname: "membre Nouveau",
                     missions: [
                         {
-                            start: new Date().toISOString().split("T")[0],
+                            start: new Date(),
                         },
                     ],
                 },
@@ -1078,18 +1078,18 @@ describe("Test user relative actions", () => {
                 utils.mockOvhUserEmailInfos();
                 utils.mockStartups();
 
-                const newMember = testUsers.find(
-                    (user) => user.id === "membre.nouveau"
+                const newMember = testUsers.users?.find(
+                    (user) => user.username === "membre.nouveau"
                 );
-                const allAccountsExceptANewMember = testUsers.filter(
-                    (user) => user.id !== newMember.id
+                const allAccountsExceptANewMember = testUsers.users?.filter(
+                    (user) => user.username !== newMember.id
                 );
 
                 nock(/.*ovh.com/)
                     .get(/^.*email\/domain\/.*\/account/)
                     .reply(
                         200,
-                        allAccountsExceptANewMember.map((user) => user.id)
+                        allAccountsExceptANewMember.map((user) => user.username)
                     );
                 const ovhEmailCreation = nock(/.*ovh.com/)
                     .post(/^.*email\/domain\/.*\/account/)
@@ -1139,8 +1139,8 @@ describe("Test user relative actions", () => {
             utils.mockOvhRedirections();
 
             // We return an email for membre.nouveau to indicate he already has one
-            const newMember = testUsers.find(
-                (user) => user.id === "membre.nouveau"
+            const newMember = testUsers.users?.find(
+                (user) => user.username === "membre.nouveau"
             );
 
             nock(/.*ovh.com/)
@@ -1194,8 +1194,8 @@ describe("Test user relative actions", () => {
                     Betagouv,
                     "subscribeToMailingList"
                 );
-                const newMember = testUsers.find(
-                    (user) => user.id === "membre.nouveau"
+                const newMember = testUsers.users?.find(
+                    (user) => user.username === "membre.nouveau"
                 );
                 nock(/.*ovh.com/)
                     .get(/^.*email\/domain\/.*\/account/)
@@ -1253,14 +1253,14 @@ describe("Test user relative actions", () => {
                     );
                 });
                 afterEach(async () => {
-                    await utils.deleteData(users);
+                    await utils.deleteUsers(users);
                     unsubscribeSpy.restore();
                 });
 
                 it("ovhMailingListUnsubscription should be called", async () => {
                     const url = process.env.USERS_API || "https://beta.gouv.fr";
-                    const newMember = testUsers.find(
-                        (user) => user.id === "membre.nouveau"
+                    const newMember = testUsers.users?.find(
+                        (user) => user.username === "membre.nouveau"
                     );
                     nock(/.*ovh.com/)
                         .get(/^.*email\/domain\/.*\/account/)
@@ -1333,28 +1333,29 @@ describe("Test user relative actions", () => {
                     .post(/^.*email\/domain\/.*\/redirection/)
                     .reply(200);
                 //await knex("login_tokens").truncate();
-                const newMember = testUsers.find(
-                    (user) => user.id === "membre.nouveau"
-                );
-                const allAccountsExceptANewMember = testUsers.filter(
-                    (user) => user.id !== newMember.id
-                );
+                const newMember = testUsers.users!.find(
+                    (user) => user.username === "membre.nouveau"
+                )!;
+                const allAccountsExceptANewMember =
+                    testUsers.users?.filter(
+                        (user) => user.username !== newMember?.username
+                    ) || [];
 
                 nock(/.*ovh.com/)
                     .get(/^.*email\/domain\/.*\/redirection/)
                     .reply(
                         200,
-                        allAccountsExceptANewMember.map((user) => user.id)
+                        allAccountsExceptANewMember.map((user) => user.username)
                     );
                 nock(/.*ovh.com/)
                     .get(/^.*email\/domain\/.*\/account/)
                     .reply(
                         200,
-                        allAccountsExceptANewMember.map((user) => user.id)
+                        allAccountsExceptANewMember.map((user) => user.username)
                     );
                 await db
                     .updateTable("users")
-                    .where("username", "=", newMember.id)
+                    .where("username", "=", newMember.username)
                     .set({
                         primary_email: null,
                         primary_email_status:
@@ -1366,22 +1367,22 @@ describe("Test user relative actions", () => {
                 const val = await db
                     .selectFrom("users")
                     .selectAll()
-                    .where("username", "=", newMember.id)
+                    .where("username", "=", newMember.username)
                     .execute();
                 await createEmailAddresses();
                 ovhRedirectionCreation.isDone().should.be.false;
                 await createRedirectionEmailAdresses();
                 ovhRedirectionCreation.isDone().should.be.true;
                 createRedirection.firstCall.args[0].should.equal(
-                    `${newMember.id}-attr@${config.domain}`
+                    `${newMember.username}-attr@${config.domain}`
                 );
                 createRedirection.calledOnce.should.be.true;
                 await db
                     .updateTable("users")
-                    .where("username", "=", newMember.id)
+                    .where("username", "=", newMember.username)
                     .set({
                         secondary_email: null,
-                        primary_email: `${newMember.id}@${config.domain}`,
+                        primary_email: `${newMember.username}@${config.domain}`,
                         email_is_redirection: false,
                     })
                     .execute();
