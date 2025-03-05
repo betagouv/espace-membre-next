@@ -2,7 +2,7 @@ import nock from "nock";
 import rewire from "rewire";
 import sinon from "sinon";
 
-import { testUsers } from "./utils/users-data";
+import testUsers from "./users.json";
 import utils from "./utils";
 import { db } from "@/lib/kysely";
 import * as mattermost from "@/lib/mattermost";
