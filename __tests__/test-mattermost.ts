@@ -12,7 +12,7 @@ import * as email from "@/server/config/email.config";
 import { removeBetaAndParnersUsersFromCommunityTeam } from "@schedulers/mattermostScheduler/removeBetaAndParnersUsersFromCommunityTeam";
 
 // all users already has account but mattermost.newuser
-const mattermostUsers = testUsers
+const mattermostUsers = testUsers.users?
     .filter((user) => user.id !== "mattermost.newuser")
     .map((u) => ({
         id: u.id,
