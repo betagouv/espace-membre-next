@@ -45,7 +45,7 @@ describe("Add user to github organization", () => {
         pendingInvitations = sinon
             .stub(github, "getAllPendingInvitations")
             .resolves([]);
-        await testutils.createData(testUsers);
+        await testUtils.createData(testUsers);
     });
 
     afterEach(async () => {
@@ -53,7 +53,7 @@ describe("Add user to github organization", () => {
         inviteUser.restore();
         addUserToTeam.restore();
         getGithubMembers.restore();
-        await testutils.deleteData(testUsers);
+        await testUtils.deleteData(testUsers);
     });
 
     it("should add new users to organization", async () => {
@@ -108,13 +108,13 @@ describe("Removed user from github organization", () => {
                     id: "45548",
                 },
             ]);
-        await testutils.createData(testUsers);
+        await testUtils.createData(testUsers);
     });
 
     afterEach(async () => {
         removeUser.restore();
         getGithubMembers.restore();
-        await testutils.deleteData(testUsers);
+        await testUtils.deleteData(testUsers);
     });
 
     it("should add new users to organization", async () => {
