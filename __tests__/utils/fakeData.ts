@@ -33,7 +33,6 @@ interface FakeDataTeam {
 }
 
 interface FakeDataUser {
-    id?: string;
     fullname?: string;
     github?: string;
     role?: string;
@@ -170,7 +169,7 @@ const createUser = async (
                   }`,
         primary_email_status_updated_at: new Date(Date.now() - sixMinutesInMs),
         primary_email_status: EmailStatusCode.EMAIL_ACTIVE,
-        github: originalData.github || originalData.username,
+        github: originalData.github,
         secondary_email: originalData.secondary_email,
         domaine: (originalData.domaine ||
             Domaine.ANIMATION) as UsersDomaineEnum,

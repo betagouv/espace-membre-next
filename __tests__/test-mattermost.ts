@@ -12,11 +12,11 @@ import * as email from "@/server/config/email.config";
 import { removeBetaAndParnersUsersFromCommunityTeam } from "@schedulers/mattermostScheduler/removeBetaAndParnersUsersFromCommunityTeam";
 
 // all users already has account but mattermost.newuser
-const mattermostUsers = testUsers.users
-    ?.filter((user) => user.id !== "mattermost.newuser")
+const mattermostUsers = (testUsers.users || [])
+    .filter((user) => user.username !== "mattermost.newuser")
     .map((u) => ({
-        id: u.id,
-        email: `${u.id}@${config.domain}`,
+        id: u.username,
+        email: `${u.username}@${config.domain}`,
     }));
 
 const mattermostScheduler = rewire(
@@ -40,7 +40,7 @@ describe("invite users to mattermost", () => {
             .get(/^.*email\/domain\/.*\/account/)
             .reply(
                 200,
-                testUsers.users?.map((user) => user.id)
+                testUsers.users?.map((user) => user.username)
             );
 
         nock(/.*mattermost.incubateur.net/)
@@ -77,7 +77,7 @@ describe("invite users to mattermost", () => {
             .get(/^.*email\/domain\/.*\/account/)
             .reply(
                 200,
-                testUsers.users?.map((user) => user.id)
+                testUsers.users?.map((user) => user.username)
             );
         // in this case this call get user in team Alumni
         nock(/.*mattermost.incubateur.net/)
@@ -87,8 +87,8 @@ describe("invite users to mattermost", () => {
                 testUsers.users
                     ?.filter((user) => user.username === "mattermost.newuser")
                     .map((u) => ({
-                        id: u.id,
-                        email: `${u.id}@${config.domain}`,
+                        id: u.username,
+                        email: `${u.username}@${config.domain}`,
                     }))
             );
         nock(/.*mattermost.incubateur.net/)
@@ -131,7 +131,7 @@ describe("invite users to mattermost", () => {
             .get(/^.*email\/domain\/.*\/account/)
             .reply(
                 200,
-                testUsers.users?.map((user) => user.id)
+                testUsers.users?.map((user) => user.username)
             );
 
         nock(/.*mattermost.incubateur.net/)
@@ -170,7 +170,7 @@ describe("invite users to mattermost", () => {
             .get(/^.*email\/domain\/.*\/account/)
             .reply(
                 200,
-                testUsers.users?.map((user) => user.id)
+                testUsers.users?.map((user) => user.username)
             );
 
         nock(/.*mattermost.incubateur.net/)

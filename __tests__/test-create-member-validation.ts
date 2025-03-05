@@ -155,7 +155,7 @@ describe(`Test creating new user flow : A new member cannot be validated by some
             }
         ).validateNewMember;
         try {
-            await validateNewMember({ memberUuid: newUser.id });
+            await validateNewMember({ memberUuid: newUser.username });
         } catch (error) {
             error.should.be.instanceof(AuthorizationError);
         }
