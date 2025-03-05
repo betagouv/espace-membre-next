@@ -5,11 +5,11 @@ import { Client } from "pg";
 import { parse } from "pg-connection-string";
 import { v4 as uuidv4 } from "uuid";
 
-import testStartups from "./startups.json";
-import testUsers from "./users.json";
+import { deleteData, createData } from "./fakeData";
+import testStartups from "../startups.json";
+import testUsers from "../users.json";
 import { Startups, UsersDomaineEnum } from "@/@types/db";
 import { db } from "@/lib/kysely";
-import { startupToModel } from "@/models/mapper";
 import { Domaine, EmailStatusCode } from "@/models/member";
 import config from "@/server/config";
 import { stopBossClientInstance } from "@/server/queueing/client";
@@ -315,6 +315,8 @@ const testUtils = {
             }
         }
     },
+    createData,
+    deleteData,
     deleteUsers: async (
         users: {
             star?: string;

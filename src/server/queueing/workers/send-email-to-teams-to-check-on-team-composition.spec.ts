@@ -13,8 +13,8 @@ import {
 } from "@/models/mapper";
 import config from "@/server/config";
 import { EMAIL_TYPES } from "@/server/modules/email";
-import testUsers from "__tests__/users.json";
-import utils from "__tests__/utils";
+import { testUsers } from "__tests__/utils/users-data";
+import utils from "__tests__/utils/utils";
 
 describe("sendEmailToTeamsToCheckOnTeamComposition()", () => {
     let sendEmailStub,
@@ -23,7 +23,7 @@ describe("sendEmailToTeamsToCheckOnTeamComposition()", () => {
     let userA: Selectable<Users>, userB: Selectable<Users>;
     beforeEach(async () => {
         getServerSessionStub = sinon.stub();
-        await utils.createUsers(testUsers);
+        await utils.createData(testUsers);
         sendEmailStub = sinon.stub().resolves(); // Resolves like a real async function
         // Use proxyquire to replace bossClient module
         sendEmailToTeamsToCheckOnTeamComposition = proxyquire(
@@ -35,7 +35,7 @@ describe("sendEmailToTeamsToCheckOnTeamComposition()", () => {
     });
 
     afterEach(async () => {
-        await utils.deleteUsers(testUsers);
+        await utils.deleteData(testUsers);
     });
 
     it("should send email listing teams member", async () => {

@@ -4,7 +4,7 @@ import PgBoss from "pg-boss";
 import proxyquire from "proxyquire";
 import sinon from "sinon";
 
-import testUsers from "./users.json";
+import { testUsers } from "./utils/users-data";
 import utils from "./utils";
 import { db } from "@/lib/kysely";
 import { EventCode } from "@/models/actionEvent";
@@ -63,10 +63,10 @@ describe("Service account creation by worker", () => {
 
     describe("matomo account producer", () => {
         before(async () => {
-            await utils.createUsers(testUsers);
+            await utils.createData(testUsers);
         });
         after(async () => {
-            await utils.deleteUsers(testUsers);
+            await utils.deleteData(testUsers);
         });
 
         it("should create matomo worker tasks", async () => {
@@ -122,7 +122,7 @@ describe("Service account creation by worker", () => {
         let mission;
         let missionStartup;
         before(async function () {
-            await utils.createUsers(testUsers);
+            await utils.createData(testUsers);
             user = await db
                 .selectFrom("users")
                 .where("username", "=", "membre.actif")
@@ -169,7 +169,7 @@ describe("Service account creation by worker", () => {
                 .deleteFrom("service_accounts")
                 .where("uuid", "=", service_accounts.uuid)
                 .executeTakeFirstOrThrow();
-            await utils.deleteUsers(testUsers);
+            await utils.deleteData(testUsers);
             await db
                 .deleteFrom("startups")
                 .where("uuid", "=", newStartup.uuid)
@@ -242,7 +242,7 @@ describe("Service account creation by worker", () => {
         let mission;
         let missionStartup;
         before(async () => {
-            await utils.createUsers(testUsers);
+            await utils.createData(testUsers);
             newStartup = await db
                 .insertInto("startups")
                 .values({
@@ -275,7 +275,7 @@ describe("Service account creation by worker", () => {
                 .executeTakeFirstOrThrow();
         });
         after(async () => {
-            await utils.deleteUsers(testUsers);
+            await utils.deleteData(testUsers);
             await db
                 .deleteFrom("startups")
                 .where("uuid", "=", newStartup.uuid)
