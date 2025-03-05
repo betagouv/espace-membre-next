@@ -12,8 +12,8 @@ import * as email from "@/server/config/email.config";
 import { removeBetaAndParnersUsersFromCommunityTeam } from "@schedulers/mattermostScheduler/removeBetaAndParnersUsersFromCommunityTeam";
 
 // all users already has account but mattermost.newuser
-const mattermostUsers = testUsers.users?
-    .filter((user) => user.id !== "mattermost.newuser")
+const mattermostUsers = testUsers.users
+    ?.filter((user) => user.id !== "mattermost.newuser")
     .map((u) => ({
         id: u.id,
         email: `${u.id}@${config.domain}`,
@@ -84,8 +84,8 @@ describe("invite users to mattermost", () => {
             .get(/^.*api\/v4\/users.*/)
             .reply(
                 200,
-                testUsers.users?
-                    .filter((user) => user.username === "mattermost.newuser")
+                testUsers.users
+                    ?.filter((user) => user.username === "mattermost.newuser")
                     .map((u) => ({
                         id: u.id,
                         email: `${u.id}@${config.domain}`,
@@ -257,21 +257,23 @@ describe("Reactivate current users on mattermost", () => {
 
 describe("Test to remove users from community team", () => {
     let clock;
-    const users = {users: [
-        {
-            username: "julien.dauphant",
-            fullname: "Julien Dauphant",
-            missions: [
-                {
-                    start: new Date("2016-11-03"),
-                    end: new Date("2020-10-20"),
-                    status: "independent",
-                    employer: "octo",
-                },
-            ],
-            role: "",
-        },
-    ]};
+    const users = {
+        users: [
+            {
+                username: "julien.dauphant",
+                fullname: "Julien Dauphant",
+                missions: [
+                    {
+                        start: new Date("2016-11-03"),
+                        end: new Date("2020-10-20"),
+                        status: "independent",
+                        employer: "octo",
+                    },
+                ],
+                role: "",
+            },
+        ],
+    };
     beforeEach(async () => {
         const date = new Date("2021-01-20T07:59:59+01:00");
         clock = sinon.useFakeTimers(date);
@@ -374,21 +376,23 @@ describe("Test to remove users from community team", () => {
 });
 describe("Test move expired user to alumni team", () => {
     let clock;
-    const users = {users:[
-        {
-            username: "julien.dauphant",
-            fullname: "Julien Dauphant",
-            missions: [
-                {
-                    start: new Date("2016-11-03"),
-                    end: new Date("2021-01-17"),
-                    status: "independent",
-                    employer: "octo",
-                },
-            ],
-            role: "",
-        },
-    ]};
+    const users = {
+        users: [
+            {
+                username: "julien.dauphant",
+                fullname: "Julien Dauphant",
+                missions: [
+                    {
+                        start: new Date("2016-11-03"),
+                        end: new Date("2021-01-17"),
+                        status: "independent",
+                        employer: "octo",
+                    },
+                ],
+                role: "",
+            },
+        ],
+    };
     beforeEach(async () => {
         const date = new Date("2021-01-20T07:59:59+01:00");
         clock = sinon.useFakeTimers(date);
