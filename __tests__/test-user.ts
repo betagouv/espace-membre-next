@@ -1,12 +1,14 @@
 import chai from "chai";
 import chaiHttp from "chai-http";
+import { addDays } from "date-fns";
 import * as nextAuth from "next-auth/next";
 import nock from "nock";
 import proxyquire from "proxyquire";
 import sinon from "sinon";
 
-import { testUsers } from "./utils/users-data";
 import utils from "./utils";
+import { FakeDataInterface } from "./utils/fakeData";
+import { testUsers } from "./utils/users-data";
 import { createEmail as createEmailAction } from "@/app/api/member/actions/createEmailForUser";
 import { createRedirectionForUser } from "@/app/api/member/actions/createRedirectionForUser";
 import { deleteRedirectionForUser } from "@/app/api/member/actions/deleteRedirectionForUser";
@@ -1040,28 +1042,32 @@ describe("Test user relative actions", () => {
             betagouvCreateEmail.restore();
         });
         describe("", () => {
-            const users = [
-                {
-                    username: "membre.actif",
-                    fullname: "membre Actif",
-                    missions: [
-                        {
-                            start: new Date("2016-11-03"),
-                            status: "independent",
-                            employer: "octo",
-                        },
-                    ],
-                },
-                {
-                    username: "membre.nouveau",
-                    fullname: "membre Nouveau",
-                    missions: [
-                        {
-                            start: new Date(),
-                        },
-                    ],
-                },
-            ];
+            const users: FakeDataInterface = {
+                users: [
+                    {
+                        username: "membre.actif",
+                        fullname: "membre Actif",
+                        missions: [
+                            {
+                                start: new Date("2016-11-03"),
+                                status: "independent",
+                                employer: "octo",
+                                end: new Date(),
+                            },
+                        ],
+                    },
+                    {
+                        username: "membre.nouveau",
+                        fullname: "membre Nouveau",
+                        missions: [
+                            {
+                                start: new Date(),
+                                end: addDays(new Date(), 500),
+                            },
+                        ],
+                    },
+                ],
+            };
             beforeEach(async () => {
                 await utils.createData(users);
             });
@@ -1080,10 +1086,10 @@ describe("Test user relative actions", () => {
 
                 const newMember = testUsers.users?.find(
                     (user) => user.username === "membre.nouveau"
-                );
+                )!;
                 const allAccountsExceptANewMember = testUsers.users?.filter(
-                    (user) => user.username !== newMember.id
-                );
+                    (user) => user.username !== newMember.username
+                )!;
 
                 nock(/.*ovh.com/)
                     .get(/^.*email\/domain\/.*\/account/)
@@ -1097,7 +1103,7 @@ describe("Test user relative actions", () => {
                 //await knex("login_tokens").truncate();
                 await db
                     .updateTable("users")
-                    .where("username", "=", newMember.id)
+                    .where("username", "=", newMember.username)
                     .set({
                         primary_email: null,
                         primary_email_status:
@@ -1115,14 +1121,14 @@ describe("Test user relative actions", () => {
                 await createEmailAddresses();
                 ovhEmailCreation.isDone().should.be.true;
                 betagouvCreateEmail.firstCall.args[0].should.equal(
-                    newMember.id
+                    newMember.username
                 );
                 await db
                     .updateTable("users")
-                    .where("username", "=", newMember.id)
+                    .where("username", "=", newMember.username)
                     .set({
                         secondary_email: null,
-                        primary_email: `${newMember.id}@${config.domain}`,
+                        primary_email: `${newMember.username}@${config.domain}`,
                     })
                     .execute();
             });
@@ -1166,17 +1172,20 @@ describe("Test user relative actions", () => {
             ovhEmailCreation.isDone().should.be.false;
         });
         describe("", () => {
-            const users = [
-                {
-                    id: "membre.nouveau",
-                    fullname: "membre Nouveau",
-                    missions: [
-                        {
-                            start: new Date().toISOString().split("T")[0],
-                        },
-                    ],
-                },
-            ];
+            const users: FakeDataInterface = {
+                users: [
+                    {
+                        username: "membre.nouveau",
+                        fullname: "membre Nouveau",
+                        missions: [
+                            {
+                                start: new Date(),
+                                end: addDays(new Date(), 500),
+                            },
+                        ],
+                    },
+                ],
+            };
             beforeEach(async () => {
                 await utils.createData(users);
             });
@@ -1223,22 +1232,20 @@ describe("Test user relative actions", () => {
         context(
             "should unsubscribe user from incubateur mailing list",
             async () => {
-                let users = [
-                    {
-                        id: "membre.nouveau",
-                        fullname: "membre Nouveau",
-                        missions: [
-                            {
-                                start: new Date("12/01/1990")
-                                    .toISOString()
-                                    .split("T")[0],
-                                end: new Date("12/01/1991")
-                                    .toISOString()
-                                    .split("T")[0],
-                            },
-                        ],
-                    },
-                ];
+                let users = {
+                    users: [
+                        {
+                            username: "membre.nouveau",
+                            fullname: "membre Nouveau",
+                            missions: [
+                                {
+                                    start: new Date("12/01/1990"),
+                                    end: new Date("12/01/1991"),
+                                },
+                            ],
+                        },
+                    ],
+                };
                 let unsubscribeSpy;
                 beforeEach(async () => {
                     await utils.createData(users);
@@ -1253,7 +1260,7 @@ describe("Test user relative actions", () => {
                     );
                 });
                 afterEach(async () => {
-                    await utils.deleteUsers(users);
+                    await utils.deleteData(users);
                     unsubscribeSpy.restore();
                 });
 
@@ -1289,28 +1296,32 @@ describe("Test user relative actions", () => {
             }
         );
         context("should create redirection missing email accounts", () => {
-            let users = [
-                {
-                    id: "membre.actif",
-                    fullname: "membre Actif",
-                    missions: [
-                        {
-                            start: "2016-11-03",
-                            status: "independent",
-                            employer: "octo",
-                        },
-                    ],
-                },
-                {
-                    id: "membre.nouveau",
-                    fullname: "membre Nouveau",
-                    missions: [
-                        {
-                            start: new Date().toISOString().split("T")[0],
-                        },
-                    ],
-                },
-            ];
+            let users: FakeDataInterface = {
+                users: [
+                    {
+                        username: "membre.actif",
+                        fullname: "membre Actif",
+                        missions: [
+                            {
+                                start: new Date("2016-11-03"),
+                                end: new Date(),
+                                status: "independent",
+                                employer: "octo",
+                            },
+                        ],
+                    },
+                    {
+                        username: "membre.nouveau",
+                        fullname: "membre Nouveau",
+                        missions: [
+                            {
+                                start: new Date(),
+                                end: addDays(new Date(), 500),
+                            },
+                        ],
+                    },
+                ],
+            };
             let createRedirection;
             beforeEach(async () => {
                 utils.cleanMocks();
@@ -1409,19 +1420,26 @@ describe("Test user relative actions", () => {
         });
 
         context("when the user needs an MX PLAN account", () => {
-            const users = [
-                {
-                    id: "membre.nouveau-email",
-                    domaine: Domaine.ANIMATION,
-                    role: "",
-                    fullname: "Membre Nouveau-email",
-                    primary_email: null,
-                    primary_email_status: EmailStatusCode.EMAIL_UNSET,
-                    secondary_email: "membre.nouveau-email.perso@example.com",
-                    end: "2024-12-03",
-                    start: "2023-12-03",
-                },
-            ];
+            const users: FakeDataInterface = {
+                users: [
+                    {
+                        username: "membre.nouveau-email",
+                        domaine: Domaine.ANIMATION,
+                        role: "",
+                        fullname: "Membre Nouveau-email",
+                        primary_email: undefined,
+                        primary_email_status: EmailStatusCode.EMAIL_UNSET,
+                        secondary_email:
+                            "membre.nouveau-email.perso@example.com",
+                        missions: [
+                            {
+                                end: new Date("2024-12-03"),
+                                start: new Date("2023-12-03"),
+                            },
+                        ],
+                    },
+                ],
+            };
             beforeEach(async () => {
                 return utils.createData(users);
             });
@@ -1436,27 +1454,30 @@ describe("Test user relative actions", () => {
         });
 
         context("when the user needs an OVH Pro account", () => {
-            let users = [
-                {
-                    id: "membre.nouveau-email",
-                    username: "membre.nouveau-email",
-                    primary_email: null,
-                    primary_email_status: EmailStatusCode.EMAIL_UNSET,
-                    secondary_email: "membre.nouveau-email.perso@example.com",
-                    domaine: Domaine.ANIMATION,
-                    role: "",
-                    fullname: "Membre Nouveau test email",
-                    missions: [
-                        {
-                            end: "2024-12-03",
-                            start: "2023-12-03",
-                            status: "independent",
-                            employer: "octo",
-                            startups: [],
-                        },
-                    ],
-                },
-            ];
+            let users: FakeDataInterface = {
+                users: [
+                    {
+                        id: "membre.nouveau-email",
+                        username: "membre.nouveau-email",
+                        primary_email: undefined,
+                        primary_email_status: EmailStatusCode.EMAIL_UNSET,
+                        secondary_email:
+                            "membre.nouveau-email.perso@example.com",
+                        domaine: Domaine.ANIMATION,
+                        role: "",
+                        fullname: "Membre Nouveau test email",
+                        missions: [
+                            {
+                                end: new Date("2024-12-03"),
+                                start: new Date("2023-12-03"),
+                                status: "independent",
+                                employer: "octo",
+                                startups: [],
+                            },
+                        ],
+                    },
+                ],
+            };
             beforeEach(async () => {
                 await utils.createData(users);
                 sandbox
@@ -1481,25 +1502,32 @@ describe("Test user relative actions", () => {
         });
 
         context("when the user needs an Exchange account", () => {
-            const users = [
-                {
-                    id: "membre.nouveau-email",
-                    domaine: Domaine.ANIMATION,
-                    role: "",
-                    fullname: "Membre Nouveau test email",
-                    primary_email: null,
-                    primary_email_status: EmailStatusCode.EMAIL_UNSET,
-                    secondary_email: "membre.nouveau-email.perso@example.com",
-                    missions: [
-                        {
-                            id: "membre.nouveau-email",
-                            end: "2024-12-03",
-                            start: "2023-12-03",
-                            startups: ["a-startup-at-gip"],
-                        },
-                    ],
-                },
-            ];
+            const users: FakeDataInterface = {
+                users: [
+                    {
+                        username: "membre.nouveau-email",
+                        domaine: Domaine.ANIMATION,
+                        role: "",
+                        fullname: "Membre Nouveau test email",
+                        primary_email: undefined,
+                        primary_email_status: EmailStatusCode.EMAIL_UNSET,
+                        secondary_email:
+                            "membre.nouveau-email.perso@example.com",
+                        missions: [
+                            {
+                                end: new Date("2024-12-03"),
+                                start: new Date("2023-12-03"),
+                                startups: ["a-startup-at-gip"],
+                            },
+                        ],
+                    },
+                ],
+                startups: [
+                    {
+                        ghid: "a-startup-at-gip",
+                    },
+                ],
+            };
             beforeEach(async () => {
                 const insertedIncubator = await db
                     .insertInto("incubators")
