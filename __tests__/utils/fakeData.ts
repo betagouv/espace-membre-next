@@ -39,6 +39,7 @@ interface FakeDataUser {
     username: string;
     secondary_email?: string;
     primary_email?: string;
+    primary_email_status?: EmailStatusCode;
     domaine?: Domaine;
     missions: FakeDataMission[];
     teams?: string[];
@@ -164,9 +165,7 @@ const createUser = async (
         primary_email:
             originalData.primary_email || originalData.primary_email === null
                 ? originalData.primary_email
-                : `${originalData.username || originalData.id}@${
-                      config.domain
-                  }`,
+                : `${originalData.username}@${config.domain}`,
         primary_email_status_updated_at: new Date(Date.now() - sixMinutesInMs),
         primary_email_status: EmailStatusCode.EMAIL_ACTIVE,
         github: originalData.github,
