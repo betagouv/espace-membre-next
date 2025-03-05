@@ -23,7 +23,7 @@ describe("sendEmailToTeamsToCheckOnTeamComposition()", () => {
     let userA: Selectable<Users>, userB: Selectable<Users>;
     beforeEach(async () => {
         getServerSessionStub = sinon.stub();
-        await utils.createUsers(testUsers);
+        await utils.createData(testUsers);
         sendEmailStub = sinon.stub().resolves(); // Resolves like a real async function
         // Use proxyquire to replace bossClient module
         sendEmailToTeamsToCheckOnTeamComposition = proxyquire(
@@ -35,7 +35,7 @@ describe("sendEmailToTeamsToCheckOnTeamComposition()", () => {
     });
 
     afterEach(async () => {
-        await utils.deleteUsers(testUsers);
+        await utils.deleteData(testUsers);
     });
 
     it("should send email listing teams member", async () => {
