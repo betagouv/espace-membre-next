@@ -1,7 +1,7 @@
 import chai from "chai";
 import sinon from "sinon";
 
-import { testUsers } from "./utils/users-data";
+import testUsers from "./users.json";
 import htmlBuilder from "../src/server/modules/htmlbuilder/htmlbuilder";
 import * as mdtohtml from "@/lib/mdtohtml";
 import { incubatorSchemaType } from "@/models/incubator";
