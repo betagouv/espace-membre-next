@@ -5,8 +5,8 @@ import nock from "nock";
 import rewire from "rewire";
 import sinon from "sinon";
 
-import testUsers from "./users.json";
-import utilsTest from "./utils";
+import { testUsers } from "./utils/users-data";
+import utilsTest from "./utils/utils";
 import { db } from "@/lib/kysely";
 import { EmailStatusCode } from "@/models/member";
 import * as email from "@/server/config/email.config";

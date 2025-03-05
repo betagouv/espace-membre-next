@@ -1,8 +1,8 @@
 import nock from "nock";
 import sinon from "sinon";
 
-import testUsers from "./users.json";
-import testUtils from "./utils";
+import { testUsers } from "./utils/users-data";
+import testUtils from "./utils/utils";
 import * as github from "@/lib/github";
 import {
     addGithubUserToOrganization,
@@ -45,7 +45,7 @@ describe("Add user to github organization", () => {
         pendingInvitations = sinon
             .stub(github, "getAllPendingInvitations")
             .resolves([]);
-        await testUtils.createUsers(testUsers);
+        await testutils.createData(testUsers);
     });
 
     afterEach(async () => {
@@ -53,7 +53,7 @@ describe("Add user to github organization", () => {
         inviteUser.restore();
         addUserToTeam.restore();
         getGithubMembers.restore();
-        await testUtils.deleteUsers(testUsers);
+        await testutils.deleteData(testUsers);
     });
 
     it("should add new users to organization", async () => {
@@ -108,13 +108,13 @@ describe("Removed user from github organization", () => {
                     id: "45548",
                 },
             ]);
-        await testUtils.createUsers(testUsers);
+        await testutils.createData(testUsers);
     });
 
     afterEach(async () => {
         removeUser.restore();
         getGithubMembers.restore();
-        await testUtils.deleteUsers(testUsers);
+        await testutils.deleteData(testUsers);
     });
 
     it("should add new users to organization", async () => {

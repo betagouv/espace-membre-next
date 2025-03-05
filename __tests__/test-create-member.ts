@@ -4,7 +4,7 @@ import { createMocks } from "node-mocks-http";
 import proxyquire from "proxyquire";
 import sinon from "sinon";
 
-import testUsers from "./users.json";
+import { testUsers } from "./utils/users-data";
 import utils from "./utils";
 import { Incubators, Teams, Users } from "@/@types/db";
 import { db } from "@/lib/kysely";
@@ -29,7 +29,7 @@ describe("Test creating new user flow", () => {
 
     beforeEach(async () => {
         getServerSessionStub = sinon.stub();
-        await utils.createUsers(testUsers);
+        await utils.createData(testUsers);
         newIncubatorA = await db
             .insertInto("incubators")
             .values({
@@ -137,7 +137,7 @@ describe("Test creating new user flow", () => {
     });
 
     afterEach(async () => {
-        await utils.deleteUsers(testUsers);
+        await utils.deleteData(testUsers);
         await db.deleteFrom("users").execute();
         await db
             .deleteFrom("startups")

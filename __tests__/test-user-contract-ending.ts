@@ -143,7 +143,7 @@ describe("send message on contract end to user", () => {
         )
             .get(/.*/)
             .reply(200, []);
-        await utils.createUsers(betaGouvUsers);
+        await utils.createData(betaGouvUsers);
     });
 
     afterEach(async () => {
@@ -152,7 +152,7 @@ describe("send message on contract end to user", () => {
         sendEmailStub.restore();
         // jobsStub.restore();
         utils.cleanMocks();
-        await utils.deleteUsers(betaGouvUsers);
+        await utils.deleteData(betaGouvUsers);
     });
 
     it("should send message to users for j-15", async () => {
@@ -198,10 +198,10 @@ describe("send message on contract end to user", () => {
             },
         ];
         beforeEach(async () => {
-            await utils.createUsers(users);
+            await utils.createData(users);
         });
         afterEach(async () => {
-            await utils.deleteUsers(users);
+            await utils.deleteData(users);
         });
         it("should send j1 mail to users", async () => {
             await sendInfoToSecondaryEmailAfterXDays(1);
@@ -384,14 +384,14 @@ describe("After quitting", () => {
             .stub(email, "sendEmail")
             .returns(Promise.resolve(null));
         clock = sinon.useFakeTimers(new Date(fakeTodayDate));
-        await utils.createUsers(users);
+        await utils.createData(users);
     });
 
     afterEach(async () => {
         clock.restore();
         sendEmailStub.restore();
         utils.cleanMocks();
-        await utils.deleteUsers(users);
+        await utils.deleteData(users);
     });
 
     it("should delete users redirections at j+1", async () => {

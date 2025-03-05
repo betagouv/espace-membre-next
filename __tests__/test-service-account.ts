@@ -1,6 +1,6 @@
 import chai from "chai";
 
-import testUsers from "./users.json";
+import { testUsers } from "./utils/users-data";
 import utils from "./utils";
 import { db } from "@/lib/kysely";
 import { ACCOUNT_SERVICE_STATUS } from "@/models/services";
@@ -16,13 +16,13 @@ describe("Should sync services", () => {
     beforeEach(async () => {
         utils.cleanMocks();
         utils.mockOvhTime();
-        await utils.createUsers(testUsers);
+        await utils.createData(testUsers);
         await db.deleteFrom("service_accounts").execute();
     });
 
     afterEach(async () => {
         // clock.restore();
-        await utils.deleteUsers(testUsers);
+        await utils.deleteData(testUsers);
     });
     describe("Matomo service", () => {
         it("should sync matomo users", async () => {

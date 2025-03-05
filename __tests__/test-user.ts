@@ -5,7 +5,7 @@ import nock from "nock";
 import proxyquire from "proxyquire";
 import sinon from "sinon";
 
-import testUsers from "./users.json";
+import { testUsers } from "./utils/users-data";
 import utils from "./utils";
 import { createEmail as createEmailAction } from "@/app/api/member/actions/createEmailForUser";
 import { createRedirectionForUser } from "@/app/api/member/actions/createRedirectionForUser";
@@ -49,7 +49,7 @@ describe("Test user relative actions", () => {
                 .stub(nextAuth, "getServerSession")
                 .resolves({});
 
-            await utils.createUsers(testUsers);
+            await utils.createData(testUsers);
             user = await db
                 .selectFrom("users")
                 .selectAll()
@@ -58,7 +58,7 @@ describe("Test user relative actions", () => {
         });
         afterEach(async () => {
             sinon.restore();
-            await utils.deleteUsers(testUsers);
+            await utils.deleteData(testUsers);
             isPublicServiceEmailStub.restore();
         });
 
@@ -101,7 +101,7 @@ describe("Test user relative actions", () => {
                 .stub(nextAuth, "getServerSession")
                 .resolves({});
 
-            await utils.createUsers(testUsers);
+            await utils.createData(testUsers);
             user = await db
                 .selectFrom("users")
                 .selectAll()
@@ -110,7 +110,7 @@ describe("Test user relative actions", () => {
         });
         afterEach(async () => {
             sinon.restore();
-            await utils.deleteUsers(testUsers);
+            await utils.deleteData(testUsers);
             isPublicServiceEmailStub.restore();
         });
 
@@ -301,7 +301,7 @@ describe("Test user relative actions", () => {
                 .stub(nextAuth, "getServerSession")
                 .resolves({});
 
-            await utils.createUsers(testUsers);
+            await utils.createData(testUsers);
             user = await db
                 .selectFrom("users")
                 .selectAll()
@@ -310,9 +310,9 @@ describe("Test user relative actions", () => {
         });
         afterEach(async () => {
             sinon.restore();
-            await utils.deleteUsers(testUsers);
+            await utils.deleteData(testUsers);
             isPublicServiceEmailStub.restore();
-            await utils.deleteUsers(testUsers);
+            await utils.deleteData(testUsers);
         });
 
         it("should ask OVH to create a redirection", async () => {
@@ -386,11 +386,11 @@ describe("Test user relative actions", () => {
                 .stub(nextAuth, "getServerSession")
                 .resolves({});
 
-            await utils.createUsers(testUsers);
+            await utils.createData(testUsers);
         });
         afterEach(async () => {
             sinon.restore();
-            await utils.deleteUsers(testUsers);
+            await utils.deleteData(testUsers);
         });
         it("should return an Unauthorized error", async () => {
             try {
@@ -417,7 +417,7 @@ describe("Test user relative actions", () => {
                 .stub(nextAuth, "getServerSession")
                 .resolves({});
 
-            await utils.createUsers(testUsers);
+            await utils.createData(testUsers);
             user = await db
                 .selectFrom("users")
                 .selectAll()
@@ -426,7 +426,7 @@ describe("Test user relative actions", () => {
         });
         afterEach(async () => {
             sinon.restore();
-            await utils.deleteUsers(testUsers);
+            await utils.deleteData(testUsers);
             isPublicServiceEmailStub.restore();
         });
 
@@ -486,12 +486,12 @@ describe("Test user relative actions", () => {
 
     describe("Test update password server action unauthenticated", () => {
         beforeEach(async () => {
-            await utils.createUsers(testUsers);
+            await utils.createData(testUsers);
         });
 
         afterEach(async () => {
             // getToken.restore();
-            await utils.deleteUsers(testUsers);
+            await utils.deleteData(testUsers);
         });
 
         it("should return an Unauthorized error", async () => {
@@ -533,7 +533,7 @@ describe("Test user relative actions", () => {
                 .stub(nextAuth, "getServerSession")
                 .resolves({});
 
-            await utils.createUsers(testUsers);
+            await utils.createData(testUsers);
             user = await db
                 .selectFrom("users")
                 .selectAll()
@@ -542,9 +542,9 @@ describe("Test user relative actions", () => {
         });
         afterEach(async () => {
             sinon.restore();
-            await utils.deleteUsers(testUsers);
+            await utils.deleteData(testUsers);
             isPublicServiceEmailStub.restore();
-            await utils.deleteUsers(testUsers);
+            await utils.deleteData(testUsers);
         });
 
         it("should send error if user does not exist", async () => {
@@ -745,7 +745,7 @@ describe("Test user relative actions", () => {
                 .stub(nextAuth, "getServerSession")
                 .resolves({});
 
-            await utils.createUsers(testUsers);
+            await utils.createData(testUsers);
             user = await db
                 .selectFrom("users")
                 .selectAll()
@@ -758,9 +758,9 @@ describe("Test user relative actions", () => {
         });
         afterEach(async () => {
             sinon.restore();
-            await utils.deleteUsers(testUsers);
+            await utils.deleteData(testUsers);
             isPublicServiceEmailStub.restore();
-            await utils.deleteUsers(testUsers);
+            await utils.deleteData(testUsers);
         });
 
         it("should add secondary email", async () => {
@@ -844,7 +844,7 @@ describe("Test user relative actions", () => {
                 .stub(nextAuth, "getServerSession")
                 .resolves({});
 
-            await utils.createUsers(testUsers);
+            await utils.createData(testUsers);
             user = await db
                 .selectFrom("users")
                 .selectAll()
@@ -853,10 +853,10 @@ describe("Test user relative actions", () => {
         });
         afterEach(async () => {
             sinon.restore();
-            await utils.deleteUsers(testUsers);
+            await utils.deleteData(testUsers);
             mattermostGetUserByEmailStub.restore();
             isPublicServiceEmailStub.restore();
-            await utils.deleteUsers(testUsers);
+            await utils.deleteData(testUsers);
         });
 
         it("should not update primary email if user is not current user", async () => {
@@ -1063,10 +1063,10 @@ describe("Test user relative actions", () => {
                 },
             ];
             beforeEach(async () => {
-                await utils.createUsers(users);
+                await utils.createData(users);
             });
             afterEach(async () => {
-                await utils.deleteUsers(users);
+                await utils.deleteData(users);
             });
             it("should create missing email accounts", async () => {
                 utils.cleanMocks();
@@ -1178,10 +1178,10 @@ describe("Test user relative actions", () => {
                 },
             ];
             beforeEach(async () => {
-                await utils.createUsers(users);
+                await utils.createData(users);
             });
             afterEach(async () => {
-                await utils.deleteUsers(users);
+                await utils.deleteData(users);
             });
             it("should subscribe user to incubateur mailing list", async () => {
                 const url = process.env.USERS_API || "https://beta.gouv.fr";
@@ -1241,7 +1241,7 @@ describe("Test user relative actions", () => {
                 ];
                 let unsubscribeSpy;
                 beforeEach(async () => {
-                    await utils.createUsers(users);
+                    await utils.createData(users);
                     utils.cleanMocks();
                     utils.mockSlackGeneral();
                     utils.mockSlackSecretariat();
@@ -1253,7 +1253,7 @@ describe("Test user relative actions", () => {
                     );
                 });
                 afterEach(async () => {
-                    await utils.deleteUsers(users);
+                    await utils.deleteData(users);
                     unsubscribeSpy.restore();
                 });
 
@@ -1321,11 +1321,11 @@ describe("Test user relative actions", () => {
                 utils.mockOvhUserResponder();
                 utils.mockOvhUserEmailInfos();
                 createRedirection = sinon.spy(betagouv, "createRedirection");
-                await utils.createUsers(users);
+                await utils.createData(users);
             });
             afterEach(async () => {
                 createRedirection.restore();
-                await utils.deleteUsers(users);
+                await utils.deleteData(users);
             });
 
             it("should create redirection missing email accounts", async () => {
@@ -1422,10 +1422,10 @@ describe("Test user relative actions", () => {
                 },
             ];
             beforeEach(async () => {
-                return utils.createUsers(users);
+                return utils.createData(users);
             });
             afterEach(async () => {
-                return utils.deleteUsers(users);
+                return utils.deleteData(users);
             });
             it("should create an OVH MX Plan account", async () => {
                 await createEmail("membre.nouveau-email", "Test");
@@ -1457,13 +1457,13 @@ describe("Test user relative actions", () => {
                 },
             ];
             beforeEach(async () => {
-                await utils.createUsers(users);
+                await utils.createData(users);
                 sandbox
                     .stub(config, "EMAIL_DEFAULT_PLAN")
                     .value(EMAIL_PLAN_TYPE.EMAIL_PLAN_PRO);
             });
             afterEach(async () => {
-                await utils.deleteUsers(users);
+                await utils.deleteData(users);
                 sandbox.restore();
             });
             it("should create an OVH Pro email account", async () => {
@@ -1516,7 +1516,7 @@ describe("Test user relative actions", () => {
                         ghid: "a-startup-at-gip",
                     })
                     .execute();
-                await utils.createUsers(users);
+                await utils.createData(users);
                 // sandbox.stub(Betagouv, "startupsInfos").resolves([
                 //     {
                 //         type: "startup",
@@ -1537,7 +1537,7 @@ describe("Test user relative actions", () => {
             });
 
             afterEach(async () => {
-                await utils.deleteUsers(users);
+                await utils.deleteData(users);
                 await db
                     .deleteFrom("startups")
                     .where("name", "=", "a-startup-at-gip")
