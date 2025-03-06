@@ -6,7 +6,7 @@ import { BaseInfoUpdate } from "@/components/BaseInfoUpdatePage";
 import { getEventListByUsername } from "@/lib/events";
 import { getAllStartups } from "@/lib/kysely/queries";
 import { getUserInfos } from "@/lib/kysely/queries/users";
-import s3 from "@/lib/s3";
+import { getAvatarUrl } from "@/lib/s3";
 import { memberChangeToModel, userInfosToModel } from "@/models/mapper";
 import { authOptions } from "@/utils/authoptions";
 
@@ -35,18 +35,6 @@ export default async function Page({
     if (!session.user.isAdmin) {
         redirect(`/community/${id}`);
     }
-    const s3Key = `members/${id}/avatar.jpg`;
-    let hasImage = false;
-    try {
-        await s3
-            .getObject({
-                Key: s3Key,
-            })
-            .promise();
-        hasImage = true;
-    } catch (error) {
-        console.log("No image for user");
-    }
     const dbData = await getUserInfos({ username: id });
     const userInfos = userInfosToModel(dbData);
     const startups = await getAllStartups();
@@ -67,7 +55,7 @@ export default async function Page({
             },
         },
         changes: changes.map((change) => memberChangeToModel(change)),
-        profileURL: hasImage ? s3Key : undefined,
+        profileURL: await getAvatarUrl(id),
         startupOptions,
         username: id,
     };
