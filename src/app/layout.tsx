@@ -29,8 +29,6 @@ export interface RootLayoutProps {
 getHtmlAttributes({ defaultColorScheme });
 
 async function MainStructure(props: PropsWithChildren) {
-    const session = await getServerSession(authOptions);
-
     return (
         <>
             {/* eslint-disable-next-line @next/next/no-head-element */}
@@ -40,7 +38,7 @@ async function MainStructure(props: PropsWithChildren) {
             </head>
             <body>
                 <NextAppDirEmotionCacheProvider options={{ key: "css" }}>
-                    <ClientSessionProvider session={session}>
+                    <ClientSessionProvider>
                         <DsfrProvider>
                             <MuiDsfrThemeProvider>
                                 <BreadCrumbProvider>
