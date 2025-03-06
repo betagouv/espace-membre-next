@@ -17,6 +17,8 @@ import {
     memberPublicInfoToModel,
     userStartupToModel,
 } from "@/models/mapper";
+import { missionSchemaType } from "@/models/mission";
+import { startupSchemaType } from "@/models/startup";
 import config from "@/server/config";
 import { sendEmail } from "@/server/config/email.config";
 import { EMAIL_TYPES } from "@/server/modules/email";
@@ -24,6 +26,19 @@ import { BusinessError, NoDataError } from "@/utils/error";
 
 export const sendNewMemberValidationEmailTopic =
     "send-new-member-validation-email";
+
+const hasActiveMissionInStartup = (
+    missions: missionSchemaType[],
+    startupId: startupSchemaType["uuid"]
+) => {
+    const now = new Date();
+    return missions.find(
+        (mission) =>
+            isAfter(now, mission.start ?? 0) &&
+            isBefore(now, mission.end ?? Infinity) &&
+            mission.startups?.includes(startupId)
+    );
+};
 
 export async function sendNewMemberValidationEmail(
     job: PgBoss.Job<SendNewMemberValidationEmailSchemaType>
@@ -61,12 +76,13 @@ export async function sendNewMemberValidationEmail(
         console.log("User is not link to any startup");
         return;
     }
-    const startupIds = userStartups.map((startup) => startup.uuid);
 
     for (const startup of userStartups) {
-        // get all startups members without the new member
-        const startupMembers = await getUsersByStartup(startup.uuid).filter(
-            (member) => member.uuid !== data.userId
+        // get all active startups members without the new member
+        const startupMembers = (await getUsersByStartup(startup.uuid)).filter(
+            (member) =>
+                member.uuid !== data.userId &&
+                hasActiveMissionInStartup(member.missions, startup.uuid)
         );
         if (!startupMembers.length) {
             console.log(
@@ -78,7 +94,7 @@ export async function sendNewMemberValidationEmail(
             new Set(
                 startupMembers
                     .map((m) => m.primary_email)
-                    .filter((email) => !!email)
+                    .filter((email) => email !== null && email !== undefined)
             )
         );
         if (startup.mailing_list) {
