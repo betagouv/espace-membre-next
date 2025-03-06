@@ -1,10 +1,12 @@
 import { addMonths } from "date-fns/addMonths";
+import { toZonedTime } from "date-fns-tz";
 import { z } from "zod";
 
 import { FileType } from "@/lib/file";
 import { memberSchema } from "@/models/member";
 
-const sixMonthsFromNow = addMonths(new Date(), 6);
+const nowInFrance = toZonedTime(new Date(), "Europe/Paris");
+const sixMonthsFromNow = addMonths(nowInFrance, 6);
 const checkMissionsAreNotMoreThan6Months = (missions, ctx) => {
     missions.forEach((mission, index) => {
         if (
