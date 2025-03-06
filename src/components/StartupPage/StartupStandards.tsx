@@ -182,6 +182,16 @@ export const StartupStandards = ({
                         "La page /budget doit être publiée dès la mise en ligne.",
                     ],
                     [
+                        "Publication de la roadmap",
+                        <BooleanBadge
+                            key="badge"
+                            value={startupInfos.roadmap_url}
+                            validText="Publiée"
+                            invalidText="Non publiée"
+                        />,
+                        "La page roadmap doit être publiée dès la mise en ligne.",
+                    ],
+                    [
                         "Publication des codes sources",
                         <BooleanBadge
                             key="badge"
