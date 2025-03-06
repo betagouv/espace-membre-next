@@ -30,12 +30,7 @@ export function StartupNewMemberArrivalEmail(
                 <p>Bonjour l'équipe {props.startup.name} !</p>
                 <p>
                     <b>{props.userInfos.fullname}</b> vient de rejoindre votre
-                    équipe !
-                </p>
-
-                <p>
-                    {props.userInfos.fullname} a rejoint l'équipe en tant que{" "}
-                    <b>{props.userInfos.role}</b>.
+                    équipe en tant que <b>{props.userInfos.role}</b> !
                 </p>
                 <p>
                     N'hésitez pas à lui souhaiter la bienvenue et à lui donner
@@ -44,7 +39,8 @@ export function StartupNewMemberArrivalEmail(
                     <a href="https://doc.incubateur.net">doc</a> et de
                     participer au prochain embarquement beta.gouv.fr !
                 </p>
-                <p>
+                <hr />
+                <p style={{ fontStyle: "italic" }}>
                     Si l'ajout de cette personne à votre équipe est une erreur,
                     vous pouvez le signifier auprès de votre responsable
                     d'incubateur.
