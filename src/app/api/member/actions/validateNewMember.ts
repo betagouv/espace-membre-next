@@ -7,12 +7,12 @@ import { db } from "@/lib/kysely";
 import { getUserBasicInfo } from "@/lib/kysely/queries/users";
 import { EventCode, EventMemberCreatedPayload } from "@/models/actionEvent";
 import { validateNewMemberSchemaType } from "@/models/actions/member";
-import { SendNewMemberValidationEmailSchema } from "@/models/jobs/member";
+import { SendEmailToTeamWhenNewMemberSchema } from "@/models/jobs/member";
 import { memberBaseInfoToModel } from "@/models/mapper";
 import { EmailStatusCode } from "@/models/member";
 import { isSessionUserIncubatorTeamAdminForUser } from "@/server/config/admin.config";
 import { getBossClientInstance } from "@/server/queueing/client";
-import { sendNewMemberValidationEmailTopic } from "@/server/queueing/workers/send-email-to-team-when-new-member";
+import { sendEmailToTeamWhenNewMemberTopic } from "@/server/queueing/workers/send-email-to-team-when-new-member";
 import { authOptions } from "@/utils/authoptions";
 import {
     AuthorizationError,
@@ -111,9 +111,9 @@ export async function validateNewMember({
 
     const bossClient = await getBossClientInstance();
     await bossClient.send(
-        sendNewMemberValidationEmailTopic,
-        SendNewMemberValidationEmailSchema.parse({
-            user: newMember.username,
+        sendEmailToTeamWhenNewMemberTopic,
+        SendEmailToTeamWhenNewMemberSchema.parse({
+            user: newMember.uuid,
         }),
         {
             retryLimit: 2,

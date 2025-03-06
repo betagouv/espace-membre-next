@@ -105,7 +105,7 @@ export async function sendEmailToTeamWhenNewMember(
             },
         });
         console.log(
-            `Validation email sent for new member ${newMember.fullname}`
+            `Email send to startup member to inform them about ${newMember.fullname} arrival`
         );
     }
 }
