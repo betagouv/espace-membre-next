@@ -113,7 +113,7 @@ export async function validateNewMember({
     await bossClient.send(
         sendEmailToTeamWhenNewMemberTopic,
         SendEmailToTeamWhenNewMemberSchema.parse({
-            user: newMember.uuid,
+            userId: newMember.uuid,
         }),
         {
             retryLimit: 2,
