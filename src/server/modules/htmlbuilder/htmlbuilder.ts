@@ -8,6 +8,10 @@ import {
     MemberValidationEmailTitle,
 } from "@/server/views/templates/emails/memberValidationEmail/memberValidationEmail";
 import {
+    StartupNewMemberArrivalEmail,
+    StartupNewMemberArrivalEmailTitle,
+} from "@/server/views/templates/emails/StartupNewMemberArrivalEmail/StartupNewMemberArrivalEmail";
+import {
     TeamCompositionEmail,
     TeamCompositionEmailTitle,
 } from "@/server/views/templates/emails/teamCompositionEmail/teamCompositionEmail";
