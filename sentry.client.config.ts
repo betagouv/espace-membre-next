@@ -1,8 +1,18 @@
 import * as Sentry from "@sentry/nextjs";
 
+import { dsn, environment, release } from "@/utils/sentry";
+
 Sentry.init({
-    dsn: process.env.NEXT_PUBLIC_SENTRY_DSN,
-    integrations: [Sentry.replayIntegration()],
+    dsn: dsn,
+    environment: environment,
+    debug: false,
+    release: release,
+    integrations: [
+        Sentry.replayIntegration({
+            block: ["[data-sentry-block]", ".crisp-client"],
+            mask: ["[data-sentry-mask]", ".crisp-client"],
+        }),
+    ],
 
     // Set tracesSampleRate to 1.0 to capture 100%
     // of transactions for performance monitoring.
