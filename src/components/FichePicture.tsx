@@ -20,6 +20,10 @@ function isBase64(src: string): boolean {
     return /^data:image\/[a-z]+;base64,/.test(src);
 }
 
+function isBlobUrl(src: string): boolean {
+    return typeof src === "string" && /^blob:/.test(src);
+}
+
 function addVersionParam(url: string): string {
     if (typeof window === "undefined") {
         return url;
@@ -55,7 +59,7 @@ export const FichePicture = ({
     const [versionedUrl, setVersionedUrl] = useState<string | null>(null);
     useEffect(() => {
         // apply addVersion only in front : prevent hydratation mismatch
-        if (src && !isBase64(src)) {
+        if (src && !isBase64(src) && !isBlobUrl(src)) {
             setVersionedUrl(addVersionParam(src));
         } else {
             setVersionedUrl(null);
