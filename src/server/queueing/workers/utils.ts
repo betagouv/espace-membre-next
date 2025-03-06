@@ -3,7 +3,7 @@ import { getUserBasicInfo } from "@/lib/kysely/queries/users";
 import { memberPublicInfoToModel } from "@/models/mapper";
 import { BusinessError, NoDataError } from "@/utils/error";
 
-export async function checkUserIsValidOrThrowError(userId: string) {
+export async function getMemberIfValidOrThrowError(userId: string) {
     const memberDbData = await getUserBasicInfo({ uuid: userId });
     if (!memberDbData) {
         throw new NoDataError(`Pas de membre trouvé pour l'id : ${userId}`);
@@ -20,4 +20,5 @@ export async function checkUserIsValidOrThrowError(userId: string) {
             `User ${userId} does not have any missions`
         );
     }
+    return newMember;
 }

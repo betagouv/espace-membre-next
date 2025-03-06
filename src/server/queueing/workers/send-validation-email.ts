@@ -2,7 +2,7 @@ import { isAfter } from "date-fns/isAfter";
 import { isBefore } from "date-fns/isBefore";
 import PgBoss from "pg-boss";
 
-import { checkUserIsValidOrThrowError } from "./utils";
+import { getMemberIfValidOrThrowError } from "./utils";
 import { getIncubator } from "@/lib/kysely/queries/incubators";
 import { getUsersByIncubatorId } from "@/lib/kysely/queries/teams";
 import { getUserStartups } from "@/lib/kysely/queries/users";
@@ -23,7 +23,7 @@ export async function sendNewMemberValidationEmail(
     job: PgBoss.Job<SendNewMemberValidationEmailSchemaType>
 ) {
     const data = SendNewMemberValidationEmailSchema.parse(job.data);
-    await checkUserIsValidOrThrowError(data.userId);
+    const newMember = await getMemberIfValidOrThrowError(data.userId);
     const now = new Date();
     const userStartups = (await getUserStartups(data.userId)).filter(
         (startup) => {
