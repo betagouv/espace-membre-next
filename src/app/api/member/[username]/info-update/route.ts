@@ -1,15 +1,9 @@
-import { NextRequest, NextResponse } from "next/server";
+import { revalidatePath } from "next/cache";
+import { NextResponse } from "next/server";
 import { getServerSession } from "next-auth";
 
 import { updateMember } from "../../updateMember";
-import { addEvent } from "@/lib/events";
-import { db, jsonArrayFrom } from "@/lib/kysely";
-import {
-    createMission,
-    deleteMission,
-    updateMission,
-} from "@/lib/kysely/queries/missions";
-import { getUserInfos, updateUser } from "@/lib/kysely/queries/users";
+import { getUserInfos } from "@/lib/kysely/queries/users";
 import { memberInfoUpdateSchema } from "@/models/actions/member";
 import { authOptions } from "@/utils/authoptions";
 
@@ -46,13 +40,11 @@ export async function PUT(
         options: { withDetails: true },
     });
 
+    revalidatePath("/account/base-info");
+    revalidatePath(`/community/${username}/admin-update`);
+
     return Response.json({
         message: `Success`,
         data: dbUser,
     });
-
-    // return Response.json({
-    //     message: `Success`,
-    //     pr_url: prInfo.html_url,
-    // });
 }
