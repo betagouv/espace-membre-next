@@ -32,6 +32,7 @@ describe("PUT /api/member[username]/info-update", () => {
         getServerSessionStub = sinon.stub();
         PUT = proxyquire("@/app/api/member/[username]/info-update/route", {
             "next-auth": { getServerSession: getServerSessionStub },
+            "next/cache": { revalidatePath: sinon.stub().resolves() },
         }).PUT;
         await utils.createUsers(testUsers);
         startup = await db
