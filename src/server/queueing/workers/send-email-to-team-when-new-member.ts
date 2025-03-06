@@ -2,23 +2,18 @@ import { isAfter } from "date-fns/isAfter";
 import { isBefore } from "date-fns/isBefore";
 import PgBoss from "pg-boss";
 
-import { db } from "@/lib/kysely";
-import {
-    getUserBasicInfo,
-    getUsersByStartup,
-    getUserStartups,
-} from "@/lib/kysely/queries/users";
+import { checkUserIsValidOrThrowError } from "./utils";
+import { getUsersByStartup, getUserStartups } from "@/lib/kysely/queries/users";
 import {
     SendEmailToTeamWhenNewMemberSchema,
     SendEmailToTeamWhenNewMemberSchemaType,
 } from "@/models/jobs/member";
-import { memberPublicInfoToModel, userStartupToModel } from "@/models/mapper";
+import { userStartupToModel } from "@/models/mapper";
 import { missionSchemaType } from "@/models/mission";
 import { startupSchemaType } from "@/models/startup";
 import config from "@/server/config";
 import { sendEmail } from "@/server/config/email.config";
 import { EMAIL_TYPES } from "@/server/modules/email";
-import { BusinessError, NoDataError } from "@/utils/error";
 
 export const sendEmailToTeamWhenNewMemberTopic =
     "send-email-to-team-when-new-member";
@@ -40,25 +35,8 @@ export async function sendEmailToTeamWhenNewMember(
     job: PgBoss.Job<SendEmailToTeamWhenNewMemberSchemaType>
 ) {
     const data = SendEmailToTeamWhenNewMemberSchema.parse(job.data);
+    await checkUserIsValidOrThrowError(data.userId);
     const now = new Date();
-    const memberDbData = await getUserBasicInfo({ uuid: data.userId });
-    if (!memberDbData) {
-        throw new NoDataError(
-            `Pas de membre trouvé pour l'id : ${data.userId}`
-        );
-    }
-    const newMember = memberPublicInfoToModel(memberDbData);
-    const userMissions = await db
-        .selectFrom("missions")
-        .selectAll()
-        .where("user_id", "=", data.userId)
-        .execute();
-    if (!userMissions.length) {
-        throw new BusinessError(
-            "NoActiveMissionForUser",
-            `User ${data.userId} does not have any missions`
-        );
-    }
     const userStartups = (await getUserStartups(data.userId)).filter(
         (startup) => {
             return (
