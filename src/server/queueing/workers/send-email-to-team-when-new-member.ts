@@ -9,14 +9,10 @@ import {
     getUserStartups,
 } from "@/lib/kysely/queries/users";
 import {
-    SendNewMemberValidationEmailSchema,
-    SendNewMemberValidationEmailSchemaType,
+    SendEmailToTeamWhenNewMemberSchema,
+    SendEmailToTeamWhenNewMemberSchemaType,
 } from "@/models/jobs/member";
-import {
-    startupToModel,
-    memberPublicInfoToModel,
-    userStartupToModel,
-} from "@/models/mapper";
+import { memberPublicInfoToModel, userStartupToModel } from "@/models/mapper";
 import { missionSchemaType } from "@/models/mission";
 import { startupSchemaType } from "@/models/startup";
 import config from "@/server/config";
@@ -24,8 +20,8 @@ import { sendEmail } from "@/server/config/email.config";
 import { EMAIL_TYPES } from "@/server/modules/email";
 import { BusinessError, NoDataError } from "@/utils/error";
 
-export const sendNewMemberValidationEmailTopic =
-    "send-new-member-validation-email";
+export const sendEmailToTeamWhenNewMemberTopic =
+    "send-email-to-team-when-new-member";
 
 const hasActiveMissionInStartup = (
     missions: missionSchemaType[],
@@ -40,10 +36,10 @@ const hasActiveMissionInStartup = (
     );
 };
 
-export async function sendNewMemberValidationEmail(
-    job: PgBoss.Job<SendNewMemberValidationEmailSchemaType>
+export async function sendEmailToTeamWhenNewMember(
+    job: PgBoss.Job<SendEmailToTeamWhenNewMemberSchemaType>
 ) {
-    const data = SendNewMemberValidationEmailSchema.parse(job.data);
+    const data = SendEmailToTeamWhenNewMemberSchema.parse(job.data);
     const now = new Date();
     const memberDbData = await getUserBasicInfo({ uuid: data.userId });
     if (!memberDbData) {
