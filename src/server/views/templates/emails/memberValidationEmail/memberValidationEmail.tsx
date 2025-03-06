@@ -10,6 +10,7 @@ import {
     MjmlColumn,
 } from "@luma-team/mjml-react";
 
+import { StandardLayout } from "@/components/emails/layouts/StandardEmail";
 import { EmailNewMemberValidation } from "@/server/modules/email";
 
 export function MemberValidationEmailTitle() {
@@ -22,57 +23,42 @@ export function MemberValidationEmail(
     const title = MemberValidationEmailTitle();
 
     return (
-        <Mjml>
-            <MjmlHead>
-                <MjmlTitle>Nouveau membre à valider</MjmlTitle>
-                <MjmlPreview>Une nouvelle fiche membre a été créée avec une mission qui concerne ton incubateur</MjmlPreview>
-            </MjmlHead>
-            <MjmlBody width={500}>
-                <MjmlSection>
-                    <MjmlColumn>
-                        <MjmlText>
-                            <h1>{title}</h1>
-                            <p>Bonjour,</p>
-                            <p>
-                                Tu reçois cet email car tu fais partie d'une
-                                équipe transverse de l'incubateur :{" "}
-                                {props.incubator.title}
-                            </p>
-                            <p>
-                                Une nouvelle fiche membre a été créée avec une
-                                mission qui concerne ton incubateur. Merci de
-                                valider cette fiche si tu es au courant de
-                                l'arrivée de cette personne.
-                            </p>
-                            <p>
-                                <ul>
-                                    <li key={"fullname"}>
-                                        Prénom Nom : {props.userInfos.fullname}
-                                    </li>
-                                    <li>Domaine : {props.userInfos.domaine}</li>
-                                    <li>
-                                        Produits :{" "}
-                                        {props.startups
-                                            .map((s) => s.name)
-                                            .join(", ")}
-                                    </li>
-                                </ul>
-                            </p>
-                        </MjmlText>
-                        <MjmlText>
-                            <p>
-                                Cette personne est-elle bien un membre de ton
-                                incubateur ? Si oui, clique sur le bouton
-                                ci-dessous.
-                            </p>
-                        </MjmlText>
-                        <MjmlButton href={props.validationLink}>
-                            Valider le membre
-                        </MjmlButton>
-                        <MjmlText></MjmlText>
-                    </MjmlColumn>
-                </MjmlSection>
-            </MjmlBody>
-        </Mjml>
+        <StandardLayout title={title}>
+            <MjmlText>
+                <h1>{title}</h1>
+                <p>Bonjour,</p>
+                <p>
+                    Tu reçois cet email car tu fais partie d'une équipe
+                    transverse de l'incubateur : {props.incubator.title}
+                </p>
+                <p>
+                    Une nouvelle fiche membre a été créée avec une mission qui
+                    concerne ton incubateur. Merci de valider cette fiche si tu
+                    es au courant de l'arrivée de cette personne.
+                </p>
+                <p>
+                    <ul>
+                        <li key={"fullname"}>
+                            Prénom Nom : {props.userInfos.fullname}
+                        </li>
+                        <li>Domaine : {props.userInfos.domaine}</li>
+                        <li>
+                            Produits :{" "}
+                            {props.startups.map((s) => s.name).join(", ")}
+                        </li>
+                    </ul>
+                </p>
+            </MjmlText>
+            <MjmlText>
+                <p>
+                    Cette personne est-elle bien un membre de ton incubateur ?
+                    Si oui, clique sur le bouton ci-dessous.
+                </p>
+            </MjmlText>
+            <MjmlButton href={props.validationLink}>
+                Valider le membre
+            </MjmlButton>
+            <MjmlText></MjmlText>
+        </StandardLayout>
     );
 }

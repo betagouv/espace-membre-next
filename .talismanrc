@@ -1,9 +1,6 @@
 fileignoreconfig:
 - filename: package-lock.json
   checksum: 13cac30b4118c9955ed467050c439dac51e9361bfdbc4abcd46d04b813d9ff58
-version: ""
-ock.json
-  checksum: 9c740513497d70e871e4abcad3a9e509ef5b1a0da9db2d0d2d336c19854303b4
 - filename: src/app/(private)/(dashboard)/community/communes.json
   checksum: f69dbcbfe5e1e7c1bd9340c7bb3d9de9cbc9d4080363e80d8b4da190fb6ae045
 - filename: src/app/(private)/(dashboard)/incubators/[id]/info-form/page.tsx
@@ -102,21 +99,7 @@ ock.json
   checksum: ebb1c7a8c5fb51e0e49a23f79d1342f177946b4e783154bb265970b672aa2a2c
 - filename: src/utils/url.ts
   checksum: 6c0989d85371d5071d9dcaa141e1c35b10f7124a3628deef443a4a1ccacfa34f
-scopeconfig:
-- scope: node
 version: "1.0"
-name: src/utils/routes/list.ts
-      checksum: ebb1c7a8c5fb51e0e49a23f79d1342f177946b4e783154bb265970b672aa2a2c
-    - filename: src/utils/url.ts
-      checksum: 6c0989d85371d5071d9dcaa141e1c35b10f7124a3628deef443a4a1ccacfa34f
-    - filename: src/utils/routes/list.ts
-      checksum: ebb1c7a8c5fb51e0e49a23f79d1342f177946b4e783154bb265970b672aa2a2c
-    - filename: src/utils/url.ts
-      checksum: 21d2da1f85cc6ce2cc3324248e3c44ad84a6775f6c1cc8435e7cfa164824b853
-    - filename: src/utils/routes/list.ts
-      checksum: ebb1c7a8c5fb51e0e49a23f79d1342f177946b4e783154bb265970b672aa2a2c
-    - filename: src/utils/url.ts
-      checksum: 6c0989d85371d5071d9dcaa141e1c35b10f7124a3628deef443a4a1ccacfa34f
+fileignoreconfig: []
 scopeconfig:
     - scope: node
-version: "1.0"
