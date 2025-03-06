@@ -23,31 +23,6 @@ interface UploadFormProps {
     shape?: "round" | "rectangle";
 }
 
-function isRelativeUrl(url) {
-    const absolutePattern = /^(?:[a-zA-Z][a-zA-Z\d+\-.]*:|\/\/)/;
-    return !absolutePattern.test(url);
-}
-
-const computeVersion = () => {
-    const version = format(new Date(), "yyyyMMdd'T'HHmmss");
-    return version;
-};
-
-function addVersionParam(url: string): string {
-    if (typeof window === "undefined") {
-        return url;
-    }
-    // when window is define window.location.origin exists
-    const isRelative = isRelativeUrl(url);
-    const tempUrl = isRelative
-        ? new URL(url, window.location.origin)
-        : new URL(url);
-    const params = tempUrl.searchParams;
-    const version = computeVersion();
-    params.set("v", version);
-    return isRelative ? tempUrl.pathname + tempUrl.search : tempUrl.toString();
-}
-
 const UploadForm = ({
     url,
     onChange,
@@ -59,19 +34,10 @@ const UploadForm = ({
 }: UploadFormProps) => {
     const [image, setImage] = useState<File | null>(null); // Use union type File | null
     const [isImageLoading, setIsImageLoading] = useState<boolean>(true);
-    const [versionedUrl, setVersionedUrl] = useState<string | null>(null);
 
     const [shouldDeletePicture, setShouldDeletePicture] =
         useState<boolean>(false);
     const fileInputRef = useRef<HTMLInputElement>(null);
-    useEffect(() => {
-        // apply addVersion only in front : prevent hydratation mismatch
-        if (url && !shouldDeletePicture) {
-            setVersionedUrl(addVersionParam(url));
-        } else {
-            setVersionedUrl(null);
-        }
-    }, [url, shouldDeletePicture]);
 
     const handleButtonClick = () => {
         if (fileInputRef && fileInputRef.current) {
@@ -111,9 +77,12 @@ const UploadForm = ({
         },
     ];
 
-    const src: string = image
-        ? URL.createObjectURL(image)
-        : versionedUrl || placeholderURL;
+    let src: string = placeholderURL;
+    if (image) {
+        src = URL.createObjectURL(image);
+    } else if (url && !shouldDeletePicture) {
+        src = url;
+    }
 
     if ((url || image) && !shouldDeletePicture) {
         buttons.push({
