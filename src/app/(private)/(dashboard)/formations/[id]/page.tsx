@@ -246,7 +246,7 @@ export default async function Page({ params }: Props) {
                         />
                     </div>
                     <div className="fr-col-md-8 fr-col-lg-8 fr-col-sm-12">
-                        <p
+                        <div
                             dangerouslySetInnerHTML={{
                                 __html:
                                     mdParser.render(formation.description) ||
@@ -255,9 +255,20 @@ export default async function Page({ params }: Props) {
                         />
                         <p>
                             Public cible :{" "}
-                            <Badge severity="info" noIcon>
-                                {formation.audience?.join(", ") || "Tous"}
-                            </Badge>
+                            {formation.audience?.length
+                                ? formation.audience
+                                      .filter((a) => !!a)
+                                      .map((audience) => (
+                                          <Badge
+                                              key={audience}
+                                              noIcon
+                                              severity="info"
+                                              style={{ marginRight: 5 }}
+                                          >
+                                              {audience}
+                                          </Badge>
+                                      ))
+                                : "Tous"}
                         </p>
                     </div>
                 </div>

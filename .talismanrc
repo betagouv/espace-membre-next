@@ -1,9 +1,8 @@
 fileignoreconfig:
-- filename: package-lock.json
-  checksum: e8ab779fc8fdbf1f46a33306b37387ce252f735b07469f0dbcd75a316a8f9599
+- filename: src/app/(private)/(dashboard)/formations/[id]/page.tsx
+  checksum: c2eda181db7eeef76cecfe01497348e9bdf9088ab19c6d86e649ee8aa70f9b0e
 version: ""
-ock.json
-  checksum: 9c740513497d70e871e4abcad3a9e509ef5b1a0da9db2d0d2d336c19854303b4
+71e4abcad3a9e509ef5b1a0da9db2d0d2d336c19854303b4
 - filename: src/app/(private)/(dashboard)/community/communes.json
   checksum: f69dbcbfe5e1e7c1bd9340c7bb3d9de9cbc9d4080363e80d8b4da190fb6ae045
 - filename: src/app/(private)/(dashboard)/incubators/[id]/info-form/page.tsx
