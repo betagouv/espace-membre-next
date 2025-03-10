@@ -31,7 +31,7 @@
     "dependencies": {
         "@codegouvfr/react-dsfr": "^1.13.6",
         "@emotion/styled": "^11.11.0",
-        "@gouvfr/dsfr": "^1.12.1",
+        "@gouvfr/dsfr": "^1.13.0",
         "@hookform/resolvers": "^3.3.4",
         "@luma-team/mjml-react": "^0.2.1",
         "@mui/base": "^5.0.0-beta.69",
