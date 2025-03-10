@@ -3,7 +3,7 @@ import PgBoss from "pg-boss";
 import proxyquire from "proxyquire";
 import sinon from "sinon";
 
-import testUsers from "./users.json";
+import { testUsers } from "./utils/users-data";
 import utils from "./utils";
 import { addEvent } from "@/lib/events";
 import { db } from "@/lib/kysely";
@@ -34,7 +34,7 @@ describe("Test creating new user flow : sending email", () => {
         userB;
     beforeEach(async () => {
         getServerSessionStub = sinon.stub();
-        await utils.createUsers(testUsers);
+        await utils.createData(testUsers);
         sendEmailStub = sinon.stub().resolves(); // Resolves like a real async function
         // Use proxyquire to replace bossClient module
         sendNewMemberValidationEmail = proxyquire(
@@ -157,7 +157,7 @@ describe("Test creating new user flow : sending email", () => {
     });
 
     afterEach(async () => {
-        await utils.deleteUsers(testUsers);
+        await utils.deleteData(testUsers);
         await db
             .deleteFrom("startups")
             .where("uuid", "=", newStartup.uuid)
