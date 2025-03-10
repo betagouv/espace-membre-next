@@ -69,7 +69,7 @@ const nextConfig = {
 
 const uploadToSentry =
     process.env.NODE_ENV === "production" &&
-    process.env.NEXT_PUBLIC_APP_MODE === "prod";
+    process.env.SENTRY_RELEASE_UPLOAD === "true";
 
 /**
  * @type {import('@sentry/nextjs').SentryBuildOptions}
@@ -82,6 +82,9 @@ const sentryWebpackPluginOptions = {
     release: process.env.SOURCE_VERSION, // https://doc.scalingo.com/platform/app/environment#build-environment-variables
     org: "betagouv",
     project: "espace-membre",
+    debug: false,
+    telemetry: false,
+    silent: false,
     sourcemaps: {
         deleteSourcemapsAfterUpload: true,
         disable: !uploadToSentry,
