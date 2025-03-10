@@ -11,7 +11,10 @@ import { getUserBasicInfo, getUserInfos } from "@/lib/kysely/queries/users";
 import { getUserByEmail, MattermostUser, searchUsers } from "@/lib/mattermost";
 import * as mattermost from "@/lib/mattermost";
 import { EventCode } from "@/models/actionEvent/actionEvent";
-import { updateMemberMissionsSchemaType } from "@/models/actions/member";
+import {
+    updateMemberMissionsSchema,
+    updateMemberMissionsSchemaType,
+} from "@/models/actions/member";
 import { UpdateOvhResponder } from "@/models/actions/ovh";
 import {
     memberBaseInfoToMemberPublicInfoModel,
@@ -288,8 +291,11 @@ async function updateMemberMissions(
     if (!session || !session.user.id) {
         throw new AuthorizationError();
     }
-    const missions = updateMemberMissionsData.missions;
-    const memberUuid = updateMemberMissionsData.memberUuid;
+    const missionData = updateMemberMissionsSchema.parse(
+        updateMemberMissionsData
+    );
+    const missions = missionData.missions;
+    const memberUuid = missionData.memberUuid;
     const dbUser = await getUserBasicInfo({ uuid: memberUuid });
     if (!dbUser) {
         throw new NoDataError(

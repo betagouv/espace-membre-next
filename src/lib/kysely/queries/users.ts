@@ -58,7 +58,7 @@ export async function getUserInfos(
     return (userInfos.rows.length && userInfos.rows[0]) || undefined;
 }
 
-export async function getUserByStartup(
+export async function getUsersByStartup(
     startupUuid: string,
     db: Kysely<DB> = database
 ) {
