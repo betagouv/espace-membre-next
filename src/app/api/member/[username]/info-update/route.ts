@@ -41,6 +41,7 @@ export async function PUT(
     });
 
     revalidatePath("/account/base-info");
+    revalidatePath("/community/${username}");
     revalidatePath(`/community/${username}/admin-update`);
     revalidatePath(`/community/${username}`);
     revalidatePath("/account");
