@@ -90,6 +90,7 @@ export default function CommunityCreateMemberPage(props: BaseInfoUpdateProps) {
         }
         setIsSaving(true);
         setSuccess(null);
+        // todo: use actions
         const response = await fetch(
             computeRoute(routes.ACCOUNT_POST_INFO_API),
             {
