@@ -77,10 +77,6 @@ const sentryWebpackPluginOptions = {
     // the following options are set automatically, and overriding them is not
     // recommended:
     //   release, url, configFile, stripPrefix, urlPrefix, include, ignore
-    dryRun: !uploadToSentry,
-    debug: false,
-    telemetry: false,
-    silent: false,
     release: process.env.SOURCE_VERSION, // https://doc.scalingo.com/platform/app/environment#build-environment-variables
     org: "betagouv",
     project: "espace-membre",
