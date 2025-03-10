@@ -67,7 +67,9 @@ const nextConfig = {
     },
 };
 
-const uploadToSentry = process.env.NODE_ENV === "production";
+const uploadToSentry =
+    process.env.NODE_ENV === "production" &&
+    process.env.NEXT_PUBLIC_APP_MODE === "prod";
 
 /**
  * @type {import('@sentry/nextjs').SentryBuildOptions}
@@ -80,12 +82,17 @@ const sentryWebpackPluginOptions = {
     release: process.env.SOURCE_VERSION, // https://doc.scalingo.com/platform/app/environment#build-environment-variables
     org: "betagouv",
     project: "espace-membre",
+    sourcemaps: {
+        deleteSourcemapsAfterUpload: true,
+        disable: !uploadToSentry,
+    },
     // An auth token is required for uploading source maps.
     authToken: process.env.SENTRY_AUTH_TOKEN,
     url: "https://sentry.incubateur.net",
     errorHandler: (err, invokeErr, compilation) => {
         compilation.warnings.push("Sentry CLI Plugin: " + err.message);
     },
+
     hideSourceMaps: true,
     // For all available options, see:
     // https://github.com/getsentry/sentry-webpack-plugin#options.
