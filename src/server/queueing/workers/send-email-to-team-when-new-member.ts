@@ -71,9 +71,7 @@ export async function sendEmailToTeamWhenNewMember(
                     .filter((email) => email !== null && email !== undefined)
             )
         );
-        if (startup.mailing_list) {
-            memberEmails.push(`${startup.mailing_list}@${config.host}`);
-        }
+
         await sendEmail({
             toEmail: memberEmails,
             type: EMAIL_TYPES.EMAIL_STARTUP_NEW_MEMBER_ARRIVAL,
