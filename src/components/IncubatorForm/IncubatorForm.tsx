@@ -386,7 +386,7 @@ export function IncubatorForm(props: IncubatorFormProps) {
                         isMulti={true}
                         placeholder={`Sélectionne un ou plusieurs produits`}
                         startups={props.startupOptions}
-                        label="Produits portés par l'incubateur :"
+                        label="Produits phares de l'incubateur :"
                     />
                     <hr />
                     <UploadForm
