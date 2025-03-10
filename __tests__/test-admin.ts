@@ -3,8 +3,10 @@ import chaiHttp from "chai-http";
 import * as nextAuth from "next-auth/next";
 import sinon from "sinon";
 
-import testUsers from "./users.json";
 import utils from "./utils";
+import { createData, deleteData } from "./utils/fakeData";
+import { testUsers } from "./utils/users-data";
+import { getMattermostInfo } from "@/app/api/admin/actions/getMattermostAdmin";
 import { getMattermostUsersInfo } from "@/app/api/admin/actions/getMattermostUsersInfo";
 import { sendMessageToUsersOnChat } from "@/app/api/admin/actions/sendMattermostMessage";
 import { db } from "@/lib/kysely";
@@ -16,8 +18,6 @@ import app from "@/server/index";
 import * as sendMattermostMessage from "@controllers/adminController/sendMattermostMessage";
 import * as chat from "@infra/chat";
 import * as mattermostScheduler from "@schedulers/mattermostScheduler/removeBetaAndParnersUsersFromCommunityTeam";
-
-import { getMattermostInfo } from "@/app/api/admin/actions/getMattermostAdmin";
 
 chai.use(chaiHttp);
 
@@ -33,7 +33,7 @@ describe("Test Admin", () => {
                     .stub(nextAuth, "getServerSession")
                     .resolves({});
 
-                await utils.createUsers(testUsers);
+                await createData(testUsers);
                 user = await db
                     .selectFrom("users")
                     .selectAll()
@@ -50,7 +50,7 @@ describe("Test Admin", () => {
             });
             afterEach(async () => {
                 sinon.restore();
-                await utils.deleteUsers(testUsers);
+                await deleteData(testUsers);
             });
 
             it("should return a forbidden error if user not in admin", async () => {
@@ -101,7 +101,7 @@ describe("Test Admin", () => {
                     .stub(nextAuth, "getServerSession")
                     .resolves({});
 
-                await utils.createUsers(testUsers);
+                await utils.createData(testUsers);
                 user = await db
                     .selectFrom("users")
                     .selectAll()
@@ -118,7 +118,7 @@ describe("Test Admin", () => {
             });
             afterEach(async () => {
                 sinon.restore();
-                await utils.deleteUsers(testUsers);
+                await utils.deleteData(testUsers);
             });
 
             it("should return /api/admin/mattermost page if user is admin", async () => {

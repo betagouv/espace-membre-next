@@ -210,13 +210,20 @@ export const Community = (props: CommunityProps) => {
                         );
                     } else if (filter.type === "startup" && filter.value) {
                         // test if user had a mission in given startup
-                        // todo: when active_only, only show startup active members
                         const user = props.users.find(
                             (u) => u.uuid === result.uuid
+                        );
+                        const activeOnly = filters.find(
+                            (f) => f.type == "active_only" && !!f.value
                         );
                         return (
                             user &&
                             user.missions
+                                .filter((m) =>
+                                    activeOnly
+                                        ? !m.end || m.end > new Date()
+                                        : true
+                                )
                                 .flatMap((m) => m.startups)
                                 .includes(filter.value.toString())
                         );

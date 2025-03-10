@@ -1,7 +1,27 @@
+import { addMonths } from "date-fns/addMonths";
+import { toZonedTime } from "date-fns-tz";
 import { z } from "zod";
 
 import { FileType } from "@/lib/file";
 import { memberSchema } from "@/models/member";
+
+const nowInFrance = toZonedTime(new Date(), "Europe/Paris");
+const sixMonthsFromNow = addMonths(nowInFrance, 6);
+const checkMissionsAreNotMoreThan6Months = (missions, ctx) => {
+    missions.forEach((mission, index) => {
+        if (
+            (!mission.end || mission.end > sixMonthsFromNow) &&
+            mission.status !== "admin"
+        ) {
+            ctx.addIssue({
+                code: z.ZodIssueCode.custom,
+                message:
+                    "La date de fin de mission ne peut pas être supérieure à 6 mois dans le futur.",
+                path: [index, "end"], // Points to the specific mission's 'end' field
+            });
+        }
+    });
+};
 
 export const memberInfoUpdateSchema = z.object({
     member: z.object({
@@ -12,7 +32,9 @@ export const memberInfoUpdateSchema = z.object({
         github: memberSchema.shape.github,
         competences: memberSchema.shape.competences,
         teams: memberSchema.shape.teams,
-        missions: memberSchema.shape.missions,
+        missions: memberSchema.shape.missions.superRefine(
+            checkMissionsAreNotMoreThan6Months
+        ),
         domaine: memberSchema.shape.domaine,
         bio: memberSchema.shape.bio,
         memberType: memberSchema.shape.memberType,
@@ -118,7 +140,9 @@ export type createMemberResponseSchemaType = z.infer<
 >;
 
 export const updateMemberMissionsSchema = z.object({
-    missions: memberSchema.shape.missions,
+    missions: memberSchema.shape.missions.superRefine(
+        checkMissionsAreNotMoreThan6Months
+    ),
     memberUuid: memberSchema.shape.uuid,
 });
 
