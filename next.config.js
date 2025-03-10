@@ -65,27 +65,38 @@ const nextConfig = {
         });
         return config;
     },
-    sentry: {
-        hideSourceMaps: true,
-    },
 };
 
+const uploadToSentry =
+    process.env.NODE_ENV === "production" &&
+    process.env.SENTRY_RELEASE_UPLOAD === "true";
+
+/**
+ * @type {import('@sentry/nextjs').SentryBuildOptions}
+ */
 const sentryWebpackPluginOptions = {
     // Additional config options for the Sentry webpack plugin. Keep in mind that
     // the following options are set automatically, and overriding them is not
     // recommended:
     //   release, url, configFile, stripPrefix, urlPrefix, include, ignore
-
     release: process.env.SOURCE_VERSION, // https://doc.scalingo.com/platform/app/environment#build-environment-variables
     org: "betagouv",
     project: "espace-membre",
+    debug: false,
+    telemetry: false,
+    silent: false,
+    sourcemaps: {
+        deleteSourcemapsAfterUpload: true,
+        disable: !uploadToSentry,
+    },
     // An auth token is required for uploading source maps.
     authToken: process.env.SENTRY_AUTH_TOKEN,
     url: "https://sentry.incubateur.net",
-    // silent: true, // Suppresses all logs
     errorHandler: (err, invokeErr, compilation) => {
         compilation.warnings.push("Sentry CLI Plugin: " + err.message);
     },
+
+    hideSourceMaps: true,
     // For all available options, see:
     // https://github.com/getsentry/sentry-webpack-plugin#options.
 };
