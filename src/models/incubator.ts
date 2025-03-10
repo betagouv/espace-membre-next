@@ -5,7 +5,7 @@ export const incubatorSchema = z.object({
     // id: z.number(),
     title: z.string().min(1),
     owner_id: z.string().optional(),
-    contact: z.string().nullable().optional(),
+    contact: z.string().email().nullable().optional(),
     ghid: z.string().min(2),
     address: z.string().nullable().optional(),
     website: z.string().url().optional().or(z.literal("")),

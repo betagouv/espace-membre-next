@@ -2,8 +2,8 @@ import nock from "nock";
 import rewire from "rewire";
 import sinon from "sinon";
 
-import testUsers from "./users.json";
 import utils from "./utils";
+import { testUsers } from "./utils/users-data";
 import { db } from "@/lib/kysely";
 import * as mattermost from "@/lib/mattermost";
 import { EmailStatusCode } from "@/models/member";
@@ -12,11 +12,11 @@ import * as email from "@/server/config/email.config";
 import { removeBetaAndParnersUsersFromCommunityTeam } from "@schedulers/mattermostScheduler/removeBetaAndParnersUsersFromCommunityTeam";
 
 // all users already has account but mattermost.newuser
-const mattermostUsers = testUsers
-    .filter((user) => user.id !== "mattermost.newuser")
+const mattermostUsers = (testUsers.users || [])
+    .filter((user) => user.username !== "mattermost.newuser")
     .map((u) => ({
-        id: u.id,
-        email: `${u.id}@${config.domain}`,
+        id: u.username,
+        email: `${u.username}@${config.domain}`,
     }));
 
 const mattermostScheduler = rewire(
@@ -27,12 +27,12 @@ describe("invite users to mattermost", () => {
     beforeEach(async () => {
         utils.cleanMocks();
         utils.mockOvhTime();
-        await utils.createUsers(testUsers);
+        await utils.createData(testUsers);
     });
 
     afterEach(async () => {
         // clock.restore();
-        await utils.deleteUsers(testUsers);
+        await utils.deleteData(testUsers);
     });
 
     it("invite users to team by emails", async () => {
@@ -40,7 +40,7 @@ describe("invite users to mattermost", () => {
             .get(/^.*email\/domain\/.*\/account/)
             .reply(
                 200,
-                testUsers.map((user) => user.id)
+                testUsers.users?.map((user) => user.username)
             );
 
         nock(/.*mattermost.incubateur.net/)
@@ -77,18 +77,18 @@ describe("invite users to mattermost", () => {
             .get(/^.*email\/domain\/.*\/account/)
             .reply(
                 200,
-                testUsers.map((user) => user.id)
+                testUsers.users?.map((user) => user.username)
             );
         // in this case this call get user in team Alumni
         nock(/.*mattermost.incubateur.net/)
             .get(/^.*api\/v4\/users.*/)
             .reply(
                 200,
-                testUsers
-                    .filter((user) => user.id === "mattermost.newuser")
+                testUsers.users
+                    ?.filter((user) => user.username === "mattermost.newuser")
                     .map((u) => ({
-                        id: u.id,
-                        email: `${u.id}@${config.domain}`,
+                        id: u.username,
+                        email: `${u.username}@${config.domain}`,
                     }))
             );
         nock(/.*mattermost.incubateur.net/)
@@ -131,7 +131,7 @@ describe("invite users to mattermost", () => {
             .get(/^.*email\/domain\/.*\/account/)
             .reply(
                 200,
-                testUsers.map((user) => user.id)
+                testUsers.users?.map((user) => user.username)
             );
 
         nock(/.*mattermost.incubateur.net/)
@@ -170,7 +170,7 @@ describe("invite users to mattermost", () => {
             .get(/^.*email\/domain\/.*\/account/)
             .reply(
                 200,
-                testUsers.map((user) => user.id)
+                testUsers.users?.map((user) => user.username)
             );
 
         nock(/.*mattermost.incubateur.net/)
@@ -228,12 +228,12 @@ describe("Reactivate current users on mattermost", () => {
         const date = new Date("2021-01-20T07:59:59+01:00");
         clock = sinon.useFakeTimers(date);
         utils.cleanMocks();
-        await utils.createUsers(testUsers);
+        await utils.createData(testUsers);
     });
 
     afterEach(async () => {
         clock.restore();
-        await utils.deleteUsers(testUsers);
+        await utils.deleteData(testUsers);
     });
 
     it("reactivate current users", async () => {
@@ -257,31 +257,33 @@ describe("Reactivate current users on mattermost", () => {
 
 describe("Test to remove users from community team", () => {
     let clock;
-    const users = [
-        {
-            id: "julien.dauphant",
-            fullname: "Julien Dauphant",
-            missions: [
-                {
-                    start: "2016-11-03",
-                    end: "2020-10-20",
-                    status: "independent",
-                    employer: "octo",
-                },
-            ],
-            role: "",
-        },
-    ];
+    const users = {
+        users: [
+            {
+                username: "julien.dauphant",
+                fullname: "Julien Dauphant",
+                missions: [
+                    {
+                        start: new Date("2016-11-03"),
+                        end: new Date("2020-10-20"),
+                        status: "independent",
+                        employer: "octo",
+                    },
+                ],
+                role: "",
+            },
+        ],
+    };
     beforeEach(async () => {
         const date = new Date("2021-01-20T07:59:59+01:00");
         clock = sinon.useFakeTimers(date);
         utils.cleanMocks();
-        await utils.createUsers(users);
+        await utils.createData(users);
     });
 
     afterEach(async () => {
         clock.restore();
-        await utils.deleteUsers(users);
+        await utils.deleteData(users);
     });
 
     it("Remove expired user from community team on mattermost", async () => {
@@ -374,31 +376,33 @@ describe("Test to remove users from community team", () => {
 });
 describe("Test move expired user to alumni team", () => {
     let clock;
-    const users = [
-        {
-            id: "julien.dauphant",
-            fullname: "Julien Dauphant",
-            missions: [
-                {
-                    start: "2016-11-03",
-                    end: "2021-01-17",
-                    status: "independent",
-                    employer: "octo",
-                },
-            ],
-            role: "",
-        },
-    ];
+    const users = {
+        users: [
+            {
+                username: "julien.dauphant",
+                fullname: "Julien Dauphant",
+                missions: [
+                    {
+                        start: new Date("2016-11-03"),
+                        end: new Date("2021-01-17"),
+                        status: "independent",
+                        employer: "octo",
+                    },
+                ],
+                role: "",
+            },
+        ],
+    };
     beforeEach(async () => {
         const date = new Date("2021-01-20T07:59:59+01:00");
         clock = sinon.useFakeTimers(date);
         utils.cleanMocks();
-        await utils.createUsers(users);
+        await utils.createData(users);
     });
 
     afterEach(async () => {
         clock.restore();
-        await utils.deleteUsers(users);
+        await utils.deleteData(users);
     });
 
     it("should move expired user to team Alumni on mattermost", async () => {

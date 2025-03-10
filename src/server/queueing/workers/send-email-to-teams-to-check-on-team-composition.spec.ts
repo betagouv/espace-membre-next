@@ -5,7 +5,7 @@ import sinon from "sinon";
 
 import { Users } from "@/@types/db";
 import { db } from "@/lib/kysely";
-import { getUserByStartup } from "@/lib/kysely/queries/users";
+import { getUsersByStartup } from "@/lib/kysely/queries/users";
 import {
     memberBaseInfoToModel,
     memberPublicInfoToModel,
@@ -13,8 +13,8 @@ import {
 } from "@/models/mapper";
 import config from "@/server/config";
 import { EMAIL_TYPES } from "@/server/modules/email";
-import testUsers from "__tests__/users.json";
-import utils from "__tests__/utils";
+import { testUsers } from "__tests__/utils/users-data";
+import utils from "__tests__/utils/utils";
 
 describe("sendEmailToTeamsToCheckOnTeamComposition()", () => {
     let sendEmailStub,
@@ -23,7 +23,7 @@ describe("sendEmailToTeamsToCheckOnTeamComposition()", () => {
     let userA: Selectable<Users>, userB: Selectable<Users>;
     beforeEach(async () => {
         getServerSessionStub = sinon.stub();
-        await utils.createUsers(testUsers);
+        await utils.createData(testUsers);
         sendEmailStub = sinon.stub().resolves(); // Resolves like a real async function
         // Use proxyquire to replace bossClient module
         sendEmailToTeamsToCheckOnTeamComposition = proxyquire(
@@ -35,7 +35,7 @@ describe("sendEmailToTeamsToCheckOnTeamComposition()", () => {
     });
 
     afterEach(async () => {
-        await utils.deleteUsers(testUsers);
+        await utils.deleteData(testUsers);
     });
 
     it("should send email listing teams member", async () => {
@@ -47,7 +47,7 @@ describe("sendEmailToTeamsToCheckOnTeamComposition()", () => {
             .selectAll()
             .where("name", "=", "test-startup")
             .executeTakeFirstOrThrow();
-        const usersByStartup = await getUserByStartup(startup.uuid);
+        const usersByStartup = await getUsersByStartup(startup.uuid);
         sendEmailStub.firstCall.args[0].should.deep.equal({
             toEmail: [`${startup.mailing_list}@${config.domain}`],
             type: EMAIL_TYPES.EMAIL_TEAM_COMPOSITION,
