@@ -287,12 +287,14 @@ export async function getUserStartups(uuid: string, db: Kysely<DB> = database) {
             "missions_startups.mission_id",
             "missions.uuid"
         )
-        .leftJoin("startups", "startups.uuid", "missions_startups.startup_id")
+        // use innerJoin instead of left join it excludes mission without startups
+        .innerJoin("startups", "startups.uuid", "missions_startups.startup_id")
         .select([
             "startups.uuid",
             "startups.ghid",
             "startups.name",
             "missions.start",
+            "startups.mailing_list",
             "missions.end",
             "startups.incubator_id",
         ])
@@ -301,10 +303,6 @@ export async function getUserStartups(uuid: string, db: Kysely<DB> = database) {
         .where("startups.name", "is not", null)
         .orderBy("missions.start", "desc")
         .execute();
-
-    if (!result) {
-        throw new Error("Failed to insert or update mission");
-    }
 
     return result;
 }

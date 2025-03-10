@@ -49,6 +49,7 @@ const TEMPLATE_ID_BY_TYPE: Record<EmailProps["type"], number> = {
     EMAIL_VERIFICATION_WAITING: 0,
     EMAIL_NEW_MEMBER_VALIDATION: 0,
     [EMAIL_TYPES.EMAIL_TEAM_COMPOSITION]: 0,
+    [EMAIL_TYPES.EMAIL_STARTUP_NEW_MEMBER_ARRIVAL]: 0,
 };
 
 type SendEmailFromSendinblueDeps = {

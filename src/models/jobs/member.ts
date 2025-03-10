@@ -13,3 +13,12 @@ export const SendNewMemberValidationEmailSchema =
 export type SendNewMemberValidationEmailSchemaType = z.infer<
     typeof SendNewMemberValidationEmailSchema
 >;
+
+export const SendEmailToTeamWhenNewMemberSchema =
+    MaintenanceWrapperDataSchema.extend({
+        userId: memberSchema.shape.uuid,
+    }).strict();
+
+export type SendEmailToTeamWhenNewMemberSchemaType = z.infer<
+    typeof SendEmailToTeamWhenNewMemberSchema
+>;
