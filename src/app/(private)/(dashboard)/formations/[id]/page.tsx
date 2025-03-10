@@ -6,16 +6,20 @@ import { fr } from "date-fns/locale/fr";
 import type { Metadata, ResolvingMetadata } from "next";
 import { redirect } from "next/navigation";
 import { getServerSession } from "next-auth";
+import MarkdownIt from "markdown-it";
 
 import { BreadCrumbFiller } from "@/app/BreadCrumbProvider";
 import { fetchAirtableFormationById } from "@/lib/airtable";
-import { db } from "@/lib/kysely";
 import { getUserInfos } from "@/lib/kysely/queries/users";
 import { userInfosToModel } from "@/models/mapper";
 import { CommunicationEmailCode } from "@/models/member";
 import { Domaine } from "@/models/member";
 import { authOptions } from "@/utils/authoptions";
 import { durationBetweenDate } from "@/utils/date";
+
+const mdParser = new MarkdownIt({
+    html: true,
+});
 
 export async function generateMetadata(
     { params }: Props,
@@ -242,7 +246,19 @@ export default async function Page({ params }: Props) {
                         />
                     </div>
                     <div className="fr-col-md-8 fr-col-lg-8 fr-col-sm-12">
-                        <p>{formation.description}</p>
+                        <p
+                            dangerouslySetInnerHTML={{
+                                __html:
+                                    mdParser.render(formation.description) ||
+                                    "",
+                            }}
+                        />
+                        <p>
+                            Public cible :{" "}
+                            <Badge severity="info" noIcon>
+                                {formation.audience?.join(", ") || "Tous"}
+                            </Badge>
+                        </p>
                     </div>
                 </div>
                 <div className="fr-my-4w">
