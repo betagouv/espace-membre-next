@@ -1,7 +1,5 @@
 // An empty DSN will disable Sentry
 
-import frontConfig from "@/frontConfig";
-
 // We want it to be enabled only when deployed
 export const dsn =
     process.env.NODE_ENV === "production"
