@@ -270,4 +270,5 @@ export default {
         ["gouv.fr", "ademe.fr"]
     ),
     SENTRY_WEBSITE_URL: process.env.SENTRY_WEBSITE_URL,
+    NEXT_PUBLIC_APP_MODE: process.env.NEXT_PUBLIC_APP_MODE || "prod",
 };
