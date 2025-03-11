@@ -16,9 +16,10 @@ async function sendVerificationRequest(params) {
     const { identifier, url } = params;
     const urlObj = new URL(url);
     await sendEmail({
-        type: EMAIL_TYPES.LOGIN_EMAIL,
+        type: EMAIL_TYPES.EMAIL_LOGIN,
         variables: {
             loginUrlWithToken: `${process.env.NEXTAUTH_URL}/signin${urlObj.search}`,
+            fullname: "", // @todo add fullname
         },
         toEmail: [identifier],
     });
