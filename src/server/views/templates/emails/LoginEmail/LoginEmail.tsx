@@ -9,7 +9,7 @@ export function LoginEmailTitle() {
     return `Connexion à l'espace membre BetaGouv`;
 }
 
-const LoginEmail = ({
+export const LoginEmail = ({
     loginUrlWithToken,
     fullname,
 }: EmailLogin["variables"]) => {
@@ -32,9 +32,7 @@ const LoginEmail = ({
                 En cas de problème avec ton compte, n'hésite pas à répondre à ce
                 mail !
             </MjmlText>
-            <MjmlText>L'app espace membre</MjmlText>
+            <MjmlText></MjmlText>
         </StandardLayout>
     );
 };
-
-export default LoginEmail;

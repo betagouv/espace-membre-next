@@ -3,9 +3,10 @@ import ejs from "ejs";
 import mjml2html from "mjml";
 
 import * as mdtohtml from "@/lib/mdtohtml";
-import LoginEmail, {
+import {
+    LoginEmail,
     LoginEmailTitle,
-} from "@/server/views/templates/emails/login/LoginEmail";
+} from "@/server/views/templates/emails/LoginEmail/LoginEmail";
 import {
     MemberValidationEmail,
     MemberValidationEmailTitle,
