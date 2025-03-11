@@ -38,8 +38,8 @@ async function MainStructure(props: PropsWithChildren) {
             </head>
             <body>
                 <NextAppDirEmotionCacheProvider options={{ key: "css" }}>
-                    <ClientSessionProvider>
-                        <DsfrProvider>
+                    <DsfrProvider>
+                        <ClientSessionProvider>
                             <MuiDsfrThemeProvider>
                                 <BreadCrumbProvider>
                                     <LiveChatProvider>
@@ -82,9 +82,9 @@ async function MainStructure(props: PropsWithChildren) {
                                     </LiveChatProvider>
                                 </BreadCrumbProvider>
                             </MuiDsfrThemeProvider>
-                        </DsfrProvider>
-                        <Matomo />
-                    </ClientSessionProvider>
+                        </ClientSessionProvider>
+                    </DsfrProvider>
+                    <Matomo />
                 </NextAppDirEmotionCacheProvider>
             </body>
         </>
