@@ -403,6 +403,7 @@ export function IncubatorForm(props: IncubatorFormProps) {
                                 setValue("shouldDeleteLogo", false);
                             }
                         }}
+                        shape={"rectangle"}
                         url={props.logoURL}
                         onDelete={() => {
                             setValue("logo", null, {
