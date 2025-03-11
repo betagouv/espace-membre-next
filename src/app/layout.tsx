@@ -1,4 +1,4 @@
-import { PropsWithChildren } from "react";
+import { PropsWithChildren, Suspense } from "react";
 
 import { fr } from "@codegouvfr/react-dsfr";
 import { Footer } from "@codegouvfr/react-dsfr/Footer";
@@ -84,7 +84,9 @@ async function MainStructure(props: PropsWithChildren) {
                             </MuiDsfrThemeProvider>
                         </ClientSessionProvider>
                     </DsfrProvider>
-                    <Matomo />
+                    <Suspense>
+                        <Matomo />
+                    </Suspense>
                 </NextAppDirEmotionCacheProvider>
             </body>
         </>
