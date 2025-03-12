@@ -87,13 +87,23 @@ const sentryWebpackPluginOptions = {
     telemetry: false,
     silent: false,
     sourcemaps: {
-        deleteSourcemapsAfterUpload: true,
         disable: !uploadToSentry,
+    },
+    setCommits: {
+        // TODO: get error: caused by: sentry reported an error: You do not have permission to perform this action. (http status: 403)
+        // Possible ref: https://github.com/getsentry/sentry-cli/issues/1388#issuecomment-1306137835
+        // Note: not able to bind our repository to our on-premise Sentry as specified in the article... leaving it manual for now (no commit details...)
+        auto: false,
+        commit: process.env.SOURCE_VERSION,
+        // auto: true,
     },
     hideSourceMaps: true,
     release: process.env.SOURCE_VERSION, // https://doc.scalingo.com/platform/app/environment#build-environment-variables
     org: "betagouv",
     project: "espace-membre",
+    deploy: {
+        env: mode,
+    },
     // An auth token is required for uploading source maps.
     authToken: process.env.SENTRY_AUTH_TOKEN,
     url: "https://sentry.incubateur.net",
