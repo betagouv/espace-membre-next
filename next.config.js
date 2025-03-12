@@ -46,11 +46,15 @@ const nextConfig = {
             bodySizeLimit: "10mb",
         },
     },
+    env: {
+        // Those will replace `process.env.*` with hardcoded values (useful when the value is calculated during the build time)
+        SENTRY_RELEASE_TAG: process.env.SOURCE_VERSION,
+    },
     rewrites: async () => [
         {
             source: "/api/public/member/:username/image",
             destination: "/api/member/:username/image",
-        }
+        },
     ],
     webpack: (config, { isServer }) => {
         if (!isServer) {
