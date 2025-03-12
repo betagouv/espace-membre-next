@@ -1,7 +1,8 @@
 fileignoreconfig:
 - filename: src/app/(private)/(dashboard)/formations/[id]/page.tsx
-  checksum: 816ff352b824abef21dcbf6070b72b39336f59eb98677111f13c9b3be7c2370f
-scopeconfig:
+  checksum: f48fbb61095d33e5fc2d9135b3dd811fa8018cdbf0b1fdcaf8b78fda8e5a0d24
+version: ""
+
 - scope: node
 version: "1.0"
 ncubators/[id]/info-form/page.tsx

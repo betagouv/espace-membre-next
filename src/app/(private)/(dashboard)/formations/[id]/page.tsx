@@ -253,23 +253,24 @@ export default async function Page({ params }: Props) {
                                     "",
                             }}
                         />
-                        <p style={{ display: "inline-flex" }}>
+                        <p>
                             Public cible :{" "}
+                            {formation.audience?.length
+                                ? formation.audience
+                                      .filter((a) => !!a)
+                                      .map((audience) => (
+                                          <Badge
+                                              as={"span"}
+                                              key={audience}
+                                              noIcon
+                                              severity="info"
+                                              style={{ marginRight: 5 }}
+                                          >
+                                              {audience}
+                                          </Badge>
+                                      ))
+                                : "Tous"}
                         </p>
-                        {formation.audience?.length
-                            ? formation.audience
-                                  .filter((a) => !!a)
-                                  .map((audience) => (
-                                      <Badge
-                                          key={audience}
-                                          noIcon
-                                          severity="info"
-                                          style={{ marginRight: 5 }}
-                                      >
-                                          {audience}
-                                      </Badge>
-                                  ))
-                            : "Tous"}
                     </div>
                 </div>
                 <div className="fr-my-4w">
