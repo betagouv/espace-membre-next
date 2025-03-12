@@ -106,6 +106,7 @@ const sentryWebpackPluginOptions = {
     deploy: {
         env: mode,
     },
+    widenClientFileUpload: true,
     // An auth token is required for uploading source maps.
     authToken: process.env.SENTRY_AUTH_TOKEN,
     url: "https://sentry.incubateur.net",
