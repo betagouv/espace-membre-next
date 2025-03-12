@@ -74,7 +74,7 @@ export default async function Page() {
                                         status: ACCOUNT_SERVICE_STATUS.ACCOUNT_FOUND,
                                     },
                                     () => (
-                                        <Badge severity="success">
+                                        <Badge severity="success" as="span">
                                             Compte existant
                                         </Badge>
                                     )
@@ -84,7 +84,7 @@ export default async function Page() {
                                         status: ACCOUNT_SERVICE_STATUS.ACCOUNT_CREATION_PENDING,
                                     },
                                     () => (
-                                        <Badge severity="new">
+                                        <Badge severity="new" as="span">
                                             Compte en cours de creation
                                         </Badge>
                                     )
@@ -94,14 +94,16 @@ export default async function Page() {
                                         status: ACCOUNT_SERVICE_STATUS.ACCOUNT_INVITATION_SENT,
                                     },
                                     () => (
-                                        <Badge severity="new">
+                                        <Badge severity="new" as="span">
                                             Tu as reçu une invitation par email
                                             pour te connecter.
                                         </Badge>
                                     )
                                 )
                                 .otherwise(() => (
-                                    <Badge noIcon>Pas de compte</Badge>
+                                    <Badge noIcon as="span">
+                                        Pas de compte
+                                    </Badge>
                                 ))}
                             orientation="horizontal"
                             noIcon={true}
