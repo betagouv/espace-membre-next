@@ -40,7 +40,7 @@ async function MainStructure(props: PropsWithChildren) {
             </head>
             <body>
                 <NextAppDirEmotionCacheProvider options={{ key: "css" }}>
-                    <ClientSessionProvider>
+                    <ClientSessionProvider session={session}>
                         <DsfrProvider>
                             <MuiDsfrThemeProvider>
                                 <BreadCrumbProvider>
