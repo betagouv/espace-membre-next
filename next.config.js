@@ -75,6 +75,8 @@ const uploadToSentry =
     process.env.NODE_ENV === "production" &&
     process.env.SENTRY_RELEASE_UPLOAD === "true";
 
+const mode = process.env.APP_MODE || "test";
+
 /**
  * @type {import('@sentry/nextjs').SentryBuildOptions}
  */
