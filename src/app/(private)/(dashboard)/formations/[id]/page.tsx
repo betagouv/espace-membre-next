@@ -3,19 +3,23 @@ import Button from "@codegouvfr/react-dsfr/Button";
 import Card from "@codegouvfr/react-dsfr/Card";
 import { format } from "date-fns/format";
 import { fr } from "date-fns/locale/fr";
+import MarkdownIt from "markdown-it";
 import type { Metadata, ResolvingMetadata } from "next";
 import { redirect } from "next/navigation";
 import { getServerSession } from "next-auth";
 
 import { BreadCrumbFiller } from "@/app/BreadCrumbProvider";
 import { fetchAirtableFormationById } from "@/lib/airtable";
-import { db } from "@/lib/kysely";
 import { getUserInfos } from "@/lib/kysely/queries/users";
 import { userInfosToModel } from "@/models/mapper";
 import { CommunicationEmailCode } from "@/models/member";
 import { Domaine } from "@/models/member";
 import { authOptions } from "@/utils/authoptions";
 import { durationBetweenDate } from "@/utils/date";
+
+const mdParser = new MarkdownIt({
+    html: true,
+});
 
 export async function generateMetadata(
     { params }: Props,
@@ -242,7 +246,31 @@ export default async function Page({ params }: Props) {
                         />
                     </div>
                     <div className="fr-col-md-8 fr-col-lg-8 fr-col-sm-12">
-                        <p>{formation.description}</p>
+                        <div
+                            dangerouslySetInnerHTML={{
+                                __html:
+                                    mdParser.render(formation.description) ||
+                                    "",
+                            }}
+                        />
+                        <p>
+                            Public cible :{" "}
+                            {formation.audience?.length
+                                ? formation.audience
+                                      .filter((a) => !!a)
+                                      .map((audience) => (
+                                          <Badge
+                                              as={"span"}
+                                              key={audience}
+                                              noIcon
+                                              severity="info"
+                                              style={{ marginRight: 5 }}
+                                          >
+                                              {audience}
+                                          </Badge>
+                                      ))
+                                : "Tous"}
+                        </p>
                     </div>
                 </div>
                 <div className="fr-my-4w">

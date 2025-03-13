@@ -4,6 +4,10 @@ import mjml2html from "mjml";
 
 import * as mdtohtml from "@/lib/mdtohtml";
 import {
+    LoginEmail,
+    LoginEmailTitle,
+} from "@/server/views/templates/emails/LoginEmail/LoginEmail";
+import {
     MemberValidationEmail,
     MemberValidationEmailTitle,
 } from "@/server/views/templates/emails/memberValidationEmail/memberValidationEmail";
@@ -18,6 +22,7 @@ import {
 import { BusinessError } from "@/utils/error";
 import {
     EMAIL_TYPES,
+    EmailLogin,
     EmailNewMemberValidation,
     EmailProps,
     EmailStartupNewMemberArrival,
@@ -31,7 +36,7 @@ const TEMPLATES_BY_TYPE: Record<EmailProps["type"], string | null | any> = {
         "./src/server/views/templates/emails/marrainage/marrainageByGroupNewcomerEmail.ejs",
     MARRAINAGE_ONBOARDER_EMAIL:
         "./src/server/views/templates/emails/marrainage/marrainageByGroupOnboarderEmail.ejs",
-    LOGIN_EMAIL: "./src/server/views/templates/emails/login.ejs",
+    EMAIL_LOGIN: (params: EmailLogin["variables"]) => LoginEmail(params),
     MARRAINAGE_REQUEST_EMAIL:
         "./src/server/views/templates/emails/marrainage/marrainageRequest.ejs",
     MARRAINAGE_ACCEPT_NEWCOMER_EMAIL:
@@ -84,7 +89,7 @@ const TEMPLATES_BY_TYPE: Record<EmailProps["type"], string | null | any> = {
 
 const SUBJECTS_BY_TYPE: Record<EmailProps["type"], string | SubjectFunction> = {
     MARRAINAGE_REQUEST_EMAIL: "Tu as été sélectionné·e comme marrain·e 🙌",
-    LOGIN_EMAIL: "Connexion à l'espace membre BetaGouv",
+    EMAIL_LOGIN: LoginEmailTitle(),
     MARRAINAGE_NEWCOMER_EMAIL: "Découvre ta marraine ou ton parrain Beta !",
     MARRAINAGE_ONBOARDER_EMAIL: "Découvre tes filleuls Beta !",
     MARRAINAGE_ACCEPT_NEWCOMER_EMAIL: "Mise en contact 👋",
@@ -135,7 +140,7 @@ const SUBJECTS_BY_TYPE: Record<EmailProps["type"], string | SubjectFunction> = {
 const MARKDOWN_BY_TYPE: Record<EmailProps["type"], boolean> = {
     MARRAINAGE_NEWCOMER_EMAIL: true,
     MARRAINAGE_ONBOARDER_EMAIL: true,
-    LOGIN_EMAIL: false,
+    EMAIL_LOGIN: false,
     MARRAINAGE_REQUEST_EMAIL: false,
     MARRAINAGE_ACCEPT_NEWCOMER_EMAIL: false,
     MARRAINAGE_ACCEPT_ONBOARDER_EMAIL: false,

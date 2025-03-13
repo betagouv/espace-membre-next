@@ -26,16 +26,24 @@ const mattermostInfoRow = (
                     <div>
                         {match(info.isInactiveOrNotInTeam)
                             .with(true, () => (
-                                <Badge severity="error">Inactif</Badge>
+                                <Badge severity="error" as="span">
+                                    Inactif
+                                </Badge>
                             ))
                             .with(false, () => (
-                                <Badge severity="success">Actif</Badge>
+                                <Badge severity="success" as="span">
+                                    Actif
+                                </Badge>
                             ))
                             .exhaustive()}
                     </div>
                 )
             )
-            .otherwise(() => <Badge severity="warning">introuvable</Badge>),
+            .otherwise(() => (
+                <Badge severity="warning" as="span">
+                    introuvable
+                </Badge>
+            )),
         match(mattermostInfo)
             .when(
                 (info) =>
@@ -62,14 +70,20 @@ const emailStatusRow = (
                 () => {
                     return match(userInfos.primary_email_status)
                         .with(EmailStatusCode.EMAIL_SUSPENDED, () => (
-                            <Badge severity="warning">Suspendu</Badge>
+                            <Badge severity="warning" as="span">
+                                Suspendu
+                            </Badge>
                         ))
                         .with(
                             P.union(
                                 EmailStatusCode.EMAIL_ACTIVE,
                                 EmailStatusCode.EMAIL_REDIRECTION_ACTIVE
                             ),
-                            () => <Badge severity="success">Actif</Badge>
+                            () => (
+                                <Badge severity="success" as="span">
+                                    Actif
+                                </Badge>
+                            )
                         )
                         .with(
                             P.union(
@@ -79,7 +93,7 @@ const emailStatusRow = (
                                 EmailStatusCode.EMAIL_REDIRECTION_PENDING
                             ),
                             () => (
-                                <Badge severity="success">
+                                <Badge severity="success" as="span">
                                     Création en cours
                                 </Badge>
                             )
@@ -91,7 +105,7 @@ const emailStatusRow = (
                                 EmailStatusCode.MEMBER_VALIDATION_WAITING
                             ),
                             () => (
-                                <Badge severity="warning">
+                                <Badge severity="warning" as="span">
                                     Action nécessaire
                                 </Badge>
                             )
@@ -103,7 +117,7 @@ const emailStatusRow = (
                                 EmailStatusCode.EMAIL_UNSET
                             ),
                             () => (
-                                <Badge severity="warning">
+                                <Badge severity="warning" as="span">
                                     Action Nécessaire
                                 </Badge>
                             )
@@ -123,7 +137,7 @@ const emailStatusRow = (
                                 EmailStatusCode.EMAIL_REDIRECTION_PENDING
                             ),
                             () => (
-                                <Badge severity="success">
+                                <Badge severity="success" as="span">
                                     Création en cours
                                 </Badge>
                             )
@@ -131,7 +145,7 @@ const emailStatusRow = (
                         .with(
                             P.union(EmailStatusCode.EMAIL_VERIFICATION_WAITING),
                             () => (
-                                <Badge severity="warning">
+                                <Badge severity="warning" as="span">
                                     Action nécessaire
                                 </Badge>
                             )
@@ -145,7 +159,9 @@ const emailStatusRow = (
                             () => <>Pas d'email beta</>
                         )
                         .otherwise(() => (
-                            <Badge severity="warning">Action nécessaire</Badge>
+                            <Badge severity="warning" as="span">
+                                Action nécessaire
+                            </Badge>
                         ))
             )
             .otherwise(() => <>Pas d'email beta</>),
@@ -242,7 +258,7 @@ const emailStatusRow = (
                                     EmailStatusCode.EMAIL_REDIRECTION_PENDING
                                 ),
                                 () => (
-                                    <Badge severity="success">
+                                    <Badge severity="success" as="span">
                                         Création en cours
                                     </Badge>
                                 )
@@ -290,16 +306,20 @@ const MatomoInfoRow = (
         <>Compte Matomo</>,
         match(status)
             .with(ACCOUNT_SERVICE_STATUS.ACCOUNT_FOUND, () => (
-                <Badge key="matomo-status" severity="success">
+                <Badge key="matomo-status" severity="success" as="span">
                     Actif
                 </Badge>
             ))
             .with(ACCOUNT_SERVICE_STATUS.ACCOUNT_CREATION_PENDING, () => (
-                <Badge key="matomo-status" severity="info">
+                <Badge key="matomo-status" severity="info" as="span">
                     Création en cours
                 </Badge>
             ))
-            .otherwise(() => <Badge key="matomo-status">Pas de compte</Badge>),
+            .otherwise(() => (
+                <Badge key="matomo-status" as="span">
+                    Pas de compte
+                </Badge>
+            )),
         !!matomo ? (
             <Accordion key="matomo-access" label={"Liste des accès"}>
                 <Table
@@ -339,21 +359,25 @@ const sentryInfoRow = (sentry: MemberPageProps["sentryInfo"]) => {
         <>Compte Sentry</>,
         match(sentry && sentry.status)
             .with(ACCOUNT_SERVICE_STATUS.ACCOUNT_FOUND, () => (
-                <Badge key="sentry-status" severity="success">
+                <Badge key="sentry-status" severity="success" as="span">
                     Actif
                 </Badge>
             ))
             .with(ACCOUNT_SERVICE_STATUS.ACCOUNT_CREATION_PENDING, () => (
-                <Badge key="sentry-status" severity="info">
+                <Badge key="sentry-status" severity="info" as="span">
                     Creation en cours
                 </Badge>
             ))
             .with(ACCOUNT_SERVICE_STATUS.ACCOUNT_INVITATION_SENT, () => (
-                <Badge key="sentry-status" severity="info">
+                <Badge key="sentry-status" severity="info" as="span">
                     Invitation envoyée
                 </Badge>
             ))
-            .otherwise(() => <Badge key="matomo-status">Pas de compte</Badge>),
+            .otherwise(() => (
+                <Badge key="matomo-status" as="span">
+                    Pas de compte
+                </Badge>
+            )),
         match([sentry && sentry.status, !!sentry])
             .with([P._, false], () => (
                 <>
@@ -424,8 +448,16 @@ export const MemberStatus = ({
         [
             <>Compte beta</>,
             match(isExpired)
-                .with(true, () => <Badge severity="error">Expiré</Badge>)
-                .with(false, () => <Badge severity="success">Actif</Badge>)
+                .with(true, () => (
+                    <Badge severity="error" as="span">
+                        Expiré{" "}
+                    </Badge>
+                ))
+                .with(false, () => (
+                    <Badge severity="success" as="span">
+                        Actif
+                    </Badge>
+                ))
                 .exhaustive(),
             match(isExpired)
                 .with(true, () => <>Plus de missions en cours.</>)

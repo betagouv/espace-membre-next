@@ -1,5 +1,3 @@
-import Button from "@codegouvfr/react-dsfr/Button";
-import { fr } from "@codegouvfr/react-dsfr";
 import Link from "next/link";
 import { incubatorSchemaType } from "@/models/incubator";
 

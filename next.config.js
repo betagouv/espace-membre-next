@@ -65,20 +65,33 @@ const nextConfig = {
         });
         return config;
     },
-    sentry: {
-        hideSourceMaps: true,
-    },
 };
 
+const uploadToSentry =
+    process.env.NODE_ENV === "production" &&
+    process.env.SENTRY_RELEASE_UPLOAD === "true";
+
+/**
+ * @type {import('@sentry/nextjs').SentryBuildOptions}
+ */
 const sentryWebpackPluginOptions = {
     // Additional config options for the Sentry webpack plugin. Keep in mind that
     // the following options are set automatically, and overriding them is not
     // recommended:
     //   release, url, configFile, stripPrefix, urlPrefix, include, ignore
-
+    debug: false,
+    telemetry: false,
+    silent: false,
+    sourcemaps: {
+        deleteSourcemapsAfterUpload: true,
+        disable: !uploadToSentry,
+    },
+    hideSourceMaps: true,
     release: process.env.SOURCE_VERSION, // https://doc.scalingo.com/platform/app/environment#build-environment-variables
     org: "betagouv",
     project: "espace-membre",
+    widenClientFileUpload: true, // https://sentry.zendesk.com/hc/en-us/articles/28813179249691-Frames-from-static-chunks-folder-are-not-source-mapped
+    // cause static/chunks/ to be uploaded
     // An auth token is required for uploading source maps.
     authToken: process.env.SENTRY_AUTH_TOKEN,
     url: "https://sentry.incubateur.net",

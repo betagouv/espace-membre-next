@@ -93,6 +93,13 @@ export async function getAllIncubatorsMembers() {
                         "startups.uuid",
                         "missions_startups.startup_id"
                     )
+                    // only include active users
+                    .where((eb) =>
+                        eb.or([
+                            eb("missions.end", "is", null),
+                            eb("missions.end", ">=", new Date()),
+                        ])
+                    )
                     .whereRef("startups.incubator_id", "=", "incubators.uuid")
                     .union(() =>
                         // team members affiliated to incubator

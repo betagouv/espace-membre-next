@@ -16,7 +16,7 @@ import {
 export enum EMAIL_TYPES {
     MARRAINAGE_NEWCOMER_EMAIL = "MARRAINAGE_NEWCOMER_EMAIL",
     MARRAINAGE_ONBOARDER_EMAIL = "MARRAINAGE_ONBOARDER_EMAIL",
-    LOGIN_EMAIL = "LOGIN_EMAIL",
+    EMAIL_LOGIN = "EMAIL_LOGIN",
     MARRAINAGE_REQUEST_EMAIL = "MARRAINAGE_REQUEST_EMAIL",
     MARRAINAGE_ACCEPT_NEWCOMER_EMAIL = "MARRAINAGE_ACCEPT_NEWCOMER_EMAIL",
     MARRAINAGE_ACCEPT_ONBOARDER_EMAIL = "MARRAINAGE_ACCEPT_ONBOARDER_EMAIL",
@@ -101,10 +101,11 @@ export type MarrainageRequestEmail = {
     };
 };
 
-export type LoginEmail = {
-    type: EMAIL_TYPES.LOGIN_EMAIL;
+export type EmailLogin = {
+    type: EMAIL_TYPES.EMAIL_LOGIN;
     variables: {
         loginUrlWithToken: string;
+        fullname: string;
     };
 };
 
@@ -314,7 +315,7 @@ export type EmailStartupNewMemberArrival = {
 export type EmailVariants =
     | EmailMarrainageNewcomer
     | EmailMarrainageOnboarder
-    | LoginEmail
+    | EmailLogin
     | MarrainageRequestEmail
     | MarrainageAcceptNewcomerEmail
     | MarrainageAcceptOnboarderEmail
