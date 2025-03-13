@@ -8,8 +8,8 @@ import PgBoss from "pg-boss";
 import { match } from "ts-pattern";
 import { v4 as uuidv4 } from "uuid";
 
-import { addEvent } from "@/lib/events";
-import { db } from "@/lib/kysely";
+import { addEvent, getMatomoEventForUsername } from "@/lib/events";
+import { db, sql } from "@/lib/kysely";
 import { getStartup } from "@/lib/kysely/queries";
 import { getServiceAccount } from "@/lib/kysely/queries/services";
 import {
@@ -264,17 +264,26 @@ const createOrUpdateMatomoAccount = async (
     if (!user.primary_email) {
         throw new ValidationError("Un email primaire est obligatoire");
     }
-    const matomoAccount = await db
+    const matomoAccountInDb = await db
         .selectFrom("service_accounts")
         .selectAll()
         .where("account_type", "=", SERVICES.MATOMO)
         .where("user_id", "=", user.uuid)
         .executeTakeFirst();
-    const matomoAlreadyExists = !!matomoAccount?.service_user_id;
+
+    const matomoAlreadyExists = !!matomoAccountInDb?.service_user_id;
     const requestId = uuidv4();
+    const job = await db
+        .selectFrom("pgboss.job")
+        .select()
+        .where("state", "in", ["active", "retry", "created"])
+        .where("data", "@>", JSON.stringify({ sites: matomoData.sites }))
+        .where("data", "@>", JSON.stringify({ newSite: matomoData.newSite }))
+        .executeTakeFirst();
+    console.log(job, "a job exist");
 
     const callPgBoss = async () => {
-        await bossClient.send(
+        return await bossClient.send(
             createOrUpdateMatomoServiceAccountTopic,
             CreateOrUpdateMatomoAccountDataSchema.parse({
                 email: user.primary_email,
@@ -295,10 +304,11 @@ const createOrUpdateMatomoAccount = async (
     };
 
     if (matomoAlreadyExists) {
-        await callPgBoss();
+        const jobId = await callPgBoss();
         await addEvent({
             action_code: EventCode.MEMBER_SERVICE_ACCOUNT_UPDATE_REQUESTED,
             action_metadata: {
+                jobId,
                 service: SERVICES.MATOMO,
                 requestId: requestId,
                 sites: (matomoData.sites || []).map((s) => ({
@@ -319,20 +329,26 @@ const createOrUpdateMatomoAccount = async (
             created_by_username: user.username,
         });
     } else {
-        await callPgBoss();
-        await db
-            .insertInto("service_accounts")
-            .values({
-                user_id: user.uuid,
-                email: user.primary_email,
-                account_type: SERVICES.MATOMO,
-                status: ACCOUNT_SERVICE_STATUS.ACCOUNT_CREATION_PENDING,
-            })
-            .execute();
+        const jobId = await callPgBoss();
+        // user may have requested several website creation at the same time
+        // while is account in matomo still not exist
+        if (!matomoAccountInDb) {
+            // matomo is being created
+            await db
+                .insertInto("service_accounts")
+                .values({
+                    user_id: user.uuid,
+                    email: user.primary_email,
+                    account_type: SERVICES.MATOMO,
+                    status: ACCOUNT_SERVICE_STATUS.ACCOUNT_CREATION_PENDING,
+                })
+                .execute();
+        }
 
         await addEvent({
             action_code: EventCode.MEMBER_SERVICE_ACCOUNT_REQUESTED,
             action_metadata: {
+                jobId: jobId,
                 requestId: requestId,
                 service: SERVICES.MATOMO,
                 sites: (matomoData.sites || []).map((s) => ({
