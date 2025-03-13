@@ -3,10 +3,10 @@ import Button from "@codegouvfr/react-dsfr/Button";
 import Card from "@codegouvfr/react-dsfr/Card";
 import { format } from "date-fns/format";
 import { fr } from "date-fns/locale/fr";
+import MarkdownIt from "markdown-it";
 import type { Metadata, ResolvingMetadata } from "next";
 import { redirect } from "next/navigation";
 import { getServerSession } from "next-auth";
-import MarkdownIt from "markdown-it";
 
 import { BreadCrumbFiller } from "@/app/BreadCrumbProvider";
 import { fetchAirtableFormationById } from "@/lib/airtable";
@@ -260,6 +260,7 @@ export default async function Page({ params }: Props) {
                                       .filter((a) => !!a)
                                       .map((audience) => (
                                           <Badge
+                                              as={"span"}
                                               key={audience}
                                               noIcon
                                               severity="info"
