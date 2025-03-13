@@ -42,7 +42,7 @@ const emailStatusRow = (
             Statut de l'email <EmailLink email={emailInfos.email} />
         </>,
         <>
-            <Badge severity="info" className={fr.cx("fr-mr-1w")}>
+            <Badge severity="info" className={fr.cx("fr-mr-1w")} as="span">
                 {match(emailInfos.emailPlan)
                     .with(EMAIL_PLAN_TYPE.EMAIL_PLAN_PRO, () => "OVH PRO")
                     .with(EMAIL_PLAN_TYPE.EMAIL_PLAN_EXCHANGE, () => "Exchange")
@@ -55,10 +55,12 @@ const emailStatusRow = (
             </Badge>
             {match(userInfos.primary_email_status)
                 .with(EmailStatusCode.EMAIL_ACTIVE, () => (
-                    <Badge severity="success">Actif</Badge>
+                    <Badge severity="success" as="span">
+                        Actif
+                    </Badge>
                 ))
                 .otherwise(() => (
-                    <Badge severity="error">
+                    <Badge severity="error" as="span">
                         {
                             EMAIL_STATUS_READABLE_FORMAT[
                                 userInfos.primary_email_status
@@ -87,8 +89,16 @@ const emailSpamInfoRow = (
             Email <EmailLink email={emailInfos.email} /> classé en spam OVH
         </>,
         match(emailInfos.isBlocked)
-            .with(true, () => <Badge severity="error">Oui</Badge>)
-            .otherwise(() => <Badge severity="success">Non</Badge>),
+            .with(true, () => (
+                <Badge severity="error" as="span">
+                    Oui
+                </Badge>
+            ))
+            .otherwise(() => (
+                <Badge severity="success" as="span">
+                    Non
+                </Badge>
+            )),
     ];
 };
 
@@ -203,7 +213,7 @@ const redirectionRow = (
             Redirection <EmailLink email={redirection.from} /> vers{" "}
             <EmailLink email={redirection.to} />.
         </>,
-        <Badge key={redirection.to} severity="success">
+        <Badge key={redirection.to} severity="success" as="span">
             OK
         </Badge>,
     ];
@@ -275,6 +285,7 @@ export default function EmailContainer({
                             {userInfos.primary_email_status !==
                                 EmailStatusCode.EMAIL_ACTIVE && (
                                 <Badge
+                                    as="span"
                                     severity={
                                         infoStatus.includes(
                                             userInfos.primary_email_status
