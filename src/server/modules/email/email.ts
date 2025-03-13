@@ -44,6 +44,7 @@ export enum EMAIL_TYPES {
     EMAIL_VERIFICATION_WAITING = "EMAIL_VERIFICATION_WAITING",
     EMAIL_NEW_MEMBER_VALIDATION = "EMAIL_NEW_MEMBER_VALIDATION",
     EMAIL_TEAM_COMPOSITION = "EMAIL_TEAM_COMPOSITION",
+    EMAIL_STARTUP_NEW_MEMBER_ARRIVAL = "EMAIL_STARTUP_NEW_MEMBER_ARRIVAL",
 }
 
 export type SubjectFunction = {
@@ -303,6 +304,14 @@ export type EmailTeamComposition = {
     };
 };
 
+export type EmailStartupNewMemberArrival = {
+    type: EMAIL_TYPES.EMAIL_STARTUP_NEW_MEMBER_ARRIVAL;
+    variables: {
+        userInfos: memberPublicInfoSchemaType;
+        startup: userStartupSchemaType;
+    };
+};
+
 export type EmailVariants =
     | EmailMarrainageNewcomer
     | EmailMarrainageOnboarder
@@ -323,6 +332,7 @@ export type EmailVariants =
     | EmailStartupEnterConstructionPhase
     | EmailStartupEnterAccelerationPhase
     | EmailStartupEnterInvestigationPhase
+    | EmailStartupNewMemberArrival
     | EmailStartupAskPhase
     | EmailForumReminder
     | EmailTest

@@ -3,6 +3,30 @@ import { addDays, subDays } from "date-fns";
 import { FakeDataInterface } from "./fakeData";
 import { Domaine } from "@/models/member";
 
+export const newMemberInStartupA = {
+    username: "annie.mation",
+    domaine: Domaine.ANIMATION,
+    missions: [
+        {
+            start: subDays(new Date(), 3),
+            end: addDays(new Date(), 3),
+            startups: ["seconda-startup-name"],
+        },
+    ],
+};
+
+export const otherMemberFromStartupA = {
+    username: "othermember.fromstartupA",
+    domaine: Domaine.ANIMATION,
+    missions: [
+        {
+            start: subDays(new Date(), 3),
+            end: addDays(new Date(), 3),
+            startups: ["seconda-startup-name"],
+        },
+    ],
+};
+
 export const userIncubatorAndTeams: FakeDataInterface = {
     incubators: [
         { ghid: "un-super-incubator" },
@@ -32,17 +56,8 @@ export const userIncubatorAndTeams: FakeDataInterface = {
             ],
             teams: ["dinum-team"],
         },
-        {
-            username: "annie.mation",
-            domaine: Domaine.ANIMATION,
-            missions: [
-                {
-                    start: subDays(new Date(), 3),
-                    end: addDays(new Date(), 3),
-                    startups: ["seconda-startup-name"],
-                },
-            ],
-        },
+        newMemberInStartupA,
+        otherMemberFromStartupA,
     ],
     startups: [
         {
