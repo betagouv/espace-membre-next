@@ -51,19 +51,20 @@ const DEFAULT_CONTENT = `Pour t'aider dans la rédaction de ta fiche produit, no
 
 ## Contexte
 
-Quel est le contexte de ta Startup d'Etat ?
+Quel est le contexte de ta Startup d'État ?
 
 ## Problème
 
-Les problèmes que vous avez identifiés ou vos hypothèses de problèmes? Qui en souffre ? quels sont les conséquences de ces problèmes ?
+Les problèmes que vous avez identifiés ou vos hypothèses de problèmes ? Qui en souffre ? Quelles sont les conséquences de ces problèmes ?
 
 ## Solution
 
-Décrit ta solution en quelques lignes? qui seront/sont les bénéficiaires ?
+Décris ta solution en quelques lignes ? Qui seront les bénéficiaires ?
 
-## Stratégie
+## Objectifs d'impact à 6 mois
 
-Comment vous vous y prenez pour atteindre votre usagers ? quel impact chiffré visez-vous ?
+Quel impact chiffré visez-vous ? Qu'est-ce qui vous permettra de dire si votre première phase de construction a été un succès au bout des 6 premiers mois ?
+
 `;
 
 const NEW_PRODUCT_DATA: startupInfoUpdateSchemaType["startup"] = {
