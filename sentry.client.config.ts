@@ -13,4 +13,8 @@ Sentry.init({
     // plus for 100% of sessions with an error
     replaysSessionSampleRate: 0.1,
     replaysOnErrorSampleRate: 1,
+    ignoreErrors: [
+        "https://reactjs.org/docs/error-decoder.html?invariant=418", // ignore minified react error
+        "https://reactjs.org/docs/error-decoder.html?invariant=423", // ignore minified react error
+    ],
 });
