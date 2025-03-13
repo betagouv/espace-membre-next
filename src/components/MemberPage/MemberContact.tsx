@@ -40,6 +40,7 @@ export const MemberContact = ({
                         <Badge
                             severity="error"
                             small
+                            as="span"
                             className={fr.cx("fr-ml-1w")}
                         >
                             {
