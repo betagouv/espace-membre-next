@@ -1,8 +1,8 @@
 import type { Metadata, ResolvingMetadata } from "next";
 import { getServerSession } from "next-auth/next";
-import { userInfo } from "os";
 
 import { getUserInformations } from "@/app/api/member/getInfo";
+import { isWaitingValidation } from "@/app/api/member/isWaitingValidation";
 import { BreadCrumbFiller } from "@/app/BreadCrumbProvider";
 import MemberPage from "@/components/MemberPage/MemberPage";
 import betagouv from "@/server/betagouv";
@@ -75,12 +75,15 @@ export default async function Page({
         });
     const isCurrentUser = session.user.id === id;
 
+    const waitingValidation = await isWaitingValidation(user.username);
+
     return (
         <>
             <BreadCrumbFiller
                 currentPage={user.userInfos.fullname}
                 currentItemId={user.userInfos.username}
             />
+
             <MemberPage
                 isAdmin={isAdmin}
                 isCurrentUser={isCurrentUser}
@@ -98,6 +101,7 @@ export default async function Page({
                 matomoInfo={userInformations.matomoInfo}
                 sentryInfo={userInformations.sentryInfo}
                 startups={userInformations.startups}
+                isWaitingValidation={waitingValidation}
             />
         </>
     );
