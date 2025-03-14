@@ -76,7 +76,7 @@ export default async function Page({
             <>
                 <BreadCrumbFiller
                     currentPage={user.userInfos.fullname}
-                    currentItemId={user.userInfos.uuid}
+                    currentItemId={user.userInfos.username}
                 />
                 {alert}
             </>
