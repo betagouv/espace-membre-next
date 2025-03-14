@@ -76,7 +76,7 @@ export async function validateNewMember({
     ) {
         throw new BusinessError(
             "userAlreadyValided",
-            `Le nouveau membre a déjà été validé`
+            `Ce membre a déjà été validé`
         );
     }
     const newMember = memberBaseInfoToModel(rawData);
