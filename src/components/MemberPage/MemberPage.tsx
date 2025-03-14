@@ -25,6 +25,7 @@ import { matomoUserSchemaType } from "@/models/matomo";
 import { sentryUserSchemaType } from "@/models/sentry";
 import LastChange from "../LastChange";
 import { FicheHeader } from "../FicheHeader";
+import { MemberWaitingValidationNotice } from "./MemberWaitingValidationNotice";
 
 const mdParser = new MarkdownIt({
     html: true,
@@ -64,6 +65,7 @@ export interface MemberPageProps {
     sessionUserIsFromIncubatorTeam: boolean;
     isAdmin: boolean;
     isCurrentUser: boolean;
+    isWaitingValidation: boolean;
 }
 
 /*
@@ -89,6 +91,7 @@ export default function MemberPage({
     isAdmin,
     avatar,
     isCurrentUser,
+    isWaitingValidation,
 }: MemberPageProps) {
     const router = useRouter();
     const [tab, setTab] = useState<null | string>(null);
@@ -250,6 +253,9 @@ export default function MemberPage({
             />
             <br />
             {isExpired && <MemberExpirationNotice userInfos={userInfos} />}
+            {isWaitingValidation && (
+                <MemberWaitingValidationNotice userInfos={userInfos} />
+            )}
             {tab !== null && (
                 <Tabs
                     tabs={tabs}
