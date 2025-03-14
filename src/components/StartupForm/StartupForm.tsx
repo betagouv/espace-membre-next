@@ -637,6 +637,7 @@ export function StartupForm(props: StartupFormProps) {
                     />
 
                     <BasicInput id="stats_url" />
+                    <BasicInput id="impact_url" />
                     <BasicInput id="budget_url" />
                     <BasicInput id="roadmap_url" />
                     <BasicInput id="repository" />

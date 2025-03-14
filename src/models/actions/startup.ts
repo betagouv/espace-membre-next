@@ -32,6 +32,7 @@ export const startupInfoUpdateSchema = z.object({
         tech_audit_url: startupSchema.shape.tech_audit_url,
         roadmap_url: startupSchema.shape.roadmap_url,
         ecodesign_url: startupSchema.shape.ecodesign_url,
+        impact_url: startupSchema.shape.impact_url,
     }),
     shot: z
         .instanceof(FileType)
