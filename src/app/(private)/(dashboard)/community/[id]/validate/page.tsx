@@ -47,7 +47,7 @@ export default async function Page({
             alert = (
                 <Alert
                     severity="success"
-                    title="Fiche membre validé"
+                    title="Fiche membre validée"
                     description={`La fiche membre de ${user.userInfos.fullname} a été validée par ${session.user.id}`}
                 />
             );
