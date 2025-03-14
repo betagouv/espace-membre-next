@@ -31,7 +31,7 @@ export async function validateNewMember({
     if (!rawData) {
         throw new BusinessError(
             "userNotFound",
-            `Aucun utilisateur trouver pour l'identifiant : ${memberUuid}`
+            `Aucun utilisateur trouvé pour l'identifiant : ${memberUuid}`
         );
     }
 
@@ -75,8 +75,8 @@ export async function validateNewMember({
         EmailStatusCode.MEMBER_VALIDATION_WAITING
     ) {
         throw new BusinessError(
-            "userIsNotWaitingValidation",
-            `${rawData.fullname} (identifiant:${memberUuid}) n'est pas en attente de validation`
+            "userAlreadyValided",
+            `Ce membre a déjà été validé`
         );
     }
     const newMember = memberBaseInfoToModel(rawData);
