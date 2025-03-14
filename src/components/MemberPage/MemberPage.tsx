@@ -253,8 +253,11 @@ export default function MemberPage({
             />
             <br />
             {isExpired && <MemberExpirationNotice userInfos={userInfos} />}
-            {isWaitingValidation && sessionUserIsFromIncubatorTeam && (
-                <MemberWaitingValidationNotice userInfos={userInfos} />
+            {isWaitingValidation && (
+                <MemberWaitingValidationNotice
+                    userInfos={userInfos}
+                    canValidate={sessionUserIsFromIncubatorTeam}
+                />
             )}
             {tab !== null && (
                 <Tabs

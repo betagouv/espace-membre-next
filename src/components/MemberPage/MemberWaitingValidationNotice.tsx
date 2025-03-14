@@ -7,8 +7,10 @@ import { MemberPageProps } from "./MemberPage";
 
 export const MemberWaitingValidationNotice = ({
     userInfos,
+    canValidate,
 }: {
     userInfos: MemberPageProps["userInfos"];
+    canValidate: boolean;
 }) => (
     <Alert
         className={fr.cx("fr-mt-2w", "fr-mb-2w")}
@@ -21,13 +23,15 @@ export const MemberWaitingValidationNotice = ({
                     l'équipe de son incubateur.
                 </p>
                 <br />
-                <Button
-                    linkProps={{
-                        href: `/community/${userInfos.username}/validate`,
-                    }}
-                >
-                    Valider la fiche de {userInfos.fullname}
-                </Button>
+                {canValidate && (
+                    <Button
+                        linkProps={{
+                            href: `/community/${userInfos.username}/validate`,
+                        }}
+                    >
+                        Valider la fiche de {userInfos.fullname}
+                    </Button>
+                )}
                 <br />
             </div>
         }

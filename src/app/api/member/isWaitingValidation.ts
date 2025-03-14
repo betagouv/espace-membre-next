@@ -12,5 +12,5 @@ export const isWaitingValidation = async (username) => {
         EventCode.MEMBER_VALIDATED
     );
 
-    return eventMemberCreated && !eventMemberValidated;
+    return !!eventMemberCreated && !eventMemberValidated;
 };
