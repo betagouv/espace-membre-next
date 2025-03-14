@@ -307,6 +307,7 @@ export interface Startups {
   ecodesign_url: string | null;
   ghid: string;
   has_mobile_app: Generated<boolean | null>;
+  impact_url: string | null;
   incubator_id: string | null;
   is_private_url: Generated<boolean | null>;
   link: string | null;

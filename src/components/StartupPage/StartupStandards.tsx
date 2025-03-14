@@ -169,7 +169,7 @@ export const StartupStandards = ({
                         null,
                     ],
                     [
-                        "Publication des statistiques d'impact",
+                        "Publication des statistiques d'usage",
                         <BooleanBadge
                             key="badge"
                             value={startupInfos.stats_url}
@@ -177,6 +177,16 @@ export const StartupStandards = ({
                             invalidText="Non publié"
                         />,
                         "La page /stats doit être publiée dès la mise en ligne.",
+                    ],
+                    [
+                        "Publication des statistiques d'impact",
+                        <BooleanBadge
+                            key="badge"
+                            value={startupInfos.impact_url}
+                            validText="Publié"
+                            invalidText="Non publié"
+                        />,
+                        "La page /impact doit être publiée dès la construction.",
                     ],
                     [
                         "Publication du budget",
