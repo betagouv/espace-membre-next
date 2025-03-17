@@ -44,6 +44,7 @@ export enum EMAIL_TYPES {
     EMAIL_VERIFICATION_WAITING = "EMAIL_VERIFICATION_WAITING",
     EMAIL_NEW_MEMBER_VALIDATION = "EMAIL_NEW_MEMBER_VALIDATION",
     EMAIL_TEAM_COMPOSITION = "EMAIL_TEAM_COMPOSITION",
+    EMAIL_STARTUP_MEMBERS_DID_NOT_CHANGE_IN_X_MONTHS = "EMAIL_STARTUP_MEMBERS_DID_NOT_CHANGE_IN_X_MONTHS",
     EMAIL_STARTUP_NEW_MEMBER_ARRIVAL = "EMAIL_STARTUP_NEW_MEMBER_ARRIVAL",
 }
 
@@ -304,6 +305,19 @@ export type EmailTeamComposition = {
     };
 };
 
+export type EmailStartupMembersDidNotChangeInXMonths = {
+    type: EMAIL_TYPES.EMAIL_STARTUP_MEMBERS_DID_NOT_CHANGE_IN_X_MONTHS;
+    variables: {
+        startupWrappers: {
+            startup: startupSchemaType;
+            activeMembers: number;
+            lastModification?: Date;
+            currentPhase: string;
+        }[];
+        incubator: incubatorSchemaType;
+    };
+};
+
 export type EmailStartupNewMemberArrival = {
     type: EMAIL_TYPES.EMAIL_STARTUP_NEW_MEMBER_ARRIVAL;
     variables: {
@@ -339,7 +353,8 @@ export type EmailVariants =
     | EmailPRPendingToTeam
     | EmailVerificationWaiting
     | EmailNewMemberValidation
-    | EmailTeamComposition;
+    | EmailTeamComposition
+    | EmailStartupMembersDidNotChangeInXMonths;
 
 export type EmailProps = BaseEmail & EmailVariants;
 
