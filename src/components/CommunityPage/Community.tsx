@@ -301,6 +301,23 @@ export const Community = (props: CommunityProps) => {
         [results]
     );
 
+    const onSelect = async (newFilters) => {
+        await setFilters((filters) => [
+            ...newFilters.map((f) => ({
+                type: f.type,
+                value: f.id || f.label,
+            })),
+            // keep existing active_only flag
+            {
+                type: "active_only",
+                value: !!filters.find(
+                    (f) => f.type === "active_only" && f.value
+                ),
+            },
+        ]);
+        await setCurrentPage(1);
+    };
+
     return (
         <>
             <div className={`${fr.cx("fr-grid-row")}`}>
@@ -342,20 +359,7 @@ export const Community = (props: CommunityProps) => {
                 options={searchOptions}
                 onSelect={(newFilters) => {
                     startTransition(async () => {
-                        await setFilters((filters) => [
-                            ...newFilters.map((f) => ({
-                                type: f.type,
-                                value: f.id || f.label,
-                            })),
-                            // keep existing active_only flag
-                            {
-                                type: "active_only",
-                                value: !!filters.find(
-                                    (f) => f.type === "active_only" && f.value
-                                ),
-                            },
-                        ]);
-                        await setCurrentPage(1);
+                        await onSelect(newFilters);
                     });
                 }}
                 defaultValue={defaultFilterValue}
