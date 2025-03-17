@@ -61,7 +61,7 @@ mission_startups AS (
     SELECT DISTINCT ms.startup_id
     FROM user_missions um
     JOIN missions_startups ms ON um.mission_id = ms.mission_id
-),
+)
 SELECT s.*, p.name as current_phase
 FROM startups s
 LEFT JOIN mission_startups fs ON s.uuid = fs.startup_id
