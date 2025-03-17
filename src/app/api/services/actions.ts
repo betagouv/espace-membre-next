@@ -8,7 +8,7 @@ import PgBoss from "pg-boss";
 import { match } from "ts-pattern";
 import { v4 as uuidv4 } from "uuid";
 
-import { addEvent, getMatomoEventForUsername } from "@/lib/events";
+import { addEvent } from "@/lib/events";
 import { db, sql } from "@/lib/kysely";
 import { getStartup } from "@/lib/kysely/queries";
 import { getServiceAccount } from "@/lib/kysely/queries/services";
