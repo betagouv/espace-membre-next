@@ -45,6 +45,7 @@ export async function createSentryTeam(
                 startupId: job.data.startupId,
                 team,
                 requestId: job.data.requestId,
+                jobId: job.id,
             },
             action_on_username: job.data.username,
             created_by_username: job.data.username,

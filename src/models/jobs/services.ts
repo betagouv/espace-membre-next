@@ -44,6 +44,7 @@ export const CreateOrUpdateMatomoAccountDataSchema =
             })
             .optional(),
         username: z.string(),
+        userUuid: z.string().uuid(),
         requestId: z.string().uuid(),
     }).strict();
 export type CreateOrUpdateMatomoAccountDataSchemaType = z.infer<
@@ -60,7 +61,7 @@ export const CreateSentryAccountDataSchema =
         ),
         email: z.string().email(),
         username: z.string(), // used to logged infortion
-        userUuid: z.string(),
+        userUuid: z.string().uuid(),
         requestId: z.string().uuid(),
     }).strict();
 export type CreateSentryAccountDataSchemaType = z.infer<
@@ -69,7 +70,7 @@ export type CreateSentryAccountDataSchemaType = z.infer<
 
 export const CreateSentryTeamDataSchema = MaintenanceWrapperDataSchema.extend({
     startupId: z.string(),
-    userUuid: z.string(),
+    userUuid: z.string().uuid(),
     email: z.string().email(),
     username: z.string(), // used to logged infortion
     requestId: z.string().uuid(),
@@ -89,7 +90,7 @@ export const UpdateSentryAccountDataSchema =
         ),
         email: z.string().email(),
         username: z.string(), // used to logged infortion
-        userUuid: z.string(),
+        userUuid: z.string().uuid(),
         memberId: z.string(),
         requestId: z.string().uuid(),
     }).strict();

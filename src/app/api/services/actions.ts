@@ -147,7 +147,7 @@ const createOrUpdateSentryAccount = async (
               }))
             : [];
     const requestId = uuidv4();
-    const job = await getSentryJob(sentryData, teams);
+    const job = await getSentryJob(user.uuid, sentryData, teams);
     if (job) {
         throw new BusinessError(
             "aSentryJobAlreadyExist",
@@ -282,7 +282,7 @@ const createOrUpdateMatomoAccount = async (
 
     const matomoAlreadyExists = !!matomoAccountInDb?.service_user_id;
     const requestId = uuidv4();
-    const job = await getMatomoJob(matomoData);
+    const job = await getMatomoJob(user.username, matomoData);
     if (job) {
         throw new BusinessError(
             "aMatomoJobAlreadyExist",
@@ -297,6 +297,7 @@ const createOrUpdateMatomoAccount = async (
                 email: user.primary_email,
                 login: user.primary_email,
                 username: user.username,
+                userUuid: user.uuid,
                 requestId: requestId,
                 password: encryptPassword(
                     crypto.randomBytes(20).toString("base64").slice(0, -2)
@@ -379,11 +380,15 @@ const createOrUpdateMatomoAccount = async (
     }
 };
 
-async function getMatomoJob(matomoData: matomoAccountRequestSchemaType) {
+async function getMatomoJob(
+    userUuid: string,
+    matomoData: matomoAccountRequestSchemaType
+) {
     let query = db
         .selectFrom("pgboss.job")
         .selectAll()
-        .where("state", "in", ["active", "retry", "created"]);
+        .where("state", "in", ["active", "retry", "created"])
+        .where("data", "@>", JSON.stringify({ userUuid }));
 
     if (matomoData.sites) {
         query = query.where(
@@ -406,6 +411,7 @@ async function getMatomoJob(matomoData: matomoAccountRequestSchemaType) {
 }
 
 async function getSentryJob(
+    userUuid: string,
     sentryData: sentryAccountRequestSchemaType,
     teams: { teamSlug: string; teamRole: SentryRole }[]
 ) {
@@ -413,7 +419,8 @@ async function getSentryJob(
         .selectFrom("pgboss.job")
         .selectAll()
         .where("state", "in", ["active", "retry", "created"])
-        .where("data", "@>", JSON.stringify({ teams: sentryData.teams }));
+        .where("data", "@>", JSON.stringify({ userUuid }))
+        .where("data", "@>", JSON.stringify({ teams: teams }));
 
     if ("newTeam" in sentryData && sentryData.newTeam) {
         query = query.where(
