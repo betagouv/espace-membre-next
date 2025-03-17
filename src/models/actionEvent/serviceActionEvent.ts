@@ -17,6 +17,7 @@ export const EventServiceAccountDeletedPayload = z.object({
 const matomoActionMetadataSchema = z.object({
     service: z.literal(SERVICES.MATOMO),
     requestId: z.string().uuid(),
+    jobId: z.string().nullable(),
     sites: z
         .array(
             z.object({
@@ -47,6 +48,7 @@ const matomoActionMetadataSchema = z.object({
 const sentryActionMetadataSchema = z.object({
     service: z.literal(SERVICES.SENTRY),
     requestId: z.string().uuid(),
+    jobId: z.string().nullable(),
     teams: z.array(
         z.object({
             teamSlug: z.string(),
@@ -79,6 +81,7 @@ export const EventSentryAccountUpdatedPayload = z.object({
 export const EventSentryCreateTeamRequestedTeamPayload = z.object({
     action_code: z.literal(EventCode.MEMBER_SERVICE_TEAM_CREATION_REQUESTED),
     action_metadata: z.object({
+        jobId: z.string().nullable(),
         service: z.literal(SERVICES.SENTRY),
         requestId: z.string().uuid(),
         startupId: z.string(),

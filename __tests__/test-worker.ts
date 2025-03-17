@@ -351,6 +351,21 @@ describe("Service account creation by worker", () => {
                 .where("account_type", "=", "sentry")
                 .executeTakeFirstOrThrow();
             account.should.exist;
+            try {
+                await askAccountCreationForService({
+                    service: SERVICES.SENTRY,
+                    data: {
+                        teams: [
+                            {
+                                slug: "beta.gouv.fr",
+                            },
+                        ],
+                    },
+                });
+            } catch (err) {
+                assert(err instanceof BusinessError);
+                assert.strictEqual(err.code, "aSentryJobAlreadyExist");
+            }
         });
 
         it("should create sentry worker tasks create account and create team", async () => {
@@ -400,6 +415,19 @@ describe("Service account creation by worker", () => {
                 EventCode.MEMBER_SERVICE_TEAM_CREATION_REQUESTED
             );
             account.should.exist;
+            try {
+                await askAccountCreationForService({
+                    service: SERVICES.SENTRY,
+                    data: {
+                        newTeam: {
+                            startupId: newStartup.uuid,
+                        },
+                    },
+                });
+            } catch (err) {
+                assert(err instanceof BusinessError);
+                assert.strictEqual(err.code, "aSentryJobAlreadyExist");
+            }
         });
     });
 });

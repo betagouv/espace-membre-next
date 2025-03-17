@@ -41,10 +41,7 @@ import { getBossClientInstance } from "@/server/queueing/client";
 import { createSentryServiceAccountTopic } from "@/server/queueing/workers/create-sentry-account";
 import { createSentryTeamTopic } from "@/server/queueing/workers/create-sentry-team";
 import { createOrUpdateMatomoServiceAccountTopic } from "@/server/queueing/workers/create-update-matomo-account";
-import {
-    updateSentryServiceAccount,
-    updateSentryServiceAccountTopic,
-} from "@/server/queueing/workers/update-sentry-account";
+import { updateSentryServiceAccountTopic } from "@/server/queueing/workers/update-sentry-account";
 import { authOptions } from "@/utils/authoptions";
 import {
     AuthorizationError,
@@ -150,6 +147,14 @@ const createOrUpdateSentryAccount = async (
               }))
             : [];
     const requestId = uuidv4();
+    const job = await getSentryJob(sentryData, teams);
+    if (job) {
+        throw new BusinessError(
+            "aSentryJobAlreadyExist",
+            `Tu as déjà une demande en cours pour ajouter ces équipes.`
+        );
+    }
+
     if ("newTeam" in sentryData && sentryData.newTeam) {
         const startup = await getStartup({
             uuid: sentryData.newTeam.startupId,
@@ -157,7 +162,7 @@ const createOrUpdateSentryAccount = async (
         if (!startup) {
             throw new NoDataError("Startup not found");
         }
-        await bossClient.send(
+        const jobId = await bossClient.send(
             createSentryTeamTopic,
             CreateSentryTeamDataSchema.parse({
                 email: user.primary_email,
@@ -179,6 +184,7 @@ const createOrUpdateSentryAccount = async (
         await addEvent({
             action_code: EventCode.MEMBER_SERVICE_TEAM_CREATION_REQUESTED,
             action_metadata: {
+                jobId: jobId,
                 service: SERVICES.SENTRY,
                 startupId: sentryData.newTeam.startupId,
                 requestId: requestId,
@@ -191,7 +197,7 @@ const createOrUpdateSentryAccount = async (
         });
     }
     if (accountAlreadyExists) {
-        await bossClient.send(
+        const jobId = await bossClient.send(
             updateSentryServiceAccountTopic,
             UpdateSentryAccountDataSchema.parse({
                 email: user.primary_email,
@@ -210,6 +216,7 @@ const createOrUpdateSentryAccount = async (
         await addEvent({
             action_code: EventCode.MEMBER_SERVICE_ACCOUNT_UPDATE_REQUESTED,
             action_metadata: {
+                jobId: jobId,
                 service: SERVICES.SENTRY,
                 teams,
                 requestId,
@@ -218,7 +225,7 @@ const createOrUpdateSentryAccount = async (
             created_by_username: user.username,
         });
     } else {
-        await bossClient.send(
+        const jobId = await bossClient.send(
             createSentryServiceAccountTopic,
             CreateSentryAccountDataSchema.parse({
                 email: user.primary_email,
@@ -247,6 +254,7 @@ const createOrUpdateSentryAccount = async (
         await addEvent({
             action_code: EventCode.MEMBER_SERVICE_ACCOUNT_REQUESTED,
             action_metadata: {
+                jobId: jobId,
                 service: SERVICES.SENTRY,
                 teams,
                 requestId,
@@ -274,7 +282,7 @@ const createOrUpdateMatomoAccount = async (
 
     const matomoAlreadyExists = !!matomoAccountInDb?.service_user_id;
     const requestId = uuidv4();
-    const job = await getJob(matomoData);
+    const job = await getMatomoJob(matomoData);
     if (job) {
         throw new BusinessError(
             "aMatomoJobAlreadyExist",
@@ -371,7 +379,7 @@ const createOrUpdateMatomoAccount = async (
     }
 };
 
-function getJob(matomoData: matomoAccountRequestSchemaType) {
+async function getMatomoJob(matomoData: matomoAccountRequestSchemaType) {
     let query = db
         .selectFrom("pgboss.job")
         .selectAll()
@@ -390,6 +398,28 @@ function getJob(matomoData: matomoAccountRequestSchemaType) {
             "data",
             "@>",
             JSON.stringify({ newSite: matomoData.newSite })
+        );
+    }
+
+    const job = await query.executeTakeFirst();
+    return job;
+}
+
+async function getSentryJob(
+    sentryData: sentryAccountRequestSchemaType,
+    teams: { teamSlug: string; teamRole: SentryRole }[]
+) {
+    let query = db
+        .selectFrom("pgboss.job")
+        .selectAll()
+        .where("state", "in", ["active", "retry", "created"])
+        .where("data", "@>", JSON.stringify({ teams: sentryData.teams }));
+
+    if ("newTeam" in sentryData && sentryData.newTeam) {
+        query = query.where(
+            "data",
+            "@>",
+            JSON.stringify({ startupId: sentryData.newTeam.startupId })
         );
     }
 
