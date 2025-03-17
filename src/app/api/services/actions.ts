@@ -48,6 +48,7 @@ import {
 import { authOptions } from "@/utils/authoptions";
 import {
     AuthorizationError,
+    BusinessError,
     NoDataError,
     ValidationError,
     withErrorHandling,
@@ -273,14 +274,13 @@ const createOrUpdateMatomoAccount = async (
 
     const matomoAlreadyExists = !!matomoAccountInDb?.service_user_id;
     const requestId = uuidv4();
-    const job = await db
-        .selectFrom("pgboss.job")
-        .select()
-        .where("state", "in", ["active", "retry", "created"])
-        .where("data", "@>", JSON.stringify({ sites: matomoData.sites }))
-        .where("data", "@>", JSON.stringify({ newSite: matomoData.newSite }))
-        .executeTakeFirst();
-    console.log(job, "a job exist");
+    const job = await getJob(matomoData);
+    if (job) {
+        throw new BusinessError(
+            "aMatomoJobAlreadyExist",
+            `Tu as déjà une demande en cours pour ajouter ces sites.`
+        );
+    }
 
     const callPgBoss = async () => {
         return await bossClient.send(
@@ -370,3 +370,29 @@ const createOrUpdateMatomoAccount = async (
         });
     }
 };
+
+function getJob(matomoData: matomoAccountRequestSchemaType) {
+    let query = db
+        .selectFrom("pgboss.job")
+        .selectAll()
+        .where("state", "in", ["active", "retry", "created"]);
+
+    if (matomoData.sites) {
+        query = query.where(
+            "data",
+            "@>",
+            JSON.stringify({ sites: matomoData.sites })
+        );
+    }
+
+    if (matomoData.newSite) {
+        query = query.where(
+            "data",
+            "@>",
+            JSON.stringify({ newSite: matomoData.newSite })
+        );
+    }
+
+    const job = await query.executeTakeFirst();
+    return job;
+}
