@@ -7,9 +7,12 @@ import { db } from "@/lib/kysely";
 import { getUserBasicInfo } from "@/lib/kysely/queries/users";
 import { EventCode, EventMemberCreatedPayload } from "@/models/actionEvent";
 import { validateNewMemberSchemaType } from "@/models/actions/member";
+import { SendEmailToTeamWhenNewMemberSchema } from "@/models/jobs/member";
 import { memberBaseInfoToModel } from "@/models/mapper";
 import { EmailStatusCode } from "@/models/member";
 import { isSessionUserIncubatorTeamAdminForUser } from "@/server/config/admin.config";
+import { getBossClientInstance } from "@/server/queueing/client";
+import { sendEmailToTeamWhenNewMemberTopic } from "@/server/queueing/workers/send-email-to-team-when-new-member";
 import { authOptions } from "@/utils/authoptions";
 import {
     AuthorizationError,
@@ -28,7 +31,7 @@ export async function validateNewMember({
     if (!rawData) {
         throw new BusinessError(
             "userNotFound",
-            `Aucun utilisateur trouver pour l'identifiant : ${memberUuid}`
+            `Aucun utilisateur trouvé pour l'identifiant : ${memberUuid}`
         );
     }
 
@@ -72,8 +75,8 @@ export async function validateNewMember({
         EmailStatusCode.MEMBER_VALIDATION_WAITING
     ) {
         throw new BusinessError(
-            "userIsNotWaitingValidation",
-            `${rawData.fullname} (identifiant:${memberUuid}) n'est pas en attente de validation`
+            "userAlreadyValided",
+            `Ce membre a déjà été validé`
         );
     }
     const newMember = memberBaseInfoToModel(rawData);
@@ -105,6 +108,18 @@ export async function validateNewMember({
         action_code: EventCode.MEMBER_VALIDATED,
         action_on_username: newMember.username,
     });
+
+    const bossClient = await getBossClientInstance();
+    await bossClient.send(
+        sendEmailToTeamWhenNewMemberTopic,
+        SendEmailToTeamWhenNewMemberSchema.parse({
+            userId: newMember.uuid,
+        }),
+        {
+            retryLimit: 2,
+            retryBackoff: true,
+        }
+    );
 }
 
 export const safeValidateNewMember = withErrorHandling(validateNewMember);

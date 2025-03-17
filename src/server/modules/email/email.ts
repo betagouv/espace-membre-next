@@ -16,7 +16,7 @@ import {
 export enum EMAIL_TYPES {
     MARRAINAGE_NEWCOMER_EMAIL = "MARRAINAGE_NEWCOMER_EMAIL",
     MARRAINAGE_ONBOARDER_EMAIL = "MARRAINAGE_ONBOARDER_EMAIL",
-    LOGIN_EMAIL = "LOGIN_EMAIL",
+    EMAIL_LOGIN = "EMAIL_LOGIN",
     MARRAINAGE_REQUEST_EMAIL = "MARRAINAGE_REQUEST_EMAIL",
     MARRAINAGE_ACCEPT_NEWCOMER_EMAIL = "MARRAINAGE_ACCEPT_NEWCOMER_EMAIL",
     MARRAINAGE_ACCEPT_ONBOARDER_EMAIL = "MARRAINAGE_ACCEPT_ONBOARDER_EMAIL",
@@ -45,6 +45,7 @@ export enum EMAIL_TYPES {
     EMAIL_NEW_MEMBER_VALIDATION = "EMAIL_NEW_MEMBER_VALIDATION",
     EMAIL_TEAM_COMPOSITION = "EMAIL_TEAM_COMPOSITION",
     EMAIL_STARTUP_MEMBERS_DID_NOT_CHANGE_IN_X_MONTHS = "EMAIL_STARTUP_MEMBERS_DID_NOT_CHANGE_IN_X_MONTHS",
+    EMAIL_STARTUP_NEW_MEMBER_ARRIVAL = "EMAIL_STARTUP_NEW_MEMBER_ARRIVAL",
 }
 
 export type SubjectFunction = {
@@ -101,10 +102,11 @@ export type MarrainageRequestEmail = {
     };
 };
 
-export type LoginEmail = {
-    type: EMAIL_TYPES.LOGIN_EMAIL;
+export type EmailLogin = {
+    type: EMAIL_TYPES.EMAIL_LOGIN;
     variables: {
         loginUrlWithToken: string;
+        fullname: string;
     };
 };
 
@@ -316,10 +318,18 @@ export type EmailStartupMembersDidNotChangeInXMonths = {
     };
 };
 
+export type EmailStartupNewMemberArrival = {
+    type: EMAIL_TYPES.EMAIL_STARTUP_NEW_MEMBER_ARRIVAL;
+    variables: {
+        userInfos: memberPublicInfoSchemaType;
+        startup: userStartupSchemaType;
+    };
+};
+
 export type EmailVariants =
     | EmailMarrainageNewcomer
     | EmailMarrainageOnboarder
-    | LoginEmail
+    | EmailLogin
     | MarrainageRequestEmail
     | MarrainageAcceptNewcomerEmail
     | MarrainageAcceptOnboarderEmail
@@ -336,6 +346,7 @@ export type EmailVariants =
     | EmailStartupEnterConstructionPhase
     | EmailStartupEnterAccelerationPhase
     | EmailStartupEnterInvestigationPhase
+    | EmailStartupNewMemberArrival
     | EmailStartupAskPhase
     | EmailForumReminder
     | EmailTest

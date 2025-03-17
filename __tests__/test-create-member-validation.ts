@@ -3,7 +3,7 @@ import { Selectable } from "kysely";
 import proxyquire from "proxyquire";
 import sinon from "sinon";
 
-import testUsers from "./users.json";
+import { testUsers } from "./utils/users-data";
 import utils from "./utils";
 import { Events, Users, Missions } from "@/@types/db";
 import { addEvent } from "@/lib/events";
@@ -25,7 +25,7 @@ describe(`Test creating new user flow : A new member cannot be validated by some
         event: Selectable<Events>;
     beforeEach(async () => {
         getServerSessionStub = sinon.stub();
-        await utils.createUsers(testUsers);
+        await utils.createData(testUsers);
         sendEmailStub = sinon.stub().resolves(); // Resolves like a real async function
         // Use proxyquire to replace bossClient module
         sendNewMemberValidationEmail = proxyquire(
@@ -129,7 +129,7 @@ describe(`Test creating new user flow : A new member cannot be validated by some
     });
 
     afterEach(async () => {
-        await utils.deleteUsers(testUsers);
+        await utils.deleteData(testUsers);
         await db
             .deleteFrom("startups")
             .where("uuid", "=", newStartup.uuid)
@@ -155,7 +155,7 @@ describe(`Test creating new user flow : A new member cannot be validated by some
             }
         ).validateNewMember;
         try {
-            await validateNewMember({ memberUuid: newUser.id });
+            await validateNewMember({ memberUuid: newUser.username });
         } catch (error) {
             error.should.be.instanceof(AuthorizationError);
         }
@@ -247,7 +247,7 @@ describe(`Test creating new user flow : A new member cannot be validated by some
         } catch (error) {
             error.should.be.instanceof(BusinessError);
             (error as BusinessError).code.should.be.equals(
-                "userIsNotWaitingValidation"
+                "userAlreadyValided"
             );
         }
     });

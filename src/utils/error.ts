@@ -53,7 +53,7 @@ export class BusinessError extends CustomError {
 export class ErrorWithStatus extends BusinessError {
     statusCode: number;
     constructor(message: string) {
-        super(message);
+        super("500", message);
         this.statusCode = 500;
     }
 }

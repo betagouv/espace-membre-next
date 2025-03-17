@@ -34,36 +34,36 @@ export default async function Page() {
             <p>
                 Malgré nos efforts, certains contenus sont inaccessibles. Vous
                 trouverez ci-dessous une liste des limitations connues :
-                <ul>
-                    <li>
-                        Tableau de recherche des membres : Le tableau n'est pas
-                        triable au clavier. Une refonte graphique de ce module
-                        est envisagé à l'avenir.
-                    </li>
-                    <li>
-                        Archives des infolettres : les archives ne sont pas
-                        accessibles avec un lecteur d'écran. Tous les liens ont
-                        le même intitulés.
-                    </li>
-                </ul>
             </p>
+            <ul>
+                <li>
+                    Tableau de recherche des membres : Le tableau n'est pas
+                    triable au clavier. Une refonte graphique de ce module est
+                    envisagé à l'avenir.
+                </li>
+                <li>
+                    Archives des infolettres : les archives ne sont pas
+                    accessibles avec un lecteur d'écran. Tous les liens ont le
+                    même intitulés.
+                </li>
+            </ul>
             <h2>Amélioration et contact</h2>
             <p>
                 Si vous n’arrivez pas à accéder à un contenu ou à un service,
                 vous pouvez contacter l'équipe responsable de Espace Membre pour
                 être orienté vers une alternative accessible ou obtenir le
                 contenu sous une autre forme.
-                <ul>
-                    <li>
-                        E-mail :{" "}
-                        <a href="mailto:animation@beta.gouv.fr">
-                            animation@beta.gouv.fr
-                        </a>
-                    </li>
-                    <li>Sur Mattermost, dans incubateur-entraide-communauté</li>
-                </ul>
-                Nous essayons de répondre dans les 2 jours ouvrés.
             </p>
+            <ul>
+                <li>
+                    E-mail :{" "}
+                    <a href="mailto:animation@beta.gouv.fr">
+                        animation@beta.gouv.fr
+                    </a>
+                </li>
+                <li>Sur Mattermost, dans incubateur-entraide-communauté</li>
+            </ul>
+            <p>Nous essayons de répondre dans les 2 jours ouvrés.</p>
             <h2>Voie de recours</h2>
             <p>
                 Cette procédure est à utiliser dans le cas suivant : vous avez
@@ -72,28 +72,26 @@ export default async function Page() {
                 des services du portail et vous n’avez pas obtenu de réponse
                 satisfaisante.
             </p>
-            <p>
-                Vous pouvez :
-                <ul>
-                    <li>
-                        Écrire un message au{" "}
-                        <a href="https://formulaire.defenseurdesdroits.fr/">
-                            Défenseur des droits
-                        </a>
-                    </li>
-                    <li>
-                        Contacter{" "}
-                        <a href="https://www.defenseurdesdroits.fr/saisir/delegues">
-                            le délégué du Défenseur des droits dans votre région
-                        </a>
-                    </li>
-                    <li>
-                        Envoyer un courrier par la poste (gratuit, ne pas mettre
-                        de timbre) : Défenseur des droits Libre réponse 71120
-                        75342 Paris CEDEX 07
-                    </li>
-                </ul>
-            </p>
+            <p>Vous pouvez :</p>
+            <ul>
+                <li>
+                    Écrire un message au{" "}
+                    <a href="https://formulaire.defenseurdesdroits.fr/">
+                        Défenseur des droits
+                    </a>
+                </li>
+                <li>
+                    Contacter{" "}
+                    <a href="https://www.defenseurdesdroits.fr/saisir/delegues">
+                        le délégué du Défenseur des droits dans votre région
+                    </a>
+                </li>
+                <li>
+                    Envoyer un courrier par la poste (gratuit, ne pas mettre de
+                    timbre) : Défenseur des droits Libre réponse 71120 75342
+                    Paris CEDEX 07
+                </li>
+            </ul>
             <p>
                 Cette déclaration d’accessibilité a été créé le 16 juillet 2024
                 grâce au{" "}

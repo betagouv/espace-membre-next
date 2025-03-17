@@ -1,12 +1,6 @@
 fileignoreconfig:
-- filename: src/app/(private)/(dashboard)/incubators/[id]/info-form/page.tsx
-  checksum: 1ec9acf039a7d336e710ef7b47c385eb7080293ee2750c2cf99e9056cde7f129
-- filename: src/app/(private)/(dashboard)/services/matomo/page.tsx
-  checksum: 186d7c96c48889c42229c2046a2cc219f0dc5165a15bb1e7166287f6b41f4dc0
-- filename: src/app/(private)/(dashboard)/services/page.tsx
-  checksum: 6e5763efa45450c3e2c0d30338e7fc045a2f2466e456a3391ec13f7dbc7b40c3
-- filename: src/app/(private)/(dashboard)/services/sentry/page.tsx
-  checksum: 137c4f3f172c74a1b0c104bff7540202801801d877d74f674ad72c3ba4b1a9cc
+- filename: src/app/(private)/(dashboard)/formations/[id]/page.tsx
+  checksum: f48fbb61095d33e5fc2d9135b3dd811fa8018cdbf0b1fdcaf8b78fda8e5a0d24
 - filename: src/app/api/member/[username]/route.ts
   checksum: a5371c646bc9955b72b6cdb5ee3aef340004a092d9e70bbbe4b308c940880370
 - filename: src/app/api/member/actions/createRedirectionForUser.ts
@@ -27,6 +21,8 @@ fileignoreconfig:
   checksum: 61c912058a8f8c12b1173a37b7fa555c11e2ddbf36bd95d0e986576c9ef5e79a
 - filename: src/components/MemberPage/Email/BlocChangerMotDePasse.tsx
   checksum: d8d94dc10f39aa4a312ee7ef74dbd34c07e0106ac8147e3fdd646cace2713f02
+- filename: src/components/MemberPage/Email/EmailContainer.tsx
+  checksum: 8032498b28992e4564069a84e94b36d066195995fd461b0c2fd1c6c5d069650d
 - filename: src/components/MemberPage/EmailUpgrade.tsx
   checksum: 183a72c4974a5bd2e7a3da0d60895480dc6843e158933a221329dd18e586e400
 - filename: src/components/MemberPage/MemberMissions.tsx
@@ -95,7 +91,16 @@ fileignoreconfig:
   checksum: ebb1c7a8c5fb51e0e49a23f79d1342f177946b4e783154bb265970b672aa2a2c
 - filename: src/utils/url.ts
   checksum: 6c0989d85371d5071d9dcaa141e1c35b10f7124a3628deef443a4a1ccacfa34f
+scopeconfig:
+- scope: node
 version: "1.0"
-fileignoreconfig: []
+24f2f271a955a467df69d7246646143ec80364dbc4fd3eacf380
+    - filename: src/server/views/templates/emails/teamCompositionEmail/teamCompositionEmail.tsx
+      checksum: 8ec5495ed8db0f139a082bf0162e23cb05b0125b394abf63e447aca293dfcdbb
+    - filename: src/utils/routes/list.ts
+      checksum: ebb1c7a8c5fb51e0e49a23f79d1342f177946b4e783154bb265970b672aa2a2c
+    - filename: src/utils/url.ts
+      checksum: 6c0989d85371d5071d9dcaa141e1c35b10f7124a3628deef443a4a1ccacfa34f
+version: "1.0"
 scopeconfig:
     - scope: node

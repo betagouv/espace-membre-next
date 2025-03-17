@@ -1,8 +1,7 @@
-import { match } from "ts-pattern";
-
-import { Badge } from "@codegouvfr/react-dsfr/Badge";
 import { Alert } from "@codegouvfr/react-dsfr/Alert";
+import { Badge } from "@codegouvfr/react-dsfr/Badge";
 import { fr } from "@codegouvfr/react-dsfr/fr";
+import { match } from "ts-pattern";
 
 import { DSFR_STATUSES, startupSchemaType } from "@/models/startup";
 
@@ -15,7 +14,11 @@ const AccessibilityBadge = ({ status }: { status?: string | null }) => {
             : status === "partiellement conforme"
             ? "info"
             : "error";
-    return <Badge severity={severity}>{status || "inconnu"}</Badge>;
+    return (
+        <Badge severity={severity} as="span">
+            {status || "inconnu"}
+        </Badge>
+    );
 };
 
 // custom table for custom styling
@@ -81,9 +84,13 @@ const TableStandards = ({ data, headers }) => {
 
 const BooleanBadge = ({ value, validText = "Actif", invalidText = "Absent" }) =>
     !!value ? (
-        <Badge severity="success">{validText}</Badge>
+        <Badge severity="success" as="span">
+            {validText}
+        </Badge>
     ) : (
-        <Badge severity="error">{invalidText}</Badge>
+        <Badge severity="error" as="span">
+            {invalidText}
+        </Badge>
     );
 
 export const StartupStandards = ({
@@ -162,7 +169,7 @@ export const StartupStandards = ({
                         null,
                     ],
                     [
-                        "Publication des statistiques d'impact",
+                        "Publication des statistiques d'usage",
                         <BooleanBadge
                             key="badge"
                             value={startupInfos.stats_url}
@@ -170,6 +177,16 @@ export const StartupStandards = ({
                             invalidText="Non publié"
                         />,
                         "La page /stats doit être publiée dès la mise en ligne.",
+                    ],
+                    [
+                        "Publication des statistiques d'impact",
+                        <BooleanBadge
+                            key="badge"
+                            value={startupInfos.impact_url}
+                            validText="Publié"
+                            invalidText="Non publié"
+                        />,
+                        "La page /impact doit être publiée dès la construction.",
                     ],
                     [
                         "Publication du budget",

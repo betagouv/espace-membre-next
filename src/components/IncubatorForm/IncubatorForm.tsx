@@ -386,7 +386,7 @@ export function IncubatorForm(props: IncubatorFormProps) {
                         isMulti={true}
                         placeholder={`Sélectionne un ou plusieurs produits`}
                         startups={props.startupOptions}
-                        label="Produits portés par l'incubateur :"
+                        label="Produits phares de l'incubateur :"
                     />
                     <hr />
                     <UploadForm
@@ -403,6 +403,7 @@ export function IncubatorForm(props: IncubatorFormProps) {
                                 setValue("shouldDeleteLogo", false);
                             }
                         }}
+                        shape={"rectangle"}
                         url={props.logoURL}
                         onDelete={() => {
                             setValue("logo", null, {
