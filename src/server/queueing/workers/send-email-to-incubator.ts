@@ -4,7 +4,7 @@ import PgBoss from "pg-boss";
 
 import { getLastEventListStartupUuids } from "@/lib/events";
 import { getAllIncubators } from "@/lib/kysely/queries/incubators";
-import { getStartupsWithAnyUpdateForThePastXMonthsRaw } from "@/lib/kysely/queries/startups";
+import { getStartupsWithoutAnyUpdateForThePastXMonthsRaw } from "@/lib/kysely/queries/startups";
 import { getIncubatorTeamMembers } from "@/lib/kysely/queries/teams";
 import { getUsersByStartupIds } from "@/lib/kysely/queries/users";
 import {
@@ -21,7 +21,7 @@ export const sendEmailToIncubatorTeamTopic = "send-email-to-incubator-team";
 
 export async function sendEmailToIncubatorTeam(job: PgBoss.Job<void>) {
     console.log("Start send email to incubator team");
-    const startups = await getStartupsWithAnyUpdateForThePastXMonthsRaw();
+    const startups = await getStartupsWithoutAnyUpdateForThePastXMonthsRaw();
     const incubators = await getAllIncubators();
     const startupsByIncubator = _.groupBy(startups, "incubator_id");
     console.log(
