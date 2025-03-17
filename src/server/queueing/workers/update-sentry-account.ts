@@ -50,6 +50,7 @@ export async function updateSentryServiceAccount(
         await addEvent({
             action_code: EventCode.MEMBER_SERVICE_ACCOUNT_UPDATED,
             action_metadata: {
+                jobId: job.id,
                 service: SERVICES.SENTRY,
                 teams: job.data.teams,
                 requestId: job.data.requestId,
@@ -76,6 +77,7 @@ const userDoesNoExist = async (
         action_code:
             EventCode.MEMBER_SERVICE_ACCOUNT_UPDATE_FAILED_USER_DOES_NOT_EXIST,
         action_metadata: {
+            jobId: job.id,
             service: SERVICES.SENTRY,
             teams: job.data.teams,
             requestId: job.data.requestId,
