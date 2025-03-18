@@ -36,7 +36,7 @@ export async function managePrimaryEmailForUser({
     }
     const isCurrentUser = session?.user.id === username;
     const user = await userInfos({ username }, isCurrentUser);
-    if (!user.authorizations.canChangeEmails) {
+    if (!user.authorizations.canChangeEmails && !session.user.isAdmin) {
         throw new AuthorizationError();
     }
     const primaryEmailIsPublicServiceEmail = await isPublicServiceEmail(
