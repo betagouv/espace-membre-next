@@ -12,6 +12,10 @@ import {
     MemberValidationEmailTitle,
 } from "@/server/views/templates/emails/memberValidationEmail/memberValidationEmail";
 import {
+    StartupMembersDidNotChangeInXMonthsEmail,
+    StartupMembersDidNotChangeInXMonthsEmailTitle,
+} from "@/server/views/templates/emails/startupMembersDidNotChangeInXMonthsEmail/startupMembersDidNotChangeInXMonthsEmail";
+import {
     StartupNewMemberArrivalEmail,
     StartupNewMemberArrivalEmailTitle,
 } from "@/server/views/templates/emails/StartupNewMemberArrivalEmail/StartupNewMemberArrivalEmail";
@@ -25,6 +29,7 @@ import {
     EmailLogin,
     EmailNewMemberValidation,
     EmailProps,
+    EmailStartupMembersDidNotChangeInXMonths,
     EmailStartupNewMemberArrival,
     EmailTeamComposition,
     HtmlBuilderType,
@@ -82,6 +87,9 @@ const TEMPLATES_BY_TYPE: Record<EmailProps["type"], string | null | any> = {
     [EMAIL_TYPES.EMAIL_TEAM_COMPOSITION]: (
         params: EmailTeamComposition["variables"]
     ) => TeamCompositionEmail(params),
+    [EMAIL_TYPES.EMAIL_STARTUP_MEMBERS_DID_NOT_CHANGE_IN_X_MONTHS]: (
+        params: EmailStartupMembersDidNotChangeInXMonths["variables"]
+    ) => StartupMembersDidNotChangeInXMonthsEmail(params),
     [EMAIL_TYPES.EMAIL_STARTUP_NEW_MEMBER_ARRIVAL]: (
         params: EmailStartupNewMemberArrival["variables"]
     ) => StartupNewMemberArrivalEmail(params),
@@ -133,6 +141,8 @@ const SUBJECTS_BY_TYPE: Record<EmailProps["type"], string | SubjectFunction> = {
     EMAIL_VERIFICATION_WAITING: "Bienvenue chez BetaGouv 🙂",
     EMAIL_NEW_MEMBER_VALIDATION: MemberValidationEmailTitle(),
     [EMAIL_TYPES.EMAIL_TEAM_COMPOSITION]: TeamCompositionEmailTitle(),
+    [EMAIL_TYPES.EMAIL_STARTUP_MEMBERS_DID_NOT_CHANGE_IN_X_MONTHS]:
+        StartupMembersDidNotChangeInXMonthsEmailTitle(),
     [EMAIL_TYPES.EMAIL_STARTUP_NEW_MEMBER_ARRIVAL]:
         StartupNewMemberArrivalEmailTitle(),
 };
@@ -167,6 +177,7 @@ const MARKDOWN_BY_TYPE: Record<EmailProps["type"], boolean> = {
     EMAIL_VERIFICATION_WAITING: false,
     EMAIL_NEW_MEMBER_VALIDATION: false,
     [EMAIL_TYPES.EMAIL_TEAM_COMPOSITION]: false,
+    [EMAIL_TYPES.EMAIL_STARTUP_MEMBERS_DID_NOT_CHANGE_IN_X_MONTHS]: false,
     [EMAIL_TYPES.EMAIL_STARTUP_NEW_MEMBER_ARRIVAL]: false,
 };
 

@@ -159,3 +159,4 @@ La listes des cron sont dans les fichiers :
 | ✅      | 15:00                                      | deleteMatomoAccount                                    | Delete matomo account                                                                        |
 | ✅      | 15:00                                      | deleteSentryAccount                                    | Delete sentry account                                                                        |
 | ✅      | 1st monday every 3 months                  | sendEmailToTeamsToCheckOnTeamComposition               | Send recap email to startups team every 3 months                                             |
+| ✅      | 1st monday every 3 months                  | sendEmailToIncubator                                   | Send recap email to incubator's team with list of startups with no update within last 3 months |
