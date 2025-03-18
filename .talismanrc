@@ -1,8 +1,8 @@
 fileignoreconfig:
-- filename: src/app/(private)/(dashboard)/formations/[id]/page.tsx
-  checksum: f48fbb61095d33e5fc2d9135b3dd811fa8018cdbf0b1fdcaf8b78fda8e5a0d24
-- filename: src/app/api/member/[username]/route.ts
-  checksum: a5371c646bc9955b72b6cdb5ee3aef340004a092d9e70bbbe4b308c940880370
+- filename: src/server/views/templates/emails/MattermostAccountCreatedEmail/MattermostAccountCreatedEmail.tsx
+  checksum: 048c8c69a9e2564be6661bce1d4e29d67435cfe1f5e8fe693d69576627e46247
+version: ""
+ecksum: a5371c646bc9955b72b6cdb5ee3aef340004a092d9e70bbbe4b308c940880370
 - filename: src/app/api/member/actions/createRedirectionForUser.ts
   checksum: 12c54f94e0d66d8e3d51b9e9dd7032a1757c50fc85733b29befe9c0162fe3251
 - filename: src/app/api/member/actions/deleteRedirectionForUser.ts

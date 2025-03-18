@@ -160,6 +160,8 @@ export type EmailMattermostAccountCreated = {
     type: EMAIL_TYPES.EMAIL_MATTERMOST_ACCOUNT_CREATED;
     variables: {
         resetPasswordLink: string;
+        fullname: string;
+        email: string;
     };
 };
 
