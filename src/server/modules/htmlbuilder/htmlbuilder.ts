@@ -7,7 +7,8 @@ import {
     LoginEmail,
     LoginEmailTitle,
 } from "@/server/views/templates/emails/LoginEmail/LoginEmail";
-import MattermostAccountCreatedEmail, {
+import {
+    MattermostAccountCreatedEmail,
     MattermostAccountCreatedEmailTitle,
 } from "@/server/views/templates/emails/MattermostAccountCreatedEmail/MattermostAccountCreatedEmail";
 import {
