@@ -19,6 +19,7 @@ export const AdminPanel = ({
         <div className="fr-mb-8v">
             <h2>Actions admin</h2>
             <h3>Emails</h3>
+            <ChangePrimaryEmail userInfos={userInfos}></ChangePrimaryEmail>
             <ChangeSecondaryEmail userInfos={userInfos}></ChangeSecondaryEmail>
 
             {!emailInfos &&
