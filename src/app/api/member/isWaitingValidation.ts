@@ -1,3 +1,5 @@
+ "use server" 
+     
 import { getLastEvent } from "@/lib/events";
 import { EventCode } from "@/models/actionEvent";
 
