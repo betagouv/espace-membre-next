@@ -88,13 +88,13 @@ export default async function Page({ params }: Props) {
     const sentryTeams = (
         await db
             .selectFrom("sentry_teams")
-            .where("startup_id", "=", params.id)
+            .where("startup_id", "=", dbSe.uuid)
             .selectAll()
             .execute()
     ).map(sentryTeamToModel);
     const matomoSites = await db
         .selectFrom("matomo_sites")
-        .where("startup_id", "=", params.id)
+        .where("startup_id", "=", dbSe.uuid)
         .selectAll()
         .execute();
     const startup = startupToModel(dbSe);
