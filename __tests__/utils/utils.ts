@@ -199,6 +199,14 @@ const testUtils = {
             })
             .returningAll()
             .executeTakeFirstOrThrow();
+        await db
+            .insertInto("phases")
+            .values({
+                startup_id: insertedStartup.uuid,
+                name: "acceleration",
+                start: new Date(),
+            })
+            .execute();
         return insertedStartup;
     },
     createUsers: async (
