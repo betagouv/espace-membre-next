@@ -1,5 +1,5 @@
 "use client";
-import React, { useCallback, useMemo, useState } from "react";
+import React, { startTransition, useCallback, useMemo, useState } from "react";
 
 import Button from "@codegouvfr/react-dsfr/Button";
 import Checkbox from "@codegouvfr/react-dsfr/Checkbox";
@@ -301,6 +301,23 @@ export const Community = (props: CommunityProps) => {
         [results]
     );
 
+    const onSelect = async (newFilters) => {
+        await setFilters((filters) => [
+            ...newFilters.map((f) => ({
+                type: f.type,
+                value: f.id || f.label,
+            })),
+            // keep existing active_only flag
+            {
+                type: "active_only",
+                value: !!filters.find(
+                    (f) => f.type === "active_only" && f.value
+                ),
+            },
+        ]);
+        await setCurrentPage(1);
+    };
+
     return (
         <>
             <div className={`${fr.cx("fr-grid-row")}`}>
@@ -341,20 +358,9 @@ export const Community = (props: CommunityProps) => {
                 multiple={true}
                 options={searchOptions}
                 onSelect={(newFilters) => {
-                    setFilters((filters) => [
-                        ...newFilters.map((f) => ({
-                            type: f.type,
-                            value: f.id || f.label,
-                        })),
-                        // keep existing active_only flag
-                        {
-                            type: "active_only",
-                            value: !!filters.find(
-                                (f) => f.type === "active_only" && f.value
-                            ),
-                        },
-                    ]);
-                    setCurrentPage(1);
+                    startTransition(async () => {
+                        await onSelect(newFilters);
+                    });
                 }}
                 defaultValue={defaultFilterValue}
                 value={defaultFilterValue}
