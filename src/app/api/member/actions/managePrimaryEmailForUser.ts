@@ -50,6 +50,13 @@ export async function managePrimaryEmailForUser({
     if (isAdminEmail(primaryEmail)) {
         throw new AdminEmailNotAllowedError();
     }
+    try {
+        await mattermost.getUserByEmail(primaryEmail);
+    } catch {
+        throw new BusinessError(
+            `L'email n'existe pas dans mattermost, pour utiliser cette adresse comme adresse principale ton compte mattermost doit aussi utiliser cette adresse.`
+        );
+    }
 
     if (user.userInfos.primary_email?.includes(config.domain)) {
         await betagouv.createRedirection(
@@ -64,15 +71,8 @@ export async function managePrimaryEmailForUser({
         } catch (e) {
             console.log(e, "Email is possibly already deleted");
         }
-    } else {
-        try {
-            await mattermost.getUserByEmail(primaryEmail);
-        } catch {
-            throw new BusinessError(
-                `L'email n'existe pas dans mattermost, pour utiliser cette adresse comme adresse principale ton compte mattermost doit aussi utiliser cette adresse.`
-            );
-        }
     }
+
     await db
         .updateTable("users")
         .where("username", "=", username)
