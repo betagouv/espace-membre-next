@@ -9,7 +9,7 @@ import { match } from "ts-pattern";
 import { v4 as uuidv4 } from "uuid";
 
 import { addEvent } from "@/lib/events";
-import { db } from "@/lib/kysely";
+import { db, sql } from "@/lib/kysely";
 import { getStartup } from "@/lib/kysely/queries";
 import { getServiceAccount } from "@/lib/kysely/queries/services";
 import {
@@ -41,13 +41,11 @@ import { getBossClientInstance } from "@/server/queueing/client";
 import { createSentryServiceAccountTopic } from "@/server/queueing/workers/create-sentry-account";
 import { createSentryTeamTopic } from "@/server/queueing/workers/create-sentry-team";
 import { createOrUpdateMatomoServiceAccountTopic } from "@/server/queueing/workers/create-update-matomo-account";
-import {
-    updateSentryServiceAccount,
-    updateSentryServiceAccountTopic,
-} from "@/server/queueing/workers/update-sentry-account";
+import { updateSentryServiceAccountTopic } from "@/server/queueing/workers/update-sentry-account";
 import { authOptions } from "@/utils/authoptions";
 import {
     AuthorizationError,
+    BusinessError,
     NoDataError,
     ValidationError,
     withErrorHandling,
@@ -149,6 +147,14 @@ const createOrUpdateSentryAccount = async (
               }))
             : [];
     const requestId = uuidv4();
+    const job = await getSentryJob(user.uuid, sentryData, teams);
+    if (job) {
+        throw new BusinessError(
+            "aSentryJobAlreadyExist",
+            `Tu as déjà une demande en cours pour ajouter ces équipes.`
+        );
+    }
+
     if ("newTeam" in sentryData && sentryData.newTeam) {
         const startup = await getStartup({
             uuid: sentryData.newTeam.startupId,
@@ -156,7 +162,7 @@ const createOrUpdateSentryAccount = async (
         if (!startup) {
             throw new NoDataError("Startup not found");
         }
-        await bossClient.send(
+        const jobId = await bossClient.send(
             createSentryTeamTopic,
             CreateSentryTeamDataSchema.parse({
                 email: user.primary_email,
@@ -178,6 +184,7 @@ const createOrUpdateSentryAccount = async (
         await addEvent({
             action_code: EventCode.MEMBER_SERVICE_TEAM_CREATION_REQUESTED,
             action_metadata: {
+                jobId: jobId,
                 service: SERVICES.SENTRY,
                 startupId: sentryData.newTeam.startupId,
                 requestId: requestId,
@@ -190,7 +197,7 @@ const createOrUpdateSentryAccount = async (
         });
     }
     if (accountAlreadyExists) {
-        await bossClient.send(
+        const jobId = await bossClient.send(
             updateSentryServiceAccountTopic,
             UpdateSentryAccountDataSchema.parse({
                 email: user.primary_email,
@@ -209,6 +216,7 @@ const createOrUpdateSentryAccount = async (
         await addEvent({
             action_code: EventCode.MEMBER_SERVICE_ACCOUNT_UPDATE_REQUESTED,
             action_metadata: {
+                jobId: jobId,
                 service: SERVICES.SENTRY,
                 teams,
                 requestId,
@@ -217,7 +225,7 @@ const createOrUpdateSentryAccount = async (
             created_by_username: user.username,
         });
     } else {
-        await bossClient.send(
+        const jobId = await bossClient.send(
             createSentryServiceAccountTopic,
             CreateSentryAccountDataSchema.parse({
                 email: user.primary_email,
@@ -246,6 +254,7 @@ const createOrUpdateSentryAccount = async (
         await addEvent({
             action_code: EventCode.MEMBER_SERVICE_ACCOUNT_REQUESTED,
             action_metadata: {
+                jobId: jobId,
                 service: SERVICES.SENTRY,
                 teams,
                 requestId,
@@ -264,22 +273,31 @@ const createOrUpdateMatomoAccount = async (
     if (!user.primary_email) {
         throw new ValidationError("Un email primaire est obligatoire");
     }
-    const matomoAccount = await db
+    const matomoAccountInDb = await db
         .selectFrom("service_accounts")
         .selectAll()
         .where("account_type", "=", SERVICES.MATOMO)
         .where("user_id", "=", user.uuid)
         .executeTakeFirst();
-    const matomoAlreadyExists = !!matomoAccount?.service_user_id;
+
+    const matomoAlreadyExists = !!matomoAccountInDb?.service_user_id;
     const requestId = uuidv4();
+    const job = await getMatomoJob(user.username, matomoData);
+    if (job) {
+        throw new BusinessError(
+            "aMatomoJobAlreadyExist",
+            `Tu as déjà une demande en cours pour ajouter ces sites.`
+        );
+    }
 
     const callPgBoss = async () => {
-        await bossClient.send(
+        return await bossClient.send(
             createOrUpdateMatomoServiceAccountTopic,
             CreateOrUpdateMatomoAccountDataSchema.parse({
                 email: user.primary_email,
                 login: user.primary_email,
                 username: user.username,
+                userUuid: user.uuid,
                 requestId: requestId,
                 password: encryptPassword(
                     crypto.randomBytes(20).toString("base64").slice(0, -2)
@@ -295,10 +313,11 @@ const createOrUpdateMatomoAccount = async (
     };
 
     if (matomoAlreadyExists) {
-        await callPgBoss();
+        const jobId = await callPgBoss();
         await addEvent({
             action_code: EventCode.MEMBER_SERVICE_ACCOUNT_UPDATE_REQUESTED,
             action_metadata: {
+                jobId,
                 service: SERVICES.MATOMO,
                 requestId: requestId,
                 sites: (matomoData.sites || []).map((s) => ({
@@ -319,20 +338,26 @@ const createOrUpdateMatomoAccount = async (
             created_by_username: user.username,
         });
     } else {
-        await callPgBoss();
-        await db
-            .insertInto("service_accounts")
-            .values({
-                user_id: user.uuid,
-                email: user.primary_email,
-                account_type: SERVICES.MATOMO,
-                status: ACCOUNT_SERVICE_STATUS.ACCOUNT_CREATION_PENDING,
-            })
-            .execute();
+        const jobId = await callPgBoss();
+        // user may have requested several website creation at the same time
+        // while is account in matomo still not exist
+        if (!matomoAccountInDb) {
+            // matomo is being created
+            await db
+                .insertInto("service_accounts")
+                .values({
+                    user_id: user.uuid,
+                    email: user.primary_email,
+                    account_type: SERVICES.MATOMO,
+                    status: ACCOUNT_SERVICE_STATUS.ACCOUNT_CREATION_PENDING,
+                })
+                .execute();
+        }
 
         await addEvent({
             action_code: EventCode.MEMBER_SERVICE_ACCOUNT_REQUESTED,
             action_metadata: {
+                jobId: jobId,
                 requestId: requestId,
                 service: SERVICES.MATOMO,
                 sites: (matomoData.sites || []).map((s) => ({
@@ -354,3 +379,57 @@ const createOrUpdateMatomoAccount = async (
         });
     }
 };
+
+async function getMatomoJob(
+    userUuid: string,
+    matomoData: matomoAccountRequestSchemaType
+) {
+    let query = db
+        .selectFrom("pgboss.job")
+        .selectAll()
+        .where("state", "in", ["active", "retry", "created"])
+        .where("data", "@>", JSON.stringify({ userUuid }));
+
+    if (matomoData.sites) {
+        query = query.where(
+            "data",
+            "@>",
+            JSON.stringify({ sites: matomoData.sites })
+        );
+    }
+
+    if (matomoData.newSite) {
+        query = query.where(
+            "data",
+            "@>",
+            JSON.stringify({ newSite: matomoData.newSite })
+        );
+    }
+
+    const job = await query.executeTakeFirst();
+    return job;
+}
+
+async function getSentryJob(
+    userUuid: string,
+    sentryData: sentryAccountRequestSchemaType,
+    teams: { teamSlug: string; teamRole: SentryRole }[]
+) {
+    let query = db
+        .selectFrom("pgboss.job")
+        .selectAll()
+        .where("state", "in", ["active", "retry", "created"])
+        .where("data", "@>", JSON.stringify({ userUuid }))
+        .where("data", "@>", JSON.stringify({ teams: teams }));
+
+    if ("newTeam" in sentryData && sentryData.newTeam) {
+        query = query.where(
+            "data",
+            "@>",
+            JSON.stringify({ startupId: sentryData.newTeam.startupId })
+        );
+    }
+
+    const job = await query.executeTakeFirst();
+    return job;
+}

@@ -1,5 +1,5 @@
+import chai, { assert, expect } from "chai";
 import { subDays, addDays } from "date-fns";
-import { isToday } from "date-fns";
 import PgBoss from "pg-boss";
 import proxyquire from "proxyquire";
 import sinon from "sinon";
@@ -18,6 +18,7 @@ import { ACCOUNT_SERVICE_STATUS, SERVICES } from "@/models/services";
 import { createSentryServiceAccount } from "@/server/queueing/workers/create-sentry-account";
 import { createSentryTeam } from "@/server/queueing/workers/create-sentry-team";
 import { createOrUpdateMatomoServiceAccount } from "@/server/queueing/workers/create-update-matomo-account";
+import { BusinessError } from "@/utils/error";
 import * as controllerUtils from "@controllers/utils";
 
 describe("Service account creation by worker", () => {
@@ -71,7 +72,7 @@ describe("Service account creation by worker", () => {
             await utils.deleteData(testUsers);
         });
 
-        it("should create matomo worker tasks", async () => {
+        it("should create matomo worker tasks and avoid duplicate", async () => {
             const user = await db
                 .selectFrom("users")
                 .where("username", "=", "membre.actif")
@@ -114,6 +115,26 @@ describe("Service account creation by worker", () => {
                 .where("account_type", "=", "matomo")
                 .executeTakeFirstOrThrow();
             account.should.exist;
+            try {
+                await askAccountCreationForService({
+                    service: SERVICES.MATOMO,
+                    data: {
+                        sites: [
+                            {
+                                id: 1,
+                            },
+                        ],
+                        newSite: {
+                            url: "https://beta.gouv.fr",
+                            type: MATOMO_SITE_TYPE.website,
+                            startupId: "startupuuid",
+                        },
+                    },
+                });
+            } catch (err) {
+                assert(err instanceof BusinessError);
+                assert.strictEqual(err.code, "aMatomoJobAlreadyExist");
+            }
         });
     });
 
@@ -330,6 +351,21 @@ describe("Service account creation by worker", () => {
                 .where("account_type", "=", "sentry")
                 .executeTakeFirstOrThrow();
             account.should.exist;
+            try {
+                await askAccountCreationForService({
+                    service: SERVICES.SENTRY,
+                    data: {
+                        teams: [
+                            {
+                                slug: "beta.gouv.fr",
+                            },
+                        ],
+                    },
+                });
+            } catch (err) {
+                assert(err instanceof BusinessError);
+                assert.strictEqual(err.code, "aSentryJobAlreadyExist");
+            }
         });
 
         it("should create sentry worker tasks create account and create team", async () => {
@@ -379,6 +415,19 @@ describe("Service account creation by worker", () => {
                 EventCode.MEMBER_SERVICE_TEAM_CREATION_REQUESTED
             );
             account.should.exist;
+            try {
+                await askAccountCreationForService({
+                    service: SERVICES.SENTRY,
+                    data: {
+                        newTeam: {
+                            startupId: newStartup.uuid,
+                        },
+                    },
+                });
+            } catch (err) {
+                assert(err instanceof BusinessError);
+                assert.strictEqual(err.code, "aSentryJobAlreadyExist");
+            }
         });
     });
 });

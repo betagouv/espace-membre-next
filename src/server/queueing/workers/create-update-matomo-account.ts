@@ -45,7 +45,8 @@ export async function createOrUpdateMatomoServiceAccount(
             res &&
             "result" in res &&
             res.result === "error" &&
-            res.message.includes(`est inexistant.`)
+            (res.message.includes(`est inexistant.`) ||
+                res.message.includes(`doesn't exist.`))
         ) {
             await matomoClient.createUser({
                 email: job.data.email,
@@ -126,6 +127,7 @@ export async function createOrUpdateMatomoServiceAccount(
             action_metadata: {
                 ...data.action_metadata,
                 service: SERVICES.MATOMO,
+                jobId: job.id,
             },
         });
         if (user.primary_email) {
@@ -149,6 +151,7 @@ export async function createOrUpdateMatomoServiceAccount(
             action_code: EventCode.MEMBER_SERVICE_ACCOUNT_CREATED,
             action_metadata: {
                 ...data.action_metadata,
+                jobId: job.id,
                 service: SERVICES.MATOMO,
             },
         });
