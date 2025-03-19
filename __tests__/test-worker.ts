@@ -32,18 +32,14 @@ describe("Service account creation by worker", () => {
                     status: ACCOUNT_SERVICE_STATUS.ACCOUNT_CREATION_PENDING,
                 })
                 .executeTakeFirstOrThrow();
-            before(async () => {
-                await utils.createData(testUsers);
-            });
+            await utils.createData(testUsers);
         });
         after(async function () {
             await db
                 .deleteFrom("service_accounts")
                 .where("uuid", "=", service_accounts.uuid)
                 .executeTakeFirstOrThrow();
-            after(async () => {
-                await utils.deleteData(testUsers);
-            });
+            await utils.deleteData(testUsers);
         });
         it("should create matomo service account", async () => {
             await createOrUpdateMatomoServiceAccount({
