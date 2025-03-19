@@ -5,6 +5,7 @@ import { EmailStatusCode } from "@/models/member";
 import { EMAIL_PLAN_TYPE } from "@/models/ovh";
 import config from "@/server/config";
 import { sendEmail } from "@/server/config/email.config";
+import { BusinessError } from "@/utils/error";
 import betagouv from "@betagouv";
 import * as utils from "@controllers/utils";
 import { EMAIL_TYPES } from "@modules/email";
@@ -93,7 +94,18 @@ export async function sendEmailCreatedEmail(username) {
         console.error(e);
     }
     const secretariatUrl = `${config.protocol}://${config.host}`;
-
+    if (!user.primary_email) {
+        throw new BusinessError(
+            "UserHasNoPrimaryEmail",
+            "User should have a primary email"
+        );
+    }
+    if (!user.secondary_email) {
+        throw new BusinessError(
+            "UserHasNoSecondaryEmail",
+            "User should have a secondary email"
+        );
+    }
     try {
         if (user?.secondary_email) {
             await sendEmail({
@@ -104,7 +116,6 @@ export async function sendEmailCreatedEmail(username) {
                     secondaryEmail: user.secondary_email,
                     secretariatUrl,
                     emailUrl,
-                    mattermostInvitationLink: config.mattermostInvitationLink,
                 },
             });
         }

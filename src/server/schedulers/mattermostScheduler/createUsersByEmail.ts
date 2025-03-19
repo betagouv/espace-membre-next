@@ -41,6 +41,8 @@ export async function createUsersByEmail() {
                     toEmail: [email],
                     type: EMAIL_TYPES.EMAIL_MATTERMOST_ACCOUNT_CREATED,
                     variables: {
+                        email,
+                        fullname: user.fullname,
                         resetPasswordLink:
                             "https://mattermost.incubateur.net/reset_password",
                     },

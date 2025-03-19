@@ -357,31 +357,33 @@ export default function EmailContainer({
                     <BlocConfigurerCommunicationEmail userInfos={userInfos} />
                 </>
             )}
-            {!emailIsBeingCreated && isCurrentUser && !isMailOPI && (
+            {!emailIsBeingCreated && isCurrentUser && (
                 <div className={fr.cx("fr-accordions-group")}>
-                    {match(userInfos.primary_email_status)
-                        .with(
-                            EmailStatusCode.EMAIL_CREATION_WAITING,
-                            EmailStatusCode.EMAIL_CREATION_PENDING,
-                            () => null
-                        )
-                        .otherwise(
-                            () =>
-                                canCreateEmail && (
-                                    <BlocCreateEmail
-                                        hasPublicServiceEmail={
-                                            hasPublicServiceEmail
-                                        }
-                                        userInfos={userInfos}
-                                    />
-                                )
-                        )}
+                    {!isMailOPI &&
+                        match(userInfos.primary_email_status)
+                            .with(
+                                EmailStatusCode.EMAIL_CREATION_WAITING,
+                                EmailStatusCode.EMAIL_CREATION_PENDING,
+                                () => null
+                            )
+                            .otherwise(
+                                () =>
+                                    canCreateEmail && (
+                                        <BlocCreateEmail
+                                            hasPublicServiceEmail={
+                                                hasPublicServiceEmail
+                                            }
+                                            userInfos={userInfos}
+                                        />
+                                    )
+                            )}
 
-                    {!!emailInfos && (
+                    {!!emailInfos && !isMailOPI && (
                         <BlocEmailConfiguration emailInfos={emailInfos} />
                     )}
 
-                    {emailInfos &&
+                    {!isMailOPI &&
+                        emailInfos &&
                         emailInfos.emailPlan ===
                             EMAIL_PLAN_TYPE.EMAIL_PLAN_BASIC && (
                             <>
@@ -399,11 +401,13 @@ export default function EmailContainer({
                             </>
                         )}
 
-                    <BlocChangerMotDePasse
-                        canChangePassword={canChangePassword}
-                        status={userInfos.primary_email_status}
-                        userInfos={userInfos}
-                    />
+                    {!isMailOPI && (
+                        <BlocChangerMotDePasse
+                            canChangePassword={canChangePassword}
+                            status={userInfos.primary_email_status}
+                            userInfos={userInfos}
+                        />
+                    )}
 
                     <BlocConfigurerEmailPrincipal
                         canChangeEmails={canChangeEmails}
