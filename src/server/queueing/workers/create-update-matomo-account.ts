@@ -14,6 +14,7 @@ import { sendEmail } from "@/server/config/email.config";
 import { matomoClient } from "@/server/config/matomo.config";
 import { decryptPassword } from "@/server/controllers/utils";
 import { EMAIL_TYPES } from "@/server/modules/email";
+import { BusinessError } from "@/utils/error";
 
 export const createOrUpdateMatomoServiceAccountTopic =
     "create-update-matomo-service-account";
