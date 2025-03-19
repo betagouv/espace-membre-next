@@ -13,6 +13,10 @@ import {
     LoginEmailTitle,
 } from "@/server/views/templates/emails/LoginEmail/LoginEmail";
 import {
+    MattermostAccountCreatedEmail,
+    MattermostAccountCreatedEmailTitle,
+} from "@/server/views/templates/emails/MattermostAccountCreatedEmail/MattermostAccountCreatedEmail";
+import {
     MemberValidationEmail,
     MemberValidationEmailTitle,
 } from "@/server/views/templates/emails/memberValidationEmail/memberValidationEmail";
@@ -32,6 +36,7 @@ import { BusinessError } from "@/utils/error";
 import {
     EMAIL_TYPES,
     EmailLogin,
+    EmailMattermostAccountCreated,
     EmailNewMemberValidation,
     EmailProps,
     EmailStartupMembersDidNotChangeInXMonths,
@@ -57,10 +62,11 @@ const TEMPLATES_BY_TYPE: Record<EmailProps["type"], string | null | any> = {
         "./src/server/views/templates/emails/marrainage/marrainageRequestFailed.ejs",
     ONBOARDING_REFERENT_EMAIL:
         "./src/server/views/templates/emails/onboardingReferent.ejs",
+    [EMAIL_TYPES.EMAIL_MATTERMOST_ACCOUNT_CREATED]: (
+        params: EmailMattermostAccountCreated["variables"]
+    ) => MattermostAccountCreatedEmail(params),
     EMAIL_CREATED_EMAIL: (params: EmailCreatedEmailType["variables"]) =>
         EmailCreatedEmail(params),
-    EMAIL_MATTERMOST_ACCOUNT_CREATED:
-        "./src/server/views/templates/emails/mattermost.ejs",
     EMAIL_PR_PENDING: `./src/server/views/templates/emails/pendingGithubAuthorPR.ejs`,
     EMAIL_ENDING_CONTRACT_2_DAYS:
         "./src/server/views/templates/emails/mail2days.ejs",
@@ -112,8 +118,8 @@ const SUBJECTS_BY_TYPE: Record<EmailProps["type"], string | SubjectFunction> = {
     ONBOARDING_REFERENT_EMAIL: ({ name }: EmailProps["variables"]) => {
         return `${name} vient de créer sa fiche Github`;
     },
+    EMAIL_MATTERMOST_ACCOUNT_CREATED: MattermostAccountCreatedEmailTitle(),
     EMAIL_CREATED_EMAIL: EmailCreatedEmailTitle(),
-    EMAIL_MATTERMOST_ACCOUNT_CREATED: "Inscription à mattermost",
     EMAIL_PR_PENDING: `PR en attente`,
     EMAIL_PR_PENDING_TO_TEAM: ({ username }: EmailProps["variables"]) => {
         return `PR en attente de ${username} en attente de merge`;

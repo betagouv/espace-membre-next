@@ -219,6 +219,8 @@ describe("Test EMAIL_MATTERMOST_ACCOUNT_CREATED", () => {
             type: EMAIL_TYPES.EMAIL_MATTERMOST_ACCOUNT_CREATED,
             variables: {
                 resetPasswordLink,
+                fullname: "Jean Polochon",
+                email: "jean.polochon@beta.gouv.fr",
             },
         });
 
