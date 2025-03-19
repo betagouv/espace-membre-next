@@ -61,9 +61,11 @@ Les problèmes que vous avez identifiés ou vos hypothèses de problèmes ? Qui 
 
 Décris ta solution en quelques lignes ? Qui seront les bénéficiaires ?
 
-## Objectifs d'impact à 6 mois
+## Objectifs à 6 mois
 
-Quel impact chiffré visez-vous ? Qu'est-ce qui vous permettra de dire si votre première phase de construction a été un succès au bout des 6 premiers mois ?
+Objectif **d'usage** à 6 mois : quel usage chiffré visez-vous ?
+
+Objectif **d'impact** à 6 mois : quel impact chiffré vous permettra de dire que votre première phase de construction a été un succès ?
 
 `;
 
