@@ -65,7 +65,7 @@ Décris ta solution en quelques lignes ? Qui seront les bénéficiaires ?
 
 Objectif **d'usage** à 6 mois : quel usage chiffré visez-vous ?
 
-Objectif d'impact à 6 mois : quel impact chiffré vous permettra de dire que votre première phase de construction a été un succès ?
+Objectif **d'impact** à 6 mois : quel impact chiffré vous permettra de dire que votre première phase de construction a été un succès ?
 
 `;
 
