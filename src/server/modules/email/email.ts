@@ -148,10 +148,9 @@ export type EmailOnboardingReferent = {
 export type EmailCreatedEmail = {
     type: EMAIL_TYPES.EMAIL_CREATED_EMAIL;
     variables: {
-        email: string | null;
-        secondaryEmail: string | null;
+        email: string;
+        secondaryEmail: string;
         secretariatUrl: string;
-        mattermostInvitationLink: string;
         emailUrl: string;
     };
 };

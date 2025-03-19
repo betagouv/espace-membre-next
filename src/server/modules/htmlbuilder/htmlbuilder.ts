@@ -3,6 +3,11 @@ import ejs from "ejs";
 import mjml2html from "mjml";
 
 import * as mdtohtml from "@/lib/mdtohtml";
+import { EmailCreatedEmail as EmailCreatedEmailType } from "@/server/modules/email";
+import {
+    EmailCreatedEmail,
+    EmailCreatedEmailTitle,
+} from "@/server/views/templates/emails/EmailCreatedEmail/EmailCreatedEmail";
 import {
     LoginEmail,
     LoginEmailTitle,
@@ -57,10 +62,11 @@ const TEMPLATES_BY_TYPE: Record<EmailProps["type"], string | null | any> = {
         "./src/server/views/templates/emails/marrainage/marrainageRequestFailed.ejs",
     ONBOARDING_REFERENT_EMAIL:
         "./src/server/views/templates/emails/onboardingReferent.ejs",
-    EMAIL_CREATED_EMAIL: "./src/server/views/templates/emails/createEmail.ejs",
     [EMAIL_TYPES.EMAIL_MATTERMOST_ACCOUNT_CREATED]: (
         params: EmailMattermostAccountCreated["variables"]
     ) => MattermostAccountCreatedEmail(params),
+    EMAIL_CREATED_EMAIL: (params: EmailCreatedEmailType["variables"]) =>
+        EmailCreatedEmail(params),
     EMAIL_PR_PENDING: `./src/server/views/templates/emails/pendingGithubAuthorPR.ejs`,
     EMAIL_ENDING_CONTRACT_2_DAYS:
         "./src/server/views/templates/emails/mail2days.ejs",
@@ -112,8 +118,8 @@ const SUBJECTS_BY_TYPE: Record<EmailProps["type"], string | SubjectFunction> = {
     ONBOARDING_REFERENT_EMAIL: ({ name }: EmailProps["variables"]) => {
         return `${name} vient de créer sa fiche Github`;
     },
-    EMAIL_CREATED_EMAIL: "Ton email betagouv est prêt 🙂",
     EMAIL_MATTERMOST_ACCOUNT_CREATED: MattermostAccountCreatedEmailTitle(),
+    EMAIL_CREATED_EMAIL: EmailCreatedEmailTitle(),
     EMAIL_PR_PENDING: `PR en attente`,
     EMAIL_PR_PENDING_TO_TEAM: ({ username }: EmailProps["variables"]) => {
         return `PR en attente de ${username} en attente de merge`;
