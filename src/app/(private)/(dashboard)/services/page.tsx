@@ -108,7 +108,8 @@ export default async function Page() {
                             orientation="horizontal"
                             noIcon={true}
                             titleAs="h6"
-                            imageUrl={(service.artwork as StaticImageData).src}
+                            imageSvg={false}
+                            imageUrl={`static/images/${service.serviceName}.png`}
                             linkProps={{
                                 href: `/services/${service.serviceName}`,
                             }}
