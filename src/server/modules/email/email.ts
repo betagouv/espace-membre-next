@@ -2,6 +2,7 @@
 import { StartupsPhaseEnum } from "@/@types/db";
 import { incubatorSchemaType } from "@/models/incubator";
 import { Job } from "@/models/job";
+import { CreateOrUpdateMatomoAccountDataSchemaType } from "@/models/jobs/services";
 import {
     memberBaseInfoSchemaType,
     memberPublicInfoSchemaType,
@@ -46,6 +47,8 @@ export enum EMAIL_TYPES {
     EMAIL_TEAM_COMPOSITION = "EMAIL_TEAM_COMPOSITION",
     EMAIL_STARTUP_MEMBERS_DID_NOT_CHANGE_IN_X_MONTHS = "EMAIL_STARTUP_MEMBERS_DID_NOT_CHANGE_IN_X_MONTHS",
     EMAIL_STARTUP_NEW_MEMBER_ARRIVAL = "EMAIL_STARTUP_NEW_MEMBER_ARRIVAL",
+    EMAIL_MATOMO_ACCOUNT_CREATED = "EMAIL_MATOMO_ACCOUNT_CREATED",
+    EMAIL_MATOMO_ACCOUNT_UPDATED = "EMAIL_MATOMO_ACCOUNT_UPDATED",
 }
 
 export type SubjectFunction = {
@@ -327,6 +330,28 @@ export type EmailStartupNewMemberArrival = {
     };
 };
 
+export type EmailMatomoAccountCreated = {
+    type: EMAIL_TYPES.EMAIL_MATOMO_ACCOUNT_CREATED;
+    variables: {
+        fullname: string;
+        matomoResetUrl: string;
+        email: string;
+        newSite: CreateOrUpdateMatomoAccountDataSchemaType["newSite"];
+        sites: CreateOrUpdateMatomoAccountDataSchemaType["sites"];
+    };
+};
+
+export type EmailMatomoAccountUpdated = {
+    type: EMAIL_TYPES.EMAIL_MATOMO_ACCOUNT_UPDATED;
+    variables: {
+        fullname: string;
+        matomoUrl: string;
+        email: string;
+        newSite: CreateOrUpdateMatomoAccountDataSchemaType["newSite"];
+        sites: CreateOrUpdateMatomoAccountDataSchemaType["sites"];
+    };
+};
+
 export type EmailVariants =
     | EmailMarrainageNewcomer
     | EmailMarrainageOnboarder
@@ -355,7 +380,9 @@ export type EmailVariants =
     | EmailVerificationWaiting
     | EmailNewMemberValidation
     | EmailTeamComposition
-    | EmailStartupMembersDidNotChangeInXMonths;
+    | EmailStartupMembersDidNotChangeInXMonths
+    | EmailMatomoAccountCreated
+    | EmailMatomoAccountUpdated;
 
 export type EmailProps = BaseEmail & EmailVariants;
 
