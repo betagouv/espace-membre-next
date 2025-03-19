@@ -1,4 +1,5 @@
 import { CreateEmailForm } from "./CreateEmailForm";
+import { ChangePrimaryEmail } from "./Email/ChangePrimaryEmail";
 import { ChangeSecondaryEmail } from "./Email/ChangeSecondaryEmail";
 import MemberBrevoEventList from "./MemberBrevoEventList";
 import MemberEmailServiceInfo from "./MemberEmailServiceInfo";
