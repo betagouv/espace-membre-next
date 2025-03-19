@@ -1,15 +1,19 @@
+import Email from "next-auth/providers/email";
 import pAll from "p-all";
 import PgBoss from "pg-boss";
 
 import { addEvent } from "@/lib/events";
 import { db } from "@/lib/kysely";
+import { getUserBasicInfo } from "@/lib/kysely/queries/users";
 import { MatomoAccess } from "@/lib/matomo";
 import { EventCode } from "@/models/actionEvent";
 import { CreateOrUpdateMatomoAccountDataSchemaType } from "@/models/jobs/services";
 import { matomoMetadataToModel } from "@/models/mapper/matomoMapper";
 import { ACCOUNT_SERVICE_STATUS, SERVICES } from "@/models/services";
+import { sendEmail } from "@/server/config/email.config";
 import { matomoClient } from "@/server/config/matomo.config";
 import { decryptPassword } from "@/server/controllers/utils";
+import { EMAIL_TYPES } from "@/server/modules/email";
 
 export const createOrUpdateMatomoServiceAccountTopic =
     "create-update-matomo-service-account";
@@ -22,7 +26,13 @@ export async function createOrUpdateMatomoServiceAccount(
         job.id,
         job.name
     );
-
+    const user = await getUserBasicInfo({ username: job.data.username });
+    if (!user) {
+        throw new BusinessError(
+            "noUserForUsername",
+            `Utilisateur ${job.data.username} inexistant.`
+        );
+    }
     let userLogin = job.data.email;
     const res = await matomoClient.getUserByEmail(job.data.email);
     let userExist = false;
@@ -117,6 +127,20 @@ export async function createOrUpdateMatomoServiceAccount(
                 service: SERVICES.MATOMO,
             },
         });
+        if (user.primary_email) {
+            await sendEmail({
+                type: EMAIL_TYPES.EMAIL_MATOMO_ACCOUNT_UPDATED,
+                variables: {
+                    fullname: user.fullname,
+                    matomoUrl:
+                        "https://stats.beta.gouv.fr/index.php?module=Login",
+                    email: job.data.email,
+                    newSite: job.data.newSite,
+                    sites: job.data.sites,
+                },
+                toEmail: [user.primary_email],
+            });
+        }
         console.log(`the matomo account has been update for ${userLogin}`);
     } else {
         await addEvent({
@@ -127,6 +151,20 @@ export async function createOrUpdateMatomoServiceAccount(
                 service: SERVICES.MATOMO,
             },
         });
+        if (user.primary_email) {
+            await sendEmail({
+                type: EMAIL_TYPES.EMAIL_MATOMO_ACCOUNT_CREATED,
+                variables: {
+                    fullname: user.fullname,
+                    matomoResetUrl:
+                        "https://stats.beta.gouv.fr/index.php?module=Login",
+                    email: job.data.email,
+                    newSite: job.data.newSite,
+                    sites: job.data.sites,
+                },
+                toEmail: [user.primary_email],
+            });
+        }
         console.log(`the matomo account has been created for ${userLogin}`);
     }
 }
