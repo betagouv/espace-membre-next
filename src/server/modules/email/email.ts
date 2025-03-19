@@ -2,6 +2,7 @@
 import { StartupsPhaseEnum } from "@/@types/db";
 import { incubatorSchemaType } from "@/models/incubator";
 import { Job } from "@/models/job";
+import { CreateOrUpdateMatomoAccountDataSchemaType } from "@/models/jobs/services";
 import {
     memberBaseInfoSchemaType,
     memberPublicInfoSchemaType,
@@ -44,6 +45,10 @@ export enum EMAIL_TYPES {
     EMAIL_VERIFICATION_WAITING = "EMAIL_VERIFICATION_WAITING",
     EMAIL_NEW_MEMBER_VALIDATION = "EMAIL_NEW_MEMBER_VALIDATION",
     EMAIL_TEAM_COMPOSITION = "EMAIL_TEAM_COMPOSITION",
+    EMAIL_STARTUP_MEMBERS_DID_NOT_CHANGE_IN_X_MONTHS = "EMAIL_STARTUP_MEMBERS_DID_NOT_CHANGE_IN_X_MONTHS",
+    EMAIL_STARTUP_NEW_MEMBER_ARRIVAL = "EMAIL_STARTUP_NEW_MEMBER_ARRIVAL",
+    EMAIL_MATOMO_ACCOUNT_CREATED = "EMAIL_MATOMO_ACCOUNT_CREATED",
+    EMAIL_MATOMO_ACCOUNT_UPDATED = "EMAIL_MATOMO_ACCOUNT_UPDATED",
 }
 
 export type SubjectFunction = {
@@ -146,10 +151,9 @@ export type EmailOnboardingReferent = {
 export type EmailCreatedEmail = {
     type: EMAIL_TYPES.EMAIL_CREATED_EMAIL;
     variables: {
-        email: string | null;
-        secondaryEmail: string | null;
+        email: string;
+        secondaryEmail: string;
         secretariatUrl: string;
-        mattermostInvitationLink: string;
         emailUrl: string;
     };
 };
@@ -158,6 +162,8 @@ export type EmailMattermostAccountCreated = {
     type: EMAIL_TYPES.EMAIL_MATTERMOST_ACCOUNT_CREATED;
     variables: {
         resetPasswordLink: string;
+        fullname: string;
+        email: string;
     };
 };
 
@@ -303,6 +309,49 @@ export type EmailTeamComposition = {
     };
 };
 
+export type EmailStartupMembersDidNotChangeInXMonths = {
+    type: EMAIL_TYPES.EMAIL_STARTUP_MEMBERS_DID_NOT_CHANGE_IN_X_MONTHS;
+    variables: {
+        startupWrappers: {
+            startup: startupSchemaType;
+            activeMembers: number;
+            lastModification?: Date;
+            currentPhase: string;
+        }[];
+        incubator: incubatorSchemaType;
+    };
+};
+
+export type EmailStartupNewMemberArrival = {
+    type: EMAIL_TYPES.EMAIL_STARTUP_NEW_MEMBER_ARRIVAL;
+    variables: {
+        userInfos: memberPublicInfoSchemaType;
+        startup: userStartupSchemaType;
+    };
+};
+
+export type EmailMatomoAccountCreated = {
+    type: EMAIL_TYPES.EMAIL_MATOMO_ACCOUNT_CREATED;
+    variables: {
+        fullname: string;
+        matomoResetUrl: string;
+        email: string;
+        newSite: CreateOrUpdateMatomoAccountDataSchemaType["newSite"];
+        sites: CreateOrUpdateMatomoAccountDataSchemaType["sites"];
+    };
+};
+
+export type EmailMatomoAccountUpdated = {
+    type: EMAIL_TYPES.EMAIL_MATOMO_ACCOUNT_UPDATED;
+    variables: {
+        fullname: string;
+        matomoUrl: string;
+        email: string;
+        newSite: CreateOrUpdateMatomoAccountDataSchemaType["newSite"];
+        sites: CreateOrUpdateMatomoAccountDataSchemaType["sites"];
+    };
+};
+
 export type EmailVariants =
     | EmailMarrainageNewcomer
     | EmailMarrainageOnboarder
@@ -323,13 +372,17 @@ export type EmailVariants =
     | EmailStartupEnterConstructionPhase
     | EmailStartupEnterAccelerationPhase
     | EmailStartupEnterInvestigationPhase
+    | EmailStartupNewMemberArrival
     | EmailStartupAskPhase
     | EmailForumReminder
     | EmailTest
     | EmailPRPendingToTeam
     | EmailVerificationWaiting
     | EmailNewMemberValidation
-    | EmailTeamComposition;
+    | EmailTeamComposition
+    | EmailStartupMembersDidNotChangeInXMonths
+    | EmailMatomoAccountCreated
+    | EmailMatomoAccountUpdated;
 
 export type EmailProps = BaseEmail & EmailVariants;
 

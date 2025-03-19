@@ -14,10 +14,10 @@ interface Relationship {
 // todo: extract types from single "phases" array ?
 
 export const PHASE_READABLE_NAME = {
-    acceleration: "En Accélération",
-    investigation: "En Investigation",
+    acceleration: "Accélération",
+    investigation: "Investigation",
     transfer: "Transférée",
-    construction: "En Construction",
+    construction: "Construction",
     alumni: "Partenariat terminé",
     success: "Pérennisé",
 };
@@ -247,7 +247,7 @@ export const startupSchema = z.object({
         .nullable(),
     stats_url: z
         .string()
-        .describe("URL de la page de statistiques")
+        .describe("URL de la page de statistiques d'usage")
         .optional()
         .nullable(),
     budget_url: z
@@ -269,7 +269,7 @@ export const startupSchema = z.object({
         .nullable(),
     analyse_risques_url: z
         .string()
-        .describe("Url de l'analyse de risque")
+        .describe("URL de l'analyse de risque")
         .optional()
         .nullable(),
     // events: z
@@ -321,17 +321,22 @@ export const startupSchema = z.object({
         .optional(),
     tech_audit_url: z
         .string()
-        .describe("Url de l'audit technique")
+        .describe("URL de l'audit technique")
         .optional()
         .nullable(),
     roadmap_url: z
         .string()
-        .describe("Url de la roadmap ou tickets")
+        .describe("URL de la roadmap ou tickets")
         .optional()
         .nullable(),
     ecodesign_url: z
         .string()
-        .describe("Url de la déclaration d'écoconception")
+        .describe("URL de la déclaration d'écoconception")
+        .optional()
+        .nullable(),
+    impact_url: z
+        .string()
+        .describe("URL de la page de statistiques d'impact")
         .optional()
         .nullable(),
 });

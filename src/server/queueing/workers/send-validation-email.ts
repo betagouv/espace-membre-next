@@ -2,23 +2,20 @@ import { isAfter } from "date-fns/isAfter";
 import { isBefore } from "date-fns/isBefore";
 import PgBoss from "pg-boss";
 
-import { db } from "@/lib/kysely";
+import { getMemberIfValidOrThrowError } from "./utils";
 import { getIncubator } from "@/lib/kysely/queries/incubators";
-import { getUsersByIncubatorId } from "@/lib/kysely/queries/teams";
+import { getIncubatorTeamMembers } from "@/lib/kysely/queries/teams";
+import {} from "@/lib/kysely/queries/teams";
 import { getUserBasicInfo, getUserStartups } from "@/lib/kysely/queries/users";
 import {
     SendNewMemberValidationEmailSchema,
     SendNewMemberValidationEmailSchemaType,
 } from "@/models/jobs/member";
-import {
-    incubatorToModel,
-    memberPublicInfoToModel,
-    userStartupToModel,
-} from "@/models/mapper";
+import { incubatorToModel, userStartupToModel } from "@/models/mapper";
 import config from "@/server/config";
 import { sendEmail } from "@/server/config/email.config";
 import { EMAIL_TYPES } from "@/server/modules/email";
-import { BusinessError, NoDataError } from "@/utils/error";
+import { BusinessError } from "@/utils/error";
 
 export const sendNewMemberValidationEmailTopic =
     "send-new-member-validation-email";
@@ -27,25 +24,8 @@ export async function sendNewMemberValidationEmail(
     job: PgBoss.Job<SendNewMemberValidationEmailSchemaType>
 ) {
     const data = SendNewMemberValidationEmailSchema.parse(job.data);
+    const newMember = await getMemberIfValidOrThrowError(data.userId);
     const now = new Date();
-    const memberDbData = await getUserBasicInfo({ uuid: data.userId });
-    if (!memberDbData) {
-        throw new NoDataError(
-            `Pas de membre trouvé pour l'id : ${data.userId}`
-        );
-    }
-    const newMember = memberPublicInfoToModel(memberDbData);
-    const userMissions = await db
-        .selectFrom("missions")
-        .selectAll()
-        .where("user_id", "=", data.userId)
-        .execute();
-    if (!userMissions.length) {
-        throw new BusinessError(
-            "NoActiveMissionForUser",
-            `User ${data.userId} does not have any missions`
-        );
-    }
     const userStartups = (await getUserStartups(data.userId)).filter(
         (startup) => {
             return (
@@ -81,7 +61,7 @@ export async function sendNewMemberValidationEmail(
                 `The provided incubator id ${incubatorId} does not exist. Incubator might have been deleted`
             );
         }
-        const membersForTeam = await getUsersByIncubatorId(incubatorId);
+        const membersForTeam = await getIncubatorTeamMembers(incubatorId);
         if (!membersForTeam.length) {
             throw new BusinessError(
                 "validationMemberListIsEmpty",

@@ -247,7 +247,7 @@ describe(`Test creating new user flow : A new member cannot be validated by some
         } catch (error) {
             error.should.be.instanceof(BusinessError);
             (error as BusinessError).code.should.be.equals(
-                "userIsNotWaitingValidation"
+                "userAlreadyValided"
             );
         }
     });

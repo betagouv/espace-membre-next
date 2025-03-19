@@ -3,14 +3,39 @@ import ejs from "ejs";
 import mjml2html from "mjml";
 
 import * as mdtohtml from "@/lib/mdtohtml";
+import { EmailCreatedEmail as EmailCreatedEmailType } from "@/server/modules/email";
+import {
+    EmailCreatedEmail,
+    EmailCreatedEmailTitle,
+} from "@/server/views/templates/emails/EmailCreatedEmail/EmailCreatedEmail";
 import {
     LoginEmail,
     LoginEmailTitle,
 } from "@/server/views/templates/emails/LoginEmail/LoginEmail";
 import {
+    MatomoAccountCreatedEmail,
+    MatomoAccountCreatedEmailTitle,
+} from "@/server/views/templates/emails/MatomoAccountCreatedEmail/MatomoAccountCreatedEmail";
+import {
+    MatomoAccountUpdatedEmail,
+    MatomoAccountUpdatedEmailTitle,
+} from "@/server/views/templates/emails/MatomoAccountUpdatedEmail/MatomoAccountUpdatedEmail";
+import {
+    MattermostAccountCreatedEmail,
+    MattermostAccountCreatedEmailTitle,
+} from "@/server/views/templates/emails/MattermostAccountCreatedEmail/MattermostAccountCreatedEmail";
+import {
     MemberValidationEmail,
     MemberValidationEmailTitle,
 } from "@/server/views/templates/emails/memberValidationEmail/memberValidationEmail";
+import {
+    StartupMembersDidNotChangeInXMonthsEmail,
+    StartupMembersDidNotChangeInXMonthsEmailTitle,
+} from "@/server/views/templates/emails/startupMembersDidNotChangeInXMonthsEmail/startupMembersDidNotChangeInXMonthsEmail";
+import {
+    StartupNewMemberArrivalEmail,
+    StartupNewMemberArrivalEmailTitle,
+} from "@/server/views/templates/emails/StartupNewMemberArrivalEmail/StartupNewMemberArrivalEmail";
 import {
     TeamCompositionEmail,
     TeamCompositionEmailTitle,
@@ -19,8 +44,13 @@ import { BusinessError } from "@/utils/error";
 import {
     EMAIL_TYPES,
     EmailLogin,
+    EmailMattermostAccountCreated,
+    EmailMatomoAccountCreated,
+    EmailMatomoAccountUpdated,
     EmailNewMemberValidation,
     EmailProps,
+    EmailStartupMembersDidNotChangeInXMonths,
+    EmailStartupNewMemberArrival,
     EmailTeamComposition,
     HtmlBuilderType,
     SubjectFunction,
@@ -42,9 +72,11 @@ const TEMPLATES_BY_TYPE: Record<EmailProps["type"], string | null | any> = {
         "./src/server/views/templates/emails/marrainage/marrainageRequestFailed.ejs",
     ONBOARDING_REFERENT_EMAIL:
         "./src/server/views/templates/emails/onboardingReferent.ejs",
-    EMAIL_CREATED_EMAIL: "./src/server/views/templates/emails/createEmail.ejs",
-    EMAIL_MATTERMOST_ACCOUNT_CREATED:
-        "./src/server/views/templates/emails/mattermost.ejs",
+    [EMAIL_TYPES.EMAIL_MATTERMOST_ACCOUNT_CREATED]: (
+        params: EmailMattermostAccountCreated["variables"]
+    ) => MattermostAccountCreatedEmail(params),
+    EMAIL_CREATED_EMAIL: (params: EmailCreatedEmailType["variables"]) =>
+        EmailCreatedEmail(params),
     EMAIL_PR_PENDING: `./src/server/views/templates/emails/pendingGithubAuthorPR.ejs`,
     EMAIL_ENDING_CONTRACT_2_DAYS:
         "./src/server/views/templates/emails/mail2days.ejs",
@@ -77,6 +109,18 @@ const TEMPLATES_BY_TYPE: Record<EmailProps["type"], string | null | any> = {
     [EMAIL_TYPES.EMAIL_TEAM_COMPOSITION]: (
         params: EmailTeamComposition["variables"]
     ) => TeamCompositionEmail(params),
+    [EMAIL_TYPES.EMAIL_STARTUP_MEMBERS_DID_NOT_CHANGE_IN_X_MONTHS]: (
+        params: EmailStartupMembersDidNotChangeInXMonths["variables"]
+    ) => StartupMembersDidNotChangeInXMonthsEmail(params),
+    [EMAIL_TYPES.EMAIL_STARTUP_NEW_MEMBER_ARRIVAL]: (
+        params: EmailStartupNewMemberArrival["variables"]
+    ) => StartupNewMemberArrivalEmail(params),
+    [EMAIL_TYPES.EMAIL_MATOMO_ACCOUNT_CREATED]: (
+        params: EmailMatomoAccountCreated["variables"]
+    ) => MatomoAccountCreatedEmail(params),
+    [EMAIL_TYPES.EMAIL_MATOMO_ACCOUNT_UPDATED]: (
+        params: EmailMatomoAccountUpdated["variables"]
+    ) => MatomoAccountUpdatedEmail(params),
 };
 
 const SUBJECTS_BY_TYPE: Record<EmailProps["type"], string | SubjectFunction> = {
@@ -90,8 +134,8 @@ const SUBJECTS_BY_TYPE: Record<EmailProps["type"], string | SubjectFunction> = {
     ONBOARDING_REFERENT_EMAIL: ({ name }: EmailProps["variables"]) => {
         return `${name} vient de créer sa fiche Github`;
     },
-    EMAIL_CREATED_EMAIL: "Ton email betagouv est prêt 🙂",
-    EMAIL_MATTERMOST_ACCOUNT_CREATED: "Inscription à mattermost",
+    EMAIL_MATTERMOST_ACCOUNT_CREATED: MattermostAccountCreatedEmailTitle(),
+    EMAIL_CREATED_EMAIL: EmailCreatedEmailTitle(),
     EMAIL_PR_PENDING: `PR en attente`,
     EMAIL_PR_PENDING_TO_TEAM: ({ username }: EmailProps["variables"]) => {
         return `PR en attente de ${username} en attente de merge`;
@@ -125,6 +169,14 @@ const SUBJECTS_BY_TYPE: Record<EmailProps["type"], string | SubjectFunction> = {
     EMAIL_VERIFICATION_WAITING: "Bienvenue chez BetaGouv 🙂",
     EMAIL_NEW_MEMBER_VALIDATION: MemberValidationEmailTitle(),
     [EMAIL_TYPES.EMAIL_TEAM_COMPOSITION]: TeamCompositionEmailTitle(),
+    [EMAIL_TYPES.EMAIL_STARTUP_MEMBERS_DID_NOT_CHANGE_IN_X_MONTHS]:
+        StartupMembersDidNotChangeInXMonthsEmailTitle(),
+    [EMAIL_TYPES.EMAIL_STARTUP_NEW_MEMBER_ARRIVAL]:
+        StartupNewMemberArrivalEmailTitle(),
+    [EMAIL_TYPES.EMAIL_MATOMO_ACCOUNT_CREATED]:
+        MatomoAccountCreatedEmailTitle(),
+    [EMAIL_TYPES.EMAIL_MATOMO_ACCOUNT_UPDATED]:
+        MatomoAccountUpdatedEmailTitle(),
 };
 
 const MARKDOWN_BY_TYPE: Record<EmailProps["type"], boolean> = {
@@ -157,6 +209,10 @@ const MARKDOWN_BY_TYPE: Record<EmailProps["type"], boolean> = {
     EMAIL_VERIFICATION_WAITING: false,
     EMAIL_NEW_MEMBER_VALIDATION: false,
     [EMAIL_TYPES.EMAIL_TEAM_COMPOSITION]: false,
+    [EMAIL_TYPES.EMAIL_STARTUP_MEMBERS_DID_NOT_CHANGE_IN_X_MONTHS]: false,
+    [EMAIL_TYPES.EMAIL_STARTUP_NEW_MEMBER_ARRIVAL]: false,
+    [EMAIL_TYPES.EMAIL_MATOMO_ACCOUNT_CREATED]: false,
+    [EMAIL_TYPES.EMAIL_MATOMO_ACCOUNT_UPDATED]: false,
 };
 
 const htmlBuilder: HtmlBuilderType = {
