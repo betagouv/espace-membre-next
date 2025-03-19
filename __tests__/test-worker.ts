@@ -4,8 +4,8 @@ import PgBoss from "pg-boss";
 import proxyquire from "proxyquire";
 import sinon from "sinon";
 
-import { testUsers } from "./utils/users-data";
 import utils from "./utils";
+import { testUsers } from "./utils/users-data";
 import { db } from "@/lib/kysely";
 import { EventCode } from "@/models/actionEvent";
 import { MATOMO_SITE_TYPE } from "@/models/actions/service";
@@ -32,12 +32,18 @@ describe("Service account creation by worker", () => {
                     status: ACCOUNT_SERVICE_STATUS.ACCOUNT_CREATION_PENDING,
                 })
                 .executeTakeFirstOrThrow();
+            before(async () => {
+                await utils.createData(testUsers);
+            });
         });
         after(async function () {
             await db
                 .deleteFrom("service_accounts")
                 .where("uuid", "=", service_accounts.uuid)
                 .executeTakeFirstOrThrow();
+            after(async () => {
+                await utils.deleteData(testUsers);
+            });
         });
         it("should create matomo service account", async () => {
             await createOrUpdateMatomoServiceAccount({
