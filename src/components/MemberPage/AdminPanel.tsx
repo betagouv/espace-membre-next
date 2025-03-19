@@ -1,4 +1,5 @@
 import { CreateEmailForm } from "./CreateEmailForm";
+import BlocConfigurerEmailPrincipal from "./Email/BlocConfigurerEmailPrincipal";
 import { ChangePrimaryEmail } from "./Email/ChangePrimaryEmail";
 import { ChangeSecondaryEmail } from "./Email/ChangeSecondaryEmail";
 import MemberBrevoEventList from "./MemberBrevoEventList";
@@ -20,6 +21,11 @@ export const AdminPanel = ({
         <div className="fr-mb-8v">
             <h2>Actions admin</h2>
             <h3>Emails</h3>
+            <BlocConfigurerEmailPrincipal
+                isAdmin={true}
+                canChangeEmails={authorizations.canChangeEmails}
+                userInfos={userInfos}
+            ></BlocConfigurerEmailPrincipal>
             <ChangePrimaryEmail userInfos={userInfos}></ChangePrimaryEmail>
             <ChangeSecondaryEmail userInfos={userInfos}></ChangeSecondaryEmail>
 
