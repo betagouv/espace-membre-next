@@ -3,6 +3,11 @@ import ejs from "ejs";
 import mjml2html from "mjml";
 
 import * as mdtohtml from "@/lib/mdtohtml";
+import { EmailCreatedEmail as EmailCreatedEmailType } from "@/server/modules/email";
+import {
+    EmailCreatedEmail,
+    EmailCreatedEmailTitle,
+} from "@/server/views/templates/emails/EmailCreatedEmail/EmailCreatedEmail";
 import {
     LoginEmail,
     LoginEmailTitle,
@@ -52,7 +57,8 @@ const TEMPLATES_BY_TYPE: Record<EmailProps["type"], string | null | any> = {
         "./src/server/views/templates/emails/marrainage/marrainageRequestFailed.ejs",
     ONBOARDING_REFERENT_EMAIL:
         "./src/server/views/templates/emails/onboardingReferent.ejs",
-    EMAIL_CREATED_EMAIL: "./src/server/views/templates/emails/createEmail.ejs",
+    EMAIL_CREATED_EMAIL: (params: EmailCreatedEmailType["variables"]) =>
+        EmailCreatedEmail(params),
     EMAIL_MATTERMOST_ACCOUNT_CREATED:
         "./src/server/views/templates/emails/mattermost.ejs",
     EMAIL_PR_PENDING: `./src/server/views/templates/emails/pendingGithubAuthorPR.ejs`,
@@ -106,7 +112,7 @@ const SUBJECTS_BY_TYPE: Record<EmailProps["type"], string | SubjectFunction> = {
     ONBOARDING_REFERENT_EMAIL: ({ name }: EmailProps["variables"]) => {
         return `${name} vient de créer sa fiche Github`;
     },
-    EMAIL_CREATED_EMAIL: "Ton email betagouv est prêt 🙂",
+    EMAIL_CREATED_EMAIL: EmailCreatedEmailTitle(),
     EMAIL_MATTERMOST_ACCOUNT_CREATED: "Inscription à mattermost",
     EMAIL_PR_PENDING: `PR en attente`,
     EMAIL_PR_PENDING_TO_TEAM: ({ username }: EmailProps["variables"]) => {
