@@ -23,10 +23,11 @@ export const MemberMissions = ({
                       end: m.end,
                       uuid: s,
                       name: startup?.name,
-                      url:
-                          linkRegistry.get("startupDetails", {
-                              startupId: startup?.uuid,
-                          }) || "#",
+                      url: startup?.uuid
+                          ? linkRegistry.get("startupDetails", {
+                                startupId: startup.uuid,
+                            })
+                          : "#",
                   };
               })
             : [
