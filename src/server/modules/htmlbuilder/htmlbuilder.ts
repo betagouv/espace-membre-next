@@ -3,7 +3,11 @@ import ejs from "ejs";
 import mjml2html from "mjml";
 
 import * as mdtohtml from "@/lib/mdtohtml";
-import { EmailCreatedEmail as EmailCreatedEmailType } from "@/server/modules/email";
+import {
+    EmailCreatedEmail as EmailCreatedEmailType,
+    EmailVerificationWaiting,
+    EmailVerificationWaiting,
+} from "@/server/modules/email";
 import {
     EmailCreatedEmail,
     EmailCreatedEmailTitle,
@@ -40,6 +44,10 @@ import {
     TeamCompositionEmail,
     TeamCompositionEmailTitle,
 } from "@/server/views/templates/emails/teamCompositionEmail/teamCompositionEmail";
+import {
+    VerificationWaitingEmail,
+    VerificationWaitingEmailTitle,
+} from "@/server/views/templates/emails/VerificationWaitingEmail/VerificationWaitingEmail";
 import { BusinessError } from "@/utils/error";
 import {
     EMAIL_TYPES,
@@ -101,8 +109,9 @@ const TEMPLATES_BY_TYPE: Record<EmailProps["type"], string | null | any> = {
     EMAIL_TEST: null,
     EMAIL_PR_PENDING_TO_TEAM:
         "./src/server/views/templates/emails/prPendingToTeam.ejs",
-    EMAIL_VERIFICATION_WAITING:
-        "./src/server/views/templates/emails/verificationWaiting.ejs",
+    EMAIL_VERIFICATION_WAITING: (
+        params: EmailVerificationWaiting["variables"]
+    ) => VerificationWaitingEmail(params),
     EMAIL_NEW_MEMBER_VALIDATION: (
         params: EmailNewMemberValidation["variables"]
     ) => MemberValidationEmail(params),
@@ -166,7 +175,7 @@ const SUBJECTS_BY_TYPE: Record<EmailProps["type"], string | SubjectFunction> = {
     EMAIL_STARTUP_ASK_PHASE: "",
     EMAIL_FORUM_REMINDER: "",
     EMAIL_TEST: "",
-    EMAIL_VERIFICATION_WAITING: "Bienvenue chez BetaGouv 🙂",
+    EMAIL_VERIFICATION_WAITING: VerificationWaitingEmailTitle(),
     EMAIL_NEW_MEMBER_VALIDATION: MemberValidationEmailTitle(),
     [EMAIL_TYPES.EMAIL_TEAM_COMPOSITION]: TeamCompositionEmailTitle(),
     [EMAIL_TYPES.EMAIL_STARTUP_MEMBERS_DID_NOT_CHANGE_IN_X_MONTHS]:
