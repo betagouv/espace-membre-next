@@ -86,7 +86,7 @@ export async function getUsersByStartupIds(
 }
 /** Return member informations */
 export async function getUserBasicInfo(
-    params: { username: string } | { uuid: string },
+    params: { username: string } | { uuid: string } | { primary_email: string },
     db: Kysely<DB> = database
 ) {
     let query = protectedDataSelect(db).select((eb) => [
@@ -96,6 +96,8 @@ export async function getUserBasicInfo(
 
     if ("username" in params) {
         query = query.where("users.username", "=", params.username);
+    } else if ("primary_email" in params) {
+        query = query.where("users.primary_email", "=", params.primary_email);
     } else {
         query = query.where("users.uuid", "=", params.uuid);
     }
