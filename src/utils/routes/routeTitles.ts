@@ -1,7 +1,7 @@
-import { localizedRoutes } from "./localizedRoutes";
+import { routes } from "./routes";
 
 export const routeTitles: {
-    [routeName in keyof typeof localizedRoutes]:
+    [routeName in keyof typeof routes]:
         | (() => string)
         | ((id?: string) => string);
 } = {
