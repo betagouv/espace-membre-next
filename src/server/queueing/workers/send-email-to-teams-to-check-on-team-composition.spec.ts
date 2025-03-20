@@ -49,7 +49,9 @@ describe("sendEmailToTeamsToCheckOnTeamComposition()", () => {
             .executeTakeFirstOrThrow();
         const usersByStartup = await getUsersByStartup(startup.uuid);
         sendEmailStub.firstCall.args[0].should.deep.equal({
-            toEmail: [`${startup.mailing_list}@${config.domain}`],
+            toEmail: usersByStartup
+                .map((u) => u.primary_email)
+                .filter((email) => !!email),
             type: EMAIL_TYPES.EMAIL_TEAM_COMPOSITION,
             variables: {
                 activeMembers: usersByStartup.map((u) => ({

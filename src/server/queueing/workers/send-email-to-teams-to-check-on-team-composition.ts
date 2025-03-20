@@ -74,7 +74,7 @@ export async function sendEmailToTeamsToCheckOnTeamComposition(
             );
         const memberEmails = activeStartupMembers
             .map((member) => member.member.primary_email)
-            .filter((email) => email !== null);
+            .filter((email) => email !== null && email !== undefined);
         await sendEmail({
             type: EMAIL_TYPES.EMAIL_TEAM_COMPOSITION,
             variables: {
