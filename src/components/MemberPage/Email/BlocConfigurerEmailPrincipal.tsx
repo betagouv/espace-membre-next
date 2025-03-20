@@ -60,6 +60,10 @@ export default function BlocConfigurerEmailPrincipal({
                 </strong>
                 .
             </p>
+            <p>
+                ⚠️ L'email du compte mattermost doit être la même que l'adresse
+                primaire.
+            </p>
             {(canChangeEmails || isAdmin) && (
                 <form
                     method="POST"
