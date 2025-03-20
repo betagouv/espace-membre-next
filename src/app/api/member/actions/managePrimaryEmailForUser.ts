@@ -36,7 +36,7 @@ export async function managePrimaryEmailForUser({
     }
     const isCurrentUser = session?.user.id === username;
     const user = await userInfos({ username }, isCurrentUser);
-    if (!user.authorizations.canChangeEmails) {
+    if (!user.authorizations.canChangeEmails && !session.user.isAdmin) {
         throw new AuthorizationError();
     }
     const primaryEmailIsPublicServiceEmail = await isPublicServiceEmail(
@@ -49,6 +49,18 @@ export async function managePrimaryEmailForUser({
     }
     if (isAdminEmail(primaryEmail)) {
         throw new AdminEmailNotAllowedError();
+    }
+    if (isCurrentUser) {
+        // if action is made by admin on another user we don't check if mattermost account with email exists
+        // it will cause friction and slow things down as the user has to change his email
+        // on mattermost and validate the change before being able to change the primary email
+        try {
+            await mattermost.getUserByEmail(primaryEmail);
+        } catch {
+            throw new BusinessError(
+                `L'email n'existe pas dans mattermost, pour utiliser cette adresse comme adresse principale ton compte mattermost doit aussi utiliser cette adresse.`
+            );
+        }
     }
 
     if (user.userInfos.primary_email?.includes(config.domain)) {
@@ -64,15 +76,8 @@ export async function managePrimaryEmailForUser({
         } catch (e) {
             console.log(e, "Email is possibly already deleted");
         }
-    } else {
-        try {
-            await mattermost.getUserByEmail(primaryEmail);
-        } catch {
-            throw new BusinessError(
-                `L'email n'existe pas dans mattermost, pour utiliser cette adresse comme adresse principale ton compte mattermost doit aussi utiliser cette adresse.`
-            );
-        }
     }
+
     await db
         .updateTable("users")
         .where("username", "=", username)
