@@ -54,9 +54,11 @@ const getUserRow = ({
                 return {
                     label: `${t.name}${incub ? ` - ${incub.label}` : ""}`,
                     value: t.uuid,
-                    url: linkRegistry.get("incubatorDetails", {
-                        incubatorId: incub?.value,
-                    }),
+                    url: incub?.value
+                        ? linkRegistry.get("incubatorDetails", {
+                              incubatorId: incub?.value,
+                          })
+                        : "",
                 };
             }) || []),
         ];
