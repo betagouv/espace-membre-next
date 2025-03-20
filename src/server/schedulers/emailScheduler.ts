@@ -468,6 +468,7 @@ export async function sendOnboardingVerificationPendingEmail() {
                 variables: {
                     secondaryEmail: user.secondary_email,
                     secretariatUrl,
+                    fullname: user.fullname,
                 },
             });
             await addEvent({
