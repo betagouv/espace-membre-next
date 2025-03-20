@@ -18,7 +18,7 @@ export function VerificationWaitingEmail({
     return (
         <StandardLayout title={title}>
             <MjmlText>Hello {fullname} ! 👋</MjmlText>
-            <p>Ta fiche a été validée !</p>
+            <MjmlText>Ta fiche a été validée !</MjmlText>
             <MjmlText>
                 Et maintenant ? Connecte toi à l'espace-membre pour compléter
                 tes informations et accéder aux différents outils de la
