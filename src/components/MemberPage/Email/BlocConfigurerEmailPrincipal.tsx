@@ -61,8 +61,9 @@ export default function BlocConfigurerEmailPrincipal({
                 .
             </p>
             <p>
-                ⚠️ L'email du compte mattermost doit être la même que l'adresse
-                primaire.
+                <i className={fr.cx("fr-icon--md", "fr-icon-warning-fill")} />{" "}
+                L'email du compte mattermost doit être le même que l'adresse
+                primaire. Pensez à le changer si ce n'est pas le cas.
             </p>
             {(canChangeEmails || isAdmin) && (
                 <form
