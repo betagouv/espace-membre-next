@@ -25,18 +25,15 @@ export async function sendEmailToTeamsToCheckOnTeamComposition(
                     .onRef("phases.startup_id", "=", "startups.uuid")
                     .on("phases.name", "in", ["success", "transfer", "alumni"])
             )
-            .where("mailing_list", "is not", null)
             .where("phases.name", "is", null)
             .execute()
     ).map((startup) => startupToModel(startup));
 
     if (!startups.length) {
-        console.log(
-            `There is no startups in active startups with mailing list`
-        );
+        console.log(`There is no startups in active startups`);
         return;
     }
-    console.log(`Will send email to ${startups.length} mailing lists`);
+    console.log(`Will send email to ${startups.length} startups`);
     const now = new Date();
     const usersByStartup = await getUsersByStartupIds(
         startups.map((startup) => startup.uuid)
@@ -75,6 +72,9 @@ export async function sendEmailToTeamsToCheckOnTeamComposition(
                     activeMission: memberBaseInfoSchemaType["missions"][0];
                 } => member !== null
             );
+        const memberEmails = activeStartupMembers
+            .map((member) => member.member.primary_email)
+            .filter((email) => email !== null);
         await sendEmail({
             type: EMAIL_TYPES.EMAIL_TEAM_COMPOSITION,
             variables: {
@@ -82,7 +82,7 @@ export async function sendEmailToTeamsToCheckOnTeamComposition(
                 startup: startup,
                 memberAccountLink: `${config.protocol}://${config.host}/account/base-info`,
             },
-            toEmail: [`${startup.mailing_list}@${config.domain}`],
+            toEmail: memberEmails,
         });
     }
 }
