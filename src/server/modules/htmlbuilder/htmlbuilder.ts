@@ -6,7 +6,6 @@ import * as mdtohtml from "@/lib/mdtohtml";
 import {
     EmailCreatedEmail as EmailCreatedEmailType,
     EmailVerificationWaiting,
-    EmailVerificationWaiting,
 } from "@/server/modules/email";
 import {
     EmailCreatedEmail,
