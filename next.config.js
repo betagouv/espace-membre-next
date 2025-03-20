@@ -35,6 +35,16 @@ const nextConfig = {
             },
         ];
     },
+    async redirects() {
+        return [
+            // Basic redirect
+            {
+                source: "/",
+                destination: "/login",
+                permanent: true,
+            },
+        ];
+    },
     experimental: {
         serverComponentsExternalPackages: [
             "knex",
