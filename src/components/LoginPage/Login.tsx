@@ -10,8 +10,6 @@ import Link from "next/link";
 import { useSearchParams } from "next/navigation";
 import { signIn } from "next-auth/react";
 
-interface Props {}
-
 const ConnectBlock = ({ children }) => {
     return (
         <>
@@ -91,7 +89,7 @@ const ConnectBlock = ({ children }) => {
 };
 
 /* Pure component */
-export const LoginPage = function (props: Props) {
+export const LoginPage = function () {
     const searchParams = useSearchParams();
     const secondary_email = searchParams.get("secondary_email");
 
