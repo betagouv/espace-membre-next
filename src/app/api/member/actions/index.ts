@@ -168,7 +168,7 @@ async function changeContactEmail(
     }
 }
 
-async function setEmailResponder({
+export async function setEmailResponder({
     content,
     from,
     to,

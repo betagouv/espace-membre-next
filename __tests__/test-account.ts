@@ -7,7 +7,10 @@ import sinon from "sinon";
 import utils from "./utils";
 import { createData, deleteData } from "./utils/fakeData";
 import { testUsers } from "./utils/users-data";
-import { updateCommunicationEmail } from "@/app/api/member/actions";
+import {
+    setEmailResponder,
+    updateCommunicationEmail,
+} from "@/app/api/member/actions";
 import { db } from "@/lib/kysely";
 import * as searchCommune from "@/lib/searchCommune";
 import { CommunicationEmailCode } from "@/models/member";
@@ -47,24 +50,19 @@ describe("Test Account", () => {
             await deleteData(testUsers);
         });
 
-        // it("should set email responder", (done) => {
-        //     const createEmailResponder = nock(/.*ovh.com/)
-        //         .post(/^.*email\/domain\/.*\/responder.*/) // <-> /email/domain/betagouv.ovh/responder/membre.actif
-        //         .reply(200);
+        it("should set email responder", async () => {
+            const createEmailResponder = nock(/.*ovh.com/)
+                .post(/^.*email\/domain\/.*\/responder.*/) // <-> /email/domain/betagouv.ovh/responder/membre.actif
+                .reply(200);
 
-        //     chai.request(app)
-        //         .post(routes.USER_SET_EMAIL_RESPONDER_API)
-        //         .type("form")
-        //         .send({
-        //             from: "2020-01-01",
-        //             to: "2021-01-01",
-        //             content: "Je ne serai pas la cette semaine",
-        //         })
-        //         .end((err, res) => {
-        //             createEmailResponder.isDone().should.be.true;
-        //             done();
-        //         });
-        // });
+            await setEmailResponder({
+                from: "2020-01-01",
+                to: "2021-01-01",
+                content: "Je ne serai pas la cette semaine",
+            });
+
+            createEmailResponder.isDone().should.be.true;
+        });
 
         // it("should update email responder", (done) => {
         //     const updateEmailResponder = nock(/.*ovh.com/)
