@@ -3,14 +3,12 @@ import chaiHttp from "chai-http";
 import nock from "nock";
 
 import utils from "./utils";
-// import { startServer } from "@/server";
 
 chai.use(chaiHttp);
 chai.should();
 
 before(async () => {
     await utils.setupTestDatabase();
-    // await startServer().then(() => {});
 });
 
 beforeEach(() => {
