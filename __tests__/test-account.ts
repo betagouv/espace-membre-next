@@ -1,15 +1,5 @@
 import chai from "chai";
 import chaiHttp from "chai-http";
-import nock from "nock";
-import sinon from "sinon";
-import { Response } from "superagent";
-
-import utils from "./utils";
-import * as searchCommune from "@/lib/searchCommune";
-import routes from "@/routes/routes";
-import config from "@/server/config";
-import * as session from "@/server/helpers/session";
-import app from "@/server/index";
 
 chai.use(chaiHttp);
 
