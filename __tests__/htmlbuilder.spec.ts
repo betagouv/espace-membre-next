@@ -603,6 +603,7 @@ describe(`Test EMAIL_VERIFICATION_WAITING`, () => {
             variables: {
                 secretariatUrl,
                 secondaryEmail: "toto@gmail.com",
+                fullname: "Lucas Thenet",
             },
         });
         emailBody.should.include(secretariatUrl);
