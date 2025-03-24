@@ -10,13 +10,7 @@ import Link from "next/link";
 import { useSearchParams } from "next/navigation";
 import { signIn } from "next-auth/react";
 
-interface Props {
-    errors: any[];
-    messages: string;
-    domain: string;
-    next: string;
-    secondary_email: string;
-}
+interface Props {}
 
 const ConnectBlock = ({ children }) => {
     return (
