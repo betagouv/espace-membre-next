@@ -30,7 +30,7 @@ export async function sendEmailToTeamsToCheckOnTeamComposition(
     ).map((startup) => startupToModel(startup));
 
     if (!startups.length) {
-        console.log(`There is no startups in active startups`);
+        console.log(`There is no active startups`);
         return;
     }
     console.log(`Will send email to ${startups.length} startups`);
