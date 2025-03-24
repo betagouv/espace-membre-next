@@ -31,7 +31,7 @@ export function VerificationWaitingEmail({
                         <a href={secretariatUrl}>l'espace membre</a> avec ton
                         email {secondaryEmail}
                     </li>
-                    <li>Étape 2 : Compléte tes informations</li>
+                    <li>Étape 2 : Complète tes informations</li>
                 </ul>
             </MjmlText>
             <MjmlButton href={secretariatUrl}>
