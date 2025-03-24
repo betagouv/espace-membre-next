@@ -98,16 +98,18 @@ const ConnectBlock = ({ children }) => {
 
 /* Pure component */
 export const LoginPage = function (props: Props) {
+    const searchParams = useSearchParams();
+    const secondary_email = searchParams.get("secondary_email");
+
     const [formErrors, setFormErrors] = React.useState<string>();
-    const [email, setEmail] = React.useState(props.secondary_email || "");
-    const [isFirstTime, setIsFirstTime] = React.useState(props.secondary_email);
+    const [email, setEmail] = React.useState(secondary_email || "");
+    const [isFirstTime, setIsFirstTime] = React.useState(secondary_email);
     const [isSaving, setIsSaving] = React.useState<boolean>(false);
     const [alertMessage, setAlertMessage] = React.useState<{
         message: string;
         type: "success" | "warning";
         description?: string;
     } | null>();
-    const searchParams = useSearchParams();
     const next = searchParams.get("next");
 
     const sendLogin = async (event: { preventDefault: () => void }) => {
@@ -167,14 +169,6 @@ export const LoginPage = function (props: Props) {
                 >
                     <h2 className="fr-h3">Me connecter</h2>
                 </legend>
-                {!!props.messages.length && (
-                    <div
-                        className="notification"
-                        dangerouslySetInnerHTML={{
-                            __html: props.messages,
-                        }}
-                    ></div>
-                )}
             </fieldset>
             <Input
                 hintText="Email en @beta.gouv.fr ou email secondaire"
