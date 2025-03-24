@@ -12,10 +12,7 @@ import {
     updateCommunicationEmail,
 } from "@/app/api/member/actions";
 import { db } from "@/lib/kysely";
-import * as searchCommune from "@/lib/searchCommune";
 import { CommunicationEmailCode } from "@/models/member";
-import routes from "@/routes/routes";
-import app from "@/server/index";
 
 chai.use(chaiHttp);
 
@@ -96,28 +93,6 @@ describe("Test Account", () => {
             getEmailResponder.isDone().should.be.true;
             utils.mockOvhUserResponder();
         });
-
-        // it("should update user info", async () => {
-        //     const fetchCommuneDetailsStub = sinon
-        //         .stub(searchCommune, "fetchCommuneDetails")
-        //         .returns(Promise.resolve(null));
-        //     await chai
-        //         .request(app)
-        //         .post(routes.ACCOUNT_POST_DETAIL_INFO_FORM)
-        //         // .type("form")
-        //         .send({
-        //             gender: "female",
-        //             workplace_insee_code: "",
-        //             tjm: 800,
-        //             legal_status: "AE",
-        //         });
-        //     const user = await knex("users")
-        //         .where({ username: "membre.actif" })
-        //         .first();
-        //     user.gender.should.equal("female");
-        //     user.tjm.should.equal(800);
-        //     fetchCommuneDetailsStub.restore();
-        // });
 
         it("should update communication_email value", async () => {
             const username = "membre.actif";
