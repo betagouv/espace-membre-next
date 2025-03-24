@@ -284,6 +284,7 @@ export type EmailVerificationWaiting = {
     variables: {
         secondaryEmail: string;
         secretariatUrl: string;
+        fullname: string;
     };
 };
 
