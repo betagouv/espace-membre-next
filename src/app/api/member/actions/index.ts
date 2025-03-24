@@ -94,7 +94,7 @@ async function changeSecondaryEmailForUser(
     revalidatePath("/account", "layout");
 }
 
-async function updateCommunicationEmail(
+export async function updateCommunicationEmail(
     communication_email: CommunicationEmailCode
 ) {
     const session = await getServerSession(authOptions);
@@ -111,6 +111,7 @@ async function updateCommunicationEmail(
     }
     let previousCommunicationEmail = dbUser.communication_email;
     let hasBothEmailsSet = dbUser.primary_email && dbUser.secondary_email;
+    // @todo send error when emails are not both set
     if (communication_email != previousCommunicationEmail && hasBothEmailsSet) {
         await db
             .updateTable("users")
