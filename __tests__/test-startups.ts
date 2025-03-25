@@ -1,23 +1,22 @@
-import chai, { expect } from "chai";
+import chai from "chai";
 import chaiHttp from "chai-http";
 import * as nextAuth from "next-auth/next";
+import proxyquire from "proxyquire";
 import sinon from "sinon";
 
-import utils from "./utils";
 import { createData, deleteData } from "./utils/fakeData";
 import { testUsers } from "./utils/users-data";
-import { updateStartup } from "@/app/api/startups/actions";
 import { db } from "@/lib/kysely";
+import { SponsorDomaineMinisteriel, SponsorType } from "@/models/sponsor";
 import { StartupPhase } from "@/models/startup";
-import * as session from "@/server/helpers/session";
 import { AuthorizationError } from "@/utils/error";
-import * as betagouv from "@betagouv";
+
 chai.use(chaiHttp);
 
-const base64Image = `data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAgAAAAIAQMAAAD+wSzIAAAABlBMVEX///+/v7+jQ3Y5AAAADklEQVQI12P4AIX8EAgALgAD/aNpbtEAAAAASUVORK5CYII`;
-describe("Startup page", () => {
+describe("Test startup server action", () => {
     describe("post /api/startups/:startup unauthenticated", () => {
         let getServerSessionStub;
+        let updateStartup;
         beforeEach(async () => {
             getServerSessionStub = sinon
                 .stub(nextAuth, "getServerSession")
@@ -39,7 +38,14 @@ describe("Startup page", () => {
                 .selectAll()
                 .where("ghid", "=", "test-startup")
                 .executeTakeFirstOrThrow();
+            const cacheStub = {
+                revalidatePath: sinon.stub(),
+            };
 
+            const actions = proxyquire("@/app/api/startups/actions", {
+                "next/cache": cacheStub,
+            });
+            updateStartup = actions.updateStartup;
             console.log(startup);
             try {
                 await updateStartup({
@@ -69,11 +75,20 @@ describe("Startup page", () => {
         let getServerSessionStub;
         let user;
         let startup;
+        let updateStartup;
         beforeEach(async () => {
             getServerSessionStub = sinon
                 .stub(nextAuth, "getServerSession")
                 .resolves({});
 
+            const cacheStub = {
+                revalidatePath: sinon.stub(),
+            };
+
+            const actions = proxyquire("@/app/api/startups/actions", {
+                "next/cache": cacheStub,
+            });
+            updateStartup = actions.updateStartup;
             await createData(testUsers);
             user = await db
                 .selectFrom("users")
@@ -96,6 +111,8 @@ describe("Startup page", () => {
         });
         afterEach(async () => {
             sinon.restore();
+            await db.deleteFrom("events").execute();
+
             await deleteData(testUsers);
         });
 
@@ -105,7 +122,7 @@ describe("Startup page", () => {
                     startup: {
                         contact: "",
                         description: "la description de la startup",
-                        incubator_id: "",
+                        incubator_id: startup.incubator_id,
                         name: "title de la se",
                         pitch: "lamissiondelastartup",
                     },
@@ -135,102 +152,96 @@ describe("Startup page", () => {
         });
     });
 
-    // describe("post /api/startups/:startup/create-form authenticated", () => {
-    //     let getToken;
-    //     let updateStartupGithubFileStub;
-    //     let startupInfosStub;
-    //     beforeEach(() => {
-    //         getToken = sinon.stub(session, "getToken");
-    //         getToken.returns(utils.getJWT("membre.actif"));
-    //         updateStartupGithubFileStub = sinon.stub(
-    //             UpdateGithubCollectionEntry,
-    //             "updateMultipleFilesPR"
-    //         );
-    //         updateStartupGithubFileStub.returns(
-    //             Promise.resolve({
-    //                 html_url: "https://djkajdlskjad.com",
-    //                 number: 12151,
-    //             })
-    //         );
-    //         startupInfosStub = sinon.stub(betagouv.default, "startupsInfos");
-    //         startupInfosStub.returns(
-    //             Promise.resolve([
-    //                 {
-    //                     id: "a-dock",
-    //                     type: "startup",
-    //                     attributes: {
-    //                         name: "A Dock",
-    //                         pitch: "Simplifier l'accès aux données et démarches administratives du transport routier de marchandises",
-    //                         stats_url: "https://adock.beta.gouv.fr/stats",
-    //                         link: "https://adock.beta.gouv.fr",
-    //                         repository: "https://github.com/MTES-MCT/adock-api",
-    //                         events: [],
-    //                         phases: [
-    //                             {
-    //                                 name: "investigation",
-    //                                 start: "2018-01-08",
-    //                                 end: "2018-07-01",
-    //                             },
+    describe("post /api/startups/:startup/create-form authenticated", () => {
+        let getServerSessionStub;
+        let user;
+        let startup;
+        let createStartup;
+        beforeEach(async () => {
+            getServerSessionStub = sinon
+                .stub(nextAuth, "getServerSession")
+                .resolves({});
 
-    //                             {
-    //                                 name: "construction",
-    //                                 start: "2018-07-01",
-    //                                 end: "2019-01-23",
-    //                             },
+            await createData(testUsers);
+            const cacheStub = {
+                revalidatePath: sinon.stub(),
+            };
 
-    //                             {
-    //                                 name: "acceleration",
-    //                                 start: "2019-01-23",
-    //                                 end: "",
-    //                             },
-    //                         ],
-    //                     },
-    //                     relationships: {
-    //                         incubator: {
-    //                             data: { type: "incubator", id: "mtes" },
-    //                         },
-    //                     },
-    //                 },
-    //             ])
-    //         );
-    //     });
+            const actions = proxyquire("@/app/api/startups/actions", {
+                "next/cache": cacheStub,
+            });
+            createStartup = actions.createStartup;
+            user = await db
+                .selectFrom("users")
+                .selectAll()
+                .where("username", "=", "membre.actif")
+                .executeTakeFirstOrThrow();
+            const mockSession = {
+                user: {
+                    id: "membre.actif",
+                    isAdmin: false,
+                    uuid: user.uuid,
+                },
+            };
+            startup = await db
+                .selectFrom("startups")
+                .selectAll()
+                .where("ghid", "=", "test-startup")
+                .executeTakeFirstOrThrow();
+            getServerSessionStub.resolves(mockSession);
+        });
+        afterEach(async () => {
+            sinon.restore();
+            await db.deleteFrom("events").execute();
+            await db
+                .deleteFrom("startups")
+                .where("ghid", "=", "title-de-la-se")
+                .execute();
+            await deleteData(testUsers);
+        });
 
-    //     afterEach(() => {
-    //         getToken.restore();
-    //         updateStartupGithubFileStub.restore();
-    //         startupInfosStub.restore();
-    //     });
-
-    //     it("should create product if date and phase are valid", async () => {
-    //         const res = await chai
-    //             .request(app)
-    //             .post(routes.STARTUP_POST_INFO_CREATE_FORM)
-    //             .set("Content-Type", "application/json") // Set the content type to application/json
-    //             .send(
-    //                 JSON.stringify({
-    //                     startup: "nomdestartup",
-    //                     mission: "lamissiondelastartup",
-    //                     markdown: "la description de la startup",
-    //                     title: "title de la se",
-    //                     contact: "lamissiondelastartup@beta.gouv.fr",
-    //                     phases: [
-    //                         {
-    //                             name: "alumni",
-    //                             start: new Date().toISOString(),
-    //                         },
-    //                     ],
-    //                     image: base64Image,
-    //                     newSponsors: [
-    //                         {
-    //                             name: "a sponsors",
-    //                             acronym: "AS",
-    //                             type: "operateur",
-    //                             domaine_ministeriel: "culture",
-    //                         },
-    //                     ],
-    //                 })
-    //             );
-    //         res.should.have.status(200);
-    //     });
-    // });
+        it("should create product if date and phase are valid", async () => {
+            await createStartup({
+                formData: {
+                    startup: {
+                        pitch: "lamissiondelastartup",
+                        description: "la description de la startup",
+                        name: "title de la se",
+                        contact: "lamissiondelastartup@beta.gouv.fr",
+                        incubator_id: (
+                            await db
+                                .selectFrom("incubators")
+                                .selectAll()
+                                .executeTakeFirstOrThrow()
+                        ).uuid,
+                    },
+                    startupPhases: [
+                        {
+                            name: StartupPhase.PHASE_ALUMNI,
+                            start: new Date(),
+                        },
+                    ],
+                    newSponsors: [
+                        {
+                            ghid: "asponsors",
+                            name: "a sponsors",
+                            acronym: "AS",
+                            type: SponsorType.SPONSOR_TYPE_OPERATEUR,
+                            domaine_ministeriel:
+                                SponsorDomaineMinisteriel.SPONSOR_DOMAINE_CULTURE,
+                        },
+                    ],
+                    startupEvents: [],
+                    startupSponsors: [],
+                    newPhases: [],
+                },
+            });
+            const startups = await db
+                .selectFrom("startups")
+                .where("ghid", "=", "title-de-la-se")
+                .selectAll()
+                .execute();
+            console.log(startups);
+        });
+    });
 });

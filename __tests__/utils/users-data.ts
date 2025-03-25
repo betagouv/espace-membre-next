@@ -310,4 +310,5 @@ export const testUsers: FakeDataInterface = {
             ghid: "test-startup",
         },
     ],
+    incubators: [{ ghid: "un-super-incubator" }],
 };
