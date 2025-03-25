@@ -1,189 +1,138 @@
-import chai from "chai";
+import chai, { expect } from "chai";
 import chaiHttp from "chai-http";
+import * as nextAuth from "next-auth/next";
 import sinon from "sinon";
 
 import utils from "./utils";
-import routes from "@/routes/routes";
+import { createData, deleteData } from "./utils/fakeData";
+import { testUsers } from "./utils/users-data";
+import { updateStartup } from "@/app/api/startups/actions";
+import { db } from "@/lib/kysely";
+import { StartupPhase } from "@/models/startup";
 import * as session from "@/server/helpers/session";
-import app from "@/server/index";
+import { AuthorizationError } from "@/utils/error";
 import * as betagouv from "@betagouv";
-//import * as UpdateGithubCollectionEntry from "@controllers/helpers/githubHelpers/updateGithubCollectionEntry";
-
 chai.use(chaiHttp);
 
 const base64Image = `data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAgAAAAIAQMAAAD+wSzIAAAABlBMVEX///+/v7+jQ3Y5AAAADklEQVQI12P4AIX8EAgALgAD/aNpbtEAAAAASUVORK5CYII`;
 describe("Startup page", () => {
-    // describe("GET /api/startups unauthenticated", () => {
-    //     it("should redirect to login", (done) => {
-    //         chai.request(app)
-    //             .get(routes.STARTUP_GET_ALL_API)
-    //             .redirects(0)
-    //             .end((err, res) => {
-    //                 res.should.have.status(500);
-    //                 // res.header.location.should.include("/login");
-    //                 // res.header.location.should.equal("/login?next=/admin");
-    //                 done();
-    //             });
-    //     });
-    // });
+    describe("post /api/startups/:startup unauthenticated", () => {
+        let getServerSessionStub;
+        beforeEach(async () => {
+            getServerSessionStub = sinon
+                .stub(nextAuth, "getServerSession")
+                .resolves({});
 
-    // describe("GET /api/startups authenticated", () => {
-    //     let getToken;
+            await createData(testUsers);
+            const mockSession = {
+                user: {},
+            };
+            getServerSessionStub.resolves(mockSession);
+        });
+        afterEach(async () => {
+            sinon.restore();
+            await deleteData(testUsers);
+        });
+        it("should not allow unauthenticated user to update startups", async () => {
+            const startup = await db
+                .selectFrom("startups")
+                .selectAll()
+                .where("ghid", "=", "test-startup")
+                .executeTakeFirstOrThrow();
 
-    //     beforeEach(() => {
-    //         getToken = sinon.stub(session, "getToken");
-    //         getToken.returns(utils.getJWT("membre.actif"));
-    //     });
-
-    //     afterEach(() => {
-    //         getToken.restore();
-    //     });
-
-    //     it("GET /api/startups authenticated should return a valid page", async () => {
-    //         utils.mockStartupsDetails();
-    //         const res = await chai.request(app).get(routes.STARTUP_GET_ALL_API);
-    //         res.should.have.status(200);
-    //     });
-    // });
-
-    // describe("post /api/startups/:startup unauthenticated", () => {
-    //     it("should redirect to login", async () => {
-    //         const res = await chai
-    //             .request(app)
-    //             .post(
-    //                 routes.STARTUP_POST_INFO_UPDATE_FORM.replace(
-    //                     ":startup",
-    //                     "a-dock"
-    //                 )
-    //             )
-    //             .redirects(0);
-    //         res.should.have.status(401);
-    //     });
-    // });
+            console.log(startup);
+            try {
+                await updateStartup({
+                    formData: {
+                        startup: {
+                            contact: "",
+                            description: "",
+                            incubator_id: "",
+                            name: "",
+                            pitch: "",
+                        },
+                        startupEvents: [],
+                        startupPhases: [],
+                        startupSponsors: [],
+                        newSponsors: [],
+                        newPhases: [],
+                    },
+                    startupUuid: startup.uuid,
+                });
+            } catch (error) {
+                error.should.be.instanceof(AuthorizationError);
+            }
+        });
+    });
 
     describe("post /api/startups/:startup authenticated", () => {
-        let getToken;
-        //  let updateStartupGithubFileStub;
-        let startupInfosStub;
-        beforeEach(() => {
-            getToken = sinon.stub(session, "getToken");
-            getToken.returns(utils.getJWT("membre.actif"));
-            // updateStartupGithubFileStub = sinon.stub(
-            //     UpdateGithubCollectionEntry,
-            //     "updateMultipleFilesPR"
-            // );
-            // updateStartupGithubFileStub.returns(
-            //     Promise.resolve({
-            //         html_url: "https://djkajdlskjad.com",
-            //         number: 12151,
-            //     })
-            // );
-            startupInfosStub = sinon.stub(betagouv.default, "startupsInfos");
-            startupInfosStub.returns(
-                Promise.resolve([
-                    {
-                        id: "a-dock",
-                        type: "startup",
-                        attributes: {
-                            name: "A Dock",
-                            pitch: "Simplifier l'accès aux données et démarches administratives du transport routier de marchandises",
-                            stats_url: "https://adock.beta.gouv.fr/stats",
-                            link: "https://adock.beta.gouv.fr",
-                            repository: "https://github.com/MTES-MCT/adock-api",
-                            events: [],
-                            phases: [
-                                {
-                                    name: "investigation",
-                                    start: "2018-01-08",
-                                    end: "2018-07-01",
-                                },
+        let getServerSessionStub;
+        let user;
+        let startup;
+        beforeEach(async () => {
+            getServerSessionStub = sinon
+                .stub(nextAuth, "getServerSession")
+                .resolves({});
 
-                                {
-                                    name: "construction",
-                                    start: "2018-07-01",
-                                    end: "2019-01-23",
-                                },
+            await createData(testUsers);
+            user = await db
+                .selectFrom("users")
+                .selectAll()
+                .where("username", "=", "membre.actif")
+                .executeTakeFirstOrThrow();
+            const mockSession = {
+                user: {
+                    id: "membre.actif",
+                    isAdmin: false,
+                    uuid: user.uuid,
+                },
+            };
+            startup = await db
+                .selectFrom("startups")
+                .selectAll()
+                .where("ghid", "=", "test-startup")
+                .executeTakeFirstOrThrow();
+            getServerSessionStub.resolves(mockSession);
+        });
+        afterEach(async () => {
+            sinon.restore();
+            await deleteData(testUsers);
+        });
 
-                                {
-                                    name: "acceleration",
-                                    start: "2019-01-23",
-                                    end: "",
-                                },
-                            ],
-                        },
-                        relationships: {
-                            incubator: {
-                                data: { type: "incubator", id: "mtes" },
-                            },
-                        },
+        it("should update product if date and phase are valid", async () => {
+            await updateStartup({
+                formData: {
+                    startup: {
+                        contact: "",
+                        description: "la description de la startup",
+                        incubator_id: "",
+                        name: "title de la se",
+                        pitch: "lamissiondelastartup",
                     },
-                ])
+                    startupEvents: [],
+                    startupPhases: [
+                        {
+                            name: StartupPhase.PHASE_ALUMNI,
+                            start: new Date(),
+                        },
+                    ],
+                    startupSponsors: [],
+                    newSponsors: [],
+                    newPhases: [],
+                },
+                startupUuid: startup.uuid,
+            });
+            const updatedStartup = await db
+                .selectFrom("startups")
+                .selectAll()
+                .where("uuid", "=", startup.uuid)
+                .executeTakeFirstOrThrow();
+            updatedStartup.pitch?.should.equals("lamissiondelastartup");
+            updatedStartup.name.should.equals("title de la se");
+            updatedStartup.description?.should.equals(
+                "la description de la startup"
             );
         });
-
-        afterEach(() => {
-            getToken.restore();
-            //updateStartupGithubFileStub.restore();
-            startupInfosStub.restore();
-        });
-
-        // it("should update product if date and phase are valid", async () => {
-        //     const res = await chai
-        //         .request(app)
-        //         .post(
-        //             routes.STARTUP_POST_INFO_UPDATE_FORM.replace(
-        //                 ":startup",
-        //                 "a-dock"
-        //             )
-        //         )
-        //         .send({
-        //             mission: "lamissiondelastartup",
-        //             markdown: "la description de la startup",
-        //             title: "title de la se",
-        //             phases: [
-        //                 {
-        //                     name: "alumni",
-        //                     start: new Date().toISOString(),
-        //                 },
-        //             ],
-        //         });
-        //     res.should.have.status(200);
-        // });
-
-        // it("should be able to update product text content", async () => {
-        //     const res = await chai
-        //         .request(app)
-        //         .post(
-        //             routes.STARTUP_POST_INFO_UPDATE_FORM.replace(
-        //                 ":startup",
-        //                 "a-dock"
-        //             )
-        //         )
-        //         .send({
-        //             mission: "lamissiondelastartup",
-        //             title: "title de la se",
-        //             phases: [
-        //                 {
-        //                     name: "alumni",
-        //                     start: new Date().toISOString(),
-        //                 },
-        //             ],
-        //             newSponsors: [
-        //                 {
-        //                     name: "a sponsors",
-        //                     acronym: "AS",
-        //                     type: "operateur",
-        //                     domaine_ministeriel: "culture",
-        //                 },
-        //             ],
-        //             image: base64Image,
-        //             markdown: "test",
-        //         });
-        //     updateStartupGithubFileStub.args[0][1][0].content.should.equals(
-        //         "test"
-        //     );
-        //     res.should.have.status(200);
-        // });
     });
 
     // describe("post /api/startups/:startup/create-form authenticated", () => {
