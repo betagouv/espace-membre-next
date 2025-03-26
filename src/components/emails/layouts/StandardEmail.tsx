@@ -41,7 +41,7 @@ export function StandardLayout(props: PropsWithChildren<StandardLayoutProps>) {
                         border-width="1px"
                         border-color="#000000"
                     ></MjmlDivider>
-                    <MjmlAll fontFamily='"Marianne", arial, sans-serif'></MjmlAll>
+                    <MjmlAll fontFamily="&quot;Marianne&quot;, arial, sans-serif"></MjmlAll>
                     <MjmlText
                         cssClass="light-text"
                         color="#3a3a3a"
