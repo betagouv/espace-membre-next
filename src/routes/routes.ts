@@ -3,7 +3,6 @@ export const computeRoute = (route) => {
 };
 
 class routes {
-    // startup
     static ACCOUNT_POST_BASE_INFO_FORM =
         "/api/member/:username/info-update" as const;
     static API_PUBLIC_POST_BASE_INFO_FORM =
