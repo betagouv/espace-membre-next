@@ -138,7 +138,7 @@ export function PrivateLayout({ children }: { children: React.ReactNode }) {
                 {
                     href: () =>
                         linkRegistry.get("startupDetails", {
-                            startupId: currentItemId,
+                            startupId: currentItemId || "",
                         }),
                     text: currentPage,
                     isActive: hasPathnameThisRegex(
@@ -185,7 +185,7 @@ export function PrivateLayout({ children }: { children: React.ReactNode }) {
                         {
                             href: () =>
                                 linkRegistry.get("incubatorDetails", {
-                                    incubatorId: currentItemId,
+                                    incubatorId: currentItemId || "",
                                 }),
                             text: currentPage,
                             isActive: hasPathnameThisRegex(

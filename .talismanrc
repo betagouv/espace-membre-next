@@ -1,6 +1,198 @@
 fileignoreconfig:
-- filename: src/server/views/templates/emails/VerificationWaiting/VerificationWaiting.tsx
-  checksum: 6516c90ed7710164f26cdb19dfadc7977ce08b928a1e805953cc5bd8877b2c95
+<<<<<<< HEAD
+  - filename: src/server/views/templates/emails/VerificationWaiting/VerificationWaiting.tsx
+    checksum: 6516c90ed7710164f26cdb19dfadc7977ce08b928a1e805953cc5bd8877b2c95
+  - filename: src/utils/routes/registry.ts
+    checksum: 0eec0164594cc177928c979ace6580d8746bfdb23a2e5b0abd34fbd578fb9bd5
+  - filename: src/app/api/member/actions/createRedirectionForUser.ts
+    checksum: 12c54f94e0d66d8e3d51b9e9dd7032a1757c50fc85733b29befe9c0162fe3251
+  - filename: src/app/api/member/actions/deleteRedirectionForUser.ts
+    checksum: 101799cd46e136337eef4fd4f6158d23b04af6484afce569d4bd6c1e7b56a26b
+  - filename: src/app/api/member/actions/updatePasswordForUser.ts
+    checksum: f0f76c8fc4094fb1a0ae2fa456dcf72b0d2481dbe4cfd8632241306d9b63c2d3
+  - filename: src/app/api/services/actions.ts
+    checksum: 80f4cffcc5861befdb98c676df064595dae5c318349c45059ba87fe20e96f2a2
+  - filename: src/components/CommunityPage/Community.tsx
+    checksum: 50ed5a9ba8e03d4ffc248026cfae6fd6331c84c21b30aaa73c0bf30f22be9e2c
+  - filename: src/components/Dashboard/DashboardPage.tsx
+    checksum: 75bfae226e0e1ef37d90f40938d0b2f73cc0ea554b7f69c4245f68179719f559
+  - filename: src/components/IncubatorForm/IncubatorForm.tsx
+    checksum: 267f0f0e491b06862cd957ae86d22baf799a705370673cd24e588391a4613a5a
+  - filename: src/components/IncubatorPage/IncubatorPage.tsx
+    checksum: 61c912058a8f8c12b1173a37b7fa555c11e2ddbf36bd95d0e986576c9ef5e79a
+  - filename: src/components/MemberPage/Email/BlocChangerMotDePasse.tsx
+    checksum: d8d94dc10f39aa4a312ee7ef74dbd34c07e0106ac8147e3fdd646cace2713f02
+  - filename: src/components/MemberPage/Email/EmailContainer.tsx
+    checksum: 8032498b28992e4564069a84e94b36d066195995fd461b0c2fd1c6c5d069650d
+  - filename: src/components/MemberPage/EmailUpgrade.tsx
+    checksum: 183a72c4974a5bd2e7a3da0d60895480dc6843e158933a221329dd18e586e400
+  - filename: src/components/MemberPage/MemberMissions.tsx
+    checksum: b2f5359c37842b49af49164e11479cc6f106f08b177c2e94ebdb4fcd54f6c9a5
+  - filename: src/components/MemberPage/MemberPage.tsx
+    checksum: d7e1d2aa3b94b36055a1cee44c29b8818cd734c7a454c63e11eb0ad6a6877c56
+  - filename: src/components/MemberPage/MemberStatus.tsx
+    checksum: d053268f66c3b28d6571780acf2fabfa335646c79ad17138dbd224fa653f2fce
+  - filename: src/components/NewsletterPage/NewsletterPage.tsx
+    checksum: 6b0b2109d112d5302ef35256a2febf53feadf65f5538acee4dce09f0d2da75eb
+  - filename: src/components/SEPhaseSelect.tsx
+    checksum: 0415032e0a9fb86957148673924ac6e16bc1ffb4b1851091377d23a200562e5e
+  - filename: src/components/SESponsorSelect.tsx
+    checksum: ae63a1c0173015ad4e9e904e4f025eecb992aca7ca5c1cbf4086baf16470dfcf
+  - filename: src/components/Service/CreateMatomoServiceForm.tsx
+    checksum: 2604444e919b0091b132574a270c719f474947d740f3195a8f078e3d0534fd20
+  - filename: src/components/Service/MatomoServiceForm.tsx
+    checksum: ef5418a9df94947e6fb2671f05916a50ad8dcfeb39ad02b8ac3e40a9529de8d7
+  - filename: src/components/Service/SentryServiceForm.tsx
+    checksum: e3d7f5c86f3cbf6a33d84bdd036847acb722687f10500b2a967c7028054065d9
+  - filename: src/components/StartupForm/StartupForm.tsx
+    checksum: 9825dfaa4fa13ba67d83dc61318030777da59cdce8b9bc8225092ae69b12711a
+  - filename: src/components/StartupForm/TechnoEditor.tsx
+    checksum: 1945d388ece9e30e247acfa902436849f78ffcd032047f8c0292173dddc8ea53
+  - filename: src/components/StartupPage/MemberTable.tsx
+    checksum: f1d168517e132fc962db2091298455c70fb127033724cd0409ce69359677e28c
+  - filename: src/components/StartupPage/StartupDescription.tsx
+    checksum: 20dacf741b7701cb6f5c5d47ec5645fb79dbbd7eb6317df333a347cbba7512ec
+  - filename: src/components/StartupPage/StartupHeader.tsx
+    checksum: 8c2e104723a070f57d47f4b34be20f8ae794e0e36c203cf8507d8e60f221286f
+  - filename: src/components/StartupPage/StartupHistory.tsx
+    checksum: 35d84702b7a958ce3577a9341f165cc4de6991822f17b531853a27af6a079ef8
+  - filename: src/components/StartupPage/StartupMembers.tsx
+    checksum: 65fe7aa4422087fa3ba23e06f1f436ffa268b8b8fb0a9370d1f0f61ff0ffb10e
+  - filename: src/components/StartupPage/StartupStandards.tsx
+    checksum: 6d4349bd1dece9716c29931a6b3a9ecd5f6a29538253d8b93b4fea444938a856
+  - filename: src/components/organization/OrganizationPage/Organization.tsx
+    checksum: 335b3f8e703ea7a3fc2fa9996adb0467961a244f97b62ca5282d69c79a15b5b7
+  - filename: src/lib/env.ts
+    checksum: 1ec2fc5a95c4ee5015ca938ece2d9e0b942c770c93df3f688dd02da08d07ae20
+  - filename: src/lib/flat.ts
+    checksum: 9d85e847b6ea44463e44012471c88fc13e78795881a440664fa694d41b23d5ee
+  - filename: src/lib/hstore.ts
+    checksum: a02535588a717719f9e51c324d78779afd8c08fe4904a4aae525b85f8720b0ef
+  - filename: src/lib/matomo.ts
+    checksum: cbeb7cde7284119eadd0b64cfd126d76797a31ecd57d4d186e33e5e35689b844
+  - filename: src/lib/protectedApiToken.ts
+    checksum: 4393d06fa68ff887c69478e5d6b5d0023b9d73deb1c8b5447002f8fb7ea14fce
+  - filename: src/lib/s3.ts
+    checksum: a91be258dbac2f22c916598e597bd8cb4ca640e03dd422653486d6288375e849
+  - filename: src/lib/sentry.ts
+    checksum: db61b0ab0428b72335b6814ac09bedd8064a0b6f48cfcaac88971ae728cc5744
+  - filename: src/middleware.ts
+    checksum: 1ac7177d4d39cf4624f97642cea78396708e11e8e486874f1ff2c5928f017024
+  - filename: src/models/member.ts
+    checksum: bd0f22c5efa62fd1388ac16c1ba321e393ede1e06d86f66d3561e556c098feb0
+  - filename: src/server/config/index.ts
+    checksum: a2591e8092f663b759ec49f7b51911e17af0f5f22de50b60340827e87755929a
+  - filename: src/server/queueing/workers/create-update-matomo-account.ts
+    checksum: 598112766ea826e0c05c38962373358c520d8720ff8faebfbc65ea7f913fff44
+  - filename: src/server/views/templates/emails/memberValidationEmail/memberValidationEmail.tsx
+    checksum: d927d56d534024f2f271a955a467df69d7246646143ec80364dbc4fd3eacf380
+  - filename: src/server/views/templates/emails/teamCompositionEmail/teamCompositionEmail.tsx
+    checksum: 8ec5495ed8db0f139a082bf0162e23cb05b0125b394abf63e447aca293dfcdbb
+  - filename: src/utils/routes/list.ts
+    checksum: ebb1c7a8c5fb51e0e49a23f79d1342f177946b4e783154bb265970b672aa2a2c
+  - filename: src/utils/url.ts
+    checksum: 6c0989d85371d5071d9dcaa141e1c35b10f7124a3628deef443a4a1ccacfa34f
+  - filename: src/utils/routes/routes.ts
+    checksum: 1436c0039f48e9588341e13841714f37f30cdb96d2ec1873e3eaa40fb9720816
+  - filename: src/app/api/member/actions/createRedirectionForUser.ts
+    checksum: 12c54f94e0d66d8e3d51b9e9dd7032a1757c50fc85733b29befe9c0162fe3251
+  - filename: src/app/api/member/actions/deleteRedirectionForUser.ts
+    checksum: 101799cd46e136337eef4fd4f6158d23b04af6484afce569d4bd6c1e7b56a26b
+  - filename: src/app/api/member/actions/updatePasswordForUser.ts
+    checksum: f0f76c8fc4094fb1a0ae2fa456dcf72b0d2481dbe4cfd8632241306d9b63c2d3
+  - filename: src/app/api/services/actions.ts
+    checksum: 80f4cffcc5861befdb98c676df064595dae5c318349c45059ba87fe20e96f2a2
+  - filename: src/components/CommunityPage/Community.tsx
+    checksum: 50ed5a9ba8e03d4ffc248026cfae6fd6331c84c21b30aaa73c0bf30f22be9e2c
+  - filename: src/components/Dashboard/DashboardPage.tsx
+    checksum: 75bfae226e0e1ef37d90f40938d0b2f73cc0ea554b7f69c4245f68179719f559
+  - filename: src/components/IncubatorForm/IncubatorForm.tsx
+    checksum: 267f0f0e491b06862cd957ae86d22baf799a705370673cd24e588391a4613a5a
+  - filename: src/components/IncubatorPage/IncubatorPage.tsx
+    checksum: 61c912058a8f8c12b1173a37b7fa555c11e2ddbf36bd95d0e986576c9ef5e79a
+  - filename: src/components/MemberPage/Email/BlocChangerMotDePasse.tsx
+    checksum: d8d94dc10f39aa4a312ee7ef74dbd34c07e0106ac8147e3fdd646cace2713f02
+  - filename: src/components/MemberPage/Email/EmailContainer.tsx
+    checksum: 8032498b28992e4564069a84e94b36d066195995fd461b0c2fd1c6c5d069650d
+  - filename: src/components/MemberPage/EmailUpgrade.tsx
+    checksum: 183a72c4974a5bd2e7a3da0d60895480dc6843e158933a221329dd18e586e400
+  - filename: src/components/MemberPage/MemberMissions.tsx
+    checksum: b2f5359c37842b49af49164e11479cc6f106f08b177c2e94ebdb4fcd54f6c9a5
+  - filename: src/components/MemberPage/MemberPage.tsx
+    checksum: d7e1d2aa3b94b36055a1cee44c29b8818cd734c7a454c63e11eb0ad6a6877c56
+  - filename: src/components/MemberPage/MemberStatus.tsx
+    checksum: d053268f66c3b28d6571780acf2fabfa335646c79ad17138dbd224fa653f2fce
+  - filename: src/components/NewsletterPage/NewsletterPage.tsx
+    checksum: 6b0b2109d112d5302ef35256a2febf53feadf65f5538acee4dce09f0d2da75eb
+  - filename: src/components/SEPhaseSelect.tsx
+    checksum: 0415032e0a9fb86957148673924ac6e16bc1ffb4b1851091377d23a200562e5e
+  - filename: src/components/SESponsorSelect.tsx
+    checksum: ae63a1c0173015ad4e9e904e4f025eecb992aca7ca5c1cbf4086baf16470dfcf
+  - filename: src/components/Service/CreateMatomoServiceForm.tsx
+    checksum: 2604444e919b0091b132574a270c719f474947d740f3195a8f078e3d0534fd20
+  - filename: src/components/Service/MatomoServiceForm.tsx
+    checksum: ef5418a9df94947e6fb2671f05916a50ad8dcfeb39ad02b8ac3e40a9529de8d7
+  - filename: src/components/Service/SentryServiceForm.tsx
+    checksum: e3d7f5c86f3cbf6a33d84bdd036847acb722687f10500b2a967c7028054065d9
+  - filename: src/components/StartupForm/StartupForm.tsx
+    checksum: 9825dfaa4fa13ba67d83dc61318030777da59cdce8b9bc8225092ae69b12711a
+  - filename: src/components/StartupForm/TechnoEditor.tsx
+    checksum: 1945d388ece9e30e247acfa902436849f78ffcd032047f8c0292173dddc8ea53
+  - filename: src/components/StartupPage/MemberTable.tsx
+    checksum: f1d168517e132fc962db2091298455c70fb127033724cd0409ce69359677e28c
+  - filename: src/components/StartupPage/StartupDescription.tsx
+    checksum: 20dacf741b7701cb6f5c5d47ec5645fb79dbbd7eb6317df333a347cbba7512ec
+  - filename: src/components/StartupPage/StartupHeader.tsx
+    checksum: 8c2e104723a070f57d47f4b34be20f8ae794e0e36c203cf8507d8e60f221286f
+  - filename: src/components/StartupPage/StartupHistory.tsx
+    checksum: 35d84702b7a958ce3577a9341f165cc4de6991822f17b531853a27af6a079ef8
+  - filename: src/components/StartupPage/StartupMembers.tsx
+    checksum: 65fe7aa4422087fa3ba23e06f1f436ffa268b8b8fb0a9370d1f0f61ff0ffb10e
+  - filename: src/components/StartupPage/StartupStandards.tsx
+    checksum: 6d4349bd1dece9716c29931a6b3a9ecd5f6a29538253d8b93b4fea444938a856
+  - filename: src/components/organization/OrganizationPage/Organization.tsx
+    checksum: 335b3f8e703ea7a3fc2fa9996adb0467961a244f97b62ca5282d69c79a15b5b7
+  - filename: src/lib/env.ts
+    checksum: 1ec2fc5a95c4ee5015ca938ece2d9e0b942c770c93df3f688dd02da08d07ae20
+  - filename: src/lib/flat.ts
+    checksum: 9d85e847b6ea44463e44012471c88fc13e78795881a440664fa694d41b23d5ee
+  - filename: src/lib/hstore.ts
+    checksum: a02535588a717719f9e51c324d78779afd8c08fe4904a4aae525b85f8720b0ef
+  - filename: src/lib/matomo.ts
+    checksum: cbeb7cde7284119eadd0b64cfd126d76797a31ecd57d4d186e33e5e35689b844
+  - filename: src/lib/protectedApiToken.ts
+    checksum: 4393d06fa68ff887c69478e5d6b5d0023b9d73deb1c8b5447002f8fb7ea14fce
+  - filename: src/lib/s3.ts
+    checksum: a91be258dbac2f22c916598e597bd8cb4ca640e03dd422653486d6288375e849
+  - filename: src/lib/sentry.ts
+    checksum: db61b0ab0428b72335b6814ac09bedd8064a0b6f48cfcaac88971ae728cc5744
+  - filename: src/middleware.ts
+    checksum: 1ac7177d4d39cf4624f97642cea78396708e11e8e486874f1ff2c5928f017024
+  - filename: src/models/member.ts
+    checksum: bd0f22c5efa62fd1388ac16c1ba321e393ede1e06d86f66d3561e556c098feb0
+  - filename: src/server/config/index.ts
+    checksum: a2591e8092f663b759ec49f7b51911e17af0f5f22de50b60340827e87755929a
+  - filename: src/server/queueing/workers/create-update-matomo-account.ts
+    checksum: 598112766ea826e0c05c38962373358c520d8720ff8faebfbc65ea7f913fff44
+  - filename: src/server/views/templates/emails/memberValidationEmail/memberValidationEmail.tsx
+    checksum: d927d56d534024f2f271a955a467df69d7246646143ec80364dbc4fd3eacf380
+  - filename: src/server/views/templates/emails/teamCompositionEmail/teamCompositionEmail.tsx
+    checksum: 8ec5495ed8db0f139a082bf0162e23cb05b0125b394abf63e447aca293dfcdbb
+  - filename: src/utils/routes/list.ts
+    checksum: ebb1c7a8c5fb51e0e49a23f79d1342f177946b4e783154bb265970b672aa2a2c
+  - filename: src/utils/url.ts
+    checksum: 6c0989d85371d5071d9dcaa141e1c35b10f7124a3628deef443a4a1ccacfa34f
+  - filename: src/server/views/templates/emails/teamCompositionEmail/teamCompositionEmail.tsx
+    checksum: 8ec5495ed8db0f139a082bf0162e23cb05b0125b394abf63e447aca293dfcdbb
+  - filename: src/utils/routes/list.ts
+    checksum: ebb1c7a8c5fb51e0e49a23f79d1342f177946b4e783154bb265970b672aa2a2c
+  - filename: src/utils/url.ts
+    checksum: 6c0989d85371d5071d9dcaa141e1c35b10f7124a3628deef443a4a1ccacfa34f
+=======
+- filename: src/utils/routes/routes.ts
+  checksum: 1436c0039f48e9588341e13841714f37f30cdb96d2ec1873e3eaa40fb9720816
+- filename: src/app/api/member/actions/createRedirectionForUser.ts
+  checksum: 12c54f94e0d66d8e3d51b9e9dd7032a1757c50fc85733b29befe9c0162fe3251
 - filename: src/app/api/member/actions/deleteRedirectionForUser.ts
   checksum: 101799cd46e136337eef4fd4f6158d23b04af6484afce569d4bd6c1e7b56a26b
 - filename: src/app/api/member/actions/updatePasswordForUser.ts
@@ -87,6 +279,17 @@ fileignoreconfig:
   checksum: ebb1c7a8c5fb51e0e49a23f79d1342f177946b4e783154bb265970b672aa2a2c
 - filename: src/utils/url.ts
   checksum: 6c0989d85371d5071d9dcaa141e1c35b10f7124a3628deef443a4a1ccacfa34f
+scopeconfig:
+- scope: node
+version: "1.0"
+24f2f271a955a467df69d7246646143ec80364dbc4fd3eacf380
+    - filename: src/server/views/templates/emails/teamCompositionEmail/teamCompositionEmail.tsx
+      checksum: 8ec5495ed8db0f139a082bf0162e23cb05b0125b394abf63e447aca293dfcdbb
+    - filename: src/utils/routes/list.ts
+      checksum: ebb1c7a8c5fb51e0e49a23f79d1342f177946b4e783154bb265970b672aa2a2c
+    - filename: src/utils/url.ts
+      checksum: 6c0989d85371d5071d9dcaa141e1c35b10f7124a3628deef443a4a1ccacfa34f
+>>>>>>> 82829874 (Update .talismanrc)
 version: "1.0"
 scopeconfig:
     - scope: node
