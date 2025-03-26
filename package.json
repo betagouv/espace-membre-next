@@ -10,7 +10,7 @@
         "build:next": "next build",
         "build:server": "ttsc -p tsconfig.server.json",
         "build": "npm run build:next && npm run build:server",
-        "start": "NODE_ENV=production next start",
+        "start": "NODE_OPTIONS='--max-old-space-size=4096' NODE_ENV=production next start",
         "lint": "next lint",
         "migrate": "knex migrate:latest --esm",
         "rolldown": "knex migrate:down --esm",
