@@ -464,7 +464,8 @@ export const MemberStatus = ({
                 .with(false, () => <>Au moins une mission en cours.</>)
                 .exhaustive(),
         ],
-        emailStatusRow(emailInfos, userInfos),
+        emailInfos?.email.endsWith("@beta.gouv.fr") &&
+            emailStatusRow(emailInfos, userInfos),
         // Mattermost account status
         mattermostInfo && mattermostInfoRow(mattermostInfo, userInfos.uuid),
         // Matomo account status
