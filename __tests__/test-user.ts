@@ -1024,6 +1024,54 @@ describe("Test user relative actions", () => {
             createRedirectionStub.restore();
             deleteEmailStub.restore();
         });
+
+        it("should update primary email if user is admin", async () => {
+            isPublicServiceEmailStub.returns(Promise.resolve(true));
+            mattermostGetUserByEmailStub.returns(Promise.resolve(true));
+            const createRedirectionStub = sinon
+                .stub(betagouv, "createRedirection")
+                .returns(Promise.resolve(true));
+            const deleteEmailStub = sinon
+                .stub(betagouv, "deleteEmail")
+                .returns(Promise.resolve(true));
+            const username = "membre.nouveau";
+            const primaryEmail = "membre.nouveau.new@example.com";
+            const adminUser = await db
+                .selectFrom("users")
+                .selectAll()
+                .where("username", "=", "membre.actif")
+                .executeTakeFirstOrThrow();
+            const mockSession = {
+                user: {
+                    id: "membre.actif",
+                    isAdmin: true,
+                    uuid: adminUser.uuid,
+                },
+            };
+            getServerSessionStub.resolves(mockSession);
+
+            await managePrimaryEmailForUser({ username, primaryEmail });
+
+            const dbNewRes = await db
+                .selectFrom("users")
+                .selectAll()
+                .where("username", "=", "membre.nouveau")
+                .executeTakeFirstOrThrow();
+            dbNewRes.primary_email?.should.equal(primaryEmail);
+            await db
+                .updateTable("users")
+                .where("username", "=", "membre.nouveau")
+                .set({
+                    primary_email: `${username}@${config.domain}`,
+                })
+                .execute();
+            createRedirectionStub.called.should.be.true;
+            deleteEmailStub.called.should.be.true;
+            isPublicServiceEmailStub.called.should.be.true;
+            // mattermostGetUserByEmailStub.calledOnce.should.be.true;
+            createRedirectionStub.restore();
+            deleteEmailStub.restore();
+        });
     });
 
     describe("cronjob", () => {
