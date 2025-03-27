@@ -3,14 +3,18 @@ import { getServerSession } from "next-auth";
 
 import { db } from "@/lib/kysely";
 import { authOptions } from "@/utils/authoptions";
+import { AuthorizationError, BusinessError, withHttpErrorHandling } from "@/utils/error";
 
-export async function GET(
+async function getFileHandler(
     req: NextRequest,
     { params: { id } }: { params: { id: string } }
 ) {
     const session = await getServerSession(authOptions);
-    if (!session || !session.user.id || !id) {
-        throw new Error(`You don't have the right to access this function`);
+    if (!session || !session.user.id) {
+        throw new AuthorizationError()
+    }
+    if (!id) {
+        throw new BusinessError('missingFileId', `Identifiant du fichier non fourni`)
     }
     // todo: ensure user can download files here
     const file = await db
@@ -25,5 +29,7 @@ export async function GET(
         const resp = Buffer.from(decoded, "base64");
         return new Response(resp);
     }
-    const resp = new Response("404", { status: 404 });
+    return new Response("404", { status: 404 });
 }
+
+export const GET = withHttpErrorHandling(getFileHandler)

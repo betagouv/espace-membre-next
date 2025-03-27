@@ -21,6 +21,7 @@ export const ERROR_MESSAGES = {
         "Startup data could not be inserted into the database.",
     MEMBER_ADMIN_EMAIL_ADDRESS_NOT_ALLOWED:
         "Les emails admin ne sont pas autorisés",
+    ADMIN_AUTHORIZATION_ERROR: `Vous devez être administrateur pour effectuer cette action.`
     // Add more error messages as needed
 };
 // errors.ts
@@ -53,13 +54,21 @@ export class BusinessError extends CustomError {
 export class ErrorWithStatus extends BusinessError {
     statusCode: number;
     constructor(message: string) {
-        super("500", message);
+        super(new.target.name, message);
         this.statusCode = 500;
     }
 }
 
 export class AuthorizationError extends ErrorWithStatus {
     constructor(message: string = ERROR_MESSAGES.AUTHORIZATION_ERROR) {
+        super(message);
+        this.message = message;
+        this.statusCode = 403;
+    }
+}
+
+export class AdminAuthorizationError extends ErrorWithStatus {
+    constructor(message: string = ERROR_MESSAGES.ADMIN_AUTHORIZATION_ERROR) {
         super(message);
         this.message = message;
         this.statusCode = 403;
@@ -146,6 +155,7 @@ const EXPECTED_ERRORS = [
     MemberUniqueConstraintViolationError,
     AdminEmailNotAllowedError,
     BusinessError,
+    AdminAuthorizationError
 ];
 
 function isExpectedError(error: unknown): error is ErrorWithStatus {
