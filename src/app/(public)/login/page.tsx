@@ -24,21 +24,8 @@ async function Login({
     if (session && session.user.id) {
         return redirect("/dashboard");
     }
-    const errors: any[] = [];
-    const messages = "";
-    const domain = "";
-    const next = "";
-    const secondary_email = searchParams.secondary_email || "";
 
-    return (
-        <LoginPage
-            secondary_email={secondary_email}
-            errors={errors}
-            messages={messages}
-            domain={domain}
-            next={next}
-        />
-    );
+    return <LoginPage />;
 }
 
 export default Login;

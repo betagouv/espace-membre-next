@@ -1,6 +1,6 @@
 fileignoreconfig:
-    - filename: src/server/views/templates/emails/teamCompositionEmail/teamCompositionEmail.tsx
-      checksum: 8ec5495ed8db0f139a082bf0162e23cb05b0125b394abf63e447aca293dfcdbb
+  - filename: src/server/views/templates/emails/VerificationWaiting/VerificationWaiting.tsx
+    checksum: 6516c90ed7710164f26cdb19dfadc7977ce08b928a1e805953cc5bd8877b2c95
 version: "1.0"
 scopeconfig:
-    - scope: node
+  - scope: node

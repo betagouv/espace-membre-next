@@ -222,6 +222,7 @@ export const startupSchema = z.object({
                 message: "Un email de contact est obligatoire",
             }),
         })
+        .email()
         .min(1)
         .describe("Email de contact du produit"),
     link: z
