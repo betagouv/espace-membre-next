@@ -41,7 +41,6 @@ export function StandardLayout(props: PropsWithChildren<StandardLayoutProps>) {
                         border-width="1px"
                         border-color="#000000"
                     ></MjmlDivider>
-                    <MjmlAll fontFamily="&quot;Marianne&quot;, arial, sans-serif"></MjmlAll>
                     <MjmlText
                         cssClass="light-text"
                         color="#3a3a3a"
@@ -58,9 +57,14 @@ export function StandardLayout(props: PropsWithChildren<StandardLayoutProps>) {
                         lineHeight="24px"
                         padding="8px 16px"
                     ></MjmlButton>
+                    {/* <MjmlAll fontFamily="&quot;Marianne&quot;, arial, sans-serif"></MjmlAll> */}
                 </MjmlAttributes>
                 <MjmlStyle>
-                    {`hr {
+                    {`
+                        * {
+                            font-family: 'Marianne', arial, sans-serif;
+                        }
+                        hr {
                         color: #000000; // Otherwise it's grey
                         }
 
