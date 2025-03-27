@@ -2,8 +2,9 @@ import { getServerSession } from "next-auth";
 
 import { getEventListByUsername } from "@/lib/events";
 import { authOptions } from "@/utils/authoptions";
+import { AuthorizationError, withHttpErrorHandling } from "@/utils/error";
 
-export async function GET(
+async function getEventListByUsernameHanlder(
     req: Request,
     {
         params: { username },
@@ -16,7 +17,7 @@ export async function GET(
     const session = await getServerSession(authOptions);
 
     if (!session || !session.user.id) {
-        throw new Error(`You don't have the right to access this function`);
+        throw new AuthorizationError()
     }
     if (!session.user.isAdmin) {
         console.error(
@@ -29,3 +30,5 @@ export async function GET(
 
     return Response.json(events);
 }
+
+export const GET = withHttpErrorHandling(getEventListByUsernameHanlder)
