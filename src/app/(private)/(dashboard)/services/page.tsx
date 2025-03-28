@@ -18,17 +18,20 @@ import { ACCOUNT_SERVICE_STATUS, SERVICES } from "@/models/services";
 import { capitalizeWords } from "@/server/controllers/utils";
 import { authOptions } from "@/utils/authoptions";
 
+const getAllServiceUserAccounts = (id) =>
+    db
+        .selectFrom("service_accounts")
+        .selectAll()
+        .where("user_id", "=", id)
+        .execute();
+
 export default async function Page() {
     const session = await getServerSession(authOptions);
     if (!session) {
         redirect("/login");
     }
 
-    const service_accounts = await db
-        .selectFrom("service_accounts")
-        .selectAll()
-        .where("user_id", "=", session.user.uuid)
-        .execute();
+    const service_accounts = await getAllServiceUserAccounts(session.user.id);
     const sentry = service_accounts.find(
         (s) => s.account_type === SERVICES.SENTRY
     );
