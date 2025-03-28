@@ -58,7 +58,6 @@ export default async function Page() {
             startups={userInformations.startups}
             sessionUserIsFromIncubatorTeam={false}
             isCurrentUser={true}
-            isWaitingValidation={false}
         />
     );
 }
