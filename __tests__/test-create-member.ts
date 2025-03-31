@@ -1,11 +1,12 @@
 import chai from "chai";
+import { addMonths } from "date-fns/addMonths";
 import { Selectable } from "kysely/dist/cjs/util/column-type";
 import { createMocks } from "node-mocks-http";
 import proxyquire from "proxyquire";
 import sinon from "sinon";
 
-import { testUsers } from "./utils/users-data";
 import utils from "./utils";
+import { testUsers } from "./utils/users-data";
 import { Incubators, Teams, Users } from "@/@types/db";
 import { db } from "@/lib/kysely";
 import { createMemberSchemaType } from "@/models/actions/member";
@@ -113,6 +114,7 @@ describe("Test creating new user flow", () => {
             missions: [
                 {
                     start: new Date(),
+                    end: addMonth(new Date(), 4),
                     startups: [newStartup.uuid],
                 },
             ],
