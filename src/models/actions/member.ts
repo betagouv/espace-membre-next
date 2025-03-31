@@ -62,7 +62,7 @@ export const memberValidateInfoSchema = z.object({
     avatar: memberSchema.shape.avatar,
     github: memberSchema.shape.github,
     competences: memberSchema.shape.competences,
-    missions: memberSchema.shape.missions,
+    missions: memberSchema.shape.missions.superRefine(checkMissionsAreNotMoreThan6Months),
     domaine: memberSchema.shape.domaine,
     bio: memberSchema.shape.bio,
     memberType: memberSchema.shape.memberType,
@@ -110,7 +110,9 @@ export const createMemberSchema = z
                 .describe("Email"),
             domaine: memberSchema.shape.domaine,
         }),
-        missions: memberSchema.shape.missions,
+        missions: memberSchema.shape.missions.superRefine(
+            checkMissionsAreNotMoreThan6Months
+        ),
         incubator_id: z.string().uuid().optional(),
     })
     .refine(
