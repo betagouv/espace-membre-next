@@ -114,7 +114,7 @@ describe("Test creating new user flow", () => {
             missions: [
                 {
                     start: new Date(),
-                    end: addMonth(new Date(), 4),
+                    end: addMonths(new Date(), 4),
                     startups: [newStartup.uuid],
                 },
             ],
