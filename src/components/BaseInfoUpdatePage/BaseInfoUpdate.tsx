@@ -167,7 +167,6 @@ export const BaseInfoUpdate = (props: BaseInfoUpdateProps) => {
             });
             //e.response.data.fieldErrors;
             setIsSaving(false);
-            Sentry.captureException(e);
             if (e.errors) {
                 control.setError("root", {
                     //@ts-ignore

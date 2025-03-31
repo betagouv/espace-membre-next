@@ -123,7 +123,6 @@ export default function AccountVerifyClientPage({
             });
             router.push("/account", { scroll: false });
         } catch (e: any) {
-            // todo: sentry
             console.log(e);
             setAlertMessage({
                 title: "Erreur",
