@@ -453,7 +453,6 @@ export async function sendOnboardingVerificationPendingEmail() {
     );
 
     concernedUsers.map(async (user) => {
-        const secretariatUrl = `${config.protocol}://${config.host}/login?secondary_email=${user.secondary_email}`;
         const event = await db
             .selectFrom("events")
             .selectAll()
@@ -474,7 +473,9 @@ export async function sendOnboardingVerificationPendingEmail() {
                 token
             })
             const url = new URL(`${getBaseUrl()}/signin`);
-            url.searchParams.set('callbackUrl', `${getBaseUrl()}/dashboard?token=${token}&email=${user.secondary_email}`);
+            url.searchParams.set('callbackUrl', `${getBaseUrl()}/dashboard`)
+            url.searchParams.set('token', token)
+            url.searchParams.set('email', user.secondary_email)
 
             await sendEmail({
                 type: EMAIL_TYPES.EMAIL_VERIFICATION_WAITING,
