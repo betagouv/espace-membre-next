@@ -1,4 +1,5 @@
-import crypto from "crypto";
+import crypto, { randomBytes } from "crypto";
+import jwt from "jsonwebtoken";
 import _ from "lodash/array";
 
 import betagouv from "../betagouv";
@@ -25,6 +26,8 @@ import {
     sendEmail,
     smtpBlockedContactsEmailDelete,
 } from "@/server/config/email.config";
+import { createVerificationToken } from "@/utils/pgAdpter";
+import { getBaseUrl } from "@/utils/url";
 import BetaGouv from "@betagouv";
 import {
     setEmailActive,
@@ -462,12 +465,23 @@ export async function sendOnboardingVerificationPendingEmail() {
             .where("action_on_username", "=", user.username)
             .executeTakeFirst();
         if (!event) {
+
+            const now = Date.now()
+            const token = randomBytes(32).toString("hex")
+            await createVerificationToken({
+                identifier: user.secondary_email,
+                expires: new Date(now + 1000 * 60 * 60 * 72),
+                token
+            })
+            const url = new URL(`${getBaseUrl()}/signin`);
+            url.searchParams.set('callbackUrl', `${getBaseUrl()}/dashboard?token=${token}&email=${user.secondary_email}`);
+
             await sendEmail({
                 type: EMAIL_TYPES.EMAIL_VERIFICATION_WAITING,
                 toEmail: [user.secondary_email],
                 variables: {
                     secondaryEmail: user.secondary_email,
-                    secretariatUrl,
+                    secretariatUrl:url.toString(),
                     fullname: user.fullname,
                 },
             });
