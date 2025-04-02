@@ -1,7 +1,8 @@
-import chai from "chai";
+import chai, { expect } from "chai";
 import chaiHttp from "chai-http";
 import { format } from "date-fns/format";
 import nock from "nock";
+import proxyquire from "proxyquire";
 import rewire from "rewire";
 import sinon from "sinon";
 
@@ -346,3 +347,45 @@ describe("Set email redirection active", () => {
             .execute();
     });
 });
+
+describe('Should send email validation', () => {
+    let sendEmailStub;
+    let sendOnboardingVerificationPendingEmail
+    const users = [
+        {
+            id: "membre.nouveau",
+            fullname: "membre.nouveau",
+            role: "Chargé de déploiement",
+            start: "2020-09-01",
+            end: "2090-01-30",
+            employer: "admin/",
+            secondary_email: "membre.nouveau@gmail.com",
+        },
+    ];
+     beforeEach(async () => {
+        sendEmailStub = sinon.stub().resolves();
+            sendOnboardingVerificationPendingEmail = proxyquire(
+            "@/server/schedulers/emailScheduler",
+            {
+                "@/server/config/email.config": {
+                    sendEmail: sendEmailStub,
+                },
+            }
+        ).sendOnboardingVerificationPendingEmail;
+        await utilsTest.createUsers(users);
+    });
+
+    afterEach(async () => {
+        await utilsTest.deleteUsers(users);
+    });
+
+    it("should send onboarding verification pending email to users with EMAIL_VERIFICATION_WAITING status", async () => {
+        await db.updateTable('users').set({
+            'primary_email_status': EmailStatusCode.EMAIL_VERIFICATION_WAITING
+        }).execute()
+       
+        await sendOnboardingVerificationPendingEmail()
+        const token = await db.selectFrom('verification_tokens').selectAll().where('identifier', '=', 'membre.nouveau@gmail.com').executeTakeFirstOrThrow()
+        expect(token).to.exist
+    })
+})
