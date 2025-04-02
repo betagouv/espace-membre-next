@@ -30,14 +30,46 @@ import { authOptions } from "@/utils/authoptions";
 const buildLinkToSentryTeam = (
     team: sentryUserSchemaType["metadata"]["teams"][0]
 ) => {
-    return team.name ? (
-        <a href={`${config.SENTRY_WEBSITE_URL}/${team.slug}`} target="_blank">
+    return team.slug && team.name ? (
+        <a
+            href={`${config.SENTRY_WEBSITE_URL}/organizations/${config.SENTRY_ORGANIZATION}/projects/${team.slug}`}
+            target="_blank"
+        >
             {team.name}
         </a>
     ) : (
-        team.name
+        "-"
     );
 };
+
+const getAllSentryTeams = () =>
+    db
+        .selectFrom("sentry_teams")
+        .selectAll()
+        .execute()
+        .then((data) => data.map((d) => sentryTeamToModel(d)));
+
+const getSentryTeamsForStartups = (startups) =>
+    db
+        .selectFrom("sentry_teams")
+        .selectAll()
+        .where(
+            "startup_id",
+            "in",
+            startups.map((s) => s.uuid)
+        )
+        .execute()
+        .then((data) => data.map((d) => sentryTeamToModel(d)));
+
+const getUserSentryEvents = (id) =>
+    db
+        .selectFrom("events")
+        .where("action_on_username", "=", id)
+        .where("action_code", "like", `%MEMBER_SERVICE%`)
+        .where(sql`action_metadata -> 'service'`, "=", `sentry`)
+        .selectAll()
+        .orderBy("created_at desc")
+        .execute();
 
 export default async function SentryRequestPage() {
     const session = await getServerSession(authOptions);
@@ -60,32 +92,12 @@ export default async function SentryRequestPage() {
 
     let sentryTeams: sentryTeamSchemaType[] = [];
     if (session.user.isAdmin) {
-        sentryTeams = await db
-            .selectFrom("sentry_teams")
-            .selectAll()
-            .execute()
-            .then((data) => data.map((d) => sentryTeamToModel(d)));
+        sentryTeams = await getAllSentryTeams();
     } else if (startups.length) {
-        sentryTeams = await db
-            .selectFrom("sentry_teams")
-            .selectAll()
-            .where(
-                "startup_id",
-                "in",
-                startups.map((s) => s.uuid)
-            )
-            .execute()
-            .then((data) => data.map((d) => sentryTeamToModel(d)));
+        sentryTeams = await getSentryTeamsForStartups(startups);
     }
 
-    const dbSentryEvents = await db
-        .selectFrom("events")
-        .where("action_on_username", "=", session.user.id)
-        .where("action_code", "like", `%MEMBER_SERVICE%`)
-        .where(sql`action_metadata -> 'service'`, "=", `sentry`)
-        .selectAll()
-        .orderBy("created_at desc")
-        .execute();
+    const dbSentryEvents = await getUserSentryEvents(session.user.id);
 
     const eventDictionnary: Record<
         string,
@@ -161,6 +173,14 @@ export default async function SentryRequestPage() {
         ? "Créer mon compte sentry"
         : `Faire une nouvelle demande d'accès à une équipe`;
 
+    const accountDetails =
+        !!service_account && service_account.metadata
+            ? service_account.metadata.teams.map((team) => [
+                  buildLinkToSentryTeam(team),
+                  team.role,
+              ])
+            : [];
+
     return (
         <>
             <h1>Compte Sentry</h1>
@@ -178,16 +198,7 @@ export default async function SentryRequestPage() {
                         <>
                             <AccountDetails
                                 account={service_account}
-                                data={
-                                    service_account.metadata
-                                        ? service_account.metadata.teams.map(
-                                              (team) => [
-                                                  buildLinkToSentryTeam(team),
-                                                  team.role,
-                                              ]
-                                          )
-                                        : []
-                                }
+                                data={accountDetails}
                                 nbEvents={dbSentryEvents.length}
                                 headers={["nom", "niveau d'accès"]}
                             />
@@ -245,7 +256,7 @@ export default async function SentryRequestPage() {
                             <Alert
                                 severity="info"
                                 small={true}
-                                description={`Tu as une demande en cours, celle-ci doit être terminé avant d'en fait une autre.`}
+                                description={`Tu as une demande en cours, celle-ci doit être terminée avant d'en fait une autre.`}
                             />
                         </div>
                     </div>
