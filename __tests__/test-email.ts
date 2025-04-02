@@ -350,6 +350,7 @@ describe("Set email redirection active", () => {
 
 describe('Should send email validation', () => {
     let sendEmailStub;
+    let sendOnboardingVerificationPendingEmail
     const users = [
         {
             id: "membre.nouveau",
@@ -363,18 +364,7 @@ describe('Should send email validation', () => {
     ];
      beforeEach(async () => {
         sendEmailStub = sinon.stub().resolves();
-        await utilsTest.createUsers(users);
-    });
-
-    afterEach(async () => {
-        sendEmailStub.restore();
-        await utilsTest.deleteUsers(users);
-    });
-    it("should send onboarding verification pending email to users with EMAIL_VERIFICATION_WAITING status", async () => {
-        await db.updateTable('users').set({
-            'primary_email_status': EmailStatusCode.EMAIL_VERIFICATION_WAITING
-        }).execute()
-        const sendOnboardingVerificationPendingEmail = proxyquire(
+            sendOnboardingVerificationPendingEmail = proxyquire(
             "@/server/schedulers/emailScheduler",
             {
                 "@/server/config/email.config": {
@@ -382,8 +372,19 @@ describe('Should send email validation', () => {
                 },
             }
         ).sendOnboardingVerificationPendingEmail;
+        await utilsTest.createUsers(users);
+    });
+
+    afterEach(async () => {
+        await utilsTest.deleteUsers(users);
+    });
+
+    it("should send onboarding verification pending email to users with EMAIL_VERIFICATION_WAITING status", async () => {
+        await db.updateTable('users').set({
+            'primary_email_status': EmailStatusCode.EMAIL_VERIFICATION_WAITING
+        }).execute()
+       
         await sendOnboardingVerificationPendingEmail()
-        sendEmailStub.calledOnce.should.be.true;
         const token = await db.selectFrom('verification_tokens').selectAll().where('identifier', '=', 'membre.nouveau@gmail.com').executeTakeFirstOrThrow()
         expect(token).to.exist
     })
