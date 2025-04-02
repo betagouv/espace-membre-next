@@ -2,15 +2,15 @@ import chai, { expect } from "chai";
 import chaiHttp from "chai-http";
 import { format } from "date-fns/format";
 import nock from "nock";
+import proxyquire from "proxyquire";
 import rewire from "rewire";
 import sinon from "sinon";
 
 import testUsers from "./users.json";
 import utilsTest from "./utils";
 import { db } from "@/lib/kysely";
-import { EmailStatusCode, EmailStatusCode } from "@/models/member";
+import { EmailStatusCode } from "@/models/member";
 import * as email from "@/server/config/email.config";
-import { sendOnboardingVerificationPendingEmail } from "@/server/schedulers/emailScheduler";
 import betagouv from "@betagouv";
 
 chai.use(chaiHttp);
@@ -272,9 +272,6 @@ describe("Set email redirection active", () => {
         },
     ];
     beforeEach(async () => {
-        sendEmailStub = sinon
-            .stub(email, "sendEmail")
-            .returns(Promise.resolve(null));
         smtpBlockedContactsEmailDelete = sinon
             .stub(email, "smtpBlockedContactsEmailDelete")
             .returns(Promise.resolve(null));
@@ -284,7 +281,6 @@ describe("Set email redirection active", () => {
     });
 
     afterEach(async () => {
-        sendEmailStub.restore();
         smtpBlockedContactsEmailDelete.restore();
         await utilsTest.deleteUsers(users);
     });
@@ -366,9 +362,7 @@ describe('Should send email validation', () => {
         },
     ];
      beforeEach(async () => {
-        sendEmailStub = sinon
-            .stub(email, "sendEmail")
-            .returns(Promise.resolve(null));
+        sendEmailStub = sinon.stub().resolves();
         await utilsTest.createUsers(users);
     });
 
@@ -380,6 +374,14 @@ describe('Should send email validation', () => {
         await db.updateTable('users').set({
             'primary_email_status': EmailStatusCode.EMAIL_VERIFICATION_WAITING
         }).execute()
+        const sendOnboardingVerificationPendingEmail = proxyquire(
+            "@/server/schedulers/emailScheduler",
+            {
+                "@/server/config/email.config": {
+                    sendEmail: sendEmailStub,
+                },
+            }
+        ).sendOnboardingVerificationPendingEmail;
         await sendOnboardingVerificationPendingEmail()
         sendEmailStub.calledOnce.should.be.true;
         const token = await db.selectFrom('verification_tokens').selectAll().where('identifier', '=', 'membre.nouveau@gmail.com').executeTakeFirstOrThrow()
