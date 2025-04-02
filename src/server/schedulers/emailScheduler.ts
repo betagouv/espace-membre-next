@@ -1,5 +1,4 @@
 import crypto, { randomBytes } from "crypto";
-import jwt from "jsonwebtoken";
 import _ from "lodash/array";
 
 import betagouv from "../betagouv";
@@ -26,6 +25,7 @@ import {
     sendEmail,
     smtpBlockedContactsEmailDelete,
 } from "@/server/config/email.config";
+import { hashToken } from "@/utils/auth/hashToken";
 import { createVerificationToken } from "@/utils/pgAdpter";
 import { getBaseUrl } from "@/utils/url";
 import BetaGouv from "@betagouv";
@@ -467,10 +467,12 @@ export async function sendOnboardingVerificationPendingEmail() {
 
             const now = Date.now()
             const token = randomBytes(32).toString("hex")
+
+            const generateToken = await hashToken(token, config.secret)
             await createVerificationToken({
                 identifier: user.secondary_email,
                 expires: new Date(now + 1000 * 60 * 60 * 72),
-                token
+                token: generateToken,
             })
             const url = new URL(`${getBaseUrl()}/signin`);
             url.searchParams.set('callbackUrl', `${getBaseUrl()}/dashboard`)

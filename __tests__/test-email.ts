@@ -1,4 +1,4 @@
-import chai from "chai";
+import chai, { expect } from "chai";
 import chaiHttp from "chai-http";
 import { format } from "date-fns/format";
 import nock from "nock";
@@ -8,8 +8,9 @@ import sinon from "sinon";
 import testUsers from "./users.json";
 import utilsTest from "./utils";
 import { db } from "@/lib/kysely";
-import { EmailStatusCode } from "@/models/member";
+import { EmailStatusCode, EmailStatusCode } from "@/models/member";
 import * as email from "@/server/config/email.config";
+import { sendOnboardingVerificationPendingEmail } from "@/server/schedulers/emailScheduler";
 import betagouv from "@betagouv";
 
 chai.use(chaiHttp);
@@ -271,6 +272,9 @@ describe("Set email redirection active", () => {
         },
     ];
     beforeEach(async () => {
+        sendEmailStub = sinon
+            .stub(email, "sendEmail")
+            .returns(Promise.resolve(null));
         smtpBlockedContactsEmailDelete = sinon
             .stub(email, "smtpBlockedContactsEmailDelete")
             .returns(Promise.resolve(null));
@@ -280,6 +284,7 @@ describe("Set email redirection active", () => {
     });
 
     afterEach(async () => {
+        sendEmailStub.restore();
         smtpBlockedContactsEmailDelete.restore();
         await utilsTest.deleteUsers(users);
     });
@@ -346,3 +351,38 @@ describe("Set email redirection active", () => {
             .execute();
     });
 });
+
+describe('Should send email validation', () => {
+    let sendEmailStub;
+    const users = [
+        {
+            id: "membre.nouveau",
+            fullname: "membre.nouveau",
+            role: "Chargé de déploiement",
+            start: "2020-09-01",
+            end: "2090-01-30",
+            employer: "admin/",
+            secondary_email: "membre.nouveau@gmail.com",
+        },
+    ];
+     beforeEach(async () => {
+        sendEmailStub = sinon
+            .stub(email, "sendEmail")
+            .returns(Promise.resolve(null));
+        await utilsTest.createUsers(users);
+    });
+
+    afterEach(async () => {
+        sendEmailStub.restore();
+        await utilsTest.deleteUsers(users);
+    });
+    it("should send onboarding verification pending email to users with EMAIL_VERIFICATION_WAITING status", async () => {
+        await db.updateTable('users').set({
+            'primary_email_status': EmailStatusCode.EMAIL_VERIFICATION_WAITING
+        }).execute()
+        await sendOnboardingVerificationPendingEmail()
+        sendEmailStub.calledOnce.should.be.true;
+        const token = await db.selectFrom('verification_tokens').selectAll().where('identifier', '=', 'membre.nouveau@gmail.com').executeTakeFirstOrThrow()
+        expect(token).to.exist
+    })
+})
