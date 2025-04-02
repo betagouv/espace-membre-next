@@ -1,4 +1,4 @@
-import crypto from "crypto";
+import crypto, { randomBytes } from "crypto";
 import _ from "lodash/array";
 
 import betagouv from "../betagouv";
@@ -25,6 +25,9 @@ import {
     sendEmail,
     smtpBlockedContactsEmailDelete,
 } from "@/server/config/email.config";
+import { hashToken } from "@/utils/auth/hashToken";
+import { createVerificationToken } from "@/utils/pgAdpter";
+import { getBaseUrl } from "@/utils/url";
 import BetaGouv from "@betagouv";
 import {
     setEmailActive,
@@ -450,7 +453,6 @@ export async function sendOnboardingVerificationPendingEmail() {
     );
 
     concernedUsers.map(async (user) => {
-        const secretariatUrl = `${config.protocol}://${config.host}/login?secondary_email=${user.secondary_email}`;
         const event = await db
             .selectFrom("events")
             .selectAll()
@@ -462,12 +464,27 @@ export async function sendOnboardingVerificationPendingEmail() {
             .where("action_on_username", "=", user.username)
             .executeTakeFirst();
         if (!event) {
+
+            const now = Date.now()
+            const token = randomBytes(32).toString("hex")
+
+            const generateToken = await hashToken(token, config.secret)
+            await createVerificationToken({
+                identifier: user.secondary_email,
+                expires: new Date(now + 1000 * 60 * 60 * 72),
+                token: generateToken,
+            })
+            const url = new URL(`${getBaseUrl()}/signin`);
+            url.searchParams.set('callbackUrl', `${getBaseUrl()}/dashboard`)
+            url.searchParams.set('token', token)
+            url.searchParams.set('email', user.secondary_email)
+
             await sendEmail({
                 type: EMAIL_TYPES.EMAIL_VERIFICATION_WAITING,
                 toEmail: [user.secondary_email],
                 variables: {
                     secondaryEmail: user.secondary_email,
-                    secretariatUrl,
+                    secretariatUrl:url.toString(),
                     fullname: user.fullname,
                 },
             });
