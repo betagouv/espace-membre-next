@@ -26,6 +26,7 @@ import { sentryUserSchemaType } from "@/models/sentry";
 import LastChange from "../LastChange";
 import { FicheHeader } from "../FicheHeader";
 import { MemberWaitingValidationNotice } from "./MemberWaitingValidationNotice";
+import { MemberWaitingEmailValidationNotice } from "./MemberWaitingEmailValidationNotice";
 
 const mdParser = new MarkdownIt({
     html: true,
@@ -65,7 +66,6 @@ export interface MemberPageProps {
     sessionUserIsFromIncubatorTeam: boolean;
     isAdmin: boolean;
     isCurrentUser: boolean;
-    isWaitingValidation: boolean;
 }
 
 /*
@@ -91,7 +91,6 @@ export default function MemberPage({
     isAdmin,
     avatar,
     isCurrentUser,
-    isWaitingValidation,
 }: MemberPageProps) {
     const router = useRouter();
     const [tab, setTab] = useState<null | string>(null);
@@ -144,6 +143,12 @@ export default function MemberPage({
             () => `/community/${userInfos.username}/update`
         )
         .otherwise(() => "");
+
+    const isWaitingValidation =
+        userInfos.primary_email_status === "MEMBER_VALIDATION_WAITING";
+
+    const isWaitingEmailValidation =
+        userInfos.primary_email_status === "EMAIL_VERIFICATION_WAITING";
 
     const tabs = [
         {
@@ -258,6 +263,9 @@ export default function MemberPage({
                     userInfos={userInfos}
                     canValidate={sessionUserIsFromIncubatorTeam}
                 />
+            )}
+            {isWaitingEmailValidation && (
+                <MemberWaitingEmailValidationNotice userInfos={userInfos} />
             )}
             {tab !== null && (
                 <Tabs

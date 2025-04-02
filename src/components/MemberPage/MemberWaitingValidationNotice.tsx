@@ -14,26 +14,27 @@ export const MemberWaitingValidationNotice = ({
 }) => (
     <Alert
         className={fr.cx("fr-mt-2w", "fr-mb-2w")}
-        title={`En attente de validation`}
-        severity="info"
+        title={`Fiche en attente de validation`}
+        severity="warning"
         description={
-            <div>
+            <p>
                 <p>
                     La fiche de {userInfos.fullname} doit être validée par
                     l'équipe de son incubateur.
                 </p>
-                <br />
                 {canValidate && (
-                    <Button
-                        linkProps={{
-                            href: `/community/${userInfos.username}/validate`,
-                        }}
-                    >
-                        Valider la fiche de {userInfos.fullname}
-                    </Button>
+                    <>
+                        <br />
+                        <Button
+                            linkProps={{
+                                href: `/community/${userInfos.username}/validate`,
+                            }}
+                        >
+                            Valider la fiche de {userInfos.fullname}
+                        </Button>
+                    </>
                 )}
-                <br />
-            </div>
+            </p>
         }
     />
 );
