@@ -3,6 +3,8 @@ fileignoreconfig:
   checksum: 1225d913323b18dd1c607d7fce97f0dc2f31d78b26c8471e00923e49e6b344ed
 - filename: src/server/views/templates/emails/VerificationWaiting/VerificationWaiting.tsx
   checksum: 6516c90ed7710164f26cdb19dfadc7977ce08b928a1e805953cc5bd8877b2c95
+- filename: src/utils/auth/hashToken.ts
+  checksum: 90e50980d0dd4efa37db0bd410b3d4faffa6195de487c0a310d2b861a7848889
 scopeconfig:
 - scope: node
 version: "1.0"
