@@ -22,7 +22,7 @@ import {
     userInfos,
 } from "@/server/controllers/utils";
 import { authOptions } from "@/utils/authoptions";
-import { AdminEmailNotAllowedError } from "@/utils/error";
+import { AdminEmailNotAllowedError, withHttpErrorHandling } from "@/utils/error";
 
 const getMattermostUserInfo = async (
     dbUser
@@ -54,7 +54,7 @@ const getMattermostUserInfo = async (
     }
 };
 
-export async function PUT(
+async function validateMemberHandler(
     req: Request,
     { params: { username } }: { params: { username: string } }
 ) {
@@ -97,7 +97,9 @@ export async function PUT(
         message: `Success`,
         data: dbUser,
     });
+
 }
+export const PUT = withHttpErrorHandling(validateMemberHandler)
 
 // export async function GET(
 //     req: Request,
