@@ -60,7 +60,11 @@ const nextConfig = {
         {
             source: "/api/public/member/:username/image",
             destination: "/api/member/:username/image",
-        }
+        },
+        // {
+        //     source: "/oauth2/callback",
+        //     destination: "/api/auth/callback/proconnect",
+        // },
     ],
     webpack: (config, { isServer }) => {
         if (!isServer) {

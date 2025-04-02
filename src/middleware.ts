@@ -133,6 +133,6 @@ export const config = {
          * - favicon.ico, sitemap.xml, robots.txt (metadata files)
          */
         // "/dashboard",
-        "/((?!accessibilite|keskispasse|components|login|signin|api/hook|api/auth|api/public|static/|_next/static|_next/image|favicon.ico|sitemap.xml|robots.txt).*)",
+        "/((?!accessibilite|oauth2/callback|keskispasse|components|login|signin|api/hook|api/auth|api/public|static/|_next/static|_next/image|favicon.ico|sitemap.xml|robots.txt).*)",
     ],
 };

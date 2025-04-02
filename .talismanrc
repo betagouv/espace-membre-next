@@ -1,10 +1,14 @@
 fileignoreconfig:
+- filename: .env.development
+  checksum: 499f31c8410f5755b53c2880f1618e63eb7276b55b5f9aacb6a7e8da92db6a2b
 - filename: src/server/schedulers/emailScheduler.ts
   checksum: 1225d913323b18dd1c607d7fce97f0dc2f31d78b26c8471e00923e49e6b344ed
 - filename: src/server/views/templates/emails/VerificationWaiting/VerificationWaiting.tsx
   checksum: 6516c90ed7710164f26cdb19dfadc7977ce08b928a1e805953cc5bd8877b2c95
 - filename: src/utils/auth/hashToken.ts
   checksum: 90e50980d0dd4efa37db0bd410b3d4faffa6195de487c0a310d2b861a7848889
+- filename: src/utils/authoptions.ts
+  checksum: d650763b81a4abd00aff993f015f4571ea45c1d2da27e5d7d5e07836dab081b6
 scopeconfig:
 - scope: node
 version: "1.0"
