@@ -31,6 +31,7 @@ export const authOptions: NextAuthOptions = {
     providers: [
         EmailProvider({
             sendVerificationRequest,
+            maxAge: 3600,
         }),
     ],
     session: {

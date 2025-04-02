@@ -11,6 +11,34 @@ import {
 import { db } from "@/lib/kysely";
 import betagouv from "@/server/betagouv";
 
+export const createVerificationToken = async ({
+            identifier,
+            expires,
+            token,
+        }: VerificationToken): Promise<
+            VerificationToken | null | undefined
+        > => {
+            const insertedRow = await db
+                .insertInto("verification_tokens")
+                .values({
+                    identifier: identifier,
+                    token: token,
+                    expires: expires,
+                })
+                .returningAll()
+                .executeTakeFirst(); // This will return all columns of the inserted row
+            if (!insertedRow) {
+                throw new Error("Row not created");
+            }
+            const createdToken: VerificationToken = {
+                identifier: insertedRow.identifier,
+                token: insertedRow.token,
+                expires: insertedRow.expires,
+            };
+            return createdToken;
+        };
+
+
 export default function customPostgresAdapter(): Adapter {
     try {
         const createUser = (
@@ -245,32 +273,6 @@ export default function customPostgresAdapter(): Adapter {
             return;
         };
 
-        const createVerificationToken = async ({
-            identifier,
-            expires,
-            token,
-        }: VerificationToken): Promise<
-            VerificationToken | null | undefined
-        > => {
-            const insertedRow = await db
-                .insertInto("verification_tokens")
-                .values({
-                    identifier: identifier,
-                    token: token,
-                    expires: expires,
-                })
-                .returningAll()
-                .executeTakeFirst(); // This will return all columns of the inserted row
-            if (!insertedRow) {
-                throw new Error("Row not created");
-            }
-            const createdToken: VerificationToken = {
-                identifier: insertedRow.identifier,
-                token: insertedRow.token,
-                expires: insertedRow.expires,
-            };
-            return createdToken;
-        };
 
         //Return verification token from the database and delete it so it cannot be used again.
         const useVerificationToken = async ({

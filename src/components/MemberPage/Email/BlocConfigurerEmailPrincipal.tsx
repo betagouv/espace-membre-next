@@ -1,7 +1,8 @@
-import React from "react";
+import React, { useState } from "react";
 
 import { fr } from "@codegouvfr/react-dsfr";
 import Accordion from "@codegouvfr/react-dsfr/Accordion";
+import Alert from "@codegouvfr/react-dsfr/Alert";
 import Button from "@codegouvfr/react-dsfr/Button";
 import Input from "@codegouvfr/react-dsfr/Input";
 
@@ -10,17 +11,39 @@ import { memberBaseInfoSchemaType } from "@/models/member";
 
 export default function BlocConfigurerEmailPrincipal({
     canChangeEmails,
+    isAdmin,
     userInfos,
 }: {
     canChangeEmails: boolean;
+    isAdmin?: boolean;
     userInfos: memberBaseInfoSchemaType;
 }) {
-    const [value, setValue] = React.useState<string>(
+    const [newPrimaryEmail, setNewPrimaryEmail] = useState<string>(
         userInfos.primary_email || ""
     );
+    const [alertMessage, setAlertMessage] = useState<{
+        title: string;
+        message: NonNullable<React.ReactNode>;
+        type: "success" | "warning";
+    } | null>();
     const [isSaving, setIsSaving] = React.useState<boolean>(false);
     return (
-        <Accordion label="Configurer mon email principal">
+        <Accordion
+            label={
+                isAdmin
+                    ? `Définir/changer l'email primaire pour cette personne`
+                    : `Configurer mon email principal`
+            }
+        >
+            {!!alertMessage && (
+                <Alert
+                    className="fr-mb-8v"
+                    severity={alertMessage.type}
+                    closable={false}
+                    title={alertMessage.title}
+                    description={<div>{alertMessage.message}</div>}
+                />
+            )}
             <p>
                 L'email principal est utilisé pour toutes les communications en
                 rapport avec Betagouv. Ce doit être un email d'agent public. Il
@@ -37,7 +60,12 @@ export default function BlocConfigurerEmailPrincipal({
                 </strong>
                 .
             </p>
-            {canChangeEmails && (
+            <p>
+                <i className={fr.cx("fr-icon--md", "fr-icon-warning-fill")} />{" "}
+                L'email du compte mattermost doit être le même que l'adresse
+                primaire. Pensez à le changer si ce n'est pas le cas.
+            </p>
+            {(canChangeEmails || isAdmin) && (
                 <form
                     method="POST"
                     onSubmit={async (e) => {
@@ -47,26 +75,35 @@ export default function BlocConfigurerEmailPrincipal({
                         );
                         if (confirmed) {
                             setIsSaving(true);
-                            const resp = await safeManagePrimaryEmailForUser({
+                            const res = await safeManagePrimaryEmailForUser({
+                                primaryEmail: newPrimaryEmail,
                                 username: userInfos.username,
-                                primaryEmail: value,
                             });
-                            if (resp.success) {
-                                alert("Ton email a bien été mis à jour.");
-                            } else {
-                                alert(resp.message);
-                            }
                             setIsSaving(false);
+                            if (res.success) {
+                                setAlertMessage({
+                                    title: "Email primaire mis à jour",
+                                    message: "",
+                                    type: "success",
+                                });
+                            } else {
+                                setAlertMessage({
+                                    title: "Une erreur est survenue",
+                                    message: res.message || "",
+                                    type: "warning",
+                                });
+                            }
                         }
                     }}
                 >
                     <Input
                         label="Email"
                         nativeInputProps={{
+                            name: "primaryEmail",
+                            defaultValue: newPrimaryEmail,
                             type: "email",
-                            value,
                             onChange: (e) => {
-                                setValue(e.target.value);
+                                setNewPrimaryEmail(e.target.value);
                             },
                         }}
                     />

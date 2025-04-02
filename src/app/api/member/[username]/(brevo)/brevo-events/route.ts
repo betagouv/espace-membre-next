@@ -4,8 +4,9 @@ import { db } from "@/lib/kysely";
 import { brevoEmailEventDataSchema } from "@/models/brevoEvent";
 import { getSendEventForUser } from "@/server/infra/email/sendInBlue";
 import { authOptions } from "@/utils/authoptions";
+import { AdminAuthorizationError, AuthorizationError, withHttpErrorHandling } from "@/utils/error";
 
-export async function GET(
+async function getBrevoEventsHandler(
     req: Request,
     {
         params: { username },
@@ -18,10 +19,10 @@ export async function GET(
     const session = await getServerSession(authOptions);
 
     if (!session || !session.user.id) {
-        throw new Error(`You don't have the right to access this function`);
+        throw new AuthorizationError()
     }
     if (!session.user.isAdmin) {
-        throw new Error(`User should be admin or should owned data`);
+        throw new AdminAuthorizationError()
     }
 
     const dbUser = await db
@@ -63,3 +64,5 @@ export async function GET(
     }
     return Response.json(brevoEmailEventDataSchema.parse(resp));
 }
+
+export const GET = withHttpErrorHandling(getBrevoEventsHandler)
