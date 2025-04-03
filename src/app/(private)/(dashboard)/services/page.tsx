@@ -31,7 +31,7 @@ export default async function Page() {
         redirect("/login");
     }
 
-    const service_accounts = await getAllServiceUserAccounts(session.user.id);
+    const service_accounts = await getAllServiceUserAccounts(session.user.uuid);
     const sentry = service_accounts.find(
         (s) => s.account_type === SERVICES.SENTRY
     );
