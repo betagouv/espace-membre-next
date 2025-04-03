@@ -158,7 +158,7 @@ const MainHeader = () => {
                               linkProps: {
                                   href: linkRegistry.get("teamList", undefined),
                               },
-                              text: "Équipes",
+                              text: "Équipes incubateur",
                               isActive: hasPathnameThisRoot(
                                   pathname,
                                   linkRegistry.get("teamList", undefined)

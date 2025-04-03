@@ -248,7 +248,7 @@ export function PrivateLayout({ children }: { children: React.ReactNode }) {
                 },
                 {
                     href: teamListLink,
-                    text: "Équipes",
+                    text: "Équipes incubateur",
                     isActive: hasPathnameThisMatch(pathname, teamListLink),
                     items: [
                         {
