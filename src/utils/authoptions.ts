@@ -57,13 +57,11 @@ export const authOptions: NextAuthOptions = {
             name: "Pro Connect",
             type: "oauth",
             version: "2.0",
-            idToken: false, // todo: should use builtin function instead of token below
+            idToken: true, // todo: should use builtin function instead of token below
             options: {
                 clientId: process.env.PRO_CONNECT_ID || "",
                 clientSecret: process.env.PRO_CONNECT_SECRET || "",
             },
-            // requestTokenUrl: process.env.PRO_CONNECT_BASE_URL + "/api/v2/token",
-
             wellKnown:
                 process.env.PRO_CONNECT_BASE_URL +
                 "/api/v2/.well-known/openid-configuration",
@@ -73,7 +71,6 @@ export const authOptions: NextAuthOptions = {
                 params: {
                     scope: "openid uid given_name usual_name email", // "openid uid given_name usual_name email siret",
                     acr_values: "eidas1",
-                    redirect_uri: process.env.NEXTAUTH_URL + "/oauth2/callback", // for PC callbacks
                     nonce: uuidv4(),
                     state: uuidv4(),
                 },
@@ -84,33 +81,6 @@ export const authOptions: NextAuthOptions = {
                 userinfo_encrypted_response_alg: "RS256",
                 userinfo_signed_response_alg: "RS256",
                 userinfo_encrypted_response_enc: "RS256",
-            },
-            token: {
-                //special id token for some reason
-                request: async (context) => {
-                    const body = {
-                        grant_type: "authorization_code",
-                        client_id: process.env.PRO_CONNECT_ID || "",
-                        client_secret: process.env.PRO_CONNECT_SECRET || "",
-                        redirect_uri:
-                            process.env.NEXTAUTH_URL + "/oauth2/callback",
-                        //+"/api/auth/callback/proconnect",
-                        code: context.params.code || "undefined",
-                    };
-                    const data = new URLSearchParams(body).toString();
-                    const tokenResponse = await fetch(
-                        process.env.PRO_CONNECT_BASE_URL + "/api/v2/token",
-                        {
-                            method: "POST",
-                            headers: {
-                                "content-type":
-                                    "application/x-www-form-urlencoded",
-                            },
-                            body: data,
-                        }
-                    ).then((r) => r.json());
-                    return { tokens: tokenResponse };
-                },
             },
 
             // special JARM JWT for ProConnect user info
@@ -132,6 +102,9 @@ export const authOptions: NextAuthOptions = {
 
             profile: async (profile) => {
                 // use profile from local DB
+                if (!profile) {
+                    throw new Error("Invalid profile");
+                }
                 const dbUser = await db
                     .selectFrom("users")
                     .select(["username", "primary_email", "uuid", "fullname"])
@@ -193,7 +166,6 @@ export const authOptions: NextAuthOptions = {
     },
     callbacks: {
         async signIn({ user }) {
-            console.log("signIn", user);
             if (user.id) {
                 // todo : this can be done in the call where user is fetch from db
                 const dbUser = await getUserInfos({

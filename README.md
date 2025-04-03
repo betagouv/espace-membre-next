@@ -85,7 +85,7 @@ Lorsqu'on utilise un autre domaine OVH (par exemple, un domain bac-à-sable pour
 
 Créer une application ProConnect
 
-autoriser les urls de callback: `https://[host]/api/auth/callback/proconnect`.
+Autoriser les urls de callback: `https://[host]/api/auth/callback/proconnect`.
 
 ## Scripts pour faire des taches en local
 

@@ -1,6 +1,6 @@
 fileignoreconfig:
 - filename: .env.development
-  checksum: 499f31c8410f5755b53c2880f1618e63eb7276b55b5f9aacb6a7e8da92db6a2b
+  checksum: 4cbe3490e3aa2251aca21e33135dc760925c81169c284e0ab50cf38b694b0c18
 - filename: src/server/schedulers/emailScheduler.ts
   checksum: 1225d913323b18dd1c607d7fce97f0dc2f31d78b26c8471e00923e49e6b344ed
 - filename: src/server/views/templates/emails/VerificationWaiting/VerificationWaiting.tsx
