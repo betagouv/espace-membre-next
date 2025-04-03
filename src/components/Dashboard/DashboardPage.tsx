@@ -5,6 +5,7 @@ import Button from "@codegouvfr/react-dsfr/Button";
 import { Tile } from "@codegouvfr/react-dsfr/Tile";
 import school from "@gouvfr/dsfr/dist/artwork/pictograms/buildings/school.svg";
 import avatar from "@gouvfr/dsfr/dist/artwork/pictograms/digital/avatar.svg";
+import internet from "@gouvfr/dsfr/dist/artwork/pictograms/digital/internet.svg";
 import document from "@gouvfr/dsfr/dist/artwork/pictograms/document/document.svg";
 import community from "@gouvfr/dsfr/dist/artwork/pictograms/environment/human-cooperation.svg";
 import locationFrance from "@gouvfr/dsfr/dist/artwork/pictograms/map/location-france.svg";
@@ -112,7 +113,7 @@ export function DashboardPage(props: DashboardPageProps) {
                         title="Fiches produit"
                         desc="Compléter ma fiche produit"
                         orientation="horizontal"
-                        imageUrl={(document as StaticImageData).src}
+                        imageUrl={(internet as StaticImageData).src}
                         linkProps={{
                             href: linkRegistry.get("startupList"),
                         }}
@@ -124,7 +125,7 @@ export function DashboardPage(props: DashboardPageProps) {
                         title="Nouveau membre"
                         desc="Créer une nouvelle fiche membre"
                         orientation="horizontal"
-                        imageUrl={(document as StaticImageData).src}
+                        imageUrl={(avatar as StaticImageData).src}
                         linkProps={{
                             href: linkRegistry.get("communityCreateMember"),
                         }}
