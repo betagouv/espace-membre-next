@@ -5,6 +5,8 @@ import Button from "@codegouvfr/react-dsfr/Button";
 import { Tile } from "@codegouvfr/react-dsfr/Tile";
 import school from "@gouvfr/dsfr/dist/artwork/pictograms/buildings/school.svg";
 import avatar from "@gouvfr/dsfr/dist/artwork/pictograms/digital/avatar.svg";
+import calendar from "@gouvfr/dsfr/dist/artwork/pictograms/digital/calendar.svg";
+import emailpicto from "@gouvfr/dsfr/dist/artwork/pictograms/digital/email-send.svg";
 import internet from "@gouvfr/dsfr/dist/artwork/pictograms/digital/internet.svg";
 import document from "@gouvfr/dsfr/dist/artwork/pictograms/document/document.svg";
 import community from "@gouvfr/dsfr/dist/artwork/pictograms/environment/human-cooperation.svg";
@@ -152,7 +154,7 @@ export function DashboardPage(props: DashboardPageProps) {
                         title="Évènements"
                         desc="Découvrir les évènements de la communauté."
                         orientation="horizontal"
-                        imageUrl={(school as StaticImageData).src}
+                        imageUrl={(calendar as StaticImageData).src}
                         linkProps={{
                             href: linkRegistry.get("eventsList"),
                         }}
@@ -161,10 +163,10 @@ export function DashboardPage(props: DashboardPageProps) {
                 <div className={fr.cx("fr-col-12", "fr-col-lg-4")}>
                     <Tile
                         className={fr.cx("fr-tile--sm")}
-                        title="Newsletters"
-                        desc="Consultez les dernières infolettres de la communauté"
+                        title="Actualités"
+                        desc="Lire les dernières infolettres de la communauté"
                         orientation="horizontal"
-                        imageUrl={(school as StaticImageData).src}
+                        imageUrl={(emailpicto as StaticImageData).src}
                         linkProps={{
                             href: linkRegistry.get("newsletters"),
                         }}
