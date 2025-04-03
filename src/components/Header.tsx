@@ -130,16 +130,6 @@ const MainHeader = () => {
                           },
                           {
                               linkProps: {
-                                  href: incubatorListLink,
-                              },
-                              isActive: hasPathnameThisRoot(
-                                  pathname,
-                                  incubatorListLink
-                              ),
-                              text: "Incubateurs",
-                          },
-                          {
-                              linkProps: {
                                   href: linkRegistry.get(
                                       "organizationList",
                                       undefined
@@ -163,6 +153,16 @@ const MainHeader = () => {
                                   pathname,
                                   linkRegistry.get("teamList", undefined)
                               ),
+                          },
+                          {
+                              linkProps: {
+                                  href: incubatorListLink,
+                              },
+                              isActive: hasPathnameThisRoot(
+                                  pathname,
+                                  incubatorListLink
+                              ),
+                              text: "Incubateurs",
                           },
                       ],
                   },
