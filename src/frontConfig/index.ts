@@ -41,8 +41,8 @@ export default {
     secret: process.env.SESSION_SECRET,
     secure: isSecure,
     protocol: isSecure ? "https" : "http",
-    host: process.env.HOSTNAME || "127.0.0.1:8100",
-    port: process.env.PORT || 8100,
+    host: process.env.HOSTNAME || "localhost", //127.0.0.1:8100",
+    port: process.env.PORT || 4180,
     domain: process.env.SECRETARIAT_DOMAIN || "beta.gouv.fr",
     ESPACE_MEMBRE_ADMIN: process.env.ESPACE_MEMBRE_ADMIN
         ? process.env.ESPACE_MEMBRE_ADMIN.split(",")

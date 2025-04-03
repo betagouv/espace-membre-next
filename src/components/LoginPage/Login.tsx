@@ -10,6 +10,8 @@ import Link from "next/link";
 import { useSearchParams } from "next/navigation";
 import { signIn } from "next-auth/react";
 
+import { ProConnect } from "./ProConnect";
+
 const ConnectBlock = ({ children }) => {
     return (
         <>
@@ -88,7 +90,6 @@ const ConnectBlock = ({ children }) => {
     );
 };
 
-/* Pure component */
 export const LoginPage = function () {
     const searchParams = useSearchParams();
     const secondary_email = searchParams.get("secondary_email");
@@ -101,7 +102,19 @@ export const LoginPage = function () {
         message: string;
         type: "success" | "warning";
         description?: string;
-    } | null>();
+    } | null>(
+        searchParams.get("error")
+            ? {
+                  message: "Erreur",
+                  type: "warning",
+                  description:
+                      (searchParams.get("error") === "OAuthCallback" &&
+                          "Impossible de se connecter via Oauth") ||
+                      searchParams.get("error") ||
+                      "",
+              }
+            : null
+    );
     const next = searchParams.get("next");
 
     const sendLogin = async (event: { preventDefault: () => void }) => {
@@ -188,6 +201,9 @@ export const LoginPage = function () {
                 ]}
             />
             <hr />
+            ou :<br />
+            <ProConnect />
+            <hr />
             <h3 className={fr.cx("fr-mb-1w", "fr-h4")}>Besoin d'aide ?</h3>
             <p className={fr.cx("fr-text--xs")}>
                 Si tu n'arrives pas à te connecter, consulte cette page pour
@@ -201,15 +217,16 @@ export const LoginPage = function () {
         <>
             <div className={fr.cx("fr-grid-row", "fr-m-4w")}>
                 {!!alertMessage && (
-                    <Alert
-                        className="fr-mb-8v"
-                        severity={alertMessage.type}
-                        closable={false}
-                        description={alertMessage.description}
-                        title={alertMessage.message}
-                    />
+                    <div className={fr.cx("fr-col-md-12", "fr-p-2w")}>
+                        <Alert
+                            className="fr-mb-8v"
+                            severity={alertMessage.type}
+                            closable={false}
+                            description={alertMessage.description}
+                            title={alertMessage.message}
+                        />
+                    </div>
                 )}
-
                 {!!isFirstTime && (
                     <>
                         <div className={fr.cx("fr-col-md-12", "fr-p-2w")}>
