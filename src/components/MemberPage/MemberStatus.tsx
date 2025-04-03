@@ -321,7 +321,7 @@ const MatomoInfoRow = (
                 </Badge>
             )),
         !!matomo ? (
-            <Accordion key="matomo-access" label={"Liste des accès"}>
+            <Accordion key="matomo-access" label={"Accès Matomo"}>
                 <Table
                     data={matomo.metadata.sites.map((s) => [
                         s.url ? (
@@ -392,7 +392,7 @@ const sentryInfoRow = (sentry: MemberPageProps["sentryInfo"]) => {
                 return <>Une invitation t'a été envoyée par email.</>;
             })
             .with([ACCOUNT_SERVICE_STATUS.ACCOUNT_FOUND, true], () => (
-                <Accordion key="sentry-info" label={"Liste des accès"}>
+                <Accordion key="sentry-info" label={"Accès Sentry"}>
                     <Table
                         data={sentry!.metadata.teams.map((s) => [
                             s.slug ? (
