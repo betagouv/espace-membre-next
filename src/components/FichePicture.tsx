@@ -55,7 +55,7 @@ export const FichePicture = ({
                     alt={alt}
                     fill={true}
                     onLoad={onLoad}
-                    style={{ objectFit: "cover" }}
+                    style={{ objectFit: "contain" }}
                 />
             )) ||
                 (initials && (
