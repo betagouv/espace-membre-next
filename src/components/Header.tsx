@@ -103,20 +103,6 @@ const MainHeader = () => {
                       isActive: hasPathnameThisRoot(pathname, accountLink),
                   },
                   {
-                      linkProps: {
-                          href: linkRegistry.get("community", undefined),
-                      },
-                      text: "Membres",
-                      isActive: hasPathnameThisRoot(pathname, communityLink),
-                  },
-                  {
-                      linkProps: {
-                          href: startupListLink,
-                      },
-                      isActive: hasPathnameThisRoot(pathname, startupListLink),
-                      text: "Produits",
-                  },
-                  {
                       isActive:
                           hasPathnameThisRoot(pathname, incubatorListLink) ||
                           hasPathnameThisRoot(
@@ -127,21 +113,20 @@ const MainHeader = () => {
                               pathname,
                               linkRegistry.get("teamList", undefined)
                           ),
-                      //   linkProps: {
-                      //       href: "/community",
-                      //       target: "_self",
-                      //   },
                       text: "Communauté",
                       menuLinks: [
                           {
                               linkProps: {
-                                  href: incubatorListLink,
+                                  href: linkRegistry.get(
+                                      "community",
+                                      undefined
+                                  ),
                               },
+                              text: "Membres",
                               isActive: hasPathnameThisRoot(
                                   pathname,
-                                  incubatorListLink
+                                  communityLink
                               ),
-                              text: "Incubateurs",
                           },
                           {
                               linkProps: {
@@ -163,13 +148,30 @@ const MainHeader = () => {
                               linkProps: {
                                   href: linkRegistry.get("teamList", undefined),
                               },
-                              text: "Équipes",
+                              text: "Équipes incubateur",
                               isActive: hasPathnameThisRoot(
                                   pathname,
                                   linkRegistry.get("teamList", undefined)
                               ),
                           },
+                          {
+                              linkProps: {
+                                  href: incubatorListLink,
+                              },
+                              isActive: hasPathnameThisRoot(
+                                  pathname,
+                                  incubatorListLink
+                              ),
+                              text: "Incubateurs",
+                          },
                       ],
+                  },
+                  {
+                      linkProps: {
+                          href: startupListLink,
+                      },
+                      isActive: hasPathnameThisRoot(pathname, startupListLink),
+                      text: "Produits",
                   },
                   {
                       linkProps: {
