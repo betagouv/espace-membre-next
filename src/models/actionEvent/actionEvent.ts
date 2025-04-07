@@ -380,6 +380,11 @@ export const EventMemberValidatedPayload = z.object({
 
 export const EventMemberUserEventUpdatedPayload = z.object({
     action_code: z.literal(EventCode.MEMBER_USER_EVENTS_UPDATED),
+    action_metadata: z.object({
+        field_id: z.string(),
+        value: z.boolean(),
+        date: z.date().nullable().optional(),
+    }),
 });
 
 export type EventPayloads =

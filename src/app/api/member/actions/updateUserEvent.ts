@@ -37,6 +37,7 @@ export async function updateUserEvent({
     if (!user) {
         throw new BusinessError("UserNotDefined", "User does not exist");
     }
+    const eventDate = date || new Date();
     if (!value) {
         await db
             .deleteFrom("user_events")
@@ -49,15 +50,12 @@ export async function updateUserEvent({
             .values({
                 field_id,
                 user_id,
-                date: date || new Date(),
+                date: eventDate,
             })
             .onConflict((oc) => {
-                return oc
-                    .column("field_id")
-                    .column("user_id")
-                    .doUpdateSet({
-                        date: date || new Date(),
-                    });
+                return oc.column("field_id").column("user_id").doUpdateSet({
+                    date: eventDate,
+                });
             })
             .execute();
     }
@@ -65,6 +63,11 @@ export async function updateUserEvent({
         action_code: EventCode.MEMBER_USER_EVENTS_UPDATED,
         created_by_username: session.user.id,
         action_on_username: user.username,
+        action_metadata: {
+            field_id,
+            value,
+            date: !!value ? eventDate : null,
+        },
     });
 }
 
