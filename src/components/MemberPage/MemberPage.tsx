@@ -29,8 +29,8 @@ import LastChange from "../LastChange";
 import { FicheHeader } from "../FicheHeader";
 import { MemberWaitingValidationNotice } from "./MemberWaitingValidationNotice";
 import { MemberWaitingEmailValidationNotice } from "./MemberWaitingEmailValidationNotice";
-import ProgressBar from "../ProgressBar";
-import Checklist from "../Checklist";
+import { OnboardingTabPanel } from "./OnboardingTabPanel";
+import { userEventSchemaType } from "@/models/userEvent";
 
 const mdParser = new MarkdownIt({
     html: true,
@@ -65,6 +65,7 @@ export interface MemberPageProps {
             listIds: number[];
         };
     };
+    userEvents: userEventSchemaType[];
     changes: PrivateMemberChangeSchemaType[];
     startups: Awaited<ReturnType<typeof getUserStartups>>;
     sessionUserIsFromIncubatorTeam: boolean;
@@ -95,6 +96,7 @@ export default function MemberPage({
     isAdmin,
     avatar,
     isCurrentUser,
+    userEvents = [],
 }: MemberPageProps) {
     const router = useRouter();
     const [tab, setTab] = useState<null | string>(null);
@@ -130,13 +132,6 @@ export default function MemberPage({
             }
         }
     }, [tab]);
-    const [checklist, setChecklist] = useState<any>(null);
-
-    useEffect(() => {
-        fetch("/onboarding/checklist.yml")
-            .then((res) => res.text())
-            .then((text) => setChecklist(yaml.parse(text)));
-    }, []);
 
     const canEdit = isAdmin || isCurrentUser || sessionUserIsFromIncubatorTeam;
     const linkToEditPage = match([
@@ -212,30 +207,15 @@ export default function MemberPage({
                 </>
             ),
         },
-        {
+        (isAdmin || isCurrentUser) && {
             label: "Embarquement",
             isDefault: tab === "embarquement",
             tabId: "embarquement",
             content: (
-                <>
-                    {!!checklist && (
-                        <>
-                            <p>
-                                Bienvenue dans la communauté ! Cette checklist
-                                est là pour t'aider à bien débuter ta mission
-                                chez beta.gouv.fr.
-                            </p>
-                            <ProgressBar
-                                progress={70}
-                                className={fr.cx("fr-mt-4w", "fr-mb-4w")}
-                            />
-                            <Checklist
-                                sections={checklist}
-                                domaine={userInfos.domaine}
-                            />
-                        </>
-                    )}
-                </>
+                <OnboardingTabPanel
+                    userEvents={userEvents}
+                    userInfos={userInfos}
+                />
             ),
         },
         {
