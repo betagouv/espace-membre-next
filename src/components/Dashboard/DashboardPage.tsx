@@ -12,7 +12,9 @@ import document from "@gouvfr/dsfr/dist/artwork/pictograms/document/document.svg
 import community from "@gouvfr/dsfr/dist/artwork/pictograms/environment/human-cooperation.svg";
 import locationFrance from "@gouvfr/dsfr/dist/artwork/pictograms/map/location-france.svg";
 import { StaticImageData } from "next/image";
+import Link from "next/link";
 
+import ProgressBar from "../ProgressBar";
 import { getLatests as getLatestsProducts } from "@/lib/kysely/queries/startups";
 import { getLatests as getLatestsMembers } from "@/lib/kysely/queries/users";
 import { linkRegistry } from "@/utils/routes/registry";
@@ -24,6 +26,7 @@ export interface DashboardPageProps {
     surveyCookieValue: string | null;
     latestProducts: LatestProductsReturnType;
     latestMembers: LatestMembersReturnType;
+    progress: number;
 }
 
 const CardProduct = ({
@@ -95,6 +98,25 @@ const CardMember = ({
 export function DashboardPage(props: DashboardPageProps) {
     return (
         <div className={fr.cx("fr-container", "fr-pb-6w")}>
+            <div
+                style={{ border: "1px solid #ccc", padding: "20px" }}
+                className={fr.cx("fr-container", "fr-mb-6w")}
+            >
+                <h3>Ton arrivée chez beta</h3>
+                <ProgressBar progress={props.progress} />
+                <div className={fr.cx("fr-mt-3w")}>
+                    <Link
+                        href={linkRegistry.get("account")}
+                        className={fr.cx(
+                            "fr-link",
+                            "fr-icon-arrow-right-line",
+                            "fr-link--icon-right"
+                        )}
+                    >
+                        Continuer mon embarquement
+                    </Link>
+                </div>
+            </div>
             <h2>Gérer mon compte</h2>
             <div className={fr.cx("fr-grid-row", "fr-grid-row--gutters")}>
                 <div className={fr.cx("fr-col-12", "fr-col-lg-4")}>
