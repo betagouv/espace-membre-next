@@ -58,6 +58,7 @@ export enum EventCode {
     MEMBER_SERVICE_ACCOUNT_UPDATE_FAILED_USER_DOES_NOT_EXIST = "MEMBER_SERVICE_ACCOUNT_UPDATE_FAILED_USER_DOES_NOT_EXIST",
     MEMBER_CREATED = "MEMBER_CREATED",
     MEMBER_VALIDATED = "MEMBER_VALIDATED",
+    MEMBER_USER_EVENTS_UPDATED = "MEMBER_UPDATE_USER_EVENTS",
 }
 
 export const EventCodeToReadable: Record<EventCode, string> = {
@@ -104,6 +105,7 @@ export const EventCodeToReadable: Record<EventCode, string> = {
         "Mise à jour du compte sentry échouée. L'utilisateur n'existe pas.",
     [EventCode.MEMBER_CREATED]: "Membre créé",
     [EventCode.MEMBER_VALIDATED]: "Membre validé",
+    [EventCode.MEMBER_USER_EVENTS_UPDATED]: "Evénement du membre mis à jour",
 };
 
 export const SYSTEM_NAME = "system";
@@ -376,6 +378,10 @@ export const EventMemberValidatedPayload = z.object({
     action_code: z.literal(EventCode.MEMBER_VALIDATED),
 });
 
+export const EventMemberUserEventUpdatedPayload = z.object({
+    action_code: z.literal(EventCode.MEMBER_USER_EVENTS_UPDATED),
+});
+
 export type EventPayloads =
     | z.infer<typeof EventMemberCommunicationEmailUpdatePayload>
     | z.infer<typeof EventMemberBaseInfoUpdatedPayload>
@@ -415,7 +421,8 @@ export type EventPayloads =
     | z.infer<typeof EventSentryAccountUpdateFailedUserDoesNotExistPayload>
     | z.infer<typeof EventMatomoAccountPayloadSchema>
     | z.infer<typeof EventMemberCreatedPayload>
-    | z.infer<typeof EventMemberValidatedPayload>;
+    | z.infer<typeof EventMemberValidatedPayload>
+    | z.infer<typeof EventMemberUserEventUpdatedPayload>;
 
 export type EventAction = BaseActionEvent & EventPayloads;
 

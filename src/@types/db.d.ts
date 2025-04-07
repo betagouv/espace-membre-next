@@ -466,6 +466,15 @@ export interface Teams {
   uuid: Generated<string>;
 }
 
+export interface UserEvents {
+  created_at: Generated<Timestamp>;
+  date: Timestamp | null;
+  field_id: string;
+  id: Generated<string>;
+  updated_at: Generated<Timestamp>;
+  user_id: string;
+}
+
 export interface Users {
   avatar: string | null;
   average_nb_of_days: number | null;
@@ -547,6 +556,7 @@ export interface DB {
   startups_organizations: StartupsOrganizations;
   tasks: Tasks;
   teams: Teams;
+  user_events: UserEvents;
   users: Users;
   users_formations: UsersFormations;
   users_teams: UsersTeams;

@@ -1,0 +1,25 @@
+- title: Découvrir l'écosystème de beta.gouv.fr
+  items:
+      - id: fiche-membre
+        title: Créer ma fiche membre
+      - id: atelier-onboarding
+        title: |
+            Assister à [un atelier d'embarquement](https://doc.incubateur.net/communaute/travailler-chez-beta.gouv.fr/to-do-darrivee/embarquement-dans-la-communaute)
+      - id: forum-beta
+        title: Assister à [un forum Beta.gouv.fr](https://doc.incubateur.net/communaute/decouvrir-beta.gouv.fr/la-communaute/les-rituels/seminaire)
+      - id: valeurs-beta
+        title: Découvrir [les valeurs de beta.gouv.fr](https://doc.incubateur.net/communaute/decouvrir-beta.gouv.fr/valeurs)
+      - id: video-fondamentaux-culture-administrative
+        title: |
+            Regarder la vidéo [Fondamentaux de la culture administrative](https://tube.numerique.gouv.fr/w/wgpehK9PTp5npJQ3Bp9K27)
+      - id: rapport-etonnement
+        title: Rédiger mon Rapport d'étonnement
+- title: Comprendre les standards de beta.gouv.fr
+  items:
+      - id: standards-beta
+        title: |
+            Découvrir [les standards de qualité de beta.gouv.fr](https://doc.incubateur.net/communaute/gerer-son-produit/les-standards)
+      - id: formation-hygiene-secu
+        title: Assister à la formation Hygiène de sécurité
+      - id: atelier-verifier-accesibilite
+        title: Assister à l'atelier Vérifier l'accessibilité de mon service

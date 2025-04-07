@@ -32,11 +32,6 @@ import { MemberWaitingEmailValidationNotice } from "./MemberWaitingEmailValidati
 import ProgressBar from "../ProgressBar";
 import Checklist from "../Checklist";
 
-export function getChecklistData() {
-    const file = fs.readFileSync("chemin/vers/ton-fichier.yaml", "utf8");
-    return yaml.parse(file);
-}
-
 const mdParser = new MarkdownIt({
     html: true,
     linkify: true,
@@ -166,8 +161,6 @@ export default function MemberPage({
     const isWaitingEmailValidation =
         userInfos.primary_email_status === "EMAIL_VERIFICATION_WAITING";
 
-    const sections = getChecklistData(); // Ton YAML parsé
-
     const tabs = [
         {
             label: "Fiche Membre",
@@ -232,7 +225,10 @@ export default function MemberPage({
                                 est là pour t'aider à bien débuter ta mission
                                 chez beta.gouv.fr.
                             </p>
-                            <ProgressBar progress={70} />
+                            <ProgressBar
+                                progress={70}
+                                className={fr.cx("fr-mt-4w", "fr-mb-4w")}
+                            />
                             <Checklist
                                 sections={checklist}
                                 domaine={userInfos.domaine}
