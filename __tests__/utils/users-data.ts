@@ -27,6 +27,32 @@ export const otherMemberFromStartupA = {
     ],
 };
 
+export const membreActif = {
+    username: "membre.actif",
+    missions: [
+        {
+            start: subDays(new Date(), 140),
+            end: addDays(new Date(), 500),
+            startups: ["test-startup"],
+        },
+    ],
+    teams: ["dinum-team"],
+};
+
+export const memberJulienD = {
+    username: "julien.dauphant",
+    fullname: "Julien Dauphant",
+    domaine: Domaine.PRODUIT,
+    missions: [
+        {
+            start: new Date("2016-11-03"),
+            end: new Date("2050-10-30"),
+            status: "independent",
+            employer: "octo",
+        },
+    ],
+};
+
 export const userIncubatorAndTeams: FakeDataInterface = {
     incubators: [
         { ghid: "un-super-incubator" },
@@ -45,17 +71,7 @@ export const userIncubatorAndTeams: FakeDataInterface = {
             ],
             teams: ["gip-team"],
         },
-        {
-            username: "membre.actif",
-            missions: [
-                {
-                    start: subDays(new Date(), 140),
-                    end: addDays(new Date(), 500),
-                    startups: ["test-startup"],
-                },
-            ],
-            teams: ["dinum-team"],
-        },
+        membreActif,
         newMemberInStartupA,
         otherMemberFromStartupA,
     ],
@@ -163,19 +179,7 @@ export const testUsers: FakeDataInterface = {
                 },
             ],
         },
-        {
-            username: "julien.dauphant",
-            fullname: "Julien Dauphant",
-            domaine: Domaine.PRODUIT,
-            missions: [
-                {
-                    start: new Date("2016-11-03"),
-                    end: new Date("2050-10-30"),
-                    status: "independent",
-                    employer: "octo",
-                },
-            ],
-        },
+        memberJulienD,
         {
             username: "hela.ghariani",
             fullname: "Hela Ghariani",

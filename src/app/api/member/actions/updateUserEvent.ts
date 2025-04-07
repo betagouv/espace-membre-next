@@ -23,7 +23,7 @@ export async function updateUserEvent({
     user_id: string;
     field_id: string;
     value: boolean;
-    date: Date;
+    date?: Date;
 }) {
     const session = await getServerSession(authOptions);
     if (!session || !session.user.id) {
@@ -37,14 +37,30 @@ export async function updateUserEvent({
     if (!user) {
         throw new BusinessError("UserNotDefined", "User does not exist");
     }
-    await db
-        .insertInto("user_events")
-        .values({
-            field_id,
-            user_id,
-            date: date || new Date(),
-        })
-        .execute();
+    if (!value) {
+        await db
+            .deleteFrom("user_events")
+            .where("field_id", "=", field_id)
+            .where("user_id", "=", user_id)
+            .execute();
+    } else {
+        await db
+            .insertInto("user_events")
+            .values({
+                field_id,
+                user_id,
+                date: date || new Date(),
+            })
+            .onConflict((oc) => {
+                return oc
+                    .column("field_id")
+                    .column("user_id")
+                    .doUpdateSet({
+                        date: date || new Date(),
+                    });
+            })
+            .execute();
+    }
     await addEvent({
         action_code: EventCode.MEMBER_USER_EVENTS_UPDATED,
         created_by_username: session.user.id,

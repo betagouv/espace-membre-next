@@ -470,9 +470,9 @@ export interface UserEvents {
   created_at: Generated<Timestamp>;
   date: Timestamp | null;
   field_id: string;
-  id: Generated<string>;
   updated_at: Generated<Timestamp>;
   user_id: string;
+  uuid: Generated<string>;
 }
 
 export interface Users {
