@@ -5,9 +5,11 @@ import { useState, useEffect } from "react";
 import { fr } from "@codegouvfr/react-dsfr";
 import Button from "@codegouvfr/react-dsfr/Button";
 import { Tabs } from "@codegouvfr/react-dsfr/Tabs";
+import fs from "fs";
 import MarkdownIt from "markdown-it";
 import { useRouter } from "next/navigation";
 import { match, P } from "ts-pattern";
+import yaml from "yaml";
 
 import { AdminPanel } from "./AdminPanel";
 import EmailContainer from "./Email/EmailContainer";
@@ -27,6 +29,13 @@ import LastChange from "../LastChange";
 import { FicheHeader } from "../FicheHeader";
 import { MemberWaitingValidationNotice } from "./MemberWaitingValidationNotice";
 import { MemberWaitingEmailValidationNotice } from "./MemberWaitingEmailValidationNotice";
+import ProgressBar from "../ProgressBar";
+import Checklist from "../Checklist";
+
+export function getChecklistData() {
+    const file = fs.readFileSync("chemin/vers/ton-fichier.yaml", "utf8");
+    return yaml.parse(file);
+}
 
 const mdParser = new MarkdownIt({
     html: true,
@@ -126,6 +135,13 @@ export default function MemberPage({
             }
         }
     }, [tab]);
+    const [checklist, setChecklist] = useState<any>(null);
+
+    useEffect(() => {
+        fetch("/onboarding/checklist.yml")
+            .then((res) => res.text())
+            .then((text) => setChecklist(yaml.parse(text)));
+    }, []);
 
     const canEdit = isAdmin || isCurrentUser || sessionUserIsFromIncubatorTeam;
     const linkToEditPage = match([
@@ -149,6 +165,8 @@ export default function MemberPage({
 
     const isWaitingEmailValidation =
         userInfos.primary_email_status === "EMAIL_VERIFICATION_WAITING";
+
+    const sections = getChecklistData(); // Ton YAML parsé
 
     const tabs = [
         {
@@ -198,6 +216,29 @@ export default function MemberPage({
                             userInfos={userInfos}
                         />
                     </div>
+                </>
+            ),
+        },
+        {
+            label: "Embarquement",
+            isDefault: tab === "embarquement",
+            tabId: "embarquement",
+            content: (
+                <>
+                    {!!checklist && (
+                        <>
+                            <p>
+                                Bienvenue dans la communauté ! Cette checklist
+                                est là pour t'aider à bien débuter ta mission
+                                chez beta.gouv.fr.
+                            </p>
+                            <ProgressBar progress={70} />
+                            <Checklist
+                                sections={checklist}
+                                domaine={userInfos.domaine}
+                            />
+                        </>
+                    )}
                 </>
             ),
         },
