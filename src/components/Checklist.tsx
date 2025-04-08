@@ -1,53 +1,15 @@
 import React, { useState } from "react";
 
 import Checkbox from "@codegouvfr/react-dsfr/Checkbox";
+import MarkdownIt from "markdown-it";
 
 import { safeUpdateUserEvent } from "@/app/api/member/actions/updateUserEvent";
 import { Domaine } from "@/models/member";
 import { onboardingChecklistSchemaType } from "@/models/onboardingCheklist";
 
-export function markdownLinksToReact(markdown: string): React.ReactNode[] {
-    const regex = /\[([^\]]+)\]\((https?:\/\/[^\)]+)\)/g;
-    const parts: React.ReactNode[] = [];
-
-    let lastIndex = 0;
-    let match;
-
-    while ((match = regex.exec(markdown)) !== null) {
-        const [fullMatch, text, url] = match;
-        const index = match.index;
-
-        // Push any text before the link
-        if (lastIndex < index) {
-            parts.push(markdown.slice(lastIndex, index));
-        }
-
-        // Push the actual <a> element
-        parts.push(<> </>);
-        parts.push(
-            <>
-                <a
-                    key={index}
-                    href={url}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="fr-link"
-                >
-                    {text}
-                </a>
-            </>
-        );
-        parts.push(<> </>);
-        lastIndex = index + fullMatch.length;
-    }
-
-    // Push any remaining text after the last match
-    if (lastIndex < markdown.length) {
-        parts.push(markdown.slice(lastIndex));
-    }
-
-    return parts;
-}
+const mdParser = new MarkdownIt({
+    html: true,
+});
 
 export default function Checklist({
     domaine,
@@ -91,7 +53,7 @@ export default function Checklist({
                         key={i}
                         legend={<h3>{section.title}</h3>}
                         options={section.items.map((item, index) => ({
-                            label: markdownLinksToReact(item.title),
+                            label: mdParser.renderInline(item.title),
                             nativeInputProps: {
                                 name: `checkboxes-${index}`,
                                 value: item.id,
