@@ -23,10 +23,12 @@ export const OnboardingTabPanel = ({
             .filter((event) => event.date !== null)
             .map((event) => event.field_id)
     );
-    const [progress, setProgress] = useState<number>(computeOnboardingProgress(userEventIds, checklistObject))
+    const [progress, setProgress] = useState<number>(
+        computeOnboardingProgress(userEventIds, checklistObject)
+    );
     useEffect(() => {
-        setProgress(computeOnboardingProgress(userEventIds, checklistObject))
-    }, [userEventIds, checklistObject])
+        setProgress(computeOnboardingProgress(userEventIds, checklistObject));
+    }, [userEventIds, checklistObject]);
 
     return (
         <>
@@ -39,6 +41,7 @@ export const OnboardingTabPanel = ({
                 className={fr.cx("fr-mt-4w", "fr-mb-4w")}
             />
             <Checklist
+                userUuid={userInfos.uuid}
                 userEventIds={userEventIds}
                 handleUserEventIdsChange={setUserEventIds}
                 sections={checklistObject}

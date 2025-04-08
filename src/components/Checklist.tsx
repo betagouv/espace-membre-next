@@ -22,11 +22,13 @@ export default function Checklist({
     sections,
     userEventIds,
     handleUserEventIdsChange,
+    userUuid,
 }: {
     domaine: Domaine;
     sections: onboardingChecklistSchemaType;
     userEventIds: string[];
     handleUserEventIdsChange: (eventIds: string[]) => void;
+    userUuid: string;
 }) {
     const isVisible = (domaines?: string[]) => {
         if (!domaines) return true;
@@ -44,9 +46,13 @@ export default function Checklist({
             handleUserEventIdsChange([...userEventIds, field_id]);
         }
         const res = await safeUpdateUserEvent({
+            action_on_user_id: userUuid,
             field_id,
             value,
         });
+        if (!res.success) {
+            console.error(res);
+        }
     };
 
     return (
