@@ -86,6 +86,7 @@ describe("Update user event server action", () => {
             .insertInto("user_events")
             .values({
                 user_id: user.uuid,
+                date: new Date(),
                 field_id: "a-field-id",
             })
             .returningAll()
@@ -143,6 +144,7 @@ describe("Update user event server action", () => {
             .insertInto("user_events")
             .values({
                 user_id: user.uuid,
+                date: new Date(),
                 field_id: "a-field-id",
             })
             .returningAll()
@@ -180,6 +182,7 @@ describe("Update user event server action", () => {
             .insertInto("user_events")
             .values({
                 user_id: otherUser.uuid,
+                date: new Date(),
                 field_id: "a-field-id",
             })
             .returningAll()
