@@ -32,7 +32,7 @@ const ProgressBar = ({ progress, className, style }: ProgressBarProps) => {
                 </div>
                 <div className={fr.cx("fr-col-1")}>
                     <span style={{ fontWeight: "bold" }}>
-                        {progress.toFixed(2)}%
+                        {progress.toFixed(1)}%
                     </span>
                 </div>
             </div>
