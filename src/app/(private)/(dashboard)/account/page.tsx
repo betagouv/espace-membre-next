@@ -50,11 +50,13 @@ export default async function Page() {
     const showOnboardingPanel = await shouldShowOnboardingPanel(user.userInfos);
     if (showOnboardingPanel) {
         const userEvents = await getUserEvents(session.user.uuid);
-
         const checklistObject = await getChecklistObject();
         if (checklistObject) {
+            const userEventIds = userEvents
+                .filter((u) => u.date !== null)
+                .map((u) => u.field_id);
             const progress = await computeOnboardingProgress(
-                userEvents,
+                userEventIds,
                 checklistObject
             );
             onboarding = {

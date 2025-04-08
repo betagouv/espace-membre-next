@@ -109,7 +109,9 @@ export function DashboardPage(props: DashboardPageProps) {
                     <ProgressBar progress={props.onboarding.progress} />
                     <div className={fr.cx("fr-mt-3w")}>
                         <Link
-                            href={linkRegistry.get("account")}
+                            href={`${linkRegistry.get(
+                                "account"
+                            )}?tab=embarquement`}
                             className={fr.cx(
                                 "fr-link",
                                 "fr-icon-arrow-right-line",

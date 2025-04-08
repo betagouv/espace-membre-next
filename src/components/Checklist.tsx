@@ -2,7 +2,7 @@ import React, { useState } from "react";
 
 import Checkbox from "@codegouvfr/react-dsfr/Checkbox";
 
-import { updateUserEvent } from "@/app/api/member/actions/updateUserEvent";
+import { safeUpdateUserEvent } from "@/app/api/member/actions/updateUserEvent";
 import { Domaine } from "@/models/member";
 import { onboardingChecklistSchemaType } from "@/models/onboardingCheklist";
 
@@ -53,29 +53,29 @@ export default function Checklist({
     domaine,
     sections,
     userEventIds,
-}: // handleUserEventIdsChange,
-{
+    handleUserEventIdsChange,
+}: {
     domaine: Domaine;
     sections: onboardingChecklistSchemaType;
     userEventIds: string[];
-    // handleUserEventIdsChange: (eventIds: string[]) => void;
+    handleUserEventIdsChange: (eventIds: string[]) => void;
 }) {
     const isVisible = (domaines?: string[]) => {
         if (!domaines) return true;
         return domaines.includes(domaine);
     };
     const onChange = async (e, field_id) => {
-        const value = e.target.value;
-        // if (userEventIds.includes(value)) {
-        //     handleUserEventIdsChange(
-        //         [...userEventIds].filter(
-        //             (userEventId) => userEventId !== field_id
-        //         )
-        //     );
-        // } else {
-        //     handleUserEventIdsChange([...userEventIds, field_id]);
-        // }
-        await updateUserEvent({
+        const value = e.target.checked;
+        if (userEventIds.includes(field_id) && !value) {
+            handleUserEventIdsChange(
+                [...userEventIds].filter(
+                    (userEventId) => userEventId !== field_id
+                )
+            );
+        } else if (!userEventIds.includes(field_id) && value) {
+            handleUserEventIdsChange([...userEventIds, field_id]);
+        }
+        const res = await safeUpdateUserEvent({
             field_id,
             value,
         });

@@ -54,8 +54,11 @@ export default async function Page(props) {
         const userEvents = await getUserEvents(session.user.uuid);
         const checklistObject = await getChecklistObject();
         if (checklistObject) {
+            const userEventIds = userEvents
+                .filter((u) => u.date !== null)
+                .map((u) => u.field_id);
             const progress = await computeOnboardingProgress(
-                userEvents,
+                userEventIds,
                 checklistObject
             );
             onboarding =

@@ -1,7 +1,6 @@
 import { useState, useEffect } from "react";
 
 import { fr } from "@codegouvfr/react-dsfr";
-import yaml from "yaml";
 
 import Checklist from "../Checklist";
 import ProgressBar from "../ProgressBar";
@@ -24,7 +23,11 @@ export const OnboardingTabPanel = ({
             .filter((event) => event.date !== null)
             .map((event) => event.field_id)
     );
-    const progress = computeOnboardingProgress(userEvents, checklistObject);
+    const [progress, setProgress] = useState<number>(computeOnboardingProgress(userEventIds, checklistObject))
+    useEffect(() => {
+        setProgress(computeOnboardingProgress(userEventIds, checklistObject))
+    }, [userEventIds, checklistObject])
+
     return (
         <>
             <p>
@@ -37,7 +40,7 @@ export const OnboardingTabPanel = ({
             />
             <Checklist
                 userEventIds={userEventIds}
-                // onUserEventIdsChange={setUserEventIds}
+                handleUserEventIdsChange={setUserEventIds}
                 sections={checklistObject}
                 domaine={userInfos.domaine}
             />
