@@ -105,7 +105,7 @@ export function DashboardPage(props: DashboardPageProps) {
                     style={{ border: "1px solid #ccc", padding: "20px" }}
                     className={fr.cx("fr-container", "fr-mb-6w")}
                 >
-                    <h3>Ton arrivée chez beta</h3>
+                    <h3>Mon arrivée chez beta.gouv.fr</h3>
                     <ProgressBar progress={props.onboarding.progress} />
                     <div className={fr.cx("fr-mt-3w")}>
                         <Link
