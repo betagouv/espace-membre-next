@@ -77,7 +77,10 @@ export default function Checklist({
                             nativeInputProps: {
                                 name: `checkboxes-${index}`,
                                 value: item.id,
-                                defaultChecked: userEventIds.includes(item.id),
+                                disabled: item.disabled,
+                                defaultChecked:
+                                    item.defaultValue ||
+                                    userEventIds.includes(item.id),
                                 onChange: (e) => onChange(e, item.id),
                             },
                         }))}

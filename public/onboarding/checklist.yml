@@ -2,6 +2,8 @@
   items:
       - id: fiche-membre
         title: Créer ma fiche membre
+        disabled: true
+        defaultValue: true
       - id: atelier-onboarding
         title: |
             Assister à [un atelier d'embarquement](https://doc.incubateur.net/communaute/travailler-chez-beta.gouv.fr/to-do-darrivee/embarquement-dans-la-communaute)
