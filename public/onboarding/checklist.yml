@@ -12,8 +12,6 @@
       - id: video-fondamentaux-culture-administrative
         title: |
             Regarder la vidéo [Fondamentaux de la culture administrative](https://tube.numerique.gouv.fr/w/wgpehK9PTp5npJQ3Bp9K27)
-      - id: rapport-etonnement
-        title: Rédiger mon Rapport d'étonnement
 - title: Comprendre les standards de beta.gouv.fr
   items:
       - id: standards-beta
