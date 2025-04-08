@@ -11,6 +11,12 @@ const mdParser = new MarkdownIt({
     html: true,
 });
 
+mdParser.renderer.rules.link_open = function (tokens, idx, options, env, self) {
+    tokens[idx].attrPush(["class", "fr-link"]); // Add class
+    tokens[idx].attrPush(["target", "_blank"]); // Add class
+    return self.renderToken(tokens, idx, options);
+};
+
 export default function Checklist({
     domaine,
     sections,
