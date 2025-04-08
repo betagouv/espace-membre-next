@@ -1,13 +1,12 @@
 import { useState, useEffect } from "react";
 
-import { fr } from "date-fns/locale";
+import { fr } from "@codegouvfr/react-dsfr";
 import yaml from "yaml";
 
 import Checklist from "../Checklist";
 import ProgressBar from "../ProgressBar";
 import { memberWrapperSchemaType } from "@/models/member";
 import { userEventSchemaType } from "@/models/userEvent";
-import { userInfos } from "@/server/controllers/utils";
 
 export const OnboardingTabPanel = ({
     userEvents,
