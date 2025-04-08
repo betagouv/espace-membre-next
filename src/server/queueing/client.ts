@@ -126,19 +126,12 @@ export function handlerWrapper<ReqData>(
         } catch (error) {
             console.error(error);
 
-            // Wrapping to report error is required since there is no working way to watch job changes easily with `work()` method
-            // Ref: https://github.com/timgit/pg-boss/issues/273#issuecomment-1788162895
-            if (
-                !(error instanceof ErrorWithStatus) ||
-                !(error instanceof BusinessError)
-            ) {
-                Sentry.withScope(function (scope) {
-                    // Gather retry errors for the same event at the same place in Sentry
-                    scope.setFingerprint(["pgboss", job.id]);
+            Sentry.withScope(function (scope) {
+                // Gather retry errors for the same event at the same place in Sentry
+                scope.setFingerprint(["pgboss", job.id]);
 
-                    Sentry.captureException(error);
-                });
-            }
+                Sentry.captureException(error);
+            });
 
             // Forward the error so pg-boss handles the error correctly
             throw error;
