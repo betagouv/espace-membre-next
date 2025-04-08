@@ -3,12 +3,17 @@ import { redirect } from "next/navigation";
 import { getServerSession } from "next-auth";
 
 import { getUserInformations } from "@/app/api/member/getInfo";
-import MemberPage from "@/components/MemberPage/MemberPage";
+import MemberPage, {
+    MemberPageProps,
+} from "@/components/MemberPage/MemberPage";
 import { getUserEvents } from "@/lib/kysely/queries/userEvents";
 import betagouv from "@/server/betagouv";
 import config from "@/server/config";
 import { userInfos } from "@/server/controllers/utils";
 import { authOptions } from "@/utils/authoptions";
+import { computeOnboardingProgress } from "@/utils/onboarding/computeOnboardingProgress";
+import { getChecklistObject } from "@/utils/onboarding/getChecklistObject";
+import { shouldShowOnboardingPanel } from "@/utils/onboarding/shouldShowOnboardingPanel";
 import { routeTitles } from "@/utils/routes/routeTitles";
 
 export const metadata: Metadata = {
@@ -41,7 +46,24 @@ export default async function Page() {
 
     const isAdmin = !!session.user.isAdmin;
 
-    const userEvents = await getUserEvents(session.user.uuid);
+    let onboarding: MemberPageProps["onboarding"];
+    const showOnboardingPanel = await shouldShowOnboardingPanel(user.userInfos);
+    if (showOnboardingPanel) {
+        const userEvents = await getUserEvents(session.user.uuid);
+
+        const checklistObject = await getChecklistObject();
+        if (checklistObject) {
+            const progress = await computeOnboardingProgress(
+                userEvents,
+                checklistObject
+            );
+            onboarding = {
+                progress,
+                userEvents,
+                checklistObject,
+            };
+        }
+    }
 
     return (
         <MemberPage
@@ -54,7 +76,6 @@ export default async function Page() {
             avatar={userInformations.avatar} // todo
             changes={userInformations.changes}
             emailResponder={userInformations.emailResponder}
-            userEvents={userEvents}
             userInfos={userInformations.baseInfo}
             mattermostInfo={userInformations.mattermostInfo}
             matomoInfo={userInformations.matomoInfo}
@@ -62,6 +83,7 @@ export default async function Page() {
             startups={userInformations.startups}
             sessionUserIsFromIncubatorTeam={false}
             isCurrentUser={true}
+            onboarding={onboarding}
         />
     );
 }

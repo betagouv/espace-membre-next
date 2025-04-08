@@ -21,6 +21,7 @@ import { MemberStatus } from "./MemberStatus";
 import { getUserStartups } from "@/lib/kysely/queries/users";
 import { memberWrapperSchemaType } from "@/models/member";
 import { PrivateMemberChangeSchemaType } from "@/models/memberChange";
+import { onboardingChecklistSchemaType } from "@/models/onboardingCheklist";
 
 import "./MemberPage.css";
 import { matomoUserSchemaType } from "@/models/matomo";
@@ -65,12 +66,16 @@ export interface MemberPageProps {
             listIds: number[];
         };
     };
-    userEvents: userEventSchemaType[];
     changes: PrivateMemberChangeSchemaType[];
     startups: Awaited<ReturnType<typeof getUserStartups>>;
     sessionUserIsFromIncubatorTeam: boolean;
     isAdmin: boolean;
     isCurrentUser: boolean;
+    onboarding?: {
+        progress: number;
+        checklistObject: onboardingChecklistSchemaType;
+        userEvents: userEventSchemaType[];
+    };
 }
 
 /*
@@ -96,7 +101,7 @@ export default function MemberPage({
     isAdmin,
     avatar,
     isCurrentUser,
-    userEvents = [],
+    onboarding,
 }: MemberPageProps) {
     const router = useRouter();
     const [tab, setTab] = useState<null | string>(null);
@@ -207,17 +212,19 @@ export default function MemberPage({
                 </>
             ),
         },
-        (isAdmin || isCurrentUser) && {
-            label: "Embarquement",
-            isDefault: tab === "embarquement",
-            tabId: "embarquement",
-            content: (
-                <OnboardingTabPanel
-                    userEvents={userEvents}
-                    userInfos={userInfos}
-                />
-            ),
-        },
+        (isAdmin || isCurrentUser) &&
+            onboarding && {
+                label: "Embarquement",
+                isDefault: tab === "embarquement",
+                tabId: "embarquement",
+                content: (
+                    <OnboardingTabPanel
+                        userEvents={onboarding.userEvents}
+                        userInfos={userInfos}
+                        checklistObject={onboarding.checklistObject}
+                    />
+                ),
+            },
         {
             label: "Statut des comptes",
             tabId: "statut-comptes",

@@ -2,7 +2,9 @@ import React, { useState } from "react";
 
 import Checkbox from "@codegouvfr/react-dsfr/Checkbox";
 
+import { updateUserEvent } from "@/app/api/member/actions/updateUserEvent";
 import { Domaine } from "@/models/member";
+import { onboardingChecklistSchemaType } from "@/models/onboardingCheklist";
 
 export function markdownLinksToReact(markdown: string): React.ReactNode[] {
     const regex = /\[([^\]]+)\]\((https?:\/\/[^\)]+)\)/g;
@@ -47,54 +49,54 @@ export function markdownLinksToReact(markdown: string): React.ReactNode[] {
     return parts;
 }
 
-type Item = {
-    id: string;
-    title: string;
-    tag?: string[];
-};
-
-type Section = {
-    title: string;
-    items: Item[];
-    tag?: string[];
-};
-
-type ChecklistProps = {
+export default function Checklist({
+    domaine,
+    sections,
+    userEventIds,
+}: // handleUserEventIdsChange,
+{
     domaine: Domaine;
-    sections: Section[];
-};
-
-export default function Checklist({ domaine, sections }) {
-    const [selected, setSelected] = useState<string[]>([]);
-    const isVisible = (tags?: string[]) => {
-        if (!tags) return true;
-        return tags.includes(domaine);
+    sections: onboardingChecklistSchemaType;
+    userEventIds: string[];
+    // handleUserEventIdsChange: (eventIds: string[]) => void;
+}) {
+    const isVisible = (domaines?: string[]) => {
+        if (!domaines) return true;
+        return domaines.includes(domaine);
     };
-    const onChange = (e) => {
+    const onChange = async (e, field_id) => {
         const value = e.target.value;
-        if (selected.includes(value)) {
-            setSelected([...selected].filter((v) => v !== value));
-        } else {
-            setSelected([...selected, value]);
-        }
+        // if (userEventIds.includes(value)) {
+        //     handleUserEventIdsChange(
+        //         [...userEventIds].filter(
+        //             (userEventId) => userEventId !== field_id
+        //         )
+        //     );
+        // } else {
+        //     handleUserEventIdsChange([...userEventIds, field_id]);
+        // }
+        await updateUserEvent({
+            field_id,
+            value,
+        });
     };
 
     return (
-        <div className="space-y-6">
+        <div>
             {sections.map((section, i) => {
-                if (!isVisible(section.tag)) return null;
+                if (!isVisible(section.domaines)) return null;
 
                 return (
                     <Checkbox
                         key={i}
                         legend={<h3>{section.title}</h3>}
-                        options={section.items.map((item) => ({
+                        options={section.items.map((item, index) => ({
                             label: markdownLinksToReact(item.title),
                             nativeInputProps: {
-                                name: "checkboxes-1",
+                                name: `checkboxes-${index}`,
                                 value: item.id,
-                                checked: selected.includes(item.id),
-                                onChange,
+                                defaultChecked: userEventIds.includes(item.id),
+                                onChange: (e) => onChange(e, item.id),
                             },
                         }))}
                     />

@@ -15,12 +15,12 @@ import {
 } from "@/utils/error";
 
 export async function updateUserEvent({
-    user_id,
+    action_on_user_id,
     field_id,
     value,
     date,
 }: {
-    user_id: string;
+    action_on_user_id?: string;
     field_id: string;
     value: boolean;
     date?: Date;
@@ -29,6 +29,7 @@ export async function updateUserEvent({
     if (!session || !session.user.id) {
         throw new AuthorizationError();
     }
+    const user_id = action_on_user_id || session.user.uuid;
     const isCurrentUser = session.user.uuid === user_id;
     if (!isCurrentUser && !session.user.isAdmin) {
         throw new AuthorizationError();

@@ -69,7 +69,7 @@ describe("Update user event server action", () => {
         getServerSessionStub.resolves(mockSession);
         await updateUserEventHandler({
             value: true,
-            user_id: user.uuid,
+            action_on_user_id: user.uuid,
             field_id: "a-field-id",
         });
     });
@@ -92,7 +92,7 @@ describe("Update user event server action", () => {
             .executeTakeFirstOrThrow();
         await updateUserEventHandler({
             value: false,
-            user_id: user.uuid,
+            action_on_user_id: user.uuid,
             field_id: "a-field-id",
         });
         const event = await db
@@ -118,7 +118,7 @@ describe("Update user event server action", () => {
             .executeTakeFirstOrThrow();
         await updateUserEventHandler({
             value: true,
-            user_id: otherUser.uuid,
+            action_on_user_id: otherUser.uuid,
             field_id: "a-field-id",
         });
         const event = await db
@@ -149,7 +149,7 @@ describe("Update user event server action", () => {
             .executeTakeFirstOrThrow();
         await updateUserEventHandler({
             value: true,
-            user_id: user.uuid,
+            action_on_user_id: user.uuid,
             field_id: "a-field-id",
             date: today,
         });
@@ -187,7 +187,7 @@ describe("Update user event server action", () => {
 
         await updateUserEventHandler({
             value: false,
-            user_id: otherUser.uuid,
+            action_on_user_id: otherUser.uuid,
             field_id: "a-field-id",
         });
         const event = await db
@@ -214,7 +214,7 @@ describe("Update user event server action", () => {
         try {
             await updateUserEventHandler({
                 value: false,
-                user_id: otherUser.uuid,
+                action_on_user_id: otherUser.uuid,
                 field_id: "a-field-id",
             });
             throw new Error("Should have thrown");
@@ -240,7 +240,7 @@ describe("Update user event server action", () => {
         try {
             await updateUserEventHandler({
                 value: false,
-                user_id: otherUser.uuid,
+                action_on_user_id: otherUser.uuid,
                 field_id: "a-field-id",
             });
             throw new Error("Should have thrown");
