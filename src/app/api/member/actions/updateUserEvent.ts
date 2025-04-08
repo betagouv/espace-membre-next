@@ -1,5 +1,6 @@
 "use server";
 
+import { revalidatePath } from "next/cache";
 import { getServerSession } from "next-auth/next";
 
 import { addEvent } from "@/lib/events";
@@ -70,6 +71,8 @@ export async function updateUserEvent({
             date: !!value ? eventDate : null,
         },
     });
+    revalidatePath(`/account`);
+    revalidatePath(`/community/${user.username}`);
 }
 
 export const safeUpdateUserEvent = withErrorHandling<

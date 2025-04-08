@@ -15,18 +15,12 @@ import {
 } from "__tests__/utils/users-data";
 
 describe("Update user event server action", () => {
-    let sendStub,
-        bossClientStub,
-        getServerSessionStub,
-        updateUserEventHandler: typeof updateUserEvent,
-        newStartup;
+    let getServerSessionStub, updateUserEventHandler: typeof updateUserEvent;
     let user: Selectable<Users>;
 
     beforeEach(async () => {
         getServerSessionStub = sinon.stub();
         await createData(testUsers);
-        sendStub = sinon.stub().resolves(); // Resolves like a real async function
-        bossClientStub = { send: sendStub };
 
         // Use proxyquire to replace bossClient module
         updateUserEventHandler = proxyquire(
@@ -34,16 +28,6 @@ describe("Update user event server action", () => {
             {
                 "next-auth/next": { getServerSession: getServerSessionStub },
                 "next/cache": { revalidatePath: sinon.stub().resolves() },
-                "@/server/queueing/client": {
-                    getBossClientInstance: sinon
-                        .stub()
-                        .resolves(bossClientStub),
-                },
-                "@/server/controllers/utils": {
-                    isPublicServiceEmail: sinon
-                        .stub()
-                        .returns(Promise.resolve(true)),
-                },
             }
         ).updateUserEvent as typeof updateUserEvent;
         user = await db
