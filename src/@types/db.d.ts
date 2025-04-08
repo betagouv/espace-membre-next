@@ -468,7 +468,7 @@ export interface Teams {
 
 export interface UserEvents {
   created_at: Generated<Timestamp>;
-  date: Timestamp | null;
+  date: Timestamp;
   field_id: string;
   updated_at: Generated<Timestamp>;
   user_id: string;
