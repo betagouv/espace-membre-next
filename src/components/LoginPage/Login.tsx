@@ -93,7 +93,7 @@ const ConnectBlock = ({ children }) => {
 const oAuthErrors = {
     OAuthCallback: "Impossible de se connecter via ProConnect",
     UnknownMember:
-        "Membre inconnu dans la communauté, veuillez contacter votre équipe référente",
+        "Membre inconnu dans la communauté, veuillez contacter votre équipe référente.",
     ExpiredMember: `Ce membre a une date de fin expirée ou pas de mission définie.`,
 };
 
@@ -149,6 +149,8 @@ export const LoginPage = function () {
                 setIsSaving(false);
                 if (data.error === "Error: UnknownMember") {
                     setFormErrors(oAuthErrors["UnknownMember"]);
+                } else if (data.error === "Error: ExpiredMember") {
+                    setFormErrors(oAuthErrors["ExpiredMember"]);
                 } else {
                     setFormErrors(data.error);
                 }
