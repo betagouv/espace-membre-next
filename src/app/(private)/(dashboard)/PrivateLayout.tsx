@@ -82,50 +82,6 @@ export function PrivateLayout({ children }: { children: React.ReactNode }) {
 
     const MenuItems: ItemLink[] = [
         {
-            href: communityLink,
-            text: "Membres",
-            isActive: hasPathnameThisMatch(pathname, communityLink),
-            items: [
-                {
-                    href: communityCreateMemberLink,
-                    text: routeTitles.communityCreateMember(),
-                    isActive: hasPathnameThisMatch(
-                        pathname,
-                        communityCreateMemberLink
-                    ),
-                },
-                {
-                    href: () =>
-                        linkRegistry.get("communityMember", {
-                            username: currentItemId || "",
-                        }),
-                    text: currentPage,
-                    isActive: hasPathnameThisRegex(
-                        pathname,
-                        "^/community/[a-zA-Z]+.[a-zA-Z]+"
-                    ),
-                    items: [
-                        {
-                            href: pathname,
-                            text: "Mise à jour de la fiche",
-                            isActive: hasPathnameThisRegex(
-                                pathname,
-                                "^/community/[a-zA-Z]+.[a-zA-Z]+/update"
-                            ),
-                        },
-                        {
-                            href: pathname,
-                            text: "Validation de la fiche",
-                            isActive: hasPathnameThisRegex(
-                                pathname,
-                                "^/community/[a-zA-Z]+.[a-zA-Z]+/validate"
-                            ),
-                        },
-                    ],
-                },
-            ],
-        },
-        {
             href: startupListLink,
             text: "Produits",
             isActive: hasPathnameThisMatch(pathname, startupListLink),
@@ -169,6 +125,50 @@ export function PrivateLayout({ children }: { children: React.ReactNode }) {
             text: "Communauté",
             isActive: hasPathnameThisMatch(pathname, communityLink),
             items: [
+                {
+                    href: communityLink,
+                    text: "Membres",
+                    isActive: hasPathnameThisMatch(pathname, communityLink),
+                    items: [
+                        {
+                            href: communityCreateMemberLink,
+                            text: routeTitles.communityCreateMember(),
+                            isActive: hasPathnameThisMatch(
+                                pathname,
+                                communityCreateMemberLink
+                            ),
+                        },
+                        {
+                            href: () =>
+                                linkRegistry.get("communityMember", {
+                                    username: currentItemId || "",
+                                }),
+                            text: currentPage,
+                            isActive: hasPathnameThisRegex(
+                                pathname,
+                                "^/community/[a-zA-Z]+.[a-zA-Z]+"
+                            ),
+                            items: [
+                                {
+                                    href: pathname,
+                                    text: "Mise à jour de la fiche",
+                                    isActive: hasPathnameThisRegex(
+                                        pathname,
+                                        "^/community/[a-zA-Z]+.[a-zA-Z]+/update"
+                                    ),
+                                },
+                                {
+                                    href: pathname,
+                                    text: "Validation de la fiche",
+                                    isActive: hasPathnameThisRegex(
+                                        pathname,
+                                        "^/community/[a-zA-Z]+.[a-zA-Z]+/validate"
+                                    ),
+                                },
+                            ],
+                        },
+                    ],
+                },
                 {
                     href: incubatorListLink,
                     text: "Incubateurs",
@@ -248,7 +248,7 @@ export function PrivateLayout({ children }: { children: React.ReactNode }) {
                 },
                 {
                     href: teamListLink,
-                    text: "Équipes",
+                    text: "Équipes incubateur",
                     isActive: hasPathnameThisMatch(pathname, teamListLink),
                     items: [
                         {

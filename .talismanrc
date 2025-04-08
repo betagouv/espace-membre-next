@@ -9,6 +9,8 @@ fileignoreconfig:
   checksum: 90e50980d0dd4efa37db0bd410b3d4faffa6195de487c0a310d2b861a7848889
 - filename: src/utils/authoptions.ts
   checksum: d650763b81a4abd00aff993f015f4571ea45c1d2da27e5d7d5e07836dab081b6
+- filename: src/components/MemberPage/MemberStatus.tsx
+  checksum: eaff8ce7da82504889d913a5eaac5019d0fffb52ca24ea62472b24b5b840ea34
 scopeconfig:
 - scope: node
 version: "1.0"
