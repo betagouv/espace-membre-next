@@ -63,7 +63,7 @@ export default function Checklist({
                 return (
                     <Checkbox
                         key={i}
-                        legend={<h3>{section.title}</h3>}
+                        legend={<h2>{section.title}</h2>}
                         options={section.items.map((item, index) => ({
                             label: (
                                 <span
