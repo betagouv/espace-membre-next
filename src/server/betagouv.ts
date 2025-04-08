@@ -174,6 +174,7 @@ const betaOVH = {
     emailInfos: async (id: string): Promise<EmailInfos | null> => {
         const errorHandler = (err) => {
             if (err.error === 404) return null;
+            console.error(err);
             throw new Error(
                 `Error to get email info in ${config.domain}:${err}`
             );
@@ -227,7 +228,6 @@ const betaOVH = {
                     .catch(errorHandler)
             );
         }
-        // check if OPI
         try {
             return await Promise.all(promises).then((data) => {
                 const emailInfos = data.filter((d) => d)[0];
@@ -236,6 +236,7 @@ const betaOVH = {
         } catch (err) {
             // Check if err is an instance of Error and has the property 'error'
             if ((err as { error: number }).error === 404) return null;
+            console.error(err);
             throw new Error(`OVH Error GET on ${url} : ${JSON.stringify(err)}`);
         }
     },

@@ -96,31 +96,36 @@ export const authOptions: NextAuthOptions = {
                         }
                     ).then((r) => r.text());
                     // User info returns a JWT token instead of a JSON object, we decode it
-                    return jwt.decode(userInfoRequest) as ProConnectProfile;
+                    const userinfo = jwt.decode(
+                        userInfoRequest
+                    ) as ProConnectProfile;
+                    // ensure we have a related user
+                    const dbUser = await db
+                        .selectFrom("users")
+                        .select(["username"])
+                        .where(({ eb }) =>
+                            eb.or([
+                                eb("primary_email", "=", userinfo.email),
+                                eb("secondary_email", "=", userinfo.email),
+                            ])
+                        )
+                        .executeTakeFirst();
+                    if (!dbUser) {
+                        console.error(
+                            `ProConnect: no member found for ${userinfo.email}`
+                        );
+                        throw new Error("UnknownMember");
+                    }
+                    return { ...userinfo, id: dbUser.username };
                 },
             },
 
             profile: async (profile) => {
-                // use profile from local DB
-                if (!profile) {
-                    throw new Error("Invalid profile");
-                }
-                const dbUser = await db
-                    .selectFrom("users")
-                    .select(["username", "primary_email", "uuid", "fullname"])
-                    .where(({ eb }) =>
-                        eb.or([
-                            eb("primary_email", "=", profile.email),
-                            eb("secondary_email", "=", profile.email),
-                        ])
-                    )
-                    .executeTakeFirstOrThrow();
-
                 return {
-                    id: dbUser.username,
-                    uuid: dbUser.uuid,
-                    name: dbUser.fullname,
-                    email: dbUser.primary_email,
+                    id: profile.id,
+                    uuid: profile.sub,
+                    name: `${profile.given_name} ${profile.usual_name}`,
+                    email: profile.email,
                 } as User;
             },
         },
@@ -132,7 +137,7 @@ export const authOptions: NextAuthOptions = {
     pages: {
         signIn: "/login",
         signOut: "/auth/signout",
-        error: "/auth/error", // Error code passed in query string as ?error=
+        error: "/login", // Error code passed in query string as ?error=
         verifyRequest: "/auth/verify-request", // (used for check email message)
         // newUser: "/auth/new-user", // New users will be directed here on first sign in (leave the property out if not of interest)
     },
@@ -175,14 +180,14 @@ export const authOptions: NextAuthOptions = {
                     },
                 });
                 if (!dbUser) {
-                    throw new Error(
-                        `Il n'y a pas de fiche dans l'espace-membre pour cet email. Un membre de la communauté peut en créer une.`
-                    );
+                    console.error(`ProConnect: no member found for ${user.id}`);
+                    throw new Error("UnknownMember");
                 }
                 if (checkUserIsExpired(memberBaseInfoToModel(dbUser), 5)) {
-                    throw new Error(
-                        `Membre ${dbUser.fullname} a une date de fin expirée ou pas de mission définie.`
+                    console.error(
+                        `ProConnect: cannot login expired member for ${user.id}`
                     );
+                    throw new Error("ExpiredMember");
                 }
                 return true; // if the email exists in the User collection, continue process
             } else {
@@ -206,7 +211,6 @@ export const authOptions: NextAuthOptions = {
             return sessionWithId || session;
         },
         async jwt({ token, user, account, profile, isNewUser, session }) {
-            //console.log("jwt", token, user, account, session);
             if (account) {
                 token.id = user?.id;
                 token.uuid = user?.uuid;

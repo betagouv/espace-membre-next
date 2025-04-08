@@ -90,6 +90,13 @@ const ConnectBlock = ({ children }) => {
     );
 };
 
+const oAuthErrors = {
+    OAuthCallback: "Impossible de se connecter via ProConnect",
+    UnknownMember:
+        "Membre inconnu dans la communauté, veuillez contacter votre équipe référente",
+    ExpiredMember: `Ce membre a une date de fin expirée ou pas de mission définie.`,
+};
+
 export const LoginPage = function () {
     const searchParams = useSearchParams();
     const secondary_email = searchParams.get("secondary_email");
@@ -98,6 +105,14 @@ export const LoginPage = function () {
     const [email, setEmail] = React.useState(secondary_email || "");
     const [isFirstTime, setIsFirstTime] = React.useState(secondary_email);
     const [isSaving, setIsSaving] = React.useState<boolean>(false);
+
+    const errorQuery = decodeURIComponent(searchParams.get("error") || "");
+
+    const errorMessage =
+        errorQuery &&
+        searchParams.get("error") &&
+        oAuthErrors[searchParams.get("error") || errorQuery];
+
     const [alertMessage, setAlertMessage] = React.useState<{
         message: string;
         type: "success" | "warning";
@@ -107,11 +122,7 @@ export const LoginPage = function () {
             ? {
                   message: "Erreur",
                   type: "warning",
-                  description:
-                      (searchParams.get("error") === "OAuthCallback" &&
-                          "Impossible de se connecter via Oauth") ||
-                      searchParams.get("error") ||
-                      "",
+                  description: errorMessage,
               }
             : null
     );
@@ -132,12 +143,15 @@ export const LoginPage = function () {
                 redirect: false,
                 callbackUrl: next ? next : undefined,
             });
-            console.log(data);
             setIsSaving(false);
 
             if (data && data.error) {
                 setIsSaving(false);
-                setFormErrors(data.error);
+                if (data.error === "Error: UnknownMember") {
+                    setFormErrors(oAuthErrors["UnknownMember"]);
+                } else {
+                    setFormErrors(data.error);
+                }
             } else if (data && data.ok && !data.error) {
                 setAlertMessage({
                     message:
