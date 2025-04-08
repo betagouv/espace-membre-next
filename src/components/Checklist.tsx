@@ -53,7 +53,15 @@ export default function Checklist({
                         key={i}
                         legend={<h3>{section.title}</h3>}
                         options={section.items.map((item, index) => ({
-                            label: mdParser.renderInline(item.title),
+                            label: (
+                                <span
+                                    dangerouslySetInnerHTML={{
+                                        __html: mdParser.renderInline(
+                                            item.title
+                                        ),
+                                    }}
+                                />
+                            ),
                             nativeInputProps: {
                                 name: `checkboxes-${index}`,
                                 value: item.id,
