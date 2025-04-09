@@ -8,7 +8,7 @@ export async function shouldShowOnboardingPanel(
     if (config.FEATURE_TMP_SHOW_ONBOARDING_TO_EVERYONE) {
         return true;
     }
-    const featureImplementedDate = new Date("08/04/2025");
+    const featureImplementedDate = new Date("01/01/2025");
     const userIsNew =
         user.missions.length === 1 &&
         user.missions[0].start >= featureImplementedDate;
