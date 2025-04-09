@@ -1,4 +1,6 @@
 import crypto, { randomBytes } from "crypto";
+import { isAfter } from "date-fns/isAfter";
+import { isBefore } from "date-fns/isBefore";
 import _ from "lodash/array";
 
 import betagouv from "../betagouv";
@@ -445,9 +447,14 @@ export async function sendOnboardingVerificationPendingEmail() {
     const dbUsers = (await getAllUsersInfo()).map((user) =>
         memberBaseInfoToModel(user)
     );
+    const now = new Date();
     const concernedUsers = dbUsers.filter(
         (user) =>
-            !utils.checkUserIsExpired(user) &&
+            user.missions.find(
+                (mission) =>
+                    isAfter(now, mission.start ?? 0) &&
+                    isBefore(now, mission.end ?? Infinity)
+            ) &&
             user.primary_email_status ===
                 EmailStatusCode.EMAIL_VERIFICATION_WAITING
     );
