@@ -31,10 +31,7 @@ export async function updateUserEvent({
         throw new AuthorizationError();
     }
     const user_id = action_on_user_id || session.user.uuid;
-    const isCurrentUser = session.user.uuid === user_id;
-    if (!isCurrentUser && !session.user.isAdmin) {
-        throw new AuthorizationError();
-    }
+
     const user = await getUserInfos({ uuid: user_id });
     if (!user) {
         throw new BusinessError("UserNotDefined", "User does not exist");

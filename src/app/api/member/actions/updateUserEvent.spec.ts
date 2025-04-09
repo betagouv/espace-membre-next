@@ -184,7 +184,21 @@ describe("Update user event server action", () => {
         expect(event).to.be.undefined;
     });
 
-    it("should not delete event if it exist if value is false when user is not current user", async () => {
+    it("should delete event if it exist if value is false when user is not current user", async () => {
+        const otherUser = await db
+            .selectFrom("users")
+            .selectAll()
+            .where("username", "=", memberJulienD.username)
+            .executeTakeFirstOrThrow();
+        const userEvent = await db
+            .insertInto("user_events")
+            .values({
+                user_id: otherUser.uuid,
+                date: new Date(),
+                field_id: "a-field-id",
+            })
+            .returningAll()
+            .executeTakeFirstOrThrow();
         const mockSession = {
             user: {
                 id: membreActif.username,
@@ -193,24 +207,21 @@ describe("Update user event server action", () => {
             },
         };
         getServerSessionStub.resolves(mockSession);
-        const otherUser = await db
-            .selectFrom("users")
-            .selectAll()
-            .where("username", "=", memberJulienD.username)
-            .executeTakeFirstOrThrow();
-        try {
-            await updateUserEventHandler({
-                value: false,
-                action_on_user_id: otherUser.uuid,
-                field_id: "a-field-id",
-            });
-            throw new Error("Should have thrown");
-        } catch (err) {
-            expect(err).to.be.instanceOf(AuthorizationError);
-        }
+
+        await updateUserEventHandler({
+            value: false,
+            action_on_user_id: otherUser.uuid,
+            field_id: "a-field-id",
+        });
+
+        const event = await db
+            .selectFrom("user_events")
+            .where("uuid", "=", userEvent.uuid)
+            .executeTakeFirst();
+        expect(event).to.be.undefined;
     });
 
-    it("should not create event if value is true when user is not current user", async () => {
+    it("should create event if value is true when user is not current user", async () => {
         const mockSession = {
             user: {
                 id: membreActif.username,
@@ -224,15 +235,17 @@ describe("Update user event server action", () => {
             .selectAll()
             .where("username", "=", memberJulienD.username)
             .executeTakeFirstOrThrow();
-        try {
-            await updateUserEventHandler({
-                value: false,
-                action_on_user_id: otherUser.uuid,
-                field_id: "a-field-id",
-            });
-            throw new Error("Should have thrown");
-        } catch (err) {
-            expect(err).to.be.instanceOf(AuthorizationError);
-        }
+        await updateUserEventHandler({
+            value: false,
+            action_on_user_id: otherUser.uuid,
+            field_id: "a-field-id",
+        });
+
+        const event = await db
+            .selectFrom("user_events")
+            .where("user_id", "=", otherUser.uuid)
+            .where("field_id", "=", "a-field-id")
+            .executeTakeFirstOrThrow();
+        event.should.be.exist;
     });
 });
