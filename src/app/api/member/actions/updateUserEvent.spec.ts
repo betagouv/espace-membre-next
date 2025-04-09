@@ -236,7 +236,7 @@ describe("Update user event server action", () => {
             .where("username", "=", memberJulienD.username)
             .executeTakeFirstOrThrow();
         await updateUserEventHandler({
-            value: false,
+            value: true,
             action_on_user_id: otherUser.uuid,
             field_id: "a-field-id",
         });
