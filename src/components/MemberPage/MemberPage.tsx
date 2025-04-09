@@ -21,7 +21,7 @@ import { MemberStatus } from "./MemberStatus";
 import { getUserStartups } from "@/lib/kysely/queries/users";
 import { memberWrapperSchemaType } from "@/models/member";
 import { PrivateMemberChangeSchemaType } from "@/models/memberChange";
-import { onboardingChecklistSchemaType } from "@/models/onboardingCheklist";
+import { onboardingChecklistSchemaType } from "@/models/onboardingChecklist";
 
 import "./MemberPage.css";
 import { matomoUserSchemaType } from "@/models/matomo";
@@ -212,19 +212,18 @@ export default function MemberPage({
                 </>
             ),
         },
-        (isAdmin || isCurrentUser) &&
-            onboarding && {
-                label: "Embarquement",
-                isDefault: tab === "embarquement",
-                tabId: "embarquement",
-                content: (
-                    <OnboardingTabPanel
-                        userEvents={onboarding.userEvents}
-                        userInfos={userInfos}
-                        checklistObject={onboarding.checklistObject}
-                    />
-                ),
-            },
+        onboarding && {
+            label: "Embarquement",
+            isDefault: tab === "embarquement",
+            tabId: "embarquement",
+            content: (
+                <OnboardingTabPanel
+                    userEvents={onboarding.userEvents}
+                    userInfos={userInfos}
+                    checklistObject={onboarding.checklistObject}
+                />
+            ),
+        },
         {
             label: "Statut des comptes",
             tabId: "statut-comptes",

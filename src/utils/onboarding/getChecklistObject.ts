@@ -6,7 +6,7 @@ import yaml from "yaml";
 import {
     onboardingChecklistSchema,
     onboardingChecklistSchemaType,
-} from "@/models/onboardingCheklist";
+} from "@/models/onboardingChecklist";
 
 export async function getChecklistObject(): Promise<onboardingChecklistSchemaType | null> {
     const filePath = path.join(

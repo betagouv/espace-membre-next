@@ -1,4 +1,4 @@
-import { onboardingChecklistSchemaType } from "@/models/onboardingCheklist";
+import { onboardingChecklistSchemaType } from "@/models/onboardingChecklist";
 import { userEventSchemaType } from "@/models/userEvent";
 
 export function computeOnboardingProgress(

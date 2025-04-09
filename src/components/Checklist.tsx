@@ -5,7 +5,7 @@ import MarkdownIt from "markdown-it";
 
 import { safeUpdateUserEvent } from "@/app/api/member/actions/updateUserEvent";
 import { Domaine } from "@/models/member";
-import { onboardingChecklistSchemaType } from "@/models/onboardingCheklist";
+import { onboardingChecklistSchemaType } from "@/models/onboardingChecklist";
 
 const mdParser = new MarkdownIt({
     html: true,

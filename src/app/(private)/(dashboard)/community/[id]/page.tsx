@@ -83,11 +83,7 @@ export default async function Page({
     let onboarding: MemberPageProps["onboarding"];
     const showOnboardingPanel = await shouldShowOnboardingPanel(user.userInfos);
     if (showOnboardingPanel) {
-        const userEvents =
-            isAdmin || sessionUserIsFromIncubatorTeam
-                ? await getUserEvents(user.userInfos.uuid)
-                : [];
-
+        const userEvents = await getUserEvents(user.userInfos.uuid);
         const checklistObject = await getChecklistObject();
         if (checklistObject) {
             const userEventIds = userEvents.map((u) => u.field_id);

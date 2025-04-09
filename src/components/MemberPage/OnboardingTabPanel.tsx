@@ -5,7 +5,7 @@ import { fr } from "@codegouvfr/react-dsfr";
 import Checklist from "../Checklist";
 import ProgressBar from "../ProgressBar";
 import { memberWrapperSchemaType } from "@/models/member";
-import { onboardingChecklistSchemaType } from "@/models/onboardingCheklist";
+import { onboardingChecklistSchemaType } from "@/models/onboardingChecklist";
 import { userEventSchemaType } from "@/models/userEvent";
 import { computeOnboardingProgress } from "@/utils/onboarding/computeOnboardingProgress";
 
