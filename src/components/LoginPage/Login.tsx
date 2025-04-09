@@ -92,6 +92,7 @@ const ConnectBlock = ({ children }) => {
 
 const oAuthErrors = {
     OAuthCallback: "Impossible de se connecter via ProConnect",
+    OAuthSignin: "Impossible de se connecter via ProConnect",
     UnknownMember:
         "Membre inconnu dans la communauté, veuillez contacter votre équipe référente.",
     ExpiredMember: `Ce membre a une date de fin expirée ou pas de mission définie.`,
@@ -109,9 +110,10 @@ export const LoginPage = function () {
     const errorQuery = decodeURIComponent(searchParams.get("error") || "");
 
     const errorMessage =
-        errorQuery &&
-        searchParams.get("error") &&
-        oAuthErrors[searchParams.get("error") || errorQuery];
+        (errorQuery &&
+            searchParams.get("error") &&
+            oAuthErrors[searchParams.get("error") || errorQuery]) ||
+        "Impossible de se connecter";
 
     const [alertMessage, setAlertMessage] = React.useState<{
         message: string;
