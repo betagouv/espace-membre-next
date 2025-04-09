@@ -26,15 +26,12 @@ export async function sendNewMemberValidationEmail(
     const data = SendNewMemberValidationEmailSchema.parse(job.data);
     const newMember = await getMemberIfValidOrThrowError(data.userId);
     const now = new Date();
+    // we fetch also startups for missions in the futur
     const userStartups = (await getUserStartups(data.userId)).filter(
         (startup) => {
-            return (
-                isAfter(now, startup.start ?? 0) &&
-                isBefore(now, startup.end ?? Infinity)
-            );
+            return isBefore(now, startup.end ?? Infinity);
         }
     );
-    // todo incubator_id might change to be another params send in object "job"
 
     const startupIncubatorIds = userStartups
         .map((startup) => startup.incubator_id)
