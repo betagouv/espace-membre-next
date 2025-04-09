@@ -5,9 +5,11 @@ import { useState, useEffect } from "react";
 import { fr } from "@codegouvfr/react-dsfr";
 import Button from "@codegouvfr/react-dsfr/Button";
 import { Tabs } from "@codegouvfr/react-dsfr/Tabs";
+import fs from "fs";
 import MarkdownIt from "markdown-it";
 import { useRouter } from "next/navigation";
 import { match, P } from "ts-pattern";
+import yaml from "yaml";
 
 import { AdminPanel } from "./AdminPanel";
 import EmailContainer from "./Email/EmailContainer";
@@ -19,6 +21,7 @@ import { MemberStatus } from "./MemberStatus";
 import { getUserStartups } from "@/lib/kysely/queries/users";
 import { memberWrapperSchemaType } from "@/models/member";
 import { PrivateMemberChangeSchemaType } from "@/models/memberChange";
+import { onboardingChecklistSchemaType } from "@/models/onboardingChecklist";
 
 import "./MemberPage.css";
 import { matomoUserSchemaType } from "@/models/matomo";
@@ -27,6 +30,8 @@ import LastChange from "../LastChange";
 import { FicheHeader } from "../FicheHeader";
 import { MemberWaitingValidationNotice } from "./MemberWaitingValidationNotice";
 import { MemberWaitingEmailValidationNotice } from "./MemberWaitingEmailValidationNotice";
+import { OnboardingTabPanel } from "./OnboardingTabPanel";
+import { userEventSchemaType } from "@/models/userEvent";
 
 const mdParser = new MarkdownIt({
     html: true,
@@ -66,6 +71,11 @@ export interface MemberPageProps {
     sessionUserIsFromIncubatorTeam: boolean;
     isAdmin: boolean;
     isCurrentUser: boolean;
+    onboarding?: {
+        progress: number;
+        checklistObject: onboardingChecklistSchemaType;
+        userEvents: userEventSchemaType[];
+    };
 }
 
 /*
@@ -91,6 +101,7 @@ export default function MemberPage({
     isAdmin,
     avatar,
     isCurrentUser,
+    onboarding,
 }: MemberPageProps) {
     const router = useRouter();
     const [tab, setTab] = useState<null | string>(null);
@@ -199,6 +210,18 @@ export default function MemberPage({
                         />
                     </div>
                 </>
+            ),
+        },
+        onboarding && {
+            label: "Embarquement",
+            isDefault: tab === "embarquement",
+            tabId: "embarquement",
+            content: (
+                <OnboardingTabPanel
+                    userEvents={onboarding.userEvents}
+                    userInfos={userInfos}
+                    checklistObject={onboarding.checklistObject}
+                />
             ),
         },
         {

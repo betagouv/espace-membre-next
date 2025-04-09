@@ -4,7 +4,8 @@ import { compareAsc, startOfDay } from "date-fns";
 import _ from "lodash";
 import nodemailer from "nodemailer";
 
-import { getUserInfos } from "@/lib/kysely/queries/users";
+import { getUserEvents } from "@/lib/kysely/queries/userEvents";
+import { getUserInfos, getUserStartups } from "@/lib/kysely/queries/users";
 import { userInfosToModel } from "@/models/mapper";
 import {
     memberBaseInfoSchemaType,

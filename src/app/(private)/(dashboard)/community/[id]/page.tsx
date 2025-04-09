@@ -1,15 +1,21 @@
+import Button from "@codegouvfr/react-dsfr/Button";
 import type { Metadata, ResolvingMetadata } from "next";
 import { getServerSession } from "next-auth/next";
 
 import { getUserInformations } from "@/app/api/member/getInfo";
 import { BreadCrumbFiller } from "@/app/BreadCrumbProvider";
-import MemberPage from "@/components/MemberPage/MemberPage";
+import MemberPage, {
+    MemberPageProps,
+} from "@/components/MemberPage/MemberPage";
+import { getUserEvents } from "@/lib/kysely/queries/userEvents";
 import betagouv from "@/server/betagouv";
 import config from "@/server/config";
 import { isSessionUserIncubatorTeamAdminForUser } from "@/server/config/admin.config";
 import { userInfos } from "@/server/controllers/utils";
 import { authOptions } from "@/utils/authoptions";
-import Button from "@codegouvfr/react-dsfr/Button";
+import { computeOnboardingProgress } from "@/utils/onboarding/computeOnboardingProgress";
+import { getChecklistObject } from "@/utils/onboarding/getChecklistObject";
+import { shouldShowOnboardingPanel } from "@/utils/onboarding/shouldShowOnboardingPanel";
 
 type Props = {
     params: { id: string };
@@ -74,6 +80,25 @@ export default async function Page({
         });
     const isCurrentUser = session.user.id === id;
 
+    let onboarding: MemberPageProps["onboarding"];
+    const showOnboardingPanel = await shouldShowOnboardingPanel(user.userInfos);
+    if (showOnboardingPanel) {
+        const userEvents = await getUserEvents(user.userInfos.uuid);
+        const checklistObject = await getChecklistObject();
+        if (checklistObject) {
+            const userEventIds = userEvents.map((u) => u.field_id);
+            const progress = await computeOnboardingProgress(
+                userEventIds,
+                checklistObject
+            );
+            onboarding = {
+                progress,
+                userEvents,
+                checklistObject,
+            };
+        }
+    }
+
     return (
         <>
             <BreadCrumbFiller
@@ -98,6 +123,7 @@ export default async function Page({
                 matomoInfo={userInformations.matomoInfo}
                 sentryInfo={userInformations.sentryInfo}
                 startups={userInformations.startups}
+                onboarding={onboarding}
             />
         </>
     );
