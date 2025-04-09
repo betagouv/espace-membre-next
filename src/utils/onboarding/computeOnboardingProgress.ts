@@ -11,7 +11,7 @@ export function computeOnboardingProgress(
     const total = allCheckListItemIds.length;
     // default to 1, has "créer une fiche" is always true
     const matchCount =
-        allCheckListItemIds.filter((id) => userEventIds.includes(id)).length ||
+        allCheckListItemIds.filter((id) => userEventIds.includes(id)).length ??
         1;
     const percentage = total > 0 ? (matchCount / total) * 100 : 0;
 
