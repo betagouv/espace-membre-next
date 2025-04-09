@@ -5,7 +5,7 @@ exports.up = async function (knex) {
         table.datetime("date").notNullable();
         table.uuid("user_id").notNullable(); // user's uuid
 
-        // Clé étrangère vers la table startups
+        // Clé étrangère vers la table users
         table
             .foreign("user_id")
             .references("uuid")
