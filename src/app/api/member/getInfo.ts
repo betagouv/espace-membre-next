@@ -55,7 +55,12 @@ export const getUserInformations = async (id) => {
             }
         });
 
-    const emailResponder = await betagouv.getResponder(id);
+    let emailResponder;
+    try {
+        emailResponder = await betagouv.getResponder(id);
+    } catch (e) {
+        console.error(e);
+    }
 
     return {
         id,

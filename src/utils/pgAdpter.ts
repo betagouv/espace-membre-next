@@ -12,32 +12,29 @@ import { db } from "@/lib/kysely";
 import betagouv from "@/server/betagouv";
 
 export const createVerificationToken = async ({
-            identifier,
-            expires,
-            token,
-        }: VerificationToken): Promise<
-            VerificationToken | null | undefined
-        > => {
-            const insertedRow = await db
-                .insertInto("verification_tokens")
-                .values({
-                    identifier: identifier,
-                    token: token,
-                    expires: expires,
-                })
-                .returningAll()
-                .executeTakeFirst(); // This will return all columns of the inserted row
-            if (!insertedRow) {
-                throw new Error("Row not created");
-            }
-            const createdToken: VerificationToken = {
-                identifier: insertedRow.identifier,
-                token: insertedRow.token,
-                expires: insertedRow.expires,
-            };
-            return createdToken;
-        };
-
+    identifier,
+    expires,
+    token,
+}: VerificationToken): Promise<VerificationToken | null | undefined> => {
+    const insertedRow = await db
+        .insertInto("verification_tokens")
+        .values({
+            identifier: identifier,
+            token: token,
+            expires: expires,
+        })
+        .returningAll()
+        .executeTakeFirst(); // This will return all columns of the inserted row
+    if (!insertedRow) {
+        throw new Error("Row not created");
+    }
+    const createdToken: VerificationToken = {
+        identifier: insertedRow.identifier,
+        token: insertedRow.token,
+        expires: insertedRow.expires,
+    };
+    return createdToken;
+};
 
 export default function customPostgresAdapter(): Adapter {
     try {
@@ -165,11 +162,14 @@ export default function customPostgresAdapter(): Adapter {
             expires: Date;
         }): Promise<AdapterSession> => {
             const expiresString = expires.toDateString();
-            await db.insertInto("sessions").values({
-                userId: userId,
-                expires: expiresString,
-                sessionToken: sessionToken,
-            });
+            await db
+                .insertInto("sessions")
+                .values({
+                    userId: userId,
+                    expires: expiresString,
+                    sessionToken: sessionToken,
+                })
+                .execute();
             const createdSession: AdapterSession = {
                 sessionToken,
                 userId,
@@ -242,19 +242,22 @@ export default function customPostgresAdapter(): Adapter {
         const linkAccount = async (
             account: AdapterAccount
         ): Promise<AdapterAccount | null | undefined> => {
-            await db.insertInto("accounts").values({
-                userId: account.userId,
-                type: account.type,
-                provider: account.provider,
-                providerAccountId: account.providerAccountId,
-                refresh_token: account.refresh_token,
-                access_token: account.access_token,
-                expires_at: sql`to_timestamp(${account.expires_at})`,
-                id_token: account.id_token,
-                scope: account.scope,
-                session_state: account.session_state,
-                token_type: account.token_type,
-            });
+            await db
+                .insertInto("accounts")
+                .values({
+                    userId: account.userId,
+                    type: account.type,
+                    provider: account.provider,
+                    providerAccountId: account.providerAccountId,
+                    refresh_token: account.refresh_token,
+                    access_token: account.access_token,
+                    expires_at: sql`${account.expires_at}`,
+                    id_token: account.id_token,
+                    scope: account.scope,
+                    session_state: account.session_state,
+                    token_type: account.token_type,
+                })
+                .execute();
             return account;
         };
 
@@ -272,7 +275,6 @@ export default function customPostgresAdapter(): Adapter {
                 .execute();
             return;
         };
-
 
         //Return verification token from the database and delete it so it cannot be used again.
         const useVerificationToken = async ({

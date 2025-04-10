@@ -10,6 +10,8 @@ import Link from "next/link";
 import { useSearchParams } from "next/navigation";
 import { signIn } from "next-auth/react";
 
+import { ProConnect } from "./ProConnect";
+
 const ConnectBlock = ({ children }) => {
     return (
         <>
@@ -88,7 +90,14 @@ const ConnectBlock = ({ children }) => {
     );
 };
 
-/* Pure component */
+const oAuthErrors = {
+    OAuthCallback: "Impossible de se connecter via ProConnect",
+    OAuthSignin: "Impossible de se connecter via ProConnect",
+    UnknownMember:
+        "Membre inconnu dans la communauté, veuillez contacter votre équipe référente.",
+    ExpiredMember: `Ce membre a une date de fin expirée ou pas de mission définie.`,
+};
+
 export const LoginPage = function () {
     const searchParams = useSearchParams();
     const secondary_email = searchParams.get("secondary_email");
@@ -97,11 +106,28 @@ export const LoginPage = function () {
     const [email, setEmail] = React.useState(secondary_email || "");
     const [isFirstTime, setIsFirstTime] = React.useState(secondary_email);
     const [isSaving, setIsSaving] = React.useState<boolean>(false);
+
+    const errorQuery = decodeURIComponent(searchParams.get("error") || "");
+
+    const errorMessage =
+        (errorQuery &&
+            searchParams.get("error") &&
+            oAuthErrors[searchParams.get("error") || errorQuery]) ||
+        "Impossible de se connecter";
+
     const [alertMessage, setAlertMessage] = React.useState<{
         message: string;
         type: "success" | "warning";
         description?: string;
-    } | null>();
+    } | null>(
+        searchParams.get("error")
+            ? {
+                  message: "Erreur",
+                  type: "warning",
+                  description: errorMessage,
+              }
+            : null
+    );
     const next = searchParams.get("next");
 
     const sendLogin = async (event: { preventDefault: () => void }) => {
@@ -119,12 +145,17 @@ export const LoginPage = function () {
                 redirect: false,
                 callbackUrl: next ? next : undefined,
             });
-            console.log(data);
             setIsSaving(false);
 
             if (data && data.error) {
                 setIsSaving(false);
-                setFormErrors(data.error);
+                if (data.error === "Error: UnknownMember") {
+                    setFormErrors(oAuthErrors["UnknownMember"]);
+                } else if (data.error === "Error: ExpiredMember") {
+                    setFormErrors(oAuthErrors["ExpiredMember"]);
+                } else {
+                    setFormErrors(data.error);
+                }
             } else if (data && data.ok && !data.error) {
                 setAlertMessage({
                     message:
@@ -188,6 +219,9 @@ export const LoginPage = function () {
                 ]}
             />
             <hr />
+            ou :<br />
+            <ProConnect />
+            <hr />
             <h3 className={fr.cx("fr-mb-1w", "fr-h4")}>Besoin d'aide ?</h3>
             <p className={fr.cx("fr-text--xs")}>
                 Si tu n'arrives pas à te connecter, consulte cette page pour
@@ -201,15 +235,16 @@ export const LoginPage = function () {
         <>
             <div className={fr.cx("fr-grid-row", "fr-m-4w")}>
                 {!!alertMessage && (
-                    <Alert
-                        className="fr-mb-8v"
-                        severity={alertMessage.type}
-                        closable={false}
-                        description={alertMessage.description}
-                        title={alertMessage.message}
-                    />
+                    <div className={fr.cx("fr-col-md-12", "fr-p-2w")}>
+                        <Alert
+                            className="fr-mb-8v"
+                            severity={alertMessage.type}
+                            closable={false}
+                            description={alertMessage.description}
+                            title={alertMessage.message}
+                        />
+                    </div>
                 )}
-
                 {!!isFirstTime && (
                     <>
                         <div className={fr.cx("fr-col-md-12", "fr-p-2w")}>
