@@ -1,4 +1,6 @@
 fileignoreconfig:
+- filename: .env.test
+  checksum: 900db203fd9526bc60c45c4005ed5330093667f615489eada3436a7025ba5568
 - filename: src/components/MemberPage/MemberStatus.tsx
   checksum: eaff8ce7da82504889d913a5eaac5019d0fffb52ca24ea62472b24b5b840ea34
 - filename: src/server/views/templates/emails/VerificationWaiting/VerificationWaiting.tsx
