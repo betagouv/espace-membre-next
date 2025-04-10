@@ -1,9 +1,9 @@
-import { getLastMissionDate } from "@/utils/member";
-import { fr } from "@codegouvfr/react-dsfr/fr";
-import Button from "@codegouvfr/react-dsfr/Button";
 import Alert from "@codegouvfr/react-dsfr/Alert";
+import Button from "@codegouvfr/react-dsfr/Button";
+import { fr } from "@codegouvfr/react-dsfr/fr";
 
 import { MemberPageProps } from "./MemberPage";
+import { getLastMissionDate } from "@/utils/member";
 
 export const MemberWaitingEmailValidationNotice = ({
     userInfos,
@@ -12,7 +12,7 @@ export const MemberWaitingEmailValidationNotice = ({
 }) => (
     <Alert
         className={fr.cx("fr-mt-2w", "fr-mb-2w")}
-        title={`Email en attente de validation`}
+        title={`${userInfos.fullname} n'a pas encore activé son compte.`}
         severity="warning"
         description={
             <p>
