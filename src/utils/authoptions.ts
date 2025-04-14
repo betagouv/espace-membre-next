@@ -147,7 +147,6 @@ export const authOptions: NextAuthOptions = {
             return getJwtTokenForUser(token);
         },
         async decode({ secret, token }) {
-            // console.log("decode", token);
             if (token) {
                 try {
                     const decoded = jwt.verify(token, config.secret, {
