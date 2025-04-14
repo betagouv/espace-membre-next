@@ -180,7 +180,7 @@ export const authOptions: NextAuthOptions = {
                     },
                 });
                 if (!dbUser) {
-                    console.error(`ProConnect: no member found for ${user.id}`);
+                    console.error(`Il n'y a pas de fiche dans l'espace-membre pour cet email. Un membre de la communauté peut en créer une.`);
                     throw new Error("UnknownMember");
                 }
                 if (checkUserIsExpired(memberBaseInfoToModel(dbUser), 5)) {
