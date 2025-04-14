@@ -4,6 +4,9 @@
         title: Créer ma fiche membre
         disabled: true
         defaultValue: true
+      - id: referent-metier
+        title: |
+            Rendre visite au référent métier [doc reference metier](https://doc.incubateur.net)
       - id: atelier-onboarding
         title: |
             Assister à [un atelier d'embarquement](https://doc.incubateur.net/communaute/travailler-chez-beta.gouv.fr/to-do-darrivee/embarquement-dans-la-communaute)
