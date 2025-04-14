@@ -7,6 +7,7 @@
       - id: atelier-onboarding
         title: |
             Assister au [1er atelier d'embarquement en visio](https://airtable.com/appebTa6XsY6fDixm/shr5Uaqje8eV9BabU)
+      - id: atelier-onboarding-presentiel
         title: |
             Assister à [l'atelier d'embarquement en présentiel](https://espace-membre.incubateur.net/formations?filter=Nouveaux+membres)
       - id: forum-beta
