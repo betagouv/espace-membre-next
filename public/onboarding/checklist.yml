@@ -1,7 +1,7 @@
 - title: Découvrir l'écosystème de beta.gouv.fr
   items:
       - id: fiche-membre
-        title: Créer ma fiche membre
+        title: Créer ma fiche membres
         disabled: true
         defaultValue: true
       - id: atelier-onboarding
