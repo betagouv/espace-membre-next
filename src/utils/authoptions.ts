@@ -185,7 +185,7 @@ export const authOptions: NextAuthOptions = {
                 }
                 if (checkUserIsExpired(memberBaseInfoToModel(dbUser), 5)) {
                     console.error(
-                        `ProConnect: cannot login expired member for ${user.id}`
+                        `Cannot login expired member ${user.id}`
                     );
                     throw new Error("ExpiredMember");
                 }
