@@ -6,7 +6,9 @@
         defaultValue: true
       - id: atelier-onboarding
         title: |
-            Assister à [un atelier d'embarquement](https://doc.incubateur.net/communaute/travailler-chez-beta.gouv.fr/to-do-darrivee/embarquement-dans-la-communaute)
+            Assister au [1er atelier d'embarquement en visio](https://airtable.com/appebTa6XsY6fDixm/shr5Uaqje8eV9BabU)
+        title: |
+            Assister à [l'atelier d'embarquement en présentiel](https://espace-membre.incubateur.net/formations?filter=Nouveaux+membres)
       - id: forum-beta
         title: Assister à [un forum Beta.gouv.fr](https://doc.incubateur.net/communaute/decouvrir-beta.gouv.fr/la-communaute/les-rituels/seminaire)
       - id: valeurs-beta
