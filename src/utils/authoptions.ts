@@ -143,7 +143,6 @@ export const authOptions: NextAuthOptions = {
     },
     jwt: {
         async encode({ secret, token }) {
-            //console.log("encode", token);
             return getJwtTokenForUser(token);
         },
         async decode({ secret, token }) {
