@@ -2,20 +2,39 @@ import { startBossClientInstance } from "./client";
 import { sendEmailToIncubatorTeamTopic } from "./workers/send-email-to-incubator";
 import { sendEmailToTeamsToCheckOnTeamCompositionTopic } from "./workers/send-email-to-teams-to-check-on-team-composition";
 
+export const pgBossJob = [
+    {
+        topic: sendEmailToTeamsToCheckOnTeamCompositionTopic,
+        frequency: `0 8 1,2,3,4,5,6,7 */3 1`,
+    },
+    {
+        topic: sendEmailToIncubatorTeamTopic,
+        frequency: `0 8 1,2,3,4,5,6,7 */3 1`,
+    },
+];
+
 export async function scheduleCronTasks() {
     const bossClient = await startBossClientInstance();
 
     // cron tasks
-    await bossClient.schedule(
-        sendEmailToTeamsToCheckOnTeamCompositionTopic,
-        `0 8 1,2,3,4,5,6,7 */3 1`, // Runs at 08:00 AM on monday every 3rd month
-        undefined,
-        { tz: "Europe/Paris" }
-    );
-    await bossClient.schedule(
-        sendEmailToIncubatorTeamTopic,
-        `0 8 1,2,3,4,5,6,7 */3 1`, // Runs at 08:00 AM on monday every 3rd month
-        undefined,
-        { tz: "Europe/Paris" }
-    );
+    for (const job of pgBossJob) {
+        await bossClient.schedule(
+            job.topic,
+            job.frequency, // Runs at 08:00 AM on monday every 3rd month
+            undefined,
+            { tz: "Europe/Paris" }
+        );
+    }
+    // await bossClient.schedule(
+    //     sendEmailToTeamsToCheckOnTeamCompositionTopic,
+    //     `0 8 1,2,3,4,5,6,7 */3 1`, // Runs at 08:00 AM on monday every 3rd month
+    //     undefined,
+    //     { tz: "Europe/Paris" }
+    // );
+    // await bossClient.schedule(
+    //     sendEmailToIncubatorTeamTopic,
+    //     `0 8 1,2,3,4,5,6,7 */3 1`, // Runs at 08:00 AM on monday every 3rd month
+    //     undefined,
+    //     { tz: "Europe/Paris" }
+    // );
 }

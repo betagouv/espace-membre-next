@@ -72,38 +72,73 @@ export async function getBossClientInstance(
     return bossClient;
 }
 
+export const pgBossWorker = [
+    {
+        topic: createOrUpdateMatomoServiceAccountTopic,
+        worker: createOrUpdateMatomoServiceAccount,
+    },
+    {
+        topic: createSentryServiceAccountTopic,
+        worker: createSentryServiceAccount,
+    },
+    {
+        topic: createSentryTeamTopic,
+        worker: createSentryTeam,
+    },
+    {
+        topic: updateSentryServiceAccountTopic,
+        worker: updateSentryServiceAccount,
+    },
+    {
+        topic: sendNewMemberValidationEmailTopic,
+        worker: sendNewMemberValidationEmail,
+    },
+    {
+        topic: sendEmailToTeamsToCheckOnTeamCompositionTopic,
+        worker: sendEmailToTeamsToCheckOnTeamComposition,
+    },
+    {
+        topic: sendEmailToIncubatorTeamTopic,
+        worker: sendEmailToIncubatorTeam,
+    },
+];
+
 // We force using a singleton getter because if `.start()` is not called before doing any operation it will
 // fail silently without doing/throwing anything (we also start listening for events before pushing them)
 export async function startBossClientInstance(): Promise<PgBoss> {
     return await getBossClientInstance(async () => {
-        await bossClient.work(
-            createOrUpdateMatomoServiceAccountTopic,
-            handlerWrapper(createOrUpdateMatomoServiceAccount)
-        );
-        await bossClient.work(
-            createSentryServiceAccountTopic,
-            handlerWrapper(createSentryServiceAccount)
-        );
-        await bossClient.work(
-            createSentryTeamTopic,
-            handlerWrapper(createSentryTeam)
-        );
-        await bossClient.work(
-            updateSentryServiceAccountTopic,
-            handlerWrapper(updateSentryServiceAccount)
-        );
-        await bossClient.work(
-            sendNewMemberValidationEmailTopic,
-            handlerWrapper(sendNewMemberValidationEmail)
-        );
-        await bossClient.work(
-            sendEmailToTeamsToCheckOnTeamCompositionTopic,
-            handlerWrapper(sendEmailToTeamsToCheckOnTeamComposition)
-        );
-        await bossClient.work(
-            sendEmailToIncubatorTeamTopic,
-            handlerWrapper(sendEmailToIncubatorTeam)
-        );
+        for (const job of pgBossWorker) {
+            await bossClient.work(job.topic, handlerWrapper(job.worker));
+        }
+
+        // await bossClient.work(
+        //     createOrUpdateMatomoServiceAccountTopic,
+        //     handlerWrapper(createOrUpdateMatomoServiceAccount)
+        // );
+        // await bossClient.work(
+        //     createSentryServiceAccountTopic,
+        //     handlerWrapper(createSentryServiceAccount)
+        // );
+        // await bossClient.work(
+        //     createSentryTeamTopic,
+        //     handlerWrapper(createSentryTeam)
+        // );
+        // await bossClient.work(
+        //     updateSentryServiceAccountTopic,
+        //     handlerWrapper(updateSentryServiceAccount)
+        // );
+        // await bossClient.work(
+        //     sendNewMemberValidationEmailTopic,
+        //     handlerWrapper(sendNewMemberValidationEmail)
+        // );
+        // await bossClient.work(
+        //     sendEmailToTeamsToCheckOnTeamCompositionTopic,
+        //     handlerWrapper(sendEmailToTeamsToCheckOnTeamComposition)
+        // );
+        // await bossClient.work(
+        //     sendEmailToIncubatorTeamTopic,
+        //     handlerWrapper(sendEmailToIncubatorTeam)
+        // );
     });
 }
 
