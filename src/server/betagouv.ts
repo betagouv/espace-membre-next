@@ -1,11 +1,11 @@
+import * as Sentry from "@sentry/nextjs";
 import axios from "axios";
 import _ from "lodash";
 import ovh0 from "ovh";
-import unescape from "unescape";
 
+import { getDinumEmail } from "@/lib/kysely/queries/dinum";
 import { getAllUsersInfo } from "@/lib/kysely/queries/users";
 import { Job, JobWTTJ } from "@/models/job";
-import { getDinumEmail } from "@/lib/kysely/queries/dinum";
 import { memberBaseInfoToModel, userInfosToModel } from "@/models/mapper";
 import { memberBaseInfoSchemaType } from "@/models/member";
 import { EmailInfos } from "@/models/member";
@@ -173,11 +173,18 @@ const betaGouv = {
 const betaOVH = {
     emailInfos: async (id: string): Promise<EmailInfos | null> => {
         const errorHandler = (err) => {
-            if (err.error === 404) return null;
-            console.error(err);
-            throw new Error(
-                `Error to get email info in ${config.domain}:${err}`
-            );
+            if (err.error === 404) {
+                return null;
+            } else {
+                /*
+                    if other error, it might be OVH api not working
+                    or credential problem, but it should not stop user
+                    from using app.
+                    Send to sentry and return null
+                */
+                Sentry.captureException(err);
+                return null;
+            }
         };
         const promises: Promise<any>[] = [];
 
@@ -411,8 +418,12 @@ const betaOVH = {
             );
         } catch (err) {
             console.log(typeof err);
-            if ((err as { error: number }).error === 404) return null;
-            throw new Error(`OVH Error GET on ${url} : ${err}`);
+            if ((err as { error: number }).error === 404) {
+                return null;
+            } else {
+                Sentry.captureException(err);
+                return null;
+            }
         }
     },
     setResponder: async (id, { content, from, to }) => {
@@ -535,7 +546,8 @@ const betaOVH = {
 
             return await betaOVH.requestRedirections("GET", redirectionIds);
         } catch (err) {
-            throw new Error(`OVH Error on ${url} : ${JSON.stringify(err)}`);
+            Sentry.captureException(err);
+            return [];
         }
     },
     deleteRedirection: async (from, to) => {

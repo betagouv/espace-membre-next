@@ -18,14 +18,13 @@ import { EMAIL_TYPES } from "@/server/modules/email";
 export const sendEmailToTeamWhenNewMemberTopic =
     "send-email-to-team-when-new-member";
 
-const hasActiveMissionInStartup = (
+const hasActiveOrFuturMissionInStartup = (
     missions: missionSchemaType[],
     startupId: startupSchemaType["uuid"]
 ) => {
     const now = new Date();
     return missions.find(
         (mission) =>
-            isAfter(now, mission.start ?? 0) &&
             isBefore(now, mission.end ?? Infinity) &&
             mission.startups?.includes(startupId)
     );
@@ -37,12 +36,10 @@ export async function sendEmailToTeamWhenNewMember(
     const data = SendEmailToTeamWhenNewMemberSchema.parse(job.data);
     const newMember = await getMemberIfValidOrThrowError(data.userId);
     const now = new Date();
+    // also fetch startups from missions in the futur
     const userStartups = (await getUserStartups(data.userId)).filter(
         (startup) => {
-            return (
-                isAfter(now, startup.start ?? 0) &&
-                isBefore(now, startup.end ?? Infinity)
-            );
+            return isBefore(now, startup.end ?? Infinity);
         }
     );
 
@@ -56,7 +53,7 @@ export async function sendEmailToTeamWhenNewMember(
         const startupMembers = (await getUsersByStartup(startup.uuid)).filter(
             (member) =>
                 member.uuid !== data.userId &&
-                hasActiveMissionInStartup(member.missions, startup.uuid)
+                hasActiveOrFuturMissionInStartup(member.missions, startup.uuid)
         );
         if (!startupMembers.length) {
             console.log(
