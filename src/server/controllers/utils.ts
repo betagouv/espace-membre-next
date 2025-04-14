@@ -273,18 +273,12 @@ export async function userInfos(
                 options: { withDetails: true },
             })
         );
-        let emailInfos: any = null,
-            emailRedirections: any = [],
-            emailResponder: any = null;
-        try {
-            emailInfos = await BetaGouv.emailInfos(userInfos.username);
-            emailRedirections = await BetaGouv.redirectionsForId({
-                from: userInfos.username,
-            });
-            emailResponder = await BetaGouv.getResponder(userInfos.username);
-        } catch (e) {
-            console.error(e);
-        }
+        // TODO: check if email OPI
+        const emailInfos = await BetaGouv.emailInfos(userInfos.username);
+        const emailRedirections = await BetaGouv.redirectionsForId({
+            from: userInfos.username,
+        });
+        const emailResponder = await BetaGouv.getResponder(userInfos.username);
         const isExpired = checkUserIsExpired(userInfos);
         // On ne peut créé un compte que si:
         // - la page fiche Github existe
