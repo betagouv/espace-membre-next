@@ -9,6 +9,8 @@ fileignoreconfig:
   checksum: eaff8ce7da82504889d913a5eaac5019d0fffb52ca24ea62472b24b5b840ea34
 - filename: src/server/views/templates/emails/VerificationWaiting/VerificationWaiting.tsx
   checksum: 6516c90ed7710164f26cdb19dfadc7977ce08b928a1e805953cc5bd8877b2c95
+- filename: storybook
+  checksum: f56b0ace83bd8e54e62ff2860dd46f592ff9fe3609f7a73cd31126d873e2aee7
 scopeconfig:
 - scope: node
 version: "1.0"
