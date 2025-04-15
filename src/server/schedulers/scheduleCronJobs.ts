@@ -108,3 +108,4 @@ export function startJobs() {
         `Started ${activeJobs} / ${espaceMembreCronJobs.length} cron jobs`
     );
 }
+startJobs();
