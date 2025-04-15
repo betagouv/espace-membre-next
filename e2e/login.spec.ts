@@ -13,7 +13,7 @@ test("submit invalid login returns error message", async ({ page }) => {
 
     await expect(
         page.getByText(
-            "Membre inconnu dans la communauté, veuillez contacter votre équipe référente."
+            "Error: Il n'y a pas de fiche dans l'espace-membre pour cet email. Un membre de la communauté peut en créer une."
         )
     ).toBeVisible();
 });
@@ -26,7 +26,7 @@ test("submit expired login returns error message", async ({ page }) => {
 
     await expect(
         page.getByText(
-            "Ce membre a une date de fin expirée ou pas de mission définie."
+            "Error: Membre Expired member a une date de fin expirée ou pas de mission définie."
         )
     ).toBeVisible();
 });
@@ -39,7 +39,7 @@ test("submit mission-less login returns error message", async ({ page }) => {
 
     await expect(
         page.getByText(
-            "Ce membre a une date de fin expirée ou pas de mission définie."
+            "Error: Membre Empty member a une date de fin expirée ou pas de mission définie."
         )
     ).toBeVisible();
 });

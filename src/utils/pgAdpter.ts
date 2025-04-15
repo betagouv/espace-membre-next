@@ -251,7 +251,7 @@ export default function customPostgresAdapter(): Adapter {
                     providerAccountId: account.providerAccountId,
                     refresh_token: account.refresh_token,
                     access_token: account.access_token,
-                    expires_at: sql`${account.expires_at}`,
+                    expires_at: sql`to_timestamp(${account.expires_at})`,
                     id_token: account.id_token,
                     scope: account.scope,
                     session_state: account.session_state,
