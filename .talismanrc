@@ -4,7 +4,7 @@ fileignoreconfig:
 - filename: .github/workflows/playwright.yml
   checksum: c7ad26d3f680a12d4169e46858d36b01ad1073c2acbb7265ee398d96ccd8bd65
 - filename: generate-email-md.ts
-  checksum: 518be5e9c3317c54cf50725be2196175c2da6c8b43326620205240a486c89538
+  checksum: aeb35a10ae2e7d9ff2b9f3591ec8fc86661bf1cc4463a7a3b1a7d4b122ac24a7
 - filename: src/components/MemberPage/MemberStatus.tsx
   checksum: eaff8ce7da82504889d913a5eaac5019d0fffb52ca24ea62472b24b5b840ea34
 - filename: src/server/views/templates/emails/VerificationWaiting/VerificationWaiting.tsx
