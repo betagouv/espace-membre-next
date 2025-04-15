@@ -60,7 +60,7 @@ const nextConfig = {
         {
             source: "/api/public/member/:username/image",
             destination: "/api/member/:username/image",
-        },
+        }
     ],
     webpack: (config, { isServer }) => {
         if (!isServer) {
