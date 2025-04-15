@@ -1,7 +1,10 @@
 import * as Sentry from "@sentry/node";
 import { CronJob } from "cron";
 
-import { EspaceMembreCronJob, espaceMembreCronJobs } from "../schedulers/cron";
+import {
+    EspaceMembreCronJobType,
+    espaceMembreCronJobs,
+} from "../schedulers/cron";
 import { db } from "@/lib/kysely";
 
 interface DBTask {
@@ -44,7 +47,7 @@ const onTickWrapper = (
 export function startJobs() {
     let activeJobs = 0;
     for (const job of espaceMembreCronJobs) {
-        const cronjob: EspaceMembreCronJob = {
+        const cronjob: EspaceMembreCronJobType = {
             timeZone: "Europe/Paris",
             start: true,
             ...job,

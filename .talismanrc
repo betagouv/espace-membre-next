@@ -6,7 +6,7 @@ fileignoreconfig:
 - filename: .github/workflows/playwright.yml
   checksum: c7ad26d3f680a12d4169e46858d36b01ad1073c2acbb7265ee398d96ccd8bd65
 - filename: generate-cron-md.ts
-  checksum: cf024f5f6ff6f75ec78463197dd578ebe0a1f34bbaca6822b28349a7774d41b3
+  checksum: 184ab41ee937833492f55d5f09844f1f679fd4d3ee462254b13d124e9e9b76b8
 - filename: src/components/MemberPage/MemberStatus.tsx
   checksum: eaff8ce7da82504889d913a5eaac5019d0fffb52ca24ea62472b24b5b840ea34
 - filename: src/server/views/templates/emails/VerificationWaiting/VerificationWaiting.tsx

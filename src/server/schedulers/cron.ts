@@ -57,7 +57,7 @@ import { sentryClient } from "../config/sentry.config";
 import config from "@/server/config";
 import { setEmailExpired } from "@schedulers/setEmailExpired";
 
-export interface EspaceMembreCronJob {
+export interface EspaceMembreCronJobType {
     cronTime: string;
     onTick: (any) => any;
     isActive: boolean;
@@ -67,7 +67,7 @@ export interface EspaceMembreCronJob {
     start?: boolean;
 }
 
-const mattermostJobs: EspaceMembreCronJob[] = [
+const mattermostJobs: EspaceMembreCronJobType[] = [
     {
         cronTime: "0 0 14 * * *",
         onTick: removeBetaAndParnersUsersFromCommunityTeam,
@@ -166,7 +166,7 @@ const mattermostJobs: EspaceMembreCronJob[] = [
     },
 ];
 
-const startupJobs: EspaceMembreCronJob[] = [
+const startupJobs: EspaceMembreCronJobType[] = [
     {
         cronTime: "0 0 5 * * 1",
         onTick: createMailingListForStartups,
@@ -184,7 +184,7 @@ const startupJobs: EspaceMembreCronJob[] = [
     },
 ];
 
-const servicesJobs: EspaceMembreCronJob[] = [
+const servicesJobs: EspaceMembreCronJobType[] = [
     {
         cronTime: "0 15 19 * * *",
         onTick: deleteMatomoAccount,
@@ -217,7 +217,7 @@ const servicesJobs: EspaceMembreCronJob[] = [
     },
 ];
 
-const formationJobs: EspaceMembreCronJob[] = [
+const formationJobs: EspaceMembreCronJobType[] = [
     {
         cronTime: "0 0 * * *",
         onTick: () => syncFormationFromAirtable(true),
@@ -236,7 +236,7 @@ const formationJobs: EspaceMembreCronJob[] = [
     },
 ];
 
-const newsletterJobs: EspaceMembreCronJob[] = [
+const newsletterJobs: EspaceMembreCronJobType[] = [
     {
         cronTime: process.env.NEWSLETTER_FIRST_REMINDER_TIME || "0 0 10 * * 3", // every week a 8:00 on monday
         onTick: () => newsletterReminder("FIRST_REMINDER"),
@@ -268,7 +268,7 @@ const newsletterJobs: EspaceMembreCronJob[] = [
     },
 ];
 
-const synchronizationJobs: EspaceMembreCronJob[] = [
+const synchronizationJobs: EspaceMembreCronJobType[] = [
     {
         cronTime: "0 10 10 * * *",
         onTick: syncMattermostUserWithMattermostMemberInfosTable,
@@ -290,7 +290,7 @@ const synchronizationJobs: EspaceMembreCronJob[] = [
     },
 ];
 
-export const espaceMembreCronJobs: EspaceMembreCronJob[] = [
+export const espaceMembreCronJobs: EspaceMembreCronJobType[] = [
     ...newsletterJobs,
     ...mattermostJobs,
     ...startupJobs,

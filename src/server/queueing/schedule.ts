@@ -2,11 +2,13 @@ import { startBossClientInstance } from "./client";
 import { sendEmailToIncubatorTeamTopic } from "./workers/send-email-to-incubator";
 import { sendEmailToTeamsToCheckOnTeamCompositionTopic } from "./workers/send-email-to-teams-to-check-on-team-composition";
 
-export const pgBossJob: {
+export type PgBossJobType = {
     topic: string;
     frequency: string;
     description: string;
-}[] = [
+};
+
+export const pgBossJobs: PgBossJobType[] = [
     {
         topic: sendEmailToTeamsToCheckOnTeamCompositionTopic,
         frequency: `0 8 1,2,3,4,5,6,7 */3 1`,
@@ -23,7 +25,7 @@ export async function scheduleCronTasks() {
     const bossClient = await startBossClientInstance();
 
     // cron tasks
-    for (const job of pgBossJob) {
+    for (const job of pgBossJobs) {
         await bossClient.schedule(
             job.topic,
             job.frequency, // Runs at 08:00 AM on monday every 3rd month
