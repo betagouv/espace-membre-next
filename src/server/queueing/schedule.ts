@@ -1,4 +1,4 @@
-import { startBossClientInstance } from "./client";
+import { getBossClientInstance, startBossClientInstance } from "./client";
 import { sendEmailToIncubatorTeamTopic } from "./workers/send-email-to-incubator";
 import { sendEmailToTeamsToCheckOnTeamCompositionTopic } from "./workers/send-email-to-teams-to-check-on-team-composition";
 
@@ -21,16 +21,13 @@ export const pgBossJobs: PgBossJobType[] = [
     },
 ];
 
-export async function scheduleCronTasks() {
-    const bossClient = await startBossClientInstance();
+export async function scheduleBossCronTasks() {
+    const bossClient = await getBossClientInstance();
 
     // cron tasks
     for (const job of pgBossJobs) {
-        await bossClient.schedule(
-            job.topic,
-            job.frequency, // Runs at 08:00 AM on monday every 3rd month
-            undefined,
-            { tz: "Europe/Paris" }
-        );
+        await bossClient.schedule(job.topic, job.frequency, undefined, {
+            tz: "Europe/Paris",
+        });
     }
 }

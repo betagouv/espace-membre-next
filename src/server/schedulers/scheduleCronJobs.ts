@@ -1,10 +1,7 @@
 import * as Sentry from "@sentry/node";
 import { CronJob } from "cron";
 
-import {
-    EspaceMembreCronJobType,
-    espaceMembreCronJobs,
-} from "../schedulers/cron";
+import { EspaceMembreCronJobType, espaceMembreCronJobs } from "./cron";
 import { db } from "@/lib/kysely";
 
 interface DBTask {
@@ -111,5 +108,3 @@ export function startJobs() {
         `Started ${activeJobs} / ${espaceMembreCronJobs.length} cron jobs`
     );
 }
-
-startJobs();
