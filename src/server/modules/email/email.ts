@@ -499,3 +499,135 @@ export enum MAILING_LIST_TYPE {
     TEST = "TEST",
     FORUM_REMINDER = "FORUM_REMINDER",
 }
+
+export const EmailDocumentation: Record<
+    EMAIL_TYPES,
+    {
+        description: string;
+    }
+> = {
+    [EMAIL_TYPES.MARRAINAGE_NEWCOMER_EMAIL]: {
+        description: "Email de marrainage envoyé au nouveau arrivant",
+    },
+    [EMAIL_TYPES.MARRAINAGE_ONBOARDER_EMAIL]: {
+        description: "Email de marrainage envoyé au parrain",
+    },
+    [EMAIL_TYPES.EMAIL_LOGIN]: {
+        description:
+            "Email de login envoyé à la personne qui essaye de se connecter",
+    },
+    [EMAIL_TYPES.MARRAINAGE_REQUEST_EMAIL]: {
+        description:
+            "Email de marrainage envoyé au parrain pour savoir s'il souhaite marrainé.",
+    },
+    [EMAIL_TYPES.MARRAINAGE_ACCEPT_NEWCOMER_EMAIL]: {
+        description:
+            "Email de marrainage envoyé au nouveau pour confirmer que la parain à accepter",
+    },
+    [EMAIL_TYPES.MARRAINAGE_ACCEPT_ONBOARDER_EMAIL]: {
+        description:
+            "Email de marrainage envoyé à l'onboarder pour confirmer que la parain à accepter",
+    },
+    [EMAIL_TYPES.MARRAINAGE_REJECT_ONBOARDER_EMAIL]: {
+        description:
+            "Email de marrainage envoyé quand le marrainage n'as pas été accepté",
+    },
+    [EMAIL_TYPES.MARRAINAGE_REQUEST_FAILED]: {
+        description:
+            "Email de marrainage envoyé quand on a pas réussi à trouver un parrain.",
+    },
+    [EMAIL_TYPES.ONBOARDING_REFERENT_EMAIL]: {
+        description: "Email de marrainage envoyé aux référent",
+    },
+    [EMAIL_TYPES.EMAIL_CREATED_EMAIL]: {
+        description:
+            "Email envoyé lors de la création d’un nouvel email dans le système.",
+    },
+    [EMAIL_TYPES.EMAIL_MATTERMOST_ACCOUNT_CREATED]: {
+        description: "Notification de création d’un compte Mattermost.",
+    },
+    [EMAIL_TYPES.EMAIL_PR_PENDING]: {
+        description:
+            "Notification lorsqu'une pull request est en attente de validation.",
+    },
+    [EMAIL_TYPES.EMAIL_PR_PENDING_TO_TEAM]: {
+        description:
+            "Notification à une équipe entière pour une pull request en attente.",
+    },
+    [EMAIL_TYPES.EMAIL_ENDING_CONTRACT_2_DAYS]: {
+        description:
+            "Alerte indiquant que le contrat d’un membre se termine dans 2 jours.",
+    },
+    [EMAIL_TYPES.EMAIL_ENDING_CONTRACT_15_DAYS]: {
+        description:
+            "Alerte indiquant que le contrat d’un membre se termine dans 15 jours.",
+    },
+    [EMAIL_TYPES.EMAIL_ENDING_CONTRACT_30_DAYS]: {
+        description:
+            "Alerte indiquant que le contrat d’un membre se termine dans 30 jours.",
+    },
+    [EMAIL_TYPES.EMAIL_NO_MORE_CONTRACT_1_DAY]: {
+        description:
+            "Notification qu’un membre n’aura plus de contrat actif demain.",
+    },
+    [EMAIL_TYPES.EMAIL_NO_MORE_CONTRACT_30_DAY]: {
+        description:
+            "Notification qu’un membre n’aura plus de contrat actif dans 30 jours.",
+    },
+    [EMAIL_TYPES.EMAIL_USER_SHOULD_UPDATE_INFO]: {
+        description:
+            "Rappel à un utilisateur de mettre à jour ses informations personnelles.",
+    },
+    [EMAIL_TYPES.EMAIL_NEWSLETTER]: {
+        description: "Email de type newsletter envoyé aux utilisateurs.",
+    },
+    [EMAIL_TYPES.EMAIL_NEW_MEMBER_PR]: {
+        description: "Notification de création de PR pour un nouveau membre.",
+    },
+    [EMAIL_TYPES.EMAIL_STARTUP_ENTER_CONSTRUCTION_PHASE]: {
+        description:
+            "Notification qu'une startup entre en phase de construction.",
+    },
+    [EMAIL_TYPES.EMAIL_STARTUP_ENTER_ACCELERATION_PHASE]: {
+        description:
+            "Notification qu'une startup entre en phase d’accélération.",
+    },
+    [EMAIL_TYPES.EMAIL_STARTUP_ENTER_INVESTIGATION_PHASE]: {
+        description:
+            "Notification qu'une startup entre en phase d’investigation.",
+    },
+    [EMAIL_TYPES.EMAIL_STARTUP_ASK_PHASE]: {
+        description:
+            "Demande envoyée pour confirmer ou changer la phase d'une startup.",
+    },
+    [EMAIL_TYPES.EMAIL_FORUM_REMINDER]: {
+        description: "Rappel envoyé pour participer à un forum.",
+    },
+    [EMAIL_TYPES.EMAIL_TEST]: {
+        description:
+            "Email de test pour vérifier le bon fonctionnement des envois.",
+    },
+    [EMAIL_TYPES.EMAIL_VERIFICATION_WAITING]: {
+        description: "Email informant qu’une vérification est en attente.",
+    },
+    [EMAIL_TYPES.EMAIL_NEW_MEMBER_VALIDATION]: {
+        description: "Demande de validation pour un nouveau membre.",
+    },
+    [EMAIL_TYPES.EMAIL_TEAM_COMPOSITION]: {
+        description: "Email résumant la composition actuelle d’une équipe.",
+    },
+    [EMAIL_TYPES.EMAIL_STARTUP_MEMBERS_DID_NOT_CHANGE_IN_X_MONTHS]: {
+        description:
+            "Alerte lorsqu'aucun changement n’a été fait sur l’équipe d’une startup depuis X mois.",
+    },
+    [EMAIL_TYPES.EMAIL_STARTUP_NEW_MEMBER_ARRIVAL]: {
+        description:
+            "Notification de l’arrivée d’un nouveau membre dans une startup.",
+    },
+    [EMAIL_TYPES.EMAIL_MATOMO_ACCOUNT_CREATED]: {
+        description: "Email envoyé après la création d’un compte Matomo.",
+    },
+    [EMAIL_TYPES.EMAIL_MATOMO_ACCOUNT_UPDATED]: {
+        description: "Notification de mise à jour d’un compte Matomo.",
+    },
+};
