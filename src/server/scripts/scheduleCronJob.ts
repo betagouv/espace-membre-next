@@ -1,7 +1,23 @@
 import * as Sentry from "@sentry/node";
 import { CronJob } from "cron";
 
+import { EspaceMembreCronJob, espaceMembreCronJobs } from "../schedulers/cron";
 import { db } from "@/lib/kysely";
+
+interface DBTask {
+    name: string;
+    description?: string;
+    created_at: Date;
+    updated_at: Date;
+    last_completed: Date;
+    last_failed: Date;
+    error_message: string;
+}
+
+interface DBTaskInsertSucceed
+    extends Omit<DBTask, "last_failed" | "error_message" | "created_at"> {}
+interface DBTaskInsertFailed
+    extends Omit<DBTask, "last_completed" | "created_at"> {}
 
 const onTickWrapper = (
     name: string,
@@ -27,8 +43,12 @@ const onTickWrapper = (
 
 export function startJobs() {
     let activeJobs = 0;
-    for (const job of jobs) {
-        const cronjob: Job = { timeZone: "Europe/Paris", start: true, ...job };
+    for (const job of espaceMembreCronJobs) {
+        const cronjob: EspaceMembreCronJob = {
+            timeZone: "Europe/Paris",
+            start: true,
+            ...job,
+        };
 
         if (cronjob.isActive) {
             console.log(
@@ -84,7 +104,9 @@ export function startJobs() {
         }
     }
 
-    console.log(`Started ${activeJobs} / ${jobs.length} cron jobs`);
+    console.log(
+        `Started ${activeJobs} / ${espaceMembreCronJobs.length} cron jobs`
+    );
 }
 
 startJobs();

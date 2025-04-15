@@ -57,7 +57,7 @@ import { sentryClient } from "../config/sentry.config";
 import config from "@/server/config";
 import { setEmailExpired } from "@schedulers/setEmailExpired";
 
-interface Job {
+export interface EspaceMembreCronJob {
     cronTime: string;
     onTick: (any) => any;
     isActive: boolean;
@@ -67,22 +67,7 @@ interface Job {
     start?: boolean;
 }
 
-interface DBTask {
-    name: string;
-    description?: string;
-    created_at: Date;
-    updated_at: Date;
-    last_completed: Date;
-    last_failed: Date;
-    error_message: string;
-}
-
-interface DBTaskInsertSucceed
-    extends Omit<DBTask, "last_failed" | "error_message" | "created_at"> {}
-interface DBTaskInsertFailed
-    extends Omit<DBTask, "last_completed" | "created_at"> {}
-
-const mattermostJobs: Job[] = [
+const mattermostJobs: EspaceMembreCronJob[] = [
     {
         cronTime: "0 0 14 * * *",
         onTick: removeBetaAndParnersUsersFromCommunityTeam,
@@ -181,7 +166,7 @@ const mattermostJobs: Job[] = [
     },
 ];
 
-const startupJobs: Job[] = [
+const startupJobs: EspaceMembreCronJob[] = [
     {
         cronTime: "0 0 5 * * 1",
         onTick: createMailingListForStartups,
@@ -199,7 +184,7 @@ const startupJobs: Job[] = [
     },
 ];
 
-const servicesJobs: Job[] = [
+const servicesJobs: EspaceMembreCronJob[] = [
     {
         cronTime: "0 15 19 * * *",
         onTick: deleteMatomoAccount,
@@ -232,7 +217,7 @@ const servicesJobs: Job[] = [
     },
 ];
 
-const formationJobs: Job[] = [
+const formationJobs: EspaceMembreCronJob[] = [
     {
         cronTime: "0 0 * * *",
         onTick: () => syncFormationFromAirtable(true),
@@ -251,7 +236,7 @@ const formationJobs: Job[] = [
     },
 ];
 
-const newsletterJobs = [
+const newsletterJobs: EspaceMembreCronJob[] = [
     {
         cronTime: process.env.NEWSLETTER_FIRST_REMINDER_TIME || "0 0 10 * * 3", // every week a 8:00 on monday
         onTick: () => newsletterReminder("FIRST_REMINDER"),
@@ -283,7 +268,7 @@ const newsletterJobs = [
     },
 ];
 
-const synchronizationJobs = [
+const synchronizationJobs: EspaceMembreCronJob[] = [
     {
         cronTime: "0 10 10 * * *",
         onTick: syncMattermostUserWithMattermostMemberInfosTable,
@@ -305,7 +290,7 @@ const synchronizationJobs = [
     },
 ];
 
-export const jobs: Job[] = [
+export const espaceMembreCronJobs: EspaceMembreCronJob[] = [
     ...newsletterJobs,
     ...mattermostJobs,
     ...startupJobs,
