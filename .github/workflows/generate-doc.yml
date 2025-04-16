@@ -1,4 +1,4 @@
-name: Auto Commit on Scheduler File Change
+name: Generate Cron.md if cron file changed
 
 on:
     push:
@@ -15,14 +15,6 @@ jobs:
               with:
                   fetch-depth: 0
 
-            - name: Set up Node.js
-              uses: actions/setup-node@v4
-              with:
-                  node-version: 18 # or whatever version you're using
-
-            - name: Install dependencies
-              run: npm install
-
             - name: Check if scheduler file changed
               id: check_diff
               run: |
@@ -32,9 +24,19 @@ jobs:
                     echo "changed=false" >> "$GITHUB_OUTPUT"
                   fi
 
+            - name: Set up Node.js
+              if: steps.check_diff.outputs.changed == 'true'
+              uses: actions/setup-node@v4
+              with:
+                  node-version: 18
+
+            - name: Install dependencies
+              if: steps.check_diff.outputs.changed == 'true'
+              run: npm install
+
             - name: Generate CRON.md
               if: steps.check_diff.outputs.changed == 'true'
-              run: npx ts-node scripts/generate-cron-md.ts
+              run: npx ts-node generate-cron-md.ts
 
             - name: Commit and push changes
               if: steps.check_diff.outputs.changed == 'true'
