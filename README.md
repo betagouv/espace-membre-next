@@ -103,3 +103,8 @@ La listes des cron sont dans les fichiers :
 ## Cron Jobs
 
 See detailed info in [CRON.md](./CRON.md)
+
+## Emails
+
+See detailed info in [EMAIL.md](./EMAIL.md)
+
