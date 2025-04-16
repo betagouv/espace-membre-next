@@ -164,3 +164,38 @@ La listes des cron sont dans les fichiers :
 ## Emails
 
 See detailed info in [EMAIL.md](./EMAIL.md)
+
+## Storybook
+
+We use **Storybook** primarily to document the appearance of emails, and eventually other components as well. To keep the main application codebase clean and uncluttered, Storybook is set up as a **Git submodule** in a separate repository:
+
+👉 [https://github.com/betagouv/espace-membre-storybook](https://github.com/betagouv/espace-membre-storybook)
+
+### Setup Instructions
+
+To initialize and use the Storybook submodule:
+
+```bash
+git submodule init
+git submodule update
+cd storybook
+npm install
+```
+
+Once inside the storybook folder, you can run the following commands defined in its package.json:
+
+`npm run storybook`: Launches the Storybook app — it should open automatically in your browser.
+
+`npm run chromatic`: If you have a Chromatic token (see below), this builds and uploads the Storybook to Chromatic.
+
+`npm run build-storybook`: Builds the static version of Storybook.
+
+### Chromatic
+
+To enable Chromatic, create a .env file in the storybook folder and add the following environment variable:
+
+```bash
+CHROMATIC_PROJECT_TOKEN=your_token_here
+```
+
+You can get a token for free by creating a project on chromatic.com.
