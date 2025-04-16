@@ -1,3 +1,3 @@
 web: npm start
-clock: node dist/src/server/schedulers/scheduleCronJobs.js && node dist/src/server/schedulers/schedulePgBossJobs.js
+clock: npm run start-cron-jobs-prod
 postdeploy: npm run migrate

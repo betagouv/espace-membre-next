@@ -25,6 +25,7 @@
         "staging-import-from-www": "node dist/src/scripts/import-from-www",
         "dev-import-from-www": "ts-node src/scripts/import-from-www",
         "export-to-www": "./src/scripts/export-to-www.sh",
+        "start-cron-jobs-prod": "node dist/src/server/schedulers/scheduleCronJobs.js & node dist/src/server/schedulers/schedulePgBossJobs.js",
         "fixme": "node ./node_modules/.bin/fixme -p src",
         "pg-mermaid": "npx -s pg-mermaid --dbname secretariat --username secretariat -h 127.0.0.1 -p 5432 --password secretariat --excluded-tables badge_requests community knex_migrations knex_migrations_lock startup_aggregated_stats"
     },
