@@ -1,0 +1,3 @@
+[submodule "storybook"]
+	path = storybook
+	url = git@github.com:betagouv/espace-membre-storybook.git
