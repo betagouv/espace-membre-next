@@ -1,3 +1,3 @@
 web: npm start
-clock: npm run start-cron-jobs-prod
+clock: npm run start-jobs-prod
 postdeploy: npm run migrate
