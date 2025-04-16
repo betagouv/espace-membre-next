@@ -124,6 +124,11 @@ export async function startBossClientInstance(): Promise<PgBoss> {
         for (const job of pgBossWorker) {
             await bossClient.work(job.topic, handlerWrapper(job.worker));
         }
+        console.log(
+            `Setup ${pgBossWorker.length} workers :\n${pgBossWorker
+                .map((job) => job.topic)
+                .join("\n")}`
+        );
     });
 }
 

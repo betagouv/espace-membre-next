@@ -30,4 +30,9 @@ export async function scheduleBossCronTasks() {
             tz: "Europe/Paris",
         });
     }
+    console.log(
+        `Started ${pgBossJobs} pgboss cron jobs : \n ${pgBossJobs
+            .map((job) => job.topic)
+            .join("\n")}`
+    );
 }

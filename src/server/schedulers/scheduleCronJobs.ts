@@ -25,14 +25,10 @@ const onTickWrapper = (
     onComplete: Function,
     onError: Function
 ) => {
-    console.log("Create ontick wrapper");
     return async function () {
-        console.log(`Run ${name}`);
         try {
             await onTick();
-            console.log(`Run  after on tick ${name}`);
             await onComplete();
-            console.log(`Run  after on Complete ${name}`);
         } catch (e) {
             Sentry.captureException(e);
             await onError(e);
