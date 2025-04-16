@@ -28,13 +28,16 @@ jobs:
                   fi
 
             - name: Set up Node.js
+              if: steps.check_diff.outputs.changed == 'true'
               uses: actions/setup-node@v3
               with:
                   node-version: "16" # Specify the version you need
 
             - name: Install dependencies
+              if: steps.check_diff.outputs.changed == 'true'
               run: |
                   npm install
 
             - name: Validate file against Zod schema
-              run: ts-node .github/workflows/utils/validateFile.ts
+              if: steps.check_diff.outputs.changed == 'true'
+              run: node .github/workflows/utils/validateFile.ts
