@@ -163,17 +163,17 @@ La listes des cron sont dans les fichiers :
 
 ## Emails
 
-See detailed info in [EMAIL.md](./EMAIL.md)
+Voir le détail dans [EMAIL.md](./EMAIL.md)
 
 ## Storybook
 
-We use **Storybook** primarily to document the appearance of emails, and eventually other components as well. To keep the main application codebase clean and uncluttered, Storybook is set up as a **Git submodule** in a separate repository:
+Nous utilisons **Storybook** principalement pour documenter l’apparence des emails, et potentiellement d'autres composants à l’avenir. Afin de garder la base de code principale propre et bien organisée, Storybook est configuré comme un **sous-module Git** dans un dépôt séparé :
 
 👉 [https://github.com/betagouv/espace-membre-storybook](https://github.com/betagouv/espace-membre-storybook)
 
-### Setup Instructions
+### Instructions d’installation
 
-To initialize and use the Storybook submodule:
+Pour initialiser et utiliser le sous-module Storybook :
 
 ```bash
 git submodule init
@@ -182,20 +182,18 @@ cd storybook
 npm install
 ```
 
-Once inside the storybook folder, you can run the following commands defined in its package.json:
+Une fois dans le dossier `storybook`, vous pouvez exécuter les commandes suivantes, définies dans son `package.json` :
 
-`npm run storybook`: Launches the Storybook app — it should open automatically in your browser.
-
-`npm run chromatic`: If you have a Chromatic token (see below), this builds and uploads the Storybook to Chromatic.
-
-`npm run build-storybook`: Builds the static version of Storybook.
+-   `npm run storybook` : Lance l’application Storybook — elle devrait s’ouvrir automatiquement dans votre navigateur.
+-   `npm run chromatic` : Si vous avez un token Chromatic (voir ci-dessous), cette commande construit et envoie votre Storybook à Chromatic.
+-   `npm run build-storybook` : Génère la version statique de Storybook.
 
 ### Chromatic
 
-To enable Chromatic, create a .env file in the storybook folder and add the following environment variable:
+Pour activer Chromatic, créez un fichier `.env` dans le dossier `storybook` et ajoutez-y la variable d’environnement suivante :
 
 ```bash
 CHROMATIC_PROJECT_TOKEN=your_token_here
 ```
 
-You can get a token for free by creating a project on chromatic.com.
+Vous pouvez obtenir un token gratuitement en créant un projet sur [chromatic.com](https://www.chromatic.com).
