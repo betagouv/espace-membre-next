@@ -35,6 +35,9 @@ jobs:
 
             - name: Generate CRON.md
               if: steps.check_diff.outputs.changed == 'true'
+              env:
+                REDIS_URL: "dummy-url"
+                SESSION_SECRET: "dummy-secret"
               run: npx ts-node generate-cron-md.ts
 
             - name: Commit and push changes
