@@ -1,3 +1,3 @@
 web: npm start
-clock: node dist/src/server/schedulers/cron.js
+clock: npm run start-jobs-prod
 postdeploy: npm run migrate

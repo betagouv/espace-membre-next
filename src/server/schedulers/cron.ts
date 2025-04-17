@@ -1,6 +1,3 @@
-import * as Sentry from "@sentry/node";
-import { CronJob } from "cron";
-
 import { postEventsOnMattermost } from "./calendarScheduler";
 import {
     createEmailAddresses,
@@ -57,12 +54,10 @@ import {
 } from "./userContractEndingScheduler";
 import { matomoClient } from "../config/matomo.config";
 import { sentryClient } from "../config/sentry.config";
-import { startBossClientInstance } from "../queueing/client";
-import { db } from "@/lib/kysely";
 import config from "@/server/config";
 import { setEmailExpired } from "@schedulers/setEmailExpired";
 
-interface Job {
+export interface EspaceMembreCronJobType {
     cronTime: string;
     onTick: (any) => any;
     isActive: boolean;
@@ -72,44 +67,7 @@ interface Job {
     start?: boolean;
 }
 
-interface DBTask {
-    name: string;
-    description?: string;
-    created_at: Date;
-    updated_at: Date;
-    last_completed: Date;
-    last_failed: Date;
-    error_message: string;
-}
-
-interface DBTaskInsertSucceed
-    extends Omit<DBTask, "last_failed" | "error_message" | "created_at"> {}
-interface DBTaskInsertFailed
-    extends Omit<DBTask, "last_completed" | "created_at"> {}
-
-const onTickWrapper = (
-    name: string,
-    onTick: Function,
-    onComplete: Function,
-    onError: Function
-) => {
-    console.log("Create ontick wrapper");
-    return async function () {
-        console.log(`Run ${name}`);
-        try {
-            await onTick();
-            console.log(`Run  after on tick ${name}`);
-            await onComplete();
-            console.log(`Run  after on Complete ${name}`);
-        } catch (e) {
-            Sentry.captureException(e);
-            await onError(e);
-            // Job Failed unexpectedly
-        }
-    };
-};
-
-const mattermostJobs: Job[] = [
+const mattermostJobs: EspaceMembreCronJobType[] = [
     {
         cronTime: "0 0 14 * * *",
         onTick: removeBetaAndParnersUsersFromCommunityTeam,
@@ -208,7 +166,7 @@ const mattermostJobs: Job[] = [
     },
 ];
 
-const startupJobs: Job[] = [
+const startupJobs: EspaceMembreCronJobType[] = [
     {
         cronTime: "0 0 5 * * 1",
         onTick: createMailingListForStartups,
@@ -226,7 +184,7 @@ const startupJobs: Job[] = [
     },
 ];
 
-const servicesJobs: Job[] = [
+const servicesJobs: EspaceMembreCronJobType[] = [
     {
         cronTime: "0 15 19 * * *",
         onTick: deleteMatomoAccount,
@@ -259,7 +217,7 @@ const servicesJobs: Job[] = [
     },
 ];
 
-const formationJobs: Job[] = [
+const formationJobs: EspaceMembreCronJobType[] = [
     {
         cronTime: "0 0 * * *",
         onTick: () => syncFormationFromAirtable(true),
@@ -278,7 +236,7 @@ const formationJobs: Job[] = [
     },
 ];
 
-const newsletterJobs = [
+const newsletterJobs: EspaceMembreCronJobType[] = [
     {
         cronTime: process.env.NEWSLETTER_FIRST_REMINDER_TIME || "0 0 10 * * 3", // every week a 8:00 on monday
         onTick: () => newsletterReminder("FIRST_REMINDER"),
@@ -310,7 +268,7 @@ const newsletterJobs = [
     },
 ];
 
-const synchronizationJobs = [
+const synchronizationJobs: EspaceMembreCronJobType[] = [
     {
         cronTime: "0 10 10 * * *",
         onTick: syncMattermostUserWithMattermostMemberInfosTable,
@@ -332,7 +290,7 @@ const synchronizationJobs = [
     },
 ];
 
-export const jobs: Job[] = [
+export const espaceMembreCronJobs: EspaceMembreCronJobType[] = [
     ...newsletterJobs,
     ...mattermostJobs,
     ...startupJobs,
@@ -532,67 +490,3 @@ export const jobs: Job[] = [
             "Send message to active user without secondary email to update secondary email",
     },
 ];
-
-function startJobs() {
-    let activeJobs = 0;
-    for (const job of jobs) {
-        const cronjob: Job = { timeZone: "Europe/Paris", start: true, ...job };
-
-        if (cronjob.isActive) {
-            console.log(
-                `🚀 The job "${cronjob.name}" is ON ${cronjob.cronTime}`
-            );
-            new CronJob({
-                ...cronjob,
-                onTick: onTickWrapper(
-                    cronjob.name,
-                    cronjob.onTick,
-                    async function () {
-                        const dbTaskSucceed: DBTaskInsertSucceed = {
-                            name: cronjob.name,
-                            description: cronjob.description,
-                            updated_at: new Date(),
-                            last_completed: new Date(),
-                        };
-                        await db
-                            .insertInto("tasks")
-                            .values(dbTaskSucceed)
-                            .onConflict((eb) =>
-                                eb.column("name").doUpdateSet({
-                                    ...dbTaskSucceed,
-                                })
-                            )
-                            .execute();
-                        return;
-                    },
-                    async function (error) {
-                        const dbTaskFailed: DBTaskInsertFailed = {
-                            name: cronjob.name,
-                            description: cronjob.description,
-                            updated_at: new Date(),
-                            last_failed: new Date(),
-                            error_message: error.message,
-                        };
-                        await db
-                            .insertInto("tasks")
-                            .values(dbTaskFailed)
-                            .onConflict((eb) =>
-                                eb.column("name").doUpdateSet({
-                                    ...dbTaskFailed,
-                                })
-                            )
-                            .execute();
-                        return;
-                    }
-                ),
-            });
-            activeJobs++;
-        } else {
-            console.log(`❌ The job "${cronjob.name}" is OFF`);
-        }
-    }
-
-    console.log(`Started ${activeJobs} / ${jobs.length} cron jobs`);
-}
-startJobs();
-startBossClientInstance();

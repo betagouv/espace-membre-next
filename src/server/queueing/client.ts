@@ -72,37 +72,62 @@ export async function getBossClientInstance(
     return bossClient;
 }
 
+export const pgBossWorker: {
+    topic: string;
+    worker: (job: PgBoss.Job<any>) => Promise<void>;
+    description: string;
+}[] = [
+    {
+        topic: createOrUpdateMatomoServiceAccountTopic,
+        worker: createOrUpdateMatomoServiceAccount,
+        description:
+            "Créer ou update un compte matomo quand un utilisateur en fait la demande",
+    },
+    {
+        topic: createSentryServiceAccountTopic,
+        worker: createSentryServiceAccount,
+        description:
+            "Créer un compte sentry quand un utilisateur en fait la demande",
+    },
+    {
+        topic: createSentryTeamTopic,
+        worker: createSentryTeam,
+        description:
+            "Créer une équipe sentry quand un utilisateur en fait la demande",
+    },
+    {
+        topic: updateSentryServiceAccountTopic,
+        worker: updateSentryServiceAccount,
+        description: `Ajoute une équipe au compte sentry d'un utilisateur`,
+    },
+    {
+        topic: sendNewMemberValidationEmailTopic,
+        worker: sendNewMemberValidationEmail,
+        description: `Envoie un email aux membres de la startup d'un nouveau membre pour qu'il valide sa fiche`,
+    },
+    {
+        topic: sendEmailToTeamsToCheckOnTeamCompositionTopic,
+        worker: sendEmailToTeamsToCheckOnTeamComposition,
+        description: `Envoie un email aux membres d'un produit pour qu'il valide sa composition`,
+    },
+    {
+        topic: sendEmailToIncubatorTeamTopic,
+        worker: sendEmailToIncubatorTeam,
+        description: `Envoie un email aux membres des incubateurs pour leur lister les produits qui n'ont pas changé depuis X mois`,
+    },
+];
+
 // We force using a singleton getter because if `.start()` is not called before doing any operation it will
 // fail silently without doing/throwing anything (we also start listening for events before pushing them)
 export async function startBossClientInstance(): Promise<PgBoss> {
     return await getBossClientInstance(async () => {
-        await bossClient.work(
-            createOrUpdateMatomoServiceAccountTopic,
-            handlerWrapper(createOrUpdateMatomoServiceAccount)
-        );
-        await bossClient.work(
-            createSentryServiceAccountTopic,
-            handlerWrapper(createSentryServiceAccount)
-        );
-        await bossClient.work(
-            createSentryTeamTopic,
-            handlerWrapper(createSentryTeam)
-        );
-        await bossClient.work(
-            updateSentryServiceAccountTopic,
-            handlerWrapper(updateSentryServiceAccount)
-        );
-        await bossClient.work(
-            sendNewMemberValidationEmailTopic,
-            handlerWrapper(sendNewMemberValidationEmail)
-        );
-        await bossClient.work(
-            sendEmailToTeamsToCheckOnTeamCompositionTopic,
-            handlerWrapper(sendEmailToTeamsToCheckOnTeamComposition)
-        );
-        await bossClient.work(
-            sendEmailToIncubatorTeamTopic,
-            handlerWrapper(sendEmailToIncubatorTeam)
+        for (const job of pgBossWorker) {
+            await bossClient.work(job.topic, handlerWrapper(job.worker));
+        }
+        console.log(
+            `Setup ${pgBossWorker.length} workers :\n${pgBossWorker
+                .map((job) => job.topic)
+                .join("\n")}`
         );
     });
 }
