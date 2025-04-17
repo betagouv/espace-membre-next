@@ -16,10 +16,10 @@ jobs:
             - name: Checkout last 2 commits
               uses: actions/checkout@v4
               with:
-                fetch-depth: 2
+                fetch-depth: 0  # important pour pouvoir comparer les branches
                 ref: ${{ github.event.pull_request.head.sha }}
 
-            - name: Get changed files (last commit only)
+            - name: Get changed files
               id: changed-files
               run: |
                 git fetch origin ${{ github.event.pull_request.base.ref }}
