@@ -38,6 +38,12 @@ jobs:
               env:
                 REDIS_URL: "dummy-url"
                 SESSION_SECRET: "dummy-secret"
+                CHAT_WEBHOOK_URL_SECRETARIAT: "dummy-url"
+                CHAT_WEBHOOK_URL_SECRETARIAT: "dummy-url"
+                CHAT_WEBHOOK_URL_GENERAL: "dummy-url"
+                CHAT_WEBHOOK_URL_DINUM: "dummy-url"
+                CHAT_WEBHOOK_URL_GIP: "dummy-url"
+                MAILING_LIST_NEWSLETTER: 0
               run: npx ts-node generate-cron-md.ts
 
             - name: Commit and push changes
