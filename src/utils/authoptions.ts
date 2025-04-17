@@ -40,8 +40,8 @@ import NextAuth, { DefaultSession, DefaultUser } from "next-auth";
 
 declare module "next-auth" {
     interface User extends DefaultUser {
-        id_token?: string;
-        provider?: string;
+        id_token?: string | null;
+        provider?: string | null;
         uuid: string;
     }
 
@@ -50,8 +50,8 @@ declare module "next-auth" {
             id: string;
             email: string;
             uuid: string;
-            id_token?: string;
-            provider?: string;
+            id_token?: string | null;
+            provider?: string | null;
             isAdmin: boolean;
         } & DefaultSession["user"];
     }
