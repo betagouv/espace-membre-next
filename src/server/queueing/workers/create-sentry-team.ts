@@ -4,7 +4,7 @@ import PgBoss from "pg-boss";
 import { addEvent } from "@/lib/events";
 import { db } from "@/lib/kysely";
 import { getStartup } from "@/lib/kysely/queries";
-import { teamAlreadyExistsError } from "@/lib/sentry";
+import { generateSentryTeamSlug, teamAlreadyExistsError } from "@/lib/sentry";
 import { EventCode } from "@/models/actionEvent";
 import { CreateSentryTeamDataSchemaType } from "@/models/jobs/services";
 import { SERVICES } from "@/models/services";
@@ -24,7 +24,7 @@ export async function createSentryTeam(
     }
     const team = {
         teamName: startup.name,
-        teamSlug: slugify(startup.name),
+        teamSlug: generateSentryTeamSlug(startup.name),
     };
     try {
         const resp = await sentryClient.createSentryTeam(team);
