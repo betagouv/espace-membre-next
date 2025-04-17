@@ -9,9 +9,9 @@ import { Input } from "@codegouvfr/react-dsfr/Input";
 import Link from "next/link";
 import { useSearchParams } from "next/navigation";
 import { signIn } from "next-auth/react";
+import ProConnectButton from "@codegouvfr/react-dsfr/ProConnectButton";
 
 import config from "@/frontConfig";
-import { ProConnect } from "./ProConnect";
 
 const ConnectBlock = ({ children }) => {
     return (
@@ -225,7 +225,8 @@ export const LoginPage = function () {
                 <>
                     <hr />
                     ou :<br />
-                    <ProConnect />
+                    <br />
+                    <ProConnectButton onClick={() => signIn("proconnect")} />
                 </>
             )}
             <hr />

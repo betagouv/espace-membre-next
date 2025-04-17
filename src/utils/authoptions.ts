@@ -63,7 +63,7 @@ export const authOptions: NextAuthOptions = {
                 clientSecret: process.env.PRO_CONNECT_SECRET || "",
             },
             wellKnown:
-                process.env.PRO_CONNECT_BASE_URL +
+                process.env.NEXT_PUBLIC_PRO_CONNECT_BASE_URL +
                 "/api/v2/.well-known/openid-configuration",
             allowDangerousEmailAccountLinking: true, // cause errors
             checks: ["nonce", "state"],
@@ -178,13 +178,13 @@ export const authOptions: NextAuthOptions = {
                     },
                 });
                 if (!dbUser) {
-                    console.error(`Il n'y a pas de fiche dans l'espace-membre pour cet email. Un membre de la communauté peut en créer une.`);
+                    console.error(
+                        `Il n'y a pas de fiche dans l'espace-membre pour cet email. Un membre de la communauté peut en créer une.`
+                    );
                     throw new Error("UnknownMember");
                 }
                 if (checkUserIsExpired(memberBaseInfoToModel(dbUser), 5)) {
-                    console.error(
-                        `Cannot login expired member ${user.id}`
-                    );
+                    console.error(`Cannot login expired member ${user.id}`);
                     throw new Error("ExpiredMember");
                 }
                 return true; // if the email exists in the User collection, continue process
@@ -201,6 +201,8 @@ export const authOptions: NextAuthOptions = {
                         ...session.user,
                         name: session.user?.name || token.sub,
                         id: token.sub,
+                        id_token: token.id_token,
+                        provider: token.provider,
                         uuid: token.uuid,
                         isAdmin: getAdmin().includes(token.sub || ""),
                     },
@@ -210,6 +212,7 @@ export const authOptions: NextAuthOptions = {
         },
         async jwt({ token, user, account, profile, isNewUser, session }) {
             if (account) {
+                token.id_token = account.id_token;
                 token.id = user?.id;
                 token.uuid = user?.uuid;
                 token.provider = account.provider;
