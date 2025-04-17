@@ -37,7 +37,7 @@ jobs:
               run: |
                 changed="false"
                 for file in ${{ steps.changed-files.outputs.changed_files }}; do
-                  if [[ "$file" == "public/onboarding/checklist.ym" || "$file" == "src/models/onboardingChecklist.ts" ]]; then
+                  if [[ "$file" == "public/onboarding/checklist.yml" || "$file" == "src/models/onboardingChecklist.ts" ]]; then
                     changed="true"
                     break
                   fi
