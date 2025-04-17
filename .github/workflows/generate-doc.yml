@@ -1,4 +1,4 @@
-name: Generate Cron.md if cron file changed
+name: Generate Cron.md
 
 on:
     pull_request:
