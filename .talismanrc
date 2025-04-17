@@ -1,4 +1,16 @@
 fileignoreconfig:
+- filename: .env.development
+  checksum: 499a0b99cdcb0f94e2e5583a90e88369e2ba0dcd8d91d1cc8e6d5a5c74cd2a5a
+- filename: .env.test
+  checksum: 900db203fd9526bc60c45c4005ed5330093667f615489eada3436a7025ba5568
+- filename: .github/workflows/generate-doc.yml
+  checksum: 2ffed2c00486de9dfe48971176ac3b9d419eeb1181353f1538a3e3395fa67d1a
+- filename: .github/workflows/playwright.yml
+  checksum: c7ad26d3f680a12d4169e46858d36b01ad1073c2acbb7265ee398d96ccd8bd65
+- filename: generate-cron-md.ts
+  checksum: 184ab41ee937833492f55d5f09844f1f679fd4d3ee462254b13d124e9e9b76b8
+- filename: generate-email-md.ts
+  checksum: aeb35a10ae2e7d9ff2b9f3591ec8fc86661bf1cc4463a7a3b1a7d4b122ac24a7
 - filename: src/components/MemberPage/MemberStatus.tsx
   checksum: eaff8ce7da82504889d913a5eaac5019d0fffb52ca24ea62472b24b5b840ea34
 - filename: src/server/config/index.ts
