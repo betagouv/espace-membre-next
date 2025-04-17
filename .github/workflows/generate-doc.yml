@@ -35,7 +35,7 @@ jobs:
 
             - name: Generate CRON.md
               if: steps.check_diff.outputs.changed == 'true'
-              run: npx ts-node generate-cron-md.ts
+              run: npx ts-node ../../generate-cron-md.ts
 
             - name: Commit and push changes
               if: steps.check_diff.outputs.changed == 'true'
