@@ -38,13 +38,13 @@ const MainHeader = () => {
         quickAccessItems.push({
             buttonProps: {
                 onClick: async () => {
-                    if (session.user?.provider === "proconnect") {
+                    if (session.user.provider === "proconnect") {
                         // https://partenaires.proconnect.gouv.fr/docs/fournisseur-service/implementation_technique#241-d%C3%A9connexion-aupr%C3%A8s-de-proconnect
-                        const idTokenHint = session.user?.id_token;
+                        const idTokenHint = session.user.id_token;
                         const signOutUrl = `${
                             process.env.NEXT_PUBLIC_PRO_CONNECT_BASE_URL
                         }/api/v2/session/end?id_token_hint=${idTokenHint}&state=${uuidv4()}&post_logout_redirect_uri=${encodeURIComponent(
-                            process.env.NEXT_PUBLIC_HOME_URL
+                            process.env.NEXT_PUBLIC_HOME_URL || ""
                         )}/logout`;
                         router.push(signOutUrl);
                     } else {

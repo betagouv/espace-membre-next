@@ -36,13 +36,22 @@ export type ProConnectProfile = {
     iss: string;
 };
 
-type UserWithInfo = User & {
-    id: string;
-    prenom: string;
-    nom: string;
-    email: string;
-    poste: string;
-};
+import NextAuth, { DefaultSession, DefaultUser } from "next-auth";
+
+declare module "next-auth" {
+    interface User extends DefaultUser {
+        id_token: string;
+        provider: string;
+    }
+
+    interface Session {
+        user: {
+            id?: string;
+            id_token: string;
+            provider: string;
+        } & DefaultSession["user"];
+    }
+}
 
 export const authOptions: NextAuthOptions = {
     adapter: customPostgresAdapter(),
