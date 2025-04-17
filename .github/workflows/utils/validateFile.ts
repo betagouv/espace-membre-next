@@ -1,16 +1,19 @@
-const path = require("path");
-const fs = require("fs");
-const yaml = require("js-yaml");
-const { onboardingChecklistSchema } = require(path.resolve(__dirname, "../../../src/models/onboardingChecklist"));
+import path from "path";
+import fs from "fs";
+import yaml from "js-yaml";
+import { onboardingChecklistSchema } from "../../../src/models/onboardingChecklist";
 
-// Read the YAML file
+// Define the path to the YAML file
 const yamlPath = path.resolve(__dirname, "../../../public/onboarding/checklist.yml");
+
+// Read the raw YAML file
 const rawYaml = fs.readFileSync(yamlPath, "utf8");
 
-let data;
+let data: unknown;
 
 try {
-  data = yaml.load(rawYaml); // Parse YAML to JS object
+  // Parse YAML to JS object
+  data = yaml.load(rawYaml);
 } catch (e) {
   console.error("YAML parsing error:", e);
   process.exit(1);
@@ -20,7 +23,7 @@ try {
 try {
   onboardingChecklistSchema.parse(data);
   console.log("✅ Validation passed!");
-} catch (error) {
+} catch (error: any) {
   console.error("❌ Validation failed:", error.errors);
   process.exit(1);
 }
