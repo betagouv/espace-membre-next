@@ -40,4 +40,4 @@ jobs:
 
             - name: Validate file against Zod schema
               if: steps.check_diff.outputs.changed == 'true'
-              run: node .github/workflows/utils/validateFile.ts
+              run: node .github/workflows/utils/validateFile.js
