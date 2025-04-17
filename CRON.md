@@ -5,7 +5,7 @@
 | ❌ | `0 0 10 * * 3` | `newsletterFirstReminderJob` | Rappel mattermost newsletter 1 |
 | ❌ | `0 0 8 * * 2` | `newsletterSecondReminderJob` | Rappel mattermost newsletter 2 |
 | ❌ | `0 16 * * 2` | `sendNewsletterAndCreateNewOneJob` | Envoi de la newsletter et creation d'un nouveau PAD + message mattermost |
-| ✅ | `0 0 14 * * *` | `removeBetaAndParnersUsersFromCommunityTeam` | Move expired user to mattermost alumni test changed |
+| ✅ | `0 0 14 * * *` | `removeBetaAndParnersUsersFromCommunityTeam` | Move expired user to mattermost alumni test |
 | ✅ | `0 0 14 * * 1` | `sendReminderToUserAtDays` | Send mattermost message to expired users (90 days) |
 | ❌ | `0 0 5 * * 1` | `sendReminderToUserAtDays` | Send mattermost message to expired users (30 days) |
 | ✅ | `0 0 10 * * *` | `sendGroupDeSoutienReminder` | Send mattermost message groupe de soutien |
