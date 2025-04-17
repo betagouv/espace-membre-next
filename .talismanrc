@@ -4,7 +4,7 @@ fileignoreconfig:
 - filename: .env.test
   checksum: 900db203fd9526bc60c45c4005ed5330093667f615489eada3436a7025ba5568
 - filename: .github/workflows/generate-doc.yml
-  checksum: a64b06915d830b35332d31cbaed4a3051d2fb9670cf8c7741b46ddac78ec751a
+  checksum: 5f9f798ed8186f440f30833a1fdd481bd74d385696662053b8e4d3f49913dd07
 - filename: .github/workflows/playwright.yml
   checksum: c7ad26d3f680a12d4169e46858d36b01ad1073c2acbb7265ee398d96ccd8bd65
 - filename: generate-cron-md.ts
