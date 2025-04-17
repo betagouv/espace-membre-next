@@ -5,12 +5,12 @@
 # or to provide custom queries or build logic.
 name: "CodeQL"
 
+workflow_run:
+  workflows: ["Generate Cron.md"]  # generate Cron.md can create a commit so we wait for it to finish
+  types:
+    - completed
+
 on:
-  push:
-    branches: [main]
-  pull_request:
-    # The branches below must be a subset of the branches above
-    branches: [main]
   schedule:
     - cron: '0 13 * * 5'
 
