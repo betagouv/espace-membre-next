@@ -1,9 +1,11 @@
+const path = require("path");
 const fs = require("fs");
 const yaml = require("js-yaml");
-const { onboardingChecklistSchema } = require("../../../src/models/onboardingChecklist"); // Adjust path
+const { onboardingChecklistSchema } = require(path.resolve(__dirname, "../../../src/models/onboardingChecklist"));
 
 // Read the YAML file
-const rawYaml = fs.readFileSync("../../../public/onboarding/checklist.yml", "utf8");
+const yamlPath = path.resolve(__dirname, "../../../public/onboarding/checklist.yml");
+const rawYaml = fs.readFileSync(yamlPath, "utf8");
 
 let data;
 
