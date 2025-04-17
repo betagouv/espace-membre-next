@@ -1,8 +1,10 @@
 name: Playwright Tests
-workflow_run:
-  workflows: ["Generate Cron.md"]  # generate Cron.md can create a commit so we wait for it to finish
-  types:
-    - completed
+
+on:
+  workflow_run:
+    workflows: ["Generate Cron.md"]  # generate Cron.md can create a commit so we wait for it to finish
+    types:
+      - completed
 jobs:
     e2e:
         timeout-minutes: 30
