@@ -9,19 +9,19 @@ jobs:
         runs-on: ubuntu-latest
 
         steps:
-            - name: Checkout repository
+            - name: Checkout last 2 commits
               uses: actions/checkout@v4
               with:
-                  fetch-depth: 0
+                fetch-depth: 2
+                ref: ${{ github.event.pull_request.head.sha }}
 
-            - name: Get changed files
+            - name: Get changed files (last commit only)
               id: changed-files
               run: |
-                changed=$(git diff --name-only HEAD^ HEAD)
+                changed=$(git diff --name-only HEAD~1 HEAD)
                 echo "Changed files:"
                 echo "$changed"
                 echo "changed_files=${changed//$'\n'/ }" >> "$GITHUB_OUTPUT"
-
 
             - name: List changed files
               run: |
