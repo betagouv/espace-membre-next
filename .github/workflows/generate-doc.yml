@@ -43,6 +43,9 @@ jobs:
                 CHAT_WEBHOOK_URL_DINUM: "dummy-url"
                 CHAT_WEBHOOK_URL_GIP: "dummy-url"
                 MAILING_LIST_NEWSLETTER: 0
+                OVH_APP_KEY: fakeovhkey
+                OVH_APP_SECRET: fakeovhsecret
+                OVH_CONSUMER_KEY: fakeconsumerkey
               run: npx ts-node generate-cron-md.ts
 
             - name: Commit and push changes
