@@ -18,16 +18,15 @@ jobs:
               id: changed-files
               run: |
                 if [ "${{ github.event_name }}" = "pull_request" ]; then
-                  changed=$(git diff-tree --no-commit-id --name-only -r HEAD)
+                  git fetch origin +refs/heads/${{ github.event.pull_request.base.ref }}:refs/remotes/origin/${{ github.event.pull_request.base.ref }}
+                  changed=$(git diff --name-only origin/${{ github.event.pull_request.base.ref }}...HEAD)
                 else
                   changed=$(git diff --name-only ${{ github.event.before }} ${{ github.event.after }})
                 fi
-
                 echo "Changed files:"
                 echo "$changed"
-
-                # Save the output as space-separated for use in the next step
                 echo "changed_files=${changed//$'\n'/ }" >> "$GITHUB_OUTPUT"
+
 
             - name: List changed files
               run: |
