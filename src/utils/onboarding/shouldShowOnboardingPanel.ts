@@ -12,14 +12,5 @@ export async function shouldShowOnboardingPanel(
     const userIsNew =
         user.missions.length === 1 &&
         user.missions[0].start >= featureImplementedDate;
-    if (userIsNew) {
-        const userStartups = await getUserStartups(user.uuid);
-        const incubatorIds = userStartups
-            .map((user) => user.incubator_id)
-            .filter((id) => id !== null);
-        return !!incubatorIds.find((incubatorId) =>
-            config.ONBOARDING_INCUBATOR_IDS.includes(incubatorId)
-        );
-    }
-    return false;
+    return userIsNew
 }
