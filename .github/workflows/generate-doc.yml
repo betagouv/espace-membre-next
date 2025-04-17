@@ -14,14 +14,41 @@ jobs:
               with:
                   fetch-depth: 0
 
-            - name: Check if scheduler file changed
+            - name: Get changed files
+              id: changed-files
+              run: |
+                if [ "${{ github.event_name }}" = "pull_request" ]; then
+                  changed=$(git diff-tree --no-commit-id --name-only -r HEAD)
+                else
+                  changed=$(git diff --name-only ${{ github.event.before }} ${{ github.event.after }})
+                fi
+
+                echo "Changed files:"
+                echo "$changed"
+
+                # Save the output as space-separated for use in the next step
+                echo "changed_files=${changed//$'\n'/ }" >> "$GITHUB_OUTPUT"
+
+            - name: List changed files
+              run: |
+                echo "Changed files:"
+                for file in ${{ steps.changed-files.outputs.changed_files }}; do
+                  echo "- $file"
+                done
+
+            - name: Check if cron or schedule file changed
               id: check_diff
               run: |
-                if git diff-tree --no-commit-id --name-only -r HEAD | grep -qE 'src/server/schedulers/cron\.ts|src/server/queueing/schedule\.ts'; then
-                  echo "changed=true" >> "$GITHUB_OUTPUT"
-                else
-                  echo "changed=false" >> "$GITHUB_OUTPUT"
-                fi
+                changed="false"
+
+                for file in ${{ steps.changed-files.outputs.changed_files }}; do
+                  if [[ "$file" == "src/server/schedulers/cron.ts" || "$file" == "src/server/queueing/schedule.ts" ]]; then
+                    changed="true"
+                    break
+                  fi
+                done
+
+                echo "changed=$changed" >> "$GITHUB_OUTPUT"
 
             - name: Set up Node.js
               if: steps.check_diff.outputs.changed == 'true'
