@@ -20,9 +20,10 @@ jobs:
       - name: Fetch base branch
         run: git fetch origin ${{ github.event.pull_request.base.ref }}
 
-      - name: Get changed files in PR
+      - name: Get changed files
         id: changed-files
         run: |
+          git fetch origin ${{ github.event.pull_request.base.ref }}
           changed=$(git diff --name-only origin/${{ github.event.pull_request.base.ref }}...HEAD)
           echo "Changed files:"
           echo "$changed"
