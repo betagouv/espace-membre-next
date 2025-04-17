@@ -73,7 +73,7 @@ const mattermostJobs: EspaceMembreCronJobType[] = [
         onTick: removeBetaAndParnersUsersFromCommunityTeam,
         isActive: true,
         name: "removeBetaAndParnersUsersFromCommunityTeam",
-        description: "Move expired user to mattermost alumni",
+        description: "Move expired user to mattermost alumni space",
     },
     {
         cronTime: "0 0 14 * * 1",
