@@ -47,6 +47,10 @@ const MainHeader = () => {
                             process.env.NEXT_PUBLIC_APP_BASE_URL || ""
                         )}/login`;
                         router.push(signOutUrl);
+                        await signOut({
+                            redirect: false,
+                            callbackUrl: "/",
+                        });
                     } else {
                         await signOut({
                             callbackUrl: "/",
