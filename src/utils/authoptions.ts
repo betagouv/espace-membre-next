@@ -79,7 +79,8 @@ export const authOptions: NextAuthOptions = {
             userinfo: {
                 request: async ({ tokens }) => {
                     const userInfoRequest = await fetch(
-                        process.env.PRO_CONNECT_BASE_URL + "/api/v2/userinfo",
+                        process.env.NEXT_PUBLIC_PRO_CONNECT_BASE_URL +
+                            "/api/v2/userinfo",
                         {
                             method: "POST",
                             headers: {

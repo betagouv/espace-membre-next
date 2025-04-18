@@ -44,7 +44,7 @@ const MainHeader = () => {
                         const signOutUrl = `${
                             process.env.NEXT_PUBLIC_PRO_CONNECT_BASE_URL
                         }/api/v2/session/end?id_token_hint=${idTokenHint}&state=${uuidv4()}&post_logout_redirect_uri=${encodeURIComponent(
-                            process.env.NEXT_PUBLIC_HOME_URL || ""
+                            process.env.NEXT_PUBLIC_APP_BASE_URL || ""
                         )}/logout`;
                         router.push(signOutUrl);
                     } else {
