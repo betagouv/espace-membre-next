@@ -10,6 +10,8 @@ declare module "next-auth" {
             email: string;
             image?: string | null;
             isAdmin: boolean;
+            id_token?: string | null;
+            provider?: string | null;
         };
     }
     interface User extends DefaultUser {
@@ -17,6 +19,8 @@ declare module "next-auth" {
         email: string;
         emailVerified: Date | null;
         uuid: string;
+        id_token?: string | null;
+        provider?: string | null;
     }
     interface AdapterUser {
         id: string;
