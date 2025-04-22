@@ -63,7 +63,8 @@ const nextConfig = {
             destination: "/api/member/:username/image",
         }
     ],
-    expireTime: 0,
+    // @todo upgrade to nextjs 15 to use
+    // expireTime: 0,
     webpack: (config, { isServer }) => {
         if (!isServer) {
             // don't resolve 'fs' module on the client to prevent this error on build --> Error: Can't resolve 'fs'
