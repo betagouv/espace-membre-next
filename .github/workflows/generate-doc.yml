@@ -2,9 +2,9 @@ name: cron
 
 on:
   push:
-    branches: [main, master]
+    branches: [main, master, task/github-action-cronmd-2]
   pull_request:
-    branches: [main, master]
+    branches: [main, master, task/github-action-cronmd-2]
 
 jobs:
   auto-commit:
