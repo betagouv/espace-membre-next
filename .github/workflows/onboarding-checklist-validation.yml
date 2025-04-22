@@ -27,12 +27,6 @@ jobs:
                 echo "Changed files:"
                 echo "$changed"
                 echo "changed_files=${changed//$'\n'/ }" >> "$GITHUB_OUTPUT"
-            - name: List changed files
-              run: |
-                echo "Changed files:"
-                for file in ${{ steps.changed-files.outputs.changed_files }}; do
-                  echo "- $file"
-                done
             - name: Check if cron or schedule file changed
               id: check_diff
               run: |
