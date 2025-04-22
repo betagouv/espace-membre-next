@@ -1,4 +1,5 @@
 import * as Sentry from "@sentry/node";
+import slugify from "@sindresorhus/slugify";
 import { CustomError as LibraryCustomError } from "ts-custom-error";
 import { z } from "zod";
 
@@ -85,6 +86,12 @@ export interface SentryUserAccess {
     inviteStatus: "approved" | "pending";
     teams: string[]; // teams slugs
     teamRoles: SentryTeamAccess[];
+}
+
+const MAX_SENTRY_TEAM_SLUG_CHARACTERS = 50
+
+export function generateSentryTeamSlug(name: string) {
+    return slugify(name).slice(0, MAX_SENTRY_TEAM_SLUG_CHARACTERS)
 }
 
 export class SentryService implements AccountService {

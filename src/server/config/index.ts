@@ -270,9 +270,6 @@ export default {
         ["gouv.fr", "ademe.fr"]
     ),
     SENTRY_WEBSITE_URL: process.env.SENTRY_WEBSITE_URL,
-    ONBOARDING_INCUBATOR_IDS: (
-        process.env.ONBOARDING_INCUBATOR_IDS || ""
-    ).split(","),
     FEATURE_TMP_SHOW_ONBOARDING_TO_EVERYONE:
         process.env.FEATURE_TMP_SHOW_ONBOARDING_TO_EVERYONE === "true",
 };

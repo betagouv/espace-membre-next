@@ -5,6 +5,8 @@ fileignoreconfig:
   checksum: 900db203fd9526bc60c45c4005ed5330093667f615489eada3436a7025ba5568
 - filename: .github/workflows/generate-doc.yml
   checksum: 5f9f798ed8186f440f30833a1fdd481bd74d385696662053b8e4d3f49913dd07
+- filename: .github/workflows/onboarding-checklist-validation.yml
+  checksum: c5a8f4963028113249edec303252264269e860b42392897b88b68407b27274d4
 - filename: .github/workflows/playwright.yml
   checksum: c7ad26d3f680a12d4169e46858d36b01ad1073c2acbb7265ee398d96ccd8bd65
 - filename: generate-cron-md.ts
