@@ -123,7 +123,7 @@ const CRON_TASK_ENV_VAR = {
     SENTRY_ORGANIZATION: process.env.SENTRY_ORGANIZATION,
 };
 
-const REQUIRED_APP_KEY = ["SESSION_SECRET", "REDIS_URL"];
+const REQUIRED_APP_KEY = ["SESSION_SECRET"];
 if (APP_TYPE === "app") {
     REQUIRED_APP_KEY.forEach((key) => {
         getOrThrowError(key);
@@ -252,7 +252,6 @@ export default {
     HASH_SALT: process.env.HASH_SALT,
     PASSWORD_ENCRYPT_KEY: process.env.PASSWORD_ENCRYPT_KEY,
     PASSWORD_IV_KEY: process.env.PASSWORD_IV_KEY,
-    REDIS_URL: process.env.REDIS_URL!,
     DS_BADGE_FORM_URL: process.env.NEXT_PUBLIC_DS_BADGE_FORM_URL,
     DS_BADGE_RENEWAL_FORM_URL:
         process.env.NEXT_PUBLIC_DS_BADGE_RENEWAL_FORM_URL,

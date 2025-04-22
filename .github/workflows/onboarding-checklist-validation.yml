@@ -51,7 +51,6 @@ jobs:
             - name: Validate file against Zod schema
               if: steps.check_diff.outputs.changed == 'true'
               env:
-                REDIS_URL: "dummy-url"
                 SESSION_SECRET: "dummy-secret"
                 CHAT_WEBHOOK_URL_SECRETARIAT: "dummy-url"
                 CHAT_WEBHOOK_URL_GENERAL: "dummy-url"
