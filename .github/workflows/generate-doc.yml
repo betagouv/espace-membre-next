@@ -1,4 +1,4 @@
-name: Generate Cron.md
+name: cron
 
 on:
   push:
