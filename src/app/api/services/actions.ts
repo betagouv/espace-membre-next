@@ -17,7 +17,7 @@ import {
     getUserStartupsActive,
 } from "@/lib/kysely/queries/users";
 import { MatomoAccess } from "@/lib/matomo";
-import { SentryRole } from "@/lib/sentry";
+import { generateSentryTeamSlug, SentryRole } from "@/lib/sentry";
 import { EventCode } from "@/models/actionEvent";
 import {
     matomoAccountRequestSchema,
@@ -177,7 +177,7 @@ const createOrUpdateSentryAccount = async (
             }
         );
         const newTeam = {
-            teamSlug: slugify(startup.name),
+            teamSlug: generateSentryTeamSlug(startup.name),
             teamRole: SentryRole.admin,
         };
         teams.push(newTeam);
