@@ -35,6 +35,7 @@ const nextConfig = {
             },
         ];
     },
+    deploymentId: process.env.SOURCE_VERSION,
     async redirects() {
         return [
             // Basic redirect
@@ -62,6 +63,7 @@ const nextConfig = {
             destination: "/api/member/:username/image",
         }
     ],
+    expireTime: 0,
     webpack: (config, { isServer }) => {
         if (!isServer) {
             // don't resolve 'fs' module on the client to prevent this error on build --> Error: Can't resolve 'fs'
