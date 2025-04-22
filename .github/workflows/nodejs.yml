@@ -1,10 +1,10 @@
 name: Node.js CI
 
-on: 
-  workflow_run:
-    workflows: [cron]  # generate Cron.md can create a commit so we wait for it to finish
-    types:
-      - completed
+on:
+  push:
+    branches: [main, master]
+  pull_request:
+    branches: [main, master]
 
 jobs:
     build:
