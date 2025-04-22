@@ -7,7 +7,7 @@ name: "CodeQL"
 
 on:
   workflow_run:
-    workflows: ["Generate Cron.md"]  # generate Cron.md can create a commit so we wait for it to finish
+    workflows: [Generate Cron.md]  # generate Cron.md can create a commit so we wait for it to finish
     types:
       - completed
   schedule:
