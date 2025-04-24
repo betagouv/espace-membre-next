@@ -149,9 +149,8 @@ export default function FormationList({
     return (
         <div>
             <ul className="fr-tags-group fr-my-2w">
-                {tags.map((tag, index) => (
-                    <li key={index}><Tag
-                        key={tag.value}
+                {tags.map((tag) => (
+                    <li key={tag.value}><Tag
                         nativeButtonProps={{
                             onClick: () => filterFormationWithKey(tag),
                         }}

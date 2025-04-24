@@ -12,7 +12,7 @@ fileignoreconfig:
 - filename: generate-email-md.ts
   checksum: aeb35a10ae2e7d9ff2b9f3591ec8fc86661bf1cc4463a7a3b1a7d4b122ac24a7
 - filename: src/components/Formation/FormationList.tsx
-  checksum: 507558bb7299b2dda60853dcd92944d087b5b722c26a0fc10fa495acd251c962
+  checksum: e1a045f319c89f4f055a7cabc4eeb702a9e9fa6e5f55f69576d90ff6a846111e
 - filename: src/components/MemberPage/MemberStatus.tsx
   checksum: eaff8ce7da82504889d913a5eaac5019d0fffb52ca24ea62472b24b5b840ea34
 - filename: src/server/views/templates/emails/VerificationWaiting/VerificationWaiting.tsx
