@@ -2,11 +2,13 @@ import { PropsWithChildren } from "react";
 
 import { fr } from "@codegouvfr/react-dsfr";
 import { Footer } from "@codegouvfr/react-dsfr/Footer";
-import { DsfrHead } from "@codegouvfr/react-dsfr/next-appdir/DsfrHead";
-import { DsfrProvider } from "@codegouvfr/react-dsfr/next-appdir/DsfrProvider";
-import { getHtmlAttributes } from "@codegouvfr/react-dsfr/next-appdir/getHtmlAttributes";
+
+// import { DsfrHead } from "@codegouvfr/react-dsfr/next-appdir/DsfrHead";
+// import { DsfrProvider } from "@codegouvfr/react-dsfr/next-appdir/DsfrProvider";
+// import { getHtmlAttributes } from "@codegouvfr/react-dsfr/next-appdir/getHtmlAttributes";
 import Link from "next/link";
 import { getServerSession } from "next-auth/next";
+import { NuqsAdapter } from "nuqs/adapters/next/app";
 import { NextAppDirEmotionCacheProvider } from "tss-react/next/appDir";
 
 import { BreadCrumbProvider } from "./BreadCrumbProvider";
@@ -14,34 +16,35 @@ import ClientSessionProvider from "./context/ClientContextProvider";
 import { defaultColorScheme } from "./defaultColorScheme";
 import { MuiDsfrThemeProvider } from "./MuiDsfrThemeProvider";
 import { StartDsfr } from "./StartDsfr";
+import { DsfrProvider } from "../dsfr-bootstrap";
+import { getHtmlAttributes, DsfrHead } from "../dsfr-bootstrap/server-only-index";
 import { Matomo } from "@/app/Matomo";
 import Header from "@/components/Header";
-import { Skiplinks } from "@/components/Skiplinks";
 import { LiveChatProvider } from "@/components/live-chat/LiveChatProvider";
+import { Skiplinks } from "@/components/Skiplinks";
 import { authOptions } from "@/utils/authoptions";
-import { NuqsAdapter } from "nuqs/adapters/next/app";
 
 export interface RootLayoutProps {
     workaroundForNextJsPages?: boolean;
 }
 
 // [WORKAROUND] Since `react-dsfr` no longer passes the color scheme through `DsfrProvider` and `DsfrHead` we call this function to avoid an assert error in case of `workaroundForNextJsPages: true` usage
-getHtmlAttributes({ defaultColorScheme });
 
 async function MainStructure(props: PropsWithChildren) {
     const session = await getServerSession(authOptions);
+	const lang = "fr"
 
     return (
         <>
             {/* eslint-disable-next-line @next/next/no-head-element */}
             <head>
                 <StartDsfr />
-                <DsfrHead Link={Link} />
+                <DsfrHead />
             </head>
             <body>
                 <NextAppDirEmotionCacheProvider options={{ key: "css" }}>
                     <ClientSessionProvider>
-                        <DsfrProvider>
+                        <DsfrProvider lang={undefined}>
                             <MuiDsfrThemeProvider>
                                 <BreadCrumbProvider>
                                     <LiveChatProvider>
