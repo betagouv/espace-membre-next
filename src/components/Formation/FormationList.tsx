@@ -149,8 +149,8 @@ export default function FormationList({
     return (
         <div>
             <ul className="fr-tags-group fr-my-2w">
-                {tags.map((tag) => (
-                    <Tag
+                {tags.map((tag, index) => (
+                    <li key={index}><Tag
                         key={tag.value}
                         nativeButtonProps={{
                             onClick: () => filterFormationWithKey(tag),
@@ -162,7 +162,7 @@ export default function FormationList({
                         }
                     >
                         {tag.label}
-                    </Tag>
+                    </Tag></li>
                 ))}
             </ul>
             {!!filteredFormations.length && (
