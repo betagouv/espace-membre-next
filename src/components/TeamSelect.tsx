@@ -31,7 +31,7 @@ export default function TeamSelect({
         <div className="fr-select-group">
             {!!label && (
                 <label className="fr-label" htmlFor="team-select">
-                    {label || "Sélectionne un ou plusieurs incubateurs"}
+                    {label || "Sélectionne une ou plusieurs équipes d'incubateur"}
                     {!!hint && <span className="fr-hint-text">{hint}</span>}
                 </label>
             )}
