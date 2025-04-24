@@ -86,11 +86,12 @@ export default function MemberSelect<T extends boolean>({
         });
     return (
         <div className="fr-select-group">
-            <label className="fr-label">
+            <label className="fr-label" htmlFor="member-select">
                 {label}
                 {!!hint && <span className="fr-hint-text">{hint}</span>}
             </label>
             <AutoComplete
+                id="member-select"
                 multiple={!!multiple}
                 options={memberOptions}
                 onSelect={onTagsChange}

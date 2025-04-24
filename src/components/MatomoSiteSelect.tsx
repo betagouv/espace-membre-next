@@ -42,11 +42,12 @@ export default function MatomoSiteSelect({
 
     return (
         <div className="fr-select-group">
-            <label className="fr-label">
+            <label className="fr-label" htmlFor="matomo-site-select">
                 {label}
                 {!!hint && <span className="fr-hint-text">{hint}</span>}
             </label>
             <AutoComplete
+                id="matomo-site-select"
                 placeholder={placeholder}
                 multiple={isMulti}
                 options={sites.map((s) => ({

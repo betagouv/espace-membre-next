@@ -23,6 +23,7 @@ export const UsertypesEditor = ({
 }) => {
     return (
         <AutoComplete
+            id="usertypes-editor"
             defaultValue={defaultValue.map((label) => ({ label }))}
             multiple
             freeSolo
