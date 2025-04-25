@@ -11,12 +11,12 @@ export type PgBossJobType = {
 export const pgBossJobs: PgBossJobType[] = [
     {
         topic: sendEmailToTeamsToCheckOnTeamCompositionTopic,
-        frequency: `0 8 1,2,3,4,5,6,7 */3 1`,
+        frequency: `0 8 1 */3 *`,
         description: `Envoie un email aux équipes produits pour qu'ils vérifient la composition de leur équipe`,
     },
     {
         topic: sendEmailToIncubatorTeamTopic,
-        frequency: `0 8 1,2,3,4,5,6,7 */3 1`,
+        frequency: `0 8 1 */3 *`,
         description: `Envoie un email aux équipes incubateur pour qu'ils vérifient les produits qui n'ont pas changé depuis X mois`,
     },
 ];
