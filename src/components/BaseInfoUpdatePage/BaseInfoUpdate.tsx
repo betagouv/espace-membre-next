@@ -335,10 +335,10 @@ export const BaseInfoUpdate = (props: BaseInfoUpdateProps) => {
                         {isCurrentUser ? `Mes compétences` : `Compétences`}
                     </h2>
                     {isCurrentUser && (
-                        <p>
+                        <label className="fr-label fr-mb-3w" htmlFor="competence-editor">
                             Aide les membres de la communauté à mieux
                             t'identifier en cas de besoin
-                        </p>
+                        </label>
                     )}
                     <CompetencesEditor
                         onChange={(e, values) => {

@@ -301,7 +301,7 @@ export function StartupForm(props: StartupFormProps) {
                                 : ""
                         }`}
                     >
-                        <label className="fr-label">
+                        <label className="fr-label" htmlFor="thematique-editor">
                             Thématiques{" "}
                             <span className="fr-hint-text">
                                 Par exemple : Jeunesse, Logement.
@@ -326,7 +326,7 @@ export function StartupForm(props: StartupFormProps) {
                                 : ""
                         }`}
                     >
-                        <label className="fr-label">
+                        <label className="fr-label" htmlFor="techo-editor">
                             Techno{" "}
                             <span className="fr-hint-text">
                                 Indiquez les technologies utilisées par la
@@ -350,7 +350,7 @@ export function StartupForm(props: StartupFormProps) {
                                 : ""
                         }`}
                     >
-                        <label className="fr-label">
+                        <label className="fr-label" htmlFor="usertypes-editor">
                             Utilisateurs cible{" "}
                             <span className="fr-hint-text">
                                 Par exemple : Particuliers, Entreprises.

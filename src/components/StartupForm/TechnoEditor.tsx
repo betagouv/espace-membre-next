@@ -35,6 +35,7 @@ export const TechnoEditor = ({
         <Autocomplete
             value={value}
             freeSolo
+            id="techo-editor"
             multiple={true}
             selectOnFocus={true}
             clearOnBlur={true}

@@ -30,12 +30,13 @@ export default function TeamSelect({
     return (
         <div className="fr-select-group">
             {!!label && (
-                <label className="fr-label">
-                    {label || "Sélectionne un ou plusieurs incubateurs"}
+                <label className="fr-label" htmlFor="team-select">
+                    {label || "Sélectionne une ou plusieurs équipes d'incubateur"}
                     {!!hint && <span className="fr-hint-text">{hint}</span>}
                 </label>
             )}
             <Autocomplete
+                id="team-select"
                 multiple={isMulti}
                 options={teamOptions}
                 onChange={onChange}

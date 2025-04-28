@@ -352,11 +352,12 @@ export const Community = (props: CommunityProps) => {
                     </Button>
                 </div>
             </div>
-            <p>
+            <label className="fr-label fr-mb-3w" htmlFor="search-member">
                 Vous pouvez chercher des membres par nom, domaine, compétence,
                 produit ou incubateur.
-            </p>
+            </label>
             <AutoComplete
+                id="search-member"
                 multiple={true}
                 options={searchOptions}
                 onSelect={(newFilters) => {
