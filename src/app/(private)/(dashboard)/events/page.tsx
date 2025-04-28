@@ -5,7 +5,7 @@ import { redirect } from "next/navigation";
 import { getServerSession } from "next-auth";
 import ical from "node-ical";
 
-import { EventsList } from "@/components/EventsList";
+import { EventsList } from "@/components/EventsList/EventsList";
 import { authOptions } from "@/utils/authoptions";
 import { routeTitles } from "@/utils/routes/routeTitles";
 

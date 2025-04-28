@@ -2,13 +2,25 @@ import { fr } from "@codegouvfr/react-dsfr";
 import Card from "@codegouvfr/react-dsfr/Card";
 import { format } from "date-fns";
 import { fr as frLocale } from "date-fns/locale/fr";
+import MarkdownIt from "markdown-it";
 import { CalendarResponse } from "node-ical";
+import "./EventsList.css";
 
-function htmlize(str = "") {
-    return str
-        .replace(/^(https:\/\/[^\s\n]+)/g, `<a href="$1">$1</a>`)
-        .replace(/[^="'](https:\/\/[^\s\n]+)/g, `<a href="$1">$1</a>`);
-}
+const mdParser = new MarkdownIt({
+    html: true,
+    linkify: true,
+    highlight: function (str) { 
+        console.log(str)
+        return '';
+    }
+
+});
+
+mdParser.renderer.rules.link_open = function (tokens, idx, options, env, self) {
+    tokens[idx].attrPush(["class", "fr-link--sm"]); // Add class
+    tokens[idx].attrPush(["target", "_blank"]); // Add class
+    return self.renderToken(tokens, idx, options);
+};
 
 export function EventsList({ events }: { events: CalendarResponse }) {
     const href = "";
@@ -38,7 +50,7 @@ export function EventsList({ events }: { events: CalendarResponse }) {
         );
 
     return (
-        <div className={fr.cx("fr-grid-row", "fr-grid-row--gutters")}>
+        <div id="events-list" className={fr.cx("fr-grid-row", "fr-grid-row--gutters")}>
             {sortedEvents.map(([key, event]) => {
                 if (event.type !== "VEVENT") {
                     return null;
@@ -58,7 +70,7 @@ export function EventsList({ events }: { events: CalendarResponse }) {
                                     whiteSpace: "break-spaces",
                                 }}
                                 dangerouslySetInnerHTML={{
-                                    __html: htmlize(event.description),
+                                    __html: mdParser.renderInline(event.description || ""),
                                 }}
                             />
                         }
@@ -81,7 +93,7 @@ export function EventsList({ events }: { events: CalendarResponse }) {
                                         whiteSpace: "break-spaces",
                                     }}
                                     dangerouslySetInnerHTML={{
-                                        __html: `📍 ${htmlize(event.location)}`,
+                                        __html: `📍 ${mdParser.renderInline(event.location || "")}`,
                                     }}
                                 />
                             ) : null
