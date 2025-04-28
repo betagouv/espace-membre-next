@@ -30,12 +30,13 @@ export default function SEIncubateurSelect({
     return (
         <div className="fr-select-group">
             {!!label && (
-                <label className="fr-label">
+                <label className="fr-label" htmlFor="se-incubateur-select">
                     {label || "Sélectionne un ou plusieurs incubateurs"}
                     {!!hint && <span className="fr-hint-text">{hint}</span>}
                 </label>
             )}
             <Autocomplete
+                id="se-incubateur-select"
                 multiple={isMulti}
                 options={incubatorOptions}
                 onChange={onChange}

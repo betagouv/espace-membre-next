@@ -34,6 +34,7 @@ export const CompetencesEditor = ({
             defaultValue={defaultValue.map(
                 (label) => ({ label } as CompetenceType)
             )}
+            id="competence-editor"
             multiple
             groupOptions
             options={competencesMap}

@@ -47,7 +47,6 @@ jobs:
                   HASH_SALT: fakesaltfortestenv
                   GITHUB_FORK: dummy-github-fork
                   MAILING_LIST_NEWSLETTER: 0
-                  REDIS_URL: "dummy-url"
             - run: npm run test
               env:
                   CI: true
@@ -72,5 +71,4 @@ jobs:
                   HASH_SALT: fakesaltfortestenv
                   GITHUB_FORK: dummy-github-fork
                   MAILING_LIST_NEWSLETTER: 0
-                  REDIS_URL: "dummy-url"
                   PASSWORD_ENCRYPT_KEY: bc827f21bda5d288e35f190d44edb8cdc98a3259c5beac90bcbb6c98de4a89e7

@@ -11,8 +11,12 @@ fileignoreconfig:
   checksum: 184ab41ee937833492f55d5f09844f1f679fd4d3ee462254b13d124e9e9b76b8
 - filename: generate-email-md.ts
   checksum: aeb35a10ae2e7d9ff2b9f3591ec8fc86661bf1cc4463a7a3b1a7d4b122ac24a7
+- filename: src/components/Formation/FormationList.tsx
+  checksum: e1a045f319c89f4f055a7cabc4eeb702a9e9fa6e5f55f69576d90ff6a846111e
 - filename: src/components/MemberPage/MemberStatus.tsx
   checksum: eaff8ce7da82504889d913a5eaac5019d0fffb52ca24ea62472b24b5b840ea34
+- filename: src/server/config/index.ts
+  checksum: 8d69094644a4b0a7caec1731c379dc2aabcb283950c5bfbe779cb2e664119856
 - filename: src/server/views/templates/emails/VerificationWaiting/VerificationWaiting.tsx
   checksum: 6516c90ed7710164f26cdb19dfadc7977ce08b928a1e805953cc5bd8877b2c95
 - filename: storybook

@@ -22,6 +22,7 @@ export const ThematiquesEditor = ({
 }) => {
     return (
         <AutoComplete
+            id="thematique-editor"
             defaultValue={defaultValue.map((label) => ({ label }))}
             multiple
             freeSolo

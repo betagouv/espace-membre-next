@@ -249,11 +249,12 @@ function SentryTeamSelect({
     };
     return (
         <div className="fr-select-group">
-            <label className="fr-label">
+            <label className="fr-label" htmlFor="sentry-team-select">
                 {label}
                 {!!hint && <span className="fr-hint-text">{hint}</span>}
             </label>
             <AutoComplete
+                id="sentry-team-select"
                 multiple={isMulti}
                 onSelect={onTagsChange}
                 onBlur={onBlur}

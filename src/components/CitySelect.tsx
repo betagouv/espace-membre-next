@@ -234,7 +234,7 @@ export default function CitySelect({
 
     return (
         <div className="fr-select-group">
-            <label className="fr-label">
+            <label className="fr-label" htmlFor="city-select">
                 Lieu de travail principal :
                 <span className="fr-hint-text">
                     Cette information est utilisée pour faire une carte des
@@ -242,6 +242,7 @@ export default function CitySelect({
                 </span>
             </label>
             <SearchBar
+                id="city-select"
                 label="Lieu de travail principal :"
                 onButtonClick={function noRefCheck() {}}
                 renderInput={({ className, id, placeholder, type }) => (
