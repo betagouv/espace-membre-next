@@ -35,7 +35,7 @@
     "dependencies": {
         "@codegouvfr/react-dsfr": "^1.13.6",
         "@emotion/styled": "^11.11.0",
-        "@gouvfr/dsfr": "^1.12.1",
+        "@gouvfr/dsfr": "^1.13.1",
         "@hookform/resolvers": "^3.3.4",
         "@luma-team/mjml-react": "^0.2.1",
         "@mui/base": "^5.0.0-beta.69",
@@ -47,7 +47,7 @@
         "@socialgouv/matomo-next": "^1.9.1",
         "airtable": "^0.12.2",
         "aws-sdk": "^2.1664.0",
-        "axios": "^1.7.7",
+        "axios": "^1.8.4",
         "compression": "^1.7.4",
         "connect-flash": "^0.1.1",
         "connect-redis": "^6.1.3",

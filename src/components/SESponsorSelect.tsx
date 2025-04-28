@@ -100,12 +100,13 @@ export default function SESponsorSelect<T extends boolean>({
 
     return (
         <div className="fr-select-group" style={containerStyle}>
-            <label className="fr-label">
+            <label className="fr-label" htmlFor="se-sponsor-select">
                 {label || `Sponsors`}
                 {!!hint && <span className="fr-hint-text">{hint}</span>}
             </label>
             {isMulti ? (
                 <AutoComplete
+                    id="se-sponsor-select"
                     {...autoCompleteProps}
                     multiple
                     value={convertToAutoCompleteValue(value, allOptions, true)}
@@ -118,6 +119,7 @@ export default function SESponsorSelect<T extends boolean>({
                 />
             ) : (
                 <AutoComplete
+                    id="se-sponsor-select"
                     {...autoCompleteProps}
                     multiple={false}
                     freeSolo={false}

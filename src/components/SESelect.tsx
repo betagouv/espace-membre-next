@@ -41,11 +41,12 @@ export default function SESelect({
 
     return (
         <div className="fr-select-group">
-            <label className="fr-label">
+            <label className="fr-label" htmlFor="se-select">
                 {label}
                 {!!hint && <span className="fr-hint-text">{hint}</span>}
             </label>
             <AutoComplete
+                id="se-select"
                 placeholder={placeholder}
                 multiple={isMulti}
                 options={startups}

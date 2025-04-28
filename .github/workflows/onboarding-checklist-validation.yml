@@ -1,0 +1,63 @@
+name: Validate Zod Schema
+
+on:
+    push:
+        branches:
+            - main
+    pull_request:
+        branches:
+            - main
+
+jobs:
+    validate-schema:
+        runs-on: ubuntu-latest
+
+        steps:
+            - name: Checkout
+              uses: actions/checkout@v4
+              with:
+                fetch-depth: 0
+                ref: ${{ github.event.pull_request.head.sha }}
+
+            - name: Get changed files
+              id: changed-files
+              run: |
+                git fetch origin ${{ github.event.pull_request.base.ref }}
+                changed=$(git diff --name-only origin/${{ github.event.pull_request.base.ref }}...HEAD)
+                echo "Changed files:"
+                echo "$changed"
+                echo "changed_files=${changed//$'\n'/ }" >> "$GITHUB_OUTPUT"
+            - name: Check if cron or schedule file changed
+              id: check_diff
+              run: |
+                changed="false"
+                echo "${{ steps.changed-files.outputs.changed_files }}" | while IFS= read -r file; do
+                  if [[ "$file" == "public/onboarding/checklist.yml" || "$file" == "src/models/onboardingChecklist.ts" ]]; then
+                    changed="true"
+                    break
+                  fi
+                done
+                echo "changed=$changed" >> "$GITHUB_OUTPUT"
+            - name: Set up Node.js
+              if: steps.check_diff.outputs.changed == 'true'
+              uses: actions/setup-node@v4
+              with:
+                  node-version: 18
+
+            - name: Install dependencies
+              if: steps.check_diff.outputs.changed == 'true'
+              run: npm install
+
+            - name: Validate file against Zod schema
+              if: steps.check_diff.outputs.changed == 'true'
+              env:
+                SESSION_SECRET: "dummy-secret"
+                CHAT_WEBHOOK_URL_SECRETARIAT: "dummy-url"
+                CHAT_WEBHOOK_URL_GENERAL: "dummy-url"
+                CHAT_WEBHOOK_URL_DINUM: "dummy-url"
+                CHAT_WEBHOOK_URL_GIP: "dummy-url"
+                MAILING_LIST_NEWSLETTER: 0
+                OVH_APP_KEY: fakeovhkey
+                OVH_APP_SECRET: fakeovhsecret
+                OVH_CONSUMER_KEY: fakeconsumerkey
+              run: npx ts-node .github/workflows/utils/validateFile.ts
