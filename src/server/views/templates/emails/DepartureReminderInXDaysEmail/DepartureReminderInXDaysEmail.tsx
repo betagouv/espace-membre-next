@@ -4,8 +4,18 @@ import { EmailEndingContract } from "@/server/modules/email";
 import { format } from "date-fns";
 import { fr } from "date-fns/locale/fr";
 
-export function DepartureReminderInXDaysEmailTitle() {
-  return "Mets à jour ta date de fin de mission 📆";
+export function DepartureReminderInXDaysEmailTitle({
+  days
+}: {
+  days: EmailEndingContract["variables"]["days"];
+}){
+  if (days === 2) {
+    return "Départ dans 2 jours 🙂"
+  } else if (days === 15) {
+    return "Départ dans 15 jours 🙂"
+  } else {
+    return "Départ dans 30 jours 🙂" 
+  }
 }
 
 export function DepartureReminderInXDaysEmail({
@@ -14,7 +24,7 @@ export function DepartureReminderInXDaysEmail({
   jobs,
   days,
 }: EmailEndingContract["variables"] ) {
-  const title = DepartureReminderInXDaysEmailTitle();
+  const title = DepartureReminderInXDaysEmailTitle({ days });
 
   return (
     <StandardLayout title={title}>

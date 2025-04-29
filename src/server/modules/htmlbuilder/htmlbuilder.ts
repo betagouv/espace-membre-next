@@ -65,7 +65,7 @@ import {
     SubjectFunction,
 } from "@modules/email";
 import { NoMoreContractXDaysEmailTitle, NoMoreContractXDaysEmail } from "@/server/views/templates/emails/NoMoreContractEmail/NoMoreContractXDaysEmail";
-import { DepartureReminderInXDaysEmail } from "@/server/views/templates/emails/DepartureReminderInXDaysEmail/DepartureReminderInXDaysEmail";
+import { DepartureReminderInXDaysEmail, DepartureReminderInXDaysEmailTitle } from "@/server/views/templates/emails/DepartureReminderInXDaysEmail/DepartureReminderInXDaysEmail";
 
 
 const TEMPLATES_BY_TYPE: Record<EmailProps["type"], string | null | any> = {
@@ -128,9 +128,10 @@ const SUBJECTS_BY_TYPE: Record<EmailProps["type"], string | SubjectFunction> = {
     EMAIL_CREATED_EMAIL: EmailCreatedEmailTitle(),
     EMAIL_NO_MORE_CONTRACT_1_DAY: NoMoreContractXDaysEmailTitle(),
     EMAIL_NO_MORE_CONTRACT_30_DAY: NoMoreContractXDaysEmailTitle(),
-    EMAIL_ENDING_CONTRACT_2_DAYS: DepartureReminderIn2DaysEmailTitle(),
-    EMAIL_ENDING_CONTRACT_15_DAYS: DepartureReminderIn15DaysEmailTitle(),
-    EMAIL_ENDING_CONTRACT_30_DAYS: DepartureReminderIn30DaysEmailTitle(),
+    EMAIL_ENDING_CONTRACT_2_DAYS: DepartureReminderInXDaysEmailTitle({ days: 2 }),
+    EMAIL_ENDING_CONTRACT_15_DAYS: DepartureReminderInXDaysEmailTitle({ days: 15 }),
+    EMAIL_ENDING_CONTRACT_30_DAYS: DepartureReminderInXDaysEmailTitle({ days: 30 }),
+    EMAIL_USER_SHOULD_UPDATE_INFO: "Mise à jour de tes informations",
     EMAIL_NEWSLETTER: ({ subject }: EmailProps["variables"]) => {
         return `${subject}`;
     },
