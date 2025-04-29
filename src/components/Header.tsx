@@ -46,11 +46,10 @@ const MainHeader = () => {
                         }/api/v2/session/end?id_token_hint=${idTokenHint}&state=${uuidv4()}&post_logout_redirect_uri=${encodeURIComponent(
                             process.env.NEXT_PUBLIC_APP_BASE_URL || ""
                         )}/login`;
-                        router.push(signOutUrl);
                         await signOut({
-                            redirect: false,
-                            callbackUrl: "/",
+                            callbackUrl: "/login",
                         });
+                        router.push(signOutUrl);
                     } else {
                         await signOut({
                             callbackUrl: "/",
