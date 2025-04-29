@@ -266,7 +266,6 @@ export type EmailVariants =
     | EmailLogin
     | EmailCreatedEmail
     | EmailMattermostAccountCreated
-    | EmailPRPending
     | EmailEndingContract
     | EmailNoMoreContract
     | EmailUserShouldUpdateInfo
@@ -279,7 +278,6 @@ export type EmailVariants =
     | EmailStartupAskPhase
     | EmailForumReminder
     | EmailTest
-    | EmailPRPendingToTeam
     | EmailVerificationWaiting
     | EmailNewMemberValidation
     | EmailTeamComposition
