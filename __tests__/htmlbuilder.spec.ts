@@ -43,7 +43,7 @@ describe("Test EMAIL_ENDING_CONTRACT", () => {
         const emailBody: string = await htmlBuilder.renderContentForType({
             type: EMAIL_TYPES.EMAIL_ENDING_CONTRACT_2_DAYS,
             variables: {
-                endDate: new Date("11/12/2024"),
+                endDate: new Date('2024-11-12'),
                 user: {
                     userInfos: testUsers.find(
                         (user) => user.id === "julien.dauphant"
@@ -70,7 +70,7 @@ describe("Test EMAIL_ENDING_CONTRACT", () => {
         const emailBody: string = await htmlBuilder.renderContentForType({
             type: EMAIL_TYPES.EMAIL_ENDING_CONTRACT_15_DAYS,
             variables: {
-                endDate: new Date("11/12/2024"),
+                endDate: new Date('2024-11-12'),
                 user: {
                     userInfos: testUsers.find(
                         (user) => user.id === "julien.dauphant"
@@ -97,7 +97,7 @@ describe("Test EMAIL_ENDING_CONTRACT", () => {
         const emailBody: string = await htmlBuilder.renderContentForType({
             type: EMAIL_TYPES.EMAIL_ENDING_CONTRACT_30_DAYS,
             variables: {
-                endDate: new Date("11/12/2024"),
+                endDate: new Date('2024-11-12'),
                 user: {
                     userInfos: testUsers.find(
                         (user) => user.id === "julien.dauphant"
