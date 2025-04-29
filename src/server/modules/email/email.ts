@@ -18,8 +18,6 @@ export enum EMAIL_TYPES {
     EMAIL_LOGIN = "EMAIL_LOGIN",
     EMAIL_CREATED_EMAIL = "EMAIL_CREATED_EMAIL",
     EMAIL_MATTERMOST_ACCOUNT_CREATED = "EMAIL_MATTERMOST_ACCOUNT_CREATED",
-    EMAIL_PR_PENDING = "EMAIL_PR_PENDING",
-    EMAIL_PR_PENDING_TO_TEAM = "EMAIL_PR_PENDING_TO_TEAM",
     EMAIL_ENDING_CONTRACT_2_DAYS = "EMAIL_ENDING_CONTRACT_2_DAYS",
     EMAIL_ENDING_CONTRACT_15_DAYS = "EMAIL_ENDING_CONTRACT_15_DAYS",
     EMAIL_ENDING_CONTRACT_30_DAYS = "EMAIL_ENDING_CONTRACT_30_DAYS",
@@ -91,14 +89,6 @@ export type EmailMattermostAccountCreated = {
         resetPasswordLink: string;
         fullname: string;
         email: string;
-    };
-};
-
-export type EmailPRPending = {
-    type: EMAIL_TYPES.EMAIL_PR_PENDING;
-    variables: {
-        username: string;
-        pr_link: string;
     };
 };
 
@@ -197,14 +187,6 @@ export type EmailTest = {
     variables?: {};
 };
 
-export type EmailPRPendingToTeam = {
-    type: EMAIL_TYPES.EMAIL_PR_PENDING_TO_TEAM;
-    variables: {
-        username: string;
-        pr_link: string;
-        startup: string;
-    };
-};
 
 export type EmailVerificationWaiting = {
     type: EMAIL_TYPES.EMAIL_VERIFICATION_WAITING;
@@ -284,7 +266,6 @@ export type EmailVariants =
     | EmailLogin
     | EmailCreatedEmail
     | EmailMattermostAccountCreated
-    | EmailPRPending
     | EmailEndingContract
     | EmailNoMoreContract
     | EmailUserShouldUpdateInfo
@@ -297,7 +278,6 @@ export type EmailVariants =
     | EmailStartupAskPhase
     | EmailForumReminder
     | EmailTest
-    | EmailPRPendingToTeam
     | EmailVerificationWaiting
     | EmailNewMemberValidation
     | EmailTeamComposition
@@ -436,14 +416,6 @@ export const EmailDocumentation: Record<
     },
     [EMAIL_TYPES.EMAIL_MATTERMOST_ACCOUNT_CREATED]: {
         description: "Notification de création d’un compte Mattermost.",
-    },
-    [EMAIL_TYPES.EMAIL_PR_PENDING]: {
-        description:
-            "Notification lorsqu'une pull request est en attente de validation.",
-    },
-    [EMAIL_TYPES.EMAIL_PR_PENDING_TO_TEAM]: {
-        description:
-            "Notification à une équipe entière pour une pull request en attente.",
     },
     [EMAIL_TYPES.EMAIL_ENDING_CONTRACT_2_DAYS]: {
         description:

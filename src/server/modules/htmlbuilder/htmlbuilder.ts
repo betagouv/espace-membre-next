@@ -70,7 +70,6 @@ const TEMPLATES_BY_TYPE: Record<EmailProps["type"], string | null | any> = {
     ) => MattermostAccountCreatedEmail(params),
     EMAIL_CREATED_EMAIL: (params: EmailCreatedEmailType["variables"]) =>
         EmailCreatedEmail(params),
-    EMAIL_PR_PENDING: `./src/server/views/templates/emails/pendingGithubAuthorPR.ejs`,
     EMAIL_ENDING_CONTRACT_2_DAYS:
         "./src/server/views/templates/emails/mail2days.ejs",
     EMAIL_ENDING_CONTRACT_15_DAYS:
@@ -92,8 +91,6 @@ const TEMPLATES_BY_TYPE: Record<EmailProps["type"], string | null | any> = {
     EMAIL_STARTUP_ASK_PHASE: null,
     EMAIL_FORUM_REMINDER: null,
     EMAIL_TEST: null,
-    EMAIL_PR_PENDING_TO_TEAM:
-        "./src/server/views/templates/emails/prPendingToTeam.ejs",
     EMAIL_VERIFICATION_WAITING: (
         params: EmailVerificationWaiting["variables"]
     ) => VerificationWaitingEmail(params),
@@ -121,10 +118,6 @@ const SUBJECTS_BY_TYPE: Record<EmailProps["type"], string | SubjectFunction> = {
     EMAIL_LOGIN: LoginEmailTitle(),
     EMAIL_MATTERMOST_ACCOUNT_CREATED: MattermostAccountCreatedEmailTitle(),
     EMAIL_CREATED_EMAIL: EmailCreatedEmailTitle(),
-    EMAIL_PR_PENDING: `PR en attente`,
-    EMAIL_PR_PENDING_TO_TEAM: ({ username }: EmailProps["variables"]) => {
-        return `PR en attente de ${username} en attente de merge`;
-    },
     EMAIL_ENDING_CONTRACT_2_DAYS: "Départ dans 2 jours 🙂",
     EMAIL_ENDING_CONTRACT_15_DAYS: "Départ dans 15 jours 🙂",
     EMAIL_ENDING_CONTRACT_30_DAYS: "Départ dans 30 jours 🙂",
@@ -168,8 +161,6 @@ const MARKDOWN_BY_TYPE: Record<EmailProps["type"], boolean> = {
     EMAIL_LOGIN: false,
     EMAIL_CREATED_EMAIL: false,
     EMAIL_MATTERMOST_ACCOUNT_CREATED: false,
-    EMAIL_PR_PENDING: true,
-    EMAIL_PR_PENDING_TO_TEAM: true,
     EMAIL_ENDING_CONTRACT_2_DAYS: true,
     EMAIL_ENDING_CONTRACT_15_DAYS: true,
     EMAIL_ENDING_CONTRACT_30_DAYS: true,
