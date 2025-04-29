@@ -241,8 +241,6 @@ export default {
     // If both emails of the users are already in sib update will not work
     FEATURE_SIB_USE_UPDATE_CONTACT_EMAIL:
         process.env.FEATURE_SIB_USE_UPDATE_CONTACT_EMAIL === "true",
-    FEATURE_USE_NEW_MARRAINAGE:
-        process.env.FEATURE_USE_NEW_MARRAINAGE === "true",
     SIB_WEBHOOK_ID: process.env.SIB_WEBHOOK_ID,
     SIB_APIKEY_PRIVATE: process.env.SIB_APIKEY_PRIVATE,
     SIB_APIKEY_PUBLIC: process.env.SIB_APIKEY_TECH_PUBLIC,

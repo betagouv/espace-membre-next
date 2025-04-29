@@ -64,21 +64,7 @@ import {
 } from "@modules/email";
 
 const TEMPLATES_BY_TYPE: Record<EmailProps["type"], string | null | any> = {
-    MARRAINAGE_NEWCOMER_EMAIL:
-        "./src/server/views/templates/emails/marrainage/marrainageByGroupNewcomerEmail.ejs",
-    MARRAINAGE_ONBOARDER_EMAIL:
-        "./src/server/views/templates/emails/marrainage/marrainageByGroupOnboarderEmail.ejs",
     EMAIL_LOGIN: (params: EmailLogin["variables"]) => LoginEmail(params),
-    MARRAINAGE_REQUEST_EMAIL:
-        "./src/server/views/templates/emails/marrainage/marrainageRequest.ejs",
-    MARRAINAGE_ACCEPT_NEWCOMER_EMAIL:
-        "./src/server/views/templates/emails/marrainage/marrainageAcceptNewcomer.ejs",
-    MARRAINAGE_ACCEPT_ONBOARDER_EMAIL:
-        "./src/server/views/templates/emails/marrainage/marrainageAcceptOnboarder.ejs",
-    MARRAINAGE_REQUEST_FAILED:
-        "./src/server/views/templates/emails/marrainage/marrainageRequestFailed.ejs",
-    ONBOARDING_REFERENT_EMAIL:
-        "./src/server/views/templates/emails/onboardingReferent.ejs",
     [EMAIL_TYPES.EMAIL_MATTERMOST_ACCOUNT_CREATED]: (
         params: EmailMattermostAccountCreated["variables"]
     ) => MattermostAccountCreatedEmail(params),
@@ -132,16 +118,7 @@ const TEMPLATES_BY_TYPE: Record<EmailProps["type"], string | null | any> = {
 };
 
 const SUBJECTS_BY_TYPE: Record<EmailProps["type"], string | SubjectFunction> = {
-    MARRAINAGE_REQUEST_EMAIL: "Tu as été sélectionné·e comme marrain·e 🙌",
     EMAIL_LOGIN: LoginEmailTitle(),
-    MARRAINAGE_NEWCOMER_EMAIL: "Découvre ta marraine ou ton parrain Beta !",
-    MARRAINAGE_ONBOARDER_EMAIL: "Découvre tes filleuls Beta !",
-    MARRAINAGE_ACCEPT_NEWCOMER_EMAIL: "Mise en contact 👋",
-    MARRAINAGE_ACCEPT_ONBOARDER_EMAIL: "Mise en contact 👋",
-    MARRAINAGE_REQUEST_FAILED: `La demande de marrainage n'a pas fonctionné`,
-    ONBOARDING_REFERENT_EMAIL: ({ name }: EmailProps["variables"]) => {
-        return `${name} vient de créer sa fiche Github`;
-    },
     EMAIL_MATTERMOST_ACCOUNT_CREATED: MattermostAccountCreatedEmailTitle(),
     EMAIL_CREATED_EMAIL: EmailCreatedEmailTitle(),
     EMAIL_PR_PENDING: `PR en attente`,
@@ -188,14 +165,7 @@ const SUBJECTS_BY_TYPE: Record<EmailProps["type"], string | SubjectFunction> = {
 };
 
 const MARKDOWN_BY_TYPE: Record<EmailProps["type"], boolean> = {
-    MARRAINAGE_NEWCOMER_EMAIL: true,
-    MARRAINAGE_ONBOARDER_EMAIL: true,
     EMAIL_LOGIN: false,
-    MARRAINAGE_REQUEST_EMAIL: false,
-    MARRAINAGE_ACCEPT_NEWCOMER_EMAIL: false,
-    MARRAINAGE_ACCEPT_ONBOARDER_EMAIL: false,
-    MARRAINAGE_REQUEST_FAILED: false,
-    ONBOARDING_REFERENT_EMAIL: true,
     EMAIL_CREATED_EMAIL: false,
     EMAIL_MATTERMOST_ACCOUNT_CREATED: false,
     EMAIL_PR_PENDING: true,

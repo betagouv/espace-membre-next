@@ -116,7 +116,6 @@ export async function setEmailAddressesActive() {
                 },
             });
             await setEmailActive(user.username);
-            // once email created we create marrainage
         })
     );
 }
@@ -170,7 +169,6 @@ export async function setCreatedEmailRedirectionsActive() {
                 email: user.primary_email as string,
             });
             await setEmailRedirectionActive(user.username);
-            // once email created we create marrainage
         })
     );
 }
@@ -221,7 +219,7 @@ export async function createRedirectionEmailAdresses() {
         "User that should have redirection",
         unregisteredMembers.map((u) => u.username)
     );
-    // create email and marrainage
+    // create email 
     return Promise.all(
         unregisteredMembers.map(async (member) => {
             if (
@@ -282,11 +280,10 @@ export async function createEmailAddresses() {
         `Email creation : ${unregisteredUsers.length} unregistered user(s) in OVH (${allOvhEmails.length} accounts in OVH. ${concernedUsers.length} accounts in Github).`
     );
 
-    // create email and marrainage
+    // create email
     return Promise.all(
         unregisteredUsers.map(async (user) => {
             await createEmail(user.username, "Secretariat cron");
-            // once email created we create marrainage
         })
     );
 }
@@ -363,7 +360,7 @@ export async function subscribeEmailAddresses() {
         `Email subscription : ${unsubscribedUsers.length} unsubscribed user(s) in incubateur mailing list.`
     );
 
-    // create email and marrainage
+    // create email
     return Promise.all(
         unsubscribedUsers.map(async (user) => {
             await BetaGouv.subscribeToMailingList(
@@ -412,7 +409,7 @@ export async function unsubscribeEmailAddresses() {
         `Email unsubscription : ${emails.length} subscribed user(s) in incubateur mailing list.`
     );
 
-    // create email and marrainage
+    // create email
     return Promise.all(
         emails.map(async (email) => {
             await BetaGouv.unsubscribeFromMailingList(
@@ -434,14 +431,6 @@ export async function unsubscribeEmailAddresses() {
 //         return dbUsers.find((x) => x.username === user.username);
 //     });
 
-//     // create email and marrainage
-//     return Promise.all(
-//         concernedUsers.map(async (user) => {
-//             console.log("This user has active email", user.username);
-//             // once email created we create marrainage
-//         })
-//     );
-// }
 
 export async function sendOnboardingVerificationPendingEmail() {
     const dbUsers = (await getAllUsersInfo()).map((user) =>
