@@ -82,7 +82,7 @@ describe("Test EMAIL_ENDING_CONTRACT", () => {
             },
         });
         emailBody.should.include(job.url);
-        emailBody.should.include(`le 11/12/2024`);
+        emailBody.should.include("le 12 novembre 2024");
         emailBody.should.include(`Bonjour Julien Dauphant`);
         emailBody.should.include("Un petit mot pour te rappeler");
     });
@@ -108,7 +108,7 @@ describe("Test EMAIL_ENDING_CONTRACT", () => {
                 days: 30,
             },
         });
-        emailBody.should.include(`au 11/12/2024`);
+        emailBody.should.include("12 novembre 2024");
         emailBody.should.include(`Bonjour Julien Dauphant`);
         emailBody.should.include(
             "Un petit rappel concernant ta fiche membre chez beta.gouv.fr"

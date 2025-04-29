@@ -41,9 +41,8 @@ export function DepartureReminderInXDaysEmail({
         {
           days === 15 && (
             <p>
-              Ton départ de la communauté beta.gouv.fr est prévu pour dans{" "}
-              15 jours (le{" "}
-              {format(endDate, "dd MMMM yyyy", { locale: fr })}).
+              Un petit mot pour te rappeler que lorsque ta fiche de membre chez beta.gouv.fr a été créée ou mise-à-jour, ta date de fin de mission a été définie pour (le{" "}
+                {format(endDate, "dd MMMM yyyy", { locale: fr })}). Cette date est pour bientôt !
             </p>
           )
         }
