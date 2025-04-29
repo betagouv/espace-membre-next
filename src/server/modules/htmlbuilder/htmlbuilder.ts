@@ -1,12 +1,14 @@
 import { renderToMjml } from "@luma-team/mjml-react";
 import ejs from "ejs";
 import mjml2html from "mjml";
+import TurndownService from 'turndown';
 
 import * as mdtohtml from "@/lib/mdtohtml";
 import {
     EmailCreatedEmail as EmailCreatedEmailType,
     EmailNoMoreContract,
     EmailEndingContract,
+    EmailVariants,
     EmailVerificationWaiting,
 } from "@/server/modules/email";
 import {
@@ -66,9 +68,10 @@ import {
 } from "@modules/email";
 import { NoMoreContractXDaysEmailTitle, NoMoreContractXDaysEmail } from "@/server/views/templates/emails/NoMoreContractEmail/NoMoreContractXDaysEmail";
 import { DepartureReminderInXDaysEmail, DepartureReminderInXDaysEmailTitle } from "@/server/views/templates/emails/DepartureReminderInXDaysEmail/DepartureReminderInXDaysEmail";
+import e from "express";
 
 
-const TEMPLATES_BY_TYPE: Record<EmailProps["type"], string | null | any> = {
+const TEMPLATES_BY_TYPE: Record<EmailProps["type"], string | null | ((params: any) => JSX.Element)> = {
     EMAIL_LOGIN: (params: EmailLogin["variables"]) => LoginEmail(params),
     [EMAIL_TYPES.EMAIL_MATTERMOST_ACCOUNT_CREATED]: (
         params: EmailMattermostAccountCreated["variables"]
@@ -169,9 +172,9 @@ const MARKDOWN_BY_TYPE: Record<EmailProps["type"], boolean> = {
     EMAIL_LOGIN: false,
     EMAIL_CREATED_EMAIL: false,
     EMAIL_MATTERMOST_ACCOUNT_CREATED: false,
-    EMAIL_ENDING_CONTRACT_2_DAYS: true,
-    EMAIL_ENDING_CONTRACT_15_DAYS: true,
-    EMAIL_ENDING_CONTRACT_30_DAYS: true,
+    EMAIL_ENDING_CONTRACT_2_DAYS: false,
+    EMAIL_ENDING_CONTRACT_15_DAYS: false,
+    EMAIL_ENDING_CONTRACT_30_DAYS: false,
     EMAIL_NO_MORE_CONTRACT_1_DAY: false,
     EMAIL_NO_MORE_CONTRACT_30_DAY: false,
     EMAIL_USER_SHOULD_UPDATE_INFO: true,
@@ -228,11 +231,54 @@ const htmlBuilder: HtmlBuilderType = {
     templates: TEMPLATES_BY_TYPE,
     renderContentForTypeAsMarkdown: async (params) => {
         const { type, variables } = params;
-        if (!MARKDOWN_BY_TYPE[type]) {
-            throw new Error(`There is no markdown file for ${type}`);
+        if (TEMPLATES_BY_TYPE[type] === null) {
+            throw new BusinessError(
+                "noEmailTemplateExists",
+                `Il n'y pas de template d'email pour ${type}`
+            );
+        } else if (typeof TEMPLATES_BY_TYPE[type] === "string") {
+            if (MARKDOWN_BY_TYPE[type]) {
+                let content = await ejs.renderFile(TEMPLATES_BY_TYPE[type], variables);
+                return content;
+            } else {
+                throw new BusinessError(
+                    "noMarkdownTemplateExists",
+                    `Il n'y pas de template d'email pour ${type}`
+                );
+            }
+        } else {
+            // use mjml
+            const mjmlHtmlContent = renderToMjml(
+                TEMPLATES_BY_TYPE[type](variables)
+            );
+            const transformResult = mjml2html(mjmlHtmlContent);
+
+            if (transformResult.errors) {
+                for (const err of transformResult.errors) {
+                    throw err;
+                }
+            }
+            const turndownService = new TurndownService();
+            turndownService.addRule('strikethrough', {
+                filter: ['head', 'script', 'style', 'img','footer', 'header'],
+                replacement: function() {
+                    return '';
+                }
+            })
+            turndownService.addRule('strikethrough', {
+                filter: (node) => {
+                    return node.getAttribute('class') === 'header-section' || node.getAttribute('class') === 'footer-section'
+                },
+                replacement: function() {
+                    return '';
+                }
+            })
+
+            const rawHtmlVersion = transformResult.html;
+            const markdown = turndownService.turndown(rawHtmlVersion);
+            return markdown;
         }
-        let content = await ejs.renderFile(TEMPLATES_BY_TYPE[type], variables);
-        return content;
+
     },
     renderSubjectForType: ({ type, variables }) => {
         let subject = "";
