@@ -63,7 +63,11 @@ import {
     HtmlBuilderType,
     SubjectFunction,
 } from "@modules/email";
+<<<<<<< HEAD
 import { NoMoreContractXDaysEmailTitle, NoMoreContractXDaysEmail } from "@/server/views/templates/emails/NoMoreContractEmail/NoMoreContractXDaysEmail";
+=======
+import { DepartureReminderIn2DaysEmail } from "@/server/views/templates/emails/DepartureReminderIn2DaysEmail/DepartureReminderIn2DaysEmail";
+>>>>>>> 9aefd03c (feat: departure email reminder in 2days to mjml)
 
 const TEMPLATES_BY_TYPE: Record<EmailProps["type"], string | null | any> = {
     EMAIL_LOGIN: (params: EmailLogin["variables"]) => LoginEmail(params),
@@ -72,8 +76,15 @@ const TEMPLATES_BY_TYPE: Record<EmailProps["type"], string | null | any> = {
     ) => MattermostAccountCreatedEmail(params),
     EMAIL_CREATED_EMAIL: (params: EmailCreatedEmailType["variables"]) =>
         EmailCreatedEmail(params),
+<<<<<<< HEAD
     EMAIL_ENDING_CONTRACT_2_DAYS:
         "./src/server/views/templates/emails/mail2days.ejs",
+=======
+    EMAIL_PR_PENDING: `./src/server/views/templates/emails/pendingGithubAuthorPR.ejs`,
+    EMAIL_ENDING_CONTRACT_2_DAYS: (
+        params: EmailDepartureReminderIn2Days["variables"]
+    ) => DepartureReminderIn2DaysEmail(params),
+>>>>>>> 9aefd03c (feat: departure email reminder in 2days to mjml)
     EMAIL_ENDING_CONTRACT_15_DAYS:
         "./src/server/views/templates/emails/mail15days.ejs",
     EMAIL_ENDING_CONTRACT_30_DAYS:

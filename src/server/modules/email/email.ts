@@ -263,6 +263,15 @@ export type EmailMatomoAccountUpdated = {
     };
 };
 
+export type EmailDepartureReminderIn2Days = {
+    type: EMAIL_TYPES.EMAIL_ENDING_CONTRACT_2_DAYS;
+    variables: {
+        user:memberPublicInfoSchemaType,
+        endDate: Date
+        jobs: Job[]
+    }
+}
+
 export type EmailVariants =
     | EmailLogin
     | EmailCreatedEmail
@@ -284,7 +293,8 @@ export type EmailVariants =
     | EmailTeamComposition
     | EmailStartupMembersDidNotChangeInXMonths
     | EmailMatomoAccountCreated
-    | EmailMatomoAccountUpdated;
+    | EmailMatomoAccountUpdated
+    | EmailDepartureReminderIn2Days;
 
 export type EmailProps = BaseEmail & EmailVariants;
 
