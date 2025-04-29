@@ -64,6 +64,7 @@ import {
 } from "@modules/email";
 
 const TEMPLATES_BY_TYPE: Record<EmailProps["type"], string | null | any> = {
+    EMAIL_LOGIN: (params: EmailLogin["variables"]) => LoginEmail(params),
     [EMAIL_TYPES.EMAIL_MATTERMOST_ACCOUNT_CREATED]: (
         params: EmailMattermostAccountCreated["variables"]
     ) => MattermostAccountCreatedEmail(params),
