@@ -64,6 +64,9 @@ import {
     SubjectFunction,
 } from "@modules/email";
 import { NoMoreContractXDaysEmailTitle, NoMoreContractXDaysEmail } from "@/server/views/templates/emails/NoMoreContractEmail/NoMoreContractXDaysEmail";
+import { DepartureReminderIn2DaysEmail, DepartureReminderIn2DaysEmailTitle } from "@/server/views/templates/emails/DepartureReminderIn2DaysEmail/DepartureReminderIn2DaysEmail";
+import { DepartureReminderIn15DaysEmail, DepartureReminderIn15DaysEmailTitle } from "@/server/views/templates/emails/DepartureReminderIn15DaysEmail/DepartureReminderIn15DaysEmail";
+import { DepartureReminderIn30DaysEmail, DepartureReminderIn30DaysEmailTitle } from "@/server/views/templates/emails/DepartureReminderIn2DaysEmail/DepartureReminderIn30DaysEmail";
 
 
 const TEMPLATES_BY_TYPE: Record<EmailProps["type"], string | null | any> = {
@@ -73,16 +76,23 @@ const TEMPLATES_BY_TYPE: Record<EmailProps["type"], string | null | any> = {
     ) => MattermostAccountCreatedEmail(params),
     EMAIL_CREATED_EMAIL: (params: EmailCreatedEmailType["variables"]) =>
         EmailCreatedEmail(params),
-    EMAIL_ENDING_CONTRACT_2_DAYS:
-        "./src/server/views/templates/emails/mail2days.ejs",
-    EMAIL_ENDING_CONTRACT_15_DAYS:
-        "./src/server/views/templates/emails/mail15days.ejs",
-    EMAIL_ENDING_CONTRACT_30_DAYS:
-        "./src/server/views/templates/emails/mail30days.ejs",
     EMAIL_NO_MORE_CONTRACT_1_DAY: (params: EmailNoMoreContract["variables"]) =>
         NoMoreContractXDaysEmail(params),
     EMAIL_NO_MORE_CONTRACT_30_DAY:(params: EmailNoMoreContract["variables"]) =>
         NoMoreContractXDaysEmail(params),
+    EMAIL_ENDING_CONTRACT_2_DAYS: (
+        params: EmailDepartureReminderIn2Days["variables"]
+    ) => DepartureReminderIn2DaysEmail(params),
+    EMAIL_ENDING_CONTRACT_15_DAYS: (
+        params: EmailDepartureReminderIn15Days["variables"]
+    ) => DepartureReminderIn2DaysEmail(params),
+    EMAIL_ENDING_CONTRACT_30_DAYS: (
+        params: EmailDepartureReminderIn30Days["variables"]
+    ) => DepartureReminderIn2DaysEmail(params),
+    EMAIL_NO_MORE_CONTRACT_1_DAY:
+        "./src/server/views/templates/emails/mailExpired1day.ejs",
+    EMAIL_NO_MORE_CONTRACT_30_DAY:
+        "./src/server/views/templates/emails/mailExpired30days.ejs",
     EMAIL_USER_SHOULD_UPDATE_INFO: `./src/server/views/templates/emails/updateUserInfoEmail.ejs`,
     EMAIL_NEWSLETTER: "./src/server/views/templates/emails/newsletter.ejs",
     EMAIL_NEW_MEMBER_PR: "./src/server/views/templates/emails/newMemberPR.ejs",
@@ -126,7 +136,9 @@ const SUBJECTS_BY_TYPE: Record<EmailProps["type"], string | SubjectFunction> = {
     EMAIL_ENDING_CONTRACT_30_DAYS: "Départ dans 30 jours 🙂",
     EMAIL_NO_MORE_CONTRACT_1_DAY: NoMoreContractXDaysEmailTitle(),
     EMAIL_NO_MORE_CONTRACT_30_DAY: NoMoreContractXDaysEmailTitle(),
-    EMAIL_USER_SHOULD_UPDATE_INFO: "Mise à jour de tes informations",
+    EMAIL_ENDING_CONTRACT_2_DAYS: DepartureReminderIn2DaysEmailTitle(),
+    EMAIL_ENDING_CONTRACT_15_DAYS: DepartureReminderIn15DaysEmailTitle(),
+    EMAIL_ENDING_CONTRACT_30_DAYS: DepartureReminderIn30DaysEmailTitle(),
     EMAIL_NEWSLETTER: ({ subject }: EmailProps["variables"]) => {
         return `${subject}`;
     },
