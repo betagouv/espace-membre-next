@@ -15,26 +15,6 @@ import {
 chai.should();
 
 
-describe("Test EMAIL_PR_PENDING", () => {
-    it("email EMAIL_PR_PENDING", async () => {
-        const pr_link = "http://github.com/uneurl";
-        const username = "Paul";
-        const renderHtmlFromMd = sinon.spy(mdtohtml, "renderHtmlFromMd");
-        const emailBody: string = await htmlBuilder.renderContentForType({
-            type: EMAIL_TYPES.EMAIL_PR_PENDING,
-            variables: {
-                username,
-                pr_link,
-            },
-        });
-
-        emailBody.should.include(username);
-        emailBody.should.include(pr_link);
-        renderHtmlFromMd.called.should.be.true;
-        renderHtmlFromMd.restore();
-    });
-});
-
 describe("Test EMAIL_MATTERMOST_ACCOUNT_CREATED", () => {
     it("email EMAIL_MATTERMOST_ACCOUNT_CREATED", async () => {
         const resetPasswordLink = "https://mattermost-reset-link";
@@ -213,26 +193,6 @@ describe(`Test EMAIL_NEW_MEMBER_PR`, () => {
 
         emailBody.should.include(prUrl);
         emailBody.should.include(name);
-        emailBody.should.include(startup);
-    });
-});
-
-describe(`Test EMAIL_PR_PENDING_TO_TEAM`, () => {
-    it(`email EMAIL_PR_PENDING_TO_TEAM,`, async () => {
-        const pr_link = "http://github.com/url";
-        const startup = "Monsuivi";
-        const username = "jean.pauluchon";
-        const emailBody: string = await htmlBuilder.renderContentForType({
-            type: EMAIL_TYPES.EMAIL_PR_PENDING_TO_TEAM,
-            variables: {
-                pr_link,
-                username,
-                startup,
-            },
-        });
-
-        emailBody.should.include(pr_link);
-        emailBody.should.include(username);
         emailBody.should.include(startup);
     });
 });

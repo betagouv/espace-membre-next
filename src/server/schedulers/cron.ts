@@ -463,22 +463,6 @@ export const espaceMembreCronJobs: EspaceMembreCronJobType[] = [
         name: "sendContractEndingMessageToUsers2days",
         description: "Sending contract ending message to users (2 days)",
     },
-    // {
-    //     cronTime: "0 * * * *", // every hours at minute 0,
-    //     onTick: pullRequestWatcher,
-    //     isActive: !!config.featureRemindUserWithPendingPullRequestOnAuthorFile,
-    //     name: "pullRequestWatcher",
-    //     description:
-    //         "Remind user with pending GitHub pull request on author file",
-    // },
-    // {
-    //     cronTime: "0 * * * *", // every hours at minute 0,
-    //     onTick: pullRequestWatcherSendEmailToTeam,
-    //     isActive: !!config.FEATURE_REMINDER_TEAM_IF_PENDING_PR_ON_AUTHOR_FILE,
-    //     name: "pullRequestWatcherSendEmailToTeam",
-    //     description:
-    //         "Remind team with pending GitHub pull request on author file",
-    // },
     {
         cronTime: "0 10 1 * *", // every 1srt of each month,
         onTick: sendMessageToActiveUsersWithoutSecondaryEmail,

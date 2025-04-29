@@ -93,9 +93,6 @@ const CRON_TASK_ENV_VAR = {
         process.env
             .FEATURE_REMIND_USER_WITH_PENDING_PULL_REQUEST_ON_AUTHOR_FILE ===
         "true",
-    FEATURE_REMINDER_TEAM_IF_PENDING_PR_ON_AUTHOR_FILE:
-        process.env.FEATURE_REMINDER_TEAM_IF_PENDING_PR_ON_AUTHOR_FILE ===
-        "true",
     featureSendMessageToActiveUsersWithoutSecondaryEmail:
         process.env
             .FEATURE_SEND_MESSAGE_TO_ACTIVE_USERS_WITHOUT_SECONDARY_EMAIL ===
