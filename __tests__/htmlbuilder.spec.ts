@@ -51,6 +51,7 @@ describe("Test EMAIL_ENDING_CONTRACT", () => {
                     mattermostUsername: "julien.dauphant",
                 },
                 jobs: [job],
+                days: 2,
             },
         });
         emailBody.should.include(job.url);
@@ -77,6 +78,7 @@ describe("Test EMAIL_ENDING_CONTRACT", () => {
                     mattermostUsername: "julien.dauphant",
                 },
                 jobs: [job],
+                days: 15,
             },
         });
         emailBody.should.include(job.url);
@@ -103,6 +105,7 @@ describe("Test EMAIL_ENDING_CONTRACT", () => {
                     mattermostUsername: "julien.dauphant",
                 },
                 jobs: [job],
+                days: 30,
             },
         });
         emailBody.should.include(`au 11/12/2024`);
