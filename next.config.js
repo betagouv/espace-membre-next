@@ -56,6 +56,13 @@ const nextConfig = {
         serverActions: {
             bodySizeLimit: "10mb",
         },
+        // This is experimental but can
+        // be enabled to allow parallel threads
+        // with nextjs automatic static generation
+        // during prerendering it access the db and in review app in breaks because there is several connexion
+        // we could disable prerendering but it is not possible to disable it only at build time
+        workerThreads: false,
+        cpus: 1
     },
     rewrites: async () => [
         {

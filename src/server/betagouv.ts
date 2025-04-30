@@ -58,71 +58,6 @@ const betaGouv = {
         }
     },
 
-    // usersInfos: async (): Promise<Member[]> => {
-    //     return axios
-    //         .get<Member[]>(config.usersAPI)
-    //         .then((response) =>
-    //             response.data.map((author: Member) => {
-    //                 if (author.missions && author.missions.length > 0) {
-    //                     const sortedStartDates = author.missions
-    //                         .map((x) => x.start)
-    //                         .sort();
-    //                     const sortedEndDates = author.missions
-    //                         .map((x) => x.end || "")
-    //                         .sort()
-    //                         .reverse();
-    //                     const latestMission = author.missions.reduce((a, v) =>
-    //                         v.end > a.end || !v.end ? v : a
-    //                     );
-
-    //                     [author.start] = sortedStartDates;
-    //                     // todo: voir impact si on supprime (info deja dans les missions)
-    //                     author.end = sortedEndDates.includes("")
-    //                         ? ""
-    //                         : sortedEndDates[0];
-    //                     // todo: voir impact si on supprime (info deja dans les missions)
-    //                     author.employer = latestMission.status
-    //                         ? `${latestMission.status}/${latestMission.employer}`
-    //                         : latestMission.employer;
-    //                 }
-    //                 return {
-    //                     ...author,
-    //                     role: unescape(author.role),
-    //                 };
-    //             })
-    //         )
-    //         .catch((err) => {
-    //             throw new Error(
-    //                 `Error to get users infos in ${config.domain}: ${err}`
-    //             );
-    //         });
-    // },
-    // incubators: async (): Promise<Incubator[]> => {
-    //     return axios
-    //         .get<any[]>(config.incubatorAPI)
-    //         .then((response) => {
-    //             return Object.keys(response.data).map((key) => ({
-    //                 ghid: key,
-    //                 ...response.data[key],
-    //             }));
-    //         })
-    //         .catch((err) => {
-    //             throw new Error(`Error to get incubators infos : ${err}`);
-    //         });
-    // },
-    // sponsors: async (): Promise<Sponsor[]> => {
-    //     return axios
-    //         .get<any[]>(config.SPONSOR_API)
-    //         .then((response) => {
-    //             return Object.keys(response.data).map((key) => ({
-    //                 ghid: key,
-    //                 ...response.data[key],
-    //             }));
-    //         })
-    //         .catch((err) => {
-    //             throw new Error(`Error to get incubators infos : ${err}`);
-    //         });
-    // },
     // getJobs: async (): Promise<Job[]> => {
     //     return await axios
     //         .get<any[]>(config.JOBS_API)
@@ -143,31 +78,10 @@ const betaGouv = {
     //     const users = await betaGouv.usersInfos();
     //     return users.find((user) => user.id === id);
     // },
-    // startupInfos: async (): Promise<Startup[]> => {
-    //     return axios
-    //         .get<Startup[]>(config.startupsDetailsAPI)
-    //         .then((response) =>
-    //             Object.keys(response.data).map((key) => response.data[key])
-    //         )
-    //         .catch((err) => {
-    //             throw new Error(
-    //                 `Error to get startups infos in ${config.domain}: ${err}`
-    //             );
-    //         });
-    // },
     // startupInfosById: async (id: string): Promise<Startup | undefined> => {
     //     const startups = await betaGouv.startupInfos();
     //     return startups.find((startup) => startup.id === id);
     // },
-    // startupsInfos: async (): Promise<StartupInfo[]> =>
-    //     axios
-    //         .get(config.startupsAPI)
-    //         .then((x) => x.data.data) // data key
-    //         .catch((err) => {
-    //             throw new Error(
-    //                 `Error to get startups infos in ${config.domain}: ${err}`
-    //             );
-    //         }),
 };
 
 const betaOVH = {
