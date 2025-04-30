@@ -57,6 +57,7 @@
         "src/lib",
         "knexfile.js",
         "**/**.spec.ts",
-        "dist"
+        "dist",
+        "storybook"
     ]
 }

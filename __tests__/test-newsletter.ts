@@ -318,7 +318,6 @@ describe("Newsletter", () => {
                 }
             );
             utils.cleanMocks();
-            utils.mockUsers();
             utils.mockSlackGeneral();
             utils.mockSlackSecretariat();
             utils.mockOvhTime();
