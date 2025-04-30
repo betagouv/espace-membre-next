@@ -15,19 +15,9 @@ import {
 } from "@/models/startup";
 
 export enum EMAIL_TYPES {
-    MARRAINAGE_NEWCOMER_EMAIL = "MARRAINAGE_NEWCOMER_EMAIL",
-    MARRAINAGE_ONBOARDER_EMAIL = "MARRAINAGE_ONBOARDER_EMAIL",
     EMAIL_LOGIN = "EMAIL_LOGIN",
-    MARRAINAGE_REQUEST_EMAIL = "MARRAINAGE_REQUEST_EMAIL",
-    MARRAINAGE_ACCEPT_NEWCOMER_EMAIL = "MARRAINAGE_ACCEPT_NEWCOMER_EMAIL",
-    MARRAINAGE_ACCEPT_ONBOARDER_EMAIL = "MARRAINAGE_ACCEPT_ONBOARDER_EMAIL",
-    MARRAINAGE_REJECT_ONBOARDER_EMAIL = "MARRAINAGE_REJECT_ONBOARDER_EMAIL",
-    MARRAINAGE_REQUEST_FAILED = "MARRAINAGE_REQUEST_FAILED",
-    ONBOARDING_REFERENT_EMAIL = "ONBOARDING_REFERENT_EMAIL",
     EMAIL_CREATED_EMAIL = "EMAIL_CREATED_EMAIL",
     EMAIL_MATTERMOST_ACCOUNT_CREATED = "EMAIL_MATTERMOST_ACCOUNT_CREATED",
-    EMAIL_PR_PENDING = "EMAIL_PR_PENDING",
-    EMAIL_PR_PENDING_TO_TEAM = "EMAIL_PR_PENDING_TO_TEAM",
     EMAIL_ENDING_CONTRACT_2_DAYS = "EMAIL_ENDING_CONTRACT_2_DAYS",
     EMAIL_ENDING_CONTRACT_15_DAYS = "EMAIL_ENDING_CONTRACT_15_DAYS",
     EMAIL_ENDING_CONTRACT_30_DAYS = "EMAIL_ENDING_CONTRACT_30_DAYS",
@@ -72,79 +62,14 @@ type BaseEmail = {
     attachments?: any[];
 };
 
-export type EmailMarrainageOnboarder = {
-    type: EMAIL_TYPES.MARRAINAGE_ONBOARDER_EMAIL;
-    variables: {
-        member: memberBaseInfoSchemaType;
-        newcomers: {
-            fullname: string;
-            email: string;
-            secondary_email: string;
-        }[];
-    };
-};
 
-export type EmailMarrainageNewcomer = {
-    type: EMAIL_TYPES.MARRAINAGE_NEWCOMER_EMAIL;
-    variables: {
-        member: memberBaseInfoSchemaType;
-        onboarder: {
-            fullname: string;
-        };
-    };
-};
 
-export type MarrainageRequestEmail = {
-    type: EMAIL_TYPES.MARRAINAGE_REQUEST_EMAIL;
-    variables: {
-        newcomer: memberBaseInfoSchemaType;
-        onboarder: memberBaseInfoSchemaType;
-        marrainageAcceptUrl: string;
-        marrainageDeclineUrl: string;
-        startup: string;
-    };
-};
 
 export type EmailLogin = {
     type: EMAIL_TYPES.EMAIL_LOGIN;
     variables: {
         loginUrlWithToken: string;
         fullname: string;
-    };
-};
-
-export type MarrainageAcceptNewcomerEmail = {
-    type: EMAIL_TYPES.MARRAINAGE_ACCEPT_NEWCOMER_EMAIL;
-    variables: {
-        newcomer: memberBaseInfoSchemaType;
-        onboarder: memberBaseInfoSchemaType;
-    };
-};
-
-export type MarrainageAcceptOnboarderEmail = {
-    type: EMAIL_TYPES.MARRAINAGE_ACCEPT_ONBOARDER_EMAIL;
-    variables: {
-        newcomer: memberBaseInfoSchemaType;
-        onboarder: memberBaseInfoSchemaType;
-    };
-};
-
-export type MarrainageRequestFailed = {
-    type: EMAIL_TYPES.MARRAINAGE_REQUEST_FAILED;
-    variables: {
-        errorMessage: string;
-        userId: string;
-    };
-};
-
-export type EmailOnboardingReferent = {
-    type: EMAIL_TYPES.ONBOARDING_REFERENT_EMAIL;
-    variables: {
-        referent: string;
-        prUrl: string;
-        name: string;
-        isEmailBetaAsked: boolean;
-        isSentViaEmail: boolean;
     };
 };
 
@@ -164,14 +89,6 @@ export type EmailMattermostAccountCreated = {
         resetPasswordLink: string;
         fullname: string;
         email: string;
-    };
-};
-
-export type EmailPRPending = {
-    type: EMAIL_TYPES.EMAIL_PR_PENDING;
-    variables: {
-        username: string;
-        pr_link: string;
     };
 };
 
@@ -195,7 +112,8 @@ export type EmailNoMoreContract = {
         | EMAIL_TYPES.EMAIL_NO_MORE_CONTRACT_1_DAY
         | EMAIL_TYPES.EMAIL_NO_MORE_CONTRACT_30_DAY;
     variables: {
-        user: memberBaseInfoSchemaType;
+        user: memberBaseInfoSchemaType;  
+        days: 1 | 30;
     };
 };
 
@@ -270,14 +188,6 @@ export type EmailTest = {
     variables?: {};
 };
 
-export type EmailPRPendingToTeam = {
-    type: EMAIL_TYPES.EMAIL_PR_PENDING_TO_TEAM;
-    variables: {
-        username: string;
-        pr_link: string;
-        startup: string;
-    };
-};
 
 export type EmailVerificationWaiting = {
     type: EMAIL_TYPES.EMAIL_VERIFICATION_WAITING;
@@ -354,17 +264,9 @@ export type EmailMatomoAccountUpdated = {
 };
 
 export type EmailVariants =
-    | EmailMarrainageNewcomer
-    | EmailMarrainageOnboarder
     | EmailLogin
-    | MarrainageRequestEmail
-    | MarrainageAcceptNewcomerEmail
-    | MarrainageAcceptOnboarderEmail
-    | MarrainageRequestFailed
-    | EmailOnboardingReferent
     | EmailCreatedEmail
     | EmailMattermostAccountCreated
-    | EmailPRPending
     | EmailEndingContract
     | EmailNoMoreContract
     | EmailUserShouldUpdateInfo
@@ -377,7 +279,6 @@ export type EmailVariants =
     | EmailStartupAskPhase
     | EmailForumReminder
     | EmailTest
-    | EmailPRPendingToTeam
     | EmailVerificationWaiting
     | EmailNewMemberValidation
     | EmailTeamComposition
@@ -506,38 +407,9 @@ export const EmailDocumentation: Record<
         description: string;
     }
 > = {
-    [EMAIL_TYPES.MARRAINAGE_NEWCOMER_EMAIL]: {
-        description: "Email de marrainage envoyé au nouveau arrivant",
-    },
-    [EMAIL_TYPES.MARRAINAGE_ONBOARDER_EMAIL]: {
-        description: "Email de marrainage envoyé au parrain",
-    },
     [EMAIL_TYPES.EMAIL_LOGIN]: {
         description:
             "Email de login envoyé à la personne qui essaye de se connecter",
-    },
-    [EMAIL_TYPES.MARRAINAGE_REQUEST_EMAIL]: {
-        description:
-            "Email de marrainage envoyé au parrain pour savoir s'il souhaite marrainé.",
-    },
-    [EMAIL_TYPES.MARRAINAGE_ACCEPT_NEWCOMER_EMAIL]: {
-        description:
-            "Email de marrainage envoyé au nouveau pour confirmer que la parain à accepter",
-    },
-    [EMAIL_TYPES.MARRAINAGE_ACCEPT_ONBOARDER_EMAIL]: {
-        description:
-            "Email de marrainage envoyé à l'onboarder pour confirmer que la parain à accepter",
-    },
-    [EMAIL_TYPES.MARRAINAGE_REJECT_ONBOARDER_EMAIL]: {
-        description:
-            "Email de marrainage envoyé quand le marrainage n'as pas été accepté",
-    },
-    [EMAIL_TYPES.MARRAINAGE_REQUEST_FAILED]: {
-        description:
-            "Email de marrainage envoyé quand on a pas réussi à trouver un parrain.",
-    },
-    [EMAIL_TYPES.ONBOARDING_REFERENT_EMAIL]: {
-        description: "Email de marrainage envoyé aux référent",
     },
     [EMAIL_TYPES.EMAIL_CREATED_EMAIL]: {
         description:
@@ -545,14 +417,6 @@ export const EmailDocumentation: Record<
     },
     [EMAIL_TYPES.EMAIL_MATTERMOST_ACCOUNT_CREATED]: {
         description: "Notification de création d’un compte Mattermost.",
-    },
-    [EMAIL_TYPES.EMAIL_PR_PENDING]: {
-        description:
-            "Notification lorsqu'une pull request est en attente de validation.",
-    },
-    [EMAIL_TYPES.EMAIL_PR_PENDING_TO_TEAM]: {
-        description:
-            "Notification à une équipe entière pour une pull request en attente.",
     },
     [EMAIL_TYPES.EMAIL_ENDING_CONTRACT_2_DAYS]: {
         description:

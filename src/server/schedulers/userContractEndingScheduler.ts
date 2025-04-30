@@ -223,7 +223,7 @@ export async function sendContractEndingMessageToUsers(
 }
 
 export async function sendInfoToSecondaryEmailAfterXDays(
-    nbDays,
+    nbDays: 1 | 30,
     optionalExpiredUsers?: memberBaseInfoSchemaType[]
 ) {
     let expiredUsers = optionalExpiredUsers;
@@ -243,6 +243,7 @@ export async function sendInfoToSecondaryEmailAfterXDays(
                         toEmail: [email],
                         variables: {
                             user,
+                            days: nbDays,
                         },
                     });
                     console.log(

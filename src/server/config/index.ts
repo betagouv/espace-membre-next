@@ -93,9 +93,6 @@ const CRON_TASK_ENV_VAR = {
         process.env
             .FEATURE_REMIND_USER_WITH_PENDING_PULL_REQUEST_ON_AUTHOR_FILE ===
         "true",
-    FEATURE_REMINDER_TEAM_IF_PENDING_PR_ON_AUTHOR_FILE:
-        process.env.FEATURE_REMINDER_TEAM_IF_PENDING_PR_ON_AUTHOR_FILE ===
-        "true",
     featureSendMessageToActiveUsersWithoutSecondaryEmail:
         process.env
             .FEATURE_SEND_MESSAGE_TO_ACTIVE_USERS_WITHOUT_SECONDARY_EMAIL ===
@@ -241,8 +238,6 @@ export default {
     // If both emails of the users are already in sib update will not work
     FEATURE_SIB_USE_UPDATE_CONTACT_EMAIL:
         process.env.FEATURE_SIB_USE_UPDATE_CONTACT_EMAIL === "true",
-    FEATURE_USE_NEW_MARRAINAGE:
-        process.env.FEATURE_USE_NEW_MARRAINAGE === "true",
     SIB_WEBHOOK_ID: process.env.SIB_WEBHOOK_ID,
     SIB_APIKEY_PRIVATE: process.env.SIB_APIKEY_PRIVATE,
     SIB_APIKEY_PUBLIC: process.env.SIB_APIKEY_TECH_PUBLIC,

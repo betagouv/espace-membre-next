@@ -5,6 +5,7 @@ import mjml2html from "mjml";
 import * as mdtohtml from "@/lib/mdtohtml";
 import {
     EmailCreatedEmail as EmailCreatedEmailType,
+    EmailNoMoreContract,
     EmailVerificationWaiting,
 } from "@/server/modules/email";
 import {
@@ -62,39 +63,25 @@ import {
     HtmlBuilderType,
     SubjectFunction,
 } from "@modules/email";
+import { NoMoreContractXDaysEmailTitle, NoMoreContractXDaysEmail } from "@/server/views/templates/emails/NoMoreContractEmail/NoMoreContractXDaysEmail";
 
 const TEMPLATES_BY_TYPE: Record<EmailProps["type"], string | null | any> = {
-    MARRAINAGE_NEWCOMER_EMAIL:
-        "./src/server/views/templates/emails/marrainage/marrainageByGroupNewcomerEmail.ejs",
-    MARRAINAGE_ONBOARDER_EMAIL:
-        "./src/server/views/templates/emails/marrainage/marrainageByGroupOnboarderEmail.ejs",
     EMAIL_LOGIN: (params: EmailLogin["variables"]) => LoginEmail(params),
-    MARRAINAGE_REQUEST_EMAIL:
-        "./src/server/views/templates/emails/marrainage/marrainageRequest.ejs",
-    MARRAINAGE_ACCEPT_NEWCOMER_EMAIL:
-        "./src/server/views/templates/emails/marrainage/marrainageAcceptNewcomer.ejs",
-    MARRAINAGE_ACCEPT_ONBOARDER_EMAIL:
-        "./src/server/views/templates/emails/marrainage/marrainageAcceptOnboarder.ejs",
-    MARRAINAGE_REQUEST_FAILED:
-        "./src/server/views/templates/emails/marrainage/marrainageRequestFailed.ejs",
-    ONBOARDING_REFERENT_EMAIL:
-        "./src/server/views/templates/emails/onboardingReferent.ejs",
     [EMAIL_TYPES.EMAIL_MATTERMOST_ACCOUNT_CREATED]: (
         params: EmailMattermostAccountCreated["variables"]
     ) => MattermostAccountCreatedEmail(params),
     EMAIL_CREATED_EMAIL: (params: EmailCreatedEmailType["variables"]) =>
         EmailCreatedEmail(params),
-    EMAIL_PR_PENDING: `./src/server/views/templates/emails/pendingGithubAuthorPR.ejs`,
     EMAIL_ENDING_CONTRACT_2_DAYS:
         "./src/server/views/templates/emails/mail2days.ejs",
     EMAIL_ENDING_CONTRACT_15_DAYS:
         "./src/server/views/templates/emails/mail15days.ejs",
     EMAIL_ENDING_CONTRACT_30_DAYS:
         "./src/server/views/templates/emails/mail30days.ejs",
-    EMAIL_NO_MORE_CONTRACT_1_DAY:
-        "./src/server/views/templates/emails/mailExpired1day.ejs",
-    EMAIL_NO_MORE_CONTRACT_30_DAY:
-        "./src/server/views/templates/emails/mailExpired30days.ejs",
+    EMAIL_NO_MORE_CONTRACT_1_DAY: (params: EmailNoMoreContract["variables"]) =>
+        NoMoreContractXDaysEmail(params),
+    EMAIL_NO_MORE_CONTRACT_30_DAY:(params: EmailNoMoreContract["variables"]) =>
+        NoMoreContractXDaysEmail(params),
     EMAIL_USER_SHOULD_UPDATE_INFO: `./src/server/views/templates/emails/updateUserInfoEmail.ejs`,
     EMAIL_NEWSLETTER: "./src/server/views/templates/emails/newsletter.ejs",
     EMAIL_NEW_MEMBER_PR: "./src/server/views/templates/emails/newMemberPR.ejs",
@@ -106,8 +93,6 @@ const TEMPLATES_BY_TYPE: Record<EmailProps["type"], string | null | any> = {
     EMAIL_STARTUP_ASK_PHASE: null,
     EMAIL_FORUM_REMINDER: null,
     EMAIL_TEST: null,
-    EMAIL_PR_PENDING_TO_TEAM:
-        "./src/server/views/templates/emails/prPendingToTeam.ejs",
     EMAIL_VERIFICATION_WAITING: (
         params: EmailVerificationWaiting["variables"]
     ) => VerificationWaitingEmail(params),
@@ -132,27 +117,14 @@ const TEMPLATES_BY_TYPE: Record<EmailProps["type"], string | null | any> = {
 };
 
 const SUBJECTS_BY_TYPE: Record<EmailProps["type"], string | SubjectFunction> = {
-    MARRAINAGE_REQUEST_EMAIL: "Tu as été sélectionné·e comme marrain·e 🙌",
     EMAIL_LOGIN: LoginEmailTitle(),
-    MARRAINAGE_NEWCOMER_EMAIL: "Découvre ta marraine ou ton parrain Beta !",
-    MARRAINAGE_ONBOARDER_EMAIL: "Découvre tes filleuls Beta !",
-    MARRAINAGE_ACCEPT_NEWCOMER_EMAIL: "Mise en contact 👋",
-    MARRAINAGE_ACCEPT_ONBOARDER_EMAIL: "Mise en contact 👋",
-    MARRAINAGE_REQUEST_FAILED: `La demande de marrainage n'a pas fonctionné`,
-    ONBOARDING_REFERENT_EMAIL: ({ name }: EmailProps["variables"]) => {
-        return `${name} vient de créer sa fiche Github`;
-    },
     EMAIL_MATTERMOST_ACCOUNT_CREATED: MattermostAccountCreatedEmailTitle(),
     EMAIL_CREATED_EMAIL: EmailCreatedEmailTitle(),
-    EMAIL_PR_PENDING: `PR en attente`,
-    EMAIL_PR_PENDING_TO_TEAM: ({ username }: EmailProps["variables"]) => {
-        return `PR en attente de ${username} en attente de merge`;
-    },
     EMAIL_ENDING_CONTRACT_2_DAYS: "Départ dans 2 jours 🙂",
     EMAIL_ENDING_CONTRACT_15_DAYS: "Départ dans 15 jours 🙂",
     EMAIL_ENDING_CONTRACT_30_DAYS: "Départ dans 30 jours 🙂",
-    EMAIL_NO_MORE_CONTRACT_1_DAY: "A bientôt 🙂",
-    EMAIL_NO_MORE_CONTRACT_30_DAY: "A bientôt 🙂",
+    EMAIL_NO_MORE_CONTRACT_1_DAY: NoMoreContractXDaysEmailTitle(),
+    EMAIL_NO_MORE_CONTRACT_30_DAY: NoMoreContractXDaysEmailTitle(),
     EMAIL_USER_SHOULD_UPDATE_INFO: "Mise à jour de tes informations",
     EMAIL_NEWSLETTER: ({ subject }: EmailProps["variables"]) => {
         return `${subject}`;
@@ -188,18 +160,9 @@ const SUBJECTS_BY_TYPE: Record<EmailProps["type"], string | SubjectFunction> = {
 };
 
 const MARKDOWN_BY_TYPE: Record<EmailProps["type"], boolean> = {
-    MARRAINAGE_NEWCOMER_EMAIL: true,
-    MARRAINAGE_ONBOARDER_EMAIL: true,
     EMAIL_LOGIN: false,
-    MARRAINAGE_REQUEST_EMAIL: false,
-    MARRAINAGE_ACCEPT_NEWCOMER_EMAIL: false,
-    MARRAINAGE_ACCEPT_ONBOARDER_EMAIL: false,
-    MARRAINAGE_REQUEST_FAILED: false,
-    ONBOARDING_REFERENT_EMAIL: true,
     EMAIL_CREATED_EMAIL: false,
     EMAIL_MATTERMOST_ACCOUNT_CREATED: false,
-    EMAIL_PR_PENDING: true,
-    EMAIL_PR_PENDING_TO_TEAM: true,
     EMAIL_ENDING_CONTRACT_2_DAYS: true,
     EMAIL_ENDING_CONTRACT_15_DAYS: true,
     EMAIL_ENDING_CONTRACT_30_DAYS: true,
