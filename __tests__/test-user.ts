@@ -1125,7 +1125,6 @@ describe("Test user relative actions", () => {
                 utils.mockOvhRedirections();
                 utils.mockOvhUserResponder();
                 utils.mockOvhUserEmailInfos();
-                utils.mockStartups();
 
                 const newMember = testUsers.users?.find(
                     (user) => user.username === "membre.nouveau"
