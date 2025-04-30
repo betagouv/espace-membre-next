@@ -12,6 +12,7 @@ import {
     EmailUserShouldUpdateInfo,
     EMAIL_TYPES,
 } from "@modules/email";
+import { memberJulienD } from "./utils/users-data";
 chai.should();
 
 
@@ -115,10 +116,7 @@ describe("Test EMAIL_ENDING_CONTRACT", () => {
 
 describe("Test EMAIL_NO_MORE_CONTRACT", () => {
     it("email EMAIL_NO_MORE_CONTRACT_1_DAY", async () => {
-        const user: memberBaseInfoSchemaType = {
-            username: "jean.paul",
-            fullname: "Jean Paul",
-        } as unknown as memberBaseInfoSchemaType;
+        const user: memberBaseInfoSchemaType = memberJulienD as unknown as memberBaseInfoSchemaType;
         const emailBody: string = await htmlBuilder.renderContentForType({
             type: EMAIL_TYPES.EMAIL_NO_MORE_CONTRACT_1_DAY,
             variables: {
@@ -130,10 +128,8 @@ describe("Test EMAIL_NO_MORE_CONTRACT", () => {
     });
 
     it("email EMAIL_NO_MORE_CONTRACT_30_DAY", async () => {
-        const user: memberBaseInfoSchemaType = {
-            username: "jean.paul",
-            fullname: "Jean Paul",
-        } as unknown as memberBaseInfoSchemaType;
+        const user: memberBaseInfoSchemaType = memberJulienD as unknown as memberBaseInfoSchemaType;
+
         const emailBody: string = await htmlBuilder.renderContentForType({
             type: EMAIL_TYPES.EMAIL_NO_MORE_CONTRACT_30_DAY,
             variables: {

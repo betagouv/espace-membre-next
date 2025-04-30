@@ -5,6 +5,7 @@ import mjml2html from "mjml";
 import * as mdtohtml from "@/lib/mdtohtml";
 import {
     EmailCreatedEmail as EmailCreatedEmailType,
+    EmailNoMoreContract,
     EmailVerificationWaiting,
 } from "@/server/modules/email";
 import {
@@ -62,6 +63,7 @@ import {
     HtmlBuilderType,
     SubjectFunction,
 } from "@modules/email";
+import { NoMoreContractXDaysEmailTitle, NoMoreContractXDaysEmail } from "@/server/views/templates/emails/NoMoreContractEmail/NoMoreContractXDaysEmail";
 
 const TEMPLATES_BY_TYPE: Record<EmailProps["type"], string | null | any> = {
     EMAIL_LOGIN: (params: EmailLogin["variables"]) => LoginEmail(params),
@@ -76,10 +78,10 @@ const TEMPLATES_BY_TYPE: Record<EmailProps["type"], string | null | any> = {
         "./src/server/views/templates/emails/mail15days.ejs",
     EMAIL_ENDING_CONTRACT_30_DAYS:
         "./src/server/views/templates/emails/mail30days.ejs",
-    EMAIL_NO_MORE_CONTRACT_1_DAY:
-        "./src/server/views/templates/emails/mailExpired1day.ejs",
-    EMAIL_NO_MORE_CONTRACT_30_DAY:
-        "./src/server/views/templates/emails/mailExpired30days.ejs",
+    EMAIL_NO_MORE_CONTRACT_1_DAY: (params: EmailNoMoreContract["variables"]) =>
+        NoMoreContractXDaysEmail(params),
+    EMAIL_NO_MORE_CONTRACT_30_DAY:(params: EmailNoMoreContract["variables"]) =>
+        NoMoreContractXDaysEmail(params),
     EMAIL_USER_SHOULD_UPDATE_INFO: `./src/server/views/templates/emails/updateUserInfoEmail.ejs`,
     EMAIL_NEWSLETTER: "./src/server/views/templates/emails/newsletter.ejs",
     EMAIL_NEW_MEMBER_PR: "./src/server/views/templates/emails/newMemberPR.ejs",
@@ -121,8 +123,8 @@ const SUBJECTS_BY_TYPE: Record<EmailProps["type"], string | SubjectFunction> = {
     EMAIL_ENDING_CONTRACT_2_DAYS: "Départ dans 2 jours 🙂",
     EMAIL_ENDING_CONTRACT_15_DAYS: "Départ dans 15 jours 🙂",
     EMAIL_ENDING_CONTRACT_30_DAYS: "Départ dans 30 jours 🙂",
-    EMAIL_NO_MORE_CONTRACT_1_DAY: "A bientôt 🙂",
-    EMAIL_NO_MORE_CONTRACT_30_DAY: "A bientôt 🙂",
+    EMAIL_NO_MORE_CONTRACT_1_DAY: NoMoreContractXDaysEmailTitle(),
+    EMAIL_NO_MORE_CONTRACT_30_DAY: NoMoreContractXDaysEmailTitle(),
     EMAIL_USER_SHOULD_UPDATE_INFO: "Mise à jour de tes informations",
     EMAIL_NEWSLETTER: ({ subject }: EmailProps["variables"]) => {
         return `${subject}`;
