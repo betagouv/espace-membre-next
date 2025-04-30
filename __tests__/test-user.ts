@@ -153,7 +153,6 @@ describe("Test user relative actions", () => {
             // a different response to indicate that membre.nouveau has an
             // existing email already created.
             utils.cleanMocks();
-            utils.mockUsers();
             utils.mockSlackGeneral();
             utils.mockSlackSecretariat();
             utils.mockOvhTime();
@@ -566,7 +565,6 @@ describe("Test user relative actions", () => {
         });
         it("should perform a password change if the email exists", async () => {
             utils.cleanMocks();
-            utils.mockUsers();
             utils.mockOvhUserResponder();
             utils.mockSlackGeneral();
             utils.mockSlackSecretariat();
@@ -605,7 +603,6 @@ describe("Test user relative actions", () => {
         });
         it("should perform a password change and pass status to active if status was suspended", async () => {
             utils.cleanMocks();
-            utils.mockUsers();
             utils.mockOvhUserResponder();
             utils.mockSlackGeneral();
             utils.mockSlackSecretariat();
@@ -1184,7 +1181,6 @@ describe("Test user relative actions", () => {
 
         it("should not create email accounts if already created", async () => {
             utils.cleanMocks();
-            utils.mockUsers();
             utils.mockSlackGeneral();
             utils.mockSlackSecretariat();
             utils.mockOvhTime();
