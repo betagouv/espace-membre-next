@@ -1,9 +1,6 @@
 name: Validate Zod Schema
 
 on:
-    push:
-        branches:
-            - main
     pull_request:
         branches:
             - main
