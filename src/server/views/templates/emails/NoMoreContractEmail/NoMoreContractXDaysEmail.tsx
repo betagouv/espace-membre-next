@@ -2,6 +2,7 @@ import { MjmlText } from "@luma-team/mjml-react";
 import { StandardLayout } from "@/components/emails/layouts/StandardEmail";
 import { EmailNoMoreContract } from "@/server/modules/email";
 import { format } from "date-fns";
+import { fr } from "date-fns/locale/fr";
 
 export function NoMoreContractXDaysEmailTitle() {
   return "A bientôt 🙂";
@@ -25,7 +26,7 @@ export function NoMoreContractXDaysEmail({
         <p>
           Un petit mot pour te rappeler que lorsque ta fiche de membre chez
           beta.gouv.fr a été créée ou mise à jour, ta date de fin de mission a
-          été définie pour le <strong>{`${latestMission.end ? format(latestMission.end, 'd MMMM') : ''}`}</strong>. Cette date était hier ! Tes différents comptes relatifs à la communauté seront bientôt
+          été définie pour le <strong>{`${latestMission.end ? format(latestMission.end, 'd MMMM', { locale: fr }) : ''}`}</strong>. Cette date était hier ! Tes différents comptes relatifs à la communauté seront bientôt
           supprimés ou désactivés.
         </p>
 
