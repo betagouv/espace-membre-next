@@ -10,6 +10,7 @@ export function NoMoreContractXDaysEmailTitle() {
 
 export function NoMoreContractXDaysEmail({
   user,
+  days
 }: EmailNoMoreContract["variables"]) {
   const title = NoMoreContractXDaysEmailTitle();
 
@@ -26,7 +27,7 @@ export function NoMoreContractXDaysEmail({
         <p>
           Un petit mot pour te rappeler que lorsque ta fiche de membre chez
           beta.gouv.fr a été créée ou mise à jour, ta date de fin de mission a
-          été définie pour le <strong>{`${latestMission.end ? format(latestMission.end, 'd MMMM', { locale: fr }) : ''}`}</strong>. Cette date était hier ! Tes différents comptes relatifs à la communauté seront bientôt
+          été définie pour le <strong>{`${latestMission.end ? format(latestMission.end, 'd MMMM', { locale: fr }) : ''}`}</strong>. { days === 1 ? `Cette date était hier` : `C'était il y a 30 jours`} ! Tes différents comptes relatifs à la communauté seront bientôt
           supprimés ou désactivés.
         </p>
 

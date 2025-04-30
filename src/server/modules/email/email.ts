@@ -112,7 +112,8 @@ export type EmailNoMoreContract = {
         | EMAIL_TYPES.EMAIL_NO_MORE_CONTRACT_1_DAY
         | EMAIL_TYPES.EMAIL_NO_MORE_CONTRACT_30_DAY;
     variables: {
-        user: memberBaseInfoSchemaType;
+        user: memberBaseInfoSchemaType;  
+        days: 1 | 30;
     };
 };
 
