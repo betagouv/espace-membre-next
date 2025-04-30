@@ -120,7 +120,7 @@ export function StandardLayout(props: PropsWithChildren<StandardLayoutProps>) {
             </MjmlHead>
             <MjmlBody width={500}>
                 <MjmlWrapper cssClass={`light-body`}>
-                    <MjmlSection>
+                    <MjmlSection cssClass="header-section">
                         <MjmlGroup>
                             <MjmlColumn
                                 cssClass="logo-section"
@@ -157,7 +157,7 @@ export function StandardLayout(props: PropsWithChildren<StandardLayoutProps>) {
                             <MjmlColumn>{props.children}</MjmlColumn>
                         </MjmlGroup>
                     </MjmlSection>
-                    <MjmlSection>
+                    <MjmlSection cssClass="footer-section">
                         <MjmlGroup>
                             <MjmlColumn>
                                 <MjmlText
