@@ -258,6 +258,7 @@ const htmlBuilder: HtmlBuilderType = {
                     throw err;
                 }
             }
+            // use turndown to return clean markdown
             const turndownService = new TurndownService();
             turndownService.addRule('strikethrough', {
                 filter: ['head', 'script', 'style', 'img','footer', 'header'],
