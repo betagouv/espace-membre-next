@@ -43,7 +43,7 @@ describe("Test EMAIL_ENDING_CONTRACT", () => {
         const emailBody: string = await htmlBuilder.renderContentForType({
             type: EMAIL_TYPES.EMAIL_ENDING_CONTRACT_2_DAYS,
             variables: {
-                endDate: "11/12/2024",
+                endDate: new Date('2024-11-12'),
                 user: {
                     userInfos: testUsers.find(
                         (user) => user.id === "julien.dauphant"
@@ -51,12 +51,13 @@ describe("Test EMAIL_ENDING_CONTRACT", () => {
                     mattermostUsername: "julien.dauphant",
                 },
                 jobs: [job],
+                days: 2,
             },
         });
         emailBody.should.include(job.url);
         emailBody.should.include(`Bonjour Julien Dauphant`);
         emailBody.should.include("prévu pour dans 2 jours");
-        emailBody.should.include("le 11/12/2024");
+        emailBody.should.include("le 12 novembre 2024");
     });
 
     it("email EMAIL_ENDING_CONTRACT_15_DAYS", async () => {
@@ -69,7 +70,7 @@ describe("Test EMAIL_ENDING_CONTRACT", () => {
         const emailBody: string = await htmlBuilder.renderContentForType({
             type: EMAIL_TYPES.EMAIL_ENDING_CONTRACT_15_DAYS,
             variables: {
-                endDate: "11/12/2024",
+                endDate: new Date('2024-11-12'),
                 user: {
                     userInfos: testUsers.find(
                         (user) => user.id === "julien.dauphant"
@@ -77,10 +78,11 @@ describe("Test EMAIL_ENDING_CONTRACT", () => {
                     mattermostUsername: "julien.dauphant",
                 },
                 jobs: [job],
+                days: 15,
             },
         });
         emailBody.should.include(job.url);
-        emailBody.should.include(`le 11/12/2024`);
+        emailBody.should.include("le 12 novembre 2024");
         emailBody.should.include(`Bonjour Julien Dauphant`);
         emailBody.should.include("Un petit mot pour te rappeler");
     });
@@ -95,7 +97,7 @@ describe("Test EMAIL_ENDING_CONTRACT", () => {
         const emailBody: string = await htmlBuilder.renderContentForType({
             type: EMAIL_TYPES.EMAIL_ENDING_CONTRACT_30_DAYS,
             variables: {
-                endDate: "11/12/2024",
+                endDate: new Date('2024-11-12'),
                 user: {
                     userInfos: testUsers.find(
                         (user) => user.id === "julien.dauphant"
@@ -103,9 +105,10 @@ describe("Test EMAIL_ENDING_CONTRACT", () => {
                     mattermostUsername: "julien.dauphant",
                 },
                 jobs: [job],
+                days: 30,
             },
         });
-        emailBody.should.include(`au 11/12/2024`);
+        emailBody.should.include("12 novembre 2024");
         emailBody.should.include(`Bonjour Julien Dauphant`);
         emailBody.should.include(
             "Un petit rappel concernant ta fiche membre chez beta.gouv.fr"

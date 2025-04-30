@@ -98,13 +98,14 @@ export type EmailEndingContract = {
         | EMAIL_TYPES.EMAIL_ENDING_CONTRACT_15_DAYS
         | EMAIL_TYPES.EMAIL_ENDING_CONTRACT_2_DAYS;
     variables: {
-        endDate: string;
         user: {
-            userInfos: memberBaseInfoSchemaType;
+            userInfos: memberPublicInfoSchemaType
             mattermostUsername: string;
-        };
-        jobs: Job[];
-    };
+        },
+        endDate: Date,
+        jobs: Job[],
+        days: 2 | 15 | 30,
+    }
 };
 
 export type EmailNoMoreContract = {

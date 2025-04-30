@@ -90,7 +90,7 @@ const CONFIG_ENDING_CONTRACT_MESSAGE: Record<
     string,
     {
         type: EmailEndingContract["type"];
-        days: number;
+        days: EmailEndingContract["variables"]["days"];
     }
 > = {
     mail2days: {
@@ -125,6 +125,7 @@ const sendMessageOnChatAndEmail = async ({
     messageType: EmailEndingContract["type"];
     jobs: Job[];
     sendToSecondary: boolean;
+    days: EmailEndingContract["variables"]["days"];
 }) => {
     const endDate = user.userInfos.missions
         .map((m) => m.end)
@@ -140,14 +141,14 @@ const sendMessageOnChatAndEmail = async ({
             userInfos: user.userInfos,
             mattermostUsername: user.mattermostUsername,
         },
-        endDate: format(endDate, "dd/MM/yyyy"),
+        endDate: endDate,
         jobs: user.userInfos.domaine
             ? jobs
-                  .filter((job) =>
-                      job.domaines.includes(user.userInfos.domaine)
-                  )
-                  .slice(0, 3)
+                .filter((job) => job.domaines.includes(user.userInfos.domaine)
+                )
+                .slice(0, 3)
             : [],
+        days: 2
     };
     const contentProps = {
         type: messageType,
@@ -217,6 +218,7 @@ export async function sendContractEndingMessageToUsers(
                 messageType: messageConfig.type,
                 sendToSecondary,
                 jobs,
+                days: messageConfig.days,
             });
         })
     );
