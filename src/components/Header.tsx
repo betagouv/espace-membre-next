@@ -4,6 +4,7 @@ import React from "react";
 import { Header, HeaderProps } from "@codegouvfr/react-dsfr/Header";
 import { usePathname, useRouter } from "next/navigation";
 import { signOut, useSession } from "next-auth/react";
+import { v4 as uuidv4 } from "uuid";
 
 import { useLiveChat } from "@/components/live-chat/useLiveChat";
 import { linkRegistry } from "@/utils/routes/registry";
@@ -37,9 +38,23 @@ const MainHeader = () => {
         quickAccessItems.push({
             buttonProps: {
                 onClick: async () => {
-                    await signOut({
-                        callbackUrl: "/",
-                    });
+                    if (session.user.provider === "proconnect") {
+                        // https://partenaires.proconnect.gouv.fr/docs/fournisseur-service/implementation_technique#241-d%C3%A9connexion-aupr%C3%A8s-de-proconnect
+                        const idTokenHint = session.user.id_token;
+                        const signOutUrl = `${
+                            process.env.NEXT_PUBLIC_PRO_CONNECT_BASE_URL
+                        }/api/v2/session/end?id_token_hint=${idTokenHint}&state=${uuidv4()}&post_logout_redirect_uri=${encodeURIComponent(
+                            process.env.NEXT_PUBLIC_APP_BASE_URL || ""
+                        )}/login`;
+                        await signOut({
+                            callbackUrl: "/login",
+                        });
+                        router.push(signOutUrl);
+                    } else {
+                        await signOut({
+                            callbackUrl: "/",
+                        });
+                    }
                 },
             },
             iconId: "fr-icon-logout-box-r-line",

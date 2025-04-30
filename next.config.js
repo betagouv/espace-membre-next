@@ -68,7 +68,7 @@ const nextConfig = {
         {
             source: "/api/public/member/:username/image",
             destination: "/api/member/:username/image",
-        }
+        },
     ],
     // @todo upgrade to nextjs 15 to use
     // expireTime: 0,

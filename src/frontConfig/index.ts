@@ -41,7 +41,7 @@ export default {
     secret: process.env.SESSION_SECRET,
     secure: isSecure,
     protocol: isSecure ? "https" : "http",
-    host: process.env.HOSTNAME || "127.0.0.1:8100",
+    host: process.env.HOSTNAME || "127.0.0.1",
     port: process.env.PORT || 8100,
     domain: process.env.SECRETARIAT_DOMAIN || "beta.gouv.fr",
     ESPACE_MEMBRE_ADMIN: process.env.ESPACE_MEMBRE_ADMIN
@@ -72,4 +72,6 @@ export default {
     matomoSiteId: process.env.NEXT_PUBLIC_MATOMO_SITE_ID,
     FEATURE_SHOW_UPLOAD_IMAGE_PRODUCT_WIDGET:
         process.env.NEXT_PUBLIC_FEATURE_SHOW_UPLOAD_IMAGE_PRODUCT_WIDGET,
+    FEATURE_SHOW_PROCONNECT_LOGIN:
+        process.env.NEXT_PUBLIC_FEATURE_SHOW_PROCONNECT_LOGIN,
 };

@@ -1,26 +1,14 @@
 fileignoreconfig:
-- filename: .env.development
-  checksum: 499a0b99cdcb0f94e2e5583a90e88369e2ba0dcd8d91d1cc8e6d5a5c74cd2a5a
-- filename: .env.test
-  checksum: 900db203fd9526bc60c45c4005ed5330093667f615489eada3436a7025ba5568
-- filename: .github/workflows/onboarding-checklist-validation.yml
-  checksum: c5a8f4963028113249edec303252264269e860b42392897b88b68407b27274d4
-- filename: .github/workflows/playwright.yml
-  checksum: c7ad26d3f680a12d4169e46858d36b01ad1073c2acbb7265ee398d96ccd8bd65
-- filename: generate-cron-md.ts
-  checksum: 184ab41ee937833492f55d5f09844f1f679fd4d3ee462254b13d124e9e9b76b8
-- filename: generate-email-md.ts
-  checksum: aeb35a10ae2e7d9ff2b9f3591ec8fc86661bf1cc4463a7a3b1a7d4b122ac24a7
-- filename: src/components/Formation/FormationList.tsx
-  checksum: e1a045f319c89f4f055a7cabc4eeb702a9e9fa6e5f55f69576d90ff6a846111e
 - filename: src/components/MemberPage/MemberStatus.tsx
   checksum: eaff8ce7da82504889d913a5eaac5019d0fffb52ca24ea62472b24b5b840ea34
 - filename: src/server/config/index.ts
   checksum: 8d69094644a4b0a7caec1731c379dc2aabcb283950c5bfbe779cb2e664119856
 - filename: src/server/views/templates/emails/VerificationWaiting/VerificationWaiting.tsx
   checksum: 6516c90ed7710164f26cdb19dfadc7977ce08b928a1e805953cc5bd8877b2c95
-- filename: storybook
-  checksum: f56b0ace83bd8e54e62ff2860dd46f592ff9fe3609f7a73cd31126d873e2aee7
+- filename: src/utils/auth/hashToken.ts
+  checksum: 90e50980d0dd4efa37db0bd410b3d4faffa6195de487c0a310d2b861a7848889
+- filename: src/utils/authoptions.ts
+  checksum: d650763b81a4abd00aff993f015f4571ea45c1d2da27e5d7d5e07836dab081b6
 scopeconfig:
 - scope: node
 version: "1.0"
