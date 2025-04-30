@@ -1,6 +1,8 @@
 import { MjmlText } from "@luma-team/mjml-react";
 import { StandardLayout } from "@/components/emails/layouts/StandardEmail";
 import { EmailDepartureReminderIn2Days } from "@/server/modules/email";
+import { format } from "date-fns";
+import { fr } from "date-fns/locale/fr";
 
 export function DepartureReminderIn2DaysEmailTitle() {
   return "Mets à jour ta date de fin de mission 📆";
@@ -16,10 +18,10 @@ export function DepartureReminderIn2DaysEmail({
   return (
     <StandardLayout title={title}>
       <MjmlText>
-        <h1>Bonjour {user.userInfos.fullname} !</h1>
+        <h1>Bonjour {user.fullname} !</h1>
         <p>
           Ton départ de la communauté beta.gouv.fr est prévu pour dans 2 jours
-          (le {endDate}).
+          (le {format(new Date(endDate), "dd MMMM yyyy", { locale: fr })}).
         </p>
         <p>
           Si cette date a changé, mets-la à jour pour rester membre de la
