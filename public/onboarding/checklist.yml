@@ -1,28 +1,76 @@
-- title: Découvrir l'écosystème de beta.gouv.fr
+- title: La première semaine - Assimiler les enjeux de la communauté
   items:
-      - id: fiche-membre
-        title: Créer ma fiche membre
-        disabled: true
-        defaultValue: true
-      - id: atelier-onboarding
-        title: |
-            Assister au [1er atelier d'embarquement en visio](https://airtable.com/appebTa6XsY6fDixm/shr5Uaqje8eV9BabU)
-      - id: atelier-onboarding-presentiel
-        title: |
-            Assister à [l'atelier d'embarquement en présentiel](https://espace-membre.incubateur.net/formations?filter=Nouveaux+membres)
-      - id: forum-beta
-        title: Assister à [un forum Beta.gouv.fr](https://doc.incubateur.net/communaute/decouvrir-beta.gouv.fr/la-communaute/les-rituels/seminaire)
-      - id: valeurs-beta
-        title: Découvrir [les valeurs de beta.gouv.fr](https://doc.incubateur.net/communaute/decouvrir-beta.gouv.fr/valeurs#)
-      - id: video-fondamentaux-culture-administrative
-        title: |
-            Regarder la vidéo [Fondamentaux de la culture administrative](https://tube.numerique.gouv.fr/w/wgpehK9PTp5npJQ3Bp9K27)
-- title: Comprendre les standards de beta.gouv.fr
+    - id: fiche-membre
+      title: Compléter ma fiche membre
+      disabled: true
+      defaultValue: true
+    - id: embarquement-visio
+      title: Participer à [L'embarquement en visioconférence obligatoire dans la communauté](embarquement-dans-la-communaute.md)
+    - id: echange-marche-avec-titulaire
+      title: Programmer un échange avec le titulaire de ton marché public si tu es prestataire
+    - id: video-presentation
+      title: Lire l'email de bienvenue et regarder [la vidéo de présentation de beta.gouv.fr](https://www.youtube.com/watch?v=TvFlxDMlbfo)
+    - id: valeurs
+      title: Prendre connaissance des [valeurs de beta.gouv.fr](https://doc.incubateur.net/communaute/decouvrir-beta.gouv.fr/valeurs)
+    - id: standards
+      title: Lire la documentation sur nos [standards de qualité](https://doc.incubateur.net/communaute/gerer-son-produit/les-standards)
+- title: La première semaine – Explorer les outils de la communauté
   items:
-      - id: standards-beta
-        title: |
-            Découvrir [les standards de qualité de beta.gouv.fr](https://doc.incubateur.net/communaute/gerer-son-produit/les-standards)
-      - id: formation-hygiene-secu
-        title: Assister à la formation Hygiène de sécurité
-      - id: atelier-verifier-accesibilite
-        title: Assister à l'atelier Vérifier l'accessibilité de mon service
+    - id: canaux-mattermost
+      title: Découvrir [les canaux mattermost recommandés](https://doc.incubateur.net/communaute/les-outils-de-la-communaute/mattermost/canaux-recommandes)
+    - id: observatoire
+      title: Consulter [l'observatoire de beta.gouv.fr](https://espace-membre.incubateur.net/metabase) et [y contribuer](https://espace-membre.incubateur.net/)
+    - id: carte-membres
+      title: Découvrir s'il y a d'autres membres de la communauté près de chez toi grâce à [la carte des membres](https://espace-membre.incubateur.net/community)
+    - id: lieux-partages
+      title: Découvrir [les lieux où travailler ou organiser des événements](https://doc.incubateur.net/communaute/travailler-chez-beta.gouv.fr/vie-quotidienne-et-bien-etre/travailler-dans-les-lieux-partages/ou-travailler)
+    - id: agenda
+      title: T'abonner à [l'agenda public de l'incubateur](https://calendar.google.com/calendar/u/0/r?cid=MGllb25xYXAxcjVqZWFsNXVnZXVob292bGdAZ3JvdXAuY2FsZW5kYXIuZ29vZ2xlLmNvbQ)
+- title: La première semaine - Appréhender ton environnement
+  items:
+    - id: doc-incubateur
+      title: Lire la [documentation de ton incubateur](https://doc.incubateur.net/communaute/travailler-chez-beta.gouv.fr/to-do-darrivee)
+    - id: doc-metier
+      title: Consulter [les pages spécifiques à ton corps de métier](https://doc.incubateur.net/communaute/travailler-chez-beta.gouv.fr/les-differents-metiers)
+    - id: equipe-mattermost
+      title: Rejoindre les canaux de ton équipe sur Mattermost
+    - id: equipe-produit
+      title: T'imprégner de ton service numérique via sa fiche produit sur [beta.gouv.fr/startups](https://beta.gouv.fr/startups)
+    - id: equipe-rituels
+      title: T'intégrer aux rituels de pilotage de ton équipe
+    - id: equipe-rencontres
+      title: Fixer des rencontres avec les membres de ton équipe
+    - id: equipe-outils
+      title: Créer tes comptes sur les outils de ton équipe
+- title: Le premier mois
+  items:
+    - id: forum-mensuel
+      title: Participer à la journée d'embarquement obligatoire dédiée aux nouveaux membres lors du forum mensuel de beta.gouv.fr
+    - id: presentation-incubateur
+      title: Participer à une session de présentation de ton incubateur
+    - id: focus-1
+      title: Participer à la session focus : Naviguer avec grâce dans l’administration
+    - id: focus-2
+      title: Participer à la session focus : Évite les pièges du mode produit
+    - id: focus-3
+      title: Participer à la session focus : Sécurité informatique : comment protéger tes données ?
+    - id: focus-4
+      title: Participer à la session focus : Maitrise le feedback pour bien travailler avec des gens différents
+    - id: focus-5
+      title: Participer à la session focus : Comment ne pas finir en prison quand on bosse sur un produit numérique
+    - id: focus-6
+      title: Participer à la session focus : Recrute et chérie tes utilisateurs
+    - id: rencontres-metiers
+      title: Participer à un point de rencontre grâce aux [clubs métiers](https://doc.incubateur.net/communaute/decouvrir-beta.gouv.fr/la-communaute/les-rituels/clubs-de-partage-dexperience)
+    - id: objectifs
+      title: Co-construire tes objectifs de mission avec le responsable de l'équipe produit
+- title: Au cours des 3 premiers mois
+  items:
+    - id: rituels-suivi
+      title: Fixer les rituels de suivi de tes objectifs avec le responsable produit
+    - id: rapport-etonnement
+      title: Partager ton rapport d'étonnement au responsable de l'équipe produit
+    - id: entraide
+      title: Participer à une [activité transverse](../../solliciter-et-contribuer-a-la-communaute/je-contribue-a-la-communaute-to-do/)
+    - id: linkedin
+      title: Ajouter ton expérience chez [beta.gouv.fr](https://www.linkedin.com/company/betagouv/?originalSubdomain=fr) à ton profil LinkedIn (en précisant si tu es en prestation)
