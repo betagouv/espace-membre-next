@@ -2,6 +2,19 @@
 
 L'espace membre de l’incubateur
 
+## Fonctionnalités
+
+-   gestion des membres et missions
+-   gestion des produits, incubateurs, équipes, sponsors
+-   gestion du compte beta
+    -   adresse email & préférences de communication
+    -   accès aux outils (sentry, matomo)
+-   exploration de la communauté
+-   afficher les formations et évènements
+-   gestion de l'infolettre
+-   connexion via ProConnect ou magic-link
+-   tâches de maintenance (cf [#scripts-cron](#scripts-cron)) : emails, mattermost, brevo, github
+
 ## Dev de l'app Espace Membre
 
 ### Variables d'environnement
@@ -97,8 +110,9 @@ Lorsqu'on utilise un autre domaine OVH (par exemple, un domain bac-à-sable pour
 Les tâches CRON sont gérées par une app scalingo dédiée via le [Procfile](./Procfile)
 
 La listes des cron sont dans les fichiers :
-./src/server/scheduler/cron.ts
-./src/server/queueing/schedule.ts
+
+-   [./src/server/scheduler/cron.ts](./src/server/scheduler/cron.ts)
+-   [./src/server/queueing/schedule.ts](./src/server/queueing/schedule.ts)
 
 ## Cron Jobs
 
