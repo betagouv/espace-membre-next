@@ -1,4 +1,6 @@
 fileignoreconfig:
+- filename: .github/workflows/nodejs.yml
+  checksum: 6144ed77e86ef4b2662cf8038bbdc34506e498fd32101eba40f3fd40bf854a9d
 - filename: src/components/MemberPage/MemberStatus.tsx
   checksum: eaff8ce7da82504889d913a5eaac5019d0fffb52ca24ea62472b24b5b840ea34
 - filename: src/models/misc.ts

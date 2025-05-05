@@ -72,3 +72,5 @@ jobs:
                   GITHUB_FORK: dummy-github-fork
                   MAILING_LIST_NEWSLETTER: 0
                   PASSWORD_ENCRYPT_KEY: bc827f21bda5d288e35f190d44edb8cdc98a3259c5beac90bcbb6c98de4a89e7
+                  AIRTABLE_API_KEY: 'dumbid'
+                  CRISP_KEY: 'dumbid'
