@@ -4,8 +4,8 @@ config()
 class AirtableTicketService {
 
     constructor() {
-        if (!process.env.AIRTABLE_OPS_API_KEY || !process.env.AIRTABLE_OPS_BASE_ID) {
-            throw new Error('AIRTABLE_API_KEY and CRISP_KEY are required')
+        if (!process.env.AIRTABLE_OPS_API_KEY || !process.env.AIRTABLE_OPS_BASE_ID || !process.env.AIRTABLE_DEMANDE_BASE_ID) {
+            throw new Error('AIRTABLE_API_KEY, AIRTABLE_OPS_BASE_ID, AIRTABLE_DEMANDE_BASE_ID are required')
         }
     }
 
