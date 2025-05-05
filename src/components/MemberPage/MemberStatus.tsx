@@ -122,6 +122,17 @@ const emailStatusRow = (
                                 </Badge>
                             )
                         )
+                        .with(
+                            P.union(
+                                EmailStatusCode.EMAIL_TICKET_CREATION_PENDING,
+                                EmailStatusCode.EMAIL_TICKET_RECREATION_PENDING
+                            ),
+                            () => (
+                                <Badge severity="warning" as="span">
+                                    La teams ops va te créer ton compte
+                                </Badge>
+                            )
+                        )
                         .exhaustive();
                 }
             )
@@ -236,8 +247,8 @@ const emailStatusRow = (
                                         <br />
                                         {
                                             EMAIL_STATUS_READABLE_FORMAT[
-                                                EmailStatusCode
-                                                    .MEMBER_VALIDATION_WAITING
+                                            EmailStatusCode
+                                                .MEMBER_VALIDATION_WAITING
                                             ]
                                         }
                                     </>
@@ -465,7 +476,7 @@ export const MemberStatus = ({
                 .exhaustive(),
         ],
         emailInfos?.email.endsWith("@beta.gouv.fr") &&
-            emailStatusRow(emailInfos, userInfos),
+        emailStatusRow(emailInfos, userInfos),
         // Mattermost account status
         mattermostInfo && mattermostInfoRow(mattermostInfo, userInfos.uuid),
         // Matomo account status
