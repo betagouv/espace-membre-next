@@ -16,6 +16,7 @@ import {
 import config from "@/server/config";
 import BetaGouv from "@betagouv";
 import * as utils from "@controllers/utils";
+import ticketServiceInstance from "@/server/config/ticket.config";
 
 const INCUBATORS_USING_EXCHANGE = ["gip-inclusion"];
 
@@ -188,27 +189,13 @@ export async function createEmail(
 ) {
     const email = utils.buildBetaEmail(username);
 
+    // use OPI api to create email
     const secretariatUrl = `${config.protocol}://${config.host}`;
-
-    const emailCreationParams = await getEmailCreationParams(username);
-
-    switch (emailCreationParams.planType) {
-        case EMAIL_PLAN_TYPE.EMAIL_PLAN_EXCHANGE:
-            await BetaGouv.createEmailForExchange(
-                username,
-                emailCreationParams.creationData
-            );
-            break;
-        case EMAIL_PLAN_TYPE.EMAIL_PLAN_BASIC:
-            await BetaGouv.createEmail(username, emailCreationParams.password);
-            break;
-        case EMAIL_PLAN_TYPE.EMAIL_PLAN_PRO:
-            await BetaGouv.createEmailPro(
-                username,
-                emailCreationParams.creationData
-            );
-            break;
-    }
+    await ticketServiceInstance.createEmailTicket({
+        email,
+        username,
+        creator
+    })
 
     await db
         .updateTable("users")
@@ -216,24 +203,24 @@ export async function createEmail(
         .set({
             primary_email: email,
             primary_email_status: emailIsRecreated
-                ? EmailStatusCode.EMAIL_RECREATION_PENDING
-                : EmailStatusCode.EMAIL_CREATION_PENDING,
+                ? EmailStatusCode.EMAIL_TICKET_RECREATION_PENDING
+                : EmailStatusCode.EMAIL_TICKET_CREATION_PENDING,
             primary_email_status_updated_at: new Date(),
         })
         .execute();
 
     addEvent({
         action_code: emailIsRecreated
-            ? EventCode.MEMBER_EMAIL_RECREATED
-            : EventCode.MEMBER_EMAIL_CREATED,
+            ? EventCode.MEMBER_EMAIL_RECREATION_TICKET_CREATED
+            : EventCode.MEMBER_EMAIL_CREATION_TICKET_CREATED,
         created_by_username: creator,
         action_on_username: username,
         action_metadata: {
             value: email,
         },
     });
-    const message = `À la demande de ${creator} sur <${secretariatUrl}>, je lance la création d'un compte mail pour ${username}`;
 
+    const message = `À la demande de ${creator} sur <${secretariatUrl}>, je lance la création d'un compte mail pour ${username}`;
     await BetaGouv.sendInfoToChat(message);
     console.log(`Création de compte by=${creator}&email=${email}`);
 }

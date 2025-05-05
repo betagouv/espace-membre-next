@@ -39,6 +39,7 @@ import {
 import * as utils from "@controllers/utils";
 import { isBetaEmail } from "@controllers/utils";
 import { EMAIL_TYPES, MAILING_LIST_TYPE } from "@modules/email";
+import { getAllDinumEmails } from "@/lib/kysely/queries/dinum";
 
 const differenceGithubOVH = function differenceGithubOVH(
     user: memberBaseInfoSchemaType,
@@ -271,9 +272,10 @@ export async function createEmailAddresses() {
     );
 
     const allOvhEmails: string[] = await BetaGouv.getAllEmailInfos();
+    const opiEmail = await getAllDinumEmails()
     const unregisteredUsers = _.differenceWith(
         concernedUsers,
-        allOvhEmails,
+        [...allOvhEmails, ...opiEmail],
         differenceGithubOVH
     );
     console.log(

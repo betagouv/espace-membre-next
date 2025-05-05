@@ -59,6 +59,8 @@ export enum EventCode {
     MEMBER_CREATED = "MEMBER_CREATED",
     MEMBER_VALIDATED = "MEMBER_VALIDATED",
     MEMBER_USER_EVENTS_UPDATED = "MEMBER_UPDATE_USER_EVENTS",
+    MEMBER_EMAIL_RECREATION_TICKET_CREATED = "MEMBER_EMAIL_RECREATION_TICKET_CREATED",
+    MEMBER_EMAIL_CREATION_TICKET_CREATED = "MEMBER_EMAIL_CREATION_TICKET_CREATED",
 }
 
 export const EventCodeToReadable: Record<EventCode, string> = {
@@ -387,6 +389,20 @@ export const EventMemberUserEventUpdatedPayload = z.object({
     }),
 });
 
+export const EventMemberEmailCreationTicketCreatedPayload = z.object({
+    action_code: z.literal(EventCode.MEMBER_EMAIL_CREATION_TICKET_CREATED),
+    action_metadata: z.object({
+        value: z.string().email(),
+    }),
+});
+
+export const EventMemberEmailRecreationTicketCreatedPayload = z.object({
+    action_code: z.literal(EventCode.MEMBER_EMAIL_RECREATION_TICKET_CREATED),
+    action_metadata: z.object({
+        value: z.string().email(),
+    }),
+});
+
 export type EventPayloads =
     | z.infer<typeof EventMemberCommunicationEmailUpdatePayload>
     | z.infer<typeof EventMemberBaseInfoUpdatedPayload>
@@ -427,7 +443,10 @@ export type EventPayloads =
     | z.infer<typeof EventMatomoAccountPayloadSchema>
     | z.infer<typeof EventMemberCreatedPayload>
     | z.infer<typeof EventMemberValidatedPayload>
-    | z.infer<typeof EventMemberUserEventUpdatedPayload>;
+    | z.infer<typeof EventMemberUserEventUpdatedPayload>
+    | z.infer<typeof EventMemberEmailCreationTicketCreatedPayload>
+    | z.infer<typeof EventMemberEmailRecreationTicketCreatedPayload>;
+
 
 export type EventAction = BaseActionEvent & EventPayloads;
 
