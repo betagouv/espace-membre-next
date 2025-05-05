@@ -1,6 +1,8 @@
 fileignoreconfig:
 - filename: src/components/MemberPage/MemberStatus.tsx
   checksum: eaff8ce7da82504889d913a5eaac5019d0fffb52ca24ea62472b24b5b840ea34
+- filename: src/models/misc.ts
+  checksum: 71291edffe471b5b0850f26c41f28970a1315bcb4e14c56672d3033734d43650
 - filename: src/server/config/index.ts
   checksum: 8d69094644a4b0a7caec1731c379dc2aabcb283950c5bfbe779cb2e664119856
 - filename: src/server/controllers/usersController/createEmailForUser.ts

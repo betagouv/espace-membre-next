@@ -78,8 +78,7 @@ export const EventCodeToReadable: Record<EventCode, string> = {
     [EventCode.MEMBER_SECONDARY_EMAIL_UPDATED]: "Email secondaire mis à jour",
     [EventCode.MEMBER_PRIMARY_EMAIL_UPDATED]: "Email primaire mis à jour",
     [EventCode.MEMBER_END_DATE_UPDATED]: "Date de fin mis à jour",
-    [EventCode.MEMBER_COMMUNICATION_EMAIL_UPDATE]:
-        "Email de communication mis à jour",
+    [EventCode.MEMBER_COMMUNICATION_EMAIL_UPDATE]: "Email de communication mis à jour",
     [EventCode.MEMBER_EMAIL_RECREATED]: "Email re-créé",
     [EventCode.MEMBER_EMAIL_UPGRADED]: "Email mis à jour",
     [EventCode.MEMBER_BASE_INFO_UPDATED]: "Info de base mis à jour",
@@ -89,25 +88,23 @@ export const EventCodeToReadable: Record<EventCode, string> = {
     [EventCode.STARTUP_INFO_CREATED]: "Fiche de startup crée",
     [EventCode.TEAM_CREATED]: "Team créée",
     [EventCode.TEAM_UPDATED]: "Team mise à jour",
-    [EventCode.EMAIL_VERIFICATION_WAITING_SENT]:
-        "Email de fiche à vérifier envoyé",
+    [EventCode.EMAIL_VERIFICATION_WAITING_SENT]: "Email de fiche à vérifier envoyé",
     [EventCode.ORGANIZATION_CREATED]: "Organization créée",
     [EventCode.ORGANIZATION_UPDATED]: "Organization mise à jour",
     [EventCode.MEMBER_SERVICE_ACCOUNT_DELETED]: "Compte de service supprimé",
     [EventCode.MEMBER_EMAIL_EXPIRED]: "Compte défini comme expiré",
     [EventCode.MEMBER_SERVICE_ACCOUNT_REQUESTED]: "Compte de service demandé",
     [EventCode.MEMBER_SERVICE_ACCOUNT_CREATED]: "Compte de service créé",
-    [EventCode.MEMBER_SERVICE_ACCOUNT_UPDATE_REQUESTED]:
-        "Compte de service mise à jour demandée",
+    [EventCode.MEMBER_SERVICE_ACCOUNT_UPDATE_REQUESTED]: "Compte de service mise à jour demandée",
     [EventCode.MEMBER_SERVICE_ACCOUNT_UPDATED]: "Compte de service mis à jour",
     [EventCode.MEMBER_SERVICE_TEAM_CREATED]: "Equipe sentry créée",
-    [EventCode.MEMBER_SERVICE_TEAM_CREATION_REQUESTED]:
-        "Equipe sentry demandée",
-    [EventCode.MEMBER_SERVICE_ACCOUNT_UPDATE_FAILED_USER_DOES_NOT_EXIST]:
-        "Mise à jour du compte sentry échouée. L'utilisateur n'existe pas.",
+    [EventCode.MEMBER_SERVICE_TEAM_CREATION_REQUESTED]: "Equipe sentry demandée",
+    [EventCode.MEMBER_SERVICE_ACCOUNT_UPDATE_FAILED_USER_DOES_NOT_EXIST]: "Mise à jour du compte sentry échouée. L'utilisateur n'existe pas.",
     [EventCode.MEMBER_CREATED]: "Membre créé",
     [EventCode.MEMBER_VALIDATED]: "Membre validé",
     [EventCode.MEMBER_USER_EVENTS_UPDATED]: "Evénement du membre mis à jour",
+    [EventCode.MEMBER_EMAIL_RECREATION_TICKET_CREATED]: "Ticket créé pour la recréation de l'email",
+    [EventCode.MEMBER_EMAIL_CREATION_TICKET_CREATED]: "Ticket créé pour la création de l'email"
 };
 
 export const SYSTEM_NAME = "system";
@@ -466,7 +463,7 @@ export interface BaseEventAction<T extends EventCode> {
 // Assuming ActionMetadata is also dependent on T
 type EventActionMetadata<T> =
     T extends EventCode.EMAIL_VERIFICATION_WAITING_SENT
-        ? { value: string; old_value: string }
-        : T extends EventCode.MARRAINAGE_ACCEPTED
-        ? { value: string; old_value: string }
-        : never;
+    ? { value: string; old_value: string }
+    : T extends EventCode.MARRAINAGE_ACCEPTED
+    ? { value: string; old_value: string }
+    : never;
