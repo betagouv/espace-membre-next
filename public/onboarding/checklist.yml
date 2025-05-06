@@ -4,7 +4,7 @@
       title: Compléter ma fiche membre
       disabled: true
       defaultValue: true
-    - id: embarquement-visio
+    - id: atelier-onboarding
       title: Participer à [L'embarquement en visioconférence obligatoire dans la communauté](embarquement-dans-la-communaute.md)
     - id: echange-marche-avec-titulaire
       title: Programmer un échange avec le titulaire de ton marché public si tu es prestataire
