@@ -29,6 +29,7 @@ import {
     subscribeEmailAddresses,
     unsubscribeEmailAddresses,
 } from "@schedulers/emailScheduler";
+import ticketServiceInstance from "@/server/config/ticket.config";
 
 chai.use(chaiHttp);
 const { expect } = chai;
@@ -91,6 +92,7 @@ describe("Test user relative actions", () => {
     describe("test createEmailAction authenticated", () => {
         let getServerSessionStub;
         let isPublicServiceEmailStub;
+        let ticketServiceInstanceStub;
         let user;
 
         beforeEach(async () => {
@@ -100,6 +102,9 @@ describe("Test user relative actions", () => {
             getServerSessionStub = sinon
                 .stub(nextAuth, "getServerSession")
                 .resolves({});
+            ticketServiceInstanceStub = sinon
+                .stub(ticketServiceInstance, 'createEmailTicket')
+                .resolves()
 
             await utils.createData(testUsers);
             user = await db
@@ -112,6 +117,7 @@ describe("Test user relative actions", () => {
             sinon.restore();
             await utils.deleteData(testUsers);
             isPublicServiceEmailStub.restore();
+            ticketServiceInstanceStub.restore()
         });
 
         it("should ask OVH to create an email", async () => {
@@ -144,8 +150,8 @@ describe("Test user relative actions", () => {
                 .selectAll()
                 .where("username", "=", "membre.nouveau")
                 .executeTakeFirst();
-            res.primary_email.should.equal(`membre.nouveau@${config.domain}`);
-            ovhEmailCreation.isDone().should.be.true;
+            res?.primary_email_status.should.equal(EmailStatusCode.EMAIL_TICKET_CREATION_PENDING);
+            ticketServiceInstanceStub.calledOnce.should.be.true
         });
 
         it("should not allow email creation from delegate if email already exists", async () => {
@@ -264,13 +270,13 @@ describe("Test user relative actions", () => {
                 username: "membre.actif",
                 to_email: "membre.nouveau@example.com",
             });
-
-            ovhEmailCreation.isDone().should.be.true;
+            ticketServiceInstanceStub.calledOnce.should.be.true
             const user2 = await db
                 .selectFrom("users")
                 .selectAll()
                 .where("username", "=", "membre.actif")
                 .executeTakeFirstOrThrow();
+            user2?.primary_email_status.should.equal(EmailStatusCode.EMAIL_TICKET_CREATION_PENDING);
         });
     });
 
@@ -965,7 +971,7 @@ describe("Test user relative actions", () => {
 
             try {
                 await managePrimaryEmailForUser({ username, primaryEmail });
-            } catch (e) {}
+            } catch (e) { }
             const dbNewRes = await db
                 .selectFrom("users")
                 .selectAll()
@@ -1085,6 +1091,7 @@ describe("Test user relative actions", () => {
             betagouvCreateEmail.restore();
         });
         describe("", () => {
+            let ticketServiceInstanceStub
             const users: FakeDataInterface = {
                 users: [
                     {
@@ -1113,6 +1120,9 @@ describe("Test user relative actions", () => {
             };
             beforeEach(async () => {
                 await utils.createData(users);
+                ticketServiceInstanceStub = sinon
+                    .stub(ticketServiceInstance, 'createEmailTicket')
+                    .resolves()
             });
             afterEach(async () => {
                 await utils.deleteData(users);
@@ -1161,8 +1171,16 @@ describe("Test user relative actions", () => {
                 //     })
                 //     .execute();
                 await createEmailAddresses();
-                ovhEmailCreation.isDone().should.be.true;
-                betagouvCreateEmail.firstCall.args[0].should.equal(
+                // ovhEmailCreation.isDone().should.be.true;
+                const res = await db
+                    .selectFrom("users")
+                    .selectAll()
+                    .where("username", "=", newMember.username)
+                    .executeTakeFirstOrThrow();
+                res?.primary_email_status.should.equal(EmailStatusCode.EMAIL_TICKET_CREATION_PENDING);
+                ticketServiceInstanceStub.calledOnce.should.be.true
+                console.log(ticketServiceInstanceStub.firstCall.args[0])
+                ticketServiceInstanceStub.firstCall.args[0].username.should.equal(
                     newMember.username
                 );
                 await db
@@ -1176,7 +1194,7 @@ describe("Test user relative actions", () => {
             });
         });
 
-        context("", () => {});
+        context("", () => { });
 
         it("should not create email accounts if already created", async () => {
             utils.cleanMocks();
@@ -1438,201 +1456,6 @@ describe("Test user relative actions", () => {
                         email_is_redirection: false,
                     })
                     .execute();
-            });
-        });
-    });
-
-    describe("createEmail", () => {
-        const sandbox = sinon.createSandbox();
-
-        beforeEach(async () => {
-            sandbox.stub(Betagouv, "createEmail");
-            sandbox.stub(Betagouv, "createEmailForExchange");
-            sandbox.stub(Betagouv, "createEmailPro");
-            sandbox.stub(Betagouv, "sendInfoToChat");
-        });
-
-        afterEach(async () => {
-            sandbox.restore();
-            // await db
-            //     .deleteFrom("users")
-            //     .where("username", "=", "membre.nouveau-email")
-            //     .execute();
-        });
-
-        context("when the user needs an MX PLAN account", () => {
-            const users: FakeDataInterface = {
-                users: [
-                    {
-                        username: "membre.nouveau-email",
-                        domaine: Domaine.ANIMATION,
-                        role: "",
-                        fullname: "Membre Nouveau-email",
-                        primary_email: undefined,
-                        primary_email_status: EmailStatusCode.EMAIL_UNSET,
-                        secondary_email:
-                            "membre.nouveau-email.perso@example.com",
-                        missions: [
-                            {
-                                end: new Date("2024-12-03"),
-                                start: new Date("2023-12-03"),
-                            },
-                        ],
-                    },
-                ],
-            };
-            beforeEach(async () => {
-                return utils.createData(users);
-            });
-            afterEach(async () => {
-                return utils.deleteData(users);
-            });
-            it("should create an OVH MX Plan account", async () => {
-                await createEmail("membre.nouveau-email", "Test");
-                Betagouv.createEmail.calledWith("membre.nouveau-email").should
-                    .be.true;
-            });
-        });
-
-        context("when the user needs an OVH Pro account", () => {
-            let users: FakeDataInterface = {
-                users: [
-                    {
-                        id: "membre.nouveau-email",
-                        username: "membre.nouveau-email",
-                        primary_email: undefined,
-                        primary_email_status: EmailStatusCode.EMAIL_UNSET,
-                        secondary_email:
-                            "membre.nouveau-email.perso@example.com",
-                        domaine: Domaine.ANIMATION,
-                        role: "",
-                        fullname: "Membre Nouveau test email",
-                        missions: [
-                            {
-                                end: new Date("2024-12-03"),
-                                start: new Date("2023-12-03"),
-                                status: "independent",
-                                employer: "octo",
-                                startups: [],
-                            },
-                        ],
-                    },
-                ],
-            };
-            beforeEach(async () => {
-                await utils.createData(users);
-                sandbox
-                    .stub(config, "EMAIL_DEFAULT_PLAN")
-                    .value(EMAIL_PLAN_TYPE.EMAIL_PLAN_PRO);
-            });
-            afterEach(async () => {
-                await utils.deleteData(users);
-                sandbox.restore();
-            });
-            it("should create an OVH Pro email account", async () => {
-                await createEmail("membre.nouveau-email", "Test");
-                Betagouv.createEmailPro.firstCall.args.should.deep.equal([
-                    "membre.nouveau-email",
-                    {
-                        displayName: "Membre Nouveau test email",
-                        firstName: "Membre",
-                        lastName: "Nouveau test email",
-                    },
-                ]);
-            });
-        });
-
-        context("when the user needs an Exchange account", () => {
-            const users: FakeDataInterface = {
-                users: [
-                    {
-                        username: "membre.nouveau-email",
-                        domaine: Domaine.ANIMATION,
-                        role: "",
-                        fullname: "Membre Nouveau test email",
-                        primary_email: undefined,
-                        primary_email_status: EmailStatusCode.EMAIL_UNSET,
-                        secondary_email:
-                            "membre.nouveau-email.perso@example.com",
-                        missions: [
-                            {
-                                end: new Date("2024-12-03"),
-                                start: new Date("2023-12-03"),
-                                startups: ["a-startup-at-gip"],
-                            },
-                        ],
-                    },
-                ],
-                startups: [
-                    {
-                        ghid: "a-startup-at-gip",
-                    },
-                ],
-            };
-            beforeEach(async () => {
-                const insertedIncubator = await db
-                    .insertInto("incubators")
-                    .values({
-                        title: "Gip",
-                        ghid: "gip-inclusion",
-                    })
-                    .returningAll()
-                    .executeTakeFirstOrThrow();
-                const insertedStartup = await db
-                    .insertInto("startups")
-                    .values({
-                        incubator_id: insertedIncubator.uuid,
-                        name: "a-startup-at-gip",
-                        ghid: "a-startup-at-gip",
-                    })
-                    .execute();
-                await utils.createData(users);
-                // sandbox.stub(Betagouv, "startupsInfos").resolves([
-                //     {
-                //         type: "startup",
-                //         id: "itou",
-                //         attributes: {
-                //             name: "Itou",
-                //         },
-                //         relationships: {
-                //             incubator: {
-                //                 data: {
-                //                     type: "incubator",
-                //                     id: "gip-inclusion",
-                //                 },
-                //             },
-                //         },
-                //     },
-                // ]);
-            });
-
-            afterEach(async () => {
-                await utils.deleteData(users);
-                await db
-                    .deleteFrom("startups")
-                    .where("name", "=", "a-startup-at-gip")
-                    .execute();
-                await db
-                    .deleteFrom("incubators")
-                    .where("ghid", "=", "gip-inclusion")
-                    .execute();
-
-                sandbox.restore();
-            });
-
-            it("should create an Exchange email account", async () => {
-                await createEmail("membre.nouveau-email", "Test");
-
-                Betagouv.createEmailForExchange.firstCall.args.should.deep.equal(
-                    [
-                        "membre.nouveau-email",
-                        {
-                            displayName: "Membre Nouveau test email",
-                            firstName: "Membre",
-                            lastName: "Nouveau test email",
-                        },
-                    ]
-                );
             });
         });
     });
