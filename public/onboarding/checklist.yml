@@ -4,12 +4,12 @@
       title: Compléter ma fiche membre
       disabled: true
       defaultValue: true
-    - id: atelier-onboarding
-      title: Participer à [L'embarquement en visioconférence obligatoire dans la communauté](embarquement-dans-la-communaute.md)
     - id: echange-marche-avec-titulaire
-      title: Programmer un échange avec le titulaire de ton marché public si tu es prestataire
+      title: Avoir échangé au moins une fois avec ton titulaire de marché public si tu es prestataire
     - id: video-presentation
       title: Lire l'email de bienvenue et regarder [la vidéo de présentation de beta.gouv.fr](https://www.youtube.com/watch?v=TvFlxDMlbfo)
+    - id: atelier-onboarding
+      title: Participer à [L'embarquement en visioconférence obligatoire dans la communauté](embarquement-dans-la-communaute.md)
     - id: valeurs-beta
       title: Prendre connaissance des [valeurs de beta.gouv.fr](https://doc.incubateur.net/communaute/decouvrir-beta.gouv.fr/valeurs)
     - id: standards-beta
@@ -19,7 +19,7 @@
     - id: canaux-mattermost
       title: Découvrir [les canaux mattermost recommandés](https://doc.incubateur.net/communaute/les-outils-de-la-communaute/mattermost/canaux-recommandes)
     - id: observatoire
-      title: Consulter [l'observatoire de beta.gouv.fr](https://espace-membre.incubateur.net/metabase) et [y contribuer](https://espace-membre.incubateur.net/)
+      title: Consulter [l'observatoire de beta.gouv.fr](https://espace-membre.incubateur.net/metabase). Pour [y contribuer](https://espace-membre.incubateur.net/)
     - id: carte-membres
       title: Publier un message pour signaler ton arrivée aux membres de la communauté beta.gouv près de chez toi via ton [canal mattermost local](https://doc.incubateur.net/communaute/les-outils-de-la-communaute/mattermost/canaux-recommandes). Si aucun ne correspond, tu peux regarder si d'autres membres de la communauté sont près de chez toi sur la [carte des membres](https://espace-membre.incubateur.net/community).
     - id: lieux-partages
@@ -75,4 +75,4 @@
 - title: Pour aller plus loin
   items:
     - id: entraide
-      title: Participer à une [activité transverse](https://doc.incubateur.net/communaute/solliciter-et-contribuer-a-la-communaute/je-contribue-a-la-communaute-to-do)
+      title: Découvrir les [activités transverses](https://doc.incubateur.net/communaute/solliciter-et-contribuer-a-la-communaute/je-contribue-a-la-communaute-to-do)
