@@ -6,6 +6,7 @@ import MarkdownIt from "markdown-it";
 import { safeUpdateUserEvent } from "@/app/api/member/actions/updateUserEvent";
 import { Domaine } from "@/models/member";
 import { onboardingChecklistSchemaType } from "@/models/onboardingChecklist";
+import Accordion from "@codegouvfr/react-dsfr/Accordion";
 
 const mdParser = new MarkdownIt({
     html: true,
@@ -59,32 +60,31 @@ export default function Checklist({
         <div>
             {sections.map((section, i) => {
                 if (!isVisible(section.domaines)) return null;
-
                 return (
-                    <Checkbox
-                        key={i}
-                        legend={<h2>{section.title}</h2>}
-                        options={section.items.map((item, index) => ({
-                            label: (
-                                <span
-                                    dangerouslySetInnerHTML={{
-                                        __html: mdParser.renderInline(
-                                            item.title
-                                        ),
-                                    }}
-                                />
-                            ),
-                            nativeInputProps: {
-                                name: `checkboxes-${index}`,
-                                value: item.id,
-                                disabled: item.disabled,
-                                defaultChecked:
-                                    item.defaultValue ||
-                                    userEventIds.includes(item.id),
-                                onChange: (e) => onChange(e, item.id),
-                            },
-                        }))}
-                    />
+                    <Accordion label={section.title} defaultExpanded={i === 0}>
+                        <Checkbox
+                            key={i}
+                            options={section.items.map((item, index) => ({
+                                label: (
+                                    <span
+                                        dangerouslySetInnerHTML={{
+                                            __html: mdParser.renderInline(
+                                                item.title
+                                            ),
+                                        }}
+                                    />
+                                ),
+                                nativeInputProps: {
+                                    name: `checkboxes-${index}`,
+                                    value: item.id,
+                                    disabled: item.disabled,
+                                    defaultChecked:
+                                        item.defaultValue ||
+                                        userEventIds.includes(item.id),
+                                    onChange: (e) => onChange(e, item.id),
+                                },
+                            }))}
+                        /></Accordion>
                 );
             })}
         </div>
