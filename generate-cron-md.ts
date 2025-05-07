@@ -41,4 +41,12 @@ function writeToFile(content: string) {
 const markdownCron = generateMarkdown(espaceMembreCronJobs);
 const markdownPgboss = generatePGBossMarkdown(pgBossJobs);
 const markdown = [markdownCron, markdownPgboss].join("\n");
-writeToFile(markdown);
+const filePath = path.resolve('CRON.md');
+const oldContent = fs.existsSync(filePath) ? fs.readFileSync(filePath, 'utf-8') : '';
+
+if (markdown.trim() !== oldContent.trim()) {
+  fs.writeFileSync(filePath, markdown, 'utf-8');
+  console.log('CRON.md updated');
+} else {
+  console.log('CRON.md is already up to date, skipping write');
+}
