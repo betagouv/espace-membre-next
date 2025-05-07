@@ -457,7 +457,7 @@ export const espaceMembreCronJobs: EspaceMembreCronJobType[] = [
         description: "Sending contract ending message to users (2 days)",
     },
     {
-        cronTime: "0 10 1 * *", // every 1srt of each month,
+        cronTime: "0 10 1 * *",
         onTick: sendMessageToActiveUsersWithoutSecondaryEmail,
         start: true,
         timeZone: "Europe/Paris",
