@@ -27,18 +27,22 @@ jobs:
           changed=$(git diff --name-only origin/${{ github.event.pull_request.base.ref }}...HEAD)
           echo "Changed files:"
           echo "$changed"
-          echo "changed_files=${changed//$'\n'/ }" >> "$GITHUB_OUTPUT"
+          # Don't replace newlines — preserve them
+          echo "changed_files<<EOF" >> "$GITHUB_OUTPUT"
+          echo "$changed" >> "$GITHUB_OUTPUT"
+          echo "EOF" >> "$GITHUB_OUTPUT"
 
       - name: Check if cron or schedule file changed
         id: check_diff
         run: |
           changed="false"
-          for file in ${{ steps.changed-files.outputs.changed_files }}; do
+          while IFS= read -r file; do
             if [[ "$file" == "src/server/schedulers/cron.ts" || "$file" == "src/server/queueing/schedule.ts" ]]; then
               changed="true"
               break
             fi
-          done
+          done <<< "${{ steps.changed-files.outputs.changed_files }}"
+      
           echo "changed=$changed" >> "$GITHUB_OUTPUT"
 
       - name: Set up Node.js
