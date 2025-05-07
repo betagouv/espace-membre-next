@@ -10,8 +10,6 @@ on:
     workflows: [cron]  # generate Cron.md can create a commit so we wait for it to finish
     types:
       - completed
-  schedule:
-    - cron: '0 13 * * 5'
 
 jobs:
   analyze:
