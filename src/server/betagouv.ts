@@ -58,14 +58,6 @@ const betaGouv = {
         }
     },
 
-    // getJobs: async (): Promise<Job[]> => {
-    //     return await axios
-    //         .get<any[]>(config.JOBS_API)
-    //         .then((res) => res.data)
-    //         .catch((err) => {
-    //             throw new Error(`Error to get jobs infos : ${err}`);
-    //         });
-    // },
     getJobsWTTJ: async (): Promise<JobWTTJ[]> => {
         return await axios
             .get(config.JOBS_WTTJ_API!)
@@ -74,14 +66,6 @@ const betaGouv = {
                 throw new Error(`Error to get jobs infos : ${err}`);
             });
     },
-    // userInfosById: async (id: string): Promise<Member | undefined> => {
-    //     const users = await betaGouv.usersInfos();
-    //     return users.find((user) => user.id === id);
-    // },
-    // startupInfosById: async (id: string): Promise<Startup | undefined> => {
-    //     const startups = await betaGouv.startupInfos();
-    //     return startups.find((startup) => startup.id === id);
-    // },
 };
 
 const betaOVH = {
