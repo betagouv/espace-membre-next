@@ -3,7 +3,20 @@ import * as Sentry from "@sentry/nextjs";
 Sentry.init({
     dsn: process.env.NEXT_PUBLIC_SENTRY_DSN,
     integrations: [Sentry.replayIntegration()],
-
+    beforeSend(event, hint) {
+        const isFromMatomo = event.exception?.values?.some((exception) =>
+          exception.stacktrace?.frames?.some((frame) =>
+            frame.filename?.includes("matomo.js")
+          )
+        );
+    
+        if (isFromMatomo) {
+          console.warn("Ignoring error from matomo.js");
+          return null; // Skip sending this error
+        }
+    
+        return event;
+    },
     // Set tracesSampleRate to 1.0 to capture 100%
     // of transactions for performance monitoring.
     // We recommend adjusting this value in production
