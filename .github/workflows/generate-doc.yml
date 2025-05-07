@@ -72,5 +72,5 @@ jobs:
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
           git add CRON.md
-          git diff --cached --quiet || git commit -m "Update CRON.md due to scheduler file change"
+          git diff --cached --quiet || git commit -m "Update CRON.md due to scheduler file change [skip ci]"
           git push origin HEAD:${{ github.head_ref }}
