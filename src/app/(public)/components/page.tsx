@@ -205,6 +205,11 @@ export default async function Page() {
           isBlocked: false,
           emailPlan: EMAIL_PLAN_TYPE.EMAIL_PLAN_EXCHANGE,
         }}
+        onboarding={{
+          progress: 2,
+          userEvents: [],
+          checklistObject: checklistObject!,
+        }}
       />
       <hr />
       <h2>OPI member</h2>
