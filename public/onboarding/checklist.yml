@@ -1,4 +1,4 @@
-- title: La première semaine - Assimiler les enjeux de la communauté
+- title: 🚀 La première semaine - Assimiler les enjeux de la communauté
   items:
     - id: fiche-membre
       title: Compléter ma fiche membre
@@ -14,7 +14,7 @@
       title: Prendre connaissance des [valeurs de beta.gouv.fr](https://doc.incubateur.net/communaute/decouvrir-beta.gouv.fr/valeurs)
     - id: standards-beta
       title: Lire la documentation sur nos [standards de qualité](https://doc.incubateur.net/communaute/gerer-son-produit/les-standards)
-- title: La première semaine – Explorer les outils de la communauté
+- title: 🧰 La première semaine – Explorer les outils de la communauté
   items:
     - id: canaux-mattermost
       title: Découvrir [les canaux mattermost recommandés](https://doc.incubateur.net/communaute/les-outils-de-la-communaute/mattermost/canaux-recommandes)
@@ -26,7 +26,7 @@
       title: Découvrir [les lieux où travailler ou organiser des événements](https://doc.incubateur.net/communaute/travailler-chez-beta.gouv.fr/vie-quotidienne-et-bien-etre/travailler-dans-les-lieux-partages/ou-travailler)
     - id: agenda
       title: T'abonner à [l'agenda public de l'incubateur](https://calendar.google.com/calendar/u/0/r?cid=MGllb25xYXAxcjVqZWFsNXVnZXVob292bGdAZ3JvdXAuY2FsZW5kYXIuZ29vZ2xlLmNvbQ)
-- title: La première semaine - Appréhender ton environnement
+- title: 🧭 La première semaine - Appréhender ton environnement
   items:
     - id: doc-incubateur
       title: Lire la [documentation de ton incubateur](https://doc.incubateur.net/communaute/travailler-chez-beta.gouv.fr/to-do-darrivee)
@@ -42,7 +42,7 @@
       title: Fixer des rencontres avec les membres de ton équipe
     - id: equipe-outils
       title: Créer tes comptes sur les outils de ton équipe
-- title: Le premier mois
+- title: 🌱 Le premier mois
   items:
     - id: forum-beta
       title: Participer obligatoirement à la journée d'embarquement obligatoire dédiée aux nouveaux membres lors du forum mensuel de beta.gouv.fr
@@ -64,7 +64,7 @@
       title: Participer à un point de rencontre grâce aux [clubs métiers](https://doc.incubateur.net/communaute/decouvrir-beta.gouv.fr/la-communaute/les-rituels/clubs-de-partage-dexperience)
     - id: objectifs
       title: Co-construire tes objectifs de mission avec le responsable de l'équipe produit
-- title: Au cours des 3 premiers mois
+- title: 🧠 Au cours des 3 premiers mois
   items:
     - id: rituels-suivi
       title: Fixer les rituels de suivi de tes objectifs avec le responsable produit
