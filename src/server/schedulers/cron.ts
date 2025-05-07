@@ -251,13 +251,6 @@ const newsletterJobs: EspaceMembreCronJobType[] = [
         name: "newsletterSecondReminderJob",
         description: "Rappel mattermost newsletter 2",
     },
-    // {
-    //     cronTime: "0 0 14 * * 4", // every week a 14:00 on thursday
-    //     onTick: () => newsletterReminder("THIRD_REMINDER"),
-    //     isActive: config.FEATURE_NEWSLETTER,
-    //     name: "newsletterThursdayEveningReminderJob",
-    //     description: "Rappel mattermost newsletter 3",
-    // },
     {
         cronTime: config.newsletterSendTime || "0 16 * * 2", // run on thursday et 4pm,
         onTick: sendNewsletterAndCreateNewOne,
@@ -464,7 +457,7 @@ export const espaceMembreCronJobs: EspaceMembreCronJobType[] = [
         description: "Sending contract ending message to users (2 days)",
     },
     {
-        cronTime: "0 10 1 * *", // every 1srt of each month,
+        cronTime: "0 10 1 * *",
         onTick: sendMessageToActiveUsersWithoutSecondaryEmail,
         start: true,
         timeZone: "Europe/Paris",
