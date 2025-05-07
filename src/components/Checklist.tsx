@@ -61,9 +61,9 @@ export default function Checklist({
             {sections.map((section, i) => {
                 if (!isVisible(section.domaines)) return null;
                 return (
-                    <Accordion label={section.title} defaultExpanded={i === 0}>
+                    <Accordion key={i}
+                        label={section.title} defaultExpanded={i === 0}>
                         <Checkbox
-                            key={i}
                             options={section.items.map((item, index) => ({
                                 label: (
                                     <span
