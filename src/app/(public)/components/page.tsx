@@ -168,7 +168,14 @@ export default async function Page() {
       <h1>Members</h1>
       <h2>Active member</h2>
       <hr />
-      <MemberPage {...sampleMember.member} />
+      <MemberPage
+        {...sampleMember.member}
+        onboarding={{
+          progress: 2,
+          userEvents: [],
+          checklistObject: checklistObject!,
+        }}
+      />
       <hr />
       <h2>Expired member</h2>
       <hr />
@@ -204,11 +211,6 @@ export default async function Page() {
           email: sampleMember.member.userInfos.primary_email || "-",
           isBlocked: false,
           emailPlan: EMAIL_PLAN_TYPE.EMAIL_PLAN_EXCHANGE,
-        }}
-        onboarding={{
-          progress: 2,
-          userEvents: [],
-          checklistObject: checklistObject!,
         }}
       />
       <hr />
