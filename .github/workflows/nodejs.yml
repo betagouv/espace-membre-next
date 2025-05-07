@@ -1,9 +1,6 @@
 name: Node.js CI
 
-on:
-  workflow_run:
-    workflows: [cron]
-    types: [completed]
+on: [push]
 
 jobs:
     build:
