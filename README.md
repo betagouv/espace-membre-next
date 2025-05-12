@@ -4,18 +4,23 @@ L'espace membre de l’incubateur
 
 ## Fonctionnalités
 
--   gestion des membres et missions
--   gestion des produits, incubateurs, équipes, sponsors
--   gestion du compte beta
-    -   adresse email & préférences de communication
-    -   accès aux outils (sentry, matomo)
--   exploration de la communauté
--   afficher les formations et évènements
--   gestion de l'infolettre
--   connexion via ProConnect ou magic-link
--   tâches de maintenance (cf [#scripts-cron](#scripts-cron)) : emails, mattermost, brevo, github
+- gestion des membres et missions
+- gestion des produits, incubateurs, équipes, sponsors
+- gestion du compte beta:
+  - adresse email & préférences de communication
+  - accès aux outils (sentry, matomo)
+- exploration de la communauté
+- afficher les formations et évènements
+- gestion de l'infolettre
+- connexion via ProConnect ou magic-link
+- tâches de maintenance (cf [#scripts-cron](#scripts-cron)) : emails,
+  mattermost, brevo, github
 
 ## Dev de l'app Espace Membre
+
+Un fichier [`Makefile`](./Makefile) ainsi que la partie `scripts` du
+fichier [`package.json`](./package.json) recensent les commandes
+utiles du projet.
 
 ### Variables d'environnement
 
@@ -23,23 +28,37 @@ copier [`.env.development`](./.env.development) en `.env`
 
 ### Lancer en mode développement
 
-Lancer PostgreSQL avec `docker compose up -d` puis démarrer l'application avec ces commandes :
+Un environnement Docker Compose permet de lancer l'application et ses
+dépendances ensemble :
 
 ```sh
-npm install # Récupère les dépendances
-npm run migrate # Applique les migrations
-npm run dev-import-from-www # Ajoute les données du site beta.gouv.fr (utilisateur, produits, incubateurs, ...)
-npm run dev
+docker compose up
 ```
 
-L'application sera disponible sur http://localhost:8100 et vous pouvez vous logger avec `valid.member@betagouv.ovh` en récupérant l'email de connexion via le maildev disponible sur http://localhost:1080.
+Si vous voulez lancer l'application en local, vous devez lui fournir
+une base de données accessible via une variable d'environnement `DATABASE_URL`.
 
-Pour récupérer les données publiques depuis beta.gouv.fr lancer `yarn dev-import-from-www`.
+### Données initiales
+
+Une fois que votre application tourne, vous pouvez utiliser la
+commande suivante pour obtenir des données initiales ; utilisez
+d'abord `make sh` pour accéder à votre conteneur Docker.
+
+```sh
+npm run seed
+npm run dev-import-from-www # Ajoute les données du site beta.gouv.fr (utilisateur, produits, incubateurs, ...)
+```
+
+L'application est disponible sur http://localhost:8100 et vous pouvez
+vous logger – une fois que la base de données est peuplée avec le
+seeding au dessus – avec `valid.member@betagouv.ovh` puis en
+récupérant l'email de connexion sur le maildev disponible sur
+http://localhost:1080.
 
 ### Lancer les tests
 
-```
-» npm run test
+```sh
+npm run test
 ```
 
 ### Debug avec le serveur SMTP Maildev

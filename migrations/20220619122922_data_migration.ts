@@ -1,4 +1,4 @@
-import crypto from "crypto";
+const crypto = require("crypto");
 
 /**
  * @param { import("knex").Knex } knex
