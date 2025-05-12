@@ -77,6 +77,7 @@ const emailStatusRow = (
                         .with(
                             P.union(
                                 EmailStatusCode.EMAIL_ACTIVE,
+                                EmailStatusCode.EMAIL_ACTIF_CREATION_WAITING_AT_OPI,
                                 EmailStatusCode.EMAIL_REDIRECTION_ACTIVE
                             ),
                             () => (
