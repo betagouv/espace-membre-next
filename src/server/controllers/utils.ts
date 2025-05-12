@@ -107,6 +107,10 @@ export function buildBetaEmail(id: string) {
     return `${id}@${config.domain}`;
 }
 
+export function buildExtBetaEmail(id: string) {
+    return `${id}@ext.${config.domain}`;
+}
+
 export function buildBetaRedirectionEmail(
     id: string,
     postfix: string = "attr"
