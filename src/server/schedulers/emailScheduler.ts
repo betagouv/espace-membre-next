@@ -32,6 +32,7 @@ import { createVerificationToken } from "@/utils/pgAdpter";
 import { getBaseUrl } from "@/utils/url";
 import BetaGouv from "@betagouv";
 import {
+    differenceUserOpiMailbox,
     setEmailActive,
     setEmailRedirectionActive,
     setEmailSuspended,
@@ -39,6 +40,7 @@ import {
 import * as utils from "@controllers/utils";
 import { isBetaEmail } from "@controllers/utils";
 import { EMAIL_TYPES, MAILING_LIST_TYPE } from "@modules/email";
+import { createEmailProviderService } from "../config/emailProviderService";
 
 const differenceGithubOVH = function differenceGithubOVH(
     user: memberBaseInfoSchemaType,
@@ -71,13 +73,20 @@ export async function setEmailAddressesActive() {
         (user) =>
             !utils.checkUserIsExpired(user) &&
             [
-                EmailStatusCode.EMAIL_CREATION_PENDING,
-                EmailStatusCode.EMAIL_RECREATION_PENDING,
+                EmailStatusCode.EMAIL_ACTIF_CREATION_WAITING_AT_OPI,
+                EmailStatusCode.EMAIL_CREATION_WAITING,
             ].includes(user.primary_email_status) &&
             user.primary_email_status_updated_at < nowLessFiveMinutes
     );
+    const emailService = createEmailProviderService()
+    const opiMailboxes = emailService.listMailbox(config.domain)
+    const unregisteredUsers = _.differenceWith(
+        concernedUsers,
+        opiMailboxes,
+        differenceUserOpiMailbox
+    );
     return Promise.all(
-        concernedUsers.map(async (user) => {
+        unregisteredUsers.map(async (user) => {
             const listTypes = [MAILING_LIST_TYPE.NEWSLETTER];
             if (
                 user.primary_email_status ===

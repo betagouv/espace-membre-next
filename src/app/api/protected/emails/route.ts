@@ -8,13 +8,8 @@ import betagouv from "@/server/betagouv";
 import _ from "lodash";
 import { createEmailProviderService } from "@/server/config/emailProviderService";
 import config from "@/server/config";
+import { differenceUserOpiMailbox } from "@/server/controllers/usersController";
 
-const differenceUserOpiMailbox = function differenceGithubOVH(
-    user: memberBaseInfoSchemaType,
-    opiMailbox: { email: string }
-) {
-    return buildBetaEmail(user.username) === opiMailbox.email;
-};
 
 function existingUser(
     ovhAccountNames: string[],

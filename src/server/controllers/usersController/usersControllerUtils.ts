@@ -1,7 +1,7 @@
 import { db } from "@/lib/kysely";
 import { getUserInfos } from "@/lib/kysely/queries/users";
 import { userInfosToModel } from "@/models/mapper";
-import { EmailStatusCode } from "@/models/member";
+import { EmailStatusCode, memberBaseInfoSchemaType } from "@/models/member";
 import { EMAIL_PLAN_TYPE } from "@/models/ovh";
 import config from "@/server/config";
 import { sendEmail } from "@/server/config/email.config";
@@ -124,3 +124,10 @@ export async function sendEmailCreatedEmail(username) {
         throw new Error(`Erreur d'envoi de mail à l'adresse indiqué ${err}`);
     }
 }
+
+export const differenceUserOpiMailbox = function differenceGithubOVH(
+    user: memberBaseInfoSchemaType,
+    opiMailbox: { email: string }
+) {
+    return utils.buildBetaEmail(user.username) === opiMailbox.email;
+};
