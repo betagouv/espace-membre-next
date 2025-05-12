@@ -3,7 +3,7 @@
     "version": "0.1.0",
     "private": true,
     "engines": {
-        "node": "20.10.0"
+      "node": ">= 24.0.0"
     },
     "scripts": {
         "dev": "next dev -p 8100",
@@ -12,12 +12,12 @@
         "build": "NODE_OPTIONS='--max-old-space-size=4096' npm run build:next && npm run build:server",
         "start": "NODE_ENV=production next start",
         "lint": "next lint",
-        "migrate": "knex migrate:latest --esm",
-        "rolldown": "knex migrate:down --esm",
-        "makeMigration": "knex migrate:make -x ts --esm",
+        "migrate": "knex migrate:latest",
+        "rolldown": "knex migrate:down",
+        "makeMigration": "knex migrate:make -x ts",
         "e2e": "npx playwright test",
         "test": "NODE_ENV=test ts-mocha --paths -p tsconfig.json src/**/*.spec.ts __tests__/*.ts --exit --require ts-node/register --require ts-node/esm --icu-data-dir=./node_modules/full-icu --require ./__tests__/env-setup.ts --timeout 30000",
-        "seed": "knex seed:run --esm",
+        "seed": "knex seed:run",
         "predev": "only-include-used-icons",
         "prebuild": "only-include-used-icons",
         "postinstall": "is-ci || husky install",

@@ -1,6 +1,3 @@
-import { config } from "dotenv";
-config();
-
 exports.up = function (knex) {
     return knex("users")
         .whereNull("primary_email")

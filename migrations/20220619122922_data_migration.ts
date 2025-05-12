@@ -1,10 +1,9 @@
-import crypto from "crypto";
-
 /**
  * @param { import("knex").Knex } knex
  * @returns { Promise<void> }
  */
 exports.up = async function (knex) {
+  const crypto = require("crypto");
     const users = await knex("users");
     const salt = process.env.HASH_SALT;
     if (salt === undefined) {

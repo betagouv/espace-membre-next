@@ -1,7 +1,9 @@
 // Use this file to override environment variables for test.
 
 import dotenv from "dotenv";
-import { parse } from "pg-connection-string";
+import pkg from "pg-connection-string";
+
+const { parse } = pkg
 
 dotenv.config();
 
