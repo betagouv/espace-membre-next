@@ -5,7 +5,7 @@ import { db } from "@/lib/kysely";
 import { Formation } from "@/models/formation";
 import config from "@/server/config";
 
-export const syncFormationInscriptionFromAirtable = (syncOnlyNewRecord) => {
+export const syncFormationInscriptionFromAirtable = async (syncOnlyNewRecord) => {
     var base = new Airtable({ apiKey: config.AIRTABLE_API_KEY }).base(
         config.AIRTABLE_FORMATION_BASE_ID!
     );
@@ -16,7 +16,7 @@ export const syncFormationInscriptionFromAirtable = (syncOnlyNewRecord) => {
         `DATETIME_DIFF(DATETIME_PARSE(` +
         dateStr +
         `, 'YYYY-MM-DD'),{Created}, 'days')<0`;
-    base.table("Inscriptions")
+    await base.table("Inscriptions")
         .select({
             filterByFormula,
             view: "Inscrits",
@@ -42,7 +42,7 @@ export const syncFormationInscriptionFromAirtable = (syncOnlyNewRecord) => {
                                 )
                                 .executeTakeFirst();
                             if (formation && username) {
-                                db.insertInto("users_formations")
+                                await db.insertInto("users_formations")
                                     .values({
                                         formation_id: formation.id,
                                         username: username.split("@")[0],
