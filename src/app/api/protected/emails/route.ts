@@ -1,7 +1,7 @@
 import { NextRequest } from "next/server";
 
 import { memberBaseInfoToModel } from "@/models/mapper";
-import { EmailStatusCode, memberBaseInfoSchemaType } from "@/models/member";
+import { EmailStatusCode } from "@/models/member";
 import { getAllUsersInfo } from "@/lib/kysely/queries/users";
 import { buildBetaEmail, buildExtBetaEmail, checkUserIsExpired } from "@/server/controllers/utils";
 import betagouv from "@/server/betagouv";
@@ -15,7 +15,6 @@ function existingUser(
     ovhAccountNames: string[],
     username: string,
 ) {
-    console.log(ovhAccountNames, username)
     return ovhAccountNames.includes(username);
 };
 
@@ -34,7 +33,6 @@ export const GET = async (req: NextRequest) => {
     const dbUsers = (await getAllUsersInfo()).map((user) =>
         memberBaseInfoToModel(user)
     );
-    console.log(dbUsers)
     const concernedUsers = dbUsers.filter(
         (user) =>
             !checkUserIsExpired(user) &&
@@ -43,7 +41,6 @@ export const GET = async (req: NextRequest) => {
             user.secondary_email
 
     );
-    console.log(concernedUsers)
     const allOvhEmails: string[] = await betagouv.getAllEmailInfos();
     const emailService = createEmailProviderService()
     const opiMailboxes = await emailService.listMailbox(config.domain)
