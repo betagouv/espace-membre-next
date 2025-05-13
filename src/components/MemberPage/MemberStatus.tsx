@@ -90,6 +90,7 @@ const emailStatusRow = (
                             P.union(
                                 EmailStatusCode.EMAIL_CREATION_WAITING,
                                 EmailStatusCode.EMAIL_CREATION_PENDING,
+                                EmailStatusCode.EMAIL_RECREATION_WAITING,
                                 EmailStatusCode.EMAIL_RECREATION_PENDING,
                                 EmailStatusCode.EMAIL_REDIRECTION_PENDING
                             ),
@@ -237,8 +238,8 @@ const emailStatusRow = (
                                         <br />
                                         {
                                             EMAIL_STATUS_READABLE_FORMAT[
-                                                EmailStatusCode
-                                                    .MEMBER_VALIDATION_WAITING
+                                            EmailStatusCode
+                                                .MEMBER_VALIDATION_WAITING
                                             ]
                                         }
                                     </>
