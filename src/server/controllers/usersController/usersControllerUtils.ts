@@ -18,14 +18,16 @@ export async function setEmailActive(username) {
         })
     );
     const shouldSendEmailCreatedEmail =
-        user.primary_email_status === EmailStatusCode.EMAIL_CREATION_PENDING ||
-        user.primary_email_status === EmailStatusCode.EMAIL_RECREATION_PENDING;
+        user.primary_email_status === EmailStatusCode.EMAIL_CREATION_WAITING ||
+        user.primary_email_status === EmailStatusCode.EMAIL_RECREATION_WAITING ||
+        user.primary_email_status === EmailStatusCode.EMAIL_ACTIF_CREATION_WAITING_AT_OPI;
     console.log("should send email", shouldSendEmailCreatedEmail);
 
     await db
         .updateTable("users")
         .where("username", "=", username)
         .set({
+            primary_email: utils.buildExtBetaEmail(username),
             primary_email_status:
                 EmailStatusCode.EMAIL_ACTIVE_AND_PASSWORD_DEFINITION_PENDING, // email active but password must be define
             primary_email_status_updated_at: new Date(),

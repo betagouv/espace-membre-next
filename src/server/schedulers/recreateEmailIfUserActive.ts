@@ -23,13 +23,15 @@ export async function recreateEmailIfUserActive() {
         .where("primary_email_status", "=", EmailStatusCode.EMAIL_DELETED)
         .where("secondary_email", "is not", null)
         .execute();
-    for (const dbUser of dbUsers) {
-        try {
-            await createEmail(dbUser.username, "Secretariat cron");
-            console.log(`Recreate email for ${dbUser.username}`);
-        } catch (e) {
-            console.error(e);
-            Sentry.captureException(e);
-        }
-    }
+    await db
+        .updateTable('users')
+        .set({
+            primary_email_status: EmailStatusCode.EMAIL_RECREATION_WAITING
+        })
+        .where(
+            "username",
+            "in",
+            dbUsers.map(user => user.username)
+        )
+        .execute();
 }

@@ -159,7 +159,7 @@ describe("Set email active", () => {
             .updateTable("users")
             .where("username", "=", "membre.nouveau")
             .set({
-                primary_email_status: EmailStatusCode.EMAIL_CREATION_PENDING,
+                primary_email_status: EmailStatusCode.EMAIL_CREATION_WAITING,
                 primary_email_status_updated_at: new Date(nowLess10Minutes),
             })
             .execute();
