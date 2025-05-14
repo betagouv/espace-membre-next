@@ -1,4 +1,3 @@
-version: "3"
 services:
     db:
         image: postgres:14.6
@@ -15,34 +14,16 @@ services:
         ports:
             - "1080:80"
             - "11025:25"
-    # web:
-    #     build: .
-    #     command: bash -c "echo 'first npm install can be a bit long'; npm run migrate; npm run dev"
-    #     depends_on:
-    #         - db
-    #         - maildev
-    #     env_file:
-    #         - .env
-    #     environment:
-    #         CHAT_WEBHOOK_URL_GENERAL: "https://example.com"
-    #         CHAT_WEBHOOK_URL_SECRETARIAT: "https://example.com"
-    #         CHAT_WEBHOOK_URL_DINUM: "https://example.com"
-    #         DATABASE_URL: postgres://secretariat:secretariat@db:5432/secretariat
-    #         MAIL_PASS: mailpassword
-    #         NEXT_TELEMETRY_DISABLED: 1
-    #         MAIL_USER: mailuser
-    #         MAIL_HOST: maildev
-    #         MAIL_PORT: 25
-    #         MAIL_IGNORE_TLS: "true"
-    #         MAIL_SENDER: "addresse@localhost"
-    #         SECURE: "false"
-    #         HOSTNAME: localhost
-    #         SESSION_SECRET: "SecretThatShouldChangedInProduction"
-    #         FEATURE_SHOULD_SEND_MESSAGE_TO_AUTHOR: "true"
-    #         HASH_SALT: "FakeHashSaltToChangeInProduction"
-    #     ports:
-    #         - "8100:8100"
-    #         - "9229:9229"
-    #     volumes:
-    #         - .:/app
-    #     restart: on-failure
+    web:
+        build: .
+        depends_on:
+            - db
+            - maildev
+        env_file:
+            - .env
+        ports:
+            - "8100:8100"
+            - "9229:9229" # node debug port
+        volumes:
+            - .:/app
+            - /app/node_modules
