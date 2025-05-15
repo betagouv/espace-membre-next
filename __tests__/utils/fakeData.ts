@@ -2,7 +2,7 @@ import { addDays, subDays } from "date-fns";
 import { tableElements } from "juice";
 import { Selectable } from "kysely/dist/cjs/util/column-type";
 
-import { Incubators, Startups, Teams, UsersDomaineEnum } from "@/@types/db";
+import { Incubators, MissionsStatusEnum, Startups, Teams, UsersDomaineEnum } from "@/@types/db";
 import { db } from "@/lib/kysely";
 import { Domaine, EmailStatusCode } from "@/models/member";
 import config from "@/server/config";
@@ -187,6 +187,7 @@ const createUser = async (
                 start: mission.start,
                 end: mission.end,
                 employer: mission.employer,
+                status: mission.status as MissionsStatusEnum,
                 user_id: createdUser.uuid,
             })
             .returningAll()

@@ -99,6 +99,21 @@ export const userIncubatorAndTeams: FakeDataInterface = {
     ],
 };
 
+export const membreNouveau = {
+    username: "membre.nouveau",
+    fullname: "Membre Nouveau",
+    domaine: Domaine.ANIMATION,
+    missions: [
+        {
+            start: new Date("2020-07-03"),
+            end: new Date("2050-07-03"),
+            status: "independent",
+            employer: "octo",
+            startups: ["test-startup"],
+        },
+    ],
+}
+
 export const testUsers: FakeDataInterface = {
     users: [
         {
@@ -145,20 +160,7 @@ export const testUsers: FakeDataInterface = {
                 },
             ],
         },
-        {
-            username: "membre.nouveau",
-            fullname: "Membre Nouveau",
-            domaine: Domaine.ANIMATION,
-            missions: [
-                {
-                    start: new Date("2020-07-03"),
-                    end: new Date("2050-07-03"),
-                    status: "independent",
-                    employer: "octo",
-                    startups: ["test-startup"],
-                },
-            ],
-        },
+        membreNouveau,
         {
             username: "membre.plusieurs.missions",
             fullname: "Membre Plusieurs Missions",

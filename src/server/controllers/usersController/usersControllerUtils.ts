@@ -1,7 +1,7 @@
 import { db } from "@/lib/kysely";
 import { getUserInfos } from "@/lib/kysely/queries/users";
 import { userInfosToModel } from "@/models/mapper";
-import { EmailStatusCode } from "@/models/member";
+import { EmailStatusCode, memberBaseInfoSchemaType } from "@/models/member";
 import { EMAIL_PLAN_TYPE } from "@/models/ovh";
 import config from "@/server/config";
 import { sendEmail } from "@/server/config/email.config";
@@ -18,14 +18,16 @@ export async function setEmailActive(username) {
         })
     );
     const shouldSendEmailCreatedEmail =
-        user.primary_email_status === EmailStatusCode.EMAIL_CREATION_PENDING ||
-        user.primary_email_status === EmailStatusCode.EMAIL_RECREATION_PENDING;
+        user.primary_email_status === EmailStatusCode.EMAIL_CREATION_WAITING ||
+        user.primary_email_status === EmailStatusCode.EMAIL_RECREATION_WAITING ||
+        user.primary_email_status === EmailStatusCode.EMAIL_ACTIVE_AND_CREATION_WAITING_AT_OPI;
     console.log("should send email", shouldSendEmailCreatedEmail);
 
     await db
         .updateTable("users")
         .where("username", "=", username)
         .set({
+            primary_email: utils.buildExtBetaEmail(username),
             primary_email_status:
                 EmailStatusCode.EMAIL_ACTIVE_AND_PASSWORD_DEFINITION_PENDING, // email active but password must be define
             primary_email_status_updated_at: new Date(),
@@ -124,3 +126,10 @@ export async function sendEmailCreatedEmail(username) {
         throw new Error(`Erreur d'envoi de mail à l'adresse indiqué ${err}`);
     }
 }
+
+export const differenceUserOpiMailbox = function differenceGithubOVH(
+    user: memberBaseInfoSchemaType,
+    opiMailbox: { email: string }
+) {
+    return utils.buildBetaEmail(user.username) === opiMailbox.email;
+};
