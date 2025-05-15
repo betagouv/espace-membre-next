@@ -1,39 +1,60 @@
-// services/UserService.ts
 type RequestOptions = {
     method: 'GET' | 'POST' | 'DELETE';
     body?: object;
 };
 
 export class OpiEmailService {
+    private token
     constructor(private baseUrl: string, private baseUser: {
         username: string,
         password: string
     }) { }
 
-    private async request<T>(path: string, options: RequestOptions): Promise<T> {
-        const headers: Record<string, string> = {
-            'Content-Type': 'application/json',
-            'Accept': 'application/json',
-        };
-        const credentials = Buffer.from(`${this.baseUser.username}:${this.baseUser.password}`).toString("base64");
-        headers['Authorization'] = `Basic ${credentials}`
-        const res = await fetch(`${this.baseUrl}${path}`, {
-            method: options.method,
+
+    async listMailbox(domainName): Promise<{ email: string }[]> {
+        const headers = await this.getHeaders();
+        const params = new URLSearchParams();
+
+        const endpoint = `${this.baseUrl}/domains/${domainName}/mailboxes/`
+
+        const url = `${endpoint}?${params.toString()}`;
+
+        const res = await fetch(url, {
+            method: "GET",
             headers,
-            body: options.body ? JSON.stringify(options.body) : undefined,
+        });
+
+        return await res.json();
+    }
+
+    async getToken() {
+        if (this.token) return this.token;
+
+        const params = new URLSearchParams();
+
+        const auth = Buffer.from(`${this.baseUser.username}:${this.baseUser.password}`).toString("base64");
+        const res = await fetch(`${this.baseUrl}/token/?${params.toString()}`, {
+            method: "GET",
+            headers: {
+                Authorization: `Basic ${auth}`,
+                Accept: "application/json",
+            },
         });
 
         if (!res.ok) {
-            const errorBody = await res.text();
-            throw new Error(`Request failed: ${res.status} ${res.statusText} — ${errorBody}`);
+            throw new Error(`Failed to fetch token: ${res.status}`);
         }
 
-        return res.json();
+        const data = await res.json();
+        this.token = data.access_token;
+        return this.token;
     }
 
-    async listMailbox(domain: string): Promise<{ email: string }[]> {
-        return this.request(`/domains/${domain}/mailboxes/`, {
-            method: 'GET',
-        });
+    async getHeaders() {
+        const token = await this.getToken();
+        return {
+            Authorization: `Bearer ${token}`,
+            Accept: "application/json",
+        };
     }
 }
