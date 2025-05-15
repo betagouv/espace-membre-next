@@ -80,7 +80,7 @@ export async function setEmailAddressesActive() {
             user.primary_email_status_updated_at < nowLessFiveMinutes
     );
     const emailService = createEmailProviderService()
-    const opiMailboxes = emailService.listMailbox(config.domain)
+    const opiMailboxes = await emailService.listMailbox(config.domain)
     const unregisteredUsers = _.differenceWith(
         concernedUsers,
         opiMailboxes,
