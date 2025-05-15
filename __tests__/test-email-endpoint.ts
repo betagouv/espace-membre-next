@@ -59,7 +59,7 @@ describe("Email endpoint", () => {
             membreNouveau.username
         ]).execute()
         const res = await db.updateTable('users').set({
-            primary_email_status: EmailStatusCode.EMAIL_ACTIF_CREATION_WAITING_AT_OPI,
+            primary_email_status: EmailStatusCode.EMAIL_ACTIVE_AND_CREATION_WAITING_AT_OPI,
             secondary_email: sql<string>`lower(concat(fullname, '@gmail.com'))`
         }).where('username', 'in', [
             memberJulienD.username

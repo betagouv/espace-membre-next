@@ -9,6 +9,7 @@ import _ from "lodash";
 import { createEmailProviderService } from "@/server/config/emailProviderService";
 import config from "@/server/config";
 import { differenceUserOpiMailbox } from "@/server/controllers/usersController";
+import { getLastMission } from "@/utils/member";
 
 
 function existingUser(
@@ -36,7 +37,11 @@ export const GET = async (req: NextRequest) => {
     const concernedUsers = dbUsers.filter(
         (user) =>
             !checkUserIsExpired(user) &&
-            [EmailStatusCode.EMAIL_ACTIF_CREATION_WAITING_AT_OPI, EmailStatusCode.EMAIL_CREATION_WAITING].includes(user.primary_email_status) &&
+            [
+                EmailStatusCode.EMAIL_ACTIVE_AND_CREATION_WAITING_AT_OPI,
+                EmailStatusCode.EMAIL_CREATION_WAITING,
+                EmailStatusCode.EMAIL_RECREATION_WAITING
+            ].includes(user.primary_email_status) &&
             !user.email_is_redirection &&
             user.secondary_email
 
@@ -57,7 +62,7 @@ export const GET = async (req: NextRequest) => {
         return {
             first_name: firstName,
             lastName: lastName,
-            email: buildExtBetaEmail(user.username),
+            email: getLastMission(user.missions)?.status === 'independent' ? buildExtBetaEmail(user.username) : buildBetaEmail(user.username),
             alias: existingUser(allOvhEmails, user.username) ? buildBetaEmail(user.username) : null,
             secondary_email: user.secondary_email
         }

@@ -73,8 +73,9 @@ export async function setEmailAddressesActive() {
         (user) =>
             !utils.checkUserIsExpired(user) &&
             [
-                EmailStatusCode.EMAIL_ACTIF_CREATION_WAITING_AT_OPI,
+                EmailStatusCode.EMAIL_ACTIVE_AND_CREATION_WAITING_AT_OPI,
                 EmailStatusCode.EMAIL_CREATION_WAITING,
+                EmailStatusCode.EMAIL_RECREATION_WAITING,
             ].includes(user.primary_email_status) &&
             user.primary_email_status_updated_at < nowLessFiveMinutes
     );

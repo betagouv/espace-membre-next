@@ -20,7 +20,7 @@ export async function setEmailActive(username) {
     const shouldSendEmailCreatedEmail =
         user.primary_email_status === EmailStatusCode.EMAIL_CREATION_WAITING ||
         user.primary_email_status === EmailStatusCode.EMAIL_RECREATION_WAITING ||
-        user.primary_email_status === EmailStatusCode.EMAIL_ACTIF_CREATION_WAITING_AT_OPI;
+        user.primary_email_status === EmailStatusCode.EMAIL_ACTIVE_AND_CREATION_WAITING_AT_OPI;
     console.log("should send email", shouldSendEmailCreatedEmail);
 
     await db

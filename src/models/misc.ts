@@ -24,7 +24,7 @@ export const EMAIL_STATUS_READABLE_FORMAT: Record<EmailStatusCode, string> = {
     [EmailStatusCode.EMAIL_VERIFICATION_WAITING]: "Le membre doit se connecter à l'espace-membre et vérifier ses informations avant que tu puisses lui créer un compte.",
     [EmailStatusCode.EMAIL_CREATION_WAITING]: "La création de l'email est en cours",
     [EmailStatusCode.MEMBER_VALIDATION_WAITING]: "En attente de la validation par un responsable transverse",
-    [EmailStatusCode.EMAIL_ACTIF_CREATION_WAITING_AT_OPI]: "Actif et en attente de création chez opi",
+    [EmailStatusCode.EMAIL_ACTIVE_AND_CREATION_WAITING_AT_OPI]: "Actif et en attente de création chez opi",
     [EmailStatusCode.EMAIL_RECREATION_WAITING]: "En attente de recréation"
 };
 
