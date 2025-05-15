@@ -1,3 +1,5 @@
+"use client";
+
 import { useEffect } from "react";
 
 import { fr } from "@codegouvfr/react-dsfr";
@@ -14,7 +16,7 @@ import {
     docComiteDataSchema,
 } from "@/models/startupFiles";
 
-const contenus = [
+export const contenusTypes = [
     {
         label: "recherche-ux",
         description: "Synthèse de recherche utilisateur",
@@ -161,7 +163,7 @@ export const FormDoc = ({
                                     // @ts-ignore todo
                                     errors.data?.contenu?.message
                                 }
-                                options={contenus.map((m, i) => ({
+                                options={contenusTypes.map((m, i) => ({
                                     //  hintText: m.description,
                                     label: m.description,
                                     nativeInputProps: {

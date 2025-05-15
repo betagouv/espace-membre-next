@@ -58,7 +58,7 @@ export const StartupFiles = ({
     startup,
     files,
 }: {
-    startup: { uuid: string };
+    startup: { uuid: string; name: string };
     files: Awaited<ReturnType<typeof getStartupFiles>>;
 }) => {
     const [pendingFiles, setPendingFiles] = useState<File[]>([]);
@@ -87,7 +87,11 @@ export const StartupFiles = ({
 
         if (uploaded) {
             // upload
-            files.unshift(uploaded);
+            files.unshift({
+                ...uploaded,
+                startup_uuid: startup.uuid,
+                startup: startup.name,
+            });
         }
 
         if (fileIndex === pendingFiles.length - 1) {
