@@ -15,6 +15,8 @@ const commonFileFields = [
     "startups_files.created_at",
     "startups_files.type",
     "startups_files.data",
+    "startups.name as startup",
+    "startups.uuid as startup_uuid",
 ] as const;
 
 export async function getStartupFiles({
@@ -23,7 +25,7 @@ export async function getStartupFiles({
 }: {
     ghid?: string;
     uuid?: string;
-}) {
+} = {}) {
     const session = await getServerSession(authOptions);
     if (!session || !session.user.id) {
         throw new Error(`You don't have the right to access this function`);
