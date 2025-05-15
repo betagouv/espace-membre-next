@@ -17,6 +17,8 @@ fileignoreconfig:
   checksum: ab43cf363f8cdca2b31130897407a434ca65ff4d54a58cf8f81ab1990314b94b
 - filename: src/models/misc.ts
   checksum: d8214b796586cb256ca424819ed12023fe8d27b22233a8c14ed2cf982a2c54dd
+- filename: src/server/config/emailProviderService.ts
+  checksum: 4c9bad809984a621a873c0dca689d74b516fbaccdca4347a74f97d5a45d8b71b
 - filename: src/server/config/index.ts
   checksum: 8d69094644a4b0a7caec1731c379dc2aabcb283950c5bfbe779cb2e664119856
 - filename: src/server/views/templates/emails/VerificationWaiting/VerificationWaiting.tsx

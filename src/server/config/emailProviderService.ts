@@ -7,5 +7,8 @@ interface EmailProviderService {
 }
 
 export function createEmailProviderService(): EmailProviderService {
-    return new OpiEmailService('https://numerique.gouv.fr')
+    return new OpiEmailService(process.env.OPI_URL!, {
+        username: process.env.OPI_USERNAME!,
+        password: process.env.OPI_KEY!
+    })
 }

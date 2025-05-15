@@ -5,17 +5,18 @@ type RequestOptions = {
 };
 
 export class OpiEmailService {
-    constructor(private baseUrl: string, private apiKey?: string) { }
+    constructor(private baseUrl: string, private baseUser: {
+        username: string,
+        password: string
+    }) { }
 
     private async request<T>(path: string, options: RequestOptions): Promise<T> {
         const headers: Record<string, string> = {
             'Content-Type': 'application/json',
+            'Accept': 'application/json',
         };
-
-        if (this.apiKey) {
-            headers['Authorization'] = `Bearer ${this.apiKey}`;
-        }
-
+        const credentials = Buffer.from(`${this.baseUser.username}:${this.baseUser.password}`).toString("base64");
+        headers['Authorization'] = `Basic ${credentials}`
         const res = await fetch(`${this.baseUrl}${path}`, {
             method: options.method,
             headers,
