@@ -67,6 +67,26 @@ export async function getUsersByStartup(
         .leftJoin("missions", "missions.user_id", "users.uuid")
         .leftJoin("missions_startups", "missions.uuid", "mission_id")
         .where("missions_startups.startup_id", "=", startupUuid)
+        .groupBy([
+            "users.uuid",
+            "users.updated_at",
+            "users.username",
+            "users.fullname",
+            "users.role",
+            "users.domaine",
+            "users.bio",
+            "users.link",
+            "users.github",
+            "users.member_type",
+            "users.primary_email",
+            "users.secondary_email",
+            "users.primary_email_status",
+            "users.primary_email_status_updated_at",
+            "users.communication_email",
+            "users.email_is_redirection",
+            "users.competences",
+            "missions_startups.startup_id",
+        ])
         .execute();
 }
 

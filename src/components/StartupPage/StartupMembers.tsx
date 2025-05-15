@@ -47,14 +47,16 @@ export const StartupMembers = ({ startupInfos, members }) => {
                 (!m.end || m.end >= new Date())
         )
     );
-    const previousMembers = members.filter((member) =>
-        member.missions.find(
-            (m) =>
-                m.startups?.includes(startupInfos.uuid) &&
-                m.end &&
-                m.end < new Date()
+    const previousMembers = members
+        .filter((member) =>
+            member.missions.find(
+                (m) =>
+                    m.startups?.includes(startupInfos.uuid) &&
+                    m.end &&
+                    m.end < new Date()
+            )
         )
-    );
+        .filter((m) => !activeMembers.map((m2) => m2.uuid).includes(m.uuid));
     return (
         <>
             <div className={fr.cx("fr-mb-2w")}>
