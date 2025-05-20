@@ -1,6 +1,6 @@
 import chai from "chai";
 import { addMonths } from "date-fns/addMonths";
-import { Selectable } from "kysely/dist/cjs/util/column-type";
+import type { Selectable } from "kysely";
 import { createMocks } from "node-mocks-http";
 import proxyquire from "proxyquire";
 import sinon from "sinon";

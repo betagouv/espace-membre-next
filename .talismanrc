@@ -1,12 +1,14 @@
 fileignoreconfig:
 - filename: .env.development
-  checksum: 499a0b99cdcb0f94e2e5583a90e88369e2ba0dcd8d91d1cc8e6d5a5c74cd2a5a
+  checksum: 6050bdc0c24d4a45963695a35c09d91d541938320e1b4b21277430b609c4c494
 - filename: .env.test
   checksum: 900db203fd9526bc60c45c4005ed5330093667f615489eada3436a7025ba5568
 - filename: .github/workflows/generate-doc.yml
   checksum: 5f9f798ed8186f440f30833a1fdd481bd74d385696662053b8e4d3f49913dd07
 - filename: .github/workflows/playwright.yml
   checksum: c7ad26d3f680a12d4169e46858d36b01ad1073c2acbb7265ee398d96ccd8bd65
+- filename: __tests__/env-setup.ts
+  checksum: 2c348f19b139ff01f4b30028cf3a31df17bfc95ccee210a836d2c8b611e42da2
 - filename: generate-cron-md.ts
   checksum: 184ab41ee937833492f55d5f09844f1f679fd4d3ee462254b13d124e9e9b76b8
 - filename: generate-email-md.ts
