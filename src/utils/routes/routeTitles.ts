@@ -15,7 +15,6 @@ export const routeTitles: {
     communityCreateMember: () => "Créer une fiche membre",
     dashboard: () => "Accueil",
     startupList: () => "Rechercher un produit",
-    startupsFiles: () => "Documents des produits",
     startupDetails: () => "",
     startupDetailsEdit: (id?: string) => {
         return `Modifier la fiche produit de ${id}`;

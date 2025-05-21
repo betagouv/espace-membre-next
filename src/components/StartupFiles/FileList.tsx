@@ -106,6 +106,7 @@ export const FileList = ({
                         file.comments || "-",
                         <Button
                             size="small"
+                            priority="secondary"
                             iconId="fr-icon-delete-bin-fill"
                             key="del"
                             type="button"

@@ -37,7 +37,6 @@ export const routes = createRouter({
         { teamId: param.path.string },
         (p) => `/teams/${p.teamId}`
     ),
-    startupsFiles: defineRoute({}, (p) => `/startups/files`),
     startupList: defineRoute({}, (p) => `/startups`),
     startupDetails: defineRoute(
         { startupId: param.path.string },
