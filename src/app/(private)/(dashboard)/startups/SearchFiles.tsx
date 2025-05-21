@@ -1,6 +1,5 @@
 "use client";
 
-//import { contenusTypes } from "@/components/StartupFiles/FormDoc";
 import { FileList } from "@/components/StartupFiles/FileList";
 
 import Checkbox from "@codegouvfr/react-dsfr/Checkbox";
@@ -10,11 +9,11 @@ const allDocTypes = ["Autre", "Document de comité", "Rapport annuel"];
 
 export const SearchFiles = ({ files }) => {
     const [docTypes, setDocTypes] = useState(allDocTypes);
-    const options = allDocTypes.map((c) => ({
-        label: c,
+    const options = allDocTypes.map((docType) => ({
+        label: docType,
         nativeInputProps: {
-            defaultChecked: docTypes.includes(c),
-            value: c,
+            defaultChecked: docTypes.includes(docType),
+            value: docType,
             onClick: (e) => {
                 const checked = e.currentTarget.value;
                 if (docTypes.includes(checked)) {
@@ -29,7 +28,7 @@ export const SearchFiles = ({ files }) => {
     return (
         <>
             <Checkbox
-                legend="Types de documents: "
+                legend="Types de documents :"
                 small={true}
                 orientation="horizontal"
                 options={options}

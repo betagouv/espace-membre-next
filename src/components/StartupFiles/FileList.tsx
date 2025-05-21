@@ -13,6 +13,7 @@ import { revalidatePath } from "next/cache";
 
 import { deleteFile } from "@/app/api/startups/files/delete";
 import { getStartupFiles } from "@/app/api/startups/files/list";
+import Button from "@codegouvfr/react-dsfr/Button";
 
 type FilesType = Awaited<ReturnType<typeof getStartupFiles>>;
 
@@ -101,15 +102,16 @@ export const FileList = ({
                                     {m}
                                 </Tag>
                             ))) ||
-                            "",
-                        file.comments || "",
-                        <i
+                            "-",
+                        file.comments || "-",
+                        <Button
+                            size="small"
+                            iconId="fr-icon-delete-bin-fill"
                             key="del"
+                            type="button"
                             title="Supprimer ce document"
-                            role="button"
                             onClick={() => onDeleteClick(file.uuid)}
                             style={{ cursor: "pointer" }}
-                            className={fr.cx("fr-icon-delete-bin-fill")}
                         />,
                     ].filter(Boolean)
                 )}
