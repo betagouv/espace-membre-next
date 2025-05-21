@@ -1,5 +1,5 @@
 "use server";
-
+import { revalidatePath } from "next/cache";
 import { getServerSession } from "next-auth";
 
 import { db } from "@/lib/kysely";
@@ -59,5 +59,6 @@ export async function uploadStartupFile(
         })
         .returning(commonFileFields)
         .executeTakeFirstOrThrow();
+    revalidatePath("/startups");
     return inserted;
 }
