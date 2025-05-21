@@ -28,7 +28,8 @@ export default async function Page() {
             <h1>{routeTitles.startupList()}</h1>
             <StartupList startups={startups} />
             <hr />
-            <h2>{routeTitles.startupsFiles()}</h2>
+            <h2>Documents partagés</h2>
+            <p>Retrouvez tous les documents partagés des startups d'état</p>
             <SearchFiles files={files} />
         </>
     );
