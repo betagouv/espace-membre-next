@@ -47,3 +47,24 @@ export const getFirstMissionDate = (
 export const isUserActive = (missions: memberSchemaType["missions"]) => {
     return missions.filter((m) => !m.end || m.end > new Date()).length > 0;
 };
+
+export const hasActiveMissionInStartup = (
+    member: memberSchemaType,
+    startupUuid: string
+) =>
+    member.missions.find(
+        (mission) =>
+            mission.startups?.includes(startupUuid) &&
+            (!mission.end || mission.end >= new Date())
+    );
+
+export const hasPreviousMissionInStartup = (
+    member: memberSchemaType,
+    startupUuid: string
+) =>
+    member.missions.find(
+        (mission) =>
+            mission.startups?.includes(startupUuid) &&
+            mission.end &&
+            mission.end < new Date()
+    );
