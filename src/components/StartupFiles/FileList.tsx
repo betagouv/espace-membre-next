@@ -80,20 +80,22 @@ export const FileList = ({
                             {
                                 // @ts-ignore todo
                                 (file.data?.contenu && (
-                                    // @ts-ignore todo
                                     <ul className={fr.cx("fr-p-0")}>
-                                        {file.data?.contenu.map((m) => (
-                                            <Tag
-                                                key={m}
-                                                className={fr.cx(
-                                                    "fr-mr-1w",
-                                                    "fr-ml-0"
-                                                )}
-                                                small
-                                            >
-                                                {m}
-                                            </Tag>
-                                        ))}
+                                        {
+                                            // @ts-ignore todo
+                                            file.data?.contenu.map((m) => (
+                                                <Tag
+                                                    key={m}
+                                                    className={fr.cx(
+                                                        "fr-mr-1w",
+                                                        "fr-ml-0"
+                                                    )}
+                                                    small
+                                                >
+                                                    {m}
+                                                </Tag>
+                                            ))
+                                        }
                                     </ul>
                                 )) ||
                                     ""
