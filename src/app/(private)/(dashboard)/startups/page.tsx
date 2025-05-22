@@ -25,11 +25,11 @@ export default async function Page() {
     );
     return (
         <>
-            <h1>{routeTitles.startupList()}</h1>
+            <h1>Explorer les produits</h1>
+            <h2>Fiches produits</h2>
             <StartupList startups={startups} />
             <hr />
             <h2>Documents partagés</h2>
-            <p>Retrouvez tous les documents partagés des startups d'état</p>
             <SearchFiles files={files} />
         </>
     );
