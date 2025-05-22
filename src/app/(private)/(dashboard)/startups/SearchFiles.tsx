@@ -1,42 +1,49 @@
 "use client";
+import { useState } from "react";
+
+import { fr } from "@codegouvfr/react-dsfr";
+import Tag from "@codegouvfr/react-dsfr/Tag";
 
 import { FileList } from "@/components/StartupFiles/FileList";
 
-import Checkbox from "@codegouvfr/react-dsfr/Checkbox";
-import { useState } from "react";
+import { typesDocuments } from "@/models/startupFiles";
 
-const allDocTypes = ["Autre", "Document de comité", "Rapport annuel"];
+const allDocTypes = [...typesDocuments]; // prevent TS readonly issue
 
 export const SearchFiles = ({ files }) => {
     const [docTypes, setDocTypes] = useState(allDocTypes);
-    const options = allDocTypes.map((docType) => ({
-        label: docType,
-        nativeInputProps: {
-            defaultChecked: docTypes.includes(docType),
-            value: docType,
-            onClick: (e) => {
-                const checked = e.currentTarget.value;
-                if (docTypes.includes(checked)) {
-                    setDocTypes(docTypes.filter((c) => c !== checked));
-                } else {
-                    setDocTypes((docTypes) => [...docTypes, checked]);
-                }
-            },
-        },
-    }));
     const filteredFiles = files.filter((f) => docTypes.includes(f.type));
     return (
         <>
-            <Checkbox
-                legend="Types de documents :"
-                small={true}
-                orientation="horizontal"
-                options={options}
-            />
+            {allDocTypes.map((docType) => (
+                <Tag
+                    key={docType}
+                    style={{ marginRight: "1em" }}
+                    nativeButtonProps={{
+                        onClick: (e) => {
+                            if (docTypes.includes(docType)) {
+                                setDocTypes(
+                                    docTypes.filter((c) => c !== docType)
+                                );
+                            } else {
+                                setDocTypes((docTypes) => [
+                                    ...docTypes,
+                                    docType,
+                                ]);
+                            }
+                        },
+                    }}
+                    pressed={docTypes.includes(docType)}
+                >
+                    {docType}
+                </Tag>
+            ))}
             {filteredFiles.length ? (
                 <FileList files={filteredFiles} showStartup={true} />
             ) : (
-                <div>Aucun fichier trouvé</div>
+                <div className={fr.cx("fr-mt-2w", "fr-text--heavy")}>
+                    Aucun fichier trouvé
+                </div>
             )}
         </>
     );

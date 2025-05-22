@@ -47,10 +47,6 @@ export const FileForm = ({
                     </option>
                 ))}
             </Select>
-            {/* {(selectedSchema === "Document de comité" && (
-                <FormDocComite file={file} onSubmit={onFormSubmit} />
-            )) ||
-                (selectedSchema !== "default" && ( */}
             {selectedSchema !== "default" && (
                 <FormDoc
                     file={file}
@@ -58,7 +54,6 @@ export const FileForm = ({
                     onSubmit={onFormSubmit}
                 />
             )}
-            {/* ))} */}
         </>
     );
 };

@@ -32,18 +32,6 @@ export const FileList = ({
     files: FilesType;
     showStartup?: boolean;
 }) => {
-    const onDeleteClick = async (uuid) => {
-        if (
-            confirm(
-                "Êtes-vous sûr(e) de vouloir définitivement supprimer ce document ?"
-            )
-        ) {
-            await deleteFile({ uuid });
-
-            // todo: there is a better way
-            document.location.reload();
-        }
-    };
     return (
         files.length > 0 && (
             <Table
@@ -53,9 +41,7 @@ export const FileList = ({
                     showStartup && "Produit",
                     "Type",
                     "Titre",
-                    "Tags",
                     "Commentaires",
-                    "-",
                 ].filter(Boolean)}
                 data={files.map((file) =>
                     [
@@ -82,38 +68,39 @@ export const FileList = ({
                                     : file.type
                             }
                         </Tag>,
-                        <Link
-                            key="title"
-                            target="_blank"
-                            download={file.filename}
-                            href={`/api/startups/files/download/${file.uuid}`}
-                        >
-                            {file.title}
-                        </Link>,
+                        <>
+                            <Link
+                                key="title"
+                                target="_blank"
+                                download={file.filename}
+                                href={`/api/startups/files/download/${file.uuid}`}
+                            >
+                                {file.title}
+                            </Link>
+                            {
+                                // @ts-ignore todo
+                                (file.data?.contenu && (
+                                    // @ts-ignore todo
+                                    <ul className={fr.cx("fr-p-0")}>
+                                        {file.data?.contenu.map((m) => (
+                                            <Tag
+                                                key={m}
+                                                className={fr.cx(
+                                                    "fr-mr-1w",
+                                                    "fr-ml-0"
+                                                )}
+                                                small
+                                            >
+                                                {m}
+                                            </Tag>
+                                        ))}
+                                    </ul>
+                                )) ||
+                                    ""
+                            }
+                        </>,
                         // @ts-ignore todo
-                        (file.data?.contenu &&
-                            // @ts-ignore todo
-                            file.data?.contenu.map((m) => (
-                                <Tag
-                                    key={m}
-                                    className={fr.cx("fr-ml-1w")}
-                                    small
-                                >
-                                    {m}
-                                </Tag>
-                            ))) ||
-                            "-",
                         file.comments || "-",
-                        <Button
-                            size="small"
-                            priority="secondary"
-                            iconId="fr-icon-delete-bin-fill"
-                            key="del"
-                            type="button"
-                            title="Supprimer ce document"
-                            onClick={() => onDeleteClick(file.uuid)}
-                            style={{ cursor: "pointer" }}
-                        />,
                     ].filter(Boolean)
                 )}
             />
