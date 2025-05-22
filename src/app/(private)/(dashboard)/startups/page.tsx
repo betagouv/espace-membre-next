@@ -4,12 +4,16 @@ import { StartupType } from "@/components/SESelect";
 import { StartupList } from "@/components/StartupListPage";
 import { getAllStartups } from "@/lib/kysely/queries";
 import { routeTitles } from "@/utils/routes/routeTitles";
+import { getStartupFiles } from "@/app/api/startups/files/list";
+
+import { SearchFiles } from "./SearchFiles";
 
 export const metadata: Metadata = {
     title: `${routeTitles.startupList()} / Espace Membre`,
 };
 
 export default async function Page() {
+    const files = await getStartupFiles();
     const startups = await getAllStartups().then((r) =>
         r.map(
             (s) =>
@@ -21,8 +25,12 @@ export default async function Page() {
     );
     return (
         <>
-            <h1>{routeTitles.startupList()}</h1>
+            <h1>Explorer les produits</h1>
+            <h2>Fiches produits</h2>
             <StartupList startups={startups} />
+            <hr />
+            <h2>Documents partagés</h2>
+            <SearchFiles files={files} />
         </>
     );
 }

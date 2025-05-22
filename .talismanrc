@@ -11,6 +11,8 @@ fileignoreconfig:
   checksum: 184ab41ee937833492f55d5f09844f1f679fd4d3ee462254b13d124e9e9b76b8
 - filename: generate-email-md.ts
   checksum: aeb35a10ae2e7d9ff2b9f3591ec8fc86661bf1cc4463a7a3b1a7d4b122ac24a7
+- filename: src/app/(private)/(dashboard)/startups/SearchFiles.tsx
+  checksum: 2a4d33a0ace486acb4aefbdb0807c8fe4b4e9cdbfc2c0a573607c6b3c11c22c9
 - filename: src/components/MemberPage/MemberStatus.tsx
   checksum: eaff8ce7da82504889d913a5eaac5019d0fffb52ca24ea62472b24b5b840ea34
 - filename: src/server/config/index.ts
