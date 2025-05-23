@@ -4,7 +4,12 @@ import { fr } from "@codegouvfr/react-dsfr/fr";
 
 import { memberBaseInfoSchemaType, memberSchemaType } from "@/models/member";
 
-import { getLastMissionDate, getFirstMissionDate, hasActiveMissionInStartup, hasPreviousMissionInStartup } from "@/utils/member";
+import {
+    getLastMissionDate,
+    getFirstMissionDate,
+    hasActiveMissionInStartup,
+    hasPreviousMissionInStartup,
+} from "@/utils/member";
 import { startupSchemaType } from "@/models/startup";
 
 export function MemberTable({
@@ -40,14 +45,27 @@ export function MemberTable({
     );
 }
 
-export const StartupMembers = ({ startupInfos, members }:{startupInfos: startupSchemaType, members: }) => {
+export const StartupMembers = ({
+    startupInfos,
+    members,
+}: {
+    startupInfos: startupSchemaType;
+    members: memberBaseInfoSchemaType[];
+}) => {
     const activeMembers = members.filter((member) =>
         hasActiveMissionInStartup(member, startupInfos.uuid)
     );
 
     const previousMembers = members
-        .filter((member) =>hasPreviousMissionInStartup(member, startupInfos.uuid))
-        .filter((member) => !activeMembers.map((member2) => member2.uuid).includes(member.uuid));
+        .filter((member) =>
+            hasPreviousMissionInStartup(member, startupInfos.uuid)
+        )
+        .filter(
+            (member) =>
+                !activeMembers
+                    .map((member2) => member2.uuid)
+                    .includes(member.uuid)
+        );
 
     return (
         <>

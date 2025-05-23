@@ -52,7 +52,7 @@ export const hasActiveMissionInStartup = (
     member: memberSchemaType,
     startupUuid: string
 ) =>
-    member.missions.find(
+    !!member.missions.find(
         (mission) =>
             mission.startups?.includes(startupUuid) &&
             (!mission.end || mission.end >= new Date())
@@ -62,7 +62,7 @@ export const hasPreviousMissionInStartup = (
     member: memberSchemaType,
     startupUuid: string
 ) =>
-    member.missions.find(
+    !!member.missions.find(
         (mission) =>
             mission.startups?.includes(startupUuid) &&
             mission.end &&
