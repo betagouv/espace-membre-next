@@ -9,13 +9,7 @@ export function DepartureReminderInXDaysEmailTitle({
 }: {
   days: EmailEndingContract["variables"]["days"];
 }){
-  if (days === 2) {
-    return "Départ dans 2 jours 🙂"
-  } else if (days === 15) {
-    return "Départ dans 15 jours 🙂"
-  } else {
-    return "Départ dans 30 jours 🙂" 
-  }
+  return `Départ dans ${days} jours 🙂`
 }
 
 export function DepartureReminderInXDaysEmail({
@@ -25,33 +19,15 @@ export function DepartureReminderInXDaysEmail({
   days,
 }: EmailEndingContract["variables"] ) {
   const title = DepartureReminderInXDaysEmailTitle({ days });
+  const leavingDate = format(endDate, "dd MMMM yyyy", { locale: fr });
 
   return (
     <StandardLayout title={title}>
       <MjmlText>
         <h1>Bonjour {user.userInfos.fullname} !</h1>
-        {
-          days === 2 && (
-            <p>
-              Ton départ de la communauté beta.gouv.fr est prévu pour dans 2 jours
-              (le {format(endDate, "dd MMMM yyyy", { locale: fr })}).
-            </p>
-          )
-        }
-        {
-          days === 15 && (
-            <p>
-              Un petit mot pour te rappeler que lorsque ta fiche de membre chez beta.gouv.fr a été créée ou mise-à-jour, ta date de fin de mission a été définie pour (le{" "}
-                {format(endDate, "dd MMMM yyyy", { locale: fr })}). Cette date est pour bientôt !
-            </p>
-          )
-        }
-        { days === 30 && (
-          <p>
-          Un petit rappel concernant ta fiche membre chez beta.gouv.fr : lors de sa création ou de sa mise à jour, ta date de fin de mission a été fixée au {format(endDate, "dd MMMM yyyy", { locale: fr })}. Cette échéance approche !
-          </p>
-          )
-        }
+
+        <p>Ta date de fin de mission est indiquée le {leavingDate}, dans {days} jours.</p>
+
         <p>
           Si cette date a changé, mets-la à jour pour rester membre de la
           communauté. C'est important car elle permet de conserver tes accès aux
