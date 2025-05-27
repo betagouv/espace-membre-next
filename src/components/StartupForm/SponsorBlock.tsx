@@ -11,77 +11,75 @@ import { Option } from "@/models/misc";
 import { Sponsor, sponsorSchemaType } from "@/models/sponsor";
 
 const modal = createModal({
-    id: "foo-modal",
-    isOpenedByDefault: false,
+  id: "foo-modal",
+  isOpenedByDefault: false,
 });
 
 export const SponsorModal = ({ addSponsor }) => {
-    const modalContent = (
-        <modal.Component title="Ajouter un sponsor">
-            <SponsorForm addSponsor={addSponsor} />
-        </modal.Component>
-    );
+  const modalContent = (
+    <modal.Component title="Ajouter un sponsor">
+      <SponsorForm addSponsor={addSponsor} />
+    </modal.Component>
+  );
 
-    return modalContent;
+  return modalContent;
 };
 
 const SponsorBlock = ({
-    setSponsors,
-    sponsors,
-    allSponsors,
-    setNewSponsors,
+  setSponsors,
+  sponsors,
+  allSponsors,
+  setNewSponsors,
 }: {
-    setSponsors: any;
-    sponsors: any;
-    allSponsors: Option[];
-    setNewSponsors: any;
+  setSponsors: any;
+  sponsors: any;
+  allSponsors: Option[];
+  setNewSponsors: any;
 }) => {
-    function openModal() {
-        modal.open();
-    }
+  function openModal() {
+    modal.open();
+  }
 
-    function addSponsor(
-        newSponsor: startupInfoUpdateSchemaType["newSponsors"],
-    ) {
-        setNewSponsors([newSponsor]);
-        modal.close();
-    }
-    return (
-        <div className="fr-input-group">
-            <SESponsorSelect
-                isMulti={true}
-                value={sponsors}
-                allSponsors={allSponsors}
-                onChange={(newSponsors) => {
-                    setSponsors(newSponsors);
-                }}
-                placeholder={"Sélectionne un ou plusieurs sponsors"}
-                containerStyle={{
-                    marginBottom: `0.5rem`,
-                }}
-                hint={"Administration(s) qui sponsorise(nt) le produit"}
-            />
-            <span className="fr-text fr-text--sm">
-                Le sponsor n'est pas encore dans la base de donnée ?
-            </span>
-            <Button
-                nativeButtonProps={{
-                    onClick: openModal,
-                }}
-                type="button"
-                style={{
-                    marginLeft: `0.5rem`,
-                    transform: `translateY(0.25rem)`,
-                }}
-                iconId="fr-icon-add-circle-fill"
-                priority="tertiary no outline"
-                size="small"
-            >
-                Ajouter un sponsor
-            </Button>
-            <SponsorModal addSponsor={addSponsor}></SponsorModal>
-        </div>
-    );
+  function addSponsor(newSponsor: startupInfoUpdateSchemaType["newSponsors"]) {
+    setNewSponsors([newSponsor]);
+    modal.close();
+  }
+  return (
+    <div className="fr-input-group">
+      <SESponsorSelect
+        isMulti={true}
+        value={sponsors}
+        allSponsors={allSponsors}
+        onChange={(newSponsors) => {
+          setSponsors(newSponsors);
+        }}
+        placeholder={"Sélectionne un ou plusieurs sponsors"}
+        containerStyle={{
+          marginBottom: `0.5rem`,
+        }}
+        hint={"Administration(s) qui sponsorise(nt) le produit"}
+      />
+      <span className="fr-text fr-text--sm">
+        Le sponsor n'est pas encore dans la base de donnée ?
+      </span>
+      <Button
+        nativeButtonProps={{
+          onClick: openModal,
+        }}
+        type="button"
+        style={{
+          marginLeft: `0.5rem`,
+          transform: `translateY(0.25rem)`,
+        }}
+        iconId="fr-icon-add-circle-fill"
+        priority="tertiary no outline"
+        size="small"
+      >
+        Ajouter un sponsor
+      </Button>
+      <SponsorModal addSponsor={addSponsor}></SponsorModal>
+    </div>
+  );
 };
 
 export default SponsorBlock;

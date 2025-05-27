@@ -19,107 +19,106 @@ import { capitalizeWords } from "@/server/controllers/utils";
 import { authOptions } from "@/utils/authoptions";
 
 const getAllServiceUserAccounts = (id) =>
-    db
-        .selectFrom("service_accounts")
-        .selectAll()
-        .where("user_id", "=", id)
-        .execute();
+  db
+    .selectFrom("service_accounts")
+    .selectAll()
+    .where("user_id", "=", id)
+    .execute();
 
 export default async function Page() {
-    const session = await getServerSession(authOptions);
-    if (!session) {
-        redirect("/login");
-    }
+  const session = await getServerSession(authOptions);
+  if (!session) {
+    redirect("/login");
+  }
 
-    const service_accounts = await getAllServiceUserAccounts(session.user.uuid);
-    const sentry = service_accounts.find(
-        (s) => s.account_type === SERVICES.SENTRY
-    );
-    const matomo = service_accounts.find(
-        (s) => s.account_type === SERVICES.MATOMO
-    );
-    const mattermost = service_accounts.find(
-        (s) => s.account_type === SERVICES.MATTERMOST
-    );
+  const service_accounts = await getAllServiceUserAccounts(session.user.uuid);
+  const sentry = service_accounts.find(
+    (s) => s.account_type === SERVICES.SENTRY,
+  );
+  const matomo = service_accounts.find(
+    (s) => s.account_type === SERVICES.MATOMO,
+  );
+  const mattermost = service_accounts.find(
+    (s) => s.account_type === SERVICES.MATTERMOST,
+  );
 
-    const services = [
-        {
-            account: matomo,
-            artwork: dataviz,
-            serviceName: SERVICES.MATOMO,
-        },
-        {
-            account: sentry,
-            serviceName: SERVICES.SENTRY,
-            artwork: error,
-        },
-        // {
-        //     service: mattermost,
-        //     artwork: information,
-        // },
-    ];
-    return (
-        <div className={fr.cx("fr-container", "fr-pb-6w")}>
-            <h2 className={fr.cx("fr-pt-4w")}>Demandes d'accès outils</h2>
-            {services.map((service) => (
-                <div
-                    key={service.serviceName}
-                    className={fr.cx("fr-grid-row", "fr-grid-row--gutters")}
-                >
-                    <div className={fr.cx("fr-col-6")}>
-                        <Tile
-                            small={true}
-                            // className={fr.cx("fr-tile--sm")}
-                            title={capitalizeWords(service.serviceName || "")}
-                            desc={match(service.account)
-                                .with(
-                                    {
-                                        status: ACCOUNT_SERVICE_STATUS.ACCOUNT_FOUND,
-                                    },
-                                    () => (
-                                        <Badge severity="success" as="span">
-                                            Compte existant
-                                        </Badge>
-                                    )
-                                )
-                                .with(
-                                    {
-                                        status: ACCOUNT_SERVICE_STATUS.ACCOUNT_CREATION_PENDING,
-                                    },
-                                    () => (
-                                        <Badge severity="new" as="span">
-                                            Compte en cours de creation
-                                        </Badge>
-                                    )
-                                )
-                                .with(
-                                    {
-                                        status: ACCOUNT_SERVICE_STATUS.ACCOUNT_INVITATION_SENT,
-                                    },
-                                    () => (
-                                        <Badge severity="new" as="span">
-                                            Tu as reçu une invitation par email
-                                            pour te connecter.
-                                        </Badge>
-                                    )
-                                )
-                                .otherwise(() => (
-                                    <Badge noIcon as="span">
-                                        Pas de compte
-                                    </Badge>
-                                ))}
-                            orientation="horizontal"
-                            noIcon={true}
-                            titleAs="h6"
-                            imageSvg={false}
-                            imageUrl={`static/images/${service.serviceName}.png`}
-                            linkProps={{
-                                href: `/services/${service.serviceName}`,
-                            }}
-                        />
-                    </div>
-                </div>
-            ))}
+  const services = [
+    {
+      account: matomo,
+      artwork: dataviz,
+      serviceName: SERVICES.MATOMO,
+    },
+    {
+      account: sentry,
+      serviceName: SERVICES.SENTRY,
+      artwork: error,
+    },
+    // {
+    //     service: mattermost,
+    //     artwork: information,
+    // },
+  ];
+  return (
+    <div className={fr.cx("fr-container", "fr-pb-6w")}>
+      <h2 className={fr.cx("fr-pt-4w")}>Demandes d'accès outils</h2>
+      {services.map((service) => (
+        <div
+          key={service.serviceName}
+          className={fr.cx("fr-grid-row", "fr-grid-row--gutters")}
+        >
+          <div className={fr.cx("fr-col-6")}>
+            <Tile
+              small={true}
+              // className={fr.cx("fr-tile--sm")}
+              title={capitalizeWords(service.serviceName || "")}
+              desc={match(service.account)
+                .with(
+                  {
+                    status: ACCOUNT_SERVICE_STATUS.ACCOUNT_FOUND,
+                  },
+                  () => (
+                    <Badge severity="success" as="span">
+                      Compte existant
+                    </Badge>
+                  ),
+                )
+                .with(
+                  {
+                    status: ACCOUNT_SERVICE_STATUS.ACCOUNT_CREATION_PENDING,
+                  },
+                  () => (
+                    <Badge severity="new" as="span">
+                      Compte en cours de creation
+                    </Badge>
+                  ),
+                )
+                .with(
+                  {
+                    status: ACCOUNT_SERVICE_STATUS.ACCOUNT_INVITATION_SENT,
+                  },
+                  () => (
+                    <Badge severity="new" as="span">
+                      Tu as reçu une invitation par email pour te connecter.
+                    </Badge>
+                  ),
+                )
+                .otherwise(() => (
+                  <Badge noIcon as="span">
+                    Pas de compte
+                  </Badge>
+                ))}
+              orientation="horizontal"
+              noIcon={true}
+              titleAs="h6"
+              imageSvg={false}
+              imageUrl={`static/images/${service.serviceName}.png`}
+              linkProps={{
+                href: `/services/${service.serviceName}`,
+              }}
+            />
+          </div>
         </div>
-    );
+      ))}
+    </div>
+  );
 }

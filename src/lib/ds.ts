@@ -1,17 +1,17 @@
-import axios from 'axios';
+import axios from "axios";
 
 const makeDS = ({ DS_TOKEN }) => {
   const getDSConfig = () => {
     if (!DS_TOKEN) {
       const errorMessage =
-        'Unable to launch ds api calls without env var DS_TOKEN';
+        "Unable to launch ds api calls without env var DS_TOKEN";
       console.error(errorMessage);
       throw new Error(errorMessage);
     }
     return {
       headers: {
         Authorization: `Bearer ${DS_TOKEN}`,
-        'Content-Type': 'application/json',
+        "Content-Type": "application/json",
       },
     };
   };
@@ -46,7 +46,7 @@ const makeDS = ({ DS_TOKEN }) => {
             demarcheNumber: demarcheId,
           },
         }),
-        getDSConfig()
+        getDSConfig(),
       )
       .then((resp) => resp.data.data.demarche.dossiers);
   }
@@ -419,7 +419,7 @@ const makeDS = ({ DS_TOKEN }) => {
             dossierNumber: dossierNumber,
           },
         }),
-        getDSConfig()
+        getDSConfig(),
       )
       .then((resp) => {
         if (resp.data.data) {
@@ -432,7 +432,7 @@ const makeDS = ({ DS_TOKEN }) => {
 
   function createPrefillDossier(
     demarcheId,
-    params
+    params,
   ): Promise<{
     dossier_url: string;
     state: string;
@@ -449,9 +449,9 @@ const makeDS = ({ DS_TOKEN }) => {
         },
         {
           headers: {
-            'Content-Type': 'application/json',
+            "Content-Type": "application/json",
           },
-        }
+        },
       )
       .then((resp) => {
         return resp.data;

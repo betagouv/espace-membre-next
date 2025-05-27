@@ -12,77 +12,77 @@ import { sentryClient } from "@/server/config/sentry.config";
 export const updateSentryServiceAccountTopic = "update-sentry-service-account";
 
 export async function updateSentryServiceAccount(
-    job: PgBoss.Job<UpdateSentryAccountDataSchemaType>
+  job: PgBoss.Job<UpdateSentryAccountDataSchemaType>,
 ) {
-    console.log(
-        `update sentry service account for ${job.data.username}`,
-        job.id,
-        job.name
-    );
-    let user;
-    try {
-        user = await sentryClient.fetchUserAccess(job.data.memberId);
+  console.log(
+    `update sentry service account for ${job.data.username}`,
+    job.id,
+    job.name,
+  );
+  let user;
+  try {
+    user = await sentryClient.fetchUserAccess(job.data.memberId);
 
-        await pAll(
-            job.data.teams.map((t) => async () => {
-                await sentryClient.addUserToTeam({
-                    memberId: job.data.memberId,
-                    teamSlug: t.teamSlug,
-                });
-                await sentryClient.changeMemberRoleInTeam({
-                    memberId: job.data.memberId,
-                    teamSlug: t.teamSlug,
-                    teamRole: t.teamRole,
-                });
-            })
-        );
-
-        await db
-            .updateTable("service_accounts")
-            .set({
-                service_user_id: job.data.memberId,
-                status: ACCOUNT_SERVICE_STATUS.ACCOUNT_INVITATION_SENT,
-            })
-            .where("account_type", "=", SERVICES.SENTRY)
-            .where("user_id", "=", job.data.userUuid)
-            .executeTakeFirstOrThrow();
-
-        await addEvent({
-            action_code: EventCode.MEMBER_SERVICE_ACCOUNT_UPDATED,
-            action_metadata: {
-                jobId: job.id,
-                service: SERVICES.SENTRY,
-                teams: job.data.teams,
-                requestId: job.data.requestId,
-            },
-            action_on_username: job.data.username,
-            created_by_username: job.data.username,
+    await pAll(
+      job.data.teams.map((t) => async () => {
+        await sentryClient.addUserToTeam({
+          memberId: job.data.memberId,
+          teamSlug: t.teamSlug,
         });
-    } catch (e) {
-        if (e === userNotFound) {
-            console.error("This user does not exists");
-            userDoesNoExist(job);
-        } else {
-            throw e;
-        }
+        await sentryClient.changeMemberRoleInTeam({
+          memberId: job.data.memberId,
+          teamSlug: t.teamSlug,
+          teamRole: t.teamRole,
+        });
+      }),
+    );
+
+    await db
+      .updateTable("service_accounts")
+      .set({
+        service_user_id: job.data.memberId,
+        status: ACCOUNT_SERVICE_STATUS.ACCOUNT_INVITATION_SENT,
+      })
+      .where("account_type", "=", SERVICES.SENTRY)
+      .where("user_id", "=", job.data.userUuid)
+      .executeTakeFirstOrThrow();
+
+    await addEvent({
+      action_code: EventCode.MEMBER_SERVICE_ACCOUNT_UPDATED,
+      action_metadata: {
+        jobId: job.id,
+        service: SERVICES.SENTRY,
+        teams: job.data.teams,
+        requestId: job.data.requestId,
+      },
+      action_on_username: job.data.username,
+      created_by_username: job.data.username,
+    });
+  } catch (e) {
+    if (e === userNotFound) {
+      console.error("This user does not exists");
+      userDoesNoExist(job);
+    } else {
+      throw e;
     }
-    console.log(`the sentry account has been updated for ${job.data.username}`);
+  }
+  console.log(`the sentry account has been updated for ${job.data.username}`);
 }
 
 const userDoesNoExist = async (
-    job: PgBoss.Job<UpdateSentryAccountDataSchemaType>
+  job: PgBoss.Job<UpdateSentryAccountDataSchemaType>,
 ) => {
-    // user has been deleted before the job calling the job
-    await addEvent({
-        action_code:
-            EventCode.MEMBER_SERVICE_ACCOUNT_UPDATE_FAILED_USER_DOES_NOT_EXIST,
-        action_metadata: {
-            jobId: job.id,
-            service: SERVICES.SENTRY,
-            teams: job.data.teams,
-            requestId: job.data.requestId,
-        },
-        action_on_username: job.data.username,
-        created_by_username: job.data.username,
-    });
+  // user has been deleted before the job calling the job
+  await addEvent({
+    action_code:
+      EventCode.MEMBER_SERVICE_ACCOUNT_UPDATE_FAILED_USER_DOES_NOT_EXIST,
+    action_metadata: {
+      jobId: job.id,
+      service: SERVICES.SENTRY,
+      teams: job.data.teams,
+      requestId: job.data.requestId,
+    },
+    action_on_username: job.data.username,
+    created_by_username: job.data.username,
+  });
 };

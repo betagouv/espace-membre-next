@@ -1,4 +1,4 @@
-// function use by NextAuth to hashtoken, unfortunatly is not export by 
+// function use by NextAuth to hashtoken, unfortunatly is not export by
 
 import { createHash } from "crypto";
 
@@ -9,5 +9,5 @@ export function hashToken(token: string, secret: string) {
       // Prefer provider specific secret, but use default secret if none specified
       .update(`${token}${secret}`)
       .digest("hex")
-  )
+  );
 }

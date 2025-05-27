@@ -1,2 +1,2 @@
-import { createRedirectionEmailAdresses } from '@schedulers/emailScheduler';
-createRedirectionEmailAdresses()
+import { createRedirectionEmailAdresses } from "@schedulers/emailScheduler";
+createRedirectionEmailAdresses();

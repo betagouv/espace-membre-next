@@ -11,62 +11,62 @@ import { memberChangeToModel, userInfosToModel } from "@/models/mapper";
 import { authOptions } from "@/utils/authoptions";
 
 export const generateMetadata = async ({
-    params: { id },
+  params: { id },
 }: {
-    params: { id: string };
+  params: { id: string };
 }) => {
-    const dbData = await getUserInfos({ username: id });
+  const dbData = await getUserInfos({ username: id });
 
-    return {
-        title: `Mise à jour des infos de ${dbData?.fullname} / Espace Membre`,
-    };
+  return {
+    title: `Mise à jour des infos de ${dbData?.fullname} / Espace Membre`,
+  };
 };
 
 export default async function Page({
-    params: { id },
+  params: { id },
 }: {
-    params: { id: string };
+  params: { id: string };
 }) {
-    const session = await getServerSession(authOptions);
+  const session = await getServerSession(authOptions);
 
-    if (!session) {
-        redirect("/login");
-    }
-    if (!session.user.isAdmin) {
-        redirect(`/community/${id}`);
-    }
-    const dbData = await getUserInfos({ username: id });
-    const userInfos = userInfosToModel(dbData);
-    const startups = await getAllStartups();
-    const startupOptions = startups.map((startup) => ({
-        value: startup.uuid,
-        label: startup.name || "",
-    }));
-    if (!userInfos) {
-        redirect("/errors");
-    }
+  if (!session) {
+    redirect("/login");
+  }
+  if (!session.user.isAdmin) {
+    redirect(`/community/${id}`);
+  }
+  const dbData = await getUserInfos({ username: id });
+  const userInfos = userInfosToModel(dbData);
+  const startups = await getAllStartups();
+  const startupOptions = startups.map((startup) => ({
+    value: startup.uuid,
+    label: startup.name || "",
+  }));
+  if (!userInfos) {
+    redirect("/errors");
+  }
 
-    const changes = await getEventListByUsername(id);
+  const changes = await getEventListByUsername(id);
 
-    const props = {
-        formData: {
-            member: {
-                ...userInfos,
-            },
-        },
-        changes: changes.map((change) => memberChangeToModel(change)),
-        profileURL: await getAvatarUrl(id),
-        startupOptions,
-        username: id,
-    };
+  const props = {
+    formData: {
+      member: {
+        ...userInfos,
+      },
+    },
+    changes: changes.map((change) => memberChangeToModel(change)),
+    profileURL: await getAvatarUrl(id),
+    startupOptions,
+    username: id,
+  };
 
-    return (
-        <>
-            <BreadCrumbFiller
-                currentPage={userInfos.fullname}
-                currentItemId={userInfos.username}
-            />
-            <BaseInfoUpdate {...props} />
-        </>
-    );
+  return (
+    <>
+      <BreadCrumbFiller
+        currentPage={userInfos.fullname}
+        currentItemId={userInfos.username}
+      />
+      <BaseInfoUpdate {...props} />
+    </>
+  );
 }

@@ -5,35 +5,35 @@ import locationFrance from "@gouvfr/dsfr/dist/artwork/pictograms/map/location-fr
 import { StaticImageData } from "next/image";
 
 export default async function Page() {
-    return (
-        <div className={fr.cx("fr-container", "fr-pb-6w")}>
-            <h2 className={fr.cx("fr-pt-4w")}>Admin</h2>
-            <div className={fr.cx("fr-grid-row", "fr-grid-row--gutters")}>
-                <div className={fr.cx("fr-col-12", "fr-col-lg-6")}>
-                    <Tile
-                        className={fr.cx("fr-tile--sm")}
-                        title="Mattermost"
-                        desc="Voir les membres mattermost"
-                        orientation="horizontal"
-                        imageUrl={(community as StaticImageData).src}
-                        linkProps={{
-                            href: "/admin/mattermost",
-                        }}
-                    />
-                </div>
-                <div className={fr.cx("fr-col-12", "fr-col-lg-6")}>
-                    <Tile
-                        className={fr.cx("fr-tile--sm")}
-                        title="Newsletters"
-                        desc="Definir la date de la prochaine newsletters"
-                        orientation="horizontal"
-                        imageUrl={(locationFrance as StaticImageData).src}
-                        linkProps={{
-                            href: `/admin/newsletters`,
-                        }}
-                    />
-                </div>
-            </div>
+  return (
+    <div className={fr.cx("fr-container", "fr-pb-6w")}>
+      <h2 className={fr.cx("fr-pt-4w")}>Admin</h2>
+      <div className={fr.cx("fr-grid-row", "fr-grid-row--gutters")}>
+        <div className={fr.cx("fr-col-12", "fr-col-lg-6")}>
+          <Tile
+            className={fr.cx("fr-tile--sm")}
+            title="Mattermost"
+            desc="Voir les membres mattermost"
+            orientation="horizontal"
+            imageUrl={(community as StaticImageData).src}
+            linkProps={{
+              href: "/admin/mattermost",
+            }}
+          />
         </div>
-    );
+        <div className={fr.cx("fr-col-12", "fr-col-lg-6")}>
+          <Tile
+            className={fr.cx("fr-tile--sm")}
+            title="Newsletters"
+            desc="Definir la date de la prochaine newsletters"
+            orientation="horizontal"
+            imageUrl={(locationFrance as StaticImageData).src}
+            linkProps={{
+              href: `/admin/newsletters`,
+            }}
+          />
+        </div>
+      </div>
+    </div>
+  );
 }

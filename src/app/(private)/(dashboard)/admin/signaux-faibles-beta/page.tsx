@@ -8,15 +8,15 @@ import { authOptions } from "@/utils/authoptions";
 import { routeTitles } from "@/utils/routes/routeTitles";
 
 export const metadata: Metadata = {
-    title: `${routeTitles.adminMattermost()} / Espace Membre`,
+  title: `${routeTitles.adminMattermost()} / Espace Membre`,
 };
 
 export default async function Page(props) {
-    const session = await getServerSession(authOptions);
+  const session = await getServerSession(authOptions);
 
-    if (session && !session.user.isAdmin) {
-        redirect("/dashboard");
-    }
-    const data = await buildStartupDashboardData();
-    return <AdminProductClientPage data={data} title={""} />;
+  if (session && !session.user.isAdmin) {
+    redirect("/dashboard");
+  }
+  const data = await buildStartupDashboardData();
+  return <AdminProductClientPage data={data} title={""} />;
 }

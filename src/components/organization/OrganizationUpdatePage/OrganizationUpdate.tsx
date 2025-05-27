@@ -12,51 +12,44 @@ import { sponsorSchemaType } from "@/models/sponsor";
 import { routeTitles } from "@/utils/routes/routeTitles";
 
 interface OrganizationUpdateProps {
-    organization: sponsorSchemaType;
+  organization: sponsorSchemaType;
 }
 
 /* Pure component */
 export const OrganizationUpdate = (props: OrganizationUpdateProps) => {
-    const css = ".panel { overflow: hidden; width: auto; min-height: 100vh; }";
+  const css = ".panel { overflow: hidden; width: auto; min-height: 100vh; }";
 
-    const save = async (data: organizationUpdateSchemaType) => {
-        try {
-            await updateOrganization({
-                organization: data,
-                organizationUuid: props.organization.uuid,
-            });
-            window.scrollTo({ top: 20, behavior: "smooth" });
-            return {
-                // ...resp,
-                isUpdate: true,
-            };
-        } catch (e) {
-            Sentry.captureException(e);
-            console.error(e);
-            window.scrollTo({ top: 20, behavior: "smooth" });
-            throw e;
-        }
-    };
+  const save = async (data: organizationUpdateSchemaType) => {
+    try {
+      await updateOrganization({
+        organization: data,
+        organizationUuid: props.organization.uuid,
+      });
+      window.scrollTo({ top: 20, behavior: "smooth" });
+      return {
+        // ...resp,
+        isUpdate: true,
+      };
+    } catch (e) {
+      Sentry.captureException(e);
+      console.error(e);
+      window.scrollTo({ top: 20, behavior: "smooth" });
+      throw e;
+    }
+  };
 
-    return (
-        <>
-            <div className={fr.cx("fr-mb-5w")}>
-                <h1>
-                    {routeTitles.organizationDetailsEdit(
-                        props.organization.name
-                    )}
-                </h1>
+  return (
+    <>
+      <div className={fr.cx("fr-mb-5w")}>
+        <h1>{routeTitles.organizationDetailsEdit(props.organization.name)}</h1>
 
-                <div className="beta-banner"></div>
+        <div className="beta-banner"></div>
 
-                {(props.organization && (
-                    <OrganizationForm
-                        save={save}
-                        organization={props.organization}
-                    />
-                )) || <>Loading...</>}
-            </div>
-            <style media="screen">{css}</style>
-        </>
-    );
+        {(props.organization && (
+          <OrganizationForm save={save} organization={props.organization} />
+        )) || <>Loading...</>}
+      </div>
+      <style media="screen">{css}</style>
+    </>
+  );
 };

@@ -6,25 +6,25 @@ import type { Metadata } from "next";
 
 import { safeGetMattermostInfo } from "@/app/api/admin/actions/getMattermostAdmin";
 import {
-    AdminMattermost,
-    AdminMattermostProps,
+  AdminMattermost,
+  AdminMattermostProps,
 } from "@/components/AdminMattermostPage/AdminMattermost";
 import routes, { computeRoute } from "@/routes/routes";
 
 export default function Page() {
-    const [data, setData] = useState({});
-    const [isLoading, setIsLoading] = useState(true);
-    useEffect(() => {
-        async function fetchData() {
-            const res = await safeGetMattermostInfo();
-            setData(res.data || {});
-            setIsLoading(false);
-        }
-        fetchData();
-    }, []);
+  const [data, setData] = useState({});
+  const [isLoading, setIsLoading] = useState(true);
+  useEffect(() => {
+    async function fetchData() {
+      const res = await safeGetMattermostInfo();
+      setData(res.data || {});
+      setIsLoading(false);
+    }
+    fetchData();
+  }, []);
 
-    if (isLoading) return <p>Chargement...</p>;
-    if (!data) return <p>No profile data</p>;
+  if (isLoading) return <p>Chargement...</p>;
+  if (!data) return <p>No profile data</p>;
 
-    return <AdminMattermost {...(data as AdminMattermostProps)} />;
+  return <AdminMattermost {...(data as AdminMattermostProps)} />;
 }

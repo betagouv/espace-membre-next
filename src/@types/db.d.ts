@@ -6,13 +6,17 @@
 import type { ColumnType } from "kysely";
 import type { IPostgresInterval } from "postgres-interval";
 
-export type Generated<T> = T extends ColumnType<infer S, infer I, infer U>
-  ? ColumnType<S, I | undefined, U>
-  : ColumnType<T, T | undefined, T>;
+export type Generated<T> =
+  T extends ColumnType<infer S, infer I, infer U>
+    ? ColumnType<S, I | undefined, U>
+    : ColumnType<T, T | undefined, T>;
 
 export type Int8 = ColumnType<string, bigint | number | string>;
 
-export type Interval = ColumnType<IPostgresInterval, IPostgresInterval | number | string>;
+export type Interval = ColumnType<
+  IPostgresInterval,
+  IPostgresInterval | number | string
+>;
 
 export type Json = JsonValue;
 
@@ -30,13 +34,37 @@ export type MissionsStatusEnum = "admin" | "independent" | "service";
 
 export type Numeric = ColumnType<string, number | string>;
 
-export type PgbossJobState = "active" | "cancelled" | "completed" | "created" | "expired" | "failed" | "retry";
+export type PgbossJobState =
+  | "active"
+  | "cancelled"
+  | "completed"
+  | "created"
+  | "expired"
+  | "failed"
+  | "retry";
 
-export type StartupsPhaseEnum = "acceleration" | "alumni" | "construction" | "investigation" | "success" | "transfer";
+export type StartupsPhaseEnum =
+  | "acceleration"
+  | "alumni"
+  | "construction"
+  | "investigation"
+  | "success"
+  | "transfer";
 
 export type Timestamp = ColumnType<Date, Date | string>;
 
-export type UsersDomaineEnum = "Animation" | "Attributaire" | "Autre" | "Coaching" | "Data" | "Déploiement" | "Design" | "Développement" | "Intraprenariat" | "Produit" | "Support";
+export type UsersDomaineEnum =
+  | "Animation"
+  | "Attributaire"
+  | "Autre"
+  | "Coaching"
+  | "Data"
+  | "Déploiement"
+  | "Design"
+  | "Développement"
+  | "Intraprenariat"
+  | "Produit"
+  | "Support";
 
 export interface Accounts {
   access_token: string | null;

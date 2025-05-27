@@ -8,15 +8,15 @@ import { memberPublicInfoToModel, startupToModel } from "@/models/mapper";
 import { routeTitles } from "@/utils/routes/routeTitles";
 
 export const metadata: Metadata = {
-    title: `${routeTitles.keskispasse()} / Espace Membre`,
+  title: `${routeTitles.keskispasse()} / Espace Membre`,
 };
 
 export default async function Page() {
-    const usersInfos = (await getAllUsersInfo()).map((user) =>
-        memberPublicInfoToModel(user)
-    );
-    const startups = (await getAllStartups()).map((startup) =>
-        startupToModel(startup)
-    );
-    return <WhatIsGoingOnWithMember startups={startups} users={usersInfos} />;
+  const usersInfos = (await getAllUsersInfo()).map((user) =>
+    memberPublicInfoToModel(user),
+  );
+  const startups = (await getAllStartups()).map((startup) =>
+    startupToModel(startup),
+  );
+  return <WhatIsGoingOnWithMember startups={startups} users={usersInfos} />;
 }
