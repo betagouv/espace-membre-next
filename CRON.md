@@ -2,15 +2,15 @@
 
 | enabled | fréquence | code | description |
 |---------|-----------|------|-------------|
-| ❌ | `0 0 10 * * 3` | `newsletterFirstReminderJob` | Rappel mattermost newsletter 1 |
-| ❌ | `0 0 8 * * 2` | `newsletterSecondReminderJob` | Rappel mattermost newsletter 2 |
-| ❌ | `0 16 * * 2` | `sendNewsletterAndCreateNewOneJob` | Envoi de la newsletter et creation d'un nouveau PAD + message mattermost |
+| ✅ | `0 0 10 * * 3` | `newsletterFirstReminderJob` | Rappel mattermost newsletter 1 |
+| ✅ | `0 0 8 * * 2` | `newsletterSecondReminderJob` | Rappel mattermost newsletter 2 |
+| ✅ | `0 16 * * 2` | `sendNewsletterAndCreateNewOneJob` | Envoi de la newsletter et creation d'un nouveau PAD + message mattermost |
 | ✅ | `0 0 14 * * *` | `removeBetaAndParnersUsersFromCommunityTeam` | Move expired user to mattermost alumni |
 | ✅ | `0 0 14 * * 1` | `sendReminderToUserAtDays` | Send mattermost message to expired users (90 days) |
 | ❌ | `0 0 5 * * 1` | `sendReminderToUserAtDays` | Send mattermost message to expired users (30 days) |
 | ✅ | `0 0 10 * * *` | `sendGroupDeSoutienReminder` | Send mattermost message groupe de soutien |
-| ❌ | `0 */8 * * * *` | `createUsersByEmail` | Create missing mattermost users and send invitation email |
-| ❌ | `0 */8 * * * *` | `addUsersNotInCommunityToCommunityTeam` | Add existing users to community team if there not in |
+| ✅ | `0 */8 * * * *` | `createUsersByEmail` | Create missing mattermost users and send invitation email |
+| ✅ | `0 */8 * * * *` | `addUsersNotInCommunityToCommunityTeam` | Add existing users to community team if there not in |
 | ❌ | `0 0 8 1 * *` | `reactivateUsers` | Reactivate mattermost accounts if any |
 | ❌ | `0 0 10 * * *` | `removeUsersFromCommunityTeam` | Remove expired users from mattermost community team (90 days) |
 | ❌ | `0 10 10 * * *` | `moveUsersToAlumniTeam` | Add user to mattermost alumni team |
@@ -33,22 +33,22 @@
 | ✅ | `0 */4 * * * *` | `emailCreationJob` | Créé les emails en attente sur OVH |
 | ✅ | `0 */4 * * * *` | `cron de creation de redirection` | Créé les redirections email en attente sur OVH |
 | ✅ | `0 */4 * * * *` | `setEmailRedirectionActive` | Ajoute les nouvelles redirections aux mailing-lists brevo et active l'adresse |
-| ❌ | `0 */4 * * * *` | `subscribeEmailAddresses` | Re-inscrit les désabonnés à la mailing-list brevo incubateur |
-| ❌ | `0 */4 * * * *` | `unsubscribeEmailAddresses` | Désinscrit les membres expirés de la mailing list |
-| ❌ | `0 */5 * * * 1-5` | `addGithubUserToOrganization` | Envoi des invitations GitHub et ajout à la team GitHub/betagouv |
-| ❌ | `0 0 18 * * *` | `removeGithubUserFromOrganization` | Désinscrit les membres expirés de l'organisation GitHub |
-| ❌ | `0 0 8,14 * * *` | `deleteRedirectionsAfterQuitting` | Supprime les redirections email OVH des utilisateurs expirés |
-| ❌ | `0 0 8 * * *` | `sendJ1Email` | Email départ J+1 |
-| ❌ | `0 0 8 * * *` | `sendJ30Email` | Email départ J+30 |
+| ✅ | `0 */4 * * * *` | `subscribeEmailAddresses` | Re-inscrit les désabonnés à la mailing-list brevo incubateur |
+| ✅ | `0 */4 * * * *` | `unsubscribeEmailAddresses` | Désinscrit les membres expirés de la mailing list |
+| ✅ | `0 */5 * * * 1-5` | `addGithubUserToOrganization` | Envoi des invitations GitHub et ajout à la team GitHub/betagouv |
+| ✅ | `0 0 18 * * *` | `removeGithubUserFromOrganization` | Désinscrit les membres expirés de l'organisation GitHub |
+| ✅ | `0 0 8,14 * * *` | `deleteRedirectionsAfterQuitting` | Supprime les redirections email OVH des utilisateurs expirés |
+| ✅ | `0 0 8 * * *` | `sendJ1Email` | Email départ J+1 |
+| ✅ | `0 0 8 * * *` | `sendJ30Email` | Email départ J+30 |
 | ❌ | `0 0 10 * * *` | `deleteSecondaryEmailsForUsers` | Supprime dans la DB les emails secondaires des membres expirés |
-| ❌ | `0 0 15 * * *` | `deleteOVHEmailAcounts` | Supprime les emails OVH des membres expirés (30 days) |
-| ❌ | `0 0 15 * * *` | `setEmailExpired` | Marque en DB les emails des membres comme expirés |
-| ❌ | `0 0 8 * * *` | `removeEmailsFromMailingList` | Supprime les utilisateurs expirés des mailing-lists brevo ONBOARDING,NEWSLETTER |
-| ❌ | `0 0 14 * * *` | `reinitPasswordEmail` | Réinitialise le mot de passe email des membres expirés après 5 jours |
-| ❌ | `0 0 10 * * *` | `sendContractEndingMessageToUsers15days` | Sending contract ending message to users (15 days) |
-| ❌ | `0 0 10 * * *` | `sendContractEndingMessageToUsers30days` | Sending contract ending message to users (30 days) |
-| ❌ | `0 0 10 * * *` | `sendContractEndingMessageToUsers2days` | Sending contract ending message to users (2 days) |
-| ❌ | `0 10 1 * *` | `sendMessageToActiveUsersWithoutSecondaryEmail` | Send message to active user without secondary email to update secondary email |
+| ✅ | `0 0 15 * * *` | `deleteOVHEmailAcounts` | Supprime les emails OVH des membres expirés (30 days) |
+| ✅ | `0 0 15 * * *` | `setEmailExpired` | Marque en DB les emails des membres comme expirés |
+| ✅ | `0 0 8 * * *` | `removeEmailsFromMailingList` | Supprime les utilisateurs expirés des mailing-lists brevo ONBOARDING,NEWSLETTER |
+| ✅ | `0 0 14 * * *` | `reinitPasswordEmail` | Réinitialise le mot de passe email des membres expirés après 5 jours |
+| ✅ | `0 0 10 * * *` | `sendContractEndingMessageToUsers15days` | Sending contract ending message to users (15 days) |
+| ✅ | `0 0 10 * * *` | `sendContractEndingMessageToUsers30days` | Sending contract ending message to users (30 days) |
+| ✅ | `0 0 10 * * *` | `sendContractEndingMessageToUsers2days` | Sending contract ending message to users (2 days) |
+| ✅ | `0 10 1 * *` | `sendMessageToActiveUsersWithoutSecondaryEmail` | Send message to active user without secondary email to update secondary email |
 
 # Liste des jobs pg-boss
 

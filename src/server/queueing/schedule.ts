@@ -1,3 +1,6 @@
+// NOTE: if you update this file, make sure you update the jobs
+// documentation file (CRON.md) file with `make cron-docs`.
+
 import { getBossClientInstance, startBossClientInstance } from "./client";
 import { sendEmailToIncubatorTeamTopic } from "./workers/send-email-to-incubator";
 import { sendEmailToTeamsToCheckOnTeamCompositionTopic } from "./workers/send-email-to-teams-to-check-on-team-composition";
