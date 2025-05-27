@@ -5,31 +5,31 @@ import { db } from "@/lib/kysely";
 import { StartupPhase } from "@/models/startup";
 
 export const getLatests = () =>
-    db
-        .selectFrom("startups")
-        .innerJoin("incubators", "incubators.uuid", "startups.incubator_id")
-        .select([
-            "startups.created_at",
-            "startups.uuid",
-            "startups.name",
-            "startups.pitch",
-            "incubators.title as incubator",
-            "incubators.uuid as incubatorUuid",
-        ])
-        .orderBy("created_at", "desc")
-        .limit(10)
-        .execute();
+  db
+    .selectFrom("startups")
+    .innerJoin("incubators", "incubators.uuid", "startups.incubator_id")
+    .select([
+      "startups.created_at",
+      "startups.uuid",
+      "startups.name",
+      "startups.pitch",
+      "incubators.title as incubator",
+      "incubators.uuid as incubatorUuid",
+    ])
+    .orderBy("created_at", "desc")
+    .limit(10)
+    .execute();
 
 export async function getStartupsWithoutAnyUpdateForThePastXMonthsRaw(
-    numberOfMonths: number = 3
+  numberOfMonths: number = 3,
 ): Promise<Selectable<Startups & { current_phase: StartupPhase }>[]> {
-    // Select all user events related to mission changes within the last 3 months
-    // Then find the associated startups by navigating through users => users_missions => missions_startups => startups table
-    // We'll refer to this result set as "A", representing all startups with user events in the past 3 months
-    // Finally, calculate the difference between All Startups and A to obtain all startups without any updates in the last 3 months
+  // Select all user events related to mission changes within the last 3 months
+  // Then find the associated startups by navigating through users => users_missions => missions_startups => startups table
+  // We'll refer to this result set as "A", representing all startups with user events in the past 3 months
+  // Finally, calculate the difference between All Startups and A to obtain all startups without any updates in the last 3 months
 
-    const rawQuery = CompiledQuery.raw(
-        `
+  const rawQuery = CompiledQuery.raw(
+    `
 WITH recent_events AS (
     SELECT DISTINCT e.action_on_username, 
            CASE 
@@ -77,10 +77,11 @@ WHERE fs.startup_id IS NULL AND NOT EXISTS (
         AND (p.name = 'transfer' OR p.name = 'success' OR p.name = 'alumni')
     );
 `,
-        []
-    );
-    const result = await db.executeQuery<
-        Selectable<Startups & { current_phase: StartupPhase }>
+    [],
+  );
+  const result =
+    await db.executeQuery<
+      Selectable<Startups & { current_phase: StartupPhase }>
     >(rawQuery);
-    return result.rows;
+  return result.rows;
 }

@@ -8,18 +8,18 @@ import z from "zod";
 //
 
 export const MaintenanceDataSchema = z
-    .object({
-        requestedAt: z.coerce.date(),
-        originalJobId: z.string().uuid(),
-        replayedMaintenanceJobId: z.string().uuid().optional(),
-    })
-    .strict();
+  .object({
+    requestedAt: z.coerce.date(),
+    originalJobId: z.string().uuid(),
+    replayedMaintenanceJobId: z.string().uuid().optional(),
+  })
+  .strict();
 export type MaintenanceDataSchemaType = z.infer<typeof MaintenanceDataSchema>;
 
 export const MaintenanceWrapperDataSchema = z.object({
-    // This object is not `.strict()` because it's intented to have other keys aside
-    __maintenance__: MaintenanceDataSchema.optional(),
+  // This object is not `.strict()` because it's intented to have other keys aside
+  __maintenance__: MaintenanceDataSchema.optional(),
 });
 export type MaintenanceWrapperDataSchemaType = z.infer<
-    typeof MaintenanceWrapperDataSchema
+  typeof MaintenanceWrapperDataSchema
 >;

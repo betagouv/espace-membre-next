@@ -3,57 +3,57 @@ import { getServerSession } from "next-auth";
 import { db } from "@/lib/kysely";
 import { brevoEmailInfoDataSchema } from "@/models/brevoInfo";
 import {
-    getAllTransacBlockedContacts,
-    getContactInfo,
+  getAllTransacBlockedContacts,
+  getContactInfo,
 } from "@/server/infra/email/sendInBlue";
 import { authOptions } from "@/utils/authoptions";
 import { AuthorizationError, withHttpErrorHandling } from "@/utils/error";
 
 export const GET = withHttpErrorHandling(async function (
-    req: Request,
-    {
-        params: { username },
-    }: {
-        params: {
-            username: string;
-        };
-    }
+  req: Request,
+  {
+    params: { username },
+  }: {
+    params: {
+      username: string;
+    };
+  },
 ) {
-    const session = await getServerSession(authOptions);
+  const session = await getServerSession(authOptions);
 
-    if (!session || !session.user.id) {
-        throw new AuthorizationError();
-    }
+  if (!session || !session.user.id) {
+    throw new AuthorizationError();
+  }
 
-    const dbUser = await db
-        .selectFrom("users")
-        .select(["primary_email", "secondary_email"])
-        .where("username", "=", username)
-        .executeTakeFirst();
+  const dbUser = await db
+    .selectFrom("users")
+    .select(["primary_email", "secondary_email"])
+    .where("username", "=", username)
+    .executeTakeFirst();
 
-    let emailServiceInfo = {};
-    if (dbUser?.primary_email) {
-        emailServiceInfo["primaryEmail"] = await getContactInfo({
-            email: dbUser.primary_email,
-        });
-    }
-    if (dbUser?.secondary_email) {
-        emailServiceInfo["secondaryEmail"] = await getContactInfo({
-            email: dbUser.secondary_email,
-        });
-    }
+  let emailServiceInfo = {};
+  if (dbUser?.primary_email) {
+    emailServiceInfo["primaryEmail"] = await getContactInfo({
+      email: dbUser.primary_email,
+    });
+  }
+  if (dbUser?.secondary_email) {
+    emailServiceInfo["secondaryEmail"] = await getContactInfo({
+      email: dbUser.secondary_email,
+    });
+  }
 
-    const blockedContacts = await getAllTransacBlockedContacts();
-    if (dbUser?.primary_email) {
-        emailServiceInfo["primaryEmailTransac"] = blockedContacts.find(
-            (contact) => dbUser.primary_email === contact.email
-        );
-    }
-    if (dbUser?.secondary_email) {
-        emailServiceInfo["secondaryEmailTransac"] = blockedContacts.find(
-            (contact) => dbUser.secondary_email === contact.email
-        );
-    }
+  const blockedContacts = await getAllTransacBlockedContacts();
+  if (dbUser?.primary_email) {
+    emailServiceInfo["primaryEmailTransac"] = blockedContacts.find(
+      (contact) => dbUser.primary_email === contact.email,
+    );
+  }
+  if (dbUser?.secondary_email) {
+    emailServiceInfo["secondaryEmailTransac"] = blockedContacts.find(
+      (contact) => dbUser.secondary_email === contact.email,
+    );
+  }
 
-    return Response.json(brevoEmailInfoDataSchema.parse(emailServiceInfo));
+  return Response.json(brevoEmailInfoDataSchema.parse(emailServiceInfo));
 });

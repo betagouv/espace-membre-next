@@ -1,2 +1,2 @@
-import { createEmailAddresses } from '@schedulers/emailScheduler';
-createEmailAddresses()
+import { createEmailAddresses } from "@schedulers/emailScheduler";
+createEmailAddresses();

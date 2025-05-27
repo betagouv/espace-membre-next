@@ -20,8 +20,6 @@
   }
 }
 
-
-
 .startup-timeline > p.active.investigation,
 .startup-timeline > p.active.construction,
 .startup-timeline > p.active.acceleration {
@@ -43,4 +41,3 @@
 .table-xs-col1 thead th:first-child {
   width: 150px;
 }
-

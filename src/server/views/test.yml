@@ -1,7 +1,7 @@
 ---
 fullname: Julien Dauphant
 role: Intrapreneur Tchap
-link: 'https://twitter.com/jdauphant'
+link: "https://twitter.com/jdauphant"
 github: jdauphant
 missions:
   - employer: octo
@@ -32,5 +32,4 @@ competences:
   - Développement Backend
 end: 2022-12-25
 ---
-
 Chercheur de simplicité
