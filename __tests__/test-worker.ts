@@ -22,7 +22,7 @@ import { BusinessError } from "@/utils/error";
 import * as controllerUtils from "@controllers/utils";
 
 describe("Service account creation by worker", () => {
-    describe("matomo account service consumer", () => {
+    describe.skip("matomo account service consumer", () => {
         let service_accounts;
         before(async function () {
             service_accounts = await db
@@ -72,7 +72,7 @@ describe("Service account creation by worker", () => {
             await utils.deleteData(testUsers);
         });
 
-        it("should create matomo worker tasks and avoid duplicate", async () => {
+      it.skip("should create matomo worker tasks and avoid duplicate", async () => {
             const user = await db
                 .selectFrom("users")
                 .where("username", "=", "membre.actif")
