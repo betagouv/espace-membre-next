@@ -1,17 +1,25 @@
-# Start from the Node.js version 18 image
-FROM node:18
+FROM node:18-slim
 
-# Set the working directory in the container to /app
+RUN apt-get update && \
+    apt-get upgrade -y && \
+    apt-get install --no-install-recommends -y \
+    build-essential \
+    libpq-dev \
+    libyaml-dev \
+    git
+
 WORKDIR /app
 
-# Copy the current directory contents into the container at /app
-COPY . .
+# first, copy only the dependencies files over to preserve caching of
+# this step when any other files changes
+COPY package.json package-lock.json ./
+RUN npm install
 
-# Switch to 'node' user for security reasons
-USER node
+# now copy everything else
+COPY . ./
 
-# Inform Docker that the container listens on port 3000 at runtime
 EXPOSE 8100
 
-# Command to run the application
+ENTRYPOINT ["./docker-entrypoint.sh"]
+
 CMD ["npm", "run", "dev"]
