@@ -13,10 +13,10 @@ export const metadata: Metadata = {
 
 export default async function Page() {
     const usersInfos = (await getAllUsersInfo()).map((user) =>
-        memberPublicInfoToModel(user)
+        memberPublicInfoToModel(user),
     );
     const startups = (await getAllStartups()).map((startup) =>
-        startupToModel(startup)
+        startupToModel(startup),
     );
     return <WhatIsGoingOnWithMember startups={startups} users={usersInfos} />;
 }

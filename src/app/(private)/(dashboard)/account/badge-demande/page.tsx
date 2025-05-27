@@ -22,7 +22,7 @@ export default async function Page() {
         redirect("/login");
     }
     const userInfos = userInfosToModel(
-        await getUserInfos({ uuid: session.user.uuid })
+        await getUserInfos({ uuid: session.user.uuid }),
     );
     // const dossiers = await DS.getAllDossiersForDemarche(config.DS_DEMARCHE_NUMBER)
     let dbBadgeRequest = await db
@@ -31,7 +31,7 @@ export default async function Page() {
         .where(
             "badge_requests.status",
             "=",
-            BADGE_REQUEST.BADGE_RENEWAL_REQUEST_PENDING
+            BADGE_REQUEST.BADGE_RENEWAL_REQUEST_PENDING,
         )
         .where("badge_requests.username", "=", session.user.id)
         .executeTakeFirst();
@@ -42,7 +42,7 @@ export default async function Page() {
     if (badgeRequest) {
         try {
             dossier = badgeDossierSchema.parse(
-                await DS.getDossierForDemarche(badgeRequest.dossier_number)
+                await DS.getDossierForDemarche(badgeRequest.dossier_number),
             );
         } catch (e) {
             // dossier is no filled yet

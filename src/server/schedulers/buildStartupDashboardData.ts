@@ -12,7 +12,7 @@ import { Domaine } from "@/models/member";
 const activeMissionsInMonth = (
     missions: any,
     date: Date,
-    domaines?: Domaine[]
+    domaines?: Domaine[],
 ): number => {
     return missions.filter((mission) => {
         const missionStarted = isBefore(mission.start, startOfMonth(date));
@@ -43,34 +43,34 @@ const getActiveMissionStats = (missions: any, domaines?: Domaine[]) => {
     const currentActiveMissions = activeMissionsInMonth(
         missions,
         currentMonth,
-        domaines
+        domaines,
     );
     const oneMonthAgoMissions = activeMissionsInMonth(
         missions,
         oneMonthAgo,
-        domaines
+        domaines,
     );
     const twoMonthsAgoMissions = activeMissionsInMonth(
         missions,
         twoMonthsAgo,
-        domaines
+        domaines,
     );
     const threeMonthsAgoMissions = activeMissionsInMonth(
         missions,
         threeMonthsAgo,
-        domaines
+        domaines,
     );
 
     const sixMonthsAgoMissions = activeMissionsInMonth(
         missions,
         sixMonthsAgo,
-        domaines
+        domaines,
     );
 
     const twelveMonthsAgoMissions = activeMissionsInMonth(
         missions,
         twelveMonthsAgo,
-        domaines
+        domaines,
     );
 
     // Determine if the number of missions increased or decreased
@@ -80,16 +80,16 @@ const getActiveMissionStats = (missions: any, domaines?: Domaine[]) => {
         twoMonthsAgo: roundToTwoDigits(twoMonthsAgoMissions),
         threeMonthsAgo: roundToTwoDigits(threeMonthsAgoMissions),
         changeFromLastMonth: roundToTwoDigits(
-            currentActiveMissions - oneMonthAgoMissions
+            currentActiveMissions - oneMonthAgoMissions,
         ),
         trendOverThreeMonths: roundToTwoDigits(
-            currentActiveMissions - threeMonthsAgoMissions
+            currentActiveMissions - threeMonthsAgoMissions,
         ),
         trendOverSixMonths: roundToTwoDigits(
-            currentActiveMissions - sixMonthsAgoMissions
+            currentActiveMissions - sixMonthsAgoMissions,
         ),
         trendOverTwelveMonths: roundToTwoDigits(
-            currentActiveMissions - twelveMonthsAgoMissions
+            currentActiveMissions - twelveMonthsAgoMissions,
         ),
     };
 
@@ -99,7 +99,7 @@ const getActiveMissionStats = (missions: any, domaines?: Domaine[]) => {
 // 1. Calculate Turnover Rate
 const turnoverRate = (
     activeRelativeMissions,
-    previousRelativeMissions
+    previousRelativeMissions,
 ): number => {
     const totalMissions = [
         ...activeRelativeMissions,
@@ -109,8 +109,8 @@ const turnoverRate = (
         activeRelativeMissions.some(
             (activeMission) =>
                 activeMission.domaine === endedMission.domaine &&
-                activeMission.start! > endedMission.end!
-        )
+                activeMission.start! > endedMission.end!,
+        ),
     );
     return (replacedMissions.length / totalMissions) * 100;
 };
@@ -118,7 +118,7 @@ const turnoverRate = (
 // 2. Calculate Average Mission Duration
 const averageMissionDuration = (
     activeRelativeMissions,
-    previousRelativeMissions
+    previousRelativeMissions,
 ): number => {
     const allMissions = [
         ...activeRelativeMissions,
@@ -135,14 +135,14 @@ const averageMissionDuration = (
 // 3. Calculate Renewal Rate (missions that were renewed)
 const renewalRate = (
     activeRelativeMissions,
-    previousRelativeMissions
+    previousRelativeMissions,
 ): number => {
     const renewedMissions = previousRelativeMissions.filter((endedMission) =>
         activeRelativeMissions.some(
             (activeMission) =>
                 activeMission.domaine === endedMission.domaine &&
-                activeMission.start! > endedMission.end!
-        )
+                activeMission.start! > endedMission.end!,
+        ),
     );
     return (renewedMissions.length / previousRelativeMissions.length) * 100;
 };
@@ -150,14 +150,14 @@ const renewalRate = (
 // 4. Calculate Frequency of Replacement (time between mission end and replacement)
 const averageReplacementFrequency = (
     activeRelativeMissions,
-    previousRelativeMissions
+    previousRelativeMissions,
 ): number => {
     const replacements = previousRelativeMissions
         .map((endedMission) => {
             const replacement = activeRelativeMissions.find(
                 (activeMission) =>
                     activeMission.domaine === endedMission.domaine &&
-                    activeMission.start! > endedMission.end!
+                    activeMission.start! > endedMission.end!,
             );
             if (replacement) {
                 return differenceInDays(replacement.start!, endedMission.end!);
@@ -168,7 +168,7 @@ const averageReplacementFrequency = (
 
     const totalReplacementDays = replacements.reduce(
         (acc, days) => acc + days,
-        0
+        0,
     );
     return replacements.length > 0
         ? totalReplacementDays / replacements.length
@@ -236,7 +236,7 @@ export async function refreshStartupAggregatedData() {
                     data.activeMember.trendOverSixMonths,
                 active_member_trend_over_twelve_months:
                     data.activeMember.trendOverTwelveMonths,
-            }))
+            })),
         )
         .execute();
 }
@@ -256,7 +256,7 @@ export async function buildStartupDashboardData() {
                 // Ensure there's only one row per startup
                 .as("current_phase"),
             "startups.uuid",
-            "current_phase.startup_id"
+            "current_phase.startup_id",
         )
         .selectAll("startups") // Select all columns from startups
         .select([
@@ -289,59 +289,59 @@ export async function buildStartupDashboardData() {
                     !mission.end ||
                     (mission.start &&
                         mission.start < today &&
-                        mission.end > today)
+                        mission.end > today),
             );
             const previousRelativeMissions = startupRelativeMissions.filter(
-                (mission) => mission.end && mission.end < today
+                (mission) => mission.end && mission.end < today,
             );
 
             const hasCoach = !!activeRelativeMissions.find(
-                (mission) => mission.domaine === Domaine.COACHING
+                (mission) => mission.domaine === Domaine.COACHING,
             );
 
             const hasIntra = !!activeRelativeMissions.find(
-                (mission) => mission.domaine === Domaine.INTRAPRENARIAT
+                (mission) => mission.domaine === Domaine.INTRAPRENARIAT,
             );
 
             const hadCoach = !!previousRelativeMissions.find(
-                (mission) => mission.domaine === Domaine.COACHING
+                (mission) => mission.domaine === Domaine.COACHING,
             );
 
             const hadIntra = !!previousRelativeMissions.find(
-                (mission) => mission.domaine === Domaine.INTRAPRENARIAT
+                (mission) => mission.domaine === Domaine.INTRAPRENARIAT,
             );
 
             // Execute calculations
             const turnoverRateValue = turnoverRate(
                 activeRelativeMissions,
-                previousRelativeMissions
+                previousRelativeMissions,
             );
             const averageMissionDurationValue = averageMissionDuration(
                 activeRelativeMissions,
-                previousRelativeMissions
+                previousRelativeMissions,
             );
             const renewalRateValue = renewalRate(
                 activeRelativeMissions,
-                previousRelativeMissions
+                previousRelativeMissions,
             );
             const averageReplacementFrequencyValue =
                 averageReplacementFrequency(
                     activeRelativeMissions,
-                    previousRelativeMissions
+                    previousRelativeMissions,
                 );
 
             // Get mission trends
             const devMissionsTrend = getActiveMissionStats(
                 startupRelativeMissions,
-                [Domaine.DEVELOPPEMENT]
+                [Domaine.DEVELOPPEMENT],
             );
             const bizdevMissionsTrend = getActiveMissionStats(
                 startupRelativeMissions,
-                [Domaine.DEPLOIEMENT]
+                [Domaine.DEPLOIEMENT],
             );
 
             const missionsTrend = getActiveMissionStats(
-                startupRelativeMissions
+                startupRelativeMissions,
             );
 
             // Return the formatted object for each startup
@@ -353,7 +353,7 @@ export async function buildStartupDashboardData() {
                 current_phase: startup.current_phase_name,
                 current_phase_start_date: startup.current_phase_start_date,
                 incubator: allIncubators.find(
-                    (incubator) => incubator.uuid === startup.incubator_id
+                    (incubator) => incubator.uuid === startup.incubator_id,
                 ),
                 hasCoach,
                 hasIntra,
@@ -361,17 +361,17 @@ export async function buildStartupDashboardData() {
                 hadIntra,
                 turnoverRateValue: roundToTwoDigits(turnoverRateValue),
                 averageMissionDurationValue: roundToTwoDigits(
-                    averageMissionDurationValue
+                    averageMissionDurationValue,
                 ),
                 renewalRateValue: roundToTwoDigits(renewalRateValue),
                 averageReplacementFrequencyValue: roundToTwoDigits(
-                    averageReplacementFrequencyValue
+                    averageReplacementFrequencyValue,
                 ),
                 devMissionsTrend,
                 bizdevMissionsTrend,
                 activeMember: missionsTrend,
             };
-        })
+        }),
     );
 
     return startupsData;

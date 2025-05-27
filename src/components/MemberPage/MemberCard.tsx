@@ -83,7 +83,7 @@ export const MemberCard = ({
                             className={fr.cx(
                                 "ri-map-pin-fill",
                                 "fr-icon--xs",
-                                "fr-mr-1v"
+                                "fr-mr-1v",
                             )}
                         />
                         {userInfos.workplace_insee_code}

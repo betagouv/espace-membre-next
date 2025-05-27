@@ -28,7 +28,7 @@ describe("Update user event server action", () => {
             {
                 "next-auth/next": { getServerSession: getServerSessionStub },
                 "next/cache": { revalidatePath: sinon.stub().resolves() },
-            }
+            },
         ).updateUserEvent as typeof updateUserEvent;
         user = await db
             .selectFrom("users")

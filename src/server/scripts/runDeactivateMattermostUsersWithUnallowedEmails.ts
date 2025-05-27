@@ -4,5 +4,5 @@ import { deactivateMattermostUsersWithUnallowedEmails } from "@schedulers/matter
 deactivateMattermostUsersWithUnallowedEmails(config.mattermostTeamId).then(
     () => {
         console.log("Done");
-    }
+    },
 );

@@ -26,7 +26,7 @@ export async function addEvent(event: EventAction, trx?: Kysely<DB>) {
 export async function getLastEvent(
     username: string,
     action_code: EventCode,
-    trx?: Kysely<DB>
+    trx?: Kysely<DB>,
 ): Promise<EventAction | null> {
     const event = await db
         .selectFrom("events")
@@ -48,7 +48,7 @@ export async function getLastEvent(
 }
 
 export async function addActionEvent<T extends EventCode>(
-    event: BaseEventAction<T>
+    event: BaseEventAction<T>,
 ) {
     return db
         .insertInto("events")

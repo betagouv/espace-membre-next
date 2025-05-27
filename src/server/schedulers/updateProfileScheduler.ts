@@ -11,14 +11,14 @@ import { sleep } from "@controllers/utils";
 export async function sendMessageToActiveUsersWithoutSecondaryEmail() {
     const allMattermostUsers = await mattermost.getUserWithParams();
     const allMattermostUsersEmails = allMattermostUsers.map(
-        (mattermostUser) => mattermostUser.email
+        (mattermostUser) => mattermostUser.email,
     );
     const users = (await getAllUsersInfo()).map((user) =>
-        memberBaseInfoToModel(user)
+        memberBaseInfoToModel(user),
     );
     const activeUsers = users.filter((user) => !utils.checkUserIsExpired(user));
     const concernedUsers = users.filter(
-        (user) => !user.secondary_email && user.primary_email
+        (user) => !user.secondary_email && user.primary_email,
     );
 
     const concernedUserWithMattermostUsers = concernedUsers.map((user) => {
@@ -37,21 +37,21 @@ export async function sendMessageToActiveUsersWithoutSecondaryEmail() {
                     `./src/server/views/templates/emails/updateSecondaryEmail.ejs`,
                     {
                         user,
-                    }
+                    },
                 );
                 console.log(
-                    `Message d'update de l'email secondaire envoyé à ${user.mattermostUsername}`
+                    `Message d'update de l'email secondaire envoyé à ${user.mattermostUsername}`,
                 );
                 await BetaGouv.sendInfoToChat(
                     messageContent,
                     "secretariat",
-                    user.mattermostUsername
+                    user.mattermostUsername,
                 );
                 await sleep(1000);
             } catch (e) {
                 console.log(
                     `Erreur lors de l'envoie à ${user.mattermostUsername}`,
-                    e
+                    e,
                 );
             }
         }

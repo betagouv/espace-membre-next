@@ -22,10 +22,13 @@ import {
     userInfos,
 } from "@/server/controllers/utils";
 import { authOptions } from "@/utils/authoptions";
-import { AdminEmailNotAllowedError, withHttpErrorHandling } from "@/utils/error";
+import {
+    AdminEmailNotAllowedError,
+    withHttpErrorHandling,
+} from "@/utils/error";
 
 const getMattermostUserInfo = async (
-    dbUser
+    dbUser,
 ): Promise<{
     mattermostUser: MattermostUser | null;
     mattermostUserInTeamAndActive: boolean;
@@ -56,7 +59,7 @@ const getMattermostUserInfo = async (
 
 async function validateMemberHandler(
     req: Request,
-    { params: { username } }: { params: { username: string } }
+    { params: { username } }: { params: { username: string } },
 ) {
     const session = await getServerSession(authOptions);
 
@@ -66,7 +69,7 @@ async function validateMemberHandler(
     const memberData = memberValidateInfoSchema.parse(await req.json());
 
     const hasPublicServiceEmail = await isPublicServiceEmail(
-        memberData.secondary_email
+        memberData.secondary_email,
     );
     if (hasPublicServiceEmail && isAdminEmail(memberData.secondary_email)) {
         throw new AdminEmailNotAllowedError();
@@ -85,7 +88,7 @@ async function validateMemberHandler(
                 ? EmailStatusCode.EMAIL_ACTIVE
                 : EmailStatusCode.EMAIL_CREATION_WAITING,
         },
-        session.user.id
+        session.user.id,
     );
 
     const dbUser = await getUserInfos({
@@ -97,9 +100,8 @@ async function validateMemberHandler(
         message: `Success`,
         data: dbUser,
     });
-
 }
-export const PUT = withHttpErrorHandling(validateMemberHandler)
+export const PUT = withHttpErrorHandling(validateMemberHandler);
 
 // export async function GET(
 //     req: Request,

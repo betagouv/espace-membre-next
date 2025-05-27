@@ -20,18 +20,18 @@ export const createOrUpdateMatomoServiceAccountTopic =
     "create-update-matomo-service-account";
 
 export async function createOrUpdateMatomoServiceAccount(
-    job: PgBoss.Job<CreateOrUpdateMatomoAccountDataSchemaType>
+    job: PgBoss.Job<CreateOrUpdateMatomoAccountDataSchemaType>,
 ) {
     console.log(
         `Create or update matomo service account for ${job.data.login}`,
         job.id,
-        job.name
+        job.name,
     );
     const user = await getUserBasicInfo({ username: job.data.username });
     if (!user) {
         throw new BusinessError(
             "noUserForUsername",
-            `Utilisateur ${job.data.username} inexistant.`
+            `Utilisateur ${job.data.username} inexistant.`,
         );
     }
     let userLogin = job.data.email;
@@ -65,7 +65,7 @@ export async function createOrUpdateMatomoServiceAccount(
         const siteId = await matomoClient.getSiteOrCreate(
             job.data.newSite.name || job.data.newSite.url,
             job.data.newSite.url ? [job.data.newSite.url] : [],
-            job.data.newSite.type
+            job.data.newSite.type,
         );
         idSites.push(siteId);
         await db

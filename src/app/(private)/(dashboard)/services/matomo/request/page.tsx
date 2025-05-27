@@ -21,7 +21,7 @@ export default async function MatomoPage() {
     }
     const rawAccount = await getServiceAccount(
         session.user.uuid,
-        SERVICES.MATOMO
+        SERVICES.MATOMO,
     );
     const service_account = rawAccount
         ? matomoServiceInfoToModel(rawAccount)
@@ -45,7 +45,7 @@ export default async function MatomoPage() {
               .where(
                   "startup_id",
                   "in",
-                  startups.map((s) => s.uuid)
+                  startups.map((s) => s.uuid),
               )
               .execute()
               .then((data) => data.map((d) => matomoSiteToModel(d)));

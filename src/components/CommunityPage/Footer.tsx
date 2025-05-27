@@ -1,8 +1,8 @@
-import { StaticImageData } from "next/image";
-import Tile from "@codegouvfr/react-dsfr/Tile";
 import { fr } from "@codegouvfr/react-dsfr/fr";
+import Tile from "@codegouvfr/react-dsfr/Tile";
 import dataviz from "@gouvfr/dsfr/dist/artwork/pictograms/digital/data-visualization.svg";
 import map from "@gouvfr/dsfr/dist/artwork/pictograms/map/map.svg";
+import { StaticImageData } from "next/image";
 
 import { linkRegistry } from "@/utils/routes/registry";
 

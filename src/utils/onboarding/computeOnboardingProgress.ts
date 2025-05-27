@@ -3,10 +3,10 @@ import { userEventSchemaType } from "@/models/userEvent";
 
 export function computeOnboardingProgress(
     userEventIds: string[],
-    checklistObject: onboardingChecklistSchemaType
+    checklistObject: onboardingChecklistSchemaType,
 ): number {
     const allCheckListItemIds = checklistObject.flatMap((section) =>
-        section.items.map((item) => item.id)
+        section.items.map((item) => item.id),
     );
     const total = allCheckListItemIds.length;
     // default to 1, has "créer une fiche" is always true

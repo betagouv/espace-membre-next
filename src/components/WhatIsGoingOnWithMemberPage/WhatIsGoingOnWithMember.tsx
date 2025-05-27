@@ -14,8 +14,8 @@ import MemberSelect from "../MemberSelect";
 import { safeGetUserPublicInfo } from "@/app/api/member/actions";
 import { safeCreateEmail } from "@/app/api/member/actions/createEmailForUser";
 import { BadgeEmailPlan } from "@/components/BadgeEmailPlan";
-import { EmailStatusCode } from "@/models/member";
 import {
+    EmailStatusCode,
     memberPublicInfoSchemaType,
     memberWrapperPublicInfoSchemaType,
 } from "@/models/member";
@@ -120,7 +120,7 @@ const ConnectedScreen = (props) => {
                 } else {
                     // Gérer les cas où la réponse n'est pas disponible
                     alert(
-                        "Une erreur s'est produite, mais aucune réponse n'a été reçue"
+                        "Une erreur s'est produite, mais aucune réponse n'a été reçue",
                     );
                 }
             } else {
@@ -246,8 +246,8 @@ const UserInfo = function (props: {
                                             props.startups.find(
                                                 (startup) =>
                                                     startup.uuid ===
-                                                    missionStartupUuid
-                                            )
+                                                    missionStartupUuid,
+                                            ),
                                         )
                                         .filter((startup) => !!startup)
                                         .map((s) => (
@@ -533,7 +533,7 @@ const MemberComponent = function ({
                                         `/community/${userPublicInfos.username}`,
                                         {
                                             scroll: false,
-                                        }
+                                        },
                                     );
                                 },
                             }}
@@ -565,13 +565,13 @@ export const UpdateEndDateScreen = function (props) {
             .post(
                 routes.API_PUBLIC_POST_BASE_INFO_FORM.replace(
                     ":username",
-                    props.user.userInfos.id
+                    props.user.userInfos.id,
                 ),
                 {
                     end: date,
                     role: props.user.userInfos.role || "",
                     startups: props.user.userInfos.startups || [],
-                }
+                },
             )
             .then((resp) => {
                 setIsSaving(false);
@@ -929,7 +929,7 @@ export const CreateEmailScreen = function (props) {
 };
 
 export const WhatIsGoingOnWithMember = function (
-    props: WhatIsGoingOnWithMemberProps
+    props: WhatIsGoingOnWithMemberProps,
 ) {
     const { users, startups } = props;
     const { showLiveChat, isLiveChatLoading } = useLiveChat();
@@ -941,7 +941,7 @@ export const WhatIsGoingOnWithMember = function (
     ]);
     const [user, setUser]: [
         memberWrapperPublicInfoSchemaType | undefined,
-        (user: memberWrapperPublicInfoSchemaType) => void
+        (user: memberWrapperPublicInfoSchemaType) => void,
     ] = React.useState();
     const [pullRequestURL, setPullRequestURL] = React.useState("");
 
@@ -959,7 +959,7 @@ export const WhatIsGoingOnWithMember = function (
                     {
                         step: state.step || STEP.whichMember,
                     },
-                    ""
+                    "",
                 );
                 if (state.step) {
                     setStep(state.step);
@@ -1016,7 +1016,7 @@ export const WhatIsGoingOnWithMember = function (
 
     function next(
         steps?: STEP[],
-        paramUser?: memberWrapperPublicInfoSchemaType
+        paramUser?: memberWrapperPublicInfoSchemaType,
     ) {
         const currentStepIndex = (steps || fixes).findIndex((s) => s === step);
         const nextStep = (steps || fixes)[currentStepIndex + 1];

@@ -27,11 +27,11 @@ interface SendIntoToChatFromMattermostDeps {
 export type SendInfoToChat = (props: SendInfoToChatProps) => Promise<null>;
 
 export const makeSendIntoToChatFromMattermost = (
-    deps: SendIntoToChatFromMattermostDeps
+    deps: SendIntoToChatFromMattermostDeps,
 ): SendInfoToChat => {
     const { config } = deps;
     return async function sendIntoToChatFromMattermost(
-        props: SendInfoToChatProps
+        props: SendInfoToChatProps,
     ) {
         const { text, channel, username, extra, space } = props;
         let hookURL = props.hookURL;

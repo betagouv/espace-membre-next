@@ -125,7 +125,7 @@ export const CreateMatomoServiceForm = ({
                             "fr-fieldset__element",
                             "fr-col-12",
                             "fr-col-lg-12",
-                            "fr-col-md-12"
+                            "fr-col-md-12",
                         )}
                     >
                         <Select

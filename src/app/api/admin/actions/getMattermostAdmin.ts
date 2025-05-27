@@ -34,7 +34,7 @@ export async function getMattermostInfo() {
     }
 
     const channels: MattermostChannel[] = await getAllChannels(
-        config.mattermostTeamId
+        config.mattermostTeamId,
     );
     try {
         const title = "Admin Mattermost";

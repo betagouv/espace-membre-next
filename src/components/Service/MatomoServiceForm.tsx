@@ -173,7 +173,7 @@ const AddMatomoServiceForm = ({ setAlertMessage, sites }) => {
                                     "fr-col-lg-10",
                                     "fr-col-md-10",
                                     "fr-col-offset-lg-2--right",
-                                    "fr-col-offset-md-2--right"
+                                    "fr-col-offset-md-2--right",
                                 )}
                             >
                                 <MatomoSiteSelect
@@ -188,7 +188,7 @@ const AddMatomoServiceForm = ({ setAlertMessage, sites }) => {
                                             {
                                                 shouldValidate: true,
                                                 shouldDirty: true,
-                                            }
+                                            },
                                         );
                                     }}
                                     isMulti={true}

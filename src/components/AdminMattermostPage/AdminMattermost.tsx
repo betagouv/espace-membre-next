@@ -36,7 +36,7 @@ const css = ".panel { min-height: 400px; }"; // to have enough space to display 
 /* Pure component */
 export const AdminMattermost = (props: AdminMattermostProps) => {
     const [usersForMessage, setUsersForMessage] = useState<MattermostUser[]>(
-        []
+        [],
     );
     const [channel, setChannel] = useState("town-square");
     const [messageType, setMessageType] = useState("channel");
@@ -76,7 +76,7 @@ export const AdminMattermost = (props: AdminMattermostProps) => {
             .join("&");
         try {
             const usersForMessage = await safeGetMattermostUsersInfo(
-                params
+                params,
             ).then((resp) => {
                 if (resp.success) {
                     return resp.data.users;
@@ -108,11 +108,11 @@ export const AdminMattermost = (props: AdminMattermostProps) => {
                         ? "au canal " +
                           (
                               props.channelOptions.find(
-                                  (c) => c.value === channel
+                                  (c) => c.value === channel,
                               ) as Option
                           ).label
                         : "à " + usersForMessage.length + " membres ?"
-                }`
+                }`,
             ) === true
         ) {
             const res = await safeSendMessageToUsersOnChat(buildParams(true));
@@ -138,11 +138,11 @@ export const AdminMattermost = (props: AdminMattermostProps) => {
         }
     };
     const [value, setValue] = useState<"one" | "two" | "three" | undefined>(
-        undefined
+        undefined,
     );
     const getCurrentChannel = (): string => {
         const currentChannel = props.channelOptions.find(
-            (c) => c.value === channel
+            (c) => c.value === channel,
         );
         if (currentChannel) {
             return currentChannel.label;

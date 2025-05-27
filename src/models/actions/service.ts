@@ -12,7 +12,7 @@ export const matomoAccountRequestSchema = z.object({
         .array(
             z.object({
                 id: z.number(),
-            })
+            }),
         )
         .optional()
         .refine((sites) => !sites || sites.length > 0, {
@@ -35,7 +35,7 @@ export const matomoAccountRequestSchema = z.object({
             {
                 message: "Name is required if type is 'App mobile'",
                 path: ["name"],
-            }
+            },
         ),
 });
 
@@ -58,7 +58,7 @@ export const sentryAccountJoinTeamRequestSchema = z.object({
         .array(
             z.object({
                 slug: z.string(),
-            })
+            }),
         )
         .min(1, { message: "Au moins une équipe est nécessaire." }),
 });

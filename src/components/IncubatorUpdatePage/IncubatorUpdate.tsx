@@ -29,7 +29,7 @@ export const IncubatorUpdate = (props: IncubatorUpdateProps) => {
     const css = ".panel { overflow: hidden; width: auto; min-height: 100vh; }";
 
     const save = async (
-        data: incubatorUpdateSchemaType
+        data: incubatorUpdateSchemaType,
     ): Promise<ActionResponse> => {
         try {
             const res = await safeUpdateIncubator({

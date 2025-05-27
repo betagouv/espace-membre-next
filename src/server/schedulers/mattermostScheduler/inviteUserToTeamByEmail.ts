@@ -9,7 +9,7 @@ export async function inviteUsersToTeamByEmail() {
         activeGithubUsersNotInCommunityTeam
             .map((user) => user.primary_email)
             .slice(0, 19),
-        config.mattermostTeamId
+        config.mattermostTeamId,
     );
     return results;
 }

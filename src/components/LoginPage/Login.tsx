@@ -6,10 +6,10 @@ import { Alert } from "@codegouvfr/react-dsfr/Alert";
 import Button from "@codegouvfr/react-dsfr/Button";
 import { ButtonsGroup } from "@codegouvfr/react-dsfr/ButtonsGroup";
 import { Input } from "@codegouvfr/react-dsfr/Input";
+import ProConnectButton from "@codegouvfr/react-dsfr/ProConnectButton";
 import Link from "next/link";
 import { useSearchParams } from "next/navigation";
 import { signIn } from "next-auth/react";
-import ProConnectButton from "@codegouvfr/react-dsfr/ProConnectButton";
 
 import config from "@/frontConfig";
 
@@ -129,7 +129,7 @@ export const LoginPage = function () {
                   type: "warning",
                   description: errorMessage,
               }
-            : null
+            : null,
     );
     const next = searchParams.get("next");
 

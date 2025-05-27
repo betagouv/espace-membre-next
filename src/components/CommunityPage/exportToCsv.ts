@@ -6,7 +6,7 @@ export function exportToCsv(filename, rows) {
         ...rows.map((row) =>
             header
                 .map((fieldName) => JSON.stringify(row[fieldName], replacer))
-                .join(";")
+                .join(";"),
         ),
     ].join("\r\n");
 

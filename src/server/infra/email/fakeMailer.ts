@@ -27,7 +27,7 @@ function fakeSendEmail(props: SendEmailProps): Promise<null> {
         `EMAIL OUT: ${toEmail
             .map((item) => item)
             .join(", ")} with subject "${subject}" and type ${type}`,
-        variables
+        variables,
     );
 
     return Promise.resolve(null);
@@ -44,20 +44,20 @@ function fakeSendCampaignEmail(props: SendCampaignEmailProps): Promise<null> {
 
     console.info(
         `EMAIL OUT: ${type} with subject "${subject}" and type ${type}`,
-        variables
+        variables,
     );
 
     return Promise.resolve(null);
 }
 
 function fakeAddContactsToMailingLists(
-    props: AddContactsToMailingListsProps
+    props: AddContactsToMailingListsProps,
 ): Promise<null> {
     return Promise.resolve(null);
 }
 
 function fakeRemoveContactsFromMailingList(
-    props: RemoveContactsFromMailingListProps
+    props: RemoveContactsFromMailingListProps,
 ): Promise<null> {
     return Promise.resolve(null);
 }

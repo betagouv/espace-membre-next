@@ -5,7 +5,7 @@ import { db } from "@/lib/kysely";
 
 export const syncFormationFromAirtable = (syncOnlyNewRecord) => {
     var base = new Airtable({ apiKey: process.env.AIRTABLE_API_KEY }).base(
-        process.env.AIRTABLE_FORMATION_BASE_ID!
+        process.env.AIRTABLE_FORMATION_BASE_ID!,
     );
     let filterByFormula =
         "DATETIME_DIFF(DATETIME_PARSE('2021-06-01', 'YYYY-MM-DD'),{Début}, 'days')<0";
@@ -43,10 +43,10 @@ export const syncFormationFromAirtable = (syncOnlyNewRecord) => {
                             .values({
                                 is_embarquement: Boolean(
                                     record.get("embarquement") === true ||
-                                        record.get("embarquement") === "true"
+                                        record.get("embarquement") === "true",
                                 ),
                                 formation_date: new Date(
-                                    record.get("Début") as string
+                                    record.get("Début") as string,
                                 ),
                                 formation_type: (
                                     record.get("formationTypeName") as [string]
@@ -73,6 +73,6 @@ export const syncFormationFromAirtable = (syncOnlyNewRecord) => {
                     console.error(err);
                     return;
                 }
-            }
+            },
         );
 };

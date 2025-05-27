@@ -79,7 +79,7 @@ export const sendMessageToUsersOnChat = async ({
     const session = await getServerSession(authOptions);
     if (!session || !session.user.id) {
         throw new AuthorizationError(
-            `You don't have the right to access this function`
+            `You don't have the right to access this function`,
         );
     }
     if (!session.user.isAdmin) {

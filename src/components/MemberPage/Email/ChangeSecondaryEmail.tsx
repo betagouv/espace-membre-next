@@ -14,7 +14,7 @@ export const ChangeSecondaryEmail = ({
     userInfos: memberBaseInfoSchemaType;
 }) => {
     const [newSecondaryEmail, setNewSecondaryEmail] = useState<string>(
-        userInfos.secondary_email
+        userInfos.secondary_email,
     );
     const [isSaving, setIsSaving] = useState<boolean>(false);
     const [alertMessage, setAlertMessage] = useState<{
@@ -39,7 +39,7 @@ export const ChangeSecondaryEmail = ({
                     setIsSaving(true);
                     const res = await safeChangeSecondaryEmailForUser(
                         newSecondaryEmail,
-                        userInfos.username
+                        userInfos.username,
                     );
                     setIsSaving(false);
                     if (res.success) {

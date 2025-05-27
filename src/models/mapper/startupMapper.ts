@@ -3,7 +3,7 @@ import { getStartup } from "@/lib/kysely/queries";
 import { getUserStartups } from "@/lib/kysely/queries/users";
 
 export function startupToModel(
-    startup: Awaited<ReturnType<typeof getStartup>>
+    startup: Awaited<ReturnType<typeof getStartup>>,
 ): startupSchemaType {
     if (!startup) {
         throw new Error("No startups");
@@ -30,7 +30,7 @@ export function startupToModel(
 }
 
 export function userStartupToModel(
-    startup: Awaited<ReturnType<typeof getUserStartups>>[0]
+    startup: Awaited<ReturnType<typeof getUserStartups>>[0],
 ): userStartupSchemaType {
     return {
         ghid: startup.ghid!,

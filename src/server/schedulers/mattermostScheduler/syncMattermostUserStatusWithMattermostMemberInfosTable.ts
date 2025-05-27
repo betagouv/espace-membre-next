@@ -10,7 +10,7 @@ export async function syncMattermostUserStatusWithMattermostMemberInfosTable() {
         .map((m) => m.mattermost_user_id)
         .filter((m) => m);
     const mattermostUsersStatus = await mattermost.getMattermostUsersStatus(
-        ids as string[]
+        ids as string[],
     );
 
     for (const status of mattermostUsersStatus) {

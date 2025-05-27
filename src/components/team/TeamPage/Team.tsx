@@ -1,12 +1,12 @@
 "use client";
 
 import Button from "@codegouvfr/react-dsfr/Button";
+import Link from "next/link";
 
+import { FicheHeader } from "@/components/FicheHeader";
 import { incubatorSchemaType } from "@/models/incubator";
 import { memberPublicInfoSchemaType } from "@/models/member";
 import { teamSchemaType } from "@/models/team";
-import Link from "next/link";
-import { FicheHeader } from "@/components/FicheHeader";
 
 export interface TeamPageProps {
     teamInfos: teamSchemaType;

@@ -41,7 +41,7 @@ export default async function Page({
 
     // if there is no current or future mission (or no mission at all)
     const hasActiveMission = !!userInfos.missions.find((m) =>
-        m.end ? new Date(m.end) >= new Date() : !m.end
+        m.end ? new Date(m.end) >= new Date() : !m.end,
     );
 
     const sessionUserIsFromIncubatorTeam =

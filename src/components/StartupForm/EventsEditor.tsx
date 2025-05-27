@@ -77,7 +77,7 @@ export function EventsEditor({
                             <div className={fr.cx("fr-error-text")} key={key}>
                                 {key}: {err[key].message}
                             </div>
-                        ))
+                        )),
                     )) ||
                 null}
             <Table
@@ -86,7 +86,7 @@ export function EventsEditor({
                 fixed={true}
                 data={eventsFields.map((event, index) => {
                     const eventDateString = getValues(
-                        `startupEvents.${index}.date`
+                        `startupEvents.${index}.date`,
                     )
                         ? new Date(getValues(`startupEvents.${index}.date`))
                               .toISOString()
@@ -97,7 +97,7 @@ export function EventsEditor({
                             key={event.id + "-name"}
                             label={undefined}
                             nativeSelectProps={register(
-                                `startupEvents.${index}.name`
+                                `startupEvents.${index}.name`,
                             )}
                             state={
                                 errors && errors[index]?.name?.message
@@ -116,7 +116,7 @@ export function EventsEditor({
                                     <option key={index} value={label}>
                                         {EVENT_READABLE_NAME[label]}
                                     </option>
-                                )
+                                ),
                             )}
                         </Select>,
                         <Input

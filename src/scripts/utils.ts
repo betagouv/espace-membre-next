@@ -20,7 +20,7 @@ type FmReturn<T> = ReturnType<typeof fm<T>>;
 
 export const parseMarkdown = async <T extends ZodSchema>(
     id: string,
-    content: string
+    content: string,
 ) => {
     try {
         const { attributes, body } = fm<z.infer<T>>(content);
@@ -34,7 +34,7 @@ export const parseMarkdown = async <T extends ZodSchema>(
 // remove null/undefined/excluded keys
 export const extractValidValues = <T extends object>(
     obj: T,
-    keys: string[] = []
+    keys: string[] = [],
 ): Partial<T> =>
     Object.keys(obj).reduce((a, c) => {
         if (
@@ -69,12 +69,12 @@ export function withMissions(eb: ExpressionBuilder<DB, "users">) {
             .leftJoin(
                 "missions_startups",
                 "missions_startups.mission_id",
-                "missions.uuid"
+                "missions.uuid",
             )
             .leftJoin(
                 "startups",
                 "startups.uuid",
-                "missions_startups.startup_id"
+                "missions_startups.startup_id",
             )
             .select((eb2) => [
                 "missions.uuid",
@@ -86,13 +86,13 @@ export function withMissions(eb: ExpressionBuilder<DB, "users">) {
                 sql<
                     Array<string>
                 >`coalesce(array_agg(startups.ghid order by startups.ghid) filter (where startups.ghid is not null), '{}')`.as(
-                    "startups"
+                    "startups",
                 ),
             ])
             .whereRef("missions.user_id", "=", "users.uuid")
             // .whereRef("missions.uuid", "=", "missions_startups.mission_id")
             .orderBy("missions.start", "asc")
-            .groupBy("missions.uuid")
+            .groupBy("missions.uuid"),
     ).as("missions");
 }
 
@@ -102,7 +102,7 @@ export function withTeams(eb: ExpressionBuilder<DB, "users">) {
             .selectFrom(["teams"])
             .leftJoin("users_teams", "users_teams.team_id", "teams.uuid")
             .select((eb2) => ["teams.ghid"])
-            .whereRef("users_teams.user_id", "=", "users.uuid")
+            .whereRef("users_teams.user_id", "=", "users.uuid"),
         // .whereRef("missions.uuid", "=", "missions_startups.mission_id")
     ).as("teams");
 }
@@ -118,7 +118,7 @@ export function withPhases(eb: ExpressionBuilder<DB, "startups">) {
                 "phases.end",
             ])
             .whereRef("phases.startup_id", "=", "startups.uuid")
-            .orderBy("phases.start", "asc")
+            .orderBy("phases.start", "asc"),
     ).as("phases");
 }
 
@@ -132,7 +132,7 @@ export function withEvents(eb: ExpressionBuilder<DB, "startups">) {
                 "startup_events.date",
             ])
             .whereRef("startup_events.startup_id", "=", "startups.uuid")
-            .orderBy("startup_events.date", "asc")
+            .orderBy("startup_events.date", "asc"),
     ).as("events");
 }
 
@@ -175,19 +175,19 @@ export const importFromZip = (): Promise<MarkdownData> => {
                 Object.keys(markdownData).forEach(async (key) => {
                     if (
                         entry.path.match(
-                            new RegExp(`/content\/_${key}\/.*\.md$`)
+                            new RegExp(`/content\/_${key}\/.*\\.md$`),
                         )
                     ) {
                         drain = false;
                         const id = entry.path.replace(
                             /^.*\/([^/]*)\.md$/,
-                            "$1"
+                            "$1",
                         );
                         const schema = schemas[key];
                         const content = await entry.buffer();
                         const parsed = await parseMarkdown<typeof schema>(
                             id,
-                            content.toString()
+                            content.toString(),
                         );
                         markdownData[key].push(parsed);
                     }
@@ -200,10 +200,10 @@ export const importFromZip = (): Promise<MarkdownData> => {
                     "Parsed",
                     Object.values(markdownData).reduce(
                         (a, c) => a + c.length,
-                        0
+                        0,
                     ),
                     "files",
-                    "\n"
+                    "\n",
                 );
                 resolve(markdownData);
             })

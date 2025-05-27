@@ -53,7 +53,9 @@ export function TeamCompositionEmail(props: EmailTeamComposition["variables"]) {
                                     {format(
                                         activeMember.activeMission.start,
                                         "dd/MM/yyyy",
-                                        { locale: fr }
+                                        {
+                                            locale: fr,
+                                        },
                                     )}{" "}
                                     <br />
                                     Fin:{" "}
@@ -61,7 +63,9 @@ export function TeamCompositionEmail(props: EmailTeamComposition["variables"]) {
                                         ? format(
                                               activeMember.activeMission.end,
                                               "dd/MM/yyyy",
-                                              { locale: fr }
+                                              {
+                                                  locale: fr,
+                                              },
                                           )
                                         : "Pas de date de fin"}
                                 </td>
@@ -72,7 +76,8 @@ export function TeamCompositionEmail(props: EmailTeamComposition["variables"]) {
             </MjmlText>
             <MjmlText>
                 <p>
-                    Si tes informations ne sont pas à jour, tu peux les modifier en cliquant sur le bouton ci-dessous.
+                    Si tes informations ne sont pas à jour, tu peux les modifier
+                    en cliquant sur le bouton ci-dessous.
                 </p>
             </MjmlText>
             <MjmlButton href={props.memberAccountLink}>

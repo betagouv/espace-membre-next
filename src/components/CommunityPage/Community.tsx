@@ -49,7 +49,7 @@ const getUserRow = ({
             ...(startups || []),
             ...(user.teams?.map((t) => {
                 const incub = incubatorOptions.find(
-                    (i) => i.value === t.incubator_id
+                    (i) => i.value === t.incubator_id,
                 );
                 return {
                     label: `${t.name}${incub ? ` - ${incub.label}` : ""}`,
@@ -125,7 +125,7 @@ export const Community = (props: CommunityProps) => {
 
     const [filters, setFilters] = useQueryState(
         "filters",
-        communityQueryParser
+        communityQueryParser,
     );
 
     // autocomplete groups
@@ -164,7 +164,7 @@ export const Community = (props: CommunityProps) => {
                 label: s.label,
             })),
         ],
-        [props.startupOptions, props.users]
+        [props.startupOptions, props.users],
     );
 
     const getColumnData = (name) =>
@@ -187,7 +187,7 @@ export const Community = (props: CommunityProps) => {
                     } else if (filter.type === "competence" && filter.value) {
                         // test if user has the given competence
                         const user = props.users.find(
-                            (u) => u.uuid === result.uuid
+                            (u) => u.uuid === result.uuid,
                         );
                         return (
                             user &&
@@ -196,13 +196,13 @@ export const Community = (props: CommunityProps) => {
                     } else if (filter.type === "domaine") {
                         // test if user has the given domain
                         const user = props.users.find(
-                            (u) => u.uuid === result.uuid
+                            (u) => u.uuid === result.uuid,
                         );
                         return user && user.domaine === filter.value;
                     } else if (filter.type === "incubator") {
                         // test if user belongs to given incubator
                         const incubator = props.incubatorMembers.find(
-                            (i) => i.uuid === filter.value
+                            (i) => i.uuid === filter.value,
                         );
                         return (
                             incubator &&
@@ -213,10 +213,10 @@ export const Community = (props: CommunityProps) => {
                     } else if (filter.type === "startup" && filter.value) {
                         // test if user had a mission in given startup
                         const user = props.users.find(
-                            (u) => u.uuid === result.uuid
+                            (u) => u.uuid === result.uuid,
                         );
                         const activeOnly = filters.find(
-                            (f) => f.type == "active_only" && !!f.value
+                            (f) => f.type == "active_only" && !!f.value,
                         );
                         return (
                             user &&
@@ -224,7 +224,7 @@ export const Community = (props: CommunityProps) => {
                                 .filter((m) =>
                                     activeOnly
                                         ? !m.end || m.end > new Date()
-                                        : true
+                                        : true,
                                 )
                                 .flatMap((m) => m.startups)
                                 .includes(filter.value.toString())
@@ -233,7 +233,7 @@ export const Community = (props: CommunityProps) => {
                 }).length === filters.length // or > 0 for or query
             );
         },
-        [filters]
+        [filters],
     );
 
     const results = useMemo(
@@ -241,7 +241,7 @@ export const Community = (props: CommunityProps) => {
             props.users
                 .filter(filterResult)
                 .sort((a, b) => a.fullname.localeCompare(b.fullname)) || [],
-        [filters]
+        [filters],
     );
 
     const onDownloadClick = async () => {
@@ -253,7 +253,7 @@ export const Community = (props: CommunityProps) => {
             {
                 type: "active_only",
                 value: !!filters.find(
-                    (f) => f.type === "active_only" && !!f.value
+                    (f) => f.type === "active_only" && !!f.value,
                 ),
             },
             {
@@ -274,8 +274,8 @@ export const Community = (props: CommunityProps) => {
             filters.find(
                 (f) =>
                     f.type === o.type &&
-                    (o.label === f.value || o.id === f.value)
-            )
+                    (o.label === f.value || o.id === f.value),
+            ),
         );
 
     const points = useMemo(
@@ -300,7 +300,7 @@ export const Community = (props: CommunityProps) => {
                 })
                 .filter((p) => p && p.geoLoc?.lat && p.geoLoc?.lon)
                 .filter((x) => !!x),
-        [results]
+        [results],
     );
 
     const onSelect = async (newFilters) => {
@@ -313,7 +313,7 @@ export const Community = (props: CommunityProps) => {
             {
                 type: "active_only",
                 value: !!filters.find(
-                    (f) => f.type === "active_only" && f.value
+                    (f) => f.type === "active_only" && f.value,
                 ),
             },
         ]);
@@ -328,7 +328,7 @@ export const Community = (props: CommunityProps) => {
                         "fr-col-12",
                         "fr-col-sm-6",
                         "fr-col-md-6",
-                        "fr-col-lg-6"
+                        "fr-col-lg-6",
                     )}`}
                 >
                     <h1>Membres de la communauté</h1>
@@ -338,7 +338,7 @@ export const Community = (props: CommunityProps) => {
                         "fr-col-12",
                         "fr-col-sm-6",
                         "fr-col-md-6",
-                        "fr-col-lg-6"
+                        "fr-col-lg-6",
                     )}`}
                     style={{ textAlign: "right" }}
                 >
@@ -386,13 +386,13 @@ export const Community = (props: CommunityProps) => {
                         label: "Membres actifs uniquement",
                         nativeInputProps: {
                             checked: !!filters.find(
-                                (f) => f.type === "active_only" && !!f.value
+                                (f) => f.type === "active_only" && !!f.value,
                             ),
                             onChange: (e) => {
                                 const checked = e.currentTarget.checked;
                                 setFilters((filters) => [
                                     ...filters.filter(
-                                        (f) => f.type !== "active_only"
+                                        (f) => f.type !== "active_only",
                                     ),
                                     { type: "active_only", value: checked },
                                 ]);
@@ -441,8 +441,8 @@ export const Community = (props: CommunityProps) => {
                                                                 onClick={() =>
                                                                     copyToClipboard(
                                                                         getColumnData(
-                                                                            header
-                                                                        )
+                                                                            header,
+                                                                        ),
                                                                     )
                                                                 }
                                                             >
@@ -450,7 +450,7 @@ export const Community = (props: CommunityProps) => {
                                                             </Button>
                                                         )}
                                                     </div>
-                                                )
+                                                ),
                                             )}
                                             data={results
                                                 .slice(
@@ -458,7 +458,7 @@ export const Community = (props: CommunityProps) => {
                                                         pageSize,
                                                     (currentPage - 1) *
                                                         pageSize +
-                                                        pageSize
+                                                        pageSize,
                                                 )
                                                 .map((r) =>
                                                     getUserRow({
@@ -469,7 +469,7 @@ export const Community = (props: CommunityProps) => {
                                                             props.incubatorOptions,
                                                         onDomaineClick:
                                                             onDomaineClick,
-                                                    })
+                                                    }),
                                                 )}
                                         />
                                         <Pagination
@@ -516,6 +516,6 @@ export const copyToClipboard = (text: string) => {
         },
         (err) => {
             console.error("Impossible de copier le texte: ", err);
-        }
+        },
     );
 };

@@ -29,7 +29,7 @@ const matomoActionMetadataSchema = z.object({
                         message: "ID must be a valid number",
                     }),
                 access: z.nativeEnum(MatomoAccess),
-            })
+            }),
         )
         .nullable()
         .optional(),
@@ -53,7 +53,7 @@ const sentryActionMetadataSchema = z.object({
         z.object({
             teamSlug: z.string(),
             teamRole: z.nativeEnum(SentryRole),
-        })
+        }),
     ),
 });
 
@@ -93,7 +93,7 @@ export const EventSentryCreateTeamRequestedTeamPayload = z.object({
 
 export const EventSentryAccountUpdateFailedUserDoesNotExistPayload = z.object({
     action_code: z.literal(
-        EventCode.MEMBER_SERVICE_ACCOUNT_UPDATE_FAILED_USER_DOES_NOT_EXIST
+        EventCode.MEMBER_SERVICE_ACCOUNT_UPDATE_FAILED_USER_DOES_NOT_EXIST,
     ),
     action_metadata: z.object({
         service: z.literal(SERVICES.SENTRY),
@@ -103,7 +103,7 @@ export const EventSentryAccountUpdateFailedUserDoesNotExistPayload = z.object({
             z.object({
                 teamSlug: z.string(),
                 teamRole: z.nativeEnum(SentryRole),
-            })
+            }),
         ),
     }),
 });

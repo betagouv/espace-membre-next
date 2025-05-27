@@ -32,7 +32,7 @@ export const CreateOrUpdateMatomoAccountDataSchema =
             .array(
                 z.object({
                     id: z.number(),
-                })
+                }),
             )
             .optional(),
         newSite: z
@@ -57,7 +57,7 @@ export const CreateSentryAccountDataSchema =
             z.object({
                 teamSlug: z.string(),
                 teamRole: z.nativeEnum(SentryRole),
-            })
+            }),
         ),
         email: z.string().email(),
         username: z.string(), // used to logged infortion
@@ -86,7 +86,7 @@ export const UpdateSentryAccountDataSchema =
             z.object({
                 teamSlug: z.string(),
                 teamRole: z.nativeEnum(SentryRole),
-            })
+            }),
         ),
         email: z.string().email(),
         username: z.string(), // used to logged infortion

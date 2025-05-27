@@ -3,7 +3,7 @@ import { SentryService } from "@/lib/sentry";
 import { FakeSentryService } from "@/server/config/sentry.config";
 
 export async function syncSentryTeams(
-    sentryClient: SentryService | FakeSentryService
+    sentryClient: SentryService | FakeSentryService,
 ) {
     try {
         // Fetch all Sentry teams
@@ -24,13 +24,13 @@ export async function syncSentryTeams(
                         .column("sentry_id") // Conflict key
                         .doUpdateSet({
                             name: (eb) => eb.ref("excluded.name"),
-                        })
+                        }),
                 )
                 .execute();
         }
 
         console.log(
-            `Successfully synced ${sentryTeams.length} Sentry teams to the database.`
+            `Successfully synced ${sentryTeams.length} Sentry teams to the database.`,
         );
     } catch (error) {
         console.error("Failed to sync Sentry teams:", error);

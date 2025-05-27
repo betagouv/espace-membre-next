@@ -21,10 +21,10 @@ export const OnboardingTabPanel = ({
     const [userEventIds, setUserEventIds] = useState<string[]>(
         userEvents
             .filter((event) => event.date !== null)
-            .map((event) => event.field_id)
+            .map((event) => event.field_id),
     );
     const [progress, setProgress] = useState<number>(
-        computeOnboardingProgress(userEventIds, checklistObject)
+        computeOnboardingProgress(userEventIds, checklistObject),
     );
     useEffect(() => {
         setProgress(computeOnboardingProgress(userEventIds, checklistObject));

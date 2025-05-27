@@ -449,5 +449,5 @@ type EventActionMetadata<T> =
     T extends EventCode.EMAIL_VERIFICATION_WAITING_SENT
         ? { value: string; old_value: string }
         : T extends EventCode.MARRAINAGE_ACCEPTED
-        ? { value: string; old_value: string }
-        : never;
+          ? { value: string; old_value: string }
+          : never;

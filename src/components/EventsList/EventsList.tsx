@@ -9,11 +9,10 @@ import "./EventsList.css";
 const mdParser = new MarkdownIt({
     html: true,
     linkify: true,
-    highlight: function (str) { 
-        console.log(str)
-        return '';
-    }
-
+    highlight: function (str) {
+        console.log(str);
+        return "";
+    },
 });
 
 mdParser.renderer.rules.link_open = function (tokens, idx, options, env, self) {
@@ -34,23 +33,28 @@ export function EventsList({ events }: { events: CalendarResponse }) {
     const sortedEvents = Object.entries(events)
         .filter(
             ([key, event]) =>
-                event.type === "VEVENT" && event.start >= new Date()
+                event.type === "VEVENT" && event.start >= new Date(),
         )
         .filter(
             ([key, event]) =>
                 event.type === "VEVENT" &&
-                !excludedKeywords.some(keyword => event.summary.toLowerCase().includes(keyword.toLowerCase()))
+                !excludedKeywords.some((keyword) =>
+                    event.summary.toLowerCase().includes(keyword.toLowerCase()),
+                ),
         )
         .sort(
             ([key1, event1], [key2, event2]) =>
                 (event1.type === "VEVENT" &&
                     event2.type === "VEVENT" &&
                     event1.start.getTime() - event2.start.getTime()) ||
-                0
+                0,
         );
 
     return (
-        <div id="events-list" className={fr.cx("fr-grid-row", "fr-grid-row--gutters")}>
+        <div
+            id="events-list"
+            className={fr.cx("fr-grid-row", "fr-grid-row--gutters")}
+        >
             {sortedEvents.map(([key, event]) => {
                 if (event.type !== "VEVENT") {
                     return null;
@@ -61,7 +65,7 @@ export function EventsList({ events }: { events: CalendarResponse }) {
                         className={fr.cx(
                             "fr-col-10",
                             "fr-col-offset-1",
-                            "fr-mb-2w"
+                            "fr-mb-2w",
                         )}
                         desc={
                             <span
@@ -70,7 +74,9 @@ export function EventsList({ events }: { events: CalendarResponse }) {
                                     whiteSpace: "break-spaces",
                                 }}
                                 dangerouslySetInnerHTML={{
-                                    __html: mdParser.renderInline(event.description || ""),
+                                    __html: mdParser.renderInline(
+                                        event.description || "",
+                                    ),
                                 }}
                             />
                         }

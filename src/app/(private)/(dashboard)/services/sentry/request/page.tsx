@@ -21,7 +21,7 @@ export default async function SentryRequestPage() {
     }
     const rawAccount = await getServiceAccount(
         session.user.uuid,
-        SERVICES.SENTRY
+        SERVICES.SENTRY,
     );
     const service_account = rawAccount
         ? sentryServiceInfoToModel(rawAccount)
@@ -29,7 +29,7 @@ export default async function SentryRequestPage() {
 
     const now = new Date();
     const startups = (await getUserStartupsActive(session.user.uuid)).map(
-        (startup) => userStartupToModel(startup)
+        (startup) => userStartupToModel(startup),
     );
 
     const sentryTeams = !startups.length
@@ -40,7 +40,7 @@ export default async function SentryRequestPage() {
               .where(
                   "startup_id",
                   "in",
-                  startups.map((s) => s.uuid)
+                  startups.map((s) => s.uuid),
               )
               .execute()
               .then((data) => data.map((d) => sentryTeamToModel(d)));

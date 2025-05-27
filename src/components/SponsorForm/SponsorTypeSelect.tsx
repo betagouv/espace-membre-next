@@ -1,5 +1,4 @@
-import React from "react";
-import { useState } from "react";
+import React, { useState } from "react";
 
 import { Select } from "@codegouvfr/react-dsfr/Select";
 import ReactSelect from "react-select";

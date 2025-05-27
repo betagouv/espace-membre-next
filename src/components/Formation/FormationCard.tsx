@@ -26,7 +26,7 @@ export default function FormationCard({
                             Inscrit
                         </Badge>
                     </li>
-                </ul>
+                </ul>,
             );
         } else {
             badges.push(
@@ -34,7 +34,7 @@ export default function FormationCard({
                     <li>
                         <Badge as="span">Inscrit sur liste d'attente</Badge>
                     </li>
-                </ul>
+                </ul>,
             );
         }
     }
@@ -42,7 +42,7 @@ export default function FormationCard({
         badges.push(
             <Badge key={"e-learning"} severity="new" as="span">
                 E-learning
-            </Badge>
+            </Badge>,
         );
     }
 

@@ -9,7 +9,7 @@ export const ERROR_MESSAGES = {
     STARTUP_UNIQUE_CONSTRAINT: (name?: string) =>
         name
             ? `Un produit avec le même nom "${name}" existe déjà. Tu peux consulter sa fiche sur <a href="/startups/${slugify(
-                  name
+                  name,
               )}">https://${config.host}/startups/${slugify(name)}</a>.`
             : "Un produit avec le même nom existe déjà",
     MEMBER_UNIQUE_CONSTRAINT: (name?: string) =>
@@ -21,13 +21,16 @@ export const ERROR_MESSAGES = {
         "Startup data could not be inserted into the database.",
     MEMBER_ADMIN_EMAIL_ADDRESS_NOT_ALLOWED:
         "Les emails admin ne sont pas autorisés",
-    ADMIN_AUTHORIZATION_ERROR: `Vous devez être administrateur pour effectuer cette action.`
+    ADMIN_AUTHORIZATION_ERROR: `Vous devez être administrateur pour effectuer cette action.`,
     // Add more error messages as needed
 };
 // errors.ts
 // TODO replace ErrorWithStatus by businessError
 export class CustomError extends LibraryCustomError {
-    public constructor(public readonly code: string, message: string = "") {
+    public constructor(
+        public readonly code: string,
+        message: string = "",
+    ) {
         super(message);
     }
 
@@ -45,7 +48,7 @@ export class BusinessError extends CustomError {
     public constructor(
         code: string,
         message: string = "",
-        public readonly httpCode?: number
+        public readonly httpCode?: number,
     ) {
         super(code, message);
     }
@@ -155,18 +158,18 @@ const EXPECTED_ERRORS = [
     MemberUniqueConstraintViolationError,
     AdminEmailNotAllowedError,
     BusinessError,
-    AdminAuthorizationError
+    AdminAuthorizationError,
 ];
 
 function isExpectedError(error: unknown): error is ErrorWithStatus {
     return EXPECTED_ERRORS.some(
-        (expectedError) => error instanceof expectedError
+        (expectedError) => error instanceof expectedError,
     );
 }
 
 export type UnwrapPromise<T> = T extends Promise<infer U> ? U : T;
 export function withErrorHandling<T, Args extends any[]>(
-    action: (...args: Args) => Promise<T>
+    action: (...args: Args) => Promise<T>,
 ): (...args: Args) => Promise<ActionResponse<T>> {
     return async (...args: Args) => {
         try {
@@ -199,7 +202,7 @@ export function withErrorHandling<T, Args extends any[]>(
 }
 
 export function withHttpErrorHandling<Args extends any[]>(
-    action: (...args: Args) => Promise<Response>
+    action: (...args: Args) => Promise<Response>,
 ): (...args: Args) => Promise<Response> {
     return async (...args: Args) => {
         try {
@@ -215,7 +218,7 @@ export function withHttpErrorHandling<Args extends any[]>(
                     },
                     {
                         status: error.statusCode || 400,
-                    }
+                    },
                 );
             } else {
                 // Handle unexpected errors\
@@ -227,7 +230,7 @@ export function withHttpErrorHandling<Args extends any[]>(
                         message:
                             "Une erreur interne est survenue. Veuillez réessayer plus tard.",
                     },
-                    { status: 500 }
+                    { status: 500 },
                 );
             }
         }

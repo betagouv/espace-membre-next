@@ -1,1 +1,1 @@
-export * from './StartupInfoUpdate';
+export * from "./StartupInfoUpdate";

@@ -12,7 +12,7 @@ const isSameUser = (
     dbUser: {
         primary_email?: string | null;
         secondary_email?: string | null;
-    }
+    },
 ) => {
     return (
         mattermostUser.email === dbUser.primary_email ||
@@ -27,7 +27,7 @@ export async function syncMattermostUserWithMattermostMemberInfosTable() {
             active: true,
         });
     const mattermostUserEmails: string[] = mattermostUsers.map(
-        (user) => user.email
+        (user) => user.email,
     );
     const mattermostMemberInfos = await db
         .selectFrom("mattermost_member_infos")
@@ -48,21 +48,21 @@ export async function syncMattermostUserWithMattermostMemberInfosTable() {
         .where(
             "username",
             "not in",
-            mattermostMemberInfos.map((m) => m.username)
+            mattermostMemberInfos.map((m) => m.username),
         )
         .where((eb) =>
             eb("secondary_email", "in", mattermostUserEmails).or(
                 "primary_email",
                 "in",
-                mattermostUserEmails
-            )
+                mattermostUserEmails,
+            ),
         )
         .selectAll()
         .execute();
 
     for (const dbUser of dbUsers) {
         const mattermostUser = mattermostUsers.find((mUser) =>
-            isSameUser(mUser, dbUser)
+            isSameUser(mUser, dbUser),
         );
         if (mattermostUser) {
             const mattermostMemberInfo: MattermostMemberInfo = {

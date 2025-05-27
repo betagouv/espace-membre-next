@@ -6,7 +6,7 @@ export const revalidate = 3600; // 1 hour
 
 export const GET = async (
     _: Request,
-    { params: { username } }: { params: { username: string } }
+    { params: { username } }: { params: { username: string } },
 ) => {
     if (!username) {
         return Response.json({});
@@ -30,7 +30,7 @@ export const GET = async (
                     headers: {
                         "Content-Type": "application/json",
                     },
-                }
+                },
             );
         } else {
             return new NextResponse(
@@ -40,7 +40,7 @@ export const GET = async (
                     headers: {
                         "Content-Type": "application/json",
                     },
-                }
+                },
             );
         }
     }

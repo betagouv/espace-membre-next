@@ -26,7 +26,7 @@ export class LinkRegistry {
     public get<RouteName extends keyof typeof routes>(
         key: RouteName,
         params?: Params<RouteName>,
-        options?: GetOptions
+        options?: GetOptions,
     ): string {
         let absoluteLink: boolean = false;
         if (options) {

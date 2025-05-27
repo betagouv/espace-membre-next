@@ -161,7 +161,7 @@ const AddSentryServiceForm = ({
                                     "fr-col-12",
                                     "fr-col-lg-10",
                                     "fr-col-md-10",
-                                    "fr-col-offset-md-2--right"
+                                    "fr-col-offset-md-2--right",
                                 )}
                             >
                                 <SentryTeamSelect
@@ -177,7 +177,7 @@ const AddSentryServiceForm = ({
                                             {
                                                 shouldValidate: true,
                                                 shouldDirty: true,
-                                            }
+                                            },
                                         );
                                     }}
                                 ></SentryTeamSelect>
@@ -236,7 +236,7 @@ function SentryTeamSelect({
         onChange(values);
     };
     const [initialValue] = useState(
-        defaultValue ? (defaultValue as SentryTeamType[]) : undefined
+        defaultValue ? (defaultValue as SentryTeamType[]) : undefined,
     );
 
     const autoCompleteProps = {

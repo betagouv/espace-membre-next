@@ -9,14 +9,14 @@ export async function activeUsers(userId) {
         const response = await axios.put(
             `${config.mattermostURL}/api/v4/users/${userId}/active`,
             payload,
-            getMattermostConfig()
+            getMattermostConfig(),
         );
         console.log(`Le compte mattermost ${userId} a été activé`);
         return response.data;
     } catch (err) {
         console.error(
             "Erreur d'activation de l‘utilisateurs à mattermost",
-            err
+            err,
         );
     }
 }

@@ -1,6 +1,7 @@
-import { startupSchemaType } from "@/models/startup";
 import { Table } from "@codegouvfr/react-dsfr/Table";
 import MarkdownIt from "markdown-it";
+
+import { startupSchemaType } from "@/models/startup";
 
 const mdParser = new MarkdownIt(/* Markdown-it options */);
 

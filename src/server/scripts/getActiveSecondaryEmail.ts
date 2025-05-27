@@ -6,7 +6,7 @@ import * as utils from "@controllers/utils";
 
 export async function getActiveSecondaryEmailsForUsers() {
     const users = (await getAllUsersInfo()).map((user) =>
-        memberBaseInfoToModel(user)
+        memberBaseInfoToModel(user),
     );
     const activeUsers = users.filter((user) => !utils.checkUserIsExpired(user));
     const dbUsers = await db
@@ -16,7 +16,7 @@ export async function getActiveSecondaryEmailsForUsers() {
         .where(
             "username",
             "in",
-            activeUsers.map((user) => user.username)
+            activeUsers.map((user) => user.username),
         )
         .execute();
     dbUsers.forEach((user) => {

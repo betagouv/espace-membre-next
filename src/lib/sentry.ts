@@ -88,10 +88,10 @@ export interface SentryUserAccess {
     teamRoles: SentryTeamAccess[];
 }
 
-const MAX_SENTRY_TEAM_SLUG_CHARACTERS = 50
+const MAX_SENTRY_TEAM_SLUG_CHARACTERS = 50;
 
 export function generateSentryTeamSlug(name: string) {
-    return slugify(name).slice(0, MAX_SENTRY_TEAM_SLUG_CHARACTERS)
+    return slugify(name).slice(0, MAX_SENTRY_TEAM_SLUG_CHARACTERS);
 }
 
 export class SentryService implements AccountService {
@@ -122,12 +122,12 @@ export class SentryService implements AccountService {
             {
                 method: "DELETE",
                 headers: this.headers,
-            }
+            },
         );
 
         if (!deleteResponse.ok) {
             throw new Error(
-                `Failed to delete user: ${deleteResponse.statusText}`
+                `Failed to delete user: ${deleteResponse.statusText}`,
             );
         }
         console.log(`User with email ${userId} deleted successfully.`);
@@ -167,7 +167,7 @@ export class SentryService implements AccountService {
                     reinvite: true,
                 }),
                 method: "PUT",
-            }
+            },
         );
         return res.json();
     }
@@ -195,7 +195,7 @@ export class SentryService implements AccountService {
                     sendInvite: true,
                     reinvite: true,
                 }),
-            }
+            },
         );
 
         if (response.status === 201) {
@@ -206,12 +206,12 @@ export class SentryService implements AccountService {
             if (contentType?.includes("application/json")) {
                 const errorData = await response.json();
                 throw new Error(
-                    `Failed to add user to organization: ${response.status} ${response.statusText}. ${errorData.detail}`
+                    `Failed to add user to organization: ${response.status} ${response.statusText}. ${errorData.detail}`,
                 );
             } else {
                 // Handle non-JSON response if needed, or return the raw text
                 throw new Error(
-                    `Failed to add user ${email} to organization: ${response.status} ${response.statusText}`
+                    `Failed to add user ${email} to organization: ${response.status} ${response.statusText}`,
                 );
             }
         }
@@ -240,19 +240,19 @@ export class SentryService implements AccountService {
         if (response.status === 200) {
             await response.json();
             console.log(
-                `Sentry: User ${memberId} changed team role to ${teamRole} in team ${teamSlug}`
+                `Sentry: User ${memberId} changed team role to ${teamRole} in team ${teamSlug}`,
             );
         } else {
             const contentType = response.headers.get("Content-Type");
             if (contentType?.includes("application/json")) {
                 const errorData = await response.json();
                 throw new Error(
-                    `Failed to changed user role : ${response.status} ${response.statusText}. ${errorData.detail}`
+                    `Failed to changed user role : ${response.status} ${response.statusText}. ${errorData.detail}`,
                 );
             } else {
                 // Handle non-JSON response if needed, or return the raw text
                 throw new Error(
-                    `Failed to changed user role : ${response.status} ${response.statusText}`
+                    `Failed to changed user role : ${response.status} ${response.statusText}`,
                 );
             }
         }
@@ -288,12 +288,12 @@ export class SentryService implements AccountService {
             if (contentType?.includes("application/json")) {
                 const errorData = await response.json();
                 throw new Error(
-                    `Failed to create team: ${response.status} ${response.statusText}. ${errorData.detail}`
+                    `Failed to create team: ${response.status} ${response.statusText}. ${errorData.detail}`,
                 );
             } else {
                 // Handle non-JSON response if needed, or return the raw text
                 throw new Error(
-                    `Failed to create team: ${response.status} ${response.statusText}`
+                    `Failed to create team: ${response.status} ${response.statusText}`,
                 );
             }
         }
@@ -315,17 +315,17 @@ export class SentryService implements AccountService {
         });
         if (response.status === 201) {
             console.log(
-                `Sentry: User ${memberId} successfully added to the team: ${teamSlug}`
+                `Sentry: User ${memberId} successfully added to the team: ${teamSlug}`,
             );
         } else if (response.status === 204) {
             console.log("Sentry user already in team");
         } else if (response.status === 202) {
             console.log(
-                "The member needs permission to join the team and an access request has been generated"
+                "The member needs permission to join the team and an access request has been generated",
             );
         } else {
             throw new Error(
-                `Failed to add user to team: ${response.status} ${response.statusText}.`
+                `Failed to add user to team: ${response.status} ${response.statusText}.`,
             );
         }
         return;
@@ -333,9 +333,8 @@ export class SentryService implements AccountService {
 
     // Function to get teams the user belongs to
     async getAllTeams(): Promise<SentryTeam[]> {
-        let nextPageUrl:
-            | string
-            | null = `${this.apiUrl}/api/0/organizations/${this.org}/teams/`;
+        let nextPageUrl: string | null =
+            `${this.apiUrl}/api/0/organizations/${this.org}/teams/`;
         let allTeams: SentryTeam[] = [];
         while (nextPageUrl) {
             const teamsResponse = await fetch(nextPageUrl, {
@@ -345,7 +344,7 @@ export class SentryService implements AccountService {
 
             if (!teamsResponse.ok) {
                 throw new Error(
-                    `Failed to fetch teams: ${teamsResponse.statusText}`
+                    `Failed to fetch teams: ${teamsResponse.statusText}`,
                 );
             }
 
@@ -365,9 +364,8 @@ export class SentryService implements AccountService {
         { serviceUserId: string; user: SentryUser }[]
     > {
         let allUsers: SentryUser[] = [];
-        let nextPageUrl:
-            | string
-            | null = `${this.apiUrl}/api/0/organizations/${this.org}/members/`;
+        let nextPageUrl: string | null =
+            `${this.apiUrl}/api/0/organizations/${this.org}/members/`;
 
         while (nextPageUrl) {
             const usersResponse = await fetch(nextPageUrl, {
@@ -377,7 +375,7 @@ export class SentryService implements AccountService {
 
             if (!usersResponse.ok) {
                 throw new Error(
-                    `Failed to fetch users: ${usersResponse.statusText}`
+                    `Failed to fetch users: ${usersResponse.statusText}`,
                 );
             }
 
@@ -414,7 +412,10 @@ export class SentryService implements AccountService {
 }
 
 export class CustomError extends LibraryCustomError {
-    public constructor(public readonly code: string, message: string = "") {
+    public constructor(
+        public readonly code: string,
+        message: string = "",
+    ) {
         super(message);
     }
 
@@ -436,7 +437,7 @@ export class SentryError extends CustomError {
     public constructor(
         code: string,
         message: string = "",
-        public readonly httpCode?: number
+        public readonly httpCode?: number,
     ) {
         super(code, message);
     }
@@ -448,15 +449,15 @@ export class SentryError extends CustomError {
 
 export const teamAlreadyExistsError = new SentryError(
     "teamAlreadyExists",
-    "Sentry team already exists"
+    "Sentry team already exists",
 );
 
 export const userAlreadyHaveDefinedRoleOrTeamDoesNotExist = new SentryError(
     "userAlreadyHaveDefinedRoleOrTeamDoesNotExist",
-    "User already have defined role or team dost not exist"
+    "User already have defined role or team dost not exist",
 );
 
 export const userNotFound = new SentryError(
     "userDoesNotExist",
-    "User does not exist"
+    "User does not exist",
 );

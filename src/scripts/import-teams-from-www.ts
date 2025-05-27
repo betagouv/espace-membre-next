@@ -17,13 +17,13 @@ const insertData = async (markdownData: MarkdownData) => {
                             "=",
                             team.attributes.incubator.replace(
                                 "/incubators/",
-                                ""
-                            )
+                                "",
+                            ),
                         )
                         .select("uuid"))!,
                 mission: team.attributes.mission!,
                 name: team.attributes.name,
-            }))
+            })),
         )
         .returning(["uuid", "ghid"])
         .execute();
@@ -56,12 +56,12 @@ const insertData = async (markdownData: MarkdownData) => {
                             .execute();
                     }
                 }) || [],
-                { concurrency: 1 }
+                { concurrency: 1 },
             );
 
             return userId;
         }),
-        { concurrency: 1 }
+        { concurrency: 1 },
     );
 
     console.log("\n\n");

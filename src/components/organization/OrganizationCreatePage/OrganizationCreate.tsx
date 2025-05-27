@@ -16,12 +16,10 @@ export const OrganizationCreate = (props: organizationInfoCreateProps) => {
             organization: data,
         })
             .then((result) => {
-
                 window.scrollTo({ top: 20, behavior: "smooth" });
                 return result;
             })
             .catch((e) => {
-
                 window.scrollTo({ top: 20, behavior: "smooth" });
                 Sentry.captureException(e);
                 throw e;

@@ -19,7 +19,7 @@ export default function BlocConfigurerEmailPrincipal({
     userInfos: memberBaseInfoSchemaType;
 }) {
     const [newPrimaryEmail, setNewPrimaryEmail] = useState<string>(
-        userInfos.primary_email || ""
+        userInfos.primary_email || "",
     );
     const [alertMessage, setAlertMessage] = useState<{
         title: string;
@@ -71,7 +71,7 @@ export default function BlocConfigurerEmailPrincipal({
                     onSubmit={async (e) => {
                         e.preventDefault();
                         const confirmed = confirm(
-                            "Êtes-vous vraiment certain(e) de vouloir changer cet email ?"
+                            "Êtes-vous vraiment certain(e) de vouloir changer cet email ?",
                         );
                         if (confirmed) {
                             setIsSaving(true);

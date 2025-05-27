@@ -22,7 +22,7 @@ const IncubatorIncludesSchema = z.union(
     ],
     {
         message: "Inclusion non valide",
-    }
+    },
 );
 const queryInput = z.object({
     includes: z
@@ -31,7 +31,7 @@ const queryInput = z.object({
         .transform((value) => (Array.isArray(value) ? value : [value]))
         .refine(
             (items) => new Set(items).size === items.length,
-            "Il ne peut y avoir plusieurs inclusions identiques."
+            "Il ne peut y avoir plusieurs inclusions identiques.",
         )
         .optional(),
 });
@@ -42,12 +42,12 @@ export const GET = async (req: NextRequest) => {
         data: searchParams,
         error,
     } = queryInput.safeParse(
-        convertSearchParamsToRecord(req.nextUrl.searchParams)
+        convertSearchParamsToRecord(req.nextUrl.searchParams),
     );
     if (!success) {
         return Response.json(
             { error: error.flatten().fieldErrors },
-            { status: HttpStatusCode.UnprocessableEntity }
+            { status: HttpStatusCode.UnprocessableEntity },
         );
     }
 
@@ -57,10 +57,10 @@ export const GET = async (req: NextRequest) => {
 
     if (searchParams.includes?.length) {
         const withStartups = searchParams.includes.includes(
-            IncubatorIncludes.STARTUPS
+            IncubatorIncludes.STARTUPS,
         );
         const withMembers = searchParams.includes.includes(
-            IncubatorIncludes.MEMBERS
+            IncubatorIncludes.MEMBERS,
         );
 
         if (withStartups) {
@@ -70,7 +70,7 @@ export const GET = async (req: NextRequest) => {
             };
             for (const incubator of incubators) {
                 const incubatorStartups = startups.filter(
-                    (startup) => startup.incubator_id === incubator.uuid
+                    (startup) => startup.incubator_id === incubator.uuid,
                 );
                 (incubator as IncubatorWithStartups).startups =
                     incubatorStartups.map(startupToModel);
@@ -84,7 +84,8 @@ export const GET = async (req: NextRequest) => {
             };
             for (const incubator of incubators) {
                 const incubatorMembers = incubatorMembersList.find(
-                    (incubatorMember) => incubatorMember.uuid === incubator.uuid
+                    (incubatorMember) =>
+                        incubatorMember.uuid === incubator.uuid,
                 );
                 (incubator as IncubatorWithMembers).members =
                     incubatorMembers?.members ?? [];

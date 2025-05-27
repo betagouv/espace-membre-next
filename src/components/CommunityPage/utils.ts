@@ -18,13 +18,13 @@ export const communityFilterSchema = z.object({
 export type CommunityFilterSchemaType = z.infer<typeof communityFilterSchema>;
 
 export const communityQueryParser = parseAsArrayOf(
-    parseAsJson(communityFilterSchema.parse)
+    parseAsJson(communityFilterSchema.parse),
 ).withDefault([]);
 
 // list unique active startups from someone missions
 export const getStartupsFromMissions = (
     missions: CommunityProps["users"][number]["missions"],
-    startupOptions: CommunityProps["startupOptions"]
+    startupOptions: CommunityProps["startupOptions"],
 ) => {
     return (
         missions
@@ -40,12 +40,12 @@ export const getStartupsFromMissions = (
                             // get full startup info
                             return startupOptions.find((s2) => s2.value === s);
                         })
-                        .filter(Boolean) || []
+                        .filter(Boolean) || [],
             )
             // uniquify
             .filter(
                 (s, i, a) =>
-                    !a.slice(i + 1).find((t) => t?.value === (s && s.value))
+                    !a.slice(i + 1).find((t) => t?.value === (s && s.value)),
             )
     );
 };

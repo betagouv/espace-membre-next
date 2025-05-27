@@ -49,7 +49,7 @@ export default function BlocConfigurerEmailSecondaire({
                             setIsSaving(true);
                             const res = await safeChangeSecondaryEmailForUser(
                                 value,
-                                sessionWrapper.data?.user.id!
+                                sessionWrapper.data?.user.id!,
                             );
                             setIsSaving(false);
 

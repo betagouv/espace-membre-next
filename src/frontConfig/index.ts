@@ -53,13 +53,13 @@ export default {
     NEXT_PUBLIC_ALERT_MESSAGE_PRIVATE: process.env
         .NEXT_PUBLIC_ALERT_MESSAGE_PRIVATE
         ? alertMessageSchema.parse(
-              JSON.parse(process.env.NEXT_PUBLIC_ALERT_MESSAGE_PRIVATE)
+              JSON.parse(process.env.NEXT_PUBLIC_ALERT_MESSAGE_PRIVATE),
           )
         : undefined,
     NEXT_PUBLIC_ALERT_MESSAGE_PUBLIC: process.env
         .NEXT_PUBLIC_ALERT_MESSAGE_PUBLIC
         ? alertMessageSchema.parse(
-              JSON.parse(process.env.NEXT_PUBLIC_ALERT_MESSAGE_PUBLIC)
+              JSON.parse(process.env.NEXT_PUBLIC_ALERT_MESSAGE_PUBLIC),
           )
         : undefined,
     CHATWOOT_WEBSITE_TOKEN: process.env.NEXT_PUBLIC_CHATWOOT_WEBSITE_TOKEN,

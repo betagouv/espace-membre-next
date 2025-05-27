@@ -25,12 +25,12 @@ export const GET = async (req: NextRequest) => {
         data: searchParams,
         error,
     } = queryInput.safeParse(
-        convertSearchParamsToRecord(req.nextUrl.searchParams)
+        convertSearchParamsToRecord(req.nextUrl.searchParams),
     );
     if (!success) {
         return Response.json(
             { error: error.flatten().fieldErrors },
-            { status: HttpStatusCode.UnprocessableEntity }
+            { status: HttpStatusCode.UnprocessableEntity },
         );
     }
 
@@ -47,7 +47,7 @@ export const GET = async (req: NextRequest) => {
         for (const startup of startups) {
             if (withIncubator) {
                 const incubator = incubators.find(
-                    (incubator) => startup.incubator_id === incubator.uuid
+                    (incubator) => startup.incubator_id === incubator.uuid,
                 );
                 (startup as StartupWithIncubator).incubator = incubator
                     ? incubatorToModel({

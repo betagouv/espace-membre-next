@@ -14,7 +14,7 @@ if (process.env.NODE_ENV === "test" || process.env.CI) {
 
     const getSignedUrlPromise = function (
         method: string,
-        params: { Key: string; Body: any }
+        params: { Key: string; Body: any },
     ) {
         // const filePath = path.join(localS3Dir, params.Key);
         // fs.writeFileSync(filePath, params.Body);

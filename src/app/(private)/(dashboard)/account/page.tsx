@@ -55,7 +55,7 @@ export default async function Page() {
             const userEventIds = userEvents.map((u) => u.field_id);
             const progress = await computeOnboardingProgress(
                 userEventIds,
-                checklistObject
+                checklistObject,
             );
             onboarding = {
                 progress,

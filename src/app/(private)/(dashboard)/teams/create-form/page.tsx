@@ -12,7 +12,7 @@ export const metadata: Metadata = {
 export default async function Page(props) {
     const incubators = await db.selectFrom("incubators").selectAll().execute(); //await betagouv.sponsors();
     const members = (await getAllUsersInfo()).map((member) =>
-        memberBaseInfoToModel(member)
+        memberBaseInfoToModel(member),
     );
 
     return (

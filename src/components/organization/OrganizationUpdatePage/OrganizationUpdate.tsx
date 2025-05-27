@@ -43,7 +43,7 @@ export const OrganizationUpdate = (props: OrganizationUpdateProps) => {
             <div className={fr.cx("fr-mb-5w")}>
                 <h1>
                     {routeTitles.organizationDetailsEdit(
-                        props.organization.name
+                        props.organization.name,
                     )}
                 </h1>
 

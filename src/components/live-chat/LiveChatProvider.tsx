@@ -117,7 +117,7 @@ export const LiveChatProvider = ({ children }: PropsWithChildren) => {
                 if (messageToDisplay === "details") {
                     Crisp.message.send(
                         "text",
-                        "Si tu as d'avantage de détails à donner tu peux l'écrire ci dessous"
+                        "Si tu as d'avantage de détails à donner tu peux l'écrire ci dessous",
                     );
                 }
             });

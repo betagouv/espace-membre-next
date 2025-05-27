@@ -23,14 +23,14 @@ export async function syncMatomoSites(matomoClient: Matomo | FakeMatomo) {
                         .column("matomo_id") // Conflict key
                         .doUpdateSet({
                             name: (eb) => eb.ref("excluded.name"),
-                            url: (eb) => eb.ref("excluded.url")
-                        })
+                            url: (eb) => eb.ref("excluded.url"),
+                        }),
                 )
                 .execute();
         }
 
         console.log(
-            `Successfully synced ${matomoSites.length} Matomo sites to the database.`
+            `Successfully synced ${matomoSites.length} Matomo sites to the database.`,
         );
     } catch (error) {
         console.error("Failed to sync Matomo sites:", error);

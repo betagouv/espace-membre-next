@@ -24,7 +24,7 @@ export const MattermostUserSchema = z.object({
 });
 
 export const getMattermostUserInfo = async (
-    email: string | null
+    email: string | null,
 ): Promise<{
     mattermostUser: MattermostUser | null;
     mattermostUserInTeamAndActive: boolean;
@@ -72,7 +72,7 @@ export interface MattermostChannel {
 
 export async function getUserWithParams(
     params = {},
-    i = 0
+    i = 0,
 ): Promise<MattermostUser[]> {
     const mattermostUsers = await axios
         .get(`${config.mattermostURL}/api/v4/users?per_page=200&page=${i}`, {
@@ -94,7 +94,7 @@ export async function searchUsers(params = {}) {
         .post(
             `${config.mattermostURL}/api/v4/users/search`,
             params,
-            getMattermostConfig()
+            getMattermostConfig(),
         )
         .then((response) => response.data);
 }
@@ -117,13 +117,13 @@ export async function addUserToTeam(userId, teamId) {
                     team_id: teamId,
                     user_id: userId,
                 },
-                getMattermostConfig()
+                getMattermostConfig(),
             )
             .then((response) => response.data);
     } catch (err) {
         console.error(err);
         throw new Error(
-            `Erreur d'ajout de l'utilisateur ${userId} à la team ${teamId} : ${err}`
+            `Erreur d'ajout de l'utilisateur ${userId} à la team ${teamId} : ${err}`,
         );
     }
     console.log(`Ajout de utilisateur ${userId} à la team ${teamId}`);
@@ -138,13 +138,13 @@ export async function removeUserFromTeam(userId, teamId) {
                 `${config.mattermostURL}/api/v4/teams/${teamId}/members/${userId}`,
                 {
                     ...getMattermostConfig(),
-                }
+                },
             )
             .then((response) => response.data);
     } catch (err) {
         console.error(err);
         throw new Error(
-            `Erreur de suppression de l'utilisateur ${userId} de la team ${teamId} : ${err}`
+            `Erreur de suppression de l'utilisateur ${userId} de la team ${teamId} : ${err}`,
         );
     }
     console.log(`Suppression de utilisateur ${userId} de la team ${teamId}`);
@@ -158,14 +158,14 @@ export async function inviteUsersToTeamByEmail(userEmails, teamId) {
             .post(
                 `${config.mattermostURL}/api/v4/teams/${teamId}/invite/email`,
                 userEmails,
-                getMattermostConfig()
+                getMattermostConfig(),
             )
             .then((response) => response.data);
     } catch (err) {
         console.error(
             "Erreur d'ajout des utilisateurs à mattermost",
             err,
-            userEmails
+            userEmails,
         );
         return null;
     }
@@ -190,7 +190,7 @@ export async function getInactiveMattermostUsers(params = {}, i = 0) {
     }
     const nextPageMattermostUsers = await getInactiveMattermostUsers(
         params,
-        i + 1
+        i + 1,
     );
     return [...mattermostUsers, ...nextPageMattermostUsers];
 }
@@ -203,7 +203,7 @@ export async function changeUserEmail(id: string, email: string) {
                 {
                     email,
                 },
-                getMattermostConfig()
+                getMattermostConfig(),
             )
             .then((response) => response.data);
         console.log(`Changement de l'email de l'utilisateur ${res.username}`);
@@ -211,7 +211,7 @@ export async function changeUserEmail(id: string, email: string) {
     } catch (err) {
         console.error(
             `Erreur de changement d'email de l'utilisateur mattermost : ${id}`,
-            err
+            err,
         );
         return false;
     }
@@ -219,7 +219,7 @@ export async function changeUserEmail(id: string, email: string) {
 
 export const createUser = async function createUser(
     { email, username, password, position },
-    inviteId
+    inviteId,
 ) {
     if (!inviteId) {
         const errorMessage =
@@ -238,12 +238,12 @@ export const createUser = async function createUser(
                     password,
                     position,
                 },
-                getMattermostConfig()
+                getMattermostConfig(),
             )
             .then((response) => response.data);
     } catch (err) {
         throw new Error(
-            `Erreur d'ajout de l'utilisateurs ${username} à mattermost : ${err}`
+            `Erreur d'ajout de l'utilisateurs ${username} à mattermost : ${err}`,
         );
     }
     console.log("Ajout de l'utilisateur", email, username);

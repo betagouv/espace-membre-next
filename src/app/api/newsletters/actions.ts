@@ -16,7 +16,7 @@ import {
 
 export const updateNewsletter = async (
     data: newsletterInfoUpdateSchemaType,
-    newsletterId: string
+    newsletterId: string,
 ) => {
     const session = await getServerSession(authOptions);
     if (!session || !session.user.id) {
@@ -27,7 +27,7 @@ export const updateNewsletter = async (
     } catch (error) {
         console.error("Database update failed:", error);
         throw new ValidationError(
-            `Erreur de validation des données : ${error}`
+            `Erreur de validation des données : ${error}`,
         );
     }
 

@@ -1,8 +1,8 @@
 import { Metadata } from "next";
 import { redirect } from "next/navigation";
 import { getServerSession } from "next-auth";
-import { BreadCrumbFiller } from "@/app/BreadCrumbProvider";
 
+import { BreadCrumbFiller } from "@/app/BreadCrumbProvider";
 import { TeamUpdate } from "@/components/team/TeamUpdatePage";
 import { db } from "@/lib/kysely";
 import { getTeam } from "@/lib/kysely/queries/teams";
@@ -48,10 +48,10 @@ export default async function Page(props: Props) {
     }
     const incubators = await db.selectFrom("incubators").selectAll().execute(); //await betagouv.sponsors();
     const members = (await getAllUsersInfo()).map((member) =>
-        memberPublicInfoToModel(member)
+        memberPublicInfoToModel(member),
     );
     const teamMembers = members.filter((m) =>
-        m.teams.map((t) => t.uuid).includes(uuid)
+        m.teams.map((t) => t.uuid).includes(uuid),
     );
 
     const team = teamToModel(dbTeam);

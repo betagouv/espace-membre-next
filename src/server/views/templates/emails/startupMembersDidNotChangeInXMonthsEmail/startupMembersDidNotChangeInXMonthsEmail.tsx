@@ -10,7 +10,7 @@ export function StartupMembersDidNotChangeInXMonthsEmailTitle() {
 }
 
 export function StartupMembersDidNotChangeInXMonthsEmail(
-    props: EmailStartupMembersDidNotChangeInXMonths["variables"]
+    props: EmailStartupMembersDidNotChangeInXMonths["variables"],
 ) {
     const title = StartupMembersDidNotChangeInXMonthsEmailTitle();
 
@@ -42,9 +42,7 @@ export function StartupMembersDidNotChangeInXMonthsEmail(
                             <tr key={index}>
                                 <td style={{ width: "40%" }}>
                                     <a
-                                        href={`${getBaseUrl()}/startups/${
-                                            wrapper.startup.ghid
-                                        }`}
+                                        href={`${getBaseUrl()}/startups/${wrapper.startup.ghid}`}
                                     >
                                         {wrapper.startup.name}
                                     </a>

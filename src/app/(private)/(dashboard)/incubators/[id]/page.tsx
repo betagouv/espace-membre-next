@@ -3,7 +3,6 @@ import { redirect } from "next/navigation";
 
 import { BreadCrumbFiller } from "@/app/BreadCrumbProvider";
 import IncubatorPage from "@/components/IncubatorPage/IncubatorPage";
-
 import {
     getIncubator,
     getIncubatorStartups,
@@ -17,7 +16,7 @@ type Props = {
 
 export async function generateMetadata(
     { params }: Props,
-    parent: ResolvingMetadata
+    parent: ResolvingMetadata,
 ): Promise<Metadata> {
     // read route params
     const id = params.id;

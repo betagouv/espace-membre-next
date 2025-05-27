@@ -32,7 +32,7 @@ export async function updatePasswordForUser({
 
     if (!user.userInfos) {
         throw new Error(
-            `Le membre ${username} n'a pas de fiche sur l'espace-membre : vous ne pouvez pas modifier le mot de passe.`
+            `Le membre ${username} n'a pas de fiche sur l'espace-membre : vous ne pouvez pas modifier le mot de passe.`,
         );
     }
 
@@ -53,20 +53,20 @@ export async function updatePasswordForUser({
         password !== password.trim()
     ) {
         throw new Error(
-            "Le mot de passe doit comporter de 9 à 30 caractères, ne pas contenir d'accents ni d'espace au début ou à la fin."
+            "Le mot de passe doit comporter de 9 à 30 caractères, ne pas contenir d'accents ni d'espace au début ou à la fin.",
         );
     }
     const email = buildBetaEmail(username);
 
     console.log(
-        `Changement de mot de passe by=${session.user.id}&email=${email}`
+        `Changement de mot de passe by=${session.user.id}&email=${email}`,
     );
 
     const secretariatUrl = `${config.protocol}://${config.host}`;
     await betagouv.changePassword(
         username,
         password,
-        user.emailInfos?.emailPlan
+        user.emailInfos?.emailPlan,
     );
     await addEvent({
         action_code: EventCode.MEMBER_PASSWORD_UPDATED,

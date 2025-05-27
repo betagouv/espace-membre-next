@@ -52,7 +52,7 @@ bossClient.on("error", (error) => {
 let initPromise: Promise<void> | null = null;
 
 export async function getBossClientInstance(
-    callback?: () => void
+    callback?: () => void,
 ): Promise<PgBoss> {
     if (!initPromise) {
         initPromise = (async () => {
@@ -127,7 +127,7 @@ export async function startBossClientInstance(): Promise<PgBoss> {
         console.log(
             `Setup ${pgBossWorker.length} workers :\n${pgBossWorker
                 .map((job) => job.topic)
-                .join("\n")}`
+                .join("\n")}`,
         );
     });
 }
@@ -143,7 +143,7 @@ export async function stopBossClientInstance(): Promise<void> {
 }
 
 export function handlerWrapper<ReqData>(
-    handler: PgBoss.WorkHandler<ReqData>
+    handler: PgBoss.WorkHandler<ReqData>,
 ): PgBoss.WorkHandler<ReqData> {
     return async (job: PgBoss.Job<ReqData>) => {
         try {

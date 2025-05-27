@@ -45,7 +45,7 @@ export const MemberMissions = ({
                               })) ||
                           "#",
                   },
-              ]
+              ],
     );
 
     //console.log("missions", missions);

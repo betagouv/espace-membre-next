@@ -37,7 +37,7 @@ export const StartupInfoUpdate = (props: StartupInfoUpdateProps) => {
     const css = ".panel { overflow: hidden; width: auto; min-height: 100vh; }";
 
     const save = async (
-        data: startupInfoUpdateSchemaType
+        data: startupInfoUpdateSchemaType,
     ): Promise<ActionResponse> => {
         try {
             const res = await safeUpdateStartup({

@@ -1,9 +1,9 @@
-import { getLastMissionDate } from "@/utils/member";
-import { fr } from "@codegouvfr/react-dsfr/fr";
-import Button from "@codegouvfr/react-dsfr/Button";
 import Alert from "@codegouvfr/react-dsfr/Alert";
+import Button from "@codegouvfr/react-dsfr/Button";
+import { fr } from "@codegouvfr/react-dsfr/fr";
 
 import { MemberPageProps } from "./MemberPage";
+import { getLastMissionDate } from "@/utils/member";
 
 export const MemberWaitingValidationNotice = ({
     userInfos,

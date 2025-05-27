@@ -17,7 +17,7 @@ import BetaGouv from "@betagouv";
 export const computeHash = function (username) {
     const hash = crypto.createHmac(
         "sha512",
-        config.HASH_SALT as string
+        config.HASH_SALT as string,
     ); /** Hashing algorithm sha512 */
     return hash.update(username).digest("hex");
 };
@@ -28,7 +28,7 @@ export function encryptPassword(password) {
     const cipher = createCipheriv(
         "aes-256-cbc",
         new Uint8Array(Buffer.from(config.PASSWORD_ENCRYPT_KEY!, "hex")),
-        new Uint8Array(iv)
+        new Uint8Array(iv),
     );
     let encrypted = cipher.update(password, "utf8", "hex");
     encrypted += cipher.final("hex");
@@ -44,7 +44,7 @@ export function decryptPassword(encryptedPassword) {
     const decipher = createDecipheriv(
         "aes-256-cbc",
         new Uint8Array(key),
-        new Uint8Array(iv)
+        new Uint8Array(iv),
     );
     let decrypted = decipher.update(encrypted, "hex", "utf8");
     decrypted += decipher.final("utf8");
@@ -72,7 +72,7 @@ export async function sendMail(
     subject,
     html,
     extraParams = {},
-    attachments = []
+    attachments = [],
 ) {
     const mail = {
         to: toEmail,
@@ -87,7 +87,7 @@ export async function sendMail(
 
     return new Promise((resolve, reject) => {
         mailTransport.sendMail(mail, (error, info) =>
-            error ? reject(error) : resolve(info)
+            error ? reject(error) : resolve(info),
         );
     });
 }
@@ -109,7 +109,7 @@ export function buildBetaEmail(id: string) {
 
 export function buildBetaRedirectionEmail(
     id: string,
-    postfix: string = "attr"
+    postfix: string = "attr",
 ) {
     return `${id}-attr@${config.domain}`;
 }
@@ -120,7 +120,7 @@ export const isBetaEmail = (email) =>
 export const getBetaEmailId = (email) => email && email.split("@")[0];
 
 export function objectArrayToCSV<T extends Record<string, any>>(
-    arr: T[]
+    arr: T[],
 ): string {
     if (arr.length === 0) {
         return ""; // or handle empty array case as needed
@@ -133,7 +133,7 @@ export function objectArrayToCSV<T extends Record<string, any>>(
         ...arr.map((row) =>
             header
                 .map((fieldName) => JSON.stringify(row[fieldName], replacer))
-                .join(";")
+                .join(";"),
         ),
     ].join("\r\n");
     return csv;
@@ -141,7 +141,7 @@ export function objectArrayToCSV<T extends Record<string, any>>(
 
 export function checkUserIsExpired(
     user: memberSchemaType | memberBaseInfoSchemaType,
-    minDaysOfExpiration: number = 1
+    minDaysOfExpiration: number = 1,
 ) {
     // Le membre est considéré comme expiré si:
     // - il/elle existe
@@ -153,7 +153,7 @@ export function checkUserIsExpired(
     if (!user.missions || !user.missions.length) return true;
     const latestMission = user.missions.reduce((a, v) =>
         //@ts-ignore todo
-        !v.end || v.end > a.end ? v : a
+        !v.end || v.end > a.end ? v : a,
     );
     if (!latestMission.end) {
         return false;
@@ -172,23 +172,23 @@ export function checkUserIsExpired(
 }
 
 export function getActiveUsers<
-    T extends memberSchemaType[] | memberBaseInfoSchemaType[]
+    T extends memberSchemaType[] | memberBaseInfoSchemaType[],
 >(users: T, minDaysOfExpiration = 0): T {
     return users.filter(
-        (u) => !checkUserIsExpired(u, minDaysOfExpiration - 1)
+        (u) => !checkUserIsExpired(u, minDaysOfExpiration - 1),
     ) as T;
 }
 
 export function getExpiredUsers<
-    T extends memberSchemaType[] | memberBaseInfoSchemaType[]
+    T extends memberSchemaType[] | memberBaseInfoSchemaType[],
 >(users: T, minDaysOfExpiration = 0): T {
     return users.filter((u) =>
-        checkUserIsExpired(u, minDaysOfExpiration - 1)
+        checkUserIsExpired(u, minDaysOfExpiration - 1),
     ) as T;
 }
 
 export function getExpiredUsersForXDays<
-    T extends memberSchemaType[] | memberBaseInfoSchemaType[]
+    T extends memberSchemaType[] | memberBaseInfoSchemaType[],
 >(users: T, nbDays: number): T {
     const date = new Date();
     date.setDate(date.getDate() - nbDays);
@@ -198,7 +198,7 @@ export function getExpiredUsersForXDays<
         const latestMission = user.missions.reduce((a, v) =>
             !v.end || (a.end ? new Date(v.end) > new Date(a.end) : false)
                 ? v
-                : a
+                : a,
         );
         // Compare the normalized dates
         return latestMission.end
@@ -210,7 +210,7 @@ export function getExpiredUsersForXDays<
 export function isMobileFirefox(req) {
     const userAgent = Object.prototype.hasOwnProperty.call(
         req.headers,
-        "user-agent"
+        "user-agent",
     )
         ? req.headers["user-agent"]
         : null;
@@ -263,14 +263,14 @@ export const asyncFilter = async (arr: Array<any>, predicate) => {
 
 export async function userInfos(
     params: { username: string } | { uuid: string },
-    isCurrentUser: boolean
+    isCurrentUser: boolean,
 ): Promise<memberWrapperSchemaType> {
     try {
         const userInfos = userInfosToModel(
             await getUserInfos({
                 ...params,
                 options: { withDetails: true },
-            })
+            }),
         );
         // TODO: check if email OPI
         const emailInfos = await BetaGouv.emailInfos(userInfos.username);
@@ -315,7 +315,7 @@ export async function userInfos(
         throw new Error(
             `Problème pour récupérer les infos du membre ${
                 "username" in params ? params.username : params.uuid
-            }`
+            }`,
         );
     }
 }

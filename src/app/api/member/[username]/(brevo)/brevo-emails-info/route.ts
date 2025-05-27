@@ -17,7 +17,7 @@ export const GET = withHttpErrorHandling(async function (
         params: {
             username: string;
         };
-    }
+    },
 ) {
     const session = await getServerSession(authOptions);
 
@@ -46,12 +46,12 @@ export const GET = withHttpErrorHandling(async function (
     const blockedContacts = await getAllTransacBlockedContacts();
     if (dbUser?.primary_email) {
         emailServiceInfo["primaryEmailTransac"] = blockedContacts.find(
-            (contact) => dbUser.primary_email === contact.email
+            (contact) => dbUser.primary_email === contact.email,
         );
     }
     if (dbUser?.secondary_email) {
         emailServiceInfo["secondaryEmailTransac"] = blockedContacts.find(
-            (contact) => dbUser.secondary_email === contact.email
+            (contact) => dbUser.secondary_email === contact.email,
         );
     }
 

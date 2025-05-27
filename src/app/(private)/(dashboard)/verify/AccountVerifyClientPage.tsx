@@ -20,8 +20,8 @@ import {
     memberValidateInfoSchema,
     memberValidateInfoSchemaType,
 } from "@/models/actions/member";
-import { statusOptions } from "@/models/member";
 import {
+    statusOptions,
     DOMAINE_OPTIONS,
     memberSchema,
     memberSchemaType,
@@ -41,8 +41,8 @@ const postMemberData = async ({ values, sessionUsername }) => {
             computeRoute(
                 routes.ACCOUNT_UPDATE_INFO_API.replace(
                     ":username",
-                    sessionUsername
-                )
+                    sessionUsername,
+                ),
             ),
             {
                 method: "PUT", // Specify the method
@@ -50,7 +50,7 @@ const postMemberData = async ({ values, sessionUsername }) => {
                 headers: {
                     "Content-Type": "application/json", // Specify the content type
                 },
-            }
+            },
         );
 
         if (!response.ok) {
@@ -249,7 +249,7 @@ export default function AccountVerifyClientPage({
                                                         placeholder:
                                                             "ex: grace.hopper@gmail.com",
                                                         ...register(
-                                                            "secondary_email"
+                                                            "secondary_email",
                                                         ),
                                                     }}
                                                     state={
@@ -281,7 +281,7 @@ export default function AccountVerifyClientPage({
                                                             {
                                                                 shouldDirty:
                                                                     true,
-                                                            }
+                                                            },
                                                         );
                                                     }}
                                                     defaultValue={
@@ -360,7 +360,7 @@ export default function AccountVerifyClientPage({
                                                             >
                                                                 {domaine.name}
                                                             </option>
-                                                        )
+                                                        ),
                                                     )}
                                                 </Select>
                                             </div>
@@ -446,7 +446,7 @@ export default function AccountVerifyClientPage({
                                                         label="Type de membre"
                                                         nativeSelectProps={{
                                                             ...register(
-                                                                `memberType`
+                                                                `memberType`,
                                                             ),
                                                         }}
                                                     >
@@ -472,7 +472,7 @@ export default function AccountVerifyClientPage({
                                                                         option.name
                                                                     }
                                                                 </option>
-                                                            )
+                                                            ),
                                                         )}
                                                     </Select>
                                                 </div>
@@ -540,7 +540,7 @@ export default function AccountVerifyClientPage({
                                                         label="Genre"
                                                         nativeSelectProps={{
                                                             ...register(
-                                                                "gender"
+                                                                "gender",
                                                             ),
                                                         }}
                                                         state={
@@ -580,7 +580,7 @@ export default function AccountVerifyClientPage({
                                                         label="Statut"
                                                         nativeSelectProps={{
                                                             ...register(
-                                                                `legal_status`
+                                                                `legal_status`,
                                                             ),
                                                         }}
                                                         state={
@@ -615,7 +615,7 @@ export default function AccountVerifyClientPage({
                                                                         option.name
                                                                     }
                                                                 </option>
-                                                            )
+                                                            ),
                                                         )}
                                                     </Select>
                                                 </div>
@@ -628,12 +628,12 @@ export default function AccountVerifyClientPage({
                                                             ...register("tjm", {
                                                                 setValueAs: (
                                                                     // use this instead of valueAsNumber to handle undefined value
-                                                                    v
+                                                                    v,
                                                                 ) =>
                                                                     !v
                                                                         ? null
                                                                         : parseInt(
-                                                                              v
+                                                                              v,
                                                                           ),
                                                             }),
                                                             type: "number",
@@ -659,14 +659,14 @@ export default function AccountVerifyClientPage({
                                                                     setValueAs:
                                                                         (
                                                                             // use this instead of valueAsNumber to handle undefined value
-                                                                            v
+                                                                            v,
                                                                         ) =>
                                                                             !v
                                                                                 ? null
                                                                                 : parseInt(
-                                                                                      v
+                                                                                      v,
                                                                                   ),
-                                                                }
+                                                                },
                                                             ),
 
                                                             type: "number",

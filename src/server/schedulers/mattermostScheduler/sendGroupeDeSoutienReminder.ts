@@ -11,7 +11,7 @@ export enum DAY_OF_THE_WEEK {
 }
 
 function getAllXDaysOfTheMonth(
-    dayOfTheWeek: DAY_OF_THE_WEEK = DAY_OF_THE_WEEK.MONDAY
+    dayOfTheWeek: DAY_OF_THE_WEEK = DAY_OF_THE_WEEK.MONDAY,
 ): Date[] {
     var d = new Date(),
         month = d.getMonth(),
@@ -41,7 +41,7 @@ const datesAreOnSameDay = (first: Date, second: Date) =>
 export const sendGroupDeSoutienReminder = async (
     canal: string = "general",
     dayOfTheWeek: DAY_OF_THE_WEEK = DAY_OF_THE_WEEK.MONDAY,
-    nXDayOfTheWeek: number = 0
+    nXDayOfTheWeek: number = 0,
 ) => {
     const message = `# Groupe de soutien 
 Si vous vous trouvez dans une situation de conflit, mal-être ou souffrance, violence ou harcèlement et que vous souhaitez en parler, un groupe de soutien constitué de membres de la communauté est disponible pour vous écouter en respectant la confidentialité de votre situation. 

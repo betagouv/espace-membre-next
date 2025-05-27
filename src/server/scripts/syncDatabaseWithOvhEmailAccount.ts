@@ -6,12 +6,12 @@ import { EmailStatusCode } from "@/models/member";
 
 const syncDatabaseWithOvhEmailAccount = async () => {
     const users = (await getAllUsersInfo()).map((user) =>
-        memberBaseInfoToModel(user)
+        memberBaseInfoToModel(user),
     );
     const usernames: string[] = users.map((user) => user.username);
     const ovhAccounts: string[] = await betagouv.accounts();
     const usernamesWithoutOvhEmailAccount = usernames.filter(
-        (username) => !ovhAccounts.includes(username)
+        (username) => !ovhAccounts.includes(username),
     );
     const dbUsers = users.filter(
         (user) =>
@@ -19,11 +19,11 @@ const syncDatabaseWithOvhEmailAccount = async () => {
                 EmailStatusCode.EMAIL_ACTIVE,
                 EmailStatusCode.EMAIL_ACTIVE_AND_PASSWORD_DEFINITION_PENDING,
             ].includes(user.primary_email_status) &&
-            usernamesWithoutOvhEmailAccount.includes(user.username)
+            usernamesWithoutOvhEmailAccount.includes(user.username),
     );
     console.log(
         "Will set primary_email_status to deleted for users :",
-        dbUsers.map((user) => user.username)
+        dbUsers.map((user) => user.username),
     );
     if (process.env.APPLY_SYNC_DATABASE_WITH_OVH_EMAIL_ACOUNT) {
         await db
@@ -31,7 +31,7 @@ const syncDatabaseWithOvhEmailAccount = async () => {
             .where(
                 "username",
                 "in",
-                dbUsers.map((user) => user.username)
+                dbUsers.map((user) => user.username),
             )
             .where("primary_email_status", "in", [
                 EmailStatusCode.EMAIL_ACTIVE,

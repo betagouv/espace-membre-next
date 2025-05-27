@@ -22,7 +22,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
 
     return {
         title: `${routeTitles.incubatorDetailsEdit(
-            incubator?.title
+            incubator?.title,
         )} / Espace Membre`,
     };
 }

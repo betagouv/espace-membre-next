@@ -33,7 +33,7 @@ const hasActiveMissions = (missions) => {
     return missions.find(
         (mission) =>
             isAfter(now, mission.start ?? 0) &&
-            isBefore(now, mission.end ?? Infinity)
+            isBefore(now, mission.end ?? Infinity),
     );
 };
 
@@ -60,7 +60,7 @@ async function handleMattermostWebhook(sibWebhookBody: ISibWebhookBody) {
     }
     await axios.post(
         `https://mattermost.incubateur.net/hooks/${config.SIB_WEBHOOK_ID}`,
-        { text: message }
+        { text: message },
     );
     if (sibWebhookBody.subject.includes("Réinitialisez votre mot de passe")) {
         await unblockFromBrevoIfNecessary(sibWebhookBody.email);
@@ -69,7 +69,7 @@ async function handleMattermostWebhook(sibWebhookBody: ISibWebhookBody) {
 
 export const POST = async (
     req: NextRequest,
-    { params: { id } }: { params: { id: string } }
+    { params: { id } }: { params: { id: string } },
 ) => {
     if (id === config.SIB_WEBHOOK_ID) {
         let sibWebhookBody = (await req.json()) as ISibWebhookBody;
@@ -97,7 +97,7 @@ https://chatwoot.incubateur.net/app/accounts/1/inbox/1/conversations/${conversat
         console.log(`Post message : `, message); // Call your action on the request here
         await axios.post(
             `https://mattermost.incubateur.net/hooks/${config.CHATWOOT_ID}`,
-            { text: message }
+            { text: message },
         );
     } else if (id === config.CHATWOOT_BADGE_ID) {
         let conversationId = "";
@@ -115,7 +115,7 @@ https://chatwoot.incubateur.net/app/accounts/1/inbox/1/conversations/${conversat
         console.log(`Post message : `, message); // Call your action on the request here
         await axios.post(
             `https://mattermost.incubateur.net/hooks/${config.CHATWOOT_BADGE_ID}`,
-            { text: message }
+            { text: message },
         );
     }
     return Response.json({ success: true });

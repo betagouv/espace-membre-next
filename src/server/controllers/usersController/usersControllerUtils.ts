@@ -15,7 +15,7 @@ export async function setEmailActive(username) {
         await getUserInfos({
             username: username,
             options: { withDetails: true },
-        })
+        }),
     );
     const shouldSendEmailCreatedEmail =
         user.primary_email_status === EmailStatusCode.EMAIL_CREATION_PENDING ||
@@ -97,13 +97,13 @@ export async function sendEmailCreatedEmail(username) {
     if (!user.primary_email) {
         throw new BusinessError(
             "UserHasNoPrimaryEmail",
-            "User should have a primary email"
+            "User should have a primary email",
         );
     }
     if (!user.secondary_email) {
         throw new BusinessError(
             "UserHasNoSecondaryEmail",
-            "User should have a secondary email"
+            "User should have a secondary email",
         );
     }
     try {

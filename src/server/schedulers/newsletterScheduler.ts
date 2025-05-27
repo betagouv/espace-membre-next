@@ -22,7 +22,7 @@ const { NUMBER_OF_DAY_FROM_MONDAY } = dateUtils;
 const replaceMacroInContent = (newsletterTemplateContent, replaceConfig) => {
     const contentWithReplacement = Object.keys(replaceConfig).reduce(
         (previousValue, key) => previousValue.replace(key, replaceConfig[key]),
-        newsletterTemplateContent
+        newsletterTemplateContent,
     );
     return contentWithReplacement;
 };
@@ -42,10 +42,10 @@ const createNewsletter = async () => {
     const pad = new HedgedocApi(
         config.padEmail,
         config.padPassword,
-        config.padURL
+        config.padURL,
     );
     const newsletterName = `infolettre-${computeId(
-        date.toISOString().split("T")[0]
+        date.toISOString().split("T")[0],
     )}`;
     const replaceConfig = {
         __REMPLACER_PAR_LIEN_DU_PAD__: `${config.padURL}/${newsletterName}`,
@@ -53,7 +53,7 @@ const createNewsletter = async () => {
         __REMPLACER_PAR_DATE_STAND_UP__: format(
             add(date, { weeks: 1, days: NUMBER_OF_DAY_FROM_MONDAY.THURSDAY }),
             "d MMMM yyyy",
-            { locale: fr }
+            { locale: fr },
         ),
         __REMPLACER_PAR_OFFRES__: await getJobOfferContent(),
         __REMPLACER_PAR_DATE__: format(
@@ -61,22 +61,22 @@ const createNewsletter = async () => {
                 days: NUMBER_OF_DAY_FROM_MONDAY[config.newsletterSentDay],
             }),
             "d MMMM yyyy",
-            { locale: fr }
+            { locale: fr },
         ),
     };
 
     // change content in template
     let newsletterTemplateContent = await pad.getNoteWithId(
-        config.newsletterTemplateId
+        config.newsletterTemplateId,
     );
     newsletterTemplateContent = replaceMacroInContent(
         newsletterTemplateContent,
-        replaceConfig
+        replaceConfig,
     );
 
     const result = await pad.createNewNoteWithContentAndAlias(
         newsletterTemplateContent,
-        newsletterName
+        newsletterName,
     );
     const padUrl = result.request.res.responseUrl;
     const message = `Nouveau pad pour l'infolettre : ${padUrl}`;
@@ -159,7 +159,7 @@ export async function newsletterReminder(reminder) {
     const today = new Date();
     const days = differenceInDays(
         startOfDay(today),
-        startOfDay(currentNewsletter.publish_at)
+        startOfDay(currentNewsletter.publish_at),
     );
     if (REMINDER_NB_DAYS[reminder] !== days) {
         return;
@@ -190,7 +190,7 @@ export async function getJobOfferContent() {
     const monday = startOfWeek(new Date(), { weekStartsOn: 1 }); // get first day of the current week
     const jobs: JobWTTJ[] = await BetaGouv.getJobsWTTJ();
     const filteredJobs = jobs.filter(
-        (job) => new Date(job.published_at) > monday
+        (job) => new Date(job.published_at) > monday,
     );
     const content = filteredJobs
         .map((job) => {
@@ -205,7 +205,7 @@ export async function getJobOfferContent() {
 export { createNewsletter };
 
 export async function sendNewsletterAndCreateNewOne(
-    shouldCreatedNewone = true
+    shouldCreatedNewone = true,
 ) {
     const currentNewsletter = await db
         .selectFrom("newsletters")
@@ -227,15 +227,14 @@ export async function sendNewsletterAndCreateNewOne(
             const pad = new HedgedocApi(
                 config.padEmail,
                 config.padPassword,
-                config.padURL
+                config.padURL,
             );
             const newsletterCurrentId = currentNewsletter.url.replace(
                 `${config.padURL}/`,
-                ""
+                "",
             );
-            const newsletterContent = await pad.getNoteWithId(
-                newsletterCurrentId
-            );
+            const newsletterContent =
+                await pad.getNoteWithId(newsletterCurrentId);
             const html = renderHtmlFromMd(newsletterContent);
 
             await sendCampaignEmail({

@@ -77,7 +77,7 @@ export async function createStartup({
 
             if (!res) {
                 throw new Error(
-                    "Startup data could not be inserted into the database"
+                    "Startup data could not be inserted into the database",
                 );
             }
 
@@ -145,7 +145,7 @@ export async function createStartup({
                         startupEvents.map((e) => ({
                             ...e,
                             startup_id: startupUuid,
-                        }))
+                        })),
                     )
                     .returning("uuid")
                     .executeTakeFirst();
@@ -165,7 +165,7 @@ export async function createStartup({
                         },
                     },
                 },
-                trx
+                trx,
             );
 
             revalidatePath("/startups");
@@ -174,7 +174,7 @@ export async function createStartup({
     } catch (error: any) {
         if (
             error.message.includes(
-                "duplicate key value violates unique constraint"
+                "duplicate key value violates unique constraint",
             )
         ) {
             // Handle unique constraint violation
@@ -210,7 +210,7 @@ export async function updateStartup({
     const session = await getServerSession(authOptions);
     if (!session || !session.user.id) {
         throw new AuthorizationError(
-            `You don't have the right to access this function`
+            `You don't have the right to access this function`,
         );
     }
     const previousStartupData = await db
@@ -227,7 +227,7 @@ export async function updateStartup({
             .leftJoin(
                 "startups_organizations",
                 "organization_id",
-                "organizations.uuid"
+                "organizations.uuid",
             )
             .where("startup_id", "=", previousStartupData.uuid)
             .select([
@@ -239,7 +239,7 @@ export async function updateStartup({
                 "organizations.ghid",
                 "organizations.name",
             ])
-            .execute()
+            .execute(),
     );
     const previousStartupPhases = z
         .array(phaseSchema)
@@ -248,7 +248,7 @@ export async function updateStartup({
                 .selectFrom("phases")
                 .where("startup_id", "=", previousStartupData.uuid)
                 .selectAll()
-                .execute()
+                .execute(),
         );
 
     return await db.transaction().execute(async (trx) => {
@@ -291,7 +291,7 @@ export async function updateStartup({
         // delete old sponsor
         const sponsorsUuidToRemove = _.difference(
             previousStartupSponsors.map((s) => s.uuid),
-            startupSponsors
+            startupSponsors,
         );
         for (const sponsorUuid of sponsorsUuidToRemove) {
             await trx
@@ -304,7 +304,7 @@ export async function updateStartup({
         // add new sponsors
         const sponsorUuidToAdd = _.difference(
             startupSponsors,
-            previousStartupSponsors.map((s) => s.uuid)
+            previousStartupSponsors.map((s) => s.uuid),
         );
         for (const sponsorUuid of sponsorUuidToAdd) {
             await trx
@@ -319,7 +319,7 @@ export async function updateStartup({
         // delete old phase
         const phasesNameToRemove = _.difference(
             previousStartupPhases.map((s) => s.name),
-            startupPhases.filter((s) => s.name).map((s) => s.name)
+            startupPhases.filter((s) => s.name).map((s) => s.name),
         );
         for (const phaseName of phasesNameToRemove) {
             await trx
@@ -362,7 +362,7 @@ export async function updateStartup({
                     startupEvents.map((e) => ({
                         ...e,
                         startup_id: startupUuid,
-                    }))
+                    })),
                 )
                 .returning("uuid")
                 .executeTakeFirst();
@@ -376,7 +376,7 @@ export async function updateStartup({
 
         const existingSponsorsUuid = _.difference(
             startupSponsors,
-            sponsorsUuidToRemove
+            sponsorsUuidToRemove,
         );
         await addEvent({
             action_code: EventCode.STARTUP_INFO_UPDATED,
@@ -406,11 +406,11 @@ export async function updateStartup({
                         usertypes: previousStartupData.usertypes as string[],
                     },
                     startupEvents: previousStartupEvents.map((event) =>
-                        startupEventToModel(event)
+                        startupEventToModel(event),
                     ),
                     startupPhases: previousStartupPhases,
                     startupSponsorIds: previousStartupSponsors.map(
-                        (sponsor) => sponsor.uuid
+                        (sponsor) => sponsor.uuid,
                     ),
                 },
             },

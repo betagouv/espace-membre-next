@@ -3,20 +3,19 @@ import { db } from "@/lib/kysely";
 import { getAllUsersInfo } from "@/lib/kysely/queries/users";
 import { EventCode, SYSTEM_NAME } from "@/models/actionEvent";
 import { memberBaseInfoToModel } from "@/models/mapper";
-import { EmailStatusCode } from "@/models/member";
-import { memberBaseInfoSchemaType } from "@/models/member";
+import { EmailStatusCode, memberBaseInfoSchemaType } from "@/models/member";
 import config from "@/server/config";
 import * as utils from "@controllers/utils";
 
 export async function setEmailExpired(
-    optionalExpiredUsers?: memberBaseInfoSchemaType[]
+    optionalExpiredUsers?: memberBaseInfoSchemaType[],
 ) {
     // set email that are not beta.gouv.fr as expired
     let expiredUsers = optionalExpiredUsers;
     let dbUsers: memberBaseInfoSchemaType[] = [];
     if (!expiredUsers) {
         const users = (await getAllUsersInfo()).map((user) =>
-            memberBaseInfoToModel(user)
+            memberBaseInfoToModel(user),
         );
         expiredUsers = users.filter((user) => {
             return utils.checkUserIsExpired(user, 30);
@@ -29,7 +28,7 @@ export async function setEmailExpired(
                 user.primary_email_status === EmailStatusCode.EMAIL_SUSPENDED &&
                 user.primary_email_status_updated_at < todayLess30days &&
                 user.primary_email &&
-                !user.primary_email.includes(`@${config.domain}`)
+                !user.primary_email.includes(`@${config.domain}`),
         );
     }
     for (const user of dbUsers) {
@@ -47,11 +46,11 @@ export async function setEmailExpired(
                 action_on_username: user.username,
             });
             console.log(
-                `Email principal pour ${user.username} défini comme expiré`
+                `Email principal pour ${user.username} défini comme expiré`,
             );
         } catch {
             console.log(
-                `Erreur lors du changement de statut en expiré de l'email principal pour ${user.username}`
+                `Erreur lors du changement de statut en expiré de l'email principal pour ${user.username}`,
             );
         }
     }

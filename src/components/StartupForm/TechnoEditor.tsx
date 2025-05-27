@@ -28,7 +28,7 @@ export const TechnoEditor = ({
     defaultValue: string[];
 }) => {
     const [value, setValue] = React.useState<TechnoType[]>(
-        defaultValue.map((t) => ({ label: t } as TechnoType))
+        defaultValue.map((t) => ({ label: t }) as TechnoType),
     );
 
     return (
@@ -65,7 +65,7 @@ export const TechnoEditor = ({
                     setValue(values);
                     onChange(
                         event,
-                        values.map((v) => v.inputValue || v.label)
+                        values.map((v) => v.inputValue || v.label),
                     );
                 } else if (newValue && newValue.inputValue) {
                     // Create a new value from the user input
@@ -73,7 +73,7 @@ export const TechnoEditor = ({
                     setValue(values);
                     onChange(
                         event,
-                        values.map((v) => v.inputValue || v.label)
+                        values.map((v) => v.inputValue || v.label),
                     );
                 } else if (Array.isArray(newValues)) {
                     const convertedValues: TechnoType[] = newValues.map(
@@ -85,14 +85,14 @@ export const TechnoEditor = ({
                                 // Already in the correct format
                                 return newValue;
                             }
-                        }
+                        },
                     );
                     setValue(convertedValues);
 
                     // Send changes upstream
                     onChange(
                         event,
-                        convertedValues.map((v) => v.inputValue || v.label)
+                        convertedValues.map((v) => v.inputValue || v.label),
                     );
                 }
             }}
@@ -101,7 +101,7 @@ export const TechnoEditor = ({
 
                 const { inputValue } = params;
                 const isExisting = options.some(
-                    (option) => inputValue === option.label
+                    (option) => inputValue === option.label,
                 );
                 if (inputValue !== "" && !isExisting) {
                     filtered.push({

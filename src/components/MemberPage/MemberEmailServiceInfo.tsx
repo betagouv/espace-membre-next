@@ -104,7 +104,7 @@ const MemberEmailServiceInfo = ({
             setLoading(true);
             try {
                 const response = await fetch(
-                    `/api/member/${userId}/brevo-emails-info`
+                    `/api/member/${userId}/brevo-emails-info`,
                 );
                 if (!response.ok) {
                     throw new Error("Network response was not ok");

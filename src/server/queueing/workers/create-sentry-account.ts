@@ -11,16 +11,16 @@ import { sentryClient } from "@/server/config/sentry.config";
 export const createSentryServiceAccountTopic = "create-sentry-service-account";
 
 export async function createSentryServiceAccount(
-    job: PgBoss.Job<CreateSentryAccountDataSchemaType>
+    job: PgBoss.Job<CreateSentryAccountDataSchemaType>,
 ) {
     console.log(
         `Create sentry service account for ${job.data.email}`,
         job.id,
-        job.name
+        job.name,
     );
     const allSentryUsers = await sentryClient.getAllUsers();
     const existingUser = allSentryUsers.find(
-        (sentryUser) => sentryUser.user.email === job.data.email
+        (sentryUser) => sentryUser.user.email === job.data.email,
     );
     let serviceUserId: string;
     if (existingUser) {

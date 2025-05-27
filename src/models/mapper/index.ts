@@ -8,6 +8,11 @@ import {
     memberBaseInfoSchemaType,
     memberPublicInfoSchemaType,
     memberSchemaType,
+    CommunicationEmailCode,
+    EmailStatusCode,
+    GenderCode,
+    LegalStatus,
+    MemberType,
 } from "../member";
 import { PrivateMemberChangeSchemaType } from "../memberChange";
 import {
@@ -41,13 +46,6 @@ import {
     getUsersByStartup,
     getUserInfos,
 } from "@/lib/kysely/queries/users";
-import {
-    CommunicationEmailCode,
-    EmailStatusCode,
-    GenderCode,
-    LegalStatus,
-    MemberType,
-} from "@/models/member";
 
 export * from "./startupMapper";
 export function missionToModel(m: Selectable<Missions>) {
@@ -59,7 +57,7 @@ export function missionToModel(m: Selectable<Missions>) {
 }
 
 export function memberBaseInfoToMemberPublicInfoModel(
-    user: memberBaseInfoSchemaType
+    user: memberBaseInfoSchemaType,
 ) {
     return {
         uuid: user.uuid,
@@ -79,7 +77,7 @@ export function memberBaseInfoToMemberPublicInfoModel(
 export function memberPublicInfoToModel(
     user:
         | Awaited<ReturnType<typeof getAllUsersInfo>>[0]
-        | Awaited<ReturnType<typeof getUserBasicInfo>>
+        | Awaited<ReturnType<typeof getUserBasicInfo>>,
 ) {
     if (!user) {
         throw new Error("No users");
@@ -113,7 +111,7 @@ export function phaseToModel(phase: Selectable<Phases>): phaseSchemaType {
 export function memberBaseInfoToModel(
     user:
         | Awaited<ReturnType<typeof getAllUsersInfo>>[0]
-        | Awaited<ReturnType<typeof getUsersByStartup>>[0]
+        | Awaited<ReturnType<typeof getUsersByStartup>>[0],
 ): memberBaseInfoSchemaType {
     if (!user) {
         throw new Error("No users");
@@ -136,7 +134,7 @@ export function memberBaseInfoToModel(
         secondary_email: user.secondary_email || "",
         primary_email_status:
             memberBaseInfoSchema.shape.primary_email_status.parse(
-                user.primary_email_status || EmailStatusCode.EMAIL_UNSET
+                user.primary_email_status || EmailStatusCode.EMAIL_UNSET,
             ),
         memberType: user.member_type
             ? (user.member_type as MemberType)
@@ -151,7 +149,7 @@ export function memberBaseInfoToModel(
 }
 
 export function userInfosToModel(
-    user: Awaited<ReturnType<typeof getUserInfos>>
+    user: Awaited<ReturnType<typeof getUserInfos>>,
 ): memberSchemaType {
     if (!user) {
         throw new Error("No users");
@@ -175,13 +173,13 @@ export function userInfosToModel(
             user.primary_email_status_updated_at || new Date(),
         // @ts-ignore todo
         missions: (user?.missions || []).map((mission) =>
-            missionToModel(mission)
+            missionToModel(mission),
         ),
     };
 }
 
 export function badgeRequestToModel(
-    badgeRequest: Selectable<BadgeRequests>
+    badgeRequest: Selectable<BadgeRequests>,
 ): badgeRequestSchemaType {
     return {
         ...badgeRequest,
@@ -197,7 +195,7 @@ export function badgeRequestToModel(
 }
 
 export function incubatorToModel(
-    incubator: Awaited<ReturnType<typeof getIncubator>>
+    incubator: Awaited<ReturnType<typeof getIncubator>>,
 ): incubatorSchemaType {
     return {
         uuid: incubator.uuid || "",
@@ -216,7 +214,7 @@ export function incubatorToModel(
 }
 
 export function organizationToModel(
-    organization: Selectable<Organizations>
+    organization: Selectable<Organizations>,
 ): sponsorSchemaType {
     return {
         uuid: organization.uuid,
@@ -240,7 +238,7 @@ export function teamToModel(team: Selectable<Teams>): teamSchemaType {
 }
 
 export function memberChangeToModel(
-    memberChange: Selectable<Events>
+    memberChange: Selectable<Events>,
 ): PrivateMemberChangeSchemaType {
     return {
         created_at: memberChange.created_at,
@@ -249,7 +247,7 @@ export function memberChangeToModel(
 }
 
 export function startupChangeToModel(
-    memberChange: Selectable<Events>
+    memberChange: Selectable<Events>,
 ): PrivateMemberChangeSchemaType {
     return {
         created_at: memberChange.created_at,
@@ -258,7 +256,7 @@ export function startupChangeToModel(
 }
 
 export function startupEventToModel(
-    startupEvent: Selectable<StartupEvents>
+    startupEvent: Selectable<StartupEvents>,
 ): eventSchemaType {
     return {
         ...startupEvent,

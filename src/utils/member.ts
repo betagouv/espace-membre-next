@@ -5,20 +5,20 @@ import { memberSchemaType } from "@/models/member";
 import { missionSchemaType } from "@/models/mission";
 
 export const getLastMission = (
-    missions: missionSchemaType[]
+    missions: missionSchemaType[],
 ): missionSchemaType | undefined => {
     if (!missions.length) {
         return;
     }
     const lastMission = missions.reduce((a, v) =>
         //@ts-ignore todo
-        !v.end || v.end > a.end ? v : a
+        !v.end || v.end > a.end ? v : a,
     );
     return lastMission;
 };
 
 export const getLastMissionDate = (
-    missions: missionSchemaType[]
+    missions: missionSchemaType[],
 ): string | null => {
     const latestMission = getLastMission(missions);
     if (latestMission && latestMission.end) {
@@ -28,10 +28,10 @@ export const getLastMissionDate = (
 };
 
 export const getFirstMissionDate = (
-    missions: missionSchemaType[]
+    missions: missionSchemaType[],
 ): string | null => {
     const sortedMissions = missions.sort(
-        (a, b) => a.start.getTime() - b.start.getTime()
+        (a, b) => a.start.getTime() - b.start.getTime(),
     );
     return (
         (sortedMissions &&

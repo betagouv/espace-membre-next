@@ -36,6 +36,6 @@ export async function scheduleBossCronTasks() {
     console.log(
         `Started ${pgBossJobs.length} pgboss cron jobs : \n ${pgBossJobs
             .map((job) => job.topic)
-            .join("\n")}`
+            .join("\n")}`,
     );
 }

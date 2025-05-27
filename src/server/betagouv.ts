@@ -7,8 +7,7 @@ import { getDinumEmail } from "@/lib/kysely/queries/dinum";
 import { getAllUsersInfo } from "@/lib/kysely/queries/users";
 import { Job, JobWTTJ } from "@/models/job";
 import { memberBaseInfoToModel, userInfosToModel } from "@/models/mapper";
-import { memberBaseInfoSchemaType } from "@/models/member";
-import { EmailInfos } from "@/models/member";
+import { memberBaseInfoSchemaType, EmailInfos } from "@/models/member";
 import {
     EMAIL_PLAN_TYPE,
     OvhExchangeCreationData,
@@ -32,7 +31,7 @@ const betaGouv = {
         text: string,
         channel?: string,
         username?: string,
-        hookURL?: string
+        hookURL?: string,
     ) => {
         const params: any = {
             text,
@@ -105,7 +104,7 @@ const betaOVH = {
                     ...data,
                     emailPlan: EMAIL_PLAN_TYPE.EMAIL_PLAN_BASIC,
                 }))
-                .catch(errorHandler)
+                .catch(errorHandler),
         );
 
         if (config.OVH_EMAIL_PRO_NAME) {
@@ -118,7 +117,7 @@ const betaOVH = {
                         emailPlan: EMAIL_PLAN_TYPE.EMAIL_PLAN_PRO,
                         email: data.primaryEmailAddress,
                     }))
-                    .catch(errorHandler)
+                    .catch(errorHandler),
             );
         }
         if (config.OVH_EMAIL_EXCHANGE_NAME) {
@@ -131,7 +130,7 @@ const betaOVH = {
                         emailPlan: EMAIL_PLAN_TYPE.EMAIL_PLAN_EXCHANGE,
                         email: data.primaryEmailAddress,
                     }))
-                    .catch(errorHandler)
+                    .catch(errorHandler),
             );
         }
         try {
@@ -158,7 +157,7 @@ const betaOVH = {
                 ovh
                     .requestPromised("GET", urlPro, {})
                     .then((data) => data.map((d) => d.split("@")[0]))
-                    .catch((e) => [])
+                    .catch((e) => []),
             );
         }
         if (config.OVH_EMAIL_EXCHANGE_NAME) {
@@ -169,7 +168,7 @@ const betaOVH = {
                         primaryEmailAddress: `%@${config.domain}`,
                     })
                     .then((data) => data.map((d) => d.split("@")[0]))
-                    .catch((e) => [])
+                    .catch((e) => []),
             );
         }
         try {
@@ -200,7 +199,7 @@ const betaOVH = {
         } catch (err) {
             console.error(`OVH Error POST on ${url} : ${JSON.stringify(err)}`);
             throw new Error(
-                `OVH Error POST on ${url} : ${JSON.stringify(err)}`
+                `OVH Error POST on ${url} : ${JSON.stringify(err)}`,
             );
         }
     },
@@ -218,14 +217,14 @@ const betaOVH = {
             return ovh
                 .requestPromised("GET", urlPro, {})
                 .then((data) =>
-                    data.filter((email) => email.includes("@configureme.me"))
+                    data.filter((email) => email.includes("@configureme.me")),
                 );
         } catch (err) {
             console.error(
-                `OVH Error GET on ${urlPro} : ${JSON.stringify(err)}`
+                `OVH Error GET on ${urlPro} : ${JSON.stringify(err)}`,
             );
             throw new Error(
-                `OVH Error GET on ${urlPro} : ${JSON.stringify(err)}`
+                `OVH Error GET on ${urlPro} : ${JSON.stringify(err)}`,
             );
         }
     },
@@ -260,7 +259,7 @@ const betaOVH = {
     },
     unsubscribeFromMailingList: async (
         mailingListName: string,
-        email: string
+        email: string,
     ) => {
         const url = `/email/domain/${config.domain}/mailingList/${mailingListName}/subscriber/${email}`;
         try {
@@ -273,7 +272,7 @@ const betaOVH = {
     },
     subscribeToMailingList: async (
         mailingListName: string,
-        email: string
+        email: string,
     ): Promise<OvhMailingList[] | null> => {
         const url = `/email/domain/${config.domain}/mailingList/${mailingListName}/subscriber`;
         try {
@@ -284,7 +283,7 @@ const betaOVH = {
             console.error("subscribeToMailingList", err);
             if ((err as { error: number }).error === 404) return null; // user already exist
             throw new Error(
-                `OVH Error subscribe on ${url} : ${JSON.stringify(err)}`
+                `OVH Error subscribe on ${url} : ${JSON.stringify(err)}`,
             );
         }
     },
@@ -298,13 +297,13 @@ const betaOVH = {
         memberBaseInfoSchemaType[]
     > => {
         const users = (await getAllUsersInfo()).map((user) =>
-            memberBaseInfoToModel(user)
+            memberBaseInfoToModel(user),
         );
         const allOvhEmails = await betaOVH.getAllEmailInfos();
         const activeUsers = users.filter(
             (user) =>
                 !checkUserIsExpired(user) &&
-                allOvhEmails.includes(user.username)
+                allOvhEmails.includes(user.username),
         );
         return activeUsers;
     },
@@ -313,7 +312,7 @@ const betaOVH = {
 
         try {
             return OvhResponderSchema.parse(
-                await ovh.requestPromised("GET", url)
+                await ovh.requestPromised("GET", url),
             );
         } catch (err) {
             console.log(typeof err);
@@ -362,9 +361,7 @@ const betaOVH = {
             });
         } catch (err) {
             throw new Error(
-                `OVH Error POST on ${url}, account ${id}: ${JSON.stringify(
-                    err
-                )}`
+                `OVH Error POST on ${url}, account ${id}: ${JSON.stringify(err)}`,
             );
         }
     },
@@ -375,7 +372,7 @@ const betaOVH = {
             return await ovh.requestPromised("DELETE", url);
         } catch (err) {
             throw new Error(
-                `OVH Error DELETE on ${url} : ${JSON.stringify(err)}`
+                `OVH Error DELETE on ${url} : ${JSON.stringify(err)}`,
             );
         }
     },
@@ -390,21 +387,21 @@ const betaOVH = {
             });
         } catch (err) {
             throw new Error(
-                `OVH Error POST on ${url} : ${JSON.stringify(err)}`
+                `OVH Error POST on ${url} : ${JSON.stringify(err)}`,
             );
         }
     },
     requestRedirection: async (method, redirectionId) =>
         ovh.requestPromised(
             method,
-            `/email/domain/${config.domain}/redirection/${redirectionId}`
+            `/email/domain/${config.domain}/redirection/${redirectionId}`,
         ),
     requestRedirections: async (
         method,
-        redirectionIds
+        redirectionIds,
     ): Promise<OvhRedirection[]> =>
         Promise.all(
-            redirectionIds.map((x) => betaOVH.requestRedirection(method, x))
+            redirectionIds.map((x) => betaOVH.requestRedirection(method, x)),
         ),
     redirectionsForId: async (
         query:
@@ -412,7 +409,7 @@ const betaOVH = {
                   from: string;
                   to?: string;
               }
-            | { from?: string; to: string }
+            | { from?: string; to: string },
     ): Promise<OvhRedirection[]> => {
         const email = `${query.from}@${config.domain}`;
         const isDinumEmail = await getDinumEmail(email);
@@ -440,7 +437,7 @@ const betaOVH = {
             const redirectionIds = await ovh.requestPromised(
                 "GET",
                 url,
-                options
+                options,
             );
 
             return await betaOVH.requestRedirections("GET", redirectionIds);
@@ -461,7 +458,7 @@ const betaOVH = {
             return await betaOVH.requestRedirections("DELETE", redirectionIds);
         } catch (err) {
             throw new Error(
-                `OVH Error on deleting ${url} : ${JSON.stringify(err)}`
+                `OVH Error on deleting ${url} : ${JSON.stringify(err)}`,
             );
         }
     },
@@ -477,7 +474,7 @@ const betaOVH = {
         }
     },
     getMailingListSubscribers: async (
-        mailingListName: string
+        mailingListName: string,
     ): Promise<string[]> => {
         const url = `/email/domain/${config.domain}/mailingList/${mailingListName}/subscriber`;
 
@@ -520,11 +517,11 @@ const betaOVH = {
                 getAccountsUrl,
                 {
                     primaryEmailAddress: "%@configureme.me",
-                }
+                },
             );
         } catch (err) {
             throw new Error(
-                `OVH Error on ${getAccountsUrl} : ${JSON.stringify(err)}`
+                `OVH Error on ${getAccountsUrl} : ${JSON.stringify(err)}`,
             );
         }
         if (availableAccounts.length === 0) {
@@ -534,7 +531,7 @@ const betaOVH = {
         const accountToBeAssigned = _.sample(availableAccounts);
 
         console.log(
-            `Assigning Ovh Pro account ${accountToBeAssigned} to ${primaryEmailAddress}`
+            `Assigning Ovh Pro account ${accountToBeAssigned} to ${primaryEmailAddress}`,
         );
 
         const assignAccountUrl = `/email/pro/${config.OVH_EMAIL_PRO_NAME}/account/${accountToBeAssigned}`;
@@ -549,16 +546,16 @@ const betaOVH = {
             return result;
         } catch (err) {
             console.log(
-                `OVH Error on ${assignAccountUrl} : ${JSON.stringify(err)}`
+                `OVH Error on ${assignAccountUrl} : ${JSON.stringify(err)}`,
             );
             throw new Error(
-                `OVH Error on ${assignAccountUrl} : ${JSON.stringify(err)}`
+                `OVH Error on ${assignAccountUrl} : ${JSON.stringify(err)}`,
             );
         }
     },
     createEmailForExchange: async (
         id: string,
-        creationData: OvhExchangeCreationData
+        creationData: OvhExchangeCreationData,
     ) => {
         const primaryEmailAddress = `${id}@${config.domain}`;
         const getAccountsUrl = `/email/exchange/${config.OVH_EMAIL_EXCHANGE_NAME}/service/${config.OVH_EMAIL_EXCHANGE_NAME}/account`;
@@ -569,11 +566,11 @@ const betaOVH = {
                 getAccountsUrl,
                 {
                     primaryEmailAddress: "%@configureme.me",
-                }
+                },
             );
         } catch (err) {
             throw new Error(
-                `OVH Error on ${getAccountsUrl} : ${JSON.stringify(err)}`
+                `OVH Error on ${getAccountsUrl} : ${JSON.stringify(err)}`,
             );
         }
         if (availableAccounts.length === 0) {
@@ -583,7 +580,7 @@ const betaOVH = {
         const accountToBeAssigned = _.sample(availableAccounts);
 
         console.log(
-            `Assigning Exchange account ${accountToBeAssigned} to ${primaryEmailAddress}`
+            `Assigning Exchange account ${accountToBeAssigned} to ${primaryEmailAddress}`,
         );
 
         const assignAccountUrl = `/email/exchange/${config.OVH_EMAIL_EXCHANGE_NAME}/service/${config.OVH_EMAIL_EXCHANGE_NAME}/account/${accountToBeAssigned}`;
@@ -598,7 +595,7 @@ const betaOVH = {
             return result;
         } catch (err) {
             throw new Error(
-                `OVH Error on ${assignAccountUrl} : ${JSON.stringify(err)}`
+                `OVH Error on ${assignAccountUrl} : ${JSON.stringify(err)}`,
             );
         }
     },
@@ -607,7 +604,7 @@ const betaOVH = {
         try {
             const result = await ovh.requestPromised(
                 "DELETE",
-                `/email/exchange/${config.OVH_EMAIL_EXCHANGE_NAME}/service/${config.OVH_EMAIL_EXCHANGE_NAME}/account/${id}@${config.domain}`
+                `/email/exchange/${config.OVH_EMAIL_EXCHANGE_NAME}/service/${config.OVH_EMAIL_EXCHANGE_NAME}/account/${id}@${config.domain}`,
             );
             return result;
         } catch (err) {

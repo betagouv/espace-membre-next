@@ -17,7 +17,7 @@ export async function getMemberIfValidOrThrowError(userId: string) {
     if (!userMissions.length) {
         throw new BusinessError(
             "NoActiveMissionForUser",
-            `User ${userId} does not have any missions`
+            `User ${userId} does not have any missions`,
         );
     }
     return newMember;

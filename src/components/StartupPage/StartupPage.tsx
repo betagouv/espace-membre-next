@@ -1,29 +1,28 @@
 "use client";
 
-import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 
-import { Tabs } from "@codegouvfr/react-dsfr/Tabs";
 import { Button } from "@codegouvfr/react-dsfr/Button";
 import { fr } from "@codegouvfr/react-dsfr/fr";
+import { Tabs } from "@codegouvfr/react-dsfr/Tabs";
+import { useRouter } from "next/navigation";
 
+import { StartupDescription } from "./StartupDescription";
+import { StartupHeader } from "./StartupHeader";
+import { StartupHistory } from "./StartupHistory";
+import { StartupMembers } from "./StartupMembers";
+import { StartupStandards } from "./StartupStandards";
+import { StartupTools } from "./StartupTools";
+import { FicheHeader } from "../FicheHeader";
+import LastChange from "../LastChange";
+import { StartupFiles } from "../StartupFiles";
+import { getStartupFiles } from "@/app/api/startups/files/list";
 import { matomoSiteSchemaType } from "@/models/matomoSite";
 import { memberBaseInfoSchemaType } from "@/models/member";
 import { sentryTeamSchemaType } from "@/models/sentryTeam";
 import { phaseSchemaType, startupSchemaType } from "@/models/startup";
 import { StartupChangeSchemaType } from "@/models/startupChange";
-import { getStartupFiles } from "@/app/api/startups/files/list";
 import { getCurrentPhase } from "@/utils/startup";
-
-import { StartupHeader } from "./StartupHeader";
-import { StartupMembers } from "./StartupMembers";
-import { StartupDescription } from "./StartupDescription";
-import { StartupHistory } from "./StartupHistory";
-import { StartupStandards } from "./StartupStandards";
-import { StartupTools } from "./StartupTools";
-import { StartupFiles } from "../StartupFiles";
-import LastChange from "../LastChange";
-import { FicheHeader } from "../FicheHeader";
 
 import "./timeline.css";
 

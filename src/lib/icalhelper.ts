@@ -40,7 +40,7 @@ interface CalEvent {
 export const getEventsForCalendarFromDateToDate = async (
     calendarIcalUrl,
     startDate,
-    endDate
+    endDate,
 ) => {
     const iCalendarData = await axios
         .get(calendarIcalUrl)

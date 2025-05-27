@@ -47,7 +47,7 @@ export async function createTeam({
                     members.map((memberUuid) => ({
                         team_id: res?.uuid,
                         user_id: memberUuid,
-                    }))
+                    })),
                 )
                 .returning("uuid")
                 .execute();

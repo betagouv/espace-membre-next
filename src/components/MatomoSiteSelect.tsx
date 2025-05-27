@@ -37,7 +37,7 @@ export default function MatomoSiteSelect({
         onChange(values);
     };
     const [initialValue] = useState(
-        defaultValue ? (defaultValue as MatomoSiteOptionType[]) : undefined
+        defaultValue ? (defaultValue as MatomoSiteOptionType[]) : undefined,
     );
 
     return (

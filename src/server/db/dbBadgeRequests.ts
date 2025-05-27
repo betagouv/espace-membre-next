@@ -6,7 +6,7 @@ import { db } from "@/lib/kysely";
 const BADGE_REQUEST_TABLE = "badge_requests";
 
 export const createBadgeRequest = (
-    props: Insertable<BadgeRequests>
+    props: Insertable<BadgeRequests>,
 ): Promise<Selectable<BadgeRequests> | undefined> => {
     return db
         .insertInto(BADGE_REQUEST_TABLE)
@@ -19,7 +19,7 @@ export const createBadgeRequest = (
 
 export const updateBadgeRequest = async (
     props: Updateable<BadgeRequests>,
-    username: string
+    username: string,
 ): Promise<void> => {
     console.log(props, username);
     await db
@@ -32,7 +32,7 @@ export const updateBadgeRequest = async (
 };
 
 export const getBadgeRequest = (
-    username: string
+    username: string,
 ): Promise<Selectable<BadgeRequests> | undefined> => {
     return db
         .selectFrom(BADGE_REQUEST_TABLE)
@@ -43,7 +43,7 @@ export const getBadgeRequest = (
 
 export const getBadgeRequestWithStatus = (
     username: string,
-    status: BadgeRequests["status"]
+    status: BadgeRequests["status"],
 ): Promise<Selectable<BadgeRequests> | undefined> => {
     return db
         .selectFrom(BADGE_REQUEST_TABLE)

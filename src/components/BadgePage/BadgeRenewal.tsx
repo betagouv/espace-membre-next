@@ -26,7 +26,7 @@ export default function BadgeRenewal({
     const [forceRequest, setForceRequest] = useState<boolean>(false);
 
     const [dsToken, setDSToken] = useState(
-        badgeRequest ? badgeRequest.ds_token : null
+        badgeRequest ? badgeRequest.ds_token : null,
     );
     function askForBadge() {
         if (isSaving) {
@@ -39,7 +39,7 @@ export default function BadgeRenewal({
                 undefined,
                 {
                     withCredentials: true,
-                }
+                },
             )
             .then((resp) => {
                 setIsSaving(false);

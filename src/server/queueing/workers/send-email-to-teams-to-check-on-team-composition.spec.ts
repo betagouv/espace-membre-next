@@ -30,7 +30,7 @@ describe("sendEmailToTeamsToCheckOnTeamComposition()", () => {
             "@/server/queueing/workers/send-email-to-teams-to-check-on-team-composition",
             {
                 "@/server/config/email.config": { sendEmail: sendEmailStub },
-            }
+            },
         ).sendEmailToTeamsToCheckOnTeamComposition;
     });
 

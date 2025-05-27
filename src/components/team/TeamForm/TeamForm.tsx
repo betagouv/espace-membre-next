@@ -20,7 +20,6 @@ import { teamUpdateSchema, teamUpdateSchemaType } from "@/models/actions/team";
 import { Option } from "@/models/misc";
 import { teamSchemaType } from "@/models/team";
 
-import "react-markdown-editor-lite/lib/index.css";
 import MemberSelect from "@/components/MemberSelect";
 import {
     memberBaseInfoSchemaType,
@@ -126,7 +125,7 @@ export function TeamForm(props: TeamFormProps) {
         (props) => (
             <BasicFormInput register={register} errors={errors} {...props} />
         ),
-        [register, errors]
+        [register, errors],
     );
     const onSubmit = (data: teamUpdateSchemaType, e) => {
         if (isSaving) {
@@ -148,8 +147,8 @@ export function TeamForm(props: TeamFormProps) {
                         : "Équipe créée",
                     message: props.team ? (
                         <>
-                            La modification sera
-                            visible en ligne d'ici 24 heures.
+                            La modification sera visible en ligne d'ici 24
+                            heures.
                         </>
                     ) : (
                         <>L'équipe a bien été créée</>
@@ -246,7 +245,7 @@ export function TeamForm(props: TeamFormProps) {
                             props.incubatorOptions.filter(
                                 (incubator) =>
                                     incubator.value ===
-                                    getValues("team.incubator_id")
+                                    getValues("team.incubator_id"),
                             )[0]
                         }
                         label={"Incubateur"}
@@ -270,7 +269,7 @@ export function TeamForm(props: TeamFormProps) {
                                 {
                                     shouldValidate: true,
                                     shouldDirty: true,
-                                }
+                                },
                             );
                         }}
                         members={props.members}
@@ -279,7 +278,7 @@ export function TeamForm(props: TeamFormProps) {
                             (member) => ({
                                 label: member.fullname,
                                 value: member.uuid,
-                            })
+                            }),
                         )}
                     ></MemberSelect>
                     <hr />

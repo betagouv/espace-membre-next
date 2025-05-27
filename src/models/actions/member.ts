@@ -33,7 +33,7 @@ export const memberInfoUpdateSchema = z.object({
         competences: memberSchema.shape.competences,
         teams: memberSchema.shape.teams,
         missions: memberSchema.shape.missions.superRefine(
-            checkMissionsAreNotMoreThan6Months
+            checkMissionsAreNotMoreThan6Months,
         ),
         domaine: memberSchema.shape.domaine,
         bio: memberSchema.shape.bio,
@@ -62,7 +62,9 @@ export const memberValidateInfoSchema = z.object({
     avatar: memberSchema.shape.avatar,
     github: memberSchema.shape.github,
     competences: memberSchema.shape.competences,
-    missions: memberSchema.shape.missions.superRefine(checkMissionsAreNotMoreThan6Months),
+    missions: memberSchema.shape.missions.superRefine(
+        checkMissionsAreNotMoreThan6Months,
+    ),
     domaine: memberSchema.shape.domaine,
     bio: memberSchema.shape.bio,
     memberType: memberSchema.shape.memberType,
@@ -111,7 +113,7 @@ export const createMemberSchema = z
             domaine: memberSchema.shape.domaine,
         }),
         missions: memberSchema.shape.missions.superRefine(
-            checkMissionsAreNotMoreThan6Months
+            checkMissionsAreNotMoreThan6Months,
         ),
         incubator_id: z.string().uuid().optional(),
     })
@@ -126,7 +128,7 @@ export const createMemberSchema = z
             message:
                 "L'incubateur est obligatoire si aucune startup n'est définie dans la mission.",
             path: ["incubator_id"], // Attach error to incubator
-        }
+        },
     );
 
 export type createMemberSchemaType = z.infer<typeof createMemberSchema>;
@@ -143,7 +145,7 @@ export type createMemberResponseSchemaType = z.infer<
 
 export const updateMemberMissionsSchema = z.object({
     missions: memberSchema.shape.missions.superRefine(
-        checkMissionsAreNotMoreThan6Months
+        checkMissionsAreNotMoreThan6Months,
     ),
     memberUuid: memberSchema.shape.uuid,
 });

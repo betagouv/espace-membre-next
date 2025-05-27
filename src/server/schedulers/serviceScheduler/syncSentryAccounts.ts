@@ -10,10 +10,10 @@ import { ACCOUNT_SERVICE_STATUS, SERVICES } from "@/models/services";
 import { FakeSentryService } from "@/server/config/sentry.config";
 
 export async function syncSentryAccounts(
-    sentryClient: SentryService | FakeSentryService
+    sentryClient: SentryService | FakeSentryService,
 ) {
     const dbUsers = (await getAllUsersInfo()).map((user) =>
-        memberBaseInfoToModel(user)
+        memberBaseInfoToModel(user),
     );
     const allTeams = await sentryClient.getAllTeams();
     const sentryUsers = await sentryClient.getAllUsers();
@@ -21,10 +21,10 @@ export async function syncSentryAccounts(
     const sentryUsersWithAccessPromises = sentryUsers.map(
         (sentryUser) => async () => {
             const userMetadata = await sentryClient.fetchUserAccess(
-                sentryUser.serviceUserId
+                sentryUser.serviceUserId,
             );
             return sentryUserToModel(sentryUser.user, userMetadata, allTeams);
-        }
+        },
     );
 
     const sentryUsersWithAccess = await pAll(sentryUsersWithAccessPromises, {
@@ -32,7 +32,7 @@ export async function syncSentryAccounts(
     });
     const usersToInsert = sentryUsersWithAccess.map((sentryUser) => {
         const user = dbUsers.find(
-            (user) => user.primary_email === sentryUser.email
+            (user) => user.primary_email === sentryUser.email,
         );
         return {
             account_type: sentryUser.account_type,
@@ -61,7 +61,7 @@ export async function syncSentryAccounts(
             })
             .executeTakeFirst();
         console.log(
-            `Inserted or updated ${result.numInsertedOrUpdatedRows} sentry users`
+            `Inserted or updated ${result.numInsertedOrUpdatedRows} sentry users`,
         );
     }
 
@@ -74,11 +74,11 @@ export async function syncSentryAccounts(
             .execute()
     ).map((u) => u.service_user_id);
     const sentryUserIds = sentryUsers.map(
-        (sentryUser) => sentryUser.serviceUserId
+        (sentryUser) => sentryUser.serviceUserId,
     );
     const accountsToRemoveFromDb = _.difference(
         sentryUserIdsInDb,
-        sentryUserIds
+        sentryUserIds,
     );
     if (accountsToRemoveFromDb.length > 0) {
         // Ensure the array is not empty

@@ -17,7 +17,7 @@ export default async function NewSentryPage() {
     const startups = session.user.isAdmin
         ? await getAllStartups()
         : (await getUserStartupsActive(session.user.uuid)).map((startup) =>
-              userStartupToModel(startup)
+              userStartupToModel(startup),
           );
 
     const startupOptions: StartupType[] = startups.map((startup) => ({

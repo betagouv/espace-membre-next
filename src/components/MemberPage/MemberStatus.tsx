@@ -13,7 +13,7 @@ import { ACCOUNT_SERVICE_STATUS, SERVICES } from "@/models/services";
 
 const mattermostInfoRow = (
     mattermostInfo: NonNullable<MemberPageProps["mattermostInfo"]>,
-    userUuid: string
+    userUuid: string,
 ) => {
     return [
         "Compte Mattermost",
@@ -37,7 +37,7 @@ const mattermostInfoRow = (
                             ))
                             .exhaustive()}
                     </div>
-                )
+                ),
             )
             .otherwise(() => (
                 <Badge severity="warning" as="span">
@@ -49,18 +49,18 @@ const mattermostInfoRow = (
                 (info) =>
                     info.hasMattermostAccount &&
                     typeof info.mattermostUserName === "string",
-                (info) => <>@{info.mattermostUserName}</>
+                (info) => <>@{info.mattermostUserName}</>,
             )
             .otherwise(
                 () =>
-                    "Le compte est introuvable : soit il n'existe pas, soit il est désactivé, soit il est lié à une adresse email inconnue."
+                    "Le compte est introuvable : soit il n'existe pas, soit il est désactivé, soit il est lié à une adresse email inconnue.",
             ),
     ];
 };
 
 const emailStatusRow = (
     emailInfos: MemberPageProps["emailInfos"],
-    userInfos: MemberPageProps["userInfos"]
+    userInfos: MemberPageProps["userInfos"],
 ) => {
     return [
         <>Email Beta</>,
@@ -77,53 +77,53 @@ const emailStatusRow = (
                         .with(
                             P.union(
                                 EmailStatusCode.EMAIL_ACTIVE,
-                                EmailStatusCode.EMAIL_REDIRECTION_ACTIVE
+                                EmailStatusCode.EMAIL_REDIRECTION_ACTIVE,
                             ),
                             () => (
                                 <Badge severity="success" as="span">
                                     Actif
                                 </Badge>
-                            )
+                            ),
                         )
                         .with(
                             P.union(
                                 EmailStatusCode.EMAIL_CREATION_WAITING,
                                 EmailStatusCode.EMAIL_CREATION_PENDING,
                                 EmailStatusCode.EMAIL_RECREATION_PENDING,
-                                EmailStatusCode.EMAIL_REDIRECTION_PENDING
+                                EmailStatusCode.EMAIL_REDIRECTION_PENDING,
                             ),
                             () => (
                                 <Badge severity="success" as="span">
                                     Création en cours
                                 </Badge>
-                            )
+                            ),
                         )
                         .with(
                             P.union(
                                 EmailStatusCode.EMAIL_ACTIVE_AND_PASSWORD_DEFINITION_PENDING,
                                 EmailStatusCode.EMAIL_VERIFICATION_WAITING,
-                                EmailStatusCode.MEMBER_VALIDATION_WAITING
+                                EmailStatusCode.MEMBER_VALIDATION_WAITING,
                             ),
                             () => (
                                 <Badge severity="warning" as="span">
                                     Action nécessaire
                                 </Badge>
-                            )
+                            ),
                         )
                         .with(
                             P.union(
                                 EmailStatusCode.EMAIL_DELETED,
                                 EmailStatusCode.EMAIL_EXPIRED,
-                                EmailStatusCode.EMAIL_UNSET
+                                EmailStatusCode.EMAIL_UNSET,
                             ),
                             () => (
                                 <Badge severity="warning" as="span">
                                     Action Nécessaire
                                 </Badge>
-                            )
+                            ),
                         )
                         .exhaustive();
-                }
+                },
             )
             .when(
                 (emailInfos) => !emailInfos,
@@ -134,13 +134,13 @@ const emailStatusRow = (
                                 EmailStatusCode.EMAIL_CREATION_WAITING,
                                 EmailStatusCode.EMAIL_CREATION_PENDING,
                                 EmailStatusCode.EMAIL_RECREATION_PENDING,
-                                EmailStatusCode.EMAIL_REDIRECTION_PENDING
+                                EmailStatusCode.EMAIL_REDIRECTION_PENDING,
                             ),
                             () => (
                                 <Badge severity="success" as="span">
                                     Création en cours
                                 </Badge>
-                            )
+                            ),
                         )
                         .with(
                             P.union(EmailStatusCode.EMAIL_VERIFICATION_WAITING),
@@ -148,21 +148,21 @@ const emailStatusRow = (
                                 <Badge severity="warning" as="span">
                                     Action nécessaire
                                 </Badge>
-                            )
+                            ),
                         )
                         .with(
                             P.union(
                                 EmailStatusCode.EMAIL_DELETED,
                                 EmailStatusCode.EMAIL_EXPIRED,
-                                EmailStatusCode.EMAIL_UNSET
+                                EmailStatusCode.EMAIL_UNSET,
                             ),
-                            () => <>Pas d'email beta</>
+                            () => <>Pas d'email beta</>,
                         )
                         .otherwise(() => (
                             <Badge severity="warning" as="span">
                                 Action nécessaire
                             </Badge>
-                        ))
+                        )),
             )
             .otherwise(() => <>Pas d'email beta</>),
         <>
@@ -185,18 +185,18 @@ const emailStatusRow = (
                                     EmailStatusCode.EMAIL_CREATION_WAITING,
                                     EmailStatusCode.EMAIL_CREATION_PENDING,
                                     EmailStatusCode.EMAIL_RECREATION_PENDING,
-                                    EmailStatusCode.EMAIL_REDIRECTION_PENDING
+                                    EmailStatusCode.EMAIL_REDIRECTION_PENDING,
                                 ),
                                 () => (
                                     <>
                                         <br />
                                         La creation de l'email est en cours.
                                     </>
-                                )
+                                ),
                             )
                             .with(
                                 P.union(
-                                    EmailStatusCode.EMAIL_ACTIVE_AND_PASSWORD_DEFINITION_PENDING
+                                    EmailStatusCode.EMAIL_ACTIVE_AND_PASSWORD_DEFINITION_PENDING,
                                 ),
                                 () => (
                                     <>
@@ -211,13 +211,13 @@ const emailStatusRow = (
                                             Changer mon mot de passe
                                         </a>
                                     </>
-                                )
+                                ),
                             )
                             .with(
                                 P.union(
                                     EmailStatusCode.EMAIL_DELETED,
                                     EmailStatusCode.EMAIL_EXPIRED,
-                                    EmailStatusCode.EMAIL_UNSET
+                                    EmailStatusCode.EMAIL_UNSET,
                                 ),
                                 () => (
                                     <>
@@ -227,7 +227,7 @@ const emailStatusRow = (
                                         supprimé ou non défini dans
                                         l'espace-membre
                                     </>
-                                )
+                                ),
                             )
                             .with(
                                 EmailStatusCode.MEMBER_VALIDATION_WAITING,
@@ -241,10 +241,10 @@ const emailStatusRow = (
                                             ]
                                         }
                                     </>
-                                )
+                                ),
                             )
                             .otherwise(() => null);
-                    }
+                    },
                 )
                 .when(
                     (emailInfos) => !emailInfos,
@@ -255,40 +255,40 @@ const emailStatusRow = (
                                     EmailStatusCode.EMAIL_CREATION_WAITING,
                                     EmailStatusCode.EMAIL_CREATION_PENDING,
                                     EmailStatusCode.EMAIL_RECREATION_PENDING,
-                                    EmailStatusCode.EMAIL_REDIRECTION_PENDING
+                                    EmailStatusCode.EMAIL_REDIRECTION_PENDING,
                                 ),
                                 () => (
                                     <Badge severity="success" as="span">
                                         Création en cours
                                     </Badge>
-                                )
+                                ),
                             )
                             .with(
                                 P.union(
-                                    EmailStatusCode.EMAIL_VERIFICATION_WAITING
+                                    EmailStatusCode.EMAIL_VERIFICATION_WAITING,
                                 ),
                                 () =>
-                                    "Les informations du compte doivent être vérifiés par le membre"
+                                    "Les informations du compte doivent être vérifiés par le membre",
                             )
                             .with(
                                 P.union(
-                                    EmailStatusCode.MEMBER_VALIDATION_WAITING
+                                    EmailStatusCode.MEMBER_VALIDATION_WAITING,
                                 ),
                                 () =>
-                                    "La fiche doit être validée par un admin ou un membre de l'équipe transverse de l'incubateur"
+                                    "La fiche doit être validée par un admin ou un membre de l'équipe transverse de l'incubateur",
                             )
                             .with(
                                 P.union(
                                     EmailStatusCode.EMAIL_DELETED,
                                     EmailStatusCode.EMAIL_EXPIRED,
-                                    EmailStatusCode.EMAIL_UNSET
+                                    EmailStatusCode.EMAIL_UNSET,
                                 ),
-                                () => null
+                                () => null,
                             )
                             .otherwise(
                                 () =>
-                                    "Un admin doit intervenir, le compte est dans un état inattendu"
-                            )
+                                    "Un admin doit intervenir, le compte est dans un état inattendu",
+                            ),
                 )
                 .otherwise(() => (
                     <>Pas d'email beta</>
@@ -299,7 +299,7 @@ const emailStatusRow = (
 
 const MatomoInfoRow = (
     matomo: MemberPageProps["matomoInfo"],
-    isCurrentUser: boolean
+    isCurrentUser: boolean,
 ) => {
     const status = !!matomo ? matomo.status : "unset";
     return [
@@ -411,7 +411,7 @@ const sentryInfoRow = (sentry: MemberPageProps["sentryInfo"]) => {
             ))
             .with(
                 [ACCOUNT_SERVICE_STATUS.ACCOUNT_CREATION_PENDING, P._],
-                () => <p>Ton compte va être créé dans quelques instants</p>
+                () => <p>Ton compte va être créé dans quelques instants</p>,
             )
             .otherwise(() => {
                 return (

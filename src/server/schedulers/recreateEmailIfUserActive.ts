@@ -9,7 +9,7 @@ export async function recreateEmailIfUserActive() {
         .selectFrom("missions")
         .selectAll()
         .where((eb) =>
-            eb.or([eb("end", ">", new Date()), eb("end", "is", null)])
+            eb.or([eb("end", ">", new Date()), eb("end", "is", null)]),
         )
         .execute();
     const dbUsers = await db
@@ -18,7 +18,7 @@ export async function recreateEmailIfUserActive() {
         .where(
             "username",
             "in",
-            missions.map((m) => m.user_id)
+            missions.map((m) => m.user_id),
         )
         .where("primary_email_status", "=", EmailStatusCode.EMAIL_DELETED)
         .where("secondary_email", "is not", null)

@@ -21,7 +21,7 @@ export const getLatests = () =>
         .execute();
 
 export async function getStartupsWithoutAnyUpdateForThePastXMonthsRaw(
-    numberOfMonths: number = 3
+    numberOfMonths: number = 3,
 ): Promise<Selectable<Startups & { current_phase: StartupPhase }>[]> {
     // Select all user events related to mission changes within the last 3 months
     // Then find the associated startups by navigating through users => users_missions => missions_startups => startups table
@@ -77,10 +77,11 @@ WHERE fs.startup_id IS NULL AND NOT EXISTS (
         AND (p.name = 'transfer' OR p.name = 'success' OR p.name = 'alumni')
     );
 `,
-        []
+        [],
     );
-    const result = await db.executeQuery<
-        Selectable<Startups & { current_phase: StartupPhase }>
-    >(rawQuery);
+    const result =
+        await db.executeQuery<
+            Selectable<Startups & { current_phase: StartupPhase }>
+        >(rawQuery);
     return result.rows;
 }

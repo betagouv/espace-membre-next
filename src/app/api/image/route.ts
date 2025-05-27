@@ -1,4 +1,4 @@
-import { revalidatePath } from 'next/cache';
+import { revalidatePath } from "next/cache";
 import { NextRequest, NextResponse } from "next/server";
 import { getServerSession } from "next-auth/next";
 import { z } from "zod";
@@ -7,12 +7,16 @@ import { z } from "zod";
 
 import { getFileName } from "./utils";
 import s3 from "@/lib/s3";
-import { imagePostApiSchemaType } from '@/models/actions/image';
+import { imagePostApiSchemaType } from "@/models/actions/image";
 import { authOptions } from "@/utils/authoptions";
 
 export async function DELETE(req: NextRequest) {
-    const { fileIdentifier, fileRelativeObjType, fileObjIdentifier, revalidateMemberImage } =
-        await req.json() as imagePostApiSchemaType;
+    const {
+        fileIdentifier,
+        fileRelativeObjType,
+        fileObjIdentifier,
+        revalidateMemberImage,
+    } = (await req.json()) as imagePostApiSchemaType;
     const session = await getServerSession(authOptions);
 
     if (
@@ -27,14 +31,14 @@ export async function DELETE(req: NextRequest) {
     if (!fileIdentifier) {
         return Response.json(
             { message: "Image key is required" },
-            { status: 400 }
+            { status: 400 },
         );
     }
 
     const params = {
         Key: getFileName[fileRelativeObjType](
             fileObjIdentifier,
-            fileIdentifier
+            fileIdentifier,
         ),
     };
 
@@ -42,13 +46,13 @@ export async function DELETE(req: NextRequest) {
         await s3.deleteObject(params).promise();
         return Response.json(
             { message: "Image deleted successfully" },
-            { status: 200 }
+            { status: 200 },
         );
     } catch (error) {
         console.error("Error deleting image:", error);
         return Response.json(
             { message: "Error deleting image" },
-            { status: 500 }
+            { status: 500 },
         );
     } finally {
         if (revalidateMemberImage && fileRelativeObjType === "member") {
@@ -65,11 +69,16 @@ export async function POST(req: NextRequest) {
             },
             {
                 status: 500,
-            }
+            },
         );
     }
-    const { fileObjIdentifier, fileRelativeObjType, fileType, fileIdentifier, revalidateMemberImage } =
-        await req.json() as imagePostApiSchemaType;
+    const {
+        fileObjIdentifier,
+        fileRelativeObjType,
+        fileType,
+        fileIdentifier,
+        revalidateMemberImage,
+    } = (await req.json()) as imagePostApiSchemaType;
 
     const session = await getServerSession(authOptions);
 
@@ -85,7 +94,7 @@ export async function POST(req: NextRequest) {
     const s3Params = {
         Key: getFileName[fileRelativeObjType](
             fileObjIdentifier,
-            fileIdentifier
+            fileIdentifier,
         ),
         Expires: 60,
         ContentType: fileType,
@@ -102,7 +111,7 @@ export async function POST(req: NextRequest) {
             },
             {
                 status: 500,
-            }
+            },
         );
     } finally {
         if (revalidateMemberImage && fileRelativeObjType === "member") {
@@ -133,12 +142,12 @@ export async function GET(req: NextRequest) {
             },
             {
                 status: 500,
-            }
+            },
         );
     }
     const s3Key = getFileName[fileRelativeObjType](
         fileObjIdentifier,
-        fileIdentifier
+        fileIdentifier,
     );
 
     try {
@@ -158,7 +167,7 @@ export async function GET(req: NextRequest) {
                     headers: {
                         "Content-Type": "application/json",
                     },
-                }
+                },
             );
         } else {
             return new NextResponse(
@@ -168,7 +177,7 @@ export async function GET(req: NextRequest) {
                     headers: {
                         "Content-Type": "application/json",
                     },
-                }
+                },
             );
         }
     }

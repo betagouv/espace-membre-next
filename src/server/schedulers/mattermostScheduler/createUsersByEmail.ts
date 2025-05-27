@@ -12,7 +12,7 @@ export async function createUsersByEmail() {
 
     //todo check how many account will be created
     const mattermostTeam: { invite_id: string } = await mattermost.getTeam(
-        config.mattermostTeamId
+        config.mattermostTeamId,
     );
     const results = await Promise.all(
         activeUsersUnregisteredOnMattermost.map(async (user) => {
@@ -34,7 +34,7 @@ export async function createUsersByEmail() {
                         // mattermost spec : password must contain at least 20 characters
                         password,
                     },
-                    mattermostTeam.invite_id
+                    mattermostTeam.invite_id,
                 );
 
                 await sendEmail({
@@ -50,10 +50,10 @@ export async function createUsersByEmail() {
             } catch (err) {
                 console.error(
                     "Erreur d'ajout des utilisateurs à mattermost",
-                    err
+                    err,
                 );
             }
-        })
+        }),
     );
     return results;
 }

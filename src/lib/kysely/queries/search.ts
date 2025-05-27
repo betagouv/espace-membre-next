@@ -17,9 +17,9 @@ export const getSesWithLatestPhaseQuery = (db: Kysely<DB> = database) =>
                     "start",
                     "end",
                     sql<number>`ROW_NUMBER() OVER (PARTITION BY startup_id ORDER BY "end" DESC NULLS FIRST, start desc)`.as(
-                        "rn"
+                        "rn",
                     ),
-                ])
+                ]),
         )
         .selectFrom("latest_phases")
         .where("latest_phases.rn", "=", 1)
@@ -28,7 +28,7 @@ export const getSesWithLatestPhaseQuery = (db: Kysely<DB> = database) =>
 // search and get users public info
 export async function searchUsers(
     filters: URLSearchParams,
-    db: Kysely<DB> = database
+    db: Kysely<DB> = database,
 ) {
     const startupPhases = (filters
         .get("startupPhases")
@@ -54,7 +54,7 @@ export async function searchUsers(
                 .select((eb) => [
                     "user_id",
                     sql<boolean>`MAX(COALESCE(missions.end, '2200-02-02'))<=NOW()`.as(
-                        "expired"
+                        "expired",
                     ),
                 ])
                 .groupBy("missions.user_id");
@@ -65,7 +65,7 @@ export async function searchUsers(
         .leftJoin(
             "missions_startups",
             "missions_startups.mission_id",
-            "missions.uuid"
+            "missions.uuid",
         )
         .leftJoin("startups", "startups.uuid", "missions_startups.startup_id")
         .select(({ eb, selectFrom }) => [
@@ -100,7 +100,7 @@ export async function searchUsers(
             if (competences.length) {
                 // https://www.postgresql.org/docs/9.5/functions-json.html
                 conditions.push(
-                    eb(ref("competences"), "?&", eb.val(competences))
+                    eb(ref("competences"), "?&", eb.val(competences)),
                 );
             }
             if (validStartups.length) {
@@ -119,7 +119,7 @@ export async function searchUsers(
                     conditions.push(eb("expired", "is", expiredStatus[0]));
                 } else {
                     conditions.push(
-                        eb.or(expiredStatus.map((s) => eb("expired", "is", s)))
+                        eb.or(expiredStatus.map((s) => eb("expired", "is", s))),
                     );
                 }
             }

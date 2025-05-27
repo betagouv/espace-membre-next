@@ -7,7 +7,7 @@ import { MatomoUser, MatomoUserAccess, MatomoSite } from "@/lib/matomo";
 
 export const matomoMetadataToModel = (
     userMetadata: MatomoUserAccess[],
-    allWebsites: MatomoSite[]
+    allWebsites: MatomoSite[],
 ): matomoUserSchemaType["metadata"] => {
     return {
         sites: userMetadata.map((u) => {
@@ -26,11 +26,11 @@ export const matomoMetadataToModel = (
 export const matomoUserToModel = (
     matomoUser: MatomoUser,
     userMetadata: MatomoUserAccess[],
-    allWebsites: MatomoSite[]
+    allWebsites: MatomoSite[],
 ): matomoUserSchemaType => {
     const metadata: matomoUserSchemaType["metadata"] = matomoMetadataToModel(
         userMetadata,
-        allWebsites
+        allWebsites,
     );
     return {
         email: matomoUser.email,
@@ -42,7 +42,7 @@ export const matomoUserToModel = (
 };
 
 export const matomoServiceInfoToModel = (
-    matomoUser: Selectable<ServiceAccounts>
+    matomoUser: Selectable<ServiceAccounts>,
 ): matomoUserSchemaType => {
     return {
         account_type: "matomo",
@@ -58,7 +58,7 @@ export const matomoServiceInfoToModel = (
 };
 
 export const matomoSiteToModel = (
-    matomoSite: Selectable<MatomoSites>
+    matomoSite: Selectable<MatomoSites>,
 ): matomoSiteSchemaType => {
     return {
         id: matomoSite.matomo_id,

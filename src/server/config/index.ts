@@ -142,7 +142,7 @@ export default {
     port: parseInt(process.env.PORT || "3000", 10),
     CHATWOOT_ID: process.env.CHATWOOT_ID,
     CHATWOOT_IGNORE_EMAILS: (process.env.CHATWOOT_IGNORE_EMAILS || "").split(
-        ""
+        "",
     ),
     CHATWOOT_BADGE_ID: process.env.CHATWOOT_BADGE_ID,
     domain: process.env.SECRETARIAT_DOMAIN || "beta.gouv.fr",
@@ -168,7 +168,7 @@ export default {
         process.env.MATTERMOST_URL || "https://mattermost.incubateur.net",
     senderEmail: process.env.MAIL_SENDER || "espace-membre@incubateur.net",
     CHAT_WEBHOOK_URL_SECRETARIAT: getOrThrowError(
-        "CHAT_WEBHOOK_URL_SECRETARIAT"
+        "CHAT_WEBHOOK_URL_SECRETARIAT",
     ),
     CHAT_WEBHOOK_URL_GENERAL: getOrThrowError("CHAT_WEBHOOK_URL_GENERAL"),
     CHAT_WEBHOOK_URL_DINUM: getOrThrowError("CHAT_WEBHOOK_URL_DINUM"),
@@ -181,7 +181,7 @@ export default {
         ? process.env.ESPACE_MEMBRE_ADMIN.split(",")
         : [],
     MAILING_LIST_NEWSLETTER: parseInt(
-        getOrThrowError("MAILING_LIST_NEWSLETTER")
+        getOrThrowError("MAILING_LIST_NEWSLETTER"),
     ),
     MAILING_LIST_ONBOARDING: process.env.MAILING_LIST_ONBOARDING
         ? parseInt(process.env.MAILING_LIST_ONBOARDING)
@@ -207,7 +207,7 @@ export default {
         .NEWSLETTER_NUMBER_OF_DAYS_WITH_LAST_NEWSLETTER
         ? parseInt(
               process.env.NEWSLETTER_NUMBER_OF_DAYS_WITH_LAST_NEWSLETTER,
-              10
+              10,
           )
         : 10,
     OVH_EMAIL_PRO_NAME: process.env.OVH_EMAIL_PRO_NAME,
@@ -243,7 +243,7 @@ export default {
     PROTECTED_API_KEYS: getArrayFromEnv("PROTECTED_API_KEYS"),
     PROTECTED_API_ALLOWED_ORIGINS: getArrayFromEnv(
         "PROTECTED_API_ALLOWED_ORIGINS",
-        ["gouv.fr", "ademe.fr"]
+        ["gouv.fr", "ademe.fr"],
     ),
     SENTRY_WEBSITE_URL: process.env.SENTRY_WEBSITE_URL,
     FEATURE_TMP_SHOW_ONBOARDING_TO_EVERYONE:

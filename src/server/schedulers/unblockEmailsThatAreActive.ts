@@ -28,10 +28,10 @@ export async function unblockEmailsThatAreActive() {
     let activeEmails = await betagouv.getAllEmailInfos();
     activeEmails = activeEmails.map((email) => `${email}@${config.domain}`);
     const contactEmails = [...transacContacts, ...contacts].map(
-        (contact) => contact.email
+        (contact) => contact.email,
     );
     const emailsToBeUnblocked = contactEmails.filter((email) =>
-        activeEmails.includes(email)
+        activeEmails.includes(email),
     );
     console.log(`Email to unblocked`, JSON.stringify(emailsToBeUnblocked));
     for (const email of emailsToBeUnblocked) {

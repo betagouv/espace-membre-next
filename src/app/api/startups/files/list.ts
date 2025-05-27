@@ -37,7 +37,7 @@ export async function getStartupFiles({
         .where((eb) => {
             const conditions: ExpressionWrapper<any, any, any>[] = [];
             conditions.push(
-                eb("startups.uuid", "=", eb.ref("startups_files.startup_id"))
+                eb("startups.uuid", "=", eb.ref("startups_files.startup_id")),
             );
             conditions.push(eb("startups_files.deleted_at", "is", null));
             if (ghid) conditions.push(eb("startups.ghid", "=", ghid));

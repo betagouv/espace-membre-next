@@ -1,5 +1,6 @@
-import { compile } from "html-to-text";
 import { ReactElement } from "react";
+
+import { compile } from "html-to-text";
 import { renderToStaticMarkup } from "react-dom/server";
 
 export const convertHtmlEmailToText = compile({

@@ -1,16 +1,14 @@
+import Table from "@codegouvfr/react-dsfr/Table";
+import MarkdownIt from "markdown-it";
 import Link from "next/link";
-import { incubatorSchemaType } from "@/models/incubator";
 
+import { FicheHeader } from "../FicheHeader";
+import { BadgePhase } from "../StartupPage/BadgePhase";
 import {
     getIncubatorStartups,
     getIncubatorTeams,
 } from "@/lib/kysely/queries/incubators";
-
-import Table from "@codegouvfr/react-dsfr/Table";
-
-import MarkdownIt from "markdown-it";
-import { BadgePhase } from "../StartupPage/BadgePhase";
-import { FicheHeader } from "../FicheHeader";
+import { incubatorSchemaType } from "@/models/incubator";
 
 const mdParser = new MarkdownIt({
     html: true,

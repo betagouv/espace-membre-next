@@ -4,5 +4,5 @@ import { sendMessageToMattermostUsersWithUnallowedEmails } from "@schedulers/mat
 sendMessageToMattermostUsersWithUnallowedEmails(config.mattermostTeamId).then(
     () => {
         console.log("Done");
-    }
+    },
 );

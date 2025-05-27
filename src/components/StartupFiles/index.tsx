@@ -64,7 +64,7 @@ export const StartupFiles = ({
     const [pendingFiles, setPendingFiles] = useState<File[]>([]);
     const [fileIndex, setFileIndex] = useState(0);
     const [uploadsCompleted, setUploadsCompleted] = useState<boolean | null>(
-        false
+        false,
     );
 
     const onDrop = useCallback((acceptedFiles: File[]) => {

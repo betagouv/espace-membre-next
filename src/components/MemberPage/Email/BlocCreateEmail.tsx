@@ -37,7 +37,7 @@ export default function BlocCreateEmail({
                         alert("Ton email a bien été créé.");
                     } else {
                         alert(
-                            `Ton email n'a pas pu être créé suite à une erreur.`
+                            `Ton email n'a pas pu être créé suite à une erreur.`,
                         );
                     }
                 }}

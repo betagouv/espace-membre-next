@@ -6,11 +6,11 @@ import { checkUserIsExpired } from "@controllers/utils";
 
 const getIntraUsersEmails = async () => {
     const users = (await getAllUsersInfo()).map((user) =>
-        memberBaseInfoToModel(user)
+        memberBaseInfoToModel(user),
     );
     const members = users.filter((user) => !checkUserIsExpired(user));
     const intras = members.filter(
-        (member) => member.domaine === "Intraprenariat"
+        (member) => member.domaine === "Intraprenariat",
     );
     const intraDBUsers = await db
         .selectFrom("users")
@@ -18,7 +18,7 @@ const getIntraUsersEmails = async () => {
         .where(
             "username",
             "in",
-            intras.map((intra) => intra.username)
+            intras.map((intra) => intra.username),
         )
         .execute();
     intraDBUsers.forEach((user) => {

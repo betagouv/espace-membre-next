@@ -26,7 +26,7 @@ const makeFakeMethods = () => {
             return dossiers.find(
                 (d) =>
                     d.dossier_number === dossierNumber &&
-                    d.state !== "prefilled"
+                    d.state !== "prefilled",
             );
         },
         createPrefillDossier: async (demarcheNumber, {}) => {

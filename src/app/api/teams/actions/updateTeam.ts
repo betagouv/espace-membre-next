@@ -67,7 +67,7 @@ export async function updateTeam({
                             team_id: teamUuid,
                             user_id: memberUuid,
                         };
-                    })
+                    }),
                 )
                 .returning("uuid")
                 .execute();

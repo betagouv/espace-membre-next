@@ -19,7 +19,7 @@ export class FakeSentryService implements AccountService {
     constructor(
         users: SentryUser[],
         teams: SentryTeam[] = [],
-        userAccess: SentryUserAccess[] = []
+        userAccess: SentryUserAccess[] = [],
     ) {
         this.users = users;
         this.teams = teams;
@@ -38,7 +38,7 @@ export class FakeSentryService implements AccountService {
                 .filter((userAccess) => userAccess.id === userId)
                 .map((userAccess) => {
                     return userAccess;
-                })[0]
+                })[0],
         );
     }
     createSentryTeam({
@@ -74,7 +74,7 @@ export class FakeSentryService implements AccountService {
             this.users.map((user) => ({
                 user: user,
                 serviceUserId: user.id,
-            }))
+            })),
         );
     }
 
@@ -87,8 +87,8 @@ export class FakeSentryService implements AccountService {
         if (this.users.find((user) => user.email === email)) {
             return Promise.reject(
                 new Error(
-                    `User with email ${email} already exists in the organization.`
-                )
+                    `User with email ${email} already exists in the organization.`,
+                ),
             );
         }
 
@@ -127,21 +127,21 @@ export class FakeSentryService implements AccountService {
 
         if (!user) {
             return Promise.reject(
-                new Error(`User with email ${memberId} does not exist.`)
+                new Error(`User with email ${memberId} does not exist.`),
             );
         }
 
         if (!team) {
             return Promise.reject(
-                new Error(`Team with slug ${teamSlug} does not exist.`)
+                new Error(`Team with slug ${teamSlug} does not exist.`),
             );
         }
 
         if (team.members?.find((member) => member.id === memberId)) {
             return Promise.reject(
                 new Error(
-                    `User with email ${memberId} is already a member of the team ${teamSlug}.`
-                )
+                    `User with email ${memberId} is already a member of the team ${teamSlug}.`,
+                ),
             );
         }
 
@@ -159,6 +159,6 @@ export const sentryClient =
         ? new SentryService(
               config.SENTRY_API_URL!,
               config.SENTRY_TOKEN!,
-              config.SENTRY_ORGANIZATION!
+              config.SENTRY_ORGANIZATION!,
           )
         : new FakeSentryService([]);

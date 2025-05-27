@@ -1,19 +1,19 @@
 "use client";
 import React from "react";
-import Link from "next/link";
 
 import { fr } from "@codegouvfr/react-dsfr";
+import Button from "@codegouvfr/react-dsfr/Button";
 import Table from "@codegouvfr/react-dsfr/Table";
 import Tag from "@codegouvfr/react-dsfr/Tag";
 import { format } from "date-fns";
-import { frenchSmallDate } from "@utils/date";
-
-import "./FileList.css";
 import { revalidatePath } from "next/cache";
+import Link from "next/link";
 
 import { deleteFile } from "@/app/api/startups/files/delete";
 import { getStartupFiles } from "@/app/api/startups/files/list";
-import Button from "@codegouvfr/react-dsfr/Button";
+import { frenchSmallDate } from "@utils/date";
+
+import "./FileList.css";
 
 type FilesType = Awaited<ReturnType<typeof getStartupFiles>>;
 
@@ -63,7 +63,7 @@ export const FileList = ({
                                 file.data?.date_comite
                                     ? `Comité du ${frenchSmallDate(
                                           // @ts-ignore todo
-                                          file.data?.date_comite
+                                          file.data?.date_comite,
                                       )}`
                                     : file.type
                             }
@@ -81,21 +81,19 @@ export const FileList = ({
                                 // @ts-ignore todo
                                 (file.data?.contenu && (
                                     <ul className={fr.cx("fr-p-0")}>
-                                        {
-                                            // @ts-ignore todo
-                                            file.data?.contenu.map((m) => (
-                                                <Tag
-                                                    key={m}
-                                                    className={fr.cx(
-                                                        "fr-mr-1w",
-                                                        "fr-ml-0"
-                                                    )}
-                                                    small
-                                                >
-                                                    {m}
-                                                </Tag>
-                                            ))
-                                        }
+                                        {// @ts-ignore todo
+                                        file.data?.contenu.map((m) => (
+                                            <Tag
+                                                key={m}
+                                                className={fr.cx(
+                                                    "fr-mr-1w",
+                                                    "fr-ml-0",
+                                                )}
+                                                small
+                                            >
+                                                {m}
+                                            </Tag>
+                                        ))}
                                     </ul>
                                 )) ||
                                     ""
@@ -103,7 +101,7 @@ export const FileList = ({
                         </>,
                         // @ts-ignore todo
                         file.comments || "-",
-                    ].filter(Boolean)
+                    ].filter(Boolean),
                 )}
             />
         )
