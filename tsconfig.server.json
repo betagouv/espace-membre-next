@@ -37,12 +37,7 @@
       "@db": ["src/server/db/index.ts"],
       "@db/*": ["src/server/db/*"],
       "@betagouv": ["src/server/betagouv.ts"]
-    },
-    "plugins": [
-      {
-        "transform": "typescript-transform-paths"
-      }
-    ]
+    }
   },
   "exclude": [
     "node_modules",
