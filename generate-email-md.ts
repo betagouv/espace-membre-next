@@ -11,7 +11,7 @@ markdown += `| Clé EMAIL_TYPES | Description |\n`;
 markdown += `|-----------------|-------------|\n`;
 
 for (const [key, ojb] of Object.entries(EmailDocumentation)) {
-    markdown += `| \`${key}\` | ${ojb.description} |\n`;
+  markdown += `| \`${key}\` | ${ojb.description} |\n`;
 }
 
 // Écriture dans EMAIL.md

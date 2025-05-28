@@ -8,9 +8,11 @@ fileignoreconfig:
 - filename: .github/workflows/playwright.yml
   checksum: c7ad26d3f680a12d4169e46858d36b01ad1073c2acbb7265ee398d96ccd8bd65
 - filename: generate-cron-md.ts
-  checksum: 184ab41ee937833492f55d5f09844f1f679fd4d3ee462254b13d124e9e9b76b8
+  checksum: 710739a984b99d823cc34f569af53e3d38a94464f788066dec33468661d45b4f
 - filename: generate-email-md.ts
   checksum: aeb35a10ae2e7d9ff2b9f3591ec8fc86661bf1cc4463a7a3b1a7d4b122ac24a7
+- filename: next.config.js
+  checksum: f16f45eec480e67fa64c9142ccc2ca99df679c9347c7204fdb61cef80feb12b3
 - filename: src/@types/db.d.ts
   checksum: ac94b89a23848212bfe12685e2fe2511c726ad760d8e2330594cbb83389b40b7
 - filename: src/app/(private)/(dashboard)/account/base-info/page.tsx
