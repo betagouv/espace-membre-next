@@ -17,110 +17,110 @@ const cspHeader = `
 
 /** @type {import('next').NextConfig} */
 const nextConfig = {
-    async headers() {
-        return [
-            {
-                source: "/(.*)",
-                headers: [
-                    {
-                        key: "Content-Security-Policy",
-                        value:
-                            process.env.NODE_ENV === "production"
-                                ? cspHeader.replace(/\n/g, "")
-                                : cspHeader
-                                      .replace("upgrade-insecure-requests;", "")
-                                      .replace(/\n/g, ""),
-                    },
-                ],
-            },
-        ];
-    },
-    deploymentId: process.env.SOURCE_VERSION,
-    async redirects() {
-        return [
-            // Basic redirect
-            {
-                source: "/",
-                destination: "/login",
-                permanent: true,
-            },
-        ];
-    },
-    experimental: {
-        serverComponentsExternalPackages: [
-            "knex",
-            "sib-api-v3-sdk",
-            "mjml",
-            "@luma-team/mjml-react",
+  async headers() {
+    return [
+      {
+        source: "/(.*)",
+        headers: [
+          {
+            key: "Content-Security-Policy",
+            value:
+              process.env.NODE_ENV === "production"
+                ? cspHeader.replace(/\n/g, "")
+                : cspHeader
+                    .replace("upgrade-insecure-requests;", "")
+                    .replace(/\n/g, ""),
+          },
         ],
-        serverActions: {
-            bodySizeLimit: "10mb",
-        },
-        // This is experimental but can
-        // be enabled to allow parallel threads
-        // with nextjs automatic static generation
-        // during prerendering it access the db and in review app in breaks because there is several connexion
-        // we could disable prerendering but it is not possible to disable it only at build time
-        workerThreads: false,
-        cpus: 1
-    },
-    rewrites: async () => [
-        {
-            source: "/api/public/member/:username/image",
-            destination: "/api/member/:username/image",
-        },
+      },
+    ];
+  },
+  deploymentId: process.env.SOURCE_VERSION,
+  async redirects() {
+    return [
+      // Basic redirect
+      {
+        source: "/",
+        destination: "/login",
+        permanent: true,
+      },
+    ];
+  },
+  experimental: {
+    serverComponentsExternalPackages: [
+      "knex",
+      "sib-api-v3-sdk",
+      "mjml",
+      "@luma-team/mjml-react",
     ],
-    // @todo upgrade to nextjs 15 to use
-    // expireTime: 0,
-    webpack: (config, { isServer }) => {
-        if (!isServer) {
-            // don't resolve 'fs' module on the client to prevent this error on build --> Error: Can't resolve 'fs'
-            config.resolve.fallback = {
-                fs: false,
-            };
-        }
-        config.module.rules.push({
-            test: /\.woff2$/,
-            type: "asset/resource",
-        });
-        return config;
+    serverActions: {
+      bodySizeLimit: "10mb",
     },
+    // This is experimental but can
+    // be enabled to allow parallel threads
+    // with nextjs automatic static generation
+    // during prerendering it access the db and in review app in breaks because there is several connexion
+    // we could disable prerendering but it is not possible to disable it only at build time
+    workerThreads: false,
+    cpus: 1,
+  },
+  rewrites: async () => [
+    {
+      source: "/api/public/member/:username/image",
+      destination: "/api/member/:username/image",
+    },
+  ],
+  // @todo upgrade to nextjs 15 to use
+  // expireTime: 0,
+  webpack: (config, { isServer }) => {
+    if (!isServer) {
+      // don't resolve 'fs' module on the client to prevent this error on build --> Error: Can't resolve 'fs'
+      config.resolve.fallback = {
+        fs: false,
+      };
+    }
+    config.module.rules.push({
+      test: /\.woff2$/,
+      type: "asset/resource",
+    });
+    return config;
+  },
 };
 
 const uploadToSentry =
-    process.env.NODE_ENV === "production" &&
-    process.env.SENTRY_RELEASE_UPLOAD === "true";
+  process.env.NODE_ENV === "production" &&
+  process.env.SENTRY_RELEASE_UPLOAD === "true";
 
 /**
  * @type {import('@sentry/nextjs').SentryBuildOptions}
  */
 const sentryWebpackPluginOptions = {
-    // Additional config options for the Sentry webpack plugin. Keep in mind that
-    // the following options are set automatically, and overriding them is not
-    // recommended:
-    //   release, url, configFile, stripPrefix, urlPrefix, include, ignore
-    debug: false,
-    telemetry: false,
-    silent: false,
-    sourcemaps: {
-        deleteSourcemapsAfterUpload: true,
-        disable: !uploadToSentry,
-    },
-    hideSourceMaps: true,
-    release: process.env.SOURCE_VERSION, // https://doc.scalingo.com/platform/app/environment#build-environment-variables
-    org: "betagouv",
-    project: "espace-membre",
-    widenClientFileUpload: true, // https://sentry.zendesk.com/hc/en-us/articles/28813179249691-Frames-from-static-chunks-folder-are-not-source-mapped
-    // cause static/chunks/ to be uploaded
-    // An auth token is required for uploading source maps.
-    authToken: process.env.SENTRY_AUTH_TOKEN,
-    url: "https://sentry.incubateur.net",
-    // silent: true, // Suppresses all logs
-    errorHandler: (err, invokeErr, compilation) => {
-        compilation.warnings.push("Sentry CLI Plugin: " + err.message);
-    },
-    // For all available options, see:
-    // https://github.com/getsentry/sentry-webpack-plugin#options.
+  // Additional config options for the Sentry webpack plugin. Keep in mind that
+  // the following options are set automatically, and overriding them is not
+  // recommended:
+  //   release, url, configFile, stripPrefix, urlPrefix, include, ignore
+  debug: false,
+  telemetry: false,
+  silent: false,
+  sourcemaps: {
+    deleteSourcemapsAfterUpload: true,
+    disable: !uploadToSentry,
+  },
+  hideSourceMaps: true,
+  release: process.env.SOURCE_VERSION, // https://doc.scalingo.com/platform/app/environment#build-environment-variables
+  org: "betagouv",
+  project: "espace-membre",
+  widenClientFileUpload: true, // https://sentry.zendesk.com/hc/en-us/articles/28813179249691-Frames-from-static-chunks-folder-are-not-source-mapped
+  // cause static/chunks/ to be uploaded
+  // An auth token is required for uploading source maps.
+  authToken: process.env.SENTRY_AUTH_TOKEN,
+  url: "https://sentry.incubateur.net",
+  // silent: true, // Suppresses all logs
+  errorHandler: (err, invokeErr, compilation) => {
+    compilation.warnings.push("Sentry CLI Plugin: " + err.message);
+  },
+  // For all available options, see:
+  // https://github.com/getsentry/sentry-webpack-plugin#options.
 };
 
 // Make sure adding Sentry options is the last code to run before exporting

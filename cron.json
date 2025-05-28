@@ -1,7 +1,7 @@
 {
-    "jobs": [
-        {
-            "command": "0 18 * * MON-FRI [[ \"$APP\" = \"espace-membre-cron\" ]] && npm run export-to-www || echo 'skip export'"
-        }
-    ]
+  "jobs": [
+    {
+      "command": "0 18 * * MON-FRI [[ \"$APP\" = \"espace-membre-cron\" ]] && npm run export-to-www || echo 'skip export'"
+    }
+  ]
 }
