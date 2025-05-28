@@ -3,424 +3,420 @@ import { z } from "zod";
 import { missionSchema } from "./mission";
 import { teamSchema } from "./team";
 import {
-    EMAIL_PLAN_TYPE,
-    OvhRedirectionSchema,
-    OvhResponderSchema,
+  EMAIL_PLAN_TYPE,
+  OvhRedirectionSchema,
+  OvhResponderSchema,
 } from "@/models/ovh";
 
 export enum USER_EVENT {
-    USER_EMAIL_ACTIVATED = "USER_EMAIL_ACTIVATED",
-    ADD_USER_TO_ONBOARDING_MAILING_LIST = "ADD_USER_TO_ONBOARDING_MAILING_LIST",
-    USER_EMAIL_REDIRECTION_ACTIVATED = "USER_EMAIL_REDIRECTION_ACTIVATED",
+  USER_EMAIL_ACTIVATED = "USER_EMAIL_ACTIVATED",
+  ADD_USER_TO_ONBOARDING_MAILING_LIST = "ADD_USER_TO_ONBOARDING_MAILING_LIST",
+  USER_EMAIL_REDIRECTION_ACTIVATED = "USER_EMAIL_REDIRECTION_ACTIVATED",
 }
 
 export enum EmailStatusCode {
-    EMAIL_ACTIVE = "EMAIL_ACTIVE",
-    EMAIL_SUSPENDED = "EMAIL_SUSPENDED",
-    EMAIL_DELETED = "EMAIL_DELETED",
-    EMAIL_EXPIRED = "EMAIL_EXPIRED",
-    EMAIL_CREATION_PENDING = "EMAIL_CREATION_PENDING", // email is being created in ovh
-    EMAIL_ACTIVE_AND_PASSWORD_DEFINITION_PENDING = "EMAIL_ACTIVE_AND_PASSWORD_DEFINITION_PENDING",
-    EMAIL_RECREATION_PENDING = "EMAIL_RECREATION_PENDING",
-    EMAIL_UNSET = "EMAIL_UNSET",
-    EMAIL_REDIRECTION_PENDING = "EMAIL_REDIRECTION_PENDING",
-    EMAIL_REDIRECTION_ACTIVE = "EMAIL_REDIRECTION_ACTIVE",
-    EMAIL_VERIFICATION_WAITING = "EMAIL_VERIFICATION_WAITING",
-    EMAIL_CREATION_WAITING = "EMAIL_CREATION_WAITING", // email will be created
-    MEMBER_VALIDATION_WAITING = "MEMBER_VALIDATION_WAITING",
+  EMAIL_ACTIVE = "EMAIL_ACTIVE",
+  EMAIL_SUSPENDED = "EMAIL_SUSPENDED",
+  EMAIL_DELETED = "EMAIL_DELETED",
+  EMAIL_EXPIRED = "EMAIL_EXPIRED",
+  EMAIL_CREATION_PENDING = "EMAIL_CREATION_PENDING", // email is being created in ovh
+  EMAIL_ACTIVE_AND_PASSWORD_DEFINITION_PENDING = "EMAIL_ACTIVE_AND_PASSWORD_DEFINITION_PENDING",
+  EMAIL_RECREATION_PENDING = "EMAIL_RECREATION_PENDING",
+  EMAIL_UNSET = "EMAIL_UNSET",
+  EMAIL_REDIRECTION_PENDING = "EMAIL_REDIRECTION_PENDING",
+  EMAIL_REDIRECTION_ACTIVE = "EMAIL_REDIRECTION_ACTIVE",
+  EMAIL_VERIFICATION_WAITING = "EMAIL_VERIFICATION_WAITING",
+  EMAIL_CREATION_WAITING = "EMAIL_CREATION_WAITING", // email will be created
+  MEMBER_VALIDATION_WAITING = "MEMBER_VALIDATION_WAITING",
 }
 
 export enum GenderCode {
-    NSP = "NSP",
-    FEMALE = "female",
-    MALE = "male",
-    OTHER = "other",
+  NSP = "NSP",
+  FEMALE = "female",
+  MALE = "male",
+  OTHER = "other",
 }
 
 export enum LegalStatus {
-    AE = "AE",
-    contractuel = "contractuel",
-    EIRL = "EIRL",
-    EURL = "EURL",
-    fonctionnaire = "fonctionnaire",
-    PORTAGE = "PORTAGE",
-    asso = "asso",
-    SA = "SA",
-    SASU = "SASU",
-    SNC = "SNC",
-    salarie_agence = "salarie_agence",
+  AE = "AE",
+  contractuel = "contractuel",
+  EIRL = "EIRL",
+  EURL = "EURL",
+  fonctionnaire = "fonctionnaire",
+  PORTAGE = "PORTAGE",
+  asso = "asso",
+  SA = "SA",
+  SASU = "SASU",
+  SNC = "SNC",
+  salarie_agence = "salarie_agence",
 }
 
 export enum CommunicationEmailCode {
-    PRIMARY = "primary",
-    SECONDARY = "secondary",
+  PRIMARY = "primary",
+  SECONDARY = "secondary",
 }
 
 export enum MemberType {
-    BETA = "beta",
-    ATTRIBUTAIRE = "attributaire",
-    DINUM = "dinum",
-    OTHER = "autre",
+  BETA = "beta",
+  ATTRIBUTAIRE = "attributaire",
+  DINUM = "dinum",
+  OTHER = "autre",
 }
 
 export const genderOptions = [
-    {
-        key: "female",
-        name: "Féminin",
-    },
-    {
-        key: "male",
-        name: "Masculin",
-    },
-    {
-        key: "other",
-        name: "Autre",
-    },
-    {
-        key: "NSP",
-        name: "Ne se prononce pas",
-    },
+  {
+    key: "female",
+    name: "Féminin",
+  },
+  {
+    key: "male",
+    name: "Masculin",
+  },
+  {
+    key: "other",
+    name: "Autre",
+  },
+  {
+    key: "NSP",
+    name: "Ne se prononce pas",
+  },
 ];
 
 export const statusOptions: {
-    key: keyof typeof LegalStatus;
-    name: string;
+  key: keyof typeof LegalStatus;
+  name: string;
 }[] = [
-    {
-        key: "AE",
-        name: "Auto-entreprise/micro-entreprise",
-    },
-    {
-        key: "contractuel",
-        name: "Contractuel-elle",
-    },
-    {
-        key: "EIRL",
-        name: "Entreprise individuelle : EI ou EIRL",
-    },
-    {
-        key: "EURL",
-        name: "EURL",
-    },
-    {
-        key: "fonctionnaire",
-        name: "Fonctionnaire",
-    },
-    {
-        key: "PORTAGE",
-        name: "Portage salarial",
-    },
-    {
-        key: "asso",
-        name: "Salarié-e d'une coopérative (CAE, SCOP, Association)",
-    },
-    {
-        key: "SA",
-        name: "Salarié-e d'une entreprise (SA, SAS, SARL)",
-    },
-    {
-        key: "SASU",
-        name: "SASU",
-    },
-    {
-        key: "SNC",
-        name: "SNC",
-    },
-    {
-        key: "salarie_agence",
-        name: "Agent d'un opérateur de l'Etat (ADEME, France Travail...)",
-    },
+  {
+    key: "AE",
+    name: "Auto-entreprise/micro-entreprise",
+  },
+  {
+    key: "contractuel",
+    name: "Contractuel-elle",
+  },
+  {
+    key: "EIRL",
+    name: "Entreprise individuelle : EI ou EIRL",
+  },
+  {
+    key: "EURL",
+    name: "EURL",
+  },
+  {
+    key: "fonctionnaire",
+    name: "Fonctionnaire",
+  },
+  {
+    key: "PORTAGE",
+    name: "Portage salarial",
+  },
+  {
+    key: "asso",
+    name: "Salarié-e d'une coopérative (CAE, SCOP, Association)",
+  },
+  {
+    key: "SA",
+    name: "Salarié-e d'une entreprise (SA, SAS, SARL)",
+  },
+  {
+    key: "SASU",
+    name: "SASU",
+  },
+  {
+    key: "SNC",
+    name: "SNC",
+  },
+  {
+    key: "salarie_agence",
+    name: "Agent d'un opérateur de l'Etat (ADEME, France Travail...)",
+  },
 ];
 
 export enum Domaine {
-    ANIMATION = "Animation",
-    COACHING = "Coaching",
-    DEPLOIEMENT = "Déploiement",
-    DESIGN = "Design",
-    DEVELOPPEMENT = "Développement",
-    INTRAPRENARIAT = "Intraprenariat",
-    PRODUIT = "Produit",
-    AUTRE = "Autre",
-    DATA = "Data",
-    SUPPORT = "Support",
-    ATTRIBUTAIRE = "Attributaire",
+  ANIMATION = "Animation",
+  COACHING = "Coaching",
+  DEPLOIEMENT = "Déploiement",
+  DESIGN = "Design",
+  DEVELOPPEMENT = "Développement",
+  INTRAPRENARIAT = "Intraprenariat",
+  PRODUIT = "Produit",
+  AUTRE = "Autre",
+  DATA = "Data",
+  SUPPORT = "Support",
+  ATTRIBUTAIRE = "Attributaire",
 }
 
 type DomaineOption = {
-    key: keyof typeof Domaine;
-    name: Domaine;
+  key: keyof typeof Domaine;
+  name: Domaine;
 };
 
 export const DOMAINE_OPTIONS: DomaineOption[] = [
-    {
-        key: "ANIMATION",
-        name: Domaine.ANIMATION,
-    },
-    {
-        key: "COACHING",
-        name: Domaine.COACHING,
-    },
-    {
-        key: "DEPLOIEMENT",
-        name: Domaine.DEPLOIEMENT,
-    },
-    {
-        key: "DESIGN",
-        name: Domaine.DESIGN,
-    },
-    {
-        key: "DEVELOPPEMENT",
-        name: Domaine.DEVELOPPEMENT,
-    },
-    {
-        key: "INTRAPRENARIAT",
-        name: Domaine.INTRAPRENARIAT,
-    },
-    {
-        key: "PRODUIT",
-        name: Domaine.PRODUIT,
-    },
-    {
-        key: "AUTRE",
-        name: Domaine.AUTRE,
-    },
-    {
-        key: "DATA",
-        name: Domaine.DATA,
-    },
-    {
-        key: "SUPPORT",
-        name: Domaine.SUPPORT,
-    },
-    {
-        key: "ATTRIBUTAIRE",
-        name: Domaine.ATTRIBUTAIRE,
-    },
+  {
+    key: "ANIMATION",
+    name: Domaine.ANIMATION,
+  },
+  {
+    key: "COACHING",
+    name: Domaine.COACHING,
+  },
+  {
+    key: "DEPLOIEMENT",
+    name: Domaine.DEPLOIEMENT,
+  },
+  {
+    key: "DESIGN",
+    name: Domaine.DESIGN,
+  },
+  {
+    key: "DEVELOPPEMENT",
+    name: Domaine.DEVELOPPEMENT,
+  },
+  {
+    key: "INTRAPRENARIAT",
+    name: Domaine.INTRAPRENARIAT,
+  },
+  {
+    key: "PRODUIT",
+    name: Domaine.PRODUIT,
+  },
+  {
+    key: "AUTRE",
+    name: Domaine.AUTRE,
+  },
+  {
+    key: "DATA",
+    name: Domaine.DATA,
+  },
+  {
+    key: "SUPPORT",
+    name: Domaine.SUPPORT,
+  },
+  {
+    key: "ATTRIBUTAIRE",
+    name: Domaine.ATTRIBUTAIRE,
+  },
 ];
 
 export const memberSchema = z.object({
-    // modify info schema
-    uuid: z.string({}).uuid().readonly(),
-    username: z.string({}).readonly(),
-    fullname: z
-        .string({
-            errorMap: (issue, ctx) => ({
-                message: "Le nom est obligatoire",
-            }),
-        })
-        .min(1)
-        .readonly()
-        .describe("Nom complet"),
-    role: z
-        .string({
-            errorMap: (issue, ctx) => ({
-                message: "Le rôle est un champ obligatoire",
-            }),
-        })
-        .min(1)
-        .describe("Rôle actuel"),
-    link: z
-        .union([
-            z.null(),
-            z.literal(""),
-            z.string().trim().url({ message: "URL invalide" }).optional(),
-        ])
-        .describe("Adresse du profil LinkedIn ou site web"),
-    avatar: z
-        .string()
-        .describe("URL ou slug de l'avatar")
-        .nullable()
-        .optional(),
-    github: z.string().describe("Login GitHub").optional().nullable(),
-    competences: z
-        .array(z.string())
-        .describe("Liste des compétences")
-        .optional()
-        .nullable(),
-    teams: z
-        .array(teamSchema)
-        .describe("Liste des équipes incubateurs")
-        .optional()
-        .nullable(),
-    missions: z
-        .array(missionSchema)
-        .min(1, "Vous devez définir au moins une mission"),
-    startups: z.array(z.string()).optional().nullable(),
-    previously: z.array(z.string()).optional().nullable(),
-    domaine: z.nativeEnum(
-        Domaine, // ??
-        {
-            errorMap: (issue, ctx) => ({
-                message: "Le domaine est un champ obligatoire",
-            }),
-        }
-    ), // ??
-    bio: z
-        .string({
-            errorMap: (issue, ctx) => ({
-                message:
-                    "La bio est optionnelle mais elle permet d'en dire plus sur toi, be creative",
-            }),
-        })
-        .describe("Courte bio")
-        .optional()
-        .nullable(),
-    memberType: z.nativeEnum(MemberType).optional().nullable(),
-    // email relative info
-    secondary_email: z
-        .string({
-            errorMap: (issue, ctx) => ({
-                message: "L'email est obligatoire",
-            }),
-        })
-        .email()
-        .describe("Email"),
-    isEmailBetaAsked: z.boolean().optional().nullable(),
-    email_is_redirection: z.boolean().optional(),
-    communication_email: z.nativeEnum(CommunicationEmailCode),
-    // stat info
-    gender: z
-        .nativeEnum(
-            GenderCode, // ??
-            {
-                errorMap: (issue, ctx) => ({
-                    message: "Le champ gender est obligatoire",
-                }),
-            }
-        )
-        .optional()
-        .nullable(),
-    average_nb_of_days: z
-        .number()
-        .describe("Nombre de jour moyen travaillé par semaine")
-        .max(5)
-        .nullable()
-        .optional(),
-    tjm: z.number().optional().nullable(),
-    legal_status: z
-        .nativeEnum(
-            LegalStatus, // ??
-            {
-                errorMap: (issue, ctx) => ({
-                    message: "Le status legal n'a pas une valeur correcte",
-                }),
-            }
-        )
-        .describe(`Status legal de l'entreprise`)
-        .optional(),
-    workplace_insee_code: z
-        .string()
-        .describe("Code postal de la ville")
-        .nullable()
-        .optional(),
-    osm_city: z.string().describe("Ville internationale").nullable().optional(),
-    primary_email: z.string().email().nullable(),
-    primary_email_status: z.nativeEnum(EmailStatusCode).readonly(),
-    primary_email_status_updated_at: z.date().readonly(),
-    updated_at: z.date().readonly(),
+  // modify info schema
+  uuid: z.string({}).uuid().readonly(),
+  username: z.string({}).readonly(),
+  fullname: z
+    .string({
+      errorMap: (issue, ctx) => ({
+        message: "Le nom est obligatoire",
+      }),
+    })
+    .min(1)
+    .readonly()
+    .describe("Nom complet"),
+  role: z
+    .string({
+      errorMap: (issue, ctx) => ({
+        message: "Le rôle est un champ obligatoire",
+      }),
+    })
+    .min(1)
+    .describe("Rôle actuel"),
+  link: z
+    .union([
+      z.null(),
+      z.literal(""),
+      z.string().trim().url({ message: "URL invalide" }).optional(),
+    ])
+    .describe("Adresse du profil LinkedIn ou site web"),
+  avatar: z.string().describe("URL ou slug de l'avatar").nullable().optional(),
+  github: z.string().describe("Login GitHub").optional().nullable(),
+  competences: z
+    .array(z.string())
+    .describe("Liste des compétences")
+    .optional()
+    .nullable(),
+  teams: z
+    .array(teamSchema)
+    .describe("Liste des équipes incubateurs")
+    .optional()
+    .nullable(),
+  missions: z
+    .array(missionSchema)
+    .min(1, "Vous devez définir au moins une mission"),
+  startups: z.array(z.string()).optional().nullable(),
+  previously: z.array(z.string()).optional().nullable(),
+  domaine: z.nativeEnum(
+    Domaine, // ??
+    {
+      errorMap: (issue, ctx) => ({
+        message: "Le domaine est un champ obligatoire",
+      }),
+    },
+  ), // ??
+  bio: z
+    .string({
+      errorMap: (issue, ctx) => ({
+        message:
+          "La bio est optionnelle mais elle permet d'en dire plus sur toi, be creative",
+      }),
+    })
+    .describe("Courte bio")
+    .optional()
+    .nullable(),
+  memberType: z.nativeEnum(MemberType).optional().nullable(),
+  // email relative info
+  secondary_email: z
+    .string({
+      errorMap: (issue, ctx) => ({
+        message: "L'email est obligatoire",
+      }),
+    })
+    .email()
+    .describe("Email"),
+  isEmailBetaAsked: z.boolean().optional().nullable(),
+  email_is_redirection: z.boolean().optional(),
+  communication_email: z.nativeEnum(CommunicationEmailCode),
+  // stat info
+  gender: z
+    .nativeEnum(
+      GenderCode, // ??
+      {
+        errorMap: (issue, ctx) => ({
+          message: "Le champ gender est obligatoire",
+        }),
+      },
+    )
+    .optional()
+    .nullable(),
+  average_nb_of_days: z
+    .number()
+    .describe("Nombre de jour moyen travaillé par semaine")
+    .max(5)
+    .nullable()
+    .optional(),
+  tjm: z.number().optional().nullable(),
+  legal_status: z
+    .nativeEnum(
+      LegalStatus, // ??
+      {
+        errorMap: (issue, ctx) => ({
+          message: "Le status legal n'a pas une valeur correcte",
+        }),
+      },
+    )
+    .describe(`Status legal de l'entreprise`)
+    .optional(),
+  workplace_insee_code: z
+    .string()
+    .describe("Code postal de la ville")
+    .nullable()
+    .optional(),
+  osm_city: z.string().describe("Ville internationale").nullable().optional(),
+  primary_email: z.string().email().nullable(),
+  primary_email_status: z.nativeEnum(EmailStatusCode).readonly(),
+  primary_email_status_updated_at: z.date().readonly(),
+  updated_at: z.date().readonly(),
 });
 export type memberSchemaType = z.infer<typeof memberSchema>;
 
 export const EmailInfosSchema = z.object({
-    email: z.string().email(), // Validation supplémentaire pour vérifier le format de l'email
-    isBlocked: z.boolean(),
-    emailPlan: z.nativeEnum(EMAIL_PLAN_TYPE),
+  email: z.string().email(), // Validation supplémentaire pour vérifier le format de l'email
+  isBlocked: z.boolean(),
+  emailPlan: z.nativeEnum(EMAIL_PLAN_TYPE),
 });
 export type EmailInfos = z.infer<typeof EmailInfosSchema>;
 
 export const memberWrapperSchema = z.object({
-    userInfos: memberSchema,
-    isExpired: z.boolean(),
-    emailInfos: EmailInfosSchema.nullable(),
-    emailRedirections: z.array(OvhRedirectionSchema),
-    emailResponder: OvhResponderSchema.nullable(),
-    authorizations: z.object({
-        canCreateEmail: z.boolean(),
-        canCreateRedirection: z.boolean(),
-        canChangePassword: z.boolean(),
-        canChangeEmails: z.boolean(),
-        hasPublicServiceEmail: z.boolean(),
-    }),
+  userInfos: memberSchema,
+  isExpired: z.boolean(),
+  emailInfos: EmailInfosSchema.nullable(),
+  emailRedirections: z.array(OvhRedirectionSchema),
+  emailResponder: OvhResponderSchema.nullable(),
+  authorizations: z.object({
+    canCreateEmail: z.boolean(),
+    canCreateRedirection: z.boolean(),
+    canChangePassword: z.boolean(),
+    canChangeEmails: z.boolean(),
+    hasPublicServiceEmail: z.boolean(),
+  }),
 });
 
 export type memberWrapperSchemaType = z.infer<typeof memberWrapperSchema>;
 
 // member info that other member can get
 export const memberBaseInfoSchema = memberSchema.pick({
-    uuid: true,
-    username: true,
-    fullname: true,
-    role: true,
-    domaine: true,
-    bio: true,
-    link: true,
-    github: true,
-    missions: true,
-    teams: true,
-    primary_email: true,
-    primary_email_status: true,
-    memberType: true,
-    primary_email_status_updated_at: true,
-    communication_email: true,
-    secondary_email: true,
-    email_is_redirection: true,
-    updated_at: true,
-    competences: true,
-    workplace_insee_code: true,
+  uuid: true,
+  username: true,
+  fullname: true,
+  role: true,
+  domaine: true,
+  bio: true,
+  link: true,
+  github: true,
+  missions: true,
+  teams: true,
+  primary_email: true,
+  primary_email_status: true,
+  memberType: true,
+  primary_email_status_updated_at: true,
+  communication_email: true,
+  secondary_email: true,
+  email_is_redirection: true,
+  updated_at: true,
+  competences: true,
+  workplace_insee_code: true,
 });
 
 export type memberBaseInfoSchemaType = z.infer<typeof memberBaseInfoSchema>;
 
 export const memberPublicInfoSchema = memberSchema.pick({
-    uuid: true,
-    username: true,
-    fullname: true,
-    role: true,
-    domaine: true,
-    bio: true,
-    link: true,
-    github: true,
-    missions: true,
-    teams: true,
-    competences: true,
-    workplace_insee_code: true,
-    // primary_email: true,
-    primary_email_status: true,
-    // communication_email: true,
-    // secondary_email: true,
+  uuid: true,
+  username: true,
+  fullname: true,
+  role: true,
+  domaine: true,
+  bio: true,
+  link: true,
+  github: true,
+  missions: true,
+  teams: true,
+  competences: true,
+  workplace_insee_code: true,
+  // primary_email: true,
+  primary_email_status: true,
+  // communication_email: true,
+  // secondary_email: true,
 });
 
 export type memberPublicInfoSchemaType = z.infer<typeof memberPublicInfoSchema>;
 
 export const memberWrapperPublicInfoSchema = z.object({
-    userPublicInfos: memberPublicInfoSchema,
-    isExpired: z.boolean(),
-    isEmailBlocked: z.boolean(),
-    hasEmailInfos: z.boolean(),
-    mattermostInfo: z.object({
-        hasMattermostAccount: z.boolean(),
-        isInactiveOrNotInTeam: z.boolean(),
-    }),
-    hasSecondaryEmail: z.boolean(),
+  userPublicInfos: memberPublicInfoSchema,
+  isExpired: z.boolean(),
+  isEmailBlocked: z.boolean(),
+  hasEmailInfos: z.boolean(),
+  mattermostInfo: z.object({
+    hasMattermostAccount: z.boolean(),
+    isInactiveOrNotInTeam: z.boolean(),
+  }),
+  hasSecondaryEmail: z.boolean(),
 });
 
 export type memberWrapperPublicInfoSchemaType = z.infer<
-    typeof memberWrapperPublicInfoSchema
+  typeof memberWrapperPublicInfoSchema
 >;
 
 const missionsArraySchema = z.array(missionSchema);
 
 export type HasMissions<T = any> = T & {
-    missions: z.infer<typeof missionsArraySchema>;
+  missions: z.infer<typeof missionsArraySchema>;
 };
 
 const memberBaseInfoAndMattermostWrapper = z.object({
-    userInfos: memberBaseInfoSchema,
-    mattermostUsername: z.string(),
+  userInfos: memberBaseInfoSchema,
+  mattermostUsername: z.string(),
 });
 
 export type memberBaseInfoAndMattermostWrapperType = z.infer<
-    typeof memberBaseInfoAndMattermostWrapper
+  typeof memberBaseInfoAndMattermostWrapper
 >;
 
 // export interface MemberWithPrimaryEmailInfo extends Member {

@@ -1,5 +1,3 @@
-import {
-    sendNewsletterAndCreateNewOne,
-} from '@schedulers/newsletterScheduler';
+import { sendNewsletterAndCreateNewOne } from "@schedulers/newsletterScheduler";
 
-sendNewsletterAndCreateNewOne(false).then()
+sendNewsletterAndCreateNewOne(false).then();

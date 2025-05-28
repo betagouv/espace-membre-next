@@ -8,85 +8,80 @@ import { Domaine } from "@/models/member";
 import { onboardingChecklistSchemaType } from "@/models/onboardingChecklist";
 
 const mdParser = new MarkdownIt({
-    html: true,
+  html: true,
 });
 
 mdParser.renderer.rules.link_open = function (tokens, idx, options, env, self) {
-    tokens[idx].attrPush(["class", "fr-link"]); // Add class
-    tokens[idx].attrPush(["target", "_blank"]); // Add class
-    return self.renderToken(tokens, idx, options);
+  tokens[idx].attrPush(["class", "fr-link"]); // Add class
+  tokens[idx].attrPush(["target", "_blank"]); // Add class
+  return self.renderToken(tokens, idx, options);
 };
 
 export default function Checklist({
-    domaine,
-    sections,
-    userEventIds,
-    handleUserEventIdsChange,
-    userUuid,
+  domaine,
+  sections,
+  userEventIds,
+  handleUserEventIdsChange,
+  userUuid,
 }: {
-    domaine: Domaine;
-    sections: onboardingChecklistSchemaType;
-    userEventIds: string[];
-    handleUserEventIdsChange: (eventIds: string[]) => void;
-    userUuid: string;
+  domaine: Domaine;
+  sections: onboardingChecklistSchemaType;
+  userEventIds: string[];
+  handleUserEventIdsChange: (eventIds: string[]) => void;
+  userUuid: string;
 }) {
-    const isVisible = (domaines?: string[]) => {
-        if (!domaines) return true;
-        return domaines.includes(domaine);
-    };
-    const onChange = async (e, field_id) => {
-        const value = e.target.checked;
-        if (userEventIds.includes(field_id) && !value) {
-            handleUserEventIdsChange(
-                [...userEventIds].filter(
-                    (userEventId) => userEventId !== field_id
-                )
-            );
-        } else if (!userEventIds.includes(field_id) && value) {
-            handleUserEventIdsChange([...userEventIds, field_id]);
-        }
-        const res = await safeUpdateUserEvent({
-            action_on_user_id: userUuid,
-            field_id,
-            value,
-        });
-        if (!res.success) {
-            console.error(res);
-        }
-    };
+  const isVisible = (domaines?: string[]) => {
+    if (!domaines) return true;
+    return domaines.includes(domaine);
+  };
+  const onChange = async (e, field_id) => {
+    const value = e.target.checked;
+    if (userEventIds.includes(field_id) && !value) {
+      handleUserEventIdsChange(
+        [...userEventIds].filter((userEventId) => userEventId !== field_id),
+      );
+    } else if (!userEventIds.includes(field_id) && value) {
+      handleUserEventIdsChange([...userEventIds, field_id]);
+    }
+    const res = await safeUpdateUserEvent({
+      action_on_user_id: userUuid,
+      field_id,
+      value,
+    });
+    if (!res.success) {
+      console.error(res);
+    }
+  };
 
-    return (
-        <div>
-            {sections.map((section, i) => {
-                if (!isVisible(section.domaines)) return null;
+  return (
+    <div>
+      {sections.map((section, i) => {
+        if (!isVisible(section.domaines)) return null;
 
-                return (
-                    <Checkbox
-                        key={i}
-                        legend={<h2>{section.title}</h2>}
-                        options={section.items.map((item, index) => ({
-                            label: (
-                                <span
-                                    dangerouslySetInnerHTML={{
-                                        __html: mdParser.renderInline(
-                                            item.title
-                                        ),
-                                    }}
-                                />
-                            ),
-                            nativeInputProps: {
-                                name: `checkboxes-${index}`,
-                                value: item.id,
-                                disabled: item.disabled,
-                                defaultChecked:
-                                    item.defaultValue ||
-                                    userEventIds.includes(item.id),
-                                onChange: (e) => onChange(e, item.id),
-                            },
-                        }))}
-                    />
-                );
-            })}
-        </div>
-    );
+        return (
+          <Checkbox
+            key={i}
+            legend={<h2>{section.title}</h2>}
+            options={section.items.map((item, index) => ({
+              label: (
+                <span
+                  dangerouslySetInnerHTML={{
+                    __html: mdParser.renderInline(item.title),
+                  }}
+                />
+              ),
+              nativeInputProps: {
+                name: `checkboxes-${index}`,
+                value: item.id,
+                disabled: item.disabled,
+                defaultChecked:
+                  item.defaultValue || userEventIds.includes(item.id),
+                onChange: (e) => onChange(e, item.id),
+              },
+            }))}
+          />
+        );
+      })}
+    </div>
+  );
 }

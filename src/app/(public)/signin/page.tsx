@@ -7,15 +7,15 @@ import { authOptions } from "@/utils/authoptions";
 import { routeTitles } from "@/utils/routes/routeTitles";
 
 export const metadata: Metadata = {
-    title: `${routeTitles.signIn()} / Espace Membre`,
+  title: `${routeTitles.signIn()} / Espace Membre`,
 };
 
 export default async function SignIn() {
-    const session = await getServerSession(authOptions);
+  const session = await getServerSession(authOptions);
 
-    if (session && session.user.id) {
-        return redirect("/dashboard");
-    }
+  if (session && session.user.id) {
+    return redirect("/dashboard");
+  }
 
-    return <SignClientPage></SignClientPage>;
+  return <SignClientPage></SignClientPage>;
 }

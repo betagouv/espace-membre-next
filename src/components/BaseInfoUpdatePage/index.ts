@@ -1,1 +1,1 @@
-export * from './BaseInfoUpdate';
+export * from "./BaseInfoUpdate";

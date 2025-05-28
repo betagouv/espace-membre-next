@@ -12,78 +12,78 @@ import { authOptions } from "@/utils/authoptions";
 import { routeTitles } from "@/utils/routes/routeTitles";
 
 type Props = {
-    params: { id: string };
+  params: { id: string };
 };
 
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
-    // read route params
-    const id = params.id;
-    const incubator = await getIncubator(id);
+  // read route params
+  const id = params.id;
+  const incubator = await getIncubator(id);
 
-    return {
-        title: `${routeTitles.incubatorDetailsEdit(
-            incubator?.title
-        )} / Espace Membre`,
-    };
+  return {
+    title: `${routeTitles.incubatorDetailsEdit(
+      incubator?.title,
+    )} / Espace Membre`,
+  };
 }
 
 export default async function Page(props: Props) {
-    const session = await getServerSession(authOptions);
+  const session = await getServerSession(authOptions);
 
-    if (!session) {
-        redirect("/login");
-    }
-    const uuid = props.params.id;
-    const dbIncubator = await getIncubator(uuid);
+  if (!session) {
+    redirect("/login");
+  }
+  const uuid = props.params.id;
+  const dbIncubator = await getIncubator(uuid);
 
-    if (!dbIncubator) {
-        redirect("/incubators");
-    }
+  if (!dbIncubator) {
+    redirect("/incubators");
+  }
 
-    const startups = await db.selectFrom("startups").selectAll().execute();
+  const startups = await db.selectFrom("startups").selectAll().execute();
 
-    const sponsors = await db.selectFrom("organizations").selectAll().execute();
+  const sponsors = await db.selectFrom("organizations").selectAll().execute();
 
-    const s3LogoKey = `incubators/${dbIncubator.ghid}/logo.jpg`;
-    let hasLogo = false;
-    try {
-        const s3Object = await s3
-            .getObject({
-                Key: s3LogoKey,
-            })
-            .promise();
-        hasLogo = true;
-    } catch (error) {
-        console.log("No image for user");
-    }
-    const logoURL = hasLogo
-        ? `/api/image?fileObjIdentifier=${dbIncubator.ghid}&fileRelativeObjType=incubator&fileIdentifier=logo`
-        : undefined;
-    const incubator = incubatorToModel(dbIncubator);
-    const componentProps = {
-        incubator,
-        sponsorOptions: sponsors.map((incubator) => {
-            return {
-                value: incubator.uuid,
-                label: incubator.name,
-            };
-        }),
-        startupOptions: (startups || []).map((startup) => {
-            return {
-                value: startup.uuid,
-                label: startup.name,
-            };
-        }),
-        logoURL,
-    };
+  const s3LogoKey = `incubators/${dbIncubator.ghid}/logo.jpg`;
+  let hasLogo = false;
+  try {
+    const s3Object = await s3
+      .getObject({
+        Key: s3LogoKey,
+      })
+      .promise();
+    hasLogo = true;
+  } catch (error) {
+    console.log("No image for user");
+  }
+  const logoURL = hasLogo
+    ? `/api/image?fileObjIdentifier=${dbIncubator.ghid}&fileRelativeObjType=incubator&fileIdentifier=logo`
+    : undefined;
+  const incubator = incubatorToModel(dbIncubator);
+  const componentProps = {
+    incubator,
+    sponsorOptions: sponsors.map((incubator) => {
+      return {
+        value: incubator.uuid,
+        label: incubator.name,
+      };
+    }),
+    startupOptions: (startups || []).map((startup) => {
+      return {
+        value: startup.uuid,
+        label: startup.name,
+      };
+    }),
+    logoURL,
+  };
 
-    return (
-        <>
-            <BreadCrumbFiller
-                currentPage={incubator.title}
-                currentItemId={incubator.uuid}
-            />
-            <IncubatorUpdate {...componentProps} />
-        </>
-    );
+  return (
+    <>
+      <BreadCrumbFiller
+        currentPage={incubator.title}
+        currentItemId={incubator.uuid}
+      />
+      <IncubatorUpdate {...componentProps} />
+    </>
+  );
 }

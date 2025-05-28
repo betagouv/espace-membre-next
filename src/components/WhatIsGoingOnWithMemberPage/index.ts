@@ -1,1 +1,1 @@
-export * from './WhatIsGoingOnWithMember';
+export * from "./WhatIsGoingOnWithMember";

@@ -12,42 +12,42 @@ import { authOptions } from "@/utils/authoptions";
 import { routeTitles } from "@/utils/routes/routeTitles";
 
 export const metadata: Metadata = {
-    title: `${routeTitles.accountEditBaseInfo()} / Espace Membre`,
+  title: `${routeTitles.accountEditBaseInfo()} / Espace Membre`,
 };
 
 export default async function Page() {
-    const session = await getServerSession(authOptions);
+  const session = await getServerSession(authOptions);
 
-    if (!session) {
-        redirect("/login");
-    }
-    const username = session.user.id;
-    const dbData = await getUserInfos({ username });
-    const userInfos = userInfosToModel(dbData);
-    const s3Key = `members/${username}/avatar.jpg`;
+  if (!session) {
+    redirect("/login");
+  }
+  const username = session.user.id;
+  const dbData = await getUserInfos({ username });
+  const userInfos = userInfosToModel(dbData);
+  const s3Key = `members/${username}/avatar.jpg`;
 
-    const startups = await getAllStartups();
-    const startupOptions = startups.map((startup) => ({
-        value: startup.uuid,
-        label: startup.name || "",
-    }));
-    if (!userInfos) {
-        redirect("/errors");
-    }
+  const startups = await getAllStartups();
+  const startupOptions = startups.map((startup) => ({
+    value: startup.uuid,
+    label: startup.name || "",
+  }));
+  if (!userInfos) {
+    redirect("/errors");
+  }
 
-    const changes = await getEventListByUsername(username);
+  const changes = await getEventListByUsername(username);
 
-    const props = {
-        changes: changes.map((change) => memberChangeToModel(change)),
-        formData: {
-            member: {
-                ...userInfos,
-            },
-        },
-        profileURL: await getAvatarUrl(username),
-        username,
-        startupOptions,
-    };
+  const props = {
+    changes: changes.map((change) => memberChangeToModel(change)),
+    formData: {
+      member: {
+        ...userInfos,
+      },
+    },
+    profileURL: await getAvatarUrl(username),
+    username,
+    startupOptions,
+  };
 
-    return <BaseInfoUpdate {...props} />;
+  return <BaseInfoUpdate {...props} />;
 }

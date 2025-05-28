@@ -7,25 +7,25 @@ import { authOptions } from "@/utils/authoptions";
 import { routeTitles } from "@/utils/routes/routeTitles";
 
 export const metadata: Metadata = {
-    title: `${routeTitles.login()} / Espace Membre`,
+  title: `${routeTitles.login()} / Espace Membre`,
 };
 
 async function Login({
-    searchParams,
+  searchParams,
 }: {
-    searchParams: { [key: string]: string };
+  searchParams: { [key: string]: string };
 }) {
-    let session;
-    try {
-        session = await getServerSession(authOptions);
-    } catch (e) {
-        // pass
-    }
-    if (session && session.user.id) {
-        return redirect("/dashboard");
-    }
+  let session;
+  try {
+    session = await getServerSession(authOptions);
+  } catch (e) {
+    // pass
+  }
+  if (session && session.user.id) {
+    return redirect("/dashboard");
+  }
 
-    return <LoginPage />;
+  return <LoginPage />;
 }
 
 export default Login;

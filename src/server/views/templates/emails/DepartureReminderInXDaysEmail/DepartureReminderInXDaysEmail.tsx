@@ -1,15 +1,16 @@
 import { MjmlText } from "@luma-team/mjml-react";
-import { StandardLayout } from "@/components/emails/layouts/StandardEmail";
-import { EmailEndingContract } from "@/server/modules/email";
 import { format } from "date-fns";
 import { fr } from "date-fns/locale/fr";
 
+import { StandardLayout } from "@/components/emails/layouts/StandardEmail";
+import { EmailEndingContract } from "@/server/modules/email";
+
 export function DepartureReminderInXDaysEmailTitle({
-  days
+  days,
 }: {
   days: EmailEndingContract["variables"]["days"];
-}){
-  return `Départ dans ${days} jours 🙂`
+}) {
+  return `Départ dans ${days} jours 🙂`;
 }
 
 export function DepartureReminderInXDaysEmail({
@@ -17,7 +18,7 @@ export function DepartureReminderInXDaysEmail({
   endDate,
   jobs,
   days,
-}: EmailEndingContract["variables"] ) {
+}: EmailEndingContract["variables"]) {
   const title = DepartureReminderInXDaysEmailTitle({ days });
   const leavingDate = format(endDate, "dd MMMM yyyy", { locale: fr });
 
@@ -26,7 +27,10 @@ export function DepartureReminderInXDaysEmail({
       <MjmlText>
         <h1>Bonjour {user.userInfos.fullname} !</h1>
 
-        <p>Ta date de fin de mission est indiquée le {leavingDate}, dans {days} jours.</p>
+        <p>
+          Ta date de fin de mission est indiquée le {leavingDate}, dans {days}{" "}
+          jours.
+        </p>
 
         <p>
           Si cette date a changé, mets-la à jour pour rester membre de la
@@ -35,8 +39,7 @@ export function DepartureReminderInXDaysEmail({
         </p>
         <p>
           En général, ta nouvelle date de fin doit correspondre à la date du
-          prochain comité d'investissement de ton produit (dans 6 mois
-          maximum).
+          prochain comité d'investissement de ton produit (dans 6 mois maximum).
         </p>
         <p>
           Pour mettre à jour ta date de fin de mission, tu peux :
@@ -56,9 +59,7 @@ export function DepartureReminderInXDaysEmail({
         </p>
         <p>
           Si tu n'y arrives pas, un membre de ton équipe pourra sans doute
-          t'aider.
-        Sinon, n'hésite pas à poser tes questions sur Mattermost
-          dans{" "}
+          t'aider. Sinon, n'hésite pas à poser tes questions sur Mattermost dans{" "}
           <a href="https://mattermost.incubateur.net/betagouv/channels/incubateur-help">
             ~incubateur-help
           </a>{" "}

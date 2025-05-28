@@ -3,103 +3,103 @@ import { getServerSession } from "next-auth";
 
 import { updateMember } from "../updateMember";
 import {
-    getUserBasicInfo,
-    getUserInfos,
-    updateUser,
+  getUserBasicInfo,
+  getUserInfos,
+  updateUser,
 } from "@/lib/kysely/queries/users";
 import { MattermostUser, getUserByEmail, searchUsers } from "@/lib/mattermost";
 import {
-    memberInfoUpdateSchemaType,
-    memberInfoUpdateSchema,
-    memberValidateInfoSchema,
+  memberInfoUpdateSchemaType,
+  memberInfoUpdateSchema,
+  memberValidateInfoSchema,
 } from "@/models/actions/member";
 import { EmailStatusCode } from "@/models/member";
 import betagouv from "@/server/betagouv";
 import config from "@/server/config";
 import {
-    isPublicServiceEmail,
-    isAdminEmail,
-    userInfos,
+  isPublicServiceEmail,
+  isAdminEmail,
+  userInfos,
 } from "@/server/controllers/utils";
 import { authOptions } from "@/utils/authoptions";
-import { AdminEmailNotAllowedError, withHttpErrorHandling } from "@/utils/error";
+import {
+  AdminEmailNotAllowedError,
+  withHttpErrorHandling,
+} from "@/utils/error";
 
 const getMattermostUserInfo = async (
-    dbUser
+  dbUser,
 ): Promise<{
-    mattermostUser: MattermostUser | null;
-    mattermostUserInTeamAndActive: boolean;
+  mattermostUser: MattermostUser | null;
+  mattermostUserInTeamAndActive: boolean;
 }> => {
-    try {
-        let mattermostUser = dbUser?.primary_email
-            ? await getUserByEmail(dbUser.primary_email).catch((e) => null)
-            : null;
-        const [mattermostUserInTeamAndActive] = dbUser?.primary_email
-            ? await searchUsers({
-                  term: dbUser.primary_email,
-                  team_id: config.mattermostTeamId,
-                  allow_inactive: false,
-              }).catch((e) => [])
-            : [];
-        return {
-            mattermostUser,
-            mattermostUserInTeamAndActive,
-        };
-    } catch (e) {
-        Sentry.captureException(e);
-        return {
-            mattermostUser: null,
-            mattermostUserInTeamAndActive: false,
-        };
-    }
+  try {
+    let mattermostUser = dbUser?.primary_email
+      ? await getUserByEmail(dbUser.primary_email).catch((e) => null)
+      : null;
+    const [mattermostUserInTeamAndActive] = dbUser?.primary_email
+      ? await searchUsers({
+          term: dbUser.primary_email,
+          team_id: config.mattermostTeamId,
+          allow_inactive: false,
+        }).catch((e) => [])
+      : [];
+    return {
+      mattermostUser,
+      mattermostUserInTeamAndActive,
+    };
+  } catch (e) {
+    Sentry.captureException(e);
+    return {
+      mattermostUser: null,
+      mattermostUserInTeamAndActive: false,
+    };
+  }
 };
 
 async function validateMemberHandler(
-    req: Request,
-    { params: { username } }: { params: { username: string } }
+  req: Request,
+  { params: { username } }: { params: { username: string } },
 ) {
-    const session = await getServerSession(authOptions);
+  const session = await getServerSession(authOptions);
 
-    if (!session || session.user.id !== username) {
-        throw new Error(`You don't have the right to access this function`);
-    }
-    const memberData = memberValidateInfoSchema.parse(await req.json());
+  if (!session || session.user.id !== username) {
+    throw new Error(`You don't have the right to access this function`);
+  }
+  const memberData = memberValidateInfoSchema.parse(await req.json());
 
-    const hasPublicServiceEmail = await isPublicServiceEmail(
-        memberData.secondary_email
-    );
-    if (hasPublicServiceEmail && isAdminEmail(memberData.secondary_email)) {
-        throw new AdminEmailNotAllowedError();
-    }
-    updateMember(
-        memberData,
-        session.user.uuid,
-        {
-            primary_email: hasPublicServiceEmail
-                ? memberData.secondary_email
-                : null,
-            secondary_email: hasPublicServiceEmail
-                ? null
-                : memberData.secondary_email,
-            primary_email_status: hasPublicServiceEmail
-                ? EmailStatusCode.EMAIL_ACTIVE
-                : EmailStatusCode.EMAIL_CREATION_WAITING,
-        },
-        session.user.id
-    );
+  const hasPublicServiceEmail = await isPublicServiceEmail(
+    memberData.secondary_email,
+  );
+  if (hasPublicServiceEmail && isAdminEmail(memberData.secondary_email)) {
+    throw new AdminEmailNotAllowedError();
+  }
+  updateMember(
+    memberData,
+    session.user.uuid,
+    {
+      primary_email: hasPublicServiceEmail ? memberData.secondary_email : null,
+      secondary_email: hasPublicServiceEmail
+        ? null
+        : memberData.secondary_email,
+      primary_email_status: hasPublicServiceEmail
+        ? EmailStatusCode.EMAIL_ACTIVE
+        : EmailStatusCode.EMAIL_CREATION_WAITING,
+    },
+    session.user.id,
+  );
 
-    const dbUser = await getUserInfos({
-        username,
-        options: { withDetails: true },
-    });
+  const dbUser = await getUserInfos({
+    username,
+    options: { withDetails: true },
+  });
 
-    return Response.json({
-        message: `Success`,
-        data: dbUser,
-    });
-
+  return Response.json({
+    message: `Success`,
+    data: dbUser,
+  });
 }
-export const PUT = withHttpErrorHandling(validateMemberHandler)
+export const PUT = withHttpErrorHandling(validateMemberHandler);
 
 // export async function GET(
 //     req: Request,

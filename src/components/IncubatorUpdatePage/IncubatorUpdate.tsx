@@ -7,8 +7,8 @@ import * as Sentry from "@sentry/nextjs";
 import { IncubatorForm } from "../IncubatorForm/IncubatorForm";
 import { ActionResponse } from "@/@types/serverAction";
 import {
-    safeUpdateIncubator,
-    updateIncubator,
+  safeUpdateIncubator,
+  updateIncubator,
 } from "@/app/api/incubators/actions/updateIncubator";
 import { incubatorUpdateSchemaType } from "@/models/actions/incubator";
 import { incubatorSchemaType } from "@/models/incubator";
@@ -18,80 +18,78 @@ import { saveImage } from "@/utils/file";
 import { routeTitles } from "@/utils/routes/routeTitles";
 
 interface IncubatorUpdateProps {
-    incubator: incubatorSchemaType;
-    sponsorOptions: Option[];
-    startupOptions: Option[];
-    logoURL?: string;
+  incubator: incubatorSchemaType;
+  sponsorOptions: Option[];
+  startupOptions: Option[];
+  logoURL?: string;
 }
 
 /* Pure component */
 export const IncubatorUpdate = (props: IncubatorUpdateProps) => {
-    const css = ".panel { overflow: hidden; width: auto; min-height: 100vh; }";
+  const css = ".panel { overflow: hidden; width: auto; min-height: 100vh; }";
 
-    const save = async (
-        data: incubatorUpdateSchemaType
-    ): Promise<ActionResponse> => {
-        try {
-            const res = await safeUpdateIncubator({
-                incubator: data.incubator,
-                incubatorUuid: props.incubator.uuid,
-            });
-            if (res.success) {
-                if (data.logo) {
-                    saveImage({
-                        fileIdentifier: "logo",
-                        fileRelativeObjType: "incubator",
-                        fileObjIdentifier: data.incubator.ghid,
-                        file: data.logo,
-                    });
-                }
-
-                if (data.shouldDeleteLogo) {
-                    await fetch("/api/image", {
-                        method: "DELETE",
-                        headers: {
-                            "Content-Type": "application/json",
-                        },
-                        body: JSON.stringify({
-                            fileObjIdentifier: res.data.ghid,
-                            fileIdentifer: "hero",
-                            fileRelativeObjType: "startup",
-                        }),
-                    });
-                }
-            }
-            window.scrollTo({ top: 20, behavior: "smooth" });
-            return res;
-        } catch (e) {
-            Sentry.captureException(e);
-            console.error(e);
-            window.scrollTo({ top: 20, behavior: "smooth" });
-            throw e;
+  const save = async (
+    data: incubatorUpdateSchemaType,
+  ): Promise<ActionResponse> => {
+    try {
+      const res = await safeUpdateIncubator({
+        incubator: data.incubator,
+        incubatorUuid: props.incubator.uuid,
+      });
+      if (res.success) {
+        if (data.logo) {
+          saveImage({
+            fileIdentifier: "logo",
+            fileRelativeObjType: "incubator",
+            fileObjIdentifier: data.incubator.ghid,
+            file: data.logo,
+          });
         }
-    };
 
-    // console.log("formData", props.formData);
+        if (data.shouldDeleteLogo) {
+          await fetch("/api/image", {
+            method: "DELETE",
+            headers: {
+              "Content-Type": "application/json",
+            },
+            body: JSON.stringify({
+              fileObjIdentifier: res.data.ghid,
+              fileIdentifer: "hero",
+              fileRelativeObjType: "startup",
+            }),
+          });
+        }
+      }
+      window.scrollTo({ top: 20, behavior: "smooth" });
+      return res;
+    } catch (e) {
+      Sentry.captureException(e);
+      console.error(e);
+      window.scrollTo({ top: 20, behavior: "smooth" });
+      throw e;
+    }
+  };
 
-    return (
-        <>
-            <div className={fr.cx("fr-mb-5w")}>
-                <h1>
-                    {routeTitles.incubatorDetailsEdit(props.incubator.title)}
-                </h1>
+  // console.log("formData", props.formData);
 
-                <div className="beta-banner"></div>
+  return (
+    <>
+      <div className={fr.cx("fr-mb-5w")}>
+        <h1>{routeTitles.incubatorDetailsEdit(props.incubator.title)}</h1>
 
-                {(props.incubator && (
-                    <IncubatorForm
-                        save={save}
-                        logoURL={props.logoURL}
-                        incubator={props.incubator}
-                        startupOptions={props.startupOptions}
-                        sponsorOptions={props.sponsorOptions}
-                    />
-                )) || <>Loading...</>}
-            </div>
-            <style media="screen">{css}</style>
-        </>
-    );
+        <div className="beta-banner"></div>
+
+        {(props.incubator && (
+          <IncubatorForm
+            save={save}
+            logoURL={props.logoURL}
+            incubator={props.incubator}
+            startupOptions={props.startupOptions}
+            sponsorOptions={props.sponsorOptions}
+          />
+        )) || <>Loading...</>}
+      </div>
+      <style media="screen">{css}</style>
+    </>
+  );
 };

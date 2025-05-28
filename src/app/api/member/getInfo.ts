@@ -10,62 +10,62 @@ import { SERVICES } from "@/models/services";
 import betagouv from "@/server/betagouv";
 
 export const getUserInformations = async (id) => {
-    // informations needed
-    const dbUser = await getUserBasicInfo({ username: id });
-    if (!dbUser) {
-        return null;
-    }
-    const changes = (await getEventListByUsername(id)).map(memberChangeToModel);
+  // informations needed
+  const dbUser = await getUserBasicInfo({ username: id });
+  if (!dbUser) {
+    return null;
+  }
+  const changes = (await getEventListByUsername(id)).map(memberChangeToModel);
 
-    const avatar = await getAvatarUrl(dbUser.username);
+  const avatar = await getAvatarUrl(dbUser.username);
 
-    const baseInfo = memberBaseInfoToModel(dbUser);
+  const baseInfo = memberBaseInfoToModel(dbUser);
 
-    let { mattermostUser, mattermostUserInTeamAndActive } =
-        await getMattermostUserInfo(dbUser?.primary_email);
-    const startups = await getUserStartups(dbUser.uuid);
+  let { mattermostUser, mattermostUserInTeamAndActive } =
+    await getMattermostUserInfo(dbUser?.primary_email);
+  const startups = await getUserStartups(dbUser.uuid);
 
-    const mattermostInfo = {
-        hasMattermostAccount: !!mattermostUser,
-        isInactiveOrNotInTeam: !mattermostUserInTeamAndActive,
-        mattermostUserName: mattermostUser && mattermostUser.username,
-    };
+  const mattermostInfo = {
+    hasMattermostAccount: !!mattermostUser,
+    isInactiveOrNotInTeam: !mattermostUserInTeamAndActive,
+    mattermostUserName: mattermostUser && mattermostUser.username,
+  };
 
-    const matomoInfo = await db
-        .selectFrom("service_accounts")
-        .selectAll()
-        .where("user_id", "=", dbUser.uuid)
-        .where("account_type", "=", SERVICES.MATOMO)
-        .executeTakeFirst()
-        .then((account) => {
-            if (account) {
-                return matomoServiceInfoToModel(account);
-            }
-        });
+  const matomoInfo = await db
+    .selectFrom("service_accounts")
+    .selectAll()
+    .where("user_id", "=", dbUser.uuid)
+    .where("account_type", "=", SERVICES.MATOMO)
+    .executeTakeFirst()
+    .then((account) => {
+      if (account) {
+        return matomoServiceInfoToModel(account);
+      }
+    });
 
-    const sentryInfo = await db
-        .selectFrom("service_accounts")
-        .selectAll()
-        .where("user_id", "=", dbUser.uuid)
-        .where("account_type", "=", SERVICES.SENTRY)
-        .executeTakeFirst()
-        .then((account) => {
-            if (account) {
-                return sentryServiceInfoToModel(account);
-            }
-        });
+  const sentryInfo = await db
+    .selectFrom("service_accounts")
+    .selectAll()
+    .where("user_id", "=", dbUser.uuid)
+    .where("account_type", "=", SERVICES.SENTRY)
+    .executeTakeFirst()
+    .then((account) => {
+      if (account) {
+        return sentryServiceInfoToModel(account);
+      }
+    });
 
-    const emailResponder = await betagouv.getResponder(id);
+  const emailResponder = await betagouv.getResponder(id);
 
-    return {
-        id,
-        changes,
-        avatar,
-        baseInfo,
-        startups,
-        mattermostInfo,
-        matomoInfo,
-        sentryInfo,
-        emailResponder,
-    };
+  return {
+    id,
+    changes,
+    avatar,
+    baseInfo,
+    startups,
+    mattermostInfo,
+    matomoInfo,
+    sentryInfo,
+    emailResponder,
+  };
 };

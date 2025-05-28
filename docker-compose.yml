@@ -1,29 +1,29 @@
 services:
-    db:
-        image: postgres:14.6
-        environment:
-            POSTGRES_USER: secretariat
-            POSTGRES_PASSWORD: secretariat
-        ports:
-            - "5432:5432"
-    maildev:
-        image: maildev/maildev:1.1.0
-        environment:
-            MAILDEV_INCOMING_USER: mailuser
-            MAILDEV_INCOMING_PASS: mailpassword
-        ports:
-            - "1080:80"
-            - "11025:25"
-    web:
-        build: .
-        depends_on:
-            - db
-            - maildev
-        env_file:
-            - .env
-        ports:
-            - "8100:8100"
-            - "9229:9229" # node debug port
-        volumes:
-            - .:/app
-            - /app/node_modules
+  db:
+    image: postgres:14.6
+    environment:
+      POSTGRES_USER: secretariat
+      POSTGRES_PASSWORD: secretariat
+    ports:
+      - "5432:5432"
+  maildev:
+    image: maildev/maildev:1.1.0
+    environment:
+      MAILDEV_INCOMING_USER: mailuser
+      MAILDEV_INCOMING_PASS: mailpassword
+    ports:
+      - "1080:80"
+      - "11025:25"
+  web:
+    build: .
+    depends_on:
+      - db
+      - maildev
+    env_file:
+      - .env
+    ports:
+      - "8100:8100"
+      - "9229:9229" # node debug port
+    volumes:
+      - .:/app
+      - /app/node_modules

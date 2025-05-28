@@ -1,6 +1,6 @@
-import { config } from 'dotenv';
+import { config } from "dotenv";
 
-import { deleteRedirectionsAfterQuitting } from '@schedulers/userContractEndingScheduler';
+import { deleteRedirectionsAfterQuitting } from "@schedulers/userContractEndingScheduler";
 
 config();
 

@@ -1,8 +1,8 @@
 export const usertypes = [
-    "particulier",
-    "association",
-    "entreprise",
-    "etat",
-    "collectivite-territoriale",
-    "etablissement-scolaire",
+  "particulier",
+  "association",
+  "entreprise",
+  "etat",
+  "collectivite-territoriale",
+  "etablissement-scolaire",
 ];

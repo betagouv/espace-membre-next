@@ -3,18 +3,18 @@ import { sendEmail } from "@/server/config/email.config";
 import { EMAIL_TYPES } from "@modules/email";
 
 const sendTemplateEmail = async () => {
-    await sendEmail({
-        toEmail: [config.senderEmail],
-        type: EMAIL_TYPES.EMAIL_NEW_MEMBER_PR,
-        forceTemplate: true,
-        variables: {
-            startup: "Ma.startup",
-            isEmailBetaAsked: false,
-            name: "Jean",
-            prUrl: "http://beta.gouv.fr",
-        },
-    });
+  await sendEmail({
+    toEmail: [config.senderEmail],
+    type: EMAIL_TYPES.EMAIL_NEW_MEMBER_PR,
+    forceTemplate: true,
+    variables: {
+      startup: "Ma.startup",
+      isEmailBetaAsked: false,
+      name: "Jean",
+      prUrl: "http://beta.gouv.fr",
+    },
+  });
 };
 sendTemplateEmail().then(() => {
-    console.log("Done");
+  console.log("Done");
 });

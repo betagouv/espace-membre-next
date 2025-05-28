@@ -9,26 +9,26 @@ import { userStartupToModel } from "@/models/mapper/startupMapper";
 import { authOptions } from "@/utils/authoptions";
 
 export default async function NewSentryPage() {
-    const session = await getServerSession(authOptions);
-    if (!session) {
-        redirect("/login");
-    }
+  const session = await getServerSession(authOptions);
+  if (!session) {
+    redirect("/login");
+  }
 
-    const startups = session.user.isAdmin
-        ? await getAllStartups()
-        : (await getUserStartupsActive(session.user.uuid)).map((startup) =>
-              userStartupToModel(startup)
-          );
+  const startups = session.user.isAdmin
+    ? await getAllStartups()
+    : (await getUserStartupsActive(session.user.uuid)).map((startup) =>
+        userStartupToModel(startup),
+      );
 
-    const startupOptions: StartupType[] = startups.map((startup) => ({
-        value: startup.uuid,
-        label: startup.name,
-    }));
+  const startupOptions: StartupType[] = startups.map((startup) => ({
+    value: startup.uuid,
+    label: startup.name,
+  }));
 
-    return (
-        <>
-            <h1>Ajouter un accès a une équipe sentry</h1>
-            <CreateSentryServiceForm startupOptions={startupOptions} />
-        </>
-    );
+  return (
+    <>
+      <h1>Ajouter un accès a une équipe sentry</h1>
+      <CreateSentryServiceForm startupOptions={startupOptions} />
+    </>
+  );
 }
