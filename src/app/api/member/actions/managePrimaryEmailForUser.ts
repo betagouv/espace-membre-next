@@ -39,12 +39,11 @@ export async function managePrimaryEmailForUser({
     if (!user.authorizations.canChangeEmails && !session.user.isAdmin) {
         throw new AuthorizationError();
     }
-    const primaryEmailIsPublicServiceEmail = await isPublicServiceEmail(
-        primaryEmail
-    );
+    const primaryEmailIsPublicServiceEmail =
+        await isPublicServiceEmail(primaryEmail);
     if (!primaryEmailIsPublicServiceEmail) {
         throw new BusinessError(
-            `L'email renseigné n'est pas un email de service public`
+            `L'email renseigné n'est pas un email de service public`,
         );
     }
     if (isAdminEmail(primaryEmail)) {
@@ -58,7 +57,7 @@ export async function managePrimaryEmailForUser({
             await mattermost.getUserByEmail(primaryEmail);
         } catch {
             throw new BusinessError(
-                `L'email n'existe pas dans mattermost, pour utiliser cette adresse comme adresse principale ton compte mattermost doit aussi utiliser cette adresse.`
+                `L'email n'existe pas dans mattermost, pour utiliser cette adresse comme adresse principale ton compte mattermost doit aussi utiliser cette adresse.`,
             );
         }
     }
@@ -67,11 +66,11 @@ export async function managePrimaryEmailForUser({
         await betagouv.createRedirection(
             user.userInfos.primary_email,
             primaryEmail,
-            false
+            false,
         );
         try {
             await betagouv.deleteEmail(
-                user.userInfos.primary_email.split("@")[0]
+                user.userInfos.primary_email.split("@")[0],
             );
         } catch (e) {
             console.log(e, "Email is possibly already deleted");

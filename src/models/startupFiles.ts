@@ -19,7 +19,7 @@ export const docComiteDataSchema = z.object({
                 errorMap: (issue, ctx) => ({
                     message: "Champ obligatoire",
                 }),
-            })
+            }),
         )
         .describe("Date du comité d'investissement"),
     contenu: z

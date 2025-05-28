@@ -20,7 +20,7 @@ interface StartupInfoCreateProps {
 /* Pure component */
 export const StartupInfoCreate = (props: StartupInfoCreateProps) => {
     const save = async (
-        data: startupInfoUpdateSchemaType
+        data: startupInfoUpdateSchemaType,
     ): Promise<ActionResponse> => {
         try {
             const res = await safeCreateStartup({

@@ -1,9 +1,8 @@
 import Accordion from "@codegouvfr/react-dsfr/Accordion";
-import { Table } from "@codegouvfr/react-dsfr/Table";
 import { fr } from "@codegouvfr/react-dsfr/fr";
+import { Table } from "@codegouvfr/react-dsfr/Table";
 
 import { memberBaseInfoSchemaType } from "@/models/member";
-
 import { getLastMissionDate, getFirstMissionDate } from "@/utils/member";
 
 export function MemberTable({
@@ -25,13 +24,13 @@ export function MemberTable({
                     member.role,
                     getFirstMissionDate(
                         member.missions.filter((mission) =>
-                            (mission.startups || []).includes(startup_id)
-                        )
+                            (mission.startups || []).includes(startup_id),
+                        ),
                     ) || "",
                     getLastMissionDate(
                         member.missions.filter((mission) =>
-                            (mission.startups || []).includes(startup_id)
-                        )
+                            (mission.startups || []).includes(startup_id),
+                        ),
                     ) || "",
                 ])}
             headers={["Nom", "Role", "Date d'arrivée", "Date de fin"]}
@@ -44,16 +43,16 @@ export const StartupMembers = ({ startupInfos, members }) => {
         member.missions.find(
             (m) =>
                 m.startups?.includes(startupInfos.uuid) &&
-                (!m.end || m.end >= new Date())
-        )
+                (!m.end || m.end >= new Date()),
+        ),
     );
     const previousMembers = members.filter((member) =>
         member.missions.find(
             (m) =>
                 m.startups?.includes(startupInfos.uuid) &&
                 m.end &&
-                m.end < new Date()
-        )
+                m.end < new Date(),
+        ),
     );
     return (
         <>

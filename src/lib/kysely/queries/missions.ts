@@ -7,7 +7,7 @@ import { db as database, jsonArrayFrom } from "@/lib/kysely";
 
 export async function deleteMission(
     uuid: string,
-    db: Kysely<DB> | Transaction<DB> = database
+    db: Kysely<DB> | Transaction<DB> = database,
 ) {
     return db.deleteFrom("missions").where("uuid", "=", uuid).execute();
 }
@@ -16,7 +16,7 @@ export async function createMission(
     mission: InsertExpression<DB, "missions"> & {
         startups?: string[] | undefined;
     },
-    db: Kysely<DB> | Transaction<DB> = database
+    db: Kysely<DB> | Transaction<DB> = database,
 ) {
     // Insert or update the mission and return the mission ID
     const query = async (trx) => {
@@ -57,7 +57,7 @@ export async function updateMission(
     mission: UpdateObjectExpression<DB, "missions", "missions"> & {
         startups?: string[] | undefined;
     },
-    db: Kysely<DB> | Transaction<DB>
+    db: Kysely<DB> | Transaction<DB>,
 ): Promise<number> {
     const query = async (trx: Transaction<DB>) => {
         // Insert or update the mission and return the mission ID

@@ -12,24 +12,24 @@ export async function addUsersNotInCommunityToCommunityTeam() {
     //   await getMattermostUsersActiveGithubUsersNotInTeam(config.mattermostTeamId);
     const mattermostUsers: MattermostUser[] =
         await getMattermostUsersActiveGithubUsersInTeam(
-            config.mattermostAlumniTeamId
+            config.mattermostAlumniTeamId,
         );
     let userCount = 0;
     console.log(
         "Log mattermost users not in community",
-        mattermostUsers.length
+        mattermostUsers.length,
     );
     for (const mattermostUser of mattermostUsers) {
         try {
             await mattermost.addUserToTeam(
                 mattermostUser.id,
-                config.mattermostTeamId
+                config.mattermostTeamId,
             );
             userCount += 1;
         } catch (e) {
             console.error(
                 `Impossible d'inviter l'utilisateur ${mattermostUser.username} à la team communauté`,
-                e
+                e,
             );
         }
     }

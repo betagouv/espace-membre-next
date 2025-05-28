@@ -4,7 +4,11 @@ import { db } from "@/lib/kysely";
 import { brevoEmailEventDataSchema } from "@/models/brevoEvent";
 import { getSendEventForUser } from "@/server/infra/email/sendInBlue";
 import { authOptions } from "@/utils/authoptions";
-import { AdminAuthorizationError, AuthorizationError, withHttpErrorHandling } from "@/utils/error";
+import {
+    AdminAuthorizationError,
+    AuthorizationError,
+    withHttpErrorHandling,
+} from "@/utils/error";
 
 async function getBrevoEventsHandler(
     req: Request,
@@ -14,15 +18,15 @@ async function getBrevoEventsHandler(
         params: {
             username: string;
         };
-    }
+    },
 ) {
     const session = await getServerSession(authOptions);
 
     if (!session || !session.user.id) {
-        throw new AuthorizationError()
+        throw new AuthorizationError();
     }
     if (!session.user.isAdmin) {
-        throw new AdminAuthorizationError()
+        throw new AdminAuthorizationError();
     }
 
     const dbUser = await db
@@ -42,7 +46,7 @@ async function getBrevoEventsHandler(
         };
         try {
             resp.primary_email["events"] = await getSendEventForUser(
-                dbUser.primary_email
+                dbUser.primary_email,
             );
         } catch (e) {
             resp.primary_email["error"] = e;
@@ -56,7 +60,7 @@ async function getBrevoEventsHandler(
         };
         try {
             resp.secondary_email["events"] = await getSendEventForUser(
-                dbUser.secondary_email
+                dbUser.secondary_email,
             );
         } catch (e) {
             resp.secondary_email["error"] = e;
@@ -65,4 +69,4 @@ async function getBrevoEventsHandler(
     return Response.json(brevoEmailEventDataSchema.parse(resp));
 }
 
-export const GET = withHttpErrorHandling(getBrevoEventsHandler)
+export const GET = withHttpErrorHandling(getBrevoEventsHandler);

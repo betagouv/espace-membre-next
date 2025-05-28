@@ -16,7 +16,7 @@ export const WelcomeScreen = function ({
     const [isSaving, setIsSaving] = useState(false);
     const [understoodBox, setUnderstoodBox] = useState<boolean>(false);
     const [dsToken, setDSToken] = useState(
-        badgeRequest ? badgeRequest.ds_token : null
+        badgeRequest ? badgeRequest.ds_token : null,
     );
     function askForBadge() {
         if (isSaving) {

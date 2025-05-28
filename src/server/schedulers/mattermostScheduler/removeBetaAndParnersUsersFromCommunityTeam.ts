@@ -4,8 +4,7 @@ import { getAllUsersInfo } from "@/lib/kysely/queries/users";
 import { MattermostUser } from "@/lib/mattermost";
 import * as mattermost from "@/lib/mattermost";
 import { memberBaseInfoToModel } from "@/models/mapper";
-import { EmailStatusCode } from "@/models/member";
-import { memberBaseInfoSchemaType } from "@/models/member";
+import { EmailStatusCode, memberBaseInfoSchemaType } from "@/models/member";
 import config from "@/server/config";
 import * as utils from "@controllers/utils";
 import { sendInfoToChat } from "@infra/chat";
@@ -56,7 +55,7 @@ const MESSAGE_FOR_TYPE: Record<
     (user: MattermostUserWithStatus) => string
 > = {
     USER_IS_NOT_VALID: (
-        user: MattermostUserWithStatus
+        user: MattermostUserWithStatus,
     ) => `Bonjour ${user.first_name},
         Tu reçois ce message car ton email n'a pas un domaine valide pour accèder à l'espace Communauté de mattermost.
         Les emails valides sont ceux en @beta.gouv.fr, d'etalab et des services publics en général ainsi que ceux des attributaires.
@@ -71,22 +70,22 @@ const MESSAGE_FOR_TYPE: Record<
         Ceci est un message automatique envoyé par l'app Espace Membre.
     `,
     USER_HAS_EXPIRED_PRIMARY_EMAIL_BUT_NO_GITUB_INFO: function (
-        user: MattermostUserWithStatus
+        user: MattermostUserWithStatus,
     ): string {
         throw new Error("Function not implemented.");
     },
     USER_HAS_ACTIVE_PRIMARY_EMAIL: function (
-        user: MattermostUserWithStatus
+        user: MattermostUserWithStatus,
     ): string {
         throw new Error("Function not implemented.");
     },
     USER_IS_PARTNER_BUT_IS_EXPIRED: function (
-        user: MattermostUserWithStatus
+        user: MattermostUserWithStatus,
     ): string {
         throw new Error("Function not implemented.");
     },
     USER_HAS_PRIMARY_EMAIL_BUT_IS_EXPIRED: function (
-        user: MattermostUserWithStatus
+        user: MattermostUserWithStatus,
     ): string {
         return `Bonjour ${user.first_name},
 Tu reçois ce message car ta fiche membre beta.gouv.fr à une date de fin dépassée.
@@ -103,7 +102,7 @@ Ceci est un message automatique envoyé par l'app Espace Membre.
 `;
     },
     USER_HAS_ACTIVE_PRIMARY_EMAIL_BUT_IS_SUSPENDED: function (
-        user: MattermostUserWithStatus
+        user: MattermostUserWithStatus,
     ): string {
         return `Bonjour ${user.first_name},
 Tu reçois ce message car ta fiche membre beta.gouv.fr à une date de fin à jour, mais l'email lié a ton compte mattermost semble supprimé.
@@ -115,7 +114,7 @@ Ceci est un message automatique envoyé par l'app Espace Membre
     `;
     },
     USER_HAS_EXPIRED_PRIMARY_EMAIL_BUT_NO_EXPIRED_INFO: function (
-        user: MattermostUserWithStatus
+        user: MattermostUserWithStatus,
     ): string {
         return `Bonjour ${user.first_name},
 Tu reçois ce message car ta fiche membre beta.gouv.fr à une date de fin à jour, mais l'email lié a ton compte mattermost semble supprimé.
@@ -128,7 +127,7 @@ Ceci est un message automatique envoyé par l'app Espace Membre
     `;
     },
     USER_HAS_SUSPENDED_PRIMARY_EMAIL_BUT_NO_EXPIRED_INFO: function (
-        user: MattermostUserWithStatus
+        user: MattermostUserWithStatus,
     ): string {
         return `Bonjour ${user.first_name},
 Tu reçois ce message car ta fiche membre beta.gouv.fr à une date de fin à jour, mais l'email lié a ton compte mattermost semble suspendu.
@@ -141,27 +140,27 @@ Ceci est un message automatique envoyé par l'app Espace Membre.
     `;
     },
     USER_IS_VALID_WITH_ACTIVE_PRIMARY_EMAIL: function (
-        user: MattermostUserWithStatus
+        user: MattermostUserWithStatus,
     ): string {
         throw new Error("Function not implemented.");
     },
     USER_IS_VALID_WITH_DOMAIN: function (
-        user: MattermostUserWithStatus
+        user: MattermostUserWithStatus,
     ): string {
         throw new Error("Function not implemented.");
     },
     USER_IS_VALID_WITH_PARTNER: function (
-        user: MattermostUserWithStatus
+        user: MattermostUserWithStatus,
     ): string {
         throw new Error("Function not implemented.");
     },
     USER_HAS_ACTIVE_PRIMARY_EMAIL_BUT_NO_GITUB_INFO: function (
-        user: MattermostUserWithStatus
+        user: MattermostUserWithStatus,
     ): string {
         throw new Error("Function not implemented.");
     },
     USER_HAS_ACTIVE_PRIMARY_EMAIL_BUT_IS_EXPIRED: function (
-        user: MattermostUserWithStatus
+        user: MattermostUserWithStatus,
     ): string {
         return `Bonjour ${user.first_name},
 Tu reçois ce message car ta fiche membre beta.gouv.fr à une date de fin dépassée.
@@ -176,7 +175,7 @@ Ceci est un message automatique envoyé par l'app Espace Membre.
 `;
     },
     USER_HAS_PRIMARY_EMAIL_BUT_IS_SUSPENDED: function (
-        user: MattermostUserWithStatus
+        user: MattermostUserWithStatus,
     ): string {
         return `Bonjour ${user.first_name},
 Tu reçois ce message car ta fiche membre beta.gouv.fr à une date de fin dépassée.
@@ -201,7 +200,7 @@ export async function getMattermostUsersWithStatus({
     // let users = await getAllDBUsersAndMission();
     // Member in db
     const dbUsers = (await getAllUsersInfo()).map((user) =>
-        memberBaseInfoToModel(user)
+        memberBaseInfoToModel(user),
     );
     const dbuser_primary_emails = dbUsers
         .map((dbUser) => dbUser.primary_email)
@@ -209,7 +208,7 @@ export async function getMattermostUsersWithStatus({
     const dbuser_not_active_primary_emails = dbUsers
         .filter(
             (dbUser) =>
-                dbUser.primary_email_status !== EmailStatusCode.EMAIL_ACTIVE
+                dbUser.primary_email_status !== EmailStatusCode.EMAIL_ACTIVE,
         )
         .map((dbUser) => dbUser.primary_email)
         .filter((email) => email);
@@ -240,7 +239,7 @@ export async function getMattermostUsersWithStatus({
             if (dbuser_primary_emails.includes(mUser.email)) {
                 if (dbuser_not_active_primary_emails.includes(mUser.email)) {
                     dbUser = dbUsers.find(
-                        (dbUser) => dbUser.primary_email === mUser.email
+                        (dbUser) => dbUser.primary_email === mUser.email,
                     );
                     // memberInfo = users.find(
                     //     (user) => user.username === dbUser.username
@@ -273,7 +272,7 @@ export async function getMattermostUsersWithStatus({
                     }
                 } else {
                     dbUser = dbUsers.find(
-                        (dbUser) => dbUser.primary_email === mUser.email
+                        (dbUser) => dbUser.primary_email === mUser.email,
                     );
                     // memberInfo = users.find(
                     //     (user) => user.id === dbUser.username
@@ -308,7 +307,7 @@ export async function getMattermostUsersWithStatus({
             } else if (
                 validateAtLeastOneFormat(
                     mattermostEmailRegexException,
-                    mUser.email
+                    mUser.email,
                 )
             ) {
                 status = MattermostUserStatus.USER_IS_VALID_WITH_DOMAIN;
@@ -339,12 +338,10 @@ export async function getInvalidBetaAndParnersUsersFromCommunityTeam({
         nbDays,
     });
     const invalidUsers = mattermostUsersWithStatus.filter(
-        (m) => !MATTERMOST_ACTIVE_STATUS.includes(m.status)
+        (m) => !MATTERMOST_ACTIVE_STATUS.includes(m.status),
     );
     console.log(
-        `Mattermost user to remove from communauté ${JSON.stringify(
-            invalidUsers
-        )}`
+        `Mattermost user to remove from communauté ${JSON.stringify(invalidUsers)}`,
     );
 
     return invalidUsers;
@@ -404,11 +401,11 @@ export async function removeBetaAndParnersUsersFromCommunityTeam() {
             try {
                 await mattermost.addUserToTeam(
                     user.id,
-                    config.mattermostAlumniTeamId
+                    config.mattermostAlumniTeamId,
                 );
                 await mattermost.removeUserFromTeam(
                     user.id,
-                    config.mattermostTeamId
+                    config.mattermostTeamId,
                 );
             } catch (e) {
                 console.log(`Error while removing user ${user.id}`, e);

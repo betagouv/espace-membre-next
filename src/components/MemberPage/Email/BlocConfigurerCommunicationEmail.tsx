@@ -46,9 +46,8 @@ export default function BlocConfigurerCommunicationEmail({
                         onSubmit={async (e) => {
                             e.preventDefault();
                             setIsSaving(true);
-                            const res = await safeUpdateCommunicationEmail(
-                                value
-                            );
+                            const res =
+                                await safeUpdateCommunicationEmail(value);
                             setIsSaving(false);
                             if (res.success) {
                                 setAlertMessage({
@@ -76,7 +75,7 @@ export default function BlocConfigurerCommunicationEmail({
                                             CommunicationEmailCode.PRIMARY,
                                         onChange: () =>
                                             setValue(
-                                                CommunicationEmailCode.PRIMARY
+                                                CommunicationEmailCode.PRIMARY,
                                             ),
                                     },
                                 },
@@ -88,7 +87,7 @@ export default function BlocConfigurerCommunicationEmail({
                                             CommunicationEmailCode.SECONDARY,
                                         onChange: () =>
                                             setValue(
-                                                CommunicationEmailCode.SECONDARY
+                                                CommunicationEmailCode.SECONDARY,
                                             ),
                                     },
                                 },

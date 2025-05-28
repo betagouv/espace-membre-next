@@ -25,7 +25,7 @@ export async function verifyAuth(req: NextRequest) {
             new TextEncoder().encode(process.env.SESSION_SECRET!),
             {
                 algorithms: ["HS512"], // Assurez-vous que l'algorithme correspond à celui utilisé pour signer le token
-            }
+            },
         );
         return verified.payload as UserJwtPayload;
     } catch (err) {
@@ -45,7 +45,7 @@ const allowedOrigins = getArrayFromEnv("PROTECTED_API_ALLOWED_ORIGINS", [
         : [
               new RegExp(`https://.*\\.${origin}`),
               new RegExp(`https://${origin}`),
-          ]
+          ],
 );
 
 const corsOptions = {
@@ -56,7 +56,7 @@ const corsOptions = {
 function getCorsHeaders(req: NextRequest): Record<string, string> {
     const origin = req.headers.get("origin") ?? "";
     const isAllowedOrigin = allowedOrigins.some((allowedOrigin) =>
-        allowedOrigin.test(origin)
+        allowedOrigin.test(origin),
     );
 
     return {
@@ -78,20 +78,20 @@ export async function middleware(req: NextRequest) {
         if (!req.headers.has("X-Api-Key")) {
             return NextResponse.json(
                 { error: { message: "Api key is required." } },
-                { status: HttpStatusCode.UnprocessableEntity, headers }
+                { status: HttpStatusCode.UnprocessableEntity, headers },
             );
         }
         const apiKey = req.headers.get("X-Api-Key") ?? "";
         if (!PROTECTED_API_KEYS.includes(apiKey)) {
             return NextResponse.json(
                 { error: { message: "Invalid api key." } },
-                { status: HttpStatusCode.Unauthorized, headers }
+                { status: HttpStatusCode.Unauthorized, headers },
             );
         }
 
         const response = NextResponse.next();
         Object.entries(headers).forEach(([key, value]) =>
-            response.headers.set(key, value)
+            response.headers.set(key, value),
         );
         return response;
     }
@@ -108,14 +108,14 @@ export async function middleware(req: NextRequest) {
                 JSON.stringify({
                     error: { message: "authentication required" },
                 }),
-                { status: HttpStatusCode.Unauthorized }
+                { status: HttpStatusCode.Unauthorized },
             );
         }
         // otherwise, redirect to the set token page
         else {
             // /!\ redirecting to pathname as req.url always use localhost:3000 as hostname
             return NextResponse.redirect(
-                new URL(`/login?next=${req.nextUrl.pathname}`, req.url)
+                new URL(`/login?next=${req.nextUrl.pathname}`, req.url),
             );
         }
     }

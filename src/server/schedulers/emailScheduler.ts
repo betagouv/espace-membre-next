@@ -3,7 +3,6 @@ import { isAfter } from "date-fns/isAfter";
 import { isBefore } from "date-fns/isBefore";
 import _ from "lodash/array";
 
-import betagouv from "../betagouv";
 import { createEmail } from "../controllers/usersController/createEmailForUser";
 import { addEvent } from "@/lib/events";
 import { db } from "@/lib/kysely";
@@ -18,8 +17,8 @@ import {
     CommunicationEmailCode,
     EmailStatusCode,
     MemberType,
+    memberBaseInfoSchemaType,
 } from "@/models/member";
-import { memberBaseInfoSchemaType } from "@/models/member";
 import { OvhRedirection } from "@/models/ovh";
 import config from "@/server/config";
 import {
@@ -42,21 +41,21 @@ import { EMAIL_TYPES, MAILING_LIST_TYPE } from "@modules/email";
 
 const differenceGithubOVH = function differenceGithubOVH(
     user: memberBaseInfoSchemaType,
-    ovhAccountName: string
+    ovhAccountName: string,
 ) {
     return user.username === ovhAccountName;
 };
 
 const differenceGithubRedirectionOVH = function differenceGithubOVH(
     user: memberBaseInfoSchemaType,
-    ovhAccountName: string
+    ovhAccountName: string,
 ) {
     return utils.buildBetaRedirectionEmail(user.username) === ovhAccountName;
 };
 
 const getValidUsers = async () => {
     const githubUsers = (await getAllUsersInfo()).map((user) =>
-        memberBaseInfoToModel(user)
+        memberBaseInfoToModel(user),
     );
     return githubUsers.filter((x) => !utils.checkUserIsExpired(x));
 };
@@ -65,7 +64,7 @@ export async function setEmailAddressesActive() {
     const fiveMinutesInMs: number = 5 * 1000 * 60;
     const nowLessFiveMinutes: Date = new Date(Date.now() - fiveMinutesInMs);
     const dbUsers = (await getAllUsersInfo()).map((user) =>
-        memberBaseInfoToModel(user)
+        memberBaseInfoToModel(user),
     );
     const concernedUsers = dbUsers.filter(
         (user) =>
@@ -74,7 +73,7 @@ export async function setEmailAddressesActive() {
                 EmailStatusCode.EMAIL_CREATION_PENDING,
                 EmailStatusCode.EMAIL_RECREATION_PENDING,
             ].includes(user.primary_email_status) &&
-            user.primary_email_status_updated_at < nowLessFiveMinutes
+            user.primary_email_status_updated_at < nowLessFiveMinutes,
     );
     return Promise.all(
         concernedUsers.map(async (user) => {
@@ -95,10 +94,10 @@ export async function setEmailAddressesActive() {
                             ? user.secondary_email
                             : user.primary_email) as string,
                         firstname: utils.capitalizeWords(
-                            user?.username?.split(".")[0]
+                            user?.username?.split(".")[0],
                         ),
                         lastname: utils.capitalizeWords(
-                            user.username.split(".")[1]
+                            user.username.split(".")[1],
                         ),
                         domaine: user.domaine,
                     },
@@ -116,7 +115,7 @@ export async function setEmailAddressesActive() {
                 },
             });
             await setEmailActive(user.username);
-        })
+        }),
     );
 }
 
@@ -124,7 +123,7 @@ export async function setCreatedEmailRedirectionsActive() {
     const fiveMinutesInMs: number = 5 * 1000 * 60;
     const nowLessFiveMinutes: Date = new Date(Date.now() - fiveMinutesInMs);
     const dbUsers = (await getAllUsersInfo()).map((user) =>
-        memberBaseInfoToModel(user)
+        memberBaseInfoToModel(user),
     );
     const concernedUsers = dbUsers.filter(
         (user) =>
@@ -132,7 +131,7 @@ export async function setCreatedEmailRedirectionsActive() {
             user.primary_email_status ===
                 EmailStatusCode.EMAIL_REDIRECTION_PENDING &&
             user.primary_email_status_updated_at < nowLessFiveMinutes &&
-            user.email_is_redirection === true
+            user.email_is_redirection === true,
     );
 
     return Promise.all(
@@ -155,10 +154,10 @@ export async function setCreatedEmailRedirectionsActive() {
                                 ? user.secondary_email
                                 : user.primary_email) as string,
                             firstname: utils.capitalizeWords(
-                                user.username.split(".")[0]
+                                user.username.split(".")[0],
                             ),
                             lastname: utils.capitalizeWords(
-                                user.username.split(".")[1]
+                                user.username.split(".")[1],
                             ),
                             domaine: user.domaine,
                         },
@@ -169,13 +168,13 @@ export async function setCreatedEmailRedirectionsActive() {
                 email: user.primary_email as string,
             });
             await setEmailRedirectionActive(user.username);
-        })
+        }),
     );
 }
 
 export async function createRedirectionEmailAdresses() {
     const dbUsers = (await getAllUsersInfo()).map((user) =>
-        memberBaseInfoToModel(user)
+        memberBaseInfoToModel(user),
     );
     const concernedUsers = dbUsers.filter(
         (user) =>
@@ -183,7 +182,7 @@ export async function createRedirectionEmailAdresses() {
             user.primary_email_status ===
                 EmailStatusCode.EMAIL_CREATION_WAITING &&
             user.email_is_redirection &&
-            user.secondary_email
+            user.secondary_email,
     );
 
     const redirections: OvhRedirection[] = await BetaGouv.redirections();
@@ -193,21 +192,21 @@ export async function createRedirectionEmailAdresses() {
             ...(redirections.reduce(
                 (acc: string[], r) =>
                     !isBetaEmail(r.to) ? [...acc, r.from] : acc,
-                []
+                [],
             ) as []),
-        ])
+        ]),
     ).sort();
     let unregisteredMembers = _.differenceWith(
         concernedUsers,
         allOvhRedirectionEmails,
-        differenceGithubRedirectionOVH
+        differenceGithubRedirectionOVH,
     );
     console.log(
-        `Email creation : ${unregisteredMembers.length} unregistered user(s) in OVH (${allOvhRedirectionEmails.length} accounts in OVH. ${concernedUsers.length} accounts in Github).`
+        `Email creation : ${unregisteredMembers.length} unregistered user(s) in OVH (${allOvhRedirectionEmails.length} accounts in OVH. ${concernedUsers.length} accounts in Github).`,
     );
     unregisteredMembers = unregisteredMembers.map((member) => {
         const dbUser = dbUsers.find(
-            (dbUser) => dbUser.username === member.username
+            (dbUser) => dbUser.username === member.username,
         );
 
         // if (dbUser) {
@@ -217,9 +216,9 @@ export async function createRedirectionEmailAdresses() {
     });
     console.log(
         "User that should have redirection",
-        unregisteredMembers.map((u) => u.username)
+        unregisteredMembers.map((u) => u.username),
     );
-    // create email 
+    // create email
     return Promise.all(
         unregisteredMembers.map(async (member) => {
             if (
@@ -228,12 +227,12 @@ export async function createRedirectionEmailAdresses() {
             ) {
                 const email = utils.buildBetaRedirectionEmail(
                     member.username,
-                    "attr"
+                    "attr",
                 );
-                await betagouv.createRedirection(
+                await BetaGouv.createRedirection(
                     email,
                     member.secondary_email,
-                    false
+                    false,
                 );
                 const user = await db
                     .updateTable("users")
@@ -248,17 +247,17 @@ export async function createRedirectionEmailAdresses() {
                     .executeTakeFirst();
                 if (user) {
                     console.log(
-                        `Email redirection créée pour ${user.username}`
+                        `Email redirection créée pour ${user.username}`,
                     );
                 }
             }
-        })
+        }),
     );
 }
 
 export async function createEmailAddresses() {
     const dbUsers = (await getAllUsersInfo()).map((user) =>
-        memberBaseInfoToModel(user)
+        memberBaseInfoToModel(user),
     );
     const concernedUsers = dbUsers.filter(
         (user) =>
@@ -267,35 +266,36 @@ export async function createEmailAddresses() {
             user.primary_email_status ===
                 EmailStatusCode.EMAIL_CREATION_WAITING &&
             !user.email_is_redirection &&
-            user.secondary_email
+            user.secondary_email,
     );
 
     const allOvhEmails: string[] = await BetaGouv.getAllEmailInfos();
     const unregisteredUsers = _.differenceWith(
         concernedUsers,
         allOvhEmails,
-        differenceGithubOVH
+        differenceGithubOVH,
     );
     console.log(
-        `Email creation : ${unregisteredUsers.length} unregistered user(s) in OVH (${allOvhEmails.length} accounts in OVH. ${concernedUsers.length} accounts in Github).`
+        `Email creation : ${unregisteredUsers.length} unregistered user(s) in OVH (${allOvhEmails.length} accounts in OVH. ${concernedUsers.length} accounts in Github).`,
     );
 
     // create email
     return Promise.all(
         unregisteredUsers.map(async (user) => {
             await createEmail(user.username, "Secretariat cron");
-        })
+        }),
     );
 }
 
 export async function reinitPasswordEmail() {
     const users = (await getAllUsersInfo()).map((user) =>
-        memberBaseInfoToModel(user)
+        memberBaseInfoToModel(user),
     );
     const expiredUsers = utils
         .getExpiredUsers(users, 5)
         .filter(
-            (user) => user.primary_email_status === EmailStatusCode.EMAIL_ACTIVE
+            (user) =>
+                user.primary_email_status === EmailStatusCode.EMAIL_ACTIVE,
         );
 
     return Promise.all(
@@ -310,20 +310,20 @@ export async function reinitPasswordEmail() {
                 await BetaGouv.changePassword(
                     user.username,
                     newPassword,
-                    emailInfos?.emailPlan
+                    emailInfos?.emailPlan,
                 );
                 await setEmailSuspended(user.username);
                 console.log(
                     `Le mot de passe de ${
                         user.username
-                    } a été modifié car son contrat finissait le ${new Date()}.`
+                    } a été modifié car son contrat finissait le ${new Date()}.`,
                 );
             } catch (err) {
                 console.log(
-                    `Le mode de passe de ${user.username} n'a pas pu être modifié: ${err}`
+                    `Le mode de passe de ${user.username} n'a pas pu être modifié: ${err}`,
                 );
             }
-        })
+        }),
     );
 }
 
@@ -345,19 +345,19 @@ export async function subscribeEmailAddresses() {
     // );
 
     const allIncubateurSubscribers = await BetaGouv.getMailingListSubscribers(
-        config.incubateurMailingListName
+        config.incubateurMailingListName,
     );
     const unsubscribedUsers = concernedUsers
         .filter((concernedUser) => {
             return !allIncubateurSubscribers.find(
                 (email) =>
                     email.toLowerCase() ===
-                    concernedUser?.primary_email?.toLowerCase()
+                    concernedUser?.primary_email?.toLowerCase(),
             );
         })
         .filter((user) => user.primary_email);
     console.log(
-        `Email subscription : ${unsubscribedUsers.length} unsubscribed user(s) in incubateur mailing list.`
+        `Email subscription : ${unsubscribedUsers.length} unsubscribed user(s) in incubateur mailing list.`,
     );
 
     // create email
@@ -365,12 +365,12 @@ export async function subscribeEmailAddresses() {
         unsubscribedUsers.map(async (user) => {
             await BetaGouv.subscribeToMailingList(
                 config.incubateurMailingListName,
-                user.primary_email as string
+                user.primary_email as string,
             );
             console.log(
-                `Subscribe ${user.primary_email} to mailing list incubateur`
+                `Subscribe ${user.primary_email} to mailing list incubateur`,
             );
-        })
+        }),
     );
 }
 
@@ -395,18 +395,18 @@ export async function unsubscribeEmailAddresses() {
 
     const allIncubateurSubscribers: string[] =
         await BetaGouv.getMailingListSubscribers(
-            config.incubateurMailingListName
+            config.incubateurMailingListName,
         );
     const emails = allIncubateurSubscribers.filter((email) => {
         return concernedUsers.find(
             (concernedUser) =>
                 email.toLowerCase() ===
-                concernedUser?.primary_email?.toLowerCase()
+                concernedUser?.primary_email?.toLowerCase(),
         );
     });
 
     console.log(
-        `Email unsubscription : ${emails.length} subscribed user(s) in incubateur mailing list.`
+        `Email unsubscription : ${emails.length} subscribed user(s) in incubateur mailing list.`,
     );
 
     // create email
@@ -414,10 +414,10 @@ export async function unsubscribeEmailAddresses() {
         emails.map(async (email) => {
             await BetaGouv.unsubscribeFromMailingList(
                 config.incubateurMailingListName,
-                email
+                email,
             );
             console.log(`Unsubscribe ${email} from mailing list incubateur`);
-        })
+        }),
     );
 }
 
@@ -431,10 +431,9 @@ export async function unsubscribeEmailAddresses() {
 //         return dbUsers.find((x) => x.username === user.username);
 //     });
 
-
 export async function sendOnboardingVerificationPendingEmail() {
     const dbUsers = (await getAllUsersInfo()).map((user) =>
-        memberBaseInfoToModel(user)
+        memberBaseInfoToModel(user),
     );
     const now = new Date();
     const concernedUsers = dbUsers.filter(
@@ -442,10 +441,10 @@ export async function sendOnboardingVerificationPendingEmail() {
             user.missions.find(
                 (mission) =>
                     isAfter(now, mission.start ?? 0) &&
-                    isBefore(now, mission.end ?? Infinity)
+                    isBefore(now, mission.end ?? Infinity),
             ) &&
             user.primary_email_status ===
-                EmailStatusCode.EMAIL_VERIFICATION_WAITING
+                EmailStatusCode.EMAIL_VERIFICATION_WAITING,
     );
 
     concernedUsers.map(async (user) => {
@@ -455,32 +454,31 @@ export async function sendOnboardingVerificationPendingEmail() {
             .where(
                 "action_code",
                 "=",
-                EventCode.EMAIL_VERIFICATION_WAITING_SENT
+                EventCode.EMAIL_VERIFICATION_WAITING_SENT,
             )
             .where("action_on_username", "=", user.username)
             .executeTakeFirst();
         if (!event) {
+            const now = Date.now();
+            const token = randomBytes(32).toString("hex");
 
-            const now = Date.now()
-            const token = randomBytes(32).toString("hex")
-
-            const generateToken = await hashToken(token, config.secret)
+            const generateToken = await hashToken(token, config.secret);
             await createVerificationToken({
                 identifier: user.secondary_email,
                 expires: new Date(now + 1000 * 60 * 60 * 72),
                 token: generateToken,
-            })
+            });
             const url = new URL(`${getBaseUrl()}/signin`);
-            url.searchParams.set('callbackUrl', `${getBaseUrl()}/dashboard`)
-            url.searchParams.set('token', token)
-            url.searchParams.set('email', user.secondary_email)
+            url.searchParams.set("callbackUrl", `${getBaseUrl()}/dashboard`);
+            url.searchParams.set("token", token);
+            url.searchParams.set("email", user.secondary_email);
 
             await sendEmail({
                 type: EMAIL_TYPES.EMAIL_VERIFICATION_WAITING,
                 toEmail: [user.secondary_email],
                 variables: {
                     secondaryEmail: user.secondary_email,
-                    secretariatUrl:url.toString(),
+                    secretariatUrl: url.toString(),
                     fullname: user.fullname,
                 },
             });

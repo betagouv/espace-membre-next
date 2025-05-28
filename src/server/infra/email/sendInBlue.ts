@@ -118,12 +118,12 @@ export function createContact({
         function (data) {
             console.log(
                 "API called successfully. Returned data: " +
-                    JSON.stringify(data)
+                    JSON.stringify(data),
             );
         },
         function (error) {
             console.error(`Cannot add ${email}`, email);
-        }
+        },
     );
 }
 
@@ -152,13 +152,13 @@ async function createEmailCampaign(props) {
         function (data) {
             console.log(
                 "API called successfully. Returned data: " +
-                    JSON.stringify(data)
+                    JSON.stringify(data),
             );
             return data;
         },
         function (error) {
             console.error(error);
-        }
+        },
     );
 }
 
@@ -194,7 +194,7 @@ export const makeSendCampaignEmail = ({
                 if (!templateId) {
                     throw new BusinessError(
                         "noCampaignBrevoTemplateExists",
-                        `Il n'y a pas de template email brevo de campagne pour : ${type}`
+                        `Il n'y a pas de template email brevo de campagne pour : ${type}`,
                     );
                 }
             } else {
@@ -206,7 +206,7 @@ export const makeSendCampaignEmail = ({
                 } else {
                     throw new BusinessError(
                         "noCampaignTemplateExists",
-                        `Il n'y a pas de template email de campagne pour : ${type}`
+                        `Il n'y a pas de template email de campagne pour : ${type}`,
                     );
                 }
             }
@@ -234,7 +234,7 @@ export const makeSendCampaignEmail = ({
             },
             function (error) {
                 console.error(error);
-            }
+            },
         );
     };
 };
@@ -296,12 +296,12 @@ export async function importContactsToMailingLists({
         function (data) {
             console.log(
                 "API called successfully. Returned data: " +
-                    JSON.stringify(data)
+                    JSON.stringify(data),
             );
         },
         function (error) {
             console.error(error);
-        }
+        },
     );
     return null;
 }
@@ -319,7 +319,7 @@ export async function getSendEventForUser(email: string) {
         },
         function (error) {
             console.error(error);
-        }
+        },
     );
 }
 
@@ -336,7 +336,7 @@ export async function smtpBlockedContactsEmailDelete({
         },
         function (error) {
             console.error(error);
-        }
+        },
     );
 }
 
@@ -356,7 +356,7 @@ export async function unblacklistContactEmail({
         },
         function (error) {
             console.error(error);
-        }
+        },
     );
 }
 
@@ -443,7 +443,7 @@ export async function updateContactEmail({
         },
         function (error) {
             console.error(error);
-        }
+        },
     );
 }
 
@@ -463,12 +463,12 @@ export async function removeContactsFromMailingList({
         function (data) {
             console.log(
                 "API called successfully. Returned data: " +
-                    JSON.stringify(data)
+                    JSON.stringify(data),
             );
         },
         function (error) {
             console.error(error);
-        }
+        },
     );
 }
 
@@ -481,7 +481,7 @@ export async function getContactInfo({ email }: { email: string }) {
         },
         function (error) {
             // console.error(error);
-        }
+        },
     );
     return data;
 }
@@ -522,7 +522,7 @@ export async function getAllTransacBlockedContacts(
         startDate?: Date;
         endDate?: Date;
         senders?: string[];
-    } = {}
+    } = {},
 ): Promise<SIBContact[]> {
     const limit = 100;
 
@@ -563,7 +563,7 @@ export const makeSendEmail = ({
     const apiInstance = new SibApiV3Sdk.TransactionalEmailsApi();
 
     return async function sendEmailFromSendinblue(
-        props: SendEmailProps
+        props: SendEmailProps,
     ): Promise<null> {
         const {
             type,
@@ -586,7 +586,7 @@ export const makeSendEmail = ({
                 templateId = TEMPLATE_ID_BY_TYPE[type];
                 if (!templateId) {
                     return Promise.reject(
-                        new Error("Cannot find template for type " + type)
+                        new Error("Cannot find template for type " + type),
                     );
                 }
             } else {
@@ -596,7 +596,7 @@ export const makeSendEmail = ({
                 } as EmailVariants;
                 // const templateURL = htmlBuilder.templates[type]
                 html = await htmlBuilder.renderContentForType(
-                    paramsToRenderContent
+                    paramsToRenderContent,
                 );
                 subject =
                     props.subject ||

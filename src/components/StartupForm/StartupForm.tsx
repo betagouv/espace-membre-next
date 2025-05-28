@@ -162,7 +162,7 @@ export function StartupForm(props: StartupFormProps) {
         (props) => (
             <BasicFormInput register={register} errors={errors} {...props} />
         ),
-        [register, errors]
+        [register, errors],
     );
     const onSubmit = (data: startupInfoUpdateSchemaType, e) => {
         if (isSaving) {
@@ -527,33 +527,33 @@ export function StartupForm(props: StartupFormProps) {
                             */
                             const newSponsors = getValues("newSponsors");
                             const newSponsorIds = newSponsors.map(
-                                (s) => s.ghid
+                                (s) => s.ghid,
                             );
                             // if a new sponsor was created, but it is then removed by the user
                             // we new to remove it from newSponsor
                             const idsToDelete = _.difference(
                                 newSponsorIds,
-                                selectedSponsorIds
+                                selectedSponsorIds,
                             );
                             const updatedNewSponsors = newSponsors.filter(
                                 (newSponsor) =>
-                                    !idsToDelete.includes(newSponsor.ghid)
+                                    !idsToDelete.includes(newSponsor.ghid),
                             );
                             const updatedNewSponsorIds = updatedNewSponsors.map(
-                                (s) => s.ghid
+                                (s) => s.ghid,
                             );
                             // change startupSponsor with ids that are not newSponsorsIds
                             setValue(
                                 "startupSponsors",
                                 selectedSponsorIds.filter(
-                                    (id) => !updatedNewSponsorIds.includes(id)
-                                )
+                                    (id) => !updatedNewSponsorIds.includes(id),
+                                ),
                             );
                             // change newSonsors
                             setValue("newSponsors", updatedNewSponsors);
                         }}
                         setNewSponsors={(
-                            data: startupInfoUpdateSchemaType["newSponsors"]
+                            data: startupInfoUpdateSchemaType["newSponsors"],
                         ) => {
                             setValue("newSponsors", [...newSponsors, ...data], {
                                 shouldValidate: true,
@@ -633,7 +633,7 @@ export function StartupForm(props: StartupFormProps) {
                         onChange={(e) =>
                             setValue(
                                 "startup.accessibility_status",
-                                e.currentTarget.value || undefined
+                                e.currentTarget.value || undefined,
                             )
                         }
                     />

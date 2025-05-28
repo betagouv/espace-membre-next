@@ -21,7 +21,7 @@ interface SendEmailFromNodemailerDeps {
 }
 
 export const makeSendEmailNodemailer = (
-    deps: SendEmailFromNodemailerDeps
+    deps: SendEmailFromNodemailerDeps,
 ): SendEmail => {
     const {
         MAIL_DEBUG,
@@ -85,7 +85,7 @@ export const makeSendEmailNodemailer = (
         };
         return new Promise((resolve, reject) => {
             mailTransport.sendMail(mail, (error, info) =>
-                error ? reject(error) : resolve(info)
+                error ? reject(error) : resolve(info),
             );
         });
     };

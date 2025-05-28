@@ -14,7 +14,7 @@ import { NoDataError } from "@/utils/error";
 export const createSentryTeamTopic = "create-sentry-team";
 
 export async function createSentryTeam(
-    job: PgBoss.Job<CreateSentryTeamDataSchemaType>
+    job: PgBoss.Job<CreateSentryTeamDataSchemaType>,
 ) {
     console.log(`Create sentry team for ${job.data.email}`, job.id, job.name);
 

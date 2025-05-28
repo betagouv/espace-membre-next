@@ -84,7 +84,7 @@ function PasswordChange({ username }: { username: string }) {
                     severity: "info" as PasswordInputProps.Severity,
                 },
             ],
-        [alertMessage]
+        [alertMessage],
     );
     return (
         <form onSubmit={onSubmit}>

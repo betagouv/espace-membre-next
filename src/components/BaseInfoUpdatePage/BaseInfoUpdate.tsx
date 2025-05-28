@@ -24,8 +24,7 @@ import {
     memberInfoUpdateSchemaType,
     memberInfoUpdateSchema,
 } from "@/models/actions/member";
-import { statusOptions } from "@/models/member";
-import { DOMAINE_OPTIONS, memberSchema } from "@/models/member";
+import { statusOptions, DOMAINE_OPTIONS, memberSchema } from "@/models/member";
 import { PrivateMemberChangeSchemaType } from "@/models/memberChange";
 import { Option } from "@/models/misc";
 import routes, { computeRoute } from "@/routes/routes";
@@ -100,12 +99,12 @@ const postMemberData = async ({
     } = await axios.put(
         computeRoute(routes.ACCOUNT_POST_BASE_INFO_FORM).replace(
             ":username",
-            username
+            username,
         ),
         member,
         {
             withCredentials: true,
-        }
+        },
     );
     return { username, message };
 };
@@ -335,7 +334,10 @@ export const BaseInfoUpdate = (props: BaseInfoUpdateProps) => {
                         {isCurrentUser ? `Mes compétences` : `Compétences`}
                     </h2>
                     {isCurrentUser && (
-                        <label className="fr-label fr-mb-3w" htmlFor="competence-editor">
+                        <label
+                            className="fr-label fr-mb-3w"
+                            htmlFor="competence-editor"
+                        >
                             Aide les membres de la communauté à mieux
                             t'identifier en cas de besoin
                         </label>
@@ -417,7 +419,7 @@ export const BaseInfoUpdate = (props: BaseInfoUpdateProps) => {
                             ...register("member.tjm", {
                                 setValueAs: (
                                     // use this instead of valueAsNumber to handle undefined value
-                                    v
+                                    v,
                                 ) => (!v ? null : parseInt(v)),
                             }),
                             type: "number",
@@ -433,7 +435,7 @@ export const BaseInfoUpdate = (props: BaseInfoUpdateProps) => {
                             ...register("member.average_nb_of_days", {
                                 setValueAs: (
                                     // use this instead of valueAsNumber to handle undefined value
-                                    v
+                                    v,
                                 ) => (!v ? null : parseInt(v)),
                             }),
                             type: "number",

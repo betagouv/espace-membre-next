@@ -12,8 +12,8 @@ const AccessibilityBadge = ({ status }: { status?: string | null }) => {
         status === "totalement conforme"
             ? "success"
             : status === "partiellement conforme"
-            ? "info"
-            : "error";
+              ? "info"
+              : "error";
     return (
         <Badge severity={severity} as="span">
             {status || "inconnu"}
@@ -82,7 +82,11 @@ const TableStandards = ({ data, headers }) => {
     );
 };
 
-const BooleanBadge = ({ value, validText = "Actif", invalidText = "Absent" }) =>
+const BooleanBadge = ({
+    value,
+    validText = "Actif",
+    invalidText = "Absent",
+}) =>
     !!value ? (
         <Badge severity="success" as="span">
             {validText}
@@ -293,7 +297,7 @@ export const StartupStandards = ({
                                         value={true}
                                         validText="Partiellement"
                                     />
-                                )
+                                ),
                             )
                             .with("Refonte prévue", () => (
                                 <BooleanBadge

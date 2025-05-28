@@ -5,7 +5,6 @@ import PgBoss from "pg-boss";
 import { getMemberIfValidOrThrowError } from "./utils";
 import { getIncubator } from "@/lib/kysely/queries/incubators";
 import { getIncubatorTeamMembers } from "@/lib/kysely/queries/teams";
-import {} from "@/lib/kysely/queries/teams";
 import { getUserBasicInfo, getUserStartups } from "@/lib/kysely/queries/users";
 import {
     SendNewMemberValidationEmailSchema,
@@ -21,7 +20,7 @@ export const sendNewMemberValidationEmailTopic =
     "send-new-member-validation-email";
 
 export async function sendNewMemberValidationEmail(
-    job: PgBoss.Job<SendNewMemberValidationEmailSchemaType>
+    job: PgBoss.Job<SendNewMemberValidationEmailSchemaType>,
 ) {
     const data = SendNewMemberValidationEmailSchema.parse(job.data);
     const newMember = await getMemberIfValidOrThrowError(data.userId);
@@ -30,7 +29,7 @@ export async function sendNewMemberValidationEmail(
     const userStartups = (await getUserStartups(data.userId)).filter(
         (startup) => {
             return isBefore(now, startup.end ?? Infinity);
-        }
+        },
     );
 
     const startupIncubatorIds = userStartups
@@ -40,14 +39,14 @@ export async function sendNewMemberValidationEmail(
     const incubatorIds = Array.from(
         new Set(
             [data.incubator_id, ...startupIncubatorIds].filter(
-                (id): id is string => typeof id === "string"
-            )
-        )
+                (id): id is string => typeof id === "string",
+            ),
+        ),
     );
     if (!incubatorIds.length) {
         throw new BusinessError(
             "NewMemberDoesNotHaveIncubators",
-            `NewMember ${data.userId} is not linked to any incubators`
+            `NewMember ${data.userId} is not linked to any incubators`,
         );
     }
     for (const incubatorId of incubatorIds) {
@@ -55,29 +54,29 @@ export async function sendNewMemberValidationEmail(
         if (!incubator) {
             throw new BusinessError(
                 "incubatorDoesNotExist",
-                `The provided incubator id ${incubatorId} does not exist. Incubator might have been deleted`
+                `The provided incubator id ${incubatorId} does not exist. Incubator might have been deleted`,
             );
         }
         const membersForTeam = await getIncubatorTeamMembers(incubatorId);
         if (!membersForTeam.length) {
             throw new BusinessError(
                 "validationMemberListIsEmpty",
-                `There is no member in animation teams for incubator ${incubatorId}`
+                `There is no member in animation teams for incubator ${incubatorId}`,
             );
         }
         const memberEmails = Array.from(
             new Set(
                 membersForTeam
                     .map((m) => m.primary_email)
-                    .filter((email) => !!email)
-            )
+                    .filter((email) => !!email),
+            ),
         ) as string[];
         await sendEmail({
             toEmail: memberEmails,
             type: EMAIL_TYPES.EMAIL_NEW_MEMBER_VALIDATION,
             variables: {
                 startups: userStartups.map((startup) =>
-                    userStartupToModel(startup)
+                    userStartupToModel(startup),
                 ),
                 incubator: incubatorToModel(incubator),
                 userInfos: newMember,
@@ -85,7 +84,7 @@ export async function sendNewMemberValidationEmail(
             },
         });
         console.log(
-            `Validation email sent for new member ${newMember.fullname}`
+            `Validation email sent for new member ${newMember.fullname}`,
         );
     }
 }

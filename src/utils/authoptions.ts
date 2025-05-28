@@ -2,7 +2,9 @@ import jwt, { JwtPayload, VerifyOptions } from "jsonwebtoken";
 import { NextAuthOptions, User } from "next-auth";
 import EmailProvider from "next-auth/providers/email";
 import { v4 as uuidv4 } from "uuid";
+
 import customPostgresAdapter from "./pgAdpter";
+import { db } from "@/lib/kysely";
 import { getUserInfos } from "@/lib/kysely/queries/users";
 import { memberBaseInfoToModel } from "@/models/mapper";
 import config from "@/server/config";
@@ -11,7 +13,6 @@ import { sendEmail } from "@/server/config/email.config";
 import { checkUserIsExpired } from "@/server/controllers/utils";
 import { getJwtTokenForUser } from "@/server/helpers/session";
 import { EMAIL_TYPES } from "@/server/modules/email";
-import { db } from "@/lib/kysely";
 
 async function sendVerificationRequest(params) {
     const { identifier, url } = params;
@@ -86,11 +87,11 @@ export const authOptions: NextAuthOptions = {
                             headers: {
                                 Authorization: `Bearer ${tokens.access_token}`,
                             },
-                        }
+                        },
                     ).then((r) => r.text());
                     // User info returns a JWT token instead of a JSON object, we decode it
                     const userinfo = jwt.decode(
-                        userInfoRequest
+                        userInfoRequest,
                     ) as ProConnectProfile;
                     // ensure we have a related user
                     const dbUser = await db
@@ -100,12 +101,12 @@ export const authOptions: NextAuthOptions = {
                             eb.or([
                                 eb("primary_email", "=", userinfo.email),
                                 eb("secondary_email", "=", userinfo.email),
-                            ])
+                            ]),
                         )
                         .executeTakeFirst();
                     if (!dbUser) {
                         console.error(
-                            `ProConnect: no member found for ${userinfo.email}`
+                            `ProConnect: no member found for ${userinfo.email}`,
                         );
                         throw new Error("UnknownMember");
                     }
@@ -152,7 +153,7 @@ export const authOptions: NextAuthOptions = {
                 } catch (error) {
                     console.error(
                         "Erreur lors de la décodification du token:",
-                        error
+                        error,
                     );
                     return null;
                 }
@@ -172,7 +173,7 @@ export const authOptions: NextAuthOptions = {
                 });
                 if (!dbUser) {
                     console.error(
-                        `Il n'y a pas de fiche dans l'espace-membre pour cet email. Un membre de la communauté peut en créer une.`
+                        `Il n'y a pas de fiche dans l'espace-membre pour cet email. Un membre de la communauté peut en créer une.`,
                     );
                     throw new Error("UnknownMember");
                 }

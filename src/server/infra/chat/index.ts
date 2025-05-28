@@ -24,7 +24,7 @@ export const getAllChannels =
 
 export const getUserWithParams: (
     params?: any,
-    i?: number
+    i?: number,
 ) => Promise<MattermostUser[]> =
     process.env.NODE_ENV === "development"
         ? async (params, i) => {

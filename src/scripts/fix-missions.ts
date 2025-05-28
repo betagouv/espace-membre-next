@@ -28,7 +28,7 @@ const importData = async () => {
     const markdownData = await importFromZip();
     markdownData.authors.forEach(async (a) => {
         const missionStartups = uniq(
-            a.attributes.missions?.flatMap((m) => m.startups || []) || []
+            a.attributes.missions?.flatMap((m) => m.startups || []) || [],
         );
         const startups = a.attributes.startups || [];
         const previously = a.attributes.previously || [];
@@ -49,9 +49,9 @@ const importData = async () => {
                                         .where(
                                             "username",
                                             "=",
-                                            a.attributes.ghid
+                                            a.attributes.ghid,
                                         )
-                                        .select("uuid")
+                                        .select("uuid"),
                                 )
                                 .orderBy("end desc")
                                 .limit(1)

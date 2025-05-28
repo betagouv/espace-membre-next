@@ -31,7 +31,7 @@ const AccountDetails = ({
                         { status: ACCOUNT_SERVICE_STATUS.ACCOUNT_FOUND },
                         {
                             status: ACCOUNT_SERVICE_STATUS.ACCOUNT_INVITATION_PENDING,
-                        }
+                        },
                     ),
                     () => (
                         <>
@@ -72,7 +72,7 @@ const AccountDetails = ({
                                 </p>
                             )}
                         </>
-                    )
+                    ),
                 )
                 .with(
                     { status: ACCOUNT_SERVICE_STATUS.ACCOUNT_CREATION_PENDING },
@@ -83,7 +83,7 @@ const AccountDetails = ({
                             email quand ce sera bon..."
                             severity="info"
                         />
-                    )
+                    ),
                 )
                 .with(
                     { status: ACCOUNT_SERVICE_STATUS.ACCOUNT_INVITATION_SENT },
@@ -96,7 +96,7 @@ const AccountDetails = ({
                             closable={false}
                             severity="info"
                         />
-                    )
+                    ),
                 )
                 .exhaustive()}
         </>

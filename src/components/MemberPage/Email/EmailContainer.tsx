@@ -24,8 +24,8 @@ import {
     EmailInfos,
     memberSchemaType,
     memberWrapperSchemaType,
+    EmailStatusCode,
 } from "@/models/member";
-import { EmailStatusCode } from "@/models/member";
 import { EMAIL_STATUS_READABLE_FORMAT } from "@/models/misc";
 import { EMAIL_PLAN_TYPE, OvhRedirection, OvhResponder } from "@/models/ovh";
 
@@ -35,7 +35,7 @@ const EmailLink = ({ email }: { email: string }) => (
 
 const emailStatusRow = (
     emailInfos: NonNullable<MemberPageProps["emailInfos"]>,
-    userInfos: MemberPageProps["userInfos"]
+    userInfos: MemberPageProps["userInfos"],
 ) => {
     return [
         <>
@@ -49,7 +49,7 @@ const emailStatusRow = (
                     .with(EMAIL_PLAN_TYPE.EMAIL_PLAN_BASIC, () => "OVH MX")
                     .with(
                         EMAIL_PLAN_TYPE.EMAIL_PLAN_OPI,
-                        () => "Suite numérique"
+                        () => "Suite numérique",
                     )
                     .exhaustive()}
             </Badge>
@@ -82,7 +82,7 @@ const emailStatusRow = (
 };
 
 const emailSpamInfoRow = (
-    emailInfos: NonNullable<MemberPageProps["emailInfos"]>
+    emailInfos: NonNullable<MemberPageProps["emailInfos"]>,
 ) => {
     return [
         <>
@@ -206,7 +206,7 @@ function BlocEmailConfiguration({ emailInfos }: { emailInfos: EmailInfos }) {
 }
 
 const redirectionRow = (
-    redirection: NonNullable<MemberPageProps["redirections"][0]>
+    redirection: NonNullable<MemberPageProps["redirections"][0]>,
 ) => {
     return [
         <>
@@ -288,7 +288,7 @@ export default function EmailContainer({
                                     as="span"
                                     severity={
                                         infoStatus.includes(
-                                            userInfos.primary_email_status
+                                            userInfos.primary_email_status,
                                         )
                                             ? "info"
                                             : "error"
@@ -364,7 +364,7 @@ export default function EmailContainer({
                             .with(
                                 EmailStatusCode.EMAIL_CREATION_WAITING,
                                 EmailStatusCode.EMAIL_CREATION_PENDING,
-                                () => null
+                                () => null,
                             )
                             .otherwise(
                                 () =>
@@ -375,7 +375,7 @@ export default function EmailContainer({
                                             }
                                             userInfos={userInfos}
                                         />
-                                    )
+                                    ),
                             )}
 
                     {!!emailInfos && !isMailOPI && (

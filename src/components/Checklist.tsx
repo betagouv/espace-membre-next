@@ -39,8 +39,8 @@ export default function Checklist({
         if (userEventIds.includes(field_id) && !value) {
             handleUserEventIdsChange(
                 [...userEventIds].filter(
-                    (userEventId) => userEventId !== field_id
-                )
+                    (userEventId) => userEventId !== field_id,
+                ),
             );
         } else if (!userEventIds.includes(field_id) && value) {
             handleUserEventIdsChange([...userEventIds, field_id]);
@@ -69,7 +69,7 @@ export default function Checklist({
                                 <span
                                     dangerouslySetInnerHTML={{
                                         __html: mdParser.renderInline(
-                                            item.title
+                                            item.title,
                                         ),
                                     }}
                                 />

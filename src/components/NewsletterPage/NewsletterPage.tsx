@@ -21,7 +21,7 @@ const formatNewsletterTitle = (newsletter) => {
         "d MMMM yyyy",
         {
             locale: fr,
-        }
+        },
     );
 };
 
@@ -38,10 +38,7 @@ const formatNewsletter = (newsletter: newsletterSchemaType, isAdmin: boolean) =>
             target="_blank"
             title={`Lire${
                 newsletter.sent_at
-                    ? ` l'édition du ${format(
-                          newsletter.sent_at,
-                          "dd/MM/yyyy à HH:mm"
-                      )}`
+                    ? ` l'édition du ${format(newsletter.sent_at, "dd/MM/yyyy à HH:mm")}`
                     : ""
             } - ouvre une nouvelle fenêtre`}
         >
@@ -81,7 +78,7 @@ export default function NewsletterPage({
                                 Cette infolettre sera publiée le :{" "}
                                 {format(
                                     currentNewsletter.publish_at,
-                                    "dd/MM/yyyy à HH:mm"
+                                    "dd/MM/yyyy à HH:mm",
                                 )}
                             </p>
                         )}
@@ -108,7 +105,7 @@ export default function NewsletterPage({
                                     (currentNewsletter.publish_at &&
                                         `Lire l'édition du ${format(
                                             currentNewsletter.publish_at,
-                                            "dd/MM/yyyy à HH:mm"
+                                            "dd/MM/yyyy à HH:mm",
                                         )} - ouvre une nouvelle fenêtre`) ||
                                     `Lire la prochaine édition - ouvre une nouvelle fenêtre`
                                 }
@@ -133,7 +130,7 @@ export default function NewsletterPage({
                     )}
                     <Table
                         data={newsletters.map((n) =>
-                            formatNewsletter(n, !!session?.user.isAdmin)
+                            formatNewsletter(n, !!session?.user.isAdmin),
                         )}
                         headers={headers}
                     />

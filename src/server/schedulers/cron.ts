@@ -230,7 +230,8 @@ const formationJobs: EspaceMembreCronJobType[] = [
             "Synchronise les données AirTable des formations avec la DB",
     },
     {
-        cronTime: process.env.SYNC_FORMATION_INSCRIPTION_CRON_TIME || "0 0 * * *",
+        cronTime:
+            process.env.SYNC_FORMATION_INSCRIPTION_CRON_TIME || "0 0 * * *",
         onTick: () => syncFormationInscriptionFromAirtable(true),
         isActive: true,
         name: "SyncFormationInscriptionFromAirtable",

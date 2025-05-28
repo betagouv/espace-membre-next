@@ -31,11 +31,11 @@ const createUsername = (firstName, lastName) =>
 const isSessionUserMemberOfUserIncubatorTeams = async function (
     sessionUserUuid: string,
     userMissions: createMemberSchemaType["missions"],
-    incubator_id: createMemberSchemaType["incubator_id"]
+    incubator_id: createMemberSchemaType["incubator_id"],
 ): Promise<boolean> {
     const sessionUserIncubators = await getUserTeamsIncubators(sessionUserUuid);
     const sessionUserIncubatorIds = sessionUserIncubators.map(
-        (incubator) => incubator.uuid
+        (incubator) => incubator.uuid,
     );
     const userStartups = userMissions.flatMap((m) => m.startups || []);
     const startupIncubators = userStartups.length
@@ -74,7 +74,7 @@ export const POST = withHttpErrorHandling(async (req: Request) => {
         await isSessionUserMemberOfUserIncubatorTeams(
             session.user.uuid,
             missions,
-            incubator_id
+            incubator_id,
         );
     try {
         const userIsValidatedStraightAway =
@@ -102,7 +102,7 @@ export const POST = withHttpErrorHandling(async (req: Request) => {
                         ...mission,
                         user_id: user.uuid,
                     },
-                    trx
+                    trx,
                 );
             }
             return user;
@@ -119,7 +119,7 @@ export const POST = withHttpErrorHandling(async (req: Request) => {
                 {
                     retryLimit: 50,
                     retryBackoff: true,
-                }
+                },
             );
         }
         await addEvent({
@@ -141,7 +141,7 @@ export const POST = withHttpErrorHandling(async (req: Request) => {
     } catch (error: any) {
         if (
             error.message.includes(
-                "duplicate key value violates unique constraint"
+                "duplicate key value violates unique constraint",
             )
         ) {
             // Handle unique constraint violation

@@ -32,12 +32,12 @@ export async function deleteRedirectionForUser({
 
     if (!user.authorizations.canCreateRedirection) {
         throw new Error(
-            "Vous n'avez pas le droit de supprimer cette redirection."
+            "Vous n'avez pas le droit de supprimer cette redirection.",
         );
     }
 
     console.log(
-        `Suppression de la redirection by=${username}&to_email=${toEmail}`
+        `Suppression de la redirection by=${username}&to_email=${toEmail}`,
     );
 
     const secretariatUrl = `${config.protocol}://${config.host}`;

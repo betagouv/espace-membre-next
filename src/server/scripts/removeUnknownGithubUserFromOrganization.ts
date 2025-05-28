@@ -5,11 +5,10 @@ import config from "@/server/config";
 
 // get users that are members of organization but don't have matching github card
 const getUnknownGithubUsersInOrganization = async (org) => {
-    const allGithubOrganizationMembers = await github.getAllOrganizationMembers(
-        org
-    );
+    const allGithubOrganizationMembers =
+        await github.getAllOrganizationMembers(org);
     const users = (await getAllUsersInfo()).map((user) =>
-        memberBaseInfoToModel(user)
+        memberBaseInfoToModel(user),
     );
 
     const activeGithubUsers = users
@@ -27,7 +26,7 @@ const removeUnknownGithubUserFromOrganization = async () => {
 
     const unknownUsersInOrganization =
         await getUnknownGithubUsersInOrganization(
-            config.githubOrganizationName
+            config.githubOrganizationName,
         );
     console.log("List unknown users");
     if (process.env.featureRemoveUnknownUsers) {
@@ -36,17 +35,17 @@ const removeUnknownGithubUserFromOrganization = async () => {
                 try {
                     await github.removeUserByUsernameFromOrganization(
                         member.login,
-                        config.githubOrganizationName
+                        config.githubOrganizationName,
                     );
                     console.log(
-                        `Remove user ${member.github} from organization`
+                        `Remove user ${member.github} from organization`,
                     );
                 } catch (err) {
                     console.error(
-                        `Cannot remove user ${member.github} from organization ${config.githubOrganizationName}. Error : ${err}`
+                        `Cannot remove user ${member.github} from organization ${config.githubOrganizationName}. Error : ${err}`,
                     );
                 }
-            })
+            }),
         );
     }
 };

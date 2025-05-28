@@ -35,7 +35,7 @@ export async function updateMember(
               primary_email_status: EmailStatusCode;
           }
         | {} = {}, // quick hack to update primary_email,secondary_email and primary_email_status on verify
-    created_by_username: string
+    created_by_username: string,
 ) {
     // todo: auth
     const { missions, ...memberData } = data;
@@ -76,7 +76,7 @@ export async function updateMember(
                 ? missions.filter((m) => m.uuid).map((m) => m.uuid)
                 : [];
             const missionsToDelete = previousInfo.missions.filter(
-                (m) => !actualMissions.includes(m.uuid)
+                (m) => !actualMissions.includes(m.uuid),
             );
             for (let mission of missionsToDelete) {
                 await deleteMission(mission.uuid, trx);
@@ -91,7 +91,7 @@ export async function updateMember(
                             ...missionOtherData,
                             user_id: memberUuid,
                         },
-                        trx
+                        trx,
                     );
                 } else {
                     await createMission(
@@ -99,7 +99,7 @@ export async function updateMember(
                             ...mission,
                             user_id: memberUuid,
                         },
-                        trx
+                        trx,
                     );
                 }
             }

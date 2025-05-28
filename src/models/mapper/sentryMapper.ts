@@ -10,7 +10,7 @@ import { SentryUser, SentryUserAccess, SentryTeam } from "@/lib/sentry";
 export const sentryUserToModel = (
     sentryUser: SentryUser,
     userMetadata: SentryUserAccess,
-    allTeams: SentryTeam[]
+    allTeams: SentryTeam[],
 ): sentryUserSchemaType => {
     const teams: sentryUserSchemaType["metadata"]["teams"] = [];
 
@@ -19,15 +19,15 @@ export const sentryUserToModel = (
             const team = allTeams.find((team) => u.includes(team.slug));
             if (team) {
                 const role = userMetadata.teamRoles.find(
-                    (t) => t.teamSlug === team.slug
+                    (t) => t.teamSlug === team.slug,
                 )?.teamRole;
                 teams.push({
                     id: team.id,
                     role: role
                         ? role
                         : userMetadata.role === "admin"
-                        ? "admin"
-                        : "contributor",
+                          ? "admin"
+                          : "contributor",
                     slug: team.slug,
                     name: team.name,
                     memberCount: team.memberCount,
@@ -59,7 +59,7 @@ export const sentryUserToModel = (
 };
 
 export const sentryServiceInfoToModel = (
-    sentryUser: Selectable<ServiceAccounts>
+    sentryUser: Selectable<ServiceAccounts>,
 ): sentryUserSchemaType => {
     return {
         account_type: "sentry",
@@ -75,7 +75,7 @@ export const sentryServiceInfoToModel = (
 };
 
 export const sentryTeamToModel = (
-    sentryTeam: Selectable<SentryTeams>
+    sentryTeam: Selectable<SentryTeams>,
 ): sentryTeamSchemaType => {
     return {
         id: sentryTeam.id,

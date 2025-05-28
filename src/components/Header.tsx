@@ -44,7 +44,7 @@ const MainHeader = () => {
                         const signOutUrl = `${
                             process.env.NEXT_PUBLIC_PRO_CONNECT_BASE_URL
                         }/api/v2/session/end?id_token_hint=${idTokenHint}&state=${uuidv4()}&post_logout_redirect_uri=${encodeURIComponent(
-                            process.env.NEXT_PUBLIC_APP_BASE_URL || ""
+                            process.env.NEXT_PUBLIC_APP_BASE_URL || "",
                         )}/login`;
                         await signOut({
                             callbackUrl: "/login",
@@ -122,11 +122,11 @@ const MainHeader = () => {
                           hasPathnameThisRoot(pathname, incubatorListLink) ||
                           hasPathnameThisRoot(
                               pathname,
-                              linkRegistry.get("organizationList", undefined)
+                              linkRegistry.get("organizationList", undefined),
                           ) ||
                           hasPathnameThisRoot(
                               pathname,
-                              linkRegistry.get("teamList", undefined)
+                              linkRegistry.get("teamList", undefined),
                           ),
                       text: "Communauté",
                       menuLinks: [
@@ -134,28 +134,28 @@ const MainHeader = () => {
                               linkProps: {
                                   href: linkRegistry.get(
                                       "community",
-                                      undefined
+                                      undefined,
                                   ),
                               },
                               text: "Membres",
                               isActive: hasPathnameThisRoot(
                                   pathname,
-                                  communityLink
+                                  communityLink,
                               ),
                           },
                           {
                               linkProps: {
                                   href: linkRegistry.get(
                                       "organizationList",
-                                      undefined
+                                      undefined,
                                   ),
                               },
                               isActive: hasPathnameThisRoot(
                                   pathname,
                                   linkRegistry.get(
                                       "organizationList",
-                                      undefined
-                                  )
+                                      undefined,
+                                  ),
                               ),
                               text: "Sponsors",
                           },
@@ -166,7 +166,7 @@ const MainHeader = () => {
                               text: "Équipes incubateur",
                               isActive: hasPathnameThisRoot(
                                   pathname,
-                                  linkRegistry.get("teamList", undefined)
+                                  linkRegistry.get("teamList", undefined),
                               ),
                           },
                           {
@@ -175,7 +175,7 @@ const MainHeader = () => {
                               },
                               isActive: hasPathnameThisRoot(
                                   pathname,
-                                  incubatorListLink
+                                  incubatorListLink,
                               ),
                               text: "Incubateurs",
                           },
@@ -196,7 +196,7 @@ const MainHeader = () => {
                       text: "Formations",
                       isActive: hasPathnameThisRoot(
                           pathname,
-                          formationListLink
+                          formationListLink,
                       ),
                   },
                   {

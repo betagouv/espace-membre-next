@@ -28,7 +28,7 @@ import config from "@/server/config";
 import { authOptions } from "@/utils/authoptions";
 
 const buildLinkToSentryTeam = (
-    team: sentryUserSchemaType["metadata"]["teams"][0]
+    team: sentryUserSchemaType["metadata"]["teams"][0],
 ) => {
     return team.slug && team.name ? (
         <a
@@ -56,7 +56,7 @@ const getSentryTeamsForStartups = (startups) =>
         .where(
             "startup_id",
             "in",
-            startups.map((s) => s.uuid)
+            startups.map((s) => s.uuid),
         )
         .execute()
         .then((data) => data.map((d) => sentryTeamToModel(d)));
@@ -79,7 +79,7 @@ export default async function SentryRequestPage() {
 
     const rawAccount = await getServiceAccount(
         session.user.uuid,
-        SERVICES.SENTRY
+        SERVICES.SENTRY,
     );
     const service_account = rawAccount
         ? sentryServiceInfoToModel(rawAccount)
@@ -87,7 +87,7 @@ export default async function SentryRequestPage() {
 
     const now = new Date();
     const startups = (await getUserStartupsActive(session.user.uuid)).map(
-        (startup) => userStartupToModel(startup)
+        (startup) => userStartupToModel(startup),
     );
 
     let sentryTeams: sentryTeamSchemaType[] = [];
@@ -104,7 +104,7 @@ export default async function SentryRequestPage() {
         EventSentryAccountPayloadSchemaType[]
     > = {};
     for (const event of dbSentryEvents.filter(
-        (event) => event.action_metadata
+        (event) => event.action_metadata,
     )) {
         const action_metadata = hstore.parse(event.action_metadata);
         const eventObj = {
@@ -137,13 +137,13 @@ export default async function SentryRequestPage() {
     };
 
     const formatMetadata = (
-        data: EventSentryAccountPayloadSchemaType["action_metadata"]
+        data: EventSentryAccountPayloadSchemaType["action_metadata"],
     ) => {
         if ("teams" in data && data["teams"]?.length) {
             const siteObj = data["teams"].map((site) =>
                 sentryTeams.find(
-                    (sentrySite) => site.teamSlug === sentrySite.id
-                )
+                    (sentrySite) => site.teamSlug === sentrySite.id,
+                ),
             );
             return (
                 <>
@@ -188,7 +188,7 @@ export default async function SentryRequestPage() {
                 className={fr.cx(
                     "fr-grid-row",
                     "fr-grid-row--gutters",
-                    "fr-mb-2w"
+                    "fr-mb-2w",
                 )}
             >
                 <div
@@ -217,7 +217,7 @@ export default async function SentryRequestPage() {
                         data={Object.keys(eventDictionnary).map((event) => [
                             <>
                                 {formatMetadata(
-                                    eventDictionnary[event][0].action_metadata
+                                    eventDictionnary[event][0].action_metadata,
                                 )}
                             </>,
                             <>
@@ -250,7 +250,7 @@ export default async function SentryRequestPage() {
                             className={fr.cx(
                                 "fr-col-12",
                                 "fr-col-md-6",
-                                "fr-col-lg-6"
+                                "fr-col-lg-6",
                             )}
                         >
                             <Alert

@@ -104,7 +104,7 @@ export function NewsletterForm({ newsletter }: NewsletterFormProps) {
                             getValues("publish_at") ||
                             new Date(),
                         "d MMMM yyyy",
-                        { locale: dateFnsFr }
+                        { locale: dateFnsFr },
                     )}
                 </h3>
                 <form
@@ -126,12 +126,12 @@ export function NewsletterForm({ newsletter }: NewsletterFormProps) {
                                 type: "datetime-local",
                                 defaultValue: format(
                                     newsletter.publish_at || new Date(),
-                                    "yyyy-MM-dd'T'HH:mm"
+                                    "yyyy-MM-dd'T'HH:mm",
                                 ),
                                 onChange: (e) => {
                                     setValue(
                                         "publish_at",
-                                        new Date(e.target.value)
+                                        new Date(e.target.value),
                                     );
                                 },
                             }}

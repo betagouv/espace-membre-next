@@ -1,14 +1,13 @@
+import Table from "@codegouvfr/react-dsfr/Table";
 import Link from "next/link";
 
-import Table from "@codegouvfr/react-dsfr/Table";
-import { sponsorSchemaType } from "@/models/sponsor";
+import { BadgePhase } from "../../StartupPage/BadgePhase";
+import { FicheHeader } from "@/components/FicheHeader";
 import {
     getOrganizationStartups,
     getOrganizationIncubators,
 } from "@/lib/kysely/queries/organizations";
-
-import { BadgePhase } from "../../StartupPage/BadgePhase";
-import { FicheHeader } from "@/components/FicheHeader";
+import { sponsorSchemaType } from "@/models/sponsor";
 
 export interface OrganizationPageProps {
     organizationInfos: sponsorSchemaType;

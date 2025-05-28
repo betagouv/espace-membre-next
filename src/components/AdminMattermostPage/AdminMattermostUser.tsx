@@ -52,9 +52,9 @@ export const AdminMattermostUser = (props: CommunityProps) => {
             ...rows.map((row) =>
                 header
                     .map((fieldName) =>
-                        JSON.stringify(row[fieldName], replacer)
+                        JSON.stringify(row[fieldName], replacer),
                     )
-                    .join(";")
+                    .join(";"),
             ),
         ].join("\r\n");
 

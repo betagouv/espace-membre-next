@@ -1,9 +1,10 @@
 "use client";
 
+import { Table } from "@codegouvfr/react-dsfr/Table";
+
+import { StartupPageProps } from "./StartupPage";
 import { StartupPhase, PHASE_READABLE_NAME } from "@/models/startup";
 import { frenchSmallDate } from "@/utils/date";
-import { StartupPageProps } from "./StartupPage";
-import { Table } from "@codegouvfr/react-dsfr/Table";
 
 import "./timeline.css";
 
@@ -24,7 +25,7 @@ export const StartupHistory = ({
             <div className="startup-timeline">
                 {Object.keys(StartupPhase).map((phase) => {
                     const startupPhase = phases.find(
-                        (p) => p.name === StartupPhase[phase]
+                        (p) => p.name === StartupPhase[phase],
                     );
                     if (
                         (StartupPhase[phase] === "transfer" ||

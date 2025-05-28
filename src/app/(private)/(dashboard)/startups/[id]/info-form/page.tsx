@@ -33,9 +33,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
     const startup = await getStartup(query);
 
     return {
-        title: `${routeTitles.startupDetailsEdit(
-            startup?.name
-        )} / Espace Membre`,
+        title: `${routeTitles.startupDetailsEdit(startup?.name)} / Espace Membre`,
     };
 }
 
@@ -69,7 +67,7 @@ export default async function Page(props) {
                 .leftJoin(
                     "startups_organizations",
                     "organization_id",
-                    "organizations.uuid"
+                    "organizations.uuid",
                 )
                 .where("startup_id", "=", startup.uuid)
                 .select([
@@ -80,7 +78,7 @@ export default async function Page(props) {
                     "organizations.ghid",
                     "organizations.name",
                 ])
-                .execute()
+                .execute(),
         );
     const startupPhases = z
         .array(phaseSchema)
@@ -90,7 +88,7 @@ export default async function Page(props) {
                 .where("startup_id", "=", startup.uuid)
                 .orderBy("phases.start asc")
                 .selectAll()
-                .execute()
+                .execute(),
         );
     const startupEvents = z
         .array(eventSchema)
@@ -100,7 +98,7 @@ export default async function Page(props) {
                 .where("startup_events.startup_id", "=", startup.uuid)
                 .orderBy("startup_events.date asc")
                 .selectAll()
-                .execute()
+                .execute(),
         );
     const s3ShotKey = `startups/${startup.ghid}/shot.jpg`;
     let hasShot = false;

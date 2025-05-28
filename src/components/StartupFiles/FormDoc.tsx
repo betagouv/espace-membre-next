@@ -31,7 +31,7 @@ export const contenusTypes = [
 ];
 
 function isComiteSchema(
-    schema: z.AnyZodObject
+    schema: z.AnyZodObject,
 ): schema is typeof docComiteSchema {
     return (
         schema &&
@@ -44,7 +44,7 @@ function isComiteSchema(
 const docComiteSchema = docSchema.merge(
     z.object({
         data: docComiteDataSchema,
-    })
+    }),
 );
 export const FormDoc = ({
     file,
@@ -82,7 +82,7 @@ export const FormDoc = ({
     });
 
     const onFormSubmit: SubmitHandler<z.infer<typeof schema>> = async (
-        data
+        data,
     ) => {
         if (!isValid) {
             alert("Invalid form");
@@ -97,7 +97,7 @@ export const FormDoc = ({
         if (selectedContenu && selectedContenu.includes(newValue)) {
             setValue(
                 "data.contenu",
-                selectedContenu.filter((item) => item !== newValue)
+                selectedContenu.filter((item) => item !== newValue),
                 //  { shouldDirty: true }
             );
         } else {
@@ -169,7 +169,7 @@ export const FormDoc = ({
                                     nativeInputProps: {
                                         value: m.label,
                                         checked: selectedContenu.includes(
-                                            m.label
+                                            m.label,
                                         ),
                                         onChange: () =>
                                             handleCheckboxChange(m.label),

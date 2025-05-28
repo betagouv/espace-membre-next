@@ -53,8 +53,8 @@ export async function getOrganizationStartups(uuid: string) {
                             .selectFrom("phases")
                             .select(eb.fn.max("phases.start").as("max_start"))
                             .whereRef("phases.startup_id", "=", "startups.uuid")
-                            .limit(1)
-                    )
+                            .limit(1),
+                    ),
                 )
                 .orderBy("start", "desc")
                 .limit(1)
@@ -63,7 +63,7 @@ export async function getOrganizationStartups(uuid: string) {
         .leftJoin(
             "startups_organizations",
             "startups_organizations.startup_id",
-            "startups.uuid"
+            "startups.uuid",
         )
         .where("startups_organizations.organization_id", "=", uuid)
         .orderBy("name")

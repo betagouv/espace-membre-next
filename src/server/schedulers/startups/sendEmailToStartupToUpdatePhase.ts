@@ -11,7 +11,7 @@ import { sendEmail } from "@/server/config/email.config";
 import { EMAIL_TYPES } from "@modules/email";
 
 export const sendEmailToStartupToUpdatePhase = async (
-    startupsArg?: startupSchemaType[]
+    startupsArg?: startupSchemaType[],
 ) => {
     const startups =
         startupsArg ||
@@ -29,7 +29,7 @@ export const sendEmailToStartupToUpdatePhase = async (
         .where(
             "startup_id",
             "in",
-            startups.map((s) => s.uuid)
+            startups.map((s) => s.uuid),
         )
         .where("end", "is", null)
         .where("name", "in", ACTIVE_PHASES)
@@ -54,7 +54,7 @@ export const sendEmailToStartupToUpdatePhase = async (
                     startup: startup.name,
                     link: `https://espace-membre.incubateur.net/${routes.STARTUP_GET_INFO_UPDATE_FORM.replace(
                         ":startup",
-                        startup.uuid
+                        startup.uuid,
                     )}`,
                 },
                 forceTemplate: true,

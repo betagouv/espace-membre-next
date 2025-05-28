@@ -1,27 +1,27 @@
-import axios from 'axios';
+import axios from "axios";
 
 const makeDS = ({ DS_TOKEN }) => {
-  const getDSConfig = () => {
-    if (!DS_TOKEN) {
-      const errorMessage =
-        'Unable to launch ds api calls without env var DS_TOKEN';
-      console.error(errorMessage);
-      throw new Error(errorMessage);
-    }
-    return {
-      headers: {
-        Authorization: `Bearer ${DS_TOKEN}`,
-        'Content-Type': 'application/json',
-      },
+    const getDSConfig = () => {
+        if (!DS_TOKEN) {
+            const errorMessage =
+                "Unable to launch ds api calls without env var DS_TOKEN";
+            console.error(errorMessage);
+            throw new Error(errorMessage);
+        }
+        return {
+            headers: {
+                Authorization: `Bearer ${DS_TOKEN}`,
+                "Content-Type": "application/json",
+            },
+        };
     };
-  };
 
-  function getAllDossiersForDemarche(demarcheId) {
-    return axios
-      .post(
-        `https://www.demarches-simplifiees.fr/api/v2/graphql`,
-        JSON.stringify({
-          query: `
+    function getAllDossiersForDemarche(demarcheId) {
+        return axios
+            .post(
+                `https://www.demarches-simplifiees.fr/api/v2/graphql`,
+                JSON.stringify({
+                    query: `
                     query getDemarche($demarcheNumber: Int!) {
                         demarche(number: $demarcheNumber) {
                             id
@@ -42,21 +42,21 @@ const makeDS = ({ DS_TOKEN }) => {
                             }
                         }
                     }`,
-          variables: {
-            demarcheNumber: demarcheId,
-          },
-        }),
-        getDSConfig()
-      )
-      .then((resp) => resp.data.data.demarche.dossiers);
-  }
+                    variables: {
+                        demarcheNumber: demarcheId,
+                    },
+                }),
+                getDSConfig(),
+            )
+            .then((resp) => resp.data.data.demarche.dossiers);
+    }
 
-  function getDossierForDemarche(dossierNumber) {
-    return axios
-      .post(
-        `https://www.demarches-simplifiees.fr/api/v2/graphql`,
-        JSON.stringify({
-          query: `
+    function getDossierForDemarche(dossierNumber) {
+        return axios
+            .post(
+                `https://www.demarches-simplifiees.fr/api/v2/graphql`,
+                JSON.stringify({
+                    query: `
                     query getDossier(
                         $dossierNumber: Int!
                         $includeRevision: Boolean = false
@@ -415,57 +415,57 @@ const makeDS = ({ DS_TOKEN }) => {
                       }
                     
                 `,
-          variables: {
-            dossierNumber: dossierNumber,
-          },
-        }),
-        getDSConfig()
-      )
-      .then((resp) => {
-        if (resp.data.data) {
-          return resp.data.data.dossier;
-        } else {
-          return null;
-        }
-      });
-  }
+                    variables: {
+                        dossierNumber: dossierNumber,
+                    },
+                }),
+                getDSConfig(),
+            )
+            .then((resp) => {
+                if (resp.data.data) {
+                    return resp.data.data.dossier;
+                } else {
+                    return null;
+                }
+            });
+    }
 
-  function createPrefillDossier(
-    demarcheId,
-    params
-  ): Promise<{
-    dossier_url: string;
-    state: string;
-    dossier_id: string;
-    dossier_number: number;
-    dossier_prefill_token: string;
-    annotations: { label: string; stringValue: string }[];
-  }> {
-    return axios
-      .post(
-        `https://www.demarches-simplifiees.fr/api/public/v1/demarches/${demarcheId}/dossiers`,
-        {
-          ...params,
-        },
-        {
-          headers: {
-            'Content-Type': 'application/json',
-          },
-        }
-      )
-      .then((resp) => {
-        return resp.data;
-      })
-      .catch((e) => {
-        console.log(e);
-      });
-  }
+    function createPrefillDossier(
+        demarcheId,
+        params,
+    ): Promise<{
+        dossier_url: string;
+        state: string;
+        dossier_id: string;
+        dossier_number: number;
+        dossier_prefill_token: string;
+        annotations: { label: string; stringValue: string }[];
+    }> {
+        return axios
+            .post(
+                `https://www.demarches-simplifiees.fr/api/public/v1/demarches/${demarcheId}/dossiers`,
+                {
+                    ...params,
+                },
+                {
+                    headers: {
+                        "Content-Type": "application/json",
+                    },
+                },
+            )
+            .then((resp) => {
+                return resp.data;
+            })
+            .catch((e) => {
+                console.log(e);
+            });
+    }
 
-  return {
-    getDossierForDemarche,
-    getAllDossiersForDemarche,
-    createPrefillDossier,
-  };
+    return {
+        getDossierForDemarche,
+        getAllDossiersForDemarche,
+        createPrefillDossier,
+    };
 };
 
 export default makeDS;

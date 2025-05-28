@@ -54,7 +54,7 @@ export const BadgePendingView = ({
 
     function getStatus(dossier: badgeDossierSchemaType) {
         const statusObject = dossier.annotations.find(
-            (annotation) => annotation.label === "Status"
+            (annotation) => annotation.label === "Status",
         );
         const status: string = statusObject
             ? statusObject.stringValue

@@ -1,9 +1,9 @@
-import { Tag } from "@codegouvfr/react-dsfr/Tag";
 import { fr } from "@codegouvfr/react-dsfr/fr";
+import { Tag } from "@codegouvfr/react-dsfr/Tag";
 
+import { BadgePhase } from "./BadgePhase";
 import { StartupPageProps } from "./StartupPage";
 import { StartupPhase } from "@/models/startup";
-import { BadgePhase } from "./BadgePhase";
 
 export function StartupHeader({
     startupInfos,

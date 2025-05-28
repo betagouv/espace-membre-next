@@ -21,7 +21,7 @@ const INCUBATORS_USING_EXCHANGE = ["gip-inclusion"];
 
 export async function createEmailForUser(
     { username }: { username: string },
-    currentUser: string
+    currentUser: string,
 ) {
     const isCurrentUser = currentUser === username;
     const [user] = await Promise.all([
@@ -29,7 +29,7 @@ export async function createEmailForUser(
     ]);
     if (!user.userInfos) {
         throw new Error(
-            `Le membre ${username} n'a pas de fiche sur l'espace-membre: vous ne pouvez pas créer son compte email.`
+            `Le membre ${username} n'a pas de fiche sur l'espace-membre: vous ne pouvez pas créer son compte email.`,
         );
     }
 
@@ -39,21 +39,21 @@ export async function createEmailForUser(
 
     if (!user.authorizations.canCreateEmail) {
         throw new Error(
-            "Vous n'avez pas le droit de créer le compte email du membre."
+            "Vous n'avez pas le droit de créer le compte email du membre.",
         );
     }
 
     if (!isCurrentUser) {
         const loggedUserInfo = userInfosToModel(
-            await getUserInfos({ username: currentUser })
+            await getUserInfos({ username: currentUser }),
         );
         if (!loggedUserInfo) {
             throw new Error(
-                "Vous ne pouvez pas créer de compte email car votre compte  n'a pas de fiche dans l'espace-membre."
+                "Vous ne pouvez pas créer de compte email car votre compte  n'a pas de fiche dans l'espace-membre.",
             );
         } else if (utils.checkUserIsExpired(loggedUserInfo)) {
             throw new Error(
-                "Vous ne pouvez pas créer le compte email car votre compte a une date de fin expiré."
+                "Vous ne pouvez pas créer le compte email car votre compte a une date de fin expiré.",
             );
         }
     }
@@ -61,7 +61,7 @@ export async function createEmailForUser(
     if (user) {
         if (user.userInfos.email_is_redirection) {
             throw new Error(
-                `Le membre ${username} ne peut pas avoir d'email beta.gouv.fr, iel utilise une adresse de redirection.`
+                `Le membre ${username} ne peut pas avoir d'email beta.gouv.fr, iel utilise une adresse de redirection.`,
             );
         }
         emailIsRecreated =
@@ -123,7 +123,7 @@ async function getEmailCreationParams(username: string): Promise<
 
     const latestMission = userInfo.missions.reduce((a, v) =>
         //@ts-ignore
-        !v.end || v.end > a.end ? v : a
+        !v.end || v.end > a.end ? v : a,
     );
     // todo see what to do with startups
     let needsExchange = false;
@@ -184,7 +184,7 @@ async function getEmailCreationParams(username: string): Promise<
 export async function createEmail(
     username: string,
     creator: string,
-    emailIsRecreated: boolean = false
+    emailIsRecreated: boolean = false,
 ) {
     const email = utils.buildBetaEmail(username);
 
@@ -196,7 +196,7 @@ export async function createEmail(
         case EMAIL_PLAN_TYPE.EMAIL_PLAN_EXCHANGE:
             await BetaGouv.createEmailForExchange(
                 username,
-                emailCreationParams.creationData
+                emailCreationParams.creationData,
             );
             break;
         case EMAIL_PLAN_TYPE.EMAIL_PLAN_BASIC:
@@ -205,7 +205,7 @@ export async function createEmail(
         case EMAIL_PLAN_TYPE.EMAIL_PLAN_PRO:
             await BetaGouv.createEmailPro(
                 username,
-                emailCreationParams.creationData
+                emailCreationParams.creationData,
             );
             break;
     }

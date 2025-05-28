@@ -99,7 +99,7 @@ export default function CommunityCreateMemberPage(props: BaseInfoUpdateProps) {
                 headers: {
                     "Content-Type": "application/json", // Specify the content type
                 },
-            }
+            },
         );
         setIsSaving(false);
         const data = await response.json();
@@ -170,7 +170,7 @@ export default function CommunityCreateMemberPage(props: BaseInfoUpdateProps) {
                                         "fr-col-lg-4",
                                         "fr-col-md-4",
                                         "fr-col-offset-lg-8--right",
-                                        "fr-col-offset-md-8--right"
+                                        "fr-col-offset-md-8--right",
                                     )}
                                 >
                                     <Input
@@ -202,7 +202,7 @@ export default function CommunityCreateMemberPage(props: BaseInfoUpdateProps) {
                                         "fr-col-lg-4",
                                         "fr-col-md-4",
                                         "fr-col-offset-lg-8--right",
-                                        "fr-col-offset-md-8--right"
+                                        "fr-col-offset-md-8--right",
                                     )}
                                 >
                                     <Input
@@ -234,7 +234,7 @@ export default function CommunityCreateMemberPage(props: BaseInfoUpdateProps) {
                                         "fr-col-lg-6",
                                         "fr-col-md-6",
                                         "fr-col-offset-lg-6--right",
-                                        "fr-col-offset-md-6--right"
+                                        "fr-col-offset-md-6--right",
                                     )}
                                 >
                                     <Input
@@ -275,7 +275,7 @@ export default function CommunityCreateMemberPage(props: BaseInfoUpdateProps) {
                                         "fr-col-lg-4",
                                         "fr-col-md-4",
                                         "fr-col-offset-lg-8--right",
-                                        "fr-col-offset-md-8--right"
+                                        "fr-col-offset-md-8--right",
                                     )}
                                 >
                                     <Select
@@ -349,7 +349,7 @@ export default function CommunityCreateMemberPage(props: BaseInfoUpdateProps) {
                                                 {
                                                     shouldValidate: true,
                                                     shouldDirty: true,
-                                                }
+                                                },
                                             );
                                             // revalidate startups fields
                                             trigger(`missions.0.startups`);

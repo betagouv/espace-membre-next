@@ -20,7 +20,7 @@ type Props = {
 
 export async function generateMetadata(
     { params }: Props,
-    parent: ResolvingMetadata
+    parent: ResolvingMetadata,
 ): Promise<Metadata> {
     // read route params
     const id = params.id;
@@ -54,7 +54,7 @@ export default async function Page({ params }: Props) {
             ...user,
             missions: [], // for TS
             teams: [], // for TS
-        })
+        }),
     );
     const team = teamToModel(dbTeam);
     return (

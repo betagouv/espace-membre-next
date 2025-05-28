@@ -38,7 +38,7 @@ describe("sendEmailToTeamWhenNewMember()", () => {
             "@/server/queueing/workers/send-email-to-team-when-new-member",
             {
                 "@/server/config/email.config": { sendEmail: sendEmailStub },
-            }
+            },
         ).sendEmailToTeamWhenNewMember;
     });
 
@@ -52,7 +52,7 @@ describe("sendEmailToTeamWhenNewMember()", () => {
         });
         if (!newMember) {
             throw new Error(
-                "test: error in test setup, newMember should exists"
+                "test: error in test setup, newMember should exists",
             );
         }
         await sendEmailToTeamWhenNewMember({

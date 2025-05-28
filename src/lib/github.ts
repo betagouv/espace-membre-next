@@ -54,7 +54,7 @@ export async function getAllPendingInvitations(org, i = 0) {
     }
     const nextPageGithubUsers = await exports.getAllPendingInvitations(
         org,
-        i + 1
+        i + 1,
     );
     return [...githubUsers, ...nextPageGithubUsers];
 }
@@ -66,7 +66,7 @@ export async function getAllOrganizationMembers(org, i = 0) {
     }
     const nextPageGithubUsers = await exports.getAllOrganizationMembers(
         org,
-        i + 1
+        i + 1,
     );
     return [...githubUsers, ...nextPageGithubUsers];
 }
@@ -87,7 +87,7 @@ export function addUserToTeam(username, org, team_slug) {
             org,
             team_slug,
             username,
-        }
+        },
     );
 }
 

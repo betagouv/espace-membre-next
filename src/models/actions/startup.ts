@@ -50,25 +50,25 @@ export const startupInfoUpdateSchema = z.object({
     newSponsors: z.array(
         sponsorSchema.omit({
             uuid: true,
-        })
+        }),
     ),
     startupPhases: z.array(
         phaseSchema.omit({
             uuid: true,
             startup_id: true,
-        })
+        }),
     ),
     startupEvents: z.array(
         eventSchema.omit({
             uuid: true,
             startup_id: true,
-        })
+        }),
     ),
     newPhases: z.array(
         phaseSchema.omit({
             uuid: true,
             startup_id: true,
-        })
+        }),
     ),
 });
 

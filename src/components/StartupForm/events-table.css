@@ -1,9 +1,9 @@
 .table-events table thead th:nth-child(2) {
-    width:200px;
+    width: 200px;
 }
 .table-events table thead th:nth-child(3) {
-    width:350px;
+    width: 350px;
 }
 .table-events table thead th:nth-child(4) {
-    width:100px;
+    width: 100px;
 }

@@ -29,7 +29,7 @@ export const SponsorForm = (props: SponsorForm) => {
     const [domaine, setDomaine] = React.useState("");
 
     const save = async (
-        e: React.MouseEvent<HTMLButtonElement>
+        e: React.MouseEvent<HTMLButtonElement>,
     ): Promise<void> => {
         e.preventDefault();
         props.addSponsor({

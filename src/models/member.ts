@@ -253,7 +253,7 @@ export const memberSchema = z.object({
             errorMap: (issue, ctx) => ({
                 message: "Le domaine est un champ obligatoire",
             }),
-        }
+        },
     ), // ??
     bio: z
         .string({
@@ -286,7 +286,7 @@ export const memberSchema = z.object({
                 errorMap: (issue, ctx) => ({
                     message: "Le champ gender est obligatoire",
                 }),
-            }
+            },
         )
         .optional()
         .nullable(),
@@ -304,7 +304,7 @@ export const memberSchema = z.object({
                 errorMap: (issue, ctx) => ({
                     message: "Le status legal n'a pas une valeur correcte",
                 }),
-            }
+            },
         )
         .describe(`Status legal de l'entreprise`)
         .optional(),

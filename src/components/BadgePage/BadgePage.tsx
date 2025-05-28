@@ -50,7 +50,7 @@ export const Badge = function ({ badgeRequest, dossier }: BadgeProps) {
 
     function getStatus(dossier) {
         const status = dossier.annotations.find(
-            (annotation) => annotation.label === "Status"
+            (annotation) => annotation.label === "Status",
         ).stringValue;
         return (
             <>

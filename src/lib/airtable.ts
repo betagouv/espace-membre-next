@@ -35,7 +35,7 @@ export async function fetchAirtableFormations(): Promise<Formation[]> {
 }
 
 export async function fetchAirtableInscription(
-    username: string
+    username: string,
 ): Promise<FormationInscription[]> {
     const baseUrl = `https://api.airtable.com/v0/${config.AIRTABLE_FORMATION_BASE_ID}/Inscriptions`;
     const token = config.AIRTABLE_API_KEY; // Replace YOUR_TOKEN with your actual Airtable API token
@@ -64,12 +64,12 @@ export async function fetchAirtableInscription(
 
     const data = await response.json();
     return data.records.map((data) =>
-        airtableRecordToFormationInscription(data)
+        airtableRecordToFormationInscription(data),
     );
 }
 
 export async function fetchAirtableFormationById(
-    recordId: string
+    recordId: string,
 ): Promise<Formation> {
     const url = `https://api.airtable.com/v0/${config.AIRTABLE_FORMATION_BASE_ID}/Formations/${recordId}`;
     const token = config.AIRTABLE_API_KEY; // Replace YOUR_TOKEN with your actual Airtable API token

@@ -35,7 +35,7 @@ export async function uploadStartupFile(
         filename,
         size,
         data,
-    }: DocSchemaType & PostParams // formData: {
+    }: DocSchemaType & PostParams, // formData: {
 ) {
     const session = await getServerSession(authOptions);
     if (!session || !session.user.id) {

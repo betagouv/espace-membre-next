@@ -20,7 +20,7 @@ export class FakeMatomo implements AccountService {
         userAccess: (MatomoUserAccess & {
             login: MatomoUser["login"];
         })[] = [],
-        sites: MatomoSite[] = []
+        sites: MatomoSite[] = [],
     ) {
         this.users = users;
         this.userAccess = userAccess;
@@ -31,7 +31,7 @@ export class FakeMatomo implements AccountService {
         return Promise.resolve();
     }
     getUserByEmail(
-        email: string
+        email: string,
     ): Promise<MatomoUser | { result: "error"; message: string }> {
         const user = this.users.find((user) => user.email === email);
         if (!user) {
@@ -50,7 +50,7 @@ export class FakeMatomo implements AccountService {
                 .map((userAccess) => {
                     const { login, ...rest } = userAccess;
                     return rest;
-                })
+                }),
         );
     }
     createUser({
@@ -78,7 +78,7 @@ export class FakeMatomo implements AccountService {
     getSiteOrCreate(
         siteName: string,
         urls: string[],
-        siteType: MATOMO_SITE_TYPE = MATOMO_SITE_TYPE.website
+        siteType: MATOMO_SITE_TYPE = MATOMO_SITE_TYPE.website,
     ): Promise<number> {
         const existingSite = this.sites.find((s) => s.main_url === urls[0]);
         if (existingSite) {
@@ -90,7 +90,7 @@ export class FakeMatomo implements AccountService {
     createSite(
         siteName: string,
         urls: string[],
-        siteType: MATOMO_SITE_TYPE = MATOMO_SITE_TYPE.website
+        siteType: MATOMO_SITE_TYPE = MATOMO_SITE_TYPE.website,
     ): Promise<number> {
         const newId = this.lastId + 1;
         this.sites.push({
@@ -135,7 +135,7 @@ export class FakeMatomo implements AccountService {
             this.users.map((user) => ({
                 user: user,
                 serviceUserId: user.login,
-            }))
+            })),
         );
     }
 }

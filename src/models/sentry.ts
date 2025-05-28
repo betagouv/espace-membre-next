@@ -20,9 +20,9 @@ const sentryUserMetadataSchema = z.object({
                     slug: z.string(),
                     name: z.string(),
                     plateform: z.string(),
-                })
+                }),
             ),
-        })
+        }),
     ),
 });
 

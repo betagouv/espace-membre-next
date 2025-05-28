@@ -4,7 +4,7 @@ import { userEventSchema, userEventSchemaType } from "../userEvent";
 import { UserEvents } from "@/@types/db";
 
 export function mapToUserEvent(
-    event: Selectable<UserEvents>
+    event: Selectable<UserEvents>,
 ): userEventSchemaType {
     return userEventSchema.parse({
         uuid: event.uuid,

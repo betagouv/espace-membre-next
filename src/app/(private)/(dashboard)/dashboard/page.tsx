@@ -10,8 +10,10 @@ import {
 import { SURVEY_BOX_COOKIE_NAME } from "@/components/SurveyBox";
 import { getLatests as getLatestsStartups } from "@/lib/kysely/queries/startups";
 import { getUserEvents } from "@/lib/kysely/queries/userEvents";
-import { getUserInfos } from "@/lib/kysely/queries/users";
-import { getLatests as getLatestsMembers } from "@/lib/kysely/queries/users";
+import {
+    getUserInfos,
+    getLatests as getLatestsMembers,
+} from "@/lib/kysely/queries/users";
 import { userInfosToModel } from "@/models/mapper";
 import { EmailStatusCode } from "@/models/member";
 import { authOptions } from "@/utils/authoptions";
@@ -34,7 +36,7 @@ export default async function Page(props) {
         await getUserInfos({
             username: session?.user?.id,
             options: { withDetails: true },
-        })
+        }),
     );
     if (
         userInfos.primary_email_status ===
@@ -57,7 +59,7 @@ export default async function Page(props) {
             const userEventIds = userEvents.map((u) => u.field_id);
             const progress = await computeOnboardingProgress(
                 userEventIds,
-                checklistObject
+                checklistObject,
             );
             onboarding =
                 progress !== 100

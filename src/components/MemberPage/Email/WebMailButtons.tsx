@@ -1,6 +1,8 @@
 import React from "react";
-import { fr } from "@codegouvfr/react-dsfr/fr";
+
 import Button from "@codegouvfr/react-dsfr/Button";
+import { fr } from "@codegouvfr/react-dsfr/fr";
+
 import { EMAIL_PLAN_TYPE } from "@/models/ovh";
 
 const urls = {

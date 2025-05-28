@@ -19,7 +19,7 @@ export function StartupNewMemberArrivalEmailTitle() {
 }
 
 export function StartupNewMemberArrivalEmail(
-    props: EmailStartupNewMemberArrival["variables"]
+    props: EmailStartupNewMemberArrival["variables"],
 ) {
     const title = StartupNewMemberArrivalEmailTitle();
 

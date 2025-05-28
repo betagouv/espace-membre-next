@@ -39,10 +39,10 @@ export const createVerificationToken = async ({
 export default function customPostgresAdapter(): Adapter {
     try {
         const createUser = (
-            user: Omit<AdapterUser, "id">
+            user: Omit<AdapterUser, "id">,
         ): Promise<AdapterUser> => {
             console.log(
-                "Unimplemented function! createUser in BetagouvAdapter. Session:"
+                "Unimplemented function! createUser in BetagouvAdapter. Session:",
             );
             return Promise.resolve(null as unknown as AdapterUser);
         };
@@ -68,7 +68,7 @@ export default function customPostgresAdapter(): Adapter {
         };
 
         const getUserByEmail = async (
-            email: string
+            email: string,
         ): Promise<AdapterUser | null> => {
             const dbUser = await db
                 .selectFrom("users")
@@ -77,7 +77,7 @@ export default function customPostgresAdapter(): Adapter {
                     eb.or([
                         eb(sql`LOWER(users.secondary_email)`, "=", email),
                         eb(sql`LOWER(users.primary_email)`, "=", email),
-                    ])
+                    ]),
                 )
                 .executeTakeFirst();
             if (!dbUser || (!dbUser.primary_email && !dbUser.secondary_email)) {
@@ -121,7 +121,7 @@ export default function customPostgresAdapter(): Adapter {
         };
 
         const updateUser = async (
-            user: Partial<AdapterUser> & Pick<AdapterUser, "id">
+            user: Partial<AdapterUser> & Pick<AdapterUser, "id">,
         ): Promise<AdapterUser> => {
             const dbUser = await db
                 .updateTable("users")
@@ -147,7 +147,7 @@ export default function customPostgresAdapter(): Adapter {
         const deleteUser = async (userId: string) => {
             console.log(
                 "Unimplemented function! deleteUser in BetagouvAdapter. Session:",
-                JSON.stringify(userId)
+                JSON.stringify(userId),
             );
             return;
         };
@@ -179,7 +179,7 @@ export default function customPostgresAdapter(): Adapter {
         };
 
         const getSessionAndUser = async (
-            sessionToken: string
+            sessionToken: string,
         ): Promise<{ session: AdapterSession; user: AdapterUser } | null> => {
             const session = await db
                 .selectFrom("sessions")
@@ -222,11 +222,11 @@ export default function customPostgresAdapter(): Adapter {
 
         const updateSession = async (
             session: Partial<AdapterSession> &
-                Pick<AdapterSession, "sessionToken">
+                Pick<AdapterSession, "sessionToken">,
         ): Promise<AdapterSession | null | undefined> => {
             console.log(
                 "Unimplemented function! updateSession in vercelPostgresAdapter. Session:",
-                JSON.stringify(session)
+                JSON.stringify(session),
             );
             return;
         };
@@ -240,7 +240,7 @@ export default function customPostgresAdapter(): Adapter {
         };
 
         const linkAccount = async (
-            account: AdapterAccount
+            account: AdapterAccount,
         ): Promise<AdapterAccount | null | undefined> => {
             await db
                 .insertInto("accounts")

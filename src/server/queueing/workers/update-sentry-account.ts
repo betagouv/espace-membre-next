@@ -12,12 +12,12 @@ import { sentryClient } from "@/server/config/sentry.config";
 export const updateSentryServiceAccountTopic = "update-sentry-service-account";
 
 export async function updateSentryServiceAccount(
-    job: PgBoss.Job<UpdateSentryAccountDataSchemaType>
+    job: PgBoss.Job<UpdateSentryAccountDataSchemaType>,
 ) {
     console.log(
         `update sentry service account for ${job.data.username}`,
         job.id,
-        job.name
+        job.name,
     );
     let user;
     try {
@@ -34,7 +34,7 @@ export async function updateSentryServiceAccount(
                     teamSlug: t.teamSlug,
                     teamRole: t.teamRole,
                 });
-            })
+            }),
         );
 
         await db
@@ -70,7 +70,7 @@ export async function updateSentryServiceAccount(
 }
 
 const userDoesNoExist = async (
-    job: PgBoss.Job<UpdateSentryAccountDataSchemaType>
+    job: PgBoss.Job<UpdateSentryAccountDataSchemaType>,
 ) => {
     // user has been deleted before the job calling the job
     await addEvent({

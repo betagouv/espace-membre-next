@@ -63,12 +63,12 @@ export function Search(props: SearchProps) {
     const nativeInputProps = useContext(nativeInputPropsContext);
     const [value, setValue] = useState<string>("");
     const [selectedValue, setSelectedValue] = useState<string>(
-        defaultValue || ""
+        defaultValue || "",
     );
     const [isEditing, setIsEditing] = useState<boolean>(false);
     assert(
         nativeInputProps !== undefined,
-        "nativeInputProps must be defined by providing a context"
+        "nativeInputProps must be defined by providing a context",
     );
 
     const { css, cx } = useStyles();
@@ -102,7 +102,7 @@ export function Search(props: SearchProps) {
                                 width: "calc(100vw - 3rem)",
                             },
                         }),
-                        overlayClassName
+                        overlayClassName,
                     )}
                     placement="bottom-start"
                 />
@@ -153,7 +153,7 @@ export function Search(props: SearchProps) {
                         {...params.inputProps}
                         className={cx(
                             params.inputProps.className,
-                            nativeInputProps.className
+                            nativeInputProps.className,
                         )}
                         value={isEditing ? value : selectedValue}
                         // defaultValue={defaultValue}
@@ -186,7 +186,7 @@ export type NativeInputProps = {
 };
 
 const nativeInputPropsContext = createContext<NativeInputProps | undefined>(
-    undefined
+    undefined,
 );
 
 export function NativeInputPropsProvider(props: {
@@ -219,7 +219,7 @@ export default function CitySelect({
 }) {
     const loadOptions = async (
         inputValue: string,
-        callback: (data: any) => void
+        callback: (data: any) => void,
     ) => {
         const data = await searchForeignCity(inputValue);
         callback(data);
@@ -228,7 +228,7 @@ export default function CitySelect({
     const debounceLoadOptions = useCallback(_.debounce(loadOptions, 500), []);
     const [search, onSearchChange] = useState("");
     const [inputElement, setInputElement] = useState<HTMLInputElement | null>(
-        null
+        null,
     );
     const [results, setResults] = useState<SearchResult[]>([]);
 
@@ -304,7 +304,7 @@ async function getCountry(value: string) {
     const search = value;
 
     const response = await fetch(
-        `https://nominatim.openstreetmap.org/search?country=${search}&format=json`
+        `https://nominatim.openstreetmap.org/search?country=${search}&format=json`,
     );
     if (!response.ok) {
         return null;
@@ -330,7 +330,7 @@ async function searchForeignCity(value: string) {
     const frenchCities = await searchCommunes(value);
     const search = value;
     const response = await fetch(
-        `https://nominatim.openstreetmap.org/search?city=${search}&format=json&featuretype=city`
+        `https://nominatim.openstreetmap.org/search?city=${search}&format=json&featuretype=city`,
     );
     if (!response.ok) {
         return [];

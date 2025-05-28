@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 
+import communes from "./communes.json";
 import { Community } from "@/components/CommunityPage";
 import { getAllStartups } from "@/lib/kysely/queries";
 import {
@@ -11,7 +12,6 @@ import { competencesList } from "@/models/competences";
 import { memberBaseInfoToModel } from "@/models/mapper";
 import { DOMAINE_OPTIONS } from "@/models/member";
 import { routeTitles } from "@/utils/routes/routeTitles";
-import communes from "./communes.json";
 
 export const metadata: Metadata = {
     title: `${routeTitles.community()} / Espace Membre`,
@@ -19,7 +19,7 @@ export const metadata: Metadata = {
 
 export default async function Page() {
     const users = (await getAllUsersInfo()).map((member) =>
-        memberBaseInfoToModel(member)
+        memberBaseInfoToModel(member),
     );
     const incubatorOptions = await getAllIncubatorsOptions();
     const startups = await getAllStartups();

@@ -72,7 +72,7 @@ export function PhasesEditor({
                 style={{ marginBottom: "0.5rem" }}
                 data={phasesFields.map((phase, index) => {
                     const startDateString = getValues(
-                        `startupPhases.${index}.start`
+                        `startupPhases.${index}.start`,
                     )
                         ? new Date(getValues(`startupPhases.${index}.start`))
                               .toISOString()
@@ -84,7 +84,7 @@ export function PhasesEditor({
                             key={phase.id + "-name"}
                             label={undefined}
                             nativeSelectProps={register(
-                                `startupPhases.${index}.name`
+                                `startupPhases.${index}.name`,
                             )}
                         >
                             <option value="" disabled hidden>
@@ -95,7 +95,7 @@ export function PhasesEditor({
                                     <option key={index} value={label}>
                                         {PHASE_READABLE_NAME[label]}
                                     </option>
-                                )
+                                ),
                             )}
                         </Select>,
                         <Input

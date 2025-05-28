@@ -1,15 +1,15 @@
 "use client";
 
 import { ReactNode, useRef } from "react";
-import { MapContainer, TileLayer, ZoomControl } from "react-leaflet";
-import { LatLngLiteral } from "leaflet";
-import L from "leaflet";
 
-import styles from "./styles.module.css";
+import L, { LatLngLiteral } from "leaflet";
+import { MapContainer, TileLayer, ZoomControl } from "react-leaflet";
+
 import Clusterizer from "./Clusterizer";
 import MapEventHandler from "./MapEventHandler";
-import { useLeafletAccessibility } from "./useLeafletAccessibility";
 import MapZoomHandler from "./MapZoomHandler";
+import styles from "./styles.module.css";
+import { useLeafletAccessibility } from "./useLeafletAccessibility";
 
 import "leaflet/dist/leaflet.css";
 

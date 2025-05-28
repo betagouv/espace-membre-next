@@ -1,3 +1,5 @@
+import { CSSProperties } from "react";
+
 import { fr } from "@codegouvfr/react-dsfr";
 import { format } from "date-fns";
 import { fr as frLocale } from "date-fns/locale/fr";
@@ -5,7 +7,6 @@ import Link from "next/link";
 
 import { PrivateMemberChangeSchemaType } from "@/models/memberChange";
 import { StartupChangeSchemaType } from "@/models/startupChange";
-import { CSSProperties } from "react";
 
 export const LastChange = ({
     changes,

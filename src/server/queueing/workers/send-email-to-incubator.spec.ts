@@ -33,7 +33,7 @@ describe("sendEmailToIncubatorTeam()", () => {
             "@/server/queueing/workers/send-email-to-incubator",
             {
                 "@/server/config/email.config": { sendEmail: sendEmailStub },
-            }
+            },
         ).sendEmailToIncubatorTeam;
         newIncubatorA = await db
             .insertInto("incubators")
@@ -74,7 +74,7 @@ describe("sendEmailToIncubatorTeam()", () => {
 
         newStartup = await utils.createStartup(
             newIncubatorB.uuid,
-            "seconda-startup-name"
+            "seconda-startup-name",
         );
         // the mission is also link to a startup and to another incubator
         await db
@@ -166,7 +166,7 @@ describe("sendEmailToIncubatorTeam()", () => {
                         .orderBy(["startup_id", "phases.start desc"])
                         .as("latest_phase"),
                 (join) =>
-                    join.onRef("latest_phase.startup_id", "=", "startups.uuid")
+                    join.onRef("latest_phase.startup_id", "=", "startups.uuid"),
             )
             .selectAll(["startups"])
             .select(["latest_phase.current_phase as current_phase"])
@@ -205,7 +205,7 @@ describe("sendEmailToIncubatorTeam()", () => {
                         .orderBy(["startup_id", "phases.start desc"])
                         .as("latest_phase"),
                 (join) =>
-                    join.onRef("latest_phase.startup_id", "=", "startups.uuid")
+                    join.onRef("latest_phase.startup_id", "=", "startups.uuid"),
             )
             .selectAll(["startups"])
             .select(["latest_phase.current_phase as current_phase"])

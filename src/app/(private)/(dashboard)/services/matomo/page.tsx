@@ -38,7 +38,7 @@ export default async function MatomoPage() {
 
     const rawAccount = await getServiceAccount(
         session.user.uuid,
-        SERVICES.MATOMO
+        SERVICES.MATOMO,
     );
     const service_account = rawAccount
         ? matomoServiceInfoToModel(rawAccount)
@@ -69,7 +69,7 @@ export default async function MatomoPage() {
             .where(
                 "startup_id",
                 "in",
-                startups.map((s) => s.uuid)
+                startups.map((s) => s.uuid),
             )
             .execute()
             .then((data) => data.map((d) => matomoSiteToModel(d)));
@@ -121,11 +121,11 @@ export default async function MatomoPage() {
     };
 
     const formatMetadata = (
-        data: EventMatomoAccountPayloadSchemaType["action_metadata"]
+        data: EventMatomoAccountPayloadSchemaType["action_metadata"],
     ) => {
         if ("sites" in data && data["sites"] && data["sites"].length) {
             const siteObj = data["sites"].map((site) =>
-                matomoSites.find((matomoSite) => site.id === matomoSite.id)
+                matomoSites.find((matomoSite) => site.id === matomoSite.id),
             );
             return (
                 <>
@@ -180,7 +180,7 @@ export default async function MatomoPage() {
                         data={Object.keys(eventDictionnary).map((event) => [
                             <>
                                 {formatMetadata(
-                                    eventDictionnary[event][0].action_metadata
+                                    eventDictionnary[event][0].action_metadata,
                                 )}
                             </>,
                             <>

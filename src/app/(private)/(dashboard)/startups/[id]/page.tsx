@@ -23,7 +23,7 @@ type Props = {
 
 export async function generateMetadata(
     { params }: Props,
-    parent: ResolvingMetadata
+    parent: ResolvingMetadata,
 ): Promise<Metadata> {
     // read route params
     let query: { ghid: string } | { uuid: string } = {
@@ -76,7 +76,7 @@ export default async function Page({ params }: Props) {
         .leftJoin(
             "startups_organizations",
             "startups_organizations.organization_id",
-            "organizations.uuid"
+            "organizations.uuid",
         )
         .select([
             "organizations.name",

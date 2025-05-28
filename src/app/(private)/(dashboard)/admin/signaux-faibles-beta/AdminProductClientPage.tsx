@@ -179,11 +179,11 @@ export const AdminProductClientPage = (props: CommunityProps) => {
                 sortType: (rowA, rowB) => {
                     const a =
                         parseFloat(
-                            rowA.original.activeMember.trendOverTwelveMonths
+                            rowA.original.activeMember.trendOverTwelveMonths,
                         ) || 0;
                     const b =
                         parseFloat(
-                            rowB.original.activeMember.trendOverTwelveMonths
+                            rowB.original.activeMember.trendOverTwelveMonths,
                         ) || 0;
                     return a - b; // Ascending order sorting
                 },
@@ -191,7 +191,7 @@ export const AdminProductClientPage = (props: CommunityProps) => {
                 maxWidth: 500, // Prevents the column from getting too wide
             },
         ],
-        []
+        [],
     );
 
     const [visibleColumns, setVisibleColumns] = useState(allColumns);
@@ -204,7 +204,7 @@ export const AdminProductClientPage = (props: CommunityProps) => {
                 : [
                       ...prevColumns,
                       allColumns.find((col) => col.accessor === columnId)!,
-                  ]
+                  ],
         );
     };
 
@@ -229,7 +229,7 @@ export const AdminProductClientPage = (props: CommunityProps) => {
         useSortBy, // Hook for sorting
         useResizeColumns,
         useFlexLayout,
-        usePagination // Add pagination hook
+        usePagination, // Add pagination hook
     );
 
     return (
@@ -244,7 +244,7 @@ export const AdminProductClientPage = (props: CommunityProps) => {
                         <input
                             type="checkbox"
                             checked={visibleColumns.some(
-                                (col: any) => col.accessor === column.accessor
+                                (col: any) => col.accessor === column.accessor,
                             )}
                             onChange={() => handleColumnToggle(column.accessor)}
                         />
@@ -271,7 +271,7 @@ export const AdminProductClientPage = (props: CommunityProps) => {
                                                     (column) => (
                                                         <th
                                                             {...column.getHeaderProps(
-                                                                column.getSortByToggleProps()
+                                                                column.getSortByToggleProps(),
                                                             )}
                                                             title={
                                                                 column.description
@@ -279,7 +279,7 @@ export const AdminProductClientPage = (props: CommunityProps) => {
                                                             key={column.id}
                                                         >
                                                             {column.render(
-                                                                "Header"
+                                                                "Header",
                                                             )}
                                                             {/* Add sort indicators */}
                                                             <span>
@@ -299,7 +299,7 @@ export const AdminProductClientPage = (props: CommunityProps) => {
                                                                 }`}
                                                             />
                                                         </th>
-                                                    )
+                                                    ),
                                                 )}
                                             </tr>
                                         ))}
@@ -328,19 +328,19 @@ export const AdminProductClientPage = (props: CommunityProps) => {
                                                                                   "#27a658",
                                                                           } // Apply green background if value > 0
                                                                         : cell.value <
-                                                                          0
-                                                                        ? {
-                                                                              backgroundColor:
-                                                                                  "#ffca00",
-                                                                          }
-                                                                        : {} // Apply yellow background if value < 0
+                                                                            0
+                                                                          ? {
+                                                                                backgroundColor:
+                                                                                    "#ffca00",
+                                                                            }
+                                                                          : {} // Apply yellow background if value < 0
                                                                     : {}),
                                                             }}
                                                             id={cell.column.id}
                                                             key={cell.column.id}
                                                         >
                                                             {cell.render(
-                                                                "Cell"
+                                                                "Cell",
                                                             )}
                                                         </td>
                                                     ))}

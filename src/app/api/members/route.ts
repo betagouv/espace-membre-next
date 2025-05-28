@@ -8,7 +8,7 @@ import { AuthorizationError, withHttpErrorHandling } from "@/utils/error";
 async function SearchUserHandler(req: NextRequest) {
     const session = await getServerSession(authOptions);
     if (!session || !session.user.id) {
-        throw new AuthorizationError()
+        throw new AuthorizationError();
     }
     const { searchParams } = new URL(req.url);
     const users = await searchUsers(searchParams);
@@ -16,4 +16,4 @@ async function SearchUserHandler(req: NextRequest) {
     return Response.json(data);
 }
 
-export const GET = withHttpErrorHandling(SearchUserHandler)
+export const GET = withHttpErrorHandling(SearchUserHandler);

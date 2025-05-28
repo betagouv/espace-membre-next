@@ -1,7 +1,8 @@
+import { ReactElement } from "react";
+
 import { Badge } from "@codegouvfr/react-dsfr/Badge";
 
 import { StartupPhase } from "@/models/startup";
-import { ReactElement } from "react";
 
 export const BadgePhase = ({
     phase,

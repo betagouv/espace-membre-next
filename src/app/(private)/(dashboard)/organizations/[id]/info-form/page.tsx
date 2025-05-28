@@ -21,7 +21,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
 
     return {
         title: `${routeTitles.organizationDetailsEdit(
-            organization?.name
+            organization?.name,
         )} / Espace Membre`,
     };
 }

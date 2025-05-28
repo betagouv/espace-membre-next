@@ -93,7 +93,7 @@ export function OrganizationForm(props: OrganizationFormProps) {
         (props) => (
             <BasicFormInput register={register} errors={errors} {...props} />
         ),
-        [register, errors]
+        [register, errors],
     );
     const onSubmit = (data: organizationUpdateSchemaType, e) => {
         if (isSaving) {
@@ -115,8 +115,8 @@ export function OrganizationForm(props: OrganizationFormProps) {
                         : `Organisation créée`,
                     message: props.organization ? (
                         <>
-                            La modification sera
-                            visible en ligne d'ici quelques heures.
+                            La modification sera visible en ligne d'ici quelques
+                            heures.
                         </>
                     ) : (
                         <>L'organisation a bien été créée</>

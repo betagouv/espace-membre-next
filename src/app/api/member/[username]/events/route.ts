@@ -12,16 +12,16 @@ async function getEventListByUsernameHanlder(
         params: {
             username: string;
         };
-    }
+    },
 ) {
     const session = await getServerSession(authOptions);
 
     if (!session || !session.user.id) {
-        throw new AuthorizationError()
+        throw new AuthorizationError();
     }
     if (!session.user.isAdmin) {
         console.error(
-            `get user events error: User should be admin or should owned data`
+            `get user events error: User should be admin or should owned data`,
         );
         return Response.json([]);
     }
@@ -31,4 +31,4 @@ async function getEventListByUsernameHanlder(
     return Response.json(events);
 }
 
-export const GET = withHttpErrorHandling(getEventListByUsernameHanlder)
+export const GET = withHttpErrorHandling(getEventListByUsernameHanlder);

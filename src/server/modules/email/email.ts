@@ -62,9 +62,6 @@ type BaseEmail = {
     attachments?: any[];
 };
 
-
-
-
 export type EmailLogin = {
     type: EMAIL_TYPES.EMAIL_LOGIN;
     variables: {
@@ -99,13 +96,13 @@ export type EmailEndingContract = {
         | EMAIL_TYPES.EMAIL_ENDING_CONTRACT_2_DAYS;
     variables: {
         user: {
-            userInfos: memberPublicInfoSchemaType
+            userInfos: memberPublicInfoSchemaType;
             mattermostUsername: string;
-        },
-        endDate: Date,
-        jobs: Job[],
-        days: 2 | 15 | 30,
-    }
+        };
+        endDate: Date;
+        jobs: Job[];
+        days: 2 | 15 | 30;
+    };
 };
 
 export type EmailNoMoreContract = {
@@ -113,7 +110,7 @@ export type EmailNoMoreContract = {
         | EMAIL_TYPES.EMAIL_NO_MORE_CONTRACT_1_DAY
         | EMAIL_TYPES.EMAIL_NO_MORE_CONTRACT_30_DAY;
     variables: {
-        user: memberBaseInfoSchemaType;  
+        user: memberBaseInfoSchemaType;
         days: 1 | 30;
     };
 };
@@ -188,7 +185,6 @@ export type EmailTest = {
     type: EMAIL_TYPES.EMAIL_TEST;
     variables?: {};
 };
-
 
 export type EmailVerificationWaiting = {
     type: EMAIL_TYPES.EMAIL_VERIFICATION_WAITING;
@@ -343,19 +339,19 @@ export interface UpdateContactEmailProps {
 export type SendEmail = (email: SendEmailProps) => Promise<null>;
 
 export type SendCampaignEmail = (
-    props: SendCampaignEmailProps
+    props: SendCampaignEmailProps,
 ) => Promise<null>;
 
 export type AddContactsToMailingLists = (
-    props: AddContactsToMailingListsProps
+    props: AddContactsToMailingListsProps,
 ) => Promise<null>;
 
 export type UpdateContactEmail = (
-    props: UpdateContactEmailProps
+    props: UpdateContactEmailProps,
 ) => Promise<null>;
 
 export type RemoveContactsFromMailingList = (
-    props: RemoveContactsFromMailingListProps
+    props: RemoveContactsFromMailingListProps,
 ) => Promise<null>;
 
 export type SmtpBlockedContactsEmailDelete = (props: {

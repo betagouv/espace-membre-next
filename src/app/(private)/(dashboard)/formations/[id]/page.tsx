@@ -12,8 +12,7 @@ import { BreadCrumbFiller } from "@/app/BreadCrumbProvider";
 import { fetchAirtableFormationById } from "@/lib/airtable";
 import { getUserInfos } from "@/lib/kysely/queries/users";
 import { userInfosToModel } from "@/models/mapper";
-import { CommunicationEmailCode } from "@/models/member";
-import { Domaine } from "@/models/member";
+import { CommunicationEmailCode, Domaine } from "@/models/member";
 import { authOptions } from "@/utils/authoptions";
 import { durationBetweenDate } from "@/utils/date";
 
@@ -23,7 +22,7 @@ const mdParser = new MarkdownIt({
 
 export async function generateMetadata(
     { params }: Props,
-    parent: ResolvingMetadata
+    parent: ResolvingMetadata,
 ): Promise<Metadata> {
     // fetch data
     const formation = await fetchAirtableFormationById(params.id);
@@ -78,7 +77,7 @@ export default async function Page({ params }: Props) {
             email: string;
             username: string;
             domaine: Domaine;
-        }
+        },
     ) => {
         const url = new URL(originalUrl);
         const newParams = {
@@ -105,7 +104,7 @@ export default async function Page({ params }: Props) {
     const dbUser = userInfosToModel(
         await getUserInfos({
             uuid: session.user.uuid,
-        })
+        }),
     );
     if (!dbUser) {
         redirect("/");
@@ -119,10 +118,10 @@ export default async function Page({ params }: Props) {
                 : dbUser.secondary_email;
     }
     const isMemberRegistered = formation.registeredMembers?.includes(
-        dbUser.username
+        dbUser.username,
     );
     const isInWaitingList = formation.waitingListUsernames?.includes(
-        dbUser.username
+        dbUser.username,
     );
 
     return (
@@ -170,7 +169,7 @@ export default async function Page({ params }: Props) {
                                             Durée :{" "}
                                             {durationBetweenDate(
                                                 formation.end,
-                                                formation.start
+                                                formation.start,
                                             )}
                                         </span>
                                     )}
@@ -212,7 +211,7 @@ export default async function Page({ params }: Props) {
                                                                 dbUser.username,
                                                             domaine:
                                                                 dbUser.domaine,
-                                                        }
+                                                        },
                                                     ),
                                                     target: "_blank",
                                                 }}
@@ -238,7 +237,9 @@ export default async function Page({ params }: Props) {
                                     ? format(
                                           formation.startDate,
                                           "d MMMM à HH'h'mm",
-                                          { locale: fr }
+                                          {
+                                              locale: fr,
+                                          },
                                       )
                                     : "Formation en ligne"
                             }

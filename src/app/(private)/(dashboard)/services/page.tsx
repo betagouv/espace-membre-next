@@ -33,13 +33,13 @@ export default async function Page() {
 
     const service_accounts = await getAllServiceUserAccounts(session.user.uuid);
     const sentry = service_accounts.find(
-        (s) => s.account_type === SERVICES.SENTRY
+        (s) => s.account_type === SERVICES.SENTRY,
     );
     const matomo = service_accounts.find(
-        (s) => s.account_type === SERVICES.MATOMO
+        (s) => s.account_type === SERVICES.MATOMO,
     );
     const mattermost = service_accounts.find(
-        (s) => s.account_type === SERVICES.MATTERMOST
+        (s) => s.account_type === SERVICES.MATTERMOST,
     );
 
     const services = [
@@ -80,7 +80,7 @@ export default async function Page() {
                                         <Badge severity="success" as="span">
                                             Compte existant
                                         </Badge>
-                                    )
+                                    ),
                                 )
                                 .with(
                                     {
@@ -90,7 +90,7 @@ export default async function Page() {
                                         <Badge severity="new" as="span">
                                             Compte en cours de creation
                                         </Badge>
-                                    )
+                                    ),
                                 )
                                 .with(
                                     {
@@ -101,7 +101,7 @@ export default async function Page() {
                                             Tu as reçu une invitation par email
                                             pour te connecter.
                                         </Badge>
-                                    )
+                                    ),
                                 )
                                 .otherwise(() => (
                                     <Badge noIcon as="span">

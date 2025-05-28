@@ -3,8 +3,7 @@ import { db } from "@/lib/kysely";
 import { getAllStartups } from "@/lib/kysely/queries";
 import { getUsersByStartup } from "@/lib/kysely/queries/users";
 import { phaseToModel, startupToModel } from "@/models/mapper";
-import { CommunicationEmailCode } from "@/models/member";
-import { memberBaseInfoSchema } from "@/models/member";
+import { CommunicationEmailCode, memberBaseInfoSchema } from "@/models/member";
 import { ACTIVE_PHASES, startupSchemaType } from "@/models/startup";
 import { getCurrentPhase } from "@/utils/startup";
 import betagouv from "@betagouv";
@@ -15,13 +14,13 @@ const createMailingListForStartup = async (startup: startupSchemaType) => {
 };
 
 const addAndRemoveMemberToMailingListForStartup = async (
-    startup: startupSchemaType
+    startup: startupSchemaType,
 ) => {
     const mailingListName = generateMailingListName(startup);
     const startupMembers = (await getUsersByStartup(startup.uuid)).map(
         (user) => {
             return memberBaseInfoSchema.parse(user);
-        }
+        },
     );
     const emails = startupMembers
         .map((dbUser) => {
@@ -36,17 +35,16 @@ const addAndRemoveMemberToMailingListForStartup = async (
             return email;
         })
         .filter((email) => email) as string[];
-    const subscribers = await betagouv.getMailingListSubscribers(
-        mailingListName
-    );
+    const subscribers =
+        await betagouv.getMailingListSubscribers(mailingListName);
     console.log(`Subscriber in ${mailingListName} : ${subscribers.length}`);
     for (const email of emails.filter(
-        (email) => !subscribers.includes(email)
+        (email) => !subscribers.includes(email),
     )) {
         await betagouv.subscribeToMailingList(mailingListName, email);
     }
     for (const subscriber of subscribers.filter(
-        (subscriber) => !emails.includes(subscriber)
+        (subscriber) => !emails.includes(subscriber),
     )) {
         await betagouv.unsubscribeFromMailingList(mailingListName, subscriber);
     }
@@ -55,7 +53,7 @@ const addAndRemoveMemberToMailingListForStartup = async (
 export const createMailingListForStartups = async () => {
     const mailingLists = (await betagouv.getAllMailingList()) || [];
     const startupDetails = (await getAllStartups()).map((startup) =>
-        startupToModel(startup)
+        startupToModel(startup),
     );
     const startupPhases = (
         await db.selectFrom("phases").selectAll().execute()
@@ -63,7 +61,7 @@ export const createMailingListForStartups = async () => {
     console.log(`Will create ${startupDetails.length} mailing lists`);
     for (const startup of startupDetails) {
         const currentStartupPhases = startupPhases.filter(
-            (startupPhase) => startupPhase.startup_id === startup.uuid
+            (startupPhase) => startupPhase.startup_id === startup.uuid,
         );
         const phase = getCurrentPhase(currentStartupPhases);
         if (phase && ACTIVE_PHASES.includes(phase)) {
@@ -80,9 +78,7 @@ export const createMailingListForStartups = async () => {
                     .execute();
                 await addAndRemoveMemberToMailingListForStartup(startup);
                 console.log(
-                    `Create mailing list for : ${generateMailingListName(
-                        startup
-                    )}`
+                    `Create mailing list for : ${generateMailingListName(startup)}`,
                 );
             } catch (e) {
                 console.error(e);

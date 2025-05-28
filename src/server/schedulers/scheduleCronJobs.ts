@@ -23,7 +23,7 @@ const onTickWrapper = (
     name: string,
     onTick: Function,
     onComplete: Function,
-    onError: Function
+    onError: Function,
 ) => {
     return async function () {
         try {
@@ -48,7 +48,7 @@ export function startJobs() {
 
         if (cronjob.isActive) {
             console.log(
-                `🚀 The job "${cronjob.name}" is ON ${cronjob.cronTime}`
+                `🚀 The job "${cronjob.name}" is ON ${cronjob.cronTime}`,
             );
             new CronJob({
                 ...cronjob,
@@ -68,7 +68,7 @@ export function startJobs() {
                             .onConflict((eb) =>
                                 eb.column("name").doUpdateSet({
                                     ...dbTaskSucceed,
-                                })
+                                }),
                             )
                             .execute();
                         return;
@@ -87,11 +87,11 @@ export function startJobs() {
                             .onConflict((eb) =>
                                 eb.column("name").doUpdateSet({
                                     ...dbTaskFailed,
-                                })
+                                }),
                             )
                             .execute();
                         return;
-                    }
+                    },
                 ),
             });
             activeJobs++;
@@ -101,7 +101,7 @@ export function startJobs() {
     }
 
     console.log(
-        `Started ${activeJobs} / ${espaceMembreCronJobs.length} cron jobs`
+        `Started ${activeJobs} / ${espaceMembreCronJobs.length} cron jobs`,
     );
 }
 startJobs();

@@ -5,9 +5,11 @@ import { db } from "@/lib/kysely";
 import { Formation } from "@/models/formation";
 import config from "@/server/config";
 
-export const syncFormationInscriptionFromAirtable = async (syncOnlyNewRecord) => {
+export const syncFormationInscriptionFromAirtable = async (
+    syncOnlyNewRecord,
+) => {
     var base = new Airtable({ apiKey: config.AIRTABLE_API_KEY }).base(
-        config.AIRTABLE_FORMATION_BASE_ID!
+        config.AIRTABLE_FORMATION_BASE_ID!,
     );
     var date = new Date();
     date.setDate(date.getDate() - 19);
@@ -16,7 +18,8 @@ export const syncFormationInscriptionFromAirtable = async (syncOnlyNewRecord) =>
         `DATETIME_DIFF(DATETIME_PARSE(` +
         dateStr +
         `, 'YYYY-MM-DD'),{Created}, 'days')<0`;
-    await base.table("Inscriptions")
+    await base
+        .table("Inscriptions")
         .select({
             filterByFormula,
             view: "Inscrits",
@@ -29,7 +32,7 @@ export const syncFormationInscriptionFromAirtable = async (syncOnlyNewRecord) =>
                     try {
                         const username = (record.get("Email") || "") as string;
                         const formation_record_id = record.get(
-                            "Record ID (from Formation)"
+                            "Record ID (from Formation)",
                         ) as [string];
                         if (formation_record_id) {
                             const formation = await db
@@ -38,11 +41,12 @@ export const syncFormationInscriptionFromAirtable = async (syncOnlyNewRecord) =>
                                 .where(
                                     "airtable_id",
                                     "=",
-                                    formation_record_id[0]
+                                    formation_record_id[0],
                                 )
                                 .executeTakeFirst();
                             if (formation && username) {
-                                await db.insertInto("users_formations")
+                                await db
+                                    .insertInto("users_formations")
                                     .values({
                                         formation_id: formation.id,
                                         username: username.split("@")[0],
@@ -67,6 +71,6 @@ export const syncFormationInscriptionFromAirtable = async (syncOnlyNewRecord) =>
                     console.error(err);
                     return;
                 }
-            }
+            },
         );
 };

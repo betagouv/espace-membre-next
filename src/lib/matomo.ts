@@ -19,6 +19,7 @@ export interface MatomoSite {
     type: string;
 }
 
+/* eslint-disable import/export */
 export interface MatomoUserAccess {
     idSite: number;
     name: string;
@@ -35,6 +36,7 @@ export interface MatomoUserAccess {
     site: number;
     access: MatomoAccess; // Define access levels you want to check
 }
+/* eslint-enable import/export */
 
 export class Matomo implements AccountService {
     private apiUrl: string;
@@ -69,7 +71,7 @@ export class Matomo implements AccountService {
 
                 if (!response.ok) {
                     throw new Error(
-                        `Matomo: Error fetching users: ${response.status} ${response.statusText}`
+                        `Matomo: Error fetching users: ${response.status} ${response.statusText}`,
                     );
                 }
 
@@ -94,7 +96,7 @@ export class Matomo implements AccountService {
      * @param email - The email of the user
      */
     async getUserByEmail(
-        email: string
+        email: string,
     ): Promise<MatomoUser | { result: "error"; message: string }> {
         const response = await fetch(`${this.apiUrl}/index.php`, {
             method: "POST",
@@ -110,7 +112,7 @@ export class Matomo implements AccountService {
 
         if (!response.ok) {
             throw new Error(
-                `Matomo: Error fetching user ${email}: ${response.statusText}`
+                `Matomo: Error fetching user ${email}: ${response.statusText}`,
             );
         }
         return await response.json();
@@ -135,7 +137,7 @@ export class Matomo implements AccountService {
 
         if (!response.ok) {
             throw new Error(
-                `Matomo: Error deleting user ${userLogin}: ${response.statusText}`
+                `Matomo: Error deleting user ${userLogin}: ${response.statusText}`,
             );
         }
 
@@ -143,7 +145,7 @@ export class Matomo implements AccountService {
         console.log(
             result.result === "success"
                 ? `Matomo: User with login: ${userLogin} successfully deleted.`
-                : `Matomo: Failed to delete user with login: ${userLogin}.`
+                : `Matomo: Failed to delete user with login: ${userLogin}.`,
         );
     }
 
@@ -231,7 +233,7 @@ export class Matomo implements AccountService {
         // if sucess response body = { result: 'success', message: 'ok' }
         if (responseBody.result === "error") {
             throw new Error(
-                `Matomo: Failed to create user ${userLogin}: ${responseBody.message}`
+                `Matomo: Failed to create user ${userLogin}: ${responseBody.message}`,
             );
         }
         console.log(`Matomo: User created with login : ${userLogin}`);
@@ -278,13 +280,13 @@ export class Matomo implements AccountService {
                 throw new Error(
                     `Matomo: Failed to grant access to user ${userLogin} with access ${access} ${
                         responseBody.result
-                    } to ${idSites.join(",")}`
+                    } to ${idSites.join(",")}`,
                 );
             }
             console.log(
                 `Matomo: User access granted : user ${userLogin} get ${access} access to ${idSites.join(
-                    ","
-                )}`
+                    ",",
+                )}`,
             );
             return;
         } catch (error) {
@@ -303,7 +305,7 @@ export class Matomo implements AccountService {
     async getSiteOrCreate(
         siteName: string,
         urls: string[],
-        siteType: MATOMO_SITE_TYPE = MATOMO_SITE_TYPE.website
+        siteType: MATOMO_SITE_TYPE = MATOMO_SITE_TYPE.website,
     ): Promise<number> {
         // Check if a site with the given URL already exists
         const existingSiteId = await fetch(`${this.apiUrl}/index.php`, {
@@ -323,7 +325,7 @@ export class Matomo implements AccountService {
             console.log(
                 `Matomo: Site found with id ${
                     existingSiteId[0].idsite
-                } for url : ${urls.join(",")}`
+                } for url : ${urls.join(",")}`,
             );
             // Site with this URL already exists
             return existingSiteId[0].idsite; // Return the existing site ID
@@ -344,7 +346,7 @@ export class Matomo implements AccountService {
     async createSite(
         siteName: string,
         urls: string[],
-        siteType: MATOMO_SITE_TYPE = MATOMO_SITE_TYPE.website
+        siteType: MATOMO_SITE_TYPE = MATOMO_SITE_TYPE.website,
     ): Promise<number> {
         const body = new URLSearchParams({
             module: "API",
@@ -371,7 +373,7 @@ export class Matomo implements AccountService {
             throw new Error(
                 `Matomo : Failed to create site: ${
                     response.statusText
-                } ${urls.join(",")}`
+                } ${urls.join(",")}`,
             );
         }
         console.log(`Matomo: Site created with url : ${urls.join(",")}`);
@@ -405,7 +407,7 @@ export class Matomo implements AccountService {
 
                 if (!response.ok) {
                     throw new Error(
-                        `Matomo: Error fetching users: ${response.status} ${response.statusText}`
+                        `Matomo: Error fetching users: ${response.status} ${response.statusText}`,
                     );
                 }
 

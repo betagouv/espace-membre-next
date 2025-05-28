@@ -12,8 +12,9 @@ import * as mattermost from "@/lib/mattermost";
 import { EventCode, SYSTEM_NAME } from "@/models/actionEvent";
 import { Job } from "@/models/job";
 import { memberBaseInfoToModel } from "@/models/mapper";
-import { CommunicationEmailCode, EmailStatusCode } from "@/models/member";
 import {
+    CommunicationEmailCode,
+    EmailStatusCode,
     memberBaseInfoAndMattermostWrapperType,
     memberBaseInfoSchemaType,
 } from "@/models/member";
@@ -21,7 +22,6 @@ import { OvhRedirection } from "@/models/ovh";
 import { AccountService } from "@/models/services";
 import { sendEmail } from "@/server/config/email.config";
 import BetaGouv from "@betagouv";
-import betagouv from "@betagouv";
 import * as utils from "@controllers/utils";
 import { sleep } from "@controllers/utils";
 import { removeContactsFromMailingList } from "@infra/email/sendInBlue";
@@ -35,11 +35,11 @@ import htmlBuilder from "@modules/htmlbuilder/htmlbuilder";
 
 // get users that are member (got a github card) and mattermost account that is not in the team
 const getRegisteredUsersWithEndingContractInXDays = async (
-    days: number
+    days: number,
 ): Promise<memberBaseInfoAndMattermostWrapperType[]> => {
     const allMattermostUsers = await mattermost.getUserWithParams();
     const users: memberBaseInfoSchemaType[] = (await getAllUsersInfo()).map(
-        (user) => memberBaseInfoToModel(user)
+        (user) => memberBaseInfoToModel(user),
     );
     const activeGithubUsers = users
         .filter((user) => user.missions.length)
@@ -48,7 +48,7 @@ const getRegisteredUsersWithEndingContractInXDays = async (
             const stillActive = !utils.checkUserIsExpired(user);
             const latestMission = user.missions.reduce((a, v) =>
                 //@ts-ignore todo
-                v.end > a.end || !v.end ? v : a
+                v.end > a.end || !v.end ? v : a,
             );
             if (!latestMission.end) {
                 return false;
@@ -57,13 +57,13 @@ const getRegisteredUsersWithEndingContractInXDays = async (
                 stillActive &&
                 differenceInDays(
                     startOfDay(latestMission.end),
-                    startOfDay(today)
+                    startOfDay(today),
                 ) === days
             );
         });
 
     const allMattermostUsersEmails = allMattermostUsers.map(
-        (mattermostUser) => mattermostUser.email
+        (mattermostUser) => mattermostUser.email,
     );
 
     const registeredUsersWithEndingContractInXDays: memberBaseInfoAndMattermostWrapperType[] =
@@ -133,7 +133,7 @@ const sendMessageOnChatAndEmail = async ({
         .sort((dateA, dateB) => dateB!.getTime() - dateA!.getTime())[0];
     if (!endDate) {
         throw new Error(
-            "Error: Member should have at leat one mission with a end date"
+            "Error: Member should have at leat one mission with a end date",
         );
     }
     const variables: EmailEndingContract["variables"] = {
@@ -144,27 +144,27 @@ const sendMessageOnChatAndEmail = async ({
         endDate: endDate,
         jobs: user.userInfos.domaine
             ? jobs
-                .filter((job) => job.domaines.includes(user.userInfos.domaine)
-                )
-                .slice(0, 3)
+                  .filter((job) =>
+                      job.domaines.includes(user.userInfos.domaine),
+                  )
+                  .slice(0, 3)
             : [],
-        days: 2
+        days: 2,
     };
     const contentProps = {
         type: messageType,
         variables,
     };
-    const messageContent = await htmlBuilder.renderContentForTypeAsMarkdown(
-        contentProps
-    );
+    const messageContent =
+        await htmlBuilder.renderContentForTypeAsMarkdown(contentProps);
     try {
         await BetaGouv.sendInfoToChat(
             messageContent,
             "secretariat",
-            user.mattermostUsername
+            user.mattermostUsername,
         );
         console.log(
-            `Send ending contract (${messageType} days) message on mattermost to ${user.mattermostUsername}`
+            `Send ending contract (${messageType} days) message on mattermost to ${user.mattermostUsername}`,
         );
         sleep(1000);
     } catch (err) {
@@ -186,7 +186,7 @@ const sendMessageOnChatAndEmail = async ({
                 toEmail: email.split(","),
             });
             console.log(
-                `Send ending contract (${messageType} days) email to ${email}`
+                `Send ending contract (${messageType} days) email to ${email}`,
             );
         }
     } catch (err) {
@@ -197,7 +197,7 @@ const sendMessageOnChatAndEmail = async ({
 export async function sendContractEndingMessageToUsers(
     configName: string,
     sendToSecondary = false,
-    users = null
+    users = null,
 ) {
     console.log("Run send contract ending message to users");
     const messageConfig = CONFIG_ENDING_CONTRACT_MESSAGE[configName];
@@ -207,7 +207,7 @@ export async function sendContractEndingMessageToUsers(
     } else {
         registeredUsersWithEndingContractInXDays =
             await getRegisteredUsersWithEndingContractInXDays(
-                messageConfig.days
+                messageConfig.days,
             );
     }
     const jobs: Job[] = [];
@@ -220,18 +220,18 @@ export async function sendContractEndingMessageToUsers(
                 jobs,
                 days: messageConfig.days,
             });
-        })
+        }),
     );
 }
 
 export async function sendInfoToSecondaryEmailAfterXDays(
     nbDays: 1 | 30,
-    optionalExpiredUsers?: memberBaseInfoSchemaType[]
+    optionalExpiredUsers?: memberBaseInfoSchemaType[],
 ) {
     let expiredUsers = optionalExpiredUsers;
     if (!expiredUsers) {
         const users = (await getAllUsersInfo()).map((user) =>
-            memberBaseInfoToModel(user)
+            memberBaseInfoToModel(user),
         );
         expiredUsers = utils.getExpiredUsersForXDays(users, nbDays);
     }
@@ -249,19 +249,19 @@ export async function sendInfoToSecondaryEmailAfterXDays(
                         },
                     });
                     console.log(
-                        `Envoie du message fin de contrat +${nbDays} à ${email}`
+                        `Envoie du message fin de contrat +${nbDays} à ${email}`,
                     );
                 } else {
                     console.error(
-                        `Le compte ${user.username} n'a pas d'adresse secondaire`
+                        `Le compte ${user.username} n'a pas d'adresse secondaire`,
                     );
                 }
             } catch (err) {
                 throw new Error(
-                    `Erreur d'envoi de mail à l'adresse indiquée ${err}`
+                    `Erreur d'envoi de mail à l'adresse indiquée ${err}`,
                 );
             }
-        })
+        }),
     );
 }
 
@@ -274,13 +274,13 @@ export async function sendJ30Email(users) {
 }
 
 export async function deleteOVHEmailAcounts(
-    optionalExpiredUsers?: memberBaseInfoSchemaType[]
+    optionalExpiredUsers?: memberBaseInfoSchemaType[],
 ) {
     let expiredUsers = optionalExpiredUsers;
     let dbUsers: memberBaseInfoSchemaType[] = [];
     if (!expiredUsers) {
         const users = (await getAllUsersInfo()).map((user) =>
-            memberBaseInfoToModel(user)
+            memberBaseInfoToModel(user),
         );
         const allOvhEmails = await BetaGouv.getAllEmailInfos();
         const today = new Date();
@@ -315,22 +315,22 @@ export async function deleteOVHEmailAcounts(
             console.log(`Suppression de l'email ovh pour ${user.username}`);
         } catch {
             console.log(
-                `Erreur lors de la suppression de l'email ovh pour ${user.username}`
+                `Erreur lors de la suppression de l'email ovh pour ${user.username}`,
             );
         }
     }
 }
 
 export async function deleteSecondaryEmailsForUsers(
-    optionalExpiredUsers?: memberBaseInfoSchemaType[]
+    optionalExpiredUsers?: memberBaseInfoSchemaType[],
 ) {
     let expiredUsers = optionalExpiredUsers;
     if (!expiredUsers) {
         const users = (await getAllUsersInfo()).map((user) =>
-            memberBaseInfoToModel(user)
+            memberBaseInfoToModel(user),
         );
         expiredUsers = users.filter((user) =>
-            utils.checkUserIsExpired(user, 30)
+            utils.checkUserIsExpired(user, 30),
         );
     }
     const today = new Date();
@@ -343,7 +343,7 @@ export async function deleteSecondaryEmailsForUsers(
                 EmailStatusCode.EMAIL_DELETED,
                 EmailStatusCode.EMAIL_EXPIRED,
             ].includes(user.primary_email_status) &&
-            user.primary_email_status_updated_at < todayLess30days
+            user.primary_email_status_updated_at < todayLess30days,
     );
     for (const user of dbUsers) {
         try {
@@ -357,7 +357,7 @@ export async function deleteSecondaryEmailsForUsers(
             console.log(`Suppression de secondary_email pour ${user.username}`);
         } catch {
             console.log(
-                `Erreur lors de la suppression de secondary_email pour ${user.username}`
+                `Erreur lors de la suppression de secondary_email pour ${user.username}`,
             );
         }
     }
@@ -372,7 +372,7 @@ export async function deleteSentryAccount() {
 }
 
 export async function deleteServiceAccounts(
-    service: AccountService // Accept any service that implements the AccountService interface
+    service: AccountService, // Accept any service that implements the AccountService interface
 ) {
     const allServiceUsers = await service.getAllUsers();
     // const allServiceUserEmails = allServiceUsers.map((user) => user.email);
@@ -380,7 +380,7 @@ export async function deleteServiceAccounts(
     const todayLess30days = new Date();
     todayLess30days.setDate(today.getDate() - 30);
     const expiredUsers = (await getAllExpiredUsers(todayLess30days)).map(
-        (user) => memberBaseInfoToModel(user)
+        (user) => memberBaseInfoToModel(user),
     );
 
     const expiredUsersWrappers = expiredUsers
@@ -389,7 +389,7 @@ export async function deleteServiceAccounts(
             serviceUser:
                 allServiceUsers.find(
                     (serviceUser) =>
-                        serviceUser.user.email === expiredUsers.primary_email
+                        serviceUser.user.email === expiredUsers.primary_email,
                 ) || null,
         }))
         .filter((expiredUser) => expiredUser.serviceUser);
@@ -398,13 +398,13 @@ export async function deleteServiceAccounts(
         try {
             if (user.serviceUser?.serviceUserId) {
                 console.log(
-                    `Suppression du compte ${service.name} pour ${user.dbUser.username}`
+                    `Suppression du compte ${service.name} pour ${user.dbUser.username}`,
                 );
                 await service.deleteUserByServiceId(
-                    user.serviceUser.serviceUserId
+                    user.serviceUser.serviceUserId,
                 );
                 console.log(
-                    `Compte ${service.name} supprimé pour ${user.dbUser.username}`
+                    `Compte ${service.name} supprimé pour ${user.dbUser.username}`,
                 );
                 await addEvent({
                     created_by_username: SYSTEM_NAME,
@@ -417,17 +417,17 @@ export async function deleteServiceAccounts(
             }
         } catch (err) {
             console.error(
-                `Erreur lors de la suppression du compte pour ${user.dbUser.username} : ${err}`
+                `Erreur lors de la suppression du compte pour ${user.dbUser.username} : ${err}`,
             );
         }
     }
 }
 
 export async function deleteRedirectionsAfterQuitting(
-    check_all = false
+    check_all = false,
 ): Promise<unknown[]> {
     const users = (await getAllUsersInfo()).map((user) =>
-        memberBaseInfoToModel(user)
+        memberBaseInfoToModel(user),
     );
     const expiredUsers = check_all
         ? utils.getExpiredUsers(users, 1)
@@ -441,63 +441,63 @@ export async function deleteRedirectionsAfterQuitting(
                 });
 
                 console.log(
-                    `Suppression des redirections pour ${user.fullname}`
+                    `Suppression des redirections pour ${user.fullname}`,
                 );
 
                 redirections.map(
                     async (r: OvhRedirection) =>
                         await BetaGouv.deleteRedirection(
                             utils.buildBetaEmail(user.username),
-                            r.to
-                        )
+                            r.to,
+                        ),
                 );
             } catch (err) {
                 console.log(
-                    `Impossible de modifier les redirections pour ${user.fullname}: ${err}`
+                    `Impossible de modifier les redirections pour ${user.fullname}: ${err}`,
                 );
             }
-        })
+        }),
     );
 }
 const removeEmailFromMailingList = async (
     userId: string,
-    mailingList: string[]
+    mailingList: string[],
 ) => {
     return Promise.all(
         mailingList.map(async (mailing: string) => {
             try {
                 await BetaGouv.unsubscribeFromMailingList(
                     mailing,
-                    utils.buildBetaEmail(userId)
+                    utils.buildBetaEmail(userId),
                 );
                 console.log(
                     `Suppression de ${utils.buildBetaEmail(
-                        userId
-                    )} de la mailing list ${mailing}`
+                        userId,
+                    )} de la mailing list ${mailing}`,
                 );
             } catch (err) {
                 console.error(
                     `Erreur lors de la suppression de l'email ${utils.buildBetaEmail(
-                        userId
-                    )} de la mailing list ${mailing}  : ${err}`
+                        userId,
+                    )} de la mailing list ${mailing}  : ${err}`,
                 );
             }
-        })
+        }),
     );
 };
 
 export async function removeEmailsFromMailingList(
     optionalExpiredUsers?: memberBaseInfoSchemaType[],
-    nbDays = 30
+    nbDays = 30,
 ) {
     let expiredUsers = optionalExpiredUsers;
     if (!expiredUsers) {
         const users = (await getAllUsersInfo()).map((user) =>
-            memberBaseInfoToModel(user)
+            memberBaseInfoToModel(user),
         );
         expiredUsers = utils.getExpiredUsersForXDays(users, nbDays);
     }
-    const mailingList: string[] = (await betagouv.getAllMailingList()) || [];
+    const mailingList: string[] = (await BetaGouv.getAllMailingList()) || [];
     for (const user of expiredUsers) {
         try {
             await removeEmailFromMailingList(user.username, mailingList);
@@ -509,7 +509,7 @@ export async function removeEmailsFromMailingList(
         try {
             await removeContactsFromMailingList({
                 emails: [user.primary_email, user.secondary_email].filter(
-                    (str) => str
+                    (str) => str,
                 ) as string[],
                 listType: MAILING_LIST_TYPE.NEWSLETTER,
             });
@@ -519,7 +519,7 @@ export async function removeEmailsFromMailingList(
         try {
             await removeContactsFromMailingList({
                 emails: [user.primary_email, user.secondary_email].filter(
-                    (str) => str
+                    (str) => str,
                 ) as string[],
                 listType: MAILING_LIST_TYPE.ONBOARDING,
             });

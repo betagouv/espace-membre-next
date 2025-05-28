@@ -9,14 +9,14 @@ import * as utils from "@controllers/utils";
 
 export async function removeUsersFromCommunityTeam(
     optionalUsers?: memberBaseInfoSchemaType[],
-    checkAll = true
+    checkAll = true,
 ) {
     // Removed users referenced on github but expired for more than 3 months
     let users = optionalUsers;
     console.log("Start function remove users from community team");
     if (!users) {
         users = (await getAllUsersInfo()).map((user) =>
-            memberBaseInfoToModel(user)
+            memberBaseInfoToModel(user),
         );
         users = checkAll
             ? utils.getExpiredUsers(users, 3 * 30)
@@ -44,24 +44,24 @@ export async function removeUsersFromCommunityTeam(
                     });
                 if (!mattermostUsers.length || mattermostUsers.length > 1) {
                     console.error(
-                        `Cannot find mattermost user for ${user.username} : ${mattermostUsers.length} found`
+                        `Cannot find mattermost user for ${user.username} : ${mattermostUsers.length} found`,
                     );
                     return;
                 }
                 const res = await mattermost.removeUserFromTeam(
                     mattermostUsers[0].id,
-                    config.mattermostTeamId
+                    config.mattermostTeamId,
                 );
                 console.log(
-                    `User ${user.username} with mattermost username ${mattermostUsers[0].username} has been removed from community`
+                    `User ${user.username} with mattermost username ${mattermostUsers[0].username} has been removed from community`,
                 );
                 return res;
             } catch (err) {
                 throw new Error(
-                    `Error while removing user ${user.username} from community team : ${err}`
+                    `Error while removing user ${user.username} from community team : ${err}`,
                 );
             }
-        })
+        }),
     );
     return results;
 }

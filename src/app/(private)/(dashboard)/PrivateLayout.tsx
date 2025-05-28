@@ -41,7 +41,7 @@ export function PrivateLayout({ children }: { children: React.ReactNode }) {
     const communityLink = linkRegistry.get("community", undefined);
     const communityCreateMemberLink = linkRegistry.get(
         "communityCreateMember",
-        undefined
+        undefined,
     );
     const dashboardLink = linkRegistry.get("dashboard", undefined);
     const startupListLink = linkRegistry.get("startupList", undefined);
@@ -54,11 +54,11 @@ export function PrivateLayout({ children }: { children: React.ReactNode }) {
 
     const organizationListLink = linkRegistry.get(
         "organizationList",
-        undefined
+        undefined,
     );
     const organizationCreateLink = linkRegistry.get(
         "organizationCreate",
-        undefined
+        undefined,
     );
     const teamListLink = linkRegistry.get("teamList", undefined);
     const teamCreateLink = linkRegistry.get("teamCreate", undefined);
@@ -67,11 +67,11 @@ export function PrivateLayout({ children }: { children: React.ReactNode }) {
     const newsletterLink = linkRegistry.get("newsletters", undefined);
     const accountEditBaseInfoLink = linkRegistry.get(
         "accountEditBaseInfo",
-        undefined
+        undefined,
     );
     const accountBadgeRenewalLink = linkRegistry.get(
         "accountBadgeRenewal",
-        undefined
+        undefined,
     );
     const metabaseLink = linkRegistry.get("metabase", undefined);
     const serviceLink = "/services";
@@ -99,7 +99,7 @@ export function PrivateLayout({ children }: { children: React.ReactNode }) {
                     text: currentPage,
                     isActive: hasPathnameThisRegex(
                         pathname,
-                        "^/startups/[^/]+"
+                        "^/startups/[^/]+",
                     ),
                     items: [
                         {
@@ -135,7 +135,7 @@ export function PrivateLayout({ children }: { children: React.ReactNode }) {
                             text: routeTitles.communityCreateMember(),
                             isActive: hasPathnameThisMatch(
                                 pathname,
-                                communityCreateMemberLink
+                                communityCreateMemberLink,
                             ),
                         },
                         {
@@ -146,7 +146,7 @@ export function PrivateLayout({ children }: { children: React.ReactNode }) {
                             text: currentPage,
                             isActive: hasPathnameThisRegex(
                                 pathname,
-                                "^/community/[a-zA-Z]+.[a-zA-Z]+"
+                                "^/community/[a-zA-Z]+.[a-zA-Z]+",
                             ),
                             items: [
                                 {
@@ -154,7 +154,7 @@ export function PrivateLayout({ children }: { children: React.ReactNode }) {
                                     text: "Mise à jour de la fiche",
                                     isActive: hasPathnameThisRegex(
                                         pathname,
-                                        "^/community/[a-zA-Z]+.[a-zA-Z]+/update"
+                                        "^/community/[a-zA-Z]+.[a-zA-Z]+/update",
                                     ),
                                 },
                                 {
@@ -162,7 +162,7 @@ export function PrivateLayout({ children }: { children: React.ReactNode }) {
                                     text: "Validation de la fiche",
                                     isActive: hasPathnameThisRegex(
                                         pathname,
-                                        "^/community/[a-zA-Z]+.[a-zA-Z]+/validate"
+                                        "^/community/[a-zA-Z]+.[a-zA-Z]+/validate",
                                     ),
                                 },
                             ],
@@ -179,7 +179,7 @@ export function PrivateLayout({ children }: { children: React.ReactNode }) {
                             text: routeTitles.incubatorCreate(),
                             isActive: hasPathnameThisMatch(
                                 pathname,
-                                incubatorCreateLink
+                                incubatorCreateLink,
                             ),
                         },
                         {
@@ -190,7 +190,7 @@ export function PrivateLayout({ children }: { children: React.ReactNode }) {
                             text: currentPage,
                             isActive: hasPathnameThisRegex(
                                 pathname,
-                                "^/incubators/[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$"
+                                "^/incubators/[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$",
                             ),
                             items: [
                                 {
@@ -198,7 +198,7 @@ export function PrivateLayout({ children }: { children: React.ReactNode }) {
                                     text: "Modifier la fiche",
                                     isActive: hasPathnameThisRegex(
                                         pathname,
-                                        "^/incubators/[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}/info-form$"
+                                        "^/incubators/[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}/info-form$",
                                     ),
                                 },
                             ],
@@ -210,7 +210,7 @@ export function PrivateLayout({ children }: { children: React.ReactNode }) {
                     text: "Sponsors",
                     isActive: hasPathnameThisMatch(
                         pathname,
-                        organizationListLink
+                        organizationListLink,
                     ),
                     items: [
                         {
@@ -218,7 +218,7 @@ export function PrivateLayout({ children }: { children: React.ReactNode }) {
                             text: routeTitles.organizationCreate(),
                             isActive: hasPathnameThisMatch(
                                 pathname,
-                                organizationCreateLink
+                                organizationCreateLink,
                             ),
                         },
                         {
@@ -231,7 +231,7 @@ export function PrivateLayout({ children }: { children: React.ReactNode }) {
                             text: currentPage,
                             isActive: hasPathnameThisRegex(
                                 pathname,
-                                "^/organizations/[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$"
+                                "^/organizations/[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$",
                             ),
                             items: [
                                 {
@@ -239,7 +239,7 @@ export function PrivateLayout({ children }: { children: React.ReactNode }) {
                                     text: "Modifier la fiche",
                                     isActive: hasPathnameThisRegex(
                                         pathname,
-                                        "^/organizations/[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}/info-form$"
+                                        "^/organizations/[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}/info-form$",
                                     ),
                                 },
                             ],
@@ -256,7 +256,7 @@ export function PrivateLayout({ children }: { children: React.ReactNode }) {
                             text: routeTitles.teamCreate(),
                             isActive: hasPathnameThisMatch(
                                 pathname,
-                                teamCreateLink
+                                teamCreateLink,
                             ),
                         },
                         {
@@ -267,7 +267,7 @@ export function PrivateLayout({ children }: { children: React.ReactNode }) {
                             text: currentPage,
                             isActive: hasPathnameThisRegex(
                                 pathname,
-                                "^/teams/[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$"
+                                "^/teams/[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$",
                             ),
                             items: [
                                 {
@@ -275,7 +275,7 @@ export function PrivateLayout({ children }: { children: React.ReactNode }) {
                                     text: "Modifier la fiche",
                                     isActive: hasPathnameThisRegex(
                                         pathname,
-                                        "^/teams/[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}/info-form$"
+                                        "^/teams/[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}/info-form$",
                                     ),
                                 },
                             ],
@@ -294,7 +294,7 @@ export function PrivateLayout({ children }: { children: React.ReactNode }) {
                     text: "Modifier ma fiche",
                     isActive: hasPathnameThisMatch(
                         pathname,
-                        accountEditBaseInfoLink
+                        accountEditBaseInfoLink,
                     ),
                 },
                 {
@@ -307,7 +307,7 @@ export function PrivateLayout({ children }: { children: React.ReactNode }) {
                             text: "Sentry",
                             isActive: hasPathnameThisMatch(
                                 pathname,
-                                "/services/sentry"
+                                "/services/sentry",
                             ),
                             items: [
                                 {
@@ -315,7 +315,7 @@ export function PrivateLayout({ children }: { children: React.ReactNode }) {
                                     text: "Ajouter une équipe",
                                     isActive: hasPathnameThisMatch(
                                         pathname,
-                                        "/services/sentry/request"
+                                        "/services/sentry/request",
                                     ),
                                     items: [
                                         {
@@ -323,7 +323,7 @@ export function PrivateLayout({ children }: { children: React.ReactNode }) {
                                             text: "Créer une nouvelle équipe",
                                             isActive: hasPathnameThisMatch(
                                                 pathname,
-                                                "/services/sentry/request/new"
+                                                "/services/sentry/request/new",
                                             ),
                                         },
                                     ],
@@ -335,7 +335,7 @@ export function PrivateLayout({ children }: { children: React.ReactNode }) {
                             text: "Matomo",
                             isActive: hasPathnameThisMatch(
                                 pathname,
-                                "/services/matomo"
+                                "/services/matomo",
                             ),
                             items: [
                                 {
@@ -343,7 +343,7 @@ export function PrivateLayout({ children }: { children: React.ReactNode }) {
                                     text: "Ajouter un site",
                                     isActive: hasPathnameThisMatch(
                                         pathname,
-                                        "/services/matomo/request"
+                                        "/services/matomo/request",
                                     ),
                                     items: [
                                         {
@@ -351,7 +351,7 @@ export function PrivateLayout({ children }: { children: React.ReactNode }) {
                                             text: "Créer un nouveau site",
                                             isActive: hasPathnameThisMatch(
                                                 pathname,
-                                                "/services/matomo/request/new"
+                                                "/services/matomo/request/new",
                                             ),
                                         },
                                     ],
@@ -363,7 +363,7 @@ export function PrivateLayout({ children }: { children: React.ReactNode }) {
                             text: "Mattermost",
                             isActive: hasPathnameThisMatch(
                                 pathname,
-                                "/services/mattermost"
+                                "/services/mattermost",
                             ),
                         },
                     ],
@@ -390,7 +390,7 @@ export function PrivateLayout({ children }: { children: React.ReactNode }) {
                     text: currentPage || pathname,
                     isActive: hasPathnameThisRegex(
                         pathname,
-                        formationDetailLink
+                        formationDetailLink,
                     ),
                 },
             ],

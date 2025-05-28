@@ -55,7 +55,7 @@ import {
 
 async function changeSecondaryEmailForUser(
     secondary_email: string,
-    username: string
+    username: string,
 ): Promise<void> {
     const session = await getServerSession(authOptions);
     if (!session || !session.user.id) {
@@ -95,7 +95,7 @@ async function changeSecondaryEmailForUser(
 }
 
 export async function updateCommunicationEmail(
-    communication_email: CommunicationEmailCode
+    communication_email: CommunicationEmailCode,
 ) {
     const session = await getServerSession(authOptions);
     if (!session || !session.user.id) {
@@ -149,7 +149,7 @@ export async function updateCommunicationEmail(
 
 async function changeContactEmail(
     previousEmail,
-    contact: Contact
+    contact: Contact,
 ): Promise<void> {
     if (config.FEATURE_SIB_USE_UPDATE_CONTACT_EMAIL) {
         await updateContactEmail({
@@ -179,7 +179,7 @@ export async function setEmailResponder({
     }
     if (!to || new Date(to).getTime() < new Date(from).getTime()) {
         throw new ValidationError(
-            "nouvelle date de fin : la date doit être supérieure à la date de début"
+            "nouvelle date de fin : la date doit être supérieure à la date de début",
         );
     }
     const responder = await betagouv.getResponder(session.user.id);
@@ -240,7 +240,7 @@ async function deleteResponder(): Promise<void> {
 }
 
 async function getUserPublicInfo(
-    username: string
+    username: string,
 ): Promise<memberWrapperPublicInfoSchemaType> {
     const user = await userInfos({ username }, false);
 
@@ -249,7 +249,7 @@ async function getUserPublicInfo(
         user.emailInfos || user.emailRedirections.length > 0;
     if (!hasGithubFile && !hasEmailAddress) {
         throw new NoDataError(
-            "Il n'y a pas de membre avec ce compte mail. Vous pouvez commencez par l'inviter <a href=\"/onboarding\">en cliquant ici</a>."
+            "Il n'y a pas de membre avec ce compte mail. Vous pouvez commencez par l'inviter <a href=\"/onboarding\">en cliquant ici</a>.",
         );
     }
     const dbUser = await db
@@ -286,21 +286,21 @@ async function getUserPublicInfo(
 }
 
 async function updateMemberMissions(
-    updateMemberMissionsData: updateMemberMissionsSchemaType
+    updateMemberMissionsData: updateMemberMissionsSchemaType,
 ): Promise<void> {
     const session = await getServerSession(authOptions);
     if (!session || !session.user.id) {
         throw new AuthorizationError();
     }
     const missionData = updateMemberMissionsSchema.parse(
-        updateMemberMissionsData
+        updateMemberMissionsData,
     );
     const missions = missionData.missions;
     const memberUuid = missionData.memberUuid;
     const dbUser = await getUserBasicInfo({ uuid: memberUuid });
     if (!dbUser) {
         throw new NoDataError(
-            `Impossible de trouver les données sur le membre`
+            `Impossible de trouver les données sur le membre`,
         );
     }
     const previousInfo = memberBaseInfoToModel(dbUser);
@@ -316,7 +316,7 @@ async function updateMemberMissions(
         for (const mission of missions) {
             if (mission.uuid) {
                 const missionPreviousData = previousInfo?.missions.find(
-                    (m) => m.uuid === mission.uuid
+                    (m) => m.uuid === mission.uuid,
                 );
                 if (!missionPreviousData) {
                     throw new NoDataError("La mission devrait déjà exister");
@@ -328,7 +328,7 @@ async function updateMemberMissions(
                         mission.end < missionPreviousData.end)
                 ) {
                     throw new ValidationError(
-                        "Error: La nouvelle date de mission doit être supérieur à la précédente."
+                        "Error: La nouvelle date de mission doit être supérieur à la précédente.",
                     );
                 }
                 const { uuid, end } = mission;
@@ -339,7 +339,7 @@ async function updateMemberMissions(
                         user_id: memberUuid,
                         startups: mission.startups,
                     },
-                    trx
+                    trx,
                 );
             } else {
                 await createMission(
@@ -348,7 +348,7 @@ async function updateMemberMissions(
                         user_id: memberUuid,
                         startups: mission.startups,
                     },
-                    trx
+                    trx,
                 );
             }
         }
@@ -372,7 +372,7 @@ export async function manageSecondaryEmailForUser({
     const user = await userInfos({ username }, isCurrentUser);
     if (!isCurrentUser && !user.isExpired) {
         throw new BusinessError(
-            `Le compte "${username}" n'est pas expiré, vous ne pouvez pas supprimer ce compte.`
+            `Le compte "${username}" n'est pas expiré, vous ne pouvez pas supprimer ce compte.`,
         );
     }
 
@@ -409,7 +409,7 @@ export async function manageSecondaryEmailForUser({
         });
 
         console.log(
-            `${session.user.id} a mis à jour son adresse mail secondaire.`
+            `${session.user.id} a mis à jour son adresse mail secondaire.`,
         );
     }
 }

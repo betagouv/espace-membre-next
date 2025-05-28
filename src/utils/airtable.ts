@@ -8,7 +8,7 @@ import {
 } from "@/models/formation";
 
 export const airtableRecordToFormation = (
-    record: Record<FieldSet>
+    record: Record<FieldSet>,
 ): Formation => {
     const image = record.fields["Image"];
 
@@ -56,7 +56,7 @@ export const airtableRecordToFormation = (
 };
 
 export const airtableRecordToFormationInscription = (
-    record: Record<FieldSet>
+    record: Record<FieldSet>,
 ): FormationInscription => {
     return formationInscriptionSchema.parse({
         username: record.fields["username"],

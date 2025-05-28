@@ -148,7 +148,7 @@ export const phaseSchema = z.object({
                     message: "Champ obligatoire",
                 }),
             })
-            .describe("Date de début de la phase")
+            .describe("Date de début de la phase"),
     ),
     startup_id: z.string(),
     end: z
@@ -180,7 +180,7 @@ export const eventSchema = z.object({
                     message: "Champ obligatoire",
                 }),
             })
-            .describe("Date")
+            .describe("Date"),
     ),
     startup_id: z.string(),
     comment: z.string().optional().nullable(),
@@ -259,7 +259,7 @@ export const startupSchema = z.object({
     mon_service_securise: z
         .boolean()
         .describe(
-            "L'équipe a mené une démarche de sécurité sur MonServiceSécurisé"
+            "L'équipe a mené une démarche de sécurité sur MonServiceSécurisé",
         )
         .optional()
         .nullable(),
@@ -312,7 +312,7 @@ export const startupSchema = z.object({
     is_private_url: z
         .boolean()
         .describe(
-            "L'application n'est pas accessible au public (accès restreint)"
+            "L'application n'est pas accessible au public (accès restreint)",
         )
         .optional()
         .nullable(),

@@ -46,7 +46,7 @@ export const startup = z.object({
                 name: z.string(),
                 comment: z.string().optional(),
                 date: z.date(),
-            })
+            }),
         )
         .optional(),
     phases: z
@@ -56,7 +56,7 @@ export const startup = z.object({
                 start: z.date(),
                 end: z.date().optional().nullable(),
                 comment: z.string().optional(),
-            })
+            }),
         )
         .optional(),
     techno: z.array(z.string()).optional(),
@@ -110,7 +110,7 @@ export const author = z.object({
                     .array(z.string())
                     .optional()
                     .superRefine(preventDuplicates),
-            })
+            }),
         )
         .optional(),
     previously: z

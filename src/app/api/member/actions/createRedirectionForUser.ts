@@ -33,7 +33,7 @@ export async function createRedirectionForUser({
     // TODO: généraliser ce code dans un `app.param("id")` ?
     if (!user.userInfos) {
         throw new Error(
-            `Le membre ${username} n'a pas de fiche membre : vous ne pouvez pas créer de redirection.`
+            `Le membre ${username} n'a pas de fiche membre : vous ne pouvez pas créer de redirection.`,
         );
     }
 
@@ -46,7 +46,7 @@ export async function createRedirectionForUser({
     }
 
     console.log(
-        `Création d'une redirection d'email id=${session.user.id}&from_email=${username}&to_email=${to_email}&keep_copy=${keep_copy}`
+        `Création d'une redirection d'email id=${session.user.id}&from_email=${username}&to_email=${to_email}&keep_copy=${keep_copy}`,
     );
 
     const secretariatUrl = `${config.protocol}://${config.host}`;
@@ -66,7 +66,7 @@ export async function createRedirectionForUser({
         await betagouv.createRedirection(
             buildBetaEmail(username),
             to_email,
-            keep_copy === true
+            keep_copy === true,
         );
     } catch (err) {
         console.log(err);

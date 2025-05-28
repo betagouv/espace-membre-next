@@ -72,7 +72,7 @@ const tags: AudienceCategoryType[] = [
 
 const applyFilter = (
     formation: Formation,
-    selectedFilter: AudienceCategoryType
+    selectedFilter: AudienceCategoryType,
 ) => {
     if (selectedFilter.type === "audience") {
         return formation.audience?.includes(selectedFilter.value);
@@ -106,7 +106,7 @@ export default function FormationList({
 
             return params.toString();
         },
-        [searchParams]
+        [searchParams],
     );
 
     useEffect(() => {
@@ -117,7 +117,7 @@ export default function FormationList({
                 .map((filter) => filter.value)
                 .join(",");
             router.push(
-                pathname + "?" + createQueryString("filter", filterValues)
+                pathname + "?" + createQueryString("filter", filterValues),
             );
             sessionStorage.setItem("filter", filterValues);
         }
@@ -127,7 +127,7 @@ export default function FormationList({
         if (selectedFilters.find((filter) => filter.value === tag.value)) {
             setSelectedFilters([
                 ...selectedFilters.filter(
-                    (filter) => filter.value !== tag.value
+                    (filter) => filter.value !== tag.value,
                 ),
             ]);
         } else {
@@ -150,18 +150,20 @@ export default function FormationList({
         <div>
             <ul className="fr-tags-group fr-my-2w">
                 {tags.map((tag) => (
-                    <li key={tag.value}><Tag
-                        nativeButtonProps={{
-                            onClick: () => filterFormationWithKey(tag),
-                        }}
-                        pressed={
-                            !!selectedFilters.find(
-                                (filter) => filter.value === tag.value
-                            )
-                        }
-                    >
-                        {tag.label}
-                    </Tag></li>
+                    <li key={tag.value}>
+                        <Tag
+                            nativeButtonProps={{
+                                onClick: () => filterFormationWithKey(tag),
+                            }}
+                            pressed={
+                                !!selectedFilters.find(
+                                    (filter) => filter.value === tag.value,
+                                )
+                            }
+                        >
+                            {tag.label}
+                        </Tag>
+                    </li>
                 ))}
             </ul>
             {!!filteredFormations.length && (
@@ -177,7 +179,7 @@ export default function FormationList({
                                     !!inscriptions.find(
                                         (inscription) =>
                                             inscription.formation ===
-                                            formation.airtable_id
+                                            formation.airtable_id,
                                     )
                                 }
                                 isMemberOnWaitingList={
@@ -185,7 +187,7 @@ export default function FormationList({
                                         (inscription) =>
                                             inscription.formation ===
                                                 formation.airtable_id &&
-                                            inscription.isInWaitingList
+                                            inscription.isInWaitingList,
                                     )
                                 }
                             />

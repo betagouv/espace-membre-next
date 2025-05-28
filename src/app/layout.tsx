@@ -7,6 +7,7 @@ import { DsfrProvider } from "@codegouvfr/react-dsfr/next-appdir/DsfrProvider";
 import { getHtmlAttributes } from "@codegouvfr/react-dsfr/next-appdir/getHtmlAttributes";
 import Link from "next/link";
 import { getServerSession } from "next-auth/next";
+import { NuqsAdapter } from "nuqs/adapters/next/app";
 import { NextAppDirEmotionCacheProvider } from "tss-react/next/appDir";
 
 import { BreadCrumbProvider } from "./BreadCrumbProvider";
@@ -16,10 +17,9 @@ import { MuiDsfrThemeProvider } from "./MuiDsfrThemeProvider";
 import { StartDsfr } from "./StartDsfr";
 import { Matomo } from "@/app/Matomo";
 import Header from "@/components/Header";
-import { Skiplinks } from "@/components/Skiplinks";
 import { LiveChatProvider } from "@/components/live-chat/LiveChatProvider";
+import { Skiplinks } from "@/components/Skiplinks";
 import { authOptions } from "@/utils/authoptions";
-import { NuqsAdapter } from "nuqs/adapters/next/app";
 
 export interface RootLayoutProps {
     workaroundForNextJsPages?: boolean;
@@ -50,7 +50,7 @@ async function MainStructure(props: PropsWithChildren) {
                                         <NuqsAdapter>
                                             <div
                                                 className={`fr-container fr-container--fluid ${fr.cx(
-                                                    "fr-mb-10v"
+                                                    "fr-mb-10v",
                                                 )}`}
                                                 id="root-container"
                                             >

@@ -10,15 +10,16 @@ export async function reactivateUsers() {
         await mattermost.getInactiveMattermostUsers();
 
     const users = (await getAllUsersInfo()).map((user) =>
-        memberBaseInfoToModel(user)
+        memberBaseInfoToModel(user),
     );
     const currentUsers = users.filter((x) => !utils.checkUserIsExpired(x));
 
     const currentUsersEmails = currentUsers.map(
-        (user) => `${user.username}@${config.domain}`
+        (user) => `${user.username}@${config.domain}`,
     );
     const mattermostUsersToReactivate = inactiveMattermostUsers.filter(
-        ({ email }) => currentUsersEmails.find((userMail) => userMail === email)
+        ({ email }) =>
+            currentUsersEmails.find((userMail) => userMail === email),
     );
 
     for (const member of mattermostUsersToReactivate) {

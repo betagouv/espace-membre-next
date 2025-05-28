@@ -20,7 +20,7 @@ export const missionSchema = z.object({
                 errorMap: (issue, ctx) => ({
                     message: "Champ obligatoire",
                 }),
-            })
+            }),
         )
         .describe("Date de début de mission"),
     end: z
@@ -38,7 +38,7 @@ export const missionSchema = z.object({
                     }),
                 })
 
-                .optional()
+                .optional(),
         )
         .describe("Date de fin de mission")
         .optional()
@@ -50,7 +50,7 @@ export const missionSchema = z.object({
                 errorMap: (issue, ctx) => ({
                     message: "Le statut est requis",
                 }),
-            }
+            },
         )
         .describe("Type de contrat")
         .optional()

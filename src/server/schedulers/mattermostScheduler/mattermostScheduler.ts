@@ -2,8 +2,7 @@ import { getAllUsersInfo } from "@/lib/kysely/queries/users";
 import { MattermostUser } from "@/lib/mattermost";
 import * as mattermost from "@/lib/mattermost";
 import { memberBaseInfoToModel } from "@/models/mapper";
-import { EmailStatusCode } from "@/models/member";
-import { memberBaseInfoSchemaType } from "@/models/member";
+import { EmailStatusCode, memberBaseInfoSchemaType } from "@/models/member";
 import config from "@/server/config";
 import betagouv from "@betagouv";
 import * as utils from "@controllers/utils";
@@ -33,7 +32,7 @@ const getUnallowedEmails = async (teamId) => {
 };
 
 export const sendMessageToMattermostUsersWithUnallowedEmails = async (
-    teamId: string
+    teamId: string,
 ): Promise<void> => {
     const usersWithUnallowedEmails = await getUnallowedEmails(teamId);
     for (const user of usersWithUnallowedEmails) {
@@ -48,7 +47,7 @@ export const sendMessageToMattermostUsersWithUnallowedEmails = async (
 };
 
 export const deactivateMattermostUsersWithUnallowedEmails = async (
-    teamId: string
+    teamId: string,
 ): Promise<void> => {
     const usersWithUnallowedEmails = await getUnallowedEmails(teamId);
     for (const user of usersWithUnallowedEmails) {
@@ -62,10 +61,10 @@ export const getActiveGithubUsersUnregisteredOnMattermost = async (): Promise<
     const allMattermostUsers: MattermostUser[] =
         await mattermost.getUserWithParams();
     const githubUsers = (await getAllUsersInfo()).map((user) =>
-        memberBaseInfoToModel(user)
+        memberBaseInfoToModel(user),
     );
     const activeGithubUsers = githubUsers.filter(
-        (x) => !utils.checkUserIsExpired(x)
+        (x) => !utils.checkUserIsExpired(x),
     );
     const concernedUsers = activeGithubUsers
         // .map((user: Member) => {
@@ -74,24 +73,24 @@ export const getActiveGithubUsersUnregisteredOnMattermost = async (): Promise<
         // })
         .filter(filterActiveUser);
     const allMattermostUsersEmails = allMattermostUsers.map(
-        (mattermostUser) => mattermostUser.email
+        (mattermostUser) => mattermostUser.email,
     );
     return concernedUsers.filter(
         (user) =>
-            !allMattermostUsersEmails.includes(user.primary_email as string)
+            !allMattermostUsersEmails.includes(user.primary_email as string),
     );
 };
 
 export const getMattermostUsersActiveGithubUsersNotInTeam = async (
-    teamId: string
+    teamId: string,
 ): Promise<MattermostUser[]> => {
     const allMattermostUsers: MattermostUser[] =
         await mattermost.getUserWithParams({ not_in_team: teamId });
     const githubUsers = (await getAllUsersInfo()).map((user) =>
-        memberBaseInfoToModel(user)
+        memberBaseInfoToModel(user),
     );
     const activeGithubUsers = githubUsers.filter(
-        (x) => !utils.checkUserIsExpired(x)
+        (x) => !utils.checkUserIsExpired(x),
     );
     const concernedUsers = activeGithubUsers
         // .map((user) => {
@@ -100,10 +99,10 @@ export const getMattermostUsersActiveGithubUsersNotInTeam = async (
         // })
         .filter(filterActiveUser);
     const concernedUsersEmails = concernedUsers.map(
-        (user) => user.primary_email
+        (user) => user.primary_email,
     );
     return allMattermostUsers.filter((user) =>
-        concernedUsersEmails.includes(user.email)
+        concernedUsersEmails.includes(user.email),
     );
 };
 

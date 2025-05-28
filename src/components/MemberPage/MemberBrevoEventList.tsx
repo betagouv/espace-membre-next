@@ -20,7 +20,7 @@ const EmailEventsTable = ({ data }) => {
         return events
             .sort(
                 (a, b) =>
-                    new Date(b._date).getTime() - new Date(a._date).getTime()
+                    new Date(b._date).getTime() - new Date(a._date).getTime(),
             )
             .map((event, index) => {
                 return [
@@ -62,7 +62,7 @@ const MemberBrevoEventList = ({ userId }) => {
             setLoading(true);
             try {
                 const response = await fetch(
-                    `/api/member/${userId}/brevo-events`
+                    `/api/member/${userId}/brevo-events`,
                 );
                 if (!response.ok) {
                     throw new Error("Network response was not ok");

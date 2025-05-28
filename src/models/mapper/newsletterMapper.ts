@@ -4,7 +4,7 @@ import { newsletterSchemaType } from "../newsletter";
 import { Newsletters } from "@/@types/db";
 
 export const newsletterToModel = (
-    newsletter: Selectable<Newsletters>
+    newsletter: Selectable<Newsletters>,
 ): newsletterSchemaType => {
     return {
         created_at: newsletter.created_at,

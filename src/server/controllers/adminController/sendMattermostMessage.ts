@@ -21,12 +21,12 @@ export const getMattermostUsers = async ({
     });
     if (includeEmails && includeEmails.length) {
         activeUsers = activeUsers.filter((user) =>
-            includeEmails.includes(user.email)
+            includeEmails.includes(user.email),
         );
     }
     if (excludeEmails && excludeEmails.length) {
         activeUsers = activeUsers.filter(
-            (user) => !excludeEmails.includes(user.email)
+            (user) => !excludeEmails.includes(user.email),
         );
     }
     if (fromBeta) {

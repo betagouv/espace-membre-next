@@ -12,8 +12,8 @@ import {
     UseFormRegister,
     UseFormSetValue,
     UseFormTrigger,
+    FieldErrors,
 } from "react-hook-form";
-import { FieldErrors } from "react-hook-form";
 
 import SESelect from "../SESelect";
 import { userStatusOptions } from "@/frontConfig";
@@ -134,7 +134,7 @@ export const Mission = ({
                                 placeholder: "JJ/MM/YYYY",
                                 type: "date",
                                 ...register(
-                                    `${missionArrayKey}.${index}.start`
+                                    `${missionArrayKey}.${index}.start`,
                                 ),
                                 value: startDateString,
                             }}
@@ -166,7 +166,7 @@ export const Mission = ({
                                     <button
                                         className={fr.cx(
                                             "fr-link",
-                                            "fr-text--xs"
+                                            "fr-text--xs",
                                         )}
                                         onClick={onMissionAutoEndClick}
                                         role="button"
@@ -229,7 +229,7 @@ export const Mission = ({
                             mission
                                 ? mission.startups &&
                                   mission.startups.includes(s.value)
-                                : undefined
+                                : undefined,
                         )}
                         onChange={(startups: Option[]) => {
                             setValue(
@@ -238,7 +238,7 @@ export const Mission = ({
                                 {
                                     shouldValidate: true,
                                     shouldDirty: true,
-                                }
+                                },
                             );
                         }}
                         isMulti={true}

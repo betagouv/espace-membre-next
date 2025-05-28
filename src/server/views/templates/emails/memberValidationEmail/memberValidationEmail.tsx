@@ -18,7 +18,7 @@ export function MemberValidationEmailTitle() {
 }
 
 export function MemberValidationEmail(
-    props: EmailNewMemberValidation["variables"]
+    props: EmailNewMemberValidation["variables"],
 ) {
     const title = MemberValidationEmailTitle();
 

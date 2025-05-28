@@ -109,13 +109,11 @@ export function DashboardPage(props: DashboardPageProps) {
                     <ProgressBar progress={props.onboarding.progress} />
                     <div className={fr.cx("fr-mt-3w")}>
                         <Link
-                            href={`${linkRegistry.get(
-                                "account"
-                            )}?tab=embarquement`}
+                            href={`${linkRegistry.get("account")}?tab=embarquement`}
                             className={fr.cx(
                                 "fr-link",
                                 "fr-icon-arrow-right-line",
-                                "fr-link--icon-right"
+                                "fr-link--icon-right",
                             )}
                         >
                             Continuer mon embarquement
@@ -233,7 +231,7 @@ export function DashboardPage(props: DashboardPageProps) {
                     "fr-grid-row",
                     "fr-grid-row--gutters",
                     "fr-mt-6w",
-                    "fr-px-6w"
+                    "fr-px-6w",
                 )}
                 style={{
                     background: "linear-gradient( #ececfe, #f5f5fe )",

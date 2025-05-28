@@ -1,1 +1,1 @@
-export * from './AdminMattermost';
+export * from "./AdminMattermost";

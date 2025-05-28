@@ -8,47 +8,47 @@ export const routes = createRouter({
     accountBadge: defineRoute({}, (p) => `/account/badge-demande`),
     accountBadgeRenewal: defineRoute(
         {},
-        (p) => `/account/badge-demande/renouvellement`
+        (p) => `/account/badge-demande/renouvellement`,
     ),
     community: defineRoute({}, (p) => `/community`),
     communityMember: defineRoute(
         { username: param.path.string },
-        (p) => `/community/${p.username}`
+        (p) => `/community/${p.username}`,
     ),
     communityCreateMember: defineRoute({}, (p) => `/community/create`),
     dashboard: defineRoute({}, (p) => `/dashboard`),
     incubatorDetailsEdit: defineRoute(
         { incubatorId: param.path.string },
-        (p) => `/incubators/${p.incubatorId}`
+        (p) => `/incubators/${p.incubatorId}`,
     ),
     incubatorList: defineRoute({}, (p) => `/incubators`),
     incubatorCreate: defineRoute({}, (p) => `/incubators/create-form`),
     incubatorDetails: defineRoute(
         { incubatorId: param.path.string },
-        (p) => `/incubators/${p.incubatorId}`
+        (p) => `/incubators/${p.incubatorId}`,
     ),
     teamDetailsEdit: defineRoute(
         { teamId: param.path.string },
-        (p) => `/teams/${p.teamId}`
+        (p) => `/teams/${p.teamId}`,
     ),
     teamList: defineRoute({}, (p) => `/teams`),
     teamCreate: defineRoute({}, (p) => `/teams/create-form`),
     teamDetails: defineRoute(
         { teamId: param.path.string },
-        (p) => `/teams/${p.teamId}`
+        (p) => `/teams/${p.teamId}`,
     ),
     startupList: defineRoute({}, (p) => `/startups`),
     startupDetails: defineRoute(
         { startupId: param.path.string },
-        (p) => `/startups/${p.startupId}`
+        (p) => `/startups/${p.startupId}`,
     ),
     startupDetailsEdit: defineRoute(
         { startupId: param.path.string },
-        (p) => `/startups/${p.startupId}/info-form`
+        (p) => `/startups/${p.startupId}/info-form`,
     ),
     startupDocs: defineRoute(
         { startupId: param.path.string },
-        (p) => `/startups/${p.startupId}/files`
+        (p) => `/startups/${p.startupId}/files`,
     ),
     startupCreate: defineRoute({}, (p) => `/startups/create-form`),
     adminMattermost: defineRoute({}, (p) => `/admin/mattermost`),
@@ -66,11 +66,11 @@ export const routes = createRouter({
     organizationList: defineRoute({}, (p) => "/organizations"),
     organizationDetails: defineRoute(
         { organizationId: param.path.string },
-        (p) => `/organizations/${p.organizationId}`
+        (p) => `/organizations/${p.organizationId}`,
     ),
     organizationDetailsEdit: defineRoute(
         { organizationId: param.path.string },
-        (p) => `/organizations/${p.organizationId}/info-form`
+        (p) => `/organizations/${p.organizationId}/info-form`,
     ),
     organizationCreate: defineRoute({}, (p) => "/organizations/create-form"),
     serviceList: defineRoute({}, (p) => "/services"),

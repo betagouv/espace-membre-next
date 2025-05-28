@@ -27,22 +27,22 @@ export async function sendEmailToIncubatorTeam(job: PgBoss.Job<void>) {
     console.log(
         `found ${startups.length} startups and ${
             Object.keys(startupsByIncubator).length
-        } incubator`
+        } incubator`,
     );
     const startupIds = startups.map((startup) => startup.uuid);
     const usersByStartup = await getUsersByStartupIds(startupIds);
     const lastEvents = await getLastEventListStartupUuids(startupIds);
     for (const incubatorId in startupsByIncubator) {
         const incubator = incubators.find(
-            (incubator) => incubator.uuid === incubatorId
+            (incubator) => incubator.uuid === incubatorId,
         );
         if (!incubator) {
             // send error to sentry and continue
             Sentry.captureException(
                 new BusinessError(
                     "incubatorShouldExists",
-                    "Incubator should exist"
-                )
+                    "Incubator should exist",
+                ),
             );
             continue;
         }
@@ -52,8 +52,8 @@ export async function sendEmailToIncubatorTeam(job: PgBoss.Job<void>) {
             Sentry.captureException(
                 new BusinessError(
                     "incubatorTeamListIsEmpty",
-                    `There is no member in animation teams for incubator ${incubatorId}`
-                )
+                    `There is no member in animation teams for incubator ${incubatorId}`,
+                ),
             );
             continue;
         }
@@ -61,13 +61,11 @@ export async function sendEmailToIncubatorTeam(job: PgBoss.Job<void>) {
             new Set(
                 membersForTeam
                     .map((m) => m.primary_email)
-                    .filter((email) => !!email)
-            )
+                    .filter((email) => !!email),
+            ),
         ) as string[];
         console.log(
-            `Will send email to ${incubator.title} team : ${memberEmails.join(
-                ","
-            )}`
+            `Will send email to ${incubator.title} team : ${memberEmails.join(",")}`,
         );
         const incubatorStartups = startupsByIncubator[incubatorId];
         const now = new Date();
@@ -86,14 +84,14 @@ export async function sendEmailToIncubatorTeam(job: PgBoss.Job<void>) {
                                         (!mission.end || now <= mission.end) &&
                                         mission.startups?.includes(s.uuid)
                                     );
-                                }
-                            )
+                                },
+                            ),
                     ).length,
                     currentPhase: PHASE_READABLE_NAME[s.current_phase],
                     // on donne la date du dernier evenement lié à la SE sinon on prend la date de l'update en bdd
                     lastModification:
                         lastEvents.find(
-                            (event) => event.action_on_startup === s.uuid
+                            (event) => event.action_on_startup === s.uuid,
                         )?.created_at || s.updated_at,
                 })),
             },

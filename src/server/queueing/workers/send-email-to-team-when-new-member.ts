@@ -20,18 +20,18 @@ export const sendEmailToTeamWhenNewMemberTopic =
 
 const hasActiveOrFuturMissionInStartup = (
     missions: missionSchemaType[],
-    startupId: startupSchemaType["uuid"]
+    startupId: startupSchemaType["uuid"],
 ) => {
     const now = new Date();
     return missions.find(
         (mission) =>
             isBefore(now, mission.end ?? Infinity) &&
-            mission.startups?.includes(startupId)
+            mission.startups?.includes(startupId),
     );
 };
 
 export async function sendEmailToTeamWhenNewMember(
-    job: PgBoss.Job<SendEmailToTeamWhenNewMemberSchemaType>
+    job: PgBoss.Job<SendEmailToTeamWhenNewMemberSchemaType>,
 ) {
     const data = SendEmailToTeamWhenNewMemberSchema.parse(job.data);
     const newMember = await getMemberIfValidOrThrowError(data.userId);
@@ -40,7 +40,7 @@ export async function sendEmailToTeamWhenNewMember(
     const userStartups = (await getUserStartups(data.userId)).filter(
         (startup) => {
             return isBefore(now, startup.end ?? Infinity);
-        }
+        },
     );
 
     if (!userStartups.length) {
@@ -53,11 +53,11 @@ export async function sendEmailToTeamWhenNewMember(
         const startupMembers = (await getUsersByStartup(startup.uuid)).filter(
             (member) =>
                 member.uuid !== data.userId &&
-                hasActiveOrFuturMissionInStartup(member.missions, startup.uuid)
+                hasActiveOrFuturMissionInStartup(member.missions, startup.uuid),
         );
         if (!startupMembers.length) {
             console.log(
-                `User is the only member of the startup ${startup.name}`
+                `User is the only member of the startup ${startup.name}`,
             );
             return;
         }
@@ -65,8 +65,8 @@ export async function sendEmailToTeamWhenNewMember(
             new Set(
                 startupMembers
                     .map((m) => m.primary_email)
-                    .filter((email) => email !== null && email !== undefined)
-            )
+                    .filter((email) => email !== null && email !== undefined),
+            ),
         );
 
         await sendEmail({
@@ -78,7 +78,7 @@ export async function sendEmailToTeamWhenNewMember(
             },
         });
         console.log(
-            `Email send to startup member to inform them about ${newMember.fullname} arrival`
+            `Email send to startup member to inform them about ${newMember.fullname} arrival`,
         );
     }
 }

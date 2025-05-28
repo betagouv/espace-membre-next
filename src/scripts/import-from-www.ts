@@ -40,7 +40,7 @@ const insertData = async (markdownData: MarkdownData) => {
                 acronym: orga.attributes.acronym,
                 type: orga.attributes.type,
                 ghid: orga.attributes.ghid,
-            }))
+            })),
         )
         .returning(["uuid", "ghid"])
         .execute();
@@ -72,8 +72,8 @@ const insertData = async (markdownData: MarkdownData) => {
                                     "=",
                                     incub.attributes.owner.replace(
                                         "/organisations/",
-                                        ""
-                                    )
+                                        "",
+                                    ),
                                 )
                                 .select("uuid")) ||
                         null,
@@ -81,7 +81,7 @@ const insertData = async (markdownData: MarkdownData) => {
                     ghid: incub.attributes.ghid,
                     description: incub.body,
                     short_description: incub.attributes.short_description,
-                }))
+                })),
         )
         .returning(["uuid", "ghid"])
         .execute();
@@ -99,13 +99,13 @@ const insertData = async (markdownData: MarkdownData) => {
                             "=",
                             team.attributes.incubator.replace(
                                 "/incubators/",
-                                ""
-                            )
+                                "",
+                            ),
                         )
                         .select("uuid"))!,
                 mission: team.attributes.mission!,
                 name: team.attributes.name,
-            }))
+            })),
         )
         .returning(["uuid", "ghid"])
         .execute();
@@ -113,7 +113,7 @@ const insertData = async (markdownData: MarkdownData) => {
     const startups = await pAll(
         markdownData.startups.map((startup) => async () => {
             const incubator_id = incubators.find(
-                (o) => o.ghid === startup.attributes.incubator
+                (o) => o.ghid === startup.attributes.incubator,
             )?.uuid;
             const query = db
                 .insertInto("startups")
@@ -149,7 +149,7 @@ const insertData = async (markdownData: MarkdownData) => {
                 startup.attributes.phases?.map((p) => p.name) || [];
             if (phaseNames.length !== Array.from(new Set(phaseNames)).length) {
                 console.error(
-                    `PhaseError: Duplicate phases in https://github.com/betagouv/beta.gouv.fr/blob/master/content/_startups/${startup.attributes.ghid}.md`
+                    `PhaseError: Duplicate phases in https://github.com/betagouv/beta.gouv.fr/blob/master/content/_startups/${startup.attributes.ghid}.md`,
                 );
             }
 
@@ -159,7 +159,7 @@ const insertData = async (markdownData: MarkdownData) => {
                     let end: Date | undefined = phase.end || undefined;
                     if (phase.end && phase.start >= phase.end) {
                         console.error(
-                            `PhaseError: start>end in https://github.com/betagouv/beta.gouv.fr/blob/master/content/_startups/${startup.attributes.ghid}.md`
+                            `PhaseError: start>end in https://github.com/betagouv/beta.gouv.fr/blob/master/content/_startups/${startup.attributes.ghid}.md`,
                         );
                         end = undefined;
                     }
@@ -181,7 +181,7 @@ const insertData = async (markdownData: MarkdownData) => {
                             .execute()
                     );
                 }) || [],
-                { concurrency: 1 }
+                { concurrency: 1 },
             );
 
             if (
@@ -197,11 +197,11 @@ const insertData = async (markdownData: MarkdownData) => {
                                     .where(
                                         "ghid",
                                         "=",
-                                        sponsor.replace("/organisations/", "")
+                                        sponsor.replace("/organisations/", ""),
                                     )
                                     .select("uuid"),
                                 startup_id: startupDb.uuid,
-                            })) || []
+                            })) || [],
                     )
                     .execute();
             }
@@ -216,7 +216,7 @@ const insertData = async (markdownData: MarkdownData) => {
                             date: event.date,
                             comment: event.comment,
                             startup_id: startupDb.uuid,
-                        })) || []
+                        })) || [],
                     )
                     .execute();
             }
@@ -235,7 +235,7 @@ const insertData = async (markdownData: MarkdownData) => {
 
             return startupDb;
         }),
-        { concurrency: 1 }
+        { concurrency: 1 },
     );
 
     // insert users
@@ -265,7 +265,7 @@ const insertData = async (markdownData: MarkdownData) => {
                         github: author.attributes.github,
                         role: author.attributes.role,
                         competences: JSON.stringify(
-                            author.attributes.competences
+                            author.attributes.competences,
                         ),
                         bio: author.body,
                     });
@@ -280,7 +280,7 @@ const insertData = async (markdownData: MarkdownData) => {
                     let end: Date | undefined = mission.end;
                     if (mission.end && mission.start >= mission.end) {
                         console.error(
-                            `MissionError: end>start in https://github.com/betagouv/beta.gouv.fr/blob/master/content/_authors/${author.attributes.ghid}.md`
+                            `MissionError: end>start in https://github.com/betagouv/beta.gouv.fr/blob/master/content/_authors/${author.attributes.ghid}.md`,
                         );
                         end = undefined;
                     }
@@ -311,12 +311,12 @@ const insertData = async (markdownData: MarkdownData) => {
                                             .where("ghid", "=", startup)
                                             .select("uuid"),
                                         mission_id,
-                                    })) || []
+                                    })) || [],
                             )
                             .execute()
                     );
                 }) || [],
-                { concurrency: 1 }
+                { concurrency: 1 },
             );
             await pAll(
                 author.attributes.teams?.map((team) => async () => {
@@ -335,12 +335,12 @@ const insertData = async (markdownData: MarkdownData) => {
                             .execute();
                     }
                 }) || [],
-                { concurrency: 1 }
+                { concurrency: 1 },
             );
 
             return userId;
         }),
-        { concurrency: 1 }
+        { concurrency: 1 },
     );
 
     console.log("\n\n");

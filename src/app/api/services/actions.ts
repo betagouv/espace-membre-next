@@ -74,7 +74,7 @@ export const askAccountCreationForService = withErrorHandling(
                 await createOrUpdateMatomoAccount(
                     user,
                     matomoAccountRequestSchema.parse(data),
-                    bossClient
+                    bossClient,
                 );
             })
             .with(SERVICES.SENTRY, async () => {
@@ -82,7 +82,7 @@ export const askAccountCreationForService = withErrorHandling(
                     user,
                     sentryAccountRequestSchema.parse(data),
                     bossClient,
-                    session.user.isAdmin
+                    session.user.isAdmin,
                 );
             })
 
@@ -90,20 +90,20 @@ export const askAccountCreationForService = withErrorHandling(
                 // otherwise or exhaustive has to be defined otherwise function is not awaited
                 // cf https://github.com/gvergnaud/ts-pattern/issues/163
             });
-    }
+    },
 );
 
 const createOrUpdateSentryAccount = async (
     user: memberBaseInfoSchemaType,
     sentryData: sentryAccountRequestSchemaType,
     bossClient: PgBoss,
-    isAdmin: boolean = false
+    isAdmin: boolean = false,
 ) => {
     if (!user.primary_email) {
         throw new ValidationError("Un email primaire est obligatoire");
     }
     const userStartups = (await getUserStartupsActive(user.uuid)).map(
-        (startup) => startup.uuid
+        (startup) => startup.uuid,
     );
     const startupsByTeamName = (
         "teams" in sentryData
@@ -112,7 +112,7 @@ const createOrUpdateSentryAccount = async (
                   .where(
                       "slug",
                       "in",
-                      sentryData.teams.map((t) => t.slug)
+                      sentryData.teams.map((t) => t.slug),
                   )
                   .selectAll()
                   .execute()
@@ -121,7 +121,7 @@ const createOrUpdateSentryAccount = async (
 
     const allRequestedStartupAreAuthorized = _.every(
         startupsByTeamName,
-        (item) => _.includes(userStartups, item)
+        (item) => _.includes(userStartups, item),
     );
     const newTeamStartupIsAuthorized =
         !("newTeam" in sentryData) ||
@@ -133,7 +133,7 @@ const createOrUpdateSentryAccount = async (
 
     if (!canRequestAccessToStartup) {
         throw new AuthorizationError(
-            "User does not work for at leat one of the provided teams"
+            "User does not work for at leat one of the provided teams",
         );
     }
     const sentryAccount = await getServiceAccount(user.uuid, SERVICES.SENTRY);
@@ -151,7 +151,7 @@ const createOrUpdateSentryAccount = async (
     if (job) {
         throw new BusinessError(
             "aSentryJobAlreadyExist",
-            `Tu as déjà une demande en cours pour ajouter ces équipes.`
+            `Tu as déjà une demande en cours pour ajouter ces équipes.`,
         );
     }
 
@@ -174,7 +174,7 @@ const createOrUpdateSentryAccount = async (
             {
                 retryLimit: 50,
                 retryBackoff: true,
-            }
+            },
         );
         const newTeam = {
             teamSlug: generateSentryTeamSlug(startup.name),
@@ -210,7 +210,7 @@ const createOrUpdateSentryAccount = async (
             {
                 retryLimit: 50,
                 retryBackoff: true,
-            }
+            },
         );
 
         await addEvent({
@@ -237,7 +237,7 @@ const createOrUpdateSentryAccount = async (
             {
                 retryLimit: 50,
                 retryBackoff: true,
-            }
+            },
         );
         if (!sentryAccount) {
             await db
@@ -268,7 +268,7 @@ const createOrUpdateSentryAccount = async (
 const createOrUpdateMatomoAccount = async (
     user: memberBaseInfoSchemaType,
     matomoData: matomoAccountRequestSchemaType,
-    bossClient: PgBoss
+    bossClient: PgBoss,
 ) => {
     if (!user.primary_email) {
         throw new ValidationError("Un email primaire est obligatoire");
@@ -286,7 +286,7 @@ const createOrUpdateMatomoAccount = async (
     if (job) {
         throw new BusinessError(
             "aMatomoJobAlreadyExist",
-            `Tu as déjà une demande en cours pour ajouter ces sites.`
+            `Tu as déjà une demande en cours pour ajouter ces sites.`,
         );
     }
 
@@ -300,7 +300,7 @@ const createOrUpdateMatomoAccount = async (
                 userUuid: user.uuid,
                 requestId: requestId,
                 password: encryptPassword(
-                    crypto.randomBytes(20).toString("base64").slice(0, -2)
+                    crypto.randomBytes(20).toString("base64").slice(0, -2),
                 ),
                 sites: matomoData.sites,
                 newSite: matomoData.newSite,
@@ -308,7 +308,7 @@ const createOrUpdateMatomoAccount = async (
             {
                 retryLimit: 50,
                 retryBackoff: true,
-            }
+            },
         );
     };
 
@@ -382,7 +382,7 @@ const createOrUpdateMatomoAccount = async (
 
 async function getMatomoJob(
     userUuid: string,
-    matomoData: matomoAccountRequestSchemaType
+    matomoData: matomoAccountRequestSchemaType,
 ) {
     let query = db
         .selectFrom("pgboss.job")
@@ -394,7 +394,7 @@ async function getMatomoJob(
         query = query.where(
             "data",
             "@>",
-            JSON.stringify({ sites: matomoData.sites })
+            JSON.stringify({ sites: matomoData.sites }),
         );
     }
 
@@ -402,7 +402,7 @@ async function getMatomoJob(
         query = query.where(
             "data",
             "@>",
-            JSON.stringify({ newSite: matomoData.newSite })
+            JSON.stringify({ newSite: matomoData.newSite }),
         );
     }
 
@@ -413,7 +413,7 @@ async function getMatomoJob(
 async function getSentryJob(
     userUuid: string,
     sentryData: sentryAccountRequestSchemaType,
-    teams: { teamSlug: string; teamRole: SentryRole }[]
+    teams: { teamSlug: string; teamRole: SentryRole }[],
 ) {
     let query = db
         .selectFrom("pgboss.job")
@@ -426,7 +426,7 @@ async function getSentryJob(
         query = query.where(
             "data",
             "@>",
-            JSON.stringify({ startupId: sentryData.newTeam.startupId })
+            JSON.stringify({ startupId: sentryData.newTeam.startupId }),
         );
     }
 

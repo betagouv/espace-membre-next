@@ -114,7 +114,7 @@ export default function MemberPage({
         // Function to handle searchParams changes
         const onSearchParamsChange = () => {
             const updatedSearchParams = new URLSearchParams(
-                window.location.search
+                window.location.search,
             );
             setTab(updatedSearchParams.get("tab") || "");
         };
@@ -146,12 +146,12 @@ export default function MemberPage({
     ])
         .with(
             [true, P._, P._],
-            () => `/community/${userInfos.username}/admin-update`
+            () => `/community/${userInfos.username}/admin-update`,
         )
         .with([false, true, P._], () => `/account/base-info`)
         .with(
             [false, false, true],
-            () => `/community/${userInfos.username}/update`
+            () => `/community/${userInfos.username}/update`,
         )
         .otherwise(() => "");
 
@@ -295,7 +295,7 @@ export default function MemberPage({
                     tabs={tabs}
                     onTabChange={(obj) => {
                         const searchParams = new URLSearchParams(
-                            window.location.search
+                            window.location.search,
                         );
                         searchParams.set("tab", tabs[obj.tabIndex].tabId);
                         const newUrl = `${

@@ -1,12 +1,11 @@
 import { Metadata } from "next";
 
+import { SearchFiles } from "./SearchFiles";
+import { getStartupFiles } from "@/app/api/startups/files/list";
 import { StartupType } from "@/components/SESelect";
 import { StartupList } from "@/components/StartupListPage";
 import { getAllStartups } from "@/lib/kysely/queries";
 import { routeTitles } from "@/utils/routes/routeTitles";
-import { getStartupFiles } from "@/app/api/startups/files/list";
-
-import { SearchFiles } from "./SearchFiles";
 
 export const metadata: Metadata = {
     title: `${routeTitles.startupList()} / Espace Membre`,
@@ -20,8 +19,8 @@ export default async function Page() {
                 ({
                     value: s.uuid,
                     label: s.name,
-                } as StartupType)
-        )
+                }) as StartupType,
+        ),
     );
     return (
         <>

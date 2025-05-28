@@ -64,7 +64,7 @@ export function getIncubatorTeamMembers(incubatorId: string) {
                     .where("end", ">=", today)
                     .orderBy(["user_id", "end desc"]) // Sort per user, picking the latest
                     .as("latest_missions"),
-            (join) => join.onRef("latest_missions.user_id", "=", "users.uuid")
+            (join) => join.onRef("latest_missions.user_id", "=", "users.uuid"),
         )
         .where("latest_missions.end", ">=", today)
         .where("teams.incubator_id", "=", incubatorId)

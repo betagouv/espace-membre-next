@@ -9,13 +9,13 @@ import { withHttpErrorHandling } from "@/utils/error";
 
 async function memberInfoUpdateHandler(
     req,
-    { params: { username } }: { params: { username: string } }
+    { params: { username } }: { params: { username: string } },
 ) {
     const session = await getServerSession(authOptions);
     if (!session || (session.user.id !== username && !session.user.isAdmin)) {
         return NextResponse.json(
             { message: "You don't have the right to access this function" },
-            { status: 403 }
+            { status: 403 },
         );
     }
     const rawdata = await req.json();
@@ -24,7 +24,7 @@ async function memberInfoUpdateHandler(
     if (!previousInfo) {
         return NextResponse.json(
             { message: "User does not exist" },
-            { status: 404 }
+            { status: 404 },
         );
     }
 
@@ -32,7 +32,7 @@ async function memberInfoUpdateHandler(
         memberData,
         previousInfo.uuid,
         undefined,
-        session.user.id
+        session.user.id,
     );
 
     const dbUser = await getUserInfos({
@@ -46,4 +46,4 @@ async function memberInfoUpdateHandler(
     });
 }
 
-export const PUT = withHttpErrorHandling(memberInfoUpdateHandler)
+export const PUT = withHttpErrorHandling(memberInfoUpdateHandler);

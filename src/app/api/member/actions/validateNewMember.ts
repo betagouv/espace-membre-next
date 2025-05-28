@@ -31,18 +31,18 @@ export async function validateNewMember({
     if (!rawData) {
         throw new BusinessError(
             "userNotFound",
-            `Aucun utilisateur trouvé pour l'identifiant : ${memberUuid}`
+            `Aucun utilisateur trouvé pour l'identifiant : ${memberUuid}`,
         );
     }
 
     const eventMemberCreated = await getLastEvent(
         rawData.username,
-        EventCode.MEMBER_CREATED
+        EventCode.MEMBER_CREATED,
     );
     if (!eventMemberCreated) {
         throw new BusinessError(
             "userMemberCreatedEventNotFound",
-            `L'événement de création du membre n'as pas été trouvé pour ${memberUuid}.`
+            `L'événement de création du membre n'as pas été trouvé pour ${memberUuid}.`,
         );
     }
     const eventMemberCreatedData =
@@ -51,7 +51,7 @@ export async function validateNewMember({
         console.log(eventMemberCreatedData.error);
         throw new BusinessError(
             "eventMemberCreatedEventDoesNotHaveTheExpectedFormat",
-            `L'événement de création du membre ${memberUuid} n'as pas le format attendu.`
+            `L'événement de création du membre ${memberUuid} n'as pas le format attendu.`,
         );
     }
     const incubator_id =
@@ -67,7 +67,7 @@ export async function validateNewMember({
     if (event) {
         throw new BusinessError(
             "userAlreadyValided",
-            `Le nouveau membre a déjà été validé par ${event.created_by_username}`
+            `Le nouveau membre a déjà été validé par ${event.created_by_username}`,
         );
     }
     if (
@@ -76,7 +76,7 @@ export async function validateNewMember({
     ) {
         throw new BusinessError(
             "userAlreadyValided",
-            `Ce membre a déjà été validé`
+            `Ce membre a déjà été validé`,
         );
     }
     const newMember = memberBaseInfoToModel(rawData);
@@ -90,7 +90,7 @@ export async function validateNewMember({
     if (!sessionUserIsFromIncubatorTeam) {
         throw new BusinessError(
             "sessionUserNotAdminOrNotInRequiredIncubatorTeam",
-            "Tu n'as pas les droits pour valider ce membre. Tu n'es pas dans l'équipe transverse de l'incubateur dont ce membre fait partie."
+            "Tu n'as pas les droits pour valider ce membre. Tu n'es pas dans l'équipe transverse de l'incubateur dont ce membre fait partie.",
         );
     }
 
@@ -118,7 +118,7 @@ export async function validateNewMember({
         {
             retryLimit: 2,
             retryBackoff: true,
-        }
+        },
     );
 }
 

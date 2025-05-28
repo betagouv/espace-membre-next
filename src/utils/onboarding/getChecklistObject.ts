@@ -13,12 +13,12 @@ export async function getChecklistObject(): Promise<onboardingChecklistSchemaTyp
         process.cwd(),
         "public",
         "onboarding",
-        "checklist.yml"
+        "checklist.yml",
     );
     const fileContents = await fs.readFile(filePath, "utf-8");
 
     const parsed = onboardingChecklistSchema.safeParse(
-        yaml.parse(fileContents)
+        yaml.parse(fileContents),
     );
 
     if (!parsed.success) {
@@ -29,7 +29,7 @@ export async function getChecklistObject(): Promise<onboardingChecklistSchemaTyp
                     issues: parsed.error.format(),
                     raw: fileContents,
                 },
-            }
+            },
         );
         return null;
     }

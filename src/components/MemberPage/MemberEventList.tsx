@@ -61,7 +61,7 @@ const MemberEventList = ({ userId }) => {
                                         (event["action_metadata"] || {})
                                             .value || {},
                                         null,
-                                        2
+                                        2,
                                     )}
                                 </pre>
                             </Accordion>
@@ -73,7 +73,7 @@ const MemberEventList = ({ userId }) => {
                                         (event["action_metadata"] || {})
                                             .old_value || {},
                                         null,
-                                        2
+                                        2,
                                     )}
                                 </pre>
                             </Accordion>

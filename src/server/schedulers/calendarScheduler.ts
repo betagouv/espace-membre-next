@@ -40,7 +40,7 @@ const makeReadableEvent = (events) => {
 
 export const sendForumBetaReminder = async (
     numberOfDays: number = 12,
-    canal: string = "general"
+    canal: string = "general",
 ) => {
     const today = new Date();
     const dayInXDays = new Date();
@@ -51,11 +51,11 @@ export const sendForumBetaReminder = async (
     const events: {} = await getEventsForCalendarFromDateToDate(
         calendarURL,
         dayInXDays,
-        dayInXDaysMoreOnWeek
+        dayInXDaysMoreOnWeek,
     );
     let readableEvents: ReadableEvents[] = makeReadableEvent(events);
     const forumBetaEvent = readableEvents.find((event) =>
-        event.title.toLowerCase().includes("forum beta.gouv")
+        event.title.toLowerCase().includes("forum beta.gouv"),
     );
     if (forumBetaEvent) {
         const messageContent = await ejs.renderFile(
@@ -67,7 +67,7 @@ export const sendForumBetaReminder = async (
                 }),
                 location: forumBetaEvent.location,
                 CALENDAR_PUBLIC_URL: process.env.CALENDAR_PUBLIC_URL,
-            }
+            },
         );
         await betagouv.sendInfoToChat(messageContent, canal);
         await sendCampaignEmail({
@@ -107,7 +107,7 @@ export const postEventsOnMattermost = async ({
     const events = await getEventsForCalendarFromDateToDate(
         calendarURL,
         today,
-        dayInSixDays
+        dayInSixDays,
     );
 
     const readableEvents: ReadableEvents[] = makeReadableEvent(events);
@@ -116,7 +116,7 @@ export const postEventsOnMattermost = async ({
         {
             events: readableEvents,
             CALENDAR_PUBLIC_URL: calendarPublicUrl,
-        }
+        },
     );
     sendInfoToChat({
         text: messageContent,

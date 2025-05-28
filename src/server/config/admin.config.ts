@@ -28,7 +28,7 @@ export const isSessionUserIncubatorTeamAdminForUser = async ({
     const teams = member.teams
         ? member.teams.map((team) => {
               const incubator = incubators.find(
-                  (incubator) => incubator.uuid === team.incubator_id
+                  (incubator) => incubator.uuid === team.incubator_id,
               );
               return {
                   ...team,
@@ -40,7 +40,7 @@ export const isSessionUserIncubatorTeamAdminForUser = async ({
     const now = new Date();
     const startups = (await getUserStartups(member.uuid)).map((startup) => {
         const incubator = incubators.find(
-            (incubator) => incubator.uuid === startup.incubator_id
+            (incubator) => incubator.uuid === startup.incubator_id,
         );
         return {
             ...startup,
@@ -60,11 +60,11 @@ export const isSessionUserIncubatorTeamAdminForUser = async ({
                 ...teams
                     .filter((team) => team.incubator)
                     .map((team) => team.incubator?.uuid),
-            ].filter((id) => !!id)
-        )
+            ].filter((id) => !!id),
+        ),
     );
     const sessionUserIncubators = (await getTeamsForUser(sessionUserUuid)).map(
-        (teams) => teams.incubator_id
+        (teams) => teams.incubator_id,
     );
     return intersection(userIncubators, sessionUserIncubators).length > 0;
 };

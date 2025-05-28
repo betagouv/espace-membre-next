@@ -36,8 +36,8 @@ export function getIncubatorStartups(uuid: string) {
                             .select(eb.fn.max("phases.start").as("max_start"))
                             .whereRef("phases.startup_id", "=", "startups.uuid")
 
-                            .limit(1)
-                    )
+                            .limit(1),
+                    ),
                 )
                 .orderBy("start", "desc")
                 .limit(1)
@@ -90,19 +90,19 @@ export async function getAllIncubatorsMembers() {
                     .leftJoin(
                         "missions_startups",
                         "missions_startups.mission_id",
-                        "missions.uuid"
+                        "missions.uuid",
                     )
                     .leftJoin(
                         "startups",
                         "startups.uuid",
-                        "missions_startups.startup_id"
+                        "missions_startups.startup_id",
                     )
                     // only include active users
                     .where((eb) =>
                         eb.or([
                             eb("missions.end", "is", null),
                             eb("missions.end", ">=", new Date()),
-                        ])
+                        ]),
                     )
                     .whereRef("startups.incubator_id", "=", "incubators.uuid")
                     .union(() =>
@@ -113,19 +113,19 @@ export async function getAllIncubatorsMembers() {
                             .leftJoin(
                                 "users_teams",
                                 "users_teams.user_id",
-                                "users.uuid"
+                                "users.uuid",
                             )
                             .leftJoin(
                                 "teams",
                                 "teams.uuid",
-                                "users_teams.team_id"
+                                "users_teams.team_id",
                             )
                             .whereRef(
                                 "teams.incubator_id",
                                 "=",
-                                "incubators.uuid"
-                            )
-                    )
+                                "incubators.uuid",
+                            ),
+                    ),
             ).as("members"),
         ])
         .execute();
