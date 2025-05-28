@@ -17,6 +17,9 @@ const cspHeader = `
 
 /** @type {import('next').NextConfig} */
 const nextConfig = {
+  eslint: {
+    dirs: ["src", "__tests__"],
+  },
   async headers() {
     return [
       {

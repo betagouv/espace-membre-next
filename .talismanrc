@@ -7,6 +7,16 @@ fileignoreconfig:
   checksum: 5f9f798ed8186f440f30833a1fdd481bd74d385696662053b8e4d3f49913dd07
 - filename: .github/workflows/playwright.yml
   checksum: c7ad26d3f680a12d4169e46858d36b01ad1073c2acbb7265ee398d96ccd8bd65
+- filename: __tests__/env-setup.ts
+  checksum: a129a2294b218db4246f91ab94c1c9c1131fb4b0173873b084238ac429c8a051
+- filename: __tests__/htmlbuilder.spec.ts
+  checksum: dceb48030eeb587612a94894c69e33845bdf8d61cf7b1641d4ec31d33f5110b4
+- filename: __tests__/test-email.ts
+  checksum: 1e591233255027624b3e62e2c4081dba56034a9bacfe63c3506c3b15f329b0f3
+- filename: __tests__/test-user.ts
+  checksum: fe980508b9e5d5d43eb5cb756cc0e439f57b515efca0951d9fe58b19b14388b8
+- filename: __tests__/test-worker.ts
+  checksum: b833938c437ea95561c57daba9dc61f0bb3465138e8b657b0d904b25dabbba16
 - filename: generate-cron-md.ts
   checksum: 710739a984b99d823cc34f569af53e3d38a94464f788066dec33468661d45b4f
 - filename: generate-email-md.ts

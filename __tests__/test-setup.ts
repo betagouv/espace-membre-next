@@ -8,25 +8,25 @@ chai.use(chaiHttp);
 chai.should();
 
 before(async () => {
-    await utils.setupTestDatabase();
+  await utils.setupTestDatabase();
 });
 
 beforeEach(() => {
-    nock.disableNetConnect();
-    nock.enableNetConnect("127.0.0.1");
-    utils.mockSlackGeneral();
-    utils.mockSlackSecretariat();
-    utils.mockOvhTime();
-    utils.mockOvhUserResponder();
-    utils.mockOvhUserEmailInfos();
-    utils.mockOvhAllEmailInfos();
-    utils.mockOvhRedirectionWithQueries();
-    utils.mockOvhRedirections();
+  nock.disableNetConnect();
+  nock.enableNetConnect("127.0.0.1");
+  utils.mockSlackGeneral();
+  utils.mockSlackSecretariat();
+  utils.mockOvhTime();
+  utils.mockOvhUserResponder();
+  utils.mockOvhUserEmailInfos();
+  utils.mockOvhAllEmailInfos();
+  utils.mockOvhRedirectionWithQueries();
+  utils.mockOvhRedirections();
 });
 
 afterEach(() => {
-    utils.cleanMocks();
-    nock.enableNetConnect();
+  utils.cleanMocks();
+  nock.enableNetConnect();
 });
 
 after(() => utils.cleanUpTestDatabase());
