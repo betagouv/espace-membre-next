@@ -2,9 +2,15 @@ import Accordion from "@codegouvfr/react-dsfr/Accordion";
 import { Table } from "@codegouvfr/react-dsfr/Table";
 import { fr } from "@codegouvfr/react-dsfr/fr";
 
-import { memberBaseInfoSchemaType } from "@/models/member";
+import { memberBaseInfoSchemaType, memberSchemaType } from "@/models/member";
 
-import { getLastMissionDate, getFirstMissionDate } from "@/utils/member";
+import {
+    getLastMissionDate,
+    getFirstMissionDate,
+    hasActiveMissionInStartup,
+    hasPreviousMissionInStartup,
+} from "@/utils/member";
+import { startupSchemaType } from "@/models/startup";
 
 export function MemberTable({
     members,
@@ -39,22 +45,28 @@ export function MemberTable({
     );
 }
 
-export const StartupMembers = ({ startupInfos, members }) => {
+export const StartupMembers = ({
+    startupInfos,
+    members,
+}: {
+    startupInfos: startupSchemaType;
+    members: memberBaseInfoSchemaType[];
+}) => {
     const activeMembers = members.filter((member) =>
-        member.missions.find(
-            (m) =>
-                m.startups?.includes(startupInfos.uuid) &&
-                (!m.end || m.end >= new Date())
-        )
+        hasActiveMissionInStartup(member, startupInfos.uuid)
     );
-    const previousMembers = members.filter((member) =>
-        member.missions.find(
-            (m) =>
-                m.startups?.includes(startupInfos.uuid) &&
-                m.end &&
-                m.end < new Date()
+
+    const previousMembers = members
+        .filter((member) =>
+            hasPreviousMissionInStartup(member, startupInfos.uuid)
         )
-    );
+        .filter(
+            (member) =>
+                !activeMembers
+                    .map((member2) => member2.uuid)
+                    .includes(member.uuid)
+        );
+
     return (
         <>
             <div className={fr.cx("fr-mb-2w")}>
