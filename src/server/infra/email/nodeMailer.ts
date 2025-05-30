@@ -76,7 +76,7 @@ export const makeSendEmailNodemailer = (
                 subject ||
                 htmlBuilder.renderSubjectForType(paramsToRenderContent),
             html,
-            text: html.replace(/<(?:.|\n)*?>/gm, ""),
+            text: html.replace(/<(?:.|\n)*?>/gm, ""), // trigger
             attachments,
             headers: headers || MAIL_SERVICE_HEADERS,
             replyTo,
