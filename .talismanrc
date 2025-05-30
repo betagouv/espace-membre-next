@@ -13,6 +13,8 @@ fileignoreconfig:
   checksum: aeb35a10ae2e7d9ff2b9f3591ec8fc86661bf1cc4463a7a3b1a7d4b122ac24a7
 - filename: src/2-indent-src.js
   checksum: 3df6f246cfc52cf67569c4d51293a8c8f652c66ea51373a531c275c2e98d6e54
+- filename: src/4-indent-src.js
+  checksum: 20bc47a8c1b990c2ecbcad86e44a13adf50f96f08bd2779f614e465627abc856
 - filename: src/app/(private)/(dashboard)/startups/SearchFiles.tsx
   checksum: 2a4d33a0ace486acb4aefbdb0807c8fe4b4e9cdbfc2c0a573607c6b3c11c22c9
 - filename: src/components/MemberPage/MemberStatus.tsx
