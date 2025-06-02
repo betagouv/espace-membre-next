@@ -63,11 +63,11 @@
     - id: rencontres-metiers
       title: Participer à un point de rencontre grâce aux [clubs métiers](https://doc.incubateur.net/communaute/decouvrir-beta.gouv.fr/la-communaute/les-rituels/clubs-de-partage-dexperience)
     - id: objectifs
-      title: Co-construire tes objectifs de mission avec le responsable de l'équipe produit
-- title: 🧠 Au cours des 3 premiers mois
+      title: Co-construire tes livrables et objectifs de mission avec le responsable de l'équipe produit
+- title: 🧠 Au cours des premiers mois
   items:
     - id: rituels-suivi
-      title: Fixer les rituels de suivi de tes objectifs avec le responsable produit
+      title: Fixer les rituels de suivi de tes livrables et objectifs avec le responsable produit
     - id: rapport-etonnement
       title: Partager ton rapport d'étonnement au responsable de l'équipe produit
     - id: linkedin
