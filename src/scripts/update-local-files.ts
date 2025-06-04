@@ -44,7 +44,7 @@ const getChanges = async (markdownData) => {
       "incubators.ghid",
       "highlighted_startups",
       sql<string>`CASE WHEN organizations.ghid IS NOT NULL then concat('/organisations/', organizations.ghid) else NULL END`.as(
-        "owner",
+        "owner"
       ),
     ])
     .execute();
@@ -56,7 +56,7 @@ const getChanges = async (markdownData) => {
       "mission",
       "teams.ghid",
       sql<string>`CASE WHEN incubators.ghid IS NOT NULL then incubators.ghid else NULL END`.as(
-        "incubator",
+        "incubator"
       ),
     ])
     .execute();
@@ -86,12 +86,12 @@ const getChanges = async (markdownData) => {
     .leftJoin(
       "startups_organizations",
       "startups_organizations.startup_id",
-      "startups.uuid",
+      "startups.uuid"
     )
     .leftJoin(
       "organizations",
       "organizations.uuid",
-      "startups_organizations.organization_id",
+      "startups_organizations.organization_id"
     )
     .leftJoin("incubators", "incubators.uuid", "startups.incubator_id")
     .select((eb) => [
@@ -102,7 +102,7 @@ const getChanges = async (markdownData) => {
       sql<
         Array<string>
       >`COALESCE(NULLIF(ARRAY_AGG(CONCAT('/organisations/', organizations.ghid) order by organizations.ghid), '{/organisations/}'), '{}')`.as(
-        "sponsors",
+        "sponsors"
       ),
       withPhases(eb),
       withEvents(eb),
@@ -132,7 +132,7 @@ const getChanges = async (markdownData) => {
       sql<
         Array<string>
       >`COALESCE(NULLIF(ARRAY_AGG(CONCAT('/teams/', teams.ghid) order by teams.ghid), '{/teams/}'), NULL)`.as(
-        "teams",
+        "teams"
       ),
       //withTeams(eb)
     ])
@@ -142,7 +142,7 @@ const getChanges = async (markdownData) => {
   // update orgs
   organisations.forEach((dbOrga) => {
     const ghOrga = markdownData.organisations.find(
-      (o) => o.attributes.ghid === dbOrga.ghid,
+      (o) => o.attributes.ghid === dbOrga.ghid
     );
     const dbOrga2 = extractValidValues(dbOrga, ["ghid", "username"]);
     if (!ghOrga) {
@@ -176,7 +176,7 @@ const getChanges = async (markdownData) => {
   // update incubateurs
   incubators.forEach((dbIncub) => {
     const ghIncub = markdownData.incubators.find(
-      (o) => o.attributes.ghid === dbIncub.ghid,
+      (o) => o.attributes.ghid === dbIncub.ghid
     );
     const dbIncub2 = extractValidValues(dbIncub, [
       "ghid",
@@ -204,7 +204,7 @@ const getChanges = async (markdownData) => {
             short_description: htmlShortDescription,
             highlighted_startups: highlighted_startups_ghids,
           },
-          dbIncub.description || "",
+          dbIncub.description || ""
         ),
       });
     } else {
@@ -247,7 +247,7 @@ const getChanges = async (markdownData) => {
   // update teams
   teams.forEach((dbTeam) => {
     const ghTeam = markdownData.teams.find(
-      (o) => o.attributes.ghid === dbTeam.ghid,
+      (o) => o.attributes.ghid === dbTeam.ghid
     );
     const dbTeam2 = extractValidValues(dbTeam, ["ghid"]);
     const htmlMission =
@@ -261,7 +261,7 @@ const getChanges = async (markdownData) => {
             ...dbTeam2,
             mission: htmlMission,
           },
-          "",
+          ""
         ),
       });
     } else {
@@ -299,7 +299,7 @@ const getChanges = async (markdownData) => {
   // update startups
   startups.forEach((dbStartup) => {
     const ghStartup = markdownData.startups.find(
-      (o) => o.attributes.ghid === dbStartup.ghid,
+      (o) => o.attributes.ghid === dbStartup.ghid
     );
 
     const dbStartup2 = extractValidValues(dbStartup, [
@@ -399,7 +399,7 @@ const getChanges = async (markdownData) => {
     .filter((dbAuthor) => dbAuthor.missions.length) // only those with missions
     .forEach((dbAuthor) => {
       const ghAuthor = markdownData.authors.find(
-        (o) => o.attributes.ghid === dbAuthor.username,
+        (o) => o.attributes.ghid === dbAuthor.username
       );
       const dbAuthor2 = extractValidValues(dbAuthor, [
         "ghid",
@@ -417,17 +417,10 @@ const getChanges = async (markdownData) => {
             const { uuid, ...mission } = m;
             return mission;
           }),
+          teams: dbAuthor2.teams
+            ? dbAuthor2.teams?.map((team) => `/teams/${team}`)
+            : [],
         };
-        // if (process.env.EXPORT_UPDATE_TEAMS) {
-        //     if (dbAuthor2.teams && dbAuthor2.teams.length) {
-        //         // @ts-ignore
-        //         dbAuthor3.teams = dbAuthor2.teams && dbAuthor2.teams.length
-        //             ? dbAuthor2.teams?.map(
-        //                 (team) => `/teams/${team.ghid}`
-        //             )
-        //             : undefined
-        //     }
-        // }
 
         updates.push({
           file: `content/_authors/${dbAuthor.username}.md`,
@@ -438,32 +431,7 @@ const getChanges = async (markdownData) => {
         const diffed = detailedDiff(ghAuthor2, {
           ...dbAuthor2,
         });
-        if (
-          diffed.updated["teams"] &&
-          Object.keys(diffed.updated).length === 1
-        ) {
-          // skip teams update if only order change
-          return;
-        }
-        if (
-          diffed.added["teams"] &&
-          Object.keys(diffed.added).length === 1 &&
-          diffed.added["teams"].length === 0
-        ) {
-          // skip teams update if no teams
-          return;
-        }
 
-        // if (process.env.EXPORT_UPDATE_TEAMS) {
-        //     if (dbAuthor2.teams && dbAuthor2.teams.length) {
-        //         // @ts-ignore
-        //         diffed.teams = dbAuthor2.teams && dbAuthor2.teams.length
-        //                 ? dbAuthor2.teams?.map(
-        //                     (team) => `/teams/${team.ghid}`
-        //                 )
-        //                 : undefined
-        //             }
-        // }
         if (
           Object.keys(diffed.updated).length ||
           Object.keys(diffed.added).length
@@ -472,17 +440,10 @@ const getChanges = async (markdownData) => {
             ...ghAuthor2,
             ...dbAuthor2,
           });
-          // if (process.env.EXPORT_UPDATE_TEAMS) {
-          //     // @ts-ignore
-          //     if (dbAuthor2.teams && dbAuthor2.teams.length) {
-          //         updated.teams =
-          //         dbAuthor2.teams && dbAuthor2.teams.length
-          //             ? dbAuthor2.teams?.map(
-          //                 (team) => `/teams/${team.ghid}`
-          //             )
-          //             : undefined
-          //         }
-          // }
+
+          if (dbAuthor2.teams && dbAuthor2.teams.length) {
+            updated.teams = dbAuthor2.teams;
+          }
 
           // hack for validation
           updated.missions =
@@ -524,7 +485,7 @@ const getChanges = async (markdownData) => {
 };
 
 const exportData = async () => {
-  // get the original markdowns to compoute changes
+  // get the original markdowns to compute changes
   const markdownData = await importFromZip();
 
   const updates = await getChanges(markdownData);
