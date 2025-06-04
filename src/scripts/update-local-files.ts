@@ -441,9 +441,8 @@ const getChanges = async (markdownData) => {
             ...dbAuthor2,
           });
 
-          if (dbAuthor2.teams && dbAuthor2.teams.length) {
-            updated.teams = dbAuthor2.teams;
-          }
+          // always update teams
+          updated.teams = dbAuthor2.teams || undefined;
 
           // hack for validation
           updated.missions =
