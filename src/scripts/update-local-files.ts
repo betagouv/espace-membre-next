@@ -442,7 +442,7 @@ const getChanges = async (markdownData) => {
           });
 
           if (dbAuthor2.teams && dbAuthor2.teams.length) {
-            updated.teams = dbAuthor2.teams || undefined;
+            updated.teams = dbAuthor2.teams;
           }
 
           // hack for validation
