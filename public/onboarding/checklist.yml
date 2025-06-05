@@ -70,7 +70,7 @@
       title: Fixer les rituels de suivi de tes livrables et objectifs avec le responsable produit
     - id: rapport-etonnement
       title: Partager ton rapport d'étonnement au responsable de l'équipe produit
-    - id: linkedin
+    - id: linkedin-beta
       title: Ajouter ton expérience chez [beta.gouv.fr](https://www.linkedin.com/company/betagouv/?originalSubdomain=fr) à ton profil LinkedIn (en précisant si tu es en prestation)
 - title: Pour aller plus loin
   items:
