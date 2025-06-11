@@ -73,6 +73,7 @@ const getChanges = async (markdownData) => {
     "startups.link",
     "startups.stats",
     "startups.stats_url",
+    "startups.impact_url",
     "startups.dashlord_url",
     "startups.name",
     "startups.pitch",
