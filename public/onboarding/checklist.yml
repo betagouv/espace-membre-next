@@ -26,22 +26,22 @@
       title: Découvrir [les lieux où travailler ou organiser des événements](https://doc.incubateur.net/communaute/travailler-chez-beta.gouv.fr/vie-quotidienne-et-bien-etre/travailler-dans-les-lieux-partages/ou-travailler)
     - id: agenda
       title: T'abonner à [l'agenda public de l'incubateur](https://calendar.google.com/calendar/u/0/r?cid=MGllb25xYXAxcjVqZWFsNXVnZXVob292bGdAZ3JvdXAuY2FsZW5kYXIuZ29vZ2xlLmNvbQ)
-- title: 🧭 La première semaine - Appréhender ton environnement
+- title: 🧭 La première semaine - Appréhender l’environnement de travail
   items:
     - id: doc-incubateur
-      title: Lire la [documentation de ton incubateur](https://doc.incubateur.net/communaute/travailler-chez-beta.gouv.fr/to-do-darrivee)
+      title: Lire la [documentation de l'incubateur auquel tu es rattaché.e](https://doc.incubateur.net/communaute/travailler-chez-beta.gouv.fr/to-do-darrivee)
     - id: doc-metier
       title: Consulter [les pages spécifiques à ton corps de métier](https://doc.incubateur.net/communaute/travailler-chez-beta.gouv.fr/les-differents-metiers)
     - id: equipe-mattermost
       title: Rejoindre les canaux de ton équipe sur Mattermost
     - id: equipe-produit
-      title: T'imprégner de ton service numérique via sa fiche produit sur [beta.gouv.fr/startups](https://beta.gouv.fr/startups)
+      title: T'imprégner du service numérique auquel tu es rattaché via sa fiche produit sur [beta.gouv.fr/startups](https://beta.gouv.fr/startups)
     - id: equipe-rituels
-      title: T'intégrer aux rituels de pilotage de ton équipe
+      title: T'intégrer aux rituels de pilotage de l’équipe avec laquelle tu travailles
     - id: equipe-rencontres
-      title: Fixer des rencontres avec les membres de ton équipe
+      title: Fixer des rencontres avec les membres de l’équipe avec laquelle tu travailles
     - id: equipe-outils
-      title: Créer tes comptes sur les outils de ton équipe
+      title: Créer tes comptes sur les outils de l’équipe avec laquelle tu travailles
 - title: 🌱 Le premier mois
   items:
     - id: forum-beta
