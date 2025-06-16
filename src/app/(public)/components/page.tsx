@@ -11,6 +11,8 @@ import {
 } from "@/models/member";
 import { EMAIL_PLAN_TYPE } from "@/models/ovh";
 import { ACCOUNT_SERVICE_STATUS } from "@/models/services";
+import Checklist from "@/components/Checklist";
+import { getChecklistObject } from "@/utils/onboarding/getChecklistObject";
 
 export const metadata: Metadata = {
   title: `Components Demo`,
@@ -159,12 +161,21 @@ const sampleMember: { member: MemberPageProps } = {
 };
 
 export default async function Page() {
+  const checklistObject = await getChecklistObject();
+
   return (
     <div className={fr.cx("fr-col-12")}>
       <h1>Members</h1>
       <h2>Active member</h2>
       <hr />
-      <MemberPage {...sampleMember.member} />
+      <MemberPage
+        {...sampleMember.member}
+        onboarding={{
+          progress: 2,
+          userEvents: [],
+          checklistObject: checklistObject!,
+        }}
+      />
       <hr />
       <h2>Expired member</h2>
       <hr />
@@ -241,6 +252,20 @@ export default async function Page() {
       <h2>No avatar</h2>
       <hr />
       <MemberPage {...sampleMember.member} avatar={undefined} />
+      ``
+      <h2>With CheckList</h2>
+      <MemberPage
+        {...sampleMember.member}
+        userInfos={{
+          ...sampleMember.member.userInfos,
+        }}
+        onboarding={{
+          progress: 2,
+          userEvents: [],
+          checklistObject: checklistObject!,
+        }}
+      />
+      <hr />
     </div>
   );
 }
