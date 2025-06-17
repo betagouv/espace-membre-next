@@ -5,8 +5,10 @@ fileignoreconfig:
   checksum: 900db203fd9526bc60c45c4005ed5330093667f615489eada3436a7025ba5568
 - filename: .github/workflows/generate-doc.yml
   checksum: 5f9f798ed8186f440f30833a1fdd481bd74d385696662053b8e4d3f49913dd07
+- filename: .github/workflows/nodejs.yml
+  checksum: c3b4591989bb015aec51404be4a292988f847409a158d17fde5263e8fed74b09
 - filename: .github/workflows/playwright.yml
-  checksum: c7ad26d3f680a12d4169e46858d36b01ad1073c2acbb7265ee398d96ccd8bd65
+  checksum: 0c46b8bba0a755d805ab402d8648d1cb4004e61cf154d0371e4dddc2c001170f
 - filename: __tests__/env-setup.ts
   checksum: a129a2294b218db4246f91ab94c1c9c1131fb4b0173873b084238ac429c8a051
 - filename: __tests__/htmlbuilder.spec.ts
