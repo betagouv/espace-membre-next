@@ -41,8 +41,7 @@ jobs:
             - name: Install Playwright Browsers
               run: npx playwright install --with-deps
             - name: Launch playwright
-              run: |
-                  npx playwright test
+              run: npx playwright test
               env:
                   DATABASE_URL: postgres://postgres:postgres@localhost:5432/postgres
                   HOSTNAME: localhost:8100
