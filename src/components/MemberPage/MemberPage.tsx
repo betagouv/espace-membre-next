@@ -79,7 +79,7 @@ export interface MemberPageProps {
 }
 
 /*
- todo: 
+ todo:
     - avatar
     - check action emails
 */
@@ -158,7 +158,7 @@ export default function MemberPage({
 
   const tabs = [
     {
-      label: "Fiche Membre",
+      label: "Fiche membre",
       isDefault: tab === "fiche-membre",
       tabId: "fiche-membre",
       content: (
