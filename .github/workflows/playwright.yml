@@ -33,6 +33,9 @@ jobs:
               run: |
                 npm run migrate
                 npm run seed
+              env:
+                  DATABASE_URL: postgres://postgres:postgres@localhost:5432/postgres
+                  HASH_SALT: fakesaltfortestenv
             - name: Install Playwright Browsers
               run: npx playwright install --with-deps
             - name: Launch playwright
