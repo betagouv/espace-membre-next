@@ -24,7 +24,7 @@ jobs:
                   node-version: 20
                   cache: 'npm'
             - run: npm ci
-            - run: npm run build --if-present
+            - run: npm run build
               env:
                   CI: true
                   FEATURE_SHOULD_SEND_MESSAGE_TO_AUTHOR: true

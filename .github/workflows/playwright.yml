@@ -36,6 +36,8 @@ jobs:
               env:
                   DATABASE_URL: postgres://postgres:postgres@localhost:5432/postgres
                   HASH_SALT: fakesaltfortestenv
+            - name: Setup the app
+              run: npm run build
             - name: Install Playwright Browsers
               run: npx playwright install --with-deps
             - name: Launch playwright
