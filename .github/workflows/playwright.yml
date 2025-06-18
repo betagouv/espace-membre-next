@@ -21,6 +21,12 @@ jobs:
               --health-retries 5
             env:
               POSTGRES_PASSWORD: postgres
+          maildev:
+            image: maildev/maildev
+            ports: ["1080:80", "11025:25"]
+            env:
+              MAILDEV_INCOMING_USER: mailuser
+              MAILDEV_INCOMING_PASS: mailpassword
         steps:
             - uses: actions/checkout@v4
             - uses: actions/setup-node@v4

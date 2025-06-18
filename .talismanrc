@@ -8,7 +8,7 @@ fileignoreconfig:
 - filename: .github/workflows/nodejs.yml
   checksum: c3b4591989bb015aec51404be4a292988f847409a158d17fde5263e8fed74b09
 - filename: .github/workflows/playwright.yml
-  checksum: f9bf4b9ab89b41b422db0f0289990f96b465b1152789adc215134c6f35d01e71
+  checksum: 2e3120a8f367a696b00ab53ba163797d6b25f9cbbe16906f653b672861b65bd2
 - filename: __tests__/env-setup.ts
   checksum: a129a2294b218db4246f91ab94c1c9c1131fb4b0173873b084238ac429c8a051
 - filename: __tests__/htmlbuilder.spec.ts
