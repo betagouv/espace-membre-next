@@ -353,7 +353,7 @@ export const getUserIncubators = (uuid: string, db: Kysely<DB> = database) =>
           eb
             .selectFrom("teams")
             .select("teams.incubator_id")
-            .leftJoin("users_teams", "users_teams.team_id", "teams.uuid")
+            .innerJoin("users_teams", "users_teams.team_id", "teams.uuid")
             .where("users_teams.user_id", "=", uuid)
         ),
         // select user startup incubators
@@ -363,12 +363,12 @@ export const getUserIncubators = (uuid: string, db: Kysely<DB> = database) =>
           eb
             .selectFrom("startups")
             .select("startups.incubator_id")
-            .leftJoin(
+            .innerJoin(
               "missions_startups",
               "missions_startups.startup_id",
               "startups.uuid"
             )
-            .leftJoin(
+            .innerJoin(
               "missions",
               "missions.uuid",
               "missions_startups.mission_id"
