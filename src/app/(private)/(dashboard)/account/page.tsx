@@ -15,6 +15,7 @@ import { computeOnboardingProgress } from "@/utils/onboarding/computeOnboardingP
 import { getChecklistObject } from "@/utils/onboarding/getChecklistObject";
 import { shouldShowOnboardingPanel } from "@/utils/onboarding/shouldShowOnboardingPanel";
 import { routeTitles } from "@/utils/routes/routeTitles";
+import { getUserIncubators } from "@/lib/kysely/queries/users";
 
 export const metadata: Metadata = {
   title: `${routeTitles.account()} / Espace Membre`,
@@ -55,7 +56,7 @@ export default async function Page() {
       const userEventIds = userEvents.map((u) => u.field_id);
       const progress = await computeOnboardingProgress(
         userEventIds,
-        checklistObject,
+        checklistObject
       );
       onboarding = {
         progress,
@@ -64,6 +65,8 @@ export default async function Page() {
       };
     }
   }
+
+  const incubators = await getUserIncubators(userInformations.baseInfo.uuid);
 
   return (
     <MemberPage
@@ -84,6 +87,7 @@ export default async function Page() {
       sessionUserIsFromIncubatorTeam={false}
       isCurrentUser={true}
       onboarding={onboarding}
+      incubators={incubators}
     />
   );
 }
