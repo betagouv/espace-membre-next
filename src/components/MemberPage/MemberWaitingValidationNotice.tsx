@@ -24,7 +24,7 @@ export const MemberWaitingValidationNotice = ({
       <p>
         <p>
           La fiche de {userInfos.fullname} doit être validée par l'équipe de son
-          incubateur :{" "}
+          incubateur(s) :{" "}
           {incubators.map((incubator, idx, all) => (
             <>
               <Link
