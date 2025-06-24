@@ -18,7 +18,7 @@ import { MemberContact } from "./MemberContact";
 import { MemberExpirationNotice } from "./MemberExpirationNotice";
 import { MemberMissions } from "./MemberMissions";
 import { MemberStatus } from "./MemberStatus";
-import { getUserStartups } from "@/lib/kysely/queries/users";
+import { getUserStartups, getUserIncubators } from "@/lib/kysely/queries/users";
 import { memberWrapperSchemaType } from "@/models/member";
 import { PrivateMemberChangeSchemaType } from "@/models/memberChange";
 import { onboardingChecklistSchemaType } from "@/models/onboardingChecklist";
@@ -76,6 +76,7 @@ export interface MemberPageProps {
     checklistObject: onboardingChecklistSchemaType;
     userEvents: userEventSchemaType[];
   };
+  incubators: Awaited<ReturnType<typeof getUserIncubators>>;
 }
 
 /*
@@ -102,6 +103,7 @@ export default function MemberPage({
   avatar,
   isCurrentUser,
   onboarding,
+  incubators,
 }: MemberPageProps) {
   const router = useRouter();
   const [tab, setTab] = useState<null | string>(null);
@@ -144,7 +146,7 @@ export default function MemberPage({
   ])
     .with(
       [true, P._, P._],
-      () => `/community/${userInfos.username}/admin-update`,
+      () => `/community/${userInfos.username}/admin-update`
     )
     .with([false, true, P._], () => `/account/base-info`)
     .with([false, false, true], () => `/community/${userInfos.username}/update`)
@@ -275,6 +277,7 @@ export default function MemberPage({
         <MemberWaitingValidationNotice
           userInfos={userInfos}
           canValidate={sessionUserIsFromIncubatorTeam}
+          incubators={incubators}
         />
       )}
       {isWaitingEmailValidation && (

@@ -16,6 +16,7 @@ import { authOptions } from "@/utils/authoptions";
 import { computeOnboardingProgress } from "@/utils/onboarding/computeOnboardingProgress";
 import { getChecklistObject } from "@/utils/onboarding/getChecklistObject";
 import { shouldShowOnboardingPanel } from "@/utils/onboarding/shouldShowOnboardingPanel";
+import { getUserIncubators } from "@/lib/kysely/queries/users";
 
 type Props = {
   params: { id: string };
@@ -23,7 +24,7 @@ type Props = {
 
 export async function generateMetadata(
   { params }: Props,
-  parent: ResolvingMetadata,
+  parent: ResolvingMetadata
 ): Promise<Metadata> {
   const id = params.id;
   return {
@@ -89,7 +90,7 @@ export default async function Page({
       const userEventIds = userEvents.map((u) => u.field_id);
       const progress = await computeOnboardingProgress(
         userEventIds,
-        checklistObject,
+        checklistObject
       );
       onboarding = {
         progress,
@@ -98,6 +99,8 @@ export default async function Page({
       };
     }
   }
+
+  const incubators = await getUserIncubators(userInformations.baseInfo.uuid);
 
   return (
     <>
@@ -124,6 +127,7 @@ export default async function Page({
         sentryInfo={userInformations.sentryInfo}
         startups={userInformations.startups}
         onboarding={onboarding}
+        incubators={incubators}
       />
     </>
   );
