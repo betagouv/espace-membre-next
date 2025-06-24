@@ -39,7 +39,7 @@ export default function Checklist({
     const value = e.target.checked;
     if (userEventIds.includes(field_id) && !value) {
       handleUserEventIdsChange(
-        [...userEventIds].filter((userEventId) => userEventId !== field_id)
+        [...userEventIds].filter((userEventId) => userEventId !== field_id),
       );
     } else if (!userEventIds.includes(field_id) && value) {
       handleUserEventIdsChange([...userEventIds, field_id]);
