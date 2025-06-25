@@ -339,6 +339,46 @@ export async function getUserStartupsActive(
   );
 }
 
+export const getUserIncubators = (uuid: string, db: Kysely<DB> = database) =>
+  db
+    .selectFrom("incubators")
+    .select(["incubators.uuid", "incubators.title"])
+    .distinct()
+    .where((eb) =>
+      eb.or([
+        // select user teams
+        eb(
+          "incubators.uuid",
+          "in",
+          eb
+            .selectFrom("teams")
+            .select("teams.incubator_id")
+            .innerJoin("users_teams", "users_teams.team_id", "teams.uuid")
+            .where("users_teams.user_id", "=", uuid),
+        ),
+        // select user startup incubators
+        eb(
+          "incubators.uuid",
+          "in",
+          eb
+            .selectFrom("startups")
+            .select("startups.incubator_id")
+            .innerJoin(
+              "missions_startups",
+              "missions_startups.startup_id",
+              "startups.uuid",
+            )
+            .innerJoin(
+              "missions",
+              "missions.uuid",
+              "missions_startups.mission_id",
+            )
+            .where("missions.user_id", "=", uuid),
+        ),
+      ]),
+    )
+    .execute();
+
 export const getLatests = (db: Kysely<DB> = database) => {
   return getAllUsersInfoQuery(db)
     .select((eb) => [withStartups(eb)])

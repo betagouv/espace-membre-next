@@ -119,6 +119,8 @@ fileignoreconfig:
   checksum: ffe6aae5dd222199c9cace94ba9a48a8d0e3958206ba8240df1ebeb8b7924468
 - filename: src/components/MemberPage/MemberStatus.tsx
   checksum: 58c50c4ddcd4c4e10838ffd986a170e14f039479c77cd68cf69408a8a25f8855
+- filename: src/components/MemberPage/MemberWaitingValidationNotice.tsx
+  checksum: 7ac8f9a77a57c0fa43b73929267ace38e73d6f3c52646c4eef57a061364fd9da
 - filename: src/components/SEIncubateurSelect.tsx
   checksum: 425a7cc00b03328946489ae48d21ac70ae9c3b3b06645b5fda7c9bb9c7c20a85
 - filename: src/components/SESponsorSelect.tsx

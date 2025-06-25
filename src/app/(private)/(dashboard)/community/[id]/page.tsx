@@ -16,6 +16,7 @@ import { authOptions } from "@/utils/authoptions";
 import { computeOnboardingProgress } from "@/utils/onboarding/computeOnboardingProgress";
 import { getChecklistObject } from "@/utils/onboarding/getChecklistObject";
 import { shouldShowOnboardingPanel } from "@/utils/onboarding/shouldShowOnboardingPanel";
+import { getUserIncubators } from "@/lib/kysely/queries/users";
 
 type Props = {
   params: { id: string };
@@ -99,6 +100,8 @@ export default async function Page({
     }
   }
 
+  const incubators = await getUserIncubators(userInformations.baseInfo.uuid);
+
   return (
     <>
       <BreadCrumbFiller
@@ -124,6 +127,7 @@ export default async function Page({
         sentryInfo={userInformations.sentryInfo}
         startups={userInformations.startups}
         onboarding={onboarding}
+        incubators={incubators}
       />
     </>
   );
