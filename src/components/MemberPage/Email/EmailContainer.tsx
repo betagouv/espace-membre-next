@@ -35,7 +35,7 @@ const EmailLink = ({ email }: { email: string }) => (
 
 const emailStatusRow = (
   emailInfos: NonNullable<MemberPageProps["emailInfos"]>,
-  userInfos: MemberPageProps["userInfos"]
+  userInfos: MemberPageProps["userInfos"],
 ) => {
   return [
     <>
@@ -75,7 +75,7 @@ const emailStatusRow = (
 };
 
 const emailSpamInfoRow = (
-  emailInfos: NonNullable<MemberPageProps["emailInfos"]>
+  emailInfos: NonNullable<MemberPageProps["emailInfos"]>,
 ) => {
   return [
     <>
@@ -199,7 +199,7 @@ function BlocEmailConfiguration({ emailInfos }: { emailInfos: EmailInfos }) {
 }
 
 const redirectionRow = (
-  redirection: NonNullable<MemberPageProps["redirections"][0]>
+  redirection: NonNullable<MemberPageProps["redirections"][0]>,
 ) => {
   return [
     <>
@@ -345,7 +345,7 @@ export default function EmailContainer({
               .with(
                 EmailStatusCode.EMAIL_CREATION_WAITING,
                 EmailStatusCode.EMAIL_CREATION_PENDING,
-                () => null
+                () => null,
               )
               .otherwise(
                 () =>
@@ -354,7 +354,7 @@ export default function EmailContainer({
                       hasPublicServiceEmail={hasPublicServiceEmail}
                       userInfos={userInfos}
                     />
-                  )
+                  ),
               )}
 
           {!!emailInfos && !isMailOPI && (
