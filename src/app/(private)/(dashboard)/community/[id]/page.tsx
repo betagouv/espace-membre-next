@@ -24,7 +24,7 @@ type Props = {
 
 export async function generateMetadata(
   { params }: Props,
-  parent: ResolvingMetadata
+  parent: ResolvingMetadata,
 ): Promise<Metadata> {
   const id = params.id;
   return {
@@ -90,7 +90,7 @@ export default async function Page({
       const userEventIds = userEvents.map((u) => u.field_id);
       const progress = await computeOnboardingProgress(
         userEventIds,
-        checklistObject
+        checklistObject,
       );
       onboarding = {
         progress,

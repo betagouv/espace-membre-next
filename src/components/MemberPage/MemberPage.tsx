@@ -146,7 +146,7 @@ export default function MemberPage({
   ])
     .with(
       [true, P._, P._],
-      () => `/community/${userInfos.username}/admin-update`
+      () => `/community/${userInfos.username}/admin-update`,
     )
     .with([false, true, P._], () => `/account/base-info`)
     .with([false, false, true], () => `/community/${userInfos.username}/update`)
