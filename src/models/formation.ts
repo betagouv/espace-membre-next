@@ -3,7 +3,7 @@ import { z } from "zod";
 export const formationSchema = z.object({
   id: z.string(),
   airtable_id: z.string(),
-  description: z.string(),
+  description: z.string().optional(),
   name: z.string(),
   imageUrl: z.string().optional(),
   created_at: z.date(),
