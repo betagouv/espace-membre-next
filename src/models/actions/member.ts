@@ -5,9 +5,9 @@ import { z } from "zod";
 import { FileType } from "@/lib/file";
 import { memberSchema } from "@/models/member";
 
-const nowInFrance = toZonedTime(new Date(), "Europe/Paris");
-const sixMonthsFromNow = addMonths(nowInFrance, 6);
 const checkMissionsAreNotMoreThan6Months = (missions, ctx) => {
+  const nowInFrance = toZonedTime(new Date(), "Europe/Paris");
+  const sixMonthsFromNow = addMonths(nowInFrance, 6);
   missions.forEach((mission, index) => {
     if (
       (!mission.end || mission.end > sixMonthsFromNow) &&
