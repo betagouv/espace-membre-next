@@ -7,6 +7,8 @@ import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import FormationCard from "./FormationCard";
 import { Formation, FormationInscription } from "@/models/formation";
 
+// FIXME: there is no reason to hardcode all of these – should be
+// dynamically built with the API results.
 type AudienceCategoryType = {
   label: string;
   type: "audience" | "category" | "type";
@@ -19,7 +21,8 @@ type AudienceCategoryType = {
     | "Tech"
     | "Produit"
     | "Nouveaux membres"
-    | "ELearning";
+    | "ELearning"
+    | "Université d'été";
 };
 const tags: AudienceCategoryType[] = [
   {
@@ -31,6 +34,11 @@ const tags: AudienceCategoryType[] = [
     label: "Design",
     type: "category",
     value: "Design",
+  },
+  {
+    label: "Université d'été",
+    type: "category",
+    value: "Université d'été",
   },
   {
     label: "Accessibilité",
