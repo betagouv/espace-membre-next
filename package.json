@@ -8,8 +8,7 @@
   "scripts": {
     "dev": "next dev -p 8100",
     "build:next": "next build",
-    "build:server": "ttsc -p tsconfig.server.json",
-    "build": "NODE_OPTIONS='--max-old-space-size=4096' npm run build:next && npm run build:server",
+    "build": "NODE_OPTIONS='--max-old-space-size=4096' npm run build:next",
     "start": "NODE_ENV=production next start",
     "lint": "next lint",
     "migrate": "knex migrate:latest --esm",
