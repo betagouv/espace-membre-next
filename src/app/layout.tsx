@@ -24,8 +24,6 @@ export interface RootLayoutProps {
   workaroundForNextJsPages?: boolean;
 }
 
-const lang = "fr";
-
 async function MainStructure(props: PropsWithChildren) {
   const session = await getServerSession(authOptions);
 
@@ -39,7 +37,7 @@ async function MainStructure(props: PropsWithChildren) {
         <StartDsfrOnHydration />
         <NextAppDirEmotionCacheProvider options={{ key: "css" }}>
           <ClientSessionProvider>
-            <DsfrProvider lang={lang}>
+            <DsfrProvider lang="fr">
               <MuiDsfrThemeProvider>
                 <BreadCrumbProvider>
                   <LiveChatProvider>
@@ -100,7 +98,7 @@ function RootLayout(props: PropsWithChildren<RootLayoutProps>) {
   }
 
   return (
-    <html {...getHtmlAttributes({ lang })}>
+    <html {...getHtmlAttributes({ lang: "fr" })}>
       <MainStructure {...props} />
     </html>
   );
