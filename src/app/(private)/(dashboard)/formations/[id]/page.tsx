@@ -164,8 +164,24 @@ export default async function Page({ params }: Props) {
                       {durationBetweenDate(formation.end, formation.start)}
                     </span>
                   )}
-                  {formation.maxSeats !== undefined &&
-                    formation.availableSeats !== undefined && (
+                  {!formation.isELearning && (
+                    <>
+                      {formation.maxSeats !== undefined &&
+                        formation.availableSeats !== undefined && (
+                          <span
+                            style={{
+                              display: "block",
+                              marginBottom: 5,
+                              marginTop: 5,
+                            }}
+                          >
+                            Inscription: {}
+                            {formation.availableSeats > 0
+                              ? formation.maxSeats - formation.availableSeats
+                              : formation.maxSeats}
+                            /{formation.maxSeats}
+                          </span>
+                        )}
                       <span
                         style={{
                           display: "block",
@@ -173,47 +189,35 @@ export default async function Page({ params }: Props) {
                           marginTop: 5,
                         }}
                       >
-                        Inscription: {}
-                        {formation.availableSeats > 0
-                          ? formation.maxSeats - formation.availableSeats
-                          : formation.maxSeats}
-                        /{formation.maxSeats}
+                        {!isMemberRegistered ? (
+                          <Button
+                            linkProps={{
+                              href: buildInscriptionLink(
+                                formation.inscriptionLink,
+                                {
+                                  fullname: dbUser.fullname,
+                                  email,
+                                  username: dbUser.username,
+                                  domaine: dbUser.domaine,
+                                },
+                              ),
+                              target: "_blank",
+                            }}
+                          >
+                            {formation.availableSeats <= 0
+                              ? `M'inscrire sur liste d'attente`
+                              : `M'inscrire`}
+                          </Button>
+                        ) : isInWaitingList ? (
+                          <Badge as="span">Inscrit sur liste d'attente</Badge>
+                        ) : (
+                          <Badge severity="success" as="span">
+                            Inscrit
+                          </Badge>
+                        )}
                       </span>
-                    )}
-                  <span
-                    style={{
-                      display: "block",
-                      marginBottom: 5,
-                      marginTop: 5,
-                    }}
-                  >
-                    {!isMemberRegistered ? (
-                      <Button
-                        linkProps={{
-                          href: buildInscriptionLink(
-                            formation.inscriptionLink,
-                            {
-                              fullname: dbUser.fullname,
-                              email,
-                              username: dbUser.username,
-                              domaine: dbUser.domaine,
-                            },
-                          ),
-                          target: "_blank",
-                        }}
-                      >
-                        {formation.availableSeats <= 0
-                          ? `M'inscrire sur liste d'attente`
-                          : `M'inscrire`}
-                      </Button>
-                    ) : isInWaitingList ? (
-                      <Badge as="span">Inscrit sur liste d'attente</Badge>
-                    ) : (
-                      <Badge severity="success" as="span">
-                        Inscrit
-                      </Badge>
-                    )}
-                  </span>
+                    </>
+                  )}
                 </>
               }
               title={
