@@ -2,31 +2,27 @@ import { PropsWithChildren } from "react";
 
 import { fr } from "@codegouvfr/react-dsfr";
 import { Footer } from "@codegouvfr/react-dsfr/Footer";
-import { DsfrHead } from "@codegouvfr/react-dsfr/next-appdir/DsfrHead";
-import { DsfrProvider } from "@codegouvfr/react-dsfr/next-appdir/DsfrProvider";
-import { getHtmlAttributes } from "@codegouvfr/react-dsfr/next-appdir/getHtmlAttributes";
-import Link from "next/link";
 import { getServerSession } from "next-auth/next";
 import { NuqsAdapter } from "nuqs/adapters/next/app";
 import { NextAppDirEmotionCacheProvider } from "tss-react/next/appDir";
 
 import { BreadCrumbProvider } from "./BreadCrumbProvider";
 import ClientSessionProvider from "./context/ClientContextProvider";
-import { defaultColorScheme } from "./defaultColorScheme";
 import { MuiDsfrThemeProvider } from "./MuiDsfrThemeProvider";
-import { StartDsfr } from "./StartDsfr";
 import { Matomo } from "@/app/Matomo";
 import Header from "@/components/Header";
 import { LiveChatProvider } from "@/components/live-chat/LiveChatProvider";
 import { Skiplinks } from "@/components/Skiplinks";
 import { authOptions } from "@/utils/authoptions";
 
+import {
+  getHtmlAttributes,
+  DsfrHead,
+} from "../dsfr-bootstrap/server-only-index";
+import { DsfrProvider, StartDsfrOnHydration } from "../dsfr-bootstrap";
 export interface RootLayoutProps {
   workaroundForNextJsPages?: boolean;
 }
-
-// [WORKAROUND] Since `react-dsfr` no longer passes the color scheme through `DsfrProvider` and `DsfrHead` we call this function to avoid an assert error in case of `workaroundForNextJsPages: true` usage
-getHtmlAttributes({ defaultColorScheme });
 
 async function MainStructure(props: PropsWithChildren) {
   const session = await getServerSession(authOptions);
@@ -35,13 +31,13 @@ async function MainStructure(props: PropsWithChildren) {
     <>
       {/* eslint-disable-next-line @next/next/no-head-element */}
       <head>
-        <StartDsfr />
-        <DsfrHead Link={Link} />
+        <DsfrHead />
       </head>
       <body>
+        <StartDsfrOnHydration />
         <NextAppDirEmotionCacheProvider options={{ key: "css" }}>
           <ClientSessionProvider>
-            <DsfrProvider>
+            <DsfrProvider lang="fr">
               <MuiDsfrThemeProvider>
                 <BreadCrumbProvider>
                   <LiveChatProvider>
@@ -102,7 +98,7 @@ function RootLayout(props: PropsWithChildren<RootLayoutProps>) {
   }
 
   return (
-    <html {...getHtmlAttributes({ defaultColorScheme, lang: "fr" })}>
+    <html {...getHtmlAttributes({ lang: "fr" })}>
       <MainStructure {...props} />
     </html>
   );
