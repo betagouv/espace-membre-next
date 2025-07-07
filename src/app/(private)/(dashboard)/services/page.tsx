@@ -1,14 +1,8 @@
 import { fr } from "@codegouvfr/react-dsfr";
 import Badge from "@codegouvfr/react-dsfr/Badge";
 import { Tile } from "@codegouvfr/react-dsfr/Tile";
-import coding from "@gouvfr/dsfr/dist/artwork/pictograms/digital/coding.svg";
-import dataviz from "@gouvfr/dsfr/dist/artwork/pictograms/digital/data-visualization.svg";
-import community from "@gouvfr/dsfr/dist/artwork/pictograms/environment/human-cooperation.svg";
-import locationFrance from "@gouvfr/dsfr/dist/artwork/pictograms/map/location-france.svg";
-import error from "@gouvfr/dsfr/dist/artwork/pictograms/system/error.svg";
-import information from "@gouvfr/dsfr/dist/artwork/pictograms/system/information.svg";
-import errortech from "@gouvfr/dsfr/dist/artwork/pictograms/system/technical-error.svg";
-import { StaticImageData } from "next/image";
+import dataviz from "@codegouvfr/react-dsfr/dsfr/artwork/pictograms/digital/data-visualization.svg";
+import error from "@codegouvfr/react-dsfr/dsfr/artwork/pictograms/system/error.svg";
 import { redirect } from "next/navigation";
 import { getServerSession } from "next-auth";
 import { match } from "ts-pattern";
