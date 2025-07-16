@@ -17,6 +17,7 @@ import {
 export enum EMAIL_TYPES {
   EMAIL_LOGIN = "EMAIL_LOGIN",
   EMAIL_CREATED_EMAIL = "EMAIL_CREATED_EMAIL",
+  EMAIL_CREATED_DIMAIL = "EMAIL_CREATED_DIMAIL",
   EMAIL_MATTERMOST_ACCOUNT_CREATED = "EMAIL_MATTERMOST_ACCOUNT_CREATED",
   EMAIL_ENDING_CONTRACT_2_DAYS = "EMAIL_ENDING_CONTRACT_2_DAYS",
   EMAIL_ENDING_CONTRACT_15_DAYS = "EMAIL_ENDING_CONTRACT_15_DAYS",
@@ -77,6 +78,15 @@ export type EmailCreatedEmail = {
     secondaryEmail: string;
     secretariatUrl: string;
     emailUrl: string;
+  };
+};
+
+export type EmailCreatedDimail = {
+  type: EMAIL_TYPES.EMAIL_CREATED_DIMAIL;
+  variables: {
+    password: string;
+    email: string;
+    webmailUrl: string;
   };
 };
 
@@ -263,6 +273,7 @@ export type EmailMatomoAccountUpdated = {
 export type EmailVariants =
   | EmailLogin
   | EmailCreatedEmail
+  | EmailCreatedDimail
   | EmailMattermostAccountCreated
   | EmailEndingContract
   | EmailNoMoreContract
@@ -411,6 +422,9 @@ export const EmailDocumentation: Record<
   [EMAIL_TYPES.EMAIL_CREATED_EMAIL]: {
     description:
       "Email envoyé lors de la création d’un nouvel email dans le système.",
+  },
+  [EMAIL_TYPES.EMAIL_CREATED_DIMAIL]: {
+    description: "Email envoyé lors de la création d’une boite mail Dimail.",
   },
   [EMAIL_TYPES.EMAIL_MATTERMOST_ACCOUNT_CREATED]: {
     description: "Notification de création d’un compte Mattermost.",

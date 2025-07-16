@@ -59,6 +59,7 @@ export enum EventCode {
   MEMBER_CREATED = "MEMBER_CREATED",
   MEMBER_VALIDATED = "MEMBER_VALIDATED",
   MEMBER_USER_EVENTS_UPDATED = "MEMBER_UPDATE_USER_EVENTS",
+  DIMAIL_MAILBOX_CREATED = "DIMAIL_MAILBOX_CREATED",
 }
 
 export const EventCodeToReadable: Record<EventCode, string> = {
@@ -105,6 +106,7 @@ export const EventCodeToReadable: Record<EventCode, string> = {
   [EventCode.MEMBER_CREATED]: "Membre créé",
   [EventCode.MEMBER_VALIDATED]: "Membre validé",
   [EventCode.MEMBER_USER_EVENTS_UPDATED]: "Evénement du membre mis à jour",
+  [EventCode.DIMAIL_MAILBOX_CREATED]: "Boite mail Dimail créée",
 };
 
 export const SYSTEM_NAME = "system";
