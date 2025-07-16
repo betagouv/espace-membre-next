@@ -2,6 +2,7 @@ export enum SERVICES {
   MATOMO = "matomo",
   SENTRY = "sentry",
   MATTERMOST = "mattermost",
+  DIMAIL = "dimail",
 }
 
 export enum ACCOUNT_SERVICE_STATUS {
