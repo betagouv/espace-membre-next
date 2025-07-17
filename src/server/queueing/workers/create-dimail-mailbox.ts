@@ -10,6 +10,7 @@ import { getUserBasicInfo } from "@/lib/kysely/queries/users";
 import { sendEmail } from "@/server/config/email.config";
 import { EMAIL_TYPES } from "@/server/modules/email";
 import { memberBaseInfoToModel } from "@/models/mapper";
+import { EmailStatusCode } from "@/models/member";
 
 export const createDimailMailboxTopic = "create-dimail-mailbox";
 
@@ -17,7 +18,7 @@ export async function createDimailMailbox(
   job: PgBoss.Job<CreateDimailAdressDataSchemaType>,
 ) {
   console.log(
-    `Create dimail mailboxe for ${job.data.userUuid}`,
+    `Create dimail mailbox for ${job.data.userUuid}`,
     job.id,
     job.name,
   );
@@ -35,6 +36,8 @@ export async function createDimailMailbox(
     user_name: baseInfoUser.username,
     domain,
   });
+  // todo: if the domain is ext.beta.gouv.fr, create an alias on beta.gouv.fr domain
+
 
   // envoi email invitation avec password
   await sendEmail({
@@ -60,7 +63,7 @@ export async function createDimailMailbox(
     .insert("dinum_emails")
     .values({
       email: mailboxInfos.email,
-      status: "active",
+      status: EmailStatusCode.EMAIL_ACTIVE,
     })
     .where("user_id", "=", job.data.userUuid)
     .execute();
@@ -85,5 +88,5 @@ export async function createDimailMailbox(
     .where("user_id", "=", job.data.userUuid)
     .execute();
 
-  console.log(`the dimail email has been created for ${job.data.username}`);
+  console.log(`the dimail mailbox has been created for ${job.data.username}`);
 }
