@@ -13,6 +13,8 @@ import { memberBaseInfoToModel } from "@/models/mapper";
 import { EmailStatusCode } from "@/models/member";
 
 export const createDimailMailboxTopic = "create-dimail-mailbox";
+const DIMAIL_MAILBOX_DOMAIN = process.env.DIMAIL_MAILBOX_DOMAIN || "beta.gouv.fr";
+const DIMAIL_MAILBOX_DOMAIN_EXT = process.env.DIMAIL_MAILBOX_DOMAIN_EXT || "ext.beta.gouv.fr";
 
 export async function createDimailMailbox(
   job: PgBoss.Job<CreateDimailAdressDataSchemaType>,
@@ -31,7 +33,7 @@ export async function createDimailMailbox(
   const baseInfoUser = memberBaseInfoToModel(dbUser);
  
   // determine the domain based on the user's legal status
-  const domain = baseInfoUser.legal_status.includes("public") ? "beta.gouv.fr" : "ext.beta.gouv.fr";
+  const domain = baseInfoUser.legal_status.includes("public") ? DIMAIL_MAILBOX_DOMAIN : DIMAIL_MAILBOX_DOMAIN_EXT;
   const mailboxInfos = await createMailbox({
     user_name: baseInfoUser.username,
     domain,
