@@ -1,6 +1,6 @@
 fileignoreconfig:
 - filename: .env.development
-  checksum: 6050bdc0c24d4a45963695a35c09d91d541938320e1b4b21277430b609c4c494
+  checksum: 874d584998983391c265175ae780c2ed80e42453aa7342142667a989f1bd4b70
 - filename: .env.test
   checksum: 900db203fd9526bc60c45c4005ed5330093667f615489eada3436a7025ba5568
 - filename: .github/workflows/generate-doc.yml
@@ -165,6 +165,8 @@ fileignoreconfig:
   checksum: 29b4b821aa8c56be7f9c13242864ae545cb2546bddff8da758904109c6d893c5
 - filename: src/frontConfig/index.ts
   checksum: 34f5ecf4f6e0fa5e48bf0a409a356d4fba3414f7326f92bf3b243cf7c7927c98
+- filename: src/lib/dimail/client.ts
+  checksum: 6867cec43955eb6e533fe0be071804783614c79e1e15b616695143d6dd03e490
 - filename: src/lib/env.ts
   checksum: a8b5d8dcb48c3b596d0de0058a5f47d7972f780359a89f7e94c6ac5774a694a1
 - filename: src/lib/flat.ts
@@ -213,6 +215,8 @@ fileignoreconfig:
   checksum: 95885406d903e20e96c70932cec81eb1b02d8cc54425acf58c3ff3253b39c121
 - filename: src/server/modules/htmlbuilder/htmlbuilder.ts
   checksum: 5e0832e12c5e7b836d6311b4a178eb8f6829ce88209be56373821383e283d58f
+- filename: src/server/queueing/workers/create-dimail-mailbox.ts
+  checksum: 0c1999cb396641ca350ceca3006b7e97b0a8830db95a13bae38763c23c6c4dd4
 - filename: src/server/queueing/workers/create-update-matomo-account.ts
   checksum: dc838c1d2745b140925a82dbecac670471ff931ff96be3728e4399217d38ebe0
 - filename: src/server/schedulers/emailScheduler.ts
@@ -225,6 +229,8 @@ fileignoreconfig:
   checksum: f1789c3de094d9dcaa94d00d115e472ce6630265764fed7f6cb9716e6851c6ae
 - filename: src/server/schedulers/newsletterScheduler.ts
   checksum: 280ea9fbedef2805e4a69d5299cfff8db0c426b478484747855830153dcea5f2
+- filename: src/server/views/templates/emails/EmailCreatedDimail/EmailCreatedDimail.tsx
+  checksum: 8a75491ff5b20cd85e557d384868cb03b4794f39f0e9976b2aec36c860785769
 - filename: src/server/views/templates/emails/EmailCreatedEmail/EmailCreatedEmail.tsx
   checksum: bfdcc935e84d712555a173eb6535d2ebd267e73770d735349d8b2560dd0e1fd3
 - filename: src/server/views/templates/emails/MatomoAccountCreatedEmail/MatomoAccountCreatedEmail.tsx
