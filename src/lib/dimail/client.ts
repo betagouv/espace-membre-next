@@ -1,16 +1,23 @@
 import axios from 'axios';
 
 const DIMAIL_API_URL = process.env.DIMAIL_API_URL || 'https://api.ovhprod.dimail1.numerique.gouv.fr';
-const DIMAIL_API_TOKEN = process.env.DIMAIL_API_TOKEN;
 
+const DIMAIL_API_USERNAME = process.env.DIMAIL_API_USERNAME;
+const DIMAIL_API_PASSWORD = process.env.DIMAIL_API_PASSWORD;
+
+if (!DIMAIL_API_USERNAME || !DIMAIL_API_PASSWORD) {
+  throw new Error('Les identifiants Basic Auth Dimail (DIMAIL_API_USERNAME/DIMAIL_API_PASSWORD) sont manquants.');
+}
+
+/*const DIMAIL_API_TOKEN = process.env.DIMAIL_API_TOKEN;
 if (!DIMAIL_API_TOKEN) {
   throw new Error('Le token API Dimail (DIMAIL_API_TOKEN) est manquant.');
-}
+}*/
 
 const client = axios.create({
   baseURL: DIMAIL_API_URL,
   headers: {
-    Authorization: `Bearer ${DIMAIL_API_TOKEN}`,
+    Authorization: 'Basic ' + Buffer.from(`${DIMAIL_API_USERNAME}:${DIMAIL_API_PASSWORD}`).toString('base64'),
     'Content-Type': 'application/json',
   },
 });
