@@ -74,7 +74,7 @@ export async function createDimailMailbox(
   // add an event to the events table
   await addEvent({
     userUuid: job.data.userUuid,
-    code: EventCode.DIMAIL_EMAIL_CREATED,
+    code: EventCode.DIMAIL_MAILBOX_CREATED,
     data: {
       email: mailboxInfos.email,
     },
