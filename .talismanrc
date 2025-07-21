@@ -165,6 +165,8 @@ fileignoreconfig:
   checksum: 29b4b821aa8c56be7f9c13242864ae545cb2546bddff8da758904109c6d893c5
 - filename: src/frontConfig/index.ts
   checksum: 34f5ecf4f6e0fa5e48bf0a409a356d4fba3414f7326f92bf3b243cf7c7927c98
+- filename: src/lib/dimail/client.ts
+  checksum: 6867cec43955eb6e533fe0be071804783614c79e1e15b616695143d6dd03e490
 - filename: src/lib/env.ts
   checksum: a8b5d8dcb48c3b596d0de0058a5f47d7972f780359a89f7e94c6ac5774a694a1
 - filename: src/lib/flat.ts
