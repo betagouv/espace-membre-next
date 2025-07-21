@@ -28,6 +28,7 @@ import {
 } from "@/models/member";
 import { EMAIL_STATUS_READABLE_FORMAT } from "@/models/misc";
 import { EMAIL_PLAN_TYPE, OvhRedirection, OvhResponder } from "@/models/ovh";
+import { OpiCreateMailButtons } from "./OpiCreateMailButtons";
 
 const EmailLink = ({ email }: { email: string }) => (
   <a href={`mailto:${email}`}>{email}</a>
@@ -332,10 +333,14 @@ export default function EmailContainer({
           data={rows}
         />
       ) : null}
-      {isMailOPI && (
+      {isMailOPI ? (
         <>
           <BlocEmailConfiguration emailInfos={emailInfos} />
           <BlocConfigurerCommunicationEmail userInfos={userInfos} />
+        </>
+      ) : (
+        <>
+          <OpiCreateMailButtons userUuid={userInfos.uuid} />
         </>
       )}
       {!emailIsBeingCreated && isCurrentUser && (
@@ -358,7 +363,9 @@ export default function EmailContainer({
               )}
 
           {!!emailInfos && !isMailOPI && (
-            <BlocEmailConfiguration emailInfos={emailInfos} />
+            <>
+              <BlocEmailConfiguration emailInfos={emailInfos} />
+            </>
           )}
 
           {!isMailOPI &&
