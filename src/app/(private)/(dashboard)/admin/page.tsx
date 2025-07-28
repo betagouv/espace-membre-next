@@ -1,7 +1,7 @@
 import { fr } from "@codegouvfr/react-dsfr";
 import { Tile } from "@codegouvfr/react-dsfr/Tile";
-import community from "@gouvfr/dsfr/dist/artwork/pictograms/environment/human-cooperation.svg";
-import locationFrance from "@gouvfr/dsfr/dist/artwork/pictograms/map/location-france.svg";
+import community from "@codegouvfr/react-dsfr/dsfr/artwork/pictograms/environment/human-cooperation.svg";
+import locationFrance from "@codegouvfr/react-dsfr/dsfr/artwork/pictograms/map/location-france.svg";
 import { StaticImageData } from "next/image";
 
 export default async function Page() {
