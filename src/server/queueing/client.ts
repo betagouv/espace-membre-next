@@ -29,6 +29,10 @@ import {
   updateSentryServiceAccount,
   updateSentryServiceAccountTopic,
 } from "./workers/update-sentry-account";
+import {
+  createDimailMailbox,
+  createDimailMailboxTopic,
+} from "./workers/create-dimail-mailbox";
 import { BusinessError, ErrorWithStatus } from "@/utils/error";
 import { gracefulExit } from "@/utils/gracefulExit";
 
@@ -114,6 +118,11 @@ export const pgBossWorker: {
     topic: sendEmailToIncubatorTeamTopic,
     worker: sendEmailToIncubatorTeam,
     description: `Envoie un email aux membres des incubateurs pour leur lister les produits qui n'ont pas changé depuis X mois`,
+  },
+  {
+    topic: createDimailMailboxTopic,
+    worker: createDimailMailbox,
+    description: `Créer une boite mail Dimail pour un utilisateur`,
   },
 ];
 
