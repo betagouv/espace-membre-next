@@ -323,6 +323,7 @@ const protectedDataSelect = (db: Kysely<DB> = database) =>
       "users.email_is_redirection",
       "users.workplace_insee_code",
       "users.competences",
+      "users.legal_status",
     ]);
 
 export async function getUserStartupsActive(

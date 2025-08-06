@@ -216,7 +216,7 @@ fileignoreconfig:
 - filename: src/server/modules/htmlbuilder/htmlbuilder.ts
   checksum: 5e0832e12c5e7b836d6311b4a178eb8f6829ce88209be56373821383e283d58f
 - filename: src/server/queueing/workers/create-dimail-mailbox.ts
-  checksum: 0c1999cb396641ca350ceca3006b7e97b0a8830db95a13bae38763c23c6c4dd4
+  checksum: 31c0bf64d2692097494267ddb278644293c2ed9cf03c4151de1c81872f434d34
 - filename: src/server/queueing/workers/create-update-matomo-account.ts
   checksum: dc838c1d2745b140925a82dbecac670471ff931ff96be3728e4399217d38ebe0
 - filename: src/server/schedulers/emailScheduler.ts
