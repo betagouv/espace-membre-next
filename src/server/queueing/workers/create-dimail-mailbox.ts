@@ -1,10 +1,7 @@
 import PgBoss from "pg-boss";
 
-import { addEvent } from "@/lib/events";
 import { db } from "@/lib/kysely";
-import { EventCode } from "@/models/actionEvent";
 import { CreateDimailAdressDataSchemaType } from "@/models/jobs/services";
-import { ACCOUNT_SERVICE_STATUS, SERVICES } from "@/models/services";
 import { createMailbox } from "@lib/dimail/client";
 import { getUserBasicInfo } from "@/lib/kysely/queries/users";
 import { sendEmail } from "@/server/config/email.config";
