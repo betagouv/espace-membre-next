@@ -22,3 +22,12 @@ export const SendEmailToTeamWhenNewMemberSchema =
 export type SendEmailToTeamWhenNewMemberSchemaType = z.infer<
   typeof SendEmailToTeamWhenNewMemberSchema
 >;
+
+export const CreateDimailMailboxDataSchema =
+  MaintenanceWrapperDataSchema.extend({
+    userUuid: z.string().uuid(),
+    requestId: z.string().uuid(),
+  }).strict();
+export type CreateDimailMailboxDataSchemaType = z.infer<
+  typeof CreateDimailMailboxDataSchema
+>;

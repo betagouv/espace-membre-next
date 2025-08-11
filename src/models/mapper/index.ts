@@ -135,6 +135,9 @@ export function memberBaseInfoToModel(
     primary_email_status: memberBaseInfoSchema.shape.primary_email_status.parse(
       user.primary_email_status || EmailStatusCode.EMAIL_UNSET,
     ),
+    legal_status: user.legal_status
+      ? (user.legal_status as LegalStatus)
+      : undefined,
     memberType: user.member_type ? (user.member_type as MemberType) : undefined,
     primary_email_status_updated_at: user.primary_email_status_updated_at!,
     email_is_redirection: user.email_is_redirection || false,
