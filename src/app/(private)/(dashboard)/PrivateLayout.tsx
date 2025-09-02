@@ -263,6 +263,11 @@ export function PrivateLayout({ children }: { children: React.ReactNode }) {
             },
           ],
         },
+        {
+          href: metabaseLink,
+          text: "Observatoire",
+          isActive: hasPathnameThisMatch(pathname, metabaseLink),
+        },
       ],
     },
     {
