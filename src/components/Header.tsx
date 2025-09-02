@@ -26,6 +26,7 @@ const MainHeader = () => {
   const adminMattermostLink = linkRegistry.get("adminMattermost", undefined);
   const formationListLink = linkRegistry.get("formationList", undefined);
   const eventsListLink = linkRegistry.get("eventsList", undefined);
+  const metabaseLink = linkRegistry.get("metabase", undefined);
   const quickAccessItems: HeaderProps.QuickAccessItem[] = [];
   if (session) {
     quickAccessItems.push({
@@ -163,6 +164,13 @@ const MainHeader = () => {
                 },
                 isActive: hasPathnameThisRoot(pathname, incubatorListLink),
                 text: "Incubateurs",
+              },
+              {
+                linkProps: {
+                  href: metabaseLink,
+                },
+                isActive: hasPathnameThisRoot(pathname, metabaseLink),
+                text: "Observatoire",
               },
             ],
           },
