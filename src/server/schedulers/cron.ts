@@ -43,6 +43,7 @@ import { createMailingListForStartups } from "./startups/createMailingListForSta
 import { sendEmailToStartupToUpdatePhase } from "./startups/sendEmailToStartupToUpdatePhase";
 import { unblockEmailsThatAreActive } from "./unblockEmailsThatAreActive";
 import { sendMessageToActiveUsersWithoutSecondaryEmail } from "./updateProfileScheduler";
+import { sendPendingUsersMessages } from "./sendPendingUsersMessages";
 import {
   deleteSecondaryEmailsForUsers,
   sendContractEndingMessageToUsers,
@@ -461,5 +462,14 @@ export const espaceMembreCronJobs: EspaceMembreCronJobType[] = [
     name: "sendMessageToActiveUsersWithoutSecondaryEmail",
     description:
       "Send message to active user without secondary email to update secondary email",
+  },
+  {
+    cronTime: "0 9 * * *",
+    onTick: sendPendingUsersMessages,
+    start: true,
+    timeZone: "Europe/Paris",
+    isActive: !!config.FEATURE_SEND_PENDING_USERS_MESSAGES,
+    name: "sendPendingUsersMessages",
+    description: "Send brevo message for pending users",
   },
 ];
