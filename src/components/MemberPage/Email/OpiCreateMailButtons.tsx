@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState } from "react";
 import { Button } from "@codegouvfr/react-dsfr/Button";
 import { createDimailEmail } from "@/app/api/member/actions/create-dimail";
 
@@ -15,13 +15,13 @@ export const OpiCreateMailButtons = ({ userUuid }: Props) => {
       await createDimailEmail(userUuid);
       // Optionnel : afficher un message de succès
     } catch (error) {
-      console.error('Erreur lors de la création de l\'email:', error);
+      console.error("Erreur lors de la création de l'email:", error);
       // Optionnel : afficher un message d'erreur
     } finally {
       setIsLoading(false);
     }
   };
-  
+
   return (
     <>
       <Button
@@ -30,7 +30,9 @@ export const OpiCreateMailButtons = ({ userUuid }: Props) => {
         disabled={isLoading}
         size="small"
       >
-        {isLoading ? 'Création en cours...' : 'Passer son adresse chez la Suite numérique'}
+        {isLoading
+          ? "Création en cours..."
+          : "Passer son adresse chez la Suite numérique"}
       </Button>
     </>
   );

@@ -7,7 +7,7 @@ const DIMAIL_API_USERNAME = process.env.DIMAIL_API_USERNAME;
 const DIMAIL_API_PASSWORD = process.env.DIMAIL_API_PASSWORD;
 
 if (!DIMAIL_API_USERNAME || !DIMAIL_API_PASSWORD) {
-  throw new Error(
+  console.error(
     "Les identifiants Basic Auth Dimail (DIMAIL_API_USERNAME/DIMAIL_API_PASSWORD) sont manquants.",
   );
 }
