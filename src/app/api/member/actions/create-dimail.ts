@@ -30,8 +30,8 @@ export const createDimailEmail = withErrorHandling(async (userUuid: string) => {
     {
       retryLimit: 50,
       retryBackoff: true,
-    }
+    },
   );
 
   return { success: true };
-}); 
+});

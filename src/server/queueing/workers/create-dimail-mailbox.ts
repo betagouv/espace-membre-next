@@ -12,8 +12,6 @@ import { EmailStatusCode } from "@/models/member";
 export const createDimailMailboxTopic = "create-dimail-mailbox";
 const DIMAIL_MAILBOX_DOMAIN =
   process.env.DIMAIL_MAILBOX_DOMAIN || "beta.gouv.fr";
-const DIMAIL_MAILBOX_DOMAIN_EXT =
-  process.env.DIMAIL_MAILBOX_DOMAIN_EXT || "ext.beta.gouv.fr";
 
 export async function createDimailMailbox(
   job: PgBoss.Job<CreateDimailAdressDataSchemaType>,
@@ -31,14 +29,15 @@ export async function createDimailMailbox(
   }
   const baseInfoUser = memberBaseInfoToModel(dbUser);
 
-  const domain = ["contractuel", "fonctionnaire"].includes(
+  const username = ["contractuel", "fonctionnaire"].includes(
     (baseInfoUser as any).legal_status || "",
   )
-    ? DIMAIL_MAILBOX_DOMAIN
-    : DIMAIL_MAILBOX_DOMAIN_EXT;
+    ? baseInfoUser.username
+    : `${baseInfoUser.username}.ext`;
+
   const mailboxInfos = await createMailbox({
     user_name: baseInfoUser.username,
-    domain,
+    domain: DIMAIL_MAILBOX_DOMAIN,
   });
   // todo: if the domain is ext.beta.gouv.fr, create an alias on beta.gouv.fr domain
 
@@ -53,15 +52,17 @@ export async function createDimailMailbox(
         process.env.DIMAIL_WEBMAIL_URL || "https://webmail.beta.gouv.fr/",
     },
   });
+
   // MAJ infos base espace-membre (primary_email et primary_email_status)
   await db
     .updateTable("users")
     .set({
       primary_email: mailboxInfos.email,
-      primary_email_status: "active",
+      primary_email_status: "EMAIL_ACTIVE",
     })
     .where("uuid", "=", job.data.userUuid)
     .execute();
+
   // MAJ de la table dinum_emails
   // update the dinum_emails in the database with the new email
   await db
