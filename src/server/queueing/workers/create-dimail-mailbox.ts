@@ -58,7 +58,7 @@ export async function createDimailMailbox(
     .updateTable("users")
     .set({
       primary_email: mailboxInfos.email,
-      primary_email_status: "EMAIL_ACTIVE",
+      primary_email_status: EmailStatusCode.EMAIL_ACTIVE,
     })
     .where("uuid", "=", job.data.userUuid)
     .execute();
