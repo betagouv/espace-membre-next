@@ -36,7 +36,7 @@ export async function createDimailMailbox(
     : `${baseInfoUser.username}.ext`;
 
   const mailboxInfos = await createMailbox({
-    user_name: baseInfoUser.username,
+    user_name: username,
     domain: DIMAIL_MAILBOX_DOMAIN,
   });
   // todo: if the domain is ext.beta.gouv.fr, create an alias on beta.gouv.fr domain
@@ -69,7 +69,7 @@ export async function createDimailMailbox(
     .insertInto("dinum_emails")
     .values({
       email: mailboxInfos.email,
-      status: EmailStatusCode.EMAIL_ACTIVE,
+      status: "active",
     })
     .execute();
 
