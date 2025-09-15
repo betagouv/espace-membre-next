@@ -1,12 +1,14 @@
 fileignoreconfig:
 - filename: .env.development
-  checksum: 874d584998983391c265175ae780c2ed80e42453aa7342142667a989f1bd4b70
+  checksum: d8352500969d39f9303da4ed351b4a1d7a832b0082a81d80bc83987c0f1a9a58
 - filename: .env.test
   checksum: 900db203fd9526bc60c45c4005ed5330093667f615489eada3436a7025ba5568
 - filename: .github/workflows/generate-doc.yml
   checksum: 5f9f798ed8186f440f30833a1fdd481bd74d385696662053b8e4d3f49913dd07
 - filename: .github/workflows/playwright.yml
   checksum: c7ad26d3f680a12d4169e46858d36b01ad1073c2acbb7265ee398d96ccd8bd65
+- filename: README.md
+  checksum: f9ca3ff129514065dded601dea3798c5e4de990a80e0bcd4f208a5be7a4b8495
 - filename: __tests__/env-setup.ts
   checksum: a129a2294b218db4246f91ab94c1c9c1131fb4b0173873b084238ac429c8a051
 - filename: __tests__/htmlbuilder.spec.ts
@@ -156,7 +158,7 @@ fileignoreconfig:
 - filename: src/components/TeamSelect.tsx
   checksum: 0b50736d481ddc8d7be01f22e1faae73314fe6a2931e3726e802ce0a7f7692c8
 - filename: src/components/WhatIsGoingOnWithMemberPage/WhatIsGoingOnWithMember.tsx
-  checksum: ac05f31ddb64177301c6db7e3777be0f91db3fd3e73758b47a60f12ba331db53
+  checksum: ab07660026360a47f998681fddacc32c8d513bdf4bc76e752a09760fe977201c
 - filename: src/components/organization/OrganizationPage/Organization.tsx
   checksum: 3110b557bf4a6cea98ba1f9a5474df6904bd60f5e067d013295f8b7a56fe4e6e
 - filename: src/components/team/TeamForm/TeamForm.tsx
@@ -200,7 +202,7 @@ fileignoreconfig:
 - filename: src/server/config/index.ts
   checksum: 67f2e19c09f904d57989c29abc5d17fb124fa833d57dfeb9bc19a7f3ab6c7cb8
 - filename: src/server/controllers/usersController/createEmailForUser.ts
-  checksum: e04bc018fae838175ac55294dffa15813dd519df5ed92693b6a964428b9c7fcf
+  checksum: b8a6b3d9ba775a3d44d1613fdf10694935d4bcd508891e41b784f0f6aaaf8470
 - filename: src/server/controllers/usersController/usersControllerUtils.ts
   checksum: e6f840e668986912f7f7ea6aaaa1eab46ddf78073864c5b332d06b87c19a1ec8
 - filename: src/server/controllers/utils.ts
@@ -216,11 +218,13 @@ fileignoreconfig:
 - filename: src/server/modules/htmlbuilder/htmlbuilder.ts
   checksum: 5e0832e12c5e7b836d6311b4a178eb8f6829ce88209be56373821383e283d58f
 - filename: src/server/queueing/workers/create-dimail-mailbox.ts
-  checksum: 31c0bf64d2692097494267ddb278644293c2ed9cf03c4151de1c81872f434d34
+  checksum: 052d86c1f41fcf083e19e1fc2f25517cc59033dd9d709762d4a06a39eab893f6
 - filename: src/server/queueing/workers/create-update-matomo-account.ts
   checksum: dc838c1d2745b140925a82dbecac670471ff931ff96be3728e4399217d38ebe0
+- filename: src/server/schedulers/cron.ts
+  checksum: b2a94e408e9145b3dfad464281c7e6ac96384f53421ea82bdf57018e04e28376
 - filename: src/server/schedulers/emailScheduler.ts
-  checksum: 84bfc5f7623f0c45bc930a4c2dd33afdf1d61071149ca6d4402b7b3facdf877d
+  checksum: 9608d001d6127b6e76c605625f834054c74157127a28ecb66ba3fa26a1632bea
 - filename: src/server/schedulers/formationScheduler/syncFormationFromAirtable.ts
   checksum: 81d21af404c5ca0f01e5b60d8f0ee9b7d7ee10f663f1e8b02483478b838172b2
 - filename: src/server/schedulers/formationScheduler/syncFormationInscriptionFromAirtable.ts

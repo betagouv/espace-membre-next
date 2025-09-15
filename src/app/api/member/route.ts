@@ -57,6 +57,7 @@ const isSessionUserMemberOfUserIncubatorTeams = async function (
   return incubatorIds.some((el) => sessionUserIncubatorIds.includes(el));
 };
 
+// create a new user
 export const POST = withHttpErrorHandling(async (req: Request) => {
   const session = await getServerSession(authOptions);
   if (!session || !session.user.id) {
@@ -121,6 +122,7 @@ export const POST = withHttpErrorHandling(async (req: Request) => {
         },
       );
     }
+    // todo: sendOnboardingVerificationPendingEmail as a pgboss job instead of scheduler
     await addEvent({
       created_by_username: session.user.id,
       action_on_username: username,

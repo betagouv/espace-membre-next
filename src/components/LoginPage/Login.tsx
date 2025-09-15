@@ -221,11 +221,6 @@ export const LoginPage = function () {
         </>
       )}
       <hr />
-      <h3 className={fr.cx("fr-mb-1w", "fr-h4")}>Besoin d'aide ?</h3>
-      <p className={fr.cx("fr-text--xs")}>
-        Si tu n'arrives pas à te connecter, consulte cette page pour savoir ce
-        qu'il se passe : <Link href="/keskispasse">/keskispasse</Link>
-      </p>
     </form>
   );
 

@@ -26,37 +26,10 @@ import {
   AdminEmailNotAllowedError,
   withHttpErrorHandling,
 } from "@/utils/error";
+import { getBossClientInstance } from "@/server/queueing/client";
+import { createDimailMailboxTopic } from "@/server/queueing/workers/create-dimail-mailbox";
 
-const getMattermostUserInfo = async (
-  dbUser,
-): Promise<{
-  mattermostUser: MattermostUser | null;
-  mattermostUserInTeamAndActive: boolean;
-}> => {
-  try {
-    let mattermostUser = dbUser?.primary_email
-      ? await getUserByEmail(dbUser.primary_email).catch((e) => null)
-      : null;
-    const [mattermostUserInTeamAndActive] = dbUser?.primary_email
-      ? await searchUsers({
-          term: dbUser.primary_email,
-          team_id: config.mattermostTeamId,
-          allow_inactive: false,
-        }).catch((e) => [])
-      : [];
-    return {
-      mattermostUser,
-      mattermostUserInTeamAndActive,
-    };
-  } catch (e) {
-    Sentry.captureException(e);
-    return {
-      mattermostUser: null,
-      mattermostUserInTeamAndActive: false,
-    };
-  }
-};
-
+// triggered when the user validates its new membership
 async function validateMemberHandler(
   req: Request,
   { params: { username } }: { params: { username: string } },
@@ -78,6 +51,7 @@ async function validateMemberHandler(
     memberData,
     session.user.uuid,
     {
+      // todo: why ?
       primary_email: hasPublicServiceEmail ? memberData.secondary_email : null,
       secondary_email: hasPublicServiceEmail
         ? null
@@ -94,71 +68,26 @@ async function validateMemberHandler(
     options: { withDetails: true },
   });
 
+  if (!dbUser) {
+    throw new Error(`User ${username} not found`);
+  }
+
+  const bossClient = await getBossClientInstance();
+  await bossClient.send(
+    createDimailMailboxTopic,
+    {
+      userUuid: dbUser.uuid,
+      username: dbUser.username,
+    },
+    {
+      retryLimit: 50,
+      retryBackoff: true,
+    },
+  );
+
   return Response.json({
     message: `Success`,
     data: dbUser,
   });
 }
 export const PUT = withHttpErrorHandling(validateMemberHandler);
-
-// export async function GET(
-//     req: Request,
-//     { params: { username } }: { params: { username: string } }
-// ) {
-//     const session = await getServerSession(authOptions);
-
-//     if (!session || !session.user.id) {
-//         throw new Error(`You don't have the right to access this function`);
-//     }
-
-// const isCurrentUser = session.user.id === username;
-// try {
-//     // todo not sure this call should send all user infos
-//     const user = await userInfos({ username }, isCurrentUser);
-//     const hasGithubFile = user.userInfos;
-//     const hasEmailAddress =
-//         user.emailInfos || user.emailRedirections.length > 0;
-//     if (!hasGithubFile && !hasEmailAddress) {
-//         throw new Error(
-//             'Il n\'y a pas de membres avec ce compte mail. Vous pouvez <a href="/onboarding">créer la fiche de cette personne</a>.'
-//         );
-//     }
-
-//         const dbUser = await getUserBasicInfo({ username });
-//         const primaryEmail = dbUser ? dbUser.primary_email : "";
-//         const secondaryEmail = dbUser ? dbUser.secondary_email : "";
-//         let availableEmailPros: string[] = [];
-//         if (config.ESPACE_MEMBRE_ADMIN.includes(session.user.id)) {
-//             availableEmailPros = await betagouv.getAvailableProEmailInfos();
-//         }
-//         let { mattermostUser, mattermostUserInTeamAndActive } =
-//             await getMattermostUserInfo(dbUser);
-//         const title = user.userInfos ? user.userInfos.fullname : null;
-
-//         return Response.json({
-//             userBaseInfos: dbUser,
-//             username,
-//             emailInfos: user.emailInfos,
-//             redirections: user.emailRedirections,
-//             userInfos: user.userInfos,
-//             isExpired: user.isExpired,
-//             isAdmin: config.ESPACE_MEMBRE_ADMIN.includes(session.user.id),
-//             availableEmailPros,
-//             mattermostInfo: {
-//                 hasMattermostAccount: !!mattermostUser,
-//                 isInactiveOrNotInTeam: !mattermostUserInTeamAndActive,
-//             },
-//             primaryEmail,
-//             primaryEmailStatus: dbUser
-//                 ? dbUser.primary_email_status
-//                 : EmailStatusCode.EMAIL_UNSET,
-//             canCreateEmail: user.authorizations.canCreateEmail,
-//             hasPublicServiceEmail:
-//                 dbUser &&
-//                 dbUser.primary_email &&
-//                 !dbUser.primary_email.includes(config.domain),
-//             domain: config.domain,
-//             secondaryEmail,
-//         });
-//     } catch (e) {}
-// }

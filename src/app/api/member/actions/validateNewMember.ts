@@ -108,6 +108,7 @@ export async function validateNewMember({
   });
 
   const bossClient = await getBossClientInstance();
+  // todo: sendOnboardingValidationPendingEmail as a pgboss job instead of scheduler
   await bossClient.send(
     sendEmailToTeamWhenNewMemberTopic,
     SendEmailToTeamWhenNewMemberSchema.parse({

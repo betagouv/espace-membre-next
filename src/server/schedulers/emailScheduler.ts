@@ -3,16 +3,11 @@ import { isAfter } from "date-fns/isAfter";
 import { isBefore } from "date-fns/isBefore";
 import _ from "lodash/array";
 
-import { createEmail } from "../controllers/usersController/createEmailForUser";
 import { addEvent } from "@/lib/events";
 import { db } from "@/lib/kysely";
 import { getAllUsersInfo } from "@/lib/kysely/queries/users";
-import {
-  ActionEvent,
-  EventCode,
-  SYSTEM_NAME,
-} from "@/models/actionEvent/actionEvent";
-import { memberBaseInfoToModel, userInfosToModel } from "@/models/mapper";
+import { EventCode, SYSTEM_NAME } from "@/models/actionEvent/actionEvent";
+import { memberBaseInfoToModel } from "@/models/mapper";
 import {
   CommunicationEmailCode,
   EmailStatusCode,
@@ -231,38 +226,8 @@ export async function createRedirectionEmailAdresses() {
   );
 }
 
-export async function createEmailAddresses() {
-  const dbUsers = (await getAllUsersInfo()).map((user) =>
-    memberBaseInfoToModel(user),
-  );
-  const concernedUsers = dbUsers.filter(
-    (user) =>
-      !utils.checkUserIsExpired(user) &&
-      !user.primary_email &&
-      user.primary_email_status === EmailStatusCode.EMAIL_CREATION_WAITING &&
-      !user.email_is_redirection &&
-      user.secondary_email,
-  );
-
-  const allOvhEmails: string[] = await BetaGouv.getAllEmailInfos();
-  const unregisteredUsers = _.differenceWith(
-    concernedUsers,
-    allOvhEmails,
-    differenceGithubOVH,
-  );
-  console.log(
-    `Email creation : ${unregisteredUsers.length} unregistered user(s) in OVH (${allOvhEmails.length} accounts in OVH. ${concernedUsers.length} accounts in Github).`,
-  );
-
-  // create email
-  return Promise.all(
-    unregisteredUsers.map(async (user) => {
-      await createEmail(user.username, "Secretariat cron");
-    }),
-  );
-}
-
 export async function reinitPasswordEmail() {
+  // todo: disable dimail accounts instead
   const users = (await getAllUsersInfo()).map((user) =>
     memberBaseInfoToModel(user),
   );
@@ -399,6 +364,7 @@ export async function unsubscribeEmailAddresses() {
 //         return dbUsers.find((x) => x.username === user.username);
 //     });
 
+// todo: move to a pgboss job after fiche validation
 export async function sendOnboardingVerificationPendingEmail() {
   const dbUsers = (await getAllUsersInfo()).map((user) =>
     memberBaseInfoToModel(user),

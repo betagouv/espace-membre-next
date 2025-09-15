@@ -32,6 +32,7 @@ import {
   MAILING_LIST_TYPE,
 } from "@modules/email";
 import htmlBuilder from "@modules/htmlbuilder/htmlbuilder";
+import pAll from "p-all";
 
 // get users that are member (got a github card) and mattermost account that is not in the team
 const getRegisteredUsersWithEndingContractInXDays = async (
@@ -204,17 +205,18 @@ export async function sendContractEndingMessageToUsers(
     registeredUsersWithEndingContractInXDays =
       await getRegisteredUsersWithEndingContractInXDays(messageConfig.days);
   }
-  const jobs: Job[] = [];
-  await Promise.all(
-    registeredUsersWithEndingContractInXDays.map(async (user) => {
-      await sendMessageOnChatAndEmail({
-        user,
-        messageType: messageConfig.type,
-        sendToSecondary,
-        jobs,
-        days: messageConfig.days,
-      });
-    }),
+  await pAll(
+    registeredUsersWithEndingContractInXDays.map(
+      (user) => () =>
+        sendMessageOnChatAndEmail({
+          user,
+          messageType: messageConfig.type,
+          sendToSecondary,
+          jobs: [],
+          days: messageConfig.days,
+        }),
+    ),
+    { concurrency: 1 },
   );
 }
 
@@ -263,6 +265,8 @@ export async function sendJ30Email(users) {
   return module.exports.sendInfoToSecondaryEmailAfterXDays(30, users);
 }
 
+// todo: handle dimail
+// todo: delete old emails OVH
 export async function deleteOVHEmailAcounts(
   optionalExpiredUsers?: memberBaseInfoSchemaType[],
 ) {
@@ -311,6 +315,7 @@ export async function deleteOVHEmailAcounts(
   }
 }
 
+// todo: remove ?
 export async function deleteSecondaryEmailsForUsers(
   optionalExpiredUsers?: memberBaseInfoSchemaType[],
 ) {

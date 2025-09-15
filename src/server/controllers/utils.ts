@@ -13,6 +13,8 @@ import {
 } from "@/models/member";
 import config from "@/server/config";
 import BetaGouv from "@betagouv";
+import { getDinumEmail } from "@/lib/kysely/queries/dinum";
+import { EMAIL_PLAN_TYPE } from "@/models/ovh";
 
 export const computeHash = function (username) {
   const hash = crypto.createHmac(
@@ -269,7 +271,16 @@ export async function userInfos(
       }),
     );
     // TODO: check if email OPI
-    const emailInfos = await BetaGouv.emailInfos(userInfos.username);
+    const dinumEmail =
+      userInfos.primary_email && (await getDinumEmail(userInfos.primary_email));
+
+    const emailInfos = dinumEmail
+      ? {
+          email: dinumEmail.email,
+          isBlocked: false,
+          emailPlan: EMAIL_PLAN_TYPE.EMAIL_PLAN_OPI,
+        }
+      : await BetaGouv.emailInfos(userInfos.username);
     const emailRedirections = await BetaGouv.redirectionsForId({
       from: userInfos.username,
     });
