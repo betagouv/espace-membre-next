@@ -119,6 +119,7 @@ const sendMessageOnChatAndEmail = async ({
   messageType,
   jobs,
   sendToSecondary,
+  days,
 }: {
   user: memberBaseInfoAndMattermostWrapperType;
   messageType: EmailEndingContract["type"];
@@ -146,7 +147,7 @@ const sendMessageOnChatAndEmail = async ({
           .filter((job) => job.domaines.includes(user.userInfos.domaine))
           .slice(0, 3)
       : [],
-    days: 2,
+    days,
   };
   const contentProps = {
     type: messageType,

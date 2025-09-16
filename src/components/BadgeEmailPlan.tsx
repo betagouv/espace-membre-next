@@ -22,9 +22,25 @@ export const BadgeEmailPlan = ({ plan }: { plan: EMAIL_PLAN_TYPE }) => {
       </Badge>
     ))
     .with(EMAIL_PLAN_TYPE.EMAIL_PLAN_OPI, () => (
-      <Badge small className={fr.cx("fr-ml-1w")} severity="info" as="span">
-        Suite numérique
-      </Badge>
+      <>
+        <Badge small className={fr.cx("fr-ml-1w")} severity="info" as="span">
+          Suite numérique
+        </Badge>
+        <a
+          title="Envoyer un email à support-messagerie@mail.numerique.gouv.fr"
+          href="mailto:support-messagerie@mail.numerique.gouv.fr"
+          style={{ backgroundImage: "none" }}
+        >
+          <Badge
+            small
+            className={fr.cx("fr-ml-1w", "ri-question-fill")}
+            severity="new"
+            as="span"
+          >
+            Contacter le support par email
+          </Badge>
+        </a>
+      </>
     ))
     .exhaustive();
 };
