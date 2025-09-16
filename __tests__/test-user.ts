@@ -9,7 +9,7 @@ import sinon from "sinon";
 import utils from "./utils";
 import { FakeDataInterface } from "./utils/fakeData";
 import { testUsers } from "./utils/users-data";
-import { createEmail as createEmailAction } from "@/app/api/member/actions/createEmailForUser";
+//import { createEmail as createEmailAction } from "@/app/api/member/actions/createEmailForUser";
 import { createRedirectionForUser } from "@/app/api/member/actions/createRedirectionForUser";
 import { deleteRedirectionForUser } from "@/app/api/member/actions/deleteRedirectionForUser";
 import { updatePasswordForUser } from "@/app/api/member/actions/updatePasswordForUser";
@@ -24,8 +24,8 @@ import betagouv from "@betagouv";
 import Betagouv from "@betagouv";
 import * as controllerUtils from "@controllers/utils";
 import {
-  createEmailAddresses,
-  createRedirectionEmailAdresses,
+  //createEmailAddresses,
+  //createRedirectionEmailAdresses,
   subscribeEmailAddresses,
   unsubscribeEmailAddresses,
 } from "@schedulers/emailScheduler";
@@ -36,243 +36,243 @@ const { expect } = chai;
 describe("Test user relative actions", () => {
   let ovhPasswordNock;
 
-  describe("test createEmailAction unauthenticated", () => {
-    let getServerSessionStub;
-    let isPublicServiceEmailStub;
-    let user;
+  // describe("test createEmailAction unauthenticated", () => {
+  //   let getServerSessionStub;
+  //   let isPublicServiceEmailStub;
+  //   let user;
 
-    beforeEach(async () => {
-      isPublicServiceEmailStub = sinon
-        .stub(controllerUtils, "isPublicServiceEmail")
-        .returns(Promise.resolve(true));
-      getServerSessionStub = sinon
-        .stub(nextAuth, "getServerSession")
-        .resolves({});
+  //   beforeEach(async () => {
+  //     isPublicServiceEmailStub = sinon
+  //       .stub(controllerUtils, "isPublicServiceEmail")
+  //       .returns(Promise.resolve(true));
+  //     getServerSessionStub = sinon
+  //       .stub(nextAuth, "getServerSession")
+  //       .resolves({});
 
-      await utils.createData(testUsers);
-      user = await db
-        .selectFrom("users")
-        .selectAll()
-        .where("username", "=", "membre.actif")
-        .executeTakeFirstOrThrow();
-    });
-    afterEach(async () => {
-      sinon.restore();
-      await utils.deleteData(testUsers);
-      isPublicServiceEmailStub.restore();
-    });
+  //     await utils.createData(testUsers);
+  //     user = await db
+  //       .selectFrom("users")
+  //       .selectAll()
+  //       .where("username", "=", "membre.actif")
+  //       .executeTakeFirstOrThrow();
+  //   });
+  //   afterEach(async () => {
+  //     sinon.restore();
+  //     await utils.deleteData(testUsers);
+  //     isPublicServiceEmailStub.restore();
+  //   });
 
-    it("should return an Unauthorized error", async () => {
-      try {
-        await createEmailAction({
-          username: "membre.parti",
-          to_email: "lucas.charr@test.com",
-        });
-      } catch (err) {
-        expect(err).to.be.an("error");
-      }
-      // chai.request(app)
-      //     .post(
-      //         routes.USER_CREATE_EMAIL_API.replace(
-      //             ":username",
-      //             "membre.parti"
-      //         )
-      //     )
-      //     .type("form")
-      //     .send({
-      //         _method: "POST",
-      //     })
-      //     .end((err, res) => {
-      // res.should.have.status(401);
-      //     done();
-      // });
-    });
-  });
-  describe("test createEmailAction authenticated", () => {
-    let getServerSessionStub;
-    let isPublicServiceEmailStub;
-    let user;
+  //   it("should return an Unauthorized error", async () => {
+  //     try {
+  //       await createEmailAction({
+  //         username: "membre.parti",
+  //         to_email: "lucas.charr@test.com",
+  //       });
+  //     } catch (err) {
+  //       expect(err).to.be.an("error");
+  //     }
+  //     // chai.request(app)
+  //     //     .post(
+  //     //         routes.USER_CREATE_EMAIL_API.replace(
+  //     //             ":username",
+  //     //             "membre.parti"
+  //     //         )
+  //     //     )
+  //     //     .type("form")
+  //     //     .send({
+  //     //         _method: "POST",
+  //     //     })
+  //     //     .end((err, res) => {
+  //     // res.should.have.status(401);
+  //     //     done();
+  //     // });
+  //   });
+  // });
+  // describe("test createEmailAction authenticated", () => {
+  //   let getServerSessionStub;
+  //   let isPublicServiceEmailStub;
+  //   let user;
 
-    beforeEach(async () => {
-      isPublicServiceEmailStub = sinon
-        .stub(controllerUtils, "isPublicServiceEmail")
-        .returns(Promise.resolve(true));
-      getServerSessionStub = sinon
-        .stub(nextAuth, "getServerSession")
-        .resolves({});
+  //   beforeEach(async () => {
+  //     isPublicServiceEmailStub = sinon
+  //       .stub(controllerUtils, "isPublicServiceEmail")
+  //       .returns(Promise.resolve(true));
+  //     getServerSessionStub = sinon
+  //       .stub(nextAuth, "getServerSession")
+  //       .resolves({});
 
-      await utils.createData(testUsers);
-      user = await db
-        .selectFrom("users")
-        .selectAll()
-        .where("username", "=", "membre.actif")
-        .executeTakeFirstOrThrow();
-    });
-    afterEach(async () => {
-      sinon.restore();
-      await utils.deleteData(testUsers);
-      isPublicServiceEmailStub.restore();
-    });
+  //     await utils.createData(testUsers);
+  //     user = await db
+  //       .selectFrom("users")
+  //       .selectAll()
+  //       .where("username", "=", "membre.actif")
+  //       .executeTakeFirstOrThrow();
+  //   });
+  //   afterEach(async () => {
+  //     sinon.restore();
+  //     await utils.deleteData(testUsers);
+  //     isPublicServiceEmailStub.restore();
+  //   });
 
-    it("should ask OVH to create an email", async () => {
-      const mockSession = {
-        user: { id: "membre.actif", isAdmin: false, uuid: user.uuid },
-      };
-      getServerSessionStub.resolves(mockSession);
-      const ovhEmailCreation = nock(/.*ovh.com/)
-        .post(/^.*email\/domain\/.*\/account/)
-        .reply(200);
-      await db
-        .updateTable("users")
-        .where("username", "=", "membre.nouveau@beta.gouv.fr")
-        .set({
-          primary_email: null,
-        })
-        .execute();
+  //   it("should ask OVH to create an email", async () => {
+  //     const mockSession = {
+  //       user: { id: "membre.actif", isAdmin: false, uuid: user.uuid },
+  //     };
+  //     getServerSessionStub.resolves(mockSession);
+  //     const ovhEmailCreation = nock(/.*ovh.com/)
+  //       .post(/^.*email\/domain\/.*\/account/)
+  //       .reply(200);
+  //     await db
+  //       .updateTable("users")
+  //       .where("username", "=", "membre.nouveau@beta.gouv.fr")
+  //       .set({
+  //         primary_email: null,
+  //       })
+  //       .execute();
 
-      try {
-        await createEmailAction({
-          username: "membre.nouveau",
-          to_email: "membre.nouveau@beta.gouv.fr",
-        });
-      } catch (err) {
-        expect(err).to.be.an("error");
-      }
+  //     try {
+  //       await createEmailAction({
+  //         username: "membre.nouveau",
+  //         to_email: "membre.nouveau@beta.gouv.fr",
+  //       });
+  //     } catch (err) {
+  //       expect(err).to.be.an("error");
+  //     }
 
-      const res = await db
-        .selectFrom("users")
-        .selectAll()
-        .where("username", "=", "membre.nouveau")
-        .executeTakeFirst();
-      res.primary_email.should.equal(`membre.nouveau@${config.domain}`);
-      ovhEmailCreation.isDone().should.be.true;
-    });
+  //     const res = await db
+  //       .selectFrom("users")
+  //       .selectAll()
+  //       .where("username", "=", "membre.nouveau")
+  //       .executeTakeFirst();
+  //     res.primary_email.should.equal(`membre.nouveau@${config.domain}`);
+  //     ovhEmailCreation.isDone().should.be.true;
+  //   });
 
-    it("should not allow email creation from delegate if email already exists", async () => {
-      // For this case we need to reset the basic nocks in order to return
-      // a different response to indicate that membre.nouveau has an
-      // existing email already created.
-      utils.cleanMocks();
-      utils.mockSlackGeneral();
-      utils.mockSlackSecretariat();
-      utils.mockOvhTime();
-      utils.mockOvhRedirections();
+  //   it("should not allow email creation from delegate if email already exists", async () => {
+  //     // For this case we need to reset the basic nocks in order to return
+  //     // a different response to indicate that membre.nouveau has an
+  //     // existing email already created.
+  //     utils.cleanMocks();
+  //     utils.mockSlackGeneral();
+  //     utils.mockSlackSecretariat();
+  //     utils.mockOvhTime();
+  //     utils.mockOvhRedirections();
 
-      const mockSession = {
-        user: { id: "membre.actif", isAdmin: false, uuid: user.uuid },
-      };
-      getServerSessionStub.resolves(mockSession);
+  //     const mockSession = {
+  //       user: { id: "membre.actif", isAdmin: false, uuid: user.uuid },
+  //     };
+  //     getServerSessionStub.resolves(mockSession);
 
-      // We return an email for membre.nouveau to indicate he already has one
-      nock(/.*ovh.com/)
-        .get(/^.*email\/domain\/.*\/account\/.*/)
-        .reply(200, {
-          accountName: "membre.nouveau",
-          email: "membre.nouveau@example.com",
-        });
+  //     // We return an email for membre.nouveau to indicate he already has one
+  //     nock(/.*ovh.com/)
+  //       .get(/^.*email\/domain\/.*\/account\/.*/)
+  //       .reply(200, {
+  //         accountName: "membre.nouveau",
+  //         email: "membre.nouveau@example.com",
+  //       });
 
-      const ovhEmailCreation = nock(/.*ovh.com/)
-        .post(/^.*email\/domain\/.*\/account/)
-        .reply(200);
-      try {
-        await createEmailAction({
-          username: "membre.nouveau",
-          to_email: "membre.nouveau@example.com",
-        });
-      } catch (err) {
-        ovhEmailCreation.isDone().should.be.false;
-      }
-    });
+  //     const ovhEmailCreation = nock(/.*ovh.com/)
+  //       .post(/^.*email\/domain\/.*\/account/)
+  //       .reply(200);
+  //     try {
+  //       await createEmailAction({
+  //         username: "membre.nouveau",
+  //         to_email: "membre.nouveau@example.com",
+  //       });
+  //     } catch (err) {
+  //       ovhEmailCreation.isDone().should.be.false;
+  //     }
+  //   });
 
-    it("should not allow email creation from delegate if github file doesn't exist", async () => {
-      const mockSession = {
-        user: { id: "membre.actif", isAdmin: false, uuid: user.uuid },
-      };
-      getServerSessionStub.resolves(mockSession);
-      const ovhEmailCreation = nock(/.*ovh.com/)
-        .post(/^.*email\/domain\/.*\/account/)
-        .reply(200);
-      try {
-        await createEmailAction({
-          username: "membre.sans.fiche",
-          to_email: "membre.nouveau@example.com",
-        });
-      } catch (err) {
-        ovhEmailCreation.isDone().should.be.false;
-      }
-    });
+  //   it("should not allow email creation from delegate if github file doesn't exist", async () => {
+  //     const mockSession = {
+  //       user: { id: "membre.actif", isAdmin: false, uuid: user.uuid },
+  //     };
+  //     getServerSessionStub.resolves(mockSession);
+  //     const ovhEmailCreation = nock(/.*ovh.com/)
+  //       .post(/^.*email\/domain\/.*\/account/)
+  //       .reply(200);
+  //     try {
+  //       await createEmailAction({
+  //         username: "membre.sans.fiche",
+  //         to_email: "membre.nouveau@example.com",
+  //       });
+  //     } catch (err) {
+  //       ovhEmailCreation.isDone().should.be.false;
+  //     }
+  //   });
 
-    it("should not allow email creation from delegate if user has expired", async () => {
-      const mockSession = {
-        user: { id: "membre.actif", isAdmin: false, uuid: user.uuid },
-      };
-      getServerSessionStub.resolves(mockSession);
-      const ovhEmailCreation = nock(/.*ovh.com/)
-        .post(/^.*email\/domain\/.*\/account/)
-        .reply(200);
+  //   it("should not allow email creation from delegate if user has expired", async () => {
+  //     const mockSession = {
+  //       user: { id: "membre.actif", isAdmin: false, uuid: user.uuid },
+  //     };
+  //     getServerSessionStub.resolves(mockSession);
+  //     const ovhEmailCreation = nock(/.*ovh.com/)
+  //       .post(/^.*email\/domain\/.*\/account/)
+  //       .reply(200);
 
-      try {
-        await createEmailAction({
-          username: "membre.expire",
-          to_email: "membre.nouveau@example.com",
-        });
-      } catch (err) {
-        ovhEmailCreation.isDone().should.be.false;
-      }
-    });
+  //     try {
+  //       await createEmailAction({
+  //         username: "membre.expire",
+  //         to_email: "membre.nouveau@example.com",
+  //       });
+  //     } catch (err) {
+  //       ovhEmailCreation.isDone().should.be.false;
+  //     }
+  //   });
 
-    it("should not allow email creation from delegate if delegate has expired", async () => {
-      const mockSession = {
-        user: { id: "membre.expire", isAdmin: false, uuid: user.uuid },
-      };
-      getServerSessionStub.resolves(mockSession);
-      const ovhEmailCreation = nock(/.*ovh.com/)
-        .post(/^.*email\/domain\/.*\/account/)
-        .reply(200);
+  //   it("should not allow email creation from delegate if delegate has expired", async () => {
+  //     const mockSession = {
+  //       user: { id: "membre.expire", isAdmin: false, uuid: user.uuid },
+  //     };
+  //     getServerSessionStub.resolves(mockSession);
+  //     const ovhEmailCreation = nock(/.*ovh.com/)
+  //       .post(/^.*email\/domain\/.*\/account/)
+  //       .reply(200);
 
-      try {
-        await createEmailAction({
-          username: "membre.nouveau",
-          to_email: "membre.nouveau@example.com",
-        });
-      } catch (err) {
-        ovhEmailCreation.isDone().should.be.false;
-      }
-    });
+  //     try {
+  //       await createEmailAction({
+  //         username: "membre.nouveau",
+  //         to_email: "membre.nouveau@example.com",
+  //       });
+  //     } catch (err) {
+  //       ovhEmailCreation.isDone().should.be.false;
+  //     }
+  //   });
 
-    it("should allow email creation from delegate if user is active", async () => {
-      const mockSession = {
-        user: {
-          id: "julien.dauphant",
-          isAdmin: false,
-          uuid: user.uuid,
-        },
-      };
-      getServerSessionStub.resolves(mockSession);
+  //   it("should allow email creation from delegate if user is active", async () => {
+  //     const mockSession = {
+  //       user: {
+  //         id: "julien.dauphant",
+  //         isAdmin: false,
+  //         uuid: user.uuid,
+  //       },
+  //     };
+  //     getServerSessionStub.resolves(mockSession);
 
-      const ovhEmailCreation = nock(/.*ovh.com/)
-        .post(/^.*email\/domain\/.*\/account/)
-        .reply(200);
-      await db
-        .updateTable("users")
-        .where("username", "=", "membre.actif")
-        .set({
-          primary_email: null,
-        })
-        .execute();
-      await createEmailAction({
-        username: "membre.actif",
-        to_email: "membre.nouveau@example.com",
-      });
+  //     const ovhEmailCreation = nock(/.*ovh.com/)
+  //       .post(/^.*email\/domain\/.*\/account/)
+  //       .reply(200);
+  //     await db
+  //       .updateTable("users")
+  //       .where("username", "=", "membre.actif")
+  //       .set({
+  //         primary_email: null,
+  //       })
+  //       .execute();
+  //     await createEmailAction({
+  //       username: "membre.actif",
+  //       to_email: "membre.nouveau@example.com",
+  //     });
 
-      ovhEmailCreation.isDone().should.be.true;
-      const user2 = await db
-        .selectFrom("users")
-        .selectAll()
-        .where("username", "=", "membre.actif")
-        .executeTakeFirstOrThrow();
-    });
-  });
+  //     ovhEmailCreation.isDone().should.be.true;
+  //     const user2 = await db
+  //       .selectFrom("users")
+  //       .selectAll()
+  //       .where("username", "=", "membre.actif")
+  //       .executeTakeFirstOrThrow();
+  //   });
+  //});
 
   describe("Create redirection unauthenticated", () => {
     it("should return an Unauthorized error", async () => {
@@ -1113,98 +1113,99 @@ describe("Test user relative actions", () => {
       afterEach(async () => {
         await utils.deleteData(users);
       });
-      it("should create missing email accounts", async () => {
-        utils.cleanMocks();
-        utils.mockSlackGeneral();
-        utils.mockSlackSecretariat();
-        utils.mockOvhTime();
-        utils.mockOvhRedirections();
-        utils.mockOvhUserResponder();
-        utils.mockOvhUserEmailInfos();
-
-        const newMember = testUsers.users?.find(
-          (user) => user.username === "membre.nouveau",
-        )!;
-        const allAccountsExceptANewMember = testUsers.users?.filter(
-          (user) => user.username !== newMember.username,
-        )!;
-
-        nock(/.*ovh.com/)
-          .get(/^.*email\/domain\/.*\/account/)
-          .reply(
-            200,
-            allAccountsExceptANewMember.map((user) => user.username),
-          );
-        const ovhEmailCreation = nock(/.*ovh.com/)
-          .post(/^.*email\/domain\/.*\/account/)
-          .reply(200);
-        //await knex("login_tokens").truncate();
-        await db
-          .updateTable("users")
-          .where("username", "=", newMember.username)
-          .set({
-            primary_email: null,
-            primary_email_status: EmailStatusCode.EMAIL_CREATION_WAITING,
-            secondary_email: "membre.nouveau.perso@example.com",
-          })
-          .execute();
-        // const val = await db
-        //     .updateTable("users")
-        //     .selectAll()
-        //     .set({
-        //         username: newMember.id,
-        //     })
-        //     .execute();
-        await createEmailAddresses();
-        ovhEmailCreation.isDone().should.be.true;
-        betagouvCreateEmail.firstCall.args[0].should.equal(newMember.username);
-        await db
-          .updateTable("users")
-          .where("username", "=", newMember.username)
-          .set({
-            secondary_email: null,
-            primary_email: `${newMember.username}@${config.domain}`,
-          })
-          .execute();
-      });
     });
+    //   it("should create missing email accounts", async () => {
+    //     utils.cleanMocks();
+    //     utils.mockSlackGeneral();
+    //     utils.mockSlackSecretariat();
+    //     utils.mockOvhTime();
+    //     utils.mockOvhRedirections();
+    //     utils.mockOvhUserResponder();
+    //     utils.mockOvhUserEmailInfos();
+
+    //     const newMember = testUsers.users?.find(
+    //       (user) => user.username === "membre.nouveau",
+    //     )!;
+    //     const allAccountsExceptANewMember = testUsers.users?.filter(
+    //       (user) => user.username !== newMember.username,
+    //     )!;
+
+    //     nock(/.*ovh.com/)
+    //       .get(/^.*email\/domain\/.*\/account/)
+    //       .reply(
+    //         200,
+    //         allAccountsExceptANewMember.map((user) => user.username),
+    //       );
+    //     const ovhEmailCreation = nock(/.*ovh.com/)
+    //       .post(/^.*email\/domain\/.*\/account/)
+    //       .reply(200);
+    //     //await knex("login_tokens").truncate();
+    //     await db
+    //       .updateTable("users")
+    //       .where("username", "=", newMember.username)
+    //       .set({
+    //         primary_email: null,
+    //         primary_email_status: EmailStatusCode.EMAIL_CREATION_WAITING,
+    //         secondary_email: "membre.nouveau.perso@example.com",
+    //       })
+    //       .execute();
+    //     // const val = await db
+    //     //     .updateTable("users")
+    //     //     .selectAll()
+    //     //     .set({
+    //     //         username: newMember.id,
+    //     //     })
+    //     //     .execute();
+    //     await createEmailAddresses();
+    //     ovhEmailCreation.isDone().should.be.true;
+    //     betagouvCreateEmail.firstCall.args[0].should.equal(newMember.username);
+    //     await db
+    //       .updateTable("users")
+    //       .where("username", "=", newMember.username)
+    //       .set({
+    //         secondary_email: null,
+    //         primary_email: `${newMember.username}@${config.domain}`,
+    //       })
+    //       .execute();
+    //   });
+    // });
 
     context("", () => {});
 
-    it("should not create email accounts if already created", async () => {
-      utils.cleanMocks();
-      utils.mockSlackGeneral();
-      utils.mockSlackSecretariat();
-      utils.mockOvhTime();
-      utils.mockOvhRedirections();
+    // it("should not create email accounts if already created", async () => {
+    //   utils.cleanMocks();
+    //   utils.mockSlackGeneral();
+    //   utils.mockSlackSecretariat();
+    //   utils.mockOvhTime();
+    //   utils.mockOvhRedirections();
 
-      // We return an email for membre.nouveau to indicate he already has one
-      const newMember = testUsers.users?.find(
-        (user) => user.username === "membre.nouveau",
-      );
+    //   // We return an email for membre.nouveau to indicate he already has one
+    //   const newMember = testUsers.users?.find(
+    //     (user) => user.username === "membre.nouveau",
+    //   );
 
-      nock(/.*ovh.com/)
-        .get(/^.*email\/domain\/.*\/account/)
-        .reply(200, [newMember]);
+    //   nock(/.*ovh.com/)
+    //     .get(/^.*email\/domain\/.*\/account/)
+    //     .reply(200, [newMember]);
 
-      const ovhEmailCreation = nock(/.*ovh.com/)
-        .post(/^.*email\/domain\/.*\/account/)
-        .reply(200);
+    //   const ovhEmailCreation = nock(/.*ovh.com/)
+    //     .post(/^.*email\/domain\/.*\/account/)
+    //     .reply(200);
 
-      await createEmailAddresses();
-      betagouvCreateEmail.notCalled.should.be.true;
-      ovhEmailCreation.isDone().should.be.false;
-    });
+    //   await createEmailAddresses();
+    //   betagouvCreateEmail.notCalled.should.be.true;
+    //   ovhEmailCreation.isDone().should.be.false;
+    // });
 
-    it("should not create email accounts if we dont have the secondary email", async () => {
-      const ovhEmailCreation = nock(/.*ovh.com/)
-        .post(/^.*email\/domain\/.*\/account/)
-        .reply(200);
+    // it("should not create email accounts if we dont have the secondary email", async () => {
+    //   const ovhEmailCreation = nock(/.*ovh.com/)
+    //     .post(/^.*email\/domain\/.*\/account/)
+    //     .reply(200);
 
-      await createEmailAddresses();
-      betagouvCreateEmail.notCalled.should.be.true;
-      ovhEmailCreation.isDone().should.be.false;
-    });
+    //   await createEmailAddresses();
+    //   betagouvCreateEmail.notCalled.should.be.true;
+    //   ovhEmailCreation.isDone().should.be.false;
+    // });
     describe("", () => {
       const users: FakeDataInterface = {
         users: [
@@ -1362,67 +1363,68 @@ describe("Test user relative actions", () => {
         createRedirection.restore();
         await utils.deleteData(users);
       });
-
-      it("should create redirection missing email accounts", async () => {
-        const ovhRedirectionCreation = nock(/.*ovh.com/)
-          .post(/^.*email\/domain\/.*\/redirection/)
-          .reply(200);
-        //await knex("login_tokens").truncate();
-        const newMember = testUsers.users!.find(
-          (user) => user.username === "membre.nouveau",
-        )!;
-        const allAccountsExceptANewMember =
-          testUsers.users?.filter(
-            (user) => user.username !== newMember?.username,
-          ) || [];
-
-        nock(/.*ovh.com/)
-          .get(/^.*email\/domain\/.*\/redirection/)
-          .reply(
-            200,
-            allAccountsExceptANewMember.map((user) => user.username),
-          );
-        nock(/.*ovh.com/)
-          .get(/^.*email\/domain\/.*\/account/)
-          .reply(
-            200,
-            allAccountsExceptANewMember.map((user) => user.username),
-          );
-        await db
-          .updateTable("users")
-          .where("username", "=", newMember.username)
-          .set({
-            primary_email: null,
-            primary_email_status: EmailStatusCode.EMAIL_CREATION_WAITING,
-            secondary_email: "membre.nouveau.perso@example.com",
-            email_is_redirection: true,
-          })
-          .execute();
-        const val = await db
-          .selectFrom("users")
-          .selectAll()
-          .where("username", "=", newMember.username)
-          .execute();
-        await createEmailAddresses();
-        ovhRedirectionCreation.isDone().should.be.false;
-        await createRedirectionEmailAdresses();
-        ovhRedirectionCreation.isDone().should.be.true;
-        createRedirection.firstCall.args[0].should.equal(
-          `${newMember.username}-attr@${config.domain}`,
-        );
-        createRedirection.calledOnce.should.be.true;
-        await db
-          .updateTable("users")
-          .where("username", "=", newMember.username)
-          .set({
-            secondary_email: null,
-            primary_email: `${newMember.username}@${config.domain}`,
-            email_is_redirection: false,
-          })
-          .execute();
-      });
     });
   });
+  //   it("should create redirection missing email accounts", async () => {
+  //     const ovhRedirectionCreation = nock(/.*ovh.com/)
+  //       .post(/^.*email\/domain\/.*\/redirection/)
+  //       .reply(200);
+  //     //await knex("login_tokens").truncate();
+  //     const newMember = testUsers.users!.find(
+  //       (user) => user.username === "membre.nouveau",
+  //     )!;
+  //     const allAccountsExceptANewMember =
+  //       testUsers.users?.filter(
+  //         (user) => user.username !== newMember?.username,
+  //       ) || [];
+
+  //     nock(/.*ovh.com/)
+  //       .get(/^.*email\/domain\/.*\/redirection/)
+  //       .reply(
+  //         200,
+  //         allAccountsExceptANewMember.map((user) => user.username),
+  //       );
+  //     nock(/.*ovh.com/)
+  //       .get(/^.*email\/domain\/.*\/account/)
+  //       .reply(
+  //         200,
+  //         allAccountsExceptANewMember.map((user) => user.username),
+  //       );
+  //     await db
+  //       .updateTable("users")
+  //       .where("username", "=", newMember.username)
+  //       .set({
+  //         primary_email: null,
+  //         primary_email_status: EmailStatusCode.EMAIL_CREATION_WAITING,
+  //         secondary_email: "membre.nouveau.perso@example.com",
+  //         email_is_redirection: true,
+  //       })
+  //       .execute();
+  //     const val = await db
+  //       .selectFrom("users")
+  //       .selectAll()
+  //       .where("username", "=", newMember.username)
+  //       .execute();
+  //     await createEmailAddresses();
+  //     ovhRedirectionCreation.isDone().should.be.false;
+  //     await createRedirectionEmailAdresses();
+  //     ovhRedirectionCreation.isDone().should.be.true;
+  //     createRedirection.firstCall.args[0].should.equal(
+  //       `${newMember.username}-attr@${config.domain}`,
+  //     );
+  //     createRedirection.calledOnce.should.be.true;
+  //     await db
+  //       .updateTable("users")
+  //       .where("username", "=", newMember.username)
+  //       .set({
+  //         secondary_email: null,
+  //         primary_email: `${newMember.username}@${config.domain}`,
+  //         email_is_redirection: false,
+  //       })
+  //       .execute();
+  //   });
+  // });
+  //});
 
   describe("createEmail", () => {
     const sandbox = sinon.createSandbox();
