@@ -32,6 +32,7 @@ import {
   MAILING_LIST_TYPE,
 } from "@modules/email";
 import htmlBuilder from "@modules/htmlbuilder/htmlbuilder";
+import pAll from "p-all";
 
 // get users that are member (got a github card) and mattermost account that is not in the team
 const getRegisteredUsersWithEndingContractInXDays = async (
@@ -118,6 +119,7 @@ const sendMessageOnChatAndEmail = async ({
   messageType,
   jobs,
   sendToSecondary,
+  days,
 }: {
   user: memberBaseInfoAndMattermostWrapperType;
   messageType: EmailEndingContract["type"];
@@ -145,7 +147,7 @@ const sendMessageOnChatAndEmail = async ({
           .filter((job) => job.domaines.includes(user.userInfos.domaine))
           .slice(0, 3)
       : [],
-    days: 2,
+    days,
   };
   const contentProps = {
     type: messageType,
@@ -204,17 +206,18 @@ export async function sendContractEndingMessageToUsers(
     registeredUsersWithEndingContractInXDays =
       await getRegisteredUsersWithEndingContractInXDays(messageConfig.days);
   }
-  const jobs: Job[] = [];
-  await Promise.all(
-    registeredUsersWithEndingContractInXDays.map(async (user) => {
-      await sendMessageOnChatAndEmail({
-        user,
-        messageType: messageConfig.type,
-        sendToSecondary,
-        jobs,
-        days: messageConfig.days,
-      });
-    }),
+  await pAll(
+    registeredUsersWithEndingContractInXDays.map(
+      (user) => () =>
+        sendMessageOnChatAndEmail({
+          user,
+          messageType: messageConfig.type,
+          sendToSecondary,
+          jobs: [],
+          days: messageConfig.days,
+        }),
+    ),
+    { concurrency: 1 },
   );
 }
 

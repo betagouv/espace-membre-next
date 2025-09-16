@@ -376,7 +376,7 @@ export const Community = (props: CommunityProps) => {
 
       {results.length ? (
         <>
-          <h2>
+          <h2 className={fr.cx("fr-mt-2w")}>
             {results.length} résultat
             {results.length > 1 ? "s" : ""}
             <Button
