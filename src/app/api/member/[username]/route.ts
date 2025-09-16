@@ -47,7 +47,7 @@ async function validateMemberHandler(
   if (hasPublicServiceEmail && isAdminEmail(memberData.secondary_email)) {
     throw new AdminEmailNotAllowedError();
   }
-  updateMember(
+  await updateMember(
     memberData,
     session.user.uuid,
     {
@@ -72,18 +72,21 @@ async function validateMemberHandler(
     throw new Error(`User ${username} not found`);
   }
 
-  const bossClient = await getBossClientInstance();
-  await bossClient.send(
-    createDimailMailboxTopic,
-    {
-      userUuid: dbUser.uuid,
-      username: dbUser.username,
-    },
-    {
-      retryLimit: 50,
-      retryBackoff: true,
-    },
-  );
+  if (!hasPublicServiceEmail) {
+    // create email only for non-public emails
+    const bossClient = await getBossClientInstance();
+    await bossClient.send(
+      createDimailMailboxTopic,
+      {
+        userUuid: dbUser.uuid,
+        username: dbUser.username,
+      },
+      {
+        retryLimit: 50,
+        retryBackoff: true,
+      },
+    );
+  }
 
   return Response.json({
     message: `Success`,

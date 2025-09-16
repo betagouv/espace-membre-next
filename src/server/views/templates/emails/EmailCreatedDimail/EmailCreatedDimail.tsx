@@ -3,7 +3,7 @@ import { MjmlText } from "@luma-team/mjml-react";
 import { StandardLayout } from "@/components/emails/layouts/StandardEmail";
 import { EmailCreatedDimail as EmailCreatedDimailType } from "@/server/modules/email";
 export function EmailCreatedDimailTitle() {
-  return "Ton boite mail betagouv est prêt 🙂";
+  return "Ta boite mail betagouv est prête 🙂";
 }
 
 export function EmailCreatedDimail({

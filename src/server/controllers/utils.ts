@@ -232,9 +232,9 @@ export function isAdminEmail(email: string): boolean {
 }
 
 export const isPublicServiceEmail = async function (email: string) {
-  if (process.env.NODE_ENV === "development") {
-    return true;
-  }
+  // if (process.env.NODE_ENV === "development") {
+  //   return true;
+  // }
   if (/@pole-emploi.fr\s*$/.test(email.toLowerCase())) {
     return true;
   }

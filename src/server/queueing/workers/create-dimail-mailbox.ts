@@ -39,21 +39,27 @@ export async function createDimailMailboxForUser(userUuid: string) {
   })
     .then(async (infos) => {
       // envoi email invitation avec password
-      await sendEmail({
-        toEmail: [baseInfoUser.secondary_email],
-        type: EMAIL_TYPES.EMAIL_CREATED_DIMAIL,
-        variables: {
-          email: infos.email,
-          password: infos.password,
-          webmailUrl:
-            process.env.DIMAIL_WEBMAIL_URL || "https://webmail.beta.gouv.fr/",
-        },
-      });
+      if (baseInfoUser.secondary_email) {
+        await sendEmail({
+          toEmail: [baseInfoUser.secondary_email],
+          type: EMAIL_TYPES.EMAIL_CREATED_DIMAIL,
+          variables: {
+            email: infos.email,
+            password: infos.password,
+            webmailUrl:
+              process.env.DIMAIL_WEBMAIL_URL || "https://webmail.beta.gouv.fr/",
+          },
+        });
+      } else {
+        console.error(
+          `No secondary email defined for ${baseInfoUser.username}`,
+        );
+      }
       return infos;
     })
     .catch((e) => {
       console.error(
-        `Error creating mailbox ${userName}@${DIMAIL_MAILBOX_DOMAIN}: ${e.status} ${e.message}`,
+        `Error creating mailbox ${userName}@${DIMAIL_MAILBOX_DOMAIN}: ${e.status || ""} ${e.message}`,
       );
       if (e.status === 409) {
         // mailbox already exist

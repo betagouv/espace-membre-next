@@ -108,7 +108,7 @@ export const POST = withHttpErrorHandling(async (req: Request) => {
       return user;
     });
     if (!userIsValidatedStraightAway) {
-      // send validation email
+      // send validation email to incubator
       const bossClient = await getBossClientInstance();
       await bossClient.send(
         sendNewMemberValidationEmailTopic,

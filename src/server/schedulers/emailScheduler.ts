@@ -402,6 +402,7 @@ export async function sendOnboardingVerificationPendingEmail() {
       url.searchParams.set("token", token);
       url.searchParams.set("email", user.secondary_email);
 
+      console.log(`Send verification email to ${user.secondary_email}`);
       await sendEmail({
         type: EMAIL_TYPES.EMAIL_VERIFICATION_WAITING,
         toEmail: [user.secondary_email],
