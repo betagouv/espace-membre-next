@@ -3,7 +3,6 @@
 
 import { postEventsOnMattermost } from "./calendarScheduler";
 import {
-  sendOnboardingVerificationPendingEmail, // todo: move
   reinitPasswordEmail, // ovh only
   subscribeEmailAddresses, // ovh only
   unsubscribeEmailAddresses, // ovh only
@@ -311,14 +310,6 @@ export const espaceMembreCronJobs: EspaceMembreCronJobType[] = [
     isActive: true,
     name: "setEmailAddressesActive",
     description: "Add pending users to mailing-list and set email as active",
-  },
-  {
-    cronTime: "0 */2 * * * *",
-    onTick: sendOnboardingVerificationPendingEmail,
-    isActive: true,
-    name: "sendOnboardingVerificationPendingEmail",
-    description:
-      "Envoi d'un email de relance pour les adresses en attente de validation",
   },
   {
     cronTime: "0 */4 * * * *",

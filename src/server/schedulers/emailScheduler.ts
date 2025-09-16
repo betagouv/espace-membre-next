@@ -33,6 +33,7 @@ import {
 import * as utils from "@controllers/utils";
 import { isBetaEmail } from "@controllers/utils";
 import { EMAIL_TYPES, MAILING_LIST_TYPE } from "@modules/email";
+import pAll from "p-all";
 
 const differenceGithubOVH = function differenceGithubOVH(
   user: memberBaseInfoSchemaType,
@@ -354,69 +355,47 @@ export async function unsubscribeEmailAddresses() {
   );
 }
 
-// export async function setEmailStatusActiveForUsers() {
-//         .whereNull("primary_email")
-//         .whereIn("primary_email_status", [EmailStatusCode.EMAIL_UNSET])
-//         .whereNotNull("secondary_email");
-//     const activeUsers = await BetaGouv.getActiveRegisteredOVHUsers();
-
-//     const concernedUsers = activeUsers.filter((user) => {
-//         return dbUsers.find((x) => x.username === user.username);
-//     });
-
-// todo: move to a pgboss job after fiche validation
-export async function sendOnboardingVerificationPendingEmail() {
-  const dbUsers = (await getAllUsersInfo()).map((user) =>
-    memberBaseInfoToModel(user),
-  );
-  const now = new Date();
-  const concernedUsers = dbUsers.filter(
-    (user) =>
-      user.missions.find(
-        (mission) =>
-          isAfter(now, mission.start ?? 0) &&
-          isBefore(now, mission.end ?? Infinity),
-      ) &&
-      user.primary_email_status === EmailStatusCode.EMAIL_VERIFICATION_WAITING,
-  );
-
-  concernedUsers.map(async (user) => {
-    const event = await db
-      .selectFrom("events")
-      .selectAll()
-      .where("action_code", "=", EventCode.EMAIL_VERIFICATION_WAITING_SENT)
-      .where("action_on_username", "=", user.username)
-      .executeTakeFirst();
-    if (!event) {
-      const now = Date.now();
-      const token = randomBytes(32).toString("hex");
-
-      const generateToken = await hashToken(token, config.secret);
-      await createVerificationToken({
-        identifier: user.secondary_email,
-        expires: new Date(now + 1000 * 60 * 60 * 72),
-        token: generateToken,
-      });
-      const url = new URL(`${getBaseUrl()}/signin`);
-      url.searchParams.set("callbackUrl", `${getBaseUrl()}/dashboard`);
-      url.searchParams.set("token", token);
-      url.searchParams.set("email", user.secondary_email);
-
-      console.log(`Send verification email to ${user.secondary_email}`);
-      await sendEmail({
-        type: EMAIL_TYPES.EMAIL_VERIFICATION_WAITING,
-        toEmail: [user.secondary_email],
-        variables: {
-          secondaryEmail: user.secondary_email,
-          secretariatUrl: url.toString(),
-          fullname: user.fullname,
-        },
-      });
-      await addEvent({
-        action_code: EventCode.EMAIL_VERIFICATION_WAITING_SENT,
-        created_by_username: SYSTEM_NAME,
-        action_on_username: user.username,
-      });
+export const sendOnboardingVerificationPendingEmailForUser = async (
+  user: memberBaseInfoSchemaType,
+) => {
+  const event = await db
+    .selectFrom("events")
+    .selectAll()
+    .where("action_code", "=", EventCode.EMAIL_VERIFICATION_WAITING_SENT)
+    .where("action_on_username", "=", user.username)
+    .executeTakeFirst();
+  if (!event) {
+    if (!user.secondary_email) {
+      console.error(`No secondary email defined for ${user.username}`);
     }
-  });
-}
+    const now = Date.now();
+    const token = randomBytes(32).toString("hex");
+
+    const generateToken = await hashToken(token, config.secret);
+    await createVerificationToken({
+      identifier: user.secondary_email,
+      expires: new Date(now + 1000 * 60 * 60 * 72),
+      token: generateToken,
+    });
+    const url = new URL(`${getBaseUrl()}/signin`);
+    url.searchParams.set("callbackUrl", `${getBaseUrl()}/dashboard`);
+    url.searchParams.set("token", token);
+    url.searchParams.set("email", user.secondary_email);
+
+    console.log(`Send verification email to ${user.secondary_email}`);
+    await sendEmail({
+      type: EMAIL_TYPES.EMAIL_VERIFICATION_WAITING,
+      toEmail: [user.secondary_email],
+      variables: {
+        secondaryEmail: user.secondary_email,
+        secretariatUrl: url.toString(),
+        fullname: user.fullname,
+      },
+    });
+    await addEvent({
+      action_code: EventCode.EMAIL_VERIFICATION_WAITING_SENT,
+      created_by_username: SYSTEM_NAME,
+      action_on_username: user.username,
+    });
+  }
+};

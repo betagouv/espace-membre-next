@@ -12,7 +12,10 @@ import {
   createMemberSchema,
   createMemberSchemaType,
 } from "@/models/actions/member";
-import { SendNewMemberValidationEmailSchema } from "@/models/jobs/member";
+import {
+  SendNewMemberValidationEmailSchema,
+  SendNewMemberVerificationEmailSchema,
+} from "@/models/jobs/member";
 import { EmailStatusCode } from "@/models/member";
 import { isPublicServiceEmail, isAdminEmail } from "@/server/controllers/utils";
 import { getBossClientInstance } from "@/server/queueing/client";
@@ -24,6 +27,7 @@ import {
   MemberUniqueConstraintViolationError,
   withHttpErrorHandling,
 } from "@/utils/error";
+import { sendNewMemberVerificationEmailTopic } from "@/server/queueing/workers/send-verification-email";
 
 const createUsername = (firstName, lastName) =>
   `${slugify(firstName)}.${slugify(lastName)}`;
@@ -93,7 +97,7 @@ export const POST = withHttpErrorHandling(async (req: Request) => {
             ? EmailStatusCode.EMAIL_VERIFICATION_WAITING
             : EmailStatusCode.MEMBER_VALIDATION_WAITING,
         })
-        .returning("uuid")
+        .returning(["uuid", "username"])
         .executeTakeFirstOrThrow();
       for (const mission of missions) {
         // Now, use the same transaction to link to an organization
@@ -107,9 +111,11 @@ export const POST = withHttpErrorHandling(async (req: Request) => {
       }
       return user;
     });
+
+    const bossClient = await getBossClientInstance();
+
     if (!userIsValidatedStraightAway) {
-      // send validation email to incubator
-      const bossClient = await getBossClientInstance();
+      // send email to incubator for member validation
       await bossClient.send(
         sendNewMemberValidationEmailTopic,
         SendNewMemberValidationEmailSchema.parse({
@@ -121,8 +127,22 @@ export const POST = withHttpErrorHandling(async (req: Request) => {
           retryBackoff: true,
         },
       );
+    } else {
+      // send email to user for email verification
+      await bossClient.send(
+        sendNewMemberVerificationEmailTopic,
+        SendNewMemberVerificationEmailSchema.parse({
+          userId: dbUser.uuid,
+          username: dbUser.username,
+          incubator_id,
+        }),
+        {
+          retryLimit: 50,
+          retryBackoff: true,
+        },
+      );
     }
-    // todo: sendOnboardingVerificationPendingEmail as a pgboss job instead of scheduler
+
     await addEvent({
       created_by_username: session.user.id,
       action_on_username: username,

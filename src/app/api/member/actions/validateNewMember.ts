@@ -7,7 +7,10 @@ import { db } from "@/lib/kysely";
 import { getUserBasicInfo } from "@/lib/kysely/queries/users";
 import { EventCode, EventMemberCreatedPayload } from "@/models/actionEvent";
 import { validateNewMemberSchemaType } from "@/models/actions/member";
-import { SendEmailToTeamWhenNewMemberSchema } from "@/models/jobs/member";
+import {
+  SendEmailToTeamWhenNewMemberSchema,
+  SendNewMemberVerificationEmailSchema,
+} from "@/models/jobs/member";
 import { memberBaseInfoToModel } from "@/models/mapper";
 import { EmailStatusCode } from "@/models/member";
 import { isSessionUserIncubatorTeamAdminForUser } from "@/server/config/admin.config";
@@ -19,6 +22,7 @@ import {
   BusinessError,
   withErrorHandling,
 } from "@/utils/error";
+import { sendNewMemberVerificationEmailTopic } from "@/server/queueing/workers/send-verification-email";
 
 export async function validateNewMember({
   memberUuid,
@@ -108,7 +112,8 @@ export async function validateNewMember({
   });
 
   const bossClient = await getBossClientInstance();
-  // todo: sendOnboardingValidationPendingEmail as a pgboss job instead of scheduler
+
+  // send email to team
   await bossClient.send(
     sendEmailToTeamWhenNewMemberTopic,
     SendEmailToTeamWhenNewMemberSchema.parse({
@@ -116,6 +121,20 @@ export async function validateNewMember({
     }),
     {
       retryLimit: 2,
+      retryBackoff: true,
+    },
+  );
+
+  // send email to user for email verification
+  await bossClient.send(
+    sendNewMemberVerificationEmailTopic,
+    SendNewMemberVerificationEmailSchema.parse({
+      userId: newMember.uuid,
+      username: newMember.username,
+      incubator_id,
+    }),
+    {
+      retryLimit: 50,
       retryBackoff: true,
     },
   );

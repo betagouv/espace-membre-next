@@ -5,6 +5,8 @@ fileignoreconfig:
   checksum: 900db203fd9526bc60c45c4005ed5330093667f615489eada3436a7025ba5568
 - filename: src/server/queueing/workers/create-dimail-mailbox.ts
   checksum: be90060fe1ce84254120e08155a622a16f7a59981d1619a0017fd51aa817e350
+- filename: src/server/schedulers/emailScheduler.ts
+  checksum: 43d4d3882aaa775f494b4e77ccf853b3979f3f5491dfe625a41b6c4b55289c71
 scopeconfig:
 - scope: node
 version: "1.0"
