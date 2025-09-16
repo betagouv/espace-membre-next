@@ -239,14 +239,17 @@ export const isPublicServiceEmail = async function (email: string) {
     return true;
   }
   try {
-    const data = await axios
-      .get(config.tchap_api + String(email).toLowerCase())
-      .then((x) => x.data);
-    if (data.hs === "agent.externe.tchap.gouv.fr") {
-      return false;
-    } else {
-      return true;
+    if (config.tchap_api) {
+      const data = await axios
+        .get(config.tchap_api + String(email).toLowerCase())
+        .then((x) => x.data);
+      if (data.hs === "agent.externe.tchap.gouv.fr") {
+        return false;
+      } else {
+        return true;
+      }
     }
+    return false;
   } catch (e) {
     console.error(e);
     //throw new Error("Get response from tchap error");
