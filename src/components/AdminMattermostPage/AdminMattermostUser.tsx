@@ -22,7 +22,7 @@ const columns: ColumnDefinition[] = [
 
 const css = ".panel { min-height: 400px; }"; // to have enough space to display dropdown
 
-var groupBy = function (xs, key) {
+const groupBy = function (xs, key) {
   return xs.reduce(function (rv, x) {
     (rv[x[key]] = rv[x[key]] || []).push(x);
     return rv;

@@ -24,9 +24,9 @@ const Clusterizer: React.FC<Props> = ({ points }) => {
   markers = L.markerClusterGroup({
     // This function is used within leaflet, do not remove because the IDE tells you so
     iconCreateFunction: (cluster) => {
-      var childCount = cluster.getChildCount();
+      const childCount = cluster.getChildCount();
 
-      var markerCluster = " marker-cluster-";
+      let markerCluster = " marker-cluster-";
       if (childCount < 10) {
         markerCluster += "small";
       } else if (childCount < 100) {
