@@ -13,8 +13,8 @@ import {
 import { getBossClientInstance } from "@/server/queueing/client";
 import { createDimailMailboxTopic } from "@/server/queueing/workers/create-dimail-mailbox";
 
-// triggered when the user validates its new membership
-async function validateMemberHandler(
+// triggered when the user verifies its new membership
+async function verifyMemberHandler(
   req: Request,
   { params: { username } }: { params: { username: string } },
 ) {
@@ -77,4 +77,4 @@ async function validateMemberHandler(
     data: dbUser,
   });
 }
-export const PUT = withHttpErrorHandling(validateMemberHandler);
+export const PUT = withHttpErrorHandling(verifyMemberHandler);
