@@ -29,7 +29,9 @@ export function encryptPassword(password) {
 
   const cipher = createCipheriv(
     "aes-256-cbc",
-    new Uint8Array(Buffer.from(config.PASSWORD_ENCRYPT_KEY!, "hex")),
+    new Uint8Array(
+      Buffer.from(config.PASSWORD_ENCRYPT_KEY!, "hex").slice(0, 32),
+    ),
     new Uint8Array(iv),
   );
   let encrypted = cipher.update(password, "utf8", "hex");

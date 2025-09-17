@@ -131,7 +131,6 @@ export async function validateNewMember({
     SendNewMemberVerificationEmailSchema.parse({
       userId: newMember.uuid,
       username: newMember.username,
-      incubator_id,
     }),
     {
       retryLimit: 50,

@@ -256,7 +256,7 @@ describe("Test creating new user flow", () => {
     await createNewMemberHandler(req, {
       params: {},
     });
-    sendStub.called.should.be.false;
+    expect(sendStub.callCount).to.be.eq(1);
     const newDbUser = await db
       .selectFrom("users")
       .selectAll()
@@ -308,7 +308,8 @@ describe("Test creating new user flow", () => {
       await createNewMemberHandler(req, {
         params: {},
       });
-      sendStub.called.should.be.false;
+      expect(sendStub.callCount).to.be.eq(1);
+
       const newDbUser = await db
         .selectFrom("users")
         .selectAll()

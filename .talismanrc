@@ -2,7 +2,9 @@ fileignoreconfig:
 - filename: .env.development
   checksum: d8352500969d39f9303da4ed351b4a1d7a832b0082a81d80bc83987c0f1a9a58
 - filename: .env.test
-  checksum: 900db203fd9526bc60c45c4005ed5330093667f615489eada3436a7025ba5568
+  checksum: 6d3826426716428e15bf65670721e01cb59a9ac3b54c8e50abe6492fa15eb68a
+- filename: src/server/controllers/utils.ts
+  checksum: 6fcd80c46d6adea235ed4e384c9cc99e3ba6adcc6ed9efac3b644724fa6a09b4
 - filename: src/server/queueing/workers/create-dimail-mailbox.ts
   checksum: be90060fe1ce84254120e08155a622a16f7a59981d1619a0017fd51aa817e350
 - filename: src/server/schedulers/emailScheduler.ts

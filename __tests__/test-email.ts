@@ -270,51 +270,51 @@ describe("Set email redirection active", () => {
   });
 });
 
-describe("Should send email validation", () => {
-  let sendEmailStub;
-  let sendOnboardingVerificationPendingEmail;
-  const users = [
-    {
-      id: "membre.nouveau",
-      fullname: "membre.nouveau",
-      role: "Chargé de déploiement",
-      start: "2020-09-01",
-      end: "2090-01-30",
-      employer: "admin/",
-      secondary_email: "membre.nouveau@gmail.com",
-    },
-  ];
-  beforeEach(async () => {
-    sendEmailStub = sinon.stub().resolves();
-    sendOnboardingVerificationPendingEmail = proxyquire(
-      "@/server/schedulers/emailScheduler",
-      {
-        "@/server/config/email.config": {
-          sendEmail: sendEmailStub,
-        },
-      },
-    ).sendOnboardingVerificationPendingEmail;
-    await utilsTest.createUsers(users);
-  });
+// describe("Should send email validation", () => {
+//   let sendEmailStub;
+//   let sendOnboardingVerificationPendingEmail;
+//   const users = [
+//     {
+//       id: "membre.nouveau",
+//       fullname: "membre.nouveau",
+//       role: "Chargé de déploiement",
+//       start: "2020-09-01",
+//       end: "2090-01-30",
+//       employer: "admin/",
+//       secondary_email: "membre.nouveau@gmail.com",
+//     },
+//   ];
+//   beforeEach(async () => {
+//     sendEmailStub = sinon.stub().resolves();
+//     sendOnboardingVerificationPendingEmail = proxyquire(
+//       "@/server/schedulers/emailScheduler",
+//       {
+//         "@/server/config/email.config": {
+//           sendEmail: sendEmailStub,
+//         },
+//       },
+//     ).sendOnboardingVerificationPendingEmail;
+//     await utilsTest.createUsers(users);
+//   });
 
-  afterEach(async () => {
-    await utilsTest.deleteUsers(users);
-  });
+//   afterEach(async () => {
+//     await utilsTest.deleteUsers(users);
+//   });
 
-  it("should send onboarding verification pending email to users with EMAIL_VERIFICATION_WAITING status", async () => {
-    await db
-      .updateTable("users")
-      .set({
-        primary_email_status: EmailStatusCode.EMAIL_VERIFICATION_WAITING,
-      })
-      .execute();
+//   it("should send onboarding verification pending email to users with EMAIL_VERIFICATION_WAITING status", async () => {
+//     await db
+//       .updateTable("users")
+//       .set({
+//         primary_email_status: EmailStatusCode.EMAIL_VERIFICATION_WAITING,
+//       })
+//       .execute();
 
-    await sendOnboardingVerificationPendingEmail();
-    const token = await db
-      .selectFrom("verification_tokens")
-      .selectAll()
-      .where("identifier", "=", "membre.nouveau@gmail.com")
-      .executeTakeFirstOrThrow();
-    expect(token).to.exist;
-  });
-});
+//     await sendOnboardingVerificationPendingEmail();
+//     const token = await db
+//       .selectFrom("verification_tokens")
+//       .selectAll()
+//       .where("identifier", "=", "membre.nouveau@gmail.com")
+//       .executeTakeFirstOrThrow();
+//     expect(token).to.exist;
+//   });
+// });

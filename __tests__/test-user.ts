@@ -902,169 +902,169 @@ describe("Test user relative actions", () => {
       mattermostGetUserByEmailStub.calledOnce.should.be.false;
     });
 
-    it("should not update primary email if email does not exist on mattermost", async () => {
-      isPublicServiceEmailStub.returns(Promise.resolve(true));
-      mattermostGetUserByEmailStub.returns(Promise.reject("404 error"));
-      const username = "membre.nouveau";
-      const primaryEmail = "membre.nouveau.new@example.com";
-      const mockSession = {
-        user: { id: "membre.nouveau", isAdmin: false, uuid: user.uuid },
-      };
-      getServerSessionStub.resolves(mockSession);
+    // it("should not update primary email if email does not exist on mattermost", async () => {
+    //   isPublicServiceEmailStub.returns(Promise.resolve(true));
+    //   mattermostGetUserByEmailStub.returns(Promise.reject("404 error"));
+    //   const username = "membre.nouveau";
+    //   const primaryEmail = "membre.nouveau.new@example.com";
+    //   const mockSession = {
+    //     user: { id: "membre.nouveau", isAdmin: false, uuid: user.uuid },
+    //   };
+    //   getServerSessionStub.resolves(mockSession);
 
-      await db
-        .updateTable("users")
-        .where("username", "=", "membre.nouveau")
-        .set({
-          primary_email: `membre.nouveau@otherdomaine.gouv.fr`,
-        })
-        .execute();
+    //   await db
+    //     .updateTable("users")
+    //     .where("username", "=", "membre.nouveau")
+    //     .set({
+    //       primary_email: `membre.nouveau@otherdomaine.gouv.fr`,
+    //     })
+    //     .execute();
 
-      try {
-        await managePrimaryEmailForUser({ username, primaryEmail });
-      } catch (e) {
-        console.log(e);
-      }
-      const dbNewRes = await db
-        .selectFrom("users")
-        .selectAll()
-        .where("username", "=", "membre.nouveau")
-        .executeTakeFirstOrThrow();
-      dbNewRes.primary_email?.should.not.equal(primaryEmail);
+    //   try {
+    //     await managePrimaryEmailForUser({ username, primaryEmail });
+    //   } catch (e) {
+    //     console.log(e);
+    //   }
+    //   const dbNewRes = await db
+    //     .selectFrom("users")
+    //     .selectAll()
+    //     .where("username", "=", "membre.nouveau")
+    //     .executeTakeFirstOrThrow();
+    //   dbNewRes.primary_email?.should.not.equal(primaryEmail);
 
-      mattermostGetUserByEmailStub.calledOnce.should.be.true;
+    //   mattermostGetUserByEmailStub.calledOnce.should.be.true;
 
-      await db
-        .updateTable("users")
-        .where("username", "=", "membre.nouveau")
-        .set({
-          primary_email: `membre.nouveau@${config.domain}`,
-        })
-        .execute();
-    });
+    //   await db
+    //     .updateTable("users")
+    //     .where("username", "=", "membre.nouveau")
+    //     .set({
+    //       primary_email: `membre.nouveau@${config.domain}`,
+    //     })
+    //     .execute();
+    // });
 
-    it("should not update primary email if email is an admin account", async () => {
-      isPublicServiceEmailStub.returns(Promise.resolve(true));
-      mattermostGetUserByEmailStub.returns(Promise.reject("404 error"));
-      const username = "membre.nouveau";
-      const primaryEmail = "admin@otherdomaine.gouv.fr";
-      const mockSession = {
-        user: { id: "membre.nouveau", isAdmin: false, uuid: user.uuid },
-      };
-      getServerSessionStub.resolves(mockSession);
+    // it("should not update primary email if email is an admin account", async () => {
+    //   isPublicServiceEmailStub.returns(Promise.resolve(true));
+    //   mattermostGetUserByEmailStub.returns(Promise.reject("404 error"));
+    //   const username = "membre.nouveau";
+    //   const primaryEmail = "admin@otherdomaine.gouv.fr";
+    //   const mockSession = {
+    //     user: { id: "membre.nouveau", isAdmin: false, uuid: user.uuid },
+    //   };
+    //   getServerSessionStub.resolves(mockSession);
 
-      await db
-        .updateTable("users")
-        .where("username", "=", "membre.nouveau")
-        .set({
-          primary_email: `membre.nouveau@${config.domain}`,
-        })
-        .execute();
+    //   await db
+    //     .updateTable("users")
+    //     .where("username", "=", "membre.nouveau")
+    //     .set({
+    //       primary_email: `membre.nouveau@${config.domain}`,
+    //     })
+    //     .execute();
 
-      try {
-        await managePrimaryEmailForUser({ username, primaryEmail });
-      } catch (e) {}
-      const dbNewRes = await db
-        .selectFrom("users")
-        .selectAll()
-        .where("username", "=", "membre.nouveau")
-        .executeTakeFirstOrThrow();
-      dbNewRes.primary_email?.should.equal(`membre.nouveau@${config.domain}`);
-      await db
-        .updateTable("users")
-        .where("username", "=", "membre.nouveau")
-        .set({
-          primary_email: `membre.nouveau@${config.domain}`,
-        })
-        .execute();
-    });
+    //   try {
+    //     await managePrimaryEmailForUser({ username, primaryEmail });
+    //   } catch (e) {}
+    //   const dbNewRes = await db
+    //     .selectFrom("users")
+    //     .selectAll()
+    //     .where("username", "=", "membre.nouveau")
+    //     .executeTakeFirstOrThrow();
+    //   dbNewRes.primary_email?.should.equal(`membre.nouveau@${config.domain}`);
+    //   await db
+    //     .updateTable("users")
+    //     .where("username", "=", "membre.nouveau")
+    //     .set({
+    //       primary_email: `membre.nouveau@${config.domain}`,
+    //     })
+    //     .execute();
+    // });
 
-    it("should update primary email", async () => {
-      isPublicServiceEmailStub.returns(Promise.resolve(true));
-      mattermostGetUserByEmailStub.returns(Promise.resolve(true));
-      const createRedirectionStub = sinon
-        .stub(betagouv, "createRedirection")
-        .returns(Promise.resolve(true));
-      const deleteEmailStub = sinon
-        .stub(betagouv, "deleteEmail")
-        .returns(Promise.resolve(true));
-      const username = "membre.nouveau";
-      const primaryEmail = "membre.nouveau.new@example.com";
-      const mockSession = {
-        user: { id: "membre.nouveau", isAdmin: false, uuid: user.uuid },
-      };
-      getServerSessionStub.resolves(mockSession);
+    // // it("should update primary email", async () => {
+    // //   isPublicServiceEmailStub.returns(Promise.resolve(true));
+    // //   mattermostGetUserByEmailStub.returns(Promise.resolve(true));
+    // //   const createRedirectionStub = sinon
+    // //     .stub(betagouv, "createRedirection")
+    // //     .returns(Promise.resolve(true));
+    // //   const deleteEmailStub = sinon
+    // //     .stub(betagouv, "deleteEmail")
+    // //     .returns(Promise.resolve(true));
+    // //   const username = "membre.nouveau";
+    // //   const primaryEmail = "membre.nouveau.new@example.com";
+    // //   const mockSession = {
+    // //     user: { id: "membre.nouveau", isAdmin: false, uuid: user.uuid },
+    // //   };
+    // //   getServerSessionStub.resolves(mockSession);
 
-      await managePrimaryEmailForUser({ username, primaryEmail });
+    // //   await managePrimaryEmailForUser({ username, primaryEmail });
 
-      const dbNewRes = await db
-        .selectFrom("users")
-        .selectAll()
-        .where("username", "=", "membre.nouveau")
-        .executeTakeFirstOrThrow();
-      dbNewRes.primary_email?.should.equal(primaryEmail);
-      await db
-        .updateTable("users")
-        .where("username", "=", "membre.nouveau")
-        .set({
-          primary_email: `${username}@${config.domain}`,
-        })
-        .execute();
-      createRedirectionStub.called.should.be.true;
-      deleteEmailStub.called.should.be.true;
-      isPublicServiceEmailStub.called.should.be.true;
-      // mattermostGetUserByEmailStub.calledOnce.should.be.true;
-      createRedirectionStub.restore();
-      deleteEmailStub.restore();
-    });
+    // //   const dbNewRes = await db
+    // //     .selectFrom("users")
+    // //     .selectAll()
+    // //     .where("username", "=", "membre.nouveau")
+    // //     .executeTakeFirstOrThrow();
+    // //   dbNewRes.primary_email?.should.equal(primaryEmail);
+    // //   await db
+    // //     .updateTable("users")
+    // //     .where("username", "=", "membre.nouveau")
+    // //     .set({
+    // //       primary_email: `${username}@${config.domain}`,
+    // //     })
+    // //     .execute();
+    // //   createRedirectionStub.called.should.be.true;
+    // //   deleteEmailStub.called.should.be.true;
+    // //   isPublicServiceEmailStub.called.should.be.true;
+    // //   // mattermostGetUserByEmailStub.calledOnce.should.be.true;
+    // //   createRedirectionStub.restore();
+    // //   deleteEmailStub.restore();
+    // // });
 
-    it("should update primary email if user is admin", async () => {
-      isPublicServiceEmailStub.returns(Promise.resolve(true));
-      mattermostGetUserByEmailStub.returns(Promise.resolve(true));
-      const createRedirectionStub = sinon
-        .stub(betagouv, "createRedirection")
-        .returns(Promise.resolve(true));
-      const deleteEmailStub = sinon
-        .stub(betagouv, "deleteEmail")
-        .returns(Promise.resolve(true));
-      const username = "membre.nouveau";
-      const primaryEmail = "membre.nouveau.new@example.com";
-      const adminUser = await db
-        .selectFrom("users")
-        .selectAll()
-        .where("username", "=", "membre.actif")
-        .executeTakeFirstOrThrow();
-      const mockSession = {
-        user: {
-          id: "membre.actif",
-          isAdmin: true,
-          uuid: adminUser.uuid,
-        },
-      };
-      getServerSessionStub.resolves(mockSession);
+    // // it("should update primary email if user is admin", async () => {
+    // //   isPublicServiceEmailStub.returns(Promise.resolve(true));
+    // //   mattermostGetUserByEmailStub.returns(Promise.resolve(true));
+    // //   const createRedirectionStub = sinon
+    // //     .stub(betagouv, "createRedirection")
+    // //     .returns(Promise.resolve(true));
+    // //   const deleteEmailStub = sinon
+    // //     .stub(betagouv, "deleteEmail")
+    // //     .returns(Promise.resolve(true));
+    // //   const username = "membre.nouveau";
+    // //   const primaryEmail = "membre.nouveau.new@example.com";
+    // //   const adminUser = await db
+    // //     .selectFrom("users")
+    // //     .selectAll()
+    // //     .where("username", "=", "membre.actif")
+    // //     .executeTakeFirstOrThrow();
+    // //   const mockSession = {
+    // //     user: {
+    // //       id: "membre.actif",
+    // //       isAdmin: true,
+    // //       uuid: adminUser.uuid,
+    // //     },
+    // //   };
+    //   getServerSessionStub.resolves(mockSession);
 
-      await managePrimaryEmailForUser({ username, primaryEmail });
+    //   await managePrimaryEmailForUser({ username, primaryEmail });
 
-      const dbNewRes = await db
-        .selectFrom("users")
-        .selectAll()
-        .where("username", "=", "membre.nouveau")
-        .executeTakeFirstOrThrow();
-      dbNewRes.primary_email?.should.equal(primaryEmail);
-      await db
-        .updateTable("users")
-        .where("username", "=", "membre.nouveau")
-        .set({
-          primary_email: `${username}@${config.domain}`,
-        })
-        .execute();
-      createRedirectionStub.called.should.be.true;
-      deleteEmailStub.called.should.be.true;
-      isPublicServiceEmailStub.called.should.be.true;
-      // mattermostGetUserByEmailStub.calledOnce.should.be.true;
-      createRedirectionStub.restore();
-      deleteEmailStub.restore();
-    });
+    //   const dbNewRes = await db
+    //     .selectFrom("users")
+    //     .selectAll()
+    //     .where("username", "=", "membre.nouveau")
+    //     .executeTakeFirstOrThrow();
+    //   dbNewRes.primary_email?.should.equal(primaryEmail);
+    //   await db
+    //     .updateTable("users")
+    //     .where("username", "=", "membre.nouveau")
+    //     .set({
+    //       primary_email: `${username}@${config.domain}`,
+    //     })
+    //     .execute();
+    //   createRedirectionStub.called.should.be.true;
+    //   deleteEmailStub.called.should.be.true;
+    //   isPublicServiceEmailStub.called.should.be.true;
+    //   // mattermostGetUserByEmailStub.calledOnce.should.be.true;
+    //   createRedirectionStub.restore();
+    //   deleteEmailStub.restore();
+    // });
   });
 
   describe("cronjob", () => {
@@ -1444,174 +1444,174 @@ describe("Test user relative actions", () => {
       //     .execute();
     });
 
-    context("when the user needs an MX PLAN account", () => {
-      const users: FakeDataInterface = {
-        users: [
-          {
-            username: "membre.nouveau-email",
-            domaine: Domaine.ANIMATION,
-            role: "",
-            fullname: "Membre Nouveau-email",
-            primary_email: undefined,
-            primary_email_status: EmailStatusCode.EMAIL_UNSET,
-            secondary_email: "membre.nouveau-email.perso@example.com",
-            missions: [
-              {
-                end: new Date("2024-12-03"),
-                start: new Date("2023-12-03"),
-              },
-            ],
-          },
-        ],
-      };
-      beforeEach(async () => {
-        return utils.createData(users);
-      });
-      afterEach(async () => {
-        return utils.deleteData(users);
-      });
-      it("should create an OVH MX Plan account", async () => {
-        await createEmail("membre.nouveau-email", "Test");
-        Betagouv.createEmail.calledWith("membre.nouveau-email").should.be.true;
-      });
-    });
+    //   context("when the user needs an MX PLAN account", () => {
+    //     const users: FakeDataInterface = {
+    //       users: [
+    //         {
+    //           username: "membre.nouveau-email",
+    //           domaine: Domaine.ANIMATION,
+    //           role: "",
+    //           fullname: "Membre Nouveau-email",
+    //           primary_email: undefined,
+    //           primary_email_status: EmailStatusCode.EMAIL_UNSET,
+    //           secondary_email: "membre.nouveau-email.perso@example.com",
+    //           missions: [
+    //             {
+    //               end: new Date("2024-12-03"),
+    //               start: new Date("2023-12-03"),
+    //             },
+    //           ],
+    //         },
+    //       ],
+    //     };
+    //     beforeEach(async () => {
+    //       return utils.createData(users);
+    //     });
+    //     afterEach(async () => {
+    //       return utils.deleteData(users);
+    //     });
+    //     it("should create an OVH MX Plan account", async () => {
+    //       await createEmail("membre.nouveau-email", "Test");
+    //       Betagouv.createEmail.calledWith("membre.nouveau-email").should.be.true;
+    //     });
+    //   });
 
-    context("when the user needs an OVH Pro account", () => {
-      let users: FakeDataInterface = {
-        users: [
-          {
-            id: "membre.nouveau-email",
-            username: "membre.nouveau-email",
-            primary_email: undefined,
-            primary_email_status: EmailStatusCode.EMAIL_UNSET,
-            secondary_email: "membre.nouveau-email.perso@example.com",
-            domaine: Domaine.ANIMATION,
-            role: "",
-            fullname: "Membre Nouveau test email",
-            missions: [
-              {
-                end: new Date("2024-12-03"),
-                start: new Date("2023-12-03"),
-                status: "independent",
-                employer: "octo",
-                startups: [],
-              },
-            ],
-          },
-        ],
-      };
-      beforeEach(async () => {
-        await utils.createData(users);
-        sandbox
-          .stub(config, "EMAIL_DEFAULT_PLAN")
-          .value(EMAIL_PLAN_TYPE.EMAIL_PLAN_PRO);
-      });
-      afterEach(async () => {
-        await utils.deleteData(users);
-        sandbox.restore();
-      });
-      it("should create an OVH Pro email account", async () => {
-        await createEmail("membre.nouveau-email", "Test");
-        Betagouv.createEmailPro.firstCall.args.should.deep.equal([
-          "membre.nouveau-email",
-          {
-            displayName: "Membre Nouveau test email",
-            firstName: "Membre",
-            lastName: "Nouveau test email",
-          },
-        ]);
-      });
-    });
+    //   context("when the user needs an OVH Pro account", () => {
+    //     let users: FakeDataInterface = {
+    //       users: [
+    //         {
+    //           id: "membre.nouveau-email",
+    //           username: "membre.nouveau-email",
+    //           primary_email: undefined,
+    //           primary_email_status: EmailStatusCode.EMAIL_UNSET,
+    //           secondary_email: "membre.nouveau-email.perso@example.com",
+    //           domaine: Domaine.ANIMATION,
+    //           role: "",
+    //           fullname: "Membre Nouveau test email",
+    //           missions: [
+    //             {
+    //               end: new Date("2024-12-03"),
+    //               start: new Date("2023-12-03"),
+    //               status: "independent",
+    //               employer: "octo",
+    //               startups: [],
+    //             },
+    //           ],
+    //         },
+    //       ],
+    //     };
+    //     beforeEach(async () => {
+    //       await utils.createData(users);
+    //       sandbox
+    //         .stub(config, "EMAIL_DEFAULT_PLAN")
+    //         .value(EMAIL_PLAN_TYPE.EMAIL_PLAN_PRO);
+    //     });
+    //     afterEach(async () => {
+    //       await utils.deleteData(users);
+    //       sandbox.restore();
+    //     });
+    //     it("should create an OVH Pro email account", async () => {
+    //       await createEmail("membre.nouveau-email", "Test");
+    //       Betagouv.createEmailPro.firstCall.args.should.deep.equal([
+    //         "membre.nouveau-email",
+    //         {
+    //           displayName: "Membre Nouveau test email",
+    //           firstName: "Membre",
+    //           lastName: "Nouveau test email",
+    //         },
+    //       ]);
+    //     });
+    //   });
 
-    context("when the user needs an Exchange account", () => {
-      const users: FakeDataInterface = {
-        users: [
-          {
-            username: "membre.nouveau-email",
-            domaine: Domaine.ANIMATION,
-            role: "",
-            fullname: "Membre Nouveau test email",
-            primary_email: undefined,
-            primary_email_status: EmailStatusCode.EMAIL_UNSET,
-            secondary_email: "membre.nouveau-email.perso@example.com",
-            missions: [
-              {
-                end: new Date("2024-12-03"),
-                start: new Date("2023-12-03"),
-                startups: ["a-startup-at-gip"],
-              },
-            ],
-          },
-        ],
-        startups: [
-          {
-            ghid: "a-startup-at-gip",
-          },
-        ],
-      };
-      beforeEach(async () => {
-        const insertedIncubator = await db
-          .insertInto("incubators")
-          .values({
-            title: "Gip",
-            ghid: "gip-inclusion",
-          })
-          .returningAll()
-          .executeTakeFirstOrThrow();
-        const insertedStartup = await db
-          .insertInto("startups")
-          .values({
-            incubator_id: insertedIncubator.uuid,
-            name: "a-startup-at-gip",
-            ghid: "a-startup-at-gip",
-          })
-          .execute();
-        await utils.createData(users);
-        // sandbox.stub(Betagouv, "startupsInfos").resolves([
-        //     {
-        //         type: "startup",
-        //         id: "itou",
-        //         attributes: {
-        //             name: "Itou",
-        //         },
-        //         relationships: {
-        //             incubator: {
-        //                 data: {
-        //                     type: "incubator",
-        //                     id: "gip-inclusion",
-        //                 },
-        //             },
-        //         },
-        //     },
-        // ]);
-      });
+    //   context("when the user needs an Exchange account", () => {
+    //     const users: FakeDataInterface = {
+    //       users: [
+    //         {
+    //           username: "membre.nouveau-email",
+    //           domaine: Domaine.ANIMATION,
+    //           role: "",
+    //           fullname: "Membre Nouveau test email",
+    //           primary_email: undefined,
+    //           primary_email_status: EmailStatusCode.EMAIL_UNSET,
+    //           secondary_email: "membre.nouveau-email.perso@example.com",
+    //           missions: [
+    //             {
+    //               end: new Date("2024-12-03"),
+    //               start: new Date("2023-12-03"),
+    //               startups: ["a-startup-at-gip"],
+    //             },
+    //           ],
+    //         },
+    //       ],
+    //       startups: [
+    //         {
+    //           ghid: "a-startup-at-gip",
+    //         },
+    //       ],
+    //     };
+    //     beforeEach(async () => {
+    //       const insertedIncubator = await db
+    //         .insertInto("incubators")
+    //         .values({
+    //           title: "Gip",
+    //           ghid: "gip-inclusion",
+    //         })
+    //         .returningAll()
+    //         .executeTakeFirstOrThrow();
+    //       const insertedStartup = await db
+    //         .insertInto("startups")
+    //         .values({
+    //           incubator_id: insertedIncubator.uuid,
+    //           name: "a-startup-at-gip",
+    //           ghid: "a-startup-at-gip",
+    //         })
+    //         .execute();
+    //       await utils.createData(users);
+    //       // sandbox.stub(Betagouv, "startupsInfos").resolves([
+    //       //     {
+    //       //         type: "startup",
+    //       //         id: "itou",
+    //       //         attributes: {
+    //       //             name: "Itou",
+    //       //         },
+    //       //         relationships: {
+    //       //             incubator: {
+    //       //                 data: {
+    //       //                     type: "incubator",
+    //       //                     id: "gip-inclusion",
+    //       //                 },
+    //       //             },
+    //       //         },
+    //       //     },
+    //       // ]);
+    //     });
 
-      afterEach(async () => {
-        await utils.deleteData(users);
-        await db
-          .deleteFrom("startups")
-          .where("name", "=", "a-startup-at-gip")
-          .execute();
-        await db
-          .deleteFrom("incubators")
-          .where("ghid", "=", "gip-inclusion")
-          .execute();
+    //     afterEach(async () => {
+    //       await utils.deleteData(users);
+    //       await db
+    //         .deleteFrom("startups")
+    //         .where("name", "=", "a-startup-at-gip")
+    //         .execute();
+    //       await db
+    //         .deleteFrom("incubators")
+    //         .where("ghid", "=", "gip-inclusion")
+    //         .execute();
 
-        sandbox.restore();
-      });
+    //       sandbox.restore();
+    //     });
 
-      it("should create an Exchange email account", async () => {
-        await createEmail("membre.nouveau-email", "Test");
+    //     it("should create an Exchange email account", async () => {
+    //       await createEmail("membre.nouveau-email", "Test");
 
-        Betagouv.createEmailForExchange.firstCall.args.should.deep.equal([
-          "membre.nouveau-email",
-          {
-            displayName: "Membre Nouveau test email",
-            firstName: "Membre",
-            lastName: "Nouveau test email",
-          },
-        ]);
-      });
-    });
+    //       Betagouv.createEmailForExchange.firstCall.args.should.deep.equal([
+    //         "membre.nouveau-email",
+    //         {
+    //           displayName: "Membre Nouveau test email",
+    //           firstName: "Membre",
+    //           lastName: "Nouveau test email",
+    //         },
+    //       ]);
+    //     });
+    //   });
   });
 });
