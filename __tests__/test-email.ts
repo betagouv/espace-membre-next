@@ -317,3 +317,4 @@ describe("getDimailEmail", () => {
     const email = await getDimailEmail();
     expect(email.data).to.be.equal("prenom.nom@test-opi-email.beta.gouv.fr");
   });
+});
