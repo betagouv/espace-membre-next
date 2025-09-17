@@ -19,8 +19,8 @@ import {
   deleteOVHEmailAcounts,
   removeEmailsFromMailingList,
   deleteRedirectionsAfterQuitting,
-  deleteMatomoAccount,
   deleteServiceAccounts,
+  sendContractEndingMessageToUsers,
 } from "@schedulers/userContractEndingScheduler";
 
 const should = chai.should();
@@ -115,8 +115,6 @@ const mattermostUsers = [
     email: `membre.quipart.30days@${config.domain}`,
   },
 ];
-
-const userContractEndingScheduler = require("@schedulers/userContractEndingScheduler");
 
 describe("send message on contract end to user", () => {
   let chat;
