@@ -1,20 +1,8 @@
-import fm from "front-matter";
 import pAll from "p-all";
-import unzipper, { Entry } from "unzipper";
-import { ZodSchema, z } from "zod";
 
-import {
-  startup,
-  author,
-  organisation,
-  incubator,
-  team,
-} from "./github-schemas";
 import { importFromZip, MarkdownData } from "./utils";
 import config from "@/server/config";
 import { db } from "@lib/kysely";
-
-const { Readable } = require("stream");
 
 const insertData = async (markdownData: MarkdownData) => {
   // truncate tables

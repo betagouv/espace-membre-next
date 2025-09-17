@@ -4,13 +4,13 @@ import Airtable from "airtable";
 import { db } from "@/lib/kysely";
 
 export const syncFormationFromAirtable = (syncOnlyNewRecord) => {
-  var base = new Airtable({ apiKey: process.env.AIRTABLE_API_KEY }).base(
+  let base = new Airtable({ apiKey: process.env.AIRTABLE_API_KEY }).base(
     process.env.AIRTABLE_FORMATION_BASE_ID!,
   );
   let filterByFormula =
     "DATETIME_DIFF(DATETIME_PARSE('2021-06-01', 'YYYY-MM-DD'),{Début}, 'days')<0";
   if (syncOnlyNewRecord) {
-    var date = new Date();
+    let date = new Date();
     date.setDate(date.getDate() - 1);
     const dateStr = date.toISOString().split("T")[0];
     filterByFormula =

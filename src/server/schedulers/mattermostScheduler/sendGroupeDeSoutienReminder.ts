@@ -13,7 +13,7 @@ export enum DAY_OF_THE_WEEK {
 function getAllXDaysOfTheMonth(
   dayOfTheWeek: DAY_OF_THE_WEEK = DAY_OF_THE_WEEK.MONDAY,
 ): Date[] {
-  var d = new Date(),
+  let d = new Date(),
     month = d.getMonth(),
     allXDaysOfTheWeek: Date[] = [];
 

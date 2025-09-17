@@ -3,6 +3,10 @@ fileignoreconfig:
   checksum: 6050bdc0c24d4a45963695a35c09d91d541938320e1b4b21277430b609c4c494
 - filename: .env.test
   checksum: 900db203fd9526bc60c45c4005ed5330093667f615489eada3436a7025ba5568
+- filename: src/server/schedulers/formationScheduler/syncFormationFromAirtable.ts
+  checksum: eb4515d2aaf2e50bf658baeb8404391e3a795da567ec7331ecddd694ae7465bf
+- filename: src/server/schedulers/formationScheduler/syncFormationInscriptionFromAirtable.ts
+  checksum: ea1b5785180bef8335cf6a492645b434103eb4cd93d7b2391b7cc238765773e0
 scopeconfig:
 - scope: node
 version: "1.0"

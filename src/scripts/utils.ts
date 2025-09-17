@@ -3,6 +3,7 @@ import yaml from "js-yaml";
 import { ExpressionBuilder, sql } from "kysely";
 import unzipper, { Entry } from "unzipper";
 import { ZodSchema, z } from "zod";
+import { Readable } from "stream";
 
 import {
   startup,
@@ -13,8 +14,6 @@ import {
 } from "./github-schemas";
 import { DB } from "@/@types/db";
 import { jsonArrayFrom } from "@/lib/kysely";
-
-const { Readable } = require("stream"); // import doesnt work for some reason
 
 type FmReturn<T> = ReturnType<typeof fm<T>>;
 

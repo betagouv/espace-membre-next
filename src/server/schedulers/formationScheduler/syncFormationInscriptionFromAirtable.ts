@@ -8,10 +8,10 @@ import config from "@/server/config";
 export const syncFormationInscriptionFromAirtable = async (
   syncOnlyNewRecord,
 ) => {
-  var base = new Airtable({ apiKey: config.AIRTABLE_API_KEY }).base(
+  let base = new Airtable({ apiKey: config.AIRTABLE_API_KEY }).base(
     config.AIRTABLE_FORMATION_BASE_ID!,
   );
-  var date = new Date();
+  let date = new Date();
   date.setDate(date.getDate() - 19);
   const dateStr = date.toISOString().split("T")[0];
   let filterByFormula =

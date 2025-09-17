@@ -158,7 +158,6 @@ describe("send message on contract end to user", () => {
   });
 
   it("should send message to users for j-15", async () => {
-    const { sendContractEndingMessageToUsers } = userContractEndingScheduler;
     await sendContractEndingMessageToUsers("mail15days", true);
     chat.calledOnce.should.be.true;
     chat.firstCall.args[2].should.be.equal("membre.quipart");
@@ -167,7 +166,6 @@ describe("send message on contract end to user", () => {
   });
 
   it("should send message to users for j-30", async () => {
-    const { sendContractEndingMessageToUsers } = userContractEndingScheduler;
     try {
       await sendContractEndingMessageToUsers("mail30days", true);
     } catch (e) {
