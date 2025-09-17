@@ -296,7 +296,7 @@ describe("getDimailEmail", () => {
     });
     const email = await getDimailEmail();
     expect(email.data).to.be.equal(
-      "prenom.nom.ext@test-opi-email.beta.gouv.fr",
+      `prenomnom.ext@${process.env.DIMAIL_MAILBOX_DOMAIN}`,
     );
   });
   it("should return internal email for contractuel", async () => {
@@ -306,7 +306,9 @@ describe("getDimailEmail", () => {
       missions: [],
     });
     const email = await getDimailEmail();
-    expect(email.data).to.be.equal("prenom.nom@test-opi-email.beta.gouv.fr");
+    expect(email.data).to.be.equal(
+      `prenom.nom@${process.env.DIMAIL_MAILBOX_DOMAIN}`,
+    );
   });
   it("should return internal email for fonctionnaire", async () => {
     const getDimailEmail = getDinumEmailStub({
@@ -315,6 +317,8 @@ describe("getDimailEmail", () => {
       missions: [],
     });
     const email = await getDimailEmail();
-    expect(email.data).to.be.equal("prenom.nom@test-opi-email.beta.gouv.fr");
+    expect(email.data).to.be.equal(
+      `prenom.nom@${process.env.DIMAIL_MAILBOX_DOMAIN}`,
+    );
   });
 });

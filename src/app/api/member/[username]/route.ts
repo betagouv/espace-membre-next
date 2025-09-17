@@ -1,26 +1,10 @@
-import * as Sentry from "@sentry/node";
 import { getServerSession } from "next-auth";
 
 import { updateMember } from "../updateMember";
-import {
-  getUserBasicInfo,
-  getUserInfos,
-  updateUser,
-} from "@/lib/kysely/queries/users";
-import { MattermostUser, getUserByEmail, searchUsers } from "@/lib/mattermost";
-import {
-  memberInfoUpdateSchemaType,
-  memberInfoUpdateSchema,
-  memberValidateInfoSchema,
-} from "@/models/actions/member";
+import { getUserInfos } from "@/lib/kysely/queries/users";
+import { memberValidateInfoSchema } from "@/models/actions/member";
 import { EmailStatusCode } from "@/models/member";
-import betagouv from "@/server/betagouv";
-import config from "@/server/config";
-import {
-  isPublicServiceEmail,
-  isAdminEmail,
-  userInfos,
-} from "@/server/controllers/utils";
+import { isPublicServiceEmail, isAdminEmail } from "@/server/controllers/utils";
 import { authOptions } from "@/utils/authoptions";
 import {
   AdminEmailNotAllowedError,
