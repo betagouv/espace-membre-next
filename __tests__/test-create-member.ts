@@ -12,6 +12,7 @@ import { db } from "@/lib/kysely";
 import { createMemberSchemaType } from "@/models/actions/member";
 import { Domaine, EmailStatusCode } from "@/models/member";
 import { sendNewMemberValidationEmailTopic } from "@/server/queueing/workers/send-validation-email";
+import { sendNewMemberVerificationEmailTopic } from "@/server/queueing/workers/send-verification-email";
 const expect = chai.expect;
 
 describe("Test creating new user flow", () => {
@@ -102,7 +103,7 @@ describe("Test creating new user flow", () => {
       .executeTakeFirstOrThrow();
     newStartup = await utils.createStartup(
       newIncubatorA.uuid,
-      "seconda-startup-name",
+      "second-startup-name",
     );
     createMemberObj = {
       member: {
@@ -153,7 +154,7 @@ describe("Test creating new user flow", () => {
       .execute();
   });
 
-  it("should create new user when requested by basic member", async () => {
+  it("should create new user with validation when requested by basic member", async () => {
     const mockSession = {
       user: {
         id: "anyuser",
@@ -257,6 +258,10 @@ describe("Test creating new user flow", () => {
       params: {},
     });
     expect(sendStub.callCount).to.be.eq(1);
+    sendStub.firstCall.args[0].should.equal(
+      sendNewMemberVerificationEmailTopic,
+    );
+
     const newDbUser = await db
       .selectFrom("users")
       .selectAll()
@@ -274,7 +279,7 @@ describe("Test creating new user flow", () => {
     expect(newDbMission).to.exist;
   });
 
-  describe("", () => {
+  describe("User validation", () => {
     let sendEmailStub, sendNewMemberValidationEmail;
     beforeEach(async () => {
       sendEmailStub = sinon.stub().resolves(); // Resolves like a real async function
@@ -309,6 +314,9 @@ describe("Test creating new user flow", () => {
         params: {},
       });
       expect(sendStub.callCount).to.be.eq(1);
+      sendStub.firstCall.args[0].should.equal(
+        sendNewMemberVerificationEmailTopic,
+      );
 
       const newDbUser = await db
         .selectFrom("users")
