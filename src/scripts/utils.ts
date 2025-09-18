@@ -158,7 +158,7 @@ export const importFromZip = (): Promise<MarkdownData> => {
     const dataStream = await fetch(zipUrl).then((r) => r.body);
     if (!dataStream) return;
 
-    await Readable.fromWeb(dataStream)
+    await Readable.from(dataStream as unknown as NodeJS.ReadableStream)
       .pipe(unzipper.Parse())
       .on("entry", function (entry: Entry) {
         let drain = true;
