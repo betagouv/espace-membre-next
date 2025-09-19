@@ -270,51 +270,49 @@ describe("Set email redirection active", () => {
   });
 });
 
-describe("Should send email validation", () => {
-  let sendEmailStub;
-  let sendOnboardingVerificationPendingEmail;
-  const users = [
-    {
-      id: "membre.nouveau",
-      fullname: "membre.nouveau",
-      role: "Chargé de déploiement",
-      start: "2020-09-01",
-      end: "2090-01-30",
-      employer: "admin/",
-      secondary_email: "membre.nouveau@gmail.com",
+describe("getDimailEmail", () => {
+  const getServerSessionStub = sinon.stub().resolves({
+    user: {
+      id: "anyuser",
+      isAdmin: false,
+      uuid: "53dd9fed-9c84-432c-a566-f785702147fc",
     },
-  ];
-  beforeEach(async () => {
-    sendEmailStub = sinon.stub().resolves();
-    sendOnboardingVerificationPendingEmail = proxyquire(
-      "@/server/schedulers/emailScheduler",
-      {
-        "@/server/config/email.config": {
-          sendEmail: sendEmailStub,
-        },
+  });
+  const getDinumEmailStub = (userInfo) => {
+    return proxyquire("@/app/api/member/actions/get-dimail-email", {
+      "next-auth": { getServerSession: getServerSessionStub },
+      "next/cache": { revalidatePath: sinon.stub().resolves() },
+      "@/lib/kysely/queries/users": {
+        getUserBasicInfo: sinon.stub().resolves(userInfo),
       },
-    ).sendOnboardingVerificationPendingEmail;
-    await utilsTest.createUsers(users);
+    }).getDimailEmail;
+  };
+
+  it("should return external email for externals", async () => {
+    const getDimailEmail = getDinumEmailStub({
+      username: "prenom.nom",
+      legal_status: "salarie",
+      missions: [],
+    });
+    const email = await getDimailEmail();
+    expect(email.data.split("@")[0]).to.be.equal(`prenom.nom.ext`);
   });
-
-  afterEach(async () => {
-    await utilsTest.deleteUsers(users);
+  it("should return internal email for contractuel", async () => {
+    const getDimailEmail = getDinumEmailStub({
+      username: "prenom.nom",
+      legal_status: "contractuel",
+      missions: [],
+    });
+    const email = await getDimailEmail();
+    expect(email.data.split("@")[0]).to.be.equal(`prenom.nom`);
   });
-
-  it("should send onboarding verification pending email to users with EMAIL_VERIFICATION_WAITING status", async () => {
-    await db
-      .updateTable("users")
-      .set({
-        primary_email_status: EmailStatusCode.EMAIL_VERIFICATION_WAITING,
-      })
-      .execute();
-
-    await sendOnboardingVerificationPendingEmail();
-    const token = await db
-      .selectFrom("verification_tokens")
-      .selectAll()
-      .where("identifier", "=", "membre.nouveau@gmail.com")
-      .executeTakeFirstOrThrow();
-    expect(token).to.exist;
+  it("should return internal email for fonctionnaire", async () => {
+    const getDimailEmail = getDinumEmailStub({
+      username: "prenom.nom",
+      legal_status: "fonctionnaire",
+      missions: [],
+    });
+    const email = await getDimailEmail();
+    expect(email.data.split("@")[0]).to.be.equal(`prenom.nom`);
   });
 });

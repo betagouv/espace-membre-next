@@ -266,6 +266,8 @@ export async function sendJ30Email(users) {
   return module.exports.sendInfoToSecondaryEmailAfterXDays(30, users);
 }
 
+// todo: handle dimail
+// todo: delete old emails OVH
 export async function deleteOVHEmailAcounts(
   optionalExpiredUsers?: memberBaseInfoSchemaType[],
 ) {
@@ -314,6 +316,7 @@ export async function deleteOVHEmailAcounts(
   }
 }
 
+// todo: remove ?
 export async function deleteSecondaryEmailsForUsers(
   optionalExpiredUsers?: memberBaseInfoSchemaType[],
 ) {
