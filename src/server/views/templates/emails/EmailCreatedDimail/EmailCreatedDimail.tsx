@@ -3,7 +3,7 @@ import { MjmlText } from "@luma-team/mjml-react";
 import { StandardLayout } from "@/components/emails/layouts/StandardEmail";
 import { EmailCreatedDimail as EmailCreatedDimailType } from "@/server/modules/email";
 export function EmailCreatedDimailTitle() {
-  return "Ton boite mail betagouv est prêt 🙂";
+  return "Ta boite mail betagouv est prête 🙂";
 }
 
 export function EmailCreatedDimail({
@@ -18,11 +18,11 @@ export function EmailCreatedDimail({
       <MjmlText>
         <h1>Ton email {email} est prêt !</h1>
 
-        <p>Et maintenant ? Définis un nouveau mot de passe </p>
+        <p>Et maintenant ?</p>
         <ul>
           <li>
-            Étape 1 : Connecte toi sur <a href={webmailUrl}>l'espace membre</a>{" "}
-            avec ton email {email} et le mot de passe suivant :{" "}
+            Tu peux te connecter <a href={webmailUrl}>au webmail</a> avec ton
+            email {email} et le mot de passe temporaire suivant :{" "}
             <strong>{password}</strong>
           </li>
         </ul>

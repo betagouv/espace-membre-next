@@ -13,6 +13,8 @@ import {
 } from "@/models/member";
 import config from "@/server/config";
 import BetaGouv from "@betagouv";
+import { getDinumEmail } from "@/lib/kysely/queries/dinum";
+import { EMAIL_PLAN_TYPE } from "@/models/ovh";
 
 export const computeHash = function (username) {
   const hash = crypto.createHmac(
@@ -230,21 +232,28 @@ export function isAdminEmail(email: string): boolean {
 }
 
 export const isPublicServiceEmail = async function (email: string) {
-  if (process.env.NODE_ENV === "development") {
-    return true;
-  }
+  // if (process.env.NODE_ENV === "development") {
+  //   return true;
+  // }
   if (/@pole-emploi.fr\s*$/.test(email.toLowerCase())) {
     return true;
   }
+  if (/@france-travail.fr\s*$/.test(email.toLowerCase())) {
+    return true;
+  }
+  // todo: use fixed-list
   try {
-    const data = await axios
-      .get(config.tchap_api + String(email).toLowerCase())
-      .then((x) => x.data);
-    if (data.hs === "agent.externe.tchap.gouv.fr") {
-      return false;
-    } else {
-      return true;
+    if (config.tchap_api) {
+      const data = await axios
+        .get(config.tchap_api + String(email).toLowerCase())
+        .then((x) => x.data);
+      if (data.hs === "agent.externe.tchap.gouv.fr") {
+        return false;
+      } else {
+        return true;
+      }
     }
+    return false;
   } catch (e) {
     console.error(e);
     //throw new Error("Get response from tchap error");
@@ -269,7 +278,16 @@ export async function userInfos(
       }),
     );
     // TODO: check if email OPI
-    const emailInfos = await BetaGouv.emailInfos(userInfos.username);
+    const dinumEmail =
+      userInfos.primary_email && (await getDinumEmail(userInfos.primary_email));
+
+    const emailInfos = dinumEmail
+      ? {
+          email: dinumEmail.email,
+          isBlocked: false,
+          emailPlan: EMAIL_PLAN_TYPE.EMAIL_PLAN_OPI,
+        }
+      : await BetaGouv.emailInfos(userInfos.username);
     const emailRedirections = await BetaGouv.redirectionsForId({
       from: userInfos.username,
     });

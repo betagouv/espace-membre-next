@@ -1,7 +1,6 @@
 import axios from "axios";
 
-const DIMAIL_API_URL =
-  process.env.DIMAIL_API_URL || "https://api.ovhprod.dimail1.numerique.gouv.fr";
+const DIMAIL_API_URL = process.env.DIMAIL_API_URL;
 
 const DIMAIL_API_USERNAME = process.env.DIMAIL_API_USERNAME;
 const DIMAIL_API_PASSWORD = process.env.DIMAIL_API_PASSWORD;
@@ -17,28 +16,72 @@ if (!DIMAIL_API_TOKEN) {
   throw new Error('Le token API Dimail (DIMAIL_API_TOKEN) est manquant.');
 }*/
 
-const client = axios.create({
-  baseURL: DIMAIL_API_URL,
-  headers: {
-    Authorization:
-      "Basic " +
-      Buffer.from(`${DIMAIL_API_USERNAME}:${DIMAIL_API_PASSWORD}`).toString(
-        "base64",
-      ),
-    "Content-Type": "application/json",
-  },
-});
-
 export interface DimailEmailParams {
   user_name: string;
   domain: string;
   displayName?: string;
 }
 
+export interface DimailAliasParams {
+  domain: string;
+  user_name: string;
+  destination: string;
+}
+
 export type DimailMailboxResult = {
   email: string;
   password: string;
 };
+
+export type DimailAliasResult = {
+  username: string;
+  domain: string;
+  destination: string;
+  allow_to_send: boolean;
+};
+
+export type DimailTokenResult = {
+  access_token: string;
+  token_type: string;
+};
+
+export type DimailNewAccesTokenResult = string;
+
+/**
+ * récupère un nouveau token
+ * GET /token
+ * Retourne access_token
+ */
+async function getAccessToken(): Promise<string> {
+  const response = await axios.get(
+    `${DIMAIL_API_URL}/token/?username=${encodeURIComponent(DIMAIL_API_USERNAME || "unknown")}`,
+    {
+      headers: {
+        Authorization:
+          "Basic " +
+          Buffer.from(`${DIMAIL_API_USERNAME}:${DIMAIL_API_PASSWORD}`)
+            .toString("base64")
+            .trim(),
+      },
+    },
+  );
+
+  return response.data.access_token;
+}
+
+const client = axios.create({
+  baseURL: DIMAIL_API_URL,
+  headers: {
+    "Content-Type": "application/json",
+  },
+});
+
+// Add token to every request
+client.interceptors.request.use(async (config) => {
+  const token = await getAccessToken();
+  config.headers.Authorization = `Bearer ${token}`;
+  return config;
+});
 
 /**
  * Crée une boîte mail
@@ -50,9 +93,33 @@ export async function createMailbox({
   user_name,
   displayName,
 }: DimailEmailParams): Promise<DimailMailboxResult> {
-  const payload = { ...(displayName && { displayName }) };
+  const payload = {
+    ...{ displayName, givenName: displayName, surName: displayName },
+  };
   const res = await client.post<DimailMailboxResult>(
     `/domains/${encodeURIComponent(domain)}/mailboxes/${encodeURIComponent(user_name)}`,
+    payload,
+  );
+  return res.data;
+}
+
+/**
+ * Crée un alias
+ * POST /domains/{domain_name}/aliases
+ * Retourne { email, password }
+ */
+export async function createAlias({
+  domain,
+  user_name,
+  destination,
+}: DimailAliasParams): Promise<DimailMailboxResult> {
+  const payload = {
+    user_name,
+    destination,
+    allow_to_send: true,
+  };
+  const res = await client.post<DimailMailboxResult>(
+    `/domains/${encodeURIComponent(domain)}/aliases`,
     payload,
   );
   return res.data;
