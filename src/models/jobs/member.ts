@@ -14,6 +14,16 @@ export type SendNewMemberValidationEmailSchemaType = z.infer<
   typeof SendNewMemberValidationEmailSchema
 >;
 
+export const SendNewMemberVerificationEmailSchema =
+  MaintenanceWrapperDataSchema.extend({
+    userId: memberSchema.shape.uuid,
+    username: memberSchema.shape.username,
+  }).strict();
+
+export type SendNewMemberVerificationEmailSchemaType = z.infer<
+  typeof SendNewMemberVerificationEmailSchema
+>;
+
 export const SendEmailToTeamWhenNewMemberSchema =
   MaintenanceWrapperDataSchema.extend({
     userId: memberSchema.shape.uuid,
