@@ -1,4 +1,3 @@
-import { CreateEmailForm } from "./CreateEmailForm";
 import BlocConfigurerEmailPrincipal from "./Email/BlocConfigurerEmailPrincipal";
 import { ChangeSecondaryEmail } from "./Email/ChangeSecondaryEmail";
 import MemberBrevoEventList from "./MemberBrevoEventList";
@@ -27,18 +26,6 @@ export const AdminPanel = ({
       ></BlocConfigurerEmailPrincipal>
       <ChangeSecondaryEmail userInfos={userInfos}></ChangeSecondaryEmail>
 
-      {!emailInfos &&
-        ![
-          EmailStatusCode.EMAIL_CREATION_WAITING,
-          EmailStatusCode.EMAIL_VERIFICATION_WAITING,
-        ].includes(userInfos.primary_email_status) &&
-        userInfos.secondary_email &&
-        authorizations.canCreateEmail && (
-          <CreateEmailForm
-            userInfos={userInfos}
-            hasPublicServiceEmail={authorizations.hasPublicServiceEmail}
-          />
-        )}
       <br />
       <h3>Évènements</h3>
       <MemberEventList userId={userInfos.username} />
