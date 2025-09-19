@@ -35,6 +35,7 @@ export interface AccountVerifyClientPageProps {
   member: memberSchemaType;
 }
 
+// todo: use actions
 const postMemberData = async ({ values, sessionUsername }) => {
   try {
     const response = await fetch(

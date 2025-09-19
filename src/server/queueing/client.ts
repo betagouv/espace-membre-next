@@ -35,6 +35,10 @@ import {
 } from "./workers/create-dimail-mailbox";
 import { BusinessError, ErrorWithStatus } from "@/utils/error";
 import { gracefulExit } from "@/utils/gracefulExit";
+import {
+  sendNewMemberVerificationEmail,
+  sendNewMemberVerificationEmailTopic,
+} from "./workers/send-verification-email";
 
 let databaseUrl = process.env.DATABASE_URL || "";
 databaseUrl = databaseUrl.replace("sslmode=prefer", "sslmode=no-verify");
@@ -108,6 +112,11 @@ export const pgBossWorker: {
     topic: sendNewMemberValidationEmailTopic,
     worker: sendNewMemberValidationEmail,
     description: `Envoie un email aux membres de la startup d'un nouveau membre pour qu'il valide sa fiche`,
+  },
+  {
+    topic: sendNewMemberVerificationEmailTopic,
+    worker: sendNewMemberVerificationEmail,
+    description: `Envoie un email de validation pour un nouveau membre`,
   },
   {
     topic: sendEmailToTeamsToCheckOnTeamCompositionTopic,

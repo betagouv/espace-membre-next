@@ -1,6 +1,12 @@
 import { v4 as uuidv4 } from "uuid";
 
 export async function seed(knex) {
+  await knex("teams").delete();
+  await knex("newsletters").delete();
+  await knex("users_teams").delete();
+  await knex("startups").delete();
+  await knex("incubators").delete();
+
   const newsletterList = [
     {
       id: uuidv4(),
@@ -73,6 +79,24 @@ export async function seed(knex) {
       incubator_id: incubId,
     },
   ]);
+
+  const teamId = uuidv4();
+  await knex("teams").insert([
+    {
+      uuid: teamId,
+      name: "Animation",
+      incubator_id: incubId,
+    },
+  ]);
+
+  await knex("users_teams").insert([
+    {
+      uuid: uuidv4(),
+      team_id: teamId,
+      user_id: "53dd9fed-9c84-432c-a566-f785702147fc", // lucas
+    },
+  ]);
+
   console.log("Inserted fake startups");
 }
 
@@ -143,6 +167,13 @@ const populateUsers = async (knex) => {
         ],
     })),
   );
+
+  // add a valid mission for lucas.charrier
+  await knex("missions").insert({
+    user_id: "53dd9fed-9c84-432c-a566-f785702147fc",
+    start: new Date("2023-01-01"),
+    end: new Date("2030-03-01"),
+  });
 
   // add a valid mission for valid.member
   await knex("missions").insert({

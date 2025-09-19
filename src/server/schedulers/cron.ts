@@ -3,14 +3,12 @@
 
 import { postEventsOnMattermost } from "./calendarScheduler";
 import {
-  createEmailAddresses,
-  reinitPasswordEmail,
-  subscribeEmailAddresses,
-  unsubscribeEmailAddresses,
-  setEmailAddressesActive,
-  setCreatedEmailRedirectionsActive,
-  createRedirectionEmailAdresses,
-  sendOnboardingVerificationPendingEmail,
+  reinitPasswordEmail, // ovh only
+  subscribeEmailAddresses, // ovh only
+  unsubscribeEmailAddresses, // ovh only
+  setEmailAddressesActive, // ovh only
+  setCreatedEmailRedirectionsActive, // ovh only
+  createRedirectionEmailAdresses, // ovh only
 } from "./emailScheduler";
 import { syncFormationFromAirtable } from "./formationScheduler/syncFormationFromAirtable";
 import { syncFormationInscriptionFromAirtable } from "./formationScheduler/syncFormationInscriptionFromAirtable";
@@ -44,12 +42,12 @@ import { sendEmailToStartupToUpdatePhase } from "./startups/sendEmailToStartupTo
 import { unblockEmailsThatAreActive } from "./unblockEmailsThatAreActive";
 import { sendMessageToActiveUsersWithoutSecondaryEmail } from "./updateProfileScheduler";
 import {
-  deleteSecondaryEmailsForUsers,
+  deleteSecondaryEmailsForUsers, // todo: remove ?
   sendContractEndingMessageToUsers,
   sendJ1Email,
   sendJ30Email,
-  deleteOVHEmailAcounts,
-  deleteRedirectionsAfterQuitting,
+  deleteOVHEmailAcounts, // todo
+  deleteRedirectionsAfterQuitting, // ovh only
   removeEmailsFromMailingList,
   deleteServiceAccounts,
   deleteMatomoAccount,
@@ -312,21 +310,6 @@ export const espaceMembreCronJobs: EspaceMembreCronJobType[] = [
     isActive: true,
     name: "setEmailAddressesActive",
     description: "Add pending users to mailing-list and set email as active",
-  },
-  {
-    cronTime: "0 */2 * * * *",
-    onTick: sendOnboardingVerificationPendingEmail,
-    isActive: true,
-    name: "sendOnboardingVerificationPendingEmail",
-    description:
-      "Envoi d'un email de relance pour les adresses en attente de validation",
-  },
-  {
-    cronTime: "0 */4 * * * *",
-    onTick: createEmailAddresses,
-    isActive: true,
-    name: "emailCreationJob",
-    description: "Créé les emails en attente sur OVH",
   },
   {
     cronTime: "0 */4 * * * *",

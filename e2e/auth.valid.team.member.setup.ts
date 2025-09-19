@@ -1,11 +1,11 @@
 import { test as setup, expect } from "@playwright/test";
 
-const validMemberFile = "./playwright-auth-valid.member.json";
+const validMemberFile = "./playwright-auth-valid.team.member.json";
 
-setup("authenticate as valid.member through magic link", async ({ page }) => {
+setup("authenticate as lucas.charrier through magic link", async ({ page }) => {
   // fill login form
   await page.goto("/");
-  await page.getByLabel("Mon email").fill("valid.member@betagouv.ovh");
+  await page.getByLabel("Mon email").fill("lucas.charrier@betagouv.ovh");
   await page.getByText("Recevoir le lien de connexion").click();
 
   // wait a while to get the latest email
