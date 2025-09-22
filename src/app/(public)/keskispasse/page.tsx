@@ -16,17 +16,17 @@ export default async function Page() {
       <br />
       <ul className={fr.cx("fr-text--xl")}>
         <li>
-          Vous pouvez retrouver toutes les informations sur le statut d'un
-          membre <a href="/community">sur sa fiche</a>
+          Retrouve toutes les informations sur le statut d'un membre{" "}
+          <a href="/community">sur sa fiche</a>
         </li>
         <li>
-          Consultez{" "}
+          Consulte{" "}
           <a href="https://faq-betagouv.crisp.help/fr/category/espace-membre-1o8xzu0/">
             la FAQ espace-membre
           </a>
         </li>
         <li>
-          Contactez l'équipe support{" "}
+          Contacte l'équipe support{" "}
           <a href="https://faq-betagouv.crisp.help">via CRISP</a>
         </li>
       </ul>
