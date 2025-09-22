@@ -3,6 +3,10 @@ fileignoreconfig:
   checksum: 6050bdc0c24d4a45963695a35c09d91d541938320e1b4b21277430b609c4c494
 - filename: .env.test
   checksum: 900db203fd9526bc60c45c4005ed5330093667f615489eada3436a7025ba5568
+- filename: src/utils/routes/routeTitles.ts
+  checksum: 4cb5e15f39d949ac003ac02cdb1682e395488aabd72fa7f7cd93f1033ae682fc
+- filename: src/utils/routes/routes.ts
+  checksum: 6e3813def93639bf0897cd5e4c6328a44bc373bf655e486803f89546c4c3d1a4
 scopeconfig:
 - scope: node
 version: "1.0"
