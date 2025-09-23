@@ -94,10 +94,18 @@ export const authOptions: NextAuthOptions = {
           const dbUser = await db
             .selectFrom("users")
             .select(["username"])
-            .where(({ eb }) =>
+            .where(({ eb, fn }) =>
               eb.or([
-                eb("primary_email", "=", userinfo.email),
-                eb("secondary_email", "=", userinfo.email),
+                eb(
+                  fn("lower", ["primary_email"]),
+                  "=",
+                  userinfo.email.toLowerCase(),
+                ),
+                eb(
+                  fn("lower", ["secondary_email"]),
+                  "=",
+                  userinfo.email.toLowerCase(),
+                ),
               ]),
             )
             .executeTakeFirst();
