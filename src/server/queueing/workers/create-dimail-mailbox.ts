@@ -12,6 +12,7 @@ import { sendEmail } from "@/server/config/email.config";
 import { EMAIL_TYPES } from "@/server/modules/email";
 import { memberBaseInfoToModel } from "@/models/mapper";
 import { EmailStatusCode } from "@/models/member";
+import * as Sentry from "@sentry/nextjs";
 
 export const createDimailMailboxTopic = "create-dimail-mailbox";
 
@@ -63,6 +64,9 @@ export async function createDimailMailboxForUser(userUuid: string) {
         console.error(
           `No secondary email defined for ${baseInfoUser.username}`,
         );
+        Sentry.captureException(
+          new Error(`No secondary email defined for ${baseInfoUser.username}`),
+        );
       }
       return infos;
     })
@@ -70,6 +74,7 @@ export async function createDimailMailboxForUser(userUuid: string) {
       console.error(
         `Error creating mailbox ${userName}@${DIMAIL_MAILBOX_DOMAIN}: ${e.status || ""} ${e.message}`,
       );
+      Sentry.captureException(e);
       if (e.status === 409) {
         // mailbox already exist
         // todo: handle this case, regenerate password ?
