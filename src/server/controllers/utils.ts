@@ -13,7 +13,7 @@ import {
 } from "@/models/member";
 import config from "@/server/config";
 import BetaGouv from "@betagouv";
-import { getDinumEmail } from "@/lib/kysely/queries/dinum";
+import { getDimailEmail } from "@/lib/kysely/queries/dimail";
 import { EMAIL_PLAN_TYPE } from "@/models/ovh";
 
 export const computeHash = function (username) {
@@ -277,9 +277,10 @@ export async function userInfos(
         options: { withDetails: true },
       }),
     );
-    // TODO: check if email OPI
+    // TODO: check if email Dimail
     const dinumEmail =
-      userInfos.primary_email && (await getDinumEmail(userInfos.primary_email));
+      userInfos.primary_email &&
+      (await getDimailEmail(userInfos.primary_email));
 
     const emailInfos = dinumEmail
       ? {

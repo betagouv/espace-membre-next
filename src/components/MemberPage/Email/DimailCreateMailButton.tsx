@@ -10,7 +10,7 @@ interface Props {
   userInfos: memberSchemaType;
 }
 
-export const OpiCreateMailButtons = ({ userUuid, userInfos }: Props) => {
+export const DimailCreateMailButton = ({ userUuid, userInfos }: Props) => {
   const [isLoading, setIsLoading] = useState(false);
   const [message, setMessage] = useState("");
   const [success, setSuccess] = useState(false);

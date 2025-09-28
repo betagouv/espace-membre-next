@@ -26,7 +26,7 @@ import {
 } from "@/models/member";
 import { EMAIL_STATUS_READABLE_FORMAT } from "@/models/misc";
 import { EMAIL_PLAN_TYPE, OvhRedirection, OvhResponder } from "@/models/ovh";
-import { OpiCreateMailButtons } from "./OpiCreateMailButtons";
+import { DimailCreateMailButton } from "./DimailCreateMailButton";
 
 const EmailLink = ({ email }: { email: string }) => (
   <a href={`mailto:${email}`}>{email}</a>
@@ -241,13 +241,13 @@ export default function EmailContainer({
     EmailStatusCode.EMAIL_CREATION_PENDING,
   ].includes(userInfos.primary_email_status);
 
-  const isMailOPI = emailInfos?.emailPlan === EMAIL_PLAN_TYPE.EMAIL_PLAN_OPI;
+  const isDinumEmail = emailInfos?.emailPlan === EMAIL_PLAN_TYPE.EMAIL_PLAN_OPI;
 
   const rows = [
     // Email status
     emailInfos && emailStatusRow(emailInfos, userInfos),
     // Spam status (ovh only)
-    !isMailOPI && emailInfos && emailSpamInfoRow(emailInfos),
+    !isDinumEmail && emailInfos && emailSpamInfoRow(emailInfos),
     // Redirections
     ...redirections.map((redirection) => redirectionRow(redirection)),
   ].filter((z) => !!z);
@@ -331,23 +331,26 @@ export default function EmailContainer({
           data={rows}
         />
       ) : null}
-      {isMailOPI ? (
+      {isDinumEmail ? (
         <>
           <BlocEmailConfiguration emailInfos={emailInfos} />
         </>
       ) : isCurrentUser ? (
-        /* affiche la migration OPI que si c'est un email non OPI et que c'est l'utilisateur lui-même */
-        <OpiCreateMailButtons userUuid={userInfos.uuid} userInfos={userInfos} />
+        /* affiche la migration dimail que si c'est un email non dimail et que c'est l'utilisateur lui-même */
+        <DimailCreateMailButton
+          userUuid={userInfos.uuid}
+          userInfos={userInfos}
+        />
       ) : null}
       {!emailIsBeingCreated && isCurrentUser && (
         <div className={fr.cx("fr-accordions-group")}>
-          {!!emailInfos && !isMailOPI && (
+          {!!emailInfos && !isDinumEmail && (
             <>
               <BlocEmailConfiguration emailInfos={emailInfos} />
             </>
           )}
 
-          {!isMailOPI &&
+          {!isDinumEmail &&
             emailInfos &&
             emailInfos.emailPlan === EMAIL_PLAN_TYPE.EMAIL_PLAN_BASIC && (
               <>
@@ -365,7 +368,7 @@ export default function EmailContainer({
               </>
             )}
 
-          {!isMailOPI && (
+          {!isDinumEmail && (
             <BlocChangerMotDePasse
               canChangePassword={canChangePassword}
               status={userInfos.primary_email_status}
