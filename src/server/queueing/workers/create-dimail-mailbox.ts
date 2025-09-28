@@ -15,6 +15,11 @@ import { EmailStatusCode } from "@/models/member";
 
 export const createDimailMailboxTopic = "create-dimail-mailbox";
 
+const splitFullName = (fullname: string) => {
+  const [prenom, ...rest] = fullname.trim().split(" ");
+  return [prenom, rest.join(" ")];
+};
+
 export async function createDimailMailboxForUser(userUuid: string) {
   const dbUser = await getUserBasicInfo({ uuid: userUuid });
   if (!dbUser) {
@@ -32,10 +37,14 @@ export async function createDimailMailboxForUser(userUuid: string) {
     `Create DIMAIL mailbox: ${userName}@${DIMAIL_MAILBOX_DOMAIN} for ${baseInfoUser.fullname}`,
   );
 
+  const [surName, givenName] = splitFullName(baseInfoUser.fullname);
+
   const mailboxInfos = await createMailbox({
     user_name: userName,
     domain: DIMAIL_MAILBOX_DOMAIN,
     displayName: baseInfoUser.fullname,
+    givenName,
+    surName,
   })
     .then(async (infos) => {
       // envoi email invitation avec password

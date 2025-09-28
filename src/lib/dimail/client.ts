@@ -19,7 +19,9 @@ if (!DIMAIL_API_TOKEN) {
 export interface DimailEmailParams {
   user_name: string;
   domain: string;
-  displayName?: string;
+  displayName: string;
+  givenName: string;
+  surName: string;
 }
 
 export interface DimailAliasParams {
@@ -92,9 +94,11 @@ export async function createMailbox({
   domain,
   user_name,
   displayName,
+  givenName,
+  surName,
 }: DimailEmailParams): Promise<DimailMailboxResult> {
   const payload = {
-    ...{ displayName, givenName: displayName, surName: displayName },
+    ...{ displayName, givenName, surName },
   };
   const res = await client.post<DimailMailboxResult>(
     `/domains/${encodeURIComponent(domain)}/mailboxes/${encodeURIComponent(user_name)}`,
