@@ -1,12 +1,8 @@
 fileignoreconfig:
-- filename: .env.development
-  checksum: 6050bdc0c24d4a45963695a35c09d91d541938320e1b4b21277430b609c4c494
 - filename: .env.test
-  checksum: 900db203fd9526bc60c45c4005ed5330093667f615489eada3436a7025ba5568
-- filename: src/utils/routes/routeTitles.ts
-  checksum: 4cb5e15f39d949ac003ac02cdb1682e395488aabd72fa7f7cd93f1033ae682fc
-- filename: src/utils/routes/routes.ts
-  checksum: 6e3813def93639bf0897cd5e4c6328a44bc373bf655e486803f89546c4c3d1a4
-scopeconfig:
-- scope: node
+  checksum: fd6fca10412ee1ed81d930e1e7a944586f56aca534412c43ef95f5381be9a97b
+- filename: package-lock.json
+  checksum: 6dcdbf6a4b272fd88b0adadec353916c6a543bde223706b6b3b575e35ba3d713
+- filename: src/server/queueing/workers/create-dimail-mailbox.spec.ts
+  checksum: 7961ed68360545e4e2c72bf9884e12943467175bdeed35b38bfc177613fc0b15
 version: "1.0"

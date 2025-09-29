@@ -214,7 +214,7 @@ export default async function Page() {
         }}
       />
       <hr />
-      <h2>OPI member</h2>
+      <h2>Dimail member</h2>
       <hr />
       <MemberPage
         {...sampleMember.member}

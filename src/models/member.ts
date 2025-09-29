@@ -362,6 +362,7 @@ export const memberBaseInfoSchema = memberSchema.pick({
   email_is_redirection: true,
   updated_at: true,
   competences: true,
+  legal_status: true,
   workplace_insee_code: true,
 });
 

@@ -7,6 +7,7 @@ import TurndownService from "turndown";
 import * as mdtohtml from "@/lib/mdtohtml";
 import {
   EmailCreatedEmail as EmailCreatedEmailType,
+  EmailCreatedDimail as EmailCreatedDimailType,
   EmailNoMoreContract,
   EmailEndingContract,
   EmailVariants,
@@ -32,6 +33,10 @@ import {
   EmailCreatedEmail,
   EmailCreatedEmailTitle,
 } from "@/server/views/templates/emails/EmailCreatedEmail/EmailCreatedEmail";
+import {
+  EmailCreatedDimail,
+  EmailCreatedDimailTitle,
+} from "@/server/views/templates/emails/EmailCreatedDimail/EmailCreatedDimail";
 import {
   LoginEmail,
   LoginEmailTitle,
@@ -84,6 +89,8 @@ const TEMPLATES_BY_TYPE: Record<
   ) => MattermostAccountCreatedEmail(params),
   EMAIL_CREATED_EMAIL: (params: EmailCreatedEmailType["variables"]) =>
     EmailCreatedEmail(params),
+  EMAIL_CREATED_DIMAIL: (params: EmailCreatedDimailType["variables"]) =>
+    EmailCreatedDimail(params),
   EMAIL_NO_MORE_CONTRACT_1_DAY: (params: EmailNoMoreContract["variables"]) =>
     NoMoreContractXDaysEmail(params),
   EMAIL_NO_MORE_CONTRACT_30_DAY: (params: EmailNoMoreContract["variables"]) =>
@@ -131,6 +138,7 @@ const SUBJECTS_BY_TYPE: Record<EmailProps["type"], string | SubjectFunction> = {
   EMAIL_LOGIN: LoginEmailTitle(),
   EMAIL_MATTERMOST_ACCOUNT_CREATED: MattermostAccountCreatedEmailTitle(),
   EMAIL_CREATED_EMAIL: EmailCreatedEmailTitle(),
+  EMAIL_CREATED_DIMAIL: EmailCreatedDimailTitle(),
   EMAIL_NO_MORE_CONTRACT_1_DAY: NoMoreContractXDaysEmailTitle(),
   EMAIL_NO_MORE_CONTRACT_30_DAY: NoMoreContractXDaysEmailTitle(),
   EMAIL_ENDING_CONTRACT_2_DAYS: DepartureReminderInXDaysEmailTitle({
@@ -177,6 +185,7 @@ const SUBJECTS_BY_TYPE: Record<EmailProps["type"], string | SubjectFunction> = {
 const MARKDOWN_BY_TYPE: Record<EmailProps["type"], boolean> = {
   EMAIL_LOGIN: false,
   EMAIL_CREATED_EMAIL: false,
+  EMAIL_CREATED_DIMAIL: false,
   EMAIL_MATTERMOST_ACCOUNT_CREATED: false,
   EMAIL_ENDING_CONTRACT_2_DAYS: false,
   EMAIL_ENDING_CONTRACT_15_DAYS: false,

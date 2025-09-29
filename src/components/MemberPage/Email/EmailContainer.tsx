@@ -5,7 +5,6 @@ import { fr } from "@codegouvfr/react-dsfr";
 import Accordion from "@codegouvfr/react-dsfr/Accordion";
 import Alert from "@codegouvfr/react-dsfr/Alert";
 import Badge from "@codegouvfr/react-dsfr/Badge";
-import Button from "@codegouvfr/react-dsfr/Button";
 import Table from "@codegouvfr/react-dsfr/Table";
 import { match } from "ts-pattern";
 
@@ -13,7 +12,6 @@ import BlocChangerMotDePasse from "./BlocChangerMotDePasse";
 import BlocConfigurerCommunicationEmail from "./BlocConfigurerCommunicationEmail";
 import BlocConfigurerEmailPrincipal from "./BlocConfigurerEmailPrincipal";
 import BlocConfigurerEmailSecondaire from "./BlocConfigurerEmailSecondaire";
-import BlocCreateEmail from "./BlocCreateEmail";
 import BlocEmailResponder from "./BlocEmailResponder";
 import BlocRedirection from "./BlocRedirection";
 import { WebMailButtons } from "./WebMailButtons";
@@ -28,6 +26,7 @@ import {
 } from "@/models/member";
 import { EMAIL_STATUS_READABLE_FORMAT } from "@/models/misc";
 import { EMAIL_PLAN_TYPE, OvhRedirection, OvhResponder } from "@/models/ovh";
+import { DimailCreateMailButton } from "./DimailCreateMailButton";
 
 const EmailLink = ({ email }: { email: string }) => (
   <a href={`mailto:${email}`}>{email}</a>
@@ -242,11 +241,13 @@ export default function EmailContainer({
     EmailStatusCode.EMAIL_CREATION_PENDING,
   ].includes(userInfos.primary_email_status);
 
+  const isDinumEmail = emailInfos?.emailPlan === EMAIL_PLAN_TYPE.EMAIL_PLAN_OPI;
+
   const rows = [
     // Email status
     emailInfos && emailStatusRow(emailInfos, userInfos),
-    // Spam status
-    emailInfos && emailSpamInfoRow(emailInfos),
+    // Spam status (ovh only)
+    !isDinumEmail && emailInfos && emailSpamInfoRow(emailInfos),
     // Redirections
     ...redirections.map((redirection) => redirectionRow(redirection)),
   ].filter((z) => !!z);
@@ -258,8 +259,6 @@ export default function EmailContainer({
     EmailStatusCode.EMAIL_REDIRECTION_PENDING,
     EmailStatusCode.EMAIL_VERIFICATION_WAITING,
   ];
-
-  const isMailOPI = emailInfos?.emailPlan === EMAIL_PLAN_TYPE.EMAIL_PLAN_OPI;
 
   return (
     <div className="fr-mb-14v">
@@ -332,36 +331,26 @@ export default function EmailContainer({
           data={rows}
         />
       ) : null}
-      {isMailOPI && (
+      {isDinumEmail ? (
         <>
           <BlocEmailConfiguration emailInfos={emailInfos} />
-          <BlocConfigurerCommunicationEmail userInfos={userInfos} />
         </>
-      )}
+      ) : isCurrentUser ? (
+        /* affiche la migration dimail que si c'est un email non dimail et que c'est l'utilisateur lui-même */
+        <DimailCreateMailButton
+          userUuid={userInfos.uuid}
+          userInfos={userInfos}
+        />
+      ) : null}
       {!emailIsBeingCreated && isCurrentUser && (
         <div className={fr.cx("fr-accordions-group")}>
-          {!isMailOPI &&
-            match(userInfos.primary_email_status)
-              .with(
-                EmailStatusCode.EMAIL_CREATION_WAITING,
-                EmailStatusCode.EMAIL_CREATION_PENDING,
-                () => null,
-              )
-              .otherwise(
-                () =>
-                  canCreateEmail && (
-                    <BlocCreateEmail
-                      hasPublicServiceEmail={hasPublicServiceEmail}
-                      userInfos={userInfos}
-                    />
-                  ),
-              )}
-
-          {!!emailInfos && !isMailOPI && (
-            <BlocEmailConfiguration emailInfos={emailInfos} />
+          {!!emailInfos && !isDinumEmail && (
+            <>
+              <BlocEmailConfiguration emailInfos={emailInfos} />
+            </>
           )}
 
-          {!isMailOPI &&
+          {!isDinumEmail &&
             emailInfos &&
             emailInfos.emailPlan === EMAIL_PLAN_TYPE.EMAIL_PLAN_BASIC && (
               <>
@@ -379,7 +368,7 @@ export default function EmailContainer({
               </>
             )}
 
-          {!isMailOPI && (
+          {!isDinumEmail && (
             <BlocChangerMotDePasse
               canChangePassword={canChangePassword}
               status={userInfos.primary_email_status}

@@ -99,6 +99,7 @@ export const userIncubatorAndTeams: FakeDataInterface = {
 export const testUsers: FakeDataInterface = {
   users: [
     {
+      uuid: "9f58ae81-3580-4d37-9334-a979dcc2372f",
       username: "membre.actif",
       fullname: "Membre Actif",
       github: "membre.actif",

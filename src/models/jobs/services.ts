@@ -98,3 +98,13 @@ export const UpdateSentryAccountDataSchema =
 export type UpdateSentryAccountDataSchemaType = z.infer<
   typeof UpdateSentryAccountDataSchema
 >;
+
+export const CreateDimailMailboxDataSchema =
+  MaintenanceWrapperDataSchema.extend({
+    userUuid: z.string().uuid(),
+    username: z.string(),
+    requestId: z.string().uuid(),
+  }).strict();
+export type CreateDimailAdressDataSchemaType = z.infer<
+  typeof CreateDimailMailboxDataSchema
+>;

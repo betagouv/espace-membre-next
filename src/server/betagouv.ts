@@ -3,7 +3,7 @@ import axios from "axios";
 import _ from "lodash";
 import ovh0 from "ovh";
 
-import { getDinumEmail } from "@/lib/kysely/queries/dinum";
+import { getDimailEmail } from "@/lib/kysely/queries/dimail";
 import { getAllUsersInfo } from "@/lib/kysely/queries/users";
 import { Job, JobWTTJ } from "@/models/job";
 import { memberBaseInfoToModel, userInfosToModel } from "@/models/mapper";
@@ -87,9 +87,9 @@ const betaOVH = {
     const promises: Promise<any>[] = [];
 
     const email = `${id}@${config.domain}`;
-    const dinumEmail = await getDinumEmail(email);
+    const dimailEmail = await getDimailEmail(email);
 
-    if (dinumEmail) {
+    if (dimailEmail) {
       return {
         email,
         emailPlan: EMAIL_PLAN_TYPE.EMAIL_PLAN_OPI,
@@ -397,8 +397,8 @@ const betaOVH = {
       | { from?: string; to: string },
   ): Promise<OvhRedirection[]> => {
     const email = `${query.from}@${config.domain}`;
-    const isDinumEmail = await getDinumEmail(email);
-    if (isDinumEmail) {
+    const isDimailEmail = await getDimailEmail(email);
+    if (isDimailEmail) {
       return [];
     }
     if (!query.from && !query.to) {
