@@ -26,6 +26,9 @@ export async function createDimailMailboxForUser(userUuid: string) {
   if (!dbUser) {
     throw new Error(`User ${userUuid} not found`);
   }
+  if (!dbUser.secondary_email) {
+    throw new Error(`User ${userUuid} has no secondary_email`);
+  }
 
   const baseInfoUser = memberBaseInfoToModel(dbUser);
 
@@ -91,11 +94,11 @@ export async function createDimailMailboxForUser(userUuid: string) {
     baseInfoUser.primary_email !== mailboxInfos.email
   ) {
     const legacyUserName = baseInfoUser.primary_email.split("@")[0];
-    console.log(
+    console.info(
       `Create DIMAIL alias: ${legacyUserName}@${DIMAIL_MAILBOX_DOMAIN} -> ${mailboxInfos.email}`,
     );
     await createAlias({
-      user_name: userName,
+      user_name: legacyUserName,
       domain: DIMAIL_MAILBOX_DOMAIN,
       destination: mailboxInfos.email,
     });
@@ -128,13 +131,13 @@ export async function createDimailMailboxForUser(userUuid: string) {
 export async function createDimailMailbox(
   job: PgBoss.Job<CreateDimailAdressDataSchemaType>,
 ) {
-  console.log(
+  console.info(
     `Create dimail mailbox for ${job.data.userUuid}: ${job.data.username}`,
     job.id,
     job.name,
   );
   const email = await createDimailMailboxForUser(job.data.userUuid);
-  console.log(
-    `the dimail mailbox has been created for ${job.data.userUuid}: ${email}`,
+  console.info(
+    `The dimail mailbox has been created for ${job.data.userUuid}: ${email}`,
   );
 }

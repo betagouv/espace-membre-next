@@ -33,6 +33,7 @@ interface FakeDataTeam {
 }
 
 interface FakeDataUser {
+  uuid?: string;
   fullname?: string;
   github?: string;
   role?: string;
@@ -159,6 +160,7 @@ const createUser = async (
 ) => {
   const sixMinutesInMs: number = 6 * 1000 * 60;
   const dbUser = {
+    uuid: originalData.uuid,
     username: originalData.username,
     fullname: originalData.fullname || originalData.username,
     primary_email:

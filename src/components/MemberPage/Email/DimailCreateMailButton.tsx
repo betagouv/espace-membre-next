@@ -4,6 +4,7 @@ import Accordion from "@codegouvfr/react-dsfr/Accordion";
 import { memberSchemaType } from "@/models/member";
 import { getDimailEmail } from "@/app/api/member/actions/get-dimail-email";
 import Button from "@codegouvfr/react-dsfr/Button";
+import * as Sentry from "@sentry/nextjs";
 
 interface Props {
   userUuid: string;
@@ -38,6 +39,7 @@ export const DimailCreateMailButton = ({ userUuid, userInfos }: Props) => {
       setMessage(
         `Erreur lors de la création de l'email ${userInfos.secondary_email}`,
       );
+      Sentry.captureException(error);
       // Optionnel : afficher un message d'erreur
     } finally {
       setIsLoading(false);
