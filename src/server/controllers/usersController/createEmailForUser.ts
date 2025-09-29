@@ -1,23 +1,16 @@
-import crypto from "crypto";
 import _ from "lodash";
 
 import { addEvent } from "@/lib/events";
 import { db } from "@/lib/kysely";
-import { getAllStartups } from "@/lib/kysely/queries";
 import { getUserInfos } from "@/lib/kysely/queries/users";
 import { EventCode } from "@/models/actionEvent/actionEvent";
 import { userInfosToModel } from "@/models/mapper";
-import { Domaine, EmailStatusCode } from "@/models/member";
-import {
-  EMAIL_PLAN_TYPE,
-  OvhExchangeCreationData,
-  OvhProCreationData,
-} from "@/models/ovh";
+import { EmailStatusCode } from "@/models/member";
+import { EMAIL_PLAN_TYPE } from "@/models/ovh";
 import config from "@/server/config";
 import BetaGouv from "@betagouv";
 import * as utils from "@controllers/utils";
-
-const INCUBATORS_USING_EXCHANGE = ["gip-inclusion"];
+import { createMailbox, DimailEmailParams } from "@/lib/dimail/client";
 
 export async function createEmailForUser(
   { username }: { username: string },
@@ -57,6 +50,7 @@ export async function createEmailForUser(
       );
     }
   }
+  // todo
   let emailIsRecreated = false;
   if (user) {
     if (user.userInfos.email_is_redirection) {
@@ -66,118 +60,28 @@ export async function createEmailForUser(
     }
     emailIsRecreated =
       user.userInfos.primary_email_status === EmailStatusCode.EMAIL_DELETED;
-  } else {
-    await db
-      .insertInto("users")
-      .values({
-        username,
-        fullname: username,
-        domaine: Domaine.AUTRE,
-        primary_email_status: EmailStatusCode.EMAIL_UNSET,
-        role: "",
-      })
-      .execute();
+    await createEmail(username, currentUser, emailIsRecreated);
   }
-  await createEmail(username, currentUser, emailIsRecreated);
 }
 
-// export async function createEmailForUser(req, res) {
-//     const username = req.sanitize(req.params.username);
-//     const email = req.sanitize(req.body.to_email);
-
-//     try {
-//         await createEmailAndUpdateSecondaryEmail(
-//             { username, email },
-//             req.auth.id
-//         );
-//         req.flash("message", "Le compte email a bien été créé.");
-//         res.redirect(`/community/${username}`);
-//     } catch (err) {
-//         console.error(err);
-
-//         req.flash("error", err.message);
-//         res.redirect("/community");
-//     }
-// }
-
-async function getEmailCreationParams(username: string): Promise<
-  | {
-      planType: EMAIL_PLAN_TYPE.EMAIL_PLAN_EXCHANGE;
-      creationData: OvhExchangeCreationData;
-    }
-  | { planType: EMAIL_PLAN_TYPE.EMAIL_PLAN_BASIC; password: string }
-  | {
-      planType: EMAIL_PLAN_TYPE.EMAIL_PLAN_PRO;
-      creationData: OvhProCreationData;
-    }
-> {
-  const [userInfo, startupsInfos] = await Promise.all([
-    getUserInfos({ username }),
-    getAllStartups(),
-  ]);
+async function getEmailCreationParams(username: string): Promise<{
+  planType: EMAIL_PLAN_TYPE.EMAIL_PLAN_OPI;
+  creationData: DimailEmailParams;
+}> {
+  const userInfo = await getUserInfos({ username });
 
   if (!userInfo?.missions) {
     throw new Error(`User ${userInfo?.username} has no mission`);
   }
 
-  const latestMission = userInfo.missions.reduce((a, v) =>
-    //@ts-ignore
-    !v.end || v.end > a.end ? v : a,
-  );
-  // todo see what to do with startups
-  let needsExchange = false;
-  for (const startupUuid of latestMission?.startups || []) {
-    const startup = _.find(startupsInfos, { uuid: startupUuid });
-    const incubator = startup?.incubator_id;
-    if (incubator) {
-      const incubatorInfo = await db
-        .selectFrom("incubators")
-        .select("ghid")
-        .where("uuid", "=", incubator)
-        .executeTakeFirst();
-      if (
-        incubatorInfo &&
-        _.includes(INCUBATORS_USING_EXCHANGE, incubatorInfo.ghid)
-      ) {
-        needsExchange = true;
-      }
-    }
-  }
-
-  if (needsExchange) {
-    const displayName = userInfo?.fullname ?? "";
-    const [firstName, ...lastNames] = displayName.split(" ");
-    const lastName = lastNames.join(" ");
-
-    return {
-      planType: EMAIL_PLAN_TYPE.EMAIL_PLAN_EXCHANGE,
-      creationData: {
-        displayName,
-        firstName,
-        lastName,
-      },
-    };
-  } else if (config.EMAIL_DEFAULT_PLAN === EMAIL_PLAN_TYPE.EMAIL_PLAN_BASIC) {
-    const password = crypto.randomBytes(16).toString("base64").slice(0, -2);
-
-    return {
-      planType: EMAIL_PLAN_TYPE.EMAIL_PLAN_BASIC,
-      password,
-    };
-  } else {
-    const displayName = userInfo?.fullname ?? "";
-    const [firstName, ...lastNames] = displayName.split(" ");
-    const lastName = lastNames.join(" ");
-
-    return {
-      planType: EMAIL_PLAN_TYPE.EMAIL_PLAN_PRO,
-      creationData: {
-        displayName,
-        firstName,
-        lastName,
-      },
-    };
-  }
+  return {
+    planType: EMAIL_PLAN_TYPE.EMAIL_PLAN_OPI,
+    creationData: {
+      domain: process.env.DIMAIL_MAILBOX_DOMAIN || "beta.gouv.fr",
+      user_name: userInfo.username,
+      displayName: userInfo.fullname,
+    },
+  };
 }
 
 export async function createEmail(
@@ -191,20 +95,7 @@ export async function createEmail(
 
   const emailCreationParams = await getEmailCreationParams(username);
 
-  switch (emailCreationParams.planType) {
-    case EMAIL_PLAN_TYPE.EMAIL_PLAN_EXCHANGE:
-      await BetaGouv.createEmailForExchange(
-        username,
-        emailCreationParams.creationData,
-      );
-      break;
-    case EMAIL_PLAN_TYPE.EMAIL_PLAN_BASIC:
-      await BetaGouv.createEmail(username, emailCreationParams.password);
-      break;
-    case EMAIL_PLAN_TYPE.EMAIL_PLAN_PRO:
-      await BetaGouv.createEmailPro(username, emailCreationParams.creationData);
-      break;
-  }
+  await createMailbox(emailCreationParams.creationData);
 
   await db
     .updateTable("users")
