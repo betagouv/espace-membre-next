@@ -1,6 +1,8 @@
 "use client";
 
 import AutoComplete, { OptionType } from "@/components/AutoComplete";
+import { CardMember } from "@/components/Dashboard/DashboardPage";
+import { fr } from "@codegouvfr/react-dsfr";
 import Accordion from "@codegouvfr/react-dsfr/Accordion";
 import { useEffect, useState } from "react";
 
@@ -19,7 +21,6 @@ const allActus: Actu[] = [
 
 const isValidActu = (actu: Actu, filters: ThematiqueType[]) => {
   if (filters.length === 0) return true;
-  let isValid = false;
   const results = filters.map((f) => {
     console.log(f.group, actu.thematiques, actu.incubator, f.value);
     if (
@@ -31,7 +32,6 @@ const isValidActu = (actu: Actu, filters: ThematiqueType[]) => {
     if (f.group === "incubator" && actu.incubator === f.value) return true;
     return false;
   });
-  console.log("isValid", results);
 
   return results.some((e) => !!e);
 };
@@ -79,7 +79,7 @@ const ActuProduits = () => {
   );
 };
 
-export function Actu() {
+export function Actu({ lastMembers }: { lastMembers: any[] }) {
   return (
     <div>
       <br />
@@ -88,8 +88,19 @@ export function Actu() {
       <Accordion label="Actu des produits" defaultExpanded={true}>
         <ActuProduits />
       </Accordion>
-      {/*<Accordion label="Actu des membres (wip)">-</Accordion>
-      <Accordion label="Actu de la documentation (wip)">-</Accordion>
+      {(lastMembers.length && (
+        <Accordion label="Les nouveaux membres">
+          <div className={fr.cx("fr-grid-row", "fr-grid-row--gutters")}>
+            {lastMembers.slice(0, 9).map((m) => (
+              <div key={m.username} className={fr.cx("fr-col-4")}>
+                <CardMember member={m} />
+              </div>
+            ))}
+          </div>
+        </Accordion>
+      )) ||
+        null}
+      {/*<Accordion label="Actu de la documentation (wip)">-</Accordion>
       <Accordion label="Actu des standards (wip)">-</Accordion>*/}
     </div>
   );
