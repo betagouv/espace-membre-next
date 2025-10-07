@@ -384,6 +384,6 @@ export const getLatests = (db: Kysely<DB> = database) => {
   return getAllUsersInfoQuery(db)
     .select((eb) => [withStartups(eb)])
     .orderBy("users.created_at", "desc")
-    .limit(10)
+    .limit(20)
     .execute();
 };
