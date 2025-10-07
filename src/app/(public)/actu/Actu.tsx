@@ -4,7 +4,7 @@ import AutoComplete, { OptionType } from "@/components/AutoComplete";
 import { CardMember } from "@/components/Dashboard/DashboardPage";
 import { fr } from "@codegouvfr/react-dsfr";
 import Accordion from "@codegouvfr/react-dsfr/Accordion";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 
 import productUpdates from "./products-updates.json";
 import fichesUpdates from "./fiches-updates.json";
@@ -48,9 +48,9 @@ type Actu = {
 };
 
 const isValidActu = (actu: Actu, filters: ThematiqueType[]) => {
-  if (filters && filters.length === 0) return true;
+  if (!filters || filters.length === 0) return true;
   const results = filters.map((f) => {
-    console.log(f.group, actu.thematiques, actu.incubator, f.value);
+    //console.log(f.group, actu.thematiques, actu.incubator, f.value);
     if (
       f.group === "thematique" &&
       (actu.thematiques ? actu.thematiques.includes(f.value) : true)
@@ -66,8 +66,8 @@ const isValidActu = (actu: Actu, filters: ThematiqueType[]) => {
 };
 
 const ActuProduits = ({ startups, incubators }) => {
-  const [changes, setChanges] = useState<Actu[] | null>(null);
-  // const [filters, setFilters] = useState<any[] | null>(null);
+  //const [changes, setChanges] = useState<Actu[] | null>(null);
+  const [filters, setFilters] = useState<any[] | null>(null);
   const options: ThematiqueType[] = [
     ...thematiquesUpdates.map((t) => ({
       value: t,
@@ -103,21 +103,36 @@ const ActuProduits = ({ startups, incubators }) => {
 
   const onFilterChange = (filters, event) => {
     if (!filters.length) {
-      setChanges(null);
+      setFilters(null);
       return;
     }
-    const newChanges = getChanges(filters);
-    if (!newChanges) {
-      setChanges([]);
-      return;
-    }
-    setChanges(newChanges);
+    setFilters(filters);
+    // if (!filters.length) {
+    //   setChanges(null);
+    //   return;
+    // }
+    // const newChanges = getChanges(filters);
+    // if (!newChanges) {
+    //   setChanges([]);
+    //   return;
+    // }
+    // setChanges(newChanges);
   };
+
+  const changes = getChanges(filters);
 
   const selectStartup = (startupId) => {
     console.log("selectStartup", startupId);
-    const changes = getChanges([{ group: "startup", value: startupId }]);
-    setChanges(changes);
+    const startup = startups.find((s) => s.ghid === startupId);
+    setFilters([
+      {
+        group: "startup",
+        value: startupId,
+        label: (startup && startup.name) || startupId,
+      },
+    ]);
+    //const changes = getChanges([{ group: "startup", value: startupId }]);
+    //setChanges(changes);
   };
 
   return (
@@ -129,12 +144,12 @@ const ActuProduits = ({ startups, incubators }) => {
         options={options}
         onSelect={onFilterChange}
         defaultValue={[]}
-        // value={filters}
+        value={filters || []}
         groupBy={(o) => o.group}
       />
       <br />
       <br />
-      {changes ? (
+      {filters ? (
         changes.length ? (
           changes.slice(0, 25).map((change, i) => {
             return (
@@ -214,7 +229,7 @@ export function Actu({
       {(lastMembers && lastMembers.length && (
         <Accordion label="Les nouveaux membres">
           <div className={fr.cx("fr-grid-row", "fr-grid-row--gutters")}>
-            {lastMembers.slice(0, 9).map((m) => (
+            {lastMembers.slice(0, 18).map((m) => (
               <div key={m.username} className={fr.cx("fr-col-4")}>
                 <CardMember member={m} />
               </div>

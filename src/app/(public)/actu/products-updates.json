@@ -132,7 +132,7 @@
   },
   {
     "id": "aplus",
-    "updates": "```markdown\n### Produit\n*   **Emails de bienvenue:** Correction de l'affichage sur grands écrans et du texte.\n*   **Export anonymisé:** Ajout du champ réseau des demandes et d'un champ manquant.\n*   **Gestion des demandes:** Suppression des données des mandats avec les demandes, affichage de toutes les demandes non effacées.\n*   **Connexion:** Activation de la connexion par mot de passe pour tous.\n*   **CGU & Politique de confidentialité:** Mise à jour des CGU (version 20250801) et de la politique de confidentialité.\n*   **Désactivation/Réactivation:** Correction d'un bug lié à la désactivation après réactivation.\n*   **Suppression de fichiers:** Correction de la suppression des fichiers.\n*   **Emails:** Arrêt de l'envoi de certains emails.\n*   **Métadonnées des mots de passe:** Ajout de l'export des métadonnées.\n\n### Technique\n*   **PostgreSQL:** Mise à jour vers la version 42.7.8.\n*   **Dépendances Play:** Mise à jour de `play-ahc-ws`, `play-filters-helpers` et autres vers la version 3.0.9.\n```",
+    "updates": "### Produit\n*   **Emails de bienvenue:** Correction de l'affichage sur grands écrans et du texte.\n*   **Export anonymisé:** Ajout du champ réseau des demandes et d'un champ manquant.\n*   **Gestion des demandes:** Suppression des données des mandats avec les demandes, affichage de toutes les demandes non effacées.\n*   **Connexion:** Activation de la connexion par mot de passe pour tous.\n*   **CGU & Politique de confidentialité:** Mise à jour des CGU (version 20250801) et de la politique de confidentialité.\n*   **Désactivation/Réactivation:** Correction d'un bug lié à la désactivation après réactivation.\n*   **Suppression de fichiers:** Correction de la suppression des fichiers.\n*   **Emails:** Arrêt de l'envoi de certains emails.\n*   **Métadonnées des mots de passe:** Ajout de l'export des métadonnées.\n\n### Technique\n*   **PostgreSQL:** Mise à jour vers la version 42.7.8.\n*   **Dépendances Play:** Mise à jour de `play-ahc-ws`, `play-filters-helpers` et autres vers la version 3.0.9.",
     "thematiques": ["Social", "Inclusion numérique"],
     "incubator": "anct"
   },
@@ -186,7 +186,7 @@
   },
   {
     "id": "ca-se",
-    "updates": "```markdown\n### Produit\n- Le nom du produit a été changé de CaSE à TBS-NG (Tableau de bord spatial nouvelle génération).\n- Ajout de nouvelles phases au projet : construction (début 2025-09-01), accélération (début 2025-11-01) et alumni (début 2026-02-28).\n- Dates de certains événements mises à jour (lancement produit, réunions de comité).\n- Ajout de commentaires aux réunions de comité concernant le budget et les ressources.\n\n### Technique\n- Aucune modification technique n'est mentionnée dans ce rapport.\n```",
+    "updates": "### Produit\n- Le nom du produit a été changé de CaSE à TBS-NG (Tableau de bord spatial nouvelle génération).\n- Ajout de nouvelles phases au projet : construction (début 2025-09-01), accélération (début 2025-11-01) et alumni (début 2026-02-28).\n- Dates de certains événements mises à jour (lancement produit, réunions de comité).\n- Ajout de commentaires aux réunions de comité concernant le budget et les ressources.\n\n### Technique\n- Aucune modification technique n'est mentionnée dans ce rapport.",
     "thematiques": ["Espace"],
     "incubator": "fabnumdef"
   },
@@ -234,7 +234,7 @@
   },
   {
     "id": "civils-de-la-defense",
-    "updates": "```markdown\n### Produit\n- Modification des libellés liés au \"compte admin\".\n- Remplacement du champ de saisie de localisation par une liste déroulante.\n- Réorganisation des paramètres.\n- Pré-sélection des candidatures d'emploi.\n- Masquage du bouton \"Postuler\" si une candidature a déjà été soumise.\n- Suppression de l'onglet \"Mon profil\".\n- Possibilité de supprimer les avantages.\n- Ajout d'une méthode pour contourner le mode maintenance.\n- Importation DGA vers CVD.\n\n### Technique\n- Amélioration de la gestion des téléchargements : tentatives de relance en cas d'échec et contournement du mode maintenance pour les téléchargements.\n```",
+    "updates": "### Produit\n- Modification des libellés liés au \"compte admin\".\n- Remplacement du champ de saisie de localisation par une liste déroulante.\n- Réorganisation des paramètres.\n- Pré-sélection des candidatures d'emploi.\n- Masquage du bouton \"Postuler\" si une candidature a déjà été soumise.\n- Suppression de l'onglet \"Mon profil\".\n- Possibilité de supprimer les avantages.\n- Ajout d'une méthode pour contourner le mode maintenance.\n- Importation DGA vers CVD.\n\n### Technique\n- Amélioration de la gestion des téléchargements : tentatives de relance en cas d'échec et contournement du mode maintenance pour les téléchargements.",
     "thematiques": ["Travail / Emploi"],
     "incubator": "fabnumdef"
   },
@@ -282,7 +282,7 @@
   },
   {
     "id": "data.etat",
-    "updates": "```markdown\n### Produit\n- Mise à jour de l'URL des statistiques : passage de `superset.databretagne.fr` à `superset.dataregion.fr` avec une nouvelle clé de lien permanent.\n- URL de la page de statistiques modifiée.\n\n### Technique\n- Changement d'URL pour les statistiques, impactant potentiellement les liens et intégrations existants.\n```",
+    "updates": "### Produit\n- Mise à jour de l'URL des statistiques : passage de `superset.databretagne.fr` à `superset.dataregion.fr` avec une nouvelle clé de lien permanent.\n- URL de la page de statistiques modifiée.\n\n### Technique\n- Changement d'URL pour les statistiques, impactant potentiellement les liens et intégrations existants.",
     "thematiques": [
       "Open-Data",
       "Administratif",
@@ -427,7 +427,7 @@
   },
   {
     "id": "espace-membre",
-    "updates": "```markdown\n### Produit\n- Correction : Bouton de migration dimail fonctionnel.\n- Correction : Connexion par email insensible à la casse.\n- Suppression : Page \"keskispasse\" supprimée.\n- Nouvelle fonctionnalité : Ajout d'informations de support pour les emails OPI.\n- Nouvelle fonctionnalité : Ajout d'une entrée de menu \"Communauté/Observatoire\".\n- Correction : Message de date de fin de contrat corrigé.\n- Correction : Masquage de l'inscription aux formations e-learning.\n- Mise à jour : dsfr mis à jour.\n\n### Technique\n- Configuration Prettier/ESLint corrigée.\n- Suppression de code inutilisé.\n- Mise à jour de checklist.yml (plusieurs occurrences).\n```",
+    "updates": "### Produit\n- Correction : Bouton de migration dimail fonctionnel.\n- Correction : Connexion par email insensible à la casse.\n- Suppression : Page \"keskispasse\" supprimée.\n- Nouvelle fonctionnalité : Ajout d'informations de support pour les emails OPI.\n- Nouvelle fonctionnalité : Ajout d'une entrée de menu \"Communauté/Observatoire\".\n- Correction : Message de date de fin de contrat corrigé.\n- Correction : Masquage de l'inscription aux formations e-learning.\n- Mise à jour : dsfr mis à jour.\n\n### Technique\n- Configuration Prettier/ESLint corrigée.\n- Suppression de code inutilisé.\n- Mise à jour de checklist.yml (plusieurs occurrences).",
     "thematiques": ["Administratif"],
     "incubator": "dinum"
   },
@@ -488,7 +488,7 @@
   },
   {
     "id": "fondation",
-    "updates": "```markdown\n### Produit\n- **Rapports:** Récupération et affichage des pièces jointes améliorés. Correction de l'URL des pièces jointes.\n- **Nominations:** Ajout d'un filtre pour les dossiers de nomination.\n- **Pièces jointes:** Confirmation de suppression d'une pièce jointe ajoutée.\n- **Refonte Front:** Refonte complète de l'interface client.\n- **Transparence:** Affectation de la transparence aux présidents pour l'été 2025.\n- **Observateurs:** Correction de l'import des observateurs.\n- **Divers:** Retours sprint 2 et standup du 23/09/2025 intégrés.\n\n### Technique\n- Mise à jour de la configuration de déploiement front de production.\n```",
+    "updates": "### Produit\n- **Rapports:** Récupération et affichage des pièces jointes améliorés. Correction de l'URL des pièces jointes.\n- **Nominations:** Ajout d'un filtre pour les dossiers de nomination.\n- **Pièces jointes:** Confirmation de suppression d'une pièce jointe ajoutée.\n- **Refonte Front:** Refonte complète de l'interface client.\n- **Transparence:** Affectation de la transparence aux présidents pour l'été 2025.\n- **Observateurs:** Correction de l'import des observateurs.\n- **Divers:** Retours sprint 2 et standup du 23/09/2025 intégrés.\n\n### Technique\n- Mise à jour de la configuration de déploiement front de production.",
     "thematiques": ["Justice", "Démocratie", "Travail / Emploi"],
     "incubator": "justice"
   },
@@ -530,7 +530,7 @@
   },
   {
     "id": "guichet-territorial-pour-la-transition-ecologique",
-    "updates": "```markdown\n### Produit\n- La phase du projet est passée de \"investigation\" à \"accélération\".\n- Ajout de la description du produit TerriSTORY® accompagné par le guichet FINDPE : plateforme open source pour la transition écologique des territoires (diagnostic, trajectoires, pilotage).\n- Objectif : déploiement national du guichet.\n\n### Technique\n- Mise à jour de la description du projet dans le fichier `content/_startups/guichet-territorial-pour-la-transition-ecologique.md`.\n```",
+    "updates": "### Produit\n- La phase du projet est passée de \"investigation\" à \"accélération\".\n- Ajout de la description du produit TerriSTORY® accompagné par le guichet FINDPE : plateforme open source pour la transition écologique des territoires (diagnostic, trajectoires, pilotage).\n- Objectif : déploiement national du guichet.\n\n### Technique\n- Mise à jour de la description du projet dans le fichier `content/_startups/guichet-territorial-pour-la-transition-ecologique.md`.",
     "thematiques": ["Écologie", "Territoires", "Collectivités"],
     "incubator": "anct"
   },
@@ -577,7 +577,7 @@
   },
   {
     "id": "jacepair",
-    "updates": "```markdown\n### Produit\n*   **Nom :** JACEPAIR\n*   **Mission :** Faciliter la recherche juridique.\n*   **Type d'utilisateurs :** État.\n*   **Incubateur :** Alliance.\n*   **Phases :**\n    *   Investigation (début : 2025-05-15)\n    *   Construction (début : 2025-09-15)\n*   **Événement :** Lancement du produit (2025-09-12).\n*   **Contact :** timothee.paris@conseil-etat.fr\n*   **Problème adressé :** Difficultés technologiques et méthodologiques dans la recherche juridique française, surcharge de travail des magistrats, inégalité d'accès à l'expertise.\n*   **Solution :** Développement d'une IA spécialisée dans le raisonnement juridique français, entraînée sur la logique du Conseil d'État.\n\n### Technique\n*   Développement d'un modèle d'IA spécialisé (JACEPAIR) via *mid-training* et apprentissage par renforcement.\n*   Architecture prévoyant du RAG (Retrieval-Augmented Generation) pour adapter le modèle aux besoins spécifiques de chaque administration.\n*   Mutualisation de la brique technologique centrale pour l'ensemble de l'écosystème juridique public français.\n```",
+    "updates": "### Produit\n*   **Nom :** JACEPAIR\n*   **Mission :** Faciliter la recherche juridique.\n*   **Type d'utilisateurs :** État.\n*   **Incubateur :** Alliance.\n*   **Phases :**\n    *   Investigation (début : 2025-05-15)\n    *   Construction (début : 2025-09-15)\n*   **Événement :** Lancement du produit (2025-09-12).\n*   **Contact :** timothee.paris@conseil-etat.fr\n*   **Problème adressé :** Difficultés technologiques et méthodologiques dans la recherche juridique française, surcharge de travail des magistrats, inégalité d'accès à l'expertise.\n*   **Solution :** Développement d'une IA spécialisée dans le raisonnement juridique français, entraînée sur la logique du Conseil d'État.\n\n### Technique\n*   Développement d'un modèle d'IA spécialisé (JACEPAIR) via *mid-training* et apprentissage par renforcement.\n*   Architecture prévoyant du RAG (Retrieval-Augmented Generation) pour adapter le modèle aux besoins spécifiques de chaque administration.\n*   Mutualisation de la brique technologique centrale pour l'ensemble de l'écosystème juridique public français.",
     "thematiques": [],
     "incubator": "alliance"
   },
@@ -733,7 +733,7 @@
   },
   {
     "id": "mon.espace.collectivite",
-    "updates": "```markdown\n### Produit\n*   **Onboarding :** Suppression du modal d'onboarding.\n*   **Page d'accueil :**\n    *   Mise à jour du wording de la bannière UV.\n    *   Changement de logo Sorbonne.\n    *   Mise à jour des images et du texte (PUI).\n*   **Tutoriels :** Mise à jour du tutoriel pour les conseillers SOSPonts.\n*   **SOSP :** Modification du fichier d'aide pour les nouveaux conseillers.\n\n### Technique\n*   Intégration des modifications liées à l'onboarding et à la page d'accueil.\n*   Mise à jour des dépendances et du code pour supporter les nouvelles fonctionnalités.\n```",
+    "updates": "### Produit\n*   **Onboarding :** Suppression du modal d'onboarding.\n*   **Page d'accueil :**\n    *   Mise à jour du wording de la bannière UV.\n    *   Changement de logo Sorbonne.\n    *   Mise à jour des images et du texte (PUI).\n*   **Tutoriels :** Mise à jour du tutoriel pour les conseillers SOSPonts.\n*   **SOSP :** Modification du fichier d'aide pour les nouveaux conseillers.\n\n### Technique\n*   Intégration des modifications liées à l'onboarding et à la page d'accueil.\n*   Mise à jour des dépendances et du code pour supporter les nouvelles fonctionnalités.",
     "thematiques": ["Collectivités"],
     "incubator": "anct"
   },
@@ -769,7 +769,7 @@
   },
   {
     "id": "nis2",
-    "updates": "```markdown\n### Produit\n- Modification de la description.\n- Mise à jour du lien de contact du centre d'aide.\n- Utilisation de `<lab-anssi-presentation-anssi>`.\n\n### Technique\n- Mise à jour de Storybook en version `7.6.20`.\n- Mise à jour de Vitest en version `3.2.4`.\n- Mise à jour de Vite en version `6.3.6`.\n- Mise à jour d'Esbuild et Vitest.\n- Mise à jour de `form-data` en version `4.0.4`.\n```",
+    "updates": "### Produit\n- Modification de la description.\n- Mise à jour du lien de contact du centre d'aide.\n- Utilisation de `<lab-anssi-presentation-anssi>`.\n\n### Technique\n- Mise à jour de Storybook en version `7.6.20`.\n- Mise à jour de Vitest en version `3.2.4`.\n- Mise à jour de Vite en version `6.3.6`.\n- Mise à jour d'Esbuild et Vitest.\n- Mise à jour de `form-data` en version `4.0.4`.",
     "thematiques": ["Sécurité informatique"],
     "incubator": "lab-innov-anssi"
   },
@@ -799,7 +799,7 @@
   },
   {
     "id": "pacoupa",
-    "updates": "```markdown\n### Produit\n- Correction de bugs concernant l'URL des pages.\n- Ajout et test de la route API `/api/stats` pour les statistiques.\n- Correction du cronjob.\n- Amélioration de la gestion des bâtiments construits après 2000.\n- Diverses corrections de bugs (ballon électrique, retour).\n\n### Technique\n- Correction de problèmes de linting.\n```",
+    "updates": "### Produit\n- Correction de bugs concernant l'URL des pages.\n- Ajout et test de la route API `/api/stats` pour les statistiques.\n- Correction du cronjob.\n- Amélioration de la gestion des bâtiments construits après 2000.\n- Diverses corrections de bugs (ballon électrique, retour).\n\n### Technique\n- Correction de problèmes de linting.",
     "thematiques": ["Logement", "Écologie"],
     "incubator": "ademe"
   },
@@ -1018,7 +1018,7 @@
   },
   {
     "id": "sites-faciles",
-    "updates": "```markdown\n### Produit\n*   **Authentification:** Désactivation possible de la connexion par mot de passe.\n*   **Tutoriels:** Récupération de l'image de prévisualisation.\n*   **Installation:** Possibilité d'installer le site dans un sous-répertoire.\n*   **Médias:** Support des GIFs animés.\n*   **Accessibilité:** Corrections suite à l'audit d'accessibilité.\n\n### Technique\n*   **Sauvegarde/Restauration:** Ajout de scripts de sauvegarde et restauration.\n*   **Dépendances:** Mise à jour des dépendances (plusieurs fois).\n*   **CI/CD:** Publication de l'image Docker avec le tag de release.\n*   **Migrations:** Regroupement des migrations jusqu'à Juillet 2025.\n*   **Audit:** Ajout de recettes pour l'audit du code.\n*   **Contenu:** Mise à jour du contenu.\n```",
+    "updates": "### Produit\n*   **Authentification:** Désactivation possible de la connexion par mot de passe.\n*   **Tutoriels:** Récupération de l'image de prévisualisation.\n*   **Installation:** Possibilité d'installer le site dans un sous-répertoire.\n*   **Médias:** Support des GIFs animés.\n*   **Accessibilité:** Corrections suite à l'audit d'accessibilité.\n\n### Technique\n*   **Sauvegarde/Restauration:** Ajout de scripts de sauvegarde et restauration.\n*   **Dépendances:** Mise à jour des dépendances (plusieurs fois).\n*   **CI/CD:** Publication de l'image Docker avec le tag de release.\n*   **Migrations:** Regroupement des migrations jusqu'à Juillet 2025.\n*   **Audit:** Ajout de recettes pour l'audit du code.\n*   **Contenu:** Mise à jour du contenu.",
     "thematiques": [
       "Outil technique",
       "Inclusion numérique",
