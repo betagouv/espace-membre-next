@@ -53,8 +53,9 @@ export default async function Page() {
     // },
   ];
   return (
-    <div className={fr.cx("fr-container", "fr-pb-6w")}>
-      <h2 className={fr.cx("fr-pt-4w")}>Demandes d'accès outils</h2>
+    <div className={fr.cx("fr-container")}>
+      <h2 className={fr.cx("fr-pt-2w")}>Demandes d'accès outils</h2>
+
       {services.map((service) => (
         <div
           key={service.serviceName}
@@ -105,7 +106,7 @@ export default async function Page() {
               noIcon={true}
               titleAs="h6"
               imageSvg={false}
-              imageUrl={`static/images/${service.serviceName}.png`}
+              imageUrl={`/static/images/${service.serviceName}.png`}
               linkProps={{
                 href: `/services/${service.serviceName}`,
               }}
@@ -113,6 +114,34 @@ export default async function Page() {
           </div>
         </div>
       ))}
+      <div
+        key="airtable"
+        className={fr.cx("fr-grid-row", "fr-grid-row--gutters")}
+      >
+        <div className={fr.cx("fr-col-6")}>
+          <Tile
+            small={true}
+            title={"Autres demandes"}
+            desc={
+              <div>
+                Pour les accès scalingo, les demandes de délégation DNS et
+                autres besoins;
+                <br />
+                <br />
+                Utiliser le mot de passse "hellobeta" pour accéder au formulaire
+              </div>
+            }
+            orientation="horizontal"
+            noIcon={true}
+            titleAs="h6"
+            imageSvg={false}
+            imageUrl={`/static/images/logo-betagouv.jpg`}
+            linkProps={{
+              href: `https://airtable.com/appmmy7DR3T8jqsTx/pagPeUwMDA7PskrDQ/form`,
+            }}
+          />
+        </div>
+      </div>
     </div>
   );
 }
