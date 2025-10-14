@@ -13,7 +13,7 @@
     - id: valeurs-beta
       title: Prendre connaissance des [valeurs de beta.gouv.fr](https://doc.incubateur.net/communaute/decouvrir-beta.gouv.fr/valeurs)
     - id: standards-beta
-      title: Lire la documentation sur nos [standards de qualité](https://doc.incubateur.net/communaute/gerer-son-produit/les-standards)
+      title: Lire la documentation sur nos [standards de qualité](https://doc.incubateur.net/communaute/gerer-son-produit/readme-doc-incubateur-net)
 - title: 🧰 La première semaine – Explorer les outils de la communauté
   items:
     - id: canaux-mattermost
