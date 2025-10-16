@@ -104,16 +104,14 @@ export async function createDimailMailboxForUser(userUuid: string) {
         destination: mailboxInfos.email,
       });
     } catch (e: any) {
-      if (e.status === 409) {
-        // alias already exist
-        // todo: handle this case, regenerate password ?
-        return { email: mailboxInfos.email };
-      } else {
-        console.error(
-          `Error creating DMAIL alias ${legacyUserName}@${DIMAIL_MAILBOX_DOMAIN} -> ${mailboxInfos.email} : ${e.message}`,
-        );
-        throw e;
-      }
+      console.error(
+        `Error creating DIMAIL alias ${legacyUserName}@${DIMAIL_MAILBOX_DOMAIN} -> ${mailboxInfos.email} : ${e.message}`,
+      );
+      Sentry.captureException(
+        new Error(
+          `Error creating DIMAIL alias ${legacyUserName}@${DIMAIL_MAILBOX_DOMAIN} -> ${mailboxInfos.email} : ${e.message}`,
+        ),
+      );
     }
   }
 
