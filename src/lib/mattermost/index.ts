@@ -126,7 +126,7 @@ export async function addUserToTeam(userId, teamId) {
       `Erreur d'ajout de l'utilisateur ${userId} à la team ${teamId} : ${err}`,
     );
   }
-  console.log(`Ajout de utilisateur ${userId} à la team ${teamId}`);
+  //console.log(`Ajout de utilisateur ${userId} à la team ${teamId}`);
   return res;
 }
 
@@ -243,7 +243,7 @@ export const createUser = async function createUser(
       .then((response) => response.data);
   } catch (err) {
     throw new Error(
-      `Erreur d'ajout de l'utilisateurs ${username} à mattermost : ${err}`,
+      `Erreur d'ajout de l'utilisateur ${username} à mattermost : ${err}`,
     );
   }
   console.log("Ajout de l'utilisateur", email, username);
