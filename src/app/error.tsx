@@ -38,7 +38,7 @@ export default function Error({
           <div className="fr-grid-row fr-grid-row--center fr-grid-row--gutters">
             <div className="fr-server__body fr-col-12 fr-col-md-8">
               <h1 className="fr-h1" data-h1="Erreur">
-                Un erreur est survenue
+                Une erreur est survenue
               </h1>
               <p data-p="La page n'a pas été trouvée">
                 <b>{error.name}</b>: {error.message}
