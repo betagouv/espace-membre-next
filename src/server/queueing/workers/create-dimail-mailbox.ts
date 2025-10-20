@@ -75,7 +75,7 @@ export async function createDimailMailboxForUser(userUuid: string) {
     })
     .catch((e) => {
       console.error(
-        `Error creating mailbox ${userName}@${DIMAIL_MAILBOX_DOMAIN}: ${e.status || ""} ${e.message}`,
+        `Error creating DIMAIL mailbox ${userName}@${DIMAIL_MAILBOX_DOMAIN}: ${e.status || ""} ${e.message}`,
       );
       Sentry.captureException(e);
       if (e.status === 409) {
@@ -97,11 +97,22 @@ export async function createDimailMailboxForUser(userUuid: string) {
     console.info(
       `Create DIMAIL alias: ${legacyUserName}@${DIMAIL_MAILBOX_DOMAIN} -> ${mailboxInfos.email}`,
     );
-    await createAlias({
-      user_name: legacyUserName,
-      domain: DIMAIL_MAILBOX_DOMAIN,
-      destination: mailboxInfos.email,
-    });
+    try {
+      await createAlias({
+        user_name: legacyUserName,
+        domain: DIMAIL_MAILBOX_DOMAIN,
+        destination: mailboxInfos.email,
+      });
+    } catch (e: any) {
+      console.error(
+        `Error creating DIMAIL alias ${legacyUserName}@${DIMAIL_MAILBOX_DOMAIN} -> ${mailboxInfos.email} : ${e.message}`,
+      );
+      Sentry.captureException(
+        new Error(
+          `Error creating DIMAIL alias ${legacyUserName}@${DIMAIL_MAILBOX_DOMAIN} -> ${mailboxInfos.email} : ${e.message}`,
+        ),
+      );
+    }
   }
 
   // MAJ infos base espace-membre (primary_email et primary_email_status)

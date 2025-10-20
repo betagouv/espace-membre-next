@@ -148,7 +148,15 @@ export function PrivateLayout({ children }: { children: React.ReactNode }) {
                   text: "Mise à jour de la fiche",
                   isActive: hasPathnameThisRegex(
                     pathname,
-                    "^/community/[a-zA-Z]+.[a-zA-Z]+/update",
+                    "^/community/[^/]+/update",
+                  ),
+                },
+                {
+                  href: pathname,
+                  text: "Mise à jour de la fiche",
+                  isActive: hasPathnameThisRegex(
+                    pathname,
+                    "^/community/[^/]+/admin-update",
                   ),
                 },
                 {
@@ -156,7 +164,7 @@ export function PrivateLayout({ children }: { children: React.ReactNode }) {
                   text: "Validation de la fiche",
                   isActive: hasPathnameThisRegex(
                     pathname,
-                    "^/community/[a-zA-Z]+.[a-zA-Z]+/validate",
+                    "^/community/[^/]+/validate",
                   ),
                 },
               ],
