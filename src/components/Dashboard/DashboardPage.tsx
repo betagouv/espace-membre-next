@@ -31,7 +31,7 @@ export interface DashboardPageProps {
   };
 }
 
-const CardProduct = ({
+export const CardProduct = ({
   product,
 }: {
   product: LatestProductsReturnType[number];
@@ -55,7 +55,7 @@ const CardProduct = ({
   />
 );
 
-const CardMember = ({
+export const CardMember = ({
   member,
 }: {
   member: LatestMembersReturnType[number];
