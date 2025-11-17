@@ -115,11 +115,11 @@ export async function createDimailMailboxForUser(userUuid: string) {
     }
   }
 
-  // MAJ infos base espace-membre (primary_email et primary_email_status)
+  // MAJ infos base espace-membre (primary_email_status)
   await db
     .updateTable("users")
     .set({
-      primary_email: mailboxInfos.email,
+      //primary_email: mailboxInfos.email, dont change the primary_email so the user dont gets confused on login
       primary_email_status: EmailStatusCode.EMAIL_ACTIVE,
     })
     .where("uuid", "=", userUuid)
