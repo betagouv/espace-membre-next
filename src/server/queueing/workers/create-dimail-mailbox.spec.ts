@@ -147,16 +147,29 @@ describe("create-dimail-mail", () => {
     ).to.be.true;
 
     // Verify dinum_emails insert
+
     expect(
-      mockInsertInto.calledOnceWith("dinum_emails"),
+      mockInsertInto.getCall(0).calledWithExactly("dinum_emails"),
       "should update table dinum_emails",
     ).to.be.true;
     expect(
-      mockValues.calledOnceWith({
+      mockInsertInto.getCall(1).calledWithExactly("dinum_emails"),
+      "should update table dinum_emails",
+    ).to.be.true;
+
+    expect(
+      mockValues.getCall(0).calledWithExactly({
         email: `john.doe.ext@${DIMAIL_MAILBOX_DOMAIN}`,
         status: "enabled",
       }),
-      "should update table dinum_emails correctly",
+      "should update table dinum_emails with new email",
+    ).to.be.true;
+    expect(
+      mockValues.getCall(1).calledWithExactly({
+        email: `john.doe@${DIMAIL_MAILBOX_DOMAIN}`,
+        status: "enabled",
+      }),
+      "should update table dinum_emails with current email",
     ).to.be.true;
 
     // Verify execute calls
