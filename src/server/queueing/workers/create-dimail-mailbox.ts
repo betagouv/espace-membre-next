@@ -103,6 +103,18 @@ export async function createDimailMailboxForUser(userUuid: string) {
         domain: DIMAIL_MAILBOX_DOMAIN,
         destination: mailboxInfos.email,
       });
+      // MAJ de la table dinum_emails
+      // update the dinum_emails in the database with the new email
+      await db
+        .insertInto("dinum_emails")
+        .values({
+          email: mailboxInfos.email,
+          status: "enabled",
+        })
+        .onConflict((oc) =>
+          oc.column("email").doUpdateSet({ status: "enabled" }),
+        )
+        .execute();
     } catch (e: any) {
       console.error(
         `Error creating DIMAIL alias ${legacyUserName}@${DIMAIL_MAILBOX_DOMAIN} -> ${mailboxInfos.email} : ${e.message}`,
@@ -126,15 +138,17 @@ export async function createDimailMailboxForUser(userUuid: string) {
     .execute();
 
   // MAJ de la table dinum_emails
-  // update the dinum_emails in the database with the new email
-  await db
-    .insertInto("dinum_emails")
-    .values({
-      email: mailboxInfos.email,
-      status: "enabled",
-    })
-    .onConflict((oc) => oc.column("email").doUpdateSet({ status: "enabled" }))
-    .execute();
+  // update the dinum_emails in the database with the current email to mark migrated
+  if (baseInfoUser.primary_email) {
+    await db
+      .insertInto("dinum_emails")
+      .values({
+        email: baseInfoUser.primary_email,
+        status: "enabled",
+      })
+      .onConflict((oc) => oc.column("email").doUpdateSet({ status: "enabled" }))
+      .execute();
+  }
 
   return mailboxInfos.email;
 }
