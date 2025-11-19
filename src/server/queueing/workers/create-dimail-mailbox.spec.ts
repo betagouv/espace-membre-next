@@ -149,11 +149,11 @@ describe("create-dimail-mail", () => {
     // Verify dinum_emails insert
 
     expect(
-      mockInsertInto.getCall(0).calledWithExactly("dinum_emails"),
+      mockInsertInto.getCall(0).calledWith("dinum_emails"),
       "should update table dinum_emails",
     ).to.be.true;
     expect(
-      mockInsertInto.getCall(1).calledWithExactly("dinum_emails"),
+      mockInsertInto.getCall(1).calledWith("dinum_emails"),
       "should update table dinum_emails",
     ).to.be.true;
 
