@@ -173,7 +173,7 @@ describe("create-dimail-mail", () => {
     ).to.be.true;
 
     // Verify execute calls
-    expect(mockExecute.calledTwice, "should execute 2 queries").to.be.true;
+    expect(mockExecute.calledThrice, "should execute 3 queries").to.be.true;
   });
 
   it("should throw error when user is not found", async () => {
