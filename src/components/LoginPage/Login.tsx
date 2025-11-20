@@ -188,7 +188,7 @@ export const LoginPage = function () {
         </legend>
       </fieldset>
       <Input
-        hintText="Email en @beta.gouv.fr ou email secondaire"
+        hintText="Tu peux te connecter avec ton email en @beta.gouv.fr ou avec ton email secondaire."
         label="Mon email"
         nativeInputProps={{
           type: "email",
