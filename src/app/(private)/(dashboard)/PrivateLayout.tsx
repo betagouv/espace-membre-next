@@ -37,7 +37,6 @@ export function PrivateLayout({ children }: { children: React.ReactNode }) {
   }
 
   const accountLink = linkRegistry.get("account", undefined);
-  const accountBadgeLink = linkRegistry.get("accountBadge", undefined);
   const communityLink = linkRegistry.get("community", undefined);
   const communityCreateMemberLink = linkRegistry.get(
     "communityCreateMember",
@@ -66,10 +65,7 @@ export function PrivateLayout({ children }: { children: React.ReactNode }) {
     "accountEditBaseInfo",
     undefined,
   );
-  const accountBadgeRenewalLink = linkRegistry.get(
-    "accountBadgeRenewal",
-    undefined,
-  );
+
   const metabaseLink = linkRegistry.get("metabase", undefined);
   const serviceLink = "/services";
   const formationLink = linkRegistry.get("formationList", undefined);

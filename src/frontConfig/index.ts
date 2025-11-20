@@ -29,7 +29,6 @@ export const memberTypeOptions = [
   { name: `Autre`, key: MemberType.OTHER },
 ];
 
-const userBadgeOptions = [{ name: "Ségur (Paris)", key: "segur" }];
 const alertMessageSchema = z.object({
   description: z.string().optional(),
   title: z.string(),
@@ -47,8 +46,6 @@ export default {
   ESPACE_MEMBRE_ADMIN: process.env.ESPACE_MEMBRE_ADMIN
     ? process.env.ESPACE_MEMBRE_ADMIN.split(",")
     : [],
-  DS_BADGE_FORM_URL: process.env.NEXT_PUBLIC_DS_BADGE_FORM_URL,
-  DS_BADGE_RENEWAL_FORM_URL: process.env.NEXT_PUBLIC_DS_BADGE_RENEWAL_FORM_URL,
   NEXT_PUBLIC_ALERT_MESSAGE_PRIVATE: process.env
     .NEXT_PUBLIC_ALERT_MESSAGE_PRIVATE
     ? alertMessageSchema.parse(
