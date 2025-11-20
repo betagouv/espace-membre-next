@@ -7,6 +7,10 @@ import { EmailStatusCode, memberBaseInfoSchemaType } from "@/models/member";
 import config from "@/server/config";
 import * as utils from "@controllers/utils";
 
+// pour les users données
+// OU
+// les users non @beta.gouv.fr en EMAIL_SUSPENDED et dont l'email a été mis à jour il y a plus de 30J
+// met l'email en EMAIL_EXPIRED
 export async function setEmailExpired(
   optionalExpiredUsers?: memberBaseInfoSchemaType[],
 ) {
