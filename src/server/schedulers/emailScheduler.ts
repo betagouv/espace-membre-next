@@ -60,6 +60,15 @@ const getValidUsers = async () => {
   return githubUsers.filter((x) => !utils.checkUserIsExpired(x));
 };
 
+//
+// pour les comptes EMAIL_CREATION_PENDING EMAIL_RECREATION_PENDING
+// dont l'email a été modifié depuis + 5 minutes (??)
+// ajoute à la newsletter NEWSLETTER
+// unbock l'email dans brevo
+// si EMAIL_CREATION_PENDING, ajoute aussi à la newsletter ONBOARDING
+// passe l'email en EMAIL_ACTIVE_AND_PASSWORD_DEFINITION_PENDING
+// envoie l'email EMAIL_CREATED_EMAIL sur secondary_email
+//
 export async function setEmailAddressesActive() {
   const fiveMinutesInMs: number = 5 * 1000 * 60;
   const nowLessFiveMinutes: Date = new Date(Date.now() - fiveMinutesInMs);
@@ -231,7 +240,11 @@ export async function createRedirectionEmailAdresses() {
   );
 }
 
+// créé les comptes emails en attente
 export async function createEmailAddresses() {
+  // utilisateurs acrtifs sans primary_email, en EMAIL_CREATION_WAITING, sans redirection et avec un secondary_email
+  // sils n'existent pas dinum_emails, les créer et les ajouter à la BDD
+
   const dbUsers = (await getAllUsersInfo()).map((user) =>
     memberBaseInfoToModel(user),
   );
@@ -262,7 +275,13 @@ export async function createEmailAddresses() {
   );
 }
 
+// change le password email des comptes expirés depuis + 5 jours
 export async function reinitPasswordEmail() {
+  // utilisateurs expirés depuis 5 jours en EMAIL_ACTIVE
+  // met un passe aleatoire
+  // marque l'email comme suspendu
+  // setEmailSuspended(username)
+
   const users = (await getAllUsersInfo()).map((user) =>
     memberBaseInfoToModel(user),
   );
@@ -301,6 +320,7 @@ export async function reinitPasswordEmail() {
   );
 }
 
+// inscrit les utilisateurs à la mailing-list principale
 export async function subscribeEmailAddresses() {
   const githubUsers = await getValidUsers();
   const concernedUsers = githubUsers.filter((u) => u.primary_email);
@@ -345,6 +365,7 @@ export async function subscribeEmailAddresses() {
   );
 }
 
+// supprime les utilisaterus expirés de la mailing liste principale
 export async function unsubscribeEmailAddresses() {
   const concernedUsers = (await getAllUsersInfo())
     .map((user) => memberBaseInfoToModel(user))

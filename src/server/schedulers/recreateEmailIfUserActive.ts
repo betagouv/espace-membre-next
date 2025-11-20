@@ -4,6 +4,9 @@ import { createEmail } from "../controllers/usersController/createEmailForUser";
 import { db } from "@/lib/kysely";
 import { EmailStatusCode } from "@/models/member";
 
+// pour les comptes actifs en EMAIL_DELETED avec un secondary_email
+// recréé l'email
+// passe le email en EMAIL_CREATION_PENDING ou EMAIL_RECREATION_PENDING
 export async function recreateEmailIfUserActive() {
   const missions = await db
     .selectFrom("missions")

@@ -266,6 +266,13 @@ export async function sendJ30Email(users) {
   return module.exports.sendInfoToSecondaryEmailAfterXDays(30, users);
 }
 
+//
+// pour les users donnés
+// OU
+// les users en EMAIL_SUSPENDED expirés depuis +30J, qui ont un email OVH et ont été mis à jour depuis +30J
+// supprime le compte email
+// passe l'email en EMAIL_DELETED et supprime le primary_email
+//
 export async function deleteOVHEmailAcounts(
   optionalExpiredUsers?: memberBaseInfoSchemaType[],
 ) {
