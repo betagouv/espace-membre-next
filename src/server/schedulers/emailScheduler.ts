@@ -33,8 +33,6 @@ import {
 import * as utils from "@controllers/utils";
 import { isBetaEmail } from "@controllers/utils";
 import { EMAIL_TYPES, MAILING_LIST_TYPE } from "@modules/email";
-import { ExpressionBuilder } from "kysely";
-import { DB } from "@/@types/db";
 
 const differenceGithubRedirectionOVH = function differenceGithubOVH(
   user: memberBaseInfoSchemaType,
