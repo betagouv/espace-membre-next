@@ -8,3 +8,5 @@ fileignoreconfig:
 - filename: src/server/queueing/workers/create-dimail-mailbox.spec.ts
   checksum: 7961ed68360545e4e2c72bf9884e12943467175bdeed35b38bfc177613fc0b15
 version: "1.0"
+scopeconfig:
+  - scope: node
