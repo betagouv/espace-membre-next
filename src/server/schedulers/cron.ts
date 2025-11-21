@@ -3,7 +3,6 @@
 
 import { postEventsOnMattermost } from "./calendarScheduler";
 import {
-  createEmailAddresses,
   reinitPasswordEmail,
   subscribeEmailAddresses,
   unsubscribeEmailAddresses,
@@ -320,13 +319,6 @@ export const espaceMembreCronJobs: EspaceMembreCronJobType[] = [
     name: "sendOnboardingVerificationPendingEmail",
     description:
       "Envoi d'un email de relance pour les adresses en attente de validation",
-  },
-  {
-    cronTime: "0 */4 * * * *",
-    onTick: createEmailAddresses,
-    isActive: true,
-    name: "emailCreationJob",
-    description: "Créé les emails en attente sur OVH",
   },
   {
     cronTime: "0 */4 * * * *",

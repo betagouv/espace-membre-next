@@ -28,6 +28,7 @@ import {
 } from "@/models/member";
 import { Option } from "@/models/misc";
 import routes, { computeRoute } from "@/routes/routes";
+import { verifyNewMember } from "@/app/api/member/actions/verifyNewMember";
 
 // data from secretariat API
 export interface AccountVerifyClientPageProps {
@@ -35,28 +36,16 @@ export interface AccountVerifyClientPageProps {
   member: memberSchemaType;
 }
 
-const postMemberData = async ({ values, sessionUsername }) => {
+// User verify its account
+const postMemberData = async ({ values }) => {
   try {
-    const response = await fetch(
-      computeRoute(
-        routes.ACCOUNT_UPDATE_INFO_API.replace(":username", sessionUsername),
-      ),
-      {
-        method: "PUT", // Specify the method
-        body: JSON.stringify(values), // Convert the values object to JSON
-        headers: {
-          "Content-Type": "application/json", // Specify the content type
-        },
-      },
-    );
+    const { success, message } = await verifyNewMember(values);
 
-    if (!response.ok) {
+    if (!success) {
       throw new Error("Network response was not ok");
     }
 
-    const { username, message } = await response.json(); // Destructure the data from the response
-
-    return { username, message }; // Return the username and message
+    return { message }; // Return the username and message
   } catch (error) {
     console.error("There was a problem with the fetch operation:", error);
     throw error; // Rethrow the error to be handled by the caller
@@ -111,7 +100,6 @@ export default function AccountVerifyClientPage({
     try {
       const { message } = await postMemberData({
         values: input,
-        sessionUsername: session.data?.user.id as string,
       });
       setAlertMessage({
         title: `Modifications enregistrées`,

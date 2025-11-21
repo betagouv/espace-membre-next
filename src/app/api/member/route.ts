@@ -57,6 +57,7 @@ const isSessionUserMemberOfUserIncubatorTeams = async function (
   return incubatorIds.some((el) => sessionUserIncubatorIds.includes(el));
 };
 
+// user creation
 export const POST = withHttpErrorHandling(async (req: Request) => {
   const session = await getServerSession(authOptions);
   if (!session || !session.user.id) {

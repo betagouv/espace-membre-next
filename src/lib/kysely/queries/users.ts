@@ -306,6 +306,7 @@ const protectedDataSelect = (db: Kysely<DB> = database) =>
     .selectFrom("users")
     .select([
       "users.uuid",
+      "users.created_at",
       "users.updated_at",
       "users.username",
       "users.fullname",

@@ -3,16 +3,11 @@ import { isAfter } from "date-fns/isAfter";
 import { isBefore } from "date-fns/isBefore";
 import _ from "lodash/array";
 
-import { createEmail } from "../controllers/usersController/createEmailForUser";
 import { addEvent } from "@/lib/events";
 import { db } from "@/lib/kysely";
 import { getAllUsersInfo } from "@/lib/kysely/queries/users";
-import {
-  ActionEvent,
-  EventCode,
-  SYSTEM_NAME,
-} from "@/models/actionEvent/actionEvent";
-import { memberBaseInfoToModel, userInfosToModel } from "@/models/mapper";
+import { EventCode, SYSTEM_NAME } from "@/models/actionEvent/actionEvent";
+import { memberBaseInfoToModel } from "@/models/mapper";
 import {
   CommunicationEmailCode,
   EmailStatusCode,
@@ -38,13 +33,8 @@ import {
 import * as utils from "@controllers/utils";
 import { isBetaEmail } from "@controllers/utils";
 import { EMAIL_TYPES, MAILING_LIST_TYPE } from "@modules/email";
-
-const differenceGithubOVH = function differenceGithubOVH(
-  user: memberBaseInfoSchemaType,
-  ovhAccountName: string,
-) {
-  return user.username === ovhAccountName;
-};
+import { ExpressionBuilder } from "kysely";
+import { DB } from "@/@types/db";
 
 const differenceGithubRedirectionOVH = function differenceGithubOVH(
   user: memberBaseInfoSchemaType,
@@ -236,41 +226,6 @@ export async function createRedirectionEmailAdresses() {
           console.log(`Email redirection créée pour ${user.username}`);
         }
       }
-    }),
-  );
-}
-
-// créé les comptes emails en attente
-export async function createEmailAddresses() {
-  // utilisateurs acrtifs sans primary_email, en EMAIL_CREATION_WAITING, sans redirection et avec un secondary_email
-  // sils n'existent pas dinum_emails, les créer et les ajouter à la BDD
-
-  const dbUsers = (await getAllUsersInfo()).map((user) =>
-    memberBaseInfoToModel(user),
-  );
-  const concernedUsers = dbUsers.filter(
-    (user) =>
-      !utils.checkUserIsExpired(user) &&
-      !user.primary_email &&
-      user.primary_email_status === EmailStatusCode.EMAIL_CREATION_WAITING &&
-      !user.email_is_redirection &&
-      user.secondary_email,
-  );
-
-  const allOvhEmails: string[] = await BetaGouv.getAllEmailInfos();
-  const unregisteredUsers = _.differenceWith(
-    concernedUsers,
-    allOvhEmails,
-    differenceGithubOVH,
-  );
-  console.log(
-    `Email creation : ${unregisteredUsers.length} unregistered user(s) in OVH (${allOvhEmails.length} accounts in OVH. ${concernedUsers.length} accounts in Github).`,
-  );
-
-  // create email
-  return Promise.all(
-    unregisteredUsers.map(async (user) => {
-      await createEmail(user.username, "Secretariat cron");
     }),
   );
 }

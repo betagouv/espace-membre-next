@@ -321,6 +321,10 @@ export async function deleteOVHEmailAcounts(
   }
 }
 
+// pour les users expirés depuis 30J et l'email en EMAIL_DELETED ou EMAIL_EXPIRED
+// dont l'email a été mis à jour il y a + de 30J
+// supprime le secondary_email
+// WHY ??
 export async function deleteSecondaryEmailsForUsers(
   optionalExpiredUsers?: memberBaseInfoSchemaType[],
 ) {
