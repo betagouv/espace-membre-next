@@ -22,3 +22,5 @@ fileignoreconfig:
 scopeconfig:
 - scope: node
 version: "1.0"
+scopeconfig:
+  - scope: node
