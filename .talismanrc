@@ -2,7 +2,7 @@ fileignoreconfig:
 - filename: .env.test
   checksum: fd6fca10412ee1ed81d930e1e7a944586f56aca534412c43ef95f5381be9a97b
 - filename: package-lock.json
-  checksum: 6dcdbf6a4b272fd88b0adadec353916c6a543bde223706b6b3b575e35ba3d713
+  checksum: 100421024e2b94085971fab0a906d5c4e7ca63699d8d6d198090e257af2b39be
 - filename: src/app/(private)/(dashboard)/services/page.tsx
   checksum: daebae004c8c06af9a88aaf57a1fad4b0a6efcb7920cf9628e0c1fd1985569ab
 - filename: src/server/queueing/workers/create-dimail-mailbox.spec.ts
