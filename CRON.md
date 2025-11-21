@@ -30,7 +30,6 @@
 | ✅ | `0 */8 * * * *` | `recreateEmailIfUserActive` | Recreate email for user active again |
 | ✅ | `0 */8 * * * *` | `setEmailAddressesActive` | Add pending users to mailing-list and set email as active |
 | ✅ | `0 */2 * * * *` | `sendOnboardingVerificationPendingEmail` | Envoi d'un email de relance pour les adresses en attente de validation |
-| ✅ | `0 */4 * * * *` | `emailCreationJob` | Créé les emails en attente sur OVH |
 | ✅ | `0 */4 * * * *` | `cron de creation de redirection` | Créé les redirections email en attente sur OVH |
 | ✅ | `0 */4 * * * *` | `setEmailRedirectionActive` | Ajoute les nouvelles redirections aux mailing-lists brevo et active l'adresse |
 | ✅ | `0 */4 * * * *` | `subscribeEmailAddresses` | Re-inscrit les désabonnés à la mailing-list brevo incubateur |

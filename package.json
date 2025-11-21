@@ -33,15 +33,15 @@
     "pg-mermaid": "npx -s pg-mermaid --dbname secretariat --username secretariat -h 127.0.0.1 -p 5432 --password secretariat --excluded-tables badge_requests community knex_migrations knex_migrations_lock startup_aggregated_stats"
   },
   "dependencies": {
-    "@codegouvfr/react-dsfr": "^1.25.3",
+    "@codegouvfr/react-dsfr": "^1.29.0",
     "@emotion/styled": "^11.11.0",
     "@hookform/resolvers": "^3.3.4",
     "@luma-team/mjml-react": "^0.2.1",
     "@mui/base": "^5.0.0-beta.69",
     "@mui/material": "^5.15.10",
     "@octokit/rest": "^20.1.2",
-    "@sentry/nextjs": "^10.8.0",
-    "@sentry/node": "^8.55.0",
+    "@sentry/nextjs": "^10.26.0",
+    "@sentry/node": "^10.26.0",
     "@sindresorhus/slugify": "^1.1.0",
     "@socialgouv/matomo-next": "^1.9.1",
     "@types/chai": "^5.2.2",
