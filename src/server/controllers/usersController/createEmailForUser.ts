@@ -6,8 +6,7 @@ import { db } from "@/lib/kysely";
 import { getAllStartups } from "@/lib/kysely/queries";
 import { getUserInfos } from "@/lib/kysely/queries/users";
 import { EventCode } from "@/models/actionEvent/actionEvent";
-import { userInfosToModel } from "@/models/mapper";
-import { Domaine, EmailStatusCode } from "@/models/member";
+import { EmailStatusCode } from "@/models/member";
 import {
   EMAIL_PLAN_TYPE,
   OvhExchangeCreationData,
