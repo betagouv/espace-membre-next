@@ -1,6 +1,5 @@
 import { Selectable } from "kysely";
 
-import { BADGE_REQUEST, badgeRequestSchemaType } from "../badgeRequests";
 import { incubatorSchemaType } from "../incubator";
 import {
   Domaine,
@@ -28,7 +27,6 @@ import {
 } from "../startup";
 import { teamSchemaType } from "../team";
 import {
-  BadgeRequests,
   Events,
   Incubators,
   Missions,
@@ -173,22 +171,6 @@ export function userInfosToModel(
       user.primary_email_status_updated_at || new Date(),
     // @ts-ignore todo
     missions: (user?.missions || []).map((mission) => missionToModel(mission)),
-  };
-}
-
-export function badgeRequestToModel(
-  badgeRequest: Selectable<BadgeRequests>,
-): badgeRequestSchemaType {
-  return {
-    ...badgeRequest,
-    dossier_number: badgeRequest.dossier_number as unknown as number,
-    ds_token: badgeRequest.ds_token!,
-    status: badgeRequest.status as BADGE_REQUEST,
-    id: badgeRequest.id as unknown as number,
-    end_date: badgeRequest.end_date as unknown as Date,
-    start_date: badgeRequest.start_date as unknown as Date,
-    updated_at: badgeRequest.updated_at as unknown as Date,
-    created_at: badgeRequest.created_at as unknown as Date,
   };
 }
 

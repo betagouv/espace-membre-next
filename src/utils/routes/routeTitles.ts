@@ -8,8 +8,6 @@ export const routeTitles: {
   account: () => "Compte",
   accountEditBaseInfo: () => "Mise à jour de mes informations",
   accountEditPrivateInfo: () => "Mise à jour de mes informations privées",
-  accountBadge: () => "Demande de badge",
-  accountBadgeRenewal: () => "Renouvellement de badge",
   community: () => "Rechercher un ou une membre",
   communityMember: () => "Fiche membre",
   communityCreateMember: () => "Créer une fiche membre",
