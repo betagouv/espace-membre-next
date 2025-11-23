@@ -1,14 +1,22 @@
 fileignoreconfig:
 - filename: .env.test
   checksum: fd6fca10412ee1ed81d930e1e7a944586f56aca534412c43ef95f5381be9a97b
+- filename: README.md
+  checksum: 8431c076ea6b521f6f7a9dae716460f89c611fcff15721c5c481efcc53589a9d
 - filename: __tests__/test-user.ts
   checksum: 19d37dc111d4017b7800460a868a5c2f89cdb62e45d00d070bea4af38f66a1a9
 - filename: package-lock.json
   checksum: 100421024e2b94085971fab0a906d5c4e7ca63699d8d6d198090e257af2b39be
 - filename: src/app/(private)/(dashboard)/services/page.tsx
   checksum: daebae004c8c06af9a88aaf57a1fad4b0a6efcb7920cf9628e0c1fd1985569ab
+- filename: src/lib/dimail/client.ts
+  checksum: f94b34d6e3902d0ee15312890f92bf33c9268ea6f5f9cfe3fdf17b623685dd05
 - filename: src/server/queueing/workers/create-dimail-mailbox.spec.ts
   checksum: 7961ed68360545e4e2c72bf9884e12943467175bdeed35b38bfc177613fc0b15
+- filename: src/server/queueing/workers/send-verification-email.ts
+  checksum: 6c4a7bbf33011000ba4223060c62f0631458c2308e27a987a61fac50a44eddfe
+- filename: src/server/schedulers/emailScheduler.ts
+  checksum: c8ab3fbd4045226859ff06a0f1bbad4fde999005319c393d064630980ec63765
 scopeconfig:
 - scope: node
 version: "1.0"

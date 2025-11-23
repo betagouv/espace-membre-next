@@ -1,12 +1,9 @@
-import crypto, { randomBytes } from "crypto";
-import { isAfter } from "date-fns/isAfter";
-import { isBefore } from "date-fns/isBefore";
+import crypto from "crypto";
 import _ from "lodash/array";
+import pAll from "p-all";
 
-import { addEvent } from "@/lib/events";
 import { db } from "@/lib/kysely";
 import { getAllUsersInfo } from "@/lib/kysely/queries/users";
-import { EventCode, SYSTEM_NAME } from "@/models/actionEvent/actionEvent";
 import { memberBaseInfoToModel } from "@/models/mapper";
 import {
   CommunicationEmailCode,
@@ -14,25 +11,22 @@ import {
   MemberType,
   memberBaseInfoSchemaType,
 } from "@/models/member";
-import { OvhRedirection } from "@/models/ovh";
+import { EMAIL_PLAN_TYPE, OvhRedirection } from "@/models/ovh";
 import config from "@/server/config";
 import {
   addContactsToMailingLists,
-  sendEmail,
   smtpBlockedContactsEmailDelete,
 } from "@/server/config/email.config";
-import { hashToken } from "@/utils/auth/hashToken";
-import { createVerificationToken } from "@/utils/pgAdpter";
-import { getBaseUrl } from "@/utils/url";
 import BetaGouv from "@betagouv";
 import {
-  setEmailActive,
   setEmailRedirectionActive,
   setEmailSuspended,
 } from "@controllers/usersController";
 import * as utils from "@controllers/utils";
 import { isBetaEmail } from "@controllers/utils";
 import { EMAIL_TYPES, MAILING_LIST_TYPE } from "@modules/email";
+import { DIMAIL_MAILBOX_DOMAIN } from "@lib/dimail/utils";
+import { resetPassword } from "@lib/dimail/client";
 
 const differenceGithubRedirectionOVH = function differenceGithubOVH(
   user: memberBaseInfoSchemaType,
@@ -48,68 +42,7 @@ const getValidUsers = async () => {
   return githubUsers.filter((x) => !utils.checkUserIsExpired(x));
 };
 
-//
-// pour les comptes EMAIL_CREATION_PENDING EMAIL_RECREATION_PENDING
-// dont l'email a été modifié depuis + 5 minutes (??)
-// ajoute à la newsletter NEWSLETTER
-// unbock l'email dans brevo
-// si EMAIL_CREATION_PENDING, ajoute aussi à la newsletter ONBOARDING
-// passe l'email en EMAIL_ACTIVE_AND_PASSWORD_DEFINITION_PENDING
-// envoie l'email EMAIL_CREATED_EMAIL sur secondary_email
-//
-export async function setEmailAddressesActive() {
-  const fiveMinutesInMs: number = 5 * 1000 * 60;
-  const nowLessFiveMinutes: Date = new Date(Date.now() - fiveMinutesInMs);
-  const dbUsers = (await getAllUsersInfo()).map((user) =>
-    memberBaseInfoToModel(user),
-  );
-  const concernedUsers = dbUsers.filter(
-    (user) =>
-      !utils.checkUserIsExpired(user) &&
-      [
-        EmailStatusCode.EMAIL_CREATION_PENDING,
-        EmailStatusCode.EMAIL_RECREATION_PENDING,
-      ].includes(user.primary_email_status) &&
-      user.primary_email_status_updated_at < nowLessFiveMinutes,
-  );
-  return Promise.all(
-    concernedUsers.map(async (user) => {
-      const listTypes = [MAILING_LIST_TYPE.NEWSLETTER];
-      if (
-        user.primary_email_status === EmailStatusCode.EMAIL_CREATION_PENDING
-      ) {
-        listTypes.push(MAILING_LIST_TYPE.ONBOARDING);
-      }
-      await addContactsToMailingLists({
-        listTypes: listTypes,
-        contacts: [
-          {
-            email: (user.communication_email ===
-              CommunicationEmailCode.SECONDARY && user.secondary_email
-              ? user.secondary_email
-              : user.primary_email) as string,
-            firstname: utils.capitalizeWords(user?.username?.split(".")[0]),
-            lastname: utils.capitalizeWords(user.username.split(".")[1]),
-            domaine: user.domaine,
-          },
-        ],
-      });
-      await smtpBlockedContactsEmailDelete({
-        email: user.primary_email as string,
-      });
-      await addEvent({
-        action_code: EventCode.MEMBER_UNBLOCK_EMAIL,
-        created_by_username: SYSTEM_NAME,
-        action_on_username: user.username,
-        action_metadata: {
-          email: user.primary_email!,
-        },
-      });
-      await setEmailActive(user.username);
-    }),
-  );
-}
-
+// todo: remove
 export async function setCreatedEmailRedirectionsActive() {
   const fiveMinutesInMs: number = 5 * 1000 * 60;
   const nowLessFiveMinutes: Date = new Date(Date.now() - fiveMinutesInMs);
@@ -157,6 +90,7 @@ export async function setCreatedEmailRedirectionsActive() {
   );
 }
 
+// todo: remove
 export async function createRedirectionEmailAdresses() {
   const dbUsers = (await getAllUsersInfo()).map((user) =>
     memberBaseInfoToModel(user),
@@ -244,78 +178,116 @@ export async function reinitPasswordEmail() {
       (user) => user.primary_email_status === EmailStatusCode.EMAIL_ACTIVE,
     );
 
-  return Promise.all(
-    expiredUsers.map(async (user) => {
+  return pAll(
+    expiredUsers.map((user) => async () => {
       const emailInfos = await BetaGouv.emailInfos(user.username);
-
-      const newPassword = crypto
-        .randomBytes(16)
-        .toString("base64")
-        .slice(0, -2);
-      try {
-        await BetaGouv.changePassword(
-          user.username,
-          newPassword,
-          emailInfos?.emailPlan,
-        );
-        await setEmailSuspended(user.username);
+      if (emailInfos?.emailPlan === EMAIL_PLAN_TYPE.EMAIL_PLAN_OPI) {
+        try {
+          await resetPassword({
+            domain_name: DIMAIL_MAILBOX_DOMAIN,
+            user_name: emailInfos.email.split("@")[0],
+          });
+          await setEmailSuspended(user.username);
+        } catch (e: any) {
+          console.error(
+            `Cannot reinit DIMAIL password for ${emailInfos.email}: ${e.message}`,
+          );
+          throw e;
+        }
         console.log(
-          `Le mot de passe de ${
+          `Le mot de passe DIMAIL de ${
             user.username
           } a été modifié car son contrat finissait le ${new Date()}.`,
         );
-      } catch (err) {
-        console.log(
-          `Le mode de passe de ${user.username} n'a pas pu être modifié: ${err}`,
-        );
+      } else {
+        // change OVH password
+        // todo: remove
+        const newPassword = crypto
+          .randomBytes(16)
+          .toString("base64")
+          .slice(0, -2);
+        try {
+          await BetaGouv.changePassword(
+            user.username,
+            newPassword,
+            emailInfos?.emailPlan,
+          );
+          await setEmailSuspended(user.username);
+          console.log(
+            `Le mot de passe de ${
+              user.username
+            } a été modifié car son contrat finissait le ${new Date()}.`,
+          );
+        } catch (err) {
+          console.log(
+            `Le mode de passe de ${user.username} n'a pas pu être modifié: ${err}`,
+          );
+        }
       }
     }),
+    { concurrency: 1 },
   );
 }
 
-// inscrit les utilisateurs à la mailing-list principale
+// inscrit les utilisateurs à la mailing-list OVH principale
 export async function subscribeEmailAddresses() {
-  const githubUsers = await getValidUsers();
-  const concernedUsers = githubUsers.filter((u) => u.primary_email);
-  // const concernedUsers = githubUsers.reduce(
-  //     (acc: (Member & { primary_email: string | undefined })[], user) => {
-  //         const dbUser = dbUsers.find((x) => x.username === user.username);
-  //         if (dbUser) {
-  //             acc.push({
-  //                 ...user,
-  //                 ...{ primary_email: dbUser.primary_email },
-  //             });
-  //         }
-  //         return acc;
-  //     },
-  //     []
-  // );
-
+  const activeUsers = await getValidUsers();
+  const concernedUsers = activeUsers.filter((u) => u.primary_email);
   const allIncubateurSubscribers = await BetaGouv.getMailingListSubscribers(
     config.incubateurMailingListName,
   );
-  const unsubscribedUsers = concernedUsers
-    .filter((concernedUser) => {
-      return !allIncubateurSubscribers.find(
+  const missingOvhUsers = concernedUsers.filter(
+    (concernedUser) =>
+      !allIncubateurSubscribers.find(
         (email) =>
           email.toLowerCase() === concernedUser?.primary_email?.toLowerCase(),
-      );
-    })
-    .filter((user) => user.primary_email);
+      ),
+  );
+  //TODO: EXTRACT members from mailing list
+  const missingBrevoMembers = [];
   console.log(
-    `Email subscription : ${unsubscribedUsers.length} unsubscribed user(s) in incubateur mailing list.`,
+    `Email subscription : ${missingOvhUsers.length} missing user(s) in incubateur OVH mailing list.`,
   );
 
-  // create email
-  return Promise.all(
-    unsubscribedUsers.map(async (user) => {
-      await BetaGouv.subscribeToMailingList(
+  // subscribe missings users to mailing list OVH
+  // TODO: USE DINUM mailing list
+  await pAll(
+    missingOvhUsers.map((user) => () => {
+      console.log(
+        `Subscribe ${user.primary_email} to mailing list incubateur OVH`,
+      );
+      return BetaGouv.subscribeToMailingList(
         config.incubateurMailingListName,
         user.primary_email as string,
       );
-      console.log(`Subscribe ${user.primary_email} to mailing list incubateur`);
     }),
+    { concurrency: 1 },
   );
+
+  // TODO: brevo mailing lists
+  //  const listTypes = [MAILING_LIST_TYPE.NEWSLETTER];
+  //       if (
+  //         user.primary_email_status === EmailStatusCode.EMAIL_CREATION_PENDING
+  //       ) {
+  //         listTypes.push(MAILING_LIST_TYPE.ONBOARDING);
+  //       }
+  //       await addContactsToMailingLists({
+  //         listTypes: listTypes,
+  //         contacts: [
+  //           {
+  //             email: (user.communication_email ===
+  //               CommunicationEmailCode.SECONDARY && user.secondary_email
+  //               ? user.secondary_email
+  //               : user.primary_email) as string,
+  //             firstname: utils.capitalizeWords(user?.username?.split(".")[0]),
+  //             lastname: utils.capitalizeWords(user.username.split(".")[1]),
+  //             domaine: user.domaine,
+  //           },
+  //         ],
+  //       });
+  //       await smtpBlockedContactsEmailDelete({
+  //         email: user.primary_email as string,
+  //       });
 }
 
 // supprime les utilisaterus expirés de la mailing liste principale
@@ -323,20 +295,6 @@ export async function unsubscribeEmailAddresses() {
   const concernedUsers = (await getAllUsersInfo())
     .map((user) => memberBaseInfoToModel(user))
     .filter((x) => utils.checkUserIsExpired(x) && x.primary_email);
-
-  // const concernedUsers = githubUsers.reduce(
-  //     (acc: (Member & { primary_email: string | undefined })[], user) => {
-  //         const dbUser = dbUsers.find((x) => x.username === user.username);
-  //         if (dbUser) {
-  //             acc.push({
-  //                 ...user,
-  //                 ...{ primary_email: dbUser.primary_email },
-  //             });
-  //         }
-  //         return acc;
-  //     },
-  //     []
-  // );
 
   const allIncubateurSubscribers: string[] =
     await BetaGouv.getMailingListSubscribers(config.incubateurMailingListName);
@@ -361,69 +319,4 @@ export async function unsubscribeEmailAddresses() {
       console.log(`Unsubscribe ${email} from mailing list incubateur`);
     }),
   );
-}
-
-// export async function setEmailStatusActiveForUsers() {
-//         .whereNull("primary_email")
-//         .whereIn("primary_email_status", [EmailStatusCode.EMAIL_UNSET])
-//         .whereNotNull("secondary_email");
-//     const activeUsers = await BetaGouv.getActiveRegisteredOVHUsers();
-
-//     const concernedUsers = activeUsers.filter((user) => {
-//         return dbUsers.find((x) => x.username === user.username);
-//     });
-
-export async function sendOnboardingVerificationPendingEmail() {
-  const dbUsers = (await getAllUsersInfo()).map((user) =>
-    memberBaseInfoToModel(user),
-  );
-  const now = new Date();
-  const concernedUsers = dbUsers.filter(
-    (user) =>
-      user.missions.find(
-        (mission) =>
-          isAfter(now, mission.start ?? 0) &&
-          isBefore(now, mission.end ?? Infinity),
-      ) &&
-      user.primary_email_status === EmailStatusCode.EMAIL_VERIFICATION_WAITING,
-  );
-
-  concernedUsers.map(async (user) => {
-    const event = await db
-      .selectFrom("events")
-      .selectAll()
-      .where("action_code", "=", EventCode.EMAIL_VERIFICATION_WAITING_SENT)
-      .where("action_on_username", "=", user.username)
-      .executeTakeFirst();
-    if (!event) {
-      const now = Date.now();
-      const token = randomBytes(32).toString("hex");
-
-      const generateToken = await hashToken(token, config.secret);
-      await createVerificationToken({
-        identifier: user.secondary_email,
-        expires: new Date(now + 1000 * 60 * 60 * 72),
-        token: generateToken,
-      });
-      const url = new URL(`${getBaseUrl()}/signin`);
-      url.searchParams.set("callbackUrl", `${getBaseUrl()}/dashboard`);
-      url.searchParams.set("token", token);
-      url.searchParams.set("email", user.secondary_email);
-
-      await sendEmail({
-        type: EMAIL_TYPES.EMAIL_VERIFICATION_WAITING,
-        toEmail: [user.secondary_email],
-        variables: {
-          secondaryEmail: user.secondary_email,
-          secretariatUrl: url.toString(),
-          fullname: user.fullname,
-        },
-      });
-      await addEvent({
-        action_code: EventCode.EMAIL_VERIFICATION_WAITING_SENT,
-        created_by_username: SYSTEM_NAME,
-        action_on_username: user.username,
-      });
-    }
-  });
 }

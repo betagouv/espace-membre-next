@@ -134,14 +134,17 @@ export async function createAlias({
  * POST /domains/{domain_name}/mailboxes/{user_name}/reset-password
  */
 export async function resetPassword({
-  domain,
+  domain_name,
   user_name,
-}: DimailEmailParams): Promise<{ success: boolean }> {
+}: {
+  user_name: string;
+  domain_name: string;
+}): Promise<{ success: boolean; password?: string }> {
   const res = await client.post<DimailMailboxResult>(
-    `/domains/${encodeURIComponent(domain)}/mailboxes/${encodeURIComponent(user_name)}/reset-password`,
+    `/domains/${encodeURIComponent(domain_name)}/mailboxes/${encodeURIComponent(user_name)}/reset-password`,
   );
   if (res.status !== 200) {
     return { success: false };
   }
-  return { success: true };
+  return { success: true, password: res.data.password };
 }

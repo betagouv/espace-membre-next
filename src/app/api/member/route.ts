@@ -12,11 +12,15 @@ import {
   createMemberSchema,
   createMemberSchemaType,
 } from "@/models/actions/member";
-import { SendNewMemberValidationEmailSchema } from "@/models/jobs/member";
+import {
+  SendNewMemberValidationEmailSchema,
+  SendNewMemberVerificationEmailSchema,
+} from "@/models/jobs/member";
 import { EmailStatusCode } from "@/models/member";
 import { isPublicServiceEmail, isAdminEmail } from "@/server/controllers/utils";
 import { getBossClientInstance } from "@/server/queueing/client";
 import { sendNewMemberValidationEmailTopic } from "@/server/queueing/workers/send-validation-email";
+import { sendNewMemberVerificationEmailTopic } from "@/server/queueing/workers/send-verification-email";
 import { authOptions } from "@/utils/authoptions";
 import {
   AdminEmailNotAllowedError,
@@ -107,14 +111,26 @@ export const POST = withHttpErrorHandling(async (req: Request) => {
       }
       return user;
     });
+    const bossClient = await getBossClientInstance();
     if (!userIsValidatedStraightAway) {
       // send validation email
-      const bossClient = await getBossClientInstance();
       await bossClient.send(
         sendNewMemberValidationEmailTopic,
         SendNewMemberValidationEmailSchema.parse({
           userId: dbUser.uuid,
           incubator_id,
+        }),
+        {
+          retryLimit: 50,
+          retryBackoff: true,
+        },
+      );
+    } else {
+      // send verification email
+      await bossClient.send(
+        sendNewMemberVerificationEmailTopic,
+        SendNewMemberVerificationEmailSchema.parse({
+          userId: dbUser.uuid,
         }),
         {
           retryLimit: 50,

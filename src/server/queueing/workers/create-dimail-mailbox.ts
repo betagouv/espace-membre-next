@@ -1,18 +1,17 @@
 import PgBoss from "pg-boss";
+import * as Sentry from "@sentry/nextjs";
 
 import { db } from "@/lib/kysely";
+import { getUserBasicInfo } from "@/lib/kysely/queries/users";
 import { CreateDimailAdressDataSchemaType } from "@/models/jobs/services";
+import { EmailStatusCode } from "@/models/member";
 import { createMailbox, createAlias } from "@lib/dimail/client";
 import {
   getDimailUsernameForUser,
   DIMAIL_MAILBOX_DOMAIN,
 } from "@lib/dimail/utils";
-import { getUserBasicInfo } from "@/lib/kysely/queries/users";
 import { sendEmail } from "@/server/config/email.config";
 import { EMAIL_TYPES } from "@/server/modules/email";
-import { memberBaseInfoToModel } from "@/models/mapper";
-import { EmailStatusCode } from "@/models/member";
-import * as Sentry from "@sentry/nextjs";
 
 export const createDimailMailboxTopic = "create-dimail-mailbox";
 
@@ -40,31 +39,30 @@ export async function createDimailMailboxForUser(userUuid: string) {
   if (!dbUser.secondary_email) {
     throw new Error(`User ${userUuid} has no secondary_email`);
   }
-  const baseInfoUser = memberBaseInfoToModel(dbUser);
 
   const userName = getDimailUsernameForUser(
-    baseInfoUser.username,
-    baseInfoUser.legal_status || "",
+    dbUser.username,
+    dbUser.legal_status || "",
   );
 
   console.log(
-    `Create DIMAIL mailbox: ${userName}@${DIMAIL_MAILBOX_DOMAIN} for ${baseInfoUser.fullname}`,
+    `Create DIMAIL mailbox: ${userName}@${DIMAIL_MAILBOX_DOMAIN} for ${dbUser.fullname}`,
   );
 
-  const [surName, givenName] = splitFullName(baseInfoUser.fullname);
+  const [surName, givenName] = splitFullName(dbUser.fullname);
 
   const mailboxInfos = await createMailbox({
     user_name: userName,
     domain: DIMAIL_MAILBOX_DOMAIN,
-    displayName: baseInfoUser.fullname,
+    displayName: dbUser.fullname,
     givenName,
     surName,
   })
     .then(async (infos) => {
       // envoi email invitation avec password
-      if (baseInfoUser.secondary_email) {
+      if (dbUser.secondary_email) {
         await sendEmail({
-          toEmail: [baseInfoUser.secondary_email],
+          toEmail: [dbUser.secondary_email],
           type: EMAIL_TYPES.EMAIL_CREATED_DIMAIL,
           variables: {
             email: infos.email,
@@ -74,11 +72,9 @@ export async function createDimailMailboxForUser(userUuid: string) {
           },
         });
       } else {
-        console.error(
-          `No secondary email defined for ${baseInfoUser.username}`,
-        );
+        console.error(`No secondary email defined for ${dbUser.username}`);
         Sentry.captureException(
-          new Error(`No secondary email defined for ${baseInfoUser.username}`),
+          new Error(`No secondary email defined for ${dbUser.username}`),
         );
       }
       return infos;
@@ -101,17 +97,17 @@ export async function createDimailMailboxForUser(userUuid: string) {
   // ex: prenom.nom.ext replacing prenom.nom
   // only create the alias for legacy members, up to 01/12/2025
   if (
-    baseInfoUser.primary_email &&
-    baseInfoUser.primary_email.endsWith(`@${DIMAIL_MAILBOX_DOMAIN}`) &&
-    baseInfoUser.primary_email !== mailboxInfos.email
+    dbUser.primary_email &&
+    dbUser.primary_email.endsWith(`@${DIMAIL_MAILBOX_DOMAIN}`) &&
+    dbUser.primary_email !== mailboxInfos.email
   ) {
-    // 1er Décembre 2025
-    if (new Date(baseInfoUser.created_at) >= new Date(2025, 11, 1)) {
+    // créé un alias pour les comptes créés avant le 1er Décembre 2025
+    if (new Date(dbUser.created_at) >= new Date(2025, 11, 1)) {
       console.info(
         `Skip create DIMAIL alias for ${mailboxInfos.email} : not a legacy member`,
       );
     } else {
-      const legacyUserName = baseInfoUser.primary_email.split("@")[0];
+      const legacyUserName = dbUser.primary_email.split("@")[0];
       console.info(
         `Create DIMAIL alias: ${legacyUserName}@${DIMAIL_MAILBOX_DOMAIN} -> ${mailboxInfos.email}`,
       );
@@ -149,7 +145,7 @@ export async function createDimailMailboxForUser(userUuid: string) {
   // MAJ infos base espace-membre (primary_email_status)
   // keep primary_email so the user dont gets confused on login
   // set newly created email if no primary_email set
-  const primaryEmail = baseInfoUser.primary_email || mailboxInfos.email;
+  const primaryEmail = dbUser.primary_email || mailboxInfos.email;
   await db
     .updateTable("users")
     .set({
