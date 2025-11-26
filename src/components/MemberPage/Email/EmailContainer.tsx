@@ -151,7 +151,7 @@ function BlocEmailConfiguration({ emailInfos }: { emailInfos: EmailInfos }) {
     },
     [EMAIL_PLAN_TYPE.EMAIL_PLAN_OPI]: {
       documentation:
-        "https://documentation.beta.numerique.gouv.fr/doc/mes-comptes-emails-ixeb6GFqjk",
+        "https://doc.incubateur.net/communaute/les-outils-de-la-communaute/emails/emails-suite-numerique",
       smtp: {
         server: "smtp.beta.gouv.fr",
         method: "TLS",
