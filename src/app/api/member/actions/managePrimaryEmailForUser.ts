@@ -60,19 +60,6 @@ export async function managePrimaryEmailForUser({
     }
   }
 
-  if (user.userInfos.primary_email?.includes(config.domain)) {
-    await betagouv.createRedirection(
-      user.userInfos.primary_email,
-      primaryEmail,
-      false,
-    );
-    try {
-      await betagouv.deleteEmail(user.userInfos.primary_email.split("@")[0]);
-    } catch (e) {
-      console.log(e, "Email is possibly already deleted");
-    }
-  }
-
   await db
     .updateTable("users")
     .where("username", "=", username)
