@@ -294,7 +294,7 @@ export async function importContactsToMailingLists({
   apiInstance.importContacts(requestContactImport).then(
     function (data) {
       console.log(
-        "API called successfully. Returned data: " + JSON.stringify(data),
+        "SIB API called successfully. Returned data: " + JSON.stringify(data),
       );
     },
     function (error) {
