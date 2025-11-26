@@ -26,6 +26,10 @@ import {
   sendNewMemberValidationEmailTopic,
 } from "./workers/send-validation-email";
 import {
+  sendNewMemberVerificationEmail,
+  sendNewMemberVerificationEmailTopic,
+} from "./workers/send-verification-email";
+import {
   updateSentryServiceAccount,
   updateSentryServiceAccountTopic,
 } from "./workers/update-sentry-account";
@@ -33,7 +37,6 @@ import {
   createDimailMailbox,
   createDimailMailboxTopic,
 } from "./workers/create-dimail-mailbox";
-import { BusinessError, ErrorWithStatus } from "@/utils/error";
 import { gracefulExit } from "@/utils/gracefulExit";
 
 let databaseUrl = process.env.DATABASE_URL || "";
@@ -107,7 +110,12 @@ export const pgBossWorker: {
   {
     topic: sendNewMemberValidationEmailTopic,
     worker: sendNewMemberValidationEmail,
-    description: `Envoie un email aux membres de la startup d'un nouveau membre pour qu'il valide sa fiche`,
+    description: `Envoie un email aux membres de la startup d'un nouveau membre pour que quelqu'un valide sa fiche`,
+  },
+  {
+    topic: sendNewMemberVerificationEmailTopic,
+    worker: sendNewMemberVerificationEmail,
+    description: `Envoie un email au nouveau membre pour l'inviter à compléter sa fiche`,
   },
   {
     topic: sendEmailToTeamsToCheckOnTeamCompositionTopic,

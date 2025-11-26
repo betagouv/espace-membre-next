@@ -136,7 +136,7 @@ describe("create-dimail-mail", () => {
 
     expect(
       mockSet.calledOnceWith({
-        //primary_email: `john.doe@${DIMAIL_MAILBOX_DOMAIN}`,
+        primary_email: `john.doe@${DIMAIL_MAILBOX_DOMAIN}`,
         primary_email_status: "EMAIL_ACTIVE",
       }),
       `should update users table with correct values. got ${JSON.stringify(mockSet.firstCall && mockSet.firstCall.args)}`,
