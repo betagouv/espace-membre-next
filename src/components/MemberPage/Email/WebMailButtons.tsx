@@ -20,7 +20,7 @@ const urls = {
   },
   [EMAIL_PLAN_TYPE.EMAIL_PLAN_OPI]: {
     webmail: "https://webmail.numerique.gouv.fr",
-    doc: "https://documentation.beta.numerique.gouv.fr/doc/mes-comptes-emails-ixeb6GFqjk",
+    doc: "https://doc.incubateur.net/communaute/les-outils-de-la-communaute/emails/emails-suite-numerique",
   },
 };
 
@@ -49,6 +49,20 @@ export const WebMailButtons = ({ plan }: { plan: EMAIL_PLAN_TYPE }) => {
       >
         Documentation
       </Button>
+      {plan === EMAIL_PLAN_TYPE.EMAIL_PLAN_OPI && (
+        <Button
+          title="Envoyer un email à support-messagerie@mail.numerique.gouv.fr"
+          linkProps={{
+            href: "mailto:support-messagerie@mail.numerique.gouv.fr",
+          }}
+          iconId="ri-question-fill"
+          priority="secondary"
+          size="small"
+          className={fr.cx("fr-ml-1w")}
+        >
+          Support : support-messagerie@mail.numerique.gouv.fr
+        </Button>
+      )}
     </>
   );
 };
