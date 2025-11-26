@@ -6,8 +6,7 @@ import { db } from "@/lib/kysely";
 import { getAllStartups } from "@/lib/kysely/queries";
 import { getUserInfos } from "@/lib/kysely/queries/users";
 import { EventCode } from "@/models/actionEvent/actionEvent";
-import { userInfosToModel } from "@/models/mapper";
-import { Domaine, EmailStatusCode } from "@/models/member";
+import { EmailStatusCode } from "@/models/member";
 import {
   EMAIL_PLAN_TYPE,
   OvhExchangeCreationData,
@@ -18,87 +17,6 @@ import BetaGouv from "@betagouv";
 import * as utils from "@controllers/utils";
 
 const INCUBATORS_USING_EXCHANGE = ["gip-inclusion"];
-
-export async function createEmailForUser(
-  { username }: { username: string },
-  currentUser: string,
-) {
-  const isCurrentUser = currentUser === username;
-  const [user] = await Promise.all([
-    utils.userInfos({ username }, isCurrentUser),
-  ]);
-  if (!user.userInfos) {
-    throw new Error(
-      `Le membre ${username} n'a pas de fiche sur l'espace-membre: vous ne pouvez pas créer son compte email.`,
-    );
-  }
-
-  if (user.isExpired) {
-    throw new Error(`Le compte du membre ${username} est expiré.`);
-  }
-
-  if (!user.authorizations.canCreateEmail) {
-    throw new Error(
-      "Vous n'avez pas le droit de créer le compte email du membre.",
-    );
-  }
-
-  if (!isCurrentUser) {
-    const loggedUserInfo = userInfosToModel(
-      await getUserInfos({ username: currentUser }),
-    );
-    if (!loggedUserInfo) {
-      throw new Error(
-        "Vous ne pouvez pas créer de compte email car votre compte  n'a pas de fiche dans l'espace-membre.",
-      );
-    } else if (utils.checkUserIsExpired(loggedUserInfo)) {
-      throw new Error(
-        "Vous ne pouvez pas créer le compte email car votre compte a une date de fin expiré.",
-      );
-    }
-  }
-  let emailIsRecreated = false;
-  if (user) {
-    if (user.userInfos.email_is_redirection) {
-      throw new Error(
-        `Le membre ${username} ne peut pas avoir d'email beta.gouv.fr, iel utilise une adresse de redirection.`,
-      );
-    }
-    emailIsRecreated =
-      user.userInfos.primary_email_status === EmailStatusCode.EMAIL_DELETED;
-  } else {
-    await db
-      .insertInto("users")
-      .values({
-        username,
-        fullname: username,
-        domaine: Domaine.AUTRE,
-        primary_email_status: EmailStatusCode.EMAIL_UNSET,
-        role: "",
-      })
-      .execute();
-  }
-  await createEmail(username, currentUser, emailIsRecreated);
-}
-
-// export async function createEmailForUser(req, res) {
-//     const username = req.sanitize(req.params.username);
-//     const email = req.sanitize(req.body.to_email);
-
-//     try {
-//         await createEmailAndUpdateSecondaryEmail(
-//             { username, email },
-//             req.auth.id
-//         );
-//         req.flash("message", "Le compte email a bien été créé.");
-//         res.redirect(`/community/${username}`);
-//     } catch (err) {
-//         console.error(err);
-
-//         req.flash("error", err.message);
-//         res.redirect("/community");
-//     }
-// }
 
 async function getEmailCreationParams(username: string): Promise<
   | {

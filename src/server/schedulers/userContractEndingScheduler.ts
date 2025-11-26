@@ -3,7 +3,6 @@ import { differenceInDays, format, startOfDay } from "date-fns";
 import { matomoClient } from "../config/matomo.config";
 import { sentryClient } from "../config/sentry.config";
 import { addEvent } from "@/lib/events";
-import { db } from "@/lib/kysely";
 import {
   getAllExpiredUsers,
   getAllUsersInfo,
@@ -14,7 +13,6 @@ import { Job } from "@/models/job";
 import { memberBaseInfoToModel } from "@/models/mapper";
 import {
   CommunicationEmailCode,
-  EmailStatusCode,
   memberBaseInfoAndMattermostWrapperType,
   memberBaseInfoSchemaType,
 } from "@/models/member";
@@ -24,12 +22,10 @@ import { sendEmail } from "@/server/config/email.config";
 import BetaGouv from "@betagouv";
 import * as utils from "@controllers/utils";
 import { sleep } from "@controllers/utils";
-import { removeContactsFromMailingList } from "@infra/email/sendInBlue";
 import {
   EmailEndingContract,
   EmailNoMoreContract,
   EMAIL_TYPES,
-  MAILING_LIST_TYPE,
 } from "@modules/email";
 import htmlBuilder from "@modules/htmlbuilder/htmlbuilder";
 import pAll from "p-all";
@@ -266,100 +262,6 @@ export async function sendJ30Email(users) {
   return module.exports.sendInfoToSecondaryEmailAfterXDays(30, users);
 }
 
-//
-// pour les users donnés
-// OU
-// les users en EMAIL_SUSPENDED expirés depuis +30J, qui ont un email OVH et ont été mis à jour depuis +30J
-// supprime le compte email
-// passe l'email en EMAIL_DELETED et supprime le primary_email
-//
-export async function deleteOVHEmailAcounts(
-  optionalExpiredUsers?: memberBaseInfoSchemaType[],
-) {
-  let expiredUsers = optionalExpiredUsers;
-  let dbUsers: memberBaseInfoSchemaType[] = [];
-  if (!expiredUsers) {
-    const users = (await getAllUsersInfo()).map((user) =>
-      memberBaseInfoToModel(user),
-    );
-    const allOvhEmails = await BetaGouv.getAllEmailInfos();
-    const today = new Date();
-    const todayLess30days = new Date();
-    todayLess30days.setDate(today.getDate() - 30);
-    expiredUsers = users.filter((user) => {
-      return (
-        utils.checkUserIsExpired(user, 30) &&
-        allOvhEmails.includes(user.username) &&
-        user.primary_email_status_updated_at < todayLess30days &&
-        user.primary_email_status === EmailStatusCode.EMAIL_SUSPENDED
-      );
-    });
-  }
-  for (const user of expiredUsers) {
-    try {
-      await BetaGouv.deleteEmail(user.username);
-      await db
-        .updateTable("users")
-        .where("username", "=", user.username)
-        .set({
-          primary_email_status: EmailStatusCode.EMAIL_DELETED,
-          primary_email: null,
-        })
-        .execute();
-      await addEvent({
-        action_code: EventCode.MEMBER_EMAIL_DELETED,
-        created_by_username: SYSTEM_NAME,
-        action_on_username: user.username,
-      });
-
-      console.log(`Suppression de l'email ovh pour ${user.username}`);
-    } catch {
-      console.log(
-        `Erreur lors de la suppression de l'email ovh pour ${user.username}`,
-      );
-    }
-  }
-}
-
-export async function deleteSecondaryEmailsForUsers(
-  optionalExpiredUsers?: memberBaseInfoSchemaType[],
-) {
-  let expiredUsers = optionalExpiredUsers;
-  if (!expiredUsers) {
-    const users = (await getAllUsersInfo()).map((user) =>
-      memberBaseInfoToModel(user),
-    );
-    expiredUsers = users.filter((user) => utils.checkUserIsExpired(user, 30));
-  }
-  const today = new Date();
-  const todayLess30days = new Date();
-  todayLess30days.setDate(today.getDate() - 30);
-  const dbUsers = expiredUsers.filter(
-    (user) =>
-      user.secondary_email &&
-      [EmailStatusCode.EMAIL_DELETED, EmailStatusCode.EMAIL_EXPIRED].includes(
-        user.primary_email_status,
-      ) &&
-      user.primary_email_status_updated_at < todayLess30days,
-  );
-  for (const user of dbUsers) {
-    try {
-      await db
-        .updateTable("users")
-        .set({
-          secondary_email: null,
-        })
-        .where("username", "=", user.username)
-        .execute();
-      console.log(`Suppression de secondary_email pour ${user.username}`);
-    } catch {
-      console.log(
-        `Erreur lors de la suppression de secondary_email pour ${user.username}`,
-      );
-    }
-  }
-}
-
 export async function deleteMatomoAccount() {
   await deleteServiceAccounts(matomoClient);
 }
@@ -451,73 +353,4 @@ export async function deleteRedirectionsAfterQuitting(
       }
     }),
   );
-}
-const removeEmailFromMailingList = async (
-  userId: string,
-  mailingList: string[],
-) => {
-  return Promise.all(
-    mailingList.map(async (mailing: string) => {
-      try {
-        await BetaGouv.unsubscribeFromMailingList(
-          mailing,
-          utils.buildBetaEmail(userId),
-        );
-        console.log(
-          `Suppression de ${utils.buildBetaEmail(
-            userId,
-          )} de la mailing list ${mailing}`,
-        );
-      } catch (err) {
-        console.error(
-          `Erreur lors de la suppression de l'email ${utils.buildBetaEmail(
-            userId,
-          )} de la mailing list ${mailing}  : ${err}`,
-        );
-      }
-    }),
-  );
-};
-
-export async function removeEmailsFromMailingList(
-  optionalExpiredUsers?: memberBaseInfoSchemaType[],
-  nbDays = 30,
-) {
-  let expiredUsers = optionalExpiredUsers;
-  if (!expiredUsers) {
-    const users = (await getAllUsersInfo()).map((user) =>
-      memberBaseInfoToModel(user),
-    );
-    expiredUsers = utils.getExpiredUsersForXDays(users, nbDays);
-  }
-  const mailingList: string[] = (await BetaGouv.getAllMailingList()) || [];
-  for (const user of expiredUsers) {
-    try {
-      await removeEmailFromMailingList(user.username, mailingList);
-    } catch (e) {
-      console.error(e);
-    }
-  }
-  for (const user of expiredUsers) {
-    try {
-      await removeContactsFromMailingList({
-        emails: [user.primary_email, user.secondary_email].filter(
-          (str) => str,
-        ) as string[],
-        listType: MAILING_LIST_TYPE.NEWSLETTER,
-      });
-    } catch (e) {
-      console.error(e);
-    }
-    try {
-      await removeContactsFromMailingList({
-        emails: [user.primary_email, user.secondary_email].filter(
-          (str) => str,
-        ) as string[],
-        listType: MAILING_LIST_TYPE.ONBOARDING,
-      });
-    } catch (e) {
-      console.error(e);
-    }
-  }
 }
