@@ -330,14 +330,6 @@ export const espaceMembreCronJobs: EspaceMembreCronJobType[] = [
     description: "Email départ J+30",
   },
   {
-    cronTime: "0 0 10 * * *",
-    onTick: deleteSecondaryEmailsForUsers,
-    isActive: !!config.featureDeleteSecondaryEmail,
-    name: "deleteSecondaryEmailsForUsers",
-    description:
-      "Supprime dans la DB les emails secondaires des membres expirés",
-  },
-  {
     cronTime: "0 0 * * * *",
     onTick: reinitPasswordEmail,
     isActive: !!config.featureReinitPasswordEmail,

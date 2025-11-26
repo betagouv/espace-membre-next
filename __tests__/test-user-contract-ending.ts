@@ -12,14 +12,9 @@ import * as email from "@/server/config/email.config";
 import { FakeMatomo, matomoClient } from "@/server/config/matomo.config";
 import { FakeSentryService } from "@/server/config/sentry.config";
 import BetaGouv from "@betagouv";
-//import { setEmailExpired } from "@schedulers/setEmailExpired";
 import {
   sendInfoToSecondaryEmailAfterXDays,
-  deleteSecondaryEmailsForUsers,
-  //deleteOVHEmailAcounts,
-  //removeEmailsFromMailingList,
   deleteRedirectionsAfterQuitting,
-  deleteMatomoAccount,
   deleteServiceAccounts,
 } from "@schedulers/userContractEndingScheduler";
 
@@ -209,86 +204,6 @@ describe("send message on contract end to user", () => {
     it("should send j1 mail to users", async () => {
       await sendInfoToSecondaryEmailAfterXDays(1);
       sendEmailStub.calledOnce.should.be.true;
-    });
-
-    it("should not delete user secondary_email if suspended less than 30days", async () => {
-      const today = new Date();
-      const todayLess29days = new Date();
-      todayLess29days.setDate(today.getDate() - 29);
-      const updatedUser = await db
-        .updateTable("users")
-        .where("username", "=", "julien.dauphant")
-        .set({
-          primary_email_status: EmailStatusCode.EMAIL_DELETED,
-          primary_email_status_updated_at: todayLess29days,
-          secondary_email: "uneadressesecondaire@gmail.com",
-        })
-        .returningAll()
-        .executeTakeFirstOrThrow();
-      await db
-        .updateTable("missions")
-        .where("user_id", "=", updatedUser.uuid)
-        .set({
-          end: expiredFor30daysDate,
-        })
-        .execute();
-      const [user1] = await db
-        .selectFrom("users")
-        .selectAll()
-        .where("username", "=", "julien.dauphant")
-        .execute();
-      should.equal(user1.secondary_email, "uneadressesecondaire@gmail.com");
-
-      await db
-        .updateTable("users")
-        .where("username", "=", "julien.dauphant")
-        .set({
-          primary_email_status: EmailStatusCode.EMAIL_DELETED,
-          primary_email_status_updated_at: new Date(expiredFor31daysDate),
-          secondary_email: "uneadressesecondaire@gmail.com",
-        })
-        .execute();
-      await deleteSecondaryEmailsForUsers();
-      const [user2] = await db
-        .selectFrom("users")
-        .selectAll()
-        .where("username", "=", "julien.dauphant")
-        .execute();
-      should.equal(user2.secondary_email, null);
-    });
-
-    it("should delete user secondary_email if suspended more than 30days", async () => {
-      const updatedUser = await db
-        .updateTable("users")
-        .where("username", "=", "julien.dauphant")
-        .set({
-          primary_email_status: EmailStatusCode.EMAIL_DELETED,
-          primary_email_status_updated_at: new Date(expiredFor31daysDate),
-          secondary_email: "uneadressesecondaire@gmail.com",
-        })
-        .returningAll()
-        .executeTakeFirstOrThrow();
-      await db
-        .updateTable("missions")
-        .where("user_id", "=", updatedUser.uuid)
-        .set({
-          end: expiredFor30daysDate,
-        })
-        .execute();
-      await deleteSecondaryEmailsForUsers();
-      const [user2] = await db
-        .selectFrom("users")
-        .selectAll()
-        .where("username", "=", "julien.dauphant")
-        .execute();
-      should.equal(user2.secondary_email, null);
-      await db
-        .updateTable("users")
-        .where("username", "=", "julien.dauphant")
-        .set({
-          secondary_email: null,
-        })
-        .execute();
     });
   });
 });

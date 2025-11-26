@@ -3,7 +3,6 @@ import { differenceInDays, format, startOfDay } from "date-fns";
 import { matomoClient } from "../config/matomo.config";
 import { sentryClient } from "../config/sentry.config";
 import { addEvent } from "@/lib/events";
-import { db } from "@/lib/kysely";
 import {
   getAllExpiredUsers,
   getAllUsersInfo,
@@ -14,7 +13,6 @@ import { Job } from "@/models/job";
 import { memberBaseInfoToModel } from "@/models/mapper";
 import {
   CommunicationEmailCode,
-  EmailStatusCode,
   memberBaseInfoAndMattermostWrapperType,
   memberBaseInfoSchemaType,
 } from "@/models/member";
@@ -24,12 +22,10 @@ import { sendEmail } from "@/server/config/email.config";
 import BetaGouv from "@betagouv";
 import * as utils from "@controllers/utils";
 import { sleep } from "@controllers/utils";
-import { removeContactsFromMailingList } from "@infra/email/sendInBlue";
 import {
   EmailEndingContract,
   EmailNoMoreContract,
   EMAIL_TYPES,
-  MAILING_LIST_TYPE,
 } from "@modules/email";
 import htmlBuilder from "@modules/htmlbuilder/htmlbuilder";
 import pAll from "p-all";
@@ -264,49 +260,6 @@ export async function sendJ1Email(users) {
 
 export async function sendJ30Email(users) {
   return module.exports.sendInfoToSecondaryEmailAfterXDays(30, users);
-}
-
-// pour les users expirés depuis 30J et l'email en EMAIL_DELETED ou EMAIL_EXPIRED
-// dont l'email a été mis à jour il y a + de 30J
-// supprime le secondary_email
-// WHY ??
-export async function deleteSecondaryEmailsForUsers(
-  optionalExpiredUsers?: memberBaseInfoSchemaType[],
-) {
-  let expiredUsers = optionalExpiredUsers;
-  if (!expiredUsers) {
-    const users = (await getAllUsersInfo()).map((user) =>
-      memberBaseInfoToModel(user),
-    );
-    expiredUsers = users.filter((user) => utils.checkUserIsExpired(user, 30));
-  }
-  const today = new Date();
-  const todayLess30days = new Date();
-  todayLess30days.setDate(today.getDate() - 30);
-  const dbUsers = expiredUsers.filter(
-    (user) =>
-      user.secondary_email &&
-      [EmailStatusCode.EMAIL_DELETED, EmailStatusCode.EMAIL_EXPIRED].includes(
-        user.primary_email_status,
-      ) &&
-      user.primary_email_status_updated_at < todayLess30days,
-  );
-  for (const user of dbUsers) {
-    try {
-      await db
-        .updateTable("users")
-        .set({
-          secondary_email: null,
-        })
-        .where("username", "=", user.username)
-        .execute();
-      console.log(`Suppression de secondary_email pour ${user.username}`);
-    } catch {
-      console.log(
-        `Erreur lors de la suppression de secondary_email pour ${user.username}`,
-      );
-    }
-  }
 }
 
 export async function deleteMatomoAccount() {

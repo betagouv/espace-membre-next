@@ -33,7 +33,6 @@
 | ✅ | `0 0 8,14 * * *` | `deleteRedirectionsAfterQuitting` | Supprime les redirections email OVH des utilisateurs expirés |
 | ✅ | `0 0 8 * * *` | `sendJ1Email` | Email départ J+1 |
 | ✅ | `0 0 8 * * *` | `sendJ30Email` | Email départ J+30 |
-| ❌ | `0 0 10 * * *` | `deleteSecondaryEmailsForUsers` | Supprime dans la DB les emails secondaires des membres expirés |
 | ✅ | `0 0 15 * * *` | `setEmailExpired` | Marque en DB les emails des membres comme expirés |
 | ✅ | `0 0 8 * * *` | `removeEmailsFromMailingList` | Supprime les utilisateurs expirés des mailing-lists brevo ONBOARDING,NEWSLETTER |
 | ✅ | `0 0 14 * * *` | `reinitPasswordEmail` | Réinitialise le mot de passe email des membres expirés après 5 jours |
