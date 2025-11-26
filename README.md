@@ -13,7 +13,7 @@ L'espace membre de l’incubateur
 - afficher les formations et évènements
 - gestion de l'infolettre
 - connexion via ProConnect ou magic-link
-- tâches de maintenance (cf [#scripts-cron](#scripts-cron)) : emails,
+- tâches de maintenance (cf [CRON.md](./CRON.md)) : emails,
   mattermost, brevo, github
 
 ## Dev de l'app Espace Membre
@@ -124,15 +124,6 @@ Lorsqu'on utilise un autre domaine OVH (par exemple, un domain bac-à-sable pour
 - Configurer les variables d'environnements : `OVH_APP_KEY`, `OVH_APP_SECRET` et `OVH_CONSUMER_KEY` (Avec une clé ayant un accès aux emails)
 - Lancer le script : `node ./scripts/delete_redirections.js from@beta.gouv.fr to@example.com`
 
-## Scripts CRON
-
-Les tâches CRON sont gérées par une app scalingo dédiée via le [Procfile](./Procfile)
-
-La listes des cron sont dans les fichiers :
-
-- [./src/server/scheduler/cron.ts](./src/server/scheduler/cron.ts)
-- [./src/server/queueing/schedule.ts](./src/server/queueing/schedule.ts)
-
 ## Cron Jobs
 
 Voir le détail dans [CRON.md](./CRON.md)
@@ -179,20 +170,23 @@ Vous pouvez obtenir un token gratuitement en créant un projet sur [chromatic.co
 ### Member creation
 
 ```mermaid
-graph TD
+graph LR
 
 CreateMember-->ValidationIncubateur
 ValidationIncubateur-->VerifyMember
 VerifyMember-->CreateEmail
 CreateEmail-->SendEmailInvitation
-VerifyMember-->AddToBrevoNewsletterContacts
-VerifyMember-->AddToOVHMailingList
 ```
 
 ### Member Offboarding
 
-- J+5 : email password is reset
-- J+30 : email is suspended
-- J+30 : mattermost account is disabled
+- J-30 : Message J-30
+- J-15 : Message J-15
+- J-1 : Message J-1
+- J+1 : Message J+1
+- J+1 : GitHub account is removed from organisation
+- J+5 : email is set as SUSPENDED
+- J+30 : Message J+30
+- J+30 : mattermost account is removed from community and added to alumni
 - J+30 : matomo account is disabled
 - J+30 : sentry account is disabled
