@@ -35,7 +35,7 @@
 | ✅ | `0 0 8 * * *` | `sendJ30Email` | Email départ J+30 |
 | ✅ | `0 0 15 * * *` | `setEmailExpired` | Marque en DB les emails des membres comme expirés |
 | ✅ | `0 0 8 * * *` | `removeEmailsFromMailingList` | Supprime les utilisateurs expirés des mailing-lists brevo ONBOARDING,NEWSLETTER |
-| ✅ | `0 0 14 * * *` | `reinitPasswordEmail` | Réinitialise le mot de passe email des membres expirés après 5 jours |
+| ✅ | `0 0 14 * * *` | `deactivateExpiredMembersEmails` |Désactive les comptes email des membres expirés après 5 jours |
 | ✅ | `0 0 10 * * *` | `sendContractEndingMessageToUsers15days` | Sending contract ending message to users (15 days) |
 | ✅ | `0 0 10 * * *` | `sendContractEndingMessageToUsers30days` | Sending contract ending message to users (30 days) |
 | ✅ | `0 0 10 * * *` | `sendContractEndingMessageToUsers2days` | Sending contract ending message to users (2 days) |

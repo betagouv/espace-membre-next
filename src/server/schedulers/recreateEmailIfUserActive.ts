@@ -3,12 +3,9 @@ import * as Sentry from "@sentry/node";
 import { db } from "@/lib/kysely";
 import { EmailStatusCode } from "@/models/member";
 import { DIMAIL_MAILBOX_DOMAIN } from "@/lib/dimail/utils";
-import { createMailbox, patchMailbox } from "@/lib/dimail/client";
+import { patchMailbox } from "@/lib/dimail/client";
 import { getDimailEmail } from "@/lib/kysely/queries/dimail";
-import {
-  createDimailMailboxForUser,
-  splitFullName,
-} from "../queueing/workers/create-dimail-mailbox";
+import { createDimailMailboxForUser } from "../queueing/workers/create-dimail-mailbox";
 import { getActiveUsers } from "@/lib/kysely/queries/users";
 
 // pour les comptes actifs en EMAIL_SUSPENDED avec un secondary_email
@@ -20,6 +17,9 @@ export async function recreateEmailIfUserActive() {
     .execute();
   for (const dbUser of dbUsers) {
     try {
+      console.log(
+        `recreate email for ${dbUser.username} (${dbUser.primary_email})`,
+      );
       if (dbUser.primary_email) {
         // if in dinum_emails
         const isDimailEmail = await getDimailEmail(dbUser.primary_email);

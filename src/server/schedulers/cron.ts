@@ -2,7 +2,7 @@
 // documentation file (CRON.md) file with `make cron-docs`.
 
 import { postEventsOnMattermost } from "./calendarScheduler";
-import { reinitPasswordEmail } from "./emailScheduler";
+import { deactivateExpiredMembersEmails } from "./emailScheduler";
 import { syncFormationFromAirtable } from "./formationScheduler/syncFormationFromAirtable";
 import { syncFormationInscriptionFromAirtable } from "./formationScheduler/syncFormationInscriptionFromAirtable";
 import {
@@ -35,7 +35,6 @@ import { sendEmailToStartupToUpdatePhase } from "./startups/sendEmailToStartupTo
 import { unblockEmailsThatAreActive } from "./unblockEmailsThatAreActive";
 import { sendMessageToActiveUsersWithoutSecondaryEmail } from "./updateProfileScheduler";
 import {
-  deleteSecondaryEmailsForUsers,
   sendContractEndingMessageToUsers,
   sendJ1Email,
   sendJ30Email,
@@ -331,11 +330,11 @@ export const espaceMembreCronJobs: EspaceMembreCronJobType[] = [
   },
   {
     cronTime: "0 0 * * * *",
-    onTick: reinitPasswordEmail,
+    onTick: deactivateExpiredMembersEmails,
     isActive: !!config.featureReinitPasswordEmail,
-    name: "reinitPasswordEmail",
+    name: "deactivateExpiredMembersEmails",
     description:
-      "Réinitialise le mot de passe email des membres expirés après 5 jours",
+      "Désactive les comptes email des membres expirés après 5 jours",
   },
   {
     cronTime: "0 0 10 * * *",
