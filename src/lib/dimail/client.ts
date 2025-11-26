@@ -54,7 +54,7 @@ export type DimailNewAccesTokenResult = string;
  * GET /token
  * Retourne access_token
  */
-async function getAccessToken(): Promise<string> {
+export async function getAccessToken(): Promise<string> {
   const response = await axios.get(
     `${DIMAIL_API_URL}/token/?username=${encodeURIComponent(DIMAIL_API_USERNAME || "unknown")}`,
     {
@@ -147,4 +147,32 @@ export async function resetPassword({
     return { success: false };
   }
   return { success: true, password: res.data.password };
+}
+
+/**
+ * Update a mailbox
+ * POST /domains/{domain_name}/mailboxes/{user_name}
+ */
+export async function patchMailbox({
+  domain_name,
+  user_name,
+  data,
+}: {
+  user_name: string;
+  domain_name: string;
+  data: {
+    active?: "no" | "yes";
+    givenName?: string;
+    surName?: string;
+    displayName?: string;
+  };
+}): Promise<{ success: boolean; password?: string }> {
+  const res = await client.patch<DimailMailboxResult>(
+    `/domains/${encodeURIComponent(domain_name)}/mailboxes/${encodeURIComponent(user_name)}`,
+    data,
+  );
+  if (res.status !== 200) {
+    return { success: false };
+  }
+  return { success: true };
 }

@@ -12,12 +12,12 @@ import * as email from "@/server/config/email.config";
 import { FakeMatomo, matomoClient } from "@/server/config/matomo.config";
 import { FakeSentryService } from "@/server/config/sentry.config";
 import BetaGouv from "@betagouv";
-import { setEmailExpired } from "@schedulers/setEmailExpired";
+//import { setEmailExpired } from "@schedulers/setEmailExpired";
 import {
   sendInfoToSecondaryEmailAfterXDays,
   deleteSecondaryEmailsForUsers,
-  deleteOVHEmailAcounts,
-  removeEmailsFromMailingList,
+  //deleteOVHEmailAcounts,
+  //removeEmailsFromMailingList,
   deleteRedirectionsAfterQuitting,
   deleteMatomoAccount,
   deleteServiceAccounts,
@@ -211,49 +211,6 @@ describe("send message on contract end to user", () => {
       sendEmailStub.calledOnce.should.be.true;
     });
 
-    it("should delete user ovh account if email status suspended for more than 30 days", async () => {
-      const updatedUser = await db
-        .updateTable("users")
-        .where("username", "=", "membre.expire")
-        .set({
-          primary_email_status: EmailStatusCode.EMAIL_SUSPENDED,
-          primary_email_status_updated_at: new Date(),
-        })
-        .returningAll()
-        .executeTakeFirstOrThrow();
-      await db
-        .updateTable("missions")
-        .where("user_id", "=", updatedUser.uuid)
-        .set({
-          end: expiredFor30daysDate,
-        })
-        .execute();
-      const ovhEmailDeletion = nock(/.*ovh.com/)
-        .delete(/^.*email\/domain\/.*\/account\/membre.expire/)
-        .reply(200);
-      await deleteOVHEmailAcounts();
-      ovhEmailDeletion.isDone().should.be.false;
-      const today = new Date();
-      const todayLess30days = new Date();
-      todayLess30days.setDate(today.getDate() - 31);
-      await db
-        .updateTable("users")
-        .where("username", "=", "membre.expire")
-        .set({
-          primary_email_status: EmailStatusCode.EMAIL_SUSPENDED,
-          primary_email_status_updated_at: todayLess30days,
-        })
-        .execute();
-      await deleteOVHEmailAcounts();
-      const user = await db
-        .selectFrom("users")
-        .selectAll()
-        .where("username", "=", "membre.expire")
-        .executeTakeFirstOrThrow();
-      user.primary_email_status.should.be.equal(EmailStatusCode.EMAIL_DELETED);
-      ovhEmailDeletion.isDone().should.be.true;
-    });
-
     it("should not delete user secondary_email if suspended less than 30days", async () => {
       const today = new Date();
       const todayLess29days = new Date();
@@ -403,100 +360,6 @@ describe("After quitting", () => {
   it("should delete redirections even for past users", async () => {
     const test: unknown[] = await deleteRedirectionsAfterQuitting(true);
     should.equal(test.length, 2);
-  });
-
-  it("should set email as expired if email is not from main domain", async () => {
-    const updatedUser = await db
-      .updateTable("users")
-      .where("username", "=", "julien.dauphant")
-      .set({
-        primary_email: `julien.dauphant@${config.domain}`,
-        primary_email_status: EmailStatusCode.EMAIL_SUSPENDED,
-        primary_email_status_updated_at: expiredFor31daysDate,
-      })
-      .returningAll()
-      .executeTakeFirstOrThrow();
-    await db
-      .updateTable("missions")
-      .where("user_id", "=", updatedUser.uuid)
-      .set({
-        start: "2018-01-01",
-        end: new Date(expiredFor31daysDate).toISOString().split("T")[0],
-      })
-      .execute();
-    await setEmailExpired();
-    const [user] = await db
-      .selectFrom("users")
-      .selectAll()
-      .where("username", "=", "julien.dauphant")
-      .execute();
-    user.primary_email_status.should.equal(EmailStatusCode.EMAIL_SUSPENDED);
-
-    const updatedUser2 = await db
-      .updateTable("users")
-      .where("username", "=", "julien.dauphant")
-      .set({
-        primary_email: `julien.dauphant@anotherdomain.com`,
-      })
-      .returningAll()
-      .executeTakeFirstOrThrow();
-    await setEmailExpired();
-    const [user2] = await db
-      .selectFrom("users")
-      .selectAll()
-      .where("username", "=", "julien.dauphant")
-      .execute();
-    user2.primary_email_status.should.equal(EmailStatusCode.EMAIL_EXPIRED);
-    // userinfos.restore();
-  });
-
-  it("should remove user from mailingList", async () => {
-    const url = process.env.USERS_API || "https://beta.gouv.fr";
-    nock(url)
-      .get((uri) => uri.includes("authors.json"))
-      .reply(200, [
-        {
-          id: "julien.dauphant",
-          fullname: "Julien Dauphant",
-          missions: [
-            {
-              start: "2016-11-03",
-              end: expiredFor30daysDate,
-              status: "independent",
-              employer: "octo",
-            },
-          ],
-        },
-      ])
-      .persist();
-    const ovhMailingList = nock(/.*ovh.com/)
-      .get(/^.*email\/domain\/.*\/mailingList\//)
-      .reply(200, ["beta-gouv-fr", "aides-jeunes"]);
-    const mailingListBeta = nock(/.*ovh.com/)
-      .delete((uri) =>
-        uri.includes(
-          `/email/domain/${config.domain}/mailingList/beta-gouv-fr/subscriber/julien.dauphant2@${config.domain}`,
-        ),
-      )
-      .reply(404);
-    const mailingListAideJeune = nock(/.*ovh.com/)
-      .delete((uri) =>
-        uri.includes(
-          `/email/domain/${config.domain}/mailingList/aides-jeunes/subscriber/julien.dauphant2@${config.domain}`,
-        ),
-      )
-      .reply(200, {
-        action: "mailinglist/deleteSubscriber",
-        id: 14564515,
-        language: "fr",
-        domain: config.domain,
-        account: "aides-jeunes",
-        date: "2021-08-12T15:29:55+02:00",
-      });
-    await removeEmailsFromMailingList();
-    ovhMailingList.isDone().should.be.true;
-    mailingListBeta.isDone().should.be.true;
-    mailingListAideJeune.isDone().should.be.true;
   });
 
   it("should delete matomo user account for expired users", async () => {

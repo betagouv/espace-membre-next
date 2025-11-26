@@ -26,7 +26,7 @@ import * as utils from "@controllers/utils";
 import { isBetaEmail } from "@controllers/utils";
 import { EMAIL_TYPES, MAILING_LIST_TYPE } from "@modules/email";
 import { DIMAIL_MAILBOX_DOMAIN } from "@lib/dimail/utils";
-import { resetPassword } from "@lib/dimail/client";
+import { patchMailbox } from "@lib/dimail/client";
 
 const differenceGithubRedirectionOVH = function differenceGithubOVH(
   user: memberBaseInfoSchemaType,
@@ -183,16 +183,18 @@ export async function reinitPasswordEmail() {
       const emailInfos = await BetaGouv.emailInfos(user.username);
       if (emailInfos?.emailPlan === EMAIL_PLAN_TYPE.EMAIL_PLAN_OPI) {
         try {
-          await resetPassword({
+          await patchMailbox({
             domain_name: DIMAIL_MAILBOX_DOMAIN,
             user_name: emailInfos.email.split("@")[0],
+            data: {
+              active: "no",
+            },
           });
           await setEmailSuspended(user.username);
         } catch (e: any) {
           console.error(
             `Cannot reinit DIMAIL password for ${emailInfos.email}: ${e.message}`,
           );
-          throw e;
         }
         console.log(
           `Le mot de passe DIMAIL de ${
@@ -219,7 +221,7 @@ export async function reinitPasswordEmail() {
             } a été modifié car son contrat finissait le ${new Date()}.`,
           );
         } catch (err) {
-          console.log(
+          console.error(
             `Le mode de passe de ${user.username} n'a pas pu être modifié: ${err}`,
           );
         }

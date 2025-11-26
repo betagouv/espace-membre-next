@@ -9,8 +9,10 @@ fileignoreconfig:
   checksum: 100421024e2b94085971fab0a906d5c4e7ca63699d8d6d198090e257af2b39be
 - filename: src/app/(private)/(dashboard)/services/page.tsx
   checksum: daebae004c8c06af9a88aaf57a1fad4b0a6efcb7920cf9628e0c1fd1985569ab
+- filename: src/lib/dimail/client.spec.ts
+  checksum: f5dd7469093a6408d795577b8c3adf5bbf8dba00e07b3388c1fad8d6f63ba185
 - filename: src/lib/dimail/client.ts
-  checksum: f94b34d6e3902d0ee15312890f92bf33c9268ea6f5f9cfe3fdf17b623685dd05
+  checksum: b43b16ede6c1744a50d3624f4dcb6e07cce09959524b0b655c45bc82e9d06a22
 - filename: src/server/queueing/workers/create-dimail-mailbox.spec.ts
   checksum: 7961ed68360545e4e2c72bf9884e12943467175bdeed35b38bfc177613fc0b15
 - filename: src/server/queueing/workers/send-verification-email.ts

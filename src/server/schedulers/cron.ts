@@ -2,11 +2,7 @@
 // documentation file (CRON.md) file with `make cron-docs`.
 
 import { postEventsOnMattermost } from "./calendarScheduler";
-import {
-  reinitPasswordEmail,
-  subscribeEmailAddresses,
-  unsubscribeEmailAddresses,
-} from "./emailScheduler";
+import { reinitPasswordEmail } from "./emailScheduler";
 import { syncFormationFromAirtable } from "./formationScheduler/syncFormationFromAirtable";
 import { syncFormationInscriptionFromAirtable } from "./formationScheduler/syncFormationInscriptionFromAirtable";
 import {
@@ -44,14 +40,12 @@ import {
   sendJ1Email,
   sendJ30Email,
   deleteRedirectionsAfterQuitting,
-  removeEmailsFromMailingList,
   deleteMatomoAccount,
   deleteSentryAccount,
 } from "./userContractEndingScheduler";
 import { matomoClient } from "../config/matomo.config";
 import { sentryClient } from "../config/sentry.config";
 import config from "@/server/config";
-import { setEmailExpired } from "@schedulers/setEmailExpired";
 
 export interface EspaceMembreCronJobType {
   cronTime: string;
@@ -293,26 +287,11 @@ export const espaceMembreCronJobs: EspaceMembreCronJobType[] = [
       "Unblock emails from MAILING_LIST_NEWSLETTER Brevo mailing-list",
   },
   {
-    cronTime: "0 */8 * * * *",
+    cronTime: "0 * * * * *",
     onTick: recreateEmailIfUserActive,
     isActive: true,
     name: "recreateEmailIfUserActive",
     description: "Recreate email for user active again",
-  },
-  {
-    cronTime: "0 */4 * * * *",
-    onTick: subscribeEmailAddresses,
-    isActive: !!config.featureSubscribeToIncubateurMailingList,
-    name: "subscribeEmailAddresses",
-    description: "Re-inscrit les désabonnés à la mailing-list brevo incubateur",
-  },
-  {
-    cronTime: "0 */4 * * * *",
-    onTick: unsubscribeEmailAddresses,
-    isActive: !!config.featureUnsubscribeFromIncubateurMailingList,
-    name: "unsubscribeEmailAddresses",
-    description:
-      "Désinscrit les membres expirés de la mailing list brevo incubateur",
   },
   {
     cronTime: "0 */5 * * * 1-5",
@@ -359,22 +338,7 @@ export const espaceMembreCronJobs: EspaceMembreCronJobType[] = [
       "Supprime dans la DB les emails secondaires des membres expirés",
   },
   {
-    cronTime: "0 0 15 * * *",
-    onTick: setEmailExpired,
-    isActive: !!config.featureSetEmailExpired,
-    name: "setEmailExpired",
-    description: "Marque en DB les emails des membres comme expirés",
-  },
-  {
-    cronTime: "0 0 8 * * *",
-    onTick: removeEmailsFromMailingList,
-    isActive: !!config.featureRemoveEmailsFromMailingList,
-    name: "removeEmailsFromMailingList",
-    description:
-      "Supprime les utilisateurs expirés des mailing-lists brevo ONBOARDING,NEWSLETTER",
-  },
-  {
-    cronTime: "0 0 14 * * *",
+    cronTime: "0 0 * * * *",
     onTick: reinitPasswordEmail,
     isActive: !!config.featureReinitPasswordEmail,
     name: "reinitPasswordEmail",

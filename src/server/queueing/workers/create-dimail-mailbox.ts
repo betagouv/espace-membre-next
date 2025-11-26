@@ -15,7 +15,7 @@ import { EMAIL_TYPES } from "@/server/modules/email";
 
 export const createDimailMailboxTopic = "create-dimail-mailbox";
 
-const splitFullName = (fullname: string) => {
+export const splitFullName = (fullname: string) => {
   const [prenom, ...rest] = fullname.trim().split(" ");
   return [prenom, rest.join(" ")];
 };
@@ -101,7 +101,7 @@ export async function createDimailMailboxForUser(userUuid: string) {
     dbUser.primary_email.endsWith(`@${DIMAIL_MAILBOX_DOMAIN}`) &&
     dbUser.primary_email !== mailboxInfos.email
   ) {
-    // créé un alias pour les comptes créés avant le 1er Décembre 2025
+    // créé un alias prenom.nom@beta.gouv.fr pour les comptes créés avant le 1er Décembre 2025
     if (new Date(dbUser.created_at) >= new Date(2025, 11, 1)) {
       console.info(
         `Skip create DIMAIL alias for ${mailboxInfos.email} : not a legacy member`,

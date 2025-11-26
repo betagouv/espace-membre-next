@@ -388,3 +388,15 @@ export const getLatests = (db: Kysely<DB> = database) => {
     .limit(10)
     .execute();
 };
+
+export const getActiveUsers = (db: Kysely<DB> = database) =>
+  db
+    .selectFrom("users")
+    .innerJoin("missions", "missions.user_id", "users.username")
+    .selectAll("users")
+    .where((eb) =>
+      eb.or([
+        eb("missions.end", ">", new Date()),
+        eb("missions.end", "is", null),
+      ]),
+    );
