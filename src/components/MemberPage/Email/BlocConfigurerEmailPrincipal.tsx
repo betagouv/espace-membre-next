@@ -47,15 +47,7 @@ export default function BlocConfigurerEmailPrincipal({
       <p>
         L'email principal est utilisé pour toutes les communications en rapport
         avec Betagouv. Ce doit être un email d'agent public. Il s'agit par
-        défaut de {userInfos.primary_email}.
-        <br />
-        <br />
-        <i className={fr.cx("fr-icon--md", "fr-icon-warning-fill")} /> En cas
-        d'utilisation d'une autre adresse,{" "}
-        <strong>
-          l'email {userInfos.primary_email} sera définitivement supprimé
-        </strong>
-        .
+        défaut de {userInfos.primary_email}. .
       </p>
       <p>
         <i className={fr.cx("fr-icon--md", "fr-icon-warning-fill")} /> L'email
