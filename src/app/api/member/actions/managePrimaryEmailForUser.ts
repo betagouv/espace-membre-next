@@ -7,8 +7,6 @@ import { addEvent } from "@/lib/events";
 import { db } from "@/lib/kysely";
 import * as mattermost from "@/lib/mattermost";
 import { EventCode } from "@/models/actionEvent/actionEvent";
-import betagouv from "@/server/betagouv";
-import config from "@/server/config";
 import {
   isPublicServiceEmail,
   isAdminEmail,

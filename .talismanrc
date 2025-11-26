@@ -7,4 +7,13 @@ fileignoreconfig:
   checksum: daebae004c8c06af9a88aaf57a1fad4b0a6efcb7920cf9628e0c1fd1985569ab
 - filename: src/server/queueing/workers/create-dimail-mailbox.spec.ts
   checksum: 7961ed68360545e4e2c72bf9884e12943467175bdeed35b38bfc177613fc0b15
+<<<<<<< HEAD
+=======
+- filename: src/server/queueing/workers/send-verification-email.ts
+  checksum: 6c4a7bbf33011000ba4223060c62f0631458c2308e27a987a61fac50a44eddfe
+- filename: src/server/schedulers/emailScheduler.ts
+  checksum: 85690f0610b3ce376f0f295c84f8503674e5f8d4fc4942f215212ee0ef50b7c2
+scopeconfig:
+- scope: node
+>>>>>>> 223b6c3c (fixxx)
 version: "1.0"
