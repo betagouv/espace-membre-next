@@ -112,13 +112,12 @@ export const POST = withHttpErrorHandling(async (req: Request) => {
       return user;
     });
     const bossClient = await getBossClientInstance();
-    if (!userIsValidatedStraightAway) {
-      // send validation email
+    if (userIsValidatedStraightAway) {
+      // send verification email
       await bossClient.send(
-        sendNewMemberValidationEmailTopic,
-        SendNewMemberValidationEmailSchema.parse({
+        sendNewMemberVerificationEmailTopic,
+        SendNewMemberVerificationEmailSchema.parse({
           userId: dbUser.uuid,
-          incubator_id,
         }),
         {
           retryLimit: 50,
@@ -126,11 +125,12 @@ export const POST = withHttpErrorHandling(async (req: Request) => {
         },
       );
     } else {
-      // send verification email
+      // send validation email
       await bossClient.send(
-        sendNewMemberVerificationEmailTopic,
-        SendNewMemberVerificationEmailSchema.parse({
+        sendNewMemberValidationEmailTopic,
+        SendNewMemberValidationEmailSchema.parse({
           userId: dbUser.uuid,
+          incubator_id,
         }),
         {
           retryLimit: 50,

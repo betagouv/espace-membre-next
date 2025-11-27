@@ -4,7 +4,6 @@ import axios from "axios";
 
 describe("dimail client", () => {
   let axiosGetStub: sinon.SinonStub;
-  let axiosCreateStub: sinon.SinonStub;
   let axiosInstance: any;
   let postStub: sinon.SinonStub;
   let patchStub: sinon.SinonStub;
@@ -34,7 +33,6 @@ describe("dimail client", () => {
       patch: patchStub,
       interceptors: { request: { use: sandbox.stub() } },
     };
-    axiosCreateStub = sandbox.stub(axios, "create").returns(axiosInstance);
 
     // Ensure fresh import by clearing require cache
     delete require.cache[require.resolve("./client")];

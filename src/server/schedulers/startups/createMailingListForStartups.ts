@@ -45,7 +45,7 @@ const addAndRemoveMemberToMailingListForStartup = async (
 };
 
 // update all mailing lists for active startups and update users
-// TODO
+// TODO : move to n8n
 export const createMailingListForStartups = async () => {
   const mailingLists = (await betagouv.getAllMailingList()) || [];
   const startupDetails = (await getAllStartups()).map((startup) =>

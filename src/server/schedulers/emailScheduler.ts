@@ -1,11 +1,10 @@
 import crypto from "crypto";
-import _ from "lodash/array";
 import pAll from "p-all";
 
 import { getAllUsersInfo } from "@/lib/kysely/queries/users";
 import { memberBaseInfoToModel } from "@/models/mapper";
-import { EmailStatusCode, memberBaseInfoSchemaType } from "@/models/member";
-import { EMAIL_PLAN_TYPE, OvhRedirection } from "@/models/ovh";
+import { EmailStatusCode } from "@/models/member";
+import { EMAIL_PLAN_TYPE } from "@/models/ovh";
 import BetaGouv from "@betagouv";
 import { setEmailSuspended } from "@controllers/usersController";
 import * as utils from "@controllers/utils";

@@ -1,5 +1,5 @@
 import PgBoss from "pg-boss";
-import { randomBytes } from "crypto";
+import { randomBytes } from "node:crypto";
 
 import { addEvent } from "@/lib/events";
 import { hashToken } from "@/utils/auth/hashToken";

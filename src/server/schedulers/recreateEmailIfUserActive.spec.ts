@@ -1,6 +1,5 @@
 import { expect } from "chai";
 import sinon from "sinon";
-import * as Sentry from "@sentry/node";
 import * as kyselyQueriesUsers from "@/lib/kysely/queries/users";
 import * as kyselyQueriesDimail from "@/lib/kysely/queries/dimail";
 import * as dimailClient from "@/lib/dimail/client";
@@ -15,7 +14,6 @@ describe("recreateEmailIfUserActive", () => {
   let patchMailboxStub: sinon.SinonStub;
   let createDimailMailboxForUserStub: sinon.SinonStub;
   let dbUpdateTableStub: sinon.SinonStub;
-  //let sentryStub: sinon.SinonStub;
 
   const fakeUser = {
     uuid: "user-uuid",
@@ -44,7 +42,6 @@ describe("recreateEmailIfUserActive", () => {
       execute: sinon.stub().resolves(),
     } as unknown as any);
 
-    //sentryStub = sinon.stub(Sentry, "captureException");
     sinon.stub(console, "error");
     sinon.stub(console, "log");
   });
@@ -73,14 +70,6 @@ describe("recreateEmailIfUserActive", () => {
     expect(createDimailMailboxForUserStub.calledOnceWith(fakeUser.uuid)).to.be
       .true;
   });
-
-  //   it("should handle errors and capture with Sentry", async () => {
-  //     getDimailEmailStub.rejects(new Error("fail"));
-
-  //     await recreateEmailIfUserActive();
-
-  //     expect(sentryStub.calledOnce).to.be.true;
-  //   });
 
   it("should do nothing if no primary_email", async () => {
     (getActiveUsersStub().execute as sinon.SinonStub).resolves([
