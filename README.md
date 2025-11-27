@@ -13,7 +13,7 @@ L'espace membre de l’incubateur
 - afficher les formations et évènements
 - gestion de l'infolettre
 - connexion via ProConnect ou magic-link
-- tâches de maintenance (cf [#scripts-cron](#scripts-cron)) : emails,
+- tâches de maintenance (cf [CRON.md](./CRON.md)) : emails,
   mattermost, brevo, github
 
 ## Dev de l'app Espace Membre
@@ -75,7 +75,7 @@ _Si vous n'avez pas les droits pour générer les credentials OVH, postez un mes
 
 Lien : https://eu.api.ovh.com/createToken/
 
--   Nécessaires pour les fonctionalités en cours
+- Nécessaires pour les fonctionalités en cours
 
 ```
 GET /email/domain/beta.gouv.fr/*
@@ -86,7 +86,7 @@ DELETE /email/domain/beta.gouv.fr/redirection/*
 POST /email/domain/beta.gouv.fr/account/*/changePassword
 ```
 
--   Nécessaires pour les prochaines fonctionalités
+- Nécessaires pour les prochaines fonctionalités
 
 ```
 POST /email/domain/beta.gouv.fr/mailingList
@@ -115,23 +115,14 @@ Lorsqu'on utilise un autre domaine OVH (par exemple, un domain bac-à-sable pour
 
 ### Générer le graphe des redirections emails
 
--   Configurer les variables d'environnements : `OVH_APP_KEY`, `OVH_APP_SECRET` et `OVH_CONSUMER_KEY` (Avec une clé ayant un accès aux emails)
--   Lancer le script : `node ./scripts/export_redirections_to_dot.ts > redirections.dot`
--   Lancer graphviz : `dot -Tpdf redirections.dot -o redirections.pdf` (Format disponible : svg,png, ...)
+- Configurer les variables d'environnements : `OVH_APP_KEY`, `OVH_APP_SECRET` et `OVH_CONSUMER_KEY` (Avec une clé ayant un accès aux emails)
+- Lancer le script : `node ./scripts/export_redirections_to_dot.ts > redirections.dot`
+- Lancer graphviz : `dot -Tpdf redirections.dot -o redirections.pdf` (Format disponible : svg,png, ...)
 
 ### Supprimer une redirection
 
--   Configurer les variables d'environnements : `OVH_APP_KEY`, `OVH_APP_SECRET` et `OVH_CONSUMER_KEY` (Avec une clé ayant un accès aux emails)
--   Lancer le script : `node ./scripts/delete_redirections.js from@beta.gouv.fr to@example.com`
-
-## Scripts CRON
-
-Les tâches CRON sont gérées par une app scalingo dédiée via le [Procfile](./Procfile)
-
-La listes des cron sont dans les fichiers :
-
--   [./src/server/scheduler/cron.ts](./src/server/scheduler/cron.ts)
--   [./src/server/queueing/schedule.ts](./src/server/queueing/schedule.ts)
+- Configurer les variables d'environnements : `OVH_APP_KEY`, `OVH_APP_SECRET` et `OVH_CONSUMER_KEY` (Avec une clé ayant un accès aux emails)
+- Lancer le script : `node ./scripts/delete_redirections.js from@beta.gouv.fr to@example.com`
 
 ## Cron Jobs
 
@@ -160,9 +151,9 @@ npm install
 
 Une fois dans le dossier `storybook`, vous pouvez exécuter les commandes suivantes, définies dans son `package.json` :
 
--   `npm run storybook` : Lance l’application Storybook — elle devrait s’ouvrir automatiquement dans votre navigateur.
--   `npm run chromatic` : Si vous avez un token Chromatic (voir ci-dessous), cette commande construit et envoie votre Storybook à Chromatic.
--   `npm run build-storybook` : Génère la version statique de Storybook.
+- `npm run storybook` : Lance l’application Storybook — elle devrait s’ouvrir automatiquement dans votre navigateur.
+- `npm run chromatic` : Si vous avez un token Chromatic (voir ci-dessous), cette commande construit et envoie votre Storybook à Chromatic.
+- `npm run build-storybook` : Génère la version statique de Storybook.
 
 ### Chromatic
 
@@ -173,3 +164,31 @@ CHROMATIC_PROJECT_TOKEN=your_token_here
 ```
 
 Vous pouvez obtenir un token gratuitement en créant un projet sur [chromatic.com](https://www.chromatic.com).
+
+## Workflows
+
+### Member creation
+
+```mermaid
+graph LR
+
+CreateMember-->ValidationIncubateur
+ValidationIncubateur-->VerifyMember
+VerifyMember-->CreateEmail
+CreateEmail-->SendEmailInvitation
+```
+
+### Member Offboarding
+
+- J-30 : Message J-30
+- J-15 : Message J-15
+- J-1 : Message J-1
+- J+1 : Message J+1
+- J+1 : GitHub account is removed from organisation
+- J+5 : email is set as SUSPENDED
+- J+30 : Message J+30
+- J+30 : mattermost account is removed from community and added to alumni
+- J+30 : matomo account is disabled
+- J+30 : sentry account is disabled
+
+see [CRON.md](./CRON.md)

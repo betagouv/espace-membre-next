@@ -6,6 +6,8 @@ import {
 } from "@/server/config/email.config";
 import betagouv from "@betagouv";
 
+// get all brevo contacts blocked in MAILING_LIST_NEWSLETTER
+// unblock them
 export async function unblockEmailsThatAreActive() {
   const startDate = new Date();
   const endDate = new Date();

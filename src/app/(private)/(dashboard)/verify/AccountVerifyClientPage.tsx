@@ -8,7 +8,6 @@ import Input from "@codegouvfr/react-dsfr/Input";
 import Select from "@codegouvfr/react-dsfr/Select";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useRouter } from "next/navigation";
-import { useSession } from "next-auth/react";
 import { useFieldArray, useForm } from "react-hook-form";
 
 import { CompetencesEditor } from "@/components/BaseInfoUpdatePage/CompetencesEditor";
@@ -27,7 +26,8 @@ import {
   memberSchemaType,
 } from "@/models/member";
 import { Option } from "@/models/misc";
-import routes, { computeRoute } from "@/routes/routes";
+import { verifyNewMember } from "@/app/api/member/actions/verifyNewMember";
+import { useSession } from "next-auth/react";
 
 // data from secretariat API
 export interface AccountVerifyClientPageProps {
@@ -35,40 +35,15 @@ export interface AccountVerifyClientPageProps {
   member: memberSchemaType;
 }
 
-const postMemberData = async ({ values, sessionUsername }) => {
-  try {
-    const response = await fetch(
-      computeRoute(
-        routes.ACCOUNT_UPDATE_INFO_API.replace(":username", sessionUsername),
-      ),
-      {
-        method: "PUT", // Specify the method
-        body: JSON.stringify(values), // Convert the values object to JSON
-        headers: {
-          "Content-Type": "application/json", // Specify the content type
-        },
-      },
-    );
-
-    if (!response.ok) {
-      throw new Error("Network response was not ok");
-    }
-
-    const { username, message } = await response.json(); // Destructure the data from the response
-
-    return { username, message }; // Return the username and message
-  } catch (error) {
-    console.error("There was a problem with the fetch operation:", error);
-    throw error; // Rethrow the error to be handled by the caller
-  }
-};
-
 export default function AccountVerifyClientPage({
   member,
   startupOptions,
 }: AccountVerifyClientPageProps) {
   const router = useRouter();
-
+  const session = useSession();
+  if (!session.data) {
+    throw new Error("Unauthorized user");
+  }
   const {
     register,
     handleSubmit,
@@ -89,8 +64,6 @@ export default function AccountVerifyClientPage({
     name: "missions",
   });
 
-  const session = useSession();
-
   const [alertMessage, setAlertMessage] = React.useState<{
     title: string;
     message: NonNullable<React.ReactNode>;
@@ -109,10 +82,14 @@ export default function AccountVerifyClientPage({
     setIsSaving(true);
     setAlertMessage(null);
     try {
-      const { message } = await postMemberData({
-        values: input,
-        sessionUsername: session.data?.user.id as string,
+      const { success, message } = await verifyNewMember({
+        ...input,
+        username: session.data.user.id,
       });
+
+      if (!success) {
+        throw new Error("Network response was not ok");
+      }
       setAlertMessage({
         title: `Modifications enregistrées`,
         message,

@@ -6,6 +6,7 @@ import config from "@/server/config";
 import { sendEmail } from "@/server/config/email.config";
 import { EMAIL_TYPES } from "@modules/email";
 
+// créé les utilisateurs manquants sur mattermost avec leur primary_email
 export async function createUsersByEmail() {
   let activeUsersUnregisteredOnMattermost =
     await getActiveUsersUnregisteredOnMattermost();

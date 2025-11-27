@@ -5,6 +5,7 @@ import { Footer } from "@codegouvfr/react-dsfr/Footer";
 import { getServerSession } from "next-auth/next";
 import { NuqsAdapter } from "nuqs/adapters/next/app";
 import { NextAppDirEmotionCacheProvider } from "tss-react/next/appDir";
+import * as Sentry from "@sentry/nextjs";
 
 import { BreadCrumbProvider } from "./BreadCrumbProvider";
 import ClientSessionProvider from "./context/ClientContextProvider";
@@ -14,14 +15,25 @@ import Header from "@/components/Header";
 import { LiveChatProvider } from "@/components/live-chat/LiveChatProvider";
 import { Skiplinks } from "@/components/Skiplinks";
 import { authOptions } from "@/utils/authoptions";
+import type { Metadata } from "next";
 
 import {
   getHtmlAttributes,
   DsfrHead,
 } from "../dsfr-bootstrap/server-only-index";
 import { DsfrProvider, StartDsfrOnHydration } from "../dsfr-bootstrap";
+
 export interface RootLayoutProps {
   workaroundForNextJsPages?: boolean;
+}
+
+// Add or edit your "generateMetadata" to include the Sentry trace data:
+export function generateMetadata(): Metadata {
+  return {
+    other: {
+      ...Sentry.getTraceData(),
+    },
+  };
 }
 
 async function MainStructure(props: PropsWithChildren) {

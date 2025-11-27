@@ -2,16 +2,7 @@
 // documentation file (CRON.md) file with `make cron-docs`.
 
 import { postEventsOnMattermost } from "./calendarScheduler";
-import {
-  createEmailAddresses,
-  reinitPasswordEmail,
-  subscribeEmailAddresses,
-  unsubscribeEmailAddresses,
-  setEmailAddressesActive,
-  setCreatedEmailRedirectionsActive,
-  createRedirectionEmailAdresses,
-  sendOnboardingVerificationPendingEmail,
-} from "./emailScheduler";
+import { deactivateExpiredMembersEmails } from "./emailScheduler";
 import { syncFormationFromAirtable } from "./formationScheduler/syncFormationFromAirtable";
 import { syncFormationInscriptionFromAirtable } from "./formationScheduler/syncFormationInscriptionFromAirtable";
 import {
@@ -44,21 +35,16 @@ import { sendEmailToStartupToUpdatePhase } from "./startups/sendEmailToStartupTo
 import { unblockEmailsThatAreActive } from "./unblockEmailsThatAreActive";
 import { sendMessageToActiveUsersWithoutSecondaryEmail } from "./updateProfileScheduler";
 import {
-  deleteSecondaryEmailsForUsers,
   sendContractEndingMessageToUsers,
   sendJ1Email,
   sendJ30Email,
-  deleteOVHEmailAcounts,
   deleteRedirectionsAfterQuitting,
-  removeEmailsFromMailingList,
-  deleteServiceAccounts,
   deleteMatomoAccount,
   deleteSentryAccount,
 } from "./userContractEndingScheduler";
 import { matomoClient } from "../config/matomo.config";
 import { sentryClient } from "../config/sentry.config";
 import config from "@/server/config";
-import { setEmailExpired } from "@schedulers/setEmailExpired";
 
 export interface EspaceMembreCronJobType {
   cronTime: string;
@@ -300,62 +286,11 @@ export const espaceMembreCronJobs: EspaceMembreCronJobType[] = [
       "Unblock emails from MAILING_LIST_NEWSLETTER Brevo mailing-list",
   },
   {
-    cronTime: "0 */8 * * * *",
+    cronTime: "0 * * * * *",
     onTick: recreateEmailIfUserActive,
     isActive: true,
     name: "recreateEmailIfUserActive",
     description: "Recreate email for user active again",
-  },
-  {
-    cronTime: "0 */8 * * * *",
-    onTick: setEmailAddressesActive,
-    isActive: true,
-    name: "setEmailAddressesActive",
-    description: "Add pending users to mailing-list and set email as active",
-  },
-  {
-    cronTime: "0 */2 * * * *",
-    onTick: sendOnboardingVerificationPendingEmail,
-    isActive: true,
-    name: "sendOnboardingVerificationPendingEmail",
-    description:
-      "Envoi d'un email de relance pour les adresses en attente de validation",
-  },
-  {
-    cronTime: "0 */4 * * * *",
-    onTick: createEmailAddresses,
-    isActive: true,
-    name: "emailCreationJob",
-    description: "Créé les emails en attente sur OVH",
-  },
-  {
-    cronTime: "0 */4 * * * *",
-    onTick: createRedirectionEmailAdresses,
-    isActive: true,
-    name: "cron de creation de redirection",
-    description: "Créé les redirections email en attente sur OVH",
-  },
-  {
-    cronTime: "0 */4 * * * *",
-    onTick: setCreatedEmailRedirectionsActive,
-    isActive: true,
-    name: "setEmailRedirectionActive",
-    description:
-      "Ajoute les nouvelles redirections aux mailing-lists brevo et active l'adresse",
-  },
-  {
-    cronTime: "0 */4 * * * *",
-    onTick: subscribeEmailAddresses,
-    isActive: !!config.featureSubscribeToIncubateurMailingList,
-    name: "subscribeEmailAddresses",
-    description: "Re-inscrit les désabonnés à la mailing-list brevo incubateur",
-  },
-  {
-    cronTime: "0 */4 * * * *",
-    onTick: unsubscribeEmailAddresses,
-    isActive: !!config.featureUnsubscribeFromIncubateurMailingList,
-    name: "unsubscribeEmailAddresses",
-    description: "Désinscrit les membres expirés de la mailing list",
   },
   {
     cronTime: "0 */5 * * * 1-5",
@@ -394,42 +329,12 @@ export const espaceMembreCronJobs: EspaceMembreCronJobType[] = [
     description: "Email départ J+30",
   },
   {
-    cronTime: "0 0 10 * * *",
-    onTick: deleteSecondaryEmailsForUsers,
-    isActive: !!config.featureDeleteSecondaryEmail,
-    name: "deleteSecondaryEmailsForUsers",
-    description:
-      "Supprime dans la DB les emails secondaires des membres expirés",
-  },
-  {
-    cronTime: "0 0 15 * * *",
-    onTick: deleteOVHEmailAcounts,
-    isActive: !!config.featureDeleteOVHEmailAccounts,
-    name: "deleteOVHEmailAcounts",
-    description: "Supprime les emails OVH des membres expirés (30 days)",
-  },
-  {
-    cronTime: "0 0 15 * * *",
-    onTick: setEmailExpired,
-    isActive: !!config.featureSetEmailExpired,
-    name: "setEmailExpired",
-    description: "Marque en DB les emails des membres comme expirés",
-  },
-  {
-    cronTime: "0 0 8 * * *",
-    onTick: removeEmailsFromMailingList,
-    isActive: !!config.featureRemoveEmailsFromMailingList,
-    name: "removeEmailsFromMailingList",
-    description:
-      "Supprime les utilisateurs expirés des mailing-lists brevo ONBOARDING,NEWSLETTER",
-  },
-  {
-    cronTime: "0 0 14 * * *",
-    onTick: reinitPasswordEmail,
+    cronTime: "0 0 * * * *",
+    onTick: deactivateExpiredMembersEmails,
     isActive: !!config.featureReinitPasswordEmail,
-    name: "reinitPasswordEmail",
+    name: "deactivateExpiredMembersEmails",
     description:
-      "Réinitialise le mot de passe email des membres expirés après 5 jours",
+      "Désactive les comptes email des membres expirés après 5 jours",
   },
   {
     cronTime: "0 0 10 * * *",
