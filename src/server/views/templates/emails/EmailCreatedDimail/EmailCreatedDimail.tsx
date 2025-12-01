@@ -25,6 +25,12 @@ export function EmailCreatedDimail({
             email {email} et le mot de passe temporaire suivant :{" "}
             <strong>{password}</strong>
           </li>
+          <li>
+            Pour changer de mot de passe, va dans le webmail puis "Paramètres"
+            &gt; "Tous les réglages" &gt; "Général" &gt; "Réglages avancés" &gt;
+            "Changer le mot de passe". Pense à Générer un mot de passe complexe
+            à l'aide de vaultwarden par exemple :)
+          </li>
         </ul>
 
         <p>Bonne journée</p>

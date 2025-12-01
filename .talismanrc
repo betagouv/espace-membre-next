@@ -19,8 +19,8 @@ fileignoreconfig:
   checksum: 6c4a7bbf33011000ba4223060c62f0631458c2308e27a987a61fac50a44eddfe
 - filename: src/server/schedulers/emailScheduler.ts
   checksum: 85690f0610b3ce376f0f295c84f8503674e5f8d4fc4942f215212ee0ef50b7c2
+- filename: src/server/views/templates/emails/EmailCreatedDimail/EmailCreatedDimail.tsx
+  checksum: 92e8908b1d03cb63c51d8a56aa909ebaeab6f0ca3078ae044110019a0f9f2a16
 scopeconfig:
 - scope: node
 version: "1.0"
-scopeconfig:
-  - scope: node
