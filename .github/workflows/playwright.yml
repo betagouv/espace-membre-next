@@ -47,7 +47,7 @@ jobs:
               env:
                   HOSTNAME: localhost:8100
                   DATABASE_URL: postgres://secretariat:secretariat@127.0.0.1:5432/secretariat
-            - uses: actions/upload-artifact@v4
+            - uses: actions/upload-artifact@v5
               if: always()
               with:
                   name: playwright-report
