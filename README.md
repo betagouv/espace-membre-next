@@ -192,3 +192,12 @@ CreateEmail-->SendEmailInvitation
 - J+30 : sentry account is disabled
 
 see [CRON.md](./CRON.md)
+
+### Matrice des droits
+
+| Rôle      | Inviter un membre | Modifier mon compte | Modifier un membre | Editer une fiche produit |
+| --------- | :---------------: | :-----------------: | :----------------: | :----------------------: |
+| Admin     |        ✅         |         ✅          |         ✅         |            ✅            |
+| Teams     |        ✅         |         ✅          |         ✅         |            ✅            |
+| Member    |        ✅         |         ✅          |         ❌         |            ✅            |
+| Anonymous |        ❌         |         ❌          |         ❌         |            ❌            |
