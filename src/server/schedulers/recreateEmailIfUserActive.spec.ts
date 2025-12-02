@@ -3,10 +3,14 @@ import sinon from "sinon";
 import * as kyselyQueriesUsers from "@/lib/kysely/queries/users";
 import * as kyselyQueriesDimail from "@/lib/kysely/queries/dimail";
 import * as dimailClient from "@/lib/dimail/client";
-import * as createDimailMailboxWorker from "../queueing/workers/create-dimail-mailbox";
-import { db } from "@/lib/kysely";
+import rewire from "rewire";
 import { EmailStatusCode } from "@/models/member";
-import { recreateEmailIfUserActive } from "./recreateEmailIfUserActive";
+import { db } from "@/lib/kysely";
+// load module via rewire so we can override its internal binding
+const recreateModule = rewire("./recreateEmailIfUserActive");
+const recreateEmailIfUserActive = recreateModule.__get__(
+  "recreateEmailIfUserActive",
+);
 
 describe("recreateEmailIfUserActive", () => {
   let getActiveUsersStub: sinon.SinonStub;
@@ -33,17 +37,20 @@ describe("recreateEmailIfUserActive", () => {
 
     getDimailEmailStub = sinon.stub(kyselyQueriesDimail, "getDimailEmail");
     patchMailboxStub = sinon.stub(dimailClient, "patchMailbox").resolves();
-    createDimailMailboxForUserStub = sinon
-      .stub(createDimailMailboxWorker, "createDimailMailboxForUser")
-      .resolves();
+    // create a stub and inject it into the module under test
+    createDimailMailboxForUserStub = sinon.stub().resolves();
+    recreateModule.__set__(
+      "createDimailMailboxForUser",
+      createDimailMailboxForUserStub,
+    );
     dbUpdateTableStub = sinon.stub(db, "updateTable").returns({
       set: sinon.stub().returnsThis(),
       where: sinon.stub().returnsThis(),
       execute: sinon.stub().resolves(),
-    } as unknown as any);
+    });
 
-    sinon.stub(console, "error");
-    sinon.stub(console, "log");
+    //sinon.stub(console, "error");
+    //sinon.stub(console, "log");
   });
 
   afterEach(() => {
@@ -56,7 +63,15 @@ describe("recreateEmailIfUserActive", () => {
     await recreateEmailIfUserActive();
 
     expect(patchMailboxStub.calledOnce).to.be.true;
+    expect(patchMailboxStub.firstCall.args[0]).to.deep.eq({
+      data: {
+        active: "yes",
+      },
+      domain_name: "test-opi-email.beta.gouv.fr",
+      user_name: "test",
+    });
     expect(dbUpdateTableStub.calledOnce).to.be.true;
+    expect(dbUpdateTableStub.firstCall.args[0]).to.deep.eq("users");
     expect(createDimailMailboxForUserStub.notCalled).to.be.true;
   });
 

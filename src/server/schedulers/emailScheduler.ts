@@ -6,10 +6,22 @@ import { memberBaseInfoToModel } from "@/models/mapper";
 import { EmailStatusCode } from "@/models/member";
 import { EMAIL_PLAN_TYPE } from "@/models/ovh";
 import BetaGouv from "@betagouv";
-import { setEmailSuspended } from "@controllers/usersController";
 import * as utils from "@controllers/utils";
 import { DIMAIL_MAILBOX_DOMAIN } from "@lib/dimail/utils";
 import { patchMailbox } from "@lib/dimail/client";
+import { db } from "@/lib/kysely";
+
+async function setEmailSuspended(username) {
+  const user = await db
+    .updateTable("users")
+    .where("username", "=", username)
+    .set({
+      primary_email_status: EmailStatusCode.EMAIL_SUSPENDED,
+      primary_email_status_updated_at: new Date(),
+    })
+    .execute();
+  console.log(`Email suspendu pour ${username}`);
+}
 
 // desactive l'email des comptes expirés depuis + 5 jours
 export async function deactivateExpiredMembersEmails() {
@@ -53,7 +65,7 @@ export async function deactivateExpiredMembersEmails() {
           console.error(
             `Imposssible de désactiver le compte DIMAIL de ${emailInfos.email}: ${e.message}`,
           );
-          console.error(e);
+          //console.error(e);
         }
       } else {
         // change OVH password

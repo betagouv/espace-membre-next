@@ -5,7 +5,10 @@ import { EmailStatusCode } from "@/models/member";
 import { DIMAIL_MAILBOX_DOMAIN } from "@/lib/dimail/utils";
 import { patchMailbox } from "@/lib/dimail/client";
 import { getDimailEmail } from "@/lib/kysely/queries/dimail";
-import { createDimailMailboxForUser } from "../queueing/workers/create-dimail-mailbox";
+import * as createDimailMailboxWorker from "../queueing/workers/create-dimail-mailbox";
+// allow tests (rewire) to override this function by exposing a mutable binding
+let createDimailMailboxForUser =
+  createDimailMailboxWorker.createDimailMailboxForUser;
 import { getActiveUsers } from "@/lib/kysely/queries/users";
 
 // pour les comptes actifs en EMAIL_SUSPENDED avec un secondary_email
@@ -46,11 +49,16 @@ export async function recreateEmailIfUserActive() {
             .where("uuid", "=", dbUser.uuid)
             .execute();
         } else {
-          console.log(`Recreate email for ${dbUser.username}`);
+          console.log(
+            `create DIMAIL email for ${dbUser.username} (${dbUser.primary_email})`,
+          );
+          // create new DIMAIL email account
           await createDimailMailboxForUser(dbUser.uuid);
         }
       }
     } catch (e) {
+      const error = e instanceof Error ? e : new Error(String(e));
+      console.error(error.message);
       console.error(e);
       Sentry.captureException(e);
     }

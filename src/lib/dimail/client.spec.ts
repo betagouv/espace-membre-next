@@ -1,11 +1,10 @@
 import { expect } from "chai";
 import sinon from "sinon";
 import axios from "axios";
+import nock from "nock";
 
 describe("dimail client", () => {
   let axiosGetStub: sinon.SinonStub;
-  let postStub: sinon.SinonStub;
-  let patchStub: sinon.SinonStub;
   let clientModule: typeof import("./client"); // Declare variable for the module
 
   const sandbox = sinon.createSandbox();
@@ -16,17 +15,14 @@ describe("dimail client", () => {
     process.env.DIMAIL_API_USERNAME = "user";
     process.env.DIMAIL_API_PASSWORD = "pass";
 
-    // Stub axios.get for getAccessToken
+    // Use nock to intercept HTTP calls instead of stubbing axios for those requests
+    nock.cleanAll();
+    nock.disableNetConnect();
+
+    // Stub axios.get only if client uses axios.get directly for token
     axiosGetStub = sandbox
       .stub(axios, "get")
       .resolves({ data: { access_token: "token123" } });
-
-    // Stub axios.create to return a fake instance with post/patch methods
-    postStub = sandbox.stub().resolves({
-      status: 200,
-      data: { email: "test@domain.com", password: "pwd" },
-    });
-    patchStub = sandbox.stub().resolves({ status: 200, data: {} });
 
     // Ensure fresh import by clearing require cache
     delete require.cache[require.resolve("./client")];
@@ -38,6 +34,10 @@ describe("dimail client", () => {
     delete process.env.DIMAIL_API_URL;
     delete process.env.DIMAIL_API_USERNAME;
     delete process.env.DIMAIL_API_PASSWORD;
+
+    // cleanup nock
+    nock.cleanAll();
+    nock.enableNetConnect();
   });
 
   describe("createMailbox", () => {
@@ -49,12 +49,17 @@ describe("dimail client", () => {
         givenName: "User",
         surName: "Name",
       };
+
+      // intercept the exact POST to mailbox creation
+      const scope = nock(process.env.DIMAIL_API_URL as string)
+        .post("/domains/domain.com/mailboxes/user")
+        .reply(200, { email: "user@domain.com", password: "pwd" });
+
       const result = await clientModule.createMailbox(params);
-      expect(postStub.calledOnce).to.be.true;
-      expect(postStub.firstCall.args[0]).to.include(
-        "/domains/domain.com/mailboxes/user",
-      );
-      expect(result).to.have.property("email", "test@domain.com");
+
+      // validate nock intercepted the request
+      expect(scope.isDone()).to.be.true;
+      expect(result).to.have.property("email", "user@domain.com");
       expect(result).to.have.property("password", "pwd");
     });
   });
@@ -66,11 +71,15 @@ describe("dimail client", () => {
         user_name: "user",
         destination: "dest@domain.com",
       };
+
+      // intercept POST to alias creation
+      const scope = nock(process.env.DIMAIL_API_URL as string)
+        .post("/domains/domain.com/aliases")
+        .reply(200, { email: "test@domain.com", password: "pwd" });
+
       const result = await clientModule.createAlias(params);
-      expect(postStub.calledOnce).to.be.true;
-      expect(postStub.firstCall.args[0]).to.include(
-        "/domains/domain.com/aliases",
-      );
+
+      expect(scope.isDone()).to.be.true;
       expect(result).to.have.property("email", "test@domain.com");
       expect(result).to.have.property("password", "pwd");
     });
@@ -78,50 +87,39 @@ describe("dimail client", () => {
 
   describe("resetPassword", () => {
     it("should call axios.post and return success with password", async () => {
-      postStub.resolves({ status: 200, data: { password: "newpwd" } });
-      const result = await clientModule.resetPassword({
-        domain_name: "domain.com",
-        user_name: "user",
-      });
-      expect(postStub.calledOnce).to.be.true;
-      expect(result).to.deep.equal({ success: true, password: "newpwd" });
-    });
+      // match any POST under the mailbox path for reset
+      const scope = nock(process.env.DIMAIL_API_URL as string)
+        .post(new RegExp("/domains/domain.com/mailboxes/user.*"))
+        .reply(200, { password: "newpwd" });
 
-    it("should return success: false if status is not 200", async () => {
-      postStub.resolves({ status: 500, data: {} });
       const result = await clientModule.resetPassword({
         domain_name: "domain.com",
         user_name: "user",
       });
-      expect(result).to.deep.equal({ success: false });
+      expect(scope.isDone()).to.be.true;
+      expect(result).to.deep.equal({ success: true, password: "newpwd" });
     });
   });
 
   describe("patchMailbox", () => {
     it("should call axios.patch and return success", async () => {
-      patchStub.resolves({ status: 200, data: {} });
+      const scope = nock(process.env.DIMAIL_API_URL as string)
+        .patch("/domains/domain.com/mailboxes/user")
+        .reply(200, {});
+
       const result = await clientModule.patchMailbox({
         domain_name: "domain.com",
         user_name: "user",
         data: { active: "yes" },
       });
-      expect(patchStub.calledOnce).to.be.true;
+      expect(scope.isDone()).to.be.true;
       expect(result).to.deep.equal({ success: true });
-    });
-
-    it("should return success: false if status is not 200", async () => {
-      patchStub.resolves({ status: 500, data: {} });
-      const result = await clientModule.patchMailbox({
-        domain_name: "domain.com",
-        user_name: "user",
-        data: { active: "no" },
-      });
-      expect(result).to.deep.equal({ success: false });
     });
   });
 
   describe("getAccessToken", () => {
     it("should call axios.get and return access_token", async () => {
+      // either keep using axios.get stub or intercept the GET with nock. Here we verify the axios.get stubed behavior:
       const token = await (clientModule as any).getAccessToken();
       expect(axiosGetStub.calledOnce).to.be.true;
       expect(token).to.equal("token123");

@@ -3,6 +3,8 @@ fileignoreconfig:
   checksum: fd6fca10412ee1ed81d930e1e7a944586f56aca534412c43ef95f5381be9a97b
 - filename: README.md
   checksum: 81d7bd9e901892da915aa4d6bf21f4897e8a3f2e8502204f245220e5c5ea86e4
+- filename: __tests__/test-email.ts
+  checksum: f03a9616b14cd5f84bca8479451f5f96fa6c9ddae51a911bab05e6d1e886e9b4
 - filename: __tests__/test-user.ts
   checksum: 19d37dc111d4017b7800460a868a5c2f89cdb62e45d00d070bea4af38f66a1a9
 - filename: package-lock.json
@@ -10,7 +12,7 @@ fileignoreconfig:
 - filename: src/app/(private)/(dashboard)/services/page.tsx
   checksum: daebae004c8c06af9a88aaf57a1fad4b0a6efcb7920cf9628e0c1fd1985569ab
 - filename: src/lib/dimail/client.spec.ts
-  checksum: f5dd7469093a6408d795577b8c3adf5bbf8dba00e07b3388c1fad8d6f63ba185
+  checksum: 777854cc51487a9f8f857ce5cb3e2bfe813c402848eef135d5aa0caff6086659
 - filename: src/lib/dimail/client.ts
   checksum: b43b16ede6c1744a50d3624f4dcb6e07cce09959524b0b655c45bc82e9d06a22
 - filename: src/server/queueing/workers/create-dimail-mailbox.spec.ts
