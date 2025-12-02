@@ -33,6 +33,17 @@ export function EmailCreatedDimail({
           </li>
         </ul>
 
+        <p>
+          Ton compte Mattermost (l'outil de discussion de la communauté) va être
+          automatiquement créé d'ici 10 à 15 mins, tu recevras sur {email} les
+          instructions pour y accéder.
+        </p>
+
+        <p>
+          Dans les prochains jours tu recevras un email pour te présenter les
+          prochaines étapes de ton embarquement au sein de la communauté.
+        </p>
+
         <p>Bonne journée</p>
       </MjmlText>
       <MjmlText></MjmlText>
