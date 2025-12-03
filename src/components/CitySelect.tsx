@@ -235,7 +235,7 @@ export default function CitySelect({
   return (
     <div className="fr-select-group">
       <label className="fr-label" htmlFor="city-select">
-        Lieu de travail principal :
+        Ville de travail :
         <span className="fr-hint-text">
           Cette information est utilisée pour faire une carte des membres de la
           communauté
@@ -243,7 +243,7 @@ export default function CitySelect({
       </label>
       <SearchBar
         id="city-select"
-        label="Lieu de travail principal :"
+        label="Ville de travail :"
         onButtonClick={function noRefCheck() {}}
         renderInput={({ className, id, placeholder, type }) => (
           <NativeInputPropsProvider
