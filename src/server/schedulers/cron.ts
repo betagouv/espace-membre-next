@@ -13,7 +13,6 @@ import {
   sendOnboardingVerificationPendingEmail,
 } from "./emailScheduler";
 import { syncFormationFromAirtable } from "./formationScheduler/syncFormationFromAirtable";
-import { syncFormationInscriptionFromAirtable } from "./formationScheduler/syncFormationInscriptionFromAirtable";
 import {
   addGithubUserToOrganization,
   removeGithubUserFromOrganization,
@@ -224,14 +223,6 @@ const formationJobs: EspaceMembreCronJobType[] = [
     isActive: true,
     name: "SyncFormationFromAirtable",
     description: "Synchronise les données AirTable des formations avec la DB",
-  },
-  {
-    cronTime: process.env.SYNC_FORMATION_INSCRIPTION_CRON_TIME || "0 0 * * *",
-    onTick: () => syncFormationInscriptionFromAirtable(true),
-    isActive: true,
-    name: "SyncFormationInscriptionFromAirtable",
-    description:
-      "Synchronise les données AirTable des inscriptions aux formations avec la DB",
   },
 ];
 
