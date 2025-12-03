@@ -25,7 +25,6 @@
 | ✅ | `0 10 10 * * *` | `syncMattermostUserWithMattermostMemberInfosTable` | Add new mattermost user to mattermost_member_info table |
 | ✅ | `0 15 10 * * *` | `syncMattermostUserStatusWithMattermostMemberInfosTable` | Get mattermost user activity info from api and sync with mattermost_member_info table |
 | ✅ | `0 0 * * *` | `SyncFormationFromAirtable` | Synchronise les données AirTable des formations avec la DB |
-| ✅ | `0 0 * * *` | `SyncFormationInscriptionFromAirtable` | Synchronise les données AirTable des inscriptions aux formations avec la DB |
 | ✅ | `0 0 0 * * 1` | `Unblock blacklisted email` | Unblock emails from MAILING_LIST_NEWSLETTER Brevo mailing-list |
 | ✅ | `0 */8 * * * *` | `recreateEmailIfUserActive` | Recreate email for user active again |
 | ✅ | `0 */8 * * * *` | `setEmailAddressesActive` | Add pending users to mailing-list and set email as active |
