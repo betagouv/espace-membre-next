@@ -12,7 +12,6 @@ import {
   createRedirectionEmailAdresses,
   sendOnboardingVerificationPendingEmail,
 } from "./emailScheduler";
-import { syncFormationFromAirtable } from "./formationScheduler/syncFormationFromAirtable";
 import {
   addGithubUserToOrganization,
   removeGithubUserFromOrganization,
@@ -216,16 +215,6 @@ const servicesJobs: EspaceMembreCronJobType[] = [
   },
 ];
 
-const formationJobs: EspaceMembreCronJobType[] = [
-  {
-    cronTime: "0 0 * * *",
-    onTick: () => syncFormationFromAirtable(true),
-    isActive: true,
-    name: "SyncFormationFromAirtable",
-    description: "Synchronise les données AirTable des formations avec la DB",
-  },
-];
-
 const newsletterJobs: EspaceMembreCronJobType[] = [
   {
     cronTime: process.env.NEWSLETTER_FIRST_REMINDER_TIME || "0 0 10 * * 3", // every week a 8:00 on monday
@@ -281,7 +270,6 @@ export const espaceMembreCronJobs: EspaceMembreCronJobType[] = [
   // ...metricJobs,
   // ...pullRequestJobs,
   ...synchronizationJobs,
-  ...formationJobs,
   {
     cronTime: "0 0 0 * * 1", // every week a 0:00 on monday
     onTick: unblockEmailsThatAreActive,
