@@ -313,6 +313,7 @@ export const memberSchema = z.object({
   primary_email: z.string().email().nullable(),
   primary_email_status: z.nativeEnum(EmailStatusCode).readonly(),
   primary_email_status_updated_at: z.date().readonly(),
+  created_at: z.date().readonly(),
   updated_at: z.date().readonly(),
 });
 export type memberSchemaType = z.infer<typeof memberSchema>;
@@ -360,6 +361,7 @@ export const memberBaseInfoSchema = memberSchema.pick({
   communication_email: true,
   secondary_email: true,
   email_is_redirection: true,
+  created_at: true,
   updated_at: true,
   competences: true,
   legal_status: true,

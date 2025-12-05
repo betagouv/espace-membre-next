@@ -7,8 +7,6 @@ import { addEvent } from "@/lib/events";
 import { db } from "@/lib/kysely";
 import * as mattermost from "@/lib/mattermost";
 import { EventCode } from "@/models/actionEvent/actionEvent";
-import betagouv from "@/server/betagouv";
-import config from "@/server/config";
 import {
   isPublicServiceEmail,
   isAdminEmail,
@@ -59,19 +57,6 @@ export async function managePrimaryEmailForUser({
       throw new BusinessError(
         `L'email n'existe pas dans mattermost, pour utiliser cette adresse comme adresse principale ton compte mattermost doit aussi utiliser cette adresse.`,
       );
-    }
-  }
-
-  if (user.userInfos.primary_email?.includes(config.domain)) {
-    await betagouv.createRedirection(
-      user.userInfos.primary_email,
-      primaryEmail,
-      false,
-    );
-    try {
-      await betagouv.deleteEmail(user.userInfos.primary_email.split("@")[0]);
-    } catch (e) {
-      console.log(e, "Email is possibly already deleted");
     }
   }
 
