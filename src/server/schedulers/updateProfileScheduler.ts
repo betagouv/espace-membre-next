@@ -8,6 +8,8 @@ import BetaGouv from "@betagouv";
 import * as utils from "@controllers/utils";
 import { sleep } from "@controllers/utils";
 
+// envoie un message de rappel mattermost
+// a tous les users qui ont un primary_email mais pas de secondary_email
 export async function sendMessageToActiveUsersWithoutSecondaryEmail() {
   const allMattermostUsers = await mattermost.getUserWithParams();
   const allMattermostUsersEmails = allMattermostUsers.map(
