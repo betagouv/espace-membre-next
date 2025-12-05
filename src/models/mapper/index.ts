@@ -124,6 +124,7 @@ export function memberBaseInfoToModel(
     link: user.link,
     github: user.github,
     primary_email: user.primary_email,
+    created_at: user.created_at,
     updated_at: user.updated_at,
     communication_email:
       user.communication_email === CommunicationEmailCode.SECONDARY

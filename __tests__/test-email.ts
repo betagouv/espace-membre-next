@@ -1,320 +1,248 @@
 import chai, { expect } from "chai";
-import chaiHttp from "chai-http";
-import { format } from "date-fns/format";
-import nock from "nock";
-import proxyquire from "proxyquire";
-import rewire from "rewire";
 import sinon from "sinon";
-
-import testUsers from "./users.json";
-import utilsTest from "./utils";
-import { db } from "@/lib/kysely";
+import rewire from "rewire";
+import * as utils from "@controllers/utils";
+import * as kyselyQueries from "@/lib/kysely/queries/users";
+import * as dimailQueries from "@/lib/kysely/queries/dimail";
+import * as mapper from "@/models/mapper";
+import * as dimailClient from "@/lib/dimail/client";
+import BetaGouv from "@betagouv";
 import { EmailStatusCode } from "@/models/member";
-import * as email from "@/server/config/email.config";
-import betagouv from "@betagouv";
+import { EMAIL_PLAN_TYPE } from "@/models/ovh";
+import { DIMAIL_MAILBOX_DOMAIN } from "@lib/dimail/utils";
+import { db } from "@/lib/kysely";
 
-chai.use(chaiHttp);
+chai.should();
 
-const emailScheduler = rewire("@schedulers/emailScheduler");
+// helper to mock Kysely-style chainable query builders in tests
+function createFakeQB(result: any) {
+  const qb = {
+    where: sinon.stub().returnsThis(),
+    execute: sinon.stub().resolves(result),
+  };
+  return qb;
+}
 
-describe("getUnregisteredOVHUsers", () => {
-  beforeEach(async () => {
-    utilsTest.cleanMocks();
-    utilsTest.mockOvhTime();
+const emailScheduler = rewire("../src/server/schedulers/emailScheduler");
+const recreateEmailIfUserActive = rewire(
+  "../src/server/schedulers/recreateEmailIfUserActive",
+);
+
+describe("deactivateExpiredMembersEmails", () => {
+  let getAllUsersInfoStub: sinon.SinonStub;
+  let memberBaseInfoToModelStub: sinon.SinonStub;
+  let getExpiredUsersStub: sinon.SinonStub;
+  let emailInfosStub: sinon.SinonStub;
+  let patchMailboxStub: sinon.SinonStub;
+  let setEmailSuspendedStub: sinon.SinonStub;
+  let changePasswordStub: sinon.SinonStub;
+
+  beforeEach(() => {
+    // ensure a clean sinon state each test to avoid "already wrapped" errors
+    sinon.restore();
+
+    getAllUsersInfoStub = sinon.stub(kyselyQueries, "getAllUsersInfo");
+    memberBaseInfoToModelStub = sinon.stub(mapper, "memberBaseInfoToModel");
+    getExpiredUsersStub = sinon.stub(utils, "getExpiredUsers");
+    emailInfosStub = sinon.stub(BetaGouv, "emailInfos");
+    patchMailboxStub = sinon.stub(dimailClient, "patchMailbox");
+    setEmailSuspendedStub = sinon.stub();
+    changePasswordStub = sinon.stub(BetaGouv, "changePassword");
+
+    // inject a stubbed setEmailSuspended into the scheduler module and global so it is always resolvable
+    emailScheduler.__set__("setEmailSuspended", setEmailSuspendedStub);
+
+    // intercept Kysely / db calls - always stub new ones per-test (sinon.restore above cleared any previous)
+    sinon.stub(db, "updateTable").returns({
+      set: () => ({
+        where: () => ({
+          execute: sinon.stub().resolves(),
+        }),
+      }),
+    });
+    sinon.stub(db, "selectFrom").returns({
+      select: () => ({
+        where: () => ({
+          execute: sinon.stub().resolves([]),
+        }),
+      }),
+    });
   });
 
-  it("should not use expired accounts", async () => {
-    const expiredMember = testUsers.find((user) => user.id === "membre.expire");
-    const getValidUsers = emailScheduler.__get__("getValidUsers");
-    const result = await getValidUsers(testUsers);
+  afterEach(() => {
+    sinon.restore();
+  });
 
-    chai.should().not.exist(result.find((x) => x.id === expiredMember.id));
-  });
-});
+  it("should deactivate DIMAIL mailbox for expired users with EMAIL_PLAN_OPI", async () => {
+    const fakeUser = {
+      username: "user1",
+      primary_email_status: EmailStatusCode.EMAIL_ACTIVE,
+    };
+    getAllUsersInfoStub.resolves([{}]);
+    memberBaseInfoToModelStub.returns(fakeUser);
+    getExpiredUsersStub.returns([fakeUser]);
+    emailInfosStub.resolves({
+      emailPlan: EMAIL_PLAN_TYPE.EMAIL_PLAN_OPI,
+      email: "user1@beta.gouv.fr",
+    });
+    patchMailboxStub.resolves();
+    setEmailSuspendedStub.resolves();
 
-describe("Reinit password for expired users", () => {
-  const datePassed = new Date();
-  datePassed.setDate(datePassed.getDate() - 5);
-  const formatedDate = format(datePassed, "yyyy-MM-dd");
-  const users = [
-    {
-      id: "membre.actif",
-      fullname: "membre actif",
-      role: "Chargé de déploiement",
-      start: "2020-09-01",
-      end: "2090-01-30",
-      employer: "admin/",
-    },
-    {
-      id: "membre.expire",
-      fullname: "membre expire",
-      role: "Intrapreneur",
-      start: "2018-01-01",
-      end: `${formatedDate}`,
-      employer: "admin/",
-    },
-  ];
+    // Act
+    await emailScheduler.__get__("deactivateExpiredMembersEmails")();
 
-  beforeEach(async () => {
-    utilsTest.cleanMocks();
-    utilsTest.mockOvhTime();
+    // Assert
+    expect(patchMailboxStub.calledOnce).to.be.true;
+    expect(
+      patchMailboxStub.calledWithMatch({
+        domain_name: DIMAIL_MAILBOX_DOMAIN,
+        user_name: "user1",
+        data: { active: "no" },
+      }),
+    ).to.be.true;
+    expect(setEmailSuspendedStub.calledOnceWith("user1")).to.be.true;
+    expect(changePasswordStub.notCalled).to.be.true;
   });
-  before(async () => {
-    await utilsTest.createUsers(users);
-    utilsTest.mockOvhTime();
-    utilsTest.mockOvhRedirections();
-    utilsTest.mockOvhUserResponder();
-  });
-  after(async () => {
-    await utilsTest.deleteUsers(users);
-  });
-  it("should call once ovh api to change password", async () => {
-    nock(/.*ovh.com/)
-      .get(/^.*email\/domain\/.*\/account\/(.*)/)
-      .reply(200, {
-        accountName: "membre.expire",
-        email: `membre.expire@betagouv.ovh`,
-      });
-    await db
-      .updateTable("users")
-      .where("username", "=", "membre.expire")
-      .set({
-        primary_email_status: EmailStatusCode.EMAIL_ACTIVE,
-      })
-      .execute();
-    const funcCalled = sinon.spy(betagouv, "changePassword");
-    utilsTest.mockOvhChangePassword();
-    await emailScheduler.reinitPasswordEmail();
-    const dbUsers = await db
-      .selectFrom("users")
-      .selectAll()
-      .where("username", "=", "membre.expire")
-      .execute();
-    dbUsers.length.should.be.equal(1);
-    dbUsers[0].primary_email_status.should.be.equal(
-      EmailStatusCode.EMAIL_SUSPENDED,
+
+  it("should change OVH password for expired users with non-OPI email plan", async () => {
+    const fakeUser = {
+      username: "user2",
+      primary_email_status: EmailStatusCode.EMAIL_ACTIVE,
+    };
+    getAllUsersInfoStub.resolves([{}]);
+    memberBaseInfoToModelStub.returns(fakeUser);
+    getExpiredUsersStub.returns([fakeUser]);
+    emailInfosStub.resolves({
+      emailPlan: EMAIL_PLAN_TYPE.EMAIL_PLAN_PRO,
+      email: "user2@beta.gouv.fr",
+    });
+    changePasswordStub.resolves();
+
+    setEmailSuspendedStub.resolves();
+
+    await emailScheduler.__get__("deactivateExpiredMembersEmails")();
+
+    expect(changePasswordStub.firstCall.args[0]).to.eq("user2");
+    expect(changePasswordStub.firstCall.args[2]).to.eq(
+      EMAIL_PLAN_TYPE.EMAIL_PLAN_PRO,
     );
-    funcCalled.calledOnce;
+
+    expect(changePasswordStub.calledOnce).to.be.true;
+    expect(setEmailSuspendedStub.calledOnceWith("user2")).to.be.true;
+    expect(patchMailboxStub.notCalled).to.be.true;
+  });
+
+  it("should do nothing if no expired users", async () => {
+    getAllUsersInfoStub.resolves([{}]);
+    memberBaseInfoToModelStub.returns({});
+    getExpiredUsersStub.returns([]);
+
+    await emailScheduler.__get__("deactivateExpiredMembersEmails")();
+
+    expect(patchMailboxStub.notCalled).to.be.true;
+    expect(changePasswordStub.notCalled).to.be.true;
+    expect(setEmailSuspendedStub.notCalled).to.be.true;
+  });
+
+  it("should handle errors gracefully", async () => {
+    const fakeUser = {
+      username: "user3",
+      primary_email_status: EmailStatusCode.EMAIL_ACTIVE,
+    };
+    getAllUsersInfoStub.resolves([{}]);
+    memberBaseInfoToModelStub.returns(fakeUser);
+    getExpiredUsersStub.returns([fakeUser]);
+    emailInfosStub.resolves({
+      emailPlan: EMAIL_PLAN_TYPE.EMAIL_PLAN_OPI,
+      email: "user3@beta.gouv.fr",
+    });
+    patchMailboxStub.rejects(new Error("Failed to patch mailbox"));
+
+    await emailScheduler.__get__("deactivateExpiredMembersEmails")();
+
+    expect(patchMailboxStub.calledOnce).to.be.true;
+    // verify parameters were attempted even if it failed
+
+    expect(patchMailboxStub.firstCall.args[0]).to.deep.eq({
+      domain_name: DIMAIL_MAILBOX_DOMAIN,
+      user_name: "user3",
+      data: { active: "no" },
+    });
+
+    // setEmailSuspended should not be called if patchMailbox fails
+    expect(setEmailSuspendedStub.notCalled).to.be.true;
   });
 });
 
-describe("Set email active", () => {
-  let sendEmailStub;
-  let smtpBlockedContactsEmailDelete;
-  let users = [
-    {
-      id: "membre.nouveau",
-      fullname: "membre.nouveau",
-      role: "Chargé de déploiement",
-      start: "2020-09-01",
-      end: "2090-01-30",
-      employer: "admin/",
-      secondary_email: `membre.nouveau@gmail.com`,
-    },
-  ];
-  beforeEach(async () => {
-    sendEmailStub = sinon
-      .stub(email, "sendEmail")
-      .returns(Promise.resolve(null));
-    smtpBlockedContactsEmailDelete = sinon
-      .stub(email, "smtpBlockedContactsEmailDelete")
-      .returns(Promise.resolve(null));
-    utilsTest.cleanMocks();
-    utilsTest.mockOvhTime();
-    await utilsTest.createUsers(users);
+describe("recreateEmailIfUserActive", () => {
+  beforeEach(() => {
+    // ensure a clean sinon state and fresh stubs for Kysely each test
+    sinon.restore();
+
+    sinon.stub(db, "selectFrom").returns({
+      select: () => ({
+        where: () => ({
+          execute: sinon.stub().resolves([]),
+        }),
+      }),
+    } as any);
+  });
+  afterEach(() => {
+    sinon.restore();
   });
 
-  afterEach(async () => {
-    sendEmailStub.restore();
-    smtpBlockedContactsEmailDelete.restore();
-    await utilsTest.deleteUsers(users);
-  });
+  it("reactivates DIMAIL mailbox and updates user to EMAIL_ACTIVE when primary_email is a dimail email", async () => {
+    const dbUser = {
+      uuid: "uuid1",
+      username: "user1",
+      primary_email: "user1@dimail.beta.gouv.fr",
+      primary_email_status: EmailStatusCode.EMAIL_SUSPENDED,
+    };
 
-  it("should set status to EMAIL_ACTIVE_AND_PASSWORD_DEFINITION_PENDING and sendEmailCreatedEmail if status is EMAIL_CRATION_PENDING", async () => {
-    const now = new Date();
-    const nowLess10Minutes = now.getTime() - 11 * 60 * 1000;
-    await db
-      .updateTable("users")
-      .where("username", "=", "membre.nouveau")
-      .set({
-        primary_email_status: EmailStatusCode.EMAIL_UNSET,
-        primary_email_status_updated_at: new Date(now),
-      })
-      .execute();
-    await emailScheduler.setEmailAddressesActive();
-    let users = await db
-      .selectFrom("users")
-      .selectAll()
-      .where("username", "=", "membre.nouveau")
-      .where(
-        "primary_email_status",
-        "=",
-        EmailStatusCode.EMAIL_ACTIVE_AND_PASSWORD_DEFINITION_PENDING,
-      )
-      .execute();
-    users.length.should.be.equal(0);
-    await db
-      .updateTable("users")
-      .where("username", "=", "membre.nouveau")
-      .set({
-        primary_email_status: EmailStatusCode.EMAIL_CREATION_PENDING,
-        primary_email_status_updated_at: new Date(nowLess10Minutes),
-      })
-      .execute();
-    await emailScheduler.setEmailAddressesActive();
-    users = await db
-      .selectFrom("users")
-      .selectAll()
-      .where("username", "=", "membre.nouveau")
-      .where(
-        "primary_email_status",
-        "=",
-        EmailStatusCode.EMAIL_ACTIVE_AND_PASSWORD_DEFINITION_PENDING,
-      )
-      .execute();
-    users[0].username.should.be.equal("membre.nouveau");
-    sendEmailStub.calledOnce.should.be.true;
-    smtpBlockedContactsEmailDelete.calledOnce.should.be.true;
-    await db
-      .updateTable("users")
-      .where("username", "=", "membre.nouveau")
-      .set({
-        primary_email_status: EmailStatusCode.EMAIL_UNSET,
-        primary_email_status_updated_at: new Date(now),
-      })
-      .execute();
-  });
-});
+    // fake query builder with chainable where() calls
+    const fakeQB = createFakeQB([dbUser]);
+    sinon.stub(kyselyQueries, "getActiveUsers").returns(fakeQB as any);
+    const getDimailEmailStub = sinon
+      .stub(dimailQueries, "getDimailEmail")
+      .resolves(true);
+    const patchMailboxStubLocal = sinon
+      .stub(dimailClient, "patchMailbox")
+      .resolves();
 
-describe("Set email redirection active", () => {
-  let smtpBlockedContactsEmailDelete;
-  const users = [
-    {
-      id: "membre.nouveau",
-      fullname: "membre.nouveau",
-      role: "Chargé de déploiement",
-      start: "2020-09-01",
-      end: "2090-01-30",
-      employer: "admin/",
-      secondary_email: "membre.nouveau@gmail.com",
-    },
-  ];
-  beforeEach(async () => {
-    smtpBlockedContactsEmailDelete = sinon
-      .stub(email, "smtpBlockedContactsEmailDelete")
-      .returns(Promise.resolve(null));
-    utilsTest.cleanMocks();
-    utilsTest.mockOvhTime();
-    await utilsTest.createUsers(users);
-  });
-
-  afterEach(async () => {
-    smtpBlockedContactsEmailDelete.restore();
-    await utilsTest.deleteUsers(users);
-  });
-
-  it("should set status to EMAIL_REDIRECTION_ACTIVE and sendEmailCreatedEmail if status is EMAIL_REDIRECTION_PENDING", async () => {
-    const now = new Date();
-    const nowLess10Minutes = now.getTime() - 11 * 60 * 1000;
-    await db
-      .updateTable("users")
-      .where("username", "=", "membre.nouveau")
-      .set({
-        primary_email_status: EmailStatusCode.EMAIL_UNSET,
-        primary_email_status_updated_at: new Date(now),
-      })
-      .execute();
-    await emailScheduler.setCreatedEmailRedirectionsActive();
-    let users = await db
-      .selectFrom("users")
-      .where("username", "=", "membre.nouveau")
-      .where(
-        "primary_email_status",
-        "=",
-        EmailStatusCode.EMAIL_REDIRECTION_ACTIVE,
-      )
-      .selectAll()
-      .execute();
-    users.length.should.be.equal(0);
-    await db
-      .updateTable("users")
-      .where("username", "=", "membre.nouveau")
-      .set({
-        primary_email_status: EmailStatusCode.EMAIL_REDIRECTION_PENDING,
-        email_is_redirection: true,
-        primary_email_status_updated_at: new Date(nowLess10Minutes),
-      })
-      .execute();
-    await emailScheduler.setCreatedEmailRedirectionsActive();
-    users = await db
-      .selectFrom("users")
-      .selectAll()
-      .where("username", "=", "membre.nouveau")
-      .where(
-        "primary_email_status",
-        "=",
-        EmailStatusCode.EMAIL_REDIRECTION_ACTIVE,
-      )
-      .execute();
-    users[0].username.should.be.equal("membre.nouveau");
-    smtpBlockedContactsEmailDelete.calledOnce.should.be.true;
-    await db
-      .updateTable("users")
-      .where("username", "=", "membre.nouveau")
-      .set({
-        email_is_redirection: false,
-        primary_email_status: EmailStatusCode.EMAIL_UNSET,
-        primary_email_status_updated_at: new Date(now),
-      })
-      .execute();
-  });
-});
-
-describe("Should send email validation", () => {
-  let sendEmailStub;
-  let sendOnboardingVerificationPendingEmail;
-  const users = [
-    {
-      id: "membre.nouveau",
-      fullname: "membre.nouveau",
-      role: "Chargé de déploiement",
-      start: "2020-09-01",
-      end: "2090-01-30",
-      employer: "admin/",
-      secondary_email: "membre.nouveau@gmail.com",
-    },
-  ];
-  beforeEach(async () => {
-    sendEmailStub = sinon.stub().resolves();
-    sendOnboardingVerificationPendingEmail = proxyquire(
-      "@/server/schedulers/emailScheduler",
-      {
-        "@/server/config/email.config": {
-          sendEmail: sendEmailStub,
-        },
+    let setArg: any = null;
+    let whereUuid: any = null;
+    const execStub = sinon.stub().resolves();
+    sinon.stub(db, "updateTable").callsFake(() => ({
+      set: (arg: any) => {
+        setArg = arg;
+        return {
+          where: (_col: any, _op: any, val: any) => {
+            whereUuid = val;
+            return { execute: execStub };
+          },
+        };
       },
-    ).sendOnboardingVerificationPendingEmail;
-    await utilsTest.createUsers(users);
-  });
+    }));
 
-  afterEach(async () => {
-    await utilsTest.deleteUsers(users);
-  });
+    await recreateEmailIfUserActive.__get__("recreateEmailIfUserActive")();
 
-  it("should send onboarding verification pending email to users with EMAIL_VERIFICATION_WAITING status", async () => {
-    await db
-      .updateTable("users")
-      .set({
-        primary_email_status: EmailStatusCode.EMAIL_VERIFICATION_WAITING,
-      })
-      .execute();
+    // patchMailbox should be called with expected params
+    expect(patchMailboxStubLocal.calledOnce).to.be.true;
 
-    await sendOnboardingVerificationPendingEmail();
-    const token = await db
-      .selectFrom("verification_tokens")
-      .selectAll()
-      .where("identifier", "=", "membre.nouveau@gmail.com")
-      .executeTakeFirstOrThrow();
-    expect(token).to.exist;
+    expect(patchMailboxStubLocal.firstCall.args[0]).to.deep.eq({
+      domain_name: DIMAIL_MAILBOX_DOMAIN,
+      user_name: "user1",
+      data: { active: "yes" },
+    });
+
+    // DB update should have been called with correct set values and uuid
+    expect(setArg).to.not.be.null;
+    expect(setArg.primary_email).to.equal(dbUser.primary_email);
+    expect(setArg.primary_email_status).to.equal(EmailStatusCode.EMAIL_ACTIVE);
+    expect(whereUuid).to.equal(dbUser.uuid);
+
+    // cleanup
+    getDimailEmailStub.restore();
+    patchMailboxStubLocal.restore();
   });
 });

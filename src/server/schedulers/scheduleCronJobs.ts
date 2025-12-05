@@ -88,6 +88,7 @@ export function startJobs() {
                 }),
               )
               .execute();
+            Sentry.captureException(error, { data: { name: cronjob.name } });
             return;
           },
         ),

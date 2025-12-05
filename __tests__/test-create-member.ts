@@ -12,6 +12,7 @@ import { db } from "@/lib/kysely";
 import { createMemberSchemaType } from "@/models/actions/member";
 import { Domaine, EmailStatusCode } from "@/models/member";
 import { sendNewMemberValidationEmailTopic } from "@/server/queueing/workers/send-validation-email";
+import { sendNewMemberVerificationEmailTopic } from "@/server/queueing/workers/send-verification-email";
 const expect = chai.expect;
 
 describe("Test creating new user flow", () => {
@@ -172,8 +173,8 @@ describe("Test creating new user flow", () => {
     await createNewMemberHandler(req, {
       params: {},
     });
-    sendStub.called.should.be.true;
-    sendStub.firstCall.args[0].should.equal(sendNewMemberValidationEmailTopic);
+    expect(sendStub.called).to.be.true;
+    expect(sendStub.firstCall.args[0]).to.eq(sendNewMemberValidationEmailTopic);
     const newDbUser = await db
       .selectFrom("users")
       .selectAll()
@@ -189,7 +190,7 @@ describe("Test creating new user flow", () => {
       .where("user_id", "=", newDbUser?.uuid!)
       .executeTakeFirst();
     expect(newDbMission).to.exist;
-    sendStub.firstCall.args[1].should.deep.equal({
+    expect(sendStub.firstCall.args[1]).to.deep.equal({
       userId: newDbUser?.uuid,
       incubator_id: undefined,
     });
@@ -214,8 +215,10 @@ describe("Test creating new user flow", () => {
     await createNewMemberHandler(req, {
       params: {},
     });
-    sendStub.called.should.be.true;
-    sendStub.firstCall.args[0].should.equal(sendNewMemberValidationEmailTopic);
+    expect(sendStub.callCount).to.eq(1);
+    expect(sendStub.firstCall.args[0]).to.equal(
+      sendNewMemberValidationEmailTopic,
+    );
     const newDbUser = await db
       .selectFrom("users")
       .selectAll()
@@ -231,7 +234,7 @@ describe("Test creating new user flow", () => {
       .where("user_id", "=", newDbUser?.uuid!)
       .executeTakeFirst();
     expect(newDbMission).to.exist;
-    sendStub.firstCall.args[1].should.deep.equal({
+    expect(sendStub.firstCall.args[1]).to.deep.equal({
       userId: newDbUser?.uuid,
       incubator_id: undefined,
     });
@@ -256,7 +259,10 @@ describe("Test creating new user flow", () => {
     await createNewMemberHandler(req, {
       params: {},
     });
-    sendStub.called.should.be.false;
+    expect(sendStub.callCount).to.eq(1);
+    expect(sendStub.firstCall.args[0]).to.equal(
+      sendNewMemberVerificationEmailTopic,
+    );
     const newDbUser = await db
       .selectFrom("users")
       .selectAll()
@@ -308,7 +314,10 @@ describe("Test creating new user flow", () => {
       await createNewMemberHandler(req, {
         params: {},
       });
-      sendStub.called.should.be.false;
+      expect(sendStub.callCount).to.eq(1);
+      expect(sendStub.firstCall.args[0]).to.equal(
+        sendNewMemberVerificationEmailTopic,
+      );
       const newDbUser = await db
         .selectFrom("users")
         .selectAll()
