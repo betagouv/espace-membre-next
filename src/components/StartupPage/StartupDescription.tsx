@@ -44,6 +44,48 @@ export const StartupDescription = ({
               {startupInfos.repository}
             </a>,
           ],
+          startupInfos.stats_url && [
+            "Statistiques d'usage",
+            <a key="5" href={startupInfos.stats_url} target="_blank">
+              {startupInfos.stats_url}
+            </a>,
+          ],
+          startupInfos.impact_url && [
+            "Statistiques d'impact",
+            <a key="6" href={startupInfos.impact_url} target="_blank">
+              {startupInfos.impact_url}
+            </a>,
+          ],
+          startupInfos.budget_url && [
+            "Budget",
+            <a key="7" href={startupInfos.budget_url} target="_blank">
+              {startupInfos.budget_url}
+            </a>,
+          ],
+          startupInfos.roadmap_url && [
+            "Roadmap",
+            <a key="8" href={startupInfos.roadmap_url} target="_blank">
+              {startupInfos.roadmap_url}
+            </a>,
+          ],
+          startupInfos.dashlord_url && [
+            "Rapport DashLord",
+            <a key="9" href={startupInfos.dashlord_url} target="_blank">
+              {startupInfos.dashlord_url}
+            </a>,
+          ],
+          startupInfos.tech_audit_url && [
+            "Audit technique",
+            <a key="10" href={startupInfos.tech_audit_url} target="_blank">
+              {startupInfos.tech_audit_url}
+            </a>,
+          ],
+          startupInfos.ecodesign_url && [
+            "Déclaration d'écoconception",
+            <a key="11" href={startupInfos.ecodesign_url} target="_blank">
+              {startupInfos.ecodesign_url}
+            </a>,
+          ],
           startupInfos.techno &&
             startupInfos.techno.length && [
               "Technologies",
