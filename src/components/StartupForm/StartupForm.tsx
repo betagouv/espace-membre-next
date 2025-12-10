@@ -21,7 +21,6 @@ import { TechnoEditor } from "./TechnoEditor";
 import { ThematiquesEditor } from "./ThematiquesEditor";
 import { UsertypesEditor } from "./UsertypesEditor";
 import { ClientOnly } from "../ClientOnly";
-import SelectAccessibilityStatus from "../SelectAccessibilityStatus";
 import UploadForm from "../UploadForm/UploadForm";
 import { ActionResponse } from "@/@types/serverAction";
 import frontConfig from "@/frontConfig";
@@ -32,7 +31,6 @@ import {
 import { Option } from "@/models/misc";
 import { sponsorSchemaType } from "@/models/sponsor";
 import {
-  DSFR_STATUSES,
   StartupEvent,
   StartupPhase,
   eventSchemaType,
@@ -218,10 +216,6 @@ export function StartupForm(props: StartupFormProps) {
       label: newSponsor.name,
     })),
   };
-  const hasAnalyseDeRisque =
-    !!props.startup?.analyse_risques ||
-    !!props.startup?.analyse_risques_url ||
-    !!getValues("startup.analyse_risques");
   if (Object.keys(errors).length) console.error("Validation errors :", errors);
   return (
     <>
@@ -553,35 +547,7 @@ export function StartupForm(props: StartupFormProps) {
           </div>
           {/*[FILE UPLOAD ]<hr />*/}
 
-          <h2>Standards beta.gouv.fr</h2>
-          <Select
-            label={
-              startupInfoUpdateSchema.shape.startup.shape.dsfr_status
-                .description
-            }
-            nativeSelectProps={register("startup.dsfr_status")}
-            hint="Statut du système de design de l'état"
-            state={errors?.startup?.dsfr_status ? "error" : "default"}
-            stateRelatedMessage={errors?.startup?.dsfr_status?.message}
-          >
-            <option value="" disabled>
-              Séléctionnez le statut
-            </option>
-            {DSFR_STATUSES.map((status) => (
-              <option key={status}>{status}</option>
-            ))}
-          </Select>
-
-          <SelectAccessibilityStatus
-            value={props.startup?.accessibility_status}
-            onChange={(e) =>
-              setValue(
-                "startup.accessibility_status",
-                e.currentTarget.value || undefined,
-              )
-            }
-          />
-
+          <h2>Liens</h2>
           <BasicInput id="stats_url" />
           <BasicInput id="impact_url" />
           <BasicInput id="budget_url" />
@@ -590,37 +556,6 @@ export function StartupForm(props: StartupFormProps) {
           <BasicInput id="dashlord_url" />
           <BasicInput id="tech_audit_url" />
           <BasicInput id="ecodesign_url" />
-
-          <Checkbox
-            options={[
-              {
-                label:
-                  startupInfoUpdateSchema.shape.startup.shape
-                    .mon_service_securise.description,
-                hintText:
-                  "Cochez cette case si votre produit est inscrit sur MonServiceSécurisé",
-                nativeInputProps: {
-                  ...register("startup.mon_service_securise"),
-                },
-              },
-            ]}
-          />
-          <Checkbox
-            options={[
-              {
-                label:
-                  startupInfoUpdateSchema.shape.startup.shape.analyse_risques
-                    .description,
-                hintText:
-                  "Cochez cette case si l'équipe a produit une analyse de risque",
-                nativeInputProps: {
-                  ...register("startup.analyse_risques"),
-                  checked: hasAnalyseDeRisque,
-                },
-              },
-            ]}
-          />
-          {hasAnalyseDeRisque && <BasicInput id="analyse_risques_url" />}
 
           <Button
             className={fr.cx("fr-mt-3w")}
