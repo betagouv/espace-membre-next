@@ -11,7 +11,7 @@ import { StartupDescription } from "./StartupDescription";
 import { StartupHeader } from "./StartupHeader";
 import { StartupHistory } from "./StartupHistory";
 import { StartupMembers } from "./StartupMembers";
-import { StartupStandards } from "./StartupStandards";
+import { StartupLinks } from "./StartupLinks";
 import { StartupTools } from "./StartupTools";
 import { FicheHeader } from "../FicheHeader";
 import LastChange from "../LastChange";
@@ -108,10 +108,10 @@ export default function StartupPage({
       content: <StartupHistory phases={phases} events={events} />,
     },
     {
-      label: "Standards",
-      tabId: "standards",
-      isDefault: hash === "standards",
-      content: <StartupStandards startupInfos={startupInfos} />,
+      label: "Liens",
+      tabId: "liens",
+      isDefault: hash === "liens",
+      content: <StartupLinks startupInfos={startupInfos} />,
     },
     {
       label: "Outils",
