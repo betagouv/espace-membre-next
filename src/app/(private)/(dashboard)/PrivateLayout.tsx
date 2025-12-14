@@ -1,9 +1,7 @@
 "use client";
 import Alert from "@codegouvfr/react-dsfr/Alert";
 import { Breadcrumb } from "@codegouvfr/react-dsfr/Breadcrumb";
-import { SideMenu, SideMenuProps } from "@codegouvfr/react-dsfr/SideMenu";
-import { usePathname, useRouter } from "next/navigation";
-import { useSession } from "next-auth/react";
+import { usePathname } from "next/navigation";
 
 import { useInfoContext } from "@/app/BreadCrumbProvider";
 import frontConfig from "@/frontConfig";
@@ -16,25 +14,9 @@ import {
 } from "@/utils/url";
 
 export function PrivateLayout({ children }: { children: React.ReactNode }) {
-  const router = useRouter();
-
   const pathname = usePathname();
 
-  const { status, data: session } = useSession({
-    required: true,
-    onUnauthenticated() {
-      router.push("/login");
-    },
-  });
-
   const { currentPage, currentItemId } = useInfoContext();
-  if (status === "loading") {
-    return (
-      <div className="fr-grid-row fr-grid-row-gutters fr-grid-row--center fr-mb-14v fr-my-4w">
-        Chargement...
-      </div>
-    );
-  }
 
   const accountLink = linkRegistry.get("account", undefined);
   const communityLink = linkRegistry.get("community", undefined);
@@ -42,11 +24,8 @@ export function PrivateLayout({ children }: { children: React.ReactNode }) {
     "communityCreateMember",
     undefined,
   );
-  const dashboardLink = linkRegistry.get("dashboard", undefined);
   const startupListLink = linkRegistry.get("startupList", undefined);
-  const startupDetailLink = linkRegistry.get("startupDetails", {
-    startupId: "",
-  });
+
   const startupCreateLink = linkRegistry.get("startupCreate", undefined);
   const incubatorListLink = linkRegistry.get("incubatorList", undefined);
   const incubatorCreateLink = linkRegistry.get("incubatorCreate", undefined);
