@@ -12,6 +12,7 @@ import {
   hasPathnameThisRegex,
   hasPathnameThisRoot,
 } from "@/utils/url";
+import React from "react";
 
 export function PrivateLayout({ children }: { children: React.ReactNode }) {
   const pathname = usePathname();
@@ -386,6 +387,7 @@ export function PrivateLayout({ children }: { children: React.ReactNode }) {
   };
 
   const tree = findActiveItem(MenuItems);
+
   return (
     <>
       {!hasPathnameThisMatch(pathname, verifyLink) &&
