@@ -71,14 +71,11 @@ export default async function Page() {
   return (
     <MemberPage
       isAdmin={isAdmin}
-      availableEmailPros={availableEmailPros}
       authorizations={user.authorizations}
       emailInfos={user.emailInfos}
       isExpired={user.isExpired}
-      redirections={user.emailRedirections}
       avatar={userInformations.avatar} // todo
       changes={userInformations.changes}
-      emailResponder={userInformations.emailResponder}
       userInfos={userInformations.baseInfo}
       mattermostInfo={userInformations.mattermostInfo}
       matomoInfo={userInformations.matomoInfo}

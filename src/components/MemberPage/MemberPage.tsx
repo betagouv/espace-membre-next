@@ -5,11 +5,8 @@ import { useState, useEffect } from "react";
 import { fr } from "@codegouvfr/react-dsfr";
 import Button from "@codegouvfr/react-dsfr/Button";
 import { Tabs } from "@codegouvfr/react-dsfr/Tabs";
-import fs from "fs";
 import MarkdownIt from "markdown-it";
-import { useRouter } from "next/navigation";
 import { match, P } from "ts-pattern";
-import yaml from "yaml";
 
 import { AdminPanel } from "./AdminPanel";
 import EmailContainer from "./Email/EmailContainer";
@@ -32,6 +29,7 @@ import { MemberWaitingEmailValidationNotice } from "./MemberWaitingEmailValidati
 import { OnboardingTabPanel } from "./OnboardingTabPanel";
 import { userEventSchemaType } from "@/models/userEvent";
 
+//@ts-ignore
 import "./MemberPage.css";
 
 const mdParser = new MarkdownIt({
@@ -44,11 +42,8 @@ const mdParser = new MarkdownIt({
 export interface MemberPageProps {
   avatar: string | undefined;
   emailInfos: memberWrapperSchemaType["emailInfos"];
-  redirections: memberWrapperSchemaType["emailRedirections"];
   authorizations: memberWrapperSchemaType["authorizations"];
-  emailResponder: memberWrapperSchemaType["emailResponder"] | null;
   userInfos: memberWrapperSchemaType["userInfos"];
-  availableEmailPros: string[];
   mattermostInfo: {
     hasMattermostAccount: boolean;
     isInactiveOrNotInTeam: boolean;
@@ -57,16 +52,6 @@ export interface MemberPageProps {
   matomoInfo?: matomoUserSchemaType;
   sentryInfo?: sentryUserSchemaType;
   isExpired: boolean;
-  emailServiceInfo?: {
-    primaryEmail?: {
-      emailBlacklisted: boolean;
-      listIds: number[];
-    };
-    secondaryEmail?: {
-      emailBlacklisted: boolean;
-      listIds: number[];
-    };
-  };
   changes: PrivateMemberChangeSchemaType[];
   startups: Awaited<ReturnType<typeof getUserStartups>>;
   sessionUserIsFromIncubatorTeam: boolean;
@@ -80,19 +65,10 @@ export interface MemberPageProps {
   incubators: Awaited<ReturnType<typeof getUserIncubators>>;
 }
 
-/*
- todo:
-    - avatar
-    - check action emails
-*/
-
 export default function MemberPage({
   emailInfos,
-  redirections,
   userInfos,
-  availableEmailPros,
   authorizations,
-  emailResponder,
   mattermostInfo,
   matomoInfo,
   sentryInfo,
@@ -106,7 +82,6 @@ export default function MemberPage({
   onboarding,
   incubators,
 }: MemberPageProps) {
-  const router = useRouter();
   const [tab, setTab] = useState<null | string>(null);
 
   useEffect(() => {
@@ -156,7 +131,7 @@ export default function MemberPage({
   const isWaitingValidation =
     userInfos.primary_email_status === "MEMBER_VALIDATION_WAITING";
 
-  const isWaitingEmailValidation =
+  const isWaitingEmailVerification =
     userInfos.primary_email_status === "EMAIL_VERIFICATION_WAITING";
 
   const tabs = [
@@ -236,9 +211,6 @@ export default function MemberPage({
           isCurrentUser={isCurrentUser}
           isExpired={isExpired}
           emailInfos={emailInfos}
-          emailResponder={emailResponder}
-          emailRedirections={redirections}
-          redirections={redirections}
           userInfos={userInfos}
           authorizations={authorizations}
         ></EmailContainer>
@@ -269,7 +241,7 @@ export default function MemberPage({
           incubators={incubators}
         />
       )}
-      {isWaitingEmailValidation && (
+      {isWaitingEmailVerification && (
         <MemberWaitingEmailValidationNotice userInfos={userInfos} />
       )}
       {tab !== null && (
