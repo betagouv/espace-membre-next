@@ -20,17 +20,9 @@ const serialize = createSerializer({
 export const MemberCard = ({
   userInfos,
   avatar,
-  changes,
-  isAdmin,
-  isCurrentUser,
-  sessionUserIsFromIncubatorTeam,
 }: {
   userInfos: MemberPageProps["userInfos"];
   avatar?: string | undefined;
-  changes: PrivateMemberChangeSchemaType[];
-  isAdmin: boolean;
-  isCurrentUser: boolean;
-  sessionUserIsFromIncubatorTeam: boolean;
 }) => {
   const heading = (
     <>

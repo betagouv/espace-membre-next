@@ -113,7 +113,7 @@ describe("dimail client", () => {
         data: { active: "yes" },
       });
       expect(scope.isDone()).to.be.true;
-      expect(result).to.deep.equal({ success: true });
+      expect(result).to.deep.equal({ success: true, status: 200 });
     });
   });
 

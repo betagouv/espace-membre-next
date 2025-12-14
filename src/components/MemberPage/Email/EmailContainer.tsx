@@ -331,43 +331,17 @@ export default function EmailContainer({
           data={rows}
         />
       ) : null}
-      {isDinumEmail ? (
-        <>
-          <BlocEmailConfiguration emailInfos={emailInfos} />
-        </>
-      ) : isCurrentUser ? (
+      {!isDinumEmail && (
         /* affiche la migration dimail que si c'est un email non dimail et que c'est l'utilisateur lui-même */
         <DimailCreateMailButton
           userUuid={userInfos.uuid}
           userInfos={userInfos}
         />
-      ) : null}
+      )}
+      {emailInfos && <BlocEmailConfiguration emailInfos={emailInfos} />}
+
       {!emailIsBeingCreated && isCurrentUser && (
         <div className={fr.cx("fr-accordions-group")}>
-          {!!emailInfos && !isDinumEmail && (
-            <>
-              <BlocEmailConfiguration emailInfos={emailInfos} />
-            </>
-          )}
-
-          {!isDinumEmail &&
-            emailInfos &&
-            emailInfos.emailPlan === EMAIL_PLAN_TYPE.EMAIL_PLAN_BASIC && (
-              <>
-                <BlocEmailResponder
-                  username={userInfos.username}
-                  responder={emailResponder}
-                />
-                <BlocRedirection
-                  redirections={emailRedirections}
-                  canCreateRedirection={canCreateRedirection}
-                  userInfos={userInfos}
-                  isExpired={isExpired}
-                  domain={frontConfig.domain}
-                />
-              </>
-            )}
-
           {!isDinumEmail && (
             <BlocChangerMotDePasse
               canChangePassword={canChangePassword}

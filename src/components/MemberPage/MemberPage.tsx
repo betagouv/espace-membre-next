@@ -23,7 +23,6 @@ import { memberWrapperSchemaType } from "@/models/member";
 import { PrivateMemberChangeSchemaType } from "@/models/memberChange";
 import { onboardingChecklistSchemaType } from "@/models/onboardingChecklist";
 
-import "./MemberPage.css";
 import { matomoUserSchemaType } from "@/models/matomo";
 import { sentryUserSchemaType } from "@/models/sentry";
 import LastChange from "../LastChange";
@@ -32,6 +31,8 @@ import { MemberWaitingValidationNotice } from "./MemberWaitingValidationNotice";
 import { MemberWaitingEmailValidationNotice } from "./MemberWaitingEmailValidationNotice";
 import { OnboardingTabPanel } from "./OnboardingTabPanel";
 import { userEventSchemaType } from "@/models/userEvent";
+
+import "./MemberPage.css";
 
 const mdParser = new MarkdownIt({
   html: true,
@@ -165,14 +166,7 @@ export default function MemberPage({
       tabId: "fiche-membre",
       content: (
         <>
-          <MemberCard
-            avatar={avatar}
-            userInfos={userInfos}
-            changes={changes}
-            isAdmin={isAdmin}
-            isCurrentUser={isCurrentUser}
-            sessionUserIsFromIncubatorTeam={sessionUserIsFromIncubatorTeam}
-          />
+          <MemberCard avatar={avatar} userInfos={userInfos} />
           {userInfos.bio && (
             <figure className={fr.cx("fr-quote", "fr-mt-2w")}>
               <blockquote
@@ -229,7 +223,6 @@ export default function MemberPage({
           mattermostInfo={mattermostInfo}
           matomoInfo={matomoInfo}
           sentryInfo={sentryInfo}
-          redirections={redirections}
           isCurrentUser={isCurrentUser}
         />
       ),
@@ -256,11 +249,7 @@ export default function MemberPage({
       tabId: "admin",
       isDefault: tab === "admin",
       content: (
-        <AdminPanel
-          authorizations={authorizations}
-          userInfos={userInfos}
-          emailInfos={emailInfos}
-        />
+        <AdminPanel authorizations={authorizations} userInfos={userInfos} />
       ),
     },
   ].filter((x) => !!x); // wth, Boolean doesnt work
