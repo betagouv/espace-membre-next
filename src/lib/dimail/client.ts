@@ -35,6 +35,20 @@ export type DimailMailboxResult = {
   password: string;
 };
 
+export type DimailMailboxesResult = {
+  type: string;
+  status: string;
+  active: string;
+  email: string;
+}[];
+
+export type DimailAliasesResult = {
+  username: "string";
+  domain: "string";
+  destination: "string";
+  allow_to_send: "boolean";
+}[];
+
 export type DimailAliasResult = {
   username: string;
   domain: string;
@@ -151,7 +165,7 @@ export async function resetPassword({
 
 /**
  * Update a mailbox
- * POST /domains/{domain_name}/mailboxes/{user_name}
+ * PATCH /domains/{domain_name}/mailboxes/{user_name}
  */
 export async function patchMailbox({
   domain_name,
@@ -175,4 +189,40 @@ export async function patchMailbox({
     return { success: false };
   }
   return { success: true };
+}
+
+/**
+ * get mailboxes for a given domain
+ * GET /domains/{domain_name}/mailboxes
+ */
+export async function getAllMailboxes({
+  domain_name,
+}: {
+  domain_name: string;
+}): Promise<{ success: boolean; mailboxes?: DimailMailboxesResult }> {
+  const res = await client.get<DimailMailboxesResult>(
+    `/domains/${encodeURIComponent(domain_name)}/mailboxes`,
+  );
+  if (res.status !== 200) {
+    return { success: false };
+  }
+  return { success: true, mailboxes: res.data };
+}
+
+/**
+ * get aliases for a given domain
+ * GET /domains/{domain_name}/aliases
+ */
+export async function getAllAliases({
+  domain_name,
+}: {
+  domain_name: string;
+}): Promise<{ success: boolean; aliases?: DimailAliasesResult }> {
+  const res = await client.get<DimailAliasesResult>(
+    `/domains/${encodeURIComponent(domain_name)}/aliases`,
+  );
+  if (res.status !== 200) {
+    return { success: false };
+  }
+  return { success: true, aliases: res.data };
 }

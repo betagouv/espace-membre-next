@@ -4,6 +4,7 @@
 import { getBossClientInstance, startBossClientInstance } from "./client";
 import { sendEmailToIncubatorTeamTopic } from "./workers/send-email-to-incubator";
 import { sendEmailToTeamsToCheckOnTeamCompositionTopic } from "./workers/send-email-to-teams-to-check-on-team-composition";
+import { syncDinumEmailsTopic } from "./workers/sync-dinum-emails";
 
 export type PgBossJobType = {
   topic: string;
@@ -21,6 +22,11 @@ export const pgBossJobs: PgBossJobType[] = [
     topic: sendEmailToIncubatorTeamTopic,
     frequency: `0 8 1 */3 *`,
     description: `Envoie un email aux équipes incubateur pour qu'ils vérifient les produits qui n'ont pas changé depuis X mois`,
+  },
+  {
+    topic: syncDinumEmailsTopic,
+    frequency: `0 8-18 * * *`,
+    description: `Met à jour la table dinum_emails`,
   },
 ];
 
