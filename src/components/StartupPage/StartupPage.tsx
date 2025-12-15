@@ -23,10 +23,15 @@ import { phaseSchemaType, startupSchemaType } from "@/models/startup";
 import { StartupChangeSchemaType } from "@/models/startupChange";
 import { getCurrentPhase } from "@/utils/startup";
 
+//@ts-ignore
 import "./timeline.css";
 
 export interface StartupPageProps {
   startupInfos: startupSchemaType;
+  allMembers: {
+    fullname: string;
+    username: string;
+  }[];
   members: memberBaseInfoSchemaType[];
   phases: phaseSchemaType[];
   changes: StartupChangeSchemaType[];
@@ -56,6 +61,7 @@ export interface StartupPageProps {
 export default function StartupPage({
   startupInfos,
   members,
+  allMembers,
   phases,
   changes,
   matomoSites,
@@ -67,7 +73,6 @@ export default function StartupPage({
 }: StartupPageProps) {
   const router = useRouter();
   const [hash, setHash] = useState<null | string>(null);
-
   // Optional: Listen for hash changes
   const onHashChange = () => {
     setHash(window.location.hash.replace("#", ""));
@@ -86,13 +91,22 @@ export default function StartupPage({
     };
   }, []);
 
+  const canEditMembers = true;
+
   const currentPhase = getCurrentPhase(phases); // todo get current phase
   const tabs = [
     {
       label: "Équipe",
       tabId: "team",
       isDefault: hash === "team",
-      content: <StartupMembers members={members} startupInfos={startupInfos} />,
+      content: (
+        <StartupMembers
+          canEditMembers={canEditMembers}
+          members={members}
+          allMembers={allMembers}
+          startupInfos={startupInfos}
+        />
+      ),
     },
     {
       label: "Description",

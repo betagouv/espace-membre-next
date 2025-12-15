@@ -8,7 +8,7 @@ import StartupPage from "@/components/StartupPage/StartupPage";
 import { getEventListByStartupUuid } from "@/lib/events";
 import { db } from "@/lib/kysely";
 import { getStartup } from "@/lib/kysely/queries";
-import { getUsersByStartup } from "@/lib/kysely/queries/users";
+import { getActiveUsers, getUsersByStartup } from "@/lib/kysely/queries/users";
 import {
   memberBaseInfoToModel,
   phaseToModel,
@@ -109,6 +109,10 @@ export default async function Page({ params }: Props) {
     .selectAll()
     .orderBy("date", "asc")
     .execute();
+  const allMembers = await getActiveUsers()
+    .clearSelect()
+    .select(["username", "fullname", "id"])
+    .execute();
   return (
     <>
       <BreadCrumbFiller
@@ -116,6 +120,7 @@ export default async function Page({ params }: Props) {
         currentItemId={startup.uuid}
       />
       <StartupPage
+        allMembers={allMembers}
         changes={changes.map((change) => startupChangeToModel(change))}
         startupInfos={startup}
         incubator={incubator}
