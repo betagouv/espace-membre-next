@@ -29,8 +29,7 @@ export const metadata: Metadata = {
 export default async function Page(props) {
   const session = await getServerSession(authOptions);
   if (!session) {
-    redirect("/login");
-    return;
+    return redirect("/login");
   }
   const userInfos = userInfosToModel(
     await getUserInfos({
@@ -73,7 +72,6 @@ export default async function Page(props) {
   return (
     <DashboardPage
       {...props}
-      session={session}
       surveyCookieValue={surveyCookieValue}
       latestProducts={lastestProducts}
       latestMembers={lastestMembers}

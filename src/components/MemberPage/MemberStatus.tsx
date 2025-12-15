@@ -104,7 +104,7 @@ const emailStatusRow = (
           </Badge>
         ),
       )
-      .with(legacyEmailStatuses, () => <>{/** obsolete */}</>)
+      .with(legacyEmailStatuses, () => <>{userInfos.primary_email_status}</>)
       .exhaustive(),
     <>
       {emailInfos && <BadgeEmailPlan plan={emailInfos.emailPlan} />}
@@ -149,7 +149,7 @@ const emailStatusRow = (
             }
           </>
         ))
-        .with(legacyEmailStatuses, () => <>{/** obsolete */}</>)
+        .with(legacyEmailStatuses, () => <>{userInfos.primary_email_status}</>)
         .exhaustive()}
     </>,
   ];
@@ -313,7 +313,7 @@ export const MemberStatus = ({
         .with(false, () => <>Au moins une mission en cours.</>)
         .exhaustive(),
     ],
-    userInfos.primary_email?.endsWith(`@betagouv.ovh`) &&
+    userInfos.primary_email?.endsWith("@beta.gouv.fr") &&
       emailInfos &&
       emailStatusRow(emailInfos, userInfos),
     // Mattermost account status

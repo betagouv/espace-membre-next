@@ -6,7 +6,6 @@ import { createSerializer } from "nuqs";
 import { MemberPageProps } from "./MemberPage";
 import { communityQueryParser } from "../CommunityPage/utils";
 import { FichePicture } from "../FichePicture";
-import { PrivateMemberChangeSchemaType } from "@/models/memberChange";
 
 const getInitials = (fullname: string) => {
   const parts = fullname.split(" ").filter(Boolean);

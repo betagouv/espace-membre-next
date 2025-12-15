@@ -46,6 +46,7 @@ export async function recreateEmailIfUserActive() {
             .set({
               primary_email: dbUser.primary_email,
               primary_email_status: EmailStatusCode.EMAIL_ACTIVE,
+              primary_email_status_updated_at: new Date(),
             })
             .where("uuid", "=", dbUser.uuid)
             .execute();

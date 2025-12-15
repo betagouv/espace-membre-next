@@ -43,7 +43,8 @@
       {
         "name": "typescript-plugin-css-modules"
       }
-    ]
+    ],
+    "tsBuildInfoFile": "./.tsbuildinfo"
   },
   "ts-node": {
     "require": ["tsconfig-paths/register"],

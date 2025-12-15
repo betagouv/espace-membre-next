@@ -33,9 +33,7 @@ export async function deactivateExpiredMembersEmails() {
   const expiredUsers = utils
     .getExpiredUsers(users, 5)
     .filter(
-      (user) =>
-        user.primary_email_status === EmailStatusCode.EMAIL_ACTIVE &&
-        user.primary_email?.endsWith(`@${config.domain}`),
+      (user) => user.primary_email_status === EmailStatusCode.EMAIL_ACTIVE,
     );
 
   return pAll(

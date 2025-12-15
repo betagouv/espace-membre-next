@@ -25,7 +25,7 @@ import { sentryUserSchemaType } from "@/models/sentry";
 import LastChange from "../LastChange";
 import { FicheHeader } from "../FicheHeader";
 import { MemberWaitingValidationNotice } from "./MemberWaitingValidationNotice";
-import { MemberWaitingEmailValidationNotice } from "./MemberWaitingEmailValidationNotice";
+import { MemberWaitingEmailVerificationNotice } from "./MemberWaitingEmailVerificationNotice";
 import { OnboardingTabPanel } from "./OnboardingTabPanel";
 import { userEventSchemaType } from "@/models/userEvent";
 
@@ -242,7 +242,7 @@ export default function MemberPage({
         />
       )}
       {isWaitingEmailVerification && (
-        <MemberWaitingEmailValidationNotice userInfos={userInfos} />
+        <MemberWaitingEmailVerificationNotice userInfos={userInfos} />
       )}
       {tab !== null && (
         <Tabs

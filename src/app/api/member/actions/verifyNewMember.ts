@@ -41,6 +41,7 @@ export async function verifyNewMember(
       primary_email_status: createNewEmail
         ? EmailStatusCode.EMAIL_CREATION_WAITING
         : EmailStatusCode.EMAIL_ACTIVE,
+      primary_email_status_updated_at: new Date(),
     },
     session.user.id,
   );
