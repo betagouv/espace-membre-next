@@ -129,7 +129,7 @@
     "chai-http": "^4.4.0",
     "cron-to-human": "^1.0.0",
     "dotenv": "^16.4.4",
-    "eslint": "^8.57.0",
+    "eslint": "^9.39.2",
     "eslint-config-next": "latest",
     "eslint-config-prettier": "^10.1.5",
     "eslint-plugin-import": "^2.29.1",
