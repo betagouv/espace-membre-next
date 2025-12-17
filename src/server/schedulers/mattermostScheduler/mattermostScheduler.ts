@@ -46,15 +46,6 @@ export const sendMessageToMattermostUsersWithUnallowedEmails = async (
   }
 };
 
-export const deactivateMattermostUsersWithUnallowedEmails = async (
-  teamId: string,
-): Promise<void> => {
-  const usersWithUnallowedEmails = await getUnallowedEmails(teamId);
-  for (const user of usersWithUnallowedEmails) {
-    await mattermost.deactiveUsers(user.id);
-  }
-};
-
 export const getActiveGithubUsersUnregisteredOnMattermost = async (): Promise<
   memberBaseInfoSchemaType[]
 > => {

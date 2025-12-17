@@ -8,12 +8,20 @@ import { MemberPageProps } from "./MemberPage";
 import { BadgeEmailPlan } from "../BadgeEmailPlan";
 import { EmailStatusCode } from "@/models/member";
 import { EMAIL_STATUS_READABLE_FORMAT } from "@/models/misc";
-import { EMAIL_PLAN_TYPE } from "@/models/ovh";
-import { ACCOUNT_SERVICE_STATUS, SERVICES } from "@/models/services";
+import { ACCOUNT_SERVICE_STATUS } from "@/models/services";
+
+const legacyEmailStatuses = P.union(
+  EmailStatusCode.EMAIL_REDIRECTION_ACTIVE,
+  EmailStatusCode.EMAIL_ACTIVE_AND_PASSWORD_DEFINITION_PENDING,
+  EmailStatusCode.EMAIL_CREATION_PENDING,
+  EmailStatusCode.EMAIL_RECREATION_PENDING,
+  EmailStatusCode.EMAIL_REDIRECTION_PENDING,
+  EmailStatusCode.EMAIL_EXPIRED,
+  EmailStatusCode.EMAIL_UNSET,
+);
 
 const mattermostInfoRow = (
   mattermostInfo: NonNullable<MemberPageProps["mattermostInfo"]>,
-  userUuid: string,
 ) => {
   return [
     "Compte Mattermost",
@@ -64,217 +72,85 @@ const emailStatusRow = (
 ) => {
   return [
     <>Email Beta</>,
-    match(emailInfos)
-      .when(
-        (emailInfos) => !!emailInfos,
-        () => {
-          return match(userInfos.primary_email_status)
-            .with(EmailStatusCode.EMAIL_SUSPENDED, () => (
-              <Badge severity="warning" as="span">
-                Suspendu
-              </Badge>
-            ))
-            .with(
-              P.union(
-                EmailStatusCode.EMAIL_ACTIVE,
-                EmailStatusCode.EMAIL_REDIRECTION_ACTIVE,
-              ),
-              () => (
-                <Badge severity="success" as="span">
-                  Actif
-                </Badge>
-              ),
-            )
-            .with(
-              P.union(
-                EmailStatusCode.EMAIL_CREATION_WAITING,
-                EmailStatusCode.EMAIL_CREATION_PENDING,
-                EmailStatusCode.EMAIL_RECREATION_PENDING,
-                EmailStatusCode.EMAIL_REDIRECTION_PENDING,
-              ),
-              () => (
-                <Badge severity="success" as="span">
-                  Création en cours
-                </Badge>
-              ),
-            )
-            .with(
-              P.union(
-                EmailStatusCode.EMAIL_ACTIVE_AND_PASSWORD_DEFINITION_PENDING,
-                EmailStatusCode.EMAIL_VERIFICATION_WAITING,
-                EmailStatusCode.MEMBER_VALIDATION_WAITING,
-              ),
-              () => (
-                <Badge severity="warning" as="span">
-                  Action nécessaire
-                </Badge>
-              ),
-            )
-            .with(
-              P.union(
-                EmailStatusCode.EMAIL_DELETED,
-                EmailStatusCode.EMAIL_EXPIRED,
-                EmailStatusCode.EMAIL_UNSET,
-              ),
-              () => (
-                <Badge severity="warning" as="span">
-                  Action Nécessaire
-                </Badge>
-              ),
-            )
-            .exhaustive();
-        },
+    match(userInfos.primary_email_status)
+      .with(EmailStatusCode.EMAIL_SUSPENDED, () => (
+        <Badge severity="warning" as="span">
+          Suspendu
+        </Badge>
+      ))
+      .with(EmailStatusCode.EMAIL_DELETED, () => (
+        <Badge severity="warning" as="span">
+          Supprimé
+        </Badge>
+      ))
+      .with(P.union(EmailStatusCode.EMAIL_ACTIVE), () => (
+        <Badge severity="success" as="span">
+          Actif
+        </Badge>
+      ))
+      .with(P.union(EmailStatusCode.EMAIL_CREATION_WAITING), () => (
+        <Badge severity="success" as="span">
+          Création en cours
+        </Badge>
+      ))
+      .with(
+        P.union(
+          EmailStatusCode.EMAIL_VERIFICATION_WAITING,
+          EmailStatusCode.MEMBER_VALIDATION_WAITING,
+        ),
+        () => (
+          <Badge severity="warning" as="span">
+            {userInfos.primary_email_status}
+          </Badge>
+        ),
       )
-      .when(
-        (emailInfos) => !emailInfos,
-        () =>
-          match(userInfos.primary_email_status)
-            .with(
-              P.union(
-                EmailStatusCode.EMAIL_CREATION_WAITING,
-                EmailStatusCode.EMAIL_CREATION_PENDING,
-                EmailStatusCode.EMAIL_RECREATION_PENDING,
-                EmailStatusCode.EMAIL_REDIRECTION_PENDING,
-              ),
-              () => (
-                <Badge severity="success" as="span">
-                  Création en cours
-                </Badge>
-              ),
-            )
-            .with(P.union(EmailStatusCode.EMAIL_VERIFICATION_WAITING), () => (
-              <Badge severity="warning" as="span">
-                Action nécessaire
-              </Badge>
-            ))
-            .with(
-              P.union(
-                EmailStatusCode.EMAIL_DELETED,
-                EmailStatusCode.EMAIL_EXPIRED,
-                EmailStatusCode.EMAIL_UNSET,
-              ),
-              () => <>Pas d'email beta</>,
-            )
-            .otherwise(() => (
-              <Badge severity="warning" as="span">
-                Action nécessaire
-              </Badge>
-            )),
-      )
-      .otherwise(() => <>Pas d'email beta</>),
+      .with(legacyEmailStatuses, () => <>{userInfos.primary_email_status}</>)
+      .exhaustive(),
     <>
       {emailInfos && <BadgeEmailPlan plan={emailInfos.emailPlan} />}
 
-      {match(emailInfos)
-        .when(
-          (emailInfos) => !!emailInfos,
-          () => {
-            return match(userInfos.primary_email_status)
-              .with(EmailStatusCode.EMAIL_SUSPENDED, () => (
-                <>
-                  <br />
-                  Le mot de passe doit etre mis-à-jour afin de réactiver le
-                  compte
-                </>
-              ))
-              .with(
-                P.union(
-                  EmailStatusCode.EMAIL_CREATION_WAITING,
-                  EmailStatusCode.EMAIL_CREATION_PENDING,
-                  EmailStatusCode.EMAIL_RECREATION_PENDING,
-                  EmailStatusCode.EMAIL_REDIRECTION_PENDING,
-                ),
-                () => (
-                  <>
-                    <br />
-                    La creation de l'email est en cours.
-                  </>
-                ),
-              )
-              .with(
-                P.union(
-                  EmailStatusCode.EMAIL_ACTIVE_AND_PASSWORD_DEFINITION_PENDING,
-                ),
-                () => (
-                  <>
-                    <br />
-                    Le mot de passe doit être défini. Rendez vous dans{" "}
-                    <a href={"/account?tab=compte-email#password"}>
-                      Changer mon mot de passe
-                    </a>
-                  </>
-                ),
-              )
-              .with(
-                P.union(
-                  EmailStatusCode.EMAIL_DELETED,
-                  EmailStatusCode.EMAIL_EXPIRED,
-                  EmailStatusCode.EMAIL_UNSET,
-                ),
-                () => (
-                  <>
-                    <br />
-                    Un admin doit intervenir. Le compte email existe mais est
-                    indiqué comme supprimé ou non défini dans l'espace-membre
-                  </>
-                ),
-              )
-              .with(EmailStatusCode.MEMBER_VALIDATION_WAITING, () => (
-                <>
-                  <br />
-                  {
-                    EMAIL_STATUS_READABLE_FORMAT[
-                      EmailStatusCode.MEMBER_VALIDATION_WAITING
-                    ]
-                  }
-                </>
-              ))
-              .otherwise(() => null);
-          },
-        )
-        .when(
-          (emailInfos) => !emailInfos,
-          () =>
-            match(userInfos.primary_email_status)
-              .with(
-                P.union(
-                  EmailStatusCode.EMAIL_CREATION_WAITING,
-                  EmailStatusCode.EMAIL_CREATION_PENDING,
-                  EmailStatusCode.EMAIL_RECREATION_PENDING,
-                  EmailStatusCode.EMAIL_REDIRECTION_PENDING,
-                ),
-                () => (
-                  <Badge severity="success" as="span">
-                    Création en cours
-                  </Badge>
-                ),
-              )
-              .with(
-                P.union(EmailStatusCode.EMAIL_VERIFICATION_WAITING),
-                () =>
-                  "Les informations du compte doivent être vérifiés par le membre",
-              )
-              .with(
-                P.union(EmailStatusCode.MEMBER_VALIDATION_WAITING),
-                () =>
-                  "La fiche doit être validée par un admin ou un membre de l'équipe transverse de l'incubateur",
-              )
-              .with(
-                P.union(
-                  EmailStatusCode.EMAIL_DELETED,
-                  EmailStatusCode.EMAIL_EXPIRED,
-                  EmailStatusCode.EMAIL_UNSET,
-                ),
-                () => null,
-              )
-              .otherwise(
-                () =>
-                  "Un admin doit intervenir, le compte est dans un état inattendu",
-              ),
-        )
-        .otherwise(() => (
-          <>Pas d'email beta</>
-        ))}
+      {match(userInfos.primary_email_status)
+        .with(EmailStatusCode.EMAIL_ACTIVE, () => null)
+        .with(EmailStatusCode.EMAIL_SUSPENDED, () => (
+          <>
+            <br />
+            Le compte a été suspendu et sera réactivé automatiquement.
+          </>
+        ))
+        .with(EmailStatusCode.EMAIL_DELETED, () => (
+          <>
+            <br />
+            Le compte a été supprimé et sera réactivé prochainement
+          </>
+        ))
+        .with(P.union(EmailStatusCode.EMAIL_CREATION_WAITING), () => (
+          <>
+            <br />
+            La creation de l'email est en cours.
+          </>
+        ))
+        .with(EmailStatusCode.MEMBER_VALIDATION_WAITING, () => (
+          <>
+            <br />
+            {
+              EMAIL_STATUS_READABLE_FORMAT[
+                EmailStatusCode.MEMBER_VALIDATION_WAITING
+              ]
+            }
+          </>
+        ))
+        .with(EmailStatusCode.EMAIL_VERIFICATION_WAITING, () => (
+          <>
+            <br />
+            {
+              EMAIL_STATUS_READABLE_FORMAT[
+                EmailStatusCode.EMAIL_VERIFICATION_WAITING
+              ]
+            }
+          </>
+        ))
+        .with(legacyEmailStatuses, () => <>{userInfos.primary_email_status}</>)
+        .exhaustive()}
     </>,
   ];
 };
@@ -404,7 +280,6 @@ export const MemberStatus = ({
   emailInfos,
   mattermostInfo,
   userInfos,
-  redirections,
   matomoInfo,
   sentryInfo,
   isCurrentUser,
@@ -413,7 +288,6 @@ export const MemberStatus = ({
   emailInfos: MemberPageProps["emailInfos"];
   mattermostInfo: MemberPageProps["mattermostInfo"];
   userInfos: MemberPageProps["userInfos"];
-  redirections: MemberPageProps["redirections"];
   matomoInfo: MemberPageProps["matomoInfo"];
   sentryInfo: MemberPageProps["sentryInfo"];
   isCurrentUser: boolean;
@@ -439,10 +313,11 @@ export const MemberStatus = ({
         .with(false, () => <>Au moins une mission en cours.</>)
         .exhaustive(),
     ],
-    emailInfos?.email.endsWith("@beta.gouv.fr") &&
+    userInfos.primary_email?.endsWith("@beta.gouv.fr") &&
+      emailInfos &&
       emailStatusRow(emailInfos, userInfos),
     // Mattermost account status
-    mattermostInfo && mattermostInfoRow(mattermostInfo, userInfos.uuid),
+    mattermostInfo && mattermostInfoRow(mattermostInfo),
     // Matomo account status
     MatomoInfoRow(matomoInfo, isCurrentUser),
     // Sentry account status

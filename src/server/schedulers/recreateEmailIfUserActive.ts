@@ -13,6 +13,7 @@ import { getActiveUsers } from "@/lib/kysely/queries/users";
 
 // pour les comptes actifs en EMAIL_SUSPENDED avec un secondary_email
 // reactive ou recréé l'email et le passe en ACTIVE
+// todo: N8N
 export async function recreateEmailIfUserActive() {
   const dbUsers = await getActiveUsers()
     .where("users.primary_email_status", "in", [
@@ -45,6 +46,7 @@ export async function recreateEmailIfUserActive() {
             .set({
               primary_email: dbUser.primary_email,
               primary_email_status: EmailStatusCode.EMAIL_ACTIVE,
+              primary_email_status_updated_at: new Date(),
             })
             .where("uuid", "=", dbUser.uuid)
             .execute();

@@ -192,10 +192,6 @@ export default async function Page() {
           ...sampleMember.member.userInfos,
           primary_email_status: EmailStatusCode.EMAIL_DELETED,
         }}
-        emailServiceInfo={{
-          primaryEmail: { emailBlacklisted: true, listIds: [] },
-          secondaryEmail: { emailBlacklisted: true, listIds: [] },
-        }}
         mattermostInfo={{
           hasMattermostAccount: true,
           isInactiveOrNotInTeam: true,

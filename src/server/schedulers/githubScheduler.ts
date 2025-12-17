@@ -4,6 +4,7 @@ import { getAllUsersInfo } from "@/lib/kysely/queries/users";
 import { memberBaseInfoToModel } from "@/models/mapper";
 import config from "@/server/config";
 import { checkUserIsExpired } from "@controllers/utils";
+import pAll from "p-all";
 
 // get users that are member (got a github card) and that have github account that is not in the team
 const getGithubUsersNotInOrganization = async (org) => {
@@ -50,19 +51,19 @@ const getExpiredGithubUsersInOrganization = async (
   );
 
   const expiredGithubUsers = users.filter((x) => {
-    const stillActive = checkUserIsExpired(x, numberOfExpirationDays);
-    return stillActive && x.github;
+    const isExpired = checkUserIsExpired(x, numberOfExpirationDays);
+    return isExpired && x.github;
   });
   const allGithubOrganizationMembersUsername = allGithubOrganizationMembers.map(
     (githubOrganizationMember) => githubOrganizationMember.login.toLowerCase(),
   );
 
-  const githubUserNotOnOrganization = expiredGithubUsers.filter((user) => {
+  const githubExpiredUsers = expiredGithubUsers.filter((user) => {
     const githubUsername = user?.github?.toLowerCase();
     return allGithubOrganizationMembersUsername.includes(githubUsername);
   });
 
-  return githubUserNotOnOrganization;
+  return githubExpiredUsers;
 };
 
 const addGithubUserToOrganization = async () => {
@@ -102,8 +103,8 @@ const removeGithubUserFromOrganization = async () => {
     config.githubOrganizationName,
     1,
   );
-  await Promise.all(
-    expiredUsers.map(async (member) => {
+  await pAll(
+    expiredUsers.map((member) => async () => {
       try {
         await github.removeUserByUsernameFromOrganization(
           member.github,
@@ -116,6 +117,7 @@ const removeGithubUserFromOrganization = async () => {
         );
       }
     }),
+    { concurrency: 1 },
   );
 };
 

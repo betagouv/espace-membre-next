@@ -1,7 +1,6 @@
 import type { Metadata } from "next";
 import { cookies } from "next/headers";
 import { redirect } from "next/navigation";
-import { getServerSession } from "next-auth";
 
 import {
   DashboardPage,
@@ -16,11 +15,12 @@ import {
 } from "@/lib/kysely/queries/users";
 import { userInfosToModel } from "@/models/mapper";
 import { EmailStatusCode } from "@/models/member";
-import { authOptions } from "@/utils/authoptions";
 import { computeOnboardingProgress } from "@/utils/onboarding/computeOnboardingProgress";
 import { getChecklistObject } from "@/utils/onboarding/getChecklistObject";
 import { shouldShowOnboardingPanel } from "@/utils/onboarding/shouldShowOnboardingPanel";
 import { routeTitles } from "@/utils/routes/routeTitles";
+import { getServerSession } from "next-auth";
+import { authOptions } from "@/utils/authoptions";
 
 export const metadata: Metadata = {
   title: `${routeTitles.dashboard()} / Espace Membre`,
@@ -29,9 +29,8 @@ export const metadata: Metadata = {
 export default async function Page(props) {
   const session = await getServerSession(authOptions);
   if (!session) {
-    redirect("/login");
+    return redirect("/login");
   }
-
   const userInfos = userInfosToModel(
     await getUserInfos({
       username: session?.user?.id,
