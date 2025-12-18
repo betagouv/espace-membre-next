@@ -3,8 +3,6 @@
 
 import { postEventsOnMattermost } from "./calendarScheduler";
 import { deactivateExpiredMembersEmails } from "./emailScheduler";
-import { syncFormationFromAirtable } from "./formationScheduler/syncFormationFromAirtable";
-import { syncFormationInscriptionFromAirtable } from "./formationScheduler/syncFormationInscriptionFromAirtable";
 import {
   addGithubUserToOrganization,
   removeGithubUserFromOrganization,
@@ -203,24 +201,6 @@ const servicesJobs: EspaceMembreCronJobType[] = [
   },
 ];
 
-const formationJobs: EspaceMembreCronJobType[] = [
-  {
-    cronTime: "0 0 * * *",
-    onTick: () => syncFormationFromAirtable(true),
-    isActive: true,
-    name: "SyncFormationFromAirtable",
-    description: "Synchronise les données AirTable des formations avec la DB",
-  },
-  {
-    cronTime: process.env.SYNC_FORMATION_INSCRIPTION_CRON_TIME || "0 0 * * *",
-    onTick: () => syncFormationInscriptionFromAirtable(true),
-    isActive: true,
-    name: "SyncFormationInscriptionFromAirtable",
-    description:
-      "Synchronise les données AirTable des inscriptions aux formations avec la DB",
-  },
-];
-
 const newsletterJobs: EspaceMembreCronJobType[] = [
   {
     cronTime: process.env.NEWSLETTER_FIRST_REMINDER_TIME || "0 0 10 * * 3", // every week a 8:00 on monday
@@ -276,7 +256,6 @@ export const espaceMembreCronJobs: EspaceMembreCronJobType[] = [
   // ...metricJobs,
   // ...pullRequestJobs,
   ...synchronizationJobs,
-  ...formationJobs,
   {
     cronTime: "0 0 0 * * 1", // every week a 0:00 on monday
     onTick: unblockEmailsThatAreActive,
