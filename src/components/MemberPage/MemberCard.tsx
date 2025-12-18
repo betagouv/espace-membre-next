@@ -6,7 +6,6 @@ import { createSerializer } from "nuqs";
 import { MemberPageProps } from "./MemberPage";
 import { communityQueryParser } from "../CommunityPage/utils";
 import { FichePicture } from "../FichePicture";
-import { PrivateMemberChangeSchemaType } from "@/models/memberChange";
 
 const getInitials = (fullname: string) => {
   const parts = fullname.split(" ").filter(Boolean);
@@ -20,17 +19,9 @@ const serialize = createSerializer({
 export const MemberCard = ({
   userInfos,
   avatar,
-  changes,
-  isAdmin,
-  isCurrentUser,
-  sessionUserIsFromIncubatorTeam,
 }: {
   userInfos: MemberPageProps["userInfos"];
   avatar?: string | undefined;
-  changes: PrivateMemberChangeSchemaType[];
-  isAdmin: boolean;
-  isCurrentUser: boolean;
-  sessionUserIsFromIncubatorTeam: boolean;
 }) => {
   const heading = (
     <>

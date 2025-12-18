@@ -7,10 +7,10 @@
     "npm": "11.x"
   },
   "scripts": {
-    "dev": "next dev -p 8100",
-    "build:next": "next build",
+    "dev": "./node_modules/.bin/only-include-used-icons && next dev -p 8100",
+    "build:next": "NODE_OPTIONS='--max-old-space-size=16384' next build",
     "build:server": "ttsc -p tsconfig.server.json",
-    "build": "NODE_OPTIONS='--max-old-space-size=16384' npm run build:next && npm run build:server",
+    "build": "./node_modules/.bin/only-include-used-icons && npm run build:next && npm run build:server",
     "start": "NODE_ENV=production next start",
     "lint": "next lint",
     "migrate": "knex migrate:latest --esm",

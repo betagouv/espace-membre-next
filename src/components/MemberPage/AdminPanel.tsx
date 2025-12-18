@@ -8,11 +8,9 @@ import { EmailStatusCode } from "@/models/member";
 
 export const AdminPanel = ({
   userInfos,
-  emailInfos,
   authorizations,
 }: {
   userInfos: MemberPageProps["userInfos"];
-  emailInfos: MemberPageProps["emailInfos"];
   authorizations: MemberPageProps["authorizations"];
 }) => {
   return (
@@ -25,7 +23,6 @@ export const AdminPanel = ({
         userInfos={userInfos}
       ></BlocConfigurerEmailPrincipal>
       <ChangeSecondaryEmail userInfos={userInfos}></ChangeSecondaryEmail>
-
       <br />
       <h3>Évènements</h3>
       <MemberEventList userId={userInfos.username} />

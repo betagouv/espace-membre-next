@@ -48,9 +48,6 @@ export const MemberMissions = ({
         ],
   );
 
-  //console.log("missions", missions);
-  //console.log("userInfos.missions", userInfos.missions);
-
   return (
     (missions.length && (
       <Table
