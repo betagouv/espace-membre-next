@@ -29,6 +29,7 @@ import { PrivateMemberChangeSchemaType } from "@/models/memberChange";
 import { Option } from "@/models/misc";
 import routes, { computeRoute } from "@/routes/routes";
 import { routeTitles } from "@/utils/routes/routeTitles";
+
 // data from secretariat API
 export interface BaseInfoUpdateProps {
   profileURL?: string;
@@ -38,6 +39,7 @@ export interface BaseInfoUpdateProps {
   username: string;
 }
 
+// todo: use action
 const postMemberData = async ({
   values,
   username,

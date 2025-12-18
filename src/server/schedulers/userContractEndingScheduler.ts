@@ -278,6 +278,7 @@ export async function deleteServiceAccounts(
   const today = new Date();
   const todayLess30days = new Date();
   todayLess30days.setDate(today.getDate() - 30);
+  // todo: fix
   const expiredUsers = (await getAllExpiredUsers(todayLess30days)).map((user) =>
     memberBaseInfoToModel(user),
   );

@@ -83,7 +83,7 @@ describe("deactivateExpiredMembersEmails", () => {
     getExpiredUsersStub.returns([fakeUser]);
     emailInfosStub.resolves({
       emailPlan: EMAIL_PLAN_TYPE.EMAIL_PLAN_OPI,
-      email: "user1@beta.gouv.fr",
+      email: `user1@${DIMAIL_MAILBOX_DOMAIN}`,
     });
     patchMailboxStub.resolves();
     setEmailSuspendedStub.resolves();

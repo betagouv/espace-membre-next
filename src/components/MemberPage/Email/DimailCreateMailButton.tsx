@@ -55,14 +55,16 @@ export const DimailCreateMailButton = ({ userUuid, userInfos }: Props) => {
       pour bénéficier d'une suite email et calendrier moderne et sécurisée.
       <br />
       <br />
-      Votre compte actuel (OVH) restera accessible pendant un mois. Pensez à
-      transférér vos anciens emails comme indiqué dans la documentation sur{" "}
+      Ton compte OVH actuel reste ouvert pendant encore un mois. Tu as donc tout
+      le temps nécessaire pour récupérer tes anciens emails. Besoin d'un coup de
+      main ?{" "}
       <a
         target="_blank"
         href="https://doc.incubateur.net/communaute/les-outils-de-la-communaute/emails/emails-suite-numerique#h-etape-4-recupererimporter-ses-anciens-mails"
       >
-        doc.incubateur.net
-      </a>
+        Notre documentation
+      </a>{" "}
+      te guide pas à pas dans la procédure de transfert et de sauvegarde.
       <br />
       <br />
       <>

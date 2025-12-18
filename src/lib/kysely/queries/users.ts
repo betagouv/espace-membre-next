@@ -136,6 +136,7 @@ export async function getAllExpiredUsers(
     .where("primary_email_status", "in", [
       EmailStatusCode.EMAIL_DELETED,
       EmailStatusCode.EMAIL_EXPIRED,
+      EmailStatusCode.EMAIL_SUSPENDED,
     ])
     .where("primary_email_status_updated_at", "<", expirationDate)
     .compile();

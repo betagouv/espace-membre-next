@@ -42,7 +42,9 @@
       {
         "transform": "typescript-transform-paths"
       }
-    ]
+    ],
+    "incremental": true,
+    "tsBuildInfoFile": "./.tsbuildinfo.server"
   },
   "exclude": [
     "node_modules",

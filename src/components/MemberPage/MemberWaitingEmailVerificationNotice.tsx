@@ -5,7 +5,7 @@ import { fr } from "@codegouvfr/react-dsfr/fr";
 import { MemberPageProps } from "./MemberPage";
 import { getLastMissionDate } from "@/utils/member";
 
-export const MemberWaitingEmailValidationNotice = ({
+export const MemberWaitingEmailVerificationNotice = ({
   userInfos,
 }: {
   userInfos: MemberPageProps["userInfos"];
