@@ -23,6 +23,21 @@ const checkMissionsAreNotMoreThan6Months = (missions, ctx) => {
   });
 };
 
+const checkMissionsEndAreValid = (missions, ctx) => {
+  missions.forEach((mission, index) => {
+    if (mission.end) {
+      if (mission.end < mission.start) {
+        ctx.addIssue({
+          code: z.ZodIssueCode.custom,
+          message:
+            "La date de fin de mission ne peut pas être antérieure à la date de début.",
+          path: [index, "end"],
+        });
+      }
+    }
+  });
+};
+
 export const memberInfoUpdateSchema = z.object({
   member: z.object({
     fullname: memberSchema.shape.fullname,
@@ -32,9 +47,9 @@ export const memberInfoUpdateSchema = z.object({
     github: memberSchema.shape.github,
     competences: memberSchema.shape.competences,
     teams: memberSchema.shape.teams,
-    missions: memberSchema.shape.missions.superRefine(
-      checkMissionsAreNotMoreThan6Months,
-    ),
+    missions: memberSchema.shape.missions
+      .superRefine(checkMissionsAreNotMoreThan6Months)
+      .superRefine(checkMissionsEndAreValid),
     domaine: memberSchema.shape.domaine,
     bio: memberSchema.shape.bio,
     memberType: memberSchema.shape.memberType,
