@@ -151,8 +151,6 @@ const sampleMember: { member: MemberPageProps } = {
     },
     redirections: [{ from: "ada@love.com", id: "42", to: "some@one.com" }],
     authorizations: {
-      canCreateEmail: false,
-      canCreateRedirection: false,
       canChangePassword: false,
       canChangeEmails: false,
       hasPublicServiceEmail: false,
