@@ -332,8 +332,6 @@ export const memberWrapperSchema = z.object({
   emailRedirections: z.array(OvhRedirectionSchema),
   emailResponder: OvhResponderSchema.nullable(),
   authorizations: z.object({
-    canCreateEmail: z.boolean(),
-    canCreateRedirection: z.boolean(),
     canChangePassword: z.boolean(),
     canChangeEmails: z.boolean(),
     hasPublicServiceEmail: z.boolean(),
