@@ -272,8 +272,6 @@ async function getUserPublicInfo(
     hasEmailInfos: !!user.emailInfos,
     isEmailBlocked: user.emailInfos?.isBlocked || false,
     hasSecondaryEmail: !!secondaryEmail,
-    // canCreateEmail: user.authorizations.canCreateEmail || false,
-    // emailInfos: req.auth?.id ? user.emailInfos : undefined,
     mattermostInfo: {
       hasMattermostAccount: !!mattermostUser,
       isInactiveOrNotInTeam: !mattermostUserInTeamAndActive,
