@@ -69,7 +69,7 @@
     "hedgedoc-api": "github:betagouv/hedgedoc-api-lib-js#v1.0",
     "html-to-text": "^9.0.5",
     "ical.js": "^1.5.0",
-    "js-yaml": "^4.1.0",
+    "js-yaml": "^4.1.1",
     "jsonwebtoken": "^9.0.2",
     "juice": "^9.1.0",
     "knex": "^3.1.0",
