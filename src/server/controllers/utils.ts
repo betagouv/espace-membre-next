@@ -14,7 +14,7 @@ import {
 import config from "@/server/config";
 import BetaGouv from "@betagouv";
 import { getDimailEmail } from "@/lib/kysely/queries/dimail";
-import { EMAIL_PLAN_TYPE } from "@/models/ovh";
+import { EMAIL_PLAN_TYPE, OvhRedirection, OvhResponder } from "@/models/ovh";
 
 export const computeHash = function (username) {
   const hash = crypto.createHmac(
@@ -241,12 +241,17 @@ export const isPublicServiceEmail = async function (email: string) {
   if (/@france-travail.fr\s*$/.test(email.toLowerCase())) {
     return true;
   }
-  // todo: use fixed-list
+  if (/@.*\.gouv\.fr$/.test(email.toLowerCase())) {
+    return true;
+  }
+  // todo: remove ?
   try {
     if (config.tchap_api) {
+      console.log(`Tchap API: test ${email}`);
       const data = await axios
         .get(config.tchap_api + String(email).toLowerCase())
         .then((x) => x.data);
+      console.log(`Tchap API: test ${email}: ${data.hs}`);
       if (data.hs === "agent.externe.tchap.gouv.fr") {
         return false;
       } else {
@@ -255,7 +260,7 @@ export const isPublicServiceEmail = async function (email: string) {
     }
     return false;
   } catch (e) {
-    console.error(e);
+    console.error("Tchap API error", e);
     //throw new Error("Get response from tchap error");
     return false;
   }
@@ -282,28 +287,28 @@ export async function userInfos(
       userInfos.primary_email &&
       (await getDimailEmail(userInfos.primary_email));
 
-    const emailInfos = dinumEmail
-      ? {
-          email: dinumEmail.email,
-          isBlocked: false,
-          emailPlan: EMAIL_PLAN_TYPE.EMAIL_PLAN_OPI,
-        }
-      : await BetaGouv.emailInfos(userInfos.username);
-    const emailRedirections = await BetaGouv.redirectionsForId({
-      from: userInfos.username,
-    });
-    const emailResponder = await BetaGouv.getResponder(userInfos.username);
+    let emailInfos,
+      emailRedirections: OvhRedirection[] = [],
+      emailResponder: OvhResponder | null = null;
+    if (dinumEmail) {
+      emailInfos = {
+        email: dinumEmail.email,
+        isBlocked: false,
+        emailPlan: EMAIL_PLAN_TYPE.EMAIL_PLAN_OPI,
+      };
+    } else {
+      emailInfos = await BetaGouv.emailInfos(userInfos.username);
+      emailRedirections = await BetaGouv.redirectionsForId({
+        from: userInfos.username,
+      });
+      emailResponder = await BetaGouv.getResponder(userInfos.username);
+    }
+
     const isExpired = checkUserIsExpired(userInfos);
-    // On ne peut créé un compte que si:
-    // - la page fiche Github existe
-    // - le membre n'est pas expiré·e
-    // - et le compte n'existe pas
-    const canCreateEmail = !isExpired && emailInfos === null;
+
     // On peut créer une redirection & changer un password si:
-    // - la page fiche Github existe
     // - le membre n'est pas expiré·e (le membre ne devrait de toute façon pas pouvoir se connecter)
     // - et que l'on est le membre connecté·e pour créer ces propres redirections.
-    const canCreateRedirection = !!(!isExpired && isCurrentUser);
     const canChangePassword = !!(!isExpired && isCurrentUser && emailInfos);
     const canChangeEmails = !!(!isExpired && isCurrentUser);
     const hasPublicServiceEmail = userInfos.primary_email
@@ -315,8 +320,6 @@ export async function userInfos(
       userInfos: userInfos,
       emailResponder,
       authorizations: {
-        canCreateEmail,
-        canCreateRedirection,
         canChangePassword,
         canChangeEmails,
         hasPublicServiceEmail,

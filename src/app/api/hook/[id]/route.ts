@@ -55,7 +55,10 @@ async function handleMattermostWebhook(sibWebhookBody: ISibWebhookBody) {
     subjet: ${sibWebhookBody.subject}
     tags: ${sibWebhookBody.tags}
 `;
-  if (sibWebhookBody.subject.includes("New Notification")) {
+  if (
+    !sibWebhookBody.subject ||
+    sibWebhookBody.subject.includes("New Notification")
+  ) {
     return;
   }
   await axios.post(

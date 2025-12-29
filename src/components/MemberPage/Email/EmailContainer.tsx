@@ -197,13 +197,7 @@ function BlocEmailConfiguration({ emailInfos }: { emailInfos: EmailInfos }) {
 export default function EmailContainer({
   userInfos,
   emailInfos,
-  authorizations: {
-    canCreateEmail,
-    canChangeEmails,
-    canChangePassword,
-    canCreateRedirection,
-    hasPublicServiceEmail,
-  },
+  authorizations: { canChangeEmails, canChangePassword },
   isExpired,
   isCurrentUser,
 }: {
