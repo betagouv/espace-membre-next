@@ -74,12 +74,6 @@ export const StartupDescription = ({
               {startupInfos.dashlord_url}
             </a>,
           ],
-          startupInfos.tech_audit_url && [
-            "Audit technique",
-            <a key="10" href={startupInfos.tech_audit_url} target="_blank">
-              {startupInfos.tech_audit_url}
-            </a>,
-          ],
           startupInfos.ecodesign_url && [
             "Déclaration d'écoconception",
             <a key="11" href={startupInfos.ecodesign_url} target="_blank">
