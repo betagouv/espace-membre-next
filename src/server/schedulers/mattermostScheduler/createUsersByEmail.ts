@@ -45,8 +45,11 @@ export async function createUsersByEmail() {
               "https://mattermost.incubateur.net/reset_password",
           },
         });
-      } catch (err) {
-        console.error("Erreur d'ajout des utilisateurs à mattermost", err);
+      } catch (err: any) {
+        console.error(
+          "Erreur d'ajout des utilisateurs à mattermost",
+          err.message,
+        );
       }
     }),
   );
