@@ -51,7 +51,7 @@ export const StartupDescription = ({
             </a>,
           ],
           startupInfos.impact_url && [
-            "Statistiques d'impact",
+            "Matrice d'impact",
             <a key="6" href={startupInfos.impact_url} target="_blank">
               {startupInfos.impact_url}
             </a>,
