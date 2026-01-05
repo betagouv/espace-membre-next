@@ -15,6 +15,7 @@ import { getActiveUsers } from "@/lib/kysely/queries/users";
 // reactive ou recréé l'email et le passe en ACTIVE
 // todo: N8N
 export async function recreateEmailIfUserActive() {
+  console.log("recreateEmailIfUserActive");
   const dbUsers = await getActiveUsers()
     .where("users.primary_email_status", "in", [
       EmailStatusCode.EMAIL_SUSPENDED,
