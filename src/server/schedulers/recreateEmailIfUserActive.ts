@@ -11,7 +11,7 @@ let createDimailMailboxForUser =
   createDimailMailboxWorker.createDimailMailboxForUser;
 import { getActiveUsers } from "@/lib/kysely/queries/users";
 
-// pour les comptes actifs en EMAIL_SUSPENDED avec un secondary_email
+// pour les comptes actifs en EMAIL_SUSPENDED/EMAIL_DELETED avec un secondary_email
 // reactive ou recréé l'email et le passe en ACTIVE
 // todo: N8N
 export async function recreateEmailIfUserActive() {
@@ -23,6 +23,7 @@ export async function recreateEmailIfUserActive() {
     ])
     .where("users.secondary_email", "is not", null)
     .execute();
+  console.log(`recreateEmailIfUserActive: ${dbUsers.length} accounts`);
   for (const dbUser of dbUsers) {
     try {
       console.log(
@@ -61,8 +62,9 @@ export async function recreateEmailIfUserActive() {
       }
     } catch (e) {
       const error = e instanceof Error ? e : new Error(String(e));
-      console.error(error.message);
-      console.error(e);
+      console.error(
+        `recreateEmailIfUserActive for ${dbUser.username} error : ${error.message}`,
+      );
       Sentry.captureException(e);
     }
   }
