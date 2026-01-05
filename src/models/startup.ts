@@ -333,7 +333,7 @@ export const startupSchema = z.object({
     .nullable(),
   impact_url: z
     .string()
-    .describe("URL de la page de statistiques d'impact")
+    .describe("URL de la matrice d'impact")
     .optional()
     .nullable(),
 });
