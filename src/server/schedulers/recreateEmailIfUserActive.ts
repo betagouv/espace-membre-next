@@ -34,9 +34,10 @@ export async function recreateEmailIfUserActive() {
         const isDimailEmail = await getDimailEmail(dbUser.primary_email);
         if (isDimailEmail) {
           console.log(
-            `set DIMAIL email active for ${dbUser.username} (${dbUser.primary_email})`,
+            `(SKIP) set DIMAIL email active for ${dbUser.username} (${dbUser.primary_email})`,
           );
-          await patchMailbox({
+          //TODO
+          /*await patchMailbox({
             domain_name: DIMAIL_MAILBOX_DOMAIN,
             user_name: dbUser.primary_email.split("@")[0],
             data: {
@@ -52,6 +53,7 @@ export async function recreateEmailIfUserActive() {
             })
             .where("uuid", "=", dbUser.uuid)
             .execute();
+            */
         } else {
           console.log(
             `create DIMAIL email for ${dbUser.username} (${dbUser.primary_email})`,
