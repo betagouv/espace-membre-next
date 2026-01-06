@@ -48,7 +48,7 @@ export async function deactivateExpiredMembersEmails() {
         await setEmailSuspended(user.username);
         return;
       }
-      match(emailInfos?.emailPlan)
+      return match(emailInfos?.emailPlan)
         .with(EMAIL_PLAN_TYPE.EMAIL_PLAN_OPI, async () => {
           try {
             await patchMailbox({
@@ -66,7 +66,7 @@ export async function deactivateExpiredMembersEmails() {
             );
           } catch (e: any) {
             console.error(
-              `Imposssible de désactiver le compte DIMAIL de ${emailInfos.email}: ${e.message}`,
+              `Impossible de désactiver le compte DIMAIL de ${emailInfos.email}: ${e.message}`,
             );
             //console.error(e);
           }

@@ -161,10 +161,10 @@ export async function inviteUsersToTeamByEmail(userEmails, teamId) {
         getMattermostConfig(),
       )
       .then((response) => response.data);
-  } catch (err) {
+  } catch (err: any) {
     console.error(
       "Erreur d'ajout des utilisateurs à mattermost",
-      err,
+      err.message,
       userEmails,
     );
     return null;

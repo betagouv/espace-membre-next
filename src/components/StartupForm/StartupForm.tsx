@@ -554,7 +554,6 @@ export function StartupForm(props: StartupFormProps) {
           <BasicInput id="roadmap_url" />
           <BasicInput id="repository" />
           <BasicInput id="dashlord_url" />
-          <BasicInput id="tech_audit_url" />
           <BasicInput id="ecodesign_url" />
 
           <Button

@@ -51,7 +51,7 @@ export const StartupDescription = ({
             </a>,
           ],
           startupInfos.impact_url && [
-            "Statistiques d'impact",
+            "Matrice d'impact",
             <a key="6" href={startupInfos.impact_url} target="_blank">
               {startupInfos.impact_url}
             </a>,
@@ -72,12 +72,6 @@ export const StartupDescription = ({
             "Rapport DashLord",
             <a key="9" href={startupInfos.dashlord_url} target="_blank">
               {startupInfos.dashlord_url}
-            </a>,
-          ],
-          startupInfos.tech_audit_url && [
-            "Audit technique",
-            <a key="10" href={startupInfos.tech_audit_url} target="_blank">
-              {startupInfos.tech_audit_url}
             </a>,
           ],
           startupInfos.ecodesign_url && [
