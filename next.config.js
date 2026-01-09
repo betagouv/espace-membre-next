@@ -19,7 +19,10 @@ const cspHeader = `
 const nextConfig = {
   eslint: {
     dirs: ["src", "__tests__"],
+    ignoreDuringBuilds: true,
   },
+  productionBrowserSourceMaps: true,
+  expireTime: 0, // https://github.com/vercel/next.js/discussions/48328#discussioncomment-12837641
   async headers() {
     return [
       {
@@ -50,6 +53,7 @@ const nextConfig = {
     ];
   },
   experimental: {
+    instrumentationHook: true,
     serverComponentsExternalPackages: [
       "knex",
       "sib-api-v3-sdk",
@@ -98,32 +102,28 @@ const uploadToSentry =
  * @type {import('@sentry/nextjs').SentryBuildOptions}
  */
 const sentryWebpackPluginOptions = {
-  // Additional config options for the Sentry webpack plugin. Keep in mind that
-  // the following options are set automatically, and overriding them is not
-  // recommended:
-  //   release, url, configFile, stripPrefix, urlPrefix, include, ignore
-  debug: false,
+  debug: true,
   telemetry: false,
-  silent: false,
+  //silent: false,
   sourcemaps: {
     deleteSourcemapsAfterUpload: true,
     disable: !uploadToSentry,
   },
-  hideSourceMaps: true,
-  release: process.env.SOURCE_VERSION, // https://doc.scalingo.com/platform/app/environment#build-environment-variables
+  release: {
+    name: process.env.SOURCE_VERSION, // https://doc.scalingo.com/platform/app/environment#build-environment-variables
+    inject: uploadToSentry,
+  },
   org: "betagouv",
   project: "espace-membre",
-  widenClientFileUpload: true, // https://sentry.zendesk.com/hc/en-us/articles/28813179249691-Frames-from-static-chunks-folder-are-not-source-mapped
-  // cause static/chunks/ to be uploaded
-  // An auth token is required for uploading source maps.
+  widenClientFileUpload: uploadToSentry, // https://sentry.zendesk.com/hc/en-us/articles/28813179249691-Frames-from-static-chunks-folder-are-not-source-mapped
   authToken: process.env.SENTRY_AUTH_TOKEN,
   url: "https://sentry.incubateur.net",
-  // silent: true, // Suppresses all logs
+  disableLogger: true,
   errorHandler: (err, invokeErr, compilation) => {
     compilation.warnings.push("Sentry CLI Plugin: " + err.message);
   },
   // For all available options, see:
-  // https://github.com/getsentry/sentry-webpack-plugin#options.
+  // https://www.npmjs.com/package/@sentry/webpack-plugin#Options
 };
 
 // Make sure adding Sentry options is the last code to run before exporting

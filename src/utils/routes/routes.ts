@@ -5,11 +5,6 @@ export const routes = createRouter({
   accountEditBaseInfo: defineRoute({}, (p) => `/account/base-info`),
   accountEditPrivateInfo: defineRoute({}, (p) => `/account/info`),
   signIn: defineRoute({}, (p) => `/signin`),
-  accountBadge: defineRoute({}, (p) => `/account/badge-demande`),
-  accountBadgeRenewal: defineRoute(
-    {},
-    (p) => `/account/badge-demande/renouvellement`,
-  ),
   community: defineRoute({}, (p) => `/community`),
   communityMember: defineRoute(
     { username: param.path.string },

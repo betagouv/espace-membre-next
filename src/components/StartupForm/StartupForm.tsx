@@ -21,7 +21,6 @@ import { TechnoEditor } from "./TechnoEditor";
 import { ThematiquesEditor } from "./ThematiquesEditor";
 import { UsertypesEditor } from "./UsertypesEditor";
 import { ClientOnly } from "../ClientOnly";
-import SelectAccessibilityStatus from "../SelectAccessibilityStatus";
 import UploadForm from "../UploadForm/UploadForm";
 import { ActionResponse } from "@/@types/serverAction";
 import frontConfig from "@/frontConfig";
@@ -32,7 +31,6 @@ import {
 import { Option } from "@/models/misc";
 import { sponsorSchemaType } from "@/models/sponsor";
 import {
-  DSFR_STATUSES,
   StartupEvent,
   StartupPhase,
   eventSchemaType,
@@ -218,10 +216,6 @@ export function StartupForm(props: StartupFormProps) {
       label: newSponsor.name,
     })),
   };
-  const hasAnalyseDeRisque =
-    !!props.startup?.analyse_risques ||
-    !!props.startup?.analyse_risques_url ||
-    !!getValues("startup.analyse_risques");
   if (Object.keys(errors).length) console.error("Validation errors :", errors);
   return (
     <>
@@ -361,31 +355,6 @@ export function StartupForm(props: StartupFormProps) {
 
           {frontConfig.FEATURE_SHOW_UPLOAD_IMAGE_PRODUCT_WIDGET && (
             <>
-              {/* <hr />
-                            <UploadForm
-                                label="Photo de la banière hero"
-                                onChange={(event) => {
-                                    const file = event.target.files;
-                                    if (file && file.length) {
-                                        setValue("hero", file[0], {
-                                            shouldValidate: true,
-                                            shouldDirty: true,
-                                        });
-                                        setValue("shouldDeleteHero", false);
-                                    }
-                                }}
-                                placeholderURL="data:image/png;base64,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QAMAQGBAAwBAYEADAEBgQAMAQGBAAwBAYEADAEBgQAMAQGBAAwBAYEADAEBgQAMAQGBAAwBAYEADAEBgQAMAQGBAAwBAYEADAEBgQAMAQGBAAwBAYEADAECw4oA+z/MAAIAl3WP1uV/f+sSABgCAL8OABgCAwIAGAIDAgAYAgMCABgCAwIAGAIDAgAYAgMCABgCAwIAGAIDAgAYAgMCABgCAwIAGAIDAgAYAgMCABgCAwIAGAIDAgAYAgMCABgCAwIAGAIDAgAYAgMCABgCAwIAGAIDAgAYAgMCABgCAwIAGAIDAgAYAgODPDujzPA8AAFjSPVaf+/U3/NkBfT/rJwAALOkeq8/9+hsMaAAANmVAAwBAYEADAEBgQAMAQGBAAwBAYEADAEBgQAMAQGBAAwBAYEADAEBgQAMAQGBAAwBAYEADAEBgQAMAQGBAAwBAYEADAEBgQAMAQGBAAwBAYEADAEBgQAMAQGBAAwBAsOKAPs/zAACAJb1er+d+/Q1/dkADAMAXY0ADAEBgQAMAQGBAAwBAYEADAEBgQAMAQGBAAwBAYEADAEBgQAMAQGBAAwBAYEADAEBgQAMAQGBAAwBAYEADAEDwHxKMsYk1ZNkvAAAAAElFTkSuQmCC"
-                                url={props.heroURL}
-                                onDelete={() => {
-                                    setValue("hero", null, {
-                                        shouldValidate: true,
-                                        shouldDirty: true,
-                                    });
-                                    if (props.heroURL) {
-                                        setValue("shouldDeleteHero", true);
-                                    }
-                                }}
-                            /> */}
               <hr />
               <UploadForm
                 label="Image"
@@ -578,74 +547,14 @@ export function StartupForm(props: StartupFormProps) {
           </div>
           {/*[FILE UPLOAD ]<hr />*/}
 
-          <h2>Standards beta.gouv.fr</h2>
-          <Select
-            label={
-              startupInfoUpdateSchema.shape.startup.shape.dsfr_status
-                .description
-            }
-            nativeSelectProps={register("startup.dsfr_status")}
-            hint="Statut du système de design de l'état"
-            state={errors?.startup?.dsfr_status ? "error" : "default"}
-            stateRelatedMessage={errors?.startup?.dsfr_status?.message}
-          >
-            <option value="" disabled>
-              Séléctionnez le statut
-            </option>
-            {DSFR_STATUSES.map((status) => (
-              <option key={status}>{status}</option>
-            ))}
-          </Select>
-
-          <SelectAccessibilityStatus
-            value={props.startup?.accessibility_status}
-            onChange={(e) =>
-              setValue(
-                "startup.accessibility_status",
-                e.currentTarget.value || undefined,
-              )
-            }
-          />
-
+          <h2>Liens</h2>
           <BasicInput id="stats_url" />
           <BasicInput id="impact_url" />
           <BasicInput id="budget_url" />
           <BasicInput id="roadmap_url" />
           <BasicInput id="repository" />
           <BasicInput id="dashlord_url" />
-          <BasicInput id="tech_audit_url" />
           <BasicInput id="ecodesign_url" />
-
-          <Checkbox
-            options={[
-              {
-                label:
-                  startupInfoUpdateSchema.shape.startup.shape
-                    .mon_service_securise.description,
-                hintText:
-                  "Cochez cette case si votre produit est inscrit sur MonServiceSécurisé",
-                nativeInputProps: {
-                  ...register("startup.mon_service_securise"),
-                },
-              },
-            ]}
-          />
-          <Checkbox
-            options={[
-              {
-                label:
-                  startupInfoUpdateSchema.shape.startup.shape.analyse_risques
-                    .description,
-                hintText:
-                  "Cochez cette case si l'équipe a produit une analyse de risque",
-                nativeInputProps: {
-                  ...register("startup.analyse_risques"),
-                  checked: hasAnalyseDeRisque,
-                },
-              },
-            ]}
-          />
-          {hasAnalyseDeRisque && <BasicInput id="analyse_risques_url" />}
 
           <Button
             className={fr.cx("fr-mt-3w")}

@@ -36,8 +36,6 @@ const memberTypeOptions = [
   { name: `Autre`, key: MemberType.OTHER },
 ];
 
-const userBadgeOptions = [{ name: "Ségur (Paris)", key: "segur" }];
-
 const CRON_TASK_ENV_VAR = {
   AIRTABLE_API_KEY: process.env.AIRTABLE_API_KEY,
   AIRTABLE_FORMATION_BASE_ID: process.env.AIRTABLE_FORMATION_BASE_ID,
@@ -136,21 +134,16 @@ export default {
   port: parseInt(process.env.PORT || "3000", 10),
   CHATWOOT_ID: process.env.CHATWOOT_ID,
   CHATWOOT_IGNORE_EMAILS: (process.env.CHATWOOT_IGNORE_EMAILS || "").split(""),
-  CHATWOOT_BADGE_ID: process.env.CHATWOOT_BADGE_ID,
   domain: process.env.SECRETARIAT_DOMAIN || "beta.gouv.fr",
   DS_TOKEN: process.env.DS_TOKEN,
   DS_DEMARCHE_NUMBER: process.env.DS_DEMARCHE_NUMBER
     ? parseInt(process.env.DS_DEMARCHE_NUMBER)
-    : null,
-  DS_DEMARCHE_RENEWAL_BADGE_NUMBER: process.env.DS_DEMARCHE_RENEWAL_BADGE_NUMBER
-    ? parseInt(process.env.DS_DEMARCHE_RENEWAL_BADGE_NUMBER)
     : null,
   EMAIL_DEFAULT_PLAN:
     process.env.EMAIL_DEFAULT_PLAN || EMAIL_PLAN_TYPE.EMAIL_PLAN_BASIC,
   user: {
     statusOptions: userStatusOptions,
     minStartDate: "2013-07-01",
-    badgeOptions: userBadgeOptions,
     memberOptions: memberTypeOptions,
   },
   newsletterBroadcastList:
@@ -211,8 +204,6 @@ export default {
   HASH_SALT: process.env.HASH_SALT,
   PASSWORD_ENCRYPT_KEY: process.env.PASSWORD_ENCRYPT_KEY,
   PASSWORD_IV_KEY: process.env.PASSWORD_IV_KEY,
-  DS_BADGE_FORM_URL: process.env.NEXT_PUBLIC_DS_BADGE_FORM_URL,
-  DS_BADGE_RENEWAL_FORM_URL: process.env.NEXT_PUBLIC_DS_BADGE_RENEWAL_FORM_URL,
   SUPPORT_EMAIL: process.env.NEXT_SUPPORT_EMAIL,
   S3_KEY_ID: process.env.S3_KEY_ID,
   S3_KEY_SECRET: process.env.S3_KEY_SECRET,

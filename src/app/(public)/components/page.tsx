@@ -151,8 +151,6 @@ const sampleMember: { member: MemberPageProps } = {
     },
     redirections: [{ from: "ada@love.com", id: "42", to: "some@one.com" }],
     authorizations: {
-      canCreateEmail: false,
-      canCreateRedirection: false,
       canChangePassword: false,
       canChangeEmails: false,
       hasPublicServiceEmail: false,
@@ -191,10 +189,6 @@ export default async function Page() {
         userInfos={{
           ...sampleMember.member.userInfos,
           primary_email_status: EmailStatusCode.EMAIL_DELETED,
-        }}
-        emailServiceInfo={{
-          primaryEmail: { emailBlacklisted: true, listIds: [] },
-          secondaryEmail: { emailBlacklisted: true, listIds: [] },
         }}
         mattermostInfo={{
           hasMattermostAccount: true,

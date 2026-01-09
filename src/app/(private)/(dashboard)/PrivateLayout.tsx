@@ -1,9 +1,7 @@
 "use client";
 import Alert from "@codegouvfr/react-dsfr/Alert";
 import { Breadcrumb } from "@codegouvfr/react-dsfr/Breadcrumb";
-import { SideMenu, SideMenuProps } from "@codegouvfr/react-dsfr/SideMenu";
-import { usePathname, useRouter } from "next/navigation";
-import { useSession } from "next-auth/react";
+import { usePathname } from "next/navigation";
 
 import { useInfoContext } from "@/app/BreadCrumbProvider";
 import frontConfig from "@/frontConfig";
@@ -14,40 +12,21 @@ import {
   hasPathnameThisRegex,
   hasPathnameThisRoot,
 } from "@/utils/url";
+import React from "react";
 
 export function PrivateLayout({ children }: { children: React.ReactNode }) {
-  const router = useRouter();
-
   const pathname = usePathname();
 
-  const { status, data: session } = useSession({
-    required: true,
-    onUnauthenticated() {
-      router.push("/login");
-    },
-  });
-
   const { currentPage, currentItemId } = useInfoContext();
-  if (status === "loading") {
-    return (
-      <div className="fr-grid-row fr-grid-row-gutters fr-grid-row--center fr-mb-14v fr-my-4w">
-        Chargement...
-      </div>
-    );
-  }
 
   const accountLink = linkRegistry.get("account", undefined);
-  const accountBadgeLink = linkRegistry.get("accountBadge", undefined);
   const communityLink = linkRegistry.get("community", undefined);
   const communityCreateMemberLink = linkRegistry.get(
     "communityCreateMember",
     undefined,
   );
-  const dashboardLink = linkRegistry.get("dashboard", undefined);
   const startupListLink = linkRegistry.get("startupList", undefined);
-  const startupDetailLink = linkRegistry.get("startupDetails", {
-    startupId: "",
-  });
+
   const startupCreateLink = linkRegistry.get("startupCreate", undefined);
   const incubatorListLink = linkRegistry.get("incubatorList", undefined);
   const incubatorCreateLink = linkRegistry.get("incubatorCreate", undefined);
@@ -66,10 +45,7 @@ export function PrivateLayout({ children }: { children: React.ReactNode }) {
     "accountEditBaseInfo",
     undefined,
   );
-  const accountBadgeRenewalLink = linkRegistry.get(
-    "accountBadgeRenewal",
-    undefined,
-  );
+
   const metabaseLink = linkRegistry.get("metabase", undefined);
   const serviceLink = "/services";
   const formationLink = linkRegistry.get("formationList", undefined);
@@ -411,6 +387,7 @@ export function PrivateLayout({ children }: { children: React.ReactNode }) {
   };
 
   const tree = findActiveItem(MenuItems);
+
   return (
     <>
       {!hasPathnameThisMatch(pathname, verifyLink) &&

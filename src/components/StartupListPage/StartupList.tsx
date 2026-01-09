@@ -23,7 +23,7 @@ export const StartupList = (props: StartupListProps) => {
         <SESelect
           startups={props.startups}
           onChange={(e: { value: React.SetStateAction<string> }) => {
-            setStartup(e.value);
+            if (e && e.value) setStartup(e.value);
           }}
           isMulti={false}
           placeholder={"Sélectionne un produit"}

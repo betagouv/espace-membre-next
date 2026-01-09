@@ -136,7 +136,7 @@ describe("create-dimail-mail", () => {
 
     expect(
       mockSet.calledOnceWith({
-        primary_email: `john.doe.ext@${DIMAIL_MAILBOX_DOMAIN}`,
+        primary_email: `john.doe@${DIMAIL_MAILBOX_DOMAIN}`,
         primary_email_status: "EMAIL_ACTIVE",
       }),
       `should update users table with correct values. got ${JSON.stringify(mockSet.firstCall && mockSet.firstCall.args)}`,
@@ -147,20 +147,33 @@ describe("create-dimail-mail", () => {
     ).to.be.true;
 
     // Verify dinum_emails insert
+
     expect(
-      mockInsertInto.calledOnceWith("dinum_emails"),
+      mockInsertInto.getCall(0).calledWith("dinum_emails"),
       "should update table dinum_emails",
     ).to.be.true;
     expect(
-      mockValues.calledOnceWith({
+      mockInsertInto.getCall(1).calledWith("dinum_emails"),
+      "should update table dinum_emails",
+    ).to.be.true;
+
+    expect(
+      mockValues.getCall(0).calledWithExactly({
         email: `john.doe.ext@${DIMAIL_MAILBOX_DOMAIN}`,
         status: "enabled",
       }),
-      "should update table dinum_emails correctly",
+      "should update table dinum_emails with new email",
+    ).to.be.true;
+    expect(
+      mockValues.getCall(1).calledWithExactly({
+        email: `john.doe@${DIMAIL_MAILBOX_DOMAIN}`,
+        status: "enabled",
+      }),
+      "should update table dinum_emails with current email",
     ).to.be.true;
 
     // Verify execute calls
-    expect(mockExecute.calledTwice, "should execute 2 queries").to.be.true;
+    expect(mockExecute.calledThrice, "should execute 3 queries").to.be.true;
   });
 
   it("should throw error when user is not found", async () => {

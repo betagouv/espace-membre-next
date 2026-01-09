@@ -134,6 +134,14 @@ export const Mission = ({
                 type: "date",
                 ...register(`${missionArrayKey}.${index}.start`),
                 value: startDateString,
+                onChange: (e) => {
+                  const value = e.currentTarget.value;
+                  setValue(`${missionArrayKey}.${index}.start`, value, {
+                    shouldValidate: true,
+                    shouldDirty: true,
+                  });
+                  trigger(`${missionArrayKey}.${index}.end`);
+                },
               }}
               {...defaultState("start")}
             />
@@ -155,6 +163,29 @@ export const Mission = ({
                 type: "date",
                 ...register(`${missionArrayKey}.${index}.end`),
                 value: endDateString,
+                onBlur: (e) => {
+                  const value = e.currentTarget.value;
+                  if (value && new Date(value) < new Date()) {
+                    const confirmed = confirm(
+                      `La date de fin saisie "${new Date(value).toLocaleDateString()}" est antérieure à la date du jour, souhaitez-vous terminer cette mission ?`,
+                    );
+                    if (confirmed) {
+                      setValue(`${missionArrayKey}.${index}.end`, value, {
+                        shouldValidate: true,
+                        shouldDirty: true,
+                      });
+                    } else {
+                      setValue(
+                        `${missionArrayKey}.${index}.end`,
+                        mission?.end,
+                        {
+                          shouldValidate: true,
+                          shouldDirty: true,
+                        },
+                      );
+                    }
+                  }
+                },
               }}
               hintText={
                 <div>
@@ -199,6 +230,17 @@ export const Mission = ({
             nativeSelectProps={{
               ...register(`${missionArrayKey}.${index}.status`),
               defaultValue: mission?.status ?? "",
+              onChange: (e) => {
+                setValue(
+                  `${missionArrayKey}.${index}.status`,
+                  e.currentTarget.value,
+                  {
+                    shouldValidate: true,
+                    shouldDirty: true,
+                  },
+                );
+                trigger(`${missionArrayKey}.${index}.end`);
+              },
             }}
             {...defaultState("status")}
           >

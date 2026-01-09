@@ -12,12 +12,9 @@ import BlocChangerMotDePasse from "./BlocChangerMotDePasse";
 import BlocConfigurerCommunicationEmail from "./BlocConfigurerCommunicationEmail";
 import BlocConfigurerEmailPrincipal from "./BlocConfigurerEmailPrincipal";
 import BlocConfigurerEmailSecondaire from "./BlocConfigurerEmailSecondaire";
-import BlocEmailResponder from "./BlocEmailResponder";
-import BlocRedirection from "./BlocRedirection";
 import { WebMailButtons } from "./WebMailButtons";
 import { MemberPageProps } from "../MemberPage";
 import { BadgeEmailPlan } from "@/components/BadgeEmailPlan";
-import frontConfig from "@/frontConfig";
 import {
   EmailInfos,
   memberSchemaType,
@@ -25,7 +22,7 @@ import {
   EmailStatusCode,
 } from "@/models/member";
 import { EMAIL_STATUS_READABLE_FORMAT } from "@/models/misc";
-import { EMAIL_PLAN_TYPE, OvhRedirection, OvhResponder } from "@/models/ovh";
+import { EMAIL_PLAN_TYPE } from "@/models/ovh";
 import { DimailCreateMailButton } from "./DimailCreateMailButton";
 
 const EmailLink = ({ email }: { email: string }) => (
@@ -151,7 +148,7 @@ function BlocEmailConfiguration({ emailInfos }: { emailInfos: EmailInfos }) {
     },
     [EMAIL_PLAN_TYPE.EMAIL_PLAN_OPI]: {
       documentation:
-        "https://documentation.beta.numerique.gouv.fr/doc/mes-comptes-emails-ixeb6GFqjk",
+        "https://doc.incubateur.net/communaute/les-outils-de-la-communaute/emails/emails-suite-numerique",
       smtp: {
         server: "smtp.beta.gouv.fr",
         method: "TLS",
@@ -197,42 +194,16 @@ function BlocEmailConfiguration({ emailInfos }: { emailInfos: EmailInfos }) {
   );
 }
 
-const redirectionRow = (
-  redirection: NonNullable<MemberPageProps["redirections"][0]>,
-) => {
-  return [
-    <>
-      Redirection <EmailLink email={redirection.from} /> vers{" "}
-      <EmailLink email={redirection.to} />.
-    </>,
-    <Badge key={redirection.to} severity="success" as="span">
-      OK
-    </Badge>,
-  ];
-};
-
 export default function EmailContainer({
   userInfos,
   emailInfos,
-  emailResponder,
-  emailRedirections,
-  authorizations: {
-    canCreateEmail,
-    canChangeEmails,
-    canChangePassword,
-    canCreateRedirection,
-    hasPublicServiceEmail,
-  },
-  redirections,
+  authorizations: { canChangeEmails, canChangePassword },
   isExpired,
   isCurrentUser,
 }: {
   userInfos: memberSchemaType;
   isExpired: boolean;
   emailInfos: EmailInfos | null;
-  emailRedirections: OvhRedirection[];
-  emailResponder: OvhResponder | null;
-  redirections: MemberPageProps["redirections"];
   authorizations: memberWrapperSchemaType["authorizations"];
   isCurrentUser: boolean;
 }) {
@@ -249,7 +220,7 @@ export default function EmailContainer({
     // Spam status (ovh only)
     !isDinumEmail && emailInfos && emailSpamInfoRow(emailInfos),
     // Redirections
-    ...redirections.map((redirection) => redirectionRow(redirection)),
+    [],
   ].filter((z) => !!z);
 
   const infoStatus = [
@@ -331,43 +302,17 @@ export default function EmailContainer({
           data={rows}
         />
       ) : null}
-      {isDinumEmail ? (
-        <>
-          <BlocEmailConfiguration emailInfos={emailInfos} />
-        </>
-      ) : isCurrentUser ? (
+      {!isDinumEmail && (
         /* affiche la migration dimail que si c'est un email non dimail et que c'est l'utilisateur lui-même */
         <DimailCreateMailButton
           userUuid={userInfos.uuid}
           userInfos={userInfos}
         />
-      ) : null}
+      )}
+      {emailInfos && <BlocEmailConfiguration emailInfos={emailInfos} />}
+
       {!emailIsBeingCreated && isCurrentUser && (
         <div className={fr.cx("fr-accordions-group")}>
-          {!!emailInfos && !isDinumEmail && (
-            <>
-              <BlocEmailConfiguration emailInfos={emailInfos} />
-            </>
-          )}
-
-          {!isDinumEmail &&
-            emailInfos &&
-            emailInfos.emailPlan === EMAIL_PLAN_TYPE.EMAIL_PLAN_BASIC && (
-              <>
-                <BlocEmailResponder
-                  username={userInfos.username}
-                  responder={emailResponder}
-                />
-                <BlocRedirection
-                  redirections={emailRedirections}
-                  canCreateRedirection={canCreateRedirection}
-                  userInfos={userInfos}
-                  isExpired={isExpired}
-                  domain={frontConfig.domain}
-                />
-              </>
-            )}
-
           {!isDinumEmail && (
             <BlocChangerMotDePasse
               canChangePassword={canChangePassword}
