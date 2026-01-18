@@ -332,7 +332,7 @@ export async function getInvalidBetaAndParnersUsersFromCommunityTeam({
     (m) => !MATTERMOST_ACTIVE_STATUS.includes(m.status),
   );
   console.log(
-    `Mattermost user to remove from communauté ${JSON.stringify(invalidUsers)}`,
+    `Mattermost user to remove from communauté ${JSON.stringify(invalidUsers.map((u) => u.username))}`,
   );
 
   return invalidUsers;

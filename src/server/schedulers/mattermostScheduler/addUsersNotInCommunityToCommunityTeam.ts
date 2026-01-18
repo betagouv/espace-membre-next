@@ -15,7 +15,9 @@ export async function addUsersNotInCommunityToCommunityTeam() {
       config.mattermostAlumniTeamId,
     );
   let userCount = 0;
-  console.log("Log mattermost users not in community", mattermostUsers.length);
+  console.log(
+    `${mattermostUsers.length} mattermost users not in community : ${mattermostUsers.map((u) => u.username)}`,
+  );
   for (const mattermostUser of mattermostUsers) {
     try {
       await mattermost.addUserToTeam(
@@ -23,9 +25,9 @@ export async function addUsersNotInCommunityToCommunityTeam() {
         config.mattermostTeamId,
       );
       userCount += 1;
-    } catch (e) {
+    } catch (e: any) {
       console.error(
-        `Impossible d'inviter l'utilisateur ${mattermostUser.username} à la team communauté`,
+        `Impossible d'inviter l'utilisateur ${mattermostUser.username} à la team communauté : ${e.message}`,
         e,
       );
     }
