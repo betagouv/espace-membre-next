@@ -180,14 +180,14 @@ CreateEmail-->SendEmailInvitation
 
 ### Member Offboarding
 
-- J-30 : Message J-30
-- J-15 : Message J-15
-- J-1 : Message J-1
-- J+1 : Message J+1
+- J-30 : [Message J-30](https://github.com/betagouv/espace-membre-next/blob/main/src/server/views/templates/emails/DepartureReminderInXDaysEmail/DepartureReminderInXDaysEmail.tsx#L28)
+- J-15 : [Message J-15](https://github.com/betagouv/espace-membre-next/blob/main/src/server/views/templates/emails/DepartureReminderInXDaysEmail/DepartureReminderInXDaysEmail.tsx#L28)
+- J-1 : [Message J-1](https://github.com/betagouv/espace-membre-next/blob/main/src/server/views/templates/emails/DepartureReminderInXDaysEmail/DepartureReminderInXDaysEmail.tsx#L28)
+- J+1 : [Message J+1](https://github.com/betagouv/espace-membre-next/blob/45dafdfd7fe522f0f64c90486896e305ab34de3b/src/server/views/templates/emails/NoMoreContractEmail/NoMoreContractXDaysEmail.tsx#L26)
 - J+1 : GitHub account is removed from organisation
-- J+5 : email is set as SUSPENDED
-- J+30 : Message J+30
-- J+30 : mattermost account is removed from community and added to alumni
+- J+5 : email is set as SUSPENDED [⚠ BROKEN]
+- J+30 : [Message J+30](https://github.com/betagouv/espace-membre-next/blob/45dafdfd7fe522f0f64c90486896e305ab34de3b/src/server/views/templates/emails/NoMoreContractEmail/NoMoreContractXDaysEmail.tsx#L26)
+- J+30 : mattermost account is removed from community and added to alumni [⚠ BROKEN]
 - J+30 : matomo account is disabled
 - J+30 : sentry account is disabled
 
