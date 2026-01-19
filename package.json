@@ -124,7 +124,7 @@
     "@types/pg": "^8.11.0",
     "@types/react": "^18.2.56",
     "@types/react-dom": "^18.2.19",
-    "autoprefixer": "^10.4.17",
+    "autoprefixer": "^10.4.23",
     "chai": "^4.4.1",
     "chai-http": "^4.4.0",
     "cron-to-human": "^1.0.0",
