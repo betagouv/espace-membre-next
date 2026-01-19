@@ -48,7 +48,7 @@
     "@types/chai": "^5.2.2",
     "@types/sinon": "^17.0.4",
     "airtable": "^0.12.2",
-    "aws-sdk": "^2.1664.0",
+    "aws-sdk": "^2.1693.0",
     "axios": "^1.8.4",
     "compression": "^1.7.4",
     "connect-flash": "^0.1.1",
