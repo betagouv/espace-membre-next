@@ -73,6 +73,7 @@ export default async function Page() {
       isAdmin={isAdmin}
       authorizations={user.authorizations}
       emailInfos={user.emailInfos}
+      emailRedirections={user.emailRedirections}
       isExpired={user.isExpired}
       avatar={userInformations.avatar} // todo
       changes={userInformations.changes}

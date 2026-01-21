@@ -35,7 +35,7 @@ const emailStatusRow = (
 ) => {
   return [
     <>
-      Statut de l'email <EmailLink email={emailInfos.email} />
+      Compte email <EmailLink email={emailInfos.email} />
     </>,
     <>
       <Badge severity="info" className={fr.cx("fr-mr-1w")} as="span">
@@ -197,6 +197,7 @@ function BlocEmailConfiguration({ emailInfos }: { emailInfos: EmailInfos }) {
 export default function EmailContainer({
   userInfos,
   emailInfos,
+  emailRedirections,
   authorizations: { canChangeEmails, canChangePassword },
   isExpired,
   isCurrentUser,
@@ -204,6 +205,7 @@ export default function EmailContainer({
   userInfos: memberSchemaType;
   isExpired: boolean;
   emailInfos: EmailInfos | null;
+  emailRedirections: memberWrapperSchemaType["emailRedirections"];
   authorizations: memberWrapperSchemaType["authorizations"];
   isCurrentUser: boolean;
 }) {
@@ -217,6 +219,18 @@ export default function EmailContainer({
   const rows = [
     // Email status
     emailInfos && emailStatusRow(emailInfos, userInfos),
+    // Aliases if any
+
+    ...((emailRedirections &&
+      emailRedirections.map((redir) => [
+        <>Redirection</>,
+        <>
+          <a href={`mailto:${redir.from}`}>{redir.from}</a> ➡️{" "}
+          <a href={`mailto:${redir.to}`}>{redir.to}</a>
+        </>,
+      ])) ||
+      []),
+    ,
     // Spam status (ovh only)
     !isDinumEmail && emailInfos && emailSpamInfoRow(emailInfos),
     // Redirections
@@ -235,32 +249,7 @@ export default function EmailContainer({
     <div className="fr-mb-14v">
       <h2>Email</h2>
       <div>
-        {emailInfos && (
-          <>
-            <span className="font-weight-bold">Email principal : </span>
-            <span className="font-weight-bold text-color-blue">
-              <a href={`mailto:${emailInfos.email}`}>{emailInfos.email}</a>
-              <BadgeEmailPlan plan={emailInfos.emailPlan} />
-              {userInfos.primary_email_status !==
-                EmailStatusCode.EMAIL_ACTIVE && (
-                <Badge
-                  as="span"
-                  severity={
-                    infoStatus.includes(userInfos.primary_email_status)
-                      ? "info"
-                      : "error"
-                  }
-                  small
-                  className={fr.cx("fr-ml-1w")}
-                >
-                  {EMAIL_STATUS_READABLE_FORMAT[userInfos.primary_email_status]}
-                </Badge>
-              )}
-            </span>
-            <br />
-          </>
-        )}
-        {!emailInfos && userInfos.primary_email && (
+        {
           <>
             <span className="font-weight-bold">Email principal : </span>
             <span className="font-weight-bold text-color-blue">
@@ -270,7 +259,7 @@ export default function EmailContainer({
             </span>
             <br />
           </>
-        )}
+        }
         <span className="font-weight-bold">Email secondaire : </span>{" "}
         {userInfos.secondary_email ? (
           <a href={`mailto:${userInfos.secondary_email}`}>

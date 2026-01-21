@@ -13,7 +13,10 @@ import {
 } from "@/models/member";
 import config from "@/server/config";
 import BetaGouv from "@betagouv";
-import { getDimailEmail } from "@/lib/kysely/queries/dimail";
+import {
+  getDimailEmail,
+  getDimailEmailsByUser,
+} from "@/lib/kysely/queries/dimail";
 import { EMAIL_PLAN_TYPE, OvhRedirection, OvhResponder } from "@/models/ovh";
 
 export const computeHash = function (username) {
@@ -283,19 +286,24 @@ export async function userInfos(
       }),
     );
     // TODO: check if email Dimail
-    const dinumEmail =
-      userInfos.primary_email &&
-      (await getDimailEmail(userInfos.primary_email));
-
+    const dinumEmails = await getDimailEmailsByUser(userInfos.uuid, "mailbox");
+    const dinumAliases = await getDimailEmailsByUser(userInfos.uuid, "alias");
+    console.log("dinumEmails", dinumEmails);
+    console.log("dinumAliases", dinumAliases);
     let emailInfos,
       emailRedirections: OvhRedirection[] = [],
       emailResponder: OvhResponder | null = null;
-    if (dinumEmail) {
+    if (dinumEmails && dinumEmails.length) {
       emailInfos = {
-        email: dinumEmail.email,
+        email: dinumEmails[0].email,
         isBlocked: false,
         emailPlan: EMAIL_PLAN_TYPE.EMAIL_PLAN_OPI,
       };
+      emailRedirections = dinumAliases.map((a) => ({
+        from: a.email,
+        to: a.destination || "",
+        id: a.uuid,
+      }));
     } else {
       emailInfos = await BetaGouv.emailInfos(userInfos.username);
       emailRedirections = await BetaGouv.redirectionsForId({

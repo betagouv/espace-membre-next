@@ -120,6 +120,7 @@ export interface DinumEmails {
   status: string | null;
   type: string | null;
   updated_at: Generated<Timestamp>;
+  user_id: string | null;
   uuid: Generated<string>;
 }
 
