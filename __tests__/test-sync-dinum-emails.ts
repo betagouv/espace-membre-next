@@ -8,12 +8,19 @@ describe("syncDinumEmailsJob", () => {
   let getAllMailboxesStub: sinon.SinonStub;
   let getAllAliasesStub: sinon.SinonStub;
   let dbStub: any;
-  let syncDinumEmailsJob: () => Promise<void>;
+  let syncDinumEmailsJob: (domain: string) => Promise<void>;
 
   beforeEach(() => {
     getAllMailboxesStub = sinon.stub();
     getAllAliasesStub = sinon.stub();
     dbStub = {
+      selectFrom: sinon.stub().returns({
+        select: sinon.stub().returns({
+          where: sinon
+            .stub()
+            .returns({ executeTakeFirst: sinon.stub().returns({}) }),
+        }),
+      }),
       insertInto: sinon.stub().returns({
         values: sinon.stub().returns({
           onConflict: sinon.stub().returns({
@@ -73,7 +80,7 @@ describe("syncDinumEmailsJob", () => {
       ],
     });
 
-    await syncDinumEmailsJob();
+    await syncDinumEmailsJob("test.com");
 
     // Assert that insertInto was called with "dinum_emails"
     expect(dbStub.insertInto.calledWith("dinum_emails")).to.be.true;
@@ -161,7 +168,7 @@ describe("syncDinumEmailsJob", () => {
       ],
     });
 
-    await syncDinumEmailsJob();
+    await syncDinumEmailsJob("test.com");
 
     const insertedData = dbStub.insertInto().values.firstCall.args[0];
 
@@ -188,7 +195,7 @@ describe("syncDinumEmailsJob", () => {
       aliases: [],
     });
 
-    await syncDinumEmailsJob();
+    await syncDinumEmailsJob("test.com");
 
     const insertedData = dbStub.insertInto().values.firstCall.args[0];
     expect(insertedData).to.have.length(0);
