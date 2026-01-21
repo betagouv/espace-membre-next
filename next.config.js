@@ -21,6 +21,8 @@ const nextConfig = {
     dirs: ["src", "__tests__"],
     ignoreDuringBuilds: true,
   },
+  productionBrowserSourceMaps: true,
+  expireTime: 0, // https://github.com/vercel/next.js/discussions/48328#discussioncomment-12837641
   async headers() {
     return [
       {
