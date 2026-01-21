@@ -235,10 +235,13 @@ export const isPublicServiceEmail = async function (email: string) {
   // if (process.env.NODE_ENV === "development") {
   //   return true;
   // }
-  if (/@pole-emploi.fr\s*$/.test(email.toLowerCase())) {
+  if (/@pole-emploi\.fr\s*$/.test(email.toLowerCase())) {
     return true;
   }
-  if (/@france-travail.fr\s*$/.test(email.toLowerCase())) {
+  if (/@france-?travail\.fr\s*$/.test(email.toLowerCase())) {
+    return true;
+  }
+  if (/@justice\.fr\s*$/.test(email.toLowerCase())) {
     return true;
   }
   if (/@.*\.gouv\.fr$/.test(email.toLowerCase())) {
