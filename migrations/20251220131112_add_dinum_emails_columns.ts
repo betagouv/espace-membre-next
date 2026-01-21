@@ -1,6 +1,4 @@
-import { Knex } from "knex";
-
-export async function up(knex: Knex) {
+export async function up(knex) {
   return knex.schema.table("dinum_emails", function (table) {
     table.string("destination");
     table.string("type");
