@@ -10,5 +10,6 @@ export async function down(knex) {
   return knex.schema.table("dinum_emails", function (table) {
     table.dropColumn("destination");
     table.dropColumn("type");
+    table.dropColumn("user_id");
   });
 }
