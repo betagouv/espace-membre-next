@@ -291,8 +291,7 @@ export async function userInfos(
     // TODO: check if email Dimail
     const dinumEmails = await getDimailEmailsByUser(userInfos.uuid, "mailbox");
     const dinumAliases = await getDimailEmailsByUser(userInfos.uuid, "alias");
-    console.log("dinumEmails", dinumEmails);
-    console.log("dinumAliases", dinumAliases);
+
     let emailInfos,
       emailRedirections: OvhRedirection[] = [],
       emailResponder: OvhResponder | null = null;
