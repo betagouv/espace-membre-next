@@ -86,12 +86,13 @@ export async function createDimailMailboxForUser(userUuid: string) {
       Sentry.captureException(e);
       if (e.status === 409) {
         // mailbox already exist somewhere
+        console.log(
+          `Error 409 creating dimail for ${userName}@${DIMAIL_MAILBOX_DOMAIN}`,
+        );
         throw e;
-        // todo: handle this case, regenerate password ?
         //return { email: `${userName}@${DIMAIL_MAILBOX_DOMAIN}` };
-      } else {
-        throw e;
       }
+      throw e;
     });
 
   // MAJ infos base espace-membre (primary_email_status)
