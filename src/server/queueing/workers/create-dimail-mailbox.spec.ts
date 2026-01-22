@@ -160,13 +160,15 @@ describe("create-dimail-mail", () => {
     expect(
       mockValues.getCall(0).calledWithExactly({
         email: `john.doe.ext@${DIMAIL_MAILBOX_DOMAIN}`,
-        status: "enabled",
+        type: "mailbox",
+        status: "ok",
       }),
-      "should update table dinum_emails with new email",
+      `should update table dinum_emails with new email, got ${JSON.stringify(mockValues.getCall(0).args)}`,
     ).to.be.true;
     expect(
       mockValues.getCall(1).calledWithExactly({
         email: `john.doe@${DIMAIL_MAILBOX_DOMAIN}`,
+        type: "alias",
         status: "enabled",
       }),
       "should update table dinum_emails with current email",
