@@ -171,7 +171,7 @@ describe("create-dimail-mail", () => {
         type: "alias",
         status: "enabled",
       }),
-      "should update table dinum_emails with current email",
+      `should update table dinum_emails with new alias, got ${JSON.stringify(mockValues.getCall(1).args)}`,
     ).to.be.true;
 
     // Verify execute calls
