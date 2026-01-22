@@ -42,6 +42,7 @@ const mdParser = new MarkdownIt({
 export interface MemberPageProps {
   avatar: string | undefined;
   emailInfos: memberWrapperSchemaType["emailInfos"];
+  emailRedirections: memberWrapperSchemaType["emailRedirections"];
   authorizations: memberWrapperSchemaType["authorizations"];
   userInfos: memberWrapperSchemaType["userInfos"];
   mattermostInfo: {
@@ -67,6 +68,7 @@ export interface MemberPageProps {
 
 export default function MemberPage({
   emailInfos,
+  emailRedirections,
   userInfos,
   authorizations,
   mattermostInfo,
@@ -212,6 +214,7 @@ export default function MemberPage({
           isExpired={isExpired}
           emailInfos={emailInfos}
           userInfos={userInfos}
+          emailRedirections={emailRedirections}
           authorizations={authorizations}
         ></EmailContainer>
       ),

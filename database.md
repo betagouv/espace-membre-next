@@ -18,6 +18,16 @@ erDiagram
         token_type text "null"
     }
 
+    dinum_emails {
+        uuid uuid PK "not null"
+        email character_varying "not null"
+        created_at timestamp_with_time_zone "not null"
+        updated_at timestamp_with_time_zone "not null"
+        destination character_varying "null"
+        status character_varying "null"
+        type character_varying "null"
+    }
+
     events {
         id uuid PK "not null"
         action_on_startup uuid FK "null"
@@ -77,6 +87,17 @@ erDiagram
         username character_varying FK "not null"
     }
 
+    matomo_sites {
+        id uuid PK "not null"
+        startup_id uuid FK "null"
+        name character_varying "not null"
+        type character_varying "not null"
+        matomo_id integer "not null"
+        created_at timestamp_with_time_zone "not null"
+        updated_at timestamp_with_time_zone "not null"
+        url text "null"
+    }
+
     mattermost_member_infos {
         last_activity_at date "null"
         mattermost_user_id text "null"
@@ -131,6 +152,16 @@ erDiagram
         end timestamp_with_time_zone "null"
     }
 
+    sentry_teams {
+        id uuid PK "not null"
+        startup_id uuid FK "null"
+        name character_varying "not null"
+        sentry_id character_varying "not null"
+        created_at timestamp_with_time_zone "not null"
+        updated_at timestamp_with_time_zone "not null"
+        slug character_varying "null"
+    }
+
     service_accounts {
         uuid uuid PK "not null"
         user_id uuid FK "null"
@@ -171,7 +202,12 @@ erDiagram
         mon_service_securise boolean "null"
         stats boolean "null"
         accessibility_status character_varying "null"
+        dsfr_status character_varying "null"
+        ecodesign_url character_varying "null"
+        impact_url character_varying "null"
         mailing_list character_varying "null"
+        roadmap_url character_varying "null"
+        tech_audit_url character_varying "null"
         techno jsonb "null"
         thematiques jsonb "null"
         usertypes jsonb "null"
@@ -230,6 +266,16 @@ erDiagram
         mission text "null"
     }
 
+    user_events {
+        uuid uuid PK "not null"
+        user_id uuid FK "not null"
+        field_id character_varying "not null"
+        created_at timestamp_with_time_zone "not null"
+        date timestamp_with_time_zone "not null"
+        updated_at timestamp_with_time_zone "not null"
+        user_id uuid "not null"
+    }
+
     users {
         username text PK "not null"
         fullname character_varying "not null"
@@ -286,8 +332,10 @@ erDiagram
     organizations ||--o{ incubators : "incubators(owner_id) -> organizations(uuid)"
     organizations ||--o{ startups_organizations : "startups_organizations(organization_id) -> organizations(uuid)"
     startups ||--o{ events : "events(action_on_startup) -> startups(uuid)"
+    startups ||--o{ matomo_sites : "matomo_sites(startup_id) -> startups(uuid)"
     startups ||--o{ missions_startups : "missions_startups(startup_id) -> startups(uuid)"
     startups ||--o{ phases : "phases(startup_id) -> startups(uuid)"
+    startups ||--o{ sentry_teams : "sentry_teams(startup_id) -> startups(uuid)"
     startups ||--o{ startup_events : "startup_events(startup_id) -> startups(uuid)"
     startups ||--o{ startups_files : "startups_files(startup_id) -> startups(uuid)"
     startups ||--o{ startups_organizations : "startups_organizations(startup_id) -> startups(uuid)"
@@ -295,6 +343,7 @@ erDiagram
     users ||--o{ marrainage_groups_members : "marrainage_groups_members(username) -> users(username)"
     users ||--o{ missions : "missions(user_id) -> users(uuid)"
     users ||--o{ service_accounts : "service_accounts(user_id) -> users(uuid)"
+    users ||--o{ user_events : "user_events(user_id) -> users(uuid)"
     users ||--o{ users_formations : "users_formations(username) -> users(username)"
     users ||--o{ users_teams : "users_teams(user_id) -> users(uuid)"
 ```
@@ -304,6 +353,11 @@ erDiagram
 ### `accounts`
 
 - `accounts_pkey`
+
+### `dinum_emails`
+
+- `dinum_emails_email_unique`
+- `dinum_emails_pkey`
 
 ### `events`
 
@@ -333,6 +387,11 @@ erDiagram
 - `marrainage_groups_members_pkey`
 - `marrainage_groups_members_username_index`
 
+### `matomo_sites`
+
+- `matomo_sites_matomo_id_unique`
+- `matomo_sites_pkey`
+
 ### `missions`
 
 - `missions_pkey`
@@ -357,6 +416,12 @@ erDiagram
 
 - `phases_pkey`
 - `phases_startup_id_name_unique`
+
+### `sentry_teams`
+
+- `sentry_teams_pkey`
+- `sentry_teams_sentry_id_unique`
+- `sentry_teams_slug_unique`
 
 ### `service_accounts`
 
@@ -393,6 +458,11 @@ erDiagram
 
 - `teams_ghid_unique`
 - `teams_pkey`
+
+### `user_events`
+
+- `user_events_field_id_user_id_unique`
+- `user_events_pkey`
 
 ### `users`
 

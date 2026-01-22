@@ -115,6 +115,7 @@ export default async function Page({
         sessionUserIsFromIncubatorTeam={sessionUserIsFromIncubatorTeam}
         authorizations={user.authorizations}
         emailInfos={user.emailInfos}
+        emailRedirections={user.emailRedirections}
         isExpired={user.isExpired}
         avatar={userInformations?.avatar}
         changes={userInformations?.changes}

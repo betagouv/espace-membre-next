@@ -85,12 +85,14 @@ export async function createDimailMailboxForUser(userUuid: string) {
       );
       Sentry.captureException(e);
       if (e.status === 409) {
-        // mailbox already exist
-        // todo: handle this case, regenerate password ?
-        return { email: `${userName}@${DIMAIL_MAILBOX_DOMAIN}` };
-      } else {
+        // mailbox already exist somewhere
+        console.log(
+          `Error 409 creating dimail for ${userName}@${DIMAIL_MAILBOX_DOMAIN}`,
+        );
         throw e;
+        //return { email: `${userName}@${DIMAIL_MAILBOX_DOMAIN}` };
       }
+      throw e;
     });
 
   // MAJ infos base espace-membre (primary_email_status)
@@ -112,7 +114,8 @@ export async function createDimailMailboxForUser(userUuid: string) {
     .insertInto("dinum_emails")
     .values({
       email: mailboxInfos.email,
-      status: "enabled",
+      type: "mailbox",
+      status: "ok",
     })
     .onConflict((oc) => oc.column("email").doUpdateSet({ status: "enabled" }))
     .execute();
@@ -132,8 +135,9 @@ export async function createDimailMailboxForUser(userUuid: string) {
       );
     } else {
       const legacyUserName = dbUser.primary_email.split("@")[0];
+      const legacyEmail = `${legacyUserName}@${DIMAIL_MAILBOX_DOMAIN}`;
       console.info(
-        `Create DIMAIL alias: ${legacyUserName}@${DIMAIL_MAILBOX_DOMAIN} -> ${mailboxInfos.email}`,
+        `Create DIMAIL alias: ${legacyEmail} -> ${mailboxInfos.email}`,
       );
       try {
         await createAlias({
@@ -146,7 +150,9 @@ export async function createDimailMailboxForUser(userUuid: string) {
         await db
           .insertInto("dinum_emails")
           .values({
-            email: dbUser.primary_email,
+            email: legacyEmail,
+            type: "alias",
+            destination: mailboxInfos.email,
             status: "enabled",
           })
           .onConflict((oc) =>

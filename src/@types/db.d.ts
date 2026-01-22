@@ -115,9 +115,12 @@ export interface Community {
 
 export interface DinumEmails {
   created_at: Generated<Timestamp>;
+  destination: string | null;
   email: string;
   status: string | null;
+  type: string | null;
   updated_at: Generated<Timestamp>;
+  user_id: string | null;
   uuid: Generated<string>;
 }
 
