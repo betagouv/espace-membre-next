@@ -170,6 +170,7 @@ describe("create-dimail-mail", () => {
         email: `john.doe@${DIMAIL_MAILBOX_DOMAIN}`,
         type: "alias",
         status: "enabled",
+        destination: `john.doe.ext@${DIMAIL_MAILBOX_DOMAIN}`,
       }),
       `should update table dinum_emails with new alias, got ${JSON.stringify(mockValues.getCall(1).args)}`,
     ).to.be.true;
