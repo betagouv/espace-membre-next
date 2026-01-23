@@ -116,6 +116,7 @@ export async function createDimailMailboxForUser(userUuid: string) {
       email: mailboxInfos.email,
       type: "mailbox",
       status: "ok",
+      user_id: userUuid,
     })
     .onConflict((oc) => oc.column("email").doUpdateSet({ status: "enabled" }))
     .execute();
@@ -154,6 +155,7 @@ export async function createDimailMailboxForUser(userUuid: string) {
             type: "alias",
             destination: mailboxInfos.email,
             status: "enabled",
+            user_id: userUuid,
           })
           .onConflict((oc) =>
             oc.column("email").doUpdateSet({ status: "enabled" }),
