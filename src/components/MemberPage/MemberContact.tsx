@@ -32,27 +32,23 @@ export const MemberContact = ({
           <a href={`mailto:${userInfos.primary_email}`}>
             {userInfos.primary_email}
           </a>
-          {emailInfos && <BadgeEmailPlan plan={emailInfos.emailPlan} />}
-          {userInfos.primary_email_status !== EmailStatusCode.EMAIL_ACTIVE && (
-            <Badge
-              severity="error"
-              small
-              as="span"
-              className={fr.cx("fr-ml-1w")}
-            >
-              {EMAIL_STATUS_READABLE_FORMAT[userInfos.primary_email_status]}
-            </Badge>
+          {/* show email badge and info only when its related to primary email  */}
+          {emailInfos && emailInfos.email === userInfos.primary_email && (
+            <>
+              <BadgeEmailPlan plan={emailInfos.emailPlan} />
+              {userInfos.primary_email_status !==
+                EmailStatusCode.EMAIL_ACTIVE && (
+                <Badge
+                  severity="error"
+                  small
+                  as="span"
+                  className={fr.cx("fr-ml-1w")}
+                >
+                  {EMAIL_STATUS_READABLE_FORMAT[userInfos.primary_email_status]}
+                </Badge>
+              )}
+            </>
           )}
-          {isCurrentUser &&
-            userInfos.primary_email_status ===
-              EmailStatusCode.EMAIL_ACTIVE_AND_PASSWORD_DEFINITION_PENDING && (
-              <span>
-                Le mot de passe doit être défini. Rendez vous dans{" "}
-                <a href={"/account?tab=compte-email#password"}>
-                  Changer mon mot de passe
-                </a>
-              </span>
-            )}
         </>
       ),
     });
