@@ -46,7 +46,7 @@ export default async function Page(props) {
 
   const lastestProducts = await getLatestsStartups();
   const lastestMembers = await getLatestsMembers();
-  const cookieStore = cookies();
+  const cookieStore = await cookies();
   const surveyCookie = cookieStore.get(SURVEY_BOX_COOKIE_NAME);
   const surveyCookieValue = (surveyCookie && surveyCookie.value) || null;
   const showOnboardingPanel = await shouldShowOnboardingPanel(userInfos);

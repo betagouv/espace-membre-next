@@ -18,7 +18,7 @@ import {
 import { sentryTeamToModel } from "@/models/mapper/sentryMapper";
 
 type Props = {
-  params: { id: string };
+  params: Promise<{ id: string }>;
 };
 
 export async function generateMetadata(
@@ -26,12 +26,13 @@ export async function generateMetadata(
   parent: ResolvingMetadata,
 ): Promise<Metadata> {
   // read route params
+  const { id } = await params;
   let query: { ghid: string } | { uuid: string } = {
-    ghid: params.id,
+    ghid: id,
   };
-  if (validate(params.id)) {
+  if (validate(id)) {
     query = {
-      uuid: params.id,
+      uuid: id,
     };
   }
   const produit = await getStartup(query);
@@ -41,12 +42,13 @@ export async function generateMetadata(
 }
 
 export default async function Page({ params }: Props) {
+  const { id } = await params;
   let query: { ghid: string } | { uuid: string } = {
-    ghid: params.id,
+    ghid: id,
   };
-  if (validate(params.id)) {
+  if (validate(id)) {
     query = {
-      uuid: params.id,
+      uuid: id,
     };
   }
 

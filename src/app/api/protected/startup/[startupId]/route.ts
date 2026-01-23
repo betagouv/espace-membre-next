@@ -7,8 +7,9 @@ import { incubatorToModel, startupToModel } from "@/models/mapper";
 
 export const GET = async (
   _: NextRequest,
-  { params: { startupId } }: { params: { startupId: string } },
+  { params }: { params: Promise<{ startupId: string }> },
 ) => {
+  const { startupId } = await params;
   const dbStartup = await getStartup({ ghid: startupId });
 
   if (!dbStartup) {

@@ -13,13 +13,14 @@ import {
 async function getBrevoEventsHandler(
   req: Request,
   {
-    params: { username },
+    params,
   }: {
-    params: {
+    params: Promise<{
       username: string;
-    };
+    }>;
   },
 ) {
+  const { username } = await params;
   const session = await getServerSession(authOptions);
 
   if (!session || !session.user.id) {

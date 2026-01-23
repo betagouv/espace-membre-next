@@ -13,8 +13,9 @@ export const metadata: Metadata = {
 async function Login({
   searchParams,
 }: {
-  searchParams: { [key: string]: string };
+  searchParams: Promise<{ [key: string]: string }>;
 }) {
+  const resolvedSearchParams = await searchParams;
   let session;
   try {
     session = await getServerSession(authOptions);

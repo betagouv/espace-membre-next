@@ -10,8 +10,9 @@ import { isUserActive } from "@/utils/member";
 
 export async function GET(
   _: Request,
-  { params: { username } }: { params: { username: string } },
+  { params }: { params: Promise<{ username: string }> },
 ) {
+  const { username } = await params;
   const dbUser = await getUserBasicInfo({ username });
   if (!dbUser) {
     return Response.json(

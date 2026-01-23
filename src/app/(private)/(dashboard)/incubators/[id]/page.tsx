@@ -11,7 +11,7 @@ import {
 import { incubatorToModel } from "@/models/mapper";
 
 type Props = {
-  params: { id: string };
+  params: Promise<{ id: string }>;
 };
 
 export async function generateMetadata(
@@ -19,7 +19,7 @@ export async function generateMetadata(
   parent: ResolvingMetadata,
 ): Promise<Metadata> {
   // read route params
-  const id = params.id;
+  const { id } = await params;
 
   const incubator = await getIncubator(id);
   return {
@@ -28,7 +28,8 @@ export async function generateMetadata(
 }
 
 export default async function Page({ params }: Props) {
-  const dbIncubator = await getIncubator(params.id);
+  const { id } = await params;
+  const dbIncubator = await getIncubator(id);
   if (!dbIncubator) {
     redirect("/incubators");
   }

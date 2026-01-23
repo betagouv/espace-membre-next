@@ -19,24 +19,21 @@ import { shouldShowOnboardingPanel } from "@/utils/onboarding/shouldShowOnboardi
 import { getUserIncubators } from "@/lib/kysely/queries/users";
 
 type Props = {
-  params: { id: string };
+  params: Promise<{ id: string }>;
 };
 
 export async function generateMetadata(
   { params }: Props,
   parent: ResolvingMetadata,
 ): Promise<Metadata> {
-  const id = params.id;
+  const { id } = await params;
   return {
     title: `Membre ${id} / Espace Membre`,
   };
 }
 
-export default async function Page({
-  params: { id },
-}: {
-  params: { id: string };
-}) {
+export default async function Page({ params }: Props) {
+  const { id } = await params;
   // todo: merge with /account/page.tsx
   const session = await getServerSession(authOptions);
 
