@@ -291,12 +291,9 @@ export default function EmailContainer({
           data={rows}
         />
       ) : null}
-      {!isDinumEmail && (
+      {!isDinumEmail && userInfos.secondary_email && (
         /* affiche la migration dimail que si c'est un email non dimail et que c'est l'utilisateur lui-même */
-        <DimailCreateMailButton
-          userUuid={userInfos.uuid}
-          userInfos={userInfos}
-        />
+        <DimailCreateMailButton secondaryEmail={userInfos.secondary_email} />
       )}
       {emailInfos && <BlocEmailConfiguration emailInfos={emailInfos} />}
 

@@ -7,11 +7,14 @@ import Button from "@codegouvfr/react-dsfr/Button";
 import * as Sentry from "@sentry/nextjs";
 
 interface Props {
-  open: boolean;
+  open?: boolean;
   secondaryEmail: string;
 }
 
-export const DimailCreateMailButton = ({ secondaryEmail, open }: Props) => {
+export const DimailCreateMailButton = ({
+  secondaryEmail,
+  open = true,
+}: Props) => {
   const [isLoading, setIsLoading] = useState(false);
   const [message, setMessage] = useState("");
   const [success, setSuccess] = useState(false);
