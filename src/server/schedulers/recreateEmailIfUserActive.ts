@@ -36,13 +36,13 @@ export async function recreateEmailIfUserActive() {
           console.log(
             `set DIMAIL email active for ${dbUser.username} (${dbUser.primary_email})`,
           );
-          await patchMailbox({
-            domain_name: DIMAIL_MAILBOX_DOMAIN,
-            user_name: dbUser.primary_email.split("@")[0],
-            data: {
-              active: "yes",
-            },
-          });
+          // await patchMailbox({
+          //   domain_name: DIMAIL_MAILBOX_DOMAIN,
+          //   user_name: dbUser.primary_email.split("@")[0],
+          //   data: {
+          //     active: "yes",
+          //   },
+          // });
           await db
             .updateTable("users")
             .set({

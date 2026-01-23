@@ -28,7 +28,7 @@ const getGithubUsersNotInOrganization = async (org) => {
   const pendingInvitationsUsernames = pendingInvitations.map((r) =>
     r.login.toLowerCase(),
   );
-  const githubUserNotOnOrganization = activeGithubUsers.filter((user) => {
+  const githubUsersNotOnOrganization = activeGithubUsers.filter((user) => {
     const githubUsername = user?.github?.toLowerCase();
     return (
       !allGithubOrganizationMembersUsername.includes(githubUsername) &&
@@ -36,7 +36,7 @@ const getGithubUsersNotInOrganization = async (org) => {
     );
   });
 
-  return githubUserNotOnOrganization;
+  return githubUsersNotOnOrganization;
 };
 
 // get users that are member (got a github card) and that have github account that is not in the team
@@ -72,8 +72,13 @@ const addGithubUserToOrganization = async () => {
   const githubUsersNotOnOrganization = await getGithubUsersNotInOrganization(
     config.githubOrganizationName,
   );
-  await Promise.all(
-    githubUsersNotOnOrganization.map(async (member) => {
+
+  console.log(
+    `add ${githubUsersNotOnOrganization.length} members to GitHub organisation : ${githubUsersNotOnOrganization.map((g) => g.github)}`,
+  );
+
+  await pAll(
+    githubUsersNotOnOrganization.map((member) => async () => {
       try {
         await github.inviteUserByUsernameToOrganization(
           member.github,
@@ -85,12 +90,15 @@ const addGithubUserToOrganization = async () => {
           config.githubBetagouvTeam,
         );
         console.log(`github: Add user ${member.github} to organization`);
+        return true;
       } catch (err) {
         console.error(
           `github: Cannot add user ${member.github} to organization ${config.githubOrganizationName}. Error : ${err}`,
         );
+        return false;
       }
     }),
+    { concurrency: 1, stopOnError: false },
   );
 };
 

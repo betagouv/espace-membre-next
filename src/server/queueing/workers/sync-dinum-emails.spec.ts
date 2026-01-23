@@ -1,8 +1,52 @@
-import chai from "chai";
+import { expect } from "chai";
 import sinon from "sinon";
 import proxyquire from "proxyquire";
 
-const expect = chai.expect;
+import { getUserNameFromEmail } from "./sync-dinum-emails";
+
+describe("getUserNameFromEmail", () => {
+  it("should extract username from simple email", () => {
+    expect(getUserNameFromEmail("john.doe@beta.gouv.fr")).to.equal("john.doe");
+  });
+
+  it("should extract username removing .ext suffix", () => {
+    expect(getUserNameFromEmail("john.doe.ext@beta.gouv.fr")).to.equal(
+      "john.doe",
+    );
+  });
+
+  it("should handle username with hyphens", () => {
+    expect(getUserNameFromEmail("jean-pierre@beta.gouv.fr")).to.equal(
+      "jean-pierre",
+    );
+  });
+
+  it("should handle complex username with dots and hyphens", () => {
+    expect(
+      getUserNameFromEmail("jean-pierre.dupont.ext@beta.gouv.fr"),
+    ).to.equal("jean-pierre.dupont");
+  });
+
+  it("should handle username with multiple dots", () => {
+    expect(getUserNameFromEmail("first.middle.last@beta.gouv.fr")).to.equal(
+      "first.middle.last",
+    );
+  });
+
+  it("should handle simple username without dots", () => {
+    expect(getUserNameFromEmail("bob@beta.gouv.fr")).to.equal("bob");
+  });
+
+  it("should handle simple username with .ext suffix", () => {
+    expect(getUserNameFromEmail("bob.ext@beta.gouv.fr")).to.equal("bob");
+  });
+
+  it("should handle different domains", () => {
+    expect(getUserNameFromEmail("user@ext.beta.gouv.fr")).to.equal("user");
+    expect(getUserNameFromEmail("user@other.com")).to.equal("user");
+    expect(getUserNameFromEmail("user.ext@some.domain.fr")).to.equal("user");
+  });
+});
 
 describe("syncDinumEmailsJob", () => {
   let getAllMailboxesStub: sinon.SinonStub;
@@ -30,18 +74,15 @@ describe("syncDinumEmailsJob", () => {
       }),
     };
 
-    const module = proxyquire(
-      "../src/server/queueing/workers/sync-dinum-emails",
-      {
-        "@/lib/dimail/client": {
-          getAllMailboxes: getAllMailboxesStub,
-          getAllAliases: getAllAliasesStub,
-        },
-        "@/lib/kysely": {
-          db: dbStub,
-        },
+    const module = proxyquire("./sync-dinum-emails", {
+      "@/lib/dimail/client": {
+        getAllMailboxes: getAllMailboxesStub,
+        getAllAliases: getAllAliasesStub,
       },
-    );
+      "@/lib/kysely": {
+        db: dbStub,
+      },
+    });
 
     syncDinumEmailsJob = module.syncDinumEmailsJob;
   });
