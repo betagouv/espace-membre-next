@@ -162,6 +162,7 @@ describe("create-dimail-mail", () => {
         email: `john.doe.ext@${DIMAIL_MAILBOX_DOMAIN}`,
         type: "mailbox",
         status: "ok",
+        user_id: userTestUuid,
       }),
       `should update table dinum_emails with new email, got ${JSON.stringify(mockValues.getCall(0).args)}`,
     ).to.be.true;
@@ -171,6 +172,7 @@ describe("create-dimail-mail", () => {
         type: "alias",
         status: "enabled",
         destination: `john.doe.ext@${DIMAIL_MAILBOX_DOMAIN}`,
+        user_id: userTestUuid,
       }),
       `should update table dinum_emails with new alias, got ${JSON.stringify(mockValues.getCall(1).args)}`,
     ).to.be.true;

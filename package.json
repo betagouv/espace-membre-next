@@ -25,6 +25,7 @@
     "kysely-codegen": "./node_modules/.bin/kysely-codegen --include-pattern=\"(public|pgboss).*\" --out-file ./src/@types/db.d.ts",
     "staging-import-from-www": "node dist/src/scripts/import-from-www",
     "dev-import-from-www": "ts-node src/scripts/import-from-www",
+    "job:sync-dimail": "ts-node src/scripts/sync-dimail",
     "export-to-www": "./src/scripts/export-to-www.sh",
     "start-cron-jobs-dev": "ts-node src/server/schedulers/scheduleCronJobs.ts",
     "start-pgboss-jobs-dev": "ts-node src/server/schedulers/schedulePgBossJobs.ts",
