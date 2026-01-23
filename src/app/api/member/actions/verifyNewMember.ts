@@ -56,7 +56,7 @@ export async function verifyNewMember(
         username: memberData.username,
       },
       {
-        retryLimit: 50,
+        retryLimit: 5,
         retryBackoff: true,
       },
     );

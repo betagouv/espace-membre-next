@@ -28,7 +28,7 @@ export const createDimailEmail = withErrorHandling(async (userUuid: string) => {
       username: user.username,
     },
     {
-      retryLimit: 50,
+      retryLimit: 5,
       retryBackoff: true,
     },
   );

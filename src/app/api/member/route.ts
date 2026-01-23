@@ -120,7 +120,7 @@ export const POST = withHttpErrorHandling(async (req: Request) => {
           userId: dbUser.uuid,
         }),
         {
-          retryLimit: 50,
+          retryLimit: 5,
           retryBackoff: true,
         },
       );

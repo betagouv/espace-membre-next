@@ -170,7 +170,7 @@ const createOrUpdateSentryAccount = async (
         startupId: sentryData.newTeam.startupId,
       }),
       {
-        retryLimit: 50,
+        retryLimit: 5,
         retryBackoff: true,
       },
     );
