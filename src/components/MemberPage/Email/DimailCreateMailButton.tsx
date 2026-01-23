@@ -53,15 +53,15 @@ export const DimailCreateMailButton = ({
       expanded={open}
       onExpandedChange={() => {}}
     >
-      Créez votre compte sur{" "}
+      Crée ton compte sur{" "}
       <a href="https://lasuite.numerique.gouv.fr/" target="_blank">
         la suite numérique
       </a>{" "}
       pour bénéficier d'une suite email et calendrier moderne et sécurisée.
       <br />
       <br />
-      Ton compte OVH actuel reste ouvert pendant encore un mois. Tu as donc tout
-      le temps nécessaire pour récupérer tes anciens emails.
+      Ton compte OVH actuel reste ouvert pendant encore un mois. Pense à
+      récupérer tes anciens emails si nécessaire.{" "}
       <a
         target="_blank"
         href="https://doc.incubateur.net/communaute/les-outils-de-la-communaute/emails/emails-suite-numerique#h-etape-4-recupererimporter-ses-anciens-mails"
