@@ -1,10 +1,8 @@
-import chai from "chai";
+import { expect } from "chai";
 import sinon from "sinon";
 import proxyquire from "proxyquire";
 
 import { getUserNameFromEmail } from "./sync-dinum-emails";
-
-const expect = chai.expect;
 
 describe("getUserNameFromEmail", () => {
   it("should extract username from simple email", () => {
@@ -76,18 +74,15 @@ describe("syncDinumEmailsJob", () => {
       }),
     };
 
-    const module = proxyquire(
-      "./sync-dinum-emails",
-      {
-        "@/lib/dimail/client": {
-          getAllMailboxes: getAllMailboxesStub,
-          getAllAliases: getAllAliasesStub,
-        },
-        "@/lib/kysely": {
-          db: dbStub,
-        },
+    const module = proxyquire("./sync-dinum-emails", {
+      "@/lib/dimail/client": {
+        getAllMailboxes: getAllMailboxesStub,
+        getAllAliases: getAllAliasesStub,
       },
-    );
+      "@/lib/kysely": {
+        db: dbStub,
+      },
+    });
 
     syncDinumEmailsJob = module.syncDinumEmailsJob;
   });
