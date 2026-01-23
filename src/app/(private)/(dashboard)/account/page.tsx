@@ -30,11 +30,6 @@ export default async function Page() {
 
   const id = session?.user?.id;
 
-  let availableEmailPros: string[] = [];
-  if (config.ESPACE_MEMBRE_ADMIN.includes(session.user.id)) {
-    availableEmailPros = await betagouv.getAvailableProEmailInfos();
-  }
-
   // compile some account informations
   const user = await userInfos({ username: id }, session.user.id === id);
 

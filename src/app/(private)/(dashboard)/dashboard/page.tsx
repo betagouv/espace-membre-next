@@ -21,6 +21,8 @@ import { shouldShowOnboardingPanel } from "@/utils/onboarding/shouldShowOnboardi
 import { routeTitles } from "@/utils/routes/routeTitles";
 import { getServerSession } from "next-auth";
 import { authOptions } from "@/utils/authoptions";
+import betagouv from "@/server/betagouv";
+import { EMAIL_PLAN_TYPE } from "@/models/ovh";
 
 export const metadata: Metadata = {
   title: `${routeTitles.dashboard()} / Espace Membre`,
@@ -50,6 +52,12 @@ export default async function Page(props) {
   const surveyCookie = cookieStore.get(SURVEY_BOX_COOKIE_NAME);
   const surveyCookieValue = (surveyCookie && surveyCookie.value) || null;
   const showOnboardingPanel = await shouldShowOnboardingPanel(userInfos);
+  const emailInfos = await betagouv.emailInfos(userInfos.username);
+  const showSuiteNumeriqueOnboardingPanel =
+    userInfos.primary_email &&
+    (emailInfos?.emailPlan === EMAIL_PLAN_TYPE.EMAIL_PLAN_PRO ||
+      emailInfos?.emailPlan === EMAIL_PLAN_TYPE.EMAIL_PLAN_BASIC ||
+      emailInfos?.emailPlan === EMAIL_PLAN_TYPE.EMAIL_PLAN_EXCHANGE);
   let onboarding: DashboardPageProps["onboarding"];
   if (showOnboardingPanel) {
     const userEvents = await getUserEvents(session.user.uuid);
@@ -76,6 +84,8 @@ export default async function Page(props) {
       latestProducts={lastestProducts}
       latestMembers={lastestMembers}
       onboarding={onboarding}
+      secondaryEmail={userInfos.secondary_email}
+      showSuiteNumeriqueOnboardingPanel={showSuiteNumeriqueOnboardingPanel}
     />
   );
 }

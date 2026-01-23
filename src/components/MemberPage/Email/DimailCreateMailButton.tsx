@@ -7,11 +7,11 @@ import Button from "@codegouvfr/react-dsfr/Button";
 import * as Sentry from "@sentry/nextjs";
 
 interface Props {
-  userUuid: string;
-  userInfos: memberSchemaType;
+  open: boolean;
+  secondaryEmail: string;
 }
 
-export const DimailCreateMailButton = ({ userUuid, userInfos }: Props) => {
+export const DimailCreateMailButton = ({ secondaryEmail, open }: Props) => {
   const [isLoading, setIsLoading] = useState(false);
   const [message, setMessage] = useState("");
   const [success, setSuccess] = useState(false);
@@ -28,17 +28,15 @@ export const DimailCreateMailButton = ({ userUuid, userInfos }: Props) => {
   const createDimailEmailHandler = async () => {
     try {
       setIsLoading(true);
-      await createDimailEmail(userUuid);
+      await createDimailEmail();
       setMessage(
-        `✅ Le mail est en cours de création. Une invitation sera envoyée sur ${userInfos.secondary_email} dans quelques minutes.`,
+        `✅ Le mail est en cours de création. Une invitation sera envoyée sur ${secondaryEmail} dans quelques minutes.`,
       );
       setSuccess(true);
       // Optionnel : afficher un message de succès
     } catch (error) {
       console.error("Erreur lors de la création de l'email:", error);
-      setMessage(
-        `Erreur lors de la création de l'email ${userInfos.secondary_email}`,
-      );
+      setMessage(`Erreur lors de la création de l'email ${secondaryEmail}`);
       Sentry.captureException(error);
       // Optionnel : afficher un message d'erreur
     } finally {
@@ -47,7 +45,11 @@ export const DimailCreateMailButton = ({ userUuid, userInfos }: Props) => {
   };
 
   return (
-    <Accordion label="Créer mon compte sur la suite numérique">
+    <Accordion
+      label="Créer mon compte sur la suite numérique"
+      expanded={open}
+      onExpandedChange={() => {}}
+    >
       Créez votre compte sur{" "}
       <a href="https://lasuite.numerique.gouv.fr/" target="_blank">
         la suite numérique
@@ -56,8 +58,7 @@ export const DimailCreateMailButton = ({ userUuid, userInfos }: Props) => {
       <br />
       <br />
       Ton compte OVH actuel reste ouvert pendant encore un mois. Tu as donc tout
-      le temps nécessaire pour récupérer tes anciens emails. Besoin d'un coup de
-      main ?{" "}
+      le temps nécessaire pour récupérer tes anciens emails.
       <a
         target="_blank"
         href="https://doc.incubateur.net/communaute/les-outils-de-la-communaute/emails/emails-suite-numerique#h-etape-4-recupererimporter-ses-anciens-mails"
@@ -68,7 +69,7 @@ export const DimailCreateMailButton = ({ userUuid, userInfos }: Props) => {
       <br />
       <br />
       <>
-        {userInfos.secondary_email && emailToCreate ? (
+        {secondaryEmail && emailToCreate ? (
           success ? (
             ""
           ) : (
@@ -76,16 +77,18 @@ export const DimailCreateMailButton = ({ userUuid, userInfos }: Props) => {
               iconId="ri-mail-check-fill"
               onClick={createDimailEmailHandler}
               disabled={isLoading}
-              size="small"
+              size="large"
             >
               Créer mon compte {emailToCreate} sur la Suite numérique
             </Button>
           )
-        ) : (
+        ) : !secondaryEmail ? (
           <div>
             Renseigne ton email secondaire avant de pouvoir créer ton compte sur
             la suite numérique.
           </div>
+        ) : (
+          ""
         )}
       </>{" "}
       {message}
