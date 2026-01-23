@@ -7,7 +7,10 @@ const DIMAIL_MAILBOX_DOMAIN = process.env.DIMAIL_MAILBOX_DOMAIN || "some";
 
 export const syncDinumEmailsTopic = "sync-dinum-emails";
 
-const getUserIdByEmail = async (email: string) => {
+export const getUserNameFromEmail = (email: string) =>
+  email.replace(/(.*?)(\.ext)?@.*$/, "$1");
+
+export const getUserIdByEmail = async (email: string) => {
   const query = db
     .selectFrom("users")
     .select("uuid")
@@ -16,6 +19,7 @@ const getUserIdByEmail = async (email: string) => {
         eb("primary_email", "=", email),
         eb("primary_email", "=", email.replace("\.ext@", "@")),
         eb("primary_email", "=", email.replace("@ext\.", "@")),
+        eb("username", "=", getUserNameFromEmail(email)),
       ]),
     );
   const user = await query.executeTakeFirst();

@@ -393,7 +393,7 @@ export const getLatests = (db: Kysely<DB> = database) => {
 export const getActiveUsers = (db: Kysely<DB> = database) =>
   db
     .selectFrom("users")
-    .innerJoin("missions", "missions.user_id", "users.username")
+    .innerJoin("missions", "missions.user_id", "users.uuid")
     .selectAll("users")
     .where((eb) =>
       eb.or([

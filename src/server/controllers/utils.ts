@@ -301,6 +301,8 @@ export async function userInfos(
         isBlocked: false,
         emailPlan: EMAIL_PLAN_TYPE.EMAIL_PLAN_OPI,
       };
+    }
+    if (dinumAliases && dinumAliases.length) {
       emailRedirections = dinumAliases.map((a) => ({
         from: a.email,
         to: a.destination || "",
