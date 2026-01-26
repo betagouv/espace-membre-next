@@ -8,12 +8,12 @@ import { AuthorizationError, withErrorHandling } from "@/utils/error";
 import { getUserBasicInfo } from "@/lib/kysely/queries/users";
 import { memberBaseInfoToModel } from "@/models/mapper";
 
-export const createDimailEmail = withErrorHandling(async (userUuid: string) => {
+export const createDimailEmail = withErrorHandling(async () => {
   const session = await getServerSession(authOptions);
   if (!session || !session.user.id) {
     throw new AuthorizationError();
   }
-
+  const userUuid = session.user.id;
   const dbUser = await getUserBasicInfo({ uuid: userUuid });
   if (!dbUser) {
     throw new Error(`User ${userUuid} not found`);

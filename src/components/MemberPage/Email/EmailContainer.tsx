@@ -23,7 +23,7 @@ import {
 } from "@/models/member";
 import { EMAIL_STATUS_READABLE_FORMAT } from "@/models/misc";
 import { EMAIL_PLAN_TYPE } from "@/models/ovh";
-import { DimailCreateMailButton } from "./DimailCreateMailButton";
+import { DimailEmailCreationInvite } from "../../DimailEmailCreationInvite";
 
 const EmailLink = ({ email }: { email: string }) => (
   <a href={`mailto:${email}`}>{email}</a>
@@ -275,6 +275,14 @@ export default function EmailContainer({
           <WebMailButtons plan={emailInfos.emailPlan} />
         </div>
       )}
+      {(emailInfos?.emailPlan === EMAIL_PLAN_TYPE.EMAIL_PLAN_BASIC ||
+        emailInfos?.emailPlan === EMAIL_PLAN_TYPE.EMAIL_PLAN_PRO) &&
+        userInfos.secondary_email && (
+          /* affiche la migration dimail que si c'est un email non dimail et que c'est l'utilisateur lui-même */
+          <DimailEmailCreationInvite
+            secondaryEmail={userInfos.secondary_email}
+          />
+        )}
       {!!emailIsBeingCreated && (
         <Alert
           description={`Ton email @beta.gouv.fr est en train d'être créé, tu recevras un email sur ${userInfos.secondary_email} dès que celui-ci sera actif.`}
@@ -291,18 +299,13 @@ export default function EmailContainer({
           data={rows}
         />
       ) : null}
-      {!isDinumEmail && (
-        /* affiche la migration dimail que si c'est un email non dimail et que c'est l'utilisateur lui-même */
-        <DimailCreateMailButton
-          userUuid={userInfos.uuid}
-          userInfos={userInfos}
-        />
-      )}
+
       {emailInfos && <BlocEmailConfiguration emailInfos={emailInfos} />}
 
       {!emailIsBeingCreated && isCurrentUser && (
         <div className={fr.cx("fr-accordions-group")}>
-          {!isDinumEmail && (
+          {(emailInfos?.emailPlan === EMAIL_PLAN_TYPE.EMAIL_PLAN_BASIC ||
+            emailInfos?.emailPlan === EMAIL_PLAN_TYPE.EMAIL_PLAN_PRO) && (
             <BlocChangerMotDePasse
               canChangePassword={canChangePassword}
               status={userInfos.primary_email_status}

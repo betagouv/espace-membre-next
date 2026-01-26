@@ -18,6 +18,8 @@ import ProgressBar from "../ProgressBar";
 import { getLatests as getLatestsProducts } from "@/lib/kysely/queries/startups";
 import { getLatests as getLatestsMembers } from "@/lib/kysely/queries/users";
 import { linkRegistry } from "@/utils/routes/registry";
+import Alert from "@codegouvfr/react-dsfr/Alert";
+import { DimailEmailCreationInvite } from "../DimailEmailCreationInvite";
 
 type LatestProductsReturnType = Awaited<ReturnType<typeof getLatestsProducts>>;
 type LatestMembersReturnType = Awaited<ReturnType<typeof getLatestsMembers>>;
@@ -29,6 +31,8 @@ export interface DashboardPageProps {
   onboarding?: {
     progress: number;
   };
+  showSuiteNumeriqueOnboardingPanel: boolean;
+  secondaryEmail: string;
 }
 
 const CardProduct = ({
@@ -99,7 +103,7 @@ const CardMember = ({
 
 export function DashboardPage(props: DashboardPageProps) {
   return (
-    <div className={fr.cx("fr-container", "fr-pb-6w")}>
+    <div className={fr.cx("fr-container", "fr-pb-6w", "fr-mb-2w")}>
       {props.onboarding && (
         <div
           style={{ border: "1px solid #ccc", padding: "20px" }}
@@ -120,6 +124,9 @@ export function DashboardPage(props: DashboardPageProps) {
             </Link>
           </div>
         </div>
+      )}
+      {props.showSuiteNumeriqueOnboardingPanel && (
+        <DimailEmailCreationInvite secondaryEmail={props.secondaryEmail} />
       )}
       <h2>Gérer mon compte</h2>
       <div className={fr.cx("fr-grid-row", "fr-grid-row--gutters")}>

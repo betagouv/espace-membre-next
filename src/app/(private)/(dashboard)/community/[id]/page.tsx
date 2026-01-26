@@ -8,8 +8,6 @@ import MemberPage, {
   MemberPageProps,
 } from "@/components/MemberPage/MemberPage";
 import { getUserEvents } from "@/lib/kysely/queries/userEvents";
-import betagouv from "@/server/betagouv";
-import config from "@/server/config";
 import { isSessionUserIncubatorTeamAdminForUser } from "@/server/config/admin.config";
 import { userInfos } from "@/server/controllers/utils";
 import { authOptions } from "@/utils/authoptions";
@@ -42,11 +40,6 @@ export default async function Page({
 
   if (!session || !session.user.id) {
     throw new Error(`You don't have the right to access this function`);
-  }
-
-  let availableEmailPros: string[] = [];
-  if (config.ESPACE_MEMBRE_ADMIN.includes(session.user.id)) {
-    availableEmailPros = await betagouv.getAvailableProEmailInfos();
   }
 
   // compile some account informations

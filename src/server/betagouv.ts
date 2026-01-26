@@ -180,48 +180,6 @@ const betaOVH = {
       throw new Error(`OVH Error GET on ${url} : ${JSON.stringify(err)}`);
     }
   },
-  migrateEmailAccount: async ({
-    userId,
-    destinationServiceName,
-    destinationEmailAddress,
-    password,
-  }: {
-    userId: string;
-    destinationServiceName: string;
-    destinationEmailAddress: string; //configure.me adress
-    password: string;
-  }): Promise<void> => {
-    const url = `/email/domain/${config.domain}/account/${userId}/migrate/${destinationServiceName}/destinationEmailAddress/${destinationEmailAddress}/migrate`;
-    try {
-      return ovh.requestPromised("POST", url, {
-        password,
-      });
-    } catch (err) {
-      console.error(`OVH Error POST on ${url} : ${JSON.stringify(err)}`);
-      throw new Error(`OVH Error POST on ${url} : ${JSON.stringify(err)}`);
-    }
-  },
-  getAvailableProEmailInfos: async (): Promise<string[]> => {
-    if (!config.OVH_EMAIL_PRO_NAME) {
-      return [];
-    }
-    const urlPro = `/email/pro/${config.OVH_EMAIL_PRO_NAME}/account`;
-    /* TODO
-     * use /email/domain/{domain}/account/{accountName}/migrate/{destinationServiceName}/destinationEmailAddress instead
-     * get available email instead of all emails
-     */
-    try {
-      console.log(`GET OVH pro emails infos : ${urlPro}`);
-      return ovh
-        .requestPromised("GET", urlPro, {})
-        .then((data) =>
-          data.filter((email) => email.includes("@configureme.me")),
-        );
-    } catch (err) {
-      console.error(`OVH Error GET on ${urlPro} : ${JSON.stringify(err)}`);
-      throw new Error(`OVH Error GET on ${urlPro} : ${JSON.stringify(err)}`);
-    }
-  },
   getAllMailingList: async (): Promise<string[] | null> => {
     const url = `/email/domain/${config.domain}/mailingList/`;
     try {
@@ -279,25 +237,6 @@ const betaOVH = {
       throw new Error(`OVH Error subscribe on ${url} : ${JSON.stringify(err)}`);
     }
   },
-  // get active users with email registered on ovh
-  // getActiveUsers: async () => {
-  //     const users = await betaGouv.usersInfos();
-  //     const activeUsers = users.filter((user) => !checkUserIsExpired(user));
-  //     return activeUsers;
-  // },
-  getActiveRegisteredOVHUsers: async (): Promise<
-    memberBaseInfoSchemaType[]
-  > => {
-    const users = (await getAllUsersInfo()).map((user) =>
-      memberBaseInfoToModel(user),
-    );
-    const allOvhEmails = await betaOVH.getAllEmailInfos();
-    const activeUsers = users.filter(
-      (user) =>
-        !checkUserIsExpired(user) && allOvhEmails.includes(user.username),
-    );
-    return activeUsers;
-  },
   getResponder: async (id: string): Promise<OvhResponder | null> => {
     const url = `/email/domain/${config.domain}/responder/${id}`;
 
@@ -338,20 +277,6 @@ const betaOVH = {
       return await ovh.requestPromised("DELETE", url);
     } catch (err) {
       throw new Error(`OVH Error PUT on ${url} : ${JSON.stringify(err)}`);
-    }
-  },
-  createEmail: async (id, password) => {
-    const url = `/email/domain/${config.domain}/account`;
-
-    try {
-      return await ovh.requestPromised("POST", url, {
-        accountName: id,
-        password,
-      });
-    } catch (err) {
-      throw new Error(
-        `OVH Error POST on ${url}, account ${id}: ${JSON.stringify(err)}`,
-      );
     }
   },
   deleteEmail: async (id) => {
@@ -484,100 +409,6 @@ const betaOVH = {
       await ovh.requestPromised("POST", url, { password });
     } catch (err) {
       throw new Error(`OVH Error on ${url} : ${JSON.stringify(err)}`);
-    }
-  },
-  createEmailPro: async (id: string, creationData: OvhProCreationData) => {
-    const primaryEmailAddress = `${id}@${config.domain}`;
-    const getAccountsUrl = `/email/pro/${config.OVH_EMAIL_PRO_NAME}/account`;
-    let availableAccounts;
-    try {
-      availableAccounts = await ovh.requestPromised("GET", getAccountsUrl, {
-        primaryEmailAddress: "%@configureme.me",
-      });
-    } catch (err) {
-      throw new Error(
-        `OVH Error on ${getAccountsUrl} : ${JSON.stringify(err)}`,
-      );
-    }
-    if (availableAccounts.length === 0) {
-      throw new Error("No Ovh Pro account available");
-    }
-
-    const accountToBeAssigned = _.sample(availableAccounts);
-
-    console.log(
-      `Assigning Ovh Pro account ${accountToBeAssigned} to ${primaryEmailAddress}`,
-    );
-
-    const assignAccountUrl = `/email/pro/${config.OVH_EMAIL_PRO_NAME}/account/${accountToBeAssigned}`;
-
-    try {
-      const result = await ovh.requestPromised("PUT", assignAccountUrl, {
-        ...creationData,
-        login: id,
-        domain: config.domain,
-      });
-      console.log(`Account ${primaryEmailAddress} assigned`);
-      return result;
-    } catch (err) {
-      console.log(`OVH Error on ${assignAccountUrl} : ${JSON.stringify(err)}`);
-      throw new Error(
-        `OVH Error on ${assignAccountUrl} : ${JSON.stringify(err)}`,
-      );
-    }
-  },
-  createEmailForExchange: async (
-    id: string,
-    creationData: OvhExchangeCreationData,
-  ) => {
-    const primaryEmailAddress = `${id}@${config.domain}`;
-    const getAccountsUrl = `/email/exchange/${config.OVH_EMAIL_EXCHANGE_NAME}/service/${config.OVH_EMAIL_EXCHANGE_NAME}/account`;
-    let availableAccounts;
-    try {
-      availableAccounts = await ovh.requestPromised("GET", getAccountsUrl, {
-        primaryEmailAddress: "%@configureme.me",
-      });
-    } catch (err) {
-      throw new Error(
-        `OVH Error on ${getAccountsUrl} : ${JSON.stringify(err)}`,
-      );
-    }
-    if (availableAccounts.length === 0) {
-      throw new Error("No Exchange account available");
-    }
-
-    const accountToBeAssigned = _.sample(availableAccounts);
-
-    console.log(
-      `Assigning Exchange account ${accountToBeAssigned} to ${primaryEmailAddress}`,
-    );
-
-    const assignAccountUrl = `/email/exchange/${config.OVH_EMAIL_EXCHANGE_NAME}/service/${config.OVH_EMAIL_EXCHANGE_NAME}/account/${accountToBeAssigned}`;
-
-    try {
-      const result = await ovh.requestPromised("PUT", assignAccountUrl, {
-        ...creationData,
-        login: id,
-        domain: config.domain,
-      });
-      console.log(`Account ${primaryEmailAddress} assigned`);
-      return result;
-    } catch (err) {
-      throw new Error(
-        `OVH Error on ${assignAccountUrl} : ${JSON.stringify(err)}`,
-      );
-    }
-  },
-
-  deleteEmailForExchange: async (id) => {
-    try {
-      const result = await ovh.requestPromised(
-        "DELETE",
-        `/email/exchange/${config.OVH_EMAIL_EXCHANGE_NAME}/service/${config.OVH_EMAIL_EXCHANGE_NAME}/account/${id}@${config.domain}`,
-      );
-      return result;
-    } catch (err) {
-      throw new Error(`OVH Error: ${JSON.stringify(err)}`);
     }
   },
 };
