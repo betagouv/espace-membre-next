@@ -26,6 +26,9 @@ export async function recreateEmailIfUserActive() {
   console.log(`recreateEmailIfUserActive: ${dbUsers.length} accounts`);
   for (const dbUser of dbUsers) {
     try {
+      if (!dbUser.primary_email) {
+        return;
+      }
       console.log(
         `recreate email for ${dbUser.username} (${dbUser.primary_email})`,
       );
@@ -53,6 +56,7 @@ export async function recreateEmailIfUserActive() {
             .where("uuid", "=", dbUser.uuid)
             .execute();
         } else {
+          // todo: should we create emails for public_sector ?
           console.log(
             `create DIMAIL email for ${dbUser.username} (${dbUser.primary_email})`,
           );
@@ -62,7 +66,7 @@ export async function recreateEmailIfUserActive() {
       }
     } catch (e) {
       const error = e instanceof Error ? e : new Error(String(e));
-      console.error(
+      console.log(
         `recreateEmailIfUserActive for ${dbUser.username} error : ${error.message}`,
       );
       Sentry.captureException(e);

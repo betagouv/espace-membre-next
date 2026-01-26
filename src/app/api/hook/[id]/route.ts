@@ -72,8 +72,9 @@ async function handleMattermostWebhook(sibWebhookBody: ISibWebhookBody) {
 
 export const POST = async (
   req: NextRequest,
-  { params: { id } }: { params: { id: string } },
+  { params }: { params: Promise<{ id: string }> },
 ) => {
+  const { id } = await params;
   if (id === config.SIB_WEBHOOK_ID) {
     let sibWebhookBody = (await req.json()) as ISibWebhookBody;
     handleMattermostWebhook(sibWebhookBody);
