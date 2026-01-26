@@ -76,7 +76,7 @@ export const DimailEmailCreationInvite = ({ secondaryEmail }: Props) => {
           onClick={createDimailEmailHandler}
           disabled={isLoading || success}
         >
-          Créer mon compte sur la suite numérique
+          Créer mon compte sur la Suite Numérique
         </Button>
       )) || (
         <div className={fr.cx("fr-mb-2w")}>
