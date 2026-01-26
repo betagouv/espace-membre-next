@@ -19,7 +19,7 @@ import { getLatests as getLatestsProducts } from "@/lib/kysely/queries/startups"
 import { getLatests as getLatestsMembers } from "@/lib/kysely/queries/users";
 import { linkRegistry } from "@/utils/routes/registry";
 import Alert from "@codegouvfr/react-dsfr/Alert";
-import { DimailCreateMailButton } from "../MemberPage/Email/DimailCreateMailButton";
+import { DimailEmailCreationInvite } from "../DimailEmailCreationInvite";
 
 type LatestProductsReturnType = Awaited<ReturnType<typeof getLatestsProducts>>;
 type LatestMembersReturnType = Awaited<ReturnType<typeof getLatestsMembers>>;
@@ -101,23 +101,6 @@ const CardMember = ({
   />
 );
 
-const SuiteNumeriqueOnboarding = ({
-  secondaryEmail,
-}: {
-  secondaryEmail: string;
-}) => (
-  <Alert
-    className={fr.cx("fr-mb-2w")}
-    severity="warning"
-    title="Suppression des comptes emails OVH"
-    description={
-      <>
-        <DimailCreateMailButton open={true} secondaryEmail={secondaryEmail} />
-      </>
-    }
-  />
-);
-
 export function DashboardPage(props: DashboardPageProps) {
   return (
     <div className={fr.cx("fr-container", "fr-pb-6w", "fr-mb-2w")}>
@@ -143,7 +126,7 @@ export function DashboardPage(props: DashboardPageProps) {
         </div>
       )}
       {props.showSuiteNumeriqueOnboardingPanel && (
-        <SuiteNumeriqueOnboarding secondaryEmail={props.secondaryEmail} />
+        <DimailEmailCreationInvite secondaryEmail={props.secondaryEmail} />
       )}
       <h2>Gérer mon compte</h2>
       <div className={fr.cx("fr-grid-row", "fr-grid-row--gutters")}>
