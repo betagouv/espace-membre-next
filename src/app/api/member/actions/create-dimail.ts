@@ -13,7 +13,7 @@ export const createDimailEmail = withErrorHandling(async () => {
   if (!session || !session.user.id) {
     throw new AuthorizationError();
   }
-  const userUuid = session.user.id;
+  const userUuid = session.user.uuid;
   const dbUser = await getUserBasicInfo({ uuid: userUuid });
   if (!dbUser) {
     throw new Error(`User ${userUuid} not found`);
