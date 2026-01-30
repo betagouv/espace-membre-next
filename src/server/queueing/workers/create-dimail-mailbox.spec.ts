@@ -7,6 +7,7 @@ const mockGetUserBasicInfo = sinon.stub();
 const mockCreateMailbox = sinon.stub();
 const mockSendEmail = sinon.stub();
 const mockCreateAlias = sinon.stub();
+const mockCreateMailboxCode = sinon.stub();
 
 // Mock Kysely database
 const mockExecute = sinon.stub();
@@ -33,6 +34,7 @@ const { createDimailMailboxForUser } = proxyquire("./create-dimail-mailbox", {
   "@lib/dimail/client": {
     createMailbox: mockCreateMailbox,
     createAlias: mockCreateAlias,
+    createMailboxCode: mockCreateMailboxCode,
   },
   "@/server/config/email.config": { sendEmail: mockSendEmail },
   "@/lib/kysely": { db: mockDb },
@@ -49,7 +51,7 @@ describe("create-dimail-mail", () => {
     consoleErrorStub = sinon.stub(console, "error");
 
     // Mock process.env
-    process.env.DIMAIL_WEBMAIL_URL = "https://webmail.beta.gouv.fr/";
+    process.env.DIMAIL_WEBMAIL_URL = "https://messagerie.numerique.gouv.fr";
 
     // Setup default mock implementations
     mockGetUserBasicInfo.resolves({
@@ -69,6 +71,14 @@ describe("create-dimail-mail", () => {
 
     mockSendEmail.resolves();
     mockCreateAlias.resolves();
+    mockCreateMailboxCode.resolves({
+      email: `john.doe.ext@${DIMAIL_MAILBOX_DOMAIN}`,
+      code: "test-access-code",
+      expires_at: Date.now() + 3600000,
+      expires_in: 3600,
+      maxuse: 1,
+      nbuse: 0,
+    });
     mockExecute.resolves();
   });
 
@@ -111,8 +121,8 @@ describe("create-dimail-mail", () => {
         type: "EMAIL_CREATED_DIMAIL",
         variables: {
           email: `john.doe.ext@${DIMAIL_MAILBOX_DOMAIN}`,
-          password: "generated-password",
-          webmailUrl: "https://webmail.beta.gouv.fr/",
+          webmailUrl:
+            "https://messagerie.numerique.gouv.fr/code/test-access-code",
         },
       }),
       `mockSendEmail should be called with correct parameters. instead got ${JSON.stringify(mockSendEmail.firstCall && mockSendEmail.firstCall.args)}`,
@@ -247,8 +257,8 @@ describe("create-dimail-mail", () => {
         type: "EMAIL_CREATED_DIMAIL",
         variables: {
           email: `john.doe.ext@${DIMAIL_MAILBOX_DOMAIN}`,
-          password: "generated-password",
-          webmailUrl: "https://webmail.beta.gouv.fr/",
+          webmailUrl:
+            "https://messagerie.numerique.gouv.fr/code/test-access-code",
         },
       }),
       `mockSendEmail should be called with correct parameters. instead got ${JSON.stringify(mockSendEmail.firstCall && mockSendEmail.getCalls())}`,
