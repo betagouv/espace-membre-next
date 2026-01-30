@@ -19,7 +19,7 @@ const urls = {
     doc: "https://help.ovhcloud.com/csm/fr-documentation-web-cloud-email-collaborative-solutions-microsoft-exchange-setting-up-email-application-on-computer?id=kb_browse_cat&kb_id=e17b4f25551974502d4c6e78b7421955&kb_category=f61fb35491fc6510f078811c7bad9449&spa=1",
   },
   [EMAIL_PLAN_TYPE.EMAIL_PLAN_OPI]: {
-    webmail: "https://webmail.numerique.gouv.fr",
+    webmail: "https://messagerie.numerique.gouv.fr",
     doc: "https://doc.incubateur.net/communaute/les-outils-de-la-communaute/emails/emails-suite-numerique",
   },
 };
