@@ -30,6 +30,12 @@ export interface DimailAliasParams {
   destination: string;
 }
 
+export interface DimailIdentityParams {
+  domain_name: string;
+  user_name: string;
+  identity: string;
+}
+
 export type DimailMailboxResult = {
   email: string;
   password: string;
@@ -225,4 +231,19 @@ export async function getAllAliases({
     return { success: false };
   }
   return { success: true, aliases: res.data };
+}
+
+/**
+ * Add a professional-connect identity to a mailbox
+ * POST /domains/{domain_name}/mailboxes/{user_name}/identities/{identity}
+ */
+export async function createIdentity({
+  domain_name,
+  user_name,
+  identity,
+}: DimailIdentityParams): Promise<{ success: boolean }> {
+  const res = await client.post(
+    `/domains/${encodeURIComponent(domain_name)}/mailboxes/${encodeURIComponent(user_name)}/identities/${encodeURIComponent(identity)}`,
+  );
+  return { success: res.status === 201 };
 }
