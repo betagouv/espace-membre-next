@@ -5,7 +5,11 @@ import { db } from "@/lib/kysely";
 import { getUserBasicInfo } from "@/lib/kysely/queries/users";
 import { CreateDimailAdressDataSchemaType } from "@/models/jobs/services";
 import { EmailStatusCode } from "@/models/member";
-import { createMailbox, createAlias } from "@lib/dimail/client";
+import {
+  createMailbox,
+  createAlias,
+  createMailboxCode,
+} from "@lib/dimail/client";
 import {
   getDimailUsernameForUser,
   DIMAIL_MAILBOX_DOMAIN,
@@ -51,6 +55,16 @@ export async function createDimailMailboxForUser(userUuid: string) {
 
   const [surName, givenName] = splitFullName(dbUser.fullname);
 
+  const secondaryEmail = dbUser.secondary_email;
+
+  if (!secondaryEmail) {
+    console.error(`No secondary email defined for ${dbUser.username}`);
+    Sentry.captureException(
+      new Error(`No secondary email defined for ${dbUser.username}`),
+    );
+    throw new Error(`No secondary email defined for ${dbUser.username}`);
+  }
+
   const mailboxInfos = await createMailbox({
     user_name: userName,
     domain: DIMAIL_MAILBOX_DOMAIN,
@@ -59,24 +73,22 @@ export async function createDimailMailboxForUser(userUuid: string) {
     surName,
   })
     .then(async (infos) => {
+      // génère un code d'accès valable 3 fois pour l'accès à la mailbox
+      const mailboxCode = await createMailboxCode({
+        domain_name: DIMAIL_MAILBOX_DOMAIN,
+        user_name: userName,
+        maxuse: 3,
+      });
+      const webmailUrl = `${process.env.DIMAIL_WEBMAIL_URL || "https://messagerie.numerique.gouv.fr"}/code/${mailboxCode.code}`;
       // envoi email invitation avec password
-      if (dbUser.secondary_email) {
-        await sendEmail({
-          toEmail: [dbUser.secondary_email],
-          type: EMAIL_TYPES.EMAIL_CREATED_DIMAIL,
-          variables: {
-            email: infos.email,
-            password: infos.password,
-            webmailUrl:
-              process.env.DIMAIL_WEBMAIL_URL || "https://webmail.beta.gouv.fr/",
-          },
-        });
-      } else {
-        console.error(`No secondary email defined for ${dbUser.username}`);
-        Sentry.captureException(
-          new Error(`No secondary email defined for ${dbUser.username}`),
-        );
-      }
+      await sendEmail({
+        toEmail: [secondaryEmail],
+        type: EMAIL_TYPES.EMAIL_CREATED_DIMAIL,
+        variables: {
+          email: infos.email,
+          webmailUrl,
+        },
+      });
       return infos;
     })
     .catch((e) => {

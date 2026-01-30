@@ -61,6 +61,22 @@ export type DimailTokenResult = {
   token_type: string;
 };
 
+export type DimailMailboxCodeParams = {
+  domain_name: string;
+  user_name: string;
+  expires_in?: number;
+  maxuse?: number;
+};
+
+export type DimailMailboxCodeResult = {
+  email: string;
+  code: string;
+  expires_at: number;
+  expires_in: number;
+  maxuse: number;
+  nbuse: number;
+};
+
 export type DimailNewAccesTokenResult = string;
 
 /**
@@ -225,4 +241,28 @@ export async function getAllAliases({
     return { success: false };
   }
   return { success: true, aliases: res.data };
+}
+
+/**
+ * Generate a mailbox access code with configurable expiration and usage limits
+ * POST /domains/{domain_name}/mailboxes/{user_name}/code
+ */
+export async function createMailboxCode({
+  domain_name,
+  user_name,
+  expires_in,
+  maxuse,
+}: DimailMailboxCodeParams): Promise<DimailMailboxCodeResult> {
+  const payload: { expires_in?: number; maxuse?: number } = {};
+  if (expires_in !== undefined) {
+    payload.expires_in = expires_in;
+  }
+  if (maxuse !== undefined) {
+    payload.maxuse = maxuse;
+  }
+  const res = await client.post<DimailMailboxCodeResult>(
+    `/domains/${encodeURIComponent(domain_name)}/mailboxes/${encodeURIComponent(user_name)}/code`,
+    payload,
+  );
+  return res.data;
 }

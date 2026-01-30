@@ -8,7 +8,6 @@ export function EmailCreatedDimailTitle() {
 
 export function EmailCreatedDimail({
   email,
-  password,
   webmailUrl,
 }: EmailCreatedDimailType["variables"]) {
   const title = EmailCreatedDimailTitle();
@@ -21,15 +20,15 @@ export function EmailCreatedDimail({
         <p>Et maintenant ?</p>
         <ul>
           <li>
-            Tu peux te connecter <a href={webmailUrl}>au webmail</a> avec ton
-            email {email} et le mot de passe temporaire suivant :{" "}
-            <strong>{password}</strong>
+            Tu peux te connecter <a href={webmailUrl}>au webmail</a> avec le
+            lien temporaire suivant, valable 1h :{" "}
+            <a href={webmailUrl}>https://messagerie.numerique.gouv.fr</a>
           </li>
           <li>
-            Pour changer de mot de passe, va dans le webmail puis "Paramètres"
-            &gt; "Tous les réglages" &gt; "Général" &gt; "Réglages avancés" &gt;
-            "Changer le mot de passe". Pense à Générer un mot de passe complexe
-            à l'aide de vaultwarden par exemple :)
+            Tu peux également utiliser ProConnect avec ton compte {email} :
+            <a href="https://messagerie.numerique.gouv.fr">
+              https://messagerie.numerique.gouv.fr
+            </a>
           </li>
         </ul>
 
