@@ -213,8 +213,8 @@ PostgreSQL-->Cron
 end
 
 App-->ProConnect
-
 App-->Crisp
+App-->Brevo
 App-->Matomo
 App-->Sentry
 App-->Mattermost
