@@ -226,7 +226,7 @@ Cron--->Brevo
 Cron--->OVH
 Cron--->DIMAIL
 Cron--->Matomo
-Cron--->SentryAPI
+Cron--->Sentry
 ```
 
 
