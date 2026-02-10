@@ -56,28 +56,28 @@ export interface EspaceMembreCronJobType {
 
 const mattermostJobs: EspaceMembreCronJobType[] = [
   {
-    cronTime: "0 0 14 * * *", // Every day at 14:00
+    cronTime: "0 14 * * *", // Every day at 14:00
     onTick: removeBetaAndParnersUsersFromCommunityTeam,
     isActive: true,
     name: "removeBetaAndParnersUsersFromCommunityTeam",
     description: "Move expired user to mattermost alumni",
   },
   {
-    cronTime: "0 0 14 * * 1", // Every Monday at 14:00
+    cronTime: "0 14 * * 1", // Every Monday at 14:00
     onTick: () => sendReminderToUserAtDays({ nbDays: 90 }),
     isActive: true,
     name: "sendReminderToUserAtDays",
     description: "Send mattermost message to expired users (90 days)",
   },
   {
-    cronTime: "0 0 5 * * 1", // Every Monday at 05:00
+    cronTime: "0 5 * * 1", // Every Monday at 05:00
     onTick: () => sendReminderToUserAtDays({ nbDays: 30 }),
     isActive: !!config.FEATURE_MATTERMOST_REMOVE_USERS,
     name: "sendReminderToUserAtDays",
     description: "Send mattermost message to expired users (30 days)",
   },
   {
-    cronTime: "0 0 10 * * *", // Every day at 10:00
+    cronTime: "0 10 * * *", // Every day at 10:00
     onTick: () => {
       sendGroupDeSoutienReminder("general", 1, 0);
     },
@@ -86,28 +86,28 @@ const mattermostJobs: EspaceMembreCronJobType[] = [
     description: "Send mattermost message groupe de soutien",
   },
   {
-    cronTime: "0 */8 * * * *", // Every 8 minutes
+    cronTime: "*/8 * * * *", // Every 8 minutes
     onTick: createUsersByEmail,
     isActive: !!config.featureCreateUserOnMattermost,
     name: "createUsersByEmail",
     description: "Create missing mattermost users and send invitation email",
   },
   {
-    cronTime: "0 */8 * * * *", // Every 8 minutes
+    cronTime: "*/8 * * * *", // Every 8 minutes
     onTick: addUsersNotInCommunityToCommunityTeam,
     isActive: !!config.featureAddUserToCommunityTeam,
     name: "addUsersNotInCommunityToCommunityTeam",
     description: "Add existing users to community team if there not in",
   },
   {
-    cronTime: "0 0 8 1 * *", // 1st of every month at 08:00
+    cronTime: "0 8 1 * *", // 1st of every month at 08:00
     onTick: reactivateUsers,
     isActive: !!config.featureReactiveMattermostUsers,
     name: "reactivateUsers",
     description: "Reactivate mattermost accounts if any",
   },
   {
-    cronTime: "0 0 10 * * *", // Every day at 10:00
+    cronTime: "0 10 * * *", // Every day at 10:00
     onTick: removeUsersFromCommunityTeam,
     isActive: !!config.featureRemoveExpiredUsersFromCommunityOnMattermost,
     name: "removeUsersFromCommunityTeam",
@@ -115,7 +115,7 @@ const mattermostJobs: EspaceMembreCronJobType[] = [
       "Remove expired users from mattermost community team (90 days)",
   },
   {
-    cronTime: "0 10 10 * * *", // Every day at 10:10
+    cronTime: "10 10 * * *", // Every day at 10:10
     onTick: moveUsersToAlumniTeam,
     isActive: !!config.featureAddExpiredUsersToAlumniOnMattermost,
     name: "moveUsersToAlumniTeam",
@@ -123,7 +123,7 @@ const mattermostJobs: EspaceMembreCronJobType[] = [
   },
   // Post automatic
   {
-    cronTime: config.CALENDAR_CRON_TIME || "0 30 17 * * 1", // Every Monday at 17:30
+    cronTime: config.CALENDAR_CRON_TIME || "30 17 * * 1", // Every Monday at 17:30
     onTick: () =>
       postEventsOnMattermost({
         numberOfDays: 6,
@@ -138,7 +138,7 @@ const mattermostJobs: EspaceMembreCronJobType[] = [
     description: "Post event of the week from betagouv calendar",
   },
   {
-    cronTime: "0 0 8 * * 1", // Every Monday at 08:00
+    cronTime: "0 8 * * 1", // Every Monday at 08:00
     onTick: () =>
       postEventsOnMattermost({
         numberOfDays: 6,
@@ -154,7 +154,7 @@ const mattermostJobs: EspaceMembreCronJobType[] = [
 
 const startupJobs: EspaceMembreCronJobType[] = [
   {
-    cronTime: "0 0 5 * * 1", // Every Monday at 05:00
+    cronTime: "0 5 * * 1", // Every Monday at 05:00
     onTick: createMailingListForStartups,
     isActive: true,
     name: "createMailingListForStartups",
@@ -172,28 +172,28 @@ const startupJobs: EspaceMembreCronJobType[] = [
 
 const servicesJobs: EspaceMembreCronJobType[] = [
   {
-    cronTime: "0 15 19 * * *", // Every day at 19:15
+    cronTime: "15 19 * * *", // Every day at 19:15
     onTick: deleteMatomoAccount,
     isActive: !!config.FEATURE_DELETE_MATOMO_ACCOUNT,
     name: "deleteMatomoAccount",
     description: "Supprime les comptes matomos des membres expirés (30 days)",
   },
   {
-    cronTime: "0 45 15 * * *", // Every day at 15:45
+    cronTime: "45 15 * * *", // Every day at 15:45
     onTick: deleteSentryAccount,
     isActive: !!config.FEATURE_DELETE_SENTRY_ACCOUNT,
     name: "deleteSentryAccount",
     description: "Supprime les comptes sentry des membres expirés (30 days)",
   },
   {
-    cronTime: process.env.SYNC_MATOMO_ACCOUNT_CRON || "0 30 14 * * *", // Every day at 14:30
+    cronTime: process.env.SYNC_MATOMO_ACCOUNT_CRON || "30 14 * * *", // Every day at 14:30
     onTick: () => syncMatomoAccounts(matomoClient),
     isActive: true,
     name: "syncMatomoAccounts",
     description: "Sync les comptes matomo des membres actifs",
   },
   {
-    cronTime: process.env.SYNC_SENTRY_ACCOUNT_CRON || "0 30 14 * * *", // Every day at 14:30
+    cronTime: process.env.SYNC_SENTRY_ACCOUNT_CRON || "30 14 * * *", // Every day at 14:30
     onTick: () => syncSentryAccounts(sentryClient),
     isActive: true,
     name: "syncSentryAccounts",
@@ -203,14 +203,14 @@ const servicesJobs: EspaceMembreCronJobType[] = [
 
 const newsletterJobs: EspaceMembreCronJobType[] = [
   {
-    cronTime: process.env.NEWSLETTER_FIRST_REMINDER_TIME || "0 0 10 * * 3", // Every Wednesday at 10:00
+    cronTime: process.env.NEWSLETTER_FIRST_REMINDER_TIME || "0 10 * * 3", // Every Wednesday at 10:00
     onTick: () => newsletterReminder("FIRST_REMINDER"),
     isActive: config.FEATURE_NEWSLETTER,
     name: "newsletterFirstReminderJob",
     description: "Rappel mattermost newsletter 1",
   },
   {
-    cronTime: process.env.NEWSLETTER_SECOND_REMINDER_TIME || "0 0 8 * * 2", // Every Tuesday at 08:00
+    cronTime: process.env.NEWSLETTER_SECOND_REMINDER_TIME || "0 8 * * 2", // Every Tuesday at 08:00
     onTick: () => newsletterReminder("SECOND_REMINDER"),
     isActive: config.FEATURE_NEWSLETTER,
     name: "newsletterSecondReminderJob",
@@ -228,7 +228,7 @@ const newsletterJobs: EspaceMembreCronJobType[] = [
 
 const synchronizationJobs: EspaceMembreCronJobType[] = [
   {
-    cronTime: "0 10 10 * * *", // Every day at 10:10
+    cronTime: "10 10 * * *", // Every day at 10:10
     onTick: syncMattermostUserWithMattermostMemberInfosTable,
     start: true,
     timeZone: "Europe/Paris",
@@ -237,7 +237,7 @@ const synchronizationJobs: EspaceMembreCronJobType[] = [
     description: "Add new mattermost user to mattermost_member_info table",
   },
   {
-    cronTime: "0 15 10 * * *", // Every day at 10:15
+    cronTime: "15 10 * * *", // Every day at 10:15
     onTick: syncMattermostUserStatusWithMattermostMemberInfosTable,
     start: true,
     timeZone: "Europe/Paris",
@@ -257,7 +257,7 @@ export const espaceMembreCronJobs: EspaceMembreCronJobType[] = [
   // ...pullRequestJobs,
   ...synchronizationJobs,
   {
-    cronTime: "0 0 0 * * 1", // every week a 0:00 on monday
+    cronTime: "0 0 * * 1", // every week at 0:00 on monday
     onTick: unblockEmailsThatAreActive,
     isActive: true,
     name: "Unblock blacklisted email",
@@ -265,14 +265,14 @@ export const espaceMembreCronJobs: EspaceMembreCronJobType[] = [
       "Unblock emails from MAILING_LIST_NEWSLETTER Brevo mailing-list",
   },
   {
-    cronTime: "0 0 * * * *", // Every hour
+    cronTime: "0 * * * *", // Every hour
     onTick: recreateEmailIfUserActive,
     isActive: true,
     name: "recreateEmailIfUserActive",
     description: "Recreate email for user active again",
   },
   {
-    cronTime: "0 */5 * * * 1-5", //  every 5 minutes, Monday to Friday (at :00, :05, :10, :15, etc.).
+    cronTime: "*/5 * * * 1-5", //  every 5 minutes, Monday to Friday (at :00, :05, :10, :15, etc.).
     onTick: addGithubUserToOrganization,
     isActive: !!config.featureAddGithubUserToOrganization,
     name: "addGithubUserToOrganization",
@@ -280,35 +280,35 @@ export const espaceMembreCronJobs: EspaceMembreCronJobType[] = [
       "Envoi des invitations GitHub et ajout à la team GitHub/betagouv",
   },
   {
-    cronTime: "0 0 18 * * *", // Every day at 18:00
+    cronTime: "0 18 * * *", // Every day at 18:00
     onTick: removeGithubUserFromOrganization,
     isActive: !!config.featureRemoveGithubUserFromOrganization,
     name: "removeGithubUserFromOrganization",
     description: "Désinscrit les membres expirés de l'organisation GitHub",
   },
   {
-    cronTime: "0 0 8,14 * * *", // Every day at 08:00 and 14:00
+    cronTime: "0 8,14 * * *", // Every day at 08:00 and 14:00
     onTick: deleteRedirectionsAfterQuitting,
     isActive: !!config.featureDeleteRedirectionsAfterQuitting,
     name: "deleteRedirectionsAfterQuitting",
     description: "Supprime les redirections email OVH des utilisateurs expirés",
   },
   {
-    cronTime: "0 0 8 * * *", // Every day at 08:00
+    cronTime: "0 8 * * *", // Every day at 08:00
     onTick: sendJ1Email,
     isActive: !!config.featureSendJ1Email,
     name: "sendJ1Email",
     description: "Email départ J+1",
   },
   {
-    cronTime: "0 0 8 * * *", // Every day at 08:00
+    cronTime: "0 8 * * *", // Every day at 08:00
     onTick: sendJ30Email,
     isActive: !!config.featureSendJ30Email,
     name: "sendJ30Email",
     description: "Email départ J+30",
   },
   {
-    cronTime: "0 0 * * * *", // Every hour
+    cronTime: "0 * * * *", // Every hour
     onTick: deactivateExpiredMembersEmails,
     isActive: !!config.featureReinitPasswordEmail,
     name: "deactivateExpiredMembersEmails",
@@ -316,28 +316,28 @@ export const espaceMembreCronJobs: EspaceMembreCronJobType[] = [
       "Désactive les comptes email des membres expirés après 5 jours",
   },
   {
-    cronTime: "0 0 10 * * *", // Every day at 10:00
+    cronTime: "0 10 * * *", // Every day at 10:00
     onTick: () => sendContractEndingMessageToUsers("mail15days", true),
     isActive: !!config.featureOnUserContractEnd,
     name: "sendContractEndingMessageToUsers15days",
     description: "Sending contract ending message to users (15 days)",
   },
   {
-    cronTime: "0 0 10 * * *", // Every day at 10:00
+    cronTime: "0 10 * * *", // Every day at 10:00
     onTick: () => sendContractEndingMessageToUsers("mail30days", true),
     isActive: !!config.featureOnUserContractEnd,
     name: "sendContractEndingMessageToUsers30days",
     description: "Sending contract ending message to users (30 days)",
   },
   {
-    cronTime: "0 0 10 * * *", // Every day at 10:00
+    cronTime: "0 10 * * *", // Every day at 10:00
     onTick: () => sendContractEndingMessageToUsers("mail2days", false),
     isActive: !!config.featureOnUserContractEnd,
     name: "sendContractEndingMessageToUsers2days",
     description: "Sending contract ending message to users (2 days)",
   },
   {
-    cronTime: "0 0 10 1 * *", // 1st of every month at 00:10
+    cronTime: "0 10 1 * *", // 1st of every month at 10:00
     onTick: sendMessageToActiveUsersWithoutSecondaryEmail,
     start: true,
     timeZone: "Europe/Paris",

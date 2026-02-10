@@ -29,7 +29,7 @@ export const getUserIdByEmail = async (email: string) => {
  * update dinum_emails table from dimail
  */
 export async function syncDinumEmailsJob(domain: string) {
-  console.info(`sync dinum_emails table for ${domain}`);
+  console.log(`sync dinum_emails table for ${domain}`);
   const mailboxesResult = await getAllMailboxes({
     domain_name: domain,
   });
@@ -69,7 +69,7 @@ export async function syncDinumEmailsJob(domain: string) {
     { concurrency: 1 },
   );
 
-  console.info(
+  console.log(
     `sync dinum_emails table for ${domain}: ${allAccounts.length} accounts`,
   );
 
@@ -89,7 +89,7 @@ export async function syncDinumEmailsJob(domain: string) {
 }
 
 export async function syncDinumEmails(job: PgBoss.Job<void>) {
-  console.info("start job sync dinum_emails table");
+  console.log("start job sync dinum_emails tables");
   await syncDinumEmailsJob(DIMAIL_MAILBOX_DOMAIN);
   await syncDinumEmailsJob("ext.beta.gouv.fr"); // legacy, todo remove
   return "ok";
