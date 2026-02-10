@@ -276,7 +276,9 @@ export default function EmailContainer({
         </div>
       )}
       {(emailInfos?.emailPlan === EMAIL_PLAN_TYPE.EMAIL_PLAN_BASIC ||
-        emailInfos?.emailPlan === EMAIL_PLAN_TYPE.EMAIL_PLAN_PRO) &&
+        emailInfos?.emailPlan === EMAIL_PLAN_TYPE.EMAIL_PLAN_PRO ||
+        userInfos.primary_email_status ==
+          EMAIL_STATUS_READABLE_FORMAT.EMAIL_DELETED) &&
         userInfos.secondary_email && (
           /* affiche la migration dimail que si c'est un email non dimail et que c'est l'utilisateur lui-même */
           <DimailEmailCreationInvite
