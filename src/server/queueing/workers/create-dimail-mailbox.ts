@@ -131,13 +131,13 @@ export async function createDimailMailboxForUser(userUuid: string) {
   ) {
     // créé un alias prenom.nom@beta.gouv.fr pour les comptes créés avant le 1er Décembre 2025
     if (new Date(dbUser.created_at) >= new Date(2025, 11, 1)) {
-      console.info(
+      console.log(
         `Skip create DIMAIL alias for ${mailboxInfos.email} : not a legacy member`,
       );
     } else {
       const legacyUserName = dbUser.primary_email.split("@")[0];
       const legacyEmail = `${legacyUserName}@${DIMAIL_MAILBOX_DOMAIN}`;
-      console.info(
+      console.log(
         `Create DIMAIL alias: ${legacyEmail} -> ${mailboxInfos.email}`,
       );
       try {
@@ -180,13 +180,13 @@ export async function createDimailMailboxForUser(userUuid: string) {
 export async function createDimailMailbox(
   job: PgBoss.Job<CreateDimailAdressDataSchemaType>,
 ) {
-  console.info(
+  console.log(
     `Create DIMAIL mailbox for ${job.data.userUuid}: ${job.data.username}`,
     job.id,
     job.name,
   );
   const email = await createDimailMailboxForUser(job.data.userUuid);
-  console.info(
+  console.log(
     `The DIMAIL mailbox has been created for ${job.data.userUuid}: ${email}`,
   );
 }
