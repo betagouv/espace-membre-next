@@ -201,3 +201,33 @@ see [CRON.md](./CRON.md)
 | Teams     |        ✅         |         ✅          |         ✅         |            ✅            |
 | Member    |        ✅         |         ✅          |         ❌         |            ✅            |
 | Anonymous |        ❌         |         ❌          |         ❌         |            ❌            |
+
+### Diagramme de flux
+
+```mermaid
+graph LR
+
+subgraph Scalingo
+PostgreSQL-->App
+PostgreSQL-->Cron
+end
+
+App-->ProConnect
+App-->Crisp
+App-->Brevo
+App-->Matomo
+App-->Sentry
+App-->Mattermost
+
+
+Cron--->GitHub
+Cron--->Mattermost
+Cron--->Brevo
+Cron--->OVH
+Cron--->DIMAIL
+Cron--->Matomo
+Cron--->Sentry
+```
+
+
+
