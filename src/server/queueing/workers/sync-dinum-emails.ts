@@ -29,7 +29,7 @@ export const getUserIdByEmail = async (email: string) => {
  * update dinum_emails table from dimail
  */
 export async function syncDinumEmailsJob(domain: string) {
-  console.info(`sync dinum_emails table for ${domain}`);
+  console.log(`sync dinum_emails table for ${domain}`);
   const mailboxesResult = await getAllMailboxes({
     domain_name: domain,
   });
