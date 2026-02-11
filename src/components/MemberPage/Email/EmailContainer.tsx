@@ -281,6 +281,10 @@ export default function EmailContainer({
           /* affiche la migration dimail que si c'est un email non dimail et que c'est l'utilisateur lui-même */
           <DimailEmailCreationInvite
             secondaryEmail={userInfos.secondary_email}
+            isOVHmigration={
+              emailInfos?.emailPlan === EMAIL_PLAN_TYPE.EMAIL_PLAN_BASIC ||
+              emailInfos?.emailPlan === EMAIL_PLAN_TYPE.EMAIL_PLAN_PRO
+            }
           />
         )}
       {!!emailIsBeingCreated && (
