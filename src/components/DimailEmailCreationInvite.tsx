@@ -11,9 +11,13 @@ import Link from "next/link";
 
 interface Props {
   secondaryEmail: string;
+  isOVHmigration: boolean; // show OVH specific info
 }
 
-export const DimailEmailCreationInvite = ({ secondaryEmail }: Props) => {
+export const DimailEmailCreationInvite = ({
+  secondaryEmail,
+  isOVHmigration,
+}: Props) => {
   const [isLoading, setIsLoading] = useState(false);
   const [message, setMessage] = useState("");
   const [success, setSuccess] = useState(false);
@@ -49,8 +53,9 @@ export const DimailEmailCreationInvite = ({ secondaryEmail }: Props) => {
   const alertContent = (
     <>
       <div className={fr.cx("fr-mt-2w", "fr-mb-2w")} />
-      Ton compte email (OVH) va bientôt être décommissionné au profit d’un
-      compte sur La Suite Numérique, plus moderne et plus sécurisé.
+      {isOVHmigration
+        ? "Les comptes email (OVH) vont bientôt être décommissionnés au profit d’un compte sur la Suite Numérique, plus moderne et plus sécurisé."
+        : "Crée ton compte email sur la Suite Numérique."}
       <div />
       <div
         className={fr.cx("fr-mt-2w", "fr-text--xs")}
@@ -59,9 +64,13 @@ export const DimailEmailCreationInvite = ({ secondaryEmail }: Props) => {
         Comment ça marche ?<br />
         <ol>
           <li>Créé ton compte {emailToCreate || ""} sur la Suite Numérique</li>
-          <li>
-            Migre ton historique et tes contacts de OVH vers ton nouveau compte
-          </li>
+          {(isOVHmigration && (
+            <li>
+              Migre ton historique et tes contacts de OVH vers ton nouveau
+              compte
+            </li>
+          )) ||
+            ""}
           <li>
             Profite des nouvelles fonctionnalités (calendriers partagés,
             interface web accessible...)
@@ -98,8 +107,12 @@ export const DimailEmailCreationInvite = ({ secondaryEmail }: Props) => {
   );
   return (
     <Alert
-      title="Migration de ton compte email"
-      severity="warning"
+      title={
+        isOVHmigration
+          ? "Migration de ton compte email"
+          : "Compte email Suite Numérique"
+      }
+      severity={isOVHmigration ? "warning" : "info"}
       description={alertContent}
     />
   );

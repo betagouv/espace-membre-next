@@ -126,7 +126,10 @@ export function DashboardPage(props: DashboardPageProps) {
         </div>
       )}
       {props.showSuiteNumeriqueOnboardingPanel && (
-        <DimailEmailCreationInvite secondaryEmail={props.secondaryEmail} />
+        <DimailEmailCreationInvite
+          secondaryEmail={props.secondaryEmail}
+          isOVHmigration={true}
+        />
       )}
       <h2>Gérer mon compte</h2>
       <div className={fr.cx("fr-grid-row", "fr-grid-row--gutters")}>
