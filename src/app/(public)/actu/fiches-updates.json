@@ -1,0 +1,207 @@
+[
+  {
+    "thematique": "Justice",
+    "produits": [
+      {
+        "nom": "API & communs numériques de la Cour de cassation",
+        "id": "api-and-communs-numeriques-de-la-cour-de-cassation",
+        "changes": "Création d'une nouvelle fiche produit décrivant le projet, ses objectifs, son contexte et sa solution."
+      },
+      {
+        "nom": "Portail greffe de la Cour de cassation",
+        "id": "portail-greffe-de-la-cour-de-cassation",
+        "changes": "Ajout de la technologie utilisée et de l'URL du dépôt."
+      },
+      {
+        "nom": "ROMIN",
+        "id": "romin",
+        "changes": "Ajout de l'URL des statistiques et de l'URL d'impact."
+      }
+    ]
+  },
+  {
+    "thematique": "Écologie",
+    "produits": [
+      {
+        "nom": "Base de données plan d'appro' Biomasse",
+        "id": "base-de-donnees-plan-d-appro-biomasse",
+        "changes": "Ajout d'une date de début pour la phase d'investigation."
+      },
+      {
+        "nom": "Diag'Mob",
+        "id": "diag-mob",
+        "changes": "Clarification du contexte et des objectifs du projet."
+      },
+      {
+        "nom": "Fonds Prévention Argile",
+        "id": "fonds-prevention-argile",
+        "changes": "Création d'une nouvelle fiche produit."
+      },
+      {
+        "nom": "Mes Ressources Formation Ex Estime Formation",
+        "id": "estime.formation",
+        "changes": "Ajout d'indicateurs d'impact et de détails sur l'ouverture à de nouveaux publics."
+      },
+      {
+        "nom": "OpenAgri",
+        "id": "open-agri",
+        "changes": "Ajout du lien vers le site web."
+      },
+      {
+        "nom": "Zones irriguées et irrigables (Hydr'eau)",
+        "id": "zones.irriguees.et.irrigables",
+        "changes": "Ajout d'une phase 'alumni'."
+      }
+    ]
+  },
+  {
+    "thematique": "Administratif",
+    "produits": [
+      {
+        "nom": "CSPLab",
+        "id": "csplab",
+        "changes": "Ajout d'une phase de construction et d'une phase de succès. Clarification du contexte et des objectifs."
+      },
+      {
+        "nom": "DocumentIA",
+        "id": "document-ia",
+        "changes": "Ajout du lien vers le dépôt GitHub."
+      },
+      {
+        "nom": "MesServicesCyber",
+        "id": "mes-services-cyber",
+        "changes": "Ajout de l'analyse des risques et de l'URL d'impact."
+      }
+    ]
+  },
+  {
+    "thematique": "Open-Data",
+    "produits": [
+      {
+        "nom": "cartes.gouv.fr",
+        "id": "cartes.gouv.fr",
+        "changes": "Ajout d'une phase 'alumni' et des informations sur la technologie utilisée."
+      },
+      {
+        "nom": "Data-État",
+        "id": "data.etat",
+        "changes": "Mise à jour de l'URL des statistiques."
+      }
+    ]
+  },
+  {
+    "thematique": "Travail / Emploi",
+    "produits": [
+      {
+        "nom": "Mes événements emploi",
+        "id": "mes-evenements-emploi",
+        "changes": "Ajout d'une phase 'success'."
+      },
+      {
+        "nom": "Profilence",
+        "id": "profilence",
+        "changes": "Mise à jour du contact et ajout de détails sur l'expérimentation et les prochaines étapes."
+      }
+    ]
+  },
+  {
+    "thematique": "Espace",
+    "produits": [
+      {
+        "nom": "TBS-NG",
+        "id": "ca-se",
+        "changes": "Changement de nom de 'CaSE' à 'TBS-NG', ajout de phases et de commentaires sur les événements."
+      }
+    ]
+  },
+  {
+    "thematique": "Inclusion numérique",
+    "produits": [
+      {
+        "nom": "La coop de la médiation numérique",
+        "id": "suite.d.outils.des.mediateurs.numeriques",
+        "changes": "Ajout de l'analyse des risques."
+      }
+    ]
+  },
+  {
+    "thematique": "Intelligence artificielle",
+    "produits": [
+      {
+        "nom": "Albert API",
+        "id": "albert-api",
+        "changes": "Ajout de liens vers le site web, le dépôt GitHub et l'URL des statistiques."
+      },
+      {
+        "nom": "IA IGAC",
+        "id": "ia-igac",
+        "changes": "Création d'une nouvelle fiche produit."
+      },
+      {
+        "nom": "MediaTech",
+        "id": "media-tech",
+        "changes": "Création d'une nouvelle fiche produit."
+      }
+    ]
+  },
+  {
+    "thematique": "Culture",
+    "produits": [
+      {
+        "nom": "Editeur collaboratif de documents de la Cour de cassation accessible en ligne / hors ligne",
+        "id": "editeur-collaboratif-de-documents-de-la-cour-de-cassation-accessible-en-ligne-hors-ligne",
+        "changes": "Création d'une nouvelle fiche produit."
+      },
+      {
+        "nom": "Maison du dessin de presse",
+        "id": "maisondessinpresse",
+        "changes": "Modification des phases."
+      }
+    ]
+  },
+  {
+    "thematique": "Autres",
+    "produits": [
+      {
+        "nom": "Camino",
+        "id": "camino",
+        "changes": "Ajout d'une phase 'success'."
+      },
+      {
+        "nom": "Carbure",
+        "id": "carbure",
+        "changes": "Ajout de 'Transports' comme thématique et de 'entreprise' comme type d'utilisateur."
+      },
+      {
+        "nom": "Datalma",
+        "id": "datalma",
+        "changes": "Mise à jour du lien."
+      },
+      {
+        "nom": "JACEPAIR",
+        "id": "jacepair",
+        "changes": "Création d'une nouvelle fiche produit."
+      },
+      {
+        "nom": "Peps",
+        "id": "peps",
+        "changes": "Ajout de thématiques."
+      },
+      {
+        "nom": "Prélèvements d'eau",
+        "id": "prelevements.deau",
+        "changes": "Ajout d'une phase 'alumni'."
+      },
+      {
+        "nom": "Prest'Agri",
+        "id": "prest-agri",
+        "changes": "Création d'une nouvelle fiche produit."
+      },
+      {
+        "nom": "MesQuestionsCyber",
+        "id": "recocyber",
+        "changes": "Changement de nom de 'Recocyber' à 'MesQuestionsCyber'."
+      }
+    ]
+  }
+]
