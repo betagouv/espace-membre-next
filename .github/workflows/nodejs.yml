@@ -5,19 +5,21 @@ on: [push]
 jobs:
     build:
         runs-on: ubuntu-latest
-
+        services:
+          postgres:
+            image: postgres:15
+            env:
+              POSTGRES_DB: postgres
+              POSTGRES_USER: postgres
+              POSTGRES_PASSWORD: postgres
+            ports:
+              - 5432:5432
         steps:
             - uses: actions/checkout@v4
             - name: Use Node.js
               uses: actions/setup-node@v4
               with:
                   node-version: 20
-            - name: Setup PostgreSQL
-              uses: Harmon758/postgresql-action@v1.0.0
-              with:
-                  postgresql db: postgres
-                  postgresql user: postgres
-                  postgresql password: postgres
             - run: npm ci
             - run: npm run build --if-present
               env:
