@@ -11,6 +11,7 @@ import { db } from "@/lib/kysely";
 import { EventCode } from "@/models/actionEvent/actionEvent";
 import { teamUpdateSchema, teamUpdateSchemaType } from "@/models/actions/team";
 import { authOptions } from "@/utils/authoptions";
+import { AuthorizationError, UnwrapPromise, withErrorHandling } from "@/utils/error";
 
 export async function createTeam({
   teamWrapper: { team, members },
@@ -19,7 +20,7 @@ export async function createTeam({
 }) {
   const session = await getServerSession(authOptions);
   if (!session || !session.user.id) {
-    throw new Error(`You don't have the right to access this function`);
+    throw new AuthorizationError();
   }
   teamUpdateSchema.parse({ team, members });
   await db.transaction().execute(async (trx) => {
@@ -75,3 +76,8 @@ export async function createTeam({
     });
   });
 }
+
+export const safeCreateTeam = withErrorHandling<
+  UnwrapPromise<ReturnType<typeof createTeam>>,
+  Parameters<typeof createTeam>
+>(createTeam);

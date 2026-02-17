@@ -4,7 +4,9 @@ import { ExpressionWrapper } from "kysely";
 import { getServerSession } from "next-auth";
 
 import { db } from "@/lib/kysely";
+import { getUserStartupsActive } from "@/lib/kysely/queries/users";
 import { authOptions } from "@/utils/authoptions";
+import { AuthorizationError, UnwrapPromise, withErrorHandling } from "@/utils/error";
 
 const commonFileFields = [
   "startups_files.filename",
@@ -28,9 +30,20 @@ export async function getStartupFiles({
 } = {}) {
   const session = await getServerSession(authOptions);
   if (!session || !session.user.id) {
-    throw new Error(`You don't have the right to access this function`);
+    throw new AuthorizationError();
   }
-  // todo: ensure user can download files here
+
+  // verify user has active mission on this startup or is admin
+  if (!session.user.isAdmin) {
+    const userStartups = await getUserStartupsActive(session.user.uuid);
+    const startupId = uuid || null;
+    const hasAccess = startupId
+      ? userStartups.some((s) => s.uuid === startupId)
+      : false;
+    if (!hasAccess) {
+      throw new AuthorizationError();
+    }
+  }
   const files = await db
     .selectFrom(["startups", "startups_files"])
     .select(commonFileFields)
@@ -48,3 +61,8 @@ export async function getStartupFiles({
     .execute();
   return files;
 }
+
+export const safeGetStartupFiles = withErrorHandling<
+  UnwrapPromise<ReturnType<typeof getStartupFiles>>,
+  Parameters<typeof getStartupFiles>
+>(getStartupFiles);

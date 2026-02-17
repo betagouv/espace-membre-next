@@ -3,8 +3,10 @@ import { revalidatePath } from "next/cache";
 import { getServerSession } from "next-auth";
 
 import { db } from "@/lib/kysely";
+import { getUserStartupsActive } from "@/lib/kysely/queries/users";
 import { DocSchemaType } from "@/models/startupFiles";
 import { authOptions } from "@/utils/authoptions";
+import { AuthorizationError, UnwrapPromise, withErrorHandling } from "@/utils/error";
 
 const commonFileFields = [
   "startups_files.filename",
@@ -39,11 +41,19 @@ export async function uploadStartupFile(
 ) {
   const session = await getServerSession(authOptions);
   if (!session || !session.user.id) {
-    throw new Error(`You don't have the right to access this function`);
+    throw new AuthorizationError();
   }
-  const base64 = Buffer.from(content);
 
-  // todo: ensure user can upload files here
+  // verify user has active mission on this startup or is admin
+  if (!session.user.isAdmin) {
+    const userStartups = await getUserStartupsActive(session.user.uuid);
+    const hasAccess = userStartups.some((s) => s.uuid === uuid);
+    if (!hasAccess) {
+      throw new AuthorizationError();
+    }
+  }
+
+  const base64 = Buffer.from(content);
   const inserted = await db
     .insertInto("startups_files")
     .values({
@@ -62,3 +72,8 @@ export async function uploadStartupFile(
   revalidatePath("/startups");
   return inserted;
 }
+
+export const safeUploadStartupFile = withErrorHandling<
+  UnwrapPromise<ReturnType<typeof uploadStartupFile>>,
+  Parameters<typeof uploadStartupFile>
+>(uploadStartupFile);

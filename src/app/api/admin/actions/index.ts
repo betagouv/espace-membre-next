@@ -6,7 +6,7 @@ import {
   unblacklistContactEmail,
 } from "@/server/config/email.config";
 import { authOptions } from "@/utils/authoptions";
-import { AuthorizationError } from "@/utils/error";
+import { AuthorizationError, UnwrapPromise, withErrorHandling } from "@/utils/error";
 
 export async function unblockMemberEmailAddress(email: string) {
   const session = await getServerSession(authOptions);
@@ -20,6 +20,11 @@ export async function unblockMemberEmailAddress(email: string) {
   return res;
 }
 
+export const safeUnblockMemberEmailAddress = withErrorHandling<
+  UnwrapPromise<ReturnType<typeof unblockMemberEmailAddress>>,
+  Parameters<typeof unblockMemberEmailAddress>
+>(unblockMemberEmailAddress);
+
 export async function unblockMemberEmailAddressFromCampaign(email: string) {
   const session = await getServerSession(authOptions);
   if (!session?.user?.id || !session?.user?.isAdmin) {
@@ -32,3 +37,8 @@ export async function unblockMemberEmailAddressFromCampaign(email: string) {
 
   return res;
 }
+
+export const safeUnblockMemberEmailAddressFromCampaign = withErrorHandling<
+  UnwrapPromise<ReturnType<typeof unblockMemberEmailAddressFromCampaign>>,
+  Parameters<typeof unblockMemberEmailAddressFromCampaign>
+>(unblockMemberEmailAddressFromCampaign);
