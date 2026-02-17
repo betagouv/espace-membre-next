@@ -1,3 +1,5 @@
+"use client";
+
 import React from "react";
 
 import { fr } from "@codegouvfr/react-dsfr";
@@ -27,7 +29,7 @@ import {
 import { Option } from "@/models/misc";
 import { verifyNewMember } from "@/app/api/member/actions/verifyNewMember";
 
-// data from secretariat API
+// data from secretariat API;
 export interface AccountVerifyClientPageProps {
   startupOptions: Option[];
   member: memberSchemaType;
