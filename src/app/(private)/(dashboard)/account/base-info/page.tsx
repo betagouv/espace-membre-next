@@ -24,7 +24,6 @@ export default async function Page() {
   const username = session.user.id;
   const dbData = await getUserInfos({ username });
   const userInfos = userInfosToModel(dbData);
-  const s3Key = `members/${username}/avatar.jpg`;
 
   const startups = await getAllStartups();
   const startupOptions = startups.map((startup) => ({

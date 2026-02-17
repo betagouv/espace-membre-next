@@ -17,7 +17,6 @@ import { userInfosToModel } from "@/models/mapper";
 import { EmailStatusCode } from "@/models/member";
 import { computeOnboardingProgress } from "@/utils/onboarding/computeOnboardingProgress";
 import { getChecklistObject } from "@/utils/onboarding/getChecklistObject";
-import { shouldShowOnboardingPanel } from "@/utils/onboarding/shouldShowOnboardingPanel";
 import { routeTitles } from "@/utils/routes/routeTitles";
 import { getServerSession } from "next-auth";
 import { authOptions } from "@/utils/authoptions";
@@ -51,7 +50,6 @@ export default async function Page(props) {
   const cookieStore = cookies();
   const surveyCookie = cookieStore.get(SURVEY_BOX_COOKIE_NAME);
   const surveyCookieValue = (surveyCookie && surveyCookie.value) || null;
-  const showOnboardingPanel = await shouldShowOnboardingPanel(userInfos);
   const emailInfos = await betagouv.emailInfos(userInfos.username);
   const showSuiteNumeriqueOnboardingPanel =
     userInfos.primary_email &&
@@ -59,22 +57,20 @@ export default async function Page(props) {
       emailInfos?.emailPlan === EMAIL_PLAN_TYPE.EMAIL_PLAN_BASIC ||
       emailInfos?.emailPlan === EMAIL_PLAN_TYPE.EMAIL_PLAN_EXCHANGE);
   let onboarding: DashboardPageProps["onboarding"];
-  if (showOnboardingPanel) {
-    const userEvents = await getUserEvents(session.user.uuid);
-    const checklistObject = await getChecklistObject();
-    if (checklistObject) {
-      const userEventIds = userEvents.map((u) => u.field_id);
-      const progress = await computeOnboardingProgress(
-        userEventIds,
-        checklistObject,
-      );
-      onboarding =
-        progress !== 100
-          ? {
-              progress,
-            }
-          : undefined;
-    }
+  const userEvents = await getUserEvents(session.user.uuid);
+  const checklistObject = await getChecklistObject();
+  if (checklistObject) {
+    const userEventIds = userEvents.map((u) => u.field_id);
+    const progress = await computeOnboardingProgress(
+      userEventIds,
+      checklistObject,
+    );
+    onboarding =
+      progress !== 100
+        ? {
+            progress,
+          }
+        : undefined;
   }
 
   return (
