@@ -2,15 +2,11 @@
 import React from "react";
 
 import { fr } from "@codegouvfr/react-dsfr";
-import * as Sentry from "@sentry/nextjs";
 
 import { TeamForm } from "../TeamForm/TeamForm";
-import { updateTeam } from "@/app/api/teams/actions/updateTeam";
+import { safeUpdateTeam } from "@/app/api/teams/actions/updateTeam";
 import { teamUpdateSchemaType } from "@/models/actions/team";
-import {
-  memberBaseInfoSchemaType,
-  memberPublicInfoSchemaType,
-} from "@/models/member";
+import { memberPublicInfoSchemaType } from "@/models/member";
 import { Option } from "@/models/misc";
 import { teamSchemaType } from "@/models/team";
 import { routeTitles } from "@/utils/routes/routeTitles";
@@ -27,22 +23,12 @@ export const TeamUpdate = (props: TeamUpdateProps) => {
   const css = ".panel { overflow: hidden; width: auto; min-height: 100vh; }";
 
   const save = async (data: teamUpdateSchemaType) => {
-    try {
-      await updateTeam({
-        teamWrapper: data,
-        teamUuid: props.team.uuid,
-      });
-      window.scrollTo({ top: 20, behavior: "smooth" });
-      return {
-        // ...resp,
-        isUpdate: true,
-      };
-    } catch (e) {
-      Sentry.captureException(e);
-      console.error(e);
-      window.scrollTo({ top: 20, behavior: "smooth" });
-      throw e;
-    }
+    const result = await safeUpdateTeam({
+      teamWrapper: data,
+      teamUuid: props.team.uuid,
+    });
+    window.scrollTo({ top: 20, behavior: "smooth" });
+    return result;
   };
 
   return (

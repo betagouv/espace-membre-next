@@ -7,7 +7,7 @@ import { memberValidateInfoSchemaType } from "@/models/actions/member";
 import { EmailStatusCode } from "@/models/member";
 import { isPublicServiceEmail, isAdminEmail } from "@/server/controllers/utils";
 import { authOptions } from "@/utils/authoptions";
-import { AdminEmailNotAllowedError } from "@/utils/error";
+import { AdminEmailNotAllowedError, AuthorizationError } from "@/utils/error";
 import { getBossClientInstance } from "@/server/queueing/client";
 import { createDimailMailboxTopic } from "@/server/queueing/workers/create-dimail-mailbox";
 
@@ -18,7 +18,7 @@ export async function verifyNewMember(
   const session = await getServerSession(authOptions);
 
   if (!session || session.user.id !== memberData.username) {
-    throw new Error(`You don't have the right to access this function`);
+    throw new AuthorizationError();
   }
   const hasPublicServiceEmail = await isPublicServiceEmail(
     memberData.secondary_email,
@@ -30,7 +30,7 @@ export async function verifyNewMember(
 
   const createNewEmail = !hasPublicServiceEmail;
 
-  updateMember(
+  await updateMember(
     memberData,
     session.user.uuid,
     {

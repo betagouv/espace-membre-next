@@ -10,7 +10,7 @@ import { useDropzone } from "react-dropzone";
 
 import { FileForm } from "./FileForm";
 import { FileList } from "./FileList";
-import { uploadStartupFile } from "../../app/api/startups/files/upload";
+import { safeUploadStartupFile } from "../../app/api/startups/files/upload";
 import { getStartupFiles } from "@/app/api/startups/files/list";
 import { DocSchemaType } from "@/models/startupFiles";
 
@@ -75,21 +75,23 @@ export const StartupFiles = ({
   }, []);
 
   const onFormSubmit = async (data: DocSchemaType) => {
-    const uploaded = await uploadStartupFile({
+    const result = await safeUploadStartupFile({
       uuid: startup.uuid,
       content: await generateDataUrl(pendingFiles[fileIndex]),
       filename: pendingFiles[fileIndex].name,
       size: pendingFiles[fileIndex].size,
       ...data,
-    }).catch((err) => {
-      Sentry.captureException(err);
-      alert("Impossible d'uploader le document 😰");
     });
 
-    if (uploaded) {
+    if (!result.success) {
+      Sentry.captureMessage(result.message);
+      alert("Impossible d'uploader le document");
+    }
+
+    if (result.success && result.data) {
       // upload
       files.unshift({
-        ...uploaded,
+        ...result.data,
         startup_uuid: startup.uuid,
         startup: startup.name,
       });

@@ -23,6 +23,10 @@ import {
 } from "@/utils/error";
 
 export async function getStartup({ uuid }: { uuid: string }) {
+  const session = await getServerSession(authOptions);
+  if (!session || !session.user.id) {
+    throw new AuthorizationError();
+  }
   return db
     .selectFrom("startups")
     .selectAll()

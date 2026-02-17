@@ -8,8 +8,9 @@ import { getServerSession } from "next-auth";
 import { addEvent } from "@/lib/events";
 import { db } from "@/lib/kysely";
 import { EventCode } from "@/models/actionEvent/actionEvent";
-import { teamUpdateSchemaType } from "@/models/actions/team";
+import { teamUpdateSchema, teamUpdateSchemaType } from "@/models/actions/team";
 import { authOptions } from "@/utils/authoptions";
+import { AuthorizationError, NoDataError, UnwrapPromise, withErrorHandling } from "@/utils/error";
 
 export async function updateTeam({
   teamWrapper: { team, members },
@@ -20,15 +21,16 @@ export async function updateTeam({
 }) {
   const session = await getServerSession(authOptions);
   if (!session || !session.user.id) {
-    throw new Error(`You don't have the right to access this function`);
+    throw new AuthorizationError();
   }
+  teamUpdateSchema.parse({ team, members });
   const previousTeamData = await db
     .selectFrom("teams")
     .selectAll()
     .where("uuid", "=", teamUuid)
     .executeTakeFirst();
   if (!previousTeamData) {
-    throw new Error("Cannot find team");
+    throw new NoDataError("Cannot find team");
   }
 
   await db.transaction().execute(async (trx) => {
@@ -99,3 +101,8 @@ export async function updateTeam({
     });
   });
 }
+
+export const safeUpdateTeam = withErrorHandling<
+  UnwrapPromise<ReturnType<typeof updateTeam>>,
+  Parameters<typeof updateTeam>
+>(updateTeam);
