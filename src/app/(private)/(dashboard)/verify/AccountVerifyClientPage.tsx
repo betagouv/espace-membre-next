@@ -1,4 +1,5 @@
 "use client";
+
 import React from "react";
 
 import { fr } from "@codegouvfr/react-dsfr";
@@ -27,9 +28,8 @@ import {
 } from "@/models/member";
 import { Option } from "@/models/misc";
 import { verifyNewMember } from "@/app/api/member/actions/verifyNewMember";
-import { useSession } from "next-auth/react";
 
-// data from secretariat API
+// data from secretariat API;
 export interface AccountVerifyClientPageProps {
   startupOptions: Option[];
   member: memberSchemaType;
@@ -40,10 +40,7 @@ export default function AccountVerifyClientPage({
   startupOptions,
 }: AccountVerifyClientPageProps) {
   const router = useRouter();
-  const session = useSession();
-  if (!session.data) {
-    throw new Error("Unauthorized user");
-  }
+
   const {
     register,
     handleSubmit,
@@ -84,7 +81,7 @@ export default function AccountVerifyClientPage({
     try {
       const { success, message } = await verifyNewMember({
         ...input,
-        username: session.data.user.id,
+        username: member.username,
       });
 
       if (!success) {
