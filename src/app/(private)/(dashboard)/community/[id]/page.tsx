@@ -13,7 +13,6 @@ import { userInfos } from "@/server/controllers/utils";
 import { authOptions } from "@/utils/authoptions";
 import { computeOnboardingProgress } from "@/utils/onboarding/computeOnboardingProgress";
 import { getChecklistObject } from "@/utils/onboarding/getChecklistObject";
-import { shouldShowOnboardingPanel } from "@/utils/onboarding/shouldShowOnboardingPanel";
 import { getUserIncubators } from "@/lib/kysely/queries/users";
 
 type Props = {
@@ -75,22 +74,19 @@ export default async function Page({
   const isCurrentUser = session.user.id === id;
 
   let onboarding: MemberPageProps["onboarding"];
-  const showOnboardingPanel = await shouldShowOnboardingPanel(user.userInfos);
-  if (showOnboardingPanel) {
-    const userEvents = await getUserEvents(user.userInfos.uuid);
-    const checklistObject = await getChecklistObject();
-    if (checklistObject) {
-      const userEventIds = userEvents.map((u) => u.field_id);
-      const progress = await computeOnboardingProgress(
-        userEventIds,
-        checklistObject,
-      );
-      onboarding = {
-        progress,
-        userEvents,
-        checklistObject,
-      };
-    }
+  const userEvents = await getUserEvents(user.userInfos.uuid);
+  const checklistObject = await getChecklistObject();
+  if (checklistObject) {
+    const userEventIds = userEvents.map((u) => u.field_id);
+    const progress = await computeOnboardingProgress(
+      userEventIds,
+      checklistObject,
+    );
+    onboarding = {
+      progress,
+      userEvents,
+      checklistObject,
+    };
   }
 
   const incubators = await getUserIncubators(userInformations.baseInfo.uuid);
