@@ -57,22 +57,23 @@ export default async function Page(props) {
       emailInfos?.emailPlan === EMAIL_PLAN_TYPE.EMAIL_PLAN_BASIC ||
       emailInfos?.emailPlan === EMAIL_PLAN_TYPE.EMAIL_PLAN_EXCHANGE);
   let onboarding: DashboardPageProps["onboarding"];
-  const userEvents = await getUserEvents(session.user.uuid);
-  const checklistObject = await getChecklistObject();
-  if (checklistObject) {
-    const userEventIds = userEvents.map((u) => u.field_id);
-    const progress = await computeOnboardingProgress(
-      userEventIds,
-      checklistObject,
-    );
-    onboarding =
-      progress !== 100
-        ? {
-            progress,
-          }
-        : undefined;
+  if (userInfos.created_at >= new Date("2025-01-01")) {
+    const userEvents = await getUserEvents(session.user.uuid);
+    const checklistObject = await getChecklistObject();
+    if (checklistObject) {
+      const userEventIds = userEvents.map((u) => u.field_id);
+      const progress = await computeOnboardingProgress(
+        userEventIds,
+        checklistObject,
+      );
+      onboarding =
+        progress !== 100
+          ? {
+              progress,
+            }
+          : undefined;
+    }
   }
-
   return (
     <DashboardPage
       {...props}
