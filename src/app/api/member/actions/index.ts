@@ -281,6 +281,19 @@ async function getUserPublicInfo(
   return data;
 }
 
+/**
+ * Updates or creates missions for a member.
+ *
+ * For existing missions (with uuid): updates the end date and associated startups.
+ * Non-admin users can only extend the end date, not shorten it.
+ *
+ * For new missions (without uuid): creates the mission with all provided data.
+ *
+ * @param updateMemberMissionsData - Contains memberUuid and an array of missions to update/create
+ * @throws AuthorizationError - If user is not authenticated
+ * @throws NoDataError - If member or existing mission is not found
+ * @throws ValidationError - If non-admin tries to shorten a mission's end date
+ */
 async function updateMemberMissions(
   updateMemberMissionsData: updateMemberMissionsSchemaType,
 ): Promise<void> {
