@@ -72,6 +72,10 @@ export default async function Page({
       sessionUserUuid: session.user.uuid,
     });
   const isCurrentUser = session.user.id === id;
+  const canValidateMember =
+    sessionUserIsFromIncubatorTeam || session.user.isAdmin;
+  const canEditMember =
+    isAdmin || isCurrentUser || sessionUserIsFromIncubatorTeam;
 
   let onboarding: MemberPageProps["onboarding"];
   const userEvents = await getUserEvents(user.userInfos.uuid);
@@ -101,7 +105,8 @@ export default async function Page({
       <MemberPage
         isAdmin={isAdmin}
         isCurrentUser={isCurrentUser}
-        sessionUserIsFromIncubatorTeam={sessionUserIsFromIncubatorTeam}
+        canEditMember={canEditMember}
+        canValidateMember={canValidateMember}
         authorizations={user.authorizations}
         emailInfos={user.emailInfos}
         emailRedirections={user.emailRedirections}

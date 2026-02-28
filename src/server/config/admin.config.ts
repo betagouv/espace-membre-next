@@ -11,13 +11,13 @@ export const getAdmin = () => {
   return config.ESPACE_MEMBRE_ADMIN;
 };
 
-// todo: make it simpler
+// todo: make it simpler (claude)
 export const isSessionUserIncubatorTeamAdminForUser = async ({
   user,
   sessionUserUuid,
   incubator_id,
 }: {
-  user: memberBaseInfoSchemaType;
+  user: { teams?: memberBaseInfoSchemaType["teams"]; uuid: string };
   sessionUserUuid: string;
   incubator_id?: string;
 }): Promise<boolean> => {
@@ -45,9 +45,7 @@ export const isSessionUserIncubatorTeamAdminForUser = async ({
     return {
       ...startup,
       incubator: incubator ?? null,
-      isCurrent:
-        isAfter(now, startup.start ?? 0) &&
-        isBefore(now, startup.end ?? Infinity),
+      isCurrentMission: isAfter(now, startup.start ?? 0),
     };
   });
   const userIncubators = Array.from(
@@ -55,7 +53,7 @@ export const isSessionUserIncubatorTeamAdminForUser = async ({
       [
         incubator_id,
         ...startups
-          .filter((startup) => startup.isCurrent && startup.incubator)
+          .filter((startup) => startup.isCurrentMission && startup.incubator)
           .map((startup) => startup.incubator?.uuid),
         ...teams
           .filter((team) => team.incubator)
@@ -66,5 +64,6 @@ export const isSessionUserIncubatorTeamAdminForUser = async ({
   const sessionUserIncubators = (await getTeamsForUser(sessionUserUuid)).map(
     (teams) => teams.incubator_id,
   );
+
   return intersection(userIncubators, sessionUserIncubators).length > 0;
 };
