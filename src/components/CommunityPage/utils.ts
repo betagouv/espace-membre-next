@@ -11,6 +11,7 @@ export const communityFilterSchema = z.object({
     "user",
     "incubator",
     "startup",
+    "primary_email_status",
   ]),
   value: z.union([z.string(), z.boolean()]).optional(),
 });
