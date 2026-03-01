@@ -1,15 +1,13 @@
 "use server";
 
 import { revalidatePath } from "next/cache";
-import { cookies } from "next/headers";
 import { getServerSession } from "next-auth/next";
 
 import { addEvent } from "@/lib/events";
 import { db } from "@/lib/kysely";
 import { createMission, updateMission } from "@/lib/kysely/queries/missions";
-import { getUserBasicInfo, getUserInfos } from "@/lib/kysely/queries/users";
+import { getUserBasicInfo } from "@/lib/kysely/queries/users";
 import { getUserByEmail, MattermostUser, searchUsers } from "@/lib/mattermost";
-import * as mattermost from "@/lib/mattermost";
 import { EventCode } from "@/models/actionEvent/actionEvent";
 import {
   updateMemberMissionsSchema,
@@ -22,24 +20,16 @@ import {
 } from "@/models/mapper";
 import {
   CommunicationEmailCode,
-  EmailStatusCode,
   memberWrapperPublicInfoSchemaType,
 } from "@/models/member";
 import betagouv from "@/server/betagouv";
 import config from "@/server/config";
-import { isSessionUserIncubatorTeamAdminForUser } from "@/server/config/admin.config";
 import {
   updateContactEmail,
   addContactsToMailingLists,
   removeContactsFromMailingList,
 } from "@/server/config/email.config";
-import {
-  capitalizeWords,
-  isPublicServiceEmail,
-  isAdminEmail,
-  userInfos,
-  buildBetaEmail,
-} from "@/server/controllers/utils";
+import { capitalizeWords, userInfos } from "@/server/controllers/utils";
 import { Contact, MAILING_LIST_TYPE } from "@/server/modules/email";
 import { authOptions } from "@/utils/authoptions";
 import {
@@ -49,9 +39,9 @@ import {
   ValidationError,
   OVHError,
   withErrorHandling,
-  AdminEmailNotAllowedError,
   BusinessError,
 } from "@/utils/error";
+import { canEditMember as _canEditMember } from "@/lib/canEditMember";
 
 async function changeSecondaryEmailForUser(
   secondary_email: string,
@@ -311,12 +301,10 @@ async function updateMemberMissions(
     throw new NoDataError(`Impossible de trouver les données sur le membre`);
   }
   const previousInfo = memberBaseInfoToModel(dbUser);
-  const sessionUserIsFromIncubatorTeam =
-    !!session.user.isAdmin ||
-    (await isSessionUserIncubatorTeamAdminForUser({
-      user: previousInfo,
-      sessionUserUuid: session.user.uuid,
-    }));
+  const canEditMember = await _canEditMember({
+    memberUuid: previousInfo.uuid,
+    sessionUser: session.user,
+  });
 
   // todo check that it is authorized
   await db.transaction().execute(async (trx) => {
@@ -329,7 +317,7 @@ async function updateMemberMissions(
           throw new NoDataError("La mission devrait déjà exister");
         }
         if (
-          !sessionUserIsFromIncubatorTeam &&
+          !canEditMember &&
           (!mission.end ||
             !missionPreviousData.end ||
             mission.end < missionPreviousData.end)

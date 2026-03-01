@@ -7,9 +7,9 @@ import { MemberUpdate } from "@/components/MemberUpdate/MemberUpdate";
 import { getAllStartups } from "@/lib/kysely/queries";
 import { getUserBasicInfo } from "@/lib/kysely/queries/users";
 import { memberBaseInfoToModel } from "@/models/mapper";
-import { isSessionUserIncubatorTeamAdminForUser } from "@/server/config/admin.config";
 import { authOptions } from "@/utils/authoptions";
 import { routeTitles } from "@/utils/routes/routeTitles";
+import { canEditMember } from "@/lib/canEditMember";
 
 export const metadata: Metadata = {
   title: `${routeTitles.accountEditBaseInfo()} / Espace Membre`,
@@ -43,18 +43,17 @@ export default async function Page({
   const hasActiveMission = !!userInfos.missions.find((m) =>
     m.end ? new Date(m.end) >= new Date() : !m.end,
   );
+  const isCurrentUser = session.user.id === dbData.uuid;
 
-  const sessionUserIsFromIncubatorTeam =
-    await isSessionUserIncubatorTeamAdminForUser({
-      user: userInfos,
-      sessionUserUuid: session.user.uuid,
-    });
+  const canEdit =
+    isCurrentUser ||
+    (await canEditMember({
+      memberUuid: userInfos.uuid,
+      sessionUser: session.user,
+    }));
+
   // members cannot edit active users directly. Call admin or team member.
-  if (
-    hasActiveMission &&
-    !session?.user.isAdmin &&
-    !sessionUserIsFromIncubatorTeam
-  ) {
+  if (hasActiveMission && !canEdit) {
     redirect(`/community/${id}`);
   }
 
