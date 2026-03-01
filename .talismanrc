@@ -12,7 +12,7 @@ fileignoreconfig:
 - filename: src/app/(private)/(dashboard)/services/page.tsx
   checksum: daebae004c8c06af9a88aaf57a1fad4b0a6efcb7920cf9628e0c1fd1985569ab
 - filename: src/components/StartupPage/StartupMembers.tsx
-  checksum: 0fa743dfd791055524e9de7d5dcc09c7a56d31a39fa920d3d6f7dd3100f188c7
+  checksum: 6a20aba25aa570f49f0413babcb256d1db870522851f2e865088df7fe6e583a9
 - filename: src/lib/dimail/client.spec.ts
   checksum: 777854cc51487a9f8f857ce5cb3e2bfe813c402848eef135d5aa0caff6086659
 - filename: src/lib/dimail/client.ts

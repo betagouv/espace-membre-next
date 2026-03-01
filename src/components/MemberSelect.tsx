@@ -6,7 +6,7 @@ type MemberSelectProps<T extends boolean> = {
     ? (value: string[]) => void
     : (value: string) => void;
   isMulti?: T;
-  members: memberPublicInfoSchemaType[];
+  members: { fullname: string; username: string }[];
   defaultValue: T extends true
     ? { value: string; label: string }[] | undefined
     : { value: string; label: string } | undefined;
@@ -36,6 +36,7 @@ export default function MemberSelect<T extends boolean>({
   multiple,
 }: MemberSelectProps<T>) {
   const onTagsChange = (data) => {
+    if (!data) return;
     onChange(
       !!multiple
         ? data.map((user) => ({ value: user.id, label: user.label }))

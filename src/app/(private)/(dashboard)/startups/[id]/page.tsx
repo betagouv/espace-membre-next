@@ -16,6 +16,9 @@ import {
   startupToModel,
 } from "@/models/mapper";
 import { sentryTeamToModel } from "@/models/mapper/sentryMapper";
+import { getServerSession } from "next-auth";
+import { authOptions } from "@/utils/authoptions";
+import { canEditStartup } from "@/lib/canEditStartup";
 
 type Props = {
   params: { id: string };
@@ -44,6 +47,13 @@ export default async function Page({ params }: Props) {
   let query: { ghid: string } | { uuid: string } = {
     ghid: params.id,
   };
+
+  const session = await getServerSession(authOptions);
+
+  if (!session || !session.user.id) {
+    throw new Error(`You don't have the right to access this function`);
+  }
+
   if (validate(params.id)) {
     query = {
       uuid: params.id,
@@ -101,6 +111,17 @@ export default async function Page({ params }: Props) {
   const startupMembers = (await getUsersByStartup(dbSe.uuid)).map((user) => {
     return memberBaseInfoToModel(user);
   });
+  // .reduce((a, c) => {
+  //   if (!a[c.uuid]) {
+  //     a[c.uuid] = {
+  //       uuid: c.uuid,
+  //       fullname: c.fullname,
+  //       username: c.username,
+
+  //     };
+  //   }
+  //   return a;
+  // }, {}),
   const changes = await getEventListByStartupUuid(startup.uuid);
   const files = await getStartupFiles({ uuid: startup.uuid });
   const events = await db
@@ -109,10 +130,15 @@ export default async function Page({ params }: Props) {
     .selectAll()
     .orderBy("date", "asc")
     .execute();
+
+  // for the "add member select"
   const allMembers = await getActiveUsers()
     .clearSelect()
     .select(["username", "fullname", "id"])
     .execute();
+
+  const canEditMembers = await canEditStartup(session, dbSe.uuid);
+
   return (
     <>
       <BreadCrumbFiller
@@ -120,6 +146,7 @@ export default async function Page({ params }: Props) {
         currentItemId={startup.uuid}
       />
       <StartupPage
+        canEditMembers={canEditMembers}
         allMembers={allMembers}
         changes={changes.map((change) => startupChangeToModel(change))}
         startupInfos={startup}

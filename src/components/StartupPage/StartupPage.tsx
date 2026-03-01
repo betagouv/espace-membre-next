@@ -56,6 +56,7 @@ export interface StartupPageProps {
     startup_id: string | null;
     date: Date;
   }[];
+  canEditMembers: boolean;
 }
 
 export default function StartupPage({
@@ -70,6 +71,7 @@ export default function StartupPage({
   sponsors,
   files,
   events,
+  canEditMembers,
 }: StartupPageProps) {
   const router = useRouter();
   const [hash, setHash] = useState<null | string>(null);
@@ -90,8 +92,6 @@ export default function StartupPage({
       window.removeEventListener("hashchange", onHashChange);
     };
   }, []);
-
-  const canEditMembers = true;
 
   const currentPhase = getCurrentPhase(phases); // todo get current phase
   const tabs = [
