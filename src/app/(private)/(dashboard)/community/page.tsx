@@ -12,6 +12,7 @@ import { competencesList } from "@/models/competences";
 import { memberBaseInfoToModel } from "@/models/mapper";
 import { DOMAINE_OPTIONS } from "@/models/member";
 import { routeTitles } from "@/utils/routes/routeTitles";
+import { EMAIL_STATUS_READABLE_FORMAT } from "@/models/misc";
 
 export const metadata: Metadata = {
   title: `${routeTitles.community()} / Espace Membre`,
@@ -46,6 +47,20 @@ export default async function Page() {
       value: key,
       label: name,
     })),
+    primaryEmailStatusOptions: Object.entries(EMAIL_STATUS_READABLE_FORMAT)
+      .filter(([value, key]) =>
+        [
+          "EMAIL_ACTIVE",
+          "EMAIL_SUSPENDED",
+          "EMAIL_CREATION_PENDING",
+          "EMAIL_VERIFICATION_WAITING",
+          "MEMBER_VALIDATION_WAITING",
+        ].includes(value),
+      )
+      .map(([value, label]) => ({
+        value,
+        label: `${label} (${value.replace("EMAIL_", "")})`,
+      })),
     competenceOptions: competencesList.map((c) => ({ value: c, label: c })),
     users: usersWithGeoLoc,
   };

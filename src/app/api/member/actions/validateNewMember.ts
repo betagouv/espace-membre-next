@@ -13,7 +13,6 @@ import {
 } from "@/models/jobs/member";
 import { memberBaseInfoToModel } from "@/models/mapper";
 import { EmailStatusCode } from "@/models/member";
-import { isSessionUserIncubatorTeamAdminForUser } from "@/server/config/admin.config";
 import { getBossClientInstance } from "@/server/queueing/client";
 import { sendEmailToTeamWhenNewMemberTopic } from "@/server/queueing/workers/send-email-to-team-when-new-member";
 import { authOptions } from "@/utils/authoptions";
@@ -23,6 +22,7 @@ import {
   withErrorHandling,
 } from "@/utils/error";
 import { sendNewMemberVerificationEmailTopic } from "@/server/queueing/workers/send-verification-email";
+import { canEditMember } from "@/lib/canEditMember";
 
 export async function validateNewMember({
   memberUuid,
@@ -82,14 +82,12 @@ export async function validateNewMember({
     );
   }
   const newMember = memberBaseInfoToModel(rawData);
-  const sessionUserIsFromIncubatorTeam =
-    !!session.user.isAdmin ||
-    (await isSessionUserIncubatorTeamAdminForUser({
-      user: newMember,
-      sessionUserUuid: session.user.uuid,
-      incubator_id: incubator_id || undefined,
-    }));
-  if (!sessionUserIsFromIncubatorTeam) {
+  const canEdit = await canEditMember({
+    memberUuid: newMember.uuid,
+    sessionUser: session.user,
+    incubator_id: incubator_id || undefined,
+  });
+  if (!canEdit) {
     throw new BusinessError(
       "sessionUserNotAdminOrNotInRequiredIncubatorTeam",
       "Tu n'as pas les droits pour valider ce membre. Tu n'es pas dans l'équipe transverse de l'incubateur dont ce membre fait partie.",

@@ -157,6 +157,12 @@ export const Community = (props: CommunityProps) => {
         id: s.value,
         label: s.label,
       })),
+      ...props.primaryEmailStatusOptions.map((d) => ({
+        type: "primary_email_status" as CommunityFilterSchemaType["type"],
+        group: "Statut du compte",
+        id: d.value,
+        label: d.label,
+      })),
     ],
     [props.startupOptions, props.users],
   );
@@ -186,6 +192,10 @@ export const Community = (props: CommunityProps) => {
             // test if user has the given domain
             const user = props.users.find((u) => u.uuid === result.uuid);
             return user && user.domaine === filter.value;
+          } else if (filter.type === "primary_email_status") {
+            // test if user has the given domain
+            const user = props.users.find((u) => u.uuid === result.uuid);
+            return user && user.primary_email_status === filter.value;
           } else if (filter.type === "incubator") {
             // test if user belongs to given incubator
             const incubator = props.incubatorMembers.find(
@@ -454,7 +464,7 @@ export const Community = (props: CommunityProps) => {
           />
         </>
       ) : filters.length ? (
-        "Aucun résultat"
+        <div className={fr.cx("fr-mt-2w")}>Aucun résultat</div>
       ) : null}
       <br />
       <br />

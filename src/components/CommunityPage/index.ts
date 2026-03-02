@@ -9,6 +9,7 @@ export interface CommunityProps {
   users: memberBaseInfoSchemaTypeWithGeoLoc[];
   incubatorOptions: Option[];
   startupOptions: Option[];
+  primaryEmailStatusOptions: Option[];
   domaineOptions: Option[];
   competenceOptions: Option[];
   incubatorMembers: Awaited<ReturnType<typeof getAllIncubatorsMembers>>;

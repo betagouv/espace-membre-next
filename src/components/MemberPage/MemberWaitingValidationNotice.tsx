@@ -21,12 +21,12 @@ export const MemberWaitingValidationNotice = ({
     title={`Fiche en attente de validation`}
     severity="warning"
     description={
-      <p>
-        <p>
+      <>
+        <div>
           La fiche de {userInfos.fullname} doit être validée par l'équipe de son
           incubateur(s) :{" "}
           {incubators.map((incubator, idx, all) => (
-            <>
+            <span key={incubator.title}>
               <Link
                 key={incubator.title}
                 href={`/incubators/${incubator.uuid}`}
@@ -34,10 +34,10 @@ export const MemberWaitingValidationNotice = ({
                 {incubator.title}
               </Link>
               {idx < all.length - 1 ? ", " : ""}
-            </>
+            </span>
           ))}
           .
-        </p>
+        </div>
         {canValidate && (
           <>
             <br />
@@ -50,7 +50,7 @@ export const MemberWaitingValidationNotice = ({
             </Button>
           </>
         )}
-      </p>
+      </>
     }
   />
 );

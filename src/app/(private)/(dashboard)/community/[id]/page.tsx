@@ -8,12 +8,12 @@ import MemberPage, {
   MemberPageProps,
 } from "@/components/MemberPage/MemberPage";
 import { getUserEvents } from "@/lib/kysely/queries/userEvents";
-import { isSessionUserIncubatorTeamAdminForUser } from "@/server/config/admin.config";
 import { userInfos } from "@/server/controllers/utils";
 import { authOptions } from "@/utils/authoptions";
 import { computeOnboardingProgress } from "@/utils/onboarding/computeOnboardingProgress";
 import { getChecklistObject } from "@/utils/onboarding/getChecklistObject";
 import { getUserIncubators } from "@/lib/kysely/queries/users";
+import { canEditMember as _canEditMember } from "@/lib/canEditMember";
 
 type Props = {
   params: { id: string };
@@ -42,7 +42,7 @@ export default async function Page({
   }
 
   // compile some account informations
-  let user;
+  let user: Awaited<ReturnType<typeof userInfos>>;
   try {
     user = await userInfos({ username: id }, session.user.id === id);
   } catch (e: any) {
@@ -66,12 +66,16 @@ export default async function Page({
   }
 
   const isAdmin = !!session.user.isAdmin;
-  const sessionUserIsFromIncubatorTeam =
-    await isSessionUserIncubatorTeamAdminForUser({
-      user: user.userInfos,
-      sessionUserUuid: session.user.uuid,
-    });
+
   const isCurrentUser = session.user.id === id;
+
+  const canEditMember = await _canEditMember({
+    memberUuid: user.userInfos.uuid,
+    sessionUser: session.user,
+  });
+
+  const canValidateMember =
+    canEditMember && !(session.user.uuid === user.userInfos.uuid);
 
   let onboarding: MemberPageProps["onboarding"];
   const userEvents = await getUserEvents(user.userInfos.uuid);
@@ -101,7 +105,8 @@ export default async function Page({
       <MemberPage
         isAdmin={isAdmin}
         isCurrentUser={isCurrentUser}
-        sessionUserIsFromIncubatorTeam={sessionUserIsFromIncubatorTeam}
+        canEditMember={canEditMember}
+        canValidateMember={canValidateMember}
         authorizations={user.authorizations}
         emailInfos={user.emailInfos}
         emailRedirections={user.emailRedirections}
