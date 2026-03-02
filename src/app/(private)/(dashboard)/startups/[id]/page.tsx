@@ -111,17 +111,7 @@ export default async function Page({ params }: Props) {
   const startupMembers = (await getUsersByStartup(dbSe.uuid)).map((user) => {
     return memberBaseInfoToModel(user);
   });
-  // .reduce((a, c) => {
-  //   if (!a[c.uuid]) {
-  //     a[c.uuid] = {
-  //       uuid: c.uuid,
-  //       fullname: c.fullname,
-  //       username: c.username,
 
-  //     };
-  //   }
-  //   return a;
-  // }, {}),
   const changes = await getEventListByStartupUuid(startup.uuid);
   const files = await getStartupFiles({ uuid: startup.uuid });
   const events = await db
