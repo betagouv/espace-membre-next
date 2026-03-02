@@ -29,7 +29,6 @@ export function MemberTable({
       `Voulez-vous vraiment supprimer ${member.fullname} de l'équipe ?`,
     );
     if (confirmed) {
-      // TODO: action
       const result = await removeMember(startup_id, member.uuid);
     }
   };
