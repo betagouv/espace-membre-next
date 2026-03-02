@@ -316,12 +316,10 @@ async function updateMemberMissions(
         if (!missionPreviousData) {
           throw new NoDataError("La mission devrait déjà exister");
         }
-        if (
-          !canEditMember &&
-          (!mission.end ||
+        if (!mission.end ||
             !missionPreviousData.end ||
             mission.end < missionPreviousData.end)
-        ) {
+        {
           throw new ValidationError(
             "Error: La nouvelle date de mission doit être supérieur à la précédente.",
           );
