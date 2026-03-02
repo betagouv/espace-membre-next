@@ -56,7 +56,7 @@ export const MemberWaitingEmailVerificationNotice = ({
             <div className={fr.cx("fr-mt-2w")}>
               <Button
                 onClick={onClick}
-                title="La personne peut se connecter à l'espace membre avec son email primaire ou secondaire directement"
+                title="La personne pourra se connecter à l'espace membre avec son email primaire ou secondaire directement"
               >
                 Forcer la vérification
               </Button>
