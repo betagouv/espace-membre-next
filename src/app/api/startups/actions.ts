@@ -21,6 +21,9 @@ import {
   UnwrapPromise,
   withErrorHandling,
 } from "@/utils/error";
+import { addMonths, differenceInDays } from "date-fns";
+import { ca } from "date-fns/locale";
+import { canEditStartup } from "@/lib/canEditStartup";
 
 export async function getStartup({ uuid }: { uuid: string }) {
   return db
@@ -413,3 +416,146 @@ export const safeUpdateStartup = withErrorHandling<
   UnwrapPromise<ReturnType<typeof updateStartup>>,
   Parameters<typeof updateStartup>
 >(updateStartup);
+
+/**
+ * Removes a member from a startup by ending their current mission association.
+ *
+ * This function preserves historical data by:
+ * 1. Creating a new mission record with an end date of now (for audit trail)
+ * 2. Removing the startup association from the member's current active mission
+ *
+ * @param startupUuid - The UUID of the startup to remove the member from
+ * @param memberUuid - The UUID of the member (user) to remove
+ * @throws {AuthorizationError} If the user is not authenticated
+ * @throws {NoResultError} If no mission is found for this member/startup combination
+ */
+export const removeMember = async (
+  startupUuid: string,
+  memberUuid: string,
+): Promise<void> => {
+  const session = await getServerSession(authOptions);
+  if (!session || !session.user.id) {
+    throw new AuthorizationError(
+      `You don't have the right to access this function`,
+    );
+  }
+
+  const canEdit = await canEditStartup(session, startupUuid);
+  if (!canEdit) {
+    throw new AuthorizationError(
+      `You don't have the right to access this function`,
+    );
+  }
+  // get the last start mission for this user/startup
+  const lastStartupMission = await db
+    .selectFrom("missions")
+    .innerJoin(
+      "missions_startups",
+      "missions_startups.mission_id",
+      "missions.uuid",
+    )
+    .select([
+      "missions.uuid",
+      "missions.start",
+      "missions.employer",
+      "missions.status",
+    ])
+    .where((eb) =>
+      eb.and([
+        eb("missions_startups.startup_id", "=", startupUuid),
+        eb("missions.user_id", "=", memberUuid),
+      ]),
+    )
+    .orderBy("start", "desc")
+    .orderBy("end", "desc")
+    .limit(1)
+    .executeTakeFirstOrThrow();
+
+  await db.transaction().execute(async (trx) => {
+    // insert new mission with only the removed startup that ends now for history
+    // except if mission started and ended today, probably an error
+    const diffInDays = differenceInDays(new Date(), lastStartupMission.start);
+    if (diffInDays > 0) {
+      const insertedMission = await trx
+        .insertInto("missions")
+        .values({
+          start: lastStartupMission.start,
+          end: new Date(),
+          user_id: memberUuid,
+          employer: lastStartupMission.employer,
+          status: lastStartupMission.status,
+        })
+        .returning("uuid")
+        .executeTakeFirstOrThrow();
+      await trx
+        .insertInto("missions_startups")
+        .values({ mission_id: insertedMission.uuid, startup_id: startupUuid })
+        .execute();
+    }
+    // remove startup from current mission
+    const res = await trx
+      .deleteFrom("missions_startups")
+      .where((eb) =>
+        eb.and({
+          "missions_startups.mission_id": lastStartupMission.uuid,
+          "missions_startups.startup_id": startupUuid,
+        }),
+      )
+      .executeTakeFirstOrThrow();
+  });
+  revalidatePath("/startups");
+};
+
+/**
+ * Adds a member to a startup by creating a new mission association.
+ *
+ * This function:
+ * 1. Looks up the user by their username to get their UUID
+ * 2. Creates a new mission starting now and ending in 3 months
+ * 3. Associates this mission with the specified startup
+ *
+ * @param startupUuid - The UUID of the startup to add the member to
+ * @param username - The username (ghid) of the member to add
+ * @throws {AuthorizationError} If the user is not authenticated
+ * @throws {NoResultError} If no user is found with the given username
+ */
+export const addMember = async (
+  startupUuid: string,
+  username: string,
+): Promise<void> => {
+  const session = await getServerSession(authOptions);
+  if (!session || !session.user.id) {
+    throw new AuthorizationError(
+      `You don't have the right to access this function`,
+    );
+  }
+  const canEdit = await canEditStartup(session, startupUuid);
+  if (!canEdit) {
+    throw new AuthorizationError(
+      `You don't have the right to access this function`,
+    );
+  }
+  const dbUser = await db
+    .selectFrom("users")
+    .where("username", "=", username)
+    .select("uuid")
+    .executeTakeFirstOrThrow();
+  const memberUuid = dbUser.uuid;
+  return db.transaction().execute(async (trx) => {
+    const insertedMission = await trx
+      .insertInto("missions")
+      .values({
+        start: new Date(),
+        end: addMonths(new Date(), 3),
+        user_id: memberUuid,
+      })
+      .returning("uuid")
+      .executeTakeFirstOrThrow();
+    await trx
+      .insertInto("missions_startups")
+      .values({ mission_id: insertedMission.uuid, startup_id: startupUuid })
+      .returning("uuid")
+      .execute();
+    revalidatePath("/startups");
+  });
+};
