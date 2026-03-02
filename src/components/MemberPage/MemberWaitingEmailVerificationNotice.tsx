@@ -47,7 +47,7 @@ export const MemberWaitingEmailVerificationNotice = ({
               <a href={`mailto:${userInfos.secondary_email}`}>
                 {userInfos.secondary_email}
               </a>
-              ""
+              "
             </div>
           )) || (
             <div>Aucun email secondaire n'est renseigné pour ce membre</div>
