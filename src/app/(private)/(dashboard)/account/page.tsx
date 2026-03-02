@@ -7,8 +7,6 @@ import MemberPage, {
   MemberPageProps,
 } from "@/components/MemberPage/MemberPage";
 import { getUserEvents } from "@/lib/kysely/queries/userEvents";
-import betagouv from "@/server/betagouv";
-import config from "@/server/config";
 import { userInfos } from "@/server/controllers/utils";
 import { authOptions } from "@/utils/authoptions";
 import { computeOnboardingProgress } from "@/utils/onboarding/computeOnboardingProgress";
@@ -73,7 +71,8 @@ export default async function Page() {
       matomoInfo={userInformations.matomoInfo}
       sentryInfo={userInformations.sentryInfo}
       startups={userInformations.startups}
-      sessionUserIsFromIncubatorTeam={false}
+      canEditMember={true}
+      canValidateMember={false}
       isCurrentUser={true}
       onboarding={onboarding}
       incubators={incubators}

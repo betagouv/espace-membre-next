@@ -55,7 +55,8 @@ export interface MemberPageProps {
   isExpired: boolean;
   changes: PrivateMemberChangeSchemaType[];
   startups: Awaited<ReturnType<typeof getUserStartups>>;
-  sessionUserIsFromIncubatorTeam: boolean;
+  canEditMember: boolean;
+  canValidateMember: boolean;
   isAdmin: boolean;
   isCurrentUser: boolean;
   onboarding?: {
@@ -77,7 +78,8 @@ export default function MemberPage({
   isExpired,
   startups,
   changes,
-  sessionUserIsFromIncubatorTeam,
+  canEditMember,
+  canValidateMember,
   isAdmin,
   avatar,
   isCurrentUser,
@@ -116,12 +118,8 @@ export default function MemberPage({
     }
   }, [tab]);
 
-  const canEdit = isAdmin || isCurrentUser || sessionUserIsFromIncubatorTeam;
-  const linkToEditPage = match([
-    isAdmin,
-    isCurrentUser,
-    sessionUserIsFromIncubatorTeam,
-  ])
+  const linkToEditPage = match([isAdmin, isCurrentUser, canEditMember])
+    // todo: remove and use a single route for edition
     .with(
       [true, P._, P._],
       () => `/community/${userInfos.username}/admin-update`,
@@ -233,19 +231,22 @@ export default function MemberPage({
     <div className="fr-mb-8v MemberPage">
       <FicheHeader
         label={userInfos.fullname}
-        editLink={canEdit && linkToEditPage}
+        editLink={canEditMember && linkToEditPage}
       />
       <br />
       {isExpired && <MemberExpirationNotice userInfos={userInfos} />}
-      {isWaitingValidation && (
+      {!isExpired && isWaitingValidation && (
         <MemberWaitingValidationNotice
           userInfos={userInfos}
-          canValidate={sessionUserIsFromIncubatorTeam}
+          canValidate={canValidateMember}
           incubators={incubators}
         />
       )}
       {isWaitingEmailVerification && (
-        <MemberWaitingEmailVerificationNotice userInfos={userInfos} />
+        <MemberWaitingEmailVerificationNotice
+          userInfos={userInfos}
+          canValidate={canValidateMember}
+        />
       )}
       {tab !== null && (
         <Tabs
@@ -265,7 +266,7 @@ export default function MemberPage({
         className={fr.cx("fr-col-12", "fr-mt-4w")}
         style={{ textAlign: "center" }}
       >
-        {canEdit && linkToEditPage && (
+        {canEditMember && linkToEditPage && (
           <Button
             className=""
             size="small"

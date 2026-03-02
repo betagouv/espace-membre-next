@@ -19,14 +19,6 @@ import {
 } from "@/lib/kysely/queries/dimail";
 import { EMAIL_PLAN_TYPE, OvhRedirection, OvhResponder } from "@/models/ovh";
 
-export const computeHash = function (username) {
-  const hash = crypto.createHmac(
-    "sha512",
-    config.HASH_SALT as string,
-  ); /** Hashing algorithm sha512 */
-  return hash.update(username).digest("hex");
-};
-
 export function encryptPassword(password) {
   const iv = randomBytes(16); // Generate a secure, random IV
 
@@ -108,13 +100,6 @@ export function capitalizeWords(arr: string) {
 
 export function buildBetaEmail(id: string) {
   return `${id}@${config.domain}`;
-}
-
-export function buildBetaRedirectionEmail(
-  id: string,
-  postfix: string = "attr",
-) {
-  return `${id}-attr@${config.domain}`;
 }
 
 export const isBetaEmail = (email) =>
@@ -208,16 +193,6 @@ export function getExpiredUsersForXDays<
   }) as T;
 }
 
-export function isMobileFirefox(req) {
-  const userAgent = Object.prototype.hasOwnProperty.call(
-    req.headers,
-    "user-agent",
-  )
-    ? req.headers["user-agent"]
-    : null;
-  return userAgent && /Android.+Firefox\//.test(userAgent);
-}
-
 export function requiredError(formValidationErrors, field) {
   formValidationErrors.push(`${field} : le champ n'est pas renseigné`);
 }
@@ -272,11 +247,7 @@ export const isPublicServiceEmail = async function (email: string) {
   }
 };
 
-export const asyncFilter = async (arr: Array<any>, predicate) => {
-  const results = await Promise.all(arr.map(predicate));
-  return arr.filter((_v, index) => results[index]);
-};
-
+// todo: remove
 export async function userInfos(
   params: { username: string } | { uuid: string },
   isCurrentUser: boolean,
@@ -354,43 +325,4 @@ export function sleep(ms) {
   return new Promise((resolve) => {
     setTimeout(resolve, ms);
   });
-}
-
-/**
- *@param	{String} date1 A date in ISO format to compare to the other one.
- *@param	{String} date2 A date in ISO format to compare to the other one.
- */
-export function sortASC(date1, date2) {
-  return date1 < date2 ? -1 : 1;
-}
-
-/**
- *@param	{Date} date     A date to convert to an ISO formated day.
- */
-export function formatDateToISOString(date) {
-  const d = new Date(date);
-  let month = "" + (d.getMonth() + 1);
-  let day = "" + d.getDate();
-  const year = d.getFullYear();
-
-  if (month.length < 2) {
-    month = "0" + month;
-  }
-  if (day.length < 2) {
-    day = "0" + day;
-  }
-
-  return [year, month, day].join("-");
-}
-
-/**
- *@param	{Array} keys An array of strings
- *@param {Int} value A value to assign to each key
- */
-export function createDefaultObjectWithKeysAndValue(keys, value = 0) {
-  const obj = {};
-  for (const key of keys) {
-    obj[key] = value;
-  }
-  return obj;
 }

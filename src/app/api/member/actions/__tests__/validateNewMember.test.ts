@@ -5,15 +5,12 @@ import * as eventsLib from "@/lib/events";
 import * as kyselyLib from "@/lib/kysely";
 import * as usersQueries from "@/lib/kysely/queries/users";
 import * as mapperLib from "@/models/mapper";
-import * as adminConfig from "@/server/config/admin.config";
+import * as canEditMemberLib from "@/lib/canEditMember";
 import * as bossClient from "@/server/queueing/client";
 import { validateNewMember } from "../validateNewMember";
 import { EmailStatusCode } from "@/models/member";
 import { EventCode } from "@/models/actionEvent";
-import {
-  AuthorizationError,
-  BusinessError,
-} from "@/utils/error";
+import { AuthorizationError, BusinessError } from "@/utils/error";
 
 describe("validateNewMember", () => {
   let getServerSessionStub: sinon.SinonStub;
@@ -22,7 +19,7 @@ describe("validateNewMember", () => {
   let dbSelectFromStub: sinon.SinonStub;
   let dbUpdateTableStub: sinon.SinonStub;
   let memberBaseInfoToModelStub: sinon.SinonStub;
-  let isSessionUserIncubatorTeamAdminStub: sinon.SinonStub;
+  let canEditMemberStub: sinon.SinonStub;
   let addEventStub: sinon.SinonStub;
   let getBossClientInstanceStub: sinon.SinonStub;
   let bossClientSendStub: sinon.SinonStub;
@@ -69,8 +66,8 @@ describe("validateNewMember", () => {
     memberBaseInfoToModelStub = sinon
       .stub(mapperLib, "memberBaseInfoToModel")
       .returns(mockMember as any);
-    isSessionUserIncubatorTeamAdminStub = sinon
-      .stub(adminConfig, "isSessionUserIncubatorTeamAdminForUser")
+    canEditMemberStub = sinon
+      .stub(canEditMemberLib, "canEditMember")
       .resolves(true);
     addEventStub = sinon.stub(eventsLib, "addEvent").resolves();
 
@@ -148,7 +145,7 @@ describe("validateNewMember", () => {
   });
 
   it("should throw BusinessError if session user not authorized", async () => {
-    isSessionUserIncubatorTeamAdminStub.resolves(false);
+    canEditMemberStub.resolves(false);
 
     try {
       await validateNewMember({ memberUuid: "member-uuid" });
@@ -190,7 +187,7 @@ describe("validateNewMember", () => {
 
     await validateNewMember({ memberUuid: "member-uuid" });
 
-    // isSessionUserIncubatorTeamAdminForUser should not be called
-    expect(isSessionUserIncubatorTeamAdminStub.notCalled).to.be.true;
+    // canEditMember is called but returns early for admins
+    expect(canEditMemberStub.calledOnce).to.be.true;
   });
 });
