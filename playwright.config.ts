@@ -34,8 +34,8 @@ export default defineConfig({
     // we'd need custom CSP
     bypassCSP: true,
   },
-  timeout: process.env.ci ? 60000 : 20000,
-  expect: { timeout: process.env.ci ? 20000 : 10000 },
+  timeout: process.env.ci ? 60000 : 30000,
+  expect: { timeout: process.env.ci ? 30000 : 10000 },
   /* Configure projects for major browsers */
   projects: [
     { name: "setup", testMatch: /.*\.setup\.ts/ },

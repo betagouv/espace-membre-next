@@ -20,20 +20,21 @@ const mdParser = new MarkdownIt({
   html: true,
 });
 
+type Props = {
+  params: Promise<{ id: string }>;
+};
+
 export async function generateMetadata(
   { params }: Props,
   parent: ResolvingMetadata,
 ): Promise<Metadata> {
   // fetch data
-  const formation = await fetchAirtableFormationById(params.id);
+  const { id } = await params;
+  const formation = await fetchAirtableFormationById(id);
   return {
     title: `${formation.name} / Espace Membre`,
   };
 }
-
-type Props = {
-  params: { id: string };
-};
 
 enum AirtableDomaine {
   Intrapreneur = "Intrapreneur.e",
@@ -65,6 +66,7 @@ const DomaineToAirtableDomaine: Record<Domaine, AirtableDomaine> = {
 };
 
 export default async function Page({ params }: Props) {
+  const { id } = await params;
   const session = await getServerSession(authOptions);
 
   if (!session) {
@@ -99,7 +101,7 @@ export default async function Page({ params }: Props) {
     // Return the modified URL as a string
     return url.toString();
   };
-  const formation = await fetchAirtableFormationById(params.id);
+  const formation = await fetchAirtableFormationById(id);
 
   const dbUser = userInfosToModel(
     await getUserInfos({

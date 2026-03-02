@@ -15,7 +15,7 @@ import { memberBaseInfoSchema, memberSchema } from "@/models/member";
 import { incubator } from "@/scripts/github-schemas";
 
 type Props = {
-  params: { id: string };
+  params: Promise<{ id: string }>;
 };
 
 export async function generateMetadata(
@@ -23,7 +23,7 @@ export async function generateMetadata(
   parent: ResolvingMetadata,
 ): Promise<Metadata> {
   // read route params
-  const id = params.id;
+  const { id } = await params;
 
   const team = await getTeam(id);
   return {
@@ -32,7 +32,8 @@ export async function generateMetadata(
 }
 
 export default async function Page({ params }: Props) {
-  const dbTeam = await getTeam(params.id);
+  const { id } = await params;
+  const dbTeam = await getTeam(id);
 
   if (!dbTeam) {
     redirect("/teams");
@@ -47,7 +48,7 @@ export default async function Page({ params }: Props) {
       .selectFrom("users")
       .selectAll()
       .innerJoin("users_teams", "users.uuid", "users_teams.user_id")
-      .where("users_teams.team_id", "=", params.id)
+      .where("users_teams.team_id", "=", id)
       .execute()
   ).map((user) =>
     memberPublicInfoToModel({

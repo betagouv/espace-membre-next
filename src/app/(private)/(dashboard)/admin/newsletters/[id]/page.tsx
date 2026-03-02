@@ -8,12 +8,12 @@ import { newsletterToModel } from "@/models/mapper/newsletterMapper";
 import { authOptions } from "@/utils/authoptions";
 
 type Props = {
-  params: { id: string };
+  params: Promise<{ id: string }>;
 };
 
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
   // read route params
-  const id = params.id;
+  const { id } = await params;
 
   return {
     title: `Newsletter ${id} / Espace Membre`,
@@ -21,6 +21,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
 }
 
 export default async function Page({ params }: Props) {
+  const { id } = await params;
   const session = await getServerSession(authOptions);
 
   if (session && !session.user.isAdmin) {
@@ -30,7 +31,7 @@ export default async function Page({ params }: Props) {
   const dbNewsletter = await db
     .selectFrom("newsletters")
     .selectAll()
-    .where("id", "=", params.id)
+    .where("id", "=", id)
     .executeTakeFirst();
   if (!dbNewsletter) {
     redirect("/dashboard");

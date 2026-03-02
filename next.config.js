@@ -22,7 +22,7 @@ const nextConfig = {
     ignoreDuringBuilds: true,
   },
   productionBrowserSourceMaps: true,
-  expireTime: 0, // https://github.com/vercel/next.js/discussions/48328#discussioncomment-12837641
+  expireTime: 0, // Disable stale-while-revalidate to prevent ChunkLoadError after deployments
   async headers() {
     return [
       {
@@ -52,14 +52,13 @@ const nextConfig = {
       },
     ];
   },
+  serverExternalPackages: [
+    "knex",
+    "sib-api-v3-sdk",
+    "mjml",
+    "@luma-team/mjml-react",
+  ],
   experimental: {
-    instrumentationHook: true,
-    serverComponentsExternalPackages: [
-      "knex",
-      "sib-api-v3-sdk",
-      "mjml",
-      "@luma-team/mjml-react",
-    ],
     serverActions: {
       bodySizeLimit: "10mb",
     },
@@ -77,8 +76,6 @@ const nextConfig = {
       destination: "/api/member/:username/image",
     },
   ],
-  // @todo upgrade to nextjs 15 to use
-  // expireTime: 0,
   webpack: (config, { isServer }) => {
     if (!isServer) {
       // don't resolve 'fs' module on the client to prevent this error on build --> Error: Can't resolve 'fs'

@@ -11,10 +11,11 @@ import { memberChangeToModel, userInfosToModel } from "@/models/mapper";
 import { authOptions } from "@/utils/authoptions";
 
 export const generateMetadata = async ({
-  params: { id },
+  params,
 }: {
-  params: { id: string };
+  params: Promise<{ id: string }>;
 }) => {
+  const { id } = await params;
   const dbData = await getUserInfos({ username: id });
 
   return {
@@ -23,10 +24,11 @@ export const generateMetadata = async ({
 };
 
 export default async function Page({
-  params: { id },
+  params,
 }: {
-  params: { id: string };
+  params: Promise<{ id: string }>;
 }) {
+  const { id } = await params;
   const session = await getServerSession(authOptions);
 
   if (!session) {
