@@ -316,12 +316,15 @@ async function updateMemberMissions(
         if (!missionPreviousData) {
           throw new NoDataError("La mission devrait déjà exister");
         }
-        if (!mission.end ||
+        if (
+          // n'autorise que les admins ou membres de l'incubateur à mettre une date inférieure
+          !canEditMember &&
+          (!mission.end ||
             !missionPreviousData.end ||
             mission.end < missionPreviousData.end)
-        {
+        ) {
           throw new ValidationError(
-            "Error: La nouvelle date de mission doit être supérieur à la précédente.",
+            "Error: La nouvelle date de mission doit être supérieure à la précédente.",
           );
         }
         const { uuid, end } = mission;
