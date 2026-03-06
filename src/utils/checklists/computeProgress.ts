@@ -1,9 +1,8 @@
-import { onboardingChecklistSchemaType } from "@/models/onboardingChecklist";
-import { userEventSchemaType } from "@/models/userEvent";
+import { checklistSchemaType } from "@/models/checklist";
 
-export function computeOnboardingProgress(
+export function computeProgress(
   userEventIds: string[],
-  checklistObject: onboardingChecklistSchemaType,
+  checklistObject: checklistSchemaType,
 ): number {
   const allCheckListItemIds = checklistObject.flatMap((section) =>
     section.items.map((item) => item.id),

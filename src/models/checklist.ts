@@ -16,8 +16,6 @@ export const sectionSchema = z.object({
   domaines: z.array(z.nativeEnum(Domaine)).optional(),
 });
 
-export const onboardingChecklistSchema = z.array(sectionSchema);
+export const checklistSchema = z.array(sectionSchema);
 
-export type onboardingChecklistSchemaType = z.infer<
-  typeof onboardingChecklistSchema
->;
+export type checklistSchemaType = z.infer<typeof checklistSchema>;

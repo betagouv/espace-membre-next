@@ -18,7 +18,7 @@ import { MemberStatus } from "./MemberStatus";
 import { getUserStartups, getUserIncubators } from "@/lib/kysely/queries/users";
 import { memberWrapperSchemaType } from "@/models/member";
 import { PrivateMemberChangeSchemaType } from "@/models/memberChange";
-import { onboardingChecklistSchemaType } from "@/models/onboardingChecklist";
+import { checklistSchemaType } from "@/models/checklist";
 
 import { matomoUserSchemaType } from "@/models/matomo";
 import { sentryUserSchemaType } from "@/models/sentry";
@@ -27,6 +27,7 @@ import { FicheHeader } from "../FicheHeader";
 import { MemberWaitingValidationNotice } from "./MemberWaitingValidationNotice";
 import { MemberWaitingEmailVerificationNotice } from "./MemberWaitingEmailVerificationNotice";
 import { OnboardingTabPanel } from "./OnboardingTabPanel";
+import { OffboardingTabPanel } from "./OffboardingTabPanel";
 import { userEventSchemaType } from "@/models/userEvent";
 
 //@ts-ignore
@@ -61,7 +62,12 @@ export interface MemberPageProps {
   isCurrentUser: boolean;
   onboarding?: {
     progress: number;
-    checklistObject: onboardingChecklistSchemaType;
+    checklistObject: checklistSchemaType;
+    userEvents: userEventSchemaType[];
+  };
+  offboarding?: {
+    progress: number;
+    checklistObject: checklistSchemaType;
     userEvents: userEventSchemaType[];
   };
   incubators: Awaited<ReturnType<typeof getUserIncubators>>;
@@ -84,6 +90,7 @@ export default function MemberPage({
   avatar,
   isCurrentUser,
   onboarding,
+  offboarding,
   incubators,
 }: MemberPageProps) {
   const [tab, setTab] = useState<null | string>(null);
@@ -182,6 +189,18 @@ export default function MemberPage({
           userEvents={onboarding.userEvents}
           userInfos={userInfos}
           checklistObject={onboarding.checklistObject}
+        />
+      ),
+    },
+    offboarding && {
+      label: "Désembarquement",
+      isDefault: tab === "desembarquement",
+      tabId: "desembarquement",
+      content: (
+        <OffboardingTabPanel
+          userEvents={offboarding.userEvents}
+          userInfos={userInfos}
+          checklistObject={offboarding.checklistObject}
         />
       ),
     },

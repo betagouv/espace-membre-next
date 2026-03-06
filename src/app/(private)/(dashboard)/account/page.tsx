@@ -9,8 +9,8 @@ import MemberPage, {
 import { getUserEvents } from "@/lib/kysely/queries/userEvents";
 import { userInfos } from "@/server/controllers/utils";
 import { authOptions } from "@/utils/authoptions";
-import { computeOnboardingProgress } from "@/utils/onboarding/computeOnboardingProgress";
-import { getChecklistObject } from "@/utils/onboarding/getChecklistObject";
+import { computeProgress } from "@/utils/checklists/computeProgress";
+import { getChecklistObject } from "@/utils/checklists/getChecklistObject";
 import { routeTitles } from "@/utils/routes/routeTitles";
 import { getUserIncubators } from "@/lib/kysely/queries/users";
 
@@ -39,19 +39,35 @@ export default async function Page() {
 
   const isAdmin = !!session.user.isAdmin;
 
-  let onboarding: MemberPageProps["onboarding"];
   const userEvents = await getUserEvents(session.user.uuid);
-  const checklistObject = await getChecklistObject();
-  if (checklistObject) {
-    const userEventIds = userEvents.map((u) => u.field_id);
-    const progress = await computeOnboardingProgress(
+  const userEventIds = userEvents.map((u) => u.field_id);
+
+  let onboarding: MemberPageProps["onboarding"];
+  const checklistOnboardingObject = await getChecklistObject("onboarding");
+
+  if (checklistOnboardingObject) {
+    const progress = await computeProgress(
       userEventIds,
-      checklistObject,
+      checklistOnboardingObject,
     );
     onboarding = {
       progress,
       userEvents,
-      checklistObject,
+      checklistObject: checklistOnboardingObject,
+    };
+  }
+
+  let offboarding: MemberPageProps["offboarding"];
+  const checklistOffboardingObject = await getChecklistObject("offboarding");
+  if (checklistOffboardingObject) {
+    const progress = await computeProgress(
+      userEventIds,
+      checklistOffboardingObject,
+    );
+    offboarding = {
+      progress,
+      userEvents,
+      checklistObject: checklistOffboardingObject,
     };
   }
 
@@ -75,6 +91,7 @@ export default async function Page() {
       canValidateMember={false}
       isCurrentUser={true}
       onboarding={onboarding}
+      offboarding={offboarding}
       incubators={incubators}
     />
   );

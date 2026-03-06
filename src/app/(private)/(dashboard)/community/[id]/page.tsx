@@ -10,8 +10,8 @@ import MemberPage, {
 import { getUserEvents } from "@/lib/kysely/queries/userEvents";
 import { userInfos } from "@/server/controllers/utils";
 import { authOptions } from "@/utils/authoptions";
-import { computeOnboardingProgress } from "@/utils/onboarding/computeOnboardingProgress";
-import { getChecklistObject } from "@/utils/onboarding/getChecklistObject";
+import { computeProgress } from "@/utils/checklists/computeProgress";
+import { getChecklistObject } from "@/utils/checklists/getChecklistObject";
 import { getUserIncubators } from "@/lib/kysely/queries/users";
 import { canEditMember as _canEditMember } from "@/lib/canEditMember";
 
@@ -77,19 +77,35 @@ export default async function Page({
   const canValidateMember =
     canEditMember && !(session.user.uuid === user.userInfos.uuid);
 
-  let onboarding: MemberPageProps["onboarding"];
   const userEvents = await getUserEvents(user.userInfos.uuid);
-  const checklistObject = await getChecklistObject();
-  if (checklistObject) {
-    const userEventIds = userEvents.map((u) => u.field_id);
-    const progress = await computeOnboardingProgress(
+  const userEventIds = userEvents.map((u) => u.field_id);
+
+  let onboarding: MemberPageProps["onboarding"];
+  const checklistOnboardingObject = await getChecklistObject("onboarding");
+  if (checklistOnboardingObject) {
+    const progress = await computeProgress(
       userEventIds,
-      checklistObject,
+      checklistOnboardingObject,
     );
     onboarding = {
       progress,
       userEvents,
-      checklistObject,
+      checklistObject: checklistOnboardingObject,
+    };
+  }
+
+  let offboarding: MemberPageProps["offboarding"];
+  const checklistOffboardingObject = await getChecklistObject("offboarding");
+  if (checklistOffboardingObject) {
+    const userEventIds = userEvents.map((u) => u.field_id);
+    const progress = await computeProgress(
+      userEventIds,
+      checklistOffboardingObject,
+    );
+    offboarding = {
+      progress,
+      userEvents,
+      checklistObject: checklistOffboardingObject,
     };
   }
 
@@ -119,6 +135,7 @@ export default async function Page({
         sentryInfo={userInformations.sentryInfo}
         startups={userInformations.startups}
         onboarding={onboarding}
+        offboarding={offboarding}
         incubators={incubators}
       />
     </>

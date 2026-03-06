@@ -9,7 +9,7 @@ import { checklistSchemaType } from "@/models/checklist";
 import { userEventSchemaType } from "@/models/userEvent";
 import { computeProgress } from "@/utils/checklists/computeProgress";
 
-export const OnboardingTabPanel = ({
+export const OffboardingTabPanel = ({
   userEvents,
   userInfos,
   checklistObject,
@@ -33,8 +33,8 @@ export const OnboardingTabPanel = ({
   return (
     <>
       <p>
-        Bienvenue dans la communauté ! Cette checklist est là pour t'aider à
-        bien débuter ta mission chez beta.gouv.fr.
+        Ho no, tu nous quittes déjà ! Cette checklist est là pour t'aider à bien
+        finaliser ta mission chez beta.gouv.fr.
       </p>
       <ProgressBar
         progress={progress}
