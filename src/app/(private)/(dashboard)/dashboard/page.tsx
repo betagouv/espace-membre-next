@@ -15,8 +15,8 @@ import {
 } from "@/lib/kysely/queries/users";
 import { userInfosToModel } from "@/models/mapper";
 import { EmailStatusCode } from "@/models/member";
-import { computeOnboardingProgress } from "@/utils/onboarding/computeOnboardingProgress";
-import { getChecklistObject } from "@/utils/onboarding/getChecklistObject";
+import { computeProgress } from "@/utils/checklists/computeProgress";
+import { getChecklistObject } from "@/utils/checklists/getChecklistObject";
 import { routeTitles } from "@/utils/routes/routeTitles";
 import { getServerSession } from "next-auth";
 import { authOptions } from "@/utils/authoptions";
@@ -59,13 +59,10 @@ export default async function Page(props) {
   let onboarding: DashboardPageProps["onboarding"];
   if (userInfos.created_at >= new Date("2025-01-01")) {
     const userEvents = await getUserEvents(session.user.uuid);
-    const checklistObject = await getChecklistObject();
+    const checklistObject = await getChecklistObject("onboarding");
     if (checklistObject) {
       const userEventIds = userEvents.map((u) => u.field_id);
-      const progress = await computeOnboardingProgress(
-        userEventIds,
-        checklistObject,
-      );
+      const progress = await computeProgress(userEventIds, checklistObject);
       onboarding =
         progress !== 100
           ? {

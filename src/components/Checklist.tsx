@@ -5,7 +5,7 @@ import MarkdownIt from "markdown-it";
 
 import { safeUpdateUserEvent } from "@/app/api/member/actions/updateUserEvent";
 import { Domaine } from "@/models/member";
-import { onboardingChecklistSchemaType } from "@/models/onboardingChecklist";
+import { checklistSchemaType } from "@/models/checklist";
 import Accordion from "@codegouvfr/react-dsfr/Accordion";
 
 const mdParser = new MarkdownIt({
@@ -26,7 +26,7 @@ export default function Checklist({
   userUuid,
 }: {
   domaine: Domaine;
-  sections: onboardingChecklistSchemaType;
+  sections: checklistSchemaType;
   userEventIds: string[];
   handleUserEventIdsChange: (eventIds: string[]) => void;
   userUuid: string;

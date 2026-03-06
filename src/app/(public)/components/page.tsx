@@ -12,7 +12,7 @@ import {
 import { EMAIL_PLAN_TYPE } from "@/models/ovh";
 import { ACCOUNT_SERVICE_STATUS } from "@/models/services";
 import Checklist from "@/components/Checklist";
-import { getChecklistObject } from "@/utils/onboarding/getChecklistObject";
+import { getChecklistObject } from "@/utils/checklists/getChecklistObject";
 
 export const metadata: Metadata = {
   title: `Components Demo`,
