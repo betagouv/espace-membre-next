@@ -159,7 +159,8 @@ const sampleMember: { member: MemberPageProps } = {
 };
 
 export default async function Page() {
-  const checklistObject = await getChecklistObject();
+  const checklistOnboardingObject = await getChecklistObject("onboarding");
+  const checklistOffboardingObject = await getChecklistObject("offboarding");
 
   return (
     <div className={fr.cx("fr-col-12")}>
@@ -171,7 +172,12 @@ export default async function Page() {
         onboarding={{
           progress: 2,
           userEvents: [],
-          checklistObject: checklistObject!,
+          checklistObject: checklistOnboardingObject!,
+        }}
+        offboarding={{
+          progress: 2,
+          userEvents: [],
+          checklistObject: checklistOffboardingObject!,
         }}
       />
       <hr />
@@ -256,7 +262,12 @@ export default async function Page() {
         onboarding={{
           progress: 2,
           userEvents: [],
-          checklistObject: checklistObject!,
+          checklistObject: checklistOnboardingObject!,
+        }}
+        offboarding={{
+          progress: 2,
+          userEvents: [],
+          checklistObject: checklistOffboardingObject!,
         }}
       />
       <hr />
