@@ -51,16 +51,16 @@ export const WebMailButtons = ({ plan }: { plan: EMAIL_PLAN_TYPE }) => {
       </Button>
       {plan === EMAIL_PLAN_TYPE.EMAIL_PLAN_OPI && (
         <Button
-          title="Envoyer un email à support-messagerie@mail.numerique.gouv.fr"
+          title="Envoyer un email à support-messagerie@numerique.gouv.fr"
           linkProps={{
-            href: "mailto:support-messagerie@mail.numerique.gouv.fr",
+            href: "mailto:support-messagerie@numerique.gouv.fr",
           }}
           iconId="ri-question-fill"
           priority="secondary"
           size="small"
           className={fr.cx("fr-ml-1w")}
         >
-          Support : support-messagerie@mail.numerique.gouv.fr
+          Support : support-messagerie@numerique.gouv.fr
         </Button>
       )}
     </>
