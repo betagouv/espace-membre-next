@@ -39,6 +39,12 @@ const mdParser = new MarkdownIt({
   breaks: true,
 });
 
+interface UserChecklist {
+  progress: number;
+  checklistObject: checklistSchemaType;
+  userEvents: userEventSchemaType[];
+}
+
 export interface MemberPageProps {
   avatar: string | undefined;
   emailInfos: memberWrapperSchemaType["emailInfos"];
@@ -59,16 +65,8 @@ export interface MemberPageProps {
   canValidateMember: boolean;
   isAdmin: boolean;
   isCurrentUser: boolean;
-  onboarding?: {
-    progress: number;
-    checklistObject: checklistSchemaType;
-    userEvents: userEventSchemaType[];
-  };
-  offboarding?: {
-    progress: number;
-    checklistObject: checklistSchemaType;
-    userEvents: userEventSchemaType[];
-  };
+  onboarding?: UserChecklist;
+  offboarding?: UserChecklist;
   incubators: Awaited<ReturnType<typeof getUserIncubators>>;
 }
 
