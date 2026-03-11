@@ -1,64 +1,64 @@
 - title: "🏁 Dès l'officialisation de la fin de mission"
   items:
-    - id: lire-doc-desembarquement
+    - id: offboarding-lire-doc-desembarquement
       title: "[Lire la documentation sur la gestion de son désembarquement](https://doc.incubateur.net/communaute/travailler-chez-beta.gouv.fr/je-quitte-beta.gouv.fr)"
-    - id: informer-titulaire-marche
+    - id: offboarding-informer-titulaire-marche
       title: Informer le.a titulaire du marché public si ce n'est pas déjà fait
-    - id: informer-responsables-incubateur
+    - id: offboarding-informer-responsables-incubateur
       title: Informer les responsables de l'incubateur si ce n'est pas déjà fait
-    - id: informer-equipe-produit
+    - id: offboarding-informer-equipe-produit
       title: Informer les membres de l'équipe produit
-    - id: plan-passation
+    - id: offboarding-plan-passation
       title: Co-préparer ton plan de passation avec le.a responsable de l'équipe produit
 - title: "⏮️ Le dernier mois"
   items:
-    - id: transfert-connaissances
+    - id: offboarding-transfert-connaissances
       title: Consigner et transmettre toutes tes connaissances liées au projet aux autres membres
-    - id: transfert-taches
+    - id: offboarding-transfert-taches
       title: "Transmettre l'ensemble de tes tâches/missions et responsabilités aux autres membres de l'équipe"
-    - id: transfert-reseau
+    - id: offboarding-transfert-reseau
       title: "Transmettre l'ensemble des informations liées à ton réseau relationnel propre au projet (sponsors, contacts, prestataires) aux autres membres de l'équipe"
-    - id: echanges-structures
+    - id: offboarding-echanges-structures
       title: Organiser des temps d'échanges structurés et obtenir une validation explicite de la compréhension des sujets par les autres membres de l'équipe
-    - id: droits-admin
+    - id: offboarding-droits-admin
       title: Transmettre tes droits d'administrateur des plateformes que tu utilises
-    - id: date-depart-espace-membre
+    - id: offboarding-date-depart-espace-membre
       title: Renseigner ta date de départ exacte dans ton espace membre
-    - id: retirer-droits-agenda
+    - id: offboarding-retirer-droits-agenda
       title: Retirer tes droits d'écriture de l'agenda public de l'incubateur
 - title: "👋 Les derniers jours"
   items:
-    - id: verifier-blocages
+    - id: offboarding-verifier-blocages
       title: Vérifier qu'il ne reste aucun potentiel blocage critique lié à ta fin de mission
-    - id: livrer-livrables
+    - id: offboarding-livrer-livrables
       title: Livrer tes derniers livrables de mission (au standard définis lors de la prise de commande)
-    - id: rapport-services-faits
+    - id: offboarding-rapport-services-faits
       title: Livrer au titulaire du marché public ton dernier rapport de services faits
-    - id: echange-sortie-responsable
+    - id: offboarding-echange-sortie-responsable
       title: Organiser ton échange de sortie avec le.a responsable de l'équipe produit
-    - id: echange-sortie-titulaire
+    - id: offboarding-echange-sortie-titulaire
       title: Organiser ton échange de sortie avec le.a titulaire du marché public
-    - id: quitter-vaultwarden
+    - id: offboarding-quitter-vaultwarden
       title: "Si tu utilises Vaultwarden : partager les mots de passes utiles avec mon équipe et supprimer mon compte"
-    - id: quitter-github
+    - id: offboarding-quitter-github
       title: "Si tu utilises GitHub : quitter l'organisation BetaGouv"
-    - id: quitter-scalingo
+    - id: offboarding-quitter-scalingo
       title: "Si tu utilises Scalingo : quitter l'organisation BetaGouv"
-    - id: desactiver-mattermost
+    - id: offboarding-desactiver-mattermost
       title: Désactiver ton compte Mattermost lié à ton adresse beta.gouv
-    - id: desactiver-comptes
+    - id: offboarding-desactiver-comptes
       title: Désactiver tous tes comptes ou abonnements liés à ta mission
-    - id: rediriger-email
+    - id: offboarding-rediriger-email
       title: "Rediriger ton adresse @beta.gouv.fr vers departs@beta.gouv.fr en le demandant sur #incubateur-secretariat"
-    - id: rendre-badges
+    - id: offboarding-rendre-badges
       title: Rendre les badges d'accès aux locaux (Ségur, Plateforme de l'inclusion etc)
 - title: "Pour aller plus loin"
   items:
-    - id: retour-experience
+    - id: offboarding-retour-experience
       title: Remplir mon [retour d'expérience au sein de la communauté](https://grist.numerique.gouv.fr/o/isn/forms/jGrwi97QpXsRynJpCEubxj/4)
-    - id: canal-alumnis
+    - id: offboarding-canal-alumnis
       title: "T'inscrire au canal Mattermost des Alumnis de la communauté"
-    - id: infolettre
+    - id: offboarding-infolettre
       title: "T'inscrire à l'infolettre de la communauté avec les coordonnées de ton choix"
-    - id: forum-mensuel
+    - id: offboarding-forum-mensuel
       title: "T'inscrire au prochain forum mensuel de la communauté"

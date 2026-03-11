@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, ReactNode } from "react";
 
 import { fr } from "@codegouvfr/react-dsfr";
 
@@ -9,14 +9,16 @@ import { checklistSchemaType } from "@/models/checklist";
 import { userEventSchemaType } from "@/models/userEvent";
 import { computeProgress } from "@/utils/checklists/computeProgress";
 
-export const OnboardingTabPanel = ({
+export const ChecklistTabPanel = ({
   userEvents,
   userInfos,
   checklistObject,
+  intro,
 }: {
   userEvents: userEventSchemaType[];
   checklistObject: checklistSchemaType;
   userInfos: memberWrapperSchemaType["userInfos"];
+  intro: ReactNode;
 }) => {
   const [userEventIds, setUserEventIds] = useState<string[]>(
     userEvents
@@ -32,10 +34,7 @@ export const OnboardingTabPanel = ({
 
   return (
     <>
-      <p>
-        Bienvenue dans la communauté ! Cette checklist est là pour t'aider à
-        bien débuter ta mission chez beta.gouv.fr.
-      </p>
+      {intro}
       <ProgressBar
         progress={progress}
         className={fr.cx("fr-mt-4w", "fr-mb-4w")}
