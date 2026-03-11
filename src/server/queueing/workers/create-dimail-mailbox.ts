@@ -5,7 +5,7 @@ import { db } from "@/lib/kysely";
 import { getUserBasicInfo } from "@/lib/kysely/queries/users";
 import { CreateDimailAdressDataSchemaType } from "@/models/jobs/services";
 import { EmailStatusCode } from "@/models/member";
-import { createMailbox, createAlias } from "@lib/dimail/client";
+import { createMailbox, createAlias, createIdentity } from "@lib/dimail/client";
 import {
   getDimailUsernameForUser,
   DIMAIL_MAILBOX_DOMAIN,
@@ -161,6 +161,16 @@ export async function createDimailMailboxForUser(userUuid: string) {
             oc.column("email").doUpdateSet({ status: "enabled" }),
           )
           .execute();
+
+        // Add identity for the alias
+        await createIdentity({
+          domain_name: DIMAIL_MAILBOX_DOMAIN,
+          user_name: userName,
+          identity: legacyEmail,
+        });
+        console.info(
+          `Created DIMAIL identity: ${legacyEmail} for ${userName}@${DIMAIL_MAILBOX_DOMAIN}`,
+        );
       } catch (e: any) {
         console.error(
           `Error creating DIMAIL alias ${legacyUserName}@${DIMAIL_MAILBOX_DOMAIN} -> ${mailboxInfos.email} : ${e.message}`,
