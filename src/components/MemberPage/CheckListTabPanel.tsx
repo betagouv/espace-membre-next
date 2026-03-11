@@ -33,7 +33,6 @@ export const ChecklistTabPanel = ({
   useEffect(() => {
     setProgress(computeProgress(userEventIds, checklistObject));
   }, [userEventIds, checklistObject]);
-
   return (
     <>
       {intro}
@@ -42,6 +41,7 @@ export const ChecklistTabPanel = ({
         className={fr.cx("fr-mt-4w", "fr-mb-4w")}
       />
       <Checklist
+        readOnly={readOnly}
         userUuid={userInfos.uuid}
         userEventIds={userEventIds}
         handleUserEventIdsChange={setUserEventIds}
