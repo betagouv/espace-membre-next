@@ -3,6 +3,7 @@
     "noErrorTruncation": true,
     "target": "esnext",
     "lib": ["dom", "dom.iterable", "esnext"],
+    "types": ["mocha", "chai"],
     "allowJs": true,
     "skipLibCheck": true,
     "strict": true,
