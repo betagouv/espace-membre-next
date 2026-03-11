@@ -39,7 +39,7 @@ const mdParser = new MarkdownIt({
   breaks: true,
 });
 
-interface UserChecklist {
+export interface UserChecklist {
   progress: number;
   checklistObject: checklistSchemaType;
   userEvents: userEventSchemaType[];
