@@ -24,12 +24,14 @@ export default function Checklist({
   userEventIds,
   handleUserEventIdsChange,
   userUuid,
+  readOnly,
 }: {
   domaine: Domaine;
   sections: checklistSchemaType;
   userEventIds: string[];
   handleUserEventIdsChange: (eventIds: string[]) => void;
   userUuid: string;
+  readOnly: boolean;
 }) {
   const isVisible = (domaines?: string[]) => {
     if (!domaines) return true;
@@ -57,9 +59,12 @@ export default function Checklist({
   return (
     <div>
       {sections.map((section, i) => {
+        const expand =
+          i === 0 ||
+          section.items.filter((i) => userEventIds.includes(i.id)).length > 0;
         if (!isVisible(section.domaines)) return null;
         return (
-          <Accordion key={i} label={section.title} defaultExpanded={i === 0}>
+          <Accordion key={i} label={section.title} defaultExpanded={expand}>
             <Checkbox
               options={section.items.map((item, index) => ({
                 label: (
@@ -72,7 +77,7 @@ export default function Checklist({
                 nativeInputProps: {
                   name: `checkboxes-${index}`,
                   value: item.id,
-                  disabled: item.disabled,
+                  disabled: item.disabled || readOnly,
                   defaultChecked:
                     item.defaultValue || userEventIds.includes(item.id),
                   onChange: (e) => onChange(e, item.id),

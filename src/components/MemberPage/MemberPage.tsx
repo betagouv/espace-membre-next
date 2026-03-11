@@ -185,6 +185,7 @@ export default function MemberPage({
       tabId: "embarquement",
       content: (
         <ChecklistTabPanel
+          readOnly={!canEditMember}
           userEvents={onboarding.userEvents}
           userInfos={userInfos}
           checklistObject={onboarding.checklistObject}
@@ -203,6 +204,7 @@ export default function MemberPage({
       tabId: "desembarquement",
       content: (
         <ChecklistTabPanel
+          readOnly={!canEditMember}
           userEvents={offboarding.userEvents}
           userInfos={userInfos}
           checklistObject={offboarding.checklistObject}
