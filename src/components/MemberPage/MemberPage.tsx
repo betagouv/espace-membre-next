@@ -26,12 +26,11 @@ import LastChange from "../LastChange";
 import { FicheHeader } from "../FicheHeader";
 import { MemberWaitingValidationNotice } from "./MemberWaitingValidationNotice";
 import { MemberWaitingEmailVerificationNotice } from "./MemberWaitingEmailVerificationNotice";
-import { OnboardingTabPanel } from "./OnboardingTabPanel";
-import { OffboardingTabPanel } from "./OffboardingTabPanel";
 import { userEventSchemaType } from "@/models/userEvent";
 
 //@ts-ignore
 import "./MemberPage.css";
+import { ChecklistTabPanel } from "./CheckListTabPanel";
 
 const mdParser = new MarkdownIt({
   html: true,
@@ -185,10 +184,16 @@ export default function MemberPage({
       isDefault: tab === "embarquement",
       tabId: "embarquement",
       content: (
-        <OnboardingTabPanel
+        <ChecklistTabPanel
           userEvents={onboarding.userEvents}
           userInfos={userInfos}
           checklistObject={onboarding.checklistObject}
+          intro={
+            <p>
+              Bienvenue dans la communauté ! Cette checklist est là pour t'aider
+              à bien débuter ta mission chez beta.gouv.fr.
+            </p>
+          }
         />
       ),
     },
@@ -197,10 +202,16 @@ export default function MemberPage({
       isDefault: tab === "desembarquement",
       tabId: "desembarquement",
       content: (
-        <OffboardingTabPanel
+        <ChecklistTabPanel
           userEvents={offboarding.userEvents}
           userInfos={userInfos}
           checklistObject={offboarding.checklistObject}
+          intro={
+            <p>
+              Lorque viendra le moment de quitter la communauté, voici comment
+              procéder.
+            </p>
+          }
         />
       ),
     },
