@@ -243,7 +243,7 @@ const betaOVH = {
     try {
       return OvhResponderSchema.parse(await ovh.requestPromised("GET", url));
     } catch (err) {
-      console.log(typeof err);
+      console.log(err);
       if ((err as { error: number }).error === 404) {
         return null;
       } else {
