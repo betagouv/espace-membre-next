@@ -22,6 +22,7 @@ import { getServerSession } from "next-auth";
 import { authOptions } from "@/utils/authoptions";
 import betagouv from "@/server/betagouv";
 import { EMAIL_PLAN_TYPE } from "@/models/ovh";
+import { getUserChecklists } from "@/utils/checklists/getUserChecklists";
 
 export const metadata: Metadata = {
   title: `${routeTitles.dashboard()} / Espace Membre`,
@@ -56,20 +57,11 @@ export default async function Page(props) {
     (emailInfos?.emailPlan === EMAIL_PLAN_TYPE.EMAIL_PLAN_PRO ||
       emailInfos?.emailPlan === EMAIL_PLAN_TYPE.EMAIL_PLAN_BASIC ||
       emailInfos?.emailPlan === EMAIL_PLAN_TYPE.EMAIL_PLAN_EXCHANGE);
+
   let onboarding: DashboardPageProps["onboarding"];
   if (userInfos.created_at >= new Date("2025-01-01")) {
-    const userEvents = await getUserEvents(session.user.uuid);
-    const checklistObject = await getChecklistObject("onboarding");
-    if (checklistObject) {
-      const userEventIds = userEvents.map((u) => u.field_id);
-      const progress = await computeProgress(userEventIds, checklistObject);
-      onboarding =
-        progress !== 100
-          ? {
-              progress,
-            }
-          : undefined;
-    }
+    const checklists = await getUserChecklists(session.user.uuid);
+    onboarding = checklists.onboarding;
   }
   return (
     <DashboardPage
