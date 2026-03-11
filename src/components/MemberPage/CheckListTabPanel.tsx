@@ -14,11 +14,13 @@ export const ChecklistTabPanel = ({
   userInfos,
   checklistObject,
   intro,
+  readOnly,
 }: {
   userEvents: userEventSchemaType[];
   checklistObject: checklistSchemaType;
   userInfos: memberWrapperSchemaType["userInfos"];
   intro: ReactNode;
+  readOnly: boolean;
 }) => {
   const [userEventIds, setUserEventIds] = useState<string[]>(
     userEvents

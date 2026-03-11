@@ -4,16 +4,12 @@ import { getServerSession } from "next-auth/next";
 
 import { getUserInformations } from "@/app/api/member/getInfo";
 import { BreadCrumbFiller } from "@/app/BreadCrumbProvider";
-import MemberPage, {
-  MemberPageProps,
-} from "@/components/MemberPage/MemberPage";
-import { getUserEvents } from "@/lib/kysely/queries/userEvents";
+import MemberPage from "@/components/MemberPage/MemberPage";
 import { userInfos } from "@/server/controllers/utils";
 import { authOptions } from "@/utils/authoptions";
-import { computeProgress } from "@/utils/checklists/computeProgress";
-import { getChecklistObject } from "@/utils/checklists/getChecklistObject";
 import { getUserIncubators } from "@/lib/kysely/queries/users";
 import { canEditMember as _canEditMember } from "@/lib/canEditMember";
+import { getUserChecklists } from "@/utils/checklists/getUserChecklists";
 
 type Props = {
   params: { id: string };
@@ -77,37 +73,9 @@ export default async function Page({
   const canValidateMember =
     canEditMember && !(session.user.uuid === user.userInfos.uuid);
 
-  const userEvents = await getUserEvents(user.userInfos.uuid);
-  const userEventIds = userEvents.map((u) => u.field_id);
-
-  let onboarding: MemberPageProps["onboarding"];
-  const checklistOnboardingObject = await getChecklistObject("onboarding");
-  if (checklistOnboardingObject) {
-    const progress = await computeProgress(
-      userEventIds,
-      checklistOnboardingObject,
-    );
-    onboarding = {
-      progress,
-      userEvents,
-      checklistObject: checklistOnboardingObject,
-    };
-  }
-
-  let offboarding: MemberPageProps["offboarding"];
-  const checklistOffboardingObject = await getChecklistObject("offboarding");
-  if (checklistOffboardingObject) {
-    const userEventIds = userEvents.map((u) => u.field_id);
-    const progress = await computeProgress(
-      userEventIds,
-      checklistOffboardingObject,
-    );
-    offboarding = {
-      progress,
-      userEvents,
-      checklistObject: checklistOffboardingObject,
-    };
-  }
+  const { onboarding, offboarding } = await getUserChecklists(
+    user.userInfos.uuid,
+  );
 
   const incubators = await getUserIncubators(userInformations.baseInfo.uuid);
 
