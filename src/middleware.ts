@@ -15,7 +15,7 @@ export async function verifyAuth(req: NextRequest) {
     req.cookies.get("__Secure-next-auth.session-token")
   )?.value;
 
-  if (!token) throw new Error("Missing user token");
+  if (!token) throw new Error(`Missing user token for ${req.url}`);
 
   try {
     // here we use jwtVerify from jose, because jwt verify from jsonwebtoken use
