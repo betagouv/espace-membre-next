@@ -45,7 +45,7 @@
     - id: offboarding-desactiver-comptes
       title: Désactiver tous tes comptes ou abonnements liés à ta mission
     - id: offboarding-rediriger-email
-      title: "Rediriger ton adresse @beta.gouv.fr vers departs@beta.gouv.fr en le demandant sur #incubateur-secretariat"
+      title: "Sur [#incubateur-secretariat](https://mattermost.incubateur.net/betagouv/channels/incubateur-secretariat), demander à ce qu'on rediriger ton adresse @beta.gouv.fr vers departs@beta.gouv.fr"
     - id: offboarding-rendre-badges
       title: Rendre les badges d'accès aux locaux (Ségur, Plateforme de l'inclusion etc)
 - title: "Pour aller plus loin"
