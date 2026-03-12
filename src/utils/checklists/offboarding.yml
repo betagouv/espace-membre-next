@@ -33,7 +33,7 @@
     - id: offboarding-livrer-livrables
       title: Livrer tes derniers livrables de mission (au standard définis lors de la prise de commande)
     - id: offboarding-rapport-services-faits
-      title: Livrer au titulaire du marché public ton dernier rapport de services faits
+      title: Livrer ton dernier rapport de services faits au titulaire du marché public 
     - id: offboarding-echange-sortie-responsable
       title: Organiser ton échange de sortie avec le.a responsable de l'équipe produit
     - id: offboarding-echange-sortie-titulaire
