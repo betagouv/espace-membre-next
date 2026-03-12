@@ -41,7 +41,7 @@
     - id: offboarding-quitter-vaultwarden
       title: "Si tu utilises Vaultwarden : partager les mots de passes utiles avec ton équipe et [supprimer ton compte](https://vaultwarden.incubateur.net/#/settings/account)"
     - id: offboarding-quitter-scalingo
-      title: "Si tu utilises Scalingo : quitter l'organisation BetaGouv"
+      title: "Si tu utilises Scalingo : [supprimer ton compte](https://dashboard.scalingo.com/account/authentication)"
     - id: offboarding-desactiver-comptes
       title: Désactiver tous tes comptes ou abonnements liés à ta mission
     - id: offboarding-rediriger-email
