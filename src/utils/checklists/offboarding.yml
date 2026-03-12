@@ -39,7 +39,7 @@
     - id: offboarding-echange-sortie-titulaire
       title: Organiser ton échange de sortie avec le.a titulaire du marché public
     - id: offboarding-quitter-vaultwarden
-      title: "Si tu utilises Vaultwarden : partager les mots de passes utiles avec mon équipe et supprimer mon compte"
+      title: "Si tu utilises Vaultwarden : partager les mots de passes utiles avec ton équipe et supprimer ton compte"
     - id: offboarding-quitter-scalingo
       title: "Si tu utilises Scalingo : quitter l'organisation BetaGouv"
     - id: offboarding-desactiver-comptes
