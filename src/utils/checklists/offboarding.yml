@@ -13,7 +13,7 @@
 - title: "⏮️ Le dernier mois"
   items:
     - id: offboarding-transfert-connaissances
-      title: Consigner et transmettre toutes tes connaissances liées au projet aux autres membres
+      title: Consigner et transmettre aux autres membres toutes tes connaissances liées au projet 
     - id: offboarding-transfert-taches
       title: "Transmettre l'ensemble de tes tâches/missions et responsabilités aux autres membres de l'équipe"
     - id: offboarding-transfert-reseau
