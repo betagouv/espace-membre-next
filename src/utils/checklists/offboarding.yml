@@ -3,7 +3,7 @@
     - id: offboarding-lire-doc-desembarquement
       title: "[Lire la documentation sur la gestion de son désembarquement](https://doc.incubateur.net/communaute/travailler-chez-beta.gouv.fr/je-quitte-beta.gouv.fr)"
     - id: offboarding-informer-titulaire-marche
-      title: Informer le.a titulaire du marché public si ce n'est pas déjà fait
+      title: Informer le.a titulaire du marché public
     - id: offboarding-informer-responsables-incubateur
       title: Informer les responsables de l'incubateur si ce n'est pas déjà fait
     - id: offboarding-informer-equipe-produit
