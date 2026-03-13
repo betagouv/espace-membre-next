@@ -155,7 +155,7 @@
     "ts-node-dev": "^2.0.0",
     "tsconfig-paths": "^4.2.0",
     "ttsc": "^0.3.1",
-    "typescript": "^5.5.3",
+    "typescript": "^5.9.3",
     "typescript-transform-paths": "^3.4.6"
   }
 }
