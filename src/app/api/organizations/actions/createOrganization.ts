@@ -13,6 +13,7 @@ import {
   organizationUpdateSchema,
 } from "@/models/actions/organization";
 import { authOptions } from "@/utils/authoptions";
+import { AuthorizationError, UnwrapPromise, withErrorHandling } from "@/utils/error";
 
 export async function createOrganization({
   organization,
@@ -21,7 +22,7 @@ export async function createOrganization({
 }) {
   const session = await getServerSession(authOptions);
   if (!session || !session.user.id) {
-    throw new Error(`You don't have the right to access this function`);
+    throw new AuthorizationError();
   }
   organizationUpdateSchema.parse(organization);
   await db.transaction().execute(async (trx) => {
@@ -55,3 +56,8 @@ export async function createOrganization({
     });
   });
 }
+
+export const safeCreateOrganization = withErrorHandling<
+  UnwrapPromise<ReturnType<typeof createOrganization>>,
+  Parameters<typeof createOrganization>
+>(createOrganization);

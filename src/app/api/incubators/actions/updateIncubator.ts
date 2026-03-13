@@ -5,7 +5,7 @@ import { revalidatePath } from "next/cache";
 import { getServerSession } from "next-auth";
 
 import { db } from "@/lib/kysely";
-import { incubatorUpdateSchemaType } from "@/models/actions/incubator";
+import { incubatorUpdateSchema, incubatorUpdateSchemaType } from "@/models/actions/incubator";
 import { incubatorSchemaType } from "@/models/incubator";
 import { authOptions } from "@/utils/authoptions";
 import {
@@ -26,6 +26,7 @@ export async function updateIncubator({
   if (!session || !session.user.id) {
     throw new AuthorizationError();
   }
+  incubatorUpdateSchema.shape.incubator.parse(incubator);
   const previousIncubatorData = await db
     .selectFrom("incubators")
     .selectAll()

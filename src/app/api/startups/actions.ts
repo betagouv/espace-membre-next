@@ -26,6 +26,10 @@ import { ca } from "date-fns/locale";
 import { canEditStartup } from "@/lib/canEditStartup";
 
 export async function getStartup({ uuid }: { uuid: string }) {
+  const session = await getServerSession(authOptions);
+  if (!session || !session.user.id) {
+    throw new AuthorizationError();
+  }
   return db
     .selectFrom("startups")
     .selectAll()
