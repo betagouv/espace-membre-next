@@ -18,7 +18,7 @@ import { MemberStatus } from "./MemberStatus";
 import { getUserStartups, getUserIncubators } from "@/lib/kysely/queries/users";
 import { memberWrapperSchemaType } from "@/models/member";
 import { PrivateMemberChangeSchemaType } from "@/models/memberChange";
-import { onboardingChecklistSchemaType } from "@/models/onboardingChecklist";
+import { checklistSchemaType } from "@/models/checklist";
 
 import { matomoUserSchemaType } from "@/models/matomo";
 import { sentryUserSchemaType } from "@/models/sentry";
@@ -26,11 +26,11 @@ import LastChange from "../LastChange";
 import { FicheHeader } from "../FicheHeader";
 import { MemberWaitingValidationNotice } from "./MemberWaitingValidationNotice";
 import { MemberWaitingEmailVerificationNotice } from "./MemberWaitingEmailVerificationNotice";
-import { OnboardingTabPanel } from "./OnboardingTabPanel";
 import { userEventSchemaType } from "@/models/userEvent";
 
 //@ts-ignore
 import "./MemberPage.css";
+import { ChecklistTabPanel } from "./CheckListTabPanel";
 
 const mdParser = new MarkdownIt({
   html: true,
@@ -38,6 +38,12 @@ const mdParser = new MarkdownIt({
   typographer: true,
   breaks: true,
 });
+
+export interface UserChecklist {
+  progress: number;
+  checklistObject: checklistSchemaType;
+  userEvents: userEventSchemaType[];
+}
 
 export interface MemberPageProps {
   avatar: string | undefined;
@@ -59,11 +65,8 @@ export interface MemberPageProps {
   canValidateMember: boolean;
   isAdmin: boolean;
   isCurrentUser: boolean;
-  onboarding?: {
-    progress: number;
-    checklistObject: onboardingChecklistSchemaType;
-    userEvents: userEventSchemaType[];
-  };
+  onboarding?: UserChecklist;
+  offboarding?: UserChecklist;
   incubators: Awaited<ReturnType<typeof getUserIncubators>>;
 }
 
@@ -84,6 +87,7 @@ export default function MemberPage({
   avatar,
   isCurrentUser,
   onboarding,
+  offboarding,
   incubators,
 }: MemberPageProps) {
   const [tab, setTab] = useState<null | string>(null);
@@ -178,10 +182,36 @@ export default function MemberPage({
       isDefault: tab === "embarquement",
       tabId: "embarquement",
       content: (
-        <OnboardingTabPanel
+        <ChecklistTabPanel
+          readOnly={!canEditMember}
           userEvents={onboarding.userEvents}
           userInfos={userInfos}
           checklistObject={onboarding.checklistObject}
+          intro={
+            <p>
+              Bienvenue dans la communauté ! Cette checklist est là pour t'aider
+              à bien débuter ta mission chez beta.gouv.fr.
+            </p>
+          }
+        />
+      ),
+    },
+    offboarding && {
+      label: "Désembarquement",
+      isDefault: tab === "desembarquement",
+      tabId: "desembarquement",
+      content: (
+        <ChecklistTabPanel
+          readOnly={!canEditMember}
+          userEvents={offboarding.userEvents}
+          userInfos={userInfos}
+          checklistObject={offboarding.checklistObject}
+          intro={
+            <p>
+              Lorque viendra le moment de quitter la communauté, voici comment
+              procéder.
+            </p>
+          }
         />
       ),
     },

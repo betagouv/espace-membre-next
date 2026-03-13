@@ -3,16 +3,12 @@ import { redirect } from "next/navigation";
 import { getServerSession } from "next-auth";
 
 import { getUserInformations } from "@/app/api/member/getInfo";
-import MemberPage, {
-  MemberPageProps,
-} from "@/components/MemberPage/MemberPage";
-import { getUserEvents } from "@/lib/kysely/queries/userEvents";
 import { userInfos } from "@/server/controllers/utils";
 import { authOptions } from "@/utils/authoptions";
-import { computeOnboardingProgress } from "@/utils/onboarding/computeOnboardingProgress";
-import { getChecklistObject } from "@/utils/onboarding/getChecklistObject";
 import { routeTitles } from "@/utils/routes/routeTitles";
 import { getUserIncubators } from "@/lib/kysely/queries/users";
+import { getUserChecklists } from "@/utils/checklists/getUserChecklists";
+import MemberPage from "@/components/MemberPage/MemberPage";
 
 export const metadata: Metadata = {
   title: `${routeTitles.account()} / Espace Membre`,
@@ -39,21 +35,9 @@ export default async function Page() {
 
   const isAdmin = !!session.user.isAdmin;
 
-  let onboarding: MemberPageProps["onboarding"];
-  const userEvents = await getUserEvents(session.user.uuid);
-  const checklistObject = await getChecklistObject();
-  if (checklistObject) {
-    const userEventIds = userEvents.map((u) => u.field_id);
-    const progress = await computeOnboardingProgress(
-      userEventIds,
-      checklistObject,
-    );
-    onboarding = {
-      progress,
-      userEvents,
-      checklistObject,
-    };
-  }
+  const { onboarding, offboarding } = await getUserChecklists(
+    session.user.uuid,
+  );
 
   const incubators = await getUserIncubators(userInformations.baseInfo.uuid);
 
@@ -75,6 +59,7 @@ export default async function Page() {
       canValidateMember={false}
       isCurrentUser={true}
       onboarding={onboarding}
+      offboarding={offboarding}
       incubators={incubators}
     />
   );
