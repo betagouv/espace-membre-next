@@ -36,6 +36,7 @@ export async function getStartup({ uuid }: { uuid: string }) {
 export async function createStartup({
   formData: {
     startup,
+    startup_urls,
     startupSponsors,
     startupEvents,
     startupPhases,
@@ -45,6 +46,7 @@ export async function createStartup({
 }: {
   formData: {
     startup: startupInfoUpdateSchemaType["startup"];
+    startup_urls: startupInfoUpdateSchemaType["startup_urls"];
     startupEvents: startupInfoUpdateSchemaType["startupEvents"];
     startupPhases: startupInfoUpdateSchemaType["startupPhases"];
     startupSponsors: startupInfoUpdateSchemaType["startupSponsors"];
@@ -81,6 +83,21 @@ export async function createStartup({
       }
 
       const startupUuid = res.uuid;
+
+      // Insert startup_urls
+      if (startup_urls.length) {
+        await trx
+          .insertInto("startup_urls")
+          .values(
+            startup_urls.map((u) => ({
+              startup_uuid: startupUuid,
+              type: u.type,
+              label: u.label ?? null,
+              url: u.url,
+            })),
+          )
+          .execute();
+      }
 
       // Create new sponsors
       for (const newSponsor of newSponsors) {
@@ -184,6 +201,7 @@ export async function createStartup({
 export async function updateStartup({
   formData: {
     startup,
+    startup_urls,
     startupSponsors,
     startupPhases,
     startupEvents,
@@ -193,6 +211,7 @@ export async function updateStartup({
 }: {
   formData: {
     startup: startupInfoUpdateSchemaType["startup"];
+    startup_urls: startupInfoUpdateSchemaType["startup_urls"];
     startupEvents: startupInfoUpdateSchemaType["startupEvents"];
     startupPhases: startupInfoUpdateSchemaType["startupPhases"];
     startupSponsors: startupInfoUpdateSchemaType["startupSponsors"];
@@ -262,6 +281,25 @@ export async function updateStartup({
       .where("uuid", "=", startupUuid)
       .returning(["uuid", "ghid"])
       .executeTakeFirstOrThrow();
+
+    // replace startup_urls
+    await trx
+      .deleteFrom("startup_urls")
+      .where("startup_uuid", "=", startupUuid)
+      .execute();
+    if (startup_urls.length) {
+      await trx
+        .insertInto("startup_urls")
+        .values(
+          startup_urls.map((u) => ({
+            startup_uuid: startupUuid,
+            type: u.type,
+            label: u.label ?? null,
+            url: u.url,
+          })),
+        )
+        .execute();
+    }
 
     // create new sponsors
     for (const newSponsor of newSponsors) {

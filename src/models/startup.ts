@@ -188,6 +188,52 @@ export const eventSchema = z.object({
 
 export type eventSchemaType = z.infer<typeof eventSchema>;
 
+export const STARTUP_URL_TYPES = [
+  "website",
+  "repository",
+  "stats",
+  "budget",
+  "roadmap",
+  "dashlord",
+  "ecodesign",
+  "tech_audit",
+  "impact",
+  "analyse_risques",
+  "tool",
+  "demo",
+  "support",
+  "other",
+] as const;
+
+export type StartupUrlType = (typeof STARTUP_URL_TYPES)[number];
+
+export const startupUrlSchema = z.object({
+  uuid: z.string().optional(),
+  startup_uuid: z.string().optional(),
+  type: z.enum(STARTUP_URL_TYPES),
+  label: z.string().optional().nullable(),
+  url: z.string().min(1, "L'URL est obligatoire"),
+});
+
+export type startupUrlSchemaType = z.infer<typeof startupUrlSchema>;
+
+export const STARTUP_URL_TYPE_LABELS: Record<StartupUrlType, string> = {
+  website: "Site web",
+  repository: "Dépôt de code",
+  stats: "Statistiques d'usage",
+  budget: "Budget",
+  roadmap: "Roadmap / tickets",
+  dashlord: "Rapport DashLord",
+  ecodesign: "Déclaration d'écoconception",
+  tech_audit: "Audit technique",
+  impact: "Matrice d'impact",
+  analyse_risques: "Analyse de risques",
+  tool: "Outil",
+  demo: "Démo",
+  support: "Support",
+  other: "Autre",
+};
+
 export const startupSchema = z.object({
   uuid: z.string(),
   ghid: z.string(),
@@ -225,37 +271,7 @@ export const startupSchema = z.object({
     .email()
     .min(1)
     .describe("Email de contact du produit"),
-  link: z
-    .string()
-    .describe("URL du site web")
-    .url({
-      message:
-        "L'URL fournie doit respecter le format suivant : https://exemple.com",
-    })
-    .or(z.literal(""))
-    .optional()
-    .nullable(),
-  repository: z
-    .string()
-    .describe("URL du repository pour le code source")
-    .optional()
-    .nullable(),
   accessibility_status: z.string().optional().nullable(),
-  dashlord_url: z
-    .string()
-    .describe("URL du rapport DashLord")
-    .optional()
-    .nullable(),
-  stats_url: z
-    .string()
-    .describe("URL de la page de statistiques d'usage")
-    .optional()
-    .nullable(),
-  budget_url: z
-    .string()
-    .describe("URL de la page de budget")
-    .optional()
-    .nullable(),
   mon_service_securise: z
     .boolean()
     .describe("L'équipe a mené une démarche de sécurité sur MonServiceSécurisé")
@@ -264,11 +280,6 @@ export const startupSchema = z.object({
   analyse_risques: z
     .boolean()
     .describe("Nous avons réalisé une analyse de risque")
-    .optional()
-    .nullable(),
-  analyse_risques_url: z
-    .string()
-    .describe("URL de l'analyse de risque")
     .optional()
     .nullable(),
   // events: z
@@ -316,26 +327,6 @@ export const startupSchema = z.object({
     .union([z.enum(DSFR_STATUSES), z.string()])
     .describe("Implémentation du design systeme de l'état")
     .optional(),
-  tech_audit_url: z
-    .string()
-    .describe("URL de l'audit technique")
-    .optional()
-    .nullable(),
-  roadmap_url: z
-    .string()
-    .describe("URL de la roadmap ou tickets")
-    .optional()
-    .nullable(),
-  ecodesign_url: z
-    .string()
-    .describe("URL de la déclaration d'écoconception")
-    .optional()
-    .nullable(),
-  impact_url: z
-    .string()
-    .describe("URL de la matrice d'impact")
-    .optional()
-    .nullable(),
 });
 
 export type startupSchemaType = z.infer<typeof startupSchema>;
