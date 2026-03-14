@@ -15,6 +15,7 @@ import {
   eventSchemaType,
   phaseSchemaType,
   startupSchemaType,
+  startupUrlSchemaType,
 } from "@/models/startup";
 import { StartupChangeSchemaType } from "@/models/startupChange";
 import { saveImage } from "@/utils/file";
@@ -25,6 +26,7 @@ interface StartupInfoUpdateProps {
   startupSponsors: sponsorSchemaType[];
   startupPhases: phaseSchemaType[];
   startupEvents: eventSchemaType[];
+  startupUrls: startupUrlSchemaType[];
   incubatorOptions: Option[];
   sponsorOptions: Option[];
   heroURL?: string;
@@ -43,6 +45,7 @@ export const StartupInfoUpdate = (props: StartupInfoUpdateProps) => {
       const res = await safeUpdateStartup({
         formData: {
           startup: data.startup,
+          startup_urls: data.startup_urls,
           startupEvents: data.startupEvents,
           startupPhases: data.startupPhases,
           startupSponsors: data.startupSponsors,
@@ -120,6 +123,7 @@ export const StartupInfoUpdate = (props: StartupInfoUpdateProps) => {
             startupSponsors={props.startupSponsors}
             startupPhases={props.startupPhases}
             startupEvents={props.startupEvents}
+            startupUrls={props.startupUrls}
             startup={props.startup}
             heroURL={props.heroURL}
             shotURL={props.shotURL}

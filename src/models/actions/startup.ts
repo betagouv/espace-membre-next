@@ -2,7 +2,12 @@ import { z } from "zod";
 
 import { sponsorSchema } from "../sponsor";
 import { FileType } from "@/lib/file";
-import { eventSchema, phaseSchema, startupSchema } from "@/models/startup";
+import {
+  eventSchema,
+  phaseSchema,
+  startupSchema,
+  startupUrlSchema,
+} from "@/models/startup";
 
 export const startupInfoUpdateSchema = z.object({
   startup: z.object({
@@ -10,15 +15,9 @@ export const startupInfoUpdateSchema = z.object({
     pitch: startupSchema.shape.pitch,
     incubator_id: startupSchema.shape.incubator_id,
     contact: startupSchema.shape.contact,
-    link: startupSchema.shape.link,
-    repository: startupSchema.shape.repository,
     accessibility_status: startupSchema.shape.accessibility_status,
-    dashlord_url: startupSchema.shape.dashlord_url,
-    stats_url: startupSchema.shape.stats_url,
-    budget_url: startupSchema.shape.budget_url,
     mon_service_securise: startupSchema.shape.mon_service_securise,
     analyse_risques: startupSchema.shape.analyse_risques,
-    analyse_risques_url: startupSchema.shape.analyse_risques_url,
     //  events: startupSchema.shape.events,
     techno: startupSchema.shape.techno,
     usertypes: startupSchema.shape.usertypes,
@@ -29,11 +28,8 @@ export const startupInfoUpdateSchema = z.object({
     has_mobile_app: startupSchema.shape.has_mobile_app,
     is_private_url: startupSchema.shape.is_private_url,
     dsfr_status: startupSchema.shape.dsfr_status,
-    tech_audit_url: startupSchema.shape.tech_audit_url,
-    roadmap_url: startupSchema.shape.roadmap_url,
-    ecodesign_url: startupSchema.shape.ecodesign_url,
-    impact_url: startupSchema.shape.impact_url,
   }),
+  startup_urls: z.array(startupUrlSchema),
   shot: z
     .instanceof(FileType)
     .refine((file) => file.size > 0, "File is required")

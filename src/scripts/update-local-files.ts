@@ -60,21 +60,27 @@ const getChanges = async (markdownData) => {
       ),
     ])
     .execute();
+  const URL_TYPE_TO_YAML: Record<string, string> = {
+    website: "link",
+    repository: "repository",
+    stats: "stats_url",
+    budget: "budget_url",
+    roadmap: "roadmap_url",
+    dashlord: "dashlord_url",
+    ecodesign: "ecodesign_url",
+    tech_audit: "tech_audit_url",
+    impact: "impact_url",
+    analyse_risques: "analyse_risques_url",
+  };
+
   const startupColumns = [
     "startups.ghid",
     "startups.description",
     "startups.accessibility_status",
     "startups.analyse_risques",
-    //"startups.analyse_risques_url",
     "startups.mon_service_securise",
-    "startups.budget_url",
     "startups.contact",
-    "startups.repository",
-    "startups.link",
     "startups.stats",
-    "startups.stats_url",
-    "startups.impact_url",
-    "startups.dashlord_url",
     "startups.name",
     "startups.pitch",
     "startups.thematiques",
@@ -110,6 +116,19 @@ const getChanges = async (markdownData) => {
     ])
     .groupBy([...startupColumns, "startups.uuid", "incubators.ghid"])
     .execute();
+
+  // Fetch all startup_urls grouped by startup_uuid
+  const allStartupUrls = await db
+    .selectFrom("startup_urls")
+    .select(["startup_uuid", "type", "url"])
+    .execute();
+  const urlsByStartup = new Map<string, { type: string; url: string }[]>();
+  for (const row of allStartupUrls) {
+    if (!urlsByStartup.has(row.startup_uuid)) {
+      urlsByStartup.set(row.startup_uuid, []);
+    }
+    urlsByStartup.get(row.startup_uuid)!.push({ type: row.type, url: row.url });
+  }
 
   const userColumns = [
     "users.uuid",
@@ -310,6 +329,15 @@ const getChanges = async (markdownData) => {
       "pitch",
       "uuid",
     ]);
+
+    // Add URL fields from startup_urls table
+    const startupUrlRows = urlsByStartup.get(dbStartup.uuid) || [];
+    for (const { type, url } of startupUrlRows) {
+      const yamlKey = URL_TYPE_TO_YAML[type];
+      if (yamlKey && url) {
+        (dbStartup2 as any)[yamlKey] = url;
+      }
+    }
     if (!ghStartup) {
       // create gh startup
       updates.push({
@@ -339,12 +367,12 @@ const getChanges = async (markdownData) => {
           return;
         }
 
-        const updated = extractValidValues({
+        const updated: any = extractValidValues({
           ...ghStartup2,
           ...dbStartup2,
         });
 
-        updated.link = dbStartup2.link || "";
+        updated.link = (dbStartup2 as any).link || "";
 
         // hack for validation
         updated.phases =

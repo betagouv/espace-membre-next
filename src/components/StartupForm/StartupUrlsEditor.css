@@ -1,0 +1,9 @@
+.table-xs-col-last thead th:first-child {
+  width: 250px;
+}
+.table-xs-col-last thead th:nth-child(2) {
+  width: 250px;
+}
+.table-xs-col-last thead th:last-child {
+  width: 100px;
+}
