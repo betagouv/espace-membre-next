@@ -24,6 +24,7 @@ import {
   EmailTeamComposition,
   HtmlBuilderType,
   SubjectFunction,
+  EmailValidationWaitingRaise,
 } from "@/server/modules/email";
 import {
   DepartureReminderInXDaysEmail,
@@ -132,6 +133,8 @@ const TEMPLATES_BY_TYPE: Record<
   [EMAIL_TYPES.EMAIL_MATOMO_ACCOUNT_UPDATED]: (
     params: EmailMatomoAccountUpdated["variables"],
   ) => MatomoAccountUpdatedEmail(params),
+  [EMAIL_TYPES.EMAIL_VALIDATION_WAITING_RAISE]: null,
+  [EMAIL_TYPES.EMAIL_VERIFICATION_WAITING_RAISE]: null,
 };
 
 const SUBJECTS_BY_TYPE: Record<EmailProps["type"], string | SubjectFunction> = {
@@ -180,6 +183,8 @@ const SUBJECTS_BY_TYPE: Record<EmailProps["type"], string | SubjectFunction> = {
     StartupNewMemberArrivalEmailTitle(),
   [EMAIL_TYPES.EMAIL_MATOMO_ACCOUNT_CREATED]: MatomoAccountCreatedEmailTitle(),
   [EMAIL_TYPES.EMAIL_MATOMO_ACCOUNT_UPDATED]: MatomoAccountUpdatedEmailTitle(),
+  EMAIL_VALIDATION_WAITING_RAISE: "",
+  EMAIL_VERIFICATION_WAITING_RAISE: "",
 };
 
 const MARKDOWN_BY_TYPE: Record<EmailProps["type"], boolean> = {
@@ -208,6 +213,8 @@ const MARKDOWN_BY_TYPE: Record<EmailProps["type"], boolean> = {
   [EMAIL_TYPES.EMAIL_STARTUP_NEW_MEMBER_ARRIVAL]: false,
   [EMAIL_TYPES.EMAIL_MATOMO_ACCOUNT_CREATED]: false,
   [EMAIL_TYPES.EMAIL_MATOMO_ACCOUNT_UPDATED]: false,
+  [EMAIL_TYPES.EMAIL_VALIDATION_WAITING_RAISE]: false,
+  [EMAIL_TYPES.EMAIL_VERIFICATION_WAITING_RAISE]: false,
 };
 
 const htmlBuilder: HtmlBuilderType = {

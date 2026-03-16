@@ -40,6 +40,8 @@ export enum EMAIL_TYPES {
   EMAIL_STARTUP_NEW_MEMBER_ARRIVAL = "EMAIL_STARTUP_NEW_MEMBER_ARRIVAL",
   EMAIL_MATOMO_ACCOUNT_CREATED = "EMAIL_MATOMO_ACCOUNT_CREATED",
   EMAIL_MATOMO_ACCOUNT_UPDATED = "EMAIL_MATOMO_ACCOUNT_UPDATED",
+  EMAIL_VALIDATION_WAITING_RAISE = "EMAIL_VALIDATION_WAITING_RAISE",
+  EMAIL_VERIFICATION_WAITING_RAISE = "EMAIL_VERIFICATION_WAITING_RAISE",
 }
 
 export type SubjectFunction = {
@@ -270,6 +272,20 @@ export type EmailMatomoAccountUpdated = {
   };
 };
 
+export type EmailVerificationWaitingRaise = {
+  type: EMAIL_TYPES.EMAIL_VERIFICATION_WAITING_RAISE;
+  variables: {
+    fullname: string;
+  };
+};
+
+export type EmailValidationWaitingRaise = {
+  type: EMAIL_TYPES.EMAIL_VALIDATION_WAITING_RAISE;
+  variables: {
+    pendingMembers: { username: string; startup?: string; fullname: string }[];
+  };
+};
+
 export type EmailVariants =
   | EmailLogin
   | EmailCreatedEmail
@@ -292,7 +308,9 @@ export type EmailVariants =
   | EmailTeamComposition
   | EmailStartupMembersDidNotChangeInXMonths
   | EmailMatomoAccountCreated
-  | EmailMatomoAccountUpdated;
+  | EmailMatomoAccountUpdated
+  | EmailValidationWaitingRaise
+  | EmailVerificationWaitingRaise;
 
 export type EmailProps = BaseEmail & EmailVariants;
 
@@ -501,5 +519,12 @@ export const EmailDocumentation: Record<
   },
   [EMAIL_TYPES.EMAIL_MATOMO_ACCOUNT_UPDATED]: {
     description: "Notification de mise à jour d’un compte Matomo.",
+  },
+  [EMAIL_TYPES.EMAIL_VALIDATION_WAITING_RAISE]: {
+    description: "Relance notification de compte en attente de validation",
+  },
+  [EMAIL_TYPES.EMAIL_VERIFICATION_WAITING_RAISE]: {
+    description:
+      "Relance notification de compte en attente de verification email",
   },
 };

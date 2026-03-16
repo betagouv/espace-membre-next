@@ -93,6 +93,8 @@ const CRON_TASK_ENV_VAR = {
   FEATURE_DELETE_MATOMO_ACCOUNT: process.env.FEATURE_DELETE_MATOMO_ACCOUNT,
   FEATURE_DELETE_SENTRY_ACCOUNT: process.env.FEATURE_DELETE_SENTRY_ACCOUNT,
   FEATURE_SEND_NEWSLETTER: process.env.FEATURE_SEND_NEWSLETTER === "true",
+  FEATURE_SEND_PENDING_USERS_MESSAGES:
+    process.env.FEATURE_SEND_PENDING_USERS_MESSAGES === "true",
   visitSenderEmail: process.env.VISIT_MAIL_SENDER || "secretariat@beta.gouv.fr",
   visitRecipientEmail:
     process.env.VISIT_MAIL_RECIPIENT || "espace-membre@incubateur.net",
