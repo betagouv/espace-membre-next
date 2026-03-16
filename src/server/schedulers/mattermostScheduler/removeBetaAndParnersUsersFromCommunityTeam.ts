@@ -65,7 +65,7 @@ const MESSAGE_FOR_TYPE: Record<
         
         Si tu n'es effectivement plus dans la communauté, ton compte mattermost sera ajouté à l'espace alumni et retiré de l'espace "Communauté" dans 1 semaine.
         
-        Si tu as des questions ou que tu penses qu'il y a une erreur tu peux écrire à espace-membre@incubateur.net.
+        Si tu as des questions ou que tu penses qu'il y a une erreur tu peux écrire à contact@beta.gouv.fr.
         
         Ceci est un message automatique envoyé par l'app Espace Membre.
     `,
@@ -95,7 +95,7 @@ Sinon il faudrait la mettre à jour. Un membre de ton équipe peut le faire pour
 
 Si tu n'y arrives pas un membre de ton équipe pourra sans doute t'aider.
 
-Sinon n'hésite pas à poser tes questions sur Mattermost dans [~incubateur-help](https://mattermost.incubateur.net/betagouv/channels/incubateur-help) ou à répondre [par email à espace-membre@incubateur.net](mailto:espace-membre@incubateur.net).
+Sinon n'hésite pas à poser tes questions sur Mattermost dans [~incubateur-help](https://mattermost.incubateur.net/betagouv/channels/incubateur-help) ou à répondre [par email à contact@beta.gouv.fr](mailto:contact@beta.gouv.fr).
 
 Ceci est un message automatique envoyé par l'app Espace Membre.
     
@@ -108,7 +108,7 @@ Ceci est un message automatique envoyé par l'app Espace Membre.
 Tu reçois ce message car ta fiche membre beta.gouv.fr à une date de fin à jour, mais l'email lié a ton compte mattermost semble supprimé.
 Tu peux le recréer dans l'[espace membre](https://espace-membre.incubateur.net/) auquel tu peux te connecter avec ton adresse secondaire : ${user?.dbUser?.secondary_email}.
 Dans Compte > Mon email.
-Si tu as des questions tu peux les poser dans [~incubateur-help](https://mattermost.incubateur.net/betagouv/channels/incubateur-help). S'il y a une erreur tu peux écrire à espace-membre@incubateur.net.
+Si tu as des questions tu peux les poser dans [~incubateur-help](https://mattermost.incubateur.net/betagouv/channels/incubateur-help). S'il y a une erreur tu peux écrire à contact@beta.gouv.fr.
         
 Ceci est un message automatique envoyé par l'app Espace Membre
     `;
@@ -121,7 +121,7 @@ Tu reçois ce message car ta fiche membre beta.gouv.fr à une date de fin à jou
 Tu peux le recréer dans l'[espace membre](https://espace-membre.incubateur.net/account) sur la page Compte > Mon Email.
 Tu peux te connecter à l'espace membre avec ton adresse secondaire : ${user?.dbUser?.secondary_email}.
 
-Si tu as des questions tu peux les poser dans [~incubateur-help](https://mattermost.incubateur.net/betagouv/channels/incubateur-help). S'il y a une erreur tu peux écrire à espace-membre@incubateur.net.
+Si tu as des questions tu peux les poser dans [~incubateur-help](https://mattermost.incubateur.net/betagouv/channels/incubateur-help). S'il y a une erreur tu peux écrire à contact@beta.gouv.fr.
         
 Ceci est un message automatique envoyé par l'app Espace Membre
     `;
@@ -134,7 +134,7 @@ Tu reçois ce message car ta fiche membre beta.gouv.fr à une date de fin à jou
 Tu peux le reactiver dans l'[espace membre](https://espace-membre.incubateur.net/) auquel tu peux te connecter avec ton adresse secondaire : ${user?.dbUser?.secondary_email}.
 Il te suffit ensuite de mettre à jour ton mot de passe pour le réactiver : https://espace-membre.incubateur.net/account#password>
 
-Si tu as des questions tu peux les poser dans [~incubateur-help](https://mattermost.incubateur.net/betagouv/channels/incubateur-help). S'il y a une erreur tu peux écrire à espace-membre@incubateur.net.
+Si tu as des questions tu peux les poser dans [~incubateur-help](https://mattermost.incubateur.net/betagouv/channels/incubateur-help). S'il y a une erreur tu peux écrire à contact@beta.gouv.fr.
         
 Ceci est un message automatique envoyé par l'app Espace Membre.
     `;
@@ -166,7 +166,7 @@ Tu reçois ce message car ta fiche membre beta.gouv.fr à une date de fin dépas
 Si c'est normal tu n'as rien a faire et ton compte mattermost sera ajouté à l'espace alumni et retiré de l'espace "Communauté" dans 1 semaine. 
 Sinon il faudrait la mettre à jour. Un membre de ton équipe peut le faire pour toi en allant sur https://${config.host}/community/${user?.dbUser?.username})
 
-Sinon n'hésite pas à poser tes questions sur Mattermost dans [~incubateur-help](https://mattermost.incubateur.net/betagouv/channels/incubateur-help) ou à répondre [par email à espace-membre@incubateur.net](mailto:espace-membre@incubateur.net).
+Sinon n'hésite pas à poser tes questions sur Mattermost dans [~incubateur-help](https://mattermost.incubateur.net/betagouv/channels/incubateur-help) ou à répondre [par email à contact@beta.gouv.fr](mailto:contact@beta.gouv.fr).
 
 Ceci est un message automatique envoyé par l'app Espace Membre.
     
@@ -181,7 +181,7 @@ Tu reçois ce message car ta fiche membre beta.gouv.fr à une date de fin dépas
 Si c'est normal tu n'as rien a faire et ton compte mattermost sera ajouté à l'espace alumni et retiré de l'espace "Communauté" dans 1 mois. 
 Sinon il faudrait la mettre à jour. Un membre de ton équipe peut le faire pour toi en allant sur https://${config.host}/community/${user?.dbUser?.username})
 
-Sinon n'hésite pas à poser tes questions sur Mattermost dans [~incubateur-help](https://mattermost.incubateur.net/betagouv/channels/incubateur-help) ou à répondre [par email à espace-membre@incubateur.net](mailto:espace-membre@incubateur.net).
+Sinon n'hésite pas à poser tes questions sur Mattermost dans [~incubateur-help](https://mattermost.incubateur.net/betagouv/channels/incubateur-help) ou à répondre [par email à contact@beta.gouv.fr](mailto:contact@beta.gouv.fr).
 
 Ceci est un message automatique envoyé par l'app Espace Membre.
     
