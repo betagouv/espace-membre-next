@@ -64,8 +64,8 @@ export function DepartureReminderInXDaysEmail({
             ~incubateur-help
           </a>{" "}
           ou à répondre par email à{" "}
-          <a href="mailto:espace-membre@incubateur.net">
-            espace-membre@incubateur.net
+          <a href="mailto:contact@beta.gouv.fr">
+            contact@beta.gouv.fr
           </a>
           .
         </p>
