@@ -40,6 +40,7 @@ import {
   startupUrlSchemaType,
 } from "@/models/startup";
 
+//@ts-ignore
 import "react-markdown-editor-lite/lib/index.css";
 
 MdEditor.use(MdEditorCustomHeaderPlugin);
@@ -551,6 +552,10 @@ export function StartupForm(props: StartupFormProps) {
           {/*[FILE UPLOAD ]<hr />*/}
 
           <h2>Liens</h2>
+          <p>
+            Tous les liens utiles pour ce produit. Ex: Projets GitHub,
+            documentations, Site web, Liens vers des démos...
+          </p>
           <StartupUrlsEditor
             control={control as any}
             register={register as any}
