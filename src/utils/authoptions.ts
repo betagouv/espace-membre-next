@@ -96,21 +96,23 @@ export const authOptions: NextAuthOptions = {
             .select(["username"])
             .where(({ eb, fn }) =>
               eb.or([
+                eb("primary_email", "ilike", userinfo.email),
+                eb("secondary_email", "ilike", userinfo.email),
+                // also check if user if from one of existing dinum_emails account
                 eb(
-                  fn("lower", ["primary_email"]),
-                  "=",
-                  userinfo.email.toLowerCase(),
-                ),
-                eb(
-                  fn("lower", ["secondary_email"]),
-                  "=",
-                  userinfo.email.toLowerCase(),
+                  "users.uuid",
+                  "in",
+                  eb
+                    .selectFrom("dinum_emails")
+                    .select("user_id")
+                    .distinct()
+                    .where("email", "ilike", userinfo.email),
                 ),
               ]),
             )
             .executeTakeFirst();
           if (!dbUser) {
-            console.error(`ProConnect: no member found for ${userinfo.email}`);
+            console.log(`ProConnect: no member found for ${userinfo.email}`);
             throw new Error("UnknownMember");
           }
           return { ...userinfo, id: dbUser.username };
@@ -154,7 +156,7 @@ export const authOptions: NextAuthOptions = {
           }
           return decoded as JwtPayload;
         } catch (error) {
-          console.error("Erreur lors de la décodification du token:", error);
+          console.log("Erreur lors de la décodification du token:", error);
           return null;
         }
       }
@@ -172,13 +174,13 @@ export const authOptions: NextAuthOptions = {
           },
         });
         if (!dbUser) {
-          console.error(
+          console.log(
             `Il n'y a pas de fiche dans l'espace-membre pour cet email. Un membre de la communauté peut en créer une.`,
           );
           throw new Error("UnknownMember");
         }
         if (checkUserIsExpired(memberBaseInfoToModel(dbUser), 5)) {
-          console.error(`Cannot login expired member ${user.id}`);
+          console.log(`Cannot login expired member ${user.id}`);
           throw new Error("ExpiredMember");
         }
         return true; // if the email exists in the User collection, continue process
