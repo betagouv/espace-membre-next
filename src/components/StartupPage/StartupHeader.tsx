@@ -2,19 +2,21 @@ import { fr } from "@codegouvfr/react-dsfr/fr";
 import { Tag } from "@codegouvfr/react-dsfr/Tag";
 
 import { BadgePhase } from "./BadgePhase";
-import { StartupPageProps } from "./StartupPage";
+import { StartupPageProps, StartupUrlRow } from "./StartupPage";
 import { StartupPhase } from "@/models/startup";
 
 export function StartupHeader({
   startupInfos,
+  startupUrls,
   changes,
   incubator,
   sponsors,
   currentPhase,
 }: Pick<
   StartupPageProps,
-  "startupInfos" | "changes" | "incubator" | "sponsors"
+  "startupInfos" | "startupUrls" | "changes" | "incubator" | "sponsors"
 > & { currentPhase: StartupPhase | null }) {
+  const websiteUrl = startupUrls.find((u) => u.type === "website")?.url;
   return (
     <>
       <div className={fr.cx("fr-col-12")}>
@@ -30,13 +32,13 @@ export function StartupHeader({
       </div>
       <div className={fr.cx("fr-col-12")}>
         <BadgePhase phase={currentPhase} className={fr.cx("fr-mr-2w")} />
-        {startupInfos.link && (
+        {websiteUrl && (
           <a
             target="_blank"
-            href={startupInfos.link}
+            href={websiteUrl}
             className={fr.cx("fr-mr-2w")}
           >
-            {startupInfos.link}
+            {websiteUrl}
           </a>
         )}
       </div>

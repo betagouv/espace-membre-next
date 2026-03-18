@@ -103,6 +103,19 @@ const insertData = async (markdownData: MarkdownData) => {
     )
     .returning(["uuid", "ghid"])
     .execute();
+  const URL_TYPE_MAP: { attr: string; type: string }[] = [
+    { attr: "link", type: "website" },
+    { attr: "repository", type: "repository" },
+    { attr: "stats_url", type: "stats" },
+    { attr: "budget_url", type: "budget" },
+    { attr: "roadmap_url", type: "roadmap" },
+    { attr: "dashlord_url", type: "dashlord" },
+    { attr: "ecodesign_url", type: "ecodesign" },
+    { attr: "tech_audit_url", type: "tech_audit" },
+    { attr: "impact_url", type: "impact" },
+    { attr: "analyse_risques_url", type: "analyse_risques" },
+  ];
+
   // insert startups
   const startups = await pAll(
     markdownData.startups.map((startup) => async () => {
@@ -115,17 +128,11 @@ const insertData = async (markdownData: MarkdownData) => {
           name: startup.attributes.title || startup.attributes.ghid,
           contact: startup.attributes.contact,
           incubator_id,
-          link: startup.attributes.link,
-          repository: startup.attributes.repository,
           accessibility_status: startup.attributes.accessibility_status,
           analyse_risques: startup.attributes.analyse_risques,
-          analyse_risques_url: startup.attributes.analyse_risques_url,
-          budget_url: startup.attributes.budget_url,
-          dashlord_url: startup.attributes.dashlord_url,
           mon_service_securise: startup.attributes.mon_service_securise,
           pitch: startup.attributes.mission,
           stats: startup.attributes.stats,
-          stats_url: startup.attributes.stats_url,
           thematiques: JSON.stringify(startup.attributes.thematiques),
           usertypes: JSON.stringify(startup.attributes.usertypes),
           techno: JSON.stringify(startup.attributes.techno),
@@ -135,6 +142,18 @@ const insertData = async (markdownData: MarkdownData) => {
         .returning(["uuid", "ghid"]);
 
       const startupDb = await query.executeTakeFirstOrThrow();
+
+      // Insert startup_urls from YAML attributes
+      const urlsToInsert = URL_TYPE_MAP.flatMap(({ attr, type }) => {
+        const val = (startup.attributes as any)[attr];
+        if (val && typeof val === "string" && val.trim() !== "") {
+          return [{ startup_uuid: startupDb.uuid, type, url: val }];
+        }
+        return [];
+      });
+      if (urlsToInsert.length) {
+        await db.insertInto("startup_urls").values(urlsToInsert).execute();
+      }
 
       // phases
       const phaseNames = startup.attributes.phases?.map((p) => p.name) || [];

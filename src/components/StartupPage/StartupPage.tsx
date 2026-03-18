@@ -26,8 +26,17 @@ import { getCurrentPhase } from "@/utils/startup";
 //@ts-ignore
 import "./timeline.css";
 
+export interface StartupUrlRow {
+  uuid: string;
+  startup_uuid: string;
+  label: string | null;
+  type: string;
+  url: string;
+}
+
 export interface StartupPageProps {
   startupInfos: startupSchemaType;
+  startupUrls: StartupUrlRow[];
   allMembers: {
     fullname: string;
     username: string;
@@ -61,6 +70,7 @@ export interface StartupPageProps {
 
 export default function StartupPage({
   startupInfos,
+  startupUrls,
   members,
   allMembers,
   phases,
@@ -112,7 +122,7 @@ export default function StartupPage({
       label: "Description",
       tabId: "description",
       isDefault: hash === "description",
-      content: <StartupDescription startupInfos={startupInfos} />,
+      content: <StartupDescription startupInfos={startupInfos} startupUrls={startupUrls} />,
     },
     {
       label: "Historique",
@@ -144,6 +154,7 @@ export default function StartupPage({
       />
       <StartupHeader
         startupInfos={startupInfos}
+        startupUrls={startupUrls}
         changes={changes}
         incubator={incubator}
         sponsors={sponsors}
