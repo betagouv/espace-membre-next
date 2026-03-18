@@ -580,12 +580,21 @@ export const addMember = async (
     .executeTakeFirstOrThrow();
   const memberUuid = dbUser.uuid;
   return db.transaction().execute(async (trx) => {
+    const latestMission = await trx
+      .selectFrom("missions")
+      .select(["employer", "status"])
+      .where("missions.user_id", "=", dbUser.uuid)
+      .orderBy("start", "desc")
+      .limit(1)
+      .executeTakeFirst();
     const insertedMission = await trx
       .insertInto("missions")
       .values({
         start: new Date(),
         end: addMonths(new Date(), 3),
         user_id: memberUuid,
+        status: latestMission?.status,
+        employer: latestMission?.employer,
       })
       .returning("uuid")
       .executeTakeFirstOrThrow();
