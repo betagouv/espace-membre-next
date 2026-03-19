@@ -2,10 +2,8 @@
 
 import React from "react";
 
-import * as Sentry from "@sentry/nextjs";
-
 import { TeamForm } from "../TeamForm/TeamForm";
-import { createTeam } from "@/app/api/teams/actions/createTeam";
+import { safeCreateTeam } from "@/app/api/teams/actions/createTeam";
 import { memberBaseInfoSchemaType } from "@/models/member";
 import { Option } from "@/models/misc";
 
@@ -17,18 +15,11 @@ interface TeamInfoCreateProps {
 /* Pure component */
 export const TeamCreate = (props: TeamInfoCreateProps) => {
   const save = async (data) => {
-    await createTeam({
+    const result = await safeCreateTeam({
       teamWrapper: data,
-    })
-      .then((result) => {
-        window.scrollTo({ top: 20, behavior: "smooth" });
-        return result;
-      })
-      .catch((e) => {
-        window.scrollTo({ top: 20, behavior: "smooth" });
-        Sentry.captureException(e);
-        throw e;
-      });
+    });
+    window.scrollTo({ top: 20, behavior: "smooth" });
+    return result;
   };
   return (
     <>
