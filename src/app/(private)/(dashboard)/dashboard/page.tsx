@@ -15,13 +15,14 @@ import {
 } from "@/lib/kysely/queries/users";
 import { userInfosToModel } from "@/models/mapper";
 import { EmailStatusCode } from "@/models/member";
-import { computeOnboardingProgress } from "@/utils/onboarding/computeOnboardingProgress";
-import { getChecklistObject } from "@/utils/onboarding/getChecklistObject";
+import { computeProgress } from "@/utils/checklists/computeProgress";
+import { getChecklistObject } from "@/utils/checklists/getChecklistObject";
 import { routeTitles } from "@/utils/routes/routeTitles";
 import { getServerSession } from "next-auth";
 import { authOptions } from "@/utils/authoptions";
 import betagouv from "@/server/betagouv";
 import { EMAIL_PLAN_TYPE } from "@/models/ovh";
+import { getUserChecklists } from "@/utils/checklists/getUserChecklists";
 
 export const metadata: Metadata = {
   title: `${routeTitles.dashboard()} / Espace Membre`,
@@ -56,23 +57,11 @@ export default async function Page(props) {
     (emailInfos?.emailPlan === EMAIL_PLAN_TYPE.EMAIL_PLAN_PRO ||
       emailInfos?.emailPlan === EMAIL_PLAN_TYPE.EMAIL_PLAN_BASIC ||
       emailInfos?.emailPlan === EMAIL_PLAN_TYPE.EMAIL_PLAN_EXCHANGE);
+
   let onboarding: DashboardPageProps["onboarding"];
   if (userInfos.created_at >= new Date("2025-01-01")) {
-    const userEvents = await getUserEvents(session.user.uuid);
-    const checklistObject = await getChecklistObject();
-    if (checklistObject) {
-      const userEventIds = userEvents.map((u) => u.field_id);
-      const progress = await computeOnboardingProgress(
-        userEventIds,
-        checklistObject,
-      );
-      onboarding =
-        progress !== 100
-          ? {
-              progress,
-            }
-          : undefined;
-    }
+    const checklists = await getUserChecklists(session.user.uuid);
+    onboarding = checklists.onboarding;
   }
   return (
     <DashboardPage
