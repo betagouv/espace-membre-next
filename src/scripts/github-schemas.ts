@@ -70,6 +70,7 @@ export const startup = z.object({
 // todo: share with espace-membre
 const domaines = [
   "Animation",
+  "Attributaire",
   "Coaching",
   "Déploiement",
   "Design",

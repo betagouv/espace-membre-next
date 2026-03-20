@@ -1,4 +1,3 @@
-import crypto from "crypto";
 import pAll from "p-all";
 
 import { getAllUsersInfo } from "@/lib/kysely/queries/users";
@@ -10,8 +9,7 @@ import * as utils from "@controllers/utils";
 import { DIMAIL_MAILBOX_DOMAIN } from "@lib/dimail/utils";
 import { patchMailbox } from "@lib/dimail/client";
 import { db } from "@/lib/kysely";
-import config from "../config";
-import { match, P } from "ts-pattern";
+import { match } from "ts-pattern";
 
 async function setEmailSuspended(username) {
   const user = await db
@@ -68,40 +66,8 @@ export async function deactivateExpiredMembersEmails() {
             console.error(
               `Impossible de désactiver le compte DIMAIL de ${emailInfos.email}: ${e.message}`,
             );
-            //console.error(e);
           }
         })
-        .with(
-          P.union(
-            EMAIL_PLAN_TYPE.EMAIL_PLAN_BASIC,
-            EMAIL_PLAN_TYPE.EMAIL_PLAN_PRO,
-          ),
-          async () => {
-            // change OVH password
-            // todo: remove
-            const newPassword = crypto
-              .randomBytes(16)
-              .toString("base64")
-              .slice(0, -2);
-            try {
-              await BetaGouv.changePassword(
-                user.username,
-                newPassword,
-                emailInfos?.emailPlan,
-              );
-              await setEmailSuspended(user.username);
-              console.log(
-                `Le mot de passe email OVH de ${
-                  user.username
-                } a été modifié car sa mission a expiré`,
-              );
-            } catch (err) {
-              console.error(
-                `Le mode de passe email OVH de ${user.username} n'a pas pu être modifié: ${err}`,
-              );
-            }
-          },
-        )
         .otherwise(() => setEmailSuspended(user.username));
     }),
     { concurrency: 1 },

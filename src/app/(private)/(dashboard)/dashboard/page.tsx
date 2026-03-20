@@ -21,7 +21,6 @@ import { routeTitles } from "@/utils/routes/routeTitles";
 import { getServerSession } from "next-auth";
 import { authOptions } from "@/utils/authoptions";
 import betagouv from "@/server/betagouv";
-import { EMAIL_PLAN_TYPE } from "@/models/ovh";
 
 export const metadata: Metadata = {
   title: `${routeTitles.dashboard()} / Espace Membre`,
@@ -51,11 +50,8 @@ export default async function Page(props) {
   const surveyCookie = cookieStore.get(SURVEY_BOX_COOKIE_NAME);
   const surveyCookieValue = (surveyCookie && surveyCookie.value) || null;
   const emailInfos = await betagouv.emailInfos(userInfos.username);
-  const showSuiteNumeriqueOnboardingPanel =
-    userInfos.primary_email &&
-    (emailInfos?.emailPlan === EMAIL_PLAN_TYPE.EMAIL_PLAN_PRO ||
-      emailInfos?.emailPlan === EMAIL_PLAN_TYPE.EMAIL_PLAN_BASIC ||
-      emailInfos?.emailPlan === EMAIL_PLAN_TYPE.EMAIL_PLAN_EXCHANGE);
+  // Suite numérique (DIMAIL/OPI) is the only email plan; no migration panel needed
+  const showSuiteNumeriqueOnboardingPanel = false;
   let onboarding: DashboardPageProps["onboarding"];
   if (userInfos.created_at >= new Date("2025-01-01")) {
     const userEvents = await getUserEvents(session.user.uuid);

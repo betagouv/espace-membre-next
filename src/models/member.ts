@@ -5,7 +5,6 @@ import { teamSchema } from "./team";
 import {
   EMAIL_PLAN_TYPE,
   OvhRedirectionSchema,
-  OvhResponderSchema,
 } from "@/models/ovh";
 
 export enum USER_EVENT {
@@ -330,7 +329,7 @@ export const memberWrapperSchema = z.object({
   isExpired: z.boolean(),
   emailInfos: EmailInfosSchema.nullable(),
   emailRedirections: z.array(OvhRedirectionSchema),
-  emailResponder: OvhResponderSchema.nullable(),
+  emailResponder: z.null(),
   authorizations: z.object({
     canChangePassword: z.boolean(),
     canChangeEmails: z.boolean(),

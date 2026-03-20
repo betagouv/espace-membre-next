@@ -17,6 +17,7 @@ import {
   memberBaseInfoSchemaType,
 } from "@/models/member";
 import { OvhRedirection } from "@/models/ovh";
+// Note: OVH redirections are no-ops, deleteRedirection stub pending n8n migration
 import { AccountService } from "@/models/services";
 import { sendEmail } from "@/server/config/email.config";
 import BetaGouv from "@betagouv";
@@ -340,13 +341,9 @@ export async function deleteRedirectionsAfterQuitting(
 
         console.log(`Suppression des redirections pour ${user.fullname}`);
 
-        redirections.map(
-          async (r: OvhRedirection) =>
-            await BetaGouv.deleteRedirection(
-              utils.buildBetaEmail(user.username),
-              r.to,
-            ),
-        );
+        // OVH redirection deletion no longer supported; redirections are managed via n8n
+        redirections.map(async (_r: OvhRedirection) => {});
+
       } catch (err) {
         console.log(
           `Impossible de modifier les redirections pour ${user.fullname}: ${err}`,
