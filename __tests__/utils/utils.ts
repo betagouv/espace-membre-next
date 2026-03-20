@@ -50,27 +50,6 @@ const testUtils = {
     }
     throw new Error("config.CHAT_WEBHOOK_URL_GENERAL not defined");
   },
-  mockOvhUserEmailInfos() {
-    return nock(/.*ovh.com/)
-      .get(/^.*email\/domain\/.*\/account\/+.+/) // <-> /email/domain/betagouv.ovh/account/membre.actif
-      .reply(404)
-      .persist();
-  },
-  mockOvhUserResponder() {
-    return nock(/.*ovh.com/)
-      .get(/^.*email\/domain\/.*\/responder\/+.+/) // <-> /email/domain/betagouv.ovh/responder/membre.actif
-      .reply(404)
-      .persist();
-  },
-  mockOvhAllEmailInfos() {
-    return nock(/.*ovh.com/)
-      .get(/^.*email\/domain\/.*\/account/)
-      .reply(
-        200,
-        testUsers.map((x) => x.id),
-      )
-      .persist();
-  },
   mockOvhRedirectionWithQueries() {
     return nock(/.*ovh.com/)
       .get(/^.*email\/domain\/.*\/redirection/)

@@ -29,7 +29,7 @@ const sampleMember: { member: MemberPageProps } = {
     emailInfos: {
       email: "ada@love.com",
       isBlocked: false,
-      emailPlan: EMAIL_PLAN_TYPE.EMAIL_PLAN_PRO,
+      emailPlan: EMAIL_PLAN_TYPE.EMAIL_PLAN_OPI,
     },
     isExpired: false,
     startups: [
@@ -184,7 +184,7 @@ export default async function Page() {
         emailInfos={{
           email: sampleMember.member.userInfos.primary_email || "-",
           isBlocked: true,
-          emailPlan: EMAIL_PLAN_TYPE.EMAIL_PLAN_PRO,
+          emailPlan: EMAIL_PLAN_TYPE.EMAIL_PLAN_OPI,
         }}
         userInfos={{
           ...sampleMember.member.userInfos,
@@ -204,7 +204,7 @@ export default async function Page() {
         emailInfos={{
           email: sampleMember.member.userInfos.primary_email || "-",
           isBlocked: false,
-          emailPlan: EMAIL_PLAN_TYPE.EMAIL_PLAN_EXCHANGE,
+          emailPlan: EMAIL_PLAN_TYPE.EMAIL_PLAN_OPI,
         }}
       />
       <hr />
@@ -229,7 +229,7 @@ export default async function Page() {
         emailInfos={{
           email: sampleMember.member.userInfos.primary_email || "-",
           isBlocked: false,
-          emailPlan: EMAIL_PLAN_TYPE.EMAIL_PLAN_BASIC,
+          emailPlan: EMAIL_PLAN_TYPE.EMAIL_PLAN_OPI,
         }}
       />
       <hr />

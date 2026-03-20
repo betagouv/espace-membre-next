@@ -4,7 +4,7 @@ import {
   getAllTransacBlockedContacts,
   unblacklistContactEmail,
 } from "@/server/config/email.config";
-import betagouv from "@betagouv";
+import { db } from "@/lib/kysely";
 
 // get all brevo contacts blocked in MAILING_LIST_NEWSLETTER
 // unblock them
@@ -27,8 +27,13 @@ export async function unblockEmailsThatAreActive() {
     ],
     offset: 0,
   });
-  let activeEmails = await betagouv.getAllEmailInfos();
-  activeEmails = activeEmails.map((email) => `${email}@${config.domain}`);
+  // Use DIMAIL active mailbox emails instead of OVH
+  const dimailRows = await db
+    .selectFrom("dinum_emails")
+    .select("email")
+    .where("type", "=", "mailbox")
+    .execute();
+  const activeEmails = dimailRows.map((e) => e.email);
   const contactEmails = [...transacContacts, ...contacts].map(
     (contact) => contact.email,
   );

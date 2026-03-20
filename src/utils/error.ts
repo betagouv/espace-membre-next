@@ -85,13 +85,6 @@ export class NoDataError extends ErrorWithStatus {
   }
 }
 
-export class OVHError extends ErrorWithStatus {
-  constructor(message: string = "Erreur OVH") {
-    super(message);
-    this.statusCode = 502;
-  }
-}
-
 export class ValidationError extends ErrorWithStatus {
   constructor(message: string = "Validation failed") {
     super(message);
@@ -153,7 +146,6 @@ const EXPECTED_ERRORS = [
   AuthorizationError,
   NoDataError,
   ValidationError,
-  OVHError,
   StartupUniqueConstraintViolationError,
   MemberUniqueConstraintViolationError,
   AdminEmailNotAllowedError,

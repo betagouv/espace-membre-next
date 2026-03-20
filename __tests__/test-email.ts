@@ -35,8 +35,6 @@ describe("deactivateExpiredMembersEmails", () => {
   let emailInfosStub: sinon.SinonStub;
   let patchMailboxStub: sinon.SinonStub;
   let setEmailSuspendedStub: sinon.SinonStub;
-  let changePasswordStub: sinon.SinonStub;
-
   beforeEach(() => {
     // ensure a clean sinon state each test to avoid "already wrapped" errors
     sinon.restore();
@@ -47,7 +45,6 @@ describe("deactivateExpiredMembersEmails", () => {
     emailInfosStub = sinon.stub(BetaGouv, "emailInfos");
     patchMailboxStub = sinon.stub(dimailClient, "patchMailbox");
     setEmailSuspendedStub = sinon.stub();
-    changePasswordStub = sinon.stub(BetaGouv, "changePassword");
 
     // inject a stubbed setEmailSuspended into the scheduler module and global so it is always resolvable
     emailScheduler.__set__("setEmailSuspended", setEmailSuspendedStub);
@@ -101,35 +98,6 @@ describe("deactivateExpiredMembersEmails", () => {
       }),
     ).to.be.true;
     expect(setEmailSuspendedStub.calledOnceWith("user1")).to.be.true;
-    expect(changePasswordStub.notCalled).to.be.true;
-  });
-
-  it("should change OVH password for expired users with non-OPI email plan", async () => {
-    const fakeUser = {
-      username: "user2",
-      primary_email_status: EmailStatusCode.EMAIL_ACTIVE,
-    };
-    getAllUsersInfoStub.resolves([{}]);
-    memberBaseInfoToModelStub.returns(fakeUser);
-    getExpiredUsersStub.returns([fakeUser]);
-    emailInfosStub.resolves({
-      emailPlan: EMAIL_PLAN_TYPE.EMAIL_PLAN_PRO,
-      email: "user2@beta.gouv.fr",
-    });
-    changePasswordStub.resolves();
-
-    setEmailSuspendedStub.resolves();
-
-    await emailScheduler.__get__("deactivateExpiredMembersEmails")();
-
-    expect(changePasswordStub.firstCall.args[0]).to.eq("user2");
-    expect(changePasswordStub.firstCall.args[2]).to.eq(
-      EMAIL_PLAN_TYPE.EMAIL_PLAN_PRO,
-    );
-
-    expect(changePasswordStub.calledOnce).to.be.true;
-    expect(setEmailSuspendedStub.calledOnceWith("user2")).to.be.true;
-    expect(patchMailboxStub.notCalled).to.be.true;
   });
 
   it("should do nothing if no expired users", async () => {
@@ -140,7 +108,6 @@ describe("deactivateExpiredMembersEmails", () => {
     await emailScheduler.__get__("deactivateExpiredMembersEmails")();
 
     expect(patchMailboxStub.notCalled).to.be.true;
-    expect(changePasswordStub.notCalled).to.be.true;
     expect(setEmailSuspendedStub.notCalled).to.be.true;
   });
 
@@ -204,7 +171,7 @@ describe("recreateEmailIfUserActive", () => {
     sinon.stub(kyselyQueries, "getActiveUsers").returns(fakeQB as any);
     const getDimailEmailStub = sinon
       .stub(dimailQueries, "getDimailEmail")
-      .resolves(true);
+      .resolves(true as any);
     const patchMailboxStubLocal = sinon
       .stub(dimailClient, "patchMailbox")
       .resolves();

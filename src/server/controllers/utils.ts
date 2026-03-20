@@ -17,7 +17,7 @@ import {
   getDimailEmail,
   getDimailEmailsByUser,
 } from "@/lib/kysely/queries/dimail";
-import { EMAIL_PLAN_TYPE, OvhRedirection, OvhResponder } from "@/models/ovh";
+import { EMAIL_PLAN_TYPE, OvhRedirection } from "@/models/ovh";
 
 export function encryptPassword(password) {
   const iv = randomBytes(16); // Generate a secure, random IV
@@ -264,14 +264,15 @@ export async function userInfos(
     const dinumAliases = await getDimailEmailsByUser(userInfos.uuid, "alias");
 
     let emailInfos,
-      emailRedirections: OvhRedirection[] = [],
-      emailResponder: OvhResponder | null = null;
+      emailRedirections: OvhRedirection[] = [];
     if (dinumEmails && dinumEmails.length) {
       emailInfos = {
         email: dinumEmails[0].email,
         isBlocked: false,
         emailPlan: EMAIL_PLAN_TYPE.EMAIL_PLAN_OPI,
       };
+    } else {
+      emailInfos = await BetaGouv.emailInfos(userInfos.username);
     }
     if (dinumAliases && dinumAliases.length) {
       emailRedirections = dinumAliases.map((a) => ({
@@ -280,11 +281,9 @@ export async function userInfos(
         id: a.uuid,
       }));
     } else {
-      emailInfos = await BetaGouv.emailInfos(userInfos.username);
       emailRedirections = await BetaGouv.redirectionsForId({
         from: userInfos.username,
       });
-      emailResponder = await BetaGouv.getResponder(userInfos.username);
     }
 
     const isExpired = checkUserIsExpired(userInfos);
@@ -301,7 +300,7 @@ export async function userInfos(
     return {
       isExpired,
       userInfos: userInfos,
-      emailResponder,
+      emailResponder: null,
       authorizations: {
         canChangePassword,
         canChangeEmails,
