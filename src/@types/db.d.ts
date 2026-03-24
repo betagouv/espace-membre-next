@@ -227,14 +227,10 @@ export interface MissionsStartups {
 }
 
 export interface Newsletters {
-  brevo_url: string | null;
   created_at: Generated<Timestamp>;
   id: Generated<string>;
   publish_at: Timestamp | null;
   sent_at: Timestamp | null;
-  url: string;
-  validator: string | null;
-  year_week: string | null;
 }
 
 export interface Organizations {
