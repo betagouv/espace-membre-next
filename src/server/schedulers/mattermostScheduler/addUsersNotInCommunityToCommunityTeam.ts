@@ -28,7 +28,6 @@ export async function addUsersNotInCommunityToCommunityTeam() {
     } catch (e: any) {
       console.error(
         `Impossible d'inviter l'utilisateur ${mattermostUser.username} à la team communauté : ${e.message}`,
-        e,
       );
     }
   }
