@@ -59,7 +59,6 @@ const CRON_TASK_ENV_VAR = {
   CALENDAR_GIP_PUBLIC_URL: process.env.CALENDAR_GIP_PUBLIC_URL,
   FEATURE_SEND_EMAIL_TO_STARTUP_TO_UPDATE_PHASE:
     process.env.FEATURE_SEND_EMAIL_TO_STARTUP_TO_UPDATE_PHASE === "true",
-  FEATURE_NEWSLETTER: process.env.FEATURE_NEWSLETTER === "true",
   FEATURE_SYNC_BETAGOUV_USER_API:
     process.env.FEATURE_SYNC_BETAGOUV_USER_API === "true",
   featureSubscribeToIncubateurMailingList:
@@ -92,12 +91,13 @@ const CRON_TASK_ENV_VAR = {
     "true",
   FEATURE_DELETE_MATOMO_ACCOUNT: process.env.FEATURE_DELETE_MATOMO_ACCOUNT,
   FEATURE_DELETE_SENTRY_ACCOUNT: process.env.FEATURE_DELETE_SENTRY_ACCOUNT,
+  FEATURE_NEWSLETTER: process.env.FEATURE_NEWSLETTER === "true",
+  NEWSLETTER_BOT_ICON_URL: process.env.NEWSLETTER_BOT_ICON_URL,
   newsletterContentUrl: process.env.NEWSLETTER_CONTENT_URL || "",
   visitSenderEmail: process.env.VISIT_MAIL_SENDER || "secretariat@beta.gouv.fr",
   visitRecipientEmail:
     process.env.VISIT_MAIL_RECIPIENT || "espace-membre@incubateur.net",
   githubBetagouvTeam: process.env.GITHUB_BETAGOUV_TEAM || "beta-gouv-fr",
-  NEWSLETTER_BOT_ICON_URL: process.env.NEWSLETTER_BOT_ICON_URL,
   MATOMO_TOKEN: process.env.MATOMO_TOKEN,
   MATOMO_API_URL: process.env.MATOMO_API_URL,
   SENTRY_API_URL: process.env.SENTRY_API_URL,

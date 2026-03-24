@@ -226,13 +226,6 @@ export interface MissionsStartups {
   uuid: Generated<string>;
 }
 
-export interface Newsletters {
-  created_at: Generated<Timestamp>;
-  id: Generated<string>;
-  publish_at: Timestamp | null;
-  sent_at: Timestamp | null;
-}
-
 export interface Organizations {
   acronym: string | null;
   domaine_ministeriel: string;
@@ -565,7 +558,6 @@ export interface DB {
   mattermost_member_infos: MattermostMemberInfos;
   missions: Missions;
   missions_startups: MissionsStartups;
-  newsletters: Newsletters;
   organizations: Organizations;
   "pgboss.archive": PgbossArchive;
   "pgboss.job": PgbossJob;

@@ -1,16 +1,11 @@
-<<<<<<< HEAD
 import { differenceInDays } from "date-fns/differenceInDays";
 import { startOfWeek } from "date-fns/startOfWeek";
-=======
-import { startOfDay } from "date-fns";
-import { differenceInDays } from "date-fns/differenceInDays";
->>>>>>> 272daaae (chore: remove newsletter+pad stuff)
 
 import { db } from "@/lib/kysely";
 import config from "@/server/config";
 import { sendInfoToChat } from "@infra/chat";
 
-const computeMessageReminder = (reminder) => {
+export const computeMessageReminder = (reminder) => {
   const url = config.newsletterContentUrl;
   let message;
   if (reminder === "FIRST_REMINDER") {
@@ -53,9 +48,23 @@ Vérifie une dernière fois le contenu du document ${url}. À 16 h, il sera envo
   return message;
 };
 
-const REMINDER_NB_DAYS = {
-  FIRST_REMINDER: -5,
-  SECOND_REMINDER: 0,
-  THIRD_REMINDER: 0,
-};
-
+export async function newsletterReminder(reminder) {
+  const message = computeMessageReminder(reminder);
+  await sendInfoToChat({
+    text: message,
+    channel: "general",
+    extra: {
+      username: "Pikachu (équipe Communauté beta.gouv.fr)",
+      icon_url: config.NEWSLETTER_BOT_ICON_URL,
+    },
+  });
+  await sendInfoToChat({
+    text: message,
+    channel: "town-square",
+    space: "dinum",
+    extra: {
+      username: "Pikachu (équipe Communauté beta.gouv.fr)",
+      icon_url: config.NEWSLETTER_BOT_ICON_URL,
+    },
+  });
+}

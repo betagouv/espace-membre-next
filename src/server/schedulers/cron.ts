@@ -96,6 +96,23 @@ const synchronizationJobs: EspaceMembreCronJobType[] = [
   },
 ];
 
+const newsletterJobs: EspaceMembreCronJobType[] = [
+  {
+    cronTime: process.env.NEWSLETTER_FIRST_REMINDER_TIME || "0 10 * * 3", // Every Wednesday at 10:00
+    onTick: () => newsletterReminder("FIRST_REMINDER"),
+    isActive: config.FEATURE_NEWSLETTER,
+    name: "newsletterFirstReminderJob",
+    description: "Rappel mattermost newsletter 1",
+  },
+  {
+    cronTime: process.env.NEWSLETTER_SECOND_REMINDER_TIME || "0 8 * * 2", // Every Tuesday at 08:00
+    onTick: () => newsletterReminder("SECOND_REMINDER"),
+    isActive: config.FEATURE_NEWSLETTER,
+    name: "newsletterSecondReminderJob",
+    description: "Rappel mattermost newsletter 2",
+  },
+];
+
 export const espaceMembreCronJobs: EspaceMembreCronJobType[] = [
   ...startupJobs,
   ...servicesJobs,
