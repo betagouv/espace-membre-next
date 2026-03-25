@@ -40,7 +40,6 @@ export function PrivateLayout({ children }: { children: React.ReactNode }) {
   const teamCreateLink = linkRegistry.get("teamCreate", undefined);
 
   const adminMattermostLink = linkRegistry.get("adminMattermost", undefined);
-  const newsletterLink = linkRegistry.get("newsletters", undefined);
   const accountEditBaseInfoLink = linkRegistry.get(
     "accountEditBaseInfo",
     undefined,
@@ -327,11 +326,6 @@ export function PrivateLayout({ children }: { children: React.ReactNode }) {
           ],
         },
       ],
-    },
-    {
-      href: newsletterLink,
-      text: routeTitles.newsletters(),
-      isActive: hasPathnameThisMatch(pathname, newsletterLink),
     },
     {
       href: eventsLink,

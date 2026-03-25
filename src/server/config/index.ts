@@ -141,8 +141,6 @@ export default {
     minStartDate: "2013-07-01",
     memberOptions: memberTypeOptions,
   },
-  newsletterBroadcastList:
-    process.env.NEWSLETTER_BROADCAST_LIST || "secretariat@beta.gouv.fr",
   mattermostURL:
     process.env.MATTERMOST_URL || "https://mattermost.incubateur.net",
   senderEmail: process.env.MAIL_SENDER || "espace-membre@incubateur.net",

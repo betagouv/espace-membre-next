@@ -11,7 +11,6 @@ L'espace membre de l’incubateur
   - accès aux outils (sentry, matomo)
 - exploration de la communauté
 - afficher les formations et évènements
-- gestion de l'infolettre
 - connexion via ProConnect ou magic-link
 - tâches de maintenance (cf [CRON.md](./CRON.md)) : emails,
   mattermost, brevo, github
@@ -228,6 +227,3 @@ Cron--->DIMAIL
 Cron--->Matomo
 Cron--->Sentry
 ```
-
-
-

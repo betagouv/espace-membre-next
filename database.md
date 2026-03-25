@@ -26,6 +26,7 @@ erDiagram
         destination character_varying "null"
         status character_varying "null"
         type character_varying "null"
+        user_id uuid "null"
     }
 
     events {
@@ -122,17 +123,6 @@ erDiagram
         startup_id uuid "not null"
     }
 
-    newsletters {
-        id uuid PK "not null"
-        url text "not null"
-        created_at timestamp_with_time_zone "not null"
-        year_week character_varying "null"
-        brevo_url text "null"
-        validator text "null"
-        publish_at timestamp_with_time_zone "null"
-        sent_at timestamp_with_time_zone "null"
-    }
-
     organizations {
         uuid uuid PK "not null"
         domaine_ministeriel character_varying "not null"
@@ -187,6 +177,16 @@ erDiagram
         name character_varying "not null"
         date date "not null"
         comment text "null"
+    }
+
+    startup_urls {
+        uuid uuid PK "not null"
+        startup_uuid uuid FK "not null"
+        type text "not null"
+        url text "not null"
+        label text "null"
+        created_at timestamp_with_time_zone "null"
+        updated_at timestamp_with_time_zone "null"
     }
 
     startups {
@@ -337,6 +337,7 @@ erDiagram
     startups ||--o{ phases : "phases(startup_id) -> startups(uuid)"
     startups ||--o{ sentry_teams : "sentry_teams(startup_id) -> startups(uuid)"
     startups ||--o{ startup_events : "startup_events(startup_id) -> startups(uuid)"
+    startups ||--o{ startup_urls : "startup_urls(startup_uuid) -> startups(uuid)"
     startups ||--o{ startups_files : "startups_files(startup_id) -> startups(uuid)"
     startups ||--o{ startups_organizations : "startups_organizations(startup_id) -> startups(uuid)"
     teams ||--o{ users_teams : "users_teams(team_id) -> teams(uuid)"
@@ -401,10 +402,6 @@ erDiagram
 - `missions_startups_pkey`
 - `missions_startups_startup_id_mission_id_unique`
 
-### `newsletters`
-
-- `newsletters_pkey`
-
 ### `organizations`
 
 - `organizations_acronym_unique`
@@ -435,6 +432,11 @@ erDiagram
 ### `startup_events`
 
 - `startup_events_pkey`
+
+### `startup_urls`
+
+- `startup_urls_pkey`
+- `startup_urls_startup_uuid_index`
 
 ### `startups`
 
