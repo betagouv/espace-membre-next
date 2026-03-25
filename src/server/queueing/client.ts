@@ -38,6 +38,10 @@ import {
   createDimailMailboxTopic,
 } from "./workers/create-dimail-mailbox";
 import { gracefulExit } from "@/utils/gracefulExit";
+import {
+  syncDinumEmails,
+  syncDinumEmailsTopic,
+} from "./workers/sync-dinum-emails";
 
 let databaseUrl = process.env.DATABASE_URL || "";
 databaseUrl = databaseUrl.replace("sslmode=prefer", "sslmode=no-verify");
@@ -130,6 +134,11 @@ export const pgBossWorker: {
   {
     topic: createDimailMailboxTopic,
     worker: createDimailMailbox,
+    description: `Créer une boite mail Dimail pour un utilisateur`,
+  },
+  {
+    topic: syncDinumEmailsTopic,
+    worker: syncDinumEmails,
     description: `Créer une boite mail Dimail pour un utilisateur`,
   },
 ];

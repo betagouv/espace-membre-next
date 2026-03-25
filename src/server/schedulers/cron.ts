@@ -1,30 +1,14 @@
 // NOTE: if you update this file, make sure you update the jobs
 // documentation file (CRON.md) file with `make cron-docs`.
 
-import { postEventsOnMattermost } from "./calendarScheduler";
 import { deactivateExpiredMembersEmails } from "./emailScheduler";
 import {
   addGithubUserToOrganization,
   removeGithubUserFromOrganization,
 } from "./githubScheduler";
-import {
-  createUsersByEmail,
-  moveUsersToAlumniTeam,
-  reactivateUsers,
-  removeUsersFromCommunityTeam,
-  addUsersNotInCommunityToCommunityTeam,
-  syncMattermostUserStatusWithMattermostMemberInfosTable,
-  syncMattermostUserWithMattermostMemberInfosTable,
-  sendGroupDeSoutienReminder,
-} from "./mattermostScheduler";
-import {
-  removeBetaAndParnersUsersFromCommunityTeam,
-  sendReminderToUserAtDays,
-} from "./mattermostScheduler/removeBetaAndParnersUsersFromCommunityTeam";
-import {
-  newsletterReminder,
-  sendNewsletterAndCreateNewOne,
-} from "./newsletterScheduler";
+import { syncMattermostUserWithMattermostMemberInfosTable } from "./mattermostScheduler/syncMattermostUserWithMattermostMemberInfosTable";
+import { sendGroupDeSoutienReminder } from "./mattermostScheduler/sendGroupeDeSoutienReminder";
+import { newsletterReminder } from "./newsletterScheduler";
 import { recreateEmailIfUserActive } from "./recreateEmailIfUserActive";
 import { syncMatomoAccounts } from "./serviceScheduler/syncMatomoAccounts";
 import { syncSentryAccounts } from "./serviceScheduler/syncSentryAccounts";
@@ -36,7 +20,6 @@ import {
   sendContractEndingMessageToUsers,
   sendJ1Email,
   sendJ30Email,
-  deleteRedirectionsAfterQuitting,
   deleteMatomoAccount,
   deleteSentryAccount,
 } from "./userContractEndingScheduler";
@@ -56,27 +39,6 @@ export interface EspaceMembreCronJobType {
 
 const mattermostJobs: EspaceMembreCronJobType[] = [
   {
-    cronTime: "0 14 * * *", // Every day at 14:00
-    onTick: removeBetaAndParnersUsersFromCommunityTeam,
-    isActive: true,
-    name: "removeBetaAndParnersUsersFromCommunityTeam",
-    description: "Move expired user to mattermost alumni",
-  },
-  {
-    cronTime: "0 14 * * 1", // Every Monday at 14:00
-    onTick: () => sendReminderToUserAtDays({ nbDays: 90 }),
-    isActive: true,
-    name: "sendReminderToUserAtDays",
-    description: "Send mattermost message to expired users (90 days)",
-  },
-  {
-    cronTime: "0 5 * * 1", // Every Monday at 05:00
-    onTick: () => sendReminderToUserAtDays({ nbDays: 30 }),
-    isActive: !!config.FEATURE_MATTERMOST_REMOVE_USERS,
-    name: "sendReminderToUserAtDays",
-    description: "Send mattermost message to expired users (30 days)",
-  },
-  {
     cronTime: "0 10 * * *", // Every day at 10:00
     onTick: () => {
       sendGroupDeSoutienReminder("general", 1, 0);
@@ -84,71 +46,6 @@ const mattermostJobs: EspaceMembreCronJobType[] = [
     isActive: true,
     name: "sendGroupDeSoutienReminder",
     description: "Send mattermost message groupe de soutien",
-  },
-  {
-    cronTime: "*/8 * * * *", // Every 8 minutes
-    onTick: createUsersByEmail,
-    isActive: !!config.featureCreateUserOnMattermost,
-    name: "createUsersByEmail",
-    description: "Create missing mattermost users and send invitation email",
-  },
-  {
-    cronTime: "*/8 * * * *", // Every 8 minutes
-    onTick: addUsersNotInCommunityToCommunityTeam,
-    isActive: !!config.featureAddUserToCommunityTeam,
-    name: "addUsersNotInCommunityToCommunityTeam",
-    description: "Add existing users to community team if there not in",
-  },
-  {
-    cronTime: "0 8 1 * *", // 1st of every month at 08:00
-    onTick: reactivateUsers,
-    isActive: !!config.featureReactiveMattermostUsers,
-    name: "reactivateUsers",
-    description: "Reactivate mattermost accounts if any",
-  },
-  {
-    cronTime: "0 10 * * *", // Every day at 10:00
-    onTick: removeUsersFromCommunityTeam,
-    isActive: !!config.featureRemoveExpiredUsersFromCommunityOnMattermost,
-    name: "removeUsersFromCommunityTeam",
-    description:
-      "Remove expired users from mattermost community team (90 days)",
-  },
-  {
-    cronTime: "10 10 * * *", // Every day at 10:10
-    onTick: moveUsersToAlumniTeam,
-    isActive: !!config.featureAddExpiredUsersToAlumniOnMattermost,
-    name: "moveUsersToAlumniTeam",
-    description: "Add user to mattermost alumni team",
-  },
-  // Post automatic
-  {
-    cronTime: config.CALENDAR_CRON_TIME || "30 17 * * 1", // Every Monday at 17:30
-    onTick: () =>
-      postEventsOnMattermost({
-        numberOfDays: 6,
-        canal: "general",
-        calendarURL: config.CALENDAR_URL!,
-        calendarPublicUrl: config.CALENDAR_PUBLIC_URL!,
-        chatWebhook: config.CHAT_WEBHOOK_URL_GENERAL,
-      }),
-    timeZone: "Europe/Paris",
-    isActive: true,
-    name: "PostEventsFromBetaOnMattermost",
-    description: "Post event of the week from betagouv calendar",
-  },
-  {
-    cronTime: "0 8 * * 1", // Every Monday at 08:00
-    onTick: () =>
-      postEventsOnMattermost({
-        numberOfDays: 6,
-        calendarURL: config.CALENDAR_GIP_URL!,
-        calendarPublicUrl: config.CALENDAR_GIP_PUBLIC_URL!,
-        chatWebhook: config.CHAT_WEBHOOK_URL_GIP,
-      }),
-    timeZone: "Europe/Paris",
-    isActive: true,
-    name: "Post event of the week from gip calendar",
   },
 ];
 
@@ -203,26 +100,18 @@ const servicesJobs: EspaceMembreCronJobType[] = [
 
 const newsletterJobs: EspaceMembreCronJobType[] = [
   {
-    cronTime: process.env.NEWSLETTER_FIRST_REMINDER_TIME || "0 10 * * 3", // Every Wednesday at 10:00
+    cronTime: process.env.NEWSLETTER_FIRST_REMINDER_TIME || "0 10 * * 3", // Every Wednesday at 10:00 - in prod: 0 0 9 * * * ( every day at 9:00:00 AM.)
     onTick: () => newsletterReminder("FIRST_REMINDER"),
     isActive: config.FEATURE_NEWSLETTER,
     name: "newsletterFirstReminderJob",
     description: "Rappel mattermost newsletter 1",
   },
   {
-    cronTime: process.env.NEWSLETTER_SECOND_REMINDER_TIME || "0 8 * * 2", // Every Tuesday at 08:00
+    cronTime: process.env.NEWSLETTER_SECOND_REMINDER_TIME || "0 8 * * 2", // Every Tuesday at 08:00 - in prod: 0 0 9 * * 2 (every Tuesday at 9:00:00 AM.)
     onTick: () => newsletterReminder("SECOND_REMINDER"),
     isActive: config.FEATURE_NEWSLETTER,
     name: "newsletterSecondReminderJob",
     description: "Rappel mattermost newsletter 2",
-  },
-  {
-    cronTime: config.newsletterSendTime || "0 16 * * 2", // Every Tuesday at 16:00
-    onTick: sendNewsletterAndCreateNewOne,
-    isActive: config.FEATURE_NEWSLETTER,
-    name: "sendNewsletterAndCreateNewOneJob",
-    description:
-      "Envoi de la newsletter et creation d'un nouveau PAD + message mattermost",
   },
 ];
 
@@ -236,16 +125,6 @@ const synchronizationJobs: EspaceMembreCronJobType[] = [
     name: "syncMattermostUserWithMattermostMemberInfosTable",
     description: "Add new mattermost user to mattermost_member_info table",
   },
-  {
-    cronTime: "15 10 * * *", // Every day at 10:15
-    onTick: syncMattermostUserStatusWithMattermostMemberInfosTable,
-    start: true,
-    timeZone: "Europe/Paris",
-    isActive: true,
-    name: "syncMattermostUserStatusWithMattermostMemberInfosTable",
-    description:
-      "Get mattermost user activity info from api and sync with mattermost_member_info table",
-  },
 ];
 
 export const espaceMembreCronJobs: EspaceMembreCronJobType[] = [
@@ -253,8 +132,6 @@ export const espaceMembreCronJobs: EspaceMembreCronJobType[] = [
   ...mattermostJobs,
   ...startupJobs,
   ...servicesJobs,
-  // ...metricJobs,
-  // ...pullRequestJobs,
   ...synchronizationJobs,
   {
     cronTime: "0 0 * * 1", // every week at 0:00 on monday
@@ -287,13 +164,6 @@ export const espaceMembreCronJobs: EspaceMembreCronJobType[] = [
     description: "Désinscrit les membres expirés de l'organisation GitHub",
   },
   {
-    cronTime: "0 8,14 * * *", // Every day at 08:00 and 14:00
-    onTick: deleteRedirectionsAfterQuitting,
-    isActive: !!config.featureDeleteRedirectionsAfterQuitting,
-    name: "deleteRedirectionsAfterQuitting",
-    description: "Supprime les redirections email OVH des utilisateurs expirés",
-  },
-  {
     cronTime: "0 8 * * *", // Every day at 08:00
     onTick: sendJ1Email,
     isActive: !!config.featureSendJ1Email,
@@ -308,6 +178,7 @@ export const espaceMembreCronJobs: EspaceMembreCronJobType[] = [
     description: "Email départ J+30",
   },
   {
+    // INACTIVE by config
     cronTime: "0 * * * *", // Every hour
     onTick: deactivateExpiredMembersEmails,
     isActive: !!config.featureReinitPasswordEmail,
