@@ -120,10 +120,9 @@ export async function addUserToTeam(userId, teamId) {
         getMattermostConfig(),
       )
       .then((response) => response.data);
-  } catch (err) {
-    console.error(err);
+  } catch (err: any) {
     throw new Error(
-      `Erreur d'ajout de l'utilisateur ${userId} à la team ${teamId} : ${err}`,
+      `Erreur d'ajout de l'utilisateur ${userId} à la team ${teamId} : ${err.message}`,
     );
   }
   //console.log(`Ajout de utilisateur ${userId} à la team ${teamId}`);
@@ -141,10 +140,9 @@ export async function removeUserFromTeam(userId, teamId) {
         },
       )
       .then((response) => response.data);
-  } catch (err) {
-    console.error(err);
+  } catch (err: any) {
     throw new Error(
-      `Erreur de suppression de l'utilisateur ${userId} de la team ${teamId} : ${err}`,
+      `Erreur de suppression de l'utilisateur ${userId} de la team ${teamId} : ${err.message}`,
     );
   }
   console.log(`Suppression de utilisateur ${userId} de la team ${teamId}`);
