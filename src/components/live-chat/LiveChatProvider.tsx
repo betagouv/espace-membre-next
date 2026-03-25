@@ -16,33 +16,6 @@ const typeForms = {
   doNotReceivedEmail: ["problem", "email", "email-contact", "details"],
 };
 
-const ChatwootScript = () => {
-  useEffect(() => {
-    (function (d, t) {
-      if (!frontConfig.CHATWOOT_WEBSITE_TOKEN) {
-        throw new Error("Chatwoot website token not defined");
-      }
-      const BASE_URL = "https://chatwoot.incubateur.net";
-      const g = d.createElement(t) as HTMLScriptElement,
-        s = d.getElementsByTagName(t)[0];
-      g.src = BASE_URL + "/packs/js/sdk.js";
-      g.defer = true;
-      g.async = true;
-      if (s.parentNode) s.parentNode.insertBefore(g, s);
-      g.onload = function () {
-        if (window.chatwootSDK) {
-          window.chatwootSDK.run({
-            websiteToken: frontConfig.CHATWOOT_WEBSITE_TOKEN as string,
-            baseUrl: BASE_URL,
-          });
-        }
-      };
-    })(document, "script");
-  }, []); // Empty dependency array ensures this runs only once
-
-  return null; // This component does not render anything to the DOM
-};
-
 export const LiveChatProvider = ({ children }: PropsWithChildren) => {
   // [IMPORTANT] When using `useSearchParams()` is breaks the the vanilla DSFR to add attributes to the `html` tag
   // resulting in the `react-dsfr` not able to initialize... it's an odd case, things are missing for mystic reasons
@@ -55,12 +28,6 @@ export const LiveChatProvider = ({ children }: PropsWithChildren) => {
   const [isLoading, setIsLoading] = useState<boolean>(false);
 
   const showLiveChat = useCallback(async (type) => {
-    if (chatName === "chatwoot") {
-      if (typeof window != "undefined" && window.$chatwoot) {
-        window.$chatwoot.toggle("open");
-      }
-      return;
-    }
     // Even if it failed retrieving information for this user, let the user contact the support
     Crisp.chat.open();
     // Example 4: show a field message
@@ -124,9 +91,6 @@ export const LiveChatProvider = ({ children }: PropsWithChildren) => {
   }, []);
 
   useEffect(() => {
-    if (chatName === "chatwoot") {
-      return;
-    }
     // This `sessionIdToResume` definition is a workaround, see at the top of the component for the reason
     let sessionIdToResume = null;
     // if (window) {
@@ -161,7 +125,6 @@ export const LiveChatProvider = ({ children }: PropsWithChildren) => {
         }}
       >
         {children}
-        {chatName === "chatwoot" && <ChatwootScript />}
       </LiveChatContext.Provider>
     </>
   );

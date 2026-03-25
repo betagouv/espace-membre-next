@@ -127,8 +127,6 @@ export default {
   protocol: isSecure ? "https" : "http",
   host: process.env.HOSTNAME,
   port: parseInt(process.env.PORT || "3000", 10),
-  CHATWOOT_ID: process.env.CHATWOOT_ID,
-  CHATWOOT_IGNORE_EMAILS: (process.env.CHATWOOT_IGNORE_EMAILS || "").split(""),
   domain: process.env.SECRETARIAT_DOMAIN || "beta.gouv.fr",
   DS_TOKEN: process.env.DS_TOKEN,
   DS_DEMARCHE_NUMBER: process.env.DS_DEMARCHE_NUMBER
@@ -148,7 +146,6 @@ export default {
   CHAT_WEBHOOK_URL_GENERAL: getOrThrowError("CHAT_WEBHOOK_URL_GENERAL"),
   CHAT_WEBHOOK_URL_DINUM: getOrThrowError("CHAT_WEBHOOK_URL_DINUM"),
   CHAT_WEBHOOK_URL_GIP: getOrThrowError("CHAT_WEBHOOK_URL_GIP"),
-  CHATWOOT_WEBSITE_TOKEN: process.env.CHATWOOT_WEBSITE_TOKEN,
   githubOrganizationName: process.env.GITHUB_ORGANIZATION_NAME || "betagouv",
   githubOrgAdminToken: process.env.GITHUB_ORG_ADMIN_TOKEN,
   sentryDSN: process.env.SENTRY_DSN || false,
