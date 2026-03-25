@@ -5,7 +5,6 @@ import { PropsWithChildren, useCallback, useEffect, useState } from "react";
 import { Crisp } from "crisp-sdk-web";
 
 import { LiveChatContext } from "@/components/live-chat/LiveChatContext";
-import frontConfig from "@/frontConfig";
 
 const crispWebsiteId: string =
   process.env.NEXT_PUBLIC_CRISP_WEBSITE_ID ||
