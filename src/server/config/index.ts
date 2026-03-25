@@ -93,7 +93,9 @@ const CRON_TASK_ENV_VAR = {
   FEATURE_DELETE_SENTRY_ACCOUNT: process.env.FEATURE_DELETE_SENTRY_ACCOUNT,
   FEATURE_NEWSLETTER: process.env.FEATURE_NEWSLETTER === "true",
   NEWSLETTER_BOT_ICON_URL: process.env.NEWSLETTER_BOT_ICON_URL,
-  newsletterContentUrl: process.env.NEWSLETTER_CONTENT_URL || "",
+  newsletterContentUrl:
+    process.env.NEWSLETTER_CONTENT_URL ||
+    "https://docs.numerique.gouv.fr/docs/8354b3be-0f1f-4690-8f89-a6c4a738f374",
   visitSenderEmail: process.env.VISIT_MAIL_SENDER || "secretariat@beta.gouv.fr",
   visitRecipientEmail:
     process.env.VISIT_MAIL_RECIPIENT || "espace-membre@incubateur.net",
