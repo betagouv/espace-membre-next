@@ -4,16 +4,12 @@ import { getServerSession } from "next-auth/next";
 
 import { getUserInformations } from "@/app/api/member/getInfo";
 import { BreadCrumbFiller } from "@/app/BreadCrumbProvider";
-import MemberPage, {
-  MemberPageProps,
-} from "@/components/MemberPage/MemberPage";
-import { getUserEvents } from "@/lib/kysely/queries/userEvents";
+import MemberPage from "@/components/MemberPage/MemberPage";
 import { userInfos } from "@/server/controllers/utils";
 import { authOptions } from "@/utils/authoptions";
-import { computeOnboardingProgress } from "@/utils/onboarding/computeOnboardingProgress";
-import { getChecklistObject } from "@/utils/onboarding/getChecklistObject";
 import { getUserIncubators } from "@/lib/kysely/queries/users";
 import { canEditMember as _canEditMember } from "@/lib/canEditMember";
+import { getUserChecklists } from "@/utils/checklists/getUserChecklists";
 
 type Props = {
   params: { id: string };
@@ -77,21 +73,9 @@ export default async function Page({
   const canValidateMember =
     canEditMember && !(session.user.uuid === user.userInfos.uuid);
 
-  let onboarding: MemberPageProps["onboarding"];
-  const userEvents = await getUserEvents(user.userInfos.uuid);
-  const checklistObject = await getChecklistObject();
-  if (checklistObject) {
-    const userEventIds = userEvents.map((u) => u.field_id);
-    const progress = await computeOnboardingProgress(
-      userEventIds,
-      checklistObject,
-    );
-    onboarding = {
-      progress,
-      userEvents,
-      checklistObject,
-    };
-  }
+  const { onboarding, offboarding } = await getUserChecklists(
+    user.userInfos.uuid,
+  );
 
   const incubators = await getUserIncubators(userInformations.baseInfo.uuid);
 
@@ -119,6 +103,7 @@ export default async function Page({
         sentryInfo={userInformations.sentryInfo}
         startups={userInformations.startups}
         onboarding={onboarding}
+        offboarding={offboarding}
         incubators={incubators}
       />
     </>

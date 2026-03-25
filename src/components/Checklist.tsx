@@ -5,7 +5,7 @@ import MarkdownIt from "markdown-it";
 
 import { safeUpdateUserEvent } from "@/app/api/member/actions/updateUserEvent";
 import { Domaine } from "@/models/member";
-import { onboardingChecklistSchemaType } from "@/models/onboardingChecklist";
+import { checklistSchemaType } from "@/models/checklist";
 import Accordion from "@codegouvfr/react-dsfr/Accordion";
 
 const mdParser = new MarkdownIt({
@@ -24,12 +24,14 @@ export default function Checklist({
   userEventIds,
   handleUserEventIdsChange,
   userUuid,
+  readOnly,
 }: {
   domaine: Domaine;
-  sections: onboardingChecklistSchemaType;
+  sections: checklistSchemaType;
   userEventIds: string[];
   handleUserEventIdsChange: (eventIds: string[]) => void;
   userUuid: string;
+  readOnly: boolean;
 }) {
   const isVisible = (domaines?: string[]) => {
     if (!domaines) return true;
@@ -39,7 +41,7 @@ export default function Checklist({
     const value = e.target.checked;
     if (userEventIds.includes(field_id) && !value) {
       handleUserEventIdsChange(
-        [...userEventIds].filter((userEventId) => userEventId !== field_id),
+        userEventIds.filter((userEventId) => userEventId !== field_id),
       );
     } else if (!userEventIds.includes(field_id) && value) {
       handleUserEventIdsChange([...userEventIds, field_id]);
@@ -57,9 +59,15 @@ export default function Checklist({
   return (
     <div>
       {sections.map((section, i) => {
+        const expand =
+          i === 0 || section.items.some((i) => userEventIds.includes(i.id));
         if (!isVisible(section.domaines)) return null;
         return (
-          <Accordion key={i} label={section.title} defaultExpanded={i === 0}>
+          <Accordion
+            key={section.title + i}
+            label={section.title}
+            defaultExpanded={expand}
+          >
             <Checkbox
               options={section.items.map((item, index) => ({
                 label: (
@@ -72,7 +80,7 @@ export default function Checklist({
                 nativeInputProps: {
                   name: `checkboxes-${index}`,
                   value: item.id,
-                  disabled: item.disabled,
+                  disabled: item.disabled || readOnly,
                   defaultChecked:
                     item.defaultValue || userEventIds.includes(item.id),
                   onChange: (e) => onChange(e, item.id),
