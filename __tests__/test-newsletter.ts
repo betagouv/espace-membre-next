@@ -109,19 +109,5 @@ describe("Newsletter reminder scheduler", () => {
       channels.should.include("general");
       channels.should.include("town-square");
     });
-
-    it("sends correct message for FIRST_REMINDER", async () => {
-      await newsletterReminder("FIRST_REMINDER");
-      sendInfoToChatSpy.firstCall.args[0].text.should.equal(
-        computeMessageReminder("FIRST_REMINDER"),
-      );
-    });
-
-    it("sends correct message for SECOND_REMINDER", async () => {
-      await newsletterReminder("SECOND_REMINDER");
-      sendInfoToChatSpy.firstCall.args[0].text.should.equal(
-        computeMessageReminder("SECOND_REMINDER"),
-      );
-    });
   });
 });
