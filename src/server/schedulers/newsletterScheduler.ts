@@ -7,13 +7,13 @@ import { sendInfoToChat } from "@infra/chat";
 
 const url = config.newsletterContentUrl;
 
-// Every Wednesday at 10:00
+// Every Thursday at 10:00
 const firstReminders = [
-  `### :loudspeaker: La newsletter beta.gouv.fr arrive bientôt — et elle a besoin de toi !
+  `### :loudspeaker: L'infolettre beta.gouv.fr arrive bientôt — et elle a besoin de toi !
 
 :wave: Salut la communauté !
 
-La newsletter part **mardi prochain** et le document est ouvert à toutes les contributions : ${url}
+L'infolettre part **mardi prochain** et le document est ouvert à toutes les contributions : ${url}
 
 Tu peux y partager :
 - les dernières actus de ton produit
@@ -24,11 +24,11 @@ Tu peux y partager :
 
 **Chaque contribution compte** — même une ligne, même un lien. À toi de jouer ! :pencil:`,
 
-  `### :newspaper: C'est l'heure de la newsletter ! Tu contribues ?
+  `### :newspaper: C'est l'heure de l'infolettre ! Tu contribues ?
 
 :wave: Bonjour tout le monde !
 
-La newsletter de la communauté beta.gouv.fr sera envoyée **mardi prochain**. Le document collaboratif est ouvert : ${url}
+L'infolettre de la communauté beta.gouv.fr sera envoyée **mardi prochain**. Le document collaboratif est ouvert : ${url}
 
 Quelques idées de ce que tu peux partager :
 - une nouveauté sur ton produit ou service
@@ -36,13 +36,13 @@ Quelques idées de ce que tu peux partager :
 - un événement ou une formation à ne pas manquer
 - une info transverse utile à toute la communauté
 
-:bulb: Pas besoin d'être expert en rédaction — l'équipe s'occupe de la mise en forme. Il suffit d'ajouter tes idées !`,
+:bulb: Pas besoin d'être expert en rédaction — l'équipe s'occupe de la mise en forme. Il suffit d'ajouter tes idées et un peu de contenu !`,
 
-  `### :mega: La newsletter beta.gouv.fr se prépare — à vos claviers !
+  `### :mega: L'infolettre beta.gouv.fr se prépare — à vos claviers !
 
-:wave: Hello la communauté !
+:wave: Salut la communauté !
 
-Chaque semaine, la newsletter rassemble les actus de nos 200+ équipes. **C'est aussi la tienne.** Le document de cette semaine : ${url}
+Toutes les deux semaines, l'infolettre rassemble les actus de nos 200+ équipes. **Cette infolettre, c'est aussi la tienne.** Le document de cette semaine : ${url}
 
 Ce que les équipes partagent en général :
 - :rocket: Lancements, mises à jour, victoires
@@ -50,16 +50,16 @@ Ce que les équipes partagent en général :
 - :calendar: Événements et formations à venir
 - :bulb: Idées et initiatives transverses
 
-La newsletter part **mardi** — plus tu contribues tôt, mieux c'est !`,
+La newsletter part **mardi** — plus tôt tu contribues, mieux c'est !`,
 ];
 
-// Every Tuesday at 08:00
+// Every Monday at 11:00
 const secondReminders = [
-  `### :hourglass_flowing_sand: Dernière chance — la newsletter part aujourd'hui !
+  `### :hourglass_flowing_sand: Dernière chance — l'infolettre part demain !
 
 :wave: Bonjour !
 
-Il reste encore un peu de temps pour contribuer à la newsletter beta.gouv.fr : ${url}
+Il reste encore un peu de temps pour contribuer à l'infolettre beta.gouv.fr : ${url}
 
 Tu peux encore ajouter :
 - des nouveautés sur ton produit
@@ -67,23 +67,23 @@ Tu peux encore ajouter :
 - des événements ou formations
 - des infos transverses
 
-**:alarm_clock: Envoi à partir de 16h — dépêche-toi !**`,
+**:alarm_clock: Envoi demain à 16h — dépêche-toi !**`,
 
-  `### :rotating_light: La newsletter ferme ses portes à 16h !
+  `### :rotating_light: L'infolettre ferme ses portes demain à 16h !
 
 :wave: Hello !
 
-La newsletter de cette semaine est encore ouvert pour quelques heures : ${url}
+La contribution à l'infolettre de cette semaine est encore ouverte pour quelques heures : ${url}
 
 Une actu à partager ? Une demande d'aide ? Un événement à signaler ? **Ajoute-le maintenant**, avant l'envoi à toute la communauté.
 
-:clock4: **Deadline : 16h aujourd'hui.**`,
+:clock4: **Deadline : demain à 16h.**`,
 
   `### :rocket: Dernière ligne droite pour la newsletter !
 
 :wave: Coucou la communauté !
 
-La newsletter beta.gouv.fr part **aujourd'hui à 16h**. Le document est encore modifiable : ${url}
+L'infolettre beta.gouv.fr part **demain à 16h**. Le document est encore ouvert : ${url}
 
 Même une toute petite contribution — une ligne, un lien, une annonce — enrichit l'infolettre pour tout le monde. :sparkles:
 
@@ -91,8 +91,8 @@ Même une toute petite contribution — une ligne, un lien, une annonce — enri
 ];
 
 const defaultReminders = [
-  `*:rolled_up_newspaper: La newsletter va bientôt partir !*
-Vérifie une dernière fois le contenu du document ${url}. À 16 h, il sera envoyé à la communauté.`,
+  `*:rolled_up_newspaper: L'infolettre va bientôt partir !*
+Vérifie une dernière fois le contenu du document ${url}. Demain à 16 h, il sera envoyé à la communauté.`,
 
   `*:mailbox_with_mail: Dernier appel avant envoi !*
 Le document part dans quelques instants. Un dernier coup d'œil ? ${url} — à 16h, c'est parti pour toute la communauté !`,
