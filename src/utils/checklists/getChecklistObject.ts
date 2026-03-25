@@ -1,6 +1,6 @@
 import * as Sentry from "@sentry/node";
-import fs from "fs/promises";
-import path from "path";
+import fs from "node:fs/promises";
+import path from "node:path";
 import yaml from "yaml";
 
 import { checklistSchema, checklistSchemaType } from "@/models/checklist";
@@ -16,7 +16,11 @@ export async function getChecklistObject(
     throw new Error(`Invalid checklist type requested: ${type}`);
   }
 
-  const filePath = path.join(process.cwd(), "src/utils/checklists", `${type}.yml`);
+  const filePath = path.join(
+    process.cwd(),
+    "src/utils/checklists",
+    `${type}.yml`,
+  );
   const fileContents = await fs.readFile(filePath, "utf-8");
 
   const parsed = checklistSchema.safeParse(yaml.parse(fileContents));

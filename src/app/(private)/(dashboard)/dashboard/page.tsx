@@ -8,15 +8,12 @@ import {
 } from "@/components/Dashboard/DashboardPage";
 import { SURVEY_BOX_COOKIE_NAME } from "@/components/SurveyBox";
 import { getLatests as getLatestsStartups } from "@/lib/kysely/queries/startups";
-import { getUserEvents } from "@/lib/kysely/queries/userEvents";
 import {
   getUserInfos,
   getLatests as getLatestsMembers,
 } from "@/lib/kysely/queries/users";
 import { userInfosToModel } from "@/models/mapper";
 import { EmailStatusCode } from "@/models/member";
-import { computeProgress } from "@/utils/checklists/computeProgress";
-import { getChecklistObject } from "@/utils/checklists/getChecklistObject";
 import { routeTitles } from "@/utils/routes/routeTitles";
 import { getServerSession } from "next-auth";
 import { authOptions } from "@/utils/authoptions";

@@ -60,11 +60,14 @@ export default function Checklist({
     <div>
       {sections.map((section, i) => {
         const expand =
-          i === 0 ||
-          section.items.filter((i) => userEventIds.includes(i.id)).length > 0;
+          i === 0 || section.items.some((i) => userEventIds.includes(i.id));
         if (!isVisible(section.domaines)) return null;
         return (
-          <Accordion key={i} label={section.title} defaultExpanded={expand}>
+          <Accordion
+            key={section.title + i}
+            label={section.title}
+            defaultExpanded={expand}
+          >
             <Checkbox
               options={section.items.map((item, index) => ({
                 label: (

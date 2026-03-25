@@ -11,10 +11,7 @@ export const getUserChecklists = async (uuid: string) => {
   const checklistOnboardingObject = await getChecklistObject("onboarding");
 
   if (checklistOnboardingObject) {
-    const progress = await computeProgress(
-      userEventIds,
-      checklistOnboardingObject,
-    );
+    const progress = computeProgress(userEventIds, checklistOnboardingObject);
     onboarding = {
       progress,
       userEvents,
@@ -25,10 +22,7 @@ export const getUserChecklists = async (uuid: string) => {
   let offboarding: MemberPageProps["offboarding"];
   const checklistOffboardingObject = await getChecklistObject("offboarding");
   if (checklistOffboardingObject) {
-    const progress = await computeProgress(
-      userEventIds,
-      checklistOffboardingObject,
-    );
+    const progress = computeProgress(userEventIds, checklistOffboardingObject);
     offboarding = {
       progress,
       userEvents,
