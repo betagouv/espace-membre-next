@@ -195,6 +195,14 @@ const MainHeader = () => {
             text: "Événements",
             isActive: hasPathnameThisRoot(pathname, eventsListLink),
           },
+          {
+            linkProps: {
+              href: "https://docs.numerique.gouv.fr/docs/8354b3be-0f1f-4690-8f89-a6c4a738f374/",
+              target: "_blank",
+            },
+            text: "Infolettre",
+            isActive: false,
+          },
         ]
       : [];
   if (session?.user?.isAdmin) {
