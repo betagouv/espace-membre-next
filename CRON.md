@@ -2,8 +2,6 @@
 
 | enabled | fréquence                    | code                                               | description                                                                   |
 | ------- | ---------------------------- | -------------------------------------------------- | ----------------------------------------------------------------------------- |
-| ✅      | `0 10 * * 3`                 | `newsletterFirstReminderJob`                       | Rappel mattermost newsletter 1                                                |
-| ✅      | `0 8 * * 2`                  | `newsletterSecondReminderJob`                      | Rappel mattermost newsletter 2                                                |
 | ✅      | `0 10 * * *`                 | `sendGroupDeSoutienReminder`                       | Send mattermost message groupe de soutien                                     |
 | ✅      | `10 10 * * *`                | `syncMattermostUserWithMattermostMemberInfosTable` | Add new mattermost user to mattermost_member_info table                       |
 | ✅      | `0 5 * * 1`                  | `createMailingListForStartups`                     | Créé des mailings-list OVH pour les startups                                  |
