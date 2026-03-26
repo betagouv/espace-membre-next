@@ -179,16 +179,6 @@ erDiagram
         comment text "null"
     }
 
-    startup_urls {
-        uuid uuid PK "not null"
-        startup_uuid uuid FK "not null"
-        type text "not null"
-        url text "not null"
-        label text "null"
-        created_at timestamp_with_time_zone "null"
-        updated_at timestamp_with_time_zone "null"
-    }
-
     startups {
         uuid uuid PK "not null"
         incubator_id uuid FK "null"
@@ -337,7 +327,6 @@ erDiagram
     startups ||--o{ phases : "phases(startup_id) -> startups(uuid)"
     startups ||--o{ sentry_teams : "sentry_teams(startup_id) -> startups(uuid)"
     startups ||--o{ startup_events : "startup_events(startup_id) -> startups(uuid)"
-    startups ||--o{ startup_urls : "startup_urls(startup_uuid) -> startups(uuid)"
     startups ||--o{ startups_files : "startups_files(startup_id) -> startups(uuid)"
     startups ||--o{ startups_organizations : "startups_organizations(startup_id) -> startups(uuid)"
     teams ||--o{ users_teams : "users_teams(team_id) -> teams(uuid)"
@@ -432,11 +421,6 @@ erDiagram
 ### `startup_events`
 
 - `startup_events_pkey`
-
-### `startup_urls`
-
-- `startup_urls_pkey`
-- `startup_urls_startup_uuid_index`
 
 ### `startups`
 
