@@ -139,7 +139,7 @@ export const pgBossWorker: {
   {
     topic: syncDinumEmailsTopic,
     worker: syncDinumEmails,
-    description: `Créer une boite mail Dimail pour un utilisateur`,
+    description: `Synchzonise la table dinum_emails`,
   },
 ];
 
