@@ -7,8 +7,6 @@ import {
   removeGithubUserFromOrganization,
 } from "./githubScheduler";
 import { syncMattermostUserWithMattermostMemberInfosTable } from "./mattermostScheduler/syncMattermostUserWithMattermostMemberInfosTable";
-import { sendGroupDeSoutienReminder } from "./mattermostScheduler/sendGroupeDeSoutienReminder";
-import { newsletterReminder } from "./newsletterScheduler";
 import { recreateEmailIfUserActive } from "./recreateEmailIfUserActive";
 import { syncMatomoAccounts } from "./serviceScheduler/syncMatomoAccounts";
 import { syncSentryAccounts } from "./serviceScheduler/syncSentryAccounts";
@@ -36,18 +34,6 @@ export interface EspaceMembreCronJobType {
   timeZone?: string;
   start?: boolean;
 }
-
-const mattermostJobs: EspaceMembreCronJobType[] = [
-  {
-    cronTime: "0 10 * * *", // Every day at 10:00
-    onTick: () => {
-      sendGroupDeSoutienReminder("general", 1, 0);
-    },
-    isActive: true,
-    name: "sendGroupDeSoutienReminder",
-    description: "Send mattermost message groupe de soutien",
-  },
-];
 
 const startupJobs: EspaceMembreCronJobType[] = [
   {
@@ -98,23 +84,6 @@ const servicesJobs: EspaceMembreCronJobType[] = [
   },
 ];
 
-const newsletterJobs: EspaceMembreCronJobType[] = [
-  {
-    cronTime: process.env.NEWSLETTER_FIRST_REMINDER_TIME || "0 10 * * 3", // Every Wednesday at 10:00 - in prod: 0 0 9 * * * ( every day at 9:00:00 AM.)
-    onTick: () => newsletterReminder("FIRST_REMINDER"),
-    isActive: config.FEATURE_NEWSLETTER,
-    name: "newsletterFirstReminderJob",
-    description: "Rappel mattermost newsletter 1",
-  },
-  {
-    cronTime: process.env.NEWSLETTER_SECOND_REMINDER_TIME || "0 8 * * 2", // Every Tuesday at 08:00 - in prod: 0 0 9 * * 2 (every Tuesday at 9:00:00 AM.)
-    onTick: () => newsletterReminder("SECOND_REMINDER"),
-    isActive: config.FEATURE_NEWSLETTER,
-    name: "newsletterSecondReminderJob",
-    description: "Rappel mattermost newsletter 2",
-  },
-];
-
 const synchronizationJobs: EspaceMembreCronJobType[] = [
   {
     cronTime: "10 10 * * *", // Every day at 10:10
@@ -128,8 +97,6 @@ const synchronizationJobs: EspaceMembreCronJobType[] = [
 ];
 
 export const espaceMembreCronJobs: EspaceMembreCronJobType[] = [
-  ...newsletterJobs,
-  ...mattermostJobs,
   ...startupJobs,
   ...servicesJobs,
   ...synchronizationJobs,
