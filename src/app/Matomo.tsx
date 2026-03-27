@@ -40,6 +40,7 @@ export function Matomo(props: MatomoProps) {
       siteId: matomoSiteId,
       disableCookies: true,
       nonce: props.nonce,
+      excludeUrlsPatterns: [/login/, /community\/.*/],
       onInitialization: () => {
         push(["optUserOut"]);
         push(["rememberConsentGiven"]); // Needed so `trackEvent` and others work (since we don't push data that identifies the user, no need of a consent)
