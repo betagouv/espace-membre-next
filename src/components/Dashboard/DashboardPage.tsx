@@ -104,7 +104,7 @@ const CardMember = ({
 export function DashboardPage(props: DashboardPageProps) {
   return (
     <div className={fr.cx("fr-container", "fr-pb-6w", "fr-mb-2w")}>
-      {props.onboarding && (
+      {props.onboarding && props.onboarding.progress < 100 && (
         <div
           style={{ border: "1px solid #ccc", padding: "20px" }}
           className={fr.cx("fr-container", "fr-mb-6w")}
