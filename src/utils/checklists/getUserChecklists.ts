@@ -11,7 +11,11 @@ export const getUserChecklists = async (uuid: string) => {
   const checklistOnboardingObject = await getChecklistObject("onboarding");
 
   if (checklistOnboardingObject) {
-    const progress = computeProgress(userEventIds, checklistOnboardingObject);
+    const progress = computeProgress(
+      userEventIds,
+      checklistOnboardingObject,
+      1,
+    );
     onboarding = {
       progress,
       userEvents,
