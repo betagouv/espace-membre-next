@@ -183,6 +183,7 @@ export default function MemberPage({
       tabId: "embarquement",
       content: (
         <ChecklistTabPanel
+          offset={1}
           readOnly={!canEditMember}
           userEvents={onboarding.userEvents}
           userInfos={userInfos}

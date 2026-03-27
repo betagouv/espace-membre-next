@@ -15,12 +15,14 @@ export const ChecklistTabPanel = ({
   checklistObject,
   intro,
   readOnly,
+  offset = 0,
 }: {
   userEvents: userEventSchemaType[];
   checklistObject: checklistSchemaType;
   userInfos: memberWrapperSchemaType["userInfos"];
   intro: ReactNode;
   readOnly: boolean;
+  offset?: number;
 }) => {
   const [userEventIds, setUserEventIds] = useState<string[]>(
     userEvents
@@ -28,10 +30,10 @@ export const ChecklistTabPanel = ({
       .map((event) => event.field_id),
   );
   const [progress, setProgress] = useState<number>(
-    computeProgress(userEventIds, checklistObject),
+    computeProgress(userEventIds, checklistObject, offset),
   );
   useEffect(() => {
-    setProgress(computeProgress(userEventIds, checklistObject));
+    setProgress(computeProgress(userEventIds, checklistObject, offset));
   }, [userEventIds, checklistObject]);
   return (
     <>
