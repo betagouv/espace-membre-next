@@ -27,7 +27,7 @@
     - id: offboarding-verifier-blocages
       title: Faire un état des lieux avec l’intra ou la personne responsable de l'équipe produit à J-7 pour identifier si des blocages critiques demeurent
     - id: offboarding-livrer-livrables
-      title: Finaliser tes derniers livrables de mission
+      title: Finaliser tes derniers livrables de ta mission
     - id: offboarding-rapport-services-faits
       title: Livrer ton dernier rapport de services faits à l'entreprise titulaire du marché public avec laquelle tu as ton contrat
     - id: offboarding-echange-sortie-responsable
@@ -43,6 +43,6 @@
     - id: offboarding-rediriger-email
       title: "Sur [#incubateur-secretariat](https://mattermost.incubateur.net/betagouv/channels/incubateur-secretariat), demander à ce qu'on rediriger ton adresse @beta.gouv.fr vers departs@beta.gouv.fr"
     - id: offboarding-rendre-badges
-      title: Rendre les badges d'accès aux locaux (Ségur, Plateforme de l'inclusion etc)
+      title: Rendre tes badges d'accès aux locaux (Ségur, Plateforme de l'inclusion, etc)
     - id: offboarding-retour-experience
-      title: Remplir mon [retour d'expérience au sein de la communauté](https://grist.numerique.gouv.fr/o/isn/forms/jGrwi97QpXsRynJpCEubxj/4)
+      title: Remplir ton [retour d'expérience au sein de la communauté](https://grist.numerique.gouv.fr/o/isn/forms/jGrwi97QpXsRynJpCEubxj/4)
