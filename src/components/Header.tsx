@@ -205,16 +205,7 @@ const MainHeader = () => {
           },
         ]
       : [];
-  if (session?.user?.isAdmin) {
-    nav.push({
-      linkProps: {
-        href: "/admin",
-        target: "_self",
-      },
-      text: "Admin",
-      isActive: hasPathnameThisRoot(pathname, adminMattermostLink),
-    });
-  }
+
   return (
     <Header
       brandTop={
