@@ -26,6 +26,7 @@ erDiagram
         destination character_varying "null"
         status character_varying "null"
         type character_varying "null"
+        user_id uuid "null"
     }
 
     events {
@@ -120,17 +121,6 @@ erDiagram
         startup_id uuid FK "not null"
         mission_id uuid "not null"
         startup_id uuid "not null"
-    }
-
-    newsletters {
-        id uuid PK "not null"
-        url text "not null"
-        created_at timestamp_with_time_zone "not null"
-        year_week character_varying "null"
-        brevo_url text "null"
-        validator text "null"
-        publish_at timestamp_with_time_zone "null"
-        sent_at timestamp_with_time_zone "null"
     }
 
     organizations {
@@ -400,10 +390,6 @@ erDiagram
 
 - `missions_startups_pkey`
 - `missions_startups_startup_id_mission_id_unique`
-
-### `newsletters`
-
-- `newsletters_pkey`
 
 ### `organizations`
 

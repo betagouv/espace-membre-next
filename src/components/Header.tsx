@@ -9,14 +9,13 @@ import { v4 as uuidv4 } from "uuid";
 import { useLiveChat } from "@/components/live-chat/useLiveChat";
 import { linkRegistry } from "@/utils/routes/registry";
 import { routeTitles } from "@/utils/routes/routeTitles";
-import { hasPathnameThisMatch, hasPathnameThisRoot } from "@/utils/url";
+import { hasPathnameThisRoot } from "@/utils/url";
 
 const MainHeader = () => {
   const router = useRouter();
   const { data: session, status } = useSession();
   const { showLiveChat, isLiveChatLoading } = useLiveChat();
   const pathname = usePathname();
-  const newsletterLink = linkRegistry.get("newsletters", undefined);
 
   const dashboardLink = linkRegistry.get("dashboard", undefined);
   const accountLink = linkRegistry.get("account", undefined);
@@ -93,7 +92,6 @@ const MainHeader = () => {
       "/admin",
       "/incubator",
       "/startups",
-      "/newsletters",
       "/formations",
       "/events",
       "/organizations",
@@ -199,10 +197,11 @@ const MainHeader = () => {
           },
           {
             linkProps: {
-              href: "/newsletters",
+              href: "https://docs.numerique.gouv.fr/docs/8354b3be-0f1f-4690-8f89-a6c4a738f374/",
+              target: "_blank",
             },
-            text: routeTitles.newsletters(),
-            isActive: hasPathnameThisMatch(pathname, newsletterLink),
+            text: "Infolettre",
+            isActive: false,
           },
         ]
       : [];

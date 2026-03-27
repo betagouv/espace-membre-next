@@ -18,8 +18,8 @@ import ProgressBar from "../ProgressBar";
 import { getLatests as getLatestsProducts } from "@/lib/kysely/queries/startups";
 import { getLatests as getLatestsMembers } from "@/lib/kysely/queries/users";
 import { linkRegistry } from "@/utils/routes/registry";
-import Alert from "@codegouvfr/react-dsfr/Alert";
 import { DimailEmailCreationInvite } from "../DimailEmailCreationInvite";
+import frontConfig from "@/frontConfig";
 
 type LatestProductsReturnType = Awaited<ReturnType<typeof getLatestsProducts>>;
 type LatestMembersReturnType = Awaited<ReturnType<typeof getLatestsMembers>>;
@@ -204,7 +204,7 @@ export function DashboardPage(props: DashboardPageProps) {
             orientation="horizontal"
             imageUrl={(emailpicto as StaticImageData).src}
             linkProps={{
-              href: linkRegistry.get("newsletters"),
+              href: frontConfig.newsletterContentUrl,
             }}
           />
         </div>
