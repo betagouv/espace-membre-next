@@ -22,7 +22,6 @@ const MainHeader = () => {
   const communityLink = linkRegistry.get("community", undefined);
   const startupListLink = linkRegistry.get("startupList", undefined);
   const incubatorListLink = linkRegistry.get("incubatorList", undefined);
-  const adminMattermostLink = linkRegistry.get("adminMattermost", undefined);
   const formationListLink = linkRegistry.get("formationList", undefined);
   const eventsListLink = linkRegistry.get("eventsList", undefined);
   const metabaseLink = linkRegistry.get("metabase", undefined);
