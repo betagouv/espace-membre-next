@@ -279,12 +279,6 @@ export async function userInfos(
         to: a.destination || "",
         id: a.uuid,
       }));
-    } else {
-      emailInfos = await BetaGouv.emailInfos(userInfos.username);
-      emailRedirections = await BetaGouv.redirectionsForId({
-        from: userInfos.username,
-      });
-      emailResponder = await BetaGouv.getResponder(userInfos.username);
     }
 
     const isExpired = checkUserIsExpired(userInfos);
