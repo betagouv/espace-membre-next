@@ -85,7 +85,7 @@ export async function createStartup({
       const startupUuid = res.uuid;
 
       // Insert startup_urls
-      if (startup_urls.length) {
+      if (startup_urls && startup_urls.length) {
         await trx
           .insertInto("startup_urls")
           .values(
@@ -151,7 +151,7 @@ export async function createStartup({
         .where("startup_id", "=", startupUuid)
         .execute();
 
-      if (startupEvents.length) {
+      if (startupEvents && startupEvents.length) {
         await trx
           .insertInto("startup_events")
           .values(
@@ -287,7 +287,7 @@ export async function updateStartup({
       .deleteFrom("startup_urls")
       .where("startup_uuid", "=", startupUuid)
       .execute();
-    if (startup_urls.length) {
+    if (startup_urls && startup_urls.length) {
       await trx
         .insertInto("startup_urls")
         .values(
@@ -382,7 +382,7 @@ export async function updateStartup({
       .where("startup_id", "=", startupUuid)
       .execute();
 
-    if (startupEvents.length) {
+    if (startupEvents && startupEvents.length) {
       await trx
         .insertInto("startup_events")
         .values(
