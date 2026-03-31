@@ -12,7 +12,6 @@ import {
   memberWrapperSchemaType,
 } from "@/models/member";
 import config from "@/server/config";
-import BetaGouv from "@betagouv";
 import {
   getDimailEmail,
   getDimailEmailsByUser,
