@@ -40,13 +40,12 @@ export function Matomo(props: MatomoProps) {
       siteId: matomoSiteId,
       disableCookies: true,
       nonce: props.nonce,
+      excludeUrlsPatterns: [/\/community\/.*/, /login/],
       onInitialization: () => {
         push(["optUserOut"]);
         push(["rememberConsentGiven"]); // Needed so `trackEvent` and others work (since we don't push data that identifies the user, no need of a consent)
         push(["forgetCookieConsentGiven"]); // Prevent Matomo setting a cookie (or remove if done previously)
         push(["enableHeartBeatTimer"]);
-        push(["disableQueueRequest"]);
-        push(["disablePerformanceTracking"]);
       },
     });
 
