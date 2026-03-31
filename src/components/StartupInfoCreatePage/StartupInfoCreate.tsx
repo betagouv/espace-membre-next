@@ -26,6 +26,7 @@ export const StartupInfoCreate = (props: StartupInfoCreateProps) => {
       const res = await safeCreateStartup({
         formData: {
           startup: data.startup,
+          startup_urls: data.startup_urls,
           startupEvents: data.startupEvents,
           startupPhases: data.startupPhases,
           startupSponsors: data.startupSponsors,

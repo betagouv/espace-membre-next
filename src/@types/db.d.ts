@@ -466,6 +466,16 @@ export interface StartupsOrganizations {
   uuid: Generated<string>;
 }
 
+export interface StartupUrls {
+  created_at: Generated<Timestamp | null>;
+  label: string | null;
+  startup_uuid: string;
+  type: string;
+  updated_at: Generated<Timestamp | null>;
+  url: string;
+  uuid: Generated<string>;
+}
+
 export interface Tasks {
   created_at: Generated<Timestamp>;
   description: string | null;
@@ -570,6 +580,7 @@ export interface DB {
   sessions: Sessions;
   startup_aggregated_stats: StartupAggregatedStats;
   startup_events: StartupEvents;
+  startup_urls: StartupUrls;
   startups: Startups;
   startups_files: StartupsFiles;
   startups_organizations: StartupsOrganizations;

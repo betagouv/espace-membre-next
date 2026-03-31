@@ -108,6 +108,11 @@ export default async function Page({ params }: Props) {
     .selectAll()
     .execute();
   const startup = startupToModel(dbSe);
+  const startupUrls = await db
+    .selectFrom("startup_urls")
+    .where("startup_uuid", "=", dbSe.uuid)
+    .selectAll()
+    .execute();
   const startupMembers = (await getUsersByStartup(dbSe.uuid)).map((user) => {
     return memberBaseInfoToModel(user);
   });
@@ -140,6 +145,7 @@ export default async function Page({ params }: Props) {
         allMembers={allMembers}
         changes={changes.map((change) => startupChangeToModel(change))}
         startupInfos={startup}
+        startupUrls={startupUrls}
         incubator={incubator}
         sponsors={sponsors}
         sentryTeams={sentryTeams}
