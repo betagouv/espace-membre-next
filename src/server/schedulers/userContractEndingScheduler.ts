@@ -43,9 +43,11 @@ const getRegisteredUsersWithEndingContractInXDays = async (
     .filter((user) => {
       const today = new Date();
       const stillActive = !utils.checkUserIsExpired(user);
-      const latestMission = user.missions.reduce((a, v) =>
-        //@ts-ignore todo
-        v.end > a.end || !v.end ? v : a,
+      const latestMission = user.missions.reduce(
+        (a, v) =>
+          //@ts-ignore todo
+          v.end > a.end || !v.end ? v : a,
+        user.missions[0],
       );
       if (!latestMission.end) {
         return false;
@@ -161,8 +163,10 @@ const sendMessageOnChatAndEmail = async ({
       `Send ending contract (${messageType} days) message on mattermost to ${user.mattermostUsername}`,
     );
     sleep(1000);
-  } catch (err) {
-    throw new Error(`Erreur d'envoi de mail à l'adresse indiquée ${err}`);
+  } catch (err: any) {
+    throw new Error(
+      `Erreur d'envoi de message mattermost à l'adresse indiquée ${err.message}`,
+    );
   }
   try {
     let email = user.userInfos.primary_email;
@@ -193,7 +197,7 @@ export async function sendContractEndingMessageToUsers(
   sendToSecondary = false,
   users = null,
 ) {
-  console.log("Run send contract ending message to users");
+  console.log(`Run send contract ending message ${configName} to users`);
   const messageConfig = CONFIG_ENDING_CONTRACT_MESSAGE[configName];
   let registeredUsersWithEndingContractInXDays: memberBaseInfoAndMattermostWrapperType[];
   if (users) {
@@ -213,7 +217,7 @@ export async function sendContractEndingMessageToUsers(
           days: messageConfig.days,
         }),
     ),
-    { concurrency: 1 },
+    { concurrency: 1, stopOnError: false },
   );
 }
 
@@ -228,11 +232,12 @@ export async function sendInfoToSecondaryEmailAfterXDays(
     );
     expiredUsers = utils.getExpiredUsersForXDays(users, nbDays);
   }
-  return Promise.all(
-    expiredUsers.map(async (user) => {
+  return pAll(
+    expiredUsers.map((user) => async () => {
       try {
         if (user.secondary_email) {
           const email = user.secondary_email;
+          console.log(`Envoi du message fin de contrat +${nbDays} à ${email}`);
           await sendEmail({
             type: CONFIG_NO_MORE_CONTRACT_MESSAGE[nbDays],
             toEmail: [email],
@@ -241,25 +246,26 @@ export async function sendInfoToSecondaryEmailAfterXDays(
               days: nbDays,
             },
           });
-          console.log(`Envoie du message fin de contrat +${nbDays} à ${email}`);
         } else {
           console.error(
             `Le compte ${user.username} n'a pas d'adresse secondaire`,
           );
         }
-      } catch (err) {
+      } catch (err: any) {
+        console.log(`sendInfoToSecondaryEmailAfterXDays error`, err.message);
         throw new Error(`Erreur d'envoi de mail à l'adresse indiquée ${err}`);
       }
     }),
+    { concurrency: 1 },
   );
 }
 
 export async function sendJ1Email(users) {
-  return module.exports.sendInfoToSecondaryEmailAfterXDays(1, users);
+  return sendInfoToSecondaryEmailAfterXDays(1, users);
 }
 
 export async function sendJ30Email(users) {
-  return module.exports.sendInfoToSecondaryEmailAfterXDays(30, users);
+  return sendInfoToSecondaryEmailAfterXDays(30, users);
 }
 
 export async function deleteMatomoAccount() {

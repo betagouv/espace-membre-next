@@ -1,10 +1,7 @@
 import { db } from "@/lib/kysely";
 import * as mattermost from "@/lib/mattermost";
 import { MattermostMemberInfo } from "@/models/mattermostMemberInfo";
-import {
-  memberBaseInfoSchemaType,
-  memberPublicInfoSchemaType,
-} from "@/models/member";
+
 import config from "@/server/config";
 
 const isSameUser = (
@@ -29,27 +26,17 @@ export async function syncMattermostUserWithMattermostMemberInfosTable() {
   const mattermostUserEmails: string[] = mattermostUsers.map(
     (user) => user.email,
   );
+
   const mattermostMemberInfos = await db
     .selectFrom("mattermost_member_infos")
-    .selectAll()
+    .select("username")
     .execute();
-  console.log("Mattermost users length", mattermostMemberInfos.length);
-  // const dbUsers: DBUser[] = await db("users")
-  //     .whereNotIn(
-  //         "username",
-  //         mattermostMemberInfos.map((m) => m.username)
-  //     )
-  //     .where((qb) => {
-  //         qb.whereIn("secondary_email", mattermostUserEmails);
-  //         qb.orWhereIn("primary_email", mattermostUserEmails);
-  //     });
-  const dbUsers = await db
+  console.log("Mattermost member infos length", mattermostMemberInfos.length);
+
+  const knownUsernames = mattermostMemberInfos.map((m) => m.username);
+
+  let dbUsersQuery = db
     .selectFrom("users")
-    .where(
-      "username",
-      "not in",
-      mattermostMemberInfos.map((m) => m.username),
-    )
     .where((eb) =>
       eb("secondary_email", "in", mattermostUserEmails).or(
         "primary_email",
@@ -57,23 +44,31 @@ export async function syncMattermostUserWithMattermostMemberInfosTable() {
         mattermostUserEmails,
       ),
     )
-    .selectAll()
-    .execute();
+    .selectAll();
 
+  if (knownUsernames.length > 0) {
+    dbUsersQuery = dbUsersQuery.where("username", "not in", knownUsernames);
+  }
+
+  const dbUsers = await dbUsersQuery.execute();
+
+  const newEntries: MattermostMemberInfo[] = [];
   for (const dbUser of dbUsers) {
     const mattermostUser = mattermostUsers.find((mUser) =>
       isSameUser(mUser, dbUser),
     );
     if (mattermostUser) {
-      const mattermostMemberInfo: MattermostMemberInfo = {
+      newEntries.push({
         username: dbUser.username,
         mattermost_user_id: mattermostUser.id,
-      };
-      await db
-        .insertInto("mattermost_member_infos")
-        .values(mattermostMemberInfo)
-        .execute();
-      console.log(`Ajoute ${dbUser.username} à la table mattermost`);
+      });
     }
+  }
+
+  if (newEntries.length > 0) {
+    await db.insertInto("mattermost_member_infos").values(newEntries).execute();
+    console.log(
+      `Ajouté ${newEntries.length} utilisateurs à la table mattermost: ${newEntries.map((e) => e.username).join(", ")}`,
+    );
   }
 }

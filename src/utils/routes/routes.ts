@@ -51,7 +51,6 @@ export const routes = createRouter({
   login: defineRoute({}, (p) => `/login`),
   onboarding: defineRoute({}, (p) => `/onboarding`),
   onboardingSuccess: defineRoute({}, (p) => `/onboardingSuccess`),
-  newsletters: defineRoute({}, (p) => `/newsletters`),
   metabase: defineRoute({}, (p) => `/metabase`),
   keskispasse: defineRoute({}, (p) => `/keskispasse`),
   eventsList: defineRoute({}, (p) => `/events`),

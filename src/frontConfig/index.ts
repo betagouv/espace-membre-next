@@ -57,7 +57,6 @@ export default {
         JSON.parse(process.env.NEXT_PUBLIC_ALERT_MESSAGE_PUBLIC),
       )
     : undefined,
-  CHATWOOT_WEBSITE_TOKEN: process.env.NEXT_PUBLIC_CHATWOOT_WEBSITE_TOKEN,
   NEXT_PUBLIC_CHAT_SUPPORT_SERVICE:
     process.env.NEXT_PUBLIC_CHAT_SUPPORT_SERVICE,
   SUPPORT_EMAIL: process.env.NEXT_SUPPORT_EMAIL,
@@ -69,4 +68,7 @@ export default {
     process.env.NEXT_PUBLIC_FEATURE_SHOW_UPLOAD_IMAGE_PRODUCT_WIDGET,
   FEATURE_SHOW_PROCONNECT_LOGIN:
     process.env.NEXT_PUBLIC_FEATURE_SHOW_PROCONNECT_LOGIN,
+  newsletterContentUrl:
+    process.env.NEWSLETTER_CONTENT_URL ||
+    "https://docs.numerique.gouv.fr/docs/8354b3be-0f1f-4690-8f89-a6c4a738f374",
 };

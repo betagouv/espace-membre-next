@@ -92,5 +92,4 @@ export async function syncDinumEmails(job: PgBoss.Job<void>) {
   console.log("start job sync dinum_emails tables");
   await syncDinumEmailsJob(DIMAIL_MAILBOX_DOMAIN);
   await syncDinumEmailsJob("ext.beta.gouv.fr"); // legacy, todo remove
-  return "ok";
 }

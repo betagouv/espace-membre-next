@@ -18,8 +18,8 @@ import ProgressBar from "../ProgressBar";
 import { getLatests as getLatestsProducts } from "@/lib/kysely/queries/startups";
 import { getLatests as getLatestsMembers } from "@/lib/kysely/queries/users";
 import { linkRegistry } from "@/utils/routes/registry";
-import Alert from "@codegouvfr/react-dsfr/Alert";
 import { DimailEmailCreationInvite } from "../DimailEmailCreationInvite";
+import frontConfig from "@/frontConfig";
 
 type LatestProductsReturnType = Awaited<ReturnType<typeof getLatestsProducts>>;
 type LatestMembersReturnType = Awaited<ReturnType<typeof getLatestsMembers>>;
@@ -104,7 +104,7 @@ const CardMember = ({
 export function DashboardPage(props: DashboardPageProps) {
   return (
     <div className={fr.cx("fr-container", "fr-pb-6w", "fr-mb-2w")}>
-      {props.onboarding && (
+      {props.onboarding && props.onboarding.progress < 100 && (
         <div
           style={{ border: "1px solid #ccc", padding: "20px" }}
           className={fr.cx("fr-container", "fr-mb-6w")}
@@ -204,7 +204,7 @@ export function DashboardPage(props: DashboardPageProps) {
             orientation="horizontal"
             imageUrl={(emailpicto as StaticImageData).src}
             linkProps={{
-              href: linkRegistry.get("newsletters"),
+              href: frontConfig.newsletterContentUrl,
             }}
           />
         </div>

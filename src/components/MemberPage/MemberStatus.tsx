@@ -57,7 +57,14 @@ const mattermostInfoRow = (
         (info) =>
           info.hasMattermostAccount &&
           typeof info.mattermostUserName === "string",
-        (info) => <>@{info.mattermostUserName}</>,
+        (info) => (
+          <a
+            target="_blank"
+            href={`https://mattermost.incubateur.net/betagouv/messages/@${info.mattermostUserName}`}
+          >
+            @{info.mattermostUserName}
+          </a>
+        ),
       )
       .otherwise(
         () =>

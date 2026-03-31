@@ -120,10 +120,9 @@ export async function addUserToTeam(userId, teamId) {
         getMattermostConfig(),
       )
       .then((response) => response.data);
-  } catch (err) {
-    console.error(err);
+  } catch (err: any) {
     throw new Error(
-      `Erreur d'ajout de l'utilisateur ${userId} à la team ${teamId} : ${err}`,
+      `Erreur d'ajout de l'utilisateur ${userId} à la team ${teamId} : ${err.message}`,
     );
   }
   //console.log(`Ajout de utilisateur ${userId} à la team ${teamId}`);
@@ -141,10 +140,9 @@ export async function removeUserFromTeam(userId, teamId) {
         },
       )
       .then((response) => response.data);
-  } catch (err) {
-    console.error(err);
+  } catch (err: any) {
     throw new Error(
-      `Erreur de suppression de l'utilisateur ${userId} de la team ${teamId} : ${err}`,
+      `Erreur de suppression de l'utilisateur ${userId} de la team ${teamId} : ${err.message}`,
     );
   }
   console.log(`Suppression de utilisateur ${userId} de la team ${teamId}`);
@@ -208,10 +206,10 @@ export async function changeUserEmail(id: string, email: string) {
       .then((response) => response.data);
     console.log(`Changement de l'email de l'utilisateur ${res.username}`);
     return true;
-  } catch (err) {
+  } catch (err: any) {
     console.error(
       `Erreur de changement d'email de l'utilisateur mattermost : ${id}`,
-      err,
+      err.message,
     );
     return false;
   }
@@ -241,9 +239,9 @@ export const createUser = async function createUser(
         getMattermostConfig(),
       )
       .then((response) => response.data);
-  } catch (err) {
+  } catch (err: any) {
     throw new Error(
-      `Erreur d'ajout de l'utilisateur ${username} à mattermost : ${err}`,
+      `Erreur d'ajout de l'utilisateur ${username} à mattermost : ${err.message}`,
     );
   }
   console.log("Ajout de l'utilisateur", email, username);

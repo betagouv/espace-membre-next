@@ -1,0 +1,48 @@
+- title: "🏁 Dès l'officialisation de la fin de mission"
+  items:
+    - id: offboarding-date-depart-espace-membre
+      title: Renseigner ta date de départ exacte dans ton espace membre
+    - id: offboarding-informer-titulaire-marche
+      title: Informer l'entreprise titulaire du marché public avec laquelle tu as ton contrat
+    - id: offboarding-informer-responsables-incubateur
+      title: Informer les responsables de l'incubateur, en lien avec l'intra ou la personne responsable de l'équipe
+    - id: offboarding-informer-equipe-produit
+      title: Informer les membres de ton équipe, en lien avec l'intra ou la personne responsable de l'équipe
+    - id: offboarding-plan-passation
+      title: Préparer ton plan de passation avec l'intra ou la personne responsable de l'équipe produit
+    - id: offboarding-lire-doc-desembarquement
+      title: "[Lire la documentation sur la gestion de son désembarquement](https://doc.incubateur.net/communaute/travailler-chez-beta.gouv.fr/je-quitte-beta.gouv.fr)"
+- title: "⏮️ Le dernier mois"
+  items:
+    - id: offboarding-transfert-connaissances
+      title: Documenter, dans un espace partagé au reste de l'équipe, tes connaissances et tes avancées liées au projet 
+    - id: offboarding-transfert-taches
+      title: Pour chacune de tes tâches et missions, t'assurer de la transmission et de la reprise en main par une personne de l'équipe
+    - id: offboarding-transfert-reseau
+      title: Documenter, dans un espace partagé au reste de l'équipe, l'ensemble des contacts liés au projet (sponsors, contacts, prestataires)
+    - id: offboarding-droits-admin
+      title: Transmettre tes droits d'administrateur ou d'écriture sur les outils partagés (agenda partagé, canaux Tchap, logiciels métiers)
+- title: "👋 Les derniers jours"
+  items:
+    - id: offboarding-verifier-blocages
+      title: Faire un état des lieux avec l’intra ou la personne responsable de l'équipe produit à J-7 pour identifier si des blocages critiques demeurent
+    - id: offboarding-livrer-livrables
+      title: Finaliser tes derniers livrables de ta mission
+    - id: offboarding-rapport-services-faits
+      title: Livrer ton dernier rapport de services faits à l'entreprise titulaire du marché public avec laquelle tu as ton contrat
+    - id: offboarding-echange-sortie-responsable
+      title: "Organiser ton [échange de sortie](https://docs.numerique.gouv.fr/docs/f0c77425-6df7-41ad-b6bd-cecf643ee158/) avec le.a responsable de l'équipe produit"
+    - id: offboarding-echange-sortie-titulaire
+      title: Organiser ton échange de sortie avec l'entreprise titulaire du marché public avec laquelle tu as ton contrat
+    - id: offboarding-quitter-vaultwarden
+      title: "Si tu utilises Vaultwarden : partager les mots de passes utiles avec ton équipe et [supprimer ton compte](https://vaultwarden.incubateur.net/#/settings/account)"
+    - id: offboarding-quitter-scalingo
+      title: "Si tu utilises Scalingo : [supprimer ton compte](https://dashboard.scalingo.com/account/authentication)"
+    - id: offboarding-desactiver-comptes
+      title: Désactiver tous tes comptes ou abonnements liés à ta mission
+    - id: offboarding-rediriger-email
+      title: "Sur [#incubateur-secretariat](https://mattermost.incubateur.net/betagouv/channels/incubateur-secretariat), demander à ce qu'on rediriger ton adresse @beta.gouv.fr vers departs@beta.gouv.fr"
+    - id: offboarding-rendre-badges
+      title: Rendre tes badges d'accès aux locaux (Ségur, Plateforme de l'inclusion, etc)
+    - id: offboarding-retour-experience
+      title: Remplir ton [retour d'expérience au sein de la communauté](https://grist.numerique.gouv.fr/o/isn/forms/jGrwi97QpXsRynJpCEubxj/4)

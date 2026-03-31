@@ -1,22 +1,28 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, ReactNode } from "react";
 
 import { fr } from "@codegouvfr/react-dsfr";
 
 import Checklist from "../Checklist";
 import ProgressBar from "../ProgressBar";
 import { memberWrapperSchemaType } from "@/models/member";
-import { onboardingChecklistSchemaType } from "@/models/onboardingChecklist";
+import { checklistSchemaType } from "@/models/checklist";
 import { userEventSchemaType } from "@/models/userEvent";
-import { computeOnboardingProgress } from "@/utils/onboarding/computeOnboardingProgress";
+import { computeProgress } from "@/utils/checklists/computeProgress";
 
-export const OnboardingTabPanel = ({
+export const ChecklistTabPanel = ({
   userEvents,
   userInfos,
   checklistObject,
+  intro,
+  readOnly,
+  offset = 0,
 }: {
   userEvents: userEventSchemaType[];
-  checklistObject: onboardingChecklistSchemaType;
+  checklistObject: checklistSchemaType;
   userInfos: memberWrapperSchemaType["userInfos"];
+  intro: ReactNode;
+  readOnly: boolean;
+  offset?: number;
 }) => {
   const [userEventIds, setUserEventIds] = useState<string[]>(
     userEvents
@@ -24,23 +30,20 @@ export const OnboardingTabPanel = ({
       .map((event) => event.field_id),
   );
   const [progress, setProgress] = useState<number>(
-    computeOnboardingProgress(userEventIds, checklistObject),
+    computeProgress(userEventIds, checklistObject, offset),
   );
   useEffect(() => {
-    setProgress(computeOnboardingProgress(userEventIds, checklistObject));
+    setProgress(computeProgress(userEventIds, checklistObject, offset));
   }, [userEventIds, checklistObject]);
-
   return (
     <>
-      <p>
-        Bienvenue dans la communauté ! Cette checklist est là pour t'aider à
-        bien débuter ta mission chez beta.gouv.fr.
-      </p>
+      {intro}
       <ProgressBar
         progress={progress}
         className={fr.cx("fr-mt-4w", "fr-mb-4w")}
       />
       <Checklist
+        readOnly={readOnly}
         userUuid={userInfos.uuid}
         userEventIds={userEventIds}
         handleUserEventIdsChange={setUserEventIds}

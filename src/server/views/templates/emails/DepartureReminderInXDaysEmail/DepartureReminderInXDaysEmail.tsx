@@ -70,6 +70,14 @@ export function DepartureReminderInXDaysEmail({
           .
         </p>
 
+        <p>
+          Rends-toi sur l'onglet{" "}
+          <a href="https://espace-membre.beta.gouv.fr/account?tab=desembarquement">
+            "désembarquement" de ton espace-membre
+          </a>{" "}
+          pour connaître toutes les étapes à suivre avant ton départ. Pour valider tes derniers services faits, il est obligatoire de compléter ta checklist de désembarquement.
+        </p>
+
         {jobs.length > 0 && (
           <>
             <p>

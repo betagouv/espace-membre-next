@@ -59,7 +59,6 @@ const CRON_TASK_ENV_VAR = {
   CALENDAR_GIP_PUBLIC_URL: process.env.CALENDAR_GIP_PUBLIC_URL,
   FEATURE_SEND_EMAIL_TO_STARTUP_TO_UPDATE_PHASE:
     process.env.FEATURE_SEND_EMAIL_TO_STARTUP_TO_UPDATE_PHASE === "true",
-  FEATURE_NEWSLETTER: process.env.FEATURE_NEWSLETTER === "true",
   FEATURE_SYNC_BETAGOUV_USER_API:
     process.env.FEATURE_SYNC_BETAGOUV_USER_API === "true",
   featureSubscribeToIncubateurMailingList:
@@ -92,19 +91,15 @@ const CRON_TASK_ENV_VAR = {
     "true",
   FEATURE_DELETE_MATOMO_ACCOUNT: process.env.FEATURE_DELETE_MATOMO_ACCOUNT,
   FEATURE_DELETE_SENTRY_ACCOUNT: process.env.FEATURE_DELETE_SENTRY_ACCOUNT,
-  FEATURE_SEND_NEWSLETTER: process.env.FEATURE_SEND_NEWSLETTER === "true",
+  FEATURE_NEWSLETTER: process.env.FEATURE_NEWSLETTER === "true",
+  NEWSLETTER_BOT_ICON_URL: process.env.NEWSLETTER_BOT_ICON_URL,
+  newsletterContentUrl:
+    process.env.NEWSLETTER_CONTENT_URL ||
+    "https://docs.numerique.gouv.fr/docs/8354b3be-0f1f-4690-8f89-a6c4a738f374",
   visitSenderEmail: process.env.VISIT_MAIL_SENDER || "secretariat@beta.gouv.fr",
   visitRecipientEmail:
     process.env.VISIT_MAIL_RECIPIENT || "espace-membre@incubateur.net",
   githubBetagouvTeam: process.env.GITHUB_BETAGOUV_TEAM || "beta-gouv-fr",
-  NEWSLETTER_BOT_ICON_URL: process.env.NEWSLETTER_BOT_ICON_URL,
-  newsletterSendTime: process.env.NEWSLETTER_SEND_TIME,
-  newsletterHashSecret: process.env.NEWSLETTER_HASH_SECRET,
-  newsletterSentDay: process.env.NEWSLETTER_SENT_DAY || "THURSDAY",
-  newsletterTemplateId: process.env.NEWSLETTER_TEMPLATE_ID,
-  padURL: process.env.PAD_URL || "https://pad.incubateur.net",
-  padEmail: process.env.PAD_USERNAME,
-  padPassword: process.env.PAD_PASSWORD,
   MATOMO_TOKEN: process.env.MATOMO_TOKEN,
   MATOMO_API_URL: process.env.MATOMO_API_URL,
   SENTRY_API_URL: process.env.SENTRY_API_URL,
@@ -132,8 +127,6 @@ export default {
   protocol: isSecure ? "https" : "http",
   host: process.env.HOSTNAME,
   port: parseInt(process.env.PORT || "3000", 10),
-  CHATWOOT_ID: process.env.CHATWOOT_ID,
-  CHATWOOT_IGNORE_EMAILS: (process.env.CHATWOOT_IGNORE_EMAILS || "").split(""),
   domain: process.env.SECRETARIAT_DOMAIN || "beta.gouv.fr",
   DS_TOKEN: process.env.DS_TOKEN,
   DS_DEMARCHE_NUMBER: process.env.DS_DEMARCHE_NUMBER
@@ -146,8 +139,6 @@ export default {
     minStartDate: "2013-07-01",
     memberOptions: memberTypeOptions,
   },
-  newsletterBroadcastList:
-    process.env.NEWSLETTER_BROADCAST_LIST || "secretariat@beta.gouv.fr",
   mattermostURL:
     process.env.MATTERMOST_URL || "https://mattermost.incubateur.net",
   senderEmail: process.env.MAIL_SENDER || "espace-membre@incubateur.net",
@@ -155,7 +146,6 @@ export default {
   CHAT_WEBHOOK_URL_GENERAL: getOrThrowError("CHAT_WEBHOOK_URL_GENERAL"),
   CHAT_WEBHOOK_URL_DINUM: getOrThrowError("CHAT_WEBHOOK_URL_DINUM"),
   CHAT_WEBHOOK_URL_GIP: getOrThrowError("CHAT_WEBHOOK_URL_GIP"),
-  CHATWOOT_WEBSITE_TOKEN: process.env.CHATWOOT_WEBSITE_TOKEN,
   githubOrganizationName: process.env.GITHUB_ORGANIZATION_NAME || "betagouv",
   githubOrgAdminToken: process.env.GITHUB_ORG_ADMIN_TOKEN,
   sentryDSN: process.env.SENTRY_DSN || false,
