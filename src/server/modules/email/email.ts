@@ -1,17 +1,12 @@
 import { StartupsPhaseEnum } from "@/@types/db";
 import { incubatorSchemaType } from "@/models/incubator";
-import { Job } from "@/models/job";
 import { CreateOrUpdateMatomoAccountDataSchemaType } from "@/models/jobs/services";
 import {
   memberBaseInfoSchemaType,
   memberPublicInfoSchemaType,
 } from "@/models/member";
 import { missionSchemaType } from "@/models/mission";
-import {
-  StartupPhase,
-  startupSchemaType,
-  userStartupSchemaType,
-} from "@/models/startup";
+import { startupSchemaType, userStartupSchemaType } from "@/models/startup";
 
 export enum EMAIL_TYPES {
   EMAIL_LOGIN = "EMAIL_LOGIN",
@@ -109,7 +104,7 @@ export type EmailEndingContract = {
       mattermostUsername: string;
     };
     endDate: Date;
-    jobs: Job[];
+    jobs: [];
     days: 2 | 15 | 30;
   };
 };

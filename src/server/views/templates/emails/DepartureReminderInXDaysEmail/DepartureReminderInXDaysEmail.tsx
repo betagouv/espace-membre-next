@@ -64,10 +64,7 @@ export function DepartureReminderInXDaysEmail({
             ~incubateur-help
           </a>{" "}
           ou à répondre par email à{" "}
-          <a href="mailto:contact@beta.gouv.fr">
-            contact@beta.gouv.fr
-          </a>
-          .
+          <a href="mailto:contact@beta.gouv.fr">contact@beta.gouv.fr</a>.
         </p>
 
         <p>
@@ -75,7 +72,9 @@ export function DepartureReminderInXDaysEmail({
           <a href="https://espace-membre.beta.gouv.fr/account?tab=desembarquement">
             "désembarquement" de ton espace-membre
           </a>{" "}
-          pour connaître toutes les étapes à suivre avant ton départ. Pour valider tes derniers services faits, il est obligatoire de compléter ta checklist de désembarquement.
+          pour connaître toutes les étapes à suivre avant ton départ. Pour
+          valider tes derniers services faits, il est obligatoire de compléter
+          ta checklist de désembarquement.
         </p>
 
         {jobs.length > 0 && (
@@ -85,7 +84,7 @@ export function DepartureReminderInXDaysEmail({
               ouvertes qui pourraient correspondre à ton domaine :
             </p>
             <ul>
-              {jobs.map((job, i) => (
+              {jobs.map((job: any, i) => (
                 <li key={i}>
                   <a href={job.url}>{job.title.trim()}</a>
                 </li>
