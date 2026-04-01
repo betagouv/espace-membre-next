@@ -108,20 +108,6 @@ export const espaceMembreCronJobs: EspaceMembreCronJobType[] = [
     name: "recreateEmailIfUserActive",
     description: "Recreate email for user active again",
   },
-  // {
-  //   cronTime: "0 8 * * *", // Every day at 08:00
-  //   onTick: sendJ1Email,
-  //   isActive: !!config.featureSendJ1Email,
-  //   name: "sendJ1Email",
-  //   description: "Email départ J+1",
-  // },
-  // {
-  //   cronTime: "0 8 * * *", // Every day at 08:00
-  //   onTick: sendJ30Email,
-  //   isActive: !!config.featureSendJ30Email,
-  //   name: "sendJ30Email",
-  //   description: "Email départ J+30",
-  // },
   {
     cronTime: "0 10 * * *", // Every day at 10:00
     onTick: () => sendContractEndingMessageToUsers("mail15days", true),
