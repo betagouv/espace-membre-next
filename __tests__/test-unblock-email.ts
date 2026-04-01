@@ -11,7 +11,6 @@ chai.use(chaiHttp);
 describe("Unblock emails", () => {
   let getAllTransacBlockedContactsStub;
   let unblacklistContactEmailStub;
-  let getAllEmailInfosStub;
   let getAllContactsFromList;
   beforeEach(() => {
     getAllTransacBlockedContactsStub = Sinon.stub(
@@ -29,10 +28,7 @@ describe("Unblock emails", () => {
       EmailConfig,
       "unblacklistContactEmail",
     );
-    getAllEmailInfosStub = Sinon.stub(betagouv, "getAllEmailInfos");
-    getAllEmailInfosStub.returns(
-      Promise.resolve(["membre.actif", "jean.francois", "autremembre.actif"]),
-    );
+
     getAllContactsFromList = Sinon.stub(EmailConfig, "getAllContactsFromList");
     getAllContactsFromList.returns(
       Promise.resolve([
@@ -45,7 +41,6 @@ describe("Unblock emails", () => {
   });
   afterEach(() => {
     getAllTransacBlockedContactsStub.restore();
-    getAllEmailInfosStub.restore();
     unblacklistContactEmailStub.restore();
     getAllContactsFromList.restore();
   });
