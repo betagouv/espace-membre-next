@@ -85,53 +85,6 @@ export const DSFR_STATUSES = [
   "Refonte prévue",
   "Service non soumis au DSFR",
 ] as const;
-// export interface Startup {
-//     github?: string;
-//     website?: string;
-//     dashlord_url?: string;
-//     id: string;
-//     name: string;
-//     repository: string;
-//     contact: string;
-//     expired_members: string[];
-//     active_members: string[];
-//     previous_members: string[];
-//     phases: Phase[];
-// }
-
-// // we keep this interface just for the migration
-// export interface StartupInfo {
-//     id: string;
-//     attributes: {
-//         sponsors: string[];
-//         github: string;
-//         dashlord_url: string;
-//         website: any;
-//         name: string;
-//         repository: string;
-//         contact: string;
-//         expired_members: string[];
-//         active_members: string[];
-//         previous_members: string[];
-//         pitch: string;
-//         stats_url: string;
-//         stats: boolean;
-//         link: string;
-//         incubator: string;
-//         phases: {
-//             start: string;
-//             end?: string;
-//             name: StartupPhase;
-//         }[];
-//         accessibility_status?: AccessibilityStatus;
-//         analyse_risques_url?: string;
-//         analyse_risques?: boolean;
-//         content_url_encoded_markdown: string;
-//         budget_url?: string;
-//     };
-//     relationships: Relationship;
-// }
-
 export const phaseSchema = z.object({
   uuid: z.string(),
   name: z.nativeEnum(StartupPhase),
@@ -271,15 +224,6 @@ export const startupSchema = z.object({
     .describe("URL de l'analyse de risque")
     .optional()
     .nullable(),
-  // events: z
-  //     .array(eventSchema.omit({ uuid: true }))
-  //     .optional()
-  //     .nullable(),
-  // phases: z
-  //     .array(phaseSchema)
-  //     .min(1, "Vous devez définir au moins une phase (ex: investigation)")
-  //     .optional()
-  //     .nullable(),
   techno: z.array(z.string()).optional().nullable(),
   mailing_list: z.string().optional().nullable(),
   usertypes: z

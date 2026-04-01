@@ -22,31 +22,3 @@ export async function getStartup(params: { ghid: string } | { uuid: string }) {
   return (startups.rows.length && startups.rows[0]) || undefined;
 }
 
-/* UTILS */
-
-// function withMembers(eb: ExpressionBuilder<DB, "startups">) {
-//     return jsonArrayFrom(
-//         eb
-//             .selectFrom(["missions"])
-//             .leftJoin(
-//                 "missions_startups",
-//                 "missions_startups.startup_id",
-//                 "startups.uuid"
-//             )
-//             .leftJoin("users", "missions.user_id", "users.uuid")
-//             .select((eb2) => [
-//                 "users.username",
-//                 "users.domaine",
-//                 "missions.end",
-//                 "missions.start",
-//                 // sql<
-//                 //     Array<string>
-//                 // >`array_agg(users.uuid order by users.username)`.as("users"),
-//             ])
-//             .whereRef("missions_startups.startup_id", "=", "startups.uuid")
-//             .whereRef("missions.uuid", "=", "missions_startups.mission_id")
-//         // .orderBy("missions.start", "asc")
-//         // .groupBy("missions.uuid")
-//         // .groupBy("users.username")
-//     ).as("members");
-// }

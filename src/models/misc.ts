@@ -1,10 +1,5 @@
 import { EmailStatusCode } from "./member";
 
-// export interface Option {
-//     key: string;
-//     name: string;
-// }
-
 export interface Option {
   value: string;
   label: string;
