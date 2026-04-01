@@ -46,16 +46,17 @@ export async function deactivateExpiredMembersEmails() {
       }
       if (emailInfos.emailPlan === EMAIL_PLAN_TYPE.EMAIL_PLAN_OPI) {
         try {
-          await patchMailbox({
-            domain_name: DIMAIL_MAILBOX_DOMAIN,
-            user_name: emailInfos.email.split("@")[0],
-            data: {
-              active: "no",
-            },
-          });
+          // TODO: fix
+          // await patchMailbox({
+          //   domain_name: DIMAIL_MAILBOX_DOMAIN,
+          //   user_name: emailInfos.email.split("@")[0],
+          //   data: {
+          //     active: "no",
+          //   },
+          // });
           await setEmailSuspended(user.username);
           console.log(
-            `Le compte DIMAIL de ${
+            `Le compte email de ${
               user.username
             } a été désactivé car sa mission a expiré.`,
           );
