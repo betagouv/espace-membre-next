@@ -16,7 +16,6 @@ import {
   memberBaseInfoAndMattermostWrapperType,
   memberBaseInfoSchemaType,
 } from "@/models/member";
-import { OvhRedirection } from "@/models/ovh";
 import { AccountService } from "@/models/services";
 import { sendEmail } from "@/server/config/email.config";
 import BetaGouv from "@betagouv";
@@ -327,37 +326,3 @@ export async function deleteServiceAccounts(
   }
 }
 
-export async function deleteRedirectionsAfterQuitting(
-  check_all = false,
-): Promise<unknown[]> {
-  const users = (await getAllUsersInfo()).map((user) =>
-    memberBaseInfoToModel(user),
-  );
-  const expiredUsers = check_all
-    ? utils.getExpiredUsers(users, 1)
-    : utils.getExpiredUsersForXDays(users, 1);
-
-  return Promise.all(
-    expiredUsers.map(async (user) => {
-      try {
-        const redirections = await BetaGouv.redirectionsForId({
-          from: user.username,
-        });
-
-        console.log(`Suppression des redirections pour ${user.fullname}`);
-
-        redirections.map(
-          async (r: OvhRedirection) =>
-            await BetaGouv.deleteRedirection(
-              utils.buildBetaEmail(user.username),
-              r.to,
-            ),
-        );
-      } catch (err) {
-        console.log(
-          `Impossible de modifier les redirections pour ${user.fullname}: ${err}`,
-        );
-      }
-    }),
-  );
-}

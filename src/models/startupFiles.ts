@@ -40,7 +40,3 @@ export const docSchema = z.object({
 });
 
 export type DocSchemaType = z.infer<typeof docSchema>;
-
-// type DocComiteSchemaType = z.infer<(typeof schemas)["Document de comité"]>;
-// type DocRapportSchemaType = z.infer<(typeof schemas)["Rapport annuel"]>;
-// type DocCPSchemaType = z.infer<(typeof schemas)["Communiqué de presse"]>;

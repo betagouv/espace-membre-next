@@ -1,34 +1,20 @@
 import { S3, Endpoint } from "aws-sdk";
-// import fs from "fs";
-// import path from "path";
 
 import config from "@/server/config";
 
-// Configure AWS SDK
 let s3;
 if (process.env.NODE_ENV === "test" || process.env.CI) {
-  // const localS3Dir = path.join(__dirname, "mock-s3-files");
-  // if (!fs.existsSync(localS3Dir)) {
-  //     fs.mkdirSync(localS3Dir);
-  // }
-
   const getSignedUrlPromise = function (
     method: string,
     params: { Key: string; Body: any },
   ) {
-    // const filePath = path.join(localS3Dir, params.Key);
-    // fs.writeFileSync(filePath, params.Body);
     return true;
   };
   const getObject = function (params: { Key: string }) {
-    // const filePath = path.join(localS3Dir, params.Key);
-    // const body = fs.readFileSync(filePath);
     return { promise: () => Promise.resolve({ Body: "" }) };
   };
 
-  const deleteObject = function (params: { Key: string }) {
-    // delete file
-  };
+  const deleteObject = function (params: { Key: string }) {};
   s3 = {
     getSignedUrlPromise,
     getObject,

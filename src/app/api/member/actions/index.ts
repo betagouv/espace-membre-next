@@ -13,7 +13,6 @@ import {
   updateMemberMissionsSchema,
   updateMemberMissionsSchemaType,
 } from "@/models/actions/member";
-import { UpdateOvhResponder } from "@/models/actions/ovh";
 import {
   memberBaseInfoToMemberPublicInfoModel,
   memberBaseInfoToModel,
@@ -22,7 +21,6 @@ import {
   CommunicationEmailCode,
   memberWrapperPublicInfoSchemaType,
 } from "@/models/member";
-import betagouv from "@/server/betagouv";
 import config from "@/server/config";
 import {
   updateContactEmail,
@@ -37,7 +35,6 @@ import {
   NoDataError,
   UnwrapPromise,
   ValidationError,
-  OVHError,
   withErrorHandling,
   BusinessError,
 } from "@/utils/error";
@@ -156,77 +153,6 @@ async function changeContactEmail(
       listType: MAILING_LIST_TYPE.NEWSLETTER,
     });
   }
-}
-
-export async function setEmailResponder({
-  content,
-  from,
-  to,
-}: UpdateOvhResponder): Promise<void> {
-  const session = await getServerSession(authOptions);
-  if (!session || !session.user.id) {
-    throw new AuthorizationError();
-  }
-  if (!to || new Date(to).getTime() < new Date(from).getTime()) {
-    throw new ValidationError(
-      "nouvelle date de fin : la date doit être supérieure à la date de début",
-    );
-  }
-  const responder = await betagouv.getResponder(session.user.id);
-  if (!responder) {
-    try {
-      await betagouv.setResponder(session.user.id, {
-        from,
-        to,
-        content,
-      });
-    } catch (e: any) {
-      throw new OVHError(e?.message);
-    }
-    await addEvent({
-      action_code: EventCode.MEMBER_RESPONDER_CREATED,
-      created_by_username: session.user.id,
-      action_on_username: session.user.id,
-      action_metadata: {
-        value: content,
-      },
-    });
-  } else {
-    try {
-      await betagouv.updateResponder(session.user.id, {
-        from,
-        to,
-        content,
-      });
-    } catch (e: any) {
-      throw new OVHError(e?.message);
-    }
-
-    await addEvent({
-      action_code: EventCode.MEMBER_RESPONDER_UPDATED,
-      created_by_username: session.user.id,
-      action_on_username: session.user.id,
-      action_metadata: {
-        value: content,
-        old_value: responder.content,
-      },
-    });
-  }
-}
-
-async function deleteResponder(): Promise<void> {
-  const session = await getServerSession(authOptions);
-  if (!session || !session.user.id) {
-    throw new AuthorizationError();
-  }
-
-  await betagouv.deleteResponder(session.user.id);
-
-  addEvent({
-    action_code: EventCode.MEMBER_RESPONDER_DELETED,
-    created_by_username: session.user.id,
-    action_on_username: session.user.id,
-  });
 }
 
 async function getUserPublicInfo(
@@ -413,14 +339,6 @@ export const safeGetUserPublicInfo = withErrorHandling<
   UnwrapPromise<ReturnType<typeof getUserPublicInfo>>,
   Parameters<typeof getUserPublicInfo>
 >(getUserPublicInfo);
-export const safeDeleteResponder = withErrorHandling<
-  UnwrapPromise<ReturnType<typeof deleteResponder>>,
-  Parameters<typeof deleteResponder>
->(deleteResponder);
-export const safeSetEmailResponder = withErrorHandling<
-  UnwrapPromise<ReturnType<typeof setEmailResponder>>,
-  Parameters<typeof setEmailResponder>
->(setEmailResponder);
 export const safeChangeSecondaryEmailForUser = withErrorHandling<
   UnwrapPromise<ReturnType<typeof changeSecondaryEmailForUser>>,
   Parameters<typeof changeSecondaryEmailForUser>

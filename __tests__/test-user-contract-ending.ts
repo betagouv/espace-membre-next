@@ -14,7 +14,6 @@ import { FakeSentryService } from "@/server/config/sentry.config";
 import BetaGouv from "@betagouv";
 import {
   sendInfoToSecondaryEmailAfterXDays,
-  deleteRedirectionsAfterQuitting,
   deleteServiceAccounts,
 } from "@schedulers/userContractEndingScheduler";
 
@@ -122,11 +121,6 @@ describe("send message on contract end to user", () => {
     utils.cleanMocks();
     utils.mockSlackGeneral();
     utils.mockSlackSecretariat();
-    utils.mockOvhTime();
-    utils.mockOvhRedirections();
-    utils.mockOvhUserResponder();
-    utils.mockOvhUserEmailInfos();
-    utils.mockOvhAllEmailInfos();
     sendEmailStub = sinon
       .stub(email, "sendEmail")
       .returns(Promise.resolve(null));
@@ -243,11 +237,6 @@ describe("After quitting", () => {
     utils.cleanMocks();
     utils.mockSlackGeneral();
     utils.mockSlackSecretariat();
-    utils.mockOvhTime();
-    utils.mockOvhRedirections();
-    utils.mockOvhUserResponder();
-    utils.mockOvhUserEmailInfos();
-    utils.mockOvhAllEmailInfos();
     sendEmailStub = sinon
       .stub(email, "sendEmail")
       .returns(Promise.resolve(null));
@@ -260,21 +249,6 @@ describe("After quitting", () => {
     sendEmailStub.restore();
     utils.cleanMocks();
     await utils.deleteData(users);
-  });
-
-  it("should delete users redirections at j+1", async () => {
-    const test: unknown[] = await deleteRedirectionsAfterQuitting();
-    should.equal(test.length, 1);
-  });
-
-  it("should delete redirections even for past users", async () => {
-    const test: unknown[] = await deleteRedirectionsAfterQuitting(true);
-    should.equal(test.length, 2);
-  });
-
-  it("should delete redirections even for past users", async () => {
-    const test: unknown[] = await deleteRedirectionsAfterQuitting(true);
-    should.equal(test.length, 2);
   });
 
   it("should delete matomo user account for expired users", async () => {

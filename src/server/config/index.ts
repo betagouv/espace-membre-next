@@ -2,7 +2,6 @@ import { config } from "dotenv";
 
 import { getArrayFromEnv } from "@/lib/env";
 import { MemberType } from "@/models/member";
-import { EMAIL_PLAN_TYPE } from "@/models/ovh";
 
 config();
 const isSecure = (process.env.SECURE || "true") === "true";
@@ -75,8 +74,6 @@ const CRON_TASK_ENV_VAR = {
   featureSendJ30Email: process.env.FEATURE_SEND_J30_EMAIL === "true",
   featureDeleteSecondaryEmail:
     process.env.FEATURE_DELETE_SECONDARY_EMAIL === "true",
-  featureDeleteOVHEmailAccounts:
-    process.env.FEATURE_DELETE_OVH_EMAIL_ACCOUNTS === "true",
   featureSetEmailExpired: process.env.FEATURE_SET_EMAIL_EXPIRED === "true",
   featureRemoveEmailsFromMailingList:
     process.env.FEATURE_REMOVE_EMAILS_FROM_MAILING_LIST === "true",
@@ -118,9 +115,6 @@ if (APP_TYPE === "app") {
 export default {
   ...CRON_TASK_ENV_VAR,
   AUTH_URL: process.env.AUTH_URL,
-  OVH_APP_KEY: process.env.OVH_APP_KEY,
-  OVH_APP_SECRET: process.env.OVH_APP_SECRET,
-  OVH_CONSUMER_KEY: process.env.OVH_CONSUMER_KEY,
   secret: process.env.SESSION_SECRET!,
   SESSION_COOKIE_NAME: "espaceMembreCookieName",
   secure: isSecure,
@@ -132,8 +126,6 @@ export default {
   DS_DEMARCHE_NUMBER: process.env.DS_DEMARCHE_NUMBER
     ? parseInt(process.env.DS_DEMARCHE_NUMBER)
     : null,
-  EMAIL_DEFAULT_PLAN:
-    process.env.EMAIL_DEFAULT_PLAN || EMAIL_PLAN_TYPE.EMAIL_PLAN_BASIC,
   user: {
     statusOptions: userStatusOptions,
     minStartDate: "2013-07-01",
@@ -175,8 +167,6 @@ export default {
     .NEWSLETTER_NUMBER_OF_DAYS_WITH_LAST_NEWSLETTER
     ? parseInt(process.env.NEWSLETTER_NUMBER_OF_DAYS_WITH_LAST_NEWSLETTER, 10)
     : 10,
-  OVH_EMAIL_PRO_NAME: process.env.OVH_EMAIL_PRO_NAME,
-  OVH_EMAIL_EXCHANGE_NAME: process.env.OVH_EMAIL_EXCHANGE_NAME,
   incubateurMailingListName:
     process.env.INCUBATEUR_MAILING_LIST_NAME || "incubateur",
   JOBS_API: process.env.JOBS_API || "https://beta.gouv.fr/api/v2.5/jobs.json",

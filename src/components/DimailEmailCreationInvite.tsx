@@ -11,13 +11,9 @@ import Link from "next/link";
 
 interface Props {
   secondaryEmail: string;
-  isOVHmigration: boolean; // show OVH specific info
 }
 
-export const DimailEmailCreationInvite = ({
-  secondaryEmail,
-  isOVHmigration,
-}: Props) => {
+export const DimailEmailCreationInvite = ({ secondaryEmail }: Props) => {
   const [isLoading, setIsLoading] = useState(false);
   const [message, setMessage] = useState("");
   const [success, setSuccess] = useState(false);
@@ -39,12 +35,10 @@ export const DimailEmailCreationInvite = ({
         `✅ Le mail est en cours de création. Une invitation sera envoyée sur ${secondaryEmail} dans quelques minutes.`,
       );
       setSuccess(true);
-      // Optionnel : afficher un message de succès
     } catch (error) {
       console.error("Erreur lors de la création de l'email:", error);
       setMessage(`Erreur lors de la création de l'email ${secondaryEmail}`);
       Sentry.captureException(error);
-      // Optionnel : afficher un message d'erreur
     } finally {
       setIsLoading(false);
     }
@@ -53,9 +47,7 @@ export const DimailEmailCreationInvite = ({
   const alertContent = (
     <>
       <div className={fr.cx("fr-mt-2w", "fr-mb-2w")} />
-      {isOVHmigration
-        ? "Les comptes email (OVH) vont bientôt être décommissionnés au profit d’un compte sur la Suite Numérique, plus moderne et plus sécurisé."
-        : "Crée ton compte email sur la Suite Numérique."}
+      Crée ton compte email sur la Suite Numérique.
       <div />
       <div
         className={fr.cx("fr-mt-2w", "fr-text--xs")}
@@ -64,13 +56,6 @@ export const DimailEmailCreationInvite = ({
         Comment ça marche ?<br />
         <ol>
           <li>Créé ton compte {emailToCreate || ""} sur la Suite Numérique</li>
-          {(isOVHmigration && (
-            <li>
-              Migre ton historique et tes contacts de OVH vers ton nouveau
-              compte
-            </li>
-          )) ||
-            ""}
           <li>
             Profite des nouvelles fonctionnalités (calendriers partagés,
             interface web accessible...)
@@ -107,12 +92,8 @@ export const DimailEmailCreationInvite = ({
   );
   return (
     <Alert
-      title={
-        isOVHmigration
-          ? "Migration de ton compte email"
-          : "Compte email Suite Numérique"
-      }
-      severity={isOVHmigration ? "warning" : "info"}
+      title="Compte email Suite Numérique"
+      severity="info"
       description={alertContent}
     />
   );

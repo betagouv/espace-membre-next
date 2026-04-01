@@ -2,11 +2,17 @@ import { z } from "zod";
 
 import { missionSchema } from "./mission";
 import { teamSchema } from "./team";
-import {
-  EMAIL_PLAN_TYPE,
-  OvhRedirectionSchema,
-  OvhResponderSchema,
-} from "@/models/ovh";
+
+export enum EMAIL_PLAN_TYPE {
+  EMAIL_PLAN_OPI = "EMAIL_PLAN_OPI",
+}
+
+export const RedirectionSchema = z.object({
+  from: z.string(),
+  to: z.string(),
+  id: z.string(),
+});
+export type Redirection = z.infer<typeof RedirectionSchema>;
 
 export enum USER_EVENT {
   USER_EMAIL_ACTIVATED = "USER_EMAIL_ACTIVATED",
@@ -19,7 +25,7 @@ export enum EmailStatusCode {
   EMAIL_SUSPENDED = "EMAIL_SUSPENDED",
   EMAIL_DELETED = "EMAIL_DELETED",
   EMAIL_EXPIRED = "EMAIL_EXPIRED",
-  EMAIL_CREATION_PENDING = "EMAIL_CREATION_PENDING", // email is being created in ovh
+  EMAIL_CREATION_PENDING = "EMAIL_CREATION_PENDING", // email is being created
   EMAIL_ACTIVE_AND_PASSWORD_DEFINITION_PENDING = "EMAIL_ACTIVE_AND_PASSWORD_DEFINITION_PENDING",
   EMAIL_RECREATION_PENDING = "EMAIL_RECREATION_PENDING",
   EMAIL_UNSET = "EMAIL_UNSET",
@@ -329,8 +335,7 @@ export const memberWrapperSchema = z.object({
   userInfos: memberSchema,
   isExpired: z.boolean(),
   emailInfos: EmailInfosSchema.nullable(),
-  emailRedirections: z.array(OvhRedirectionSchema),
-  emailResponder: OvhResponderSchema.nullable(),
+  emailRedirections: z.array(RedirectionSchema),
   authorizations: z.object({
     canChangePassword: z.boolean(),
     canChangeEmails: z.boolean(),

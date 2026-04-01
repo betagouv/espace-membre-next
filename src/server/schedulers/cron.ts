@@ -5,14 +5,11 @@ import { syncMattermostUserWithMattermostMemberInfosTable } from "./mattermostSc
 import { recreateEmailIfUserActive } from "./recreateEmailIfUserActive";
 import { syncMatomoAccounts } from "./serviceScheduler/syncMatomoAccounts";
 import { syncSentryAccounts } from "./serviceScheduler/syncSentryAccounts";
-import { createMailingListForStartups } from "./startups/createMailingListForStartups";
 import { sendEmailToStartupToUpdatePhase } from "./startups/sendEmailToStartupToUpdatePhase";
 import { unblockEmailsThatAreActive } from "./unblockEmailsThatAreActive";
 import { sendMessageToActiveUsersWithoutSecondaryEmail } from "./updateProfileScheduler";
 import {
   sendContractEndingMessageToUsers,
-  sendJ1Email,
-  sendJ30Email,
   deleteMatomoAccount,
   deleteSentryAccount,
 } from "./userContractEndingScheduler";
@@ -31,14 +28,14 @@ export interface EspaceMembreCronJobType {
 }
 
 const startupJobs: EspaceMembreCronJobType[] = [
-  {
+  /*{
     // TODO: move to N8N and dimail ?
     cronTime: "0 5 * * 1", // Every Monday at 05:00
     onTick: createMailingListForStartups,
     isActive: true,
     name: "createMailingListForStartups",
     description: "Créé des mailings-list OVH pour les startups",
-  },
+  },*/
   {
     cronTime: "30 09 01 Jan,Apr,Jul,Oct *", // 1st of Jan, Apr, Jul, Oct at 09:00:30
     onTick: sendEmailToStartupToUpdatePhase,
@@ -110,20 +107,6 @@ export const espaceMembreCronJobs: EspaceMembreCronJobType[] = [
     isActive: true,
     name: "recreateEmailIfUserActive",
     description: "Recreate email for user active again",
-  },
-  {
-    cronTime: "0 8 * * *", // Every day at 08:00
-    onTick: sendJ1Email,
-    isActive: !!config.featureSendJ1Email,
-    name: "sendJ1Email",
-    description: "Email départ J+1",
-  },
-  {
-    cronTime: "0 8 * * *", // Every day at 08:00
-    onTick: sendJ30Email,
-    isActive: !!config.featureSendJ30Email,
-    name: "sendJ30Email",
-    description: "Email départ J+30",
   },
   {
     cronTime: "0 10 * * *", // Every day at 10:00

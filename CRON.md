@@ -12,8 +12,6 @@
 | ✅      | `30 14 * * *`                | `syncSentryAccounts`                               | Sync les comptes sentry des membres actifs                                    |
 | ✅      | `0 0 * * 1`                  | `Unblock blacklisted email`                        | Unblock emails from MAILING_LIST_NEWSLETTER Brevo mailing-list                |
 | ✅      | `0 * * * *`                  | `recreateEmailIfUserActive`                        | Recreate email for user active again                                          |
-| ✅      | `0 8 * * *`                  | `sendJ1Email`                                      | Email départ J+1                                                              |
-| ✅      | `0 8 * * *`                  | `sendJ30Email`                                     | Email départ J+30                                                             |
 | ❌      | `0 * * * *`                  | `deactivateExpiredMembersEmails`                   | Désactive les comptes email des membres expirés après 5 jours                 |
 | ✅      | `0 10 * * *`                 | `sendContractEndingMessageToUsers15days`           | Sending contract ending message to users (15 days)                            |
 | ✅      | `0 10 * * *`                 | `sendContractEndingMessageToUsers30days`           | Sending contract ending message to users (30 days)                            |

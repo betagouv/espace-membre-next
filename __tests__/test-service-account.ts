@@ -15,7 +15,6 @@ const should = chai.should();
 describe("Should sync services", () => {
   beforeEach(async () => {
     utils.cleanMocks();
-    utils.mockOvhTime();
     await utils.createData(testUsers);
     await db.deleteFrom("service_accounts").execute();
   });

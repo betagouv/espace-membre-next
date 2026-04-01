@@ -1,4 +1,3 @@
-// import { DBUser, DBUserWithEmailsAndMattermostUsername } from "@/models/dbUser";
 import { StartupsPhaseEnum } from "@/@types/db";
 import { incubatorSchemaType } from "@/models/incubator";
 import { Job } from "@/models/job";

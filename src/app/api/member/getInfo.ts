@@ -7,7 +7,6 @@ import { memberChangeToModel, memberBaseInfoToModel } from "@/models/mapper";
 import { matomoServiceInfoToModel } from "@/models/mapper/matomoMapper";
 import { sentryServiceInfoToModel } from "@/models/mapper/sentryMapper";
 import { SERVICES } from "@/models/services";
-import betagouv from "@/server/betagouv";
 
 export const getUserInformations = async (id) => {
   // informations needed
@@ -55,8 +54,6 @@ export const getUserInformations = async (id) => {
       }
     });
 
-  const emailResponder = await betagouv.getResponder(id);
-
   return {
     id,
     changes,
@@ -66,6 +63,5 @@ export const getUserInformations = async (id) => {
     mattermostInfo,
     matomoInfo,
     sentryInfo,
-    emailResponder,
   };
 };

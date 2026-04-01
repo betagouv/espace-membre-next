@@ -29,9 +29,6 @@ jobs:
                   yarn build
                   yarn start -p 8100 &
               env:
-                  OVH_APP_KEY: ${{ secrets.OVH_APP_KEY }}
-                  OVH_APP_SECRET: ${{ secrets.OVH_APP_SECRET }}
-                  OVH_CONSUMER_KEY: ${{ secrets.OVH_CONSUMER_KEY }}
                   PROTECTED_API_KEYS: test-api-key
                   DATABASE_URL: postgres://secretariat:secretariat@127.0.0.1:5432/secretariat
             - name: Wait

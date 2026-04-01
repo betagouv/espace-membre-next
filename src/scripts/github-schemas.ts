@@ -90,9 +90,6 @@ const preventDuplicates = (val, ctx) => {
   }
 };
 
-// const startupsPath = "./content/_startups";
-// const startupsIds = (await fs.readdir(startupsPath)).filter((path) => path.endsWith(".md")).map((p) => p.replace(/\.md$/, ""));
-
 export const author = z.object({
   fullname: z.string().min(1),
   role: z.string().min(1),

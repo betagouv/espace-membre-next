@@ -5,13 +5,12 @@ import MemberPage, {
   MemberPageProps,
 } from "@/components/MemberPage/MemberPage";
 import {
+  EMAIL_PLAN_TYPE,
   CommunicationEmailCode,
   Domaine,
   EmailStatusCode,
 } from "@/models/member";
-import { EMAIL_PLAN_TYPE } from "@/models/ovh";
 import { ACCOUNT_SERVICE_STATUS } from "@/models/services";
-import Checklist from "@/components/Checklist";
 import { getChecklistObject } from "@/utils/checklists/getChecklistObject";
 
 export const metadata: Metadata = {
@@ -29,7 +28,7 @@ const sampleMember: { member: MemberPageProps } = {
     emailInfos: {
       email: "ada@love.com",
       isBlocked: false,
-      emailPlan: EMAIL_PLAN_TYPE.EMAIL_PLAN_PRO,
+      emailPlan: EMAIL_PLAN_TYPE.EMAIL_PLAN_OPI,
     },
     isExpired: false,
     startups: [
@@ -80,9 +79,7 @@ const sampleMember: { member: MemberPageProps } = {
       github: "ada",
       link: "https://fr.wikipedia.org/wiki/Ada_Lovelace",
     },
-    availableEmailPros: [],
     isCurrentUser: false,
-    emailResponder: null,
     mattermostInfo: {
       hasMattermostAccount: true,
       isInactiveOrNotInTeam: false,
@@ -190,7 +187,7 @@ export default async function Page() {
         emailInfos={{
           email: sampleMember.member.userInfos.primary_email || "-",
           isBlocked: true,
-          emailPlan: EMAIL_PLAN_TYPE.EMAIL_PLAN_PRO,
+          emailPlan: EMAIL_PLAN_TYPE.EMAIL_PLAN_OPI,
         }}
         userInfos={{
           ...sampleMember.member.userInfos,
@@ -210,7 +207,7 @@ export default async function Page() {
         emailInfos={{
           email: sampleMember.member.userInfos.primary_email || "-",
           isBlocked: false,
-          emailPlan: EMAIL_PLAN_TYPE.EMAIL_PLAN_EXCHANGE,
+          emailPlan: EMAIL_PLAN_TYPE.EMAIL_PLAN_OPI,
         }}
       />
       <hr />
@@ -235,7 +232,7 @@ export default async function Page() {
         emailInfos={{
           email: sampleMember.member.userInfos.primary_email || "-",
           isBlocked: false,
-          emailPlan: EMAIL_PLAN_TYPE.EMAIL_PLAN_BASIC,
+          emailPlan: EMAIL_PLAN_TYPE.EMAIL_PLAN_OPI,
         }}
       />
       <hr />

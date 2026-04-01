@@ -358,44 +358,6 @@ export async function unblacklistContactEmail({
   );
 }
 
-// export async function getAllTransacBlockedContacts({
-//     startDate,
-//     endDate,
-//     offset,
-//     senders,
-// }: {
-//     startDate: Date;
-//     endDate: Date;
-//     senders?: string[];
-//     offset: number;
-// }): Promise<Contact[]> {
-//     const limit = 100;
-//     let apiInstance = new SibApiV3Sdk.TransactionalEmailsApi();
-//     let opts = {
-//         startDate: startDate.toISOString().split("T")[0], //mandatory
-//         endDate: endDate.toISOString().split("T")[0], //mandatory
-//         limit, // max 100
-//         offset: offset || 0,
-//         senders,
-//     };
-
-//     const data = await apiInstance
-//         .getTransacBlockedContacts(opts)
-//         .then((data) => {
-//             return data.contacts;
-//         });
-//     if (data.length < limit) {
-//         return data;
-//     }
-//     const nextData = await getAllTransacBlockedContacts({
-//         startDate,
-//         endDate,
-//         senders,
-//         offset: limit,
-//     });
-//     return [...data, ...nextData];
-// }
-
 export async function getAllContacts({
   offset,
 }: {

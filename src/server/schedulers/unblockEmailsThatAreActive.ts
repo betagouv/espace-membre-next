@@ -1,10 +1,11 @@
+import { db } from "@/lib/kysely";
+import { EmailStatusCode } from "@/models/member";
 import config from "@/server/config";
 import {
   getAllContactsFromList,
   getAllTransacBlockedContacts,
   unblacklistContactEmail,
 } from "@/server/config/email.config";
-import betagouv from "@betagouv";
 
 // get all brevo contacts blocked in MAILING_LIST_NEWSLETTER
 // unblock them
@@ -27,8 +28,15 @@ export async function unblockEmailsThatAreActive() {
     ],
     offset: 0,
   });
-  let activeEmails = await betagouv.getAllEmailInfos();
-  activeEmails = activeEmails.map((email) => `${email}@${config.domain}`);
+  const activeUsers = await db
+    .selectFrom("users")
+    .select("primary_email")
+    .where("primary_email_status", "=", EmailStatusCode.EMAIL_ACTIVE)
+    .where("primary_email", "is not", null)
+    .execute();
+  const activeEmails = activeUsers
+    .map((u) => u.primary_email)
+    .filter(Boolean) as string[];
   const contactEmails = [...transacContacts, ...contacts].map(
     (contact) => contact.email,
   );
