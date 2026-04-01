@@ -7,9 +7,7 @@ import { syncMatomoAccounts } from "./serviceScheduler/syncMatomoAccounts";
 import { syncSentryAccounts } from "./serviceScheduler/syncSentryAccounts";
 import { sendEmailToStartupToUpdatePhase } from "./startups/sendEmailToStartupToUpdatePhase";
 import { unblockEmailsThatAreActive } from "./unblockEmailsThatAreActive";
-import { sendMessageToActiveUsersWithoutSecondaryEmail } from "./updateProfileScheduler";
 import {
-  sendContractEndingMessageToUsers,
   deleteMatomoAccount,
   deleteSentryAccount,
 } from "./userContractEndingScheduler";
@@ -107,36 +105,5 @@ export const espaceMembreCronJobs: EspaceMembreCronJobType[] = [
     isActive: true,
     name: "recreateEmailIfUserActive",
     description: "Recreate email for user active again",
-  },
-  {
-    cronTime: "0 10 * * *", // Every day at 10:00
-    onTick: () => sendContractEndingMessageToUsers("mail15days", true),
-    isActive: !!config.featureOnUserContractEnd,
-    name: "sendContractEndingMessageToUsers15days",
-    description: "Sending contract ending message to users (15 days)",
-  },
-  {
-    cronTime: "0 10 * * *", // Every day at 10:00
-    onTick: () => sendContractEndingMessageToUsers("mail30days", true),
-    isActive: !!config.featureOnUserContractEnd,
-    name: "sendContractEndingMessageToUsers30days",
-    description: "Sending contract ending message to users (30 days)",
-  },
-  {
-    cronTime: "0 10 * * *", // Every day at 10:00
-    onTick: () => sendContractEndingMessageToUsers("mail2days", false),
-    isActive: !!config.featureOnUserContractEnd,
-    name: "sendContractEndingMessageToUsers2days",
-    description: "Sending contract ending message to users (2 days)",
-  },
-  {
-    cronTime: "0 10 1 * *", // 1st of every month at 10:00
-    onTick: sendMessageToActiveUsersWithoutSecondaryEmail,
-    start: true,
-    timeZone: "Europe/Paris",
-    isActive: !!config.featureSendMessageToActiveUsersWithoutSecondaryEmail,
-    name: "sendMessageToActiveUsersWithoutSecondaryEmail",
-    description:
-      "Send message to active user without secondary email to update secondary email",
   },
 ];
