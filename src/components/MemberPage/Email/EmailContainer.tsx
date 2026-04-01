@@ -19,6 +19,7 @@ import {
 } from "@/models/member";
 import { EMAIL_STATUS_READABLE_FORMAT } from "@/models/misc";
 import { DimailEmailCreationInvite } from "../../DimailEmailCreationInvite";
+import { match } from "ts-pattern";
 
 const EmailLink = ({ email }: { email: string }) => (
   <a href={`mailto:${email}`}>{email}</a>
