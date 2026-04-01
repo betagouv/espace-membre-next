@@ -42,6 +42,10 @@ import {
   syncDinumEmails,
   syncDinumEmailsTopic,
 } from "./workers/sync-dinum-emails";
+import {
+  cleanTeamsMembers,
+  cleanTeamsMembersTopic,
+} from "./workers/clean-teams-members";
 
 let databaseUrl = process.env.DATABASE_URL || "";
 databaseUrl = databaseUrl.replace("sslmode=prefer", "sslmode=no-verify");
@@ -140,6 +144,11 @@ export const pgBossWorker: {
     topic: syncDinumEmailsTopic,
     worker: syncDinumEmails,
     description: `Synchzonise la table dinum_emails`,
+  },
+  {
+    topic: cleanTeamsMembersTopic,
+    worker: cleanTeamsMembers,
+    description: `Supprime les membres expirés des équipes incubateurs`,
   },
 ];
 

@@ -145,18 +145,6 @@ export async function getAllExpiredUsers(
   return userInfos.rows;
 }
 
-// get all data even private info
-export async function adminGetAllUsersInfos(db: Kysely<DB> = database) {
-  let query = db
-    .selectFrom("users")
-    .selectAll("users")
-    .select((eb) => [withEndDate, withMissions]);
-
-  const userInfos = await db.executeQuery(query);
-
-  return userInfos.rows;
-}
-
 /* UTILS */
 
 function withMissions(eb: ExpressionBuilder<DB, "users">) {
@@ -401,3 +389,25 @@ export const getActiveUsers = (db: Kysely<DB> = database) =>
         eb("missions.end", "is", null),
       ]),
     );
+
+export const getExpiredUsers = (db: Kysely<DB> = database) =>
+  db
+    .selectFrom("users")
+    .selectAll("users")
+    .innerJoin("missions", "missions.user_id", "users.uuid")
+    .where(({ eb }) =>
+      eb.and([
+        eb("missions.end", "is not", null),
+        eb(
+          "users.uuid",
+          "not in",
+          getActiveUsers(db).clearSelect().select("users.uuid"),
+        ),
+      ]),
+    )
+    .groupBy([
+      "users.uuid",
+      "users.username",
+      "users.fullname",
+      "users.primary_email",
+    ]);
