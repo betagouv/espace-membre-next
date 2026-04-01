@@ -55,8 +55,6 @@ export const getUserInformations = async (id) => {
       }
     });
 
-  const emailResponder = await betagouv.getResponder(id);
-
   return {
     id,
     changes,
@@ -66,6 +64,5 @@ export const getUserInformations = async (id) => {
     mattermostInfo,
     matomoInfo,
     sentryInfo,
-    emailResponder,
   };
 };

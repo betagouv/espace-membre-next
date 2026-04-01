@@ -63,7 +63,6 @@ export async function updatePasswordForUser({
   );
 
   const secretariatUrl = `${config.protocol}://${config.host}`;
-  await betagouv.changePassword(username, password, user.emailInfos?.emailPlan);
   await addEvent({
     action_code: EventCode.MEMBER_PASSWORD_UPDATED,
     created_by_username: session.user.id,

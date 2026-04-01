@@ -10,7 +10,6 @@ import { syncMattermostUserWithMattermostMemberInfosTable } from "./mattermostSc
 import { recreateEmailIfUserActive } from "./recreateEmailIfUserActive";
 import { syncMatomoAccounts } from "./serviceScheduler/syncMatomoAccounts";
 import { syncSentryAccounts } from "./serviceScheduler/syncSentryAccounts";
-import { createMailingListForStartups } from "./startups/createMailingListForStartups";
 import { sendEmailToStartupToUpdatePhase } from "./startups/sendEmailToStartupToUpdatePhase";
 import { unblockEmailsThatAreActive } from "./unblockEmailsThatAreActive";
 import { sendMessageToActiveUsersWithoutSecondaryEmail } from "./updateProfileScheduler";
@@ -36,13 +35,6 @@ export interface EspaceMembreCronJobType {
 }
 
 const startupJobs: EspaceMembreCronJobType[] = [
-  {
-    cronTime: "0 5 * * 1", // Every Monday at 05:00
-    onTick: createMailingListForStartups,
-    isActive: true,
-    name: "createMailingListForStartups",
-    description: "Créé des mailings-list OVH pour les startups",
-  },
   {
     cronTime: "30 09 01 Jan,Apr,Jul,Oct *", // 1st of Jan, Apr, Jul, Oct at 09:00:30
     onTick: sendEmailToStartupToUpdatePhase,

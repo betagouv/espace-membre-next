@@ -128,7 +128,6 @@ export function DashboardPage(props: DashboardPageProps) {
       {props.showSuiteNumeriqueOnboardingPanel && (
         <DimailEmailCreationInvite
           secondaryEmail={props.secondaryEmail}
-          isOVHmigration={true}
         />
       )}
       <h2>Gérer mon compte</h2>

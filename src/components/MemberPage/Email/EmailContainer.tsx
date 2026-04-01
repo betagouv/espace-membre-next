@@ -6,9 +6,6 @@ import Accordion from "@codegouvfr/react-dsfr/Accordion";
 import Alert from "@codegouvfr/react-dsfr/Alert";
 import Badge from "@codegouvfr/react-dsfr/Badge";
 import Table from "@codegouvfr/react-dsfr/Table";
-import { match } from "ts-pattern";
-
-import BlocChangerMotDePasse from "./BlocChangerMotDePasse";
 import BlocConfigurerCommunicationEmail from "./BlocConfigurerCommunicationEmail";
 import BlocConfigurerEmailPrincipal from "./BlocConfigurerEmailPrincipal";
 import BlocConfigurerEmailSecondaire from "./BlocConfigurerEmailSecondaire";
@@ -21,7 +18,6 @@ import {
   EmailStatusCode,
 } from "@/models/member";
 import { EMAIL_STATUS_READABLE_FORMAT } from "@/models/misc";
-import { EMAIL_PLAN_TYPE } from "@/models/ovh";
 import { DimailEmailCreationInvite } from "../../DimailEmailCreationInvite";
 
 const EmailLink = ({ email }: { email: string }) => (
@@ -38,12 +34,7 @@ const emailStatusRow = (
     </>,
     <>
       <Badge severity="info" className={fr.cx("fr-mr-1w")} as="span">
-        {match(emailInfos.emailPlan)
-          .with(EMAIL_PLAN_TYPE.EMAIL_PLAN_PRO, () => "OVH PRO")
-          .with(EMAIL_PLAN_TYPE.EMAIL_PLAN_EXCHANGE, () => "Exchange")
-          .with(EMAIL_PLAN_TYPE.EMAIL_PLAN_BASIC, () => "OVH MX")
-          .with(EMAIL_PLAN_TYPE.EMAIL_PLAN_OPI, () => "Suite numérique")
-          .exhaustive()}
+        Suite numérique
       </Badge>
       {match(userInfos.primary_email_status)
         .with(EmailStatusCode.EMAIL_ACTIVE, () => (
@@ -69,98 +60,21 @@ const emailStatusRow = (
   ];
 };
 
-const emailSpamInfoRow = (
-  emailInfos: NonNullable<MemberPageProps["emailInfos"]>,
-) => {
-  return [
-    <>
-      Email <EmailLink email={emailInfos.email} /> classé en spam OVH
-    </>,
-    match(emailInfos.isBlocked)
-      .with(true, () => (
-        <Badge severity="error" as="span">
-          Oui
-        </Badge>
-      ))
-      .otherwise(() => (
-        <Badge severity="success" as="span">
-          Non
-        </Badge>
-      )),
-  ];
-};
-
 function BlocEmailConfiguration({ emailInfos }: { emailInfos: EmailInfos }) {
-  interface ServerConf {
-    server: string;
-    method: string;
-    port: string;
-  }
-  const conf: {
-    [key in EMAIL_PLAN_TYPE]: {
-      smtp: ServerConf;
-      imap: ServerConf;
-      documentation: string;
-    };
-  } = {
-    [EMAIL_PLAN_TYPE.EMAIL_PLAN_PRO]: {
-      documentation:
-        "https://doc.incubateur.net/communaute/les-outils-de-la-communaute/emails/emails-ovh-pro",
-      smtp: {
-        server: "pro1.mail.ovh.net",
-        method: "TLS",
-        port: "587",
-      },
-      imap: {
-        server: "pro1.mail.ovh.net",
-        method: "SSL",
-        port: "993",
-      },
+  const planConf = {
+    documentation:
+      "https://doc.incubateur.net/communaute/les-outils-de-la-communaute/emails/emails-suite-numerique",
+    smtp: {
+      server: "smtp.beta.gouv.fr",
+      method: "TLS",
+      port: "587",
     },
-    [EMAIL_PLAN_TYPE.EMAIL_PLAN_EXCHANGE]: {
-      documentation:
-        "https://help.ovhcloud.com/csm/fr-exchange-macos-mailapp-configuration?id=kb_article_view&sysparm_article=KB0053382",
-      smtp: {
-        server: "ex3.mail.ovh.fr",
-        method: "TLS",
-        port: "587",
-      },
-      imap: {
-        server: "ex3.mail.ovh.net",
-        method: "SSL",
-        port: "993",
-      },
-    },
-    [EMAIL_PLAN_TYPE.EMAIL_PLAN_BASIC]: {
-      documentation:
-        "https://doc.incubateur.net/communaute/les-outils-de-la-communaute/emails/envoyer-et-recevoir-des-emails-beta.gouv.fr-avec-loffre-ovh-mx-plan",
-      smtp: {
-        server: "ssl0.ovh.net",
-        method: "TLS",
-        port: "587",
-      },
-      imap: {
-        server: "ssl0.ovh.net",
-        method: "SSL",
-        port: "993",
-      },
-    },
-    [EMAIL_PLAN_TYPE.EMAIL_PLAN_OPI]: {
-      documentation:
-        "https://doc.incubateur.net/communaute/les-outils-de-la-communaute/emails/emails-suite-numerique",
-      smtp: {
-        server: "smtp.beta.gouv.fr",
-        method: "TLS",
-        port: "587",
-      },
-      imap: {
-        server: "imap.beta.gouv.fr",
-        method: "SSL",
-        port: "993",
-      },
+    imap: {
+      server: "imap.beta.gouv.fr",
+      method: "SSL",
+      port: "993",
     },
   };
-  const planConf = conf[emailInfos.emailPlan];
   return (
     <Accordion label="Configurer ton email beta">
       <p>
@@ -213,8 +127,6 @@ export default function EmailContainer({
     EmailStatusCode.EMAIL_CREATION_PENDING,
   ].includes(userInfos.primary_email_status);
 
-  const isDinumEmail = emailInfos?.emailPlan === EMAIL_PLAN_TYPE.EMAIL_PLAN_OPI;
-
   const rows = [
     // Email status
     emailInfos && emailStatusRow(emailInfos, userInfos),
@@ -230,9 +142,6 @@ export default function EmailContainer({
       ])) ||
       []),
     ,
-    // Spam status (ovh only)
-    !isDinumEmail && emailInfos && emailSpamInfoRow(emailInfos),
-    // Redirections
     [],
   ].filter((z) => !!z);
 
@@ -274,17 +183,10 @@ export default function EmailContainer({
           <WebMailButtons plan={emailInfos.emailPlan} />
         </div>
       )}
-      {(emailInfos?.emailPlan === EMAIL_PLAN_TYPE.EMAIL_PLAN_BASIC ||
-        emailInfos?.emailPlan === EMAIL_PLAN_TYPE.EMAIL_PLAN_PRO ||
-        userInfos.primary_email_status == EmailStatusCode.EMAIL_DELETED) &&
+      {userInfos.primary_email_status == EmailStatusCode.EMAIL_DELETED &&
         userInfos.secondary_email && (
-          /* affiche la migration dimail que si c'est un email non dimail et que c'est l'utilisateur lui-même */
           <DimailEmailCreationInvite
             secondaryEmail={userInfos.secondary_email}
-            isOVHmigration={
-              emailInfos?.emailPlan === EMAIL_PLAN_TYPE.EMAIL_PLAN_BASIC ||
-              emailInfos?.emailPlan === EMAIL_PLAN_TYPE.EMAIL_PLAN_PRO
-            }
           />
         )}
       {!!emailIsBeingCreated && (
@@ -308,15 +210,6 @@ export default function EmailContainer({
 
       {!emailIsBeingCreated && isCurrentUser && (
         <div className={fr.cx("fr-accordions-group")}>
-          {(emailInfos?.emailPlan === EMAIL_PLAN_TYPE.EMAIL_PLAN_BASIC ||
-            emailInfos?.emailPlan === EMAIL_PLAN_TYPE.EMAIL_PLAN_PRO) && (
-            <BlocChangerMotDePasse
-              canChangePassword={canChangePassword}
-              status={userInfos.primary_email_status}
-              userInfos={userInfos}
-            />
-          )}
-
           <BlocConfigurerEmailPrincipal
             canChangeEmails={canChangeEmails}
             userInfos={userInfos}

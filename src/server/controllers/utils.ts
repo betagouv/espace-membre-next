@@ -16,7 +16,7 @@ import {
   getDimailEmail,
   getDimailEmailsByUser,
 } from "@/lib/kysely/queries/dimail";
-import { EMAIL_PLAN_TYPE, OvhRedirection, OvhResponder } from "@/models/ovh";
+import { EMAIL_PLAN_TYPE, Redirection } from "@/models/member";
 
 export function encryptPassword(password) {
   const iv = randomBytes(16); // Generate a secure, random IV
@@ -263,8 +263,7 @@ export async function userInfos(
     const dinumAliases = await getDimailEmailsByUser(userInfos.uuid, "alias");
 
     let emailInfos,
-      emailRedirections: OvhRedirection[] = [],
-      emailResponder: OvhResponder | null = null;
+      emailRedirections: Redirection[] = [];
     if (dinumEmails && dinumEmails.length) {
       emailInfos = {
         email: dinumEmails[0].email,
@@ -294,7 +293,6 @@ export async function userInfos(
     return {
       isExpired,
       userInfos: userInfos,
-      emailResponder,
       authorizations: {
         canChangePassword,
         canChangeEmails,

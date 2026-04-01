@@ -17,8 +17,6 @@ import { EmailStatusCode } from "@/models/member";
 import { routeTitles } from "@/utils/routes/routeTitles";
 import { getServerSession } from "next-auth";
 import { authOptions } from "@/utils/authoptions";
-import betagouv from "@/server/betagouv";
-import { EMAIL_PLAN_TYPE } from "@/models/ovh";
 import { getUserChecklists } from "@/utils/checklists/getUserChecklists";
 
 export const metadata: Metadata = {
@@ -48,12 +46,7 @@ export default async function Page(props) {
   const cookieStore = cookies();
   const surveyCookie = cookieStore.get(SURVEY_BOX_COOKIE_NAME);
   const surveyCookieValue = (surveyCookie && surveyCookie.value) || null;
-  const emailInfos = await betagouv.emailInfos(userInfos.username);
-  const showSuiteNumeriqueOnboardingPanel =
-    userInfos.primary_email &&
-    (emailInfos?.emailPlan === EMAIL_PLAN_TYPE.EMAIL_PLAN_PRO ||
-      emailInfos?.emailPlan === EMAIL_PLAN_TYPE.EMAIL_PLAN_BASIC ||
-      emailInfos?.emailPlan === EMAIL_PLAN_TYPE.EMAIL_PLAN_EXCHANGE);
+  const showSuiteNumeriqueOnboardingPanel = false;
 
   let onboarding: DashboardPageProps["onboarding"];
   if (userInfos.created_at >= new Date("2025-01-01")) {
