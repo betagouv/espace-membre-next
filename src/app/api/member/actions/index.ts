@@ -21,7 +21,6 @@ import {
   CommunicationEmailCode,
   memberWrapperPublicInfoSchemaType,
 } from "@/models/member";
-import betagouv from "@/server/betagouv";
 import config from "@/server/config";
 import {
   updateContactEmail,

@@ -2,8 +2,7 @@ import pAll from "p-all";
 
 import { getAllUsersInfo } from "@/lib/kysely/queries/users";
 import { memberBaseInfoToModel } from "@/models/mapper";
-import { EmailStatusCode } from "@/models/member";
-import { EMAIL_PLAN_TYPE } from "@/models/member";
+import { EmailStatusCode, EMAIL_PLAN_TYPE } from "@/models/member";
 import BetaGouv from "@betagouv";
 import * as utils from "@controllers/utils";
 import { DIMAIL_MAILBOX_DOMAIN } from "@lib/dimail/utils";

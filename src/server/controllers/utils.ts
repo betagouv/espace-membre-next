@@ -1,5 +1,5 @@
 import axios from "axios";
-import crypto, { createCipheriv, createDecipheriv, randomBytes } from "crypto";
+import { createCipheriv, createDecipheriv, randomBytes } from "crypto";
 import { compareAsc, startOfDay } from "date-fns";
 import _ from "lodash";
 import nodemailer from "nodemailer";
@@ -7,16 +7,14 @@ import nodemailer from "nodemailer";
 import { getUserInfos } from "@/lib/kysely/queries/users";
 import { userInfosToModel } from "@/models/mapper";
 import {
+  EMAIL_PLAN_TYPE,
+  Redirection,
   memberBaseInfoSchemaType,
   memberSchemaType,
   memberWrapperSchemaType,
 } from "@/models/member";
 import config from "@/server/config";
-import {
-  getDimailEmail,
-  getDimailEmailsByUser,
-} from "@/lib/kysely/queries/dimail";
-import { EMAIL_PLAN_TYPE, Redirection } from "@/models/member";
+import { getDimailEmailsByUser } from "@/lib/kysely/queries/dimail";
 
 export function encryptPassword(password) {
   const iv = randomBytes(16); // Generate a secure, random IV
