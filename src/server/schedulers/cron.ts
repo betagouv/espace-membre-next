@@ -1,11 +1,6 @@
 // NOTE: if you update this file, make sure you update the jobs
 // documentation file (CRON.md) file with `make cron-docs`.
 
-import { deactivateExpiredMembersEmails } from "./emailScheduler";
-import {
-  addGithubUserToOrganization,
-  removeGithubUserFromOrganization,
-} from "./githubScheduler";
 import { syncMattermostUserWithMattermostMemberInfosTable } from "./mattermostScheduler/syncMattermostUserWithMattermostMemberInfosTable";
 import { recreateEmailIfUserActive } from "./recreateEmailIfUserActive";
 import { syncMatomoAccounts } from "./serviceScheduler/syncMatomoAccounts";
@@ -37,6 +32,7 @@ export interface EspaceMembreCronJobType {
 
 const startupJobs: EspaceMembreCronJobType[] = [
   {
+    // TODO: move to N8N and dimail ?
     cronTime: "0 5 * * 1", // Every Monday at 05:00
     onTick: createMailingListForStartups,
     isActive: true,
@@ -116,21 +112,6 @@ export const espaceMembreCronJobs: EspaceMembreCronJobType[] = [
     description: "Recreate email for user active again",
   },
   {
-    cronTime: "*/5 * * * 1-5", //  every 5 minutes, Monday to Friday (at :00, :05, :10, :15, etc.).
-    onTick: addGithubUserToOrganization,
-    isActive: !!config.featureAddGithubUserToOrganization,
-    name: "addGithubUserToOrganization",
-    description:
-      "Envoi des invitations GitHub et ajout à la team GitHub/betagouv",
-  },
-  {
-    cronTime: "0 18 * * *", // Every day at 18:00
-    onTick: removeGithubUserFromOrganization,
-    isActive: !!config.featureRemoveGithubUserFromOrganization,
-    name: "removeGithubUserFromOrganization",
-    description: "Désinscrit les membres expirés de l'organisation GitHub",
-  },
-  {
     cronTime: "0 8 * * *", // Every day at 08:00
     onTick: sendJ1Email,
     isActive: !!config.featureSendJ1Email,
@@ -143,15 +124,6 @@ export const espaceMembreCronJobs: EspaceMembreCronJobType[] = [
     isActive: !!config.featureSendJ30Email,
     name: "sendJ30Email",
     description: "Email départ J+30",
-  },
-  {
-    // INACTIVE by config
-    cronTime: "0 * * * *", // Every hour
-    onTick: deactivateExpiredMembersEmails,
-    isActive: !!config.featureReinitPasswordEmail,
-    name: "deactivateExpiredMembersEmails",
-    description:
-      "Désactive les comptes email des membres expirés après 5 jours",
   },
   {
     cronTime: "0 10 * * *", // Every day at 10:00
