@@ -10,8 +10,6 @@ import { unblockEmailsThatAreActive } from "./unblockEmailsThatAreActive";
 import { sendMessageToActiveUsersWithoutSecondaryEmail } from "./updateProfileScheduler";
 import {
   sendContractEndingMessageToUsers,
-  sendJ1Email,
-  sendJ30Email,
   deleteMatomoAccount,
   deleteSentryAccount,
 } from "./userContractEndingScheduler";
