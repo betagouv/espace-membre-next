@@ -5,6 +5,7 @@ import { getBossClientInstance, startBossClientInstance } from "./client";
 import { sendEmailToIncubatorTeamTopic } from "./workers/send-email-to-incubator";
 import { sendEmailToTeamsToCheckOnTeamCompositionTopic } from "./workers/send-email-to-teams-to-check-on-team-composition";
 import { syncDinumEmailsTopic } from "./workers/sync-dinum-emails";
+import { cleanTeamsMembersTopic } from "./workers/clean-teams-members";
 
 export type PgBossJobType = {
   topic: string;
@@ -28,6 +29,11 @@ export const pgBossJobs: PgBossJobType[] = [
     frequency: `0 8-18 * * *`,
     description: `Met à jour la table dinum_emails`,
   },
+  {
+    topic: cleanTeamsMembersTopic,
+    frequency: `0 8 * * *`,
+    description: `Supprime les membres expirés des équipes incubateurs`,
+  },
 ];
 
 export async function scheduleBossCronTasks() {
@@ -35,6 +41,7 @@ export async function scheduleBossCronTasks() {
 
   // cron tasks
   for (const job of pgBossJobs) {
+    console.log(`Start scheduled pbboss job ${job.topic} : ${job.frequency}`);
     await bossClient.schedule(job.topic, job.frequency, undefined, {
       tz: "Europe/Paris",
     });
