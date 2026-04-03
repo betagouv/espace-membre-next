@@ -46,6 +46,38 @@ import {
   cleanTeamsMembers,
   cleanTeamsMembersTopic,
 } from "./workers/clean-teams-members";
+import {
+  deleteMatomoAccountWorker,
+  deleteMatomoAccountTopic,
+} from "./workers/delete-matomo-account";
+import {
+  deleteSentryAccountWorker,
+  deleteSentryAccountTopic,
+} from "./workers/delete-sentry-account";
+import {
+  recreateEmailIfUserActiveWorker,
+  recreateEmailIfUserActiveTopic,
+} from "./workers/recreate-email-if-user-active";
+import {
+  sendEmailToStartupToUpdatePhaseWorker,
+  sendEmailToStartupToUpdatePhaseTopic,
+} from "./workers/send-email-to-startup-to-update-phase";
+import {
+  syncMatomoAccountsWorker,
+  syncMatomoAccountsTopic,
+} from "./workers/sync-matomo-accounts";
+import {
+  syncMattermostUsers,
+  syncMattermostUsersTopic,
+} from "./workers/sync-mattermost-users";
+import {
+  syncSentryAccountsWorker,
+  syncSentryAccountsTopic,
+} from "./workers/sync-sentry-accounts";
+import {
+  unblockBlacklistedEmails,
+  unblockBlacklistedEmailsTopic,
+} from "./workers/unblock-blacklisted-emails";
 
 let databaseUrl = process.env.DATABASE_URL || "";
 databaseUrl = databaseUrl.replace("sslmode=prefer", "sslmode=no-verify");
@@ -149,6 +181,46 @@ export const pgBossWorker: {
     topic: cleanTeamsMembersTopic,
     worker: cleanTeamsMembers,
     description: `Supprime les membres expirés des équipes incubateurs`,
+  },
+  {
+    topic: syncMattermostUsersTopic,
+    worker: syncMattermostUsers,
+    description: `Synchronise les utilisateurs Mattermost avec la table mattermost_member_infos`,
+  },
+  {
+    topic: deleteMatomoAccountTopic,
+    worker: deleteMatomoAccountWorker,
+    description: `Supprime les comptes Matomo des membres expirés (30 jours)`,
+  },
+  {
+    topic: deleteSentryAccountTopic,
+    worker: deleteSentryAccountWorker,
+    description: `Supprime les comptes Sentry des membres expirés (30 jours)`,
+  },
+  {
+    topic: syncMatomoAccountsTopic,
+    worker: syncMatomoAccountsWorker,
+    description: `Synchronise les comptes Matomo des membres actifs`,
+  },
+  {
+    topic: syncSentryAccountsTopic,
+    worker: syncSentryAccountsWorker,
+    description: `Synchronise les comptes Sentry des membres actifs`,
+  },
+  {
+    topic: unblockBlacklistedEmailsTopic,
+    worker: unblockBlacklistedEmails,
+    description: `Débloque les emails blacklistés de la liste Brevo MAILING_LIST_NEWSLETTER`,
+  },
+  {
+    topic: recreateEmailIfUserActiveTopic,
+    worker: recreateEmailIfUserActiveWorker,
+    description: `Recrée les emails pour les utilisateurs redevenus actifs`,
+  },
+  {
+    topic: sendEmailToStartupToUpdatePhaseTopic,
+    worker: sendEmailToStartupToUpdatePhaseWorker,
+    description: `Envoie par mail une relance pour mise à jour de la phase de la SE`,
   },
 ];
 
