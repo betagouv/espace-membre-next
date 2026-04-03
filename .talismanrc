@@ -27,6 +27,10 @@ fileignoreconfig:
   checksum: 0294a10f151fe53549f7bdfd6081d5a69d7572bb633b7813adc49bfac2f2f241
 - filename: src/server/queueing/workers/create-dimail-mailbox.spec.ts
   checksum: 7961ed68360545e4e2c72bf9884e12943467175bdeed35b38bfc177613fc0b15
+- filename: src/server/queueing/workers/create-update-matomo-account.spec.ts
+  checksum: fa90dcd84cf0a9e7bbb1e1cd46dd886712768000886a5b57af0277cf81c195ba
+- filename: src/server/queueing/workers/send-verification-email.spec.ts
+  checksum: 51786b73a70e17422b4457a35c084818f5e4f67a754fdf564659818ea00e30b0
 - filename: src/server/queueing/workers/send-verification-email.ts
   checksum: 6c4a7bbf33011000ba4223060c62f0631458c2308e27a987a61fac50a44eddfe
 - filename: src/server/schedulers/emailScheduler.ts
