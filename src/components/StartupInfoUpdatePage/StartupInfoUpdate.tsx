@@ -7,7 +7,7 @@ import * as Sentry from "@sentry/nextjs";
 import LastChange from "../LastChange";
 import { StartupForm, StartupFormProps } from "../StartupForm/StartupForm";
 import { ActionResponse } from "@/@types/serverAction";
-import { safeUpdateStartup, updateStartup } from "@/app/api/startups/actions";
+import { safeUpdateStartup } from "@/app/api/startups/actions";
 import { startupInfoUpdateSchemaType } from "@/models/actions/startup";
 import { Option } from "@/models/misc";
 import { sponsorSchemaType } from "@/models/sponsor";
