@@ -39,7 +39,7 @@
     "@emotion/styled": "^11.11.0",
     "@hookform/resolvers": "^3.3.4",
     "@luma-team/mjml-react": "^0.2.1",
-    "@mui/base": "^5.0.0-beta.69",
+    "@mui/base": "^5.0.0-beta.70",
     "@mui/material": "^5.15.10",
     "@octokit/rest": "^20.1.2",
     "@sentry/nextjs": "^10.26.0",
