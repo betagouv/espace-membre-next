@@ -78,7 +78,7 @@
     "leaflet.markercluster": "^1.5.3",
     "lodash": "^4.17.21",
     "markdown-it": "^13.0.2",
-    "marked": "^9.1.0",
+    "marked": "^17.0.5",
     "mjml": "^4.15.3",
     "next": "^14.2.25",
     "next-auth": "^4.24.11",
