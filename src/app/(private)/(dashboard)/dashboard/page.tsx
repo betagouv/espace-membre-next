@@ -49,9 +49,24 @@ export default async function Page(props) {
   const showSuiteNumeriqueOnboardingPanel = false;
 
   let onboarding: DashboardPageProps["onboarding"];
+  let offboarding: DashboardPageProps["onboarding"];
+  const checklists = await getUserChecklists(session.user.uuid);
   if (userInfos.created_at >= new Date("2025-01-01")) {
-    const checklists = await getUserChecklists(session.user.uuid);
     onboarding = checklists.onboarding;
+  }
+  if (userInfos.missions.length) {
+    // check if user leave in less than 45 days
+    // to show offboarding panel
+    const maxEnd = userInfos.missions
+      .map((m) => m.end)
+      .filter((m) => !!m)
+      .sort((a, b) => b.getTime() - a.getTime())[0];
+    const daysBeforeDeparture =
+      (new Date(maxEnd).getTime() - new Date().getTime()) /
+      (1000 * 60 * 60 * 24);
+    if (daysBeforeDeparture <= 45) {
+      offboarding = checklists.offboarding;
+    }
   }
   return (
     <DashboardPage
@@ -60,6 +75,7 @@ export default async function Page(props) {
       latestProducts={lastestProducts}
       latestMembers={lastestMembers}
       onboarding={onboarding}
+      offboarding={offboarding}
       secondaryEmail={userInfos.secondary_email}
       showSuiteNumeriqueOnboardingPanel={showSuiteNumeriqueOnboardingPanel}
     />
