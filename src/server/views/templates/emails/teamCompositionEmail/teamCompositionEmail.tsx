@@ -78,6 +78,12 @@ export function TeamCompositionEmail(props: EmailTeamComposition["variables"]) {
         <p>
           Si un des autres membres n'est plus dans l'équipe tu peux le signaler
           aux responsables de ton incubateur.
+
+          Enfin si tu prévois la fin de mission de certains membres de l'équipe, tu peux piloter leur désembarquement depuis leur espace membre avec une checklist sur-mesure.
+          Rends-toi sur l'onglet{" "}
+          <a href="https://espace-membre.beta.gouv.fr/account?tab=desembarquement">
+            "désembarquement" de son espace-membre
+          Toute la méthodologie est expliquée [ici](https://doc.incubateur.net/communaute/gerer-son-produit/gestion-au-quotidien/renforcer-l-equipe/le-desembarquement-de-la-communaute)
         </p>
       </MjmlText>
       <MjmlText></MjmlText>
