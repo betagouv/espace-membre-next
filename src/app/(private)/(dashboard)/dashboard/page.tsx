@@ -49,7 +49,7 @@ export default async function Page(props) {
   const showSuiteNumeriqueOnboardingPanel = false;
 
   let onboarding: DashboardPageProps["onboarding"];
-  let offboarding: DashboardPageProps["onboarding"];
+  let offboarding: DashboardPageProps["offboarding"];
   const checklists = await getUserChecklists(session.user.uuid);
   if (userInfos.created_at >= new Date("2025-01-01")) {
     onboarding = checklists.onboarding;
