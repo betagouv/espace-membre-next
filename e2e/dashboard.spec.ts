@@ -124,15 +124,19 @@ test("checking an onboarding item increases the progress bar on account and dash
             page.getByText("Bienvenue dans la communauté")
         ).toBeVisible();
 
+        // DSFR Tabs renders all panels in the DOM simultaneously; scope to the
+        // active panel via .fr-tabs__panel--selected to avoid strict-mode errors.
+        const activePanel = page.locator(".fr-tabs__panel--selected");
+
         // Read the initial progress percentage shown in the progress bar
-        const progressText = page.getByText(/^\d+%$/);
+        const progressText = activePanel.getByText(/^\d+%$/);
         const initialProgressStr = await progressText.textContent();
         const initialProgress = parseInt(initialProgressStr ?? "0");
 
         // Click the first enabled (non-disabled) checkbox — the first item
         // "onboarding-fiche-membre" is disabled+defaultChecked, so the first
         // enabled one is the next actual task
-        await page
+        await activePanel
             .locator('input[type="checkbox"]:not([disabled])')
             .first()
             .check();
@@ -198,12 +202,16 @@ test("checking an offboarding item increases the progress bar on account and das
             page.getByText("Lorque viendra le moment de quitter la communauté")
         ).toBeVisible();
 
-        const progressText = page.getByText(/^\d+%$/);
+        // Scope to the active panel to avoid matching the onboarding panel's
+        // progress bar which is also present in the DOM but hidden.
+        const activePanel = page.locator(".fr-tabs__panel--selected");
+
+        const progressText = activePanel.getByText(/^\d+%$/);
         const initialProgressStr = await progressText.textContent();
         const initialProgress = parseInt(initialProgressStr ?? "0");
 
         // Check the first enabled checkbox in the offboarding list
-        await page
+        await activePanel
             .locator('input[type="checkbox"]:not([disabled])')
             .first()
             .check();
