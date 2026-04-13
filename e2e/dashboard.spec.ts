@@ -4,7 +4,7 @@ import { db } from "@/lib/kysely";
 
 test.use({ storageState: "./playwright-auth-valid.member.json" });
 
-const VALID_MEMBER_UUID = "7a04e214-9241-40f4-b38e-87b737b31854";
+const VALID_MEMBER_UUID = "23dd9fed-9c84-432c-a566-f785702147fc";
 const FAR_FUTURE_END = new Date("2030-03-01");
 
 test("onboarding panel is shown on dashboard for a recently created member with no upcoming departure", async ({
