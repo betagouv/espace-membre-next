@@ -208,6 +208,7 @@ test("checking an offboarding item increases the progress bar on account and das
 
     // Check the first enabled checkbox in the offboarding list
 
+    await page.waitForTimeout(500);
     await page.check("input[type=checkbox]:not([disabled]) + label");
 
     await expect(progressText).not.toHaveText(initialProgressStr!);
