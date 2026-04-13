@@ -52,7 +52,7 @@ export default function Checklist({
       value,
     });
     if (!res.success) {
-      console.error(res);
+      console.error("ERROR", res.message);
     }
   };
 

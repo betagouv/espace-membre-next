@@ -31,6 +31,9 @@ export interface DashboardPageProps {
   onboarding?: {
     progress: number;
   };
+  offboarding?: {
+    progress: number;
+  };
   showSuiteNumeriqueOnboardingPanel: boolean;
   secondaryEmail: string;
 }
@@ -104,31 +107,59 @@ const CardMember = ({
 export function DashboardPage(props: DashboardPageProps) {
   return (
     <div className={fr.cx("fr-container", "fr-pb-6w", "fr-mb-2w")}>
-      {props.onboarding && props.onboarding.progress < 100 && (
+      {!props.offboarding &&
+        props.onboarding &&
+        props.onboarding.progress < 100 && (
+          <div
+            style={{ border: "1px solid #ccc", padding: "20px" }}
+            className={fr.cx("fr-container", "fr-mb-6w")}
+          >
+            <h3>Mon arrivée chez beta.gouv.fr</h3>
+            <ProgressBar progress={props.onboarding.progress} />
+            <div className={fr.cx("fr-mt-3w")}>
+              <Link
+                href={`${linkRegistry.get("account")}?tab=embarquement`}
+                className={fr.cx(
+                  "fr-link",
+                  "fr-icon-arrow-right-line",
+                  "fr-link--icon-right",
+                )}
+              >
+                Continuer mon embarquement
+              </Link>
+            </div>
+          </div>
+        )}
+      {props.offboarding && props.offboarding.progress < 100 && (
         <div
           style={{ border: "1px solid #ccc", padding: "20px" }}
           className={fr.cx("fr-container", "fr-mb-6w")}
         >
-          <h3>Mon arrivée chez beta.gouv.fr</h3>
-          <ProgressBar progress={props.onboarding.progress} />
+          <h3>Mon désembarquement</h3>
+          <p>
+            Ta fiche arrive prochainement à expiration. Pense à{" "}
+            <Link href={linkRegistry.get("accountEditBaseInfo")}>
+              prolonger ta mission
+            </Link>{" "}
+            ou commencer ton désembarquement.
+          </p>
+          <ProgressBar progress={props.offboarding.progress} />
           <div className={fr.cx("fr-mt-3w")}>
             <Link
-              href={`${linkRegistry.get("account")}?tab=embarquement`}
+              href={`${linkRegistry.get("account")}?tab=desembarquement`}
               className={fr.cx(
                 "fr-link",
                 "fr-icon-arrow-right-line",
                 "fr-link--icon-right",
               )}
             >
-              Continuer mon embarquement
+              Continuer mon désembarquement
             </Link>
           </div>
         </div>
       )}
       {props.showSuiteNumeriqueOnboardingPanel && (
-        <DimailEmailCreationInvite
-          secondaryEmail={props.secondaryEmail}
-        />
+        <DimailEmailCreationInvite secondaryEmail={props.secondaryEmail} />
       )}
       <h2>Gérer mon compte</h2>
       <div className={fr.cx("fr-grid-row", "fr-grid-row--gutters")}>

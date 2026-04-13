@@ -25,8 +25,8 @@ export const parseMarkdown = async <T extends ZodSchema>(
   try {
     const { attributes, body } = fm<z.infer<T>>(content);
     return { attributes: { ...attributes, ghid: id }, body };
-  } catch (e) {
-    console.error(e);
+  } catch (e: any) {
+    console.error("parseMarkdown error", e.message);
     return { attributes: {}, body: null };
   }
 };
