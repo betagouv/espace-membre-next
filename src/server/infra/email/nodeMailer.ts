@@ -47,7 +47,7 @@ export const makeSendEmailNodemailer = (
     },
   };
   const mailTransport = nodemailer.createTransport(transport);
-  console.info(`Mail setting : ${JSON.stringify(transport)}`);
+  console.info(`Mail setting : ${transport.host}:${transport.port}`);
 
   return async function sendMailFromNodemailer(params: SendEmailProps) {
     const {

@@ -183,8 +183,8 @@ export function handlerWrapper<ReqData>(
   return async (job: PgBoss.Job<ReqData>) => {
     try {
       await handler(job);
-    } catch (error) {
-      console.error(error);
+    } catch (error: any) {
+      console.error(`ERROR ${job.name} : ${error.message}`);
 
       Sentry.withScope(function (scope) {
         // Gather retry errors for the same event at the same place in Sentry
