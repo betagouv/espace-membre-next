@@ -9,6 +9,8 @@ fileignoreconfig:
   checksum: 19d37dc111d4017b7800460a868a5c2f89cdb62e45d00d070bea4af38f66a1a9
 - filename: package-lock.json
   checksum: 6dcdbf6a4b272fd88b0adadec353916c6a543bde223706b6b3b575e35ba3d713
+- filename: src/@types/db.d.ts
+  checksum: 6f1851774271e3f0d3fcdf1feac4cd6ba03f6e75922fd839a94b276589a77b76
 - filename: src/app/(private)/(dashboard)/services/page.tsx
   checksum: daebae004c8c06af9a88aaf57a1fad4b0a6efcb7920cf9628e0c1fd1985569ab
 - filename: src/components/Checklist.tsx
