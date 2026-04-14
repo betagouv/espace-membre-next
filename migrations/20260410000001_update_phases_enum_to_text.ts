@@ -4,6 +4,10 @@ exports.up = async function (knex) {
         ALTER TABLE phases ALTER COLUMN name TYPE text;
     `);
 
+  // todo: add constraint later when migration done
+  // ALTER TABLE phases ADD CONSTRAINT chk_phase_name
+  // CHECK (name IN ('investigation', 'construction', 'acceleration', 'perennisation', 'abandon', 'abandon-investigation', 'transfere', 'opere'));
+
   // 2. Drop the old enum type
   await knex.raw(`
         DROP TYPE IF EXISTS startups_phase_enum;
