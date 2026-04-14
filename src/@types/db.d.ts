@@ -3,6 +3,7 @@
  * Please do not edit it manually.
  */
 
+import type { StartupPhase } from "@/models/startup";
 import type { ColumnType } from "kysely";
 import type { IPostgresInterval } from "postgres-interval";
 
@@ -43,13 +44,7 @@ export type PgbossJobState =
   | "failed"
   | "retry";
 
-export type StartupsPhaseEnum =
-  | "acceleration"
-  | "alumni"
-  | "construction"
-  | "investigation"
-  | "success"
-  | "transfer";
+export type StartupsPhaseEnum = StartupPhase;
 
 export type Timestamp = ColumnType<Date, Date | string>;
 
