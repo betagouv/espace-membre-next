@@ -3,9 +3,7 @@
  * Please do not edit it manually.
  */
 
-import type { StartupPhase } from "@/models/startup";
 import type { ColumnType } from "kysely";
-import type { IPostgresInterval } from "postgres-interval";
 
 export type Generated<T> =
   T extends ColumnType<infer S, infer I, infer U>
@@ -13,11 +11,6 @@ export type Generated<T> =
     : ColumnType<T, T | undefined, T>;
 
 export type Int8 = ColumnType<string, bigint | number | string>;
-
-export type Interval = ColumnType<
-  IPostgresInterval,
-  IPostgresInterval | number | string
->;
 
 export type Json = JsonValue;
 
@@ -34,17 +27,6 @@ export type JsonValue = JsonArray | JsonObject | JsonPrimitive;
 export type MissionsStatusEnum = "admin" | "independent" | "service";
 
 export type Numeric = ColumnType<string, number | string>;
-
-export type PgbossJobState =
-  | "active"
-  | "cancelled"
-  | "completed"
-  | "created"
-  | "expired"
-  | "failed"
-  | "retry";
-
-export type StartupsPhaseEnum = StartupPhase;
 
 export type Timestamp = ColumnType<Date, Date | string>;
 
@@ -230,78 +212,10 @@ export interface Organizations {
   uuid: Generated<string>;
 }
 
-export interface PgbossArchive {
-  archivedon: Generated<Timestamp>;
-  completedon: Timestamp | null;
-  createdon: Timestamp;
-  data: Json | null;
-  expirein: Interval;
-  id: string;
-  keepuntil: Timestamp;
-  name: string;
-  on_complete: boolean;
-  output: Json | null;
-  priority: number;
-  retrybackoff: boolean;
-  retrycount: number;
-  retrydelay: number;
-  retrylimit: number;
-  singletonkey: string | null;
-  singletonon: Timestamp | null;
-  startafter: Timestamp;
-  startedon: Timestamp | null;
-  state: PgbossJobState;
-}
-
-export interface PgbossJob {
-  completedon: Timestamp | null;
-  createdon: Generated<Timestamp>;
-  data: Json | null;
-  expirein: Generated<Interval>;
-  id: Generated<string>;
-  keepuntil: Generated<Timestamp>;
-  name: string;
-  on_complete: Generated<boolean>;
-  output: Json | null;
-  priority: Generated<number>;
-  retrybackoff: Generated<boolean>;
-  retrycount: Generated<number>;
-  retrydelay: Generated<number>;
-  retrylimit: Generated<number>;
-  singletonkey: string | null;
-  singletonon: Timestamp | null;
-  startafter: Generated<Timestamp>;
-  startedon: Timestamp | null;
-  state: Generated<PgbossJobState>;
-}
-
-export interface PgbossSchedule {
-  created_on: Generated<Timestamp>;
-  cron: string;
-  data: Json | null;
-  name: string;
-  options: Json | null;
-  timezone: string | null;
-  updated_on: Generated<Timestamp>;
-}
-
-export interface PgbossSubscription {
-  created_on: Generated<Timestamp>;
-  event: string;
-  name: string;
-  updated_on: Generated<Timestamp>;
-}
-
-export interface PgbossVersion {
-  cron_on: Timestamp | null;
-  maintained_on: Timestamp | null;
-  version: number;
-}
-
 export interface Phases {
   comment: string | null;
   end: Timestamp | null;
-  name: StartupsPhaseEnum;
+  name: string;
   start: Timestamp;
   startup_id: string;
   uuid: Generated<string>;
@@ -554,11 +468,6 @@ export interface DB {
   missions: Missions;
   missions_startups: MissionsStartups;
   organizations: Organizations;
-  "pgboss.archive": PgbossArchive;
-  "pgboss.job": PgbossJob;
-  "pgboss.schedule": PgbossSchedule;
-  "pgboss.subscription": PgbossSubscription;
-  "pgboss.version": PgbossVersion;
   phases: Phases;
   sentry_teams: SentryTeams;
   service_accounts: ServiceAccounts;
