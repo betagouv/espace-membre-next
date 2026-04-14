@@ -66,7 +66,8 @@ async function getBrevoEventsHandler(
       resp.secondary_email["error"] = e;
     }
   }
-  return Response.json(brevoEmailEventDataSchema.parse(resp));
+
+  return Response.json(brevoEmailEventDataSchema.safeParse(resp));
 }
 
 export const GET = withHttpErrorHandling(getBrevoEventsHandler);

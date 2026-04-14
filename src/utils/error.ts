@@ -214,7 +214,7 @@ export function withHttpErrorHandling<Args extends any[]>(
         );
       } else {
         // Handle unexpected errors\
-        console.error("Unexpected error", error);
+        console.error("Unexpected error", error.message);
         Sentry.captureException(error);
         return Response.json(
           {
