@@ -22,3 +22,25 @@ export async function getStartup(params: { ghid: string } | { uuid: string }) {
   return (startups.rows.length && startups.rows[0]) || undefined;
 }
 
+/**
+ * return true if the user is active in the given startup and is public agent
+ */
+export const isStartupAgent = async (memberId: string, startupId: string) => {
+  const isStartupAgentQuery = db
+    .selectFrom("users")
+    .select(["users.uuid", "users.legal_status"])
+    .rightJoin("missions", "missions.user_id", "users.uuid")
+    .rightJoin(
+      "missions_startups",
+      "missions_startups.mission_id",
+      "missions.uuid",
+    )
+    .where("users.uuid", "=", memberId)
+    .where("missions_startups.startup_id", "=", startupId)
+    .where("missions.start", "<=", new Date())
+    .where("missions.end", ">", new Date())
+    .where("users.legal_status", "in", ["fonctionnaire", "contractuel"]);
+
+  const result = await isStartupAgentQuery.execute();
+  return result.length > 0;
+};
