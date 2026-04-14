@@ -134,10 +134,10 @@ test("checking an onboarding item increases the progress bar on account and dash
     // Click the first enabled (non-disabled) checkbox — the first item
     // "onboarding-fiche-membre" is disabled+defaultChecked, so the first
     // enabled one is the next actual task
-    // const checkbox = await activePanel.locator(
-    //   "checkbox:not([disabled]) + label",
-    // );
-    await page.check("input[type=checkbox]:not([disabled]) + label");
+    const checkbox = await activePanel
+      .locator("input[type=checkbox]:not([disabled]) + label")
+      .first();
+    await checkbox.check();
 
     // Progress bar should update immediately in client state
     await expect(progressText).not.toHaveText(initialProgressStr!);
@@ -209,7 +209,10 @@ test("checking an offboarding item increases the progress bar on account and das
     // Check the first enabled checkbox in the offboarding list
 
     await page.waitForTimeout(500);
-    await page.check("input[type=checkbox]:not([disabled]) + label");
+    const checkbox = await activePanel
+      .locator("input[type=checkbox]:not([disabled]) + label")
+      .first();
+    await checkbox.check();
 
     await expect(progressText).not.toHaveText(initialProgressStr!);
     const accountProgress = parseInt((await progressText.textContent()) ?? "0");

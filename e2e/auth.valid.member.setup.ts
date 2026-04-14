@@ -8,8 +8,13 @@ setup("authenticate as valid.member through magic link", async ({ page }) => {
   await page.getByLabel("Mon email").fill("valid.member@betagouv.ovh");
   await page.getByText("Recevoir le lien de connexion").click();
 
-  // wait a while to get the latest email
-  await page.waitForTimeout(1000);
+  await expect(
+    page
+      .getByText(
+        "Un email avec un lien de connexion a été envoyé à ton adresse.",
+      )
+      .first(),
+  ).toBeVisible();
 
   // open maildev and click the first invitation link
   await page.goto("http://127.0.0.1:1080");
