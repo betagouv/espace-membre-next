@@ -1,4 +1,3 @@
-import { StartupsPhaseEnum } from "@/@types/db";
 import { incubatorSchemaType } from "@/models/incubator";
 import { CreateOrUpdateMatomoAccountDataSchemaType } from "@/models/jobs/services";
 import {
@@ -172,7 +171,7 @@ export type EmailStartupAskPhase = {
     startup: string;
     readablePhase: string;
     link: string;
-    phase: StartupsPhaseEnum;
+    phase: string;
   };
 };
 
