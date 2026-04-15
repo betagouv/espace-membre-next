@@ -23,9 +23,6 @@ export async function sendEmailToTeamsToCheckOnTeamComposition(
         join
           .onRef("phases.startup_id", "=", "startups.uuid")
           .on("phases.name", "in", [
-            "success",
-            "transfer",
-            "alumni",
             "transfere",
             "abandon",
             "abandon-investigation",
