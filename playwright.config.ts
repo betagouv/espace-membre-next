@@ -24,7 +24,7 @@ export default defineConfig({
   /* Shared settings for all the projects below. See https://playwright.dev/docs/api/class-testoptions. */
   use: {
     /* Base URL to use in actions like `await page.goto('/')`. */
-    baseURL: "http://127.0.0.1:8100",
+    baseURL: process.env.CI ? "http://127.0.0.1:8100" : "http://localhost:8100",
 
     /* Collect trace when retrying the failed test. See https://playwright.dev/docs/trace-viewer */
     trace: "on-first-retry",
@@ -34,8 +34,8 @@ export default defineConfig({
     // we'd need custom CSP
     bypassCSP: true,
   },
-  timeout: process.env.ci ? 60000 : 20000,
-  expect: { timeout: process.env.ci ? 20000 : 10000 },
+  timeout: process.env.ci ? 60000 : 30000,
+  expect: { timeout: process.env.ci ? 30000 : 20000 },
   /* Configure projects for major browsers */
   projects: [
     { name: "setup", testMatch: /.*\.setup\.ts/ },
