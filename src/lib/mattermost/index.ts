@@ -100,8 +100,10 @@ export async function searchUsers(params = {}) {
 }
 
 export async function getUserByEmail(email: string): Promise<MattermostUser> {
+  const encodedEmail = encodeURIComponent(email.trim());
+
   return await axios
-    .get(`${config.mattermostURL}/api/v4/users/email/${email}`, {
+    .get(`${config.mattermostURL}/api/v4/users/email/${encodedEmail}`, {
       ...getMattermostConfig(),
     })
     .then((response) => response.data);
