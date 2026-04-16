@@ -4,7 +4,7 @@ import { getServerSession } from "next-auth";
 
 import { updateMember } from "../updateMember";
 import { memberValidateInfoSchemaType } from "@/models/actions/member";
-import { EmailStatusCode } from "@/models/member";
+import { Domaine, EmailStatusCode } from "@/models/member";
 import { isPublicServiceEmail, isAdminEmail } from "@/server/controllers/utils";
 import { authOptions } from "@/utils/authoptions";
 import { AdminEmailNotAllowedError } from "@/utils/error";
@@ -23,12 +23,14 @@ export async function verifyNewMember(
   const hasPublicServiceEmail = await isPublicServiceEmail(
     memberData.secondary_email,
   );
+  const isAttributaire = memberData.domaine === Domaine.ATTRIBUTAIRE;
+
   if (hasPublicServiceEmail && isAdminEmail(memberData.secondary_email)) {
     throw new AdminEmailNotAllowedError();
   }
-  // should create a new email account if not a public sector email
 
-  const createNewEmail = !hasPublicServiceEmail;
+  // should create a new email account if not a public sector email and not an attributaire
+  const createNewEmail = !hasPublicServiceEmail && !isAttributaire;
 
   updateMember(
     memberData,
@@ -46,8 +48,8 @@ export async function verifyNewMember(
     session.user.id,
   );
 
-  // create an email if secondary_email is not a public sector email
-  if (!hasPublicServiceEmail) {
+  // create a new email if necessary
+  if (createNewEmail) {
     const bossClient = await getBossClientInstance();
     await bossClient.send(
       createDimailMailboxTopic,
