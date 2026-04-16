@@ -18,7 +18,6 @@ import ProgressBar from "../ProgressBar";
 import { getLatests as getLatestsProducts } from "@/lib/kysely/queries/startups";
 import { getLatests as getLatestsMembers } from "@/lib/kysely/queries/users";
 import { linkRegistry } from "@/utils/routes/registry";
-import { DimailEmailCreationInvite } from "../DimailEmailCreationInvite";
 import frontConfig from "@/frontConfig";
 
 type LatestProductsReturnType = Awaited<ReturnType<typeof getLatestsProducts>>;
@@ -34,7 +33,6 @@ export interface DashboardPageProps {
   offboarding?: {
     progress: number;
   };
-  showSuiteNumeriqueOnboardingPanel: boolean;
   secondaryEmail: string;
 }
 
@@ -157,9 +155,6 @@ export function DashboardPage(props: DashboardPageProps) {
             </Link>
           </div>
         </div>
-      )}
-      {props.showSuiteNumeriqueOnboardingPanel && (
-        <DimailEmailCreationInvite secondaryEmail={props.secondaryEmail} />
       )}
       <h2>Gérer mon compte</h2>
       <div className={fr.cx("fr-grid-row", "fr-grid-row--gutters")}>

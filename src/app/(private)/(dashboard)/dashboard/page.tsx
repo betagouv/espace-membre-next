@@ -46,7 +46,6 @@ export default async function Page(props) {
   const cookieStore = cookies();
   const surveyCookie = cookieStore.get(SURVEY_BOX_COOKIE_NAME);
   const surveyCookieValue = (surveyCookie && surveyCookie.value) || null;
-  const showSuiteNumeriqueOnboardingPanel = false;
 
   let onboarding: DashboardPageProps["onboarding"];
   let offboarding: DashboardPageProps["offboarding"];
@@ -77,7 +76,6 @@ export default async function Page(props) {
       onboarding={onboarding}
       offboarding={offboarding}
       secondaryEmail={userInfos.secondary_email}
-      showSuiteNumeriqueOnboardingPanel={showSuiteNumeriqueOnboardingPanel}
     />
   );
 }
