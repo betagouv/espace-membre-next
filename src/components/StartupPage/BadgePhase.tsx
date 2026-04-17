@@ -2,7 +2,7 @@ import { ReactElement } from "react";
 
 import { Badge } from "@codegouvfr/react-dsfr/Badge";
 
-import { StartupPhase } from "@/models/startup";
+import { PHASE_READABLE_NAME, StartupPhase } from "@/models/startup";
 
 export const BadgePhase = ({
   phase,
@@ -14,32 +14,42 @@ export const BadgePhase = ({
   const phases: Record<StartupPhase, ReactElement> = {
     investigation: (
       <Badge severity="new" className={className}>
-        Investigation
+        {PHASE_READABLE_NAME["investigation"]}
       </Badge>
     ),
     construction: (
       <Badge severity="info" className={className}>
-        Construction
+        {PHASE_READABLE_NAME["construction"]}
       </Badge>
     ),
     acceleration: (
       <Badge severity="info" className={className}>
-        Accéleration
+        {PHASE_READABLE_NAME["acceleration"]}
       </Badge>
     ),
-    transfer: (
+    perennisation: (
       <Badge severity="success" className={className}>
-        Transféré
+        {PHASE_READABLE_NAME["perennisation"]}
       </Badge>
     ),
-    success: (
+    transfere: (
       <Badge severity="success" className={className}>
-        Succès
+        {PHASE_READABLE_NAME["transfere"]}
       </Badge>
     ),
-    alumni: (
+    opere: (
+      <Badge severity="success" className={className}>
+        {PHASE_READABLE_NAME["opere"]}
+      </Badge>
+    ),
+    abandon: (
       <Badge severity="warning" className={className}>
-        Abandon
+        {PHASE_READABLE_NAME["abandon"]}
+      </Badge>
+    ),
+    "abandon-investigation": (
+      <Badge severity="warning" className={className}>
+        {PHASE_READABLE_NAME["abandon-investigation"]}
       </Badge>
     ),
   };

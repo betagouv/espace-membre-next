@@ -28,8 +28,9 @@ export const StartupHistory = ({
             (p) => p.name === StartupPhase[phase],
           );
           if (
-            (StartupPhase[phase] === "transfer" ||
-              StartupPhase[phase] === "alumni") &&
+            (StartupPhase[phase] === "transfere" ||
+              StartupPhase[phase] === "abandon-investigation" ||
+              StartupPhase[phase] === "abandon") &&
             !startupPhase
           )
             return null; // n'affiche pas les phases de transfert et alumni si elles n'existent pas

@@ -4,7 +4,6 @@
  */
 
 import type { ColumnType } from "kysely";
-import type { IPostgresInterval } from "postgres-interval";
 
 export type Generated<T> =
   T extends ColumnType<infer S, infer I, infer U>
@@ -12,11 +11,6 @@ export type Generated<T> =
     : ColumnType<T, T | undefined, T>;
 
 export type Int8 = ColumnType<string, bigint | number | string>;
-
-export type Interval = ColumnType<
-  IPostgresInterval,
-  IPostgresInterval | number | string
->;
 
 export type Json = JsonValue;
 
@@ -42,14 +36,6 @@ export type PgbossJobState =
   | "expired"
   | "failed"
   | "retry";
-
-export type StartupsPhaseEnum =
-  | "acceleration"
-  | "alumni"
-  | "construction"
-  | "investigation"
-  | "success"
-  | "transfer";
 
 export type Timestamp = ColumnType<Date, Date | string>;
 
@@ -235,6 +221,15 @@ export interface Organizations {
   uuid: Generated<string>;
 }
 
+export interface Phases {
+  comment: string | null;
+  end: Timestamp | null;
+  name: string;
+  start: Timestamp;
+  startup_id: string;
+  uuid: Generated<string>;
+}
+
 export interface PgbossArchive {
   archivedon: Generated<Timestamp>;
   completedon: Timestamp | null;
@@ -301,15 +296,6 @@ export interface PgbossVersion {
   cron_on: Timestamp | null;
   maintained_on: Timestamp | null;
   version: number;
-}
-
-export interface Phases {
-  comment: string | null;
-  end: Timestamp | null;
-  name: StartupsPhaseEnum;
-  start: Timestamp;
-  startup_id: string;
-  uuid: Generated<string>;
 }
 
 export interface SentryTeams {

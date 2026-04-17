@@ -74,7 +74,7 @@ WHERE fs.startup_id IS NULL AND NOT EXISTS (
         SELECT 1 
         FROM phases p 
         WHERE p.startup_id = s.uuid 
-        AND (p.name = 'transfer' OR p.name = 'success' OR p.name = 'alumni')
+        AND (p.name = 'transfere' OR p.name = 'abandon' OR p.name = 'abandon-investigation')
     );
 `,
     [],
