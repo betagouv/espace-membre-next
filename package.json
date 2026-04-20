@@ -15,7 +15,7 @@
     "migrate": "NODE_OPTIONS='--import tsx/esm' knex migrate:latest",
     "rolldown": "NODE_OPTIONS='--import tsx/esm' knex migrate:down",
     "e2e": "npx playwright test",
-    "test": "NODE_ENV=test ts-mocha --paths -p tsconfig.json src/**/*.spec.ts __tests__/*.ts --exit --require ts-node/register --require ts-node/esm --icu-data-dir=./node_modules/full-icu --require ./__tests__/env-setup.ts --timeout 30000",
+    "test": "NODE_ENV=test ts-mocha src/**/*.spec.ts __tests__/*.ts",
     "seed": "NODE_OPTIONS='--import tsx/esm' knex seed:run",
     "predev": "only-include-used-icons",
     "prebuild": "only-include-used-icons",
