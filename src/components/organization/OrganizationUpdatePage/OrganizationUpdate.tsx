@@ -2,12 +2,10 @@
 import React from "react";
 
 import { fr } from "@codegouvfr/react-dsfr";
-import * as Sentry from "@sentry/nextjs";
 
 import { OrganizationForm } from "../OrganizationForm/OrganizationForm";
-import { updateOrganization } from "@/app/api/organizations/actions/updateOrganization";
+import { safeUpdateOrganization } from "@/app/api/organizations/actions/updateOrganization";
 import { organizationUpdateSchemaType } from "@/models/actions/organization";
-import { Option } from "@/models/misc";
 import { sponsorSchemaType } from "@/models/sponsor";
 import { routeTitles } from "@/utils/routes/routeTitles";
 
@@ -20,22 +18,12 @@ export const OrganizationUpdate = (props: OrganizationUpdateProps) => {
   const css = ".panel { overflow: hidden; width: auto; min-height: 100vh; }";
 
   const save = async (data: organizationUpdateSchemaType) => {
-    try {
-      await updateOrganization({
-        organization: data,
-        organizationUuid: props.organization.uuid,
-      });
-      window.scrollTo({ top: 20, behavior: "smooth" });
-      return {
-        // ...resp,
-        isUpdate: true,
-      };
-    } catch (e) {
-      Sentry.captureException(e);
-      console.error(e);
-      window.scrollTo({ top: 20, behavior: "smooth" });
-      throw e;
-    }
+    const result = await safeUpdateOrganization({
+      organization: data,
+      organizationUuid: props.organization.uuid,
+    });
+    window.scrollTo({ top: 20, behavior: "smooth" });
+    return result;
   };
 
   return (
