@@ -3,10 +3,7 @@ FROM node:20-slim
 RUN apt-get update && \
     apt-get upgrade -y && \
     apt-get install --no-install-recommends -y \
-    build-essential \
-    libpq-dev \
-    libyaml-dev \
-    git
+    build-essential
 
 WORKDIR /app
 
