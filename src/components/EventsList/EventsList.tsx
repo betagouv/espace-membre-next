@@ -3,8 +3,17 @@ import Card from "@codegouvfr/react-dsfr/Card";
 import { format } from "date-fns";
 import { fr as frLocale } from "date-fns/locale/fr";
 import MarkdownIt from "markdown-it";
-import { CalendarResponse } from "node-ical";
+import { CalendarComponent, CalendarResponse, ParameterValue, VEvent } from "node-ical";
 import "./EventsList.css";
+
+function isVEvent(event: CalendarComponent | undefined): event is VEvent {
+  return !!event && event.type === "VEVENT";
+}
+
+function paramStr(val: ParameterValue | undefined): string {
+  if (!val) return "";
+  return typeof val === "string" ? val : val.val;
+}
 
 const mdParser = new MarkdownIt({
   html: true,
@@ -30,23 +39,20 @@ export function EventsList({ events }: { events: CalendarResponse }) {
     "tester l'accessibilité",
     "coacher l'accessibilité",
   ];
-  const sortedEvents = Object.entries(events)
-    .filter(
-      ([key, event]) => event.type === "VEVENT" && event.start >= new Date(),
-    )
+  const sortedEvents = (
+    Object.entries(events) as [string, CalendarComponent | undefined][]
+  )
+    .filter((entry): entry is [string, VEvent] => isVEvent(entry[1]))
     .filter(
       ([key, event]) =>
-        event.type === "VEVENT" &&
+        event.start >= new Date() &&
         !excludedKeywords.some((keyword) =>
-          event.summary.toLowerCase().includes(keyword.toLowerCase()),
+          paramStr(event.summary).toLowerCase().includes(keyword.toLowerCase()),
         ),
     )
     .sort(
-      ([key1, event1], [key2, event2]) =>
-        (event1.type === "VEVENT" &&
-          event2.type === "VEVENT" &&
-          event1.start.getTime() - event2.start.getTime()) ||
-        0,
+      ([, event1], [, event2]) =>
+        event1.start.getTime() - event2.start.getTime(),
     );
 
   return (
@@ -55,9 +61,6 @@ export function EventsList({ events }: { events: CalendarResponse }) {
       className={fr.cx("fr-grid-row", "fr-grid-row--gutters")}
     >
       {sortedEvents.map(([key, event]) => {
-        if (event.type !== "VEVENT") {
-          return null;
-        }
         return (
           <Card
             key={key}
@@ -69,7 +72,7 @@ export function EventsList({ events }: { events: CalendarResponse }) {
                   whiteSpace: "break-spaces",
                 }}
                 dangerouslySetInnerHTML={{
-                  __html: mdParser.renderInline(event.description || ""),
+                  __html: mdParser.renderInline(paramStr(event.description)),
                 }}
               />
             }
@@ -82,7 +85,7 @@ export function EventsList({ events }: { events: CalendarResponse }) {
               </div>
             }
             size="medium"
-            title={event.summary}
+            title={paramStr(event.summary)}
             titleAs="h2"
             endDetail={
               event.location ? (
@@ -92,7 +95,7 @@ export function EventsList({ events }: { events: CalendarResponse }) {
                     whiteSpace: "break-spaces",
                   }}
                   dangerouslySetInnerHTML={{
-                    __html: `📍 ${mdParser.renderInline(event.location || "")}`,
+                    __html: `📍 ${mdParser.renderInline(paramStr(event.location))}`,
                   }}
                 />
               ) : null
