@@ -7,10 +7,6 @@ import { syncMatomoAccounts } from "./serviceScheduler/syncMatomoAccounts";
 import { syncSentryAccounts } from "./serviceScheduler/syncSentryAccounts";
 import { sendEmailToStartupToUpdatePhase } from "./startups/sendEmailToStartupToUpdatePhase";
 import { unblockEmailsThatAreActive } from "./unblockEmailsThatAreActive";
-import {
-  deleteMatomoAccount,
-  deleteSentryAccount,
-} from "./userContractEndingScheduler";
 import { matomoClient } from "../config/matomo.config";
 import { sentryClient } from "../config/sentry.config";
 import config from "@/server/config";
@@ -45,20 +41,6 @@ const startupJobs: EspaceMembreCronJobType[] = [
 ];
 
 const servicesJobs: EspaceMembreCronJobType[] = [
-  {
-    cronTime: "15 19 * * *", // Every day at 19:15
-    onTick: deleteMatomoAccount,
-    isActive: !!config.FEATURE_DELETE_MATOMO_ACCOUNT,
-    name: "deleteMatomoAccount",
-    description: "Supprime les comptes matomos des membres expirés (30 days)",
-  },
-  {
-    cronTime: "45 15 * * *", // Every day at 15:45
-    onTick: deleteSentryAccount,
-    isActive: !!config.FEATURE_DELETE_SENTRY_ACCOUNT,
-    name: "deleteSentryAccount",
-    description: "Supprime les comptes sentry des membres expirés (30 days)",
-  },
   {
     cronTime: process.env.SYNC_MATOMO_ACCOUNT_CRON || "30 14 * * *", // Every day at 14:30
     onTick: () => syncMatomoAccounts(matomoClient),
