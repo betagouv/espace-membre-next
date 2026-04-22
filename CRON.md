@@ -5,8 +5,6 @@
 | ✅      | `10 10 * * *`                | `syncMattermostUserWithMattermostMemberInfosTable` | Add new mattermost user to mattermost_member_info table                       |
 | ❌      | `0 5 * * 1`                  | `createMailingListForStartups`                     | Créé des mailings-list OVH pour les startups                                  |
 | ❌      | `30 09 01 Jan,Apr,Jul,Oct *` | `sendEmailToStartupToUpdatePhase`                  | Envoie par mail une relance pour mise à jour de la phase de la SE             |
-| ✅      | `15 19 * * *`                | `deleteMatomoAccount`                              | Supprime les comptes matomos des membres expirés (30 days)                    |
-| ✅      | `45 15 * * *`                | `deleteSentryAccount`                              | Supprime les comptes sentry des membres expirés (30 days)                     |
 | ✅      | `30 14 * * *`                | `syncMatomoAccounts`                               | Sync les comptes matomo des membres actifs                                    |
 | ✅      | `30 14 * * *`                | `syncSentryAccounts`                               | Sync les comptes sentry des membres actifs                                    |
 | ✅      | `0 0 * * 1`                  | `Unblock blacklisted email`                        | Unblock emails from MAILING_LIST_NEWSLETTER Brevo mailing-list                |

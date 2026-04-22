@@ -62,27 +62,4 @@ export async function syncMatomoAccounts(matomoClient: Matomo | FakeMatomo) {
       `Inserted or updated ${result.numInsertedOrUpdatedRows} matomo users`,
     );
   }
-
-  const matomoUserIdsInDb = (
-    await db
-      .selectFrom("service_accounts")
-      .select("service_user_id")
-      .where("account_type", "=", SERVICES.MATOMO)
-      .where("status", "=", ACCOUNT_SERVICE_STATUS.ACCOUNT_FOUND)
-      .execute()
-  ).map((u) => u.service_user_id);
-  const matomoUserIds = matomoUsers.map(
-    (matomoUser) => matomoUser.serviceUserId,
-  );
-  const accountsToRemoveFromDb = _.difference(matomoUserIdsInDb, matomoUserIds);
-  if (accountsToRemoveFromDb.length > 0) {
-    // Ensure the array is not empty
-    const deletedResult = await db
-      .deleteFrom("service_accounts")
-      .where("service_user_id", "in", accountsToRemoveFromDb)
-      .executeTakeFirstOrThrow();
-    console.log(
-      `Deleted ${deletedResult.numDeletedRows} matomo service_accounts`,
-    );
-  }
 }
