@@ -75,6 +75,7 @@ export function DepartureReminderInXDaysEmail({
           pour connaître toutes les étapes à suivre avant ton départ. Pour
           valider tes derniers services faits, il est obligatoire de compléter
           ta checklist de désembarquement.
+          Pour connaitre tous les détails de ton parcours de désembarquement, RDV [ici](https://doc.incubateur.net/communaute/travailler-chez-beta.gouv.fr/je-quitte-beta.gouv.fr)
         </p>
 
         {jobs.length > 0 && (
