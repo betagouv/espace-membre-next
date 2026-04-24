@@ -32,24 +32,7 @@ const testUtils = {
     );
     return token;
   },
-  mockSlackSecretariat() {
-    if (config.CHAT_WEBHOOK_URL_SECRETARIAT) {
-      return nock(config.CHAT_WEBHOOK_URL_SECRETARIAT)
-        .post(/.*/)
-        .reply(200)
-        .persist();
-    }
-    throw new Error("config.CHAT_WEBHOOK_URL_SECRETARIAT not defined");
-  },
-  mockSlackGeneral() {
-    if (config.CHAT_WEBHOOK_URL_GENERAL) {
-      return nock(config.CHAT_WEBHOOK_URL_GENERAL)
-        .post(/.*/)
-        .reply(200)
-        .persist();
-    }
-    throw new Error("config.CHAT_WEBHOOK_URL_GENERAL not defined");
-  },
+
   cleanMocks() {
     nock.cleanAll();
     nock.enableNetConnect();
