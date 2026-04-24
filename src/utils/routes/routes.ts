@@ -46,7 +46,6 @@ export const routes = createRouter({
     (p) => `/startups/${p.startupId}/files`,
   ),
   startupCreate: defineRoute({}, (p) => `/startups/create-form`),
-  adminMattermost: defineRoute({}, (p) => `/admin/mattermost`),
   home: defineRoute({}, (p) => `/`),
   login: defineRoute({}, (p) => `/login`),
   onboarding: defineRoute({}, (p) => `/onboarding`),

@@ -1,7 +1,6 @@
 import { getEventListByUsername } from "@/lib/events";
 import { db } from "@/lib/kysely";
 import { getUserBasicInfo, getUserStartups } from "@/lib/kysely/queries/users";
-import { getMattermostUserInfo } from "@/lib/mattermost";
 import { getAvatarUrl } from "@/lib/s3";
 import { memberChangeToModel, memberBaseInfoToModel } from "@/models/mapper";
 import { matomoServiceInfoToModel } from "@/models/mapper/matomoMapper";
@@ -20,15 +19,7 @@ export const getUserInformations = async (id) => {
 
   const baseInfo = memberBaseInfoToModel(dbUser);
 
-  let { mattermostUser, mattermostUserInTeamAndActive } =
-    await getMattermostUserInfo(dbUser?.primary_email);
   const startups = await getUserStartups(dbUser.uuid);
-
-  const mattermostInfo = {
-    hasMattermostAccount: !!mattermostUser,
-    isInactiveOrNotInTeam: !mattermostUserInTeamAndActive,
-    mattermostUserName: mattermostUser && mattermostUser.username,
-  };
 
   const matomoInfo = await db
     .selectFrom("service_accounts")
@@ -60,7 +51,6 @@ export const getUserInformations = async (id) => {
     avatar,
     baseInfo,
     startups,
-    mattermostInfo,
     matomoInfo,
     sentryInfo,
   };

@@ -1,7 +1,6 @@
 // NOTE: if you update this file, make sure you update the jobs
 // documentation file (CRON.md) file with `make cron-docs`.
 
-import { syncMattermostUserWithMattermostMemberInfosTable } from "./mattermostScheduler/syncMattermostUserWithMattermostMemberInfosTable";
 import { recreateEmailIfUserActive } from "./recreateEmailIfUserActive";
 import { syncMatomoAccounts } from "./serviceScheduler/syncMatomoAccounts";
 import { syncSentryAccounts } from "./serviceScheduler/syncSentryAccounts";
@@ -57,22 +56,9 @@ const servicesJobs: EspaceMembreCronJobType[] = [
   },
 ];
 
-const synchronizationJobs: EspaceMembreCronJobType[] = [
-  {
-    cronTime: "10 10 * * *", // Every day at 10:10
-    onTick: syncMattermostUserWithMattermostMemberInfosTable,
-    start: true,
-    timeZone: "Europe/Paris",
-    isActive: true,
-    name: "syncMattermostUserWithMattermostMemberInfosTable",
-    description: "Add new mattermost user to mattermost_member_info table",
-  },
-];
-
 export const espaceMembreCronJobs: EspaceMembreCronJobType[] = [
   ...startupJobs,
   ...servicesJobs,
-  ...synchronizationJobs,
   {
     cronTime: "0 0 * * 1", // every week at 0:00 on monday
     onTick: unblockEmailsThatAreActive,

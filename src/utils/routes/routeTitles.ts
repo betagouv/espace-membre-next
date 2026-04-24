@@ -27,7 +27,6 @@ export const routeTitles: {
     return `Modifier la fiche de ${id}`;
   },
   organizationCreate: () => "Créer une fiche organisation sponsor",
-  adminMattermost: () => "Administration mattermost",
   home: () => "",
   signIn: () => "Me connecter",
   login: () => "Me connecter",

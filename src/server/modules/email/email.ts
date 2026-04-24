@@ -12,12 +12,6 @@ export enum EMAIL_TYPES {
   EMAIL_LOGIN = "EMAIL_LOGIN",
   EMAIL_CREATED_EMAIL = "EMAIL_CREATED_EMAIL",
   EMAIL_CREATED_DIMAIL = "EMAIL_CREATED_DIMAIL",
-  EMAIL_MATTERMOST_ACCOUNT_CREATED = "EMAIL_MATTERMOST_ACCOUNT_CREATED",
-  EMAIL_ENDING_CONTRACT_2_DAYS = "EMAIL_ENDING_CONTRACT_2_DAYS",
-  EMAIL_ENDING_CONTRACT_15_DAYS = "EMAIL_ENDING_CONTRACT_15_DAYS",
-  EMAIL_ENDING_CONTRACT_30_DAYS = "EMAIL_ENDING_CONTRACT_30_DAYS",
-  EMAIL_NO_MORE_CONTRACT_1_DAY = "EMAIL_NO_MORE_CONTRACT_1_DAY",
-  EMAIL_NO_MORE_CONTRACT_30_DAY = "EMAIL_NO_MORE_CONTRACT_30_DAY",
   EMAIL_USER_SHOULD_UPDATE_INFO = "EMAIL_USER_SHOULD_UPDATE_INFO",
   EMAIL_NEWSLETTER = "EMAIL_NEWSLETTER",
   EMAIL_NEW_MEMBER_PR = "EMAIL_NEW_MEMBER_PR",
@@ -81,41 +75,6 @@ export type EmailCreatedDimail = {
     password: string;
     email: string;
     webmailUrl: string;
-  };
-};
-
-export type EmailMattermostAccountCreated = {
-  type: EMAIL_TYPES.EMAIL_MATTERMOST_ACCOUNT_CREATED;
-  variables: {
-    resetPasswordLink: string;
-    fullname: string;
-    email: string;
-  };
-};
-
-export type EmailEndingContract = {
-  type:
-    | EMAIL_TYPES.EMAIL_ENDING_CONTRACT_30_DAYS
-    | EMAIL_TYPES.EMAIL_ENDING_CONTRACT_15_DAYS
-    | EMAIL_TYPES.EMAIL_ENDING_CONTRACT_2_DAYS;
-  variables: {
-    user: {
-      userInfos: memberPublicInfoSchemaType;
-      mattermostUsername: string;
-    };
-    endDate: Date;
-    jobs: [];
-    days: 2 | 15 | 30;
-  };
-};
-
-export type EmailNoMoreContract = {
-  type:
-    | EMAIL_TYPES.EMAIL_NO_MORE_CONTRACT_1_DAY
-    | EMAIL_TYPES.EMAIL_NO_MORE_CONTRACT_30_DAY;
-  variables: {
-    user: memberBaseInfoSchemaType;
-    days: 1 | 30;
   };
 };
 
@@ -268,9 +227,6 @@ export type EmailVariants =
   | EmailLogin
   | EmailCreatedEmail
   | EmailCreatedDimail
-  | EmailMattermostAccountCreated
-  | EmailEndingContract
-  | EmailNoMoreContract
   | EmailUserShouldUpdateInfo
   | EmailNewsletter
   | EmailNewMemberPR
@@ -419,29 +375,6 @@ export const EmailDocumentation: Record<
   },
   [EMAIL_TYPES.EMAIL_CREATED_DIMAIL]: {
     description: "Email envoyé lors de la création d’une boite mail Dimail.",
-  },
-  [EMAIL_TYPES.EMAIL_MATTERMOST_ACCOUNT_CREATED]: {
-    description: "Notification de création d’un compte Mattermost.",
-  },
-  [EMAIL_TYPES.EMAIL_ENDING_CONTRACT_2_DAYS]: {
-    description:
-      "Alerte indiquant que le contrat d’un membre se termine dans 2 jours.",
-  },
-  [EMAIL_TYPES.EMAIL_ENDING_CONTRACT_15_DAYS]: {
-    description:
-      "Alerte indiquant que le contrat d’un membre se termine dans 15 jours.",
-  },
-  [EMAIL_TYPES.EMAIL_ENDING_CONTRACT_30_DAYS]: {
-    description:
-      "Alerte indiquant que le contrat d’un membre se termine dans 30 jours.",
-  },
-  [EMAIL_TYPES.EMAIL_NO_MORE_CONTRACT_1_DAY]: {
-    description:
-      "Notification qu’un membre n’aura plus de contrat actif demain.",
-  },
-  [EMAIL_TYPES.EMAIL_NO_MORE_CONTRACT_30_DAY]: {
-    description:
-      "Notification qu’un membre n’aura plus de contrat actif dans 30 jours.",
   },
   [EMAIL_TYPES.EMAIL_USER_SHOULD_UPDATE_INFO]: {
     description:

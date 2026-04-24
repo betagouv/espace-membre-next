@@ -3,7 +3,6 @@ import { isBefore, isAfter } from "date-fns";
 
 import { getAllIncubators } from "@/lib/kysely/queries/incubators";
 import { getUserBasicInfo, getUserStartups } from "@/lib/kysely/queries/users";
-import { getMattermostUserInfo } from "@/lib/mattermost";
 import { getAvatarUrl } from "@/lib/s3";
 import { memberBaseInfoToModel } from "@/models/mapper";
 import { isUserActive } from "@/utils/member";
@@ -22,8 +21,6 @@ export async function GET(
   const incubators = await getAllIncubators();
   const member = memberBaseInfoToModel(dbUser);
   const avatar = await getAvatarUrl(dbUser.username);
-  const mattermost =
-    (await getMattermostUserInfo(dbUser?.primary_email)) ?? null;
   const isActive = isUserActive(member.missions);
 
   const teams = member.teams
@@ -55,7 +52,6 @@ export async function GET(
   return Response.json({
     ...member,
     avatar: avatar ?? null,
-    mattermost,
     teams,
     startups,
     isActive,

@@ -20,59 +20,6 @@ const legacyEmailStatuses = P.union(
   EmailStatusCode.EMAIL_UNSET,
 );
 
-const mattermostInfoRow = (
-  mattermostInfo: NonNullable<MemberPageProps["mattermostInfo"]>,
-) => {
-  return [
-    "Compte Mattermost",
-    match(mattermostInfo)
-      .when(
-        (info) =>
-          info.hasMattermostAccount &&
-          typeof info.mattermostUserName === "string",
-        (info) => (
-          <div>
-            {match(info.isInactiveOrNotInTeam)
-              .with(true, () => (
-                <Badge severity="error" as="span">
-                  Inactif
-                </Badge>
-              ))
-              .with(false, () => (
-                <Badge severity="success" as="span">
-                  Actif
-                </Badge>
-              ))
-              .exhaustive()}
-          </div>
-        ),
-      )
-      .otherwise(() => (
-        <Badge severity="warning" as="span">
-          introuvable
-        </Badge>
-      )),
-    match(mattermostInfo)
-      .when(
-        (info) =>
-          info.hasMattermostAccount &&
-          typeof info.mattermostUserName === "string",
-        (info) => (
-          <a
-            target="_blank"
-            href={`https://mattermost.incubateur.net/betagouv/messages/@${info.mattermostUserName}`}
-          >
-            @{info.mattermostUserName}
-          </a>
-        ),
-      )
-      .otherwise(
-        () =>
-          "Le compte est introuvable : soit il n'existe pas, soit il est désactivé, soit il est lié à une adresse email inconnue.",
-      ),
-  ];
-};
-
 const emailStatusRow = (
   emailInfos: MemberPageProps["emailInfos"],
   userInfos: MemberPageProps["userInfos"],
@@ -285,7 +232,6 @@ const sentryInfoRow = (sentry: MemberPageProps["sentryInfo"]) => {
 export const MemberStatus = ({
   isExpired,
   emailInfos,
-  mattermostInfo,
   userInfos,
   matomoInfo,
   sentryInfo,
@@ -293,7 +239,6 @@ export const MemberStatus = ({
 }: {
   isExpired: MemberPageProps["isExpired"];
   emailInfos: MemberPageProps["emailInfos"];
-  mattermostInfo: MemberPageProps["mattermostInfo"];
   userInfos: MemberPageProps["userInfos"];
   matomoInfo: MemberPageProps["matomoInfo"];
   sentryInfo: MemberPageProps["sentryInfo"];
@@ -323,8 +268,6 @@ export const MemberStatus = ({
     userInfos.primary_email?.endsWith("@beta.gouv.fr") &&
       emailInfos &&
       emailStatusRow(emailInfos, userInfos),
-    // Mattermost account status
-    mattermostInfo && mattermostInfoRow(mattermostInfo),
     // Matomo account status
     MatomoInfoRow(matomoInfo, isCurrentUser),
     // Sentry account status
