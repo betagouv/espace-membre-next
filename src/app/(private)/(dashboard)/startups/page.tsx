@@ -33,8 +33,9 @@ export default async function Page() {
       <div className={fr.cx("fr-col-12")}>
         <h2>Fiches produits</h2>
         <StartupList startups={startups} incubators={incubators} />
-        <hr />
-        <h2>Documents partagés</h2>
+        <br />
+        <br />
+        <br /> <h2>Documents partagés</h2>
         <SearchFiles files={files} />
       </div>
     </div>

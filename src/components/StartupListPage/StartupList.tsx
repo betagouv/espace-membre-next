@@ -45,7 +45,9 @@ const getStartupRow = ({
       </div>
       {startup.pitch}
       <br />
-      <BadgePhase phase={startup.phase} className={fr.cx("fr-mt-1w")} />
+      {startup.phase && (
+        <BadgePhase phase={startup.phase} className={fr.cx("fr-mt-1w")} />
+      )}
     </>,
     // thématiques
     <>
@@ -53,11 +55,7 @@ const getStartupRow = ({
         <div className={fr.cx("fr-mb-1w")}>
           <i
             title="Thèmes"
-            className={fr.cx(
-              "fr-icon--sm",
-              "fr-icon-git-repository-line",
-              "fr-mr-1w",
-            )}
+            className={fr.cx("fr-icon--sm", "fr-icon-file-line", "fr-mr-1w")}
           ></i>
           {startup.thematiques.map((thematique, idx, all) => (
             <span key={thematique}>
@@ -295,37 +293,43 @@ export const StartupList = ({ startups, incubators }: StartupListProps) => {
         }
       />
 
-      <Table
-        fixed
-        noCaption
-        headers={headers.map((header, index) => (
-          <div key={header}>{header}</div>
-        ))}
-        data={results
-          .slice(
-            (currentPage - 1) * pageSize,
-            (currentPage - 1) * pageSize + pageSize,
-          )
-          .map((r) =>
-            getStartupRow({
-              startup: r,
-              onThematiqueClick: onThematiqueClick,
-              onUserTypeClick: onUserTypeClick,
-              onIncubatorClick: onIncubatorClick,
-            }),
-          )}
-      />
-      <Pagination
-        showFirstLast={false}
-        count={pageCount}
-        defaultPage={currentPage}
-        getPageLinkProps={(number) => ({
-          href: "#",
-          onClick: (e) => {
-            setCurrentPage(number);
-          },
-        })}
-      />
+      {results.length ? (
+        <>
+          <Table
+            fixed
+            noCaption
+            headers={headers.map((header, index) => (
+              <div key={header}>{header}</div>
+            ))}
+            data={results
+              .slice(
+                (currentPage - 1) * pageSize,
+                (currentPage - 1) * pageSize + pageSize,
+              )
+              .map((r) =>
+                getStartupRow({
+                  startup: r,
+                  onThematiqueClick: onThematiqueClick,
+                  onUserTypeClick: onUserTypeClick,
+                  onIncubatorClick: onIncubatorClick,
+                }),
+              )}
+          />
+          <Pagination
+            showFirstLast={false}
+            count={pageCount}
+            defaultPage={currentPage}
+            getPageLinkProps={(number) => ({
+              href: "#",
+              onClick: (e) => {
+                setCurrentPage(number);
+              },
+            })}
+          />
+        </>
+      ) : filters.length ? (
+        <div className={fr.cx("fr-mt-4w")}>Aucun résultat</div>
+      ) : null}
     </>
   );
 };
