@@ -15,7 +15,7 @@ jobs:
             - uses: actions/setup-node@v4
               with:
                   node-version: 22
-                  npm-version: 11
+                  npm-version: 10.9
             - name: Install dependencies
               run: |
                   npm ci
