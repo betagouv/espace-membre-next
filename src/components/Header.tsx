@@ -1,15 +1,17 @@
 "use client";
 import React from "react";
 
+import { routes } from "@/utils/routes/routes";
+
 import { Header, HeaderProps } from "@codegouvfr/react-dsfr/Header";
 import { usePathname, useRouter } from "next/navigation";
 import { signOut, useSession } from "next-auth/react";
 import { v4 as uuidv4 } from "uuid";
 
 import { useLiveChat } from "@/components/live-chat/useLiveChat";
-import { linkRegistry } from "@/utils/routes/registry";
 import { routeTitles } from "@/utils/routes/routeTitles";
-import { hasPathnameThisRoot } from "@/utils/url";
+
+const isCurrentPath = (pathname, rootPath) => pathname.startsWith(rootPath);
 
 const MainHeader = () => {
   const router = useRouter();
@@ -17,21 +19,21 @@ const MainHeader = () => {
   const { showLiveChat, isLiveChatLoading } = useLiveChat();
   const pathname = usePathname();
 
-  const dashboardLink = linkRegistry.get("dashboard", undefined);
-  const accountLink = linkRegistry.get("account", undefined);
-  const communityLink = linkRegistry.get("community", undefined);
-  const startupListLink = linkRegistry.get("startupList", undefined);
-  const incubatorListLink = linkRegistry.get("incubatorList", undefined);
-  const formationListLink = linkRegistry.get("formationList", undefined);
-  const eventsListLink = linkRegistry.get("eventsList", undefined);
-  const metabaseLink = linkRegistry.get("metabase", undefined);
+  const dashboardLink = routes["dashboard"]();
+  const accountLink = routes["account"]();
+  const communityLink = routes["community"]();
+  const startupListLink = routes["startupList"]();
+  const incubatorListLink = routes["incubatorList"]();
+  const formationListLink = routes["formationList"]();
+  const eventsListLink = routes["eventsList"]();
+  const metabaseLink = routes["metabase"]();
   const quickAccessItems: HeaderProps.QuickAccessItem[] = [];
   if (session) {
     quickAccessItems.push({
       iconId: "fr-icon-account-line",
       text: session?.user?.name,
       linkProps: {
-        href: linkRegistry.get("account", undefined),
+        href: routes["account"](),
       },
     });
     quickAccessItems.push({
@@ -105,7 +107,7 @@ const MainHeader = () => {
               target: "_self",
             },
             text: routeTitles.dashboard(),
-            isActive: hasPathnameThisRoot(pathname, dashboardLink),
+            isActive: isCurrentPath(pathname, dashboardLink),
           },
           {
             linkProps: {
@@ -113,60 +115,48 @@ const MainHeader = () => {
               target: "_self",
             },
             text: routeTitles.account(),
-            isActive: hasPathnameThisRoot(pathname, accountLink),
+            isActive: isCurrentPath(pathname, accountLink),
           },
           {
             isActive:
-              hasPathnameThisRoot(pathname, incubatorListLink) ||
-              hasPathnameThisRoot(
-                pathname,
-                linkRegistry.get("organizationList", undefined),
-              ) ||
-              hasPathnameThisRoot(
-                pathname,
-                linkRegistry.get("teamList", undefined),
-              ),
+              isCurrentPath(pathname, incubatorListLink) ||
+              isCurrentPath(pathname, routes["organizationList"]()) ||
+              isCurrentPath(pathname, routes["teamList"]()),
             text: "Communauté",
             menuLinks: [
               {
                 linkProps: {
-                  href: linkRegistry.get("community", undefined),
+                  href: routes["community"](),
                 },
                 text: "Membres",
-                isActive: hasPathnameThisRoot(pathname, communityLink),
+                isActive: isCurrentPath(pathname, communityLink),
               },
               {
                 linkProps: {
-                  href: linkRegistry.get("organizationList", undefined),
+                  href: routes["organizationList"](),
                 },
-                isActive: hasPathnameThisRoot(
-                  pathname,
-                  linkRegistry.get("organizationList", undefined),
-                ),
+                isActive: isCurrentPath(pathname, routes["organizationList"]()),
                 text: "Sponsors",
               },
               {
                 linkProps: {
-                  href: linkRegistry.get("teamList", undefined),
+                  href: routes["teamList"](),
                 },
                 text: "Équipes incubateur",
-                isActive: hasPathnameThisRoot(
-                  pathname,
-                  linkRegistry.get("teamList", undefined),
-                ),
+                isActive: isCurrentPath(pathname, routes["teamList"]()),
               },
               {
                 linkProps: {
                   href: incubatorListLink,
                 },
-                isActive: hasPathnameThisRoot(pathname, incubatorListLink),
+                isActive: isCurrentPath(pathname, incubatorListLink),
                 text: "Incubateurs",
               },
               {
                 linkProps: {
                   href: metabaseLink,
                 },
-                isActive: hasPathnameThisRoot(pathname, metabaseLink),
+                isActive: isCurrentPath(pathname, metabaseLink),
                 text: "Observatoire",
               },
             ],
@@ -175,7 +165,7 @@ const MainHeader = () => {
             linkProps: {
               href: startupListLink,
             },
-            isActive: hasPathnameThisRoot(pathname, startupListLink),
+            isActive: isCurrentPath(pathname, startupListLink),
             text: "Produits",
           },
           {
@@ -184,7 +174,7 @@ const MainHeader = () => {
               target: "_self",
             },
             text: "Formations",
-            isActive: hasPathnameThisRoot(pathname, formationListLink),
+            isActive: isCurrentPath(pathname, formationListLink),
           },
           {
             linkProps: {
@@ -192,7 +182,7 @@ const MainHeader = () => {
               target: "_self",
             },
             text: "Événements",
-            isActive: hasPathnameThisRoot(pathname, eventsListLink),
+            isActive: isCurrentPath(pathname, eventsListLink),
           },
           {
             linkProps: {

@@ -22,7 +22,7 @@ import {
 } from "./utils";
 import AutoComplete from "../AutoComplete";
 import { isUserActive } from "@/utils/member";
-import { linkRegistry } from "@/utils/routes/registry";
+import { routes } from "@/utils/routes/routes";
 
 // to fix ReferenceError: window is not defined
 const MapComponent = dynamic(() => import("../Map").then((mod) => mod.Map), {
@@ -52,7 +52,7 @@ const getUserRow = ({
         label: `${t.name}${incub ? ` - ${incub.label}` : ""}`,
         value: t.uuid,
         url: incub?.value
-          ? linkRegistry.get("incubatorDetails", {
+          ? routes["incubatorDetails"]({
               incubatorId: incub?.value,
             })
           : "",
