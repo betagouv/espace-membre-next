@@ -193,10 +193,6 @@ export default async function Page() {
           ...sampleMember.member.userInfos,
           primary_email_status: EmailStatusCode.EMAIL_DELETED,
         }}
-        mattermostInfo={{
-          hasMattermostAccount: true,
-          isInactiveOrNotInTeam: true,
-        }}
       />
       <hr />
       <h2>Editable member</h2>
