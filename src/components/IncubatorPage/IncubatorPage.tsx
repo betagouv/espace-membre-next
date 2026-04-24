@@ -9,6 +9,7 @@ import {
   getIncubatorTeams,
 } from "@/lib/kysely/queries/incubators";
 import { incubatorSchemaType } from "@/models/incubator";
+import { StartupPhase } from "@/models/startup";
 
 const mdParser = new MarkdownIt({
   html: true,
@@ -97,7 +98,8 @@ export default function IncubatorPage({
               <Link key="link" href={`/startups/${s.uuid}`}>
                 {s.name}
               </Link>,
-              (s.phase && <BadgePhase phase={s.phase} />) || "-",
+              (s.phase && <BadgePhase phase={s.phase as StartupPhase} />) ||
+                "-",
               s.pitch,
             ])}
           />

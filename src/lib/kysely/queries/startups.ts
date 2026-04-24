@@ -1,8 +1,9 @@
 import { CompiledQuery, Selectable } from "kysely";
 
-import { Startups } from "@/@types/db";
+import { StartupsPhaseEnum, Startups } from "@/@types/db";
 import { db } from "@/lib/kysely";
 import { StartupPhase } from "@/models/startup";
+import { getAllIncubators } from "./incubators";
 
 export const getLatests = () =>
   db
@@ -22,7 +23,7 @@ export const getLatests = () =>
 
 export async function getStartupsWithoutAnyUpdateForThePastXMonthsRaw(
   numberOfMonths: number = 3,
-): Promise<Selectable<Startups & { current_phase: StartupPhase }>[]> {
+) {
   // Select all user events related to mission changes within the last 3 months
   // Then find the associated startups by navigating through users => users_missions => missions_startups => startups table
   // We'll refer to this result set as "A", representing all startups with user events in the past 3 months
@@ -79,9 +80,64 @@ WHERE fs.startup_id IS NULL AND NOT EXISTS (
 `,
     [],
   );
-  const result =
-    await db.executeQuery<
-      Selectable<Startups & { current_phase: StartupPhase }>
-    >(rawQuery);
+  const result = await db.executeQuery<
+    Selectable<Startups> & { current_phase: StartupPhase }
+  >(rawQuery);
   return result.rows;
 }
+
+const selectLastStartupPhase = (selectFrom, startupId) =>
+  selectFrom("phases")
+    .select("name")
+    .whereRef("phases.startup_id", "=", startupId)
+    .where((eb) =>
+      eb(
+        "phases.start",
+        "=",
+        eb
+          .selectFrom("phases")
+          .select(eb.fn.max("phases.start").as("max_start"))
+          .whereRef("phases.startup_id", "=", "startups.uuid")
+
+          .limit(1),
+      ),
+    );
+
+export const getAllStartupsWithIncubatorAndPhase = async () => {
+  const incubators = await getAllIncubators();
+  // todo: better typing
+  const baseSelect = db
+    .selectFrom("startups")
+    .select([
+      "uuid",
+      "ghid",
+      "name",
+      "pitch",
+      "thematiques",
+      "techno",
+      "incubator_id",
+      "usertypes",
+    ]);
+  const startupsData = await baseSelect
+    .select(({ selectFrom }) =>
+      selectLastStartupPhase(selectFrom, "startups.uuid")
+        .orderBy("start", "desc")
+        .limit(1)
+        .as("phase"),
+    )
+    .execute();
+
+  const startups = startupsData.map((s) => {
+    const incubator = incubators.find((i) => i.uuid === s.incubator_id);
+    return {
+      ...s,
+      phase: (s as typeof s & { phase: StartupsPhaseEnum | null }).phase,
+      thematiques: (s.thematiques as string[]) || [],
+      techno: (s.techno as string[]) || [],
+      usertypes: (s.usertypes as string[]) || [],
+      incubatorName: incubator && incubator.title,
+      incubatorId: s.incubator_id,
+    };
+  });
+  return startups;
+};
