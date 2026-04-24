@@ -79,7 +79,7 @@ export function StartupHeader({
         {(startupInfos.usertypes?.length &&
           startupInfos.usertypes.map((usertype) => (
             <Tag
-              key="usertype"
+              key={usertype}
               linkProps={{
                 href: `/startups/${serialize({
                   filters: [
@@ -101,7 +101,7 @@ export function StartupHeader({
         {(startupInfos.thematiques?.length &&
           startupInfos.thematiques.map((thematique) => (
             <Tag
-              key="thematiques"
+              key={thematique}
               linkProps={{
                 href: `/startups/${serialize({
                   filters: [
@@ -118,17 +118,6 @@ export function StartupHeader({
             >
               {thematique}
             </Tag>
-
-            // <Link href="/startups?">
-            //   <Tag
-            //     small
-            //     key={thematique}
-            //     iconId="fr-icon-file-line"
-            //     className={fr.cx("fr-mr-1w", "fr-mb-1w")}
-            //   >
-            //     {thematique}
-            //   </Tag>
-            //</Link>
           ))) ||
           null}
       </div>
