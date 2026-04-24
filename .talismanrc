@@ -1,6 +1,8 @@
 fileignoreconfig:
 - filename: .env.test
   checksum: fd6fca10412ee1ed81d930e1e7a944586f56aca534412c43ef95f5381be9a97b
+- filename: .github/workflows/nodejs.yml
+  checksum: 47dd6e50fca9712fd273115999dd5355c2fb55468f069d509a3e53dbc436780b
 - filename: README.md
   checksum: 81d7bd9e901892da915aa4d6bf21f4897e8a3f2e8502204f245220e5c5ea86e4
 - filename: __tests__/test-email.ts
