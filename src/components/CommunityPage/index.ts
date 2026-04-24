@@ -2,7 +2,10 @@ import { getAllIncubatorsMembers } from "@/lib/kysely/queries/incubators";
 import { memberBaseInfoSchemaType } from "@/models/member";
 import { Option } from "@/models/misc";
 
-type memberBaseInfoSchemaTypeWithGeoLoc = memberBaseInfoSchemaType & {
+type memberBaseInfoSchemaTypeWithGeoLoc = Omit<
+  memberBaseInfoSchemaType,
+  "secondary_email"
+> & {
   latLon: { lat: number | null; lon: number | null };
 };
 export interface CommunityProps {
