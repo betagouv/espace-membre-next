@@ -399,10 +399,6 @@ export const memberWrapperPublicInfoSchema = z.object({
   isExpired: z.boolean(),
   isEmailBlocked: z.boolean(),
   hasEmailInfos: z.boolean(),
-  mattermostInfo: z.object({
-    hasMattermostAccount: z.boolean(),
-    isInactiveOrNotInTeam: z.boolean(),
-  }),
   hasSecondaryEmail: z.boolean(),
 });
 
@@ -415,12 +411,3 @@ const missionsArraySchema = z.array(missionSchema);
 export type HasMissions<T = any> = T & {
   missions: z.infer<typeof missionsArraySchema>;
 };
-
-const memberBaseInfoAndMattermostWrapper = z.object({
-  userInfos: memberBaseInfoSchema,
-  mattermostUsername: z.string(),
-});
-
-export type memberBaseInfoAndMattermostWrapperType = z.infer<
-  typeof memberBaseInfoAndMattermostWrapper
->;

@@ -12,13 +12,11 @@ import { EMAIL_STATUS_READABLE_FORMAT } from "@/models/misc";
 
 export const MemberContact = ({
   userInfos,
-  mattermostInfo,
   emailInfos,
   isAdmin,
   isCurrentUser,
 }: {
   userInfos: MemberPageProps["userInfos"];
-  mattermostInfo: MemberPageProps["mattermostInfo"];
   emailInfos: MemberPageProps["emailInfos"];
   isAdmin: MemberPageProps["isAdmin"];
   isCurrentUser: MemberPageProps["isCurrentUser"];
@@ -70,13 +68,6 @@ export const MemberContact = ({
           {userInfos.secondary_email}
         </a>
       ),
-    });
-  }
-
-  if (mattermostInfo.hasMattermostAccount) {
-    infos.push({
-      label: "Mattermost",
-      value: <span>@{mattermostInfo.mattermostUserName}</span>,
     });
   }
 

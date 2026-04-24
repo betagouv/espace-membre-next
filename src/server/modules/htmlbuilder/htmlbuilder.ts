@@ -8,13 +8,9 @@ import * as mdtohtml from "@/lib/mdtohtml";
 import {
   EmailCreatedEmail as EmailCreatedEmailType,
   EmailCreatedDimail as EmailCreatedDimailType,
-  EmailNoMoreContract,
-  EmailEndingContract,
-  EmailVariants,
   EmailVerificationWaiting,
   EMAIL_TYPES,
   EmailLogin,
-  EmailMattermostAccountCreated,
   EmailMatomoAccountCreated,
   EmailMatomoAccountUpdated,
   EmailNewMemberValidation,
@@ -25,10 +21,6 @@ import {
   HtmlBuilderType,
   SubjectFunction,
 } from "@/server/modules/email";
-import {
-  DepartureReminderInXDaysEmail,
-  DepartureReminderInXDaysEmailTitle,
-} from "@/server/views/templates/emails/DepartureReminderInXDaysEmail/DepartureReminderInXDaysEmail";
 import {
   EmailCreatedEmail,
   EmailCreatedEmailTitle,
@@ -50,17 +42,9 @@ import {
   MatomoAccountUpdatedEmailTitle,
 } from "@/server/views/templates/emails/MatomoAccountUpdatedEmail/MatomoAccountUpdatedEmail";
 import {
-  MattermostAccountCreatedEmail,
-  MattermostAccountCreatedEmailTitle,
-} from "@/server/views/templates/emails/MattermostAccountCreatedEmail/MattermostAccountCreatedEmail";
-import {
   MemberValidationEmail,
   MemberValidationEmailTitle,
 } from "@/server/views/templates/emails/memberValidationEmail/memberValidationEmail";
-import {
-  NoMoreContractXDaysEmailTitle,
-  NoMoreContractXDaysEmail,
-} from "@/server/views/templates/emails/NoMoreContractEmail/NoMoreContractXDaysEmail";
 import {
   StartupMembersDidNotChangeInXMonthsEmail,
   StartupMembersDidNotChangeInXMonthsEmailTitle,
@@ -84,23 +68,10 @@ const TEMPLATES_BY_TYPE: Record<
   string | null | ((params: any) => JSX.Element)
 > = {
   EMAIL_LOGIN: (params: EmailLogin["variables"]) => LoginEmail(params),
-  [EMAIL_TYPES.EMAIL_MATTERMOST_ACCOUNT_CREATED]: (
-    params: EmailMattermostAccountCreated["variables"],
-  ) => MattermostAccountCreatedEmail(params),
   EMAIL_CREATED_EMAIL: (params: EmailCreatedEmailType["variables"]) =>
     EmailCreatedEmail(params),
   EMAIL_CREATED_DIMAIL: (params: EmailCreatedDimailType["variables"]) =>
     EmailCreatedDimail(params),
-  EMAIL_NO_MORE_CONTRACT_1_DAY: (params: EmailNoMoreContract["variables"]) =>
-    NoMoreContractXDaysEmail(params),
-  EMAIL_NO_MORE_CONTRACT_30_DAY: (params: EmailNoMoreContract["variables"]) =>
-    NoMoreContractXDaysEmail(params),
-  EMAIL_ENDING_CONTRACT_2_DAYS: (params: EmailEndingContract["variables"]) =>
-    DepartureReminderInXDaysEmail(params),
-  EMAIL_ENDING_CONTRACT_15_DAYS: (params: EmailEndingContract["variables"]) =>
-    DepartureReminderInXDaysEmail(params),
-  EMAIL_ENDING_CONTRACT_30_DAYS: (params: EmailEndingContract["variables"]) =>
-    DepartureReminderInXDaysEmail(params),
   EMAIL_USER_SHOULD_UPDATE_INFO: `./src/server/views/templates/emails/updateUserInfoEmail.ejs`,
   EMAIL_NEWSLETTER: "./src/server/views/templates/emails/newsletter.ejs",
   EMAIL_NEW_MEMBER_PR: "./src/server/views/templates/emails/newMemberPR.ejs",
@@ -136,20 +107,9 @@ const TEMPLATES_BY_TYPE: Record<
 
 const SUBJECTS_BY_TYPE: Record<EmailProps["type"], string | SubjectFunction> = {
   EMAIL_LOGIN: LoginEmailTitle(),
-  EMAIL_MATTERMOST_ACCOUNT_CREATED: MattermostAccountCreatedEmailTitle(),
   EMAIL_CREATED_EMAIL: EmailCreatedEmailTitle(),
   EMAIL_CREATED_DIMAIL: EmailCreatedDimailTitle(),
-  EMAIL_NO_MORE_CONTRACT_1_DAY: NoMoreContractXDaysEmailTitle(),
-  EMAIL_NO_MORE_CONTRACT_30_DAY: NoMoreContractXDaysEmailTitle(),
-  EMAIL_ENDING_CONTRACT_2_DAYS: DepartureReminderInXDaysEmailTitle({
-    days: 2,
-  }),
-  EMAIL_ENDING_CONTRACT_15_DAYS: DepartureReminderInXDaysEmailTitle({
-    days: 15,
-  }),
-  EMAIL_ENDING_CONTRACT_30_DAYS: DepartureReminderInXDaysEmailTitle({
-    days: 30,
-  }),
+
   EMAIL_USER_SHOULD_UPDATE_INFO: "Mise à jour de tes informations",
   EMAIL_NEWSLETTER: ({ subject }: EmailProps["variables"]) => {
     return `${subject}`;
@@ -186,12 +146,6 @@ const MARKDOWN_BY_TYPE: Record<EmailProps["type"], boolean> = {
   EMAIL_LOGIN: false,
   EMAIL_CREATED_EMAIL: false,
   EMAIL_CREATED_DIMAIL: false,
-  EMAIL_MATTERMOST_ACCOUNT_CREATED: false,
-  EMAIL_ENDING_CONTRACT_2_DAYS: false,
-  EMAIL_ENDING_CONTRACT_15_DAYS: false,
-  EMAIL_ENDING_CONTRACT_30_DAYS: false,
-  EMAIL_NO_MORE_CONTRACT_1_DAY: false,
-  EMAIL_NO_MORE_CONTRACT_30_DAY: false,
   EMAIL_USER_SHOULD_UPDATE_INFO: true,
   EMAIL_NEWSLETTER: true,
   EMAIL_NEW_MEMBER_PR: true,

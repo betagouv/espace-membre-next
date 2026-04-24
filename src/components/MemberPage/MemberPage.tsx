@@ -51,11 +51,6 @@ export interface MemberPageProps {
   emailRedirections: memberWrapperSchemaType["emailRedirections"];
   authorizations: memberWrapperSchemaType["authorizations"];
   userInfos: memberWrapperSchemaType["userInfos"];
-  mattermostInfo: {
-    hasMattermostAccount: boolean;
-    isInactiveOrNotInTeam: boolean;
-    mattermostUserName?: string | null;
-  };
   matomoInfo?: matomoUserSchemaType;
   sentryInfo?: sentryUserSchemaType;
   isExpired: boolean;
@@ -75,7 +70,6 @@ export default function MemberPage({
   emailRedirections,
   userInfos,
   authorizations,
-  mattermostInfo,
   matomoInfo,
   sentryInfo,
   isExpired,
@@ -164,7 +158,6 @@ export default function MemberPage({
             <h2>Contact</h2>
             <MemberContact
               userInfos={userInfos}
-              mattermostInfo={mattermostInfo}
               emailInfos={emailInfos}
               isAdmin={isAdmin}
               isCurrentUser={isCurrentUser}
@@ -226,7 +219,6 @@ export default function MemberPage({
           isExpired={isExpired}
           emailInfos={emailInfos}
           userInfos={userInfos}
-          mattermostInfo={mattermostInfo}
           matomoInfo={matomoInfo}
           sentryInfo={sentryInfo}
           isCurrentUser={isCurrentUser}

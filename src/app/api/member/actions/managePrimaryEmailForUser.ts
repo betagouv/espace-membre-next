@@ -5,7 +5,6 @@ import { getServerSession } from "next-auth/next";
 
 import { addEvent } from "@/lib/events";
 import { db } from "@/lib/kysely";
-import * as mattermost from "@/lib/mattermost";
 import { EventCode } from "@/models/actionEvent/actionEvent";
 import {
   isPublicServiceEmail,
@@ -46,18 +45,6 @@ export async function managePrimaryEmailForUser({
   }
   if (isAdminEmail(primaryEmail)) {
     throw new AdminEmailNotAllowedError();
-  }
-  if (isCurrentUser) {
-    // if action is made by admin on another user we don't check if mattermost account with email exists
-    // it will cause friction and slow things down as the user has to change his email
-    // on mattermost and validate the change before being able to change the primary email
-    try {
-      await mattermost.getUserByEmail(primaryEmail);
-    } catch {
-      throw new BusinessError(
-        `L'email n'existe pas dans mattermost, pour utiliser cette adresse comme adresse principale ton compte mattermost doit aussi utiliser cette adresse.`,
-      );
-    }
   }
 
   await db

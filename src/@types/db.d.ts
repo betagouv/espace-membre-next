@@ -204,12 +204,6 @@ export interface MatomoSites {
   url: string | null;
 }
 
-export interface MattermostMemberInfos {
-  last_activity_at: Timestamp | null;
-  mattermost_user_id: string | null;
-  username: Generated<string | null>;
-}
-
 export interface Missions {
   employer: string | null;
   end: Timestamp | null;
@@ -555,7 +549,6 @@ export interface DB {
   marrainage_groups: MarrainageGroups;
   marrainage_groups_members: MarrainageGroupsMembers;
   matomo_sites: MatomoSites;
-  mattermost_member_infos: MattermostMemberInfos;
   missions: Missions;
   missions_startups: MissionsStartups;
   organizations: Organizations;

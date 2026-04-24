@@ -7,7 +7,6 @@ import { addEvent } from "@/lib/events";
 import { db } from "@/lib/kysely";
 import { createMission, updateMission } from "@/lib/kysely/queries/missions";
 import { getUserBasicInfo } from "@/lib/kysely/queries/users";
-import { getUserByEmail, MattermostUser, searchUsers } from "@/lib/mattermost";
 import { EventCode } from "@/models/actionEvent/actionEvent";
 import {
   updateMemberMissionsSchema,
@@ -173,25 +172,12 @@ async function getUserPublicInfo(
     .where("username", "=", username)
     .executeTakeFirst();
   const secondaryEmail: string = dbUser?.secondary_email || "";
-  let mattermostUser = dbUser?.primary_email
-    ? await getUserByEmail(dbUser.primary_email).catch((e) => null)
-    : null;
-  let [mattermostUserInTeamAndActive]: MattermostUser[] = dbUser?.primary_email
-    ? await searchUsers({
-        term: dbUser.primary_email,
-        team_id: config.mattermostTeamId,
-        allow_inactive: false,
-      }).catch((e) => [])
-    : [];
+
   let data: memberWrapperPublicInfoSchemaType = {
     isExpired: user.isExpired,
     hasEmailInfos: !!user.emailInfos,
     isEmailBlocked: user.emailInfos?.isBlocked || false,
     hasSecondaryEmail: !!secondaryEmail,
-    mattermostInfo: {
-      hasMattermostAccount: !!mattermostUser,
-      isInactiveOrNotInTeam: !mattermostUserInTeamAndActive,
-    },
     userPublicInfos: memberBaseInfoToMemberPublicInfoModel(user.userInfos),
   };
   return data;

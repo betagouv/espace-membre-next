@@ -38,19 +38,6 @@ const memberTypeOptions = [
 const CRON_TASK_ENV_VAR = {
   AIRTABLE_API_KEY: process.env.AIRTABLE_API_KEY,
   AIRTABLE_FORMATION_BASE_ID: process.env.AIRTABLE_FORMATION_BASE_ID,
-  FEATURE_MATTERMOST_REMOVE_USERS:
-    process.env.FEATURE_MATTERMOST_REMOVE_USERS === "true",
-  featureCreateUserOnMattermost:
-    process.env.FEATURE_CREATE_USER_ON_MATTERMOST === "true",
-  featureAddUserToCommunityTeam:
-    process.env.FEATURE_ADD_USER_TO_COMMUNITY_ON_MATTERMOST === "true",
-  featureReactiveMattermostUsers:
-    process.env.FEATURE_REACTIVE_MATTERMOST_USERS === "true",
-  featureRemoveExpiredUsersFromCommunityOnMattermost:
-    process.env.FEATURE_REMOVED_EXPIRED_USERS_FROM_COMMUNITY_ON_MATTERMOST ===
-    "true",
-  featureAddExpiredUsersToAlumniOnMattermost:
-    process.env.FEATURE_ADD_EXPIRED_USERS_TO_ALUMNI_ON_MATTERMOST === "true",
   CALENDAR_CRON_TIME: process.env.CALENDAR_CRON_TIME,
   CALENDAR_URL: process.env.CALENDAR_URL,
   CALENDAR_PUBLIC_URL: process.env.CALENDAR_PUBLIC_URL,
@@ -131,8 +118,6 @@ export default {
     minStartDate: "2013-07-01",
     memberOptions: memberTypeOptions,
   },
-  mattermostURL:
-    process.env.MATTERMOST_URL || "https://mattermost.incubateur.net",
   senderEmail: process.env.MAIL_SENDER || "espace-membre@incubateur.net",
   CHAT_WEBHOOK_URL_SECRETARIAT: getOrThrowError("CHAT_WEBHOOK_URL_SECRETARIAT"),
   CHAT_WEBHOOK_URL_GENERAL: getOrThrowError("CHAT_WEBHOOK_URL_GENERAL"),
@@ -151,18 +136,6 @@ export default {
   MAILING_LIST_REMINDER: process.env.MAILING_LIST_REMINDER
     ? parseInt(process.env.MAILING_LIST_REMINDER)
     : null,
-  mattermostBotToken: process.env.MATTERMOST_BOT_TOKEN,
-  mattermostTeamId: process.env.MATTERMOST_TEAM_ID || "testteam",
-  mattermostAlumniTeamId:
-    process.env.MATTERMOST_ALUMNI_TEAM_ID || "testalumniteam",
-  MATTERMOST_ALLOWED_DOMAINS:
-    process.env.MATTERMOST_ALLOWED_DOMAINS || "beta.gouv.fr",
-  MATTERMOST_PARTNERS_AUTHORS_URL: process.env.MATTERMOST_PARTNERS_AUTHORS_URL,
-  MATTERMOST_PARTNERS_AUTHORS_URLS: process.env.MATTERMOST_PARTNERS_AUTHORS_URLS
-    ? JSON.parse(process.env.MATTERMOST_PARTNERS_AUTHORS_URLS)
-    : [],
-  MATTERMOST_EMAIL_REGEX_EXCEPTION:
-    process.env.MATTERMOST_EMAIL_REGEX_EXCEPTION,
   NEWSLETTER_NUMBER_OF_DAYS_WITH_LAST_NEWSLETTER: process.env
     .NEWSLETTER_NUMBER_OF_DAYS_WITH_LAST_NEWSLETTER
     ? parseInt(process.env.NEWSLETTER_NUMBER_OF_DAYS_WITH_LAST_NEWSLETTER, 10)

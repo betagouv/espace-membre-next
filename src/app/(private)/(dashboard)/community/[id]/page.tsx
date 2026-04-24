@@ -98,7 +98,6 @@ export default async function Page({
         avatar={userInformations?.avatar}
         changes={userInformations?.changes}
         userInfos={userInformations?.baseInfo}
-        mattermostInfo={userInformations.mattermostInfo}
         matomoInfo={userInformations.matomoInfo}
         sentryInfo={userInformations.sentryInfo}
         startups={userInformations.startups}
