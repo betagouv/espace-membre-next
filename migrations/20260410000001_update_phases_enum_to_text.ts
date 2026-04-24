@@ -6,7 +6,7 @@ exports.up = async function (knex) {
 
   // todo: add constraint later when migration done
   // ALTER TABLE phases ADD CONSTRAINT chk_phase_name
-  // CHECK (name IN ('investigation', 'construction', 'acceleration', 'perennisation', 'abandon', 'abandon-investigation', 'transfere', 'opere'));
+  // CHECK (name IN ('investigation', 'construction', 'acceleration', 'perennisation', 'abandon',  'transfere', 'opere'));
 };
 
 exports.down = async function (knex) {

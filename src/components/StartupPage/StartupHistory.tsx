@@ -30,7 +30,6 @@ export const StartupHistory = ({
           );
           if (
             (StartupPhase[phase] === "transfere" ||
-              StartupPhase[phase] === "abandon-investigation" ||
               StartupPhase[phase] === "abandon") &&
             !startupPhase
           )

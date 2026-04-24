@@ -47,11 +47,6 @@ export const BadgePhase = ({
         {PHASE_READABLE_NAME["abandon"]}
       </Badge>
     ),
-    "abandon-investigation": (
-      <Badge severity="warning" className={className}>
-        {PHASE_READABLE_NAME["abandon-investigation"]}
-      </Badge>
-    ),
   };
   return (phase && phases[phase]) || null;
 };
