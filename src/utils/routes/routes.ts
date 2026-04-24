@@ -26,7 +26,6 @@ export const routes = {
   startupDocs: ({ startupId }: { startupId: string }) =>
     `/startups/${startupId}/files`,
   startupCreate: () => `/startups/create-form`,
-  adminMattermost: () => `/admin/mattermost`,
   home: () => `/`,
   login: () => `/login`,
   onboarding: () => `/onboarding`,
