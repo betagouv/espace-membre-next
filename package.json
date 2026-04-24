@@ -3,8 +3,8 @@
   "version": "0.1.0",
   "private": true,
   "engines": {
-    "node": ">=20.x",
-    "npm": ">=10"
+    "node": "20.x",
+    "npm": "11.x"
   },
   "scripts": {
     "dev": "./node_modules/.bin/only-include-used-icons && next dev -p 8100",
