@@ -2,6 +2,7 @@ import { sql, ExpressionBuilder } from "kysely";
 
 import { DB } from "@/@types/db"; // generated with `npm run kysely-codegen`
 import { db, jsonArrayFrom } from "@/lib/kysely";
+import { getAllIncubators } from "./queries/incubators";
 
 /** Return all startups */
 export function getAllStartups() {
@@ -43,4 +44,24 @@ export const isStartupAgent = async (memberId: string, startupId: string) => {
 
   const result = await isStartupAgentQuery.execute();
   return result.length > 0;
+};
+
+export const getAllStartupsWithIncubator = async () => {
+  const incubators = await getAllIncubators();
+  const startupsData = await getAllStartups();
+  const startups = startupsData.map((s) => {
+    const incubator = incubators.find((i) => i.uuid === s.incubator_id);
+    return {
+      uuid: s.uuid,
+      ghid: s.ghid,
+      name: s.name,
+      pitch: s.pitch,
+      thematiques: s.thematiques,
+      techno: s.techno,
+      usertypes: s.usertypes,
+      incubatorName: incubator && incubator.title,
+      incubatorId: s.incubator_id,
+    };
+  });
+  return startups;
 };

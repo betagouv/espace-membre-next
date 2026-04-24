@@ -15,6 +15,8 @@ fileignoreconfig:
   checksum: 7bcd2b7b8aa2c603855af404f89c24d9bb02ba6e7b4a2a8503ef7b1b72902178
 - filename: src/components/MemberPage/MemberWaitingValidationNotice.tsx
   checksum: 4243d7f9fb28db14113849647ba3126d456aa935c7169722d844ae11b3d06443
+- filename: src/components/StartupListPage/StartupList.tsx
+  checksum: dc0cd2457d08442a16323e40997c8cdfb6bfd0336e486f3735bd827878f695ef
 - filename: src/components/StartupPage/StartupMembers.tsx
   checksum: 6a20aba25aa570f49f0413babcb256d1db870522851f2e865088df7fe6e583a9
 - filename: src/lib/dimail/client.spec.ts
