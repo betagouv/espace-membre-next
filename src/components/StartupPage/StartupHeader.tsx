@@ -4,6 +4,13 @@ import { Tag } from "@codegouvfr/react-dsfr/Tag";
 import { BadgePhase } from "./BadgePhase";
 import { StartupPageProps } from "./StartupPage";
 import { StartupPhase } from "@/models/startup";
+import Link from "next/link";
+import { createSerializer } from "nuqs";
+import { startupsQueryParser } from "../StartupListPage/utils";
+
+const serialize = createSerializer({
+  filters: startupsQueryParser,
+});
 
 export function StartupHeader({
   startupInfos,
@@ -29,7 +36,9 @@ export function StartupHeader({
         </div>
       </div>
       <div className={fr.cx("fr-col-12")}>
-        <BadgePhase phase={currentPhase} className={fr.cx("fr-mr-2w")} />
+        {currentPhase && (
+          <BadgePhase phase={currentPhase} className={fr.cx("fr-mr-2w")} />
+        )}
         {startupInfos.link && (
           <a
             target="_blank"
@@ -70,8 +79,18 @@ export function StartupHeader({
         {(startupInfos.usertypes?.length &&
           startupInfos.usertypes.map((usertype) => (
             <Tag
-              small
               key={usertype}
+              linkProps={{
+                href: `/startups/${serialize({
+                  filters: [
+                    {
+                      type: "usertype",
+                      value: usertype,
+                    },
+                  ],
+                })}`,
+              }}
+              title={`Voir toutes les startups avec ces utilisateurs`}
               iconId="fr-icon-user-line"
               className={fr.cx("fr-mr-1w", "fr-mb-1w")}
             >
@@ -82,9 +101,19 @@ export function StartupHeader({
         {(startupInfos.thematiques?.length &&
           startupInfos.thematiques.map((thematique) => (
             <Tag
-              small
               key={thematique}
+              linkProps={{
+                href: `/startups/${serialize({
+                  filters: [
+                    {
+                      type: "thematique",
+                      value: thematique,
+                    },
+                  ],
+                })}`,
+              }}
               iconId="fr-icon-file-line"
+              title={`Voir toutes les startups avec cette thématique`}
               className={fr.cx("fr-mr-1w", "fr-mb-1w")}
             >
               {thematique}

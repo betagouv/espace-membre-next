@@ -23,6 +23,7 @@ import {
 import AutoComplete from "../AutoComplete";
 import { isUserActive } from "@/utils/member";
 import { linkRegistry } from "@/utils/routes/registry";
+import { copyToClipboard } from "@/utils/copyToClipBoard";
 
 // to fix ReferenceError: window is not defined
 const MapComponent = dynamic(() => import("../Map").then((mod) => mod.Map), {
@@ -474,17 +475,5 @@ export const Community = (props: CommunityProps) => {
       <br />
       <Footer />
     </>
-  );
-};
-
-// Utility function to copy to clipboard
-export const copyToClipboard = (text: string) => {
-  navigator.clipboard.writeText(text).then(
-    () => {
-      alert("Les emails ont été copiés dans le presse-papier");
-    },
-    (err) => {
-      console.error("Impossible de copier le texte: ", err);
-    },
   );
 };

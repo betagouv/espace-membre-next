@@ -2,6 +2,7 @@ import { sql, ExpressionBuilder } from "kysely";
 
 import { DB } from "@/@types/db"; // generated with `npm run kysely-codegen`
 import { db, jsonArrayFrom } from "@/lib/kysely";
+import { getAllIncubators } from "./queries/incubators";
 
 /** Return all startups */
 export function getAllStartups() {

@@ -413,10 +413,10 @@ export interface Startups {
   stats: boolean | null;
   stats_url: string | null;
   tech_audit_url: string | null;
-  techno: Json | null;
-  thematiques: Json | null;
+  techno: JsonArray<string> | null;
+  thematiques: JsonArray<string> | null;
   updated_at: Generated<Timestamp>;
-  usertypes: Json | null;
+  usertypes: JsonArray<string> | null;
   uuid: Generated<string>;
 }
 
