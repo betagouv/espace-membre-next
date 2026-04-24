@@ -4,6 +4,7 @@
  */
 
 import type { ColumnType } from "kysely";
+import type { IPostgresInterval } from "postgres-interval";
 
 export type Generated<T> =
   T extends ColumnType<infer S, infer I, infer U>
