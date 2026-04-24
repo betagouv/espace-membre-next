@@ -3,12 +3,12 @@ import z from "zod";
 
 export const startupsFilterSchema = z.object({
   type: z.enum([
-    "active_only",
     "techno",
     "usertype",
     "thematique",
     "incubator",
     "startup",
+    "phase",
   ]),
   value: z.union([z.string(), z.boolean()]).optional(),
 });

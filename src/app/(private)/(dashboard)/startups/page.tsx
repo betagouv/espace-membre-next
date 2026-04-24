@@ -3,11 +3,11 @@ import { Metadata } from "next";
 import { SearchFiles } from "./SearchFiles";
 import { getStartupFiles } from "@/app/api/startups/files/list";
 import { StartupList } from "@/components/StartupListPage";
-import { getAllStartupsWithIncubator } from "@/lib/kysely/queries";
 import { routeTitles } from "@/utils/routes/routeTitles";
 import { getAllIncubators } from "@/lib/kysely/queries/incubators";
 import { fr } from "@codegouvfr/react-dsfr";
 import Button from "@codegouvfr/react-dsfr/Button";
+import { getAllStartupsWithIncubatorAndPhase } from "@/lib/kysely/queries/startups";
 
 export const metadata: Metadata = {
   title: `${routeTitles.startupList()} / Espace Membre`,
@@ -16,7 +16,7 @@ export const metadata: Metadata = {
 export default async function Page() {
   const files = await getStartupFiles();
   const incubators = await getAllIncubators();
-  const startups = await getAllStartupsWithIncubator();
+  const startups = await getAllStartupsWithIncubatorAndPhase();
   return (
     <div className={`${fr.cx("fr-grid-row")}`}>
       <h1>Explorer les produits</h1>

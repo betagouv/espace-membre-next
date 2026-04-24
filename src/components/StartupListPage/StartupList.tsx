@@ -1,29 +1,21 @@
 "use client";
 import React, { startTransition, useCallback, useMemo, useState } from "react";
-
-import Button from "@codegouvfr/react-dsfr/Button";
-import { useRouter } from "next/navigation";
-
-import SESelect, { StartupType } from "@/components/SESelect";
-import AutoComplete from "../AutoComplete";
-import {
-  getAllStartups,
-  getAllStartupsWithIncubator,
-  getStartup,
-} from "@/lib/kysely/queries";
+import Link from "next/link";
 import { useQueryState } from "nuqs";
-import { startupsQueryParser } from "./utils";
+import { fr } from "@codegouvfr/react-dsfr";
 import Pagination from "@codegouvfr/react-dsfr/Pagination";
 import Table from "@codegouvfr/react-dsfr/Table";
-import { copyToClipboard } from "@/utils/copyToClipBoard";
-import Link from "next/link";
-import { fr } from "@codegouvfr/react-dsfr";
+
+import { PHASE_READABLE_NAME } from "@/models/startup";
 import { getAllIncubators } from "@/lib/kysely/queries/incubators";
-import Badge from "@codegouvfr/react-dsfr/Badge";
-import { incubator } from "@/scripts/github-schemas";
+import { getAllStartupsWithIncubatorAndPhase } from "@/lib/kysely/queries/startups";
+import { BadgePhase } from "../StartupPage/BadgePhase";
+import AutoComplete from "../AutoComplete";
+
+import { startupsQueryParser } from "./utils";
 
 export interface StartupListProps {
-  startups: Awaited<ReturnType<typeof getAllStartupsWithIncubator>>;
+  startups: Awaited<ReturnType<typeof getAllStartupsWithIncubatorAndPhase>>;
   incubators: Awaited<ReturnType<typeof getAllIncubators>>;
 }
 
@@ -38,37 +30,22 @@ const getStartupRow = ({
   onUserTypeClick: (usertype: string) => void;
   onIncubatorClick: (incubator: string) => void;
 }) => {
-  // const startups = getStartupsFromMissions(user.missions, startupOptions);
-  //isUserActive(user.missions);
-
-  // const teams: ReturnType<typeof getStartupsFromMissions> & { url?: string } = [
-  //   ...(startups || []),
-  //   ...(user.teams?.map((t) => {
-  //     const incub = incubatorOptions.find((i) => i.value === t.incubator_id);
-  //     return {
-  //       label: `${t.name}${incub ? ` - ${incub.label}` : ""}`,
-  //       value: t.uuid,
-  //       url: incub?.value
-  //         ? linkRegistry.get("incubatorDetails", {
-  //             incubatorId: incub?.value,
-  //           })
-  //         : "",
-  //     };
-  //   }) || []),
-  // ];
   return [
     // user
     <>
-      <Link
-        title="Accéder à la fiche startup"
-        href={`/startups/${startup.uuid}`}
-        className={fr.cx("fr-link--lg")}
-      >
-        {/* sometimes we do not have user fullname */}
-        {startup.name}
-      </Link>
-      <br />
+      <div className={fr.cx("fr-mb-1w")}>
+        <Link
+          title="Accéder à la fiche startup"
+          href={`/startups/${startup.uuid}`}
+          className={fr.cx("fr-link--lg")}
+        >
+          {/* sometimes we do not have user fullname */}
+          {startup.name}
+        </Link>
+      </div>
       {startup.pitch}
+      <br />
+      <BadgePhase phase={startup.phase} className={fr.cx("fr-mt-1w")} />
     </>,
     // thématiques
     <>
@@ -83,9 +60,8 @@ const getStartupRow = ({
             )}
           ></i>
           {startup.thematiques.map((thematique, idx, all) => (
-            <>
+            <span key={thematique}>
               <span
-                key={thematique}
                 style={{ cursor: "pointer" }}
                 className={fr.cx("fr-link", "fr-link")}
                 title="Chercher toutes les startups de cette thématique"
@@ -96,7 +72,7 @@ const getStartupRow = ({
                 {thematique}
               </span>
               {idx < all.length - 1 && ", "}
-            </>
+            </span>
           ))}
         </div>
       )) ||
@@ -108,9 +84,8 @@ const getStartupRow = ({
             className={fr.cx("fr-icon--sm", "fr-icon-group-line", "fr-mr-1w")}
           ></i>
           {startup.usertypes.map((usertype, idx, all) => (
-            <>
+            <span key={usertype}>
               <span
-                key={usertype}
                 style={{ cursor: "pointer" }}
                 className={fr.cx("fr-link", "fr-link")}
                 title="Chercher toutes les startups pour ces utilisateurs"
@@ -121,7 +96,7 @@ const getStartupRow = ({
                 {usertype}
               </span>
               {idx < all.length - 1 && ", "}
-            </>
+            </span>
           )) || null}
         </div>
       )) ||
@@ -139,43 +114,13 @@ const getStartupRow = ({
         {startup.incubatorName}
       </span>
     ),
-    // teams
-    // teams.length ? (
-    //   <ul style={{ paddingLeft: 0 }}>
-    //     {teams
-    //       .filter((s) => !!s)
-    //       .map((s) => (
-    //         <li
-    //           key={s.value}
-    //           style={{
-    //             display: "inline",
-    //           }}
-    //         >
-    //           <Tag
-    //             linkProps={{
-    //               href:
-    //                 // @ts-ignore todo
-    //                 (s && s.url) || `/startups/${s?.value}`,
-    //             }}
-    //             title="Accéder à la fiche"
-    //             className={fr.cx("fr-mr-1w", "fr-mb-1w")}
-    //           >
-    //             {s.label}
-    //           </Tag>
-    //         </li>
-    //       ))}
-    //   </ul>
-    // ) : null,
   ];
 };
 
 /* Pure component */
 export const StartupList = ({ startups, incubators }: StartupListProps) => {
-  const [startup, setStartup] = React.useState("");
   const [currentPage, setCurrentPage] = useState(1);
   const [filters, setFilters] = useQueryState("filters", startupsQueryParser);
-
-  const router = useRouter();
 
   const filterResult = useCallback(
     (result: StartupListProps["startups"][number]) => {
@@ -184,52 +129,18 @@ export const StartupList = ({ startups, incubators }: StartupListProps) => {
         filters.filter((filter) => {
           if (!filter) {
             return true;
-            // } else if (filter.type === "active_only") {
-            //   if (filter.value === false) return true;
-            //   // test if user has active missions
-            //   return isUserActive(result.missions);
           } else if (filter.type === "startup") {
-            // test specific user uuid
-            //console.log("startup", startup, filter);
             return filter.value === result.uuid;
+          } else if (filter.type === "phase") {
+            return filter.value === result.phase;
           } else if (filter.type === "thematique" && filter.value) {
             return (result.thematiques || []).includes(filter.value.toString());
           } else if (filter.type === "usertype" && filter.value) {
             return (result.usertypes || []).includes(filter.value.toString());
           } else if (filter.type === "incubator" && filter.value) {
             return result.incubatorId === filter.value.toString();
-            // } else if (filter.type === "domaine") {
-            //   // test if user has the given domain
-            //   const user = props.users.find((u) => u.uuid === result.uuid);
-            //   return user && user.domaine === filter.value;
-            // } else if (filter.type === "primary_email_status") {
-            //   // test if user has the given domain
-            //   const user = props.users.find((u) => u.uuid === result.uuid);
-            //   return user && user.primary_email_status === filter.value;
-            // } else if (filter.type === "incubator") {
-            // test if user belongs to given incubator
-            // const incubator = props.incubatorMembers.find(
-            //   (i) => i.uuid === filter.value,
-            // );
-            // return (
-            //   incubator &&
-            //   incubator.members.map((m) => m.uuid).includes(result.uuid)
-            // );
-            // } else if (filter.type === "startup" && filter.value) {
-            //   // test if user had a mission in given startup
-            //   const user = props.users.find((u) => u.uuid === result.uuid);
-            //   const activeOnly = filters.find(
-            //     (f) => f.type == "active_only" && !!f.value,
-            //   );
-            //   return (
-            //     user &&
-            //     user.missions
-            //       .filter((m) =>
-            //         activeOnly ? !m.end || m.end > new Date() : true,
-            //       )
-            //       .flatMap((m) => m.startups)
-            //       .includes(filter.value.toString())
-            //   );
+          } else if (filter.type === "techno" && filter.value) {
+            return (result.techno || []).includes(filter.value.toString());
           }
         }).length === filters.length // or > 0 for or query
       );
@@ -245,24 +156,12 @@ export const StartupList = ({ startups, incubators }: StartupListProps) => {
     [filters],
   );
 
-  console.log({ startups, results, filters });
-
-  // const save = (event: { preventDefault: () => void }) => {
-  //   event.preventDefault();
-  //   router.push(`/startups/${startup}`);
-  // };
-
   const onSelect = async (newFilters) => {
     await setFilters((filters) => [
       ...newFilters.map((f) => ({
         type: f.type,
         value: f.id || f.label,
       })),
-      // keep existing active_only flag
-      // {
-      //   type: "active_only",
-      //   value: !!filters.find((f) => f.type === "active_only" && f.value),
-      // },
     ]);
     await setCurrentPage(1);
   };
@@ -281,8 +180,27 @@ export const StartupList = ({ startups, incubators }: StartupListProps) => {
     .sort()
     .map((t) => ({ id: t, label: t }));
 
+  const allTechnos = Array.from(
+    new Set(startups.flatMap((s) => s.techno || [])),
+  )
+    .filter(Boolean)
+    .sort()
+    .map((t) => ({ id: t, label: t }));
+
   const searchOptions = useMemo(
     () => [
+      ...Object.entries(PHASE_READABLE_NAME).map(([id, label]) => ({
+        type: "phase",
+        group: "Phase",
+        id,
+        label,
+      })),
+      ...incubators.map((s) => ({
+        type: "incubator",
+        group: "Incubateur",
+        id: s.uuid,
+        label: s.title,
+      })),
       ...startups.map((s) => ({
         type: "startup",
         group: "Startups",
@@ -295,15 +213,15 @@ export const StartupList = ({ startups, incubators }: StartupListProps) => {
         id: s.id,
         label: s.label,
       })),
-      ...incubators.map((s) => ({
-        type: "incubator",
-        group: "Incubateur",
-        id: s.uuid,
-        label: s.title,
-      })),
       ...allUserTypes.map((s) => ({
         type: "usertype",
         group: "Utilisateurs",
+        id: s.id,
+        label: s.label,
+      })),
+      ...allTechnos.map((s) => ({
+        type: "techno",
+        group: "Technologies",
         id: s.id,
         label: s.label,
       })),
@@ -351,7 +269,7 @@ export const StartupList = ({ startups, incubators }: StartupListProps) => {
 
   const pageSize = 15;
   const pageCount = Math.ceil(results.length / pageSize);
-  const headers = ["Nom", "Description", "Incubateur"];
+  const headers = ["Nom", "À propos", "Incubateur"];
 
   return (
     <>
@@ -373,7 +291,7 @@ export const StartupList = ({ startups, incubators }: StartupListProps) => {
         optionLabelField={"label"}
         groupBy={(o) => o.group}
         placeholder={
-          "Choisissez une startup, une thématique, incubateur, technologie"
+          "Choisissez une startup, thématique, incubateur, technologie, phase"
         }
       />
 
