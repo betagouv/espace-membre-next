@@ -31,6 +31,7 @@ export default async function Page() {
   const usersWithGeoLoc = users.map((u) => ({
     ...u,
     latLon: u.workplace_insee_code && communes[u.workplace_insee_code],
+    secondary_email: undefined,
   }));
 
   const props = {
