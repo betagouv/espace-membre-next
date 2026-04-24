@@ -6,6 +6,7 @@ import { StartupPageProps } from "./StartupPage";
 import { StartupPhase, PHASE_READABLE_NAME } from "@/models/startup";
 import { frenchSmallDate } from "@/utils/date";
 
+// @ts-ignore
 import "./timeline.css";
 
 const getEventComment = (e) => {

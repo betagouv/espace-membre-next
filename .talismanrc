@@ -33,6 +33,8 @@ fileignoreconfig:
   checksum: 9984a43d1096596c3e87f3333e733f6ade807f2017132469f9acc8cec9a0f344
 - filename: src/server/views/templates/emails/EmailCreatedDimail/EmailCreatedDimail.tsx
   checksum: 92e8908b1d03cb63c51d8a56aa909ebaeab6f0ca3078ae044110019a0f9f2a16
+- filename: src/utils/routes/routes.ts
+  checksum: 6a38b15c7efd08ecb470db5946a6cd826b3553b11f54069cf1bc6df335763ca2
 scopeconfig:
 - scope: node
 version: "1.0"

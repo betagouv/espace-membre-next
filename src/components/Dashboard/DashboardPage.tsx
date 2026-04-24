@@ -1,4 +1,3 @@
-"use client";
 import { fr } from "@codegouvfr/react-dsfr";
 import { Badge } from "@codegouvfr/react-dsfr/Badge";
 import Button from "@codegouvfr/react-dsfr/Button";
@@ -17,8 +16,8 @@ import Link from "next/link";
 import ProgressBar from "../ProgressBar";
 import { getLatests as getLatestsProducts } from "@/lib/kysely/queries/startups";
 import { getLatests as getLatestsMembers } from "@/lib/kysely/queries/users";
-import { linkRegistry } from "@/utils/routes/registry";
 import frontConfig from "@/frontConfig";
+import { routes } from "@/utils/routes/routes";
 
 type LatestProductsReturnType = Awaited<ReturnType<typeof getLatestsProducts>>;
 type LatestMembersReturnType = Awaited<ReturnType<typeof getLatestsMembers>>;
@@ -48,7 +47,7 @@ const CardProduct = ({
     enlargeLinkOrButton={true}
     orientation="horizontal"
     linkProps={{
-      href: linkRegistry.get("startupDetails", {
+      href: routes["startupDetails"]({
         startupId: product.uuid,
       }),
     }}
@@ -95,7 +94,7 @@ const CardMember = ({
     enlargeLinkOrButton={true}
     orientation="horizontal"
     linkProps={{
-      href: linkRegistry.get("communityMember", {
+      href: routes["communityMember"]({
         username: member.username,
       }),
     }}
@@ -116,7 +115,7 @@ export function DashboardPage(props: DashboardPageProps) {
             <ProgressBar progress={props.onboarding.progress} />
             <div className={fr.cx("fr-mt-3w")}>
               <Link
-                href={`${linkRegistry.get("account")}?tab=embarquement`}
+                href={`${routes["account"]()}?tab=embarquement`}
                 className={fr.cx(
                   "fr-link",
                   "fr-icon-arrow-right-line",
@@ -136,7 +135,7 @@ export function DashboardPage(props: DashboardPageProps) {
           <h3>Mon désembarquement</h3>
           <p>
             Ta fiche arrive prochainement à expiration. Pense à{" "}
-            <Link href={linkRegistry.get("accountEditBaseInfo")}>
+            <Link href={routes["accountEditBaseInfo"]()}>
               prolonger ta mission
             </Link>{" "}
             ou commencer ton désembarquement.
@@ -144,7 +143,7 @@ export function DashboardPage(props: DashboardPageProps) {
           <ProgressBar progress={props.offboarding.progress} />
           <div className={fr.cx("fr-mt-3w")}>
             <Link
-              href={`${linkRegistry.get("account")}?tab=desembarquement`}
+              href={`${routes["account"]()}?tab=desembarquement`}
               className={fr.cx(
                 "fr-link",
                 "fr-icon-arrow-right-line",
@@ -166,7 +165,7 @@ export function DashboardPage(props: DashboardPageProps) {
             orientation="horizontal"
             imageUrl={(document as StaticImageData).src}
             linkProps={{
-              href: linkRegistry.get("account"),
+              href: routes["account"](),
             }}
           />
         </div>
@@ -178,7 +177,7 @@ export function DashboardPage(props: DashboardPageProps) {
             orientation="horizontal"
             imageUrl={(internet as StaticImageData).src}
             linkProps={{
-              href: linkRegistry.get("startupList"),
+              href: routes["startupList"](),
             }}
           />
         </div>
@@ -190,7 +189,7 @@ export function DashboardPage(props: DashboardPageProps) {
             orientation="horizontal"
             imageUrl={(avatar as StaticImageData).src}
             linkProps={{
-              href: linkRegistry.get("communityCreateMember"),
+              href: routes["communityCreateMember"](),
             }}
           />
         </div>
@@ -205,7 +204,7 @@ export function DashboardPage(props: DashboardPageProps) {
             orientation="horizontal"
             imageUrl={(school as StaticImageData).src}
             linkProps={{
-              href: linkRegistry.get("formationList"),
+              href: routes["formationList"](),
             }}
           />
         </div>
@@ -217,7 +216,7 @@ export function DashboardPage(props: DashboardPageProps) {
             orientation="horizontal"
             imageUrl={(calendar as StaticImageData).src}
             linkProps={{
-              href: linkRegistry.get("eventsList"),
+              href: routes["eventsList"](),
             }}
           />
         </div>
@@ -244,7 +243,7 @@ export function DashboardPage(props: DashboardPageProps) {
             orientation="horizontal"
             imageUrl={(community as StaticImageData).src}
             linkProps={{
-              href: linkRegistry.get("community"),
+              href: routes["community"](),
             }}
           />
         </div>
@@ -256,7 +255,7 @@ export function DashboardPage(props: DashboardPageProps) {
             orientation="horizontal"
             imageUrl={(locationFrance as StaticImageData).src}
             linkProps={{
-              href: `${linkRegistry.get("metabase")}`,
+              href: routes["metabase"](),
             }}
           />
         </div>
@@ -284,7 +283,7 @@ export function DashboardPage(props: DashboardPageProps) {
               <Button
                 priority="secondary"
                 linkProps={{
-                  href: linkRegistry.get("startupList"),
+                  href: routes["startupList"](),
                 }}
               >
                 Explorer les produits →
@@ -304,7 +303,7 @@ export function DashboardPage(props: DashboardPageProps) {
               <Button
                 priority="secondary"
                 linkProps={{
-                  href: linkRegistry.get("community"),
+                  href: routes["community"](),
                 }}
               >
                 Explorer les membres →

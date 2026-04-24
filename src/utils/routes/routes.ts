@@ -1,71 +1,47 @@
-import { param, createRouter, defineRoute } from "type-route";
-
-export const routes = createRouter({
-  account: defineRoute({}, (p) => `/account`),
-  accountEditBaseInfo: defineRoute({}, (p) => `/account/base-info`),
-  accountEditPrivateInfo: defineRoute({}, (p) => `/account/info`),
-  signIn: defineRoute({}, (p) => `/signin`),
-  community: defineRoute({}, (p) => `/community`),
-  communityMember: defineRoute(
-    { username: param.path.string },
-    (p) => `/community/${p.username}`,
-  ),
-  communityCreateMember: defineRoute({}, (p) => `/community/create`),
-  dashboard: defineRoute({}, (p) => `/dashboard`),
-  incubatorDetailsEdit: defineRoute(
-    { incubatorId: param.path.string },
-    (p) => `/incubators/${p.incubatorId}`,
-  ),
-  incubatorList: defineRoute({}, (p) => `/incubators`),
-  incubatorCreate: defineRoute({}, (p) => `/incubators/create-form`),
-  incubatorDetails: defineRoute(
-    { incubatorId: param.path.string },
-    (p) => `/incubators/${p.incubatorId}`,
-  ),
-  teamDetailsEdit: defineRoute(
-    { teamId: param.path.string },
-    (p) => `/teams/${p.teamId}`,
-  ),
-  teamList: defineRoute({}, (p) => `/teams`),
-  teamCreate: defineRoute({}, (p) => `/teams/create-form`),
-  teamDetails: defineRoute(
-    { teamId: param.path.string },
-    (p) => `/teams/${p.teamId}`,
-  ),
-  startupList: defineRoute({}, (p) => `/startups`),
-  startupDetails: defineRoute(
-    { startupId: param.path.string },
-    (p) => `/startups/${p.startupId}`,
-  ),
-  startupDetailsEdit: defineRoute(
-    { startupId: param.path.string },
-    (p) => `/startups/${p.startupId}/info-form`,
-  ),
-  startupDocs: defineRoute(
-    { startupId: param.path.string },
-    (p) => `/startups/${p.startupId}/files`,
-  ),
-  startupCreate: defineRoute({}, (p) => `/startups/create-form`),
-  adminMattermost: defineRoute({}, (p) => `/admin/mattermost`),
-  home: defineRoute({}, (p) => `/`),
-  login: defineRoute({}, (p) => `/login`),
-  onboarding: defineRoute({}, (p) => `/onboarding`),
-  onboardingSuccess: defineRoute({}, (p) => `/onboardingSuccess`),
-  metabase: defineRoute({}, (p) => `/metabase`),
-  keskispasse: defineRoute({}, (p) => `/keskispasse`),
-  eventsList: defineRoute({}, (p) => `/events`),
-  formationList: defineRoute({}, (p) => `/formations`),
-  formationDetails: defineRoute({}, (p) => "/formations/.*"),
-  verifyMember: defineRoute({}, (p) => "/verify"),
-  organizationList: defineRoute({}, (p) => "/organizations"),
-  organizationDetails: defineRoute(
-    { organizationId: param.path.string },
-    (p) => `/organizations/${p.organizationId}`,
-  ),
-  organizationDetailsEdit: defineRoute(
-    { organizationId: param.path.string },
-    (p) => `/organizations/${p.organizationId}/info-form`,
-  ),
-  organizationCreate: defineRoute({}, (p) => "/organizations/create-form"),
-  serviceList: defineRoute({}, (p) => "/services"),
-}).routes;
+export const routes = {
+  account: () => `/account`,
+  accountEditBaseInfo: () => `/account/base-info`,
+  accountEditPrivateInfo: () => `/account/info`,
+  signIn: () => `/signin`,
+  community: () => `/community`,
+  communityMember: ({ username }: { username: string }) =>
+    `/community/${username}`,
+  communityCreateMember: () => `/community/create`,
+  dashboard: () => `/dashboard`,
+  incubatorDetailsEdit: ({ incubatorId }: { incubatorId: string }) =>
+    `/incubators/${incubatorId}`,
+  incubatorList: () => `/incubators`,
+  incubatorCreate: () => `/incubators/create-form`,
+  incubatorDetails: ({ incubatorId }: { incubatorId: string }) =>
+    `/incubators/${incubatorId}`,
+  teamDetailsEdit: ({ teamId }: { teamId: string }) => `/teams/${teamId}`,
+  teamList: () => `/teams`,
+  teamCreate: () => `/teams/create-form`,
+  teamDetails: ({ teamId }: { teamId: string }) => `/teams/${teamId}`,
+  startupList: () => `/startups`,
+  startupDetails: ({ startupId }: { startupId: string }) =>
+    `/startups/${startupId}`,
+  startupDetailsEdit: ({ startupId }: { startupId: string }) =>
+    `/startups/${startupId}/info-form`,
+  startupDocs: ({ startupId }: { startupId: string }) =>
+    `/startups/${startupId}/files`,
+  startupCreate: () => `/startups/create-form`,
+  adminMattermost: () => `/admin/mattermost`,
+  home: () => `/`,
+  login: () => `/login`,
+  onboarding: () => `/onboarding`,
+  onboardingSuccess: () => `/onboardingSuccess`,
+  metabase: () => `/metabase`,
+  keskispasse: () => `/keskispasse`,
+  eventsList: () => `/events`,
+  formationList: () => `/formations`,
+  formationDetails: () => `/formations/.*`,
+  verifyMember: () => `/verify`,
+  organizationList: () => `/organizations`,
+  organizationDetails: ({ organizationId }: { organizationId: string }) =>
+    `/organizations/${organizationId}`,
+  organizationDetailsEdit: ({ organizationId }: { organizationId: string }) =>
+    `/organizations/${organizationId}/info-form`,
+  organizationCreate: () => `/organizations/create-form`,
+  serviceList: () => `/services`,
+} as const;

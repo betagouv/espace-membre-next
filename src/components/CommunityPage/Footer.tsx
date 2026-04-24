@@ -3,7 +3,7 @@ import Tile from "@codegouvfr/react-dsfr/Tile";
 import dataviz from "@codegouvfr/react-dsfr/dsfr/artwork/pictograms/digital/data-visualization.svg";
 import { StaticImageData } from "next/image";
 
-import { linkRegistry } from "@/utils/routes/registry";
+import { routes } from "@/utils/routes/routes";
 
 export const Footer = () => (
   <div className={fr.cx("fr-grid-row", "fr-grid-row--gutters")}>
@@ -15,7 +15,7 @@ export const Footer = () => (
         orientation="horizontal"
         imageUrl={(dataviz as StaticImageData).src}
         linkProps={{
-          href: linkRegistry.get("metabase"),
+          href: routes["metabase"](),
         }}
       />
     </div>

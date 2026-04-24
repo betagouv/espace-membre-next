@@ -5,7 +5,7 @@ import { format } from "date-fns";
 import { fr as frLocale } from "date-fns/locale/fr";
 
 import { MemberPageProps } from "./MemberPage";
-import { linkRegistry } from "@/utils/routes/registry";
+import { routes } from "@/utils/routes/routes";
 
 export const MemberMissions = ({
   startups,
@@ -24,7 +24,7 @@ export const MemberMissions = ({
             uuid: s,
             name: startup?.name,
             url: startup?.uuid
-              ? linkRegistry.get("startupDetails", {
+              ? routes["startupDetails"]({
                   startupId: startup.uuid,
                 })
               : "#",
@@ -40,7 +40,7 @@ export const MemberMissions = ({
               : userInfos.role,
             url:
               (userInfos.teams?.length &&
-                linkRegistry.get("teamDetails", {
+                routes["teamDetails"]({
                   teamId: userInfos.teams[0].uuid,
                 })) ||
               "#",
