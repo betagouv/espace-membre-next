@@ -2,6 +2,7 @@
 import React from "react";
 
 import Button from "@codegouvfr/react-dsfr/Button";
+import Link from "next/link";
 import { useRouter } from "next/navigation";
 
 import SEIncubateurSelect from "../SEIncubateurSelect";
@@ -43,9 +44,12 @@ export const IncubatorList = (props: IncubatorListProps) => {
       </form>
 
       <p>
-        <a className="fr-btn fr-btn--secondary" href="/incubators/create-form">
+        <Link
+          className="fr-btn fr-btn--secondary"
+          href="/incubators/create-form"
+        >
           Créer une nouvelle fiche incubateur
-        </a>
+        </Link>
       </p>
     </>
   );

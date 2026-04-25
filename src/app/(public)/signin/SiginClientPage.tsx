@@ -62,6 +62,7 @@ export default function SignClientPage() {
   };
 
   React.useEffect(() => {
+    // eslint-disable-next-line react-hooks/set-state-in-effect
     if (typeof window !== "undefined") onSubmit();
   }, [onSubmit]);
 

@@ -41,7 +41,11 @@ export const MemberUpdate = ({
     setValue,
     trigger,
     control,
-  } = useForm<updateMemberMissionsSchemaInputType, any, updateMemberMissionsSchemaType>({
+  } = useForm<
+    updateMemberMissionsSchemaInputType,
+    any,
+    updateMemberMissionsSchemaType
+  >({
     resolver: zodResolver(updateMemberMissionsSchema),
     mode: "onChange",
     defaultValues,

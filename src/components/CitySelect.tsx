@@ -5,6 +5,7 @@ import {
   useContext,
   useState,
   useRef,
+  useMemo,
   type ReactNode,
   useCallback,
 } from "react";
@@ -225,7 +226,7 @@ export default function CitySelect({
     callback(data);
   };
   const [loading, setLoading] = useState<boolean>(false);
-  const debounceLoadOptions = useCallback(_.debounce(loadOptions, 500), []);
+  const debounceLoadOptions = useMemo(() => _.debounce(loadOptions, 500), []);
   const [search, onSearchChange] = useState("");
   const [inputElement, setInputElement] = useState<HTMLInputElement | null>(
     null,

@@ -41,14 +41,16 @@ interface AutoCompleteProps<
   FreeSolo extends boolean | undefined,
   GroupOptions extends boolean | undefined,
   ChipComponent extends React.ElementType = ChipTypeMap["defaultComponent"],
-> extends UseAutocompleteProps<Value, Multiple, DisableClearable, FreeSolo>,
+>
+  extends
+    UseAutocompleteProps<Value, Multiple, DisableClearable, FreeSolo>,
     StandardProps<
       React.HTMLAttributes<HTMLDivElement>,
       "defaultValue" | "onChange" | "onSelect" | "children"
     > {
   ChipProps?: ChipProps<ChipComponent>;
   unstable_isActiveElementInListbox?: (
-    listbox: React.RefObject<HTMLElement | null>
+    listbox: React.RefObject<HTMLElement | null>,
   ) => boolean;
   defaultValue: AutoCompleteValue<Value, Multiple, DisableClearable, FreeSolo>;
   multiple?: Multiple;

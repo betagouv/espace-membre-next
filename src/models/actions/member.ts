@@ -69,7 +69,9 @@ export const memberInfoUpdateSchema = z.object({
 });
 
 export type memberInfoUpdateSchemaType = z.infer<typeof memberInfoUpdateSchema>;
-export type memberInfoUpdateSchemaInputType = z.input<typeof memberInfoUpdateSchema>;
+export type memberInfoUpdateSchemaInputType = z.input<
+  typeof memberInfoUpdateSchema
+>;
 
 export const memberValidateInfoSchema = z.object({
   fullname: memberSchema.shape.fullname,

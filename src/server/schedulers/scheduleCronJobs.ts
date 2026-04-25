@@ -14,10 +14,14 @@ interface DBTask {
   error_message: string;
 }
 
-interface DBTaskInsertSucceed
-  extends Omit<DBTask, "last_failed" | "error_message" | "created_at"> {}
-interface DBTaskInsertFailed
-  extends Omit<DBTask, "last_completed" | "created_at"> {}
+interface DBTaskInsertSucceed extends Omit<
+  DBTask,
+  "last_failed" | "error_message" | "created_at"
+> {}
+interface DBTaskInsertFailed extends Omit<
+  DBTask,
+  "last_completed" | "created_at"
+> {}
 
 const onTickWrapper = (
   name: string,

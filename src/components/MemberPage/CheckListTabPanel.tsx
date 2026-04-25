@@ -1,4 +1,4 @@
-import { useState, useEffect, ReactNode } from "react";
+import { useState, useMemo, ReactNode } from "react";
 
 import { fr } from "@codegouvfr/react-dsfr";
 
@@ -29,12 +29,10 @@ export const ChecklistTabPanel = ({
       .filter((event) => event.date !== null)
       .map((event) => event.field_id),
   );
-  const [progress, setProgress] = useState<number>(
-    computeProgress(userEventIds, checklistObject, offset),
+  const progress = useMemo(
+    () => computeProgress(userEventIds, checklistObject, offset),
+    [userEventIds, checklistObject, offset],
   );
-  useEffect(() => {
-    setProgress(computeProgress(userEventIds, checklistObject, offset));
-  }, [userEventIds, checklistObject]);
   return (
     <>
       {intro}

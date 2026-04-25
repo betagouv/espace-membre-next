@@ -1,3 +1,4 @@
+import Link from "next/link";
 import type { Metadata } from "next";
 
 import { routeTitles } from "@/utils/routes/routeTitles";
@@ -17,7 +18,7 @@ export default async function Page() {
       <ul className={fr.cx("fr-text--xl")}>
         <li>
           Retrouve toutes les informations sur le statut d'un membre{" "}
-          <a href="/community">sur sa fiche</a>
+          <Link href="/community">sur sa fiche</Link>
         </li>
         <li>
           Consulte{" "}

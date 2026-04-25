@@ -156,19 +156,19 @@ export function OrganizationForm(props: OrganizationFormProps) {
           onSubmit={handleSubmit(onSubmit)}
           aria-label="Modifier mes informations"
         >
-          <BasicInput
-            id="name"
-            label="Nom de l'organisation (obligatoire)"
-            placeholder="ex: Direction Interministerielle du Numérique"
-            hintText={`Le nom complet de l'organisation sponsor et
-                                ne doit pas dépasser 30 caractères.`}
-          />
-          <BasicInput
-            id="acronym"
-            label="Acronyme de l'organisation (obligatoire)"
-            placeholder="DINUM"
-            hintText={`Par exemple : "DINUM"`}
-          />
+          {BasicInput({
+            id: "name",
+            label: "Nom de l'organisation (obligatoire)",
+            placeholder: "ex: Direction Interministerielle du Numérique",
+            hintText: `Le nom complet de l'organisation sponsor et
+                                ne doit pas dépasser 30 caractères.`,
+          })}
+          {BasicInput({
+            id: "acronym",
+            label: "Acronyme de l'organisation (obligatoire)",
+            placeholder: "DINUM",
+            hintText: `Par exemple : "DINUM"`,
+          })}
           <SponsorTypeSelect
             isMulti={false}
             onChange={(value) => {

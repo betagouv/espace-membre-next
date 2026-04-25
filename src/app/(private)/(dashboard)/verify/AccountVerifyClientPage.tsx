@@ -49,7 +49,11 @@ export default function AccountVerifyClientPage({
     setValue,
     trigger,
     control,
-  } = useForm<memberValidateInfoSchemaInputType, any, memberValidateInfoSchemaType>({
+  } = useForm<
+    memberValidateInfoSchemaInputType,
+    any,
+    memberValidateInfoSchemaType
+  >({
     resolver: zodResolver(memberValidateInfoSchema),
     mode: "onChange",
     defaultValues: {

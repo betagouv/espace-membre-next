@@ -2,6 +2,7 @@
 import React from "react";
 
 import Button from "@codegouvfr/react-dsfr/Button";
+import Link from "next/link";
 import { useRouter } from "next/navigation";
 
 import SESponsorSelect from "@/components/SESponsorSelect";
@@ -42,12 +43,12 @@ export const OrganizationList = (props: OrganizationListProps) => {
       </form>
 
       <p>
-        <a
+        <Link
           className="fr-btn fr-btn--secondary"
           href="/organizations/create-form"
         >
           Créer une nouvelle fiche organisation sponsor
-        </a>
+        </Link>
       </p>
     </>
   );

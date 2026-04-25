@@ -122,11 +122,13 @@ export const BaseInfoUpdate = (props: BaseInfoUpdateProps) => {
     trigger,
     control,
     getValues,
-  } = useForm<memberInfoUpdateSchemaInputType, any, memberInfoUpdateSchemaType>({
-    resolver: zodResolver(memberInfoUpdateSchema),
-    mode: "onChange",
-    defaultValues,
-  });
+  } = useForm<memberInfoUpdateSchemaInputType, any, memberInfoUpdateSchemaType>(
+    {
+      resolver: zodResolver(memberInfoUpdateSchema),
+      mode: "onChange",
+      defaultValues,
+    },
+  );
 
   const session = useSession();
 

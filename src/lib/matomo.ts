@@ -19,7 +19,6 @@ export interface MatomoSite {
   type: string;
 }
 
-/* eslint-disable import/export */
 export interface MatomoUserAccess {
   idSite: number;
   name: string;
@@ -36,7 +35,6 @@ export interface MatomoUserAccess {
   site: number;
   access: MatomoAccess; // Define access levels you want to check
 }
-/* eslint-enable import/export */
 
 export class Matomo implements AccountService {
   private apiUrl: string;
