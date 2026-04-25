@@ -21,8 +21,9 @@ import LastChange from "../LastChange";
 import UploadForm from "../UploadForm/UploadForm";
 import { imagePostApiSchemaType } from "@/models/actions/image";
 import {
-  memberInfoUpdateSchemaType,
   memberInfoUpdateSchema,
+  memberInfoUpdateSchemaInputType,
+  memberInfoUpdateSchemaType,
 } from "@/models/actions/member";
 import { statusOptions, DOMAINE_OPTIONS, memberSchema } from "@/models/member";
 import { PrivateMemberChangeSchemaType } from "@/models/memberChange";
@@ -121,11 +122,13 @@ export const BaseInfoUpdate = (props: BaseInfoUpdateProps) => {
     trigger,
     control,
     getValues,
-  } = useForm<memberInfoUpdateSchemaType>({
-    resolver: zodResolver(memberInfoUpdateSchema),
-    mode: "onChange",
-    defaultValues,
-  });
+  } = useForm<memberInfoUpdateSchemaInputType, any, memberInfoUpdateSchemaType>(
+    {
+      resolver: zodResolver(memberInfoUpdateSchema),
+      mode: "onChange",
+      defaultValues,
+    },
+  );
 
   const session = useSession();
 

@@ -37,7 +37,7 @@ describe("canEditMember", () => {
     getTeamsForUserStub = sinon.stub();
     getUserBasicInfoStub = sinon.stub();
 
-    const module = proxyquire("./canEditMember", {
+    const somemodule = proxyquire("./canEditMember", {
       "@/lib/kysely/queries/users": {
         getUserStartups: getUserStartupsStub,
         getUserBasicInfo: getUserBasicInfoStub,
@@ -47,7 +47,7 @@ describe("canEditMember", () => {
       },
     });
 
-    canEditMember = module.canEditMember;
+    canEditMember = somemodule.canEditMember;
   });
 
   afterEach(() => {
@@ -82,7 +82,9 @@ describe("canEditMember", () => {
         },
       ],
     });
-    getUserBasicInfoStub.onSecondCall().resolves({ legal_status: "independant" });
+    getUserBasicInfoStub
+      .onSecondCall()
+      .resolves({ legal_status: "independant" });
     getUserStartupsStub.resolves([]);
     getTeamsForUserStub.resolves([{ incubator_id: incubatorA.uuid }]);
 
@@ -98,8 +100,12 @@ describe("canEditMember", () => {
   it("should return true when session user's team incubator matches user's current startup incubator", async () => {
     const pastDate = new Date("2020-01-01");
 
-    getUserBasicInfoStub.onFirstCall().resolves({ uuid: "user-uuid", teams: [] });
-    getUserBasicInfoStub.onSecondCall().resolves({ legal_status: "independant" });
+    getUserBasicInfoStub
+      .onFirstCall()
+      .resolves({ uuid: "user-uuid", teams: [] });
+    getUserBasicInfoStub
+      .onSecondCall()
+      .resolves({ legal_status: "independant" });
     getUserStartupsStub.resolves([
       {
         uuid: "startup-uuid",
@@ -120,8 +126,12 @@ describe("canEditMember", () => {
   });
 
   it("should return true when session user's team incubator matches provided incubator_id", async () => {
-    getUserBasicInfoStub.onFirstCall().resolves({ uuid: "user-uuid", teams: [] });
-    getUserBasicInfoStub.onSecondCall().resolves({ legal_status: "independant" });
+    getUserBasicInfoStub
+      .onFirstCall()
+      .resolves({ uuid: "user-uuid", teams: [] });
+    getUserBasicInfoStub
+      .onSecondCall()
+      .resolves({ legal_status: "independant" });
     getUserStartupsStub.resolves([]);
     getTeamsForUserStub.resolves([{ incubator_id: incubatorA.uuid }]);
 
@@ -147,7 +157,9 @@ describe("canEditMember", () => {
         },
       ],
     });
-    getUserBasicInfoStub.onSecondCall().resolves({ legal_status: "independant" });
+    getUserBasicInfoStub
+      .onSecondCall()
+      .resolves({ legal_status: "independant" });
     getUserStartupsStub.resolves([]);
     getTeamsForUserStub.resolves([{ incubator_id: incubatorC.uuid }]);
 
@@ -172,7 +184,9 @@ describe("canEditMember", () => {
         },
       ],
     });
-    getUserBasicInfoStub.onSecondCall().resolves({ legal_status: "independant" });
+    getUserBasicInfoStub
+      .onSecondCall()
+      .resolves({ legal_status: "independant" });
     getUserStartupsStub.resolves([]);
     getTeamsForUserStub.resolves([]);
 
@@ -187,8 +201,12 @@ describe("canEditMember", () => {
   it("should ignore startup missions that have not started yet", async () => {
     const futureDate = new Date("2099-01-01");
 
-    getUserBasicInfoStub.onFirstCall().resolves({ uuid: "user-uuid", teams: [] });
-    getUserBasicInfoStub.onSecondCall().resolves({ legal_status: "independant" });
+    getUserBasicInfoStub
+      .onFirstCall()
+      .resolves({ uuid: "user-uuid", teams: [] });
+    getUserBasicInfoStub
+      .onSecondCall()
+      .resolves({ legal_status: "independant" });
     getUserStartupsStub.resolves([
       {
         uuid: "startup-uuid",
@@ -211,8 +229,12 @@ describe("canEditMember", () => {
   it("should return true when user has no teams but has matching startup incubator", async () => {
     const pastDate = new Date("2020-01-01");
 
-    getUserBasicInfoStub.onFirstCall().resolves({ uuid: "user-uuid", teams: undefined });
-    getUserBasicInfoStub.onSecondCall().resolves({ legal_status: "independant" });
+    getUserBasicInfoStub
+      .onFirstCall()
+      .resolves({ uuid: "user-uuid", teams: undefined });
+    getUserBasicInfoStub
+      .onSecondCall()
+      .resolves({ legal_status: "independant" });
     getUserStartupsStub.resolves([
       {
         uuid: "startup-uuid",
@@ -247,7 +269,9 @@ describe("canEditMember", () => {
         },
       ],
     });
-    getUserBasicInfoStub.onSecondCall().resolves({ legal_status: "independant" });
+    getUserBasicInfoStub
+      .onSecondCall()
+      .resolves({ legal_status: "independant" });
     getUserStartupsStub.resolves([
       {
         uuid: "startup-uuid",
@@ -269,8 +293,12 @@ describe("canEditMember", () => {
   });
 
   it("should return false when user has no teams, no startups, and no incubator_id", async () => {
-    getUserBasicInfoStub.onFirstCall().resolves({ uuid: "user-uuid", teams: [] });
-    getUserBasicInfoStub.onSecondCall().resolves({ legal_status: "independant" });
+    getUserBasicInfoStub
+      .onFirstCall()
+      .resolves({ uuid: "user-uuid", teams: [] });
+    getUserBasicInfoStub
+      .onSecondCall()
+      .resolves({ legal_status: "independant" });
     getUserStartupsStub.resolves([]);
     getTeamsForUserStub.resolves([{ incubator_id: incubatorA.uuid }]);
 
@@ -285,8 +313,12 @@ describe("canEditMember", () => {
   it("should handle startups without incubator", async () => {
     const pastDate = new Date("2020-01-01");
 
-    getUserBasicInfoStub.onFirstCall().resolves({ uuid: "user-uuid", teams: [] });
-    getUserBasicInfoStub.onSecondCall().resolves({ legal_status: "independant" });
+    getUserBasicInfoStub
+      .onFirstCall()
+      .resolves({ uuid: "user-uuid", teams: [] });
+    getUserBasicInfoStub
+      .onSecondCall()
+      .resolves({ legal_status: "independant" });
     getUserStartupsStub.resolves([
       {
         uuid: "startup-uuid",
@@ -319,7 +351,9 @@ describe("canEditMember", () => {
         },
       ],
     });
-    getUserBasicInfoStub.onSecondCall().resolves({ legal_status: "independant" });
+    getUserBasicInfoStub
+      .onSecondCall()
+      .resolves({ legal_status: "independant" });
     getUserStartupsStub.resolves([]);
     getTeamsForUserStub.resolves([{ incubator_id: incubatorA.uuid }]);
 
@@ -337,8 +371,12 @@ describe("canEditMember", () => {
     const pastDate = new Date("2020-01-01");
     const sharedStartupUuid = "shared-startup-uuid";
 
-    getUserBasicInfoStub.onFirstCall().resolves({ uuid: "user-uuid", teams: [] });
-    getUserBasicInfoStub.onSecondCall().resolves({ legal_status: "contractuel" });
+    getUserBasicInfoStub
+      .onFirstCall()
+      .resolves({ uuid: "user-uuid", teams: [] });
+    getUserBasicInfoStub
+      .onSecondCall()
+      .resolves({ legal_status: "contractuel" });
 
     getUserStartupsStub
       .onFirstCall()
@@ -376,8 +414,12 @@ describe("canEditMember", () => {
     const pastDate = new Date("2020-01-01");
     const sharedStartupUuid = "shared-startup-uuid";
 
-    getUserBasicInfoStub.onFirstCall().resolves({ uuid: "user-uuid", teams: [] });
-    getUserBasicInfoStub.onSecondCall().resolves({ legal_status: "fonctionnaire" });
+    getUserBasicInfoStub
+      .onFirstCall()
+      .resolves({ uuid: "user-uuid", teams: [] });
+    getUserBasicInfoStub
+      .onSecondCall()
+      .resolves({ legal_status: "fonctionnaire" });
 
     getUserStartupsStub
       .onFirstCall()
@@ -415,8 +457,12 @@ describe("canEditMember", () => {
     const pastDate = new Date("2020-01-01");
     const sharedStartupUuid = "shared-startup-uuid";
 
-    getUserBasicInfoStub.onFirstCall().resolves({ uuid: "user-uuid", teams: [] });
-    getUserBasicInfoStub.onSecondCall().resolves({ legal_status: "independant" });
+    getUserBasicInfoStub
+      .onFirstCall()
+      .resolves({ uuid: "user-uuid", teams: [] });
+    getUserBasicInfoStub
+      .onSecondCall()
+      .resolves({ legal_status: "independant" });
 
     getUserStartupsStub
       .onFirstCall()
@@ -453,8 +499,12 @@ describe("canEditMember", () => {
   it("should return false when session user is contractuel but does not share any startup", async () => {
     const pastDate = new Date("2020-01-01");
 
-    getUserBasicInfoStub.onFirstCall().resolves({ uuid: "user-uuid", teams: [] });
-    getUserBasicInfoStub.onSecondCall().resolves({ legal_status: "contractuel" });
+    getUserBasicInfoStub
+      .onFirstCall()
+      .resolves({ uuid: "user-uuid", teams: [] });
+    getUserBasicInfoStub
+      .onSecondCall()
+      .resolves({ legal_status: "contractuel" });
 
     getUserStartupsStub
       .onFirstCall()
@@ -491,7 +541,9 @@ describe("canEditMember", () => {
   it("should return false when session user info cannot be found", async () => {
     const pastDate = new Date("2020-01-01");
 
-    getUserBasicInfoStub.onFirstCall().resolves({ uuid: "user-uuid", teams: [] });
+    getUserBasicInfoStub
+      .onFirstCall()
+      .resolves({ uuid: "user-uuid", teams: [] });
     getUserBasicInfoStub.onSecondCall().resolves(null);
 
     getUserStartupsStub.resolves([
@@ -518,8 +570,12 @@ describe("canEditMember", () => {
     const futureDate = new Date("2099-01-01");
     const sharedStartupUuid = "shared-startup-uuid";
 
-    getUserBasicInfoStub.onFirstCall().resolves({ uuid: "user-uuid", teams: [] });
-    getUserBasicInfoStub.onSecondCall().resolves({ legal_status: "contractuel" });
+    getUserBasicInfoStub
+      .onFirstCall()
+      .resolves({ uuid: "user-uuid", teams: [] });
+    getUserBasicInfoStub
+      .onSecondCall()
+      .resolves({ legal_status: "contractuel" });
 
     getUserStartupsStub
       .onFirstCall()

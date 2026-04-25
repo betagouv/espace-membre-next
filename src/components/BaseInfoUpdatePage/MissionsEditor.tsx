@@ -5,15 +5,7 @@ import { Button } from "@codegouvfr/react-dsfr/Button";
 import { Input } from "@codegouvfr/react-dsfr/Input";
 import { Select } from "@codegouvfr/react-dsfr/Select";
 import { addMonths } from "date-fns/addMonths";
-import {
-  Control,
-  useFieldArray,
-  useWatch,
-  UseFormRegister,
-  UseFormSetValue,
-  UseFormTrigger,
-  FieldErrors,
-} from "react-hook-form";
+import { useFieldArray, useWatch } from "react-hook-form";
 
 import SESelect from "../SESelect";
 import { userStatusOptions } from "@/frontConfig";
@@ -41,11 +33,11 @@ export const Mission = ({
   missionArrayKey = "missions",
 }: {
   index: number;
-  register: UseFormRegister<HasMissions>;
-  control: Control<HasMissions>;
-  setValue: UseFormSetValue<HasMissions>;
-  trigger: UseFormTrigger<HasMissions>;
-  mission?: missionSchemaType;
+  register: any;
+  control: any;
+  setValue: any;
+  trigger: any;
+  mission?: Record<string, any>;
   missionsRemove: any;
   startupOptions: Option[];
   errors: any; //FieldErrors<HasMissions>;
@@ -294,11 +286,11 @@ export const MissionsEditor = ({
   startupOptions,
   missionArrayKey = "missions",
 }: {
-  control: Control<HasMissions>;
+  control: any;
   errors?: Record<string, any>;
-  register: UseFormRegister<HasMissions>;
-  setValue: UseFormSetValue<HasMissions>;
-  trigger: UseFormTrigger<HasMissions>;
+  register: any;
+  setValue: any;
+  trigger: any;
   startupOptions: Option[];
   missionArrayKey?: string;
 }) => {

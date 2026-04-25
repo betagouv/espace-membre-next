@@ -41,7 +41,7 @@ async function MainStructure(props: PropsWithChildren) {
 
   return (
     <>
-      {/* eslint-disable-next-line @next/next/no-head-element */}
+      {}
       <head>
         <DsfrHead />
       </head>

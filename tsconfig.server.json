@@ -38,11 +38,7 @@
       "@db/*": ["src/server/db/*"],
       "@betagouv": ["src/server/betagouv.ts"]
     },
-    "plugins": [
-      {
-        "transform": "typescript-transform-paths"
-      }
-    ],
+    "plugins": [],
     "incremental": true,
     "tsBuildInfoFile": "./.tsbuildinfo.server"
   },

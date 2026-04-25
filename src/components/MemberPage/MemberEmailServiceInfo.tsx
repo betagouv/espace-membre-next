@@ -157,7 +157,9 @@ const MemberEmailServiceInfo = ({
           Email primaire bloqué sur brevo en transactionnel :{" "}
           {emailServiceInfo.primaryEmailTransac ? "oui" : "non"}
           {isAdmin && emailServiceInfo.primaryEmailTransac && (
-            <ContactCard {...(emailServiceInfo.primaryEmailTransac as SIBContact)} />
+            <ContactCard
+              {...(emailServiceInfo.primaryEmailTransac as SIBContact)}
+            />
           )}
         </li>
       }
@@ -166,7 +168,9 @@ const MemberEmailServiceInfo = ({
           Email secondaire bloqué sur brevo :{" "}
           {emailServiceInfo.secondaryEmailTransac ? "oui" : "non"}
           {isAdmin && emailServiceInfo.secondaryEmailTransac && (
-            <ContactCard {...(emailServiceInfo.secondaryEmailTransac as SIBContact)} />
+            <ContactCard
+              {...(emailServiceInfo.secondaryEmailTransac as SIBContact)}
+            />
           )}
         </li>
       }

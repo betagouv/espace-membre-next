@@ -20,7 +20,7 @@ export const GET = async (
         Key: s3Key,
       })
       .promise();
-    return new NextResponse(s3Object.Body as Buffer);
+    return new NextResponse(new Uint8Array(s3Object.Body as Buffer));
   } catch (error) {
     if ((error as { code: string }).code === "NoSuchKey") {
       return new NextResponse(

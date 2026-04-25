@@ -277,7 +277,6 @@ export function renderHtmlFromMd(content, rendererConfig = {}) {
   });
 
   function build(coll, k, level, ctx) {
-    /* eslint-disable no-param-reassign */
     if (k >= coll.length || coll[k].level <= level) {
       return k;
     }

@@ -15,6 +15,7 @@ import SEIncubateurSelect from "@/components/SEIncubateurSelect";
 import {
   createMemberResponseSchema,
   createMemberSchema,
+  createMemberSchemaInputType,
   createMemberSchemaType,
 } from "@/models/actions/member";
 import { DOMAINE_OPTIONS, Domaine } from "@/models/member";
@@ -28,7 +29,7 @@ export interface BaseInfoUpdateProps {
 }
 
 export default function CommunityCreateMemberPage(props: BaseInfoUpdateProps) {
-  const defaultValues: createMemberSchemaType = {
+  const defaultValues: createMemberSchemaInputType = {
     member: {
       firstname: "",
       lastname: "",
@@ -56,7 +57,7 @@ export default function CommunityCreateMemberPage(props: BaseInfoUpdateProps) {
     getValues,
     control,
     watch,
-  } = useForm<createMemberSchemaType>({
+  } = useForm<createMemberSchemaInputType, any, createMemberSchemaType>({
     resolver: zodResolver(createMemberSchema),
     mode: "onChange",
     defaultValues,

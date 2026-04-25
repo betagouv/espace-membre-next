@@ -126,9 +126,6 @@ export default async function Page() {
               <div>
                 Pour les accès scalingo, les demandes de délégation DNS et
                 autres besoins;
-                <br />
-                <br />
-                Utiliser le mot de passse "hellobeta" pour accéder au formulaire
               </div>
             }
             orientation="horizontal"

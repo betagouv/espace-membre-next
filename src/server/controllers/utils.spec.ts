@@ -55,9 +55,7 @@ describe("isPublicServiceEmail", () => {
     });
 
     it("should return true for subdomain gouv.fr emails", async () => {
-      const result = await isPublicServiceEmail(
-        "user@sub.ministry.gouv.fr",
-      );
+      const result = await isPublicServiceEmail("user@sub.ministry.gouv.fr");
       expect(result).to.be.true;
       expect(axiosGetStub.called).to.be.false;
     });

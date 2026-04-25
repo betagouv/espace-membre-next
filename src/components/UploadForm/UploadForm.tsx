@@ -101,6 +101,7 @@ const UploadForm = ({
   }
 
   if ((url || image) && !shouldDeletePicture) {
+    // eslint-disable-next-line react-hooks/refs
     buttons.push({
       children: "Supprimer l'image",
       iconId: "fr-icon-delete-bin-line",
