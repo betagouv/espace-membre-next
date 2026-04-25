@@ -47,6 +47,9 @@ interface AutoCompleteProps<
       "defaultValue" | "onChange" | "onSelect" | "children"
     > {
   ChipProps?: ChipProps<ChipComponent>;
+  unstable_isActiveElementInListbox?: (
+    listbox: React.RefObject<HTMLElement | null>
+  ) => boolean;
   defaultValue: AutoCompleteValue<Value, Multiple, DisableClearable, FreeSolo>;
   multiple?: Multiple;
   freeSolo?: FreeSolo;

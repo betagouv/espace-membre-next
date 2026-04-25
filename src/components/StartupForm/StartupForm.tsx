@@ -26,6 +26,7 @@ import { ActionResponse } from "@/@types/serverAction";
 import frontConfig from "@/frontConfig";
 import {
   startupInfoUpdateSchema,
+  startupInfoUpdateSchemaInputType,
   startupInfoUpdateSchemaType,
 } from "@/models/actions/startup";
 import { Option } from "@/models/misc";
@@ -127,7 +128,7 @@ export function StartupForm(props: StartupFormProps) {
     getValues,
     watch,
     control,
-  } = useForm<startupInfoUpdateSchemaType>({
+  } = useForm<startupInfoUpdateSchemaInputType, any, startupInfoUpdateSchemaType>({
     resolver: zodResolver(startupInfoUpdateSchema),
     mode: "onChange",
     defaultValues: {

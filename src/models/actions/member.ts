@@ -69,6 +69,7 @@ export const memberInfoUpdateSchema = z.object({
 });
 
 export type memberInfoUpdateSchemaType = z.infer<typeof memberInfoUpdateSchema>;
+export type memberInfoUpdateSchemaInputType = z.input<typeof memberInfoUpdateSchema>;
 
 export const memberValidateInfoSchema = z.object({
   fullname: memberSchema.shape.fullname,
@@ -93,6 +94,9 @@ export const memberValidateInfoSchema = z.object({
 });
 
 export type memberValidateInfoSchemaType = z.infer<
+  typeof memberValidateInfoSchema
+>;
+export type memberValidateInfoSchemaInputType = z.input<
   typeof memberValidateInfoSchema
 >;
 
@@ -147,6 +151,7 @@ export const createMemberSchema = z
   );
 
 export type createMemberSchemaType = z.infer<typeof createMemberSchema>;
+export type createMemberSchemaInputType = z.input<typeof createMemberSchema>;
 
 export const createMemberResponseSchema = z
   .object({
@@ -166,6 +171,9 @@ export const updateMemberMissionsSchema = z.object({
 });
 
 export type updateMemberMissionsSchemaType = z.infer<
+  typeof updateMemberMissionsSchema
+>;
+export type updateMemberMissionsSchemaInputType = z.input<
   typeof updateMemberMissionsSchema
 >;
 

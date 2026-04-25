@@ -22,7 +22,6 @@ const nextConfig = {
     ignoreDuringBuilds: true,
   },
   productionBrowserSourceMaps: true,
-  expireTime: 0, // https://github.com/vercel/next.js/discussions/48328#discussioncomment-12837641
   async headers() {
     return [
       {
@@ -118,7 +117,6 @@ const sentryWebpackPluginOptions = {
   widenClientFileUpload: uploadToSentry, // https://sentry.zendesk.com/hc/en-us/articles/28813179249691-Frames-from-static-chunks-folder-are-not-source-mapped
   authToken: process.env.SENTRY_AUTH_TOKEN,
   url: "https://sentry.incubateur.net",
-  disableLogger: true,
   errorHandler: (err, invokeErr, compilation) => {
     compilation.warnings.push("Sentry CLI Plugin: " + err.message);
   },

@@ -14,6 +14,7 @@ import { MissionsEditor } from "../BaseInfoUpdatePage/MissionsEditor";
 import { safeUpdateMemberMissions } from "@/app/api/member/actions";
 import {
   updateMemberMissionsSchema,
+  updateMemberMissionsSchemaInputType,
   updateMemberMissionsSchemaType,
 } from "@/models/actions/member";
 import { EmailStatusCode, memberBaseInfoSchemaType } from "@/models/member";
@@ -29,7 +30,7 @@ export const MemberUpdate = ({
   userInfos,
   startupOptions,
 }: BaseInfoUpdateProps) => {
-  const defaultValues: updateMemberMissionsSchemaType = {
+  const defaultValues: updateMemberMissionsSchemaInputType = {
     missions: userInfos.missions,
     memberUuid: userInfos.uuid,
   };
@@ -40,7 +41,7 @@ export const MemberUpdate = ({
     setValue,
     trigger,
     control,
-  } = useForm<updateMemberMissionsSchemaType>({
+  } = useForm<updateMemberMissionsSchemaInputType, any, updateMemberMissionsSchemaType>({
     resolver: zodResolver(updateMemberMissionsSchema),
     mode: "onChange",
     defaultValues,
