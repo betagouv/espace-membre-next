@@ -1,5 +1,6 @@
 import { renderToMjml } from "@luma-team/mjml-react";
 import ejs from "ejs";
+import type { JSX } from "react";
 import mjml2html from "mjml";
 import TurndownService from "turndown";
 

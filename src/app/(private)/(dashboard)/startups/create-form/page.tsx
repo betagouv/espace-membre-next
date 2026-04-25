@@ -29,7 +29,6 @@ export default async function Page(props) {
             label: incubator.name,
           };
         })}
-        {...props}
       />
     </>
   );

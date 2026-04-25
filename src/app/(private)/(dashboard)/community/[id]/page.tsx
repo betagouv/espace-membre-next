@@ -12,24 +12,28 @@ import { canEditMember as _canEditMember } from "@/lib/canEditMember";
 import { getUserChecklists } from "@/utils/checklists/getUserChecklists";
 
 type Props = {
-  params: { id: string };
+  params: Promise<{ id: string }>;
 };
 
-export async function generateMetadata(
-  { params }: Props,
-  parent: ResolvingMetadata,
-): Promise<Metadata> {
+export async function generateMetadata(props: Props, parent: ResolvingMetadata): Promise<Metadata> {
+  const params = await props.params;
   const id = params.id;
   return {
     title: `Membre ${id} / Espace Membre`,
   };
 }
 
-export default async function Page({
-  params: { id },
-}: {
-  params: { id: string };
-}) {
+export default async function Page(
+  props: {
+    params: Promise<{ id: string }>;
+  }
+) {
+  const params = await props.params;
+
+  const {
+    id
+  } = params;
+
   // todo: merge with /account/page.tsx
   const session = await getServerSession(authOptions);
 

@@ -11,14 +11,9 @@ import { AuthorizationError, withHttpErrorHandling } from "@/utils/error";
 
 export const GET = withHttpErrorHandling(async function (
   req: Request,
-  {
-    params: { username },
-  }: {
-    params: {
-      username: string;
-    };
-  },
+  context: { params: Promise<{ username: string }> },
 ) {
+  const { username } = await context.params;
   const session = await getServerSession(authOptions);
 
   if (!session || !session.user.id) {

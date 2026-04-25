@@ -5,9 +5,6 @@ import { fr } from "@codegouvfr/react-dsfr";
 import Alert from "@codegouvfr/react-dsfr/Alert";
 import { Button } from "@codegouvfr/react-dsfr/Button";
 import { zodResolver } from "@hookform/resolvers/zod";
-import * as Sentry from "@sentry/nextjs";
-import axios from "axios";
-import { useSession } from "next-auth/react";
 import { useForm } from "react-hook-form";
 
 import { MissionsEditor } from "../BaseInfoUpdatePage/MissionsEditor";
@@ -50,8 +47,6 @@ export const MemberUpdate = ({
     mode: "onChange",
     defaultValues,
   });
-
-  const session = useSession();
 
   const [alertMessage, setAlertMessage] = React.useState<{
     title: string;

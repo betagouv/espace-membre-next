@@ -7,7 +7,6 @@ import { Button } from "@codegouvfr/react-dsfr/Button";
 import Input from "@codegouvfr/react-dsfr/Input";
 import Select from "@codegouvfr/react-dsfr/Select";
 import { zodResolver } from "@hookform/resolvers/zod";
-import * as Sentry from "@sentry/nextjs";
 import axios from "axios";
 import Link from "next/link";
 import { useSession } from "next-auth/react";

@@ -11,8 +11,9 @@ import {
 
 async function getFileHandler(
   req: NextRequest,
-  { params: { id } }: { params: { id: string } },
+  context: { params: Promise<{ id: string }> },
 ) {
+  const { id } = await context.params;
   const session = await getServerSession(authOptions);
   if (!session || !session.user.id) {
     throw new AuthorizationError();
