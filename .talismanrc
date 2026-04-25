@@ -13,6 +13,8 @@ fileignoreconfig:
   checksum: daebae004c8c06af9a88aaf57a1fad4b0a6efcb7920cf9628e0c1fd1985569ab
 - filename: src/components/Checklist.tsx
   checksum: 7bcd2b7b8aa2c603855af404f89c24d9bb02ba6e7b4a2a8503ef7b1b72902178
+- filename: src/components/EventsList/EventsList.tsx
+  checksum: 01f943fd703c4c5d4e3298bb73487c482b8aa789be160f0ba9421b29102f7a00
 - filename: src/components/MemberPage/MemberWaitingValidationNotice.tsx
   checksum: 4243d7f9fb28db14113849647ba3126d456aa935c7169722d844ae11b3d06443
 - filename: src/components/StartupPage/StartupMembers.tsx
