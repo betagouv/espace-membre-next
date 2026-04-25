@@ -3,8 +3,8 @@
   "version": "0.1.0",
   "private": true,
   "engines": {
-    "node": "22.x",
-    "npm": ">=10.9"
+    "node": "20.x",
+    "npm": "11.x"
   },
   "scripts": {
     "dev": "./node_modules/.bin/only-include-used-icons && next dev -p 8100",
@@ -83,7 +83,7 @@
     "next": "^14.2.25",
     "next-auth": "^4.24.11",
     "node-ical": "^0.18.0",
-    "nodemailer": "^7.0.7",
+    "nodemailer": "^6.9.9",
     "nuqs": "^2.0.4",
     "p-all": "^3.0.0",
     "pg": "^8.11.5",
@@ -128,7 +128,7 @@
     "cron-to-human": "^1.0.0",
     "dotenv": "^16.4.4",
     "eslint": "^8.57.0",
-    "eslint-config-next": "^14.2.21",
+    "eslint-config-next": "latest",
     "eslint-config-prettier": "^10.1.5",
     "eslint-plugin-import": "^2.29.1",
     "eslint-plugin-prettier": "^5.5.0",
