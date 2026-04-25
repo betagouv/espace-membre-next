@@ -36,7 +36,9 @@ export const sendEmailToStartupToUpdatePhase = async (
     .groupBy("startup_id")
     .selectAll()
     .execute();
-  console.log(`Will send email to ${startups.length} mailing lists`);
+  console.log(
+    `sendEmailToStartupToUpdatePhase: Will send email to ${startups.length} mailing lists`,
+  );
 
   for (const startup of startups) {
     const phase = startupPhases
