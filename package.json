@@ -9,7 +9,7 @@
   "scripts": {
     "dev": "./node_modules/.bin/only-include-used-icons && next dev -p 8100",
     "build:next": "NODE_OPTIONS='--max-old-space-size=16384' next build",
-    "build:server": "ttsc -p tsconfig.server.json",
+    "build:server": "tsc -p tsconfig.server.json",
     "build": "./node_modules/.bin/only-include-used-icons && npm run build:next && npm run build:server",
     "start": "NODE_ENV=production next start",
     "lint": "next lint",
@@ -17,7 +17,7 @@
     "rolldown": "knex migrate:down --esm",
     "makeMigration": "knex migrate:make -x ts --esm",
     "e2e": "npx playwright test",
-    "test": "NODE_ENV=test ts-mocha --paths -p tsconfig.json src/**/*.spec.ts __tests__/*.ts --exit --require ts-node/register --require ts-node/esm --icu-data-dir=./node_modules/full-icu --require ./__tests__/env-setup.ts --timeout 30000",
+    "test": "NODE_ENV=test ts-mocha src/**/*.spec.ts __tests__/*.ts",
     "seed": "knex seed:run --esm",
     "predev": "only-include-used-icons",
     "prebuild": "only-include-used-icons",
@@ -136,7 +136,6 @@
     "husky": "^9.1.6",
     "is-ci": "^3.0.1",
     "jest": "^29.7.0",
-    "jest-environment-jsdom": "^29.7.0",
     "kysely-codegen": "^0.16.8",
     "nock": "^13.5.1",
     "node-mocks-http": "^1.16.1",
@@ -151,8 +150,6 @@
     "ts-node": "^10.9.2",
     "ts-node-dev": "^2.0.0",
     "tsconfig-paths": "^4.2.0",
-    "ttsc": "^0.3.1",
-    "typescript": "^5.5.3",
-    "typescript-transform-paths": "^3.4.6"
+    "typescript": "^5.5.3"
   }
 }
