@@ -74,7 +74,7 @@ describe("syncDinumEmailsJob", () => {
       }),
     };
 
-    const module = proxyquire("./sync-dinum-emails", {
+    const somemodule = proxyquire("./sync-dinum-emails", {
       "@/lib/dimail/client": {
         getAllMailboxes: getAllMailboxesStub,
         getAllAliases: getAllAliasesStub,
@@ -84,7 +84,7 @@ describe("syncDinumEmailsJob", () => {
       },
     });
 
-    syncDinumEmailsJob = module.syncDinumEmailsJob;
+    syncDinumEmailsJob = somemodule.syncDinumEmailsJob;
   });
 
   afterEach(() => {

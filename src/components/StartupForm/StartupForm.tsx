@@ -26,6 +26,7 @@ import { ActionResponse } from "@/@types/serverAction";
 import frontConfig from "@/frontConfig";
 import {
   startupInfoUpdateSchema,
+  startupInfoUpdateSchemaInputType,
   startupInfoUpdateSchemaType,
 } from "@/models/actions/startup";
 import { Option } from "@/models/misc";
@@ -40,6 +41,7 @@ import {
 
 import "react-markdown-editor-lite/lib/index.css";
 
+// eslint-disable-next-line react-hooks/rules-of-hooks
 MdEditor.use(MdEditorCustomHeaderPlugin);
 
 // import style manually
@@ -127,7 +129,11 @@ export function StartupForm(props: StartupFormProps) {
     getValues,
     watch,
     control,
-  } = useForm<startupInfoUpdateSchemaType>({
+  } = useForm<
+    startupInfoUpdateSchemaInputType,
+    any,
+    startupInfoUpdateSchemaType
+  >({
     resolver: zodResolver(startupInfoUpdateSchema),
     mode: "onChange",
     defaultValues: {

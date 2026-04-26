@@ -6,6 +6,7 @@ import { useRouter } from "next/navigation";
 
 import TeamSelect from "../../TeamSelect";
 import { Option } from "@/models/misc";
+import Link from "next/link";
 
 export interface TeamListProps {
   teamOptions: Option[];
@@ -43,9 +44,9 @@ export const TeamList = (props: TeamListProps) => {
       </form>
 
       <p>
-        <a className="fr-btn fr-btn--secondary" href="/teams/create-form">
+        <Link className="fr-btn fr-btn--secondary" href="/teams/create-form">
           Créer une nouvelle fiche équipe
-        </a>
+        </Link>
       </p>
     </>
   );

@@ -27,7 +27,7 @@ describe("canEditStartup", () => {
     getIncubatorTeamMembersStub = sinon.stub();
     isStartupAgentStub = sinon.stub();
 
-    const module = proxyquire("./canEditStartup", {
+    const somemodule = proxyquire("./canEditStartup", {
       "./kysely/queries": {
         getStartup: getStartupStub,
         isStartupAgent: isStartupAgentStub,
@@ -37,7 +37,7 @@ describe("canEditStartup", () => {
       },
     });
 
-    canEditStartup = module.canEditStartup;
+    canEditStartup = somemodule.canEditStartup;
   });
 
   afterEach(() => {

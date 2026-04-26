@@ -3,7 +3,7 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { redirect } from "next/navigation";
 import { getServerSession } from "next-auth";
-import ical from "node-ical";
+import { parseICS } from "@/utils/ical";
 
 import { EventsList } from "@/components/EventsList/EventsList";
 import { authOptions } from "@/utils/authoptions";
@@ -19,7 +19,7 @@ const calendarUrl =
 const fetchCalendar = (url) => {
   return fetch(url)
     .then((r) => r.text())
-    .then((r) => ical.parseICS(r));
+    .then((r) => parseICS(r));
 };
 
 export default async function Page() {

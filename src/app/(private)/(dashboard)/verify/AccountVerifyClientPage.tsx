@@ -18,6 +18,7 @@ import GenderSelect from "@/components/GenderSelect";
 import { memberTypeOptions } from "@/frontConfig";
 import {
   memberValidateInfoSchema,
+  memberValidateInfoSchemaInputType,
   memberValidateInfoSchemaType,
 } from "@/models/actions/member";
 import {
@@ -48,7 +49,11 @@ export default function AccountVerifyClientPage({
     setValue,
     trigger,
     control,
-  } = useForm<memberValidateInfoSchemaType>({
+  } = useForm<
+    memberValidateInfoSchemaInputType,
+    any,
+    memberValidateInfoSchemaType
+  >({
     resolver: zodResolver(memberValidateInfoSchema),
     mode: "onChange",
     defaultValues: {

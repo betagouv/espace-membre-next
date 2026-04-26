@@ -89,6 +89,7 @@ export default function MemberPage({
   useEffect(() => {
     // Get the initial tab from the URL's search parameters
     const searchParams = new URLSearchParams(window.location.search);
+    // eslint-disable-next-line react-hooks/set-state-in-effect
     setTab(searchParams.get("tab") || "");
 
     // Function to handle searchParams changes

@@ -75,3 +75,6 @@ export const startupInfoUpdateSchema = z.object({
 export type startupInfoUpdateSchemaType = z.infer<
   typeof startupInfoUpdateSchema
 >;
+export type startupInfoUpdateSchemaInputType = z.input<
+  typeof startupInfoUpdateSchema
+>;

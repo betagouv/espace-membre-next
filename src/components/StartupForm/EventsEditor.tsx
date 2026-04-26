@@ -35,10 +35,10 @@ export function EventsEditor({
   setValue,
   getValues,
 }: {
-  control: Control<HasEvents>;
+  control: any;
   errors?: Record<string, any>;
-  register: UseFormRegister<HasEvents>;
-  setValue: UseFormSetValue<HasEvents>;
+  register: any;
+  setValue: any;
   getValues: any;
 }) {
   const {

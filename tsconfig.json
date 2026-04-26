@@ -59,9 +59,6 @@
     },
     "plugins": [
       {
-        "transform": "typescript-transform-paths"
-      },
-      {
         "name": "typescript-plugin-css-modules"
       }
     ]
