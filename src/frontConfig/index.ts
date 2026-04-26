@@ -1,9 +1,6 @@
-import { config } from "dotenv";
 import { z } from "zod";
 
 import { MemberType } from "@/models/member";
-
-config();
 
 const isSecure = (process.env.SECURE || "true") === "true";
 

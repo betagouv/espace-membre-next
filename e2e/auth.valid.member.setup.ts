@@ -29,7 +29,8 @@ setup("authenticate as valid.member through magic link", async ({ page }) => {
 
   // open magic link
   await page.goto(href);
-  await page.getByText("Me connecter").first().click();
+  //await page.waitForTimeout(2000);
+  //await page.getByText("Me connecter").first().click();
   await expect(
     page.getByText("Gérer mon compte", { exact: true }).first(),
   ).toBeVisible();

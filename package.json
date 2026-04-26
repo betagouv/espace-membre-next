@@ -3,8 +3,7 @@
   "version": "0.1.0",
   "private": true,
   "engines": {
-    "node": "22.x",
-    "npm": ">=10"
+    "node": "22.x"
   },
   "scripts": {
     "dev": "./node_modules/.bin/only-include-used-icons && next dev -p 8100",
@@ -59,7 +58,7 @@
     "js-yaml": "^4.1.0",
     "jsonwebtoken": "^9.0.2",
     "juice": "^9.1.0",
-    "knex": "^3.1.0",
+    "knex": "^3.2.9",
     "kysely": "^0.28.16",
     "leaflet": "^1.9.4",
     "leaflet.markercluster": "^1.5.3",
@@ -135,6 +134,7 @@
     "ts-node": "^10.9.2",
     "ts-node-dev": "^2.0.0",
     "tsconfig-paths": "^4.2.0",
-    "typescript": "^5.5.3"
+    "typescript": "^5.5.3",
+    "typescript-transform-paths": "^3.4.6"
   }
 }

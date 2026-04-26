@@ -195,7 +195,8 @@ function withTeams(eb: ExpressionBuilder<DB, "users">) {
         "incubators.title as incubator_title",
       ])
       .whereRef("users_teams.user_id", "=", "users.uuid")
-      .orderBy(["incubators.title asc", "teams.name asc"])
+      .orderBy("incubators.title", "asc")
+      .orderBy("teams.name", "asc")
       .groupBy(["teams.uuid", "incubators.title"]),
   )
     .$notNull()

@@ -33,7 +33,7 @@ export async function getLastEvent(
     .selectAll()
     .where("action_on_username", "=", username)
     .where("action_code", "=", action_code)
-    .orderBy("created_at desc")
+    .orderBy("created_at", "desc")
     .executeTakeFirst();
   return event
     ? ({
@@ -66,7 +66,7 @@ export async function getEventListByUsername(username: string) {
     .selectFrom("events")
     .selectAll()
     .where("action_on_username", "=", username)
-    .orderBy("created_at desc")
+    .orderBy("created_at", "desc")
     .execute();
   return eventList.map((event) => ({
     ...event,
@@ -81,7 +81,7 @@ export async function getEventListByStartupUuid(startupUuid: string) {
     .selectFrom("events")
     .selectAll()
     .where("action_on_startup", "=", startupUuid)
-    .orderBy("created_at desc")
+    .orderBy("created_at", "desc")
     .execute();
   return eventList.map((event) => ({
     ...event,

@@ -41,7 +41,6 @@ async function MainStructure(props: PropsWithChildren) {
 
   return (
     <>
-      {}
       <head>
         <DsfrHead />
       </head>

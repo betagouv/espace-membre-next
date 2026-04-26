@@ -1,7 +1,6 @@
+"use client";
 import { useState, useEffect } from "react";
 import { createDimailEmail } from "@/app/api/member/actions/create-dimail";
-import Accordion from "@codegouvfr/react-dsfr/Accordion";
-import { memberSchemaType } from "@/models/member";
 import { getDimailEmail } from "@/app/api/member/actions/get-dimail-email";
 import Button from "@codegouvfr/react-dsfr/Button";
 import * as Sentry from "@sentry/nextjs";

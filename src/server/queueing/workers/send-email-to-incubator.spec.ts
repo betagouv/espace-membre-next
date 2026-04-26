@@ -163,7 +163,8 @@ describe("sendEmailToIncubatorTeam()", () => {
             .selectFrom("phases")
             .distinctOn("startup_id")
             .select(["name as current_phase", "startup_id"])
-            .orderBy(["startup_id", "phases.start desc"])
+            .orderBy("startup_id")
+            .orderBy("phases.start", "desc")
             .as("latest_phase"),
         (join) => join.onRef("latest_phase.startup_id", "=", "startups.uuid"),
       )
@@ -200,7 +201,8 @@ describe("sendEmailToIncubatorTeam()", () => {
             .selectFrom("phases")
             .distinctOn("startup_id")
             .select(["name as current_phase", "startup_id"])
-            .orderBy(["startup_id", "phases.start desc"])
+            .orderBy("startup_id")
+            .orderBy("phases.start", "desc")
             .as("latest_phase"),
         (join) => join.onRef("latest_phase.startup_id", "=", "startups.uuid"),
       )
