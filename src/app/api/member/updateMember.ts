@@ -85,7 +85,7 @@ export async function updateMember(
         // Now, use the same transaction to link to an organization
         if (mission.uuid) {
           const { uuid, ...missionOtherData } = mission;
-          updateMission(
+          await updateMission(
             uuid,
             {
               ...missionOtherData,
