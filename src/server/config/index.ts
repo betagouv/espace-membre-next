@@ -1,9 +1,6 @@
-import { config } from "dotenv";
-
 import { getArrayFromEnv } from "@/lib/env";
 import { MemberType } from "@/models/member";
 
-config();
 const isSecure = (process.env.SECURE || "true") === "true";
 const APP_TYPE = process.env.APP_TYPE || "app";
 const getOrThrowError = (key: string): string => {
