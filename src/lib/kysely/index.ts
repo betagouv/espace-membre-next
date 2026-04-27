@@ -1,4 +1,3 @@
-import { config } from "dotenv";
 import {
   Kysely,
   PostgresDialect,
@@ -10,8 +9,6 @@ import {
 import { Pool } from "pg";
 
 import { DB } from "@/@types/db"; // generated with `npm run kysely-codegen`
-
-config();
 
 const dialect = new PostgresDialect({
   pool: new Pool({
