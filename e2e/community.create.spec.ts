@@ -79,21 +79,13 @@ test("cannot create a new member unless we select a startup or incubateur", asyn
       )
       .nth(1),
   ).toBeVisible();
-
-  //   await expect(page.getByText("C'est presque bon !").first()).toBeVisible({
-  //     timeout: 10000,
-  //   });
-
-  // cleanup
-  const username = `${firstname.toLowerCase()}.${lastname.toLowerCase()}`;
-  await db.deleteFrom("users").where("username", "=", username).execute();
 });
 
 test("can create a new member", async ({ page }) => {
   const uniqueSuffix = Date.now();
   const firstname = "Test";
-  const lastname = `E2E${uniqueSuffix}`;
-  const email = `test.e2e${uniqueSuffix}@example.com`;
+  const lastname = `User${uniqueSuffix}`;
+  const email = `test.user${uniqueSuffix}@example.com`;
   const endDate = format(addMonths(new Date(), 2), "yyyy-MM-dd");
 
   await page.goto("/community/create");
@@ -137,7 +129,8 @@ test("can create a new member", async ({ page }) => {
     .deleteFrom("users")
     .where("username", "=", username)
     .executeTakeFirstOrThrow();
-  expect(res.numDeletedRows).toEqual(1);
+
+  expect(res.numDeletedRows.toString()).toEqual("1");
 });
 
 test("shows error when creating member with duplicate username", async ({
