@@ -119,25 +119,25 @@ test("can create a new member", async ({ page }) => {
     .getByLabel("Entité qui gère la contractualisation (obligatoire)")
     .fill("DINUM");
 
-  await page.waitForTimeout(200);
-
-  const submitButton = page.getByRole("button", { name: "Créer la fiche" });
-  await expect(submitButton).toBeEnabled();
-
   await page
     .getByPlaceholder("Sélectionne un ou plusieurs produits")
     .fill("Startup 1");
   await page.getByRole("option", { name: "Startup 1", exact: true }).click();
 
+  const submitButton = page.getByRole("button", { name: "Créer la fiche" });
+  await expect(submitButton).toBeEnabled();
+
   await submitButton.click();
 
-  await expect(page.getByText("C'est presque bon !").first()).toBeVisible({
-    timeout: 10000,
-  });
+  await expect(page.getByText("C'est presque bon !").first()).toBeVisible();
 
   // cleanup
   const username = `${firstname.toLowerCase()}.${lastname.toLowerCase()}`;
-  await db.deleteFrom("users").where("username", "=", username).execute();
+  const res = await db
+    .deleteFrom("users")
+    .where("username", "=", username)
+    .executeTakeFirstOrThrow();
+  expect(res.numDeletedRows).toEqual(1);
 });
 
 test("shows error when creating member with duplicate username", async ({

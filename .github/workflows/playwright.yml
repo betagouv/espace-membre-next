@@ -51,7 +51,7 @@ jobs:
                   interval: 500
             - name: Launch playwright
               run: |
-                  npx playwright test
+                  npx playwright test --reporter=list
               env:
                   HOSTNAME: localhost:8100
                   DATABASE_URL: postgres://secretariat:secretariat@127.0.0.1:5432/secretariat
