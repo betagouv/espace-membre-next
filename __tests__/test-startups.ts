@@ -132,7 +132,7 @@ describe("Test startup server action", () => {
           startupEvents: [],
           startupPhases: [
             {
-              name: StartupPhase.PHASE_ALUMNI,
+              name: StartupPhase.PHASE_ABANDON,
               start: new Date(),
             },
           ],
@@ -218,7 +218,7 @@ describe("Test startup server action", () => {
           },
           startupPhases: [
             {
-              name: StartupPhase.PHASE_ALUMNI,
+              name: StartupPhase.PHASE_ABANDON,
               start: new Date(),
             },
           ],

@@ -1,7 +1,7 @@
 import { sql, Kysely, Expression } from "kysely";
 
 import { MEMBER_PROTECTED_INFO } from "./users";
-import { DB, StartupsPhaseEnum, UsersDomaineEnum } from "@/@types/db"; // generated with `npm run kysely-codegen`
+import { DB, UsersDomaineEnum } from "@/@types/db"; // generated with `npm run kysely-codegen`
 import { db as database } from "@/lib/kysely";
 
 // get list of startups with latest phase
@@ -30,10 +30,8 @@ export async function searchUsers(
   filters: URLSearchParams,
   db: Kysely<DB> = database,
 ) {
-  const startupPhases = (filters
-    .get("startupPhases")
-    ?.split(",")
-    .filter(Boolean) || []) as StartupsPhaseEnum[];
+  const startupPhases =
+    filters.get("startupPhases")?.split(",").filter(Boolean) || [];
 
   const validStartups: string[] = [];
   if (startupPhases.length) {

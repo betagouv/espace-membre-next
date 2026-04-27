@@ -22,7 +22,7 @@ export async function sendEmailToTeamsToCheckOnTeamComposition(
       .leftJoin("phases", (join) =>
         join
           .onRef("phases.startup_id", "=", "startups.uuid")
-          .on("phases.name", "in", ["success", "transfer", "alumni"]),
+          .on("phases.name", "in", ["transfere", "abandon"]),
       )
       .where("phases.name", "is", null)
       .execute()

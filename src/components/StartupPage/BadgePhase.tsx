@@ -1,5 +1,6 @@
 import { Badge } from "@codegouvfr/react-dsfr/Badge";
 
+<<<<<<< HEAD
 import { PHASE_READABLE_NAME } from "@/models/startup";
 import { match } from "ts-pattern";
 import { AlertProps } from "@codegouvfr/react-dsfr/Alert";
@@ -10,6 +11,9 @@ const readablePhases = Object.entries(PHASE_READABLE_NAME).map(
     label,
   }),
 );
+=======
+import { PHASE_READABLE_NAME, StartupPhase } from "@/models/startup";
+>>>>>>> 03877012 (feat: upgrade code for new phases names)
 
 export const BadgePhase = ({
   phase,
