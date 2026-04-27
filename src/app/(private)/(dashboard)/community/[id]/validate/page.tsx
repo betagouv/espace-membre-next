@@ -34,56 +34,58 @@ export default async function Page({
   if (!session || !session.user.id) {
     throw new Error(`You don't have the right to access this function`);
   }
-  // compile some account informations
+  let userData: { fullname: string; username: string } | null = null;
+  let alertSeverity: "success" | "error" | "info" = "success";
+  let alertTitle = "Fiche membre validée";
+  let alertDescription = "";
+  let loadError: any = null;
 
   try {
     const user = await userInfos({ username: id }, session.user.id === id);
-    let alert: JSX.Element;
-    // validate server side
+    userData = {
+      fullname: user.userInfos.fullname,
+      username: user.userInfos.username,
+    };
+    alertDescription = `La fiche membre de ${user.userInfos.fullname} a été validée par ${session.user.id}`;
     try {
       await validateNewMember({
         memberUuid: user?.userInfos.uuid,
       });
-      alert = (
-        <Alert
-          severity="success"
-          title="Fiche membre validée"
-          description={`La fiche membre de ${user.userInfos.fullname} a été validée par ${session.user.id}`}
-        />
-      );
     } catch (error) {
-      alert = (
-        <Alert
-          severity="error"
-          title="Une erreur est survenue lors de la validation"
-          description={(error as Error).message}
-        />
-      );
-      if (error instanceof BusinessError) {
-        const businessError = error as BusinessError;
-        if (businessError.code === "userAlreadyValided") {
-          alert = (
-            <Alert
-              severity="info"
-              title="Fiche membre déjà validée"
-              description={error.message}
-            />
-          );
-        }
+      if (
+        error instanceof BusinessError &&
+        error.code === "userAlreadyValided"
+      ) {
+        alertSeverity = "info";
+        alertTitle = "Fiche membre déjà validée";
+        alertDescription = (error as Error).message;
+      } else {
+        alertSeverity = "error";
+        alertTitle = "Une erreur est survenue lors de la validation";
+        alertDescription = (error as Error).message;
       }
     }
-    return (
-      <>
-        <BreadCrumbFiller
-          currentPage={user.userInfos.fullname}
-          currentItemId={user.userInfos.username}
-        />
-        {alert}
-      </>
-    );
   } catch (e: any) {
-    return <InvalideUserComponent error={e}></InvalideUserComponent>;
+    loadError = e;
   }
+
+  if (loadError) {
+    return <InvalideUserComponent error={loadError} />;
+  }
+
+  return (
+    <>
+      <BreadCrumbFiller
+        currentPage={userData!.fullname}
+        currentItemId={userData!.username}
+      />
+      <Alert
+        severity={alertSeverity}
+        title={alertTitle}
+        description={alertDescription}
+      />
+    </>
+  );
 }
 
 const InvalideUserComponent = ({ error }) => (

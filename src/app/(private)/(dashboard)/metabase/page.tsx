@@ -23,6 +23,7 @@ export default async function Page() {
   const payload = {
     resource: { dashboard: 16 },
     params: {},
+    // eslint-disable-next-line react-hooks/purity
     exp: Math.round(Date.now() / 1000) + 10 * 60, // 10 minute expiration
   };
   const token = jwt.sign(payload, METABASE_SECRET_KEY);

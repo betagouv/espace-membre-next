@@ -5,6 +5,7 @@ import { format } from "date-fns/format";
 import { fr } from "date-fns/locale/fr";
 import MarkdownIt from "markdown-it";
 import type { Metadata, ResolvingMetadata } from "next";
+import Link from "next/link";
 import { redirect } from "next/navigation";
 import { getServerSession } from "next-auth";
 
@@ -257,12 +258,12 @@ export default async function Page({ params }: Props) {
           </div>
         </div>
         <div className="fr-my-4w">
-          <a
+          <Link
             href="/formations"
             className="fr-link fr-link--lg fr-link--icon-left fr-icon-arrow-left-line"
           >
             Voir toutes les formations
-          </a>
+          </Link>
         </div>
       </div>
     </>

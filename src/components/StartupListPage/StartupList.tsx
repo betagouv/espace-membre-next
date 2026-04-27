@@ -2,6 +2,7 @@
 import React from "react";
 
 import Button from "@codegouvfr/react-dsfr/Button";
+import Link from "next/link";
 import { useRouter } from "next/navigation";
 
 import SESelect, { StartupType } from "@/components/SESelect";
@@ -38,9 +39,9 @@ export const StartupList = (props: StartupListProps) => {
       </form>
 
       <p>
-        <a className="fr-btn fr-btn--secondary" href="/startups/create-form">
+        <Link className="fr-btn fr-btn--secondary" href="/startups/create-form">
           Créer une nouvelle fiche produit
-        </a>
+        </Link>
       </p>
     </>
   );

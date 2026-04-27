@@ -81,7 +81,7 @@ export default async function MatomoPage() {
     .where("action_code", "like", `%MEMBER_SERVICE%`)
     .where(sql`action_metadata -> 'service'`, "=", `matomo`)
     .selectAll()
-    .orderBy("created_at desc")
+    .orderBy("created_at", "desc")
     .execute();
 
   const eventDictionnary: Record<

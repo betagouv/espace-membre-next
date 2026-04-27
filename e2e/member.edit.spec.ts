@@ -5,54 +5,71 @@ import { format } from "date-fns/format";
 test.use({ storageState: "./playwright-auth-valid.member.json" });
 
 test("can edit my account", async ({ page }) => {
-    const randomBio = "io " + Math.random();
+  const randomBio = "io " + Math.random();
 
-    await page.goto("/account");
+  await page.goto("/account");
 
-    await page.getByText("Modifier la fiche").first().click();
+  await page.getByText("Modifier la fiche").first().click();
 
-    await page.waitForURL("/account/base-info");
+  await page.waitForURL("/account/base-info");
 
-    await page.getByLabel("Courte bio").fill(randomBio);
-    await page.getByLabel("Statut (obligatoire)").selectOption("EURL");
+  await page.getByLabel("Courte bio").fill(randomBio);
+  await page.getByLabel("Statut (obligatoire)").selectOption("EURL");
 
-    await page.getByText("Enregistrer").click();
+  await page
+    .getByLabel("Date de fin de mission (obligatoire)")
+    .fill(
+      new Date(new Date().getTime() + 1000 * 60 * 60 * 24 * 8)
+        .toISOString()
+        .substring(0, 10),
+    );
+  await page
+    .getByPlaceholder("Sélectionne un ou plusieurs produits")
+    .first()
+    .fill("Startup 1");
+  await page.getByRole("option", { name: "Startup 1", exact: true }).click();
 
-    await page.getByText("Modifications enregistrées.");
+  await page.getByText("Enregistrer").click();
 
-    await page.goto("/account");
+  await page.getByText("Modifications enregistrées.");
 
-    await page.waitForURL("/account");
+  await page.goto("/account");
 
-    expect(await page.getByText(randomBio));
+  await page.waitForURL("/account");
+
+  expect(await page.getByText(randomBio).innerText()).toEqual(randomBio);
+
+  expect(
+    await page.getByRole("table").nth(1).getByText("Startup 1"),
+  ).toBeVisible();
 });
 
 test("cannot add date with more than 6 months if status is independant", async ({
-    page,
+  page,
 }) => {
-    const randomBio = "io " + Math.random();
-    const dateIn8Months = addMonths(new Date(), 8);
+  const randomBio = "io " + Math.random();
+  const dateIn8Months = addMonths(new Date(), 8);
 
-    await page.goto("/account");
+  await page.goto("/account");
 
-    await page.getByText("Modifier la fiche").first().click();
+  await page.getByText("Modifier la fiche").first().click();
 
-    await page.waitForURL("/account/base-info");
+  await page.waitForURL("/account/base-info");
 
-    await page.getByLabel("Courte bio").fill(randomBio);
-    await page
-        .getByLabel("Type de contrat (obligatoire)")
-        .selectOption("Indépendant");
-    await page
-        .getByLabel("Date de fin de mission (obligatoire)")
-        .fill(format(dateIn8Months, "yyyy-MM-dd"));
-    await page.waitForTimeout(100);
+  await page.getByLabel("Courte bio").fill(randomBio);
+  await page
+    .getByLabel("Type de contrat (obligatoire)")
+    .selectOption("Indépendant");
+  await page
+    .getByLabel("Date de fin de mission (obligatoire)")
+    .fill(format(dateIn8Months, "yyyy-MM-dd"));
+  await page.waitForTimeout(100);
 
-    await page.getByText("Enregistrer").click();
+  await page.getByText("Enregistrer").click();
 
-    expect(
-        await page.getByText(
-            "La date de fin de mission ne peut pas être supérieure à 6 mois dans le futur."
-        )
-    );
+  expect(
+    await page.getByText(
+      "La date de fin de mission ne peut pas être supérieure à 6 mois dans le futur.",
+    ),
+  );
 });

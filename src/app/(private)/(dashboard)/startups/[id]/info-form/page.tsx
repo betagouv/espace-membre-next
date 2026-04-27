@@ -86,7 +86,7 @@ export default async function Page(props) {
       await db
         .selectFrom("phases")
         .where("startup_id", "=", startup.uuid)
-        .orderBy("phases.start asc")
+        .orderBy("phases.start", "asc")
         .selectAll()
         .execute(),
     );
@@ -96,7 +96,7 @@ export default async function Page(props) {
       await db
         .selectFrom("startup_events")
         .where("startup_events.startup_id", "=", startup.uuid)
-        .orderBy("startup_events.date asc")
+        .orderBy("startup_events.date", "asc")
         .selectAll()
         .execute(),
     );

@@ -252,7 +252,7 @@ describe("Service account creation by worker", () => {
       const result = await db
         .selectFrom("events")
         .selectAll()
-        .orderBy("created_at desc")
+        .orderBy("created_at", "desc")
         .executeTakeFirst();
       result?.action_code.should.equal(EventCode.MEMBER_SERVICE_TEAM_CREATED);
     });

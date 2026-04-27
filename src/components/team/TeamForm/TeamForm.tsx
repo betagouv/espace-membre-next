@@ -9,6 +9,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import _ from "lodash";
 import MarkdownIt from "markdown-it";
 
+// @ts-ignore
 import "react-markdown-editor-lite/lib/index.css";
 
 import { useForm } from "react-hook-form";
@@ -115,6 +116,7 @@ export function TeamForm(props: TeamFormProps) {
   } | null>();
   const [isSaving, setIsSaving] = React.useState(false);
 
+  // @eslint-ignore
   const BasicInput = useCallback(
     (props) => (
       <BasicFormInput register={register} errors={errors} {...props} />
@@ -180,14 +182,13 @@ export function TeamForm(props: TeamFormProps) {
           onSubmit={handleSubmit(onSubmit)}
           aria-label="Modifier mes informations"
         >
-          <BasicInput
-            id="name"
-            label="Nom de l'équipe (obligatoire)"
-            placeholder="ex: Équipe de Service Numérique"
-            hintText={`Le nom complet de l'équipe et
-                                ne doit pas dépasser 30 caractères.`}
-          />
-
+          {BasicInput({
+            id: "name",
+            label: "Nom de l'équipe (obligatoire)",
+            placeholder: "ex: Équipe de Service Numérique",
+            hintText: `Le nom complet de l'équipe et
+                                ne doit pas dépasser 30 caractères.`,
+          })}
           <div
             className={`fr-input-group ${
               errors && errors.team && errors.team.mission

@@ -265,6 +265,7 @@ export const Community = (props: CommunityProps) => {
       ),
     );
 
+  /* eslint-disable react-hooks/preserve-manual-memoization */
   const points = useMemo(
     () =>
       results
@@ -289,6 +290,7 @@ export const Community = (props: CommunityProps) => {
         .filter((x) => !!x),
     [results],
   );
+  /* eslint-enable react-hooks/preserve-manual-memoization */
 
   const onSelect = async (newFilters) => {
     await setFilters((filters) => [

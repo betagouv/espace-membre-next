@@ -33,10 +33,10 @@ export function PhasesEditor({
   setValue,
   getValues,
 }: {
-  control: Control<HasPhases>;
+  control: any;
   errors?: Record<string, any>;
-  register: UseFormRegister<HasPhases>;
-  setValue: UseFormSetValue<HasPhases>;
+  register: any;
+  setValue: any;
   getValues: any;
 }) {
   const {

@@ -59,6 +59,7 @@ export function Matomo(props: MatomoProps) {
     }
 
     if (!previousPath) {
+      // eslint-disable-next-line react-hooks/set-state-in-effect
       return setPreviousPath(pathname);
     }
 

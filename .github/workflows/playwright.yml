@@ -2,19 +2,19 @@ name: Playwright Tests
 
 on:
     push:
-        branches: [main, master]
+        branches: [ main, master ]
     pull_request:
-        branches: [main, master]
+        branches: [ main, master ]
 
 jobs:
     e2e:
         timeout-minutes: 30
         runs-on: ubuntu-latest
         steps:
-            - uses: actions/checkout@v4
-            - uses: actions/setup-node@v4
+            - uses: actions/checkout@v6
+            - uses: actions/setup-node@v6
               with:
-                  node-version: 20
+                  node-version: 22
             - name: Install dependencies
               run: |
                   npm ci
@@ -31,6 +31,17 @@ jobs:
               env:
                   PROTECTED_API_KEYS: test-api-key
                   DATABASE_URL: postgres://secretariat:secretariat@127.0.0.1:5432/secretariat
+                  FEATURE_SHOULD_SEND_MESSAGE_TO_AUTHOR: true
+                  NEWSLETTER_HASH_SECRET: fakenewslettersecret
+                  SHOULD_SEND_NL: true
+                  SESSION_SECRET: fakesessionsecret
+                  MAIL_PASS: fakepass
+                  MAIL_USER: fakeuser
+                  MAIL_SENDER: fake@localhost
+                  HOSTNAME: localhost:8100
+                  HASH_SALT: fakesaltfortestenv
+                  GITHUB_FORK: dummy-github-fork
+                  MAILING_LIST_NEWSLETTER: 0
             - name: Wait
               uses: cygnetdigital/wait_for_response@v2.0.0
               with:
@@ -44,6 +55,16 @@ jobs:
               env:
                   HOSTNAME: localhost:8100
                   DATABASE_URL: postgres://secretariat:secretariat@127.0.0.1:5432/secretariat
+                  FEATURE_SHOULD_SEND_MESSAGE_TO_AUTHOR: true
+                  NEWSLETTER_HASH_SECRET: fakenewslettersecret
+                  SHOULD_SEND_NL: true
+                  SESSION_SECRET: fakesessionsecret
+                  MAIL_PASS: fakepass
+                  MAIL_USER: fakeuser
+                  MAIL_SENDER: fake@localhost
+                  HASH_SALT: fakesaltfortestenv
+                  GITHUB_FORK: dummy-github-fork
+                  MAILING_LIST_NEWSLETTER: 0
             - uses: actions/upload-artifact@v4
               if: always()
               with:

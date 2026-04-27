@@ -25,6 +25,7 @@ export const FileForm = ({
     setSelectedSchema("default");
   };
   useEffect(() => {
+    // eslint-disable-next-line react-hooks/set-state-in-effect
     setSelectedSchema("default");
   }, [file]);
   return (

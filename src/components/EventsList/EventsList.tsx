@@ -3,7 +3,9 @@ import Card from "@codegouvfr/react-dsfr/Card";
 import { format } from "date-fns";
 import { fr as frLocale } from "date-fns/locale/fr";
 import MarkdownIt from "markdown-it";
-import { CalendarResponse } from "node-ical";
+import { CalendarResponse } from "@/utils/ical";
+
+// @ts-ignore
 import "./EventsList.css";
 
 const mdParser = new MarkdownIt({
@@ -32,18 +34,25 @@ export function EventsList({ events }: { events: CalendarResponse }) {
   ];
   const sortedEvents = Object.entries(events)
     .filter(
-      ([key, event]) => event.type === "VEVENT" && event.start >= new Date(),
+      ([key, event]) =>
+        event && event.type === "VEVENT" && event.start >= new Date(),
     )
     .filter(
       ([key, event]) =>
+        event &&
         event.type === "VEVENT" &&
         !excludedKeywords.some((keyword) =>
-          event.summary.toLowerCase().includes(keyword.toLowerCase()),
+          event.summary
+            .toString()
+            .toLowerCase()
+            .includes(keyword.toLowerCase()),
         ),
     )
     .sort(
       ([key1, event1], [key2, event2]) =>
-        (event1.type === "VEVENT" &&
+        (event1 &&
+          event1.type === "VEVENT" &&
+          event2 &&
           event2.type === "VEVENT" &&
           event1.start.getTime() - event2.start.getTime()) ||
         0,
@@ -55,9 +64,10 @@ export function EventsList({ events }: { events: CalendarResponse }) {
       className={fr.cx("fr-grid-row", "fr-grid-row--gutters")}
     >
       {sortedEvents.map(([key, event]) => {
-        if (event.type !== "VEVENT") {
+        if (event && event.type !== "VEVENT") {
           return null;
         }
+        if (!event) return null;
         return (
           <Card
             key={key}
@@ -82,7 +92,7 @@ export function EventsList({ events }: { events: CalendarResponse }) {
               </div>
             }
             size="medium"
-            title={event.summary}
+            title={event.summary.toString()}
             titleAs="h2"
             endDetail={
               event.location ? (
