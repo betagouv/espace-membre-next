@@ -56,7 +56,6 @@
     "src/providers",
     "__tests__",
     "models",
-    "src/lib",
     "knexfile.js",
     "**/**.spec.ts",
     "dist",
