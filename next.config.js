@@ -51,24 +51,17 @@ const nextConfig = {
       },
     ];
   },
+  expireTime: 0,
+  serverExternalPackages: [
+    "knex",
+    "sib-api-v3-sdk",
+    "mjml",
+    "@luma-team/mjml-react",
+  ],
   experimental: {
-    instrumentationHook: true,
-    serverComponentsExternalPackages: [
-      "knex",
-      "sib-api-v3-sdk",
-      "mjml",
-      "@luma-team/mjml-react",
-    ],
     serverActions: {
       bodySizeLimit: "10mb",
     },
-    // This is experimental but can
-    // be enabled to allow parallel threads
-    // with nextjs automatic static generation
-    // during prerendering it access the db and in review app in breaks because there is several connexion
-    // we could disable prerendering but it is not possible to disable it only at build time
-    workerThreads: false,
-    cpus: 1,
   },
   rewrites: async () => [
     {
@@ -76,8 +69,6 @@ const nextConfig = {
       destination: "/api/member/:username/image",
     },
   ],
-  // @todo upgrade to nextjs 15 to use
-  // expireTime: 0,
   webpack: (config, { isServer }) => {
     if (!isServer) {
       // don't resolve 'fs' module on the client to prevent this error on build --> Error: Can't resolve 'fs'
@@ -125,4 +116,6 @@ const sentryWebpackPluginOptions = {
 };
 
 // Make sure adding Sentry options is the last code to run before exporting
-module.exports = withSentryConfig(nextConfig, sentryWebpackPluginOptions);
+module.exports = uploadToSentry
+  ? withSentryConfig(nextConfig, sentryWebpackPluginOptions)
+  : nextConfig;

@@ -100,17 +100,20 @@ async function MainStructure(props: PropsWithChildren) {
   );
 }
 
-function RootLayout(props: PropsWithChildren<RootLayoutProps>) {
-  if (props.workaroundForNextJsPages === true) {
+function RootLayout({
+  children,
+  workaroundForNextJsPages,
+}: PropsWithChildren<RootLayoutProps>) {
+  if (workaroundForNextJsPages === true) {
     // When embedded through a server-side only page (for errors for example) `<html>` and `<body>`
     // are already included by Next.js (the browser can ajust the structure but in our case `<html>` duplication
     // throws a visible error in development so we avoid it (it does not change things that much since it's only specific pages))
-    return <MainStructure {...props} />;
+    return <MainStructure>{children}</MainStructure>;
   }
 
   return (
     <html {...getHtmlAttributes({ lang: "fr" })}>
-      <MainStructure {...props} />
+      <MainStructure>{children}</MainStructure>
     </html>
   );
 }

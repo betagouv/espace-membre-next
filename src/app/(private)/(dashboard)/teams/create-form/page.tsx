@@ -26,7 +26,6 @@ export default async function Page(props) {
             label: team.title,
           };
         })}
-        {...props}
       />
     </>
   );

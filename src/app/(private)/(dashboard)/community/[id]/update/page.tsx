@@ -15,11 +15,17 @@ export const metadata: Metadata = {
   title: `${routeTitles.accountEditBaseInfo()} / Espace Membre`,
 };
 
-export default async function Page({
-  params: { id },
-}: {
-  params: { id: string };
-}) {
+export default async function Page(
+  props0: {
+    params: Promise<{ id: string }>;
+  }
+) {
+  const params = await props0.params;
+
+  const {
+    id
+  } = params;
+
   const session = await getServerSession(authOptions);
 
   if (!session) {
