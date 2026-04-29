@@ -1,47 +1,37 @@
-import { ReactElement } from "react";
-
 import { Badge } from "@codegouvfr/react-dsfr/Badge";
 
-import { StartupPhase } from "@/models/startup";
+import { PHASE_READABLE_NAME } from "@/models/startup";
+import { match } from "ts-pattern";
+import { AlertProps } from "@codegouvfr/react-dsfr/Alert";
+
+const readablePhases = Object.entries(PHASE_READABLE_NAME).map(
+  ([id, label]) => ({
+    id,
+    label,
+  }),
+);
 
 export const BadgePhase = ({
   phase,
   className,
 }: {
-  phase: string | null; //StartupPhase | null;
+  phase: keyof typeof PHASE_READABLE_NAME;
   className?: string;
 }) => {
-  const phases: Record<StartupPhase, ReactElement> = {
-    investigation: (
-      <Badge severity="new" className={className}>
-        Investigation
+  const severity = match(phase)
+    .with("investigation", () => "new" as AlertProps.Severity)
+    .with("construction", () => "info" as AlertProps.Severity)
+    .with("acceleration", () => "info" as AlertProps.Severity)
+    .with("transfer", () => "success" as AlertProps.Severity)
+    .with("success", () => "success" as AlertProps.Severity)
+    .with("alumni", () => "warning" as AlertProps.Severity)
+    .exhaustive();
+  const readablePhase = readablePhases.find((p) => p.id === phase);
+  return (
+    readablePhase && (
+      <Badge severity={severity} className={className}>
+        {readablePhase.label}
       </Badge>
-    ),
-    construction: (
-      <Badge severity="info" className={className}>
-        Construction
-      </Badge>
-    ),
-    acceleration: (
-      <Badge severity="info" className={className}>
-        Accéleration
-      </Badge>
-    ),
-    transfer: (
-      <Badge severity="success" className={className}>
-        Transféré
-      </Badge>
-    ),
-    success: (
-      <Badge severity="success" className={className}>
-        Succès
-      </Badge>
-    ),
-    alumni: (
-      <Badge severity="warning" className={className}>
-        Abandon
-      </Badge>
-    ),
-  };
-  return (phase && phases[phase]) || null;
+    )
+  );
 };

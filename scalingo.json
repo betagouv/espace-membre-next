@@ -6,7 +6,7 @@
       "size": "S"
     }
   },
-  "addons": ["postgresql:postgresql-starter-512", "redis:redis-starter-256"],
+  "addons": ["postgresql:postgresql-starter-512"],
   "buildpacks": [
     {
       "url": "heroku/nodejs"

@@ -9,11 +9,9 @@ import { useFieldArray, useWatch } from "react-hook-form";
 
 import SESelect from "../SESelect";
 import { userStatusOptions } from "@/frontConfig";
-import { HasMissions } from "@/models/member";
 import { Option } from "@/models/misc";
 import {
   Status,
-  missionSchema,
   missionSchemaShape,
   missionSchemaType,
 } from "@/models/mission";
@@ -40,7 +38,7 @@ export const Mission = ({
   mission?: Record<string, any>;
   missionsRemove: any;
   startupOptions: Option[];
-  errors: any; //FieldErrors<HasMissions>;
+  errors: any;
   isMulti: boolean;
   labels?: {
     employer?: string;

@@ -1,7 +1,4 @@
-import { sql, ExpressionBuilder } from "kysely";
-
-import { DB } from "@/@types/db"; // generated with `npm run kysely-codegen`
-import { db, jsonArrayFrom } from "@/lib/kysely";
+import { db } from "@/lib/kysely";
 
 /** Return all startups */
 export function getAllStartups() {
