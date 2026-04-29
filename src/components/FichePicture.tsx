@@ -47,8 +47,8 @@ export const FichePicture = ({
     <div style={style} className={fr.cx("fr-mb-1w", "fr-mt-1w")}>
       {((src || placeholder) && (
         <Image
-          // @ts-ignore TODO: make TS happy
-          src={src || placeholder}
+          unoptimized
+          src={src || placeholder || ""}
           placeholder={placeholder}
           alt={alt}
           fill={true}
