@@ -8,6 +8,7 @@ import {
   getOrganizationIncubators,
 } from "@/lib/kysely/queries/organizations";
 import { sponsorSchemaType } from "@/models/sponsor";
+import { StartupPhase } from "@/models/startup";
 
 export interface OrganizationPageProps {
   organizationInfos: sponsorSchemaType;
@@ -60,7 +61,8 @@ export default function OrganizationPage({
               <Link key="link" href={`/startups/${s.uuid}`}>
                 {s.name}
               </Link>,
-              (s.phase && <BadgePhase phase={s.phase} />) || "-",
+              (s.phase && <BadgePhase phase={s.phase as StartupPhase} />) ||
+                "-",
               s.pitch,
             ])}
           />

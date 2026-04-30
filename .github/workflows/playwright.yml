@@ -51,7 +51,7 @@ jobs:
                   interval: 500
             - name: Launch playwright
               run: |
-                  npx playwright test
+                  npx playwright test --reporter=list
               env:
                   HOSTNAME: localhost:8100
                   DATABASE_URL: postgres://secretariat:secretariat@127.0.0.1:5432/secretariat
@@ -65,7 +65,7 @@ jobs:
                   HASH_SALT: fakesaltfortestenv
                   GITHUB_FORK: dummy-github-fork
                   MAILING_LIST_NEWSLETTER: 0
-            - uses: actions/upload-artifact@v4
+            - uses: actions/upload-artifact@v7
               if: always()
               with:
                   name: playwright-report

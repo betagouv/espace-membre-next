@@ -1,8 +1,7 @@
 import * as Sentry from "@sentry/node";
 
 import { db } from "@/lib/kysely";
-import { EmailStatusCode } from "@/models/member";
-import { DIMAIL_MAILBOX_DOMAIN } from "@/lib/dimail/utils";
+import { Domaine, EmailStatusCode } from "@/models/member";
 import { patchMailbox } from "@/lib/dimail/client";
 import { getDimailEmail } from "@/lib/kysely/queries/dimail";
 import * as createDimailMailboxWorker from "../queueing/workers/create-dimail-mailbox";
@@ -22,6 +21,7 @@ export async function recreateEmailIfUserActive() {
       EmailStatusCode.EMAIL_DELETED,
     ])
     .where("users.secondary_email", "is not", null)
+    .where("users.domaine", "!=", Domaine.ATTRIBUTAIRE)
     .execute();
   console.log(`recreateEmailIfUserActive: ${dbUsers.length} accounts`);
   for (const dbUser of dbUsers) {
@@ -59,6 +59,12 @@ export async function recreateEmailIfUserActive() {
           // create new DIMAIL email account
           await createDimailMailboxForUser(dbUser.uuid);
         }
+      } else {
+        console.log(
+          `create DIMAIL email for ${dbUser.username} (${dbUser.secondary_email})`,
+        );
+        // create new DIMAIL email account
+        await createDimailMailboxForUser(dbUser.uuid);
       }
     } catch (e) {
       const error = e instanceof Error ? e : new Error(String(e));
