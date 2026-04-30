@@ -2,34 +2,27 @@ import { z } from "zod";
 
 import { missionSchemaShape } from "./mission";
 
-interface Relationship {
-  incubator: {
-    data: {
-      type: string;
-      id: string;
-    };
-  };
-}
-
 // todo: extract types from single "phases" array ?
-
-export const PHASE_READABLE_NAME = {
-  acceleration: "Accélération",
-  investigation: "Investigation",
-  transfer: "En cours de pérennisation",
-  construction: "Construction",
-  alumni: "Partenariat terminé",
-  success: "Pérennisé",
-};
 
 export enum StartupPhase {
   PHASE_INVESTIGATION = "investigation",
   PHASE_CONSTRUCTION = "construction",
   PHASE_ACCELERATION = "acceleration",
-  PHASE_TRANSFER = "transfer",
-  PHASE_SUCCESS = "success",
-  PHASE_ALUMNI = "alumni",
+  PHASE_ABANDON = "abandon",
+  PHASE_PERENNISATION = "perennisation",
+  PHASE_OPERE = "opere",
+  PHASE_TRANSFERE = "transfere",
 }
+
+export const PHASE_READABLE_NAME: Record<StartupPhase, string> = {
+  investigation: "Investigation",
+  acceleration: "Accélération",
+  construction: "Construction",
+  perennisation: "En cours de pérennisation",
+  transfere: "Transféré",
+  opere: "Opéré par beta.gouv.fr",
+  abandon: "Abandonné",
+};
 
 export const ACTIVE_PHASES = [
   StartupPhase.PHASE_ACCELERATION,
@@ -41,9 +34,10 @@ export const PHASES_ORDERED_LIST = [
   StartupPhase.PHASE_INVESTIGATION,
   StartupPhase.PHASE_CONSTRUCTION,
   StartupPhase.PHASE_ACCELERATION,
-  StartupPhase.PHASE_TRANSFER,
-  StartupPhase.PHASE_SUCCESS,
-  StartupPhase.PHASE_ALUMNI,
+  StartupPhase.PHASE_PERENNISATION,
+  StartupPhase.PHASE_OPERE,
+  StartupPhase.PHASE_TRANSFERE,
+  StartupPhase.PHASE_ABANDON,
 ];
 
 export enum AccessibilityStatus {
@@ -70,14 +64,7 @@ export const EVENT_READABLE_NAME = {
   end: "Abandon",
 };
 
-export const EVENTS_ORDERED_LIST = [
-  StartupEvent.EVENT_LAUNCH,
-  StartupEvent.EVENT_COMITE,
-  StartupEvent.EVENT_FAST,
-  StartupEvent.EVENT_NATIONAL_IMPACT,
-  StartupEvent.EVENT_OTHER,
-  StartupEvent.EVENT_END,
-];
+export const EVENTS_ORDERED_LIST = Object.keys(StartupEvent);
 
 export const DSFR_STATUSES = [
   "Le DSFR est implémenté",

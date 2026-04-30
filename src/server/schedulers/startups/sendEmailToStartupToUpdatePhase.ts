@@ -22,8 +22,6 @@ export const sendEmailToStartupToUpdatePhase = async (
         .where("mailing_list", "is not", null)
         .execute()
     ).map((startup) => startupToModel(startup));
-  // .whereIn("current_phase", ACTIVE_PHASES)
-  // .whereNotNull("mailing_list"));
   const startupPhases = await db
     .selectFrom("phases")
     .where(
@@ -36,7 +34,9 @@ export const sendEmailToStartupToUpdatePhase = async (
     .groupBy("startup_id")
     .selectAll()
     .execute();
-  console.log(`Will send email to ${startups.length} mailing lists`);
+  console.log(
+    `sendEmailToStartupToUpdatePhase: Will send email to ${startups.length} mailing lists`,
+  );
 
   for (const startup of startups) {
     const phase = startupPhases
@@ -46,6 +46,9 @@ export const sendEmailToStartupToUpdatePhase = async (
       })
       .map((phase) => phase.name)[0];
     try {
+      console.log(
+        `sendEmailToStartupToUpdatePhase: send email to ${startup.mailing_list}@beta.gouv.fr`,
+      );
       await sendEmail({
         type: EMAIL_TYPES.EMAIL_STARTUP_ASK_PHASE,
         variables: {
