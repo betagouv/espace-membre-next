@@ -118,7 +118,6 @@
     "ts-node": "^10.9.2",
     "tsc-alias": "^1.8.16",
     "tsconfig-paths": "^4.2.0",
-    "typescript": "^5.5.3",
-    "typescript-transform-paths": "^3.4.6"
+    "typescript": "^5.5.3"
   }
 }
