@@ -1,6 +1,6 @@
 import { CompiledQuery, Selectable } from "kysely";
 
-import { StartupsPhaseEnum, Startups } from "@/@types/db";
+import { Startups } from "@/@types/db";
 import { db } from "@/lib/kysely";
 import { StartupPhase } from "@/models/startup";
 import { getAllIncubators } from "./incubators";
@@ -131,7 +131,7 @@ export const getAllStartupsWithIncubatorAndPhase = async () => {
     const incubator = incubators.find((i) => i.uuid === s.incubator_id);
     return {
       ...s,
-      phase: (s as typeof s & { phase: StartupsPhaseEnum | null }).phase,
+      phase: (s as typeof s & { phase: string | null }).phase,
       thematiques: (s.thematiques as string[]) || [],
       techno: (s.techno as string[]) || [],
       usertypes: (s.usertypes as string[]) || [],
