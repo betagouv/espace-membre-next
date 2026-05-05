@@ -15,10 +15,10 @@ export const BadgePhase = ({
   phase,
   className,
 }: {
-  phase: keyof typeof PHASE_READABLE_NAME;
+  phase: string;
   className?: string;
 }) => {
-  const severity = match(phase)
+  const severity = match(phase as StartupPhase)
     .with(StartupPhase.PHASE_INVESTIGATION, () => "info" as AlertProps.Severity)
     .with(StartupPhase.PHASE_CONSTRUCTION, () => "info" as AlertProps.Severity)
     .with(StartupPhase.PHASE_ACCELERATION, () => "info" as AlertProps.Severity)
