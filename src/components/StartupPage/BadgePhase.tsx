@@ -1,8 +1,7 @@
-import { Badge } from "@codegouvfr/react-dsfr/Badge";
-
-<<<<<<< HEAD
-import { PHASE_READABLE_NAME } from "@/models/startup";
 import { match } from "ts-pattern";
+
+import { Badge } from "@codegouvfr/react-dsfr/Badge";
+import { PHASE_READABLE_NAME, StartupPhase } from "@/models/startup";
 import { AlertProps } from "@codegouvfr/react-dsfr/Alert";
 
 const readablePhases = Object.entries(PHASE_READABLE_NAME).map(
@@ -11,9 +10,6 @@ const readablePhases = Object.entries(PHASE_READABLE_NAME).map(
     label,
   }),
 );
-=======
-import { PHASE_READABLE_NAME, StartupPhase } from "@/models/startup";
->>>>>>> 03877012 (feat: upgrade code for new phases names)
 
 export const BadgePhase = ({
   phase,
@@ -23,12 +19,17 @@ export const BadgePhase = ({
   className?: string;
 }) => {
   const severity = match(phase)
-    .with("investigation", () => "new" as AlertProps.Severity)
-    .with("construction", () => "info" as AlertProps.Severity)
-    .with("acceleration", () => "info" as AlertProps.Severity)
-    .with("transfer", () => "success" as AlertProps.Severity)
-    .with("success", () => "success" as AlertProps.Severity)
-    .with("alumni", () => "warning" as AlertProps.Severity)
+    .with(StartupPhase.PHASE_INVESTIGATION, () => "info" as AlertProps.Severity)
+    .with(StartupPhase.PHASE_CONSTRUCTION, () => "info" as AlertProps.Severity)
+    .with(StartupPhase.PHASE_ACCELERATION, () => "info" as AlertProps.Severity)
+    .with(StartupPhase.PHASE_PERENNISATION, () => "info" as AlertProps.Severity)
+    .with(StartupPhase.PHASE_TRANSFERE, () => "success" as AlertProps.Severity)
+    .with(StartupPhase.PHASE_OPERE, () => "success" as AlertProps.Severity)
+    .with(StartupPhase.PHASE_ABANDON, () => "warning" as AlertProps.Severity)
+    .with(
+      StartupPhase.PHASE_ABANDON_INVESTIGATION,
+      () => "warning" as AlertProps.Severity,
+    )
     .exhaustive();
   const readablePhase = readablePhases.find((p) => p.id === phase);
   return (

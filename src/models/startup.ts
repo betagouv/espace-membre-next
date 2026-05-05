@@ -9,6 +9,7 @@ export enum StartupPhase {
   PHASE_CONSTRUCTION = "construction",
   PHASE_ACCELERATION = "acceleration",
   PHASE_ABANDON = "abandon",
+  PHASE_ABANDON_INVESTIGATION = "abandon-investigation",
   PHASE_PERENNISATION = "perennisation",
   PHASE_OPERE = "opere",
   PHASE_TRANSFERE = "transfere",
@@ -22,6 +23,7 @@ export const PHASE_READABLE_NAME: Record<StartupPhase, string> = {
   transfere: "Transféré",
   opere: "Opéré par beta.gouv.fr",
   abandon: "Abandonné",
+  "abandon-investigation": "Abandonné après investigation",
 };
 
 export const ACTIVE_PHASES = [
@@ -37,6 +39,7 @@ export const PHASES_ORDERED_LIST = [
   StartupPhase.PHASE_PERENNISATION,
   StartupPhase.PHASE_OPERE,
   StartupPhase.PHASE_TRANSFERE,
+  StartupPhase.PHASE_ABANDON_INVESTIGATION,
   StartupPhase.PHASE_ABANDON,
 ];
 

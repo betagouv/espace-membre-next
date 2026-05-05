@@ -4,7 +4,7 @@ exports.up = async function (knex) {
     ALTER TABLE phases ALTER COLUMN name TYPE text;
     DROP TYPE IF EXISTS startups_phase_enum;
     ALTER TABLE phases ADD CONSTRAINT chk_phase_name
-    CHECK (name IN ('investigation', 'construction', 'acceleration', 'perennisation', 'transfer', 'success', 'alumni', 'abandon',  'transfere', 'opere'));
+    CHECK (name IN ('investigation', 'construction', 'acceleration', 'perennisation', 'transfer', 'success', 'alumni', 'abandon', 'abandon-investigation', 'transfere', 'opere'));
   `);
 
   // todo: after data fix
