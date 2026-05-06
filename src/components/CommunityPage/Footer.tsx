@@ -1,7 +1,6 @@
 import { fr } from "@codegouvfr/react-dsfr/fr";
+import DataVisualization from "@codegouvfr/react-dsfr/picto/DataVisualization";
 import Tile from "@codegouvfr/react-dsfr/Tile";
-import dataviz from "@codegouvfr/react-dsfr/dsfr/artwork/pictograms/digital/data-visualization.svg";
-import { StaticImageData } from "next/image";
 
 import { routes } from "@/utils/routes/routes";
 
@@ -13,7 +12,7 @@ export const Footer = () => (
         title="Observatoire de la communauté"
         desc="Consulter les stats"
         orientation="horizontal"
-        imageUrl={(dataviz as StaticImageData).src}
+        pictogram={<DataVisualization />}
         linkProps={{
           href: routes["metabase"](),
         }}

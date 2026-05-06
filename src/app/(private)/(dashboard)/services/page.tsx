@@ -1,8 +1,6 @@
 import { fr } from "@codegouvfr/react-dsfr";
 import Badge from "@codegouvfr/react-dsfr/Badge";
 import { Tile } from "@codegouvfr/react-dsfr/Tile";
-import dataviz from "@codegouvfr/react-dsfr/dsfr/artwork/pictograms/digital/data-visualization.svg";
-import error from "@codegouvfr/react-dsfr/dsfr/artwork/pictograms/system/error.svg";
 import { redirect } from "next/navigation";
 import { getServerSession } from "next-auth";
 import { match } from "ts-pattern";
@@ -39,13 +37,11 @@ export default async function Page() {
   const services = [
     {
       account: matomo,
-      artwork: dataviz,
       serviceName: SERVICES.MATOMO,
     },
     {
       account: sentry,
       serviceName: SERVICES.SENTRY,
-      artwork: error,
     },
     // {
     //     service: mattermost,
