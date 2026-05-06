@@ -17,16 +17,12 @@ fileignoreconfig:
   checksum: 6f1851774271e3f0d3fcdf1feac4cd6ba03f6e75922fd839a94b276589a77b76
 - filename: src/app/(private)/(dashboard)/services/page.tsx
   checksum: daebae004c8c06af9a88aaf57a1fad4b0a6efcb7920cf9628e0c1fd1985569ab
-- filename: src/components/Checklist.tsx
-  checksum: 7bcd2b7b8aa2c603855af404f89c24d9bb02ba6e7b4a2a8503ef7b1b72902178
-- filename: src/components/EventsList/EventsList.tsx
-  checksum: 01f943fd703c4c5d4e3298bb73487c482b8aa789be160f0ba9421b29102f7a00
 - filename: src/components/MemberPage/MemberWaitingValidationNotice.tsx
   checksum: 4243d7f9fb28db14113849647ba3126d456aa935c7169722d844ae11b3d06443
-- filename: src/components/StartupListPage/StartupList.tsx
-  checksum: e80ba5ef4992ffe38f37e645f86acdcc35d4e19742a2b4765e6d2a26d739b1d7
-- filename: src/components/StartupPage/StartupHeader.tsx
-  checksum: eadc2f2e6e18c331613266eab493ddac385b8fa083d0f4ad21596b89b2cf59ab
+- filename: src/components/StartupForm/StartupUrlsEditor.tsx
+  checksum: 81ac53ab5b6e4920711dbfe00c18126fb5462ca51be580612e39adb0ebcda498
+- filename: src/components/StartupPage/StartupDescription.tsx
+  checksum: cde3721f491f630ab6ba020833fa2e4cc96dbabb289e74f7fe14f37ff8d75679
 - filename: src/components/StartupPage/StartupMembers.tsx
   checksum: 6a20aba25aa570f49f0413babcb256d1db870522851f2e865088df7fe6e583a9
 - filename: src/lib/dimail/client.spec.ts
@@ -37,6 +33,8 @@ fileignoreconfig:
   checksum: a74621f69d4d7e4cdb99c05d127fcdc4a3f81aed2dc921146272f3deed3e283e
 - filename: src/models/misc.ts
   checksum: 0294a10f151fe53549f7bdfd6081d5a69d7572bb633b7813adc49bfac2f2f241
+- filename: src/scripts/update-local-files.ts
+  checksum: 244a3c61ec97d559e073b13d0c076cbfb4b564aafa09cc23a0c0ed5c898260b0
 - filename: src/server/queueing/workers/create-dimail-mailbox.spec.ts
   checksum: 7961ed68360545e4e2c72bf9884e12943467175bdeed35b38bfc177613fc0b15
 - filename: src/server/queueing/workers/send-verification-email.ts

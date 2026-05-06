@@ -12,7 +12,7 @@ import { getStartup } from "@/lib/kysely/queries";
 import s3 from "@/lib/s3";
 import { startupChangeToModel, startupToModel } from "@/models/mapper";
 import { sponsorSchema } from "@/models/sponsor";
-import { eventSchema, phaseSchema } from "@/models/startup";
+import { eventSchema, phaseSchema, startupUrlSchema } from "@/models/startup";
 import { authOptions } from "@/utils/authoptions";
 import { routeTitles } from "@/utils/routes/routeTitles";
 
@@ -100,6 +100,15 @@ export default async function Page(props) {
         .selectAll()
         .execute(),
     );
+  const startupUrls = z
+    .array(startupUrlSchema)
+    .parse(
+      await db
+        .selectFrom("startup_urls")
+        .where("startup_uuid", "=", startup.uuid)
+        .selectAll()
+        .execute(),
+    );
   const s3ShotKey = `startups/${startup.ghid}/shot.jpg`;
   let hasShot = false;
   try {
@@ -132,6 +141,7 @@ export default async function Page(props) {
     startupSponsors,
     startupPhases,
     startupEvents,
+    startupUrls,
     heroURL: hasHero
       ? `/api/image?fileObjIdentifier=${startup.ghid}&fileRelativeObjType=startup&fileIdentifier=hero`
       : undefined,

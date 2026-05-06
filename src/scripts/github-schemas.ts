@@ -38,6 +38,10 @@ export const startup = z.object({
   stats: z.boolean().optional().nullable(),
   stats_url: z.string().optional().nullable(),
   budget_url: z.string().optional().nullable(),
+  roadmap_url: z.string().optional().nullable(),
+  ecodesign_url: z.string().optional().nullable(),
+  tech_audit_url: z.string().optional().nullable(),
+  impact_url: z.string().optional().nullable(),
   analyse_risques: z.boolean().optional().nullable(),
   analyse_risques_url: z.string().optional().nullable(),
   events: z

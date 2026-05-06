@@ -2,7 +2,7 @@ import { fr } from "@codegouvfr/react-dsfr/fr";
 import { Tag } from "@codegouvfr/react-dsfr/Tag";
 
 import { BadgePhase } from "./BadgePhase";
-import { StartupPageProps } from "./StartupPage";
+import { StartupPageProps, StartupUrlRow } from "./StartupPage";
 import { StartupPhase } from "@/models/startup";
 import { createSerializer } from "nuqs";
 import { startupsQueryParser } from "../StartupListPage/utils";
@@ -13,13 +13,15 @@ const serialize = createSerializer({
 
 export function StartupHeader({
   startupInfos,
+  startupUrls,
   incubator,
   sponsors,
   currentPhase,
 }: Pick<
   StartupPageProps,
-  "startupInfos" | "changes" | "incubator" | "sponsors"
-> & { currentPhase: StartupPhase | null }) {
+  "startupInfos" | "startupUrls" | "changes" | "incubator" | "sponsors"
+> & { currentPhase: string | null }) {
+  const websiteUrl = startupUrls.find((u) => u.type === "website")?.url;
   return (
     <>
       <div className={fr.cx("fr-col-12")}>
@@ -34,16 +36,10 @@ export function StartupHeader({
         </div>
       </div>
       <div className={fr.cx("fr-col-12")}>
-        {currentPhase && (
-          <BadgePhase phase={currentPhase} className={fr.cx("fr-mr-2w")} />
-        )}
-        {startupInfos.link && (
-          <a
-            target="_blank"
-            href={startupInfos.link}
-            className={fr.cx("fr-mr-2w")}
-          >
-            {startupInfos.link}
+        <BadgePhase phase={currentPhase} className={fr.cx("fr-mr-2w")} />
+        {websiteUrl && (
+          <a target="_blank" href={websiteUrl} className={fr.cx("fr-mr-2w")}>
+            {websiteUrl}
           </a>
         )}
       </div>
