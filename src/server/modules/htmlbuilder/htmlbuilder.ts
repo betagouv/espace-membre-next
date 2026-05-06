@@ -180,7 +180,7 @@ const htmlBuilder: HtmlBuilderType = {
     } else {
       // use mjml
       const mjmlHtmlContent = renderToMjml(TEMPLATES_BY_TYPE[type](variables));
-      const transformResult = mjml2html(mjmlHtmlContent);
+      const transformResult = await mjml2html(mjmlHtmlContent);
       if (transformResult.errors) {
         for (const err of transformResult.errors) {
           throw err;
@@ -215,7 +215,7 @@ const htmlBuilder: HtmlBuilderType = {
     } else {
       // use mjml
       const mjmlHtmlContent = renderToMjml(TEMPLATES_BY_TYPE[type](variables));
-      const transformResult = mjml2html(mjmlHtmlContent);
+      const transformResult = await mjml2html(mjmlHtmlContent);
 
       if (transformResult.errors) {
         for (const err of transformResult.errors) {
