@@ -213,12 +213,15 @@ async function updateMemberMissions(
     throw new NoDataError(`Impossible de trouver les données sur le membre`);
   }
   const previousInfo = memberBaseInfoToModel(dbUser);
+  const isSelfEdit = session.user.uuid === previousInfo.uuid;
   const canEditMember = await _canEditMember({
     memberUuid: previousInfo.uuid,
     sessionUser: session.user,
   });
+  if (!isSelfEdit && !canEditMember) {
+    throw new AuthorizationError();
+  }
 
-  // todo check that it is authorized
   await db.transaction().execute(async (trx) => {
     for (const mission of missions) {
       if (mission.uuid) {
