@@ -43,14 +43,6 @@ export type PgbossJobState =
   | "failed"
   | "retry";
 
-export type StartupsPhaseEnum =
-  | "acceleration"
-  | "alumni"
-  | "construction"
-  | "investigation"
-  | "success"
-  | "transfer";
-
 export type Timestamp = ColumnType<Date, Date | string>;
 
 export type UsersDomaineEnum =
@@ -300,7 +292,7 @@ export interface PgbossVersion {
 export interface Phases {
   comment: string | null;
   end: Timestamp | null;
-  name: StartupsPhaseEnum;
+  name: string;
   start: Timestamp;
   startup_id: string;
   uuid: Generated<string>;

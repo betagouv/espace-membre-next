@@ -1,6 +1,6 @@
 import { CompiledQuery, Selectable } from "kysely";
 
-import { StartupsPhaseEnum, Startups } from "@/@types/db";
+import { Startups } from "@/@types/db";
 import { db } from "@/lib/kysely";
 import { StartupPhase } from "@/models/startup";
 import { getAllIncubators } from "./incubators";
@@ -75,7 +75,7 @@ WHERE fs.startup_id IS NULL AND NOT EXISTS (
         SELECT 1 
         FROM phases p 
         WHERE p.startup_id = s.uuid 
-        AND (p.name = 'transfer' OR p.name = 'success' OR p.name = 'alumni')
+        AND (p.name = 'transfere' OR p.name = 'abandon' OR p.name = 'abandon-investigation')
     );
 `,
     [],
@@ -131,7 +131,7 @@ export const getAllStartupsWithIncubatorAndPhase = async () => {
     const incubator = incubators.find((i) => i.uuid === s.incubator_id);
     return {
       ...s,
-      phase: (s as typeof s & { phase: StartupsPhaseEnum | null }).phase,
+      phase: (s as typeof s & { phase: string | null }).phase,
       thematiques: (s.thematiques as string[]) || [],
       techno: (s.techno as string[]) || [],
       usertypes: (s.usertypes as string[]) || [],
