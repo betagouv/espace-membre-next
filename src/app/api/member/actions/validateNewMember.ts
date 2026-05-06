@@ -94,7 +94,6 @@ export async function validateNewMember({
     );
   }
 
-  // todo check that it is authorized
   await db
     .updateTable("users")
     .where("uuid", "=", memberUuid)
