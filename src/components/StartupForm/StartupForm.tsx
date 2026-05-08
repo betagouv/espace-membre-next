@@ -516,13 +516,13 @@ export function StartupForm(props: StartupFormProps) {
               errors.startupPhases ? "fr-input-group--error" : ""
             }`}
           >
-            <label className="fr-label">
+            <p className="fr-label" style={{ margin: 0 }}>
               Phases
               <span className="fr-hint-text">
                 Historique des phases du produit (investigation,
                 construction...)
               </span>
-            </label>
+            </p>
             <PhasesEditor
               control={control}
               register={register}
@@ -536,13 +536,13 @@ export function StartupForm(props: StartupFormProps) {
               errors.startupEvents ? "fr-input-group--error" : ""
             }`}
           >
-            <label className="fr-label">
+            <p className="fr-label" style={{ margin: 0 }}>
               Événements
               <span className="fr-hint-text">
                 Historique des événements marquants de la startup. Par exemple :
                 "Lancement du produit", "Comité"...
               </span>
-            </label>
+            </p>
             <EventsEditor
               control={control}
               register={register}
