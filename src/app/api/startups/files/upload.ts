@@ -2,9 +2,11 @@
 import { revalidatePath } from "next/cache";
 import { getServerSession } from "next-auth";
 
+import { canEditStartup } from "@/lib/canEditStartup";
 import { db } from "@/lib/kysely";
 import { DocSchemaType } from "@/models/startupFiles";
 import { authOptions } from "@/utils/authoptions";
+import { AuthorizationError } from "@/utils/error";
 
 const commonFileFields = [
   "startups_files.filename",
@@ -39,11 +41,15 @@ export async function uploadStartupFile(
 ) {
   const session = await getServerSession(authOptions);
   if (!session || !session.user.id) {
-    throw new Error(`You don't have the right to access this function`);
+    throw new AuthorizationError();
+  }
+  // Defense in depth: only allow uploading files to a startup the user can
+  // edit (admin, member of the incubator team, or active startup agent).
+  if (!(await canEditStartup(session, uuid))) {
+    throw new AuthorizationError();
   }
   const base64 = Buffer.from(content);
 
-  // todo: ensure user can upload files here
   const inserted = await db
     .insertInto("startups_files")
     .values({
