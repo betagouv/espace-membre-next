@@ -1,6 +1,7 @@
 import { NextRequest } from "next/server";
 import { getServerSession } from "next-auth";
 
+import { canEditStartup } from "@/lib/canEditStartup";
 import { db } from "@/lib/kysely";
 import { authOptions } from "@/utils/authoptions";
 import {
@@ -23,13 +24,20 @@ async function getFileHandler(
       `Identifiant du fichier non fourni`,
     );
   }
-  // todo: ensure user can download files here
   const file = await db
     .selectFrom("startups_files")
-    .select(["filename", "base64"])
+    .select(["filename", "base64", "startup_id"])
     .where("uuid", "=", id)
     .where("deleted_at", "is", null)
     .executeTakeFirstOrThrow();
+
+  // Defense in depth: only allow downloading files attached to a startup the
+  // session user can edit (admin, member of the incubator team, or active
+  // startup agent). Startup files may contain sensitive documents
+  // (conventions, contracts, personal data).
+  if (!(await canEditStartup(session, file.startup_id))) {
+    throw new AuthorizationError();
+  }
 
   if (file.base64) {
     const decoded = file.base64.toString().split(",").slice(1).join(""); // remove base64 header
