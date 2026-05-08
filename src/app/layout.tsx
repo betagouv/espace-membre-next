@@ -109,6 +109,7 @@ function RootLayout(props: PropsWithChildren<RootLayoutProps>) {
   }
 
   return (
+    // eslint-disable-next-line jsx-a11y/html-has-lang -- lang is set via the DSFR getHtmlAttributes spread; ESLint cannot detect attributes from a spread.
     <html {...getHtmlAttributes({ lang: "fr" })}>
       <MainStructure {...props} />
     </html>
