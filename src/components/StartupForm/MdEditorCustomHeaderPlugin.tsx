@@ -19,14 +19,14 @@ const Header2Plugin = (props) => {
   const handleHeader = (header) => {
     props.handleHeader(header);
   };
-  const onHeaderKeyDown = (
-    e: React.KeyboardEvent<HTMLHeadingElement>,
-    header: string,
-  ) => {
-    if (e.key === "Enter" || e.key === " ") {
-      e.preventDefault();
-      handleHeader(header);
-    }
+  const headerButtonStyle: React.CSSProperties = {
+    background: "transparent",
+    border: 0,
+    padding: 0,
+    cursor: "pointer",
+    display: "block",
+    width: "100%",
+    textAlign: "left",
   };
   return (
     <span
@@ -44,54 +44,54 @@ const Header2Plugin = (props) => {
       <DropList show={visible} onClose={hide}>
         <ul className="header-list">
           <li className="list-item">
-            <h2
-              role="button"
-              tabIndex={0}
+            <button
+              type="button"
+              style={headerButtonStyle}
+              aria-label="Insérer un titre de niveau 2"
               onClick={() => handleHeader("h2")}
-              onKeyDown={(e) => onHeaderKeyDown(e, "h2")}
             >
-              H2
-            </h2>
+              <h2 style={{ margin: 0 }}>H2</h2>
+            </button>
           </li>
           <li className="list-item">
-            <h3
-              role="button"
-              tabIndex={0}
+            <button
+              type="button"
+              style={headerButtonStyle}
+              aria-label="Insérer un titre de niveau 3"
               onClick={() => handleHeader("h3")}
-              onKeyDown={(e) => onHeaderKeyDown(e, "h3")}
             >
-              H3
-            </h3>
+              <h3 style={{ margin: 0 }}>H3</h3>
+            </button>
           </li>
           <li className="list-item">
-            <h4
-              role="button"
-              tabIndex={0}
+            <button
+              type="button"
+              style={headerButtonStyle}
+              aria-label="Insérer un titre de niveau 4"
               onClick={() => handleHeader("h4")}
-              onKeyDown={(e) => onHeaderKeyDown(e, "h4")}
             >
-              H4
-            </h4>
+              <h4 style={{ margin: 0 }}>H4</h4>
+            </button>
           </li>
           <li className="list-item">
-            <h5
-              role="button"
-              tabIndex={0}
+            <button
+              type="button"
+              style={headerButtonStyle}
+              aria-label="Insérer un titre de niveau 5"
               onClick={() => handleHeader("h5")}
-              onKeyDown={(e) => onHeaderKeyDown(e, "h5")}
             >
-              H5
-            </h5>
+              <h5 style={{ margin: 0 }}>H5</h5>
+            </button>
           </li>
           <li className="list-item">
-            <h6
-              role="button"
-              tabIndex={0}
+            <button
+              type="button"
+              style={headerButtonStyle}
+              aria-label="Insérer un titre de niveau 6"
               onClick={() => handleHeader("h6")}
-              onKeyDown={(e) => onHeaderKeyDown(e, "h6")}
             >
-              H6
-            </h6>
+              <h6 style={{ margin: 0 }}>H6</h6>
+            </button>
           </li>
         </ul>
       </DropList>
