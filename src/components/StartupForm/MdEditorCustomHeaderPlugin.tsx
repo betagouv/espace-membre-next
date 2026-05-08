@@ -19,31 +19,79 @@ const Header2Plugin = (props) => {
   const handleHeader = (header) => {
     props.handleHeader(header);
   };
+  const onHeaderKeyDown = (
+    e: React.KeyboardEvent<HTMLHeadingElement>,
+    header: string,
+  ) => {
+    if (e.key === "Enter" || e.key === " ") {
+      e.preventDefault();
+      handleHeader(header);
+    }
+  };
   return (
     <span
       className="button button-type-header"
       title={"Header"}
+      role="button"
+      tabIndex={0}
       onMouseEnter={show}
       onMouseLeave={hide}
+      onFocus={show}
+      onBlur={hide}
     >
       <i className={`rmel-iconfont rmel-icon-font-size`} />
       {/* @ts-ignore todo */}
       <DropList show={visible} onClose={hide}>
         <ul className="header-list">
           <li className="list-item">
-            <h2 onClick={() => handleHeader("h2")}>H2</h2>
+            <h2
+              role="button"
+              tabIndex={0}
+              onClick={() => handleHeader("h2")}
+              onKeyDown={(e) => onHeaderKeyDown(e, "h2")}
+            >
+              H2
+            </h2>
           </li>
           <li className="list-item">
-            <h3 onClick={() => handleHeader("h3")}>H3</h3>
+            <h3
+              role="button"
+              tabIndex={0}
+              onClick={() => handleHeader("h3")}
+              onKeyDown={(e) => onHeaderKeyDown(e, "h3")}
+            >
+              H3
+            </h3>
           </li>
           <li className="list-item">
-            <h4 onClick={() => handleHeader("h4")}>H4</h4>
+            <h4
+              role="button"
+              tabIndex={0}
+              onClick={() => handleHeader("h4")}
+              onKeyDown={(e) => onHeaderKeyDown(e, "h4")}
+            >
+              H4
+            </h4>
           </li>
           <li className="list-item">
-            <h5 onClick={() => handleHeader("h5")}>H5</h5>
+            <h5
+              role="button"
+              tabIndex={0}
+              onClick={() => handleHeader("h5")}
+              onKeyDown={(e) => onHeaderKeyDown(e, "h5")}
+            >
+              H5
+            </h5>
           </li>
           <li className="list-item">
-            <h6 onClick={() => handleHeader("h6")}>H6</h6>
+            <h6
+              role="button"
+              tabIndex={0}
+              onClick={() => handleHeader("h6")}
+              onKeyDown={(e) => onHeaderKeyDown(e, "h6")}
+            >
+              H6
+            </h6>
           </li>
         </ul>
       </DropList>
