@@ -59,8 +59,14 @@ const getStartupRow = ({
           ></i>
           {(startup.thematiques || []).map((thematique, idx, all) => (
             <span key={thematique}>
-              <span
-                style={{ cursor: "pointer" }}
+              <button
+                type="button"
+                style={{
+                  background: "transparent",
+                  border: 0,
+                  padding: 0,
+                  cursor: "pointer",
+                }}
                 className={fr.cx("fr-link", "fr-link")}
                 title="Chercher toutes les startups de cette thématique"
                 onClick={() => {
@@ -68,7 +74,7 @@ const getStartupRow = ({
                 }}
               >
                 {thematique}
-              </span>
+              </button>
               {idx < all.length - 1 && ", "}
             </span>
           ))}
@@ -83,8 +89,14 @@ const getStartupRow = ({
           ></i>
           {(startup.usertypes || []).map((usertype, idx, all) => (
             <span key={usertype}>
-              <span
-                style={{ cursor: "pointer" }}
+              <button
+                type="button"
+                style={{
+                  background: "transparent",
+                  border: 0,
+                  padding: 0,
+                  cursor: "pointer",
+                }}
                 className={fr.cx("fr-link", "fr-link")}
                 title="Chercher toutes les startups pour ces utilisateurs"
                 onClick={() => {
@@ -92,7 +104,7 @@ const getStartupRow = ({
                 }}
               >
                 {usertype}
-              </span>
+              </button>
               {idx < all.length - 1 && ", "}
             </span>
           )) || null}
@@ -101,8 +113,14 @@ const getStartupRow = ({
         null}
     </>,
     startup.incubatorId && (
-      <span
-        style={{ cursor: "pointer" }}
+      <button
+        type="button"
+        style={{
+          background: "transparent",
+          border: 0,
+          padding: 0,
+          cursor: "pointer",
+        }}
         className={fr.cx("fr-link", "fr-link")}
         title="Chercher toutes les startups de cet incubateur"
         onClick={() => {
@@ -110,7 +128,7 @@ const getStartupRow = ({
         }}
       >
         {startup.incubatorName}
-      </span>
+      </button>
     ),
   ];
 };
