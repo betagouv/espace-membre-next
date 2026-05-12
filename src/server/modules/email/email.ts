@@ -9,17 +9,8 @@ import { startupSchemaType, userStartupSchemaType } from "@/models/startup";
 
 export enum EMAIL_TYPES {
   EMAIL_LOGIN = "EMAIL_LOGIN",
-  EMAIL_CREATED_EMAIL = "EMAIL_CREATED_EMAIL",
   EMAIL_CREATED_DIMAIL = "EMAIL_CREATED_DIMAIL",
-  EMAIL_USER_SHOULD_UPDATE_INFO = "EMAIL_USER_SHOULD_UPDATE_INFO",
-  EMAIL_NEWSLETTER = "EMAIL_NEWSLETTER",
-  EMAIL_NEW_MEMBER_PR = "EMAIL_NEW_MEMBER_PR",
-  EMAIL_STARTUP_ENTER_CONSTRUCTION_PHASE = "EMAIL_STARTUP_ENTER_CONSTRUCTION_PHASE",
-  EMAIL_STARTUP_ENTER_ACCELERATION_PHASE = "EMAIL_STARTUP_ENTER_ACCELERATION_PHASE",
-  EMAIL_STARTUP_ENTER_INVESTIGATION_PHASE = "EMAIL_STARTUP_ENTER_INVESTIGATION_PHASE",
   EMAIL_STARTUP_ASK_PHASE = "EMAIL_STARTUP_ASK_PHASE",
-  EMAIL_FORUM_REMINDER = "EMAIL_FORUM_REMINDER",
-  EMAIL_TEST = "EMAIL_TEST",
   EMAIL_VERIFICATION_WAITING = "EMAIL_VERIFICATION_WAITING",
   EMAIL_NEW_MEMBER_VALIDATION = "EMAIL_NEW_MEMBER_VALIDATION",
   EMAIL_TEAM_COMPOSITION = "EMAIL_TEAM_COMPOSITION",
@@ -58,69 +49,12 @@ export type EmailLogin = {
   };
 };
 
-export type EmailCreatedEmail = {
-  type: EMAIL_TYPES.EMAIL_CREATED_EMAIL;
-  variables: {
-    email: string;
-    secondaryEmail: string;
-    secretariatUrl: string;
-    emailUrl: string;
-  };
-};
-
 export type EmailCreatedDimail = {
   type: EMAIL_TYPES.EMAIL_CREATED_DIMAIL;
   variables: {
     password: string;
     email: string;
     webmailUrl: string;
-  };
-};
-
-export type EmailUserShouldUpdateInfo = {
-  type: EMAIL_TYPES.EMAIL_USER_SHOULD_UPDATE_INFO;
-  variables: {
-    user: memberBaseInfoSchemaType;
-    secretariatUrl: string;
-  };
-};
-
-export type EmailNewsletter = {
-  type: EMAIL_TYPES.EMAIL_NEWSLETTER;
-  variables: {
-    body: string;
-    subject: string;
-  };
-};
-
-export type EmailNewMemberPR = {
-  type: EMAIL_TYPES.EMAIL_NEW_MEMBER_PR;
-  variables: {
-    prUrl: string;
-    name: string;
-    isEmailBetaAsked: boolean;
-    startup: string;
-  };
-};
-
-export type EmailStartupEnterConstructionPhase = {
-  type: EMAIL_TYPES.EMAIL_STARTUP_ENTER_CONSTRUCTION_PHASE;
-  variables: {
-    startup: string;
-  };
-};
-
-export type EmailStartupEnterAccelerationPhase = {
-  type: EMAIL_TYPES.EMAIL_STARTUP_ENTER_ACCELERATION_PHASE;
-  variables: {
-    startup: string;
-  };
-};
-
-export type EmailStartupEnterInvestigationPhase = {
-  type: EMAIL_TYPES.EMAIL_STARTUP_ENTER_INVESTIGATION_PHASE;
-  variables: {
-    startup: string;
   };
 };
 
@@ -132,20 +66,6 @@ export type EmailStartupAskPhase = {
     link: string;
     phase: string;
   };
-};
-
-export type EmailForumReminder = {
-  type: EMAIL_TYPES.EMAIL_FORUM_REMINDER;
-  variables: {
-    date: string;
-    calendar_public_url: string;
-    location: string;
-  };
-};
-
-export type EmailTest = {
-  type: EMAIL_TYPES.EMAIL_TEST;
-  variables?: {};
 };
 
 export type EmailVerificationWaiting = {
@@ -224,18 +144,9 @@ export type EmailMatomoAccountUpdated = {
 
 export type EmailVariants =
   | EmailLogin
-  | EmailCreatedEmail
   | EmailCreatedDimail
-  | EmailUserShouldUpdateInfo
-  | EmailNewsletter
-  | EmailNewMemberPR
-  | EmailStartupEnterConstructionPhase
-  | EmailStartupEnterAccelerationPhase
-  | EmailStartupEnterInvestigationPhase
   | EmailStartupNewMemberArrival
   | EmailStartupAskPhase
-  | EmailForumReminder
-  | EmailTest
   | EmailVerificationWaiting
   | EmailNewMemberValidation
   | EmailTeamComposition
@@ -368,42 +279,12 @@ export const EmailDocumentation: Record<
     description:
       "Email de login envoyé à la personne qui essaye de se connecter",
   },
-  [EMAIL_TYPES.EMAIL_CREATED_EMAIL]: {
-    description:
-      "Email envoyé lors de la création d’un nouvel email dans le système.",
-  },
   [EMAIL_TYPES.EMAIL_CREATED_DIMAIL]: {
     description: "Email envoyé lors de la création d’une boite mail Dimail.",
-  },
-  [EMAIL_TYPES.EMAIL_USER_SHOULD_UPDATE_INFO]: {
-    description:
-      "Rappel à un utilisateur de mettre à jour ses informations personnelles.",
-  },
-  [EMAIL_TYPES.EMAIL_NEWSLETTER]: {
-    description: "Email de type newsletter envoyé aux utilisateurs.",
-  },
-  [EMAIL_TYPES.EMAIL_NEW_MEMBER_PR]: {
-    description: "Notification de création de PR pour un nouveau membre.",
-  },
-  [EMAIL_TYPES.EMAIL_STARTUP_ENTER_CONSTRUCTION_PHASE]: {
-    description: "Notification qu'une startup entre en phase de construction.",
-  },
-  [EMAIL_TYPES.EMAIL_STARTUP_ENTER_ACCELERATION_PHASE]: {
-    description: "Notification qu'une startup entre en phase d’accélération.",
-  },
-  [EMAIL_TYPES.EMAIL_STARTUP_ENTER_INVESTIGATION_PHASE]: {
-    description: "Notification qu'une startup entre en phase d’investigation.",
   },
   [EMAIL_TYPES.EMAIL_STARTUP_ASK_PHASE]: {
     description:
       "Demande envoyée pour confirmer ou changer la phase d'une startup.",
-  },
-  [EMAIL_TYPES.EMAIL_FORUM_REMINDER]: {
-    description: "Rappel envoyé pour participer à un forum.",
-  },
-  [EMAIL_TYPES.EMAIL_TEST]: {
-    description:
-      "Email de test pour vérifier le bon fonctionnement des envois.",
   },
   [EMAIL_TYPES.EMAIL_VERIFICATION_WAITING]: {
     description: "Email informant qu’une vérification est en attente.",
