@@ -3,6 +3,7 @@
 import { revalidatePath } from "next/cache";
 import { getServerSession } from "next-auth/next";
 
+import { canEditMember } from "@/lib/canEditMember";
 import { addEvent } from "@/lib/events";
 import { db } from "@/lib/kysely";
 import { getUserInfos } from "@/lib/kysely/queries/users";
@@ -27,10 +28,21 @@ export async function updateUserEvent({
   date?: Date;
 }) {
   const session = await getServerSession(authOptions);
-  if (!session || !session.user.id) {
+  if (!session || !session.user?.uuid) {
     throw new AuthorizationError();
   }
   const user_id = action_on_user_id || session.user.uuid;
+
+  // Defense in depth: only allow editing one's own user events, unless the
+  // session user has edit permissions on the target member (admin, same
+  // incubator team, or shared startup with contractuel/fonctionnaire status).
+  const isSelfEdit = session.user.uuid === user_id;
+  if (
+    !isSelfEdit &&
+    !(await canEditMember({ memberUuid: user_id, sessionUser: session.user }))
+  ) {
+    throw new AuthorizationError();
+  }
 
   const user = await getUserInfos({ uuid: user_id });
   if (!user) {
