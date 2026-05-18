@@ -24,8 +24,6 @@ jobs:
       - run: npm run build --if-present
         env:
           CI: true
-          FEATURE_SHOULD_SEND_MESSAGE_TO_AUTHOR: true
-          NEWSLETTER_HASH_SECRET: fakenewslettersecret
           SHOULD_SEND_NL: true
           SESSION_SECRET: fakesessionsecret
           MAIL_PASS: fakepass
@@ -39,8 +37,6 @@ jobs:
       - run: npm run test
         env:
           CI: true
-          FEATURE_SHOULD_SEND_MESSAGE_TO_AUTHOR: true
-          NEWSLETTER_HASH_SECRET: fakenewslettersecret
           SHOULD_SEND_NL: true
           SESSION_SECRET: fakesessionsecret
           MAIL_PASS: fakepass
