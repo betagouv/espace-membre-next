@@ -116,6 +116,14 @@ export interface DinumEmails {
   uuid: Generated<string>;
 }
 
+export interface MatrixAccounts {
+  id: Generated<string>;
+  user_id: string;
+  matrix_id: string;
+  created_at: Generated<Timestamp>;
+  updated_at: Generated<Timestamp>;
+}
+
 export interface Events {
   action_code: string;
   action_metadata: string | null;
@@ -538,6 +546,7 @@ export interface DB {
   knex_migrations: KnexMigrations;
   knex_migrations_lock: KnexMigrationsLock;
   marrainage: Marrainage;
+  matrix_accounts: MatrixAccounts;
   marrainage_groups: MarrainageGroups;
   marrainage_groups_members: MarrainageGroupsMembers;
   matomo_sites: MatomoSites;

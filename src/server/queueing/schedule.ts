@@ -6,6 +6,7 @@ import { sendEmailToIncubatorTeamTopic } from "./workers/send-email-to-incubator
 import { sendEmailToTeamsToCheckOnTeamCompositionTopic } from "./workers/send-email-to-teams-to-check-on-team-composition";
 import { syncDinumEmailsTopic } from "./workers/sync-dinum-emails";
 import { cleanTeamsMembersTopic } from "./workers/clean-teams-members";
+import { syncMatrixAccountsTopic } from "./workers/sync-matrix-accounts";
 
 export type PgBossJobType = {
   topic: string;
@@ -33,6 +34,11 @@ export const pgBossJobs: PgBossJobType[] = [
     topic: cleanTeamsMembersTopic,
     frequency: `0 8 * * *`,
     description: `Supprime les membres expirés des équipes incubateurs`,
+  },
+  {
+    topic: syncMatrixAccountsTopic,
+    frequency: `0 3 * * *`,
+    description: `Indexe les comptes Matrix (Tchap) des utilisateurs`,
   },
 ];
 
