@@ -76,17 +76,23 @@ const getUserRow = ({
     </>,
     <>{user.primary_email}</>,
     // domaine
-    <span
+    <button
       key="domaine"
+      type="button"
       className={fr.cx("fr-link", "fr-link--sm")}
-      style={{ cursor: "pointer" }}
+      style={{
+        background: "transparent",
+        border: 0,
+        padding: 0,
+        cursor: "pointer",
+      }}
       title="Chercher tous les membres de ce domaine"
       onClick={() => {
         onDomaineClick(user.domaine);
       }}
     >
       {user.domaine}
-    </span>,
+    </button>,
     // teams
     teams.length ? (
       <ul style={{ paddingLeft: 0 }}>

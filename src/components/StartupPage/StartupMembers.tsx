@@ -53,11 +53,22 @@ export function MemberTable({
             ),
           ) || "",
           canEditMembers && (
-            <i
+            <button
+              type="button"
+              aria-label={`Retirer ${member.fullname || member.username} de la startup`}
               onClick={(e) => onRemoveMemberClick(e, member)}
-              className={fr.cx("fr-icon--md", "ri-delete-bin-2-fill")}
-              style={{ cursor: "pointer" }}
-            ></i>
+              style={{
+                background: "transparent",
+                border: 0,
+                padding: 0,
+                cursor: "pointer",
+              }}
+            >
+              <i
+                className={fr.cx("fr-icon--md", "ri-delete-bin-2-fill")}
+                aria-hidden="true"
+              ></i>
+            </button>
           ),
         ])}
       headers={["Nom", "Role", "Date d'arrivée", "Date de fin", "Actions"]}

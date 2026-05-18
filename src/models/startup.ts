@@ -26,12 +26,6 @@ export const PHASE_READABLE_NAME: Record<StartupPhase, string> = {
   "abandon-investigation": "Abandonné après investigation",
 };
 
-export const ACTIVE_PHASES = [
-  StartupPhase.PHASE_ACCELERATION,
-  StartupPhase.PHASE_CONSTRUCTION,
-  StartupPhase.PHASE_INVESTIGATION,
-];
-
 export const PHASES_ORDERED_LIST = [
   StartupPhase.PHASE_INVESTIGATION,
   StartupPhase.PHASE_CONSTRUCTION,

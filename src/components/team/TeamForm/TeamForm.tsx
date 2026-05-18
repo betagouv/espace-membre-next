@@ -196,12 +196,12 @@ export function TeamForm(props: TeamFormProps) {
                 : ""
             }`}
           >
-            <label className="fr-label">
+            <p className="fr-label" style={{ margin: 0 }}>
               Description rapide de l'incubateur (obligatoire) :
               <span className="fr-hint-text">
                 Aperçu en une phrase de cet incubateur.
               </span>
-            </label>
+            </p>
 
             <ClientOnly>
               <MdEditor

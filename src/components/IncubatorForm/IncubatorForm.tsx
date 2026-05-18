@@ -231,12 +231,12 @@ export function IncubatorForm(props: IncubatorFormProps) {
                 : ""
             }`}
           >
-            <label className="fr-label">
+            <p className="fr-label" style={{ margin: 0 }}>
               Description rapide de l'incubateur (obligatoire) :
               <span className="fr-hint-text">
                 Aperçu en une phrase de cet incubateur.
               </span>
-            </label>
+            </p>
 
             <ClientOnly>
               <MdEditor
@@ -271,12 +271,12 @@ export function IncubatorForm(props: IncubatorFormProps) {
                 : ""
             }`}
           >
-            <label className="fr-label">
+            <p className="fr-label" style={{ margin: 0 }}>
               Description complète de l'incubateur (obligatoire) :
               <span className="fr-hint-text">
                 Pour la fiche de l'incubateur.
               </span>
-            </label>
+            </p>
 
             <ClientOnly>
               <MdEditor

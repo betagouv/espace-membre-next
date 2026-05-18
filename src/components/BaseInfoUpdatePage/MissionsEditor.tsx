@@ -183,7 +183,6 @@ export const Mission = ({
                   <button
                     className={fr.cx("fr-link", "fr-text--xs")}
                     onClick={onMissionAutoEndClick}
-                    role="button"
                     type="button"
                     title="Mettre la date de fin à +3 mois"
                   >

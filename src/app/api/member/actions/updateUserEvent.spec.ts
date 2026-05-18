@@ -184,7 +184,7 @@ describe("Update user event server action", () => {
     expect(event).to.be.undefined;
   });
 
-  it("should delete event if it exist if value is false when user is not current user", async () => {
+  it("should throw AuthorizationError when a non-admin tries to delete another user's event", async () => {
     const otherUser = await db
       .selectFrom("users")
       .selectAll()
@@ -208,20 +208,27 @@ describe("Update user event server action", () => {
     };
     getServerSessionStub.resolves(mockSession);
 
-    await updateUserEventHandler({
-      value: false,
-      action_on_user_id: otherUser.uuid,
-      field_id: "a-field-id",
-    });
+    let thrown: unknown;
+    try {
+      await updateUserEventHandler({
+        value: false,
+        action_on_user_id: otherUser.uuid,
+        field_id: "a-field-id",
+      });
+    } catch (e) {
+      thrown = e;
+    }
+    expect(thrown).to.be.instanceOf(AuthorizationError);
 
+    // Event must NOT have been deleted.
     const event = await db
       .selectFrom("user_events")
       .where("uuid", "=", userEvent.uuid)
       .executeTakeFirst();
-    expect(event).to.be.undefined;
+    expect(event).to.not.be.undefined;
   });
 
-  it("should create event if value is true when user is not current user", async () => {
+  it("should throw AuthorizationError when a non-admin tries to create an event for another user", async () => {
     const mockSession = {
       user: {
         id: membreActif.username,
@@ -235,17 +242,41 @@ describe("Update user event server action", () => {
       .selectAll()
       .where("username", "=", memberJulienD.username)
       .executeTakeFirstOrThrow();
-    await updateUserEventHandler({
-      value: true,
-      action_on_user_id: otherUser.uuid,
-      field_id: "a-field-id",
-    });
 
+    let thrown: unknown;
+    try {
+      await updateUserEventHandler({
+        value: true,
+        action_on_user_id: otherUser.uuid,
+        field_id: "a-field-id",
+      });
+    } catch (e) {
+      thrown = e;
+    }
+    expect(thrown).to.be.instanceOf(AuthorizationError);
+
+    // Event must NOT have been created.
     const event = await db
       .selectFrom("user_events")
       .where("user_id", "=", otherUser.uuid)
       .where("field_id", "=", "a-field-id")
-      .executeTakeFirstOrThrow();
-    event.should.be.exist;
+      .executeTakeFirst();
+    expect(event).to.be.undefined;
+  });
+
+  it("should throw AuthorizationError when there is no session", async () => {
+    getServerSessionStub.resolves(null);
+
+    let thrown: unknown;
+    try {
+      await updateUserEventHandler({
+        value: true,
+        action_on_user_id: user.uuid,
+        field_id: "a-field-id",
+      });
+    } catch (e) {
+      thrown = e;
+    }
+    expect(thrown).to.be.instanceOf(AuthorizationError);
   });
 });

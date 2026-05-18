@@ -1,8 +1,7 @@
-import { Startups } from "@/@types/db";
 import { db } from "@/lib/kysely";
 import { startupToModel } from "@/models/mapper";
 import {
-  ACTIVE_PHASES,
+  StartupPhase,
   PHASE_READABLE_NAME,
   startupSchemaType,
 } from "@/models/startup";
@@ -10,6 +9,9 @@ import routes from "@/routes/routes";
 import { sendEmail } from "@/server/config/email.config";
 import { EMAIL_TYPES } from "@modules/email";
 
+/*
+remind new startups to update their phases
+*/
 export const sendEmailToStartupToUpdatePhase = async (
   startupsArg?: startupSchemaType[],
 ) => {
@@ -30,7 +32,11 @@ export const sendEmailToStartupToUpdatePhase = async (
       startups.map((s) => s.uuid),
     )
     .where("end", "is", null)
-    .where("name", "in", ACTIVE_PHASES)
+    .where("name", "in", [
+      StartupPhase.PHASE_INVESTIGATION,
+      StartupPhase.PHASE_CONSTRUCTION,
+      StartupPhase.PHASE_ACCELERATION,
+    ])
     .groupBy("startup_id")
     .selectAll()
     .execute();

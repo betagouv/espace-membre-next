@@ -87,6 +87,7 @@ export async function getAccessToken(): Promise<string> {
 
 const client = axios.create({
   baseURL: DIMAIL_API_URL,
+  timeout: 120000,
   headers: {
     "Content-Type": "application/json",
   },
