@@ -16,14 +16,14 @@ export enum StartupPhase {
 }
 
 export const PHASE_READABLE_NAME: Record<StartupPhase, string> = {
-  investigation: "Investigation",
-  acceleration: "Accélération",
-  construction: "Construction",
-  perennisation: "En cours de pérennisation",
+  investigation: "En investigation",
+  acceleration: "En accélération",
+  construction: "En construction",
+  perennisation: "En consolidation",
   transfere: "Transféré",
-  opere: "Opéré par beta.gouv.fr",
-  abandon: "Abandonné",
-  "abandon-investigation": "Abandonné après investigation",
+  opere: "Opéré au sein du réseau",
+  abandon: "Arrêté",
+  "abandon-investigation": "Investigation non concluante",
 };
 
 export const PHASES_ORDERED_LIST = [
