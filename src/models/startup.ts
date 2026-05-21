@@ -61,7 +61,7 @@ export const EVENT_READABLE_NAME = {
   end: "Abandon",
 };
 
-export const EVENTS_ORDERED_LIST = Object.keys(StartupEvent);
+export const EVENTS_ORDERED_LIST = Object.values(StartupEvent);
 
 export const DSFR_STATUSES = [
   "Le DSFR est implémenté",
