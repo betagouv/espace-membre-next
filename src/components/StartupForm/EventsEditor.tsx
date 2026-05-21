@@ -103,9 +103,9 @@ export function EventsEditor({
               <option value="" disabled hidden>
                 Type d'événement
               </option>
-              {Object.entries(EVENTS_ORDERED_LIST).map(([id, label], index) => (
-                <option key={index} value={label}>
-                  {EVENT_READABLE_NAME[label]}
+              {EVENTS_ORDERED_LIST.map((key, index) => (
+                <option key={index} value={key}>
+                  {EVENT_READABLE_NAME[key]}
                 </option>
               ))}
             </Select>,
