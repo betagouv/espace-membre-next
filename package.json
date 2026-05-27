@@ -39,7 +39,7 @@
     "@hookform/resolvers": "^5.2.2",
     "@luma-team/mjml-react": "^0.2.1",
     "@mui/base": "^5.0.0-beta.69",
-    "@mui/material": "^5.15.10",
+    "@mui/material": "^9.0.1",
     "@sentry/nextjs": "^10.26.0",
     "@sentry/node": "^10.26.0",
     "@sindresorhus/slugify": "^1.1.0",
