@@ -222,6 +222,9 @@ export const isPublicServiceEmail = async function (email: string) {
   if (/@.*\.gouv\.fr$/.test(email.toLowerCase())) {
     return true;
   }
+  if (/@betagouv\.ovh$/.test(email.toLowerCase())) {
+    return true;
+  }
   // todo: remove ?
   try {
     if (config.tchap_api) {

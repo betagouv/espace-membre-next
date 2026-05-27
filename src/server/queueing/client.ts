@@ -46,6 +46,10 @@ import {
   cleanTeamsMembers,
   cleanTeamsMembersTopic,
 } from "./workers/clean-teams-members";
+import {
+  syncMatrixAccounts,
+  syncMatrixAccountsTopic,
+} from "./workers/sync-matrix-accounts";
 
 let databaseUrl = process.env.DATABASE_URL || "";
 databaseUrl = databaseUrl.replace("sslmode=prefer", "sslmode=no-verify");
@@ -149,6 +153,11 @@ export const pgBossWorker: {
     topic: cleanTeamsMembersTopic,
     worker: cleanTeamsMembers,
     description: `Supprime les membres expirés des équipes incubateurs`,
+  },
+  {
+    topic: syncMatrixAccountsTopic,
+    worker: syncMatrixAccounts,
+    description: `Indexe les comptes Matrix (Tchap) des utilisateurs`,
   },
 ];
 
