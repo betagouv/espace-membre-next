@@ -10,27 +10,27 @@ export enum StartupPhase {
   PHASE_ACCELERATION = "acceleration",
   PHASE_ABANDON = "abandon",
   PHASE_ABANDON_INVESTIGATION = "abandon-investigation",
-  PHASE_PERENNISATION = "perennisation",
+  PHASE_CONSOLIDATION = "consolidation",
   PHASE_OPERE = "opere",
   PHASE_TRANSFERE = "transfere",
 }
 
 export const PHASE_READABLE_NAME: Record<StartupPhase, string> = {
-  investigation: "Investigation",
-  acceleration: "Accélération",
-  construction: "Construction",
-  perennisation: "En cours de pérennisation",
+  investigation: "En investigation",
+  acceleration: "En accélération",
+  construction: "En construction",
+  consolidation: "En consolidation",
   transfere: "Transféré",
-  opere: "Opéré par beta.gouv.fr",
-  abandon: "Abandonné",
-  "abandon-investigation": "Abandonné après investigation",
+  opere: "Opéré au sein du réseau",
+  abandon: "Arrêté",
+  "abandon-investigation": "Investigation non concluante",
 };
 
 export const PHASES_ORDERED_LIST = [
   StartupPhase.PHASE_INVESTIGATION,
   StartupPhase.PHASE_CONSTRUCTION,
   StartupPhase.PHASE_ACCELERATION,
-  StartupPhase.PHASE_PERENNISATION,
+  StartupPhase.PHASE_CONSOLIDATION,
   StartupPhase.PHASE_OPERE,
   StartupPhase.PHASE_TRANSFERE,
   StartupPhase.PHASE_ABANDON_INVESTIGATION,
@@ -61,7 +61,7 @@ export const EVENT_READABLE_NAME = {
   end: "Abandon",
 };
 
-export const EVENTS_ORDERED_LIST = Object.keys(StartupEvent);
+export const EVENTS_ORDERED_LIST = Object.values(StartupEvent);
 
 export const DSFR_STATUSES = [
   "Le DSFR est implémenté",
