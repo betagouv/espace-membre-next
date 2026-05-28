@@ -210,33 +210,40 @@ export const isPublicServiceEmail = async function (email: string) {
   // if (process.env.NODE_ENV === "development") {
   //   return true;
   // }
-  if (
-    email.toLocaleLowerCase().endsWith("gmail.com") ||
-    email.toLocaleLowerCase().endsWith("live.fr") ||
-    email.toLocaleLowerCase().endsWith("orange.fr") ||
-    email.toLocaleLowerCase().endsWith("hotmail.fr") ||
-    email.toLocaleLowerCase().endsWith("hotmail.com") ||
-    email.toLocaleLowerCase().endsWith("protonmail.com") ||
-    email.toLocaleLowerCase().endsWith("octo.com") ||
-    email.toLocaleLowerCase().endsWith("yahoo.fr") ||
-    email.toLocaleLowerCase().endsWith("yahoo.com") ||
-    email.toLocaleLowerCase().endsWith("multi.coop")
-  ) {
+  const normalizedEmail = String(email).trim().toLowerCase();
+  const atIndex = normalizedEmail.lastIndexOf("@");
+  if (atIndex <= 0 || atIndex === normalizedEmail.length - 1) {
     return false;
   }
-  if (/@pole-emploi\.fr\s*$/.test(email.toLowerCase())) {
+  const domain = normalizedEmail.slice(atIndex + 1);
+  const blockedDomains = new Set([
+    "gmail.com",
+    "live.fr",
+    "orange.fr",
+    "hotmail.fr",
+    "hotmail.com",
+    "protonmail.com",
+    "octo.com",
+    "yahoo.fr",
+    "yahoo.com",
+    "multi.coop",
+  ]);
+  if (blockedDomains.has(domain)) {
+    return false;
+  }
+  if (/@pole-emploi\.fr\s*$/.test(normalizedEmail)) {
     return true;
   }
-  if (/@france-?travail\.fr\s*$/.test(email.toLowerCase())) {
+  if (/@france-?travail\.fr\s*$/.test(normalizedEmail)) {
     return true;
   }
-  if (/@justice\.fr\s*$/.test(email.toLowerCase())) {
+  if (/@justice\.fr\s*$/.test(normalizedEmail)) {
     return true;
   }
-  if (/@.*\.gouv\.fr$/.test(email.toLowerCase())) {
+  if (/@.*\.gouv\.fr$/.test(normalizedEmail)) {
     return true;
   }
-  if (/@betagouv\.ovh$/.test(email.toLowerCase())) {
+  if (/@betagouv\.ovh$/.test(normalizedEmail)) {
     return true;
   }
   // todo: remove ?
