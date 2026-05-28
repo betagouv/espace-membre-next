@@ -210,6 +210,20 @@ export const isPublicServiceEmail = async function (email: string) {
   // if (process.env.NODE_ENV === "development") {
   //   return true;
   // }
+  if (
+    email.toLocaleLowerCase().endsWith("gmail.com") ||
+    email.toLocaleLowerCase().endsWith("live.fr") ||
+    email.toLocaleLowerCase().endsWith("orange.fr") ||
+    email.toLocaleLowerCase().endsWith("hotmail.fr") ||
+    email.toLocaleLowerCase().endsWith("hotmail.com") ||
+    email.toLocaleLowerCase().endsWith("protonmail.com") ||
+    email.toLocaleLowerCase().endsWith("octo.com") ||
+    email.toLocaleLowerCase().endsWith("yahoo.fr") ||
+    email.toLocaleLowerCase().endsWith("yahoo.com") ||
+    email.toLocaleLowerCase().endsWith("multi.coop")
+  ) {
+    return false;
+  }
   if (/@pole-emploi\.fr\s*$/.test(email.toLowerCase())) {
     return true;
   }
