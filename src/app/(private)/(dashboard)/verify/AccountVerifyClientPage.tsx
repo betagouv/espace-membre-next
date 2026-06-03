@@ -452,7 +452,7 @@ export default function AccountVerifyClientPage({
                             hintText="Tu pourras changer plus tard"
                             nativeInputProps={{
                               ...register("average_nb_of_days", {
-                                setValueAs: (
+                                setValueAs: ( 
                                   // use this instead of valueAsNumber to handle undefined value
                                   v,
                                 ) => (!v ? null : parseInt(v)),
