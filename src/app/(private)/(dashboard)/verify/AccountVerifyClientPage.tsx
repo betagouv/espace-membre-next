@@ -58,6 +58,10 @@ export default function AccountVerifyClientPage({
     mode: "onChange",
     defaultValues: {
       ...member,
+      // average_nb_of_days is now required (number) in the schema, but the
+      // member record may still hold null — coerce it to undefined so the
+      // field starts empty instead of breaking the input type.
+      average_nb_of_days: member.average_nb_of_days ?? undefined,
     },
   });
   const { fields: missionsFields } = useFieldArray({
