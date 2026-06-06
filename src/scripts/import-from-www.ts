@@ -1,4 +1,5 @@
 import fm from "front-matter";
+import { Transaction } from "kysely";
 import pAll from "p-all";
 import unzipper, { Entry } from "unzipper";
 import { ZodSchema, z } from "zod";
@@ -11,27 +12,64 @@ import {
   team,
 } from "./github-schemas";
 import { importFromZip, MarkdownData } from "./utils";
+import { DB } from "@/@types/db";
 import config from "@/server/config";
 import { db } from "@lib/kysely";
 
 const { Readable } = require("stream");
 
-const insertData = async (markdownData: MarkdownData) => {
+/**
+ * Refuse to run the destructive import in production unless the operator
+ * explicitly opts in via the ALLOW_DESTRUCTIVE_IMPORT env var.
+ *
+ * `import-from-www` truncates and re-inserts the bulk of the database
+ * (incubators, teams, startups, missions, phases, events, organisations).
+ * Running it on the production database would wipe out edits made by
+ * members between two runs and break the data flow.
+ *
+ * Export so the guard can be unit-tested in isolation.
+ */
+export const assertDestructiveImportAllowed = (
+  env: NodeJS.ProcessEnv = process.env,
+) => {
+  const isProduction = env.NODE_ENV === "production";
+  const isExplicitlyAllowed = env.ALLOW_DESTRUCTIVE_IMPORT === "true";
+
+  if (isProduction && !isExplicitlyAllowed) {
+    throw new Error(
+      "Refused to run import-from-www in production: this script truncates " +
+        "incubators/teams/startups/missions/phases/events/organisations. " +
+        "Set ALLOW_DESTRUCTIVE_IMPORT=true to override (use only on dev/staging).",
+    );
+  }
+
+  if (isExplicitlyAllowed) {
+    console.warn(
+      "ALLOW_DESTRUCTIVE_IMPORT=true detected — destructive import is allowed " +
+        "in the current environment. This will TRUNCATE database tables.",
+    );
+  }
+};
+
+export const insertData = async (
+  markdownData: MarkdownData,
+  trx: Transaction<DB>,
+) => {
   // truncate tables
-  // do not drop users -- await db.deleteFrom("users").execute();
-  await db.deleteFrom("missions_startups").execute();
-  await db.deleteFrom("missions").execute();
-  await db.deleteFrom("phases").execute();
-  await db.deleteFrom("startups_organizations").execute();
-  await db.deleteFrom("startup_events").execute();
-  await db.deleteFrom("events").execute();
-  await db.deleteFrom("startups").execute();
-  await db.deleteFrom("incubators").execute();
-  await db.deleteFrom("organizations").execute();
-  await db.deleteFrom("teams").execute();
+  // do not drop users -- await trx.deleteFrom("users").execute();
+  await trx.deleteFrom("missions_startups").execute();
+  await trx.deleteFrom("missions").execute();
+  await trx.deleteFrom("phases").execute();
+  await trx.deleteFrom("startups_organizations").execute();
+  await trx.deleteFrom("startup_events").execute();
+  await trx.deleteFrom("events").execute();
+  await trx.deleteFrom("startups").execute();
+  await trx.deleteFrom("incubators").execute();
+  await trx.deleteFrom("organizations").execute();
+  await trx.deleteFrom("teams").execute();
 
   // insert organisations
-  const organisations = await db
+  const organisations = await trx
     .insertInto("organizations")
     .values(
       markdownData.organisations.map((orga) => ({
@@ -46,7 +84,7 @@ const insertData = async (markdownData: MarkdownData) => {
     .execute();
 
   // insert incubators
-  const incubators = await db
+  const incubators = await trx
     .insertInto("incubators")
     .values(({ selectFrom }) =>
       markdownData.incubators
@@ -84,7 +122,7 @@ const insertData = async (markdownData: MarkdownData) => {
     .execute();
 
   // insert teams
-  const teams = await db
+  const teams = await trx
     .insertInto("teams")
     .values(({ selectFrom }) =>
       markdownData.teams.map((team) => ({
@@ -109,7 +147,7 @@ const insertData = async (markdownData: MarkdownData) => {
       const incubator_id = incubators.find(
         (o) => o.ghid === startup.attributes.incubator,
       )?.uuid;
-      const query = db
+      const query = trx
         .insertInto("startups")
         .values({
           name: startup.attributes.title || startup.attributes.ghid,
@@ -156,7 +194,7 @@ const insertData = async (markdownData: MarkdownData) => {
           }
 
           return (
-            db
+            trx
               .insertInto("phases")
               .values({
                 //@ts-ignore todo
@@ -176,7 +214,7 @@ const insertData = async (markdownData: MarkdownData) => {
       );
 
       if (startup.attributes.sponsors && startup.attributes.sponsors.length) {
-        await db
+        await trx
           .insertInto("startups_organizations")
           .values(
             ({ selectFrom }) =>
@@ -192,7 +230,7 @@ const insertData = async (markdownData: MarkdownData) => {
 
       // events
       if (startup.attributes.events && startup.attributes.events.length) {
-        await db
+        await trx
           .insertInto("startup_events")
           .values(
             startup.attributes.events?.map((event) => ({
@@ -206,7 +244,7 @@ const insertData = async (markdownData: MarkdownData) => {
       }
 
       if (startup.attributes.fast) {
-        await db
+        await trx
           .insertInto("startup_events")
           .values({
             name: "fast",
@@ -225,7 +263,7 @@ const insertData = async (markdownData: MarkdownData) => {
   // insert users
   const authors = await pAll(
     markdownData.authors.map((author) => async () => {
-      const query = db
+      const query = trx
         .insertInto("users")
         .values({
           fullname: author.attributes.fullname,
@@ -267,7 +305,7 @@ const insertData = async (markdownData: MarkdownData) => {
             end = undefined;
           }
           const mission_id = (
-            await db
+            await trx
               .insertInto("missions")
               .values({
                 start: mission.start || new Date(),
@@ -284,7 +322,7 @@ const insertData = async (markdownData: MarkdownData) => {
           return (
             mission.startups &&
             mission.startups.length &&
-            db
+            trx
               .insertInto("missions_startups")
               .values(
                 ({ selectFrom }) =>
@@ -302,13 +340,13 @@ const insertData = async (markdownData: MarkdownData) => {
       );
       await pAll(
         author.attributes.teams?.map((team) => async () => {
-          const res = await db
+          const res = await trx
             .selectFrom("teams")
             .where("ghid", "=", team.replace("/teams/", ""))
             .select("uuid")
             .executeTakeFirst();
           if (res) {
-            return db
+            return trx
               .insertInto("users_teams")
               .values({
                 team_id: res.uuid,
@@ -335,9 +373,16 @@ const insertData = async (markdownData: MarkdownData) => {
   });
 };
 
-const importData = async () => {
+export const importData = async () => {
+  assertDestructiveImportAllowed();
   const markdownData = await importFromZip();
-  await insertData(markdownData);
+  await db.transaction().execute(async (trx) => {
+    await insertData(markdownData, trx);
+  });
 };
 
-importData();
+// Only auto-execute when invoked directly as a script (e.g. `node dist/.../import-from-www.js`).
+// Skipping the auto-run when imported (tests) keeps the guard testable in isolation.
+if (require.main === module) {
+  importData();
+}
