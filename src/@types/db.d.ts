@@ -171,27 +171,6 @@ export interface KnexMigrationsLock {
   is_locked: number | null;
 }
 
-export interface Marrainage {
-  completed: Generated<boolean>;
-  count: Generated<number>;
-  created_at: Generated<Timestamp>;
-  last_onboarder: string;
-  last_updated: Generated<Timestamp>;
-  username: string;
-}
-
-export interface MarrainageGroups {
-  count: Generated<number>;
-  created_at: Generated<Timestamp | null>;
-  id: Generated<number>;
-  onboarder: string | null;
-  status: Generated<string | null>;
-}
-
-export interface MarrainageGroupsMembers {
-  marrainage_group_id: Int8;
-  username: string;
-}
 
 export interface MatomoSites {
   created_at: Generated<Timestamp>;
@@ -545,10 +524,7 @@ export interface DB {
   incubators: Incubators;
   knex_migrations: KnexMigrations;
   knex_migrations_lock: KnexMigrationsLock;
-  marrainage: Marrainage;
   matrix_accounts: MatrixAccounts;
-  marrainage_groups: MarrainageGroups;
-  marrainage_groups_members: MarrainageGroupsMembers;
   matomo_sites: MatomoSites;
   missions: Missions;
   missions_startups: MissionsStartups;
