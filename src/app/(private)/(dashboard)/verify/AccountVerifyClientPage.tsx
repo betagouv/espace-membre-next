@@ -428,24 +428,6 @@ export default function AccountVerifyClientPage({
                             ))}
                           </Select>
                         </div>
-                        <div className="fr-fieldset__element">
-                          <Input
-                            label="TJM moyen HT (si tu es indépendant)"
-                            hintText="Cette information est utilisée uniquement pour
-                                    faire des statistiques. Elle n'est pas affichée."
-                            nativeInputProps={{
-                              ...register("tjm", {
-                                setValueAs: (
-                                  // use this instead of valueAsNumber to handle undefined value
-                                  v,
-                                ) => (!v ? null : parseInt(v)),
-                              }),
-                              type: "number",
-                            }}
-                            state={errors.tjm ? "error" : "default"}
-                            stateRelatedMessage={errors.tjm?.message}
-                          />
-                        </div>
                         <div className="fr-fieldset__element ">
                           <Input
                             label="Nombre de jours moyen travaillés par semaine"

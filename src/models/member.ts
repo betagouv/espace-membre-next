@@ -298,7 +298,6 @@ export const memberSchema = z.object({
     .max(5)
     .nullable()
     .optional(),
-  tjm: z.number().optional().nullable(),
   legal_status: z
     .nativeEnum(
       LegalStatus, // ??

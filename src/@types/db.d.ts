@@ -511,7 +511,6 @@ export interface Users {
   primary_email_status_updated_at: Generated<Timestamp | null>;
   role: string;
   secondary_email: string | null;
-  tjm: number | null;
   updated_at: Generated<Timestamp>;
   username: string;
   uuid: Generated<string>;
