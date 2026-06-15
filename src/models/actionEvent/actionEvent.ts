@@ -29,9 +29,6 @@ export enum EventCode {
   MEMBER_RESPONDER_CREATED = "MEMBER_RESPONDER_CREATED",
   MEMBER_RESPONDER_UPDATED = "MEMBER_RESPONDER_UPDATED",
   MEMBER_RESPONDER_DELETED = "MEMBER_RESPONDER_DELETED",
-  MARRAINAGE_CREATED = "MARRAINAGE_CREATED",
-  MARRAINAGE_ACCEPTED = "MARRAINAGE_ACCEPTED",
-  MEMBER_MARRAINAGE_DECLINED = "MEMBER_MARRAINAGE_DECLINED",
   MEMBER_SECONDARY_EMAIL_UPDATED = "MEMBER_SECONDARY_EMAIL_UPDATED",
   MEMBER_PRIMARY_EMAIL_UPDATED = "MEMBER_PRIMARY_EMAIL_UPDATED",
   MEMBER_END_DATE_UPDATED = "MEMBER_END_DATE_UPDATED",
@@ -72,9 +69,6 @@ export const EventCodeToReadable: Record<EventCode, string> = {
   [EventCode.MEMBER_RESPONDER_CREATED]: "Réponse automatique créé",
   [EventCode.MEMBER_RESPONDER_UPDATED]: "Réponse automatique mise à jour",
   [EventCode.MEMBER_RESPONDER_DELETED]: "Réponse automatique supprimé",
-  [EventCode.MARRAINAGE_CREATED]: "Marrainage créé",
-  [EventCode.MARRAINAGE_ACCEPTED]: "Marrainage accepté",
-  [EventCode.MEMBER_MARRAINAGE_DECLINED]: "Marrainage décliné",
   [EventCode.MEMBER_SECONDARY_EMAIL_UPDATED]: "Email secondaire mis à jour",
   [EventCode.MEMBER_PRIMARY_EMAIL_UPDATED]: "Email primaire mis à jour",
   [EventCode.MEMBER_END_DATE_UPDATED]: "Date de fin mis à jour",
@@ -175,18 +169,6 @@ export const EventMemberResponderUpdatedPayload = z.object({
 
 export const EventMemberResponderDeletedPayload = z.object({
   action_code: z.literal(EventCode.MEMBER_RESPONDER_DELETED),
-});
-
-export const EventMemberMarrainageAcceptedPayload = z.object({
-  action_code: z.literal(EventCode.MARRAINAGE_ACCEPTED),
-});
-
-export const EventMemberMarrainageCreatedPayload = z.object({
-  action_code: z.literal(EventCode.MARRAINAGE_CREATED),
-});
-
-export const EventMemberMarrainageDeclinedPayload = z.object({
-  action_code: z.literal(EventCode.MEMBER_MARRAINAGE_DECLINED),
 });
 
 export const EventMemberVerificationWaitingSentPayload = z.object({
@@ -397,9 +379,6 @@ export const EventMemberUserEventUpdatedPayload = z.object({
 export type EventPayloads =
   | z.infer<typeof EventMemberCommunicationEmailUpdatePayload>
   | z.infer<typeof EventMemberBaseInfoUpdatedPayload>
-  | z.infer<typeof EventMemberMarrainageDeclinedPayload>
-  | z.infer<typeof EventMemberMarrainageCreatedPayload>
-  | z.infer<typeof EventMemberMarrainageAcceptedPayload>
   | z.infer<typeof EventMemberVerificationWaitingSentPayload>
   | z.infer<typeof EventMemberRedirectionCreatedPayload>
   | z.infer<typeof EventMemberResponderDeletedPayload>
@@ -456,6 +435,4 @@ export interface BaseEventAction<T extends EventCode> {
 type EventActionMetadata<T> =
   T extends EventCode.EMAIL_VERIFICATION_WAITING_SENT
     ? { value: string; old_value: string }
-    : T extends EventCode.MARRAINAGE_ACCEPTED
-      ? { value: string; old_value: string }
-      : never;
+    : never;
