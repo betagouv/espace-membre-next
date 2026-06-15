@@ -87,7 +87,15 @@ export const memberValidateInfoSchema = z.object({
   memberType: memberSchema.shape.memberType,
   gender: memberSchema.shape.gender,
   secondary_email: memberSchema.shape.secondary_email,
-  average_nb_of_days: memberSchema.shape.average_nb_of_days,
+  average_nb_of_days: z
+    .number({
+      errorMap: () => ({
+        message:
+          "Le nombre de jours moyen travaillés par semaine est obligatoire",
+      }),
+    })
+    .max(5)
+    .describe("Nombre de jour moyen travaillé par semaine"),
   legal_status: memberSchema.shape.legal_status,
   workplace_insee_code: memberSchema.shape.workplace_insee_code,
   osm_city: memberSchema.shape.osm_city,
