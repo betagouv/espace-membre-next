@@ -98,7 +98,7 @@ export const authOptions: NextAuthOptions = {
               eb.or([
                 eb("primary_email", "ilike", userinfo.email),
                 eb("secondary_email", "ilike", userinfo.email),
-                // also check if user if from one of existing dinum_emails account
+                // also check if user owns one of existing dinum_emails account
                 eb(
                   "users.uuid",
                   "in",
@@ -106,7 +106,14 @@ export const authOptions: NextAuthOptions = {
                     .selectFrom("dinum_emails")
                     .select("user_id")
                     .distinct()
-                    .where("email", "ilike", userinfo.email),
+                    .where(({ eb }) =>
+                      eb
+                        .or([
+                          eb("email", "ilike", userinfo.email),
+                          eb("destination", "ilike", userinfo.email),
+                        ])
+                        .and("user_id", "is not", null),
+                    ),
                 ),
               ]),
             )

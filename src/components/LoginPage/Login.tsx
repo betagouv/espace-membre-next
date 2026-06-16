@@ -171,11 +171,7 @@ export const LoginPage = function () {
   };
 
   const connectForm = showProConnect ? (
-    <form
-      onSubmit={sendLogin}
-      method="POST"
-      id="login_form"
-      noValidate
+    <div
       style={{
         padding: "4rem",
         backgroundColor: fr.colors.decisions.background.alt.blueFrance.default,
@@ -201,36 +197,43 @@ export const LoginPage = function () {
       <p className={fr.cx("fr-hr-or")} aria-hidden="true">
         ou
       </p>
-      <Accordion label="Se connecter par email" titleAs="h3">
-        <Input
-          hintText="Tu peux te connecter avec ton email en @beta.gouv.fr ou avec ton email secondaire."
-          label="Mon email"
-          nativeInputProps={{
-            type: "email",
-            placeholder: "prenom.nom@beta.gouv.fr",
-            onChange: (e) => setEmail(e.target.value),
-            required: true,
-            defaultValue: email,
-          }}
-          state={formErrors ? "error" : "default"}
-          stateRelatedMessage={formErrors}
-        />
-        <ButtonsGroup
-          buttons={[
-            {
-              children: isSaving
-                ? "Envoi du lien de connexion..."
-                : "Recevoir le lien de connexion",
-              onClick: () => {},
-              disabled: isSaving,
-              type: "submit",
-              priority: "secondary",
-            },
-          ]}
-        />
-      </Accordion>
+      <form
+        onSubmit={sendLogin}
+        method="POST"
+        id="login_form"
+        noValidate
+      >
+        <Accordion label="Se connecter par email" titleAs="h3">
+          <Input
+            hintText="Tu peux te connecter avec ton email en @beta.gouv.fr ou avec ton email secondaire."
+            label="Mon email"
+            nativeInputProps={{
+              type: "email",
+              placeholder: "prenom.nom@beta.gouv.fr",
+              onChange: (e) => setEmail(e.target.value),
+              required: true,
+              defaultValue: email,
+            }}
+            state={formErrors ? "error" : "default"}
+            stateRelatedMessage={formErrors}
+          />
+          <ButtonsGroup
+            buttons={[
+              {
+                children: isSaving
+                  ? "Envoi du lien de connexion..."
+                  : "Recevoir le lien de connexion",
+                onClick: () => {},
+                disabled: isSaving,
+                type: "submit",
+                priority: "secondary",
+              },
+            ]}
+          />
+        </Accordion>
+      </form>
       <hr className={fr.cx("fr-mt-2w")} />
-    </form>
+    </div>
   ) : (
     <form
       onSubmit={sendLogin}
