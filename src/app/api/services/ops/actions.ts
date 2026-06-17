@@ -50,6 +50,8 @@ export const submitOpsRequest = withErrorHandling(
     }
 
     const fields: GristRecordFields = {
+      // Grist Date columns expect seconds since epoch.
+      [GRIST_OPS_COLUMNS.date]: Math.floor(Date.now() / 1000),
       [GRIST_OPS_COLUMNS.tchapId]: parsed.tchapId,
       [GRIST_OPS_COLUMNS.email]: parsed.email,
       [GRIST_OPS_COLUMNS.demande]: parsed.demande,

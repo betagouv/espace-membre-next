@@ -30,6 +30,10 @@ function choiceWidget(choices: string[]): string {
 
 const columns: GristColumn[] = [
   {
+    id: GRIST_OPS_COLUMNS.date,
+    fields: { label: "Date", type: "Date" },
+  },
+  {
     id: GRIST_OPS_COLUMNS.tchapId,
     fields: { label: "Identifiant Tchap", type: "Text" },
   },
@@ -50,10 +54,6 @@ const columns: GristColumn[] = [
     fields: { label: "Projet (si pas une SE)", type: "Text" },
   },
   {
-    id: GRIST_OPS_COLUMNS.adressesMail,
-    fields: { label: "Adresses mail à ajouter", type: "Text" },
-  },
-  {
     id: GRIST_OPS_COLUMNS.demandeLibre,
     fields: { label: "Demande (champ libre)", type: "Text" },
   },
@@ -64,14 +64,6 @@ const columns: GristColumn[] = [
   {
     id: GRIST_OPS_COLUMNS.prenomNom,
     fields: { label: "Prénom Nom", type: "Text" },
-  },
-  {
-    id: GRIST_OPS_COLUMNS.jourSegur,
-    fields: { label: "Jour de venue à Ségur", type: "Date" },
-  },
-  {
-    id: GRIST_OPS_COLUMNS.utilite,
-    fields: { label: "Utilité du formulaire", type: "Int" },
   },
   {
     id: GRIST_OPS_COLUMNS.statut,

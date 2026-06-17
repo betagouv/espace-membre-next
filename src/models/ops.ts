@@ -144,16 +144,13 @@ export const OPS_STATUT_CHOICES: OPS_STATUT[] = [
 // Grist column ids for the OPS table. Keep in sync with the setup script
 // (src/scripts/setup-grist-ops-table.ts).
 export const GRIST_OPS_COLUMNS = {
+  date: "Date",
   tchapId: "Tchap",
   email: "Email",
   demande: "Demande",
   projet: "Projet",
-  adressesMail: "Adresses_mail",
   demandeLibre: "Demande_libre",
   notes: "Notes",
   prenomNom: "Prenom_Nom",
-  jourSegur: "Jour_Segur",
-  utilite: "Utilite",
   statut: "Statut",
-  testPhoto: "Test_photo",
 } as const;
