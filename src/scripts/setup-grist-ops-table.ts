@@ -114,7 +114,6 @@ async function main() {
   if (!res.ok) {
     throw new Error(`Échec (${res.status}): ${text}`);
   }
-  console.log("OK:", text);
 }
 
 main()
