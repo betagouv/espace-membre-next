@@ -89,27 +89,9 @@ export const OpsRequestForm = ({ defaultValues }: OpsRequestFormProps) => {
         directement vos questions sur le canal ~incubateur-ops.
       </p>
       <form onSubmit={handleSubmit(onSubmit)}>
-        <Input
-          label="Quel est ton identifiant Tchap ?"
-          hintText="Ton identifiant Tchap (e.g. prenom.nom). Tu peux le retrouver dans ton profil Tchap."
-          state={errors.tchapId ? "error" : undefined}
-          stateRelatedMessage={errors.tchapId?.message}
-          nativeInputProps={{
-            placeholder: "prenom.nom",
-            ...register("tchapId"),
-          }}
-        />
-
-        <Input
-          label="Quel est ton email ?"
-          state={errors.email ? "error" : undefined}
-          stateRelatedMessage={errors.email?.message}
-          nativeInputProps={{
-            type: "email",
-            placeholder: "prenom.nom@beta.gouv.fr",
-            ...register("email"),
-          }}
-        />
+        {/* Identifiant Tchap et email : préremplis et masqués, mais envoyés à Grist. */}
+        <input type="hidden" {...register("tchapId")} />
+        <input type="hidden" {...register("email")} />
 
         <RadioButtons
           legend="Quelle est ta demande ?"

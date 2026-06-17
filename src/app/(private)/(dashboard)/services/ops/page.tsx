@@ -16,6 +16,7 @@ export default async function OpsRequestPage() {
 
   const user = await getUserBasicInfo({ uuid: session.user.uuid });
   const matrixId = await getMatrixIdByUserId(session.user.uuid);
+  const email = user?.secondary_email || user?.primary_email || "";
 
   return (
     <div>
@@ -23,8 +24,12 @@ export default async function OpsRequestPage() {
       <OpsRequestForm
         defaultValues={{
           tchapId: matrixId || user?.username || "",
-          email: user?.secondary_email || user?.primary_email || "",
+          email,
           prenomNom: user?.fullname || "",
+          // pré-rempli pour les demandes qui réclament un email
+          emailCollaborateur: email,
+          emailAssocier: email,
+          emailsNotifier: email,
         }}
       />
     </div>
