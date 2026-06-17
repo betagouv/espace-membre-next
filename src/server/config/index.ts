@@ -106,6 +106,11 @@ export default {
   host: process.env.HOSTNAME,
   port: parseInt(process.env.PORT || "3000", 10),
   domain: process.env.SECRETARIAT_DOMAIN || "beta.gouv.fr",
+  GRIST_API_URL:
+    process.env.GRIST_API_URL || "https://grist.numerique.gouv.fr/api",
+  GRIST_API_KEY: process.env.GRIST_API_KEY,
+  GRIST_OPS_DOC_ID: process.env.GRIST_OPS_DOC_ID,
+  GRIST_OPS_TABLE_ID: process.env.GRIST_OPS_TABLE_ID || "Demandes_OPS",
   DS_TOKEN: process.env.DS_TOKEN,
   DS_DEMARCHE_NUMBER: process.env.DS_DEMARCHE_NUMBER
     ? parseInt(process.env.DS_DEMARCHE_NUMBER)

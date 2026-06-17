@@ -107,6 +107,19 @@ export async function getUserBasicInfo(
   return (userInfos.rows.length && userInfos.rows[0]) || undefined;
 }
 
+/** Return the linked Matrix/Tchap id for a user, or undefined. */
+export async function getMatrixIdByUserId(
+  userId: string,
+  db: Kysely<DB> = database,
+) {
+  const row = await db
+    .selectFrom("matrix_accounts")
+    .select("matrix_id")
+    .where("user_id", "=", userId)
+    .executeTakeFirst();
+  return row?.matrix_id;
+}
+
 export const getAllUsersInfoQuery = (db: Kysely<DB> = database) =>
   db
     .selectFrom("users")
