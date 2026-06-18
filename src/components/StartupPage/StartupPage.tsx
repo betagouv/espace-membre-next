@@ -31,6 +31,7 @@ export interface StartupPageProps {
   allMembers: {
     fullname: string;
     username: string;
+    uuid: string;
   }[];
   members: memberBaseInfoSchemaType[];
   phases: phaseSchemaType[];

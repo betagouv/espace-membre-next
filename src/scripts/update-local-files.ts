@@ -95,11 +95,23 @@ const getChanges = async (markdownData) => {
       "startups_organizations.organization_id",
     )
     .leftJoin("incubators", "incubators.uuid", "startups.incubator_id")
+    .leftJoin(
+      "users as dinum_contact",
+      "dinum_contact.uuid",
+      "startups.contact_dinum",
+    )
+    .leftJoin(
+      "users as incub_contact",
+      "incub_contact.uuid",
+      "startups.contact_incubator",
+    )
     .select((eb) => [
       ...startupColumns,
       eb.ref("startups.name").as("title"),
       eb.ref("startups.pitch").as("mission"),
       eb.ref("incubators.ghid").as("incubator"),
+      eb.ref("dinum_contact.username").as("contact_dinum"),
+      eb.ref("incub_contact.username").as("contact_incubator"),
       sql<
         Array<string>
       >`COALESCE(NULLIF(ARRAY_AGG(CONCAT('/organisations/', organizations.ghid) order by organizations.ghid), '{/organisations/}'), '{}')`.as(
@@ -108,7 +120,13 @@ const getChanges = async (markdownData) => {
       withPhases(eb),
       withEvents(eb),
     ])
-    .groupBy([...startupColumns, "startups.uuid", "incubators.ghid"])
+    .groupBy([
+      ...startupColumns,
+      "startups.uuid",
+      "incubators.ghid",
+      "dinum_contact.username",
+      "incub_contact.username",
+    ])
     .execute();
 
   const userColumns = [

@@ -27,6 +27,7 @@ interface StartupInfoUpdateProps {
   startupEvents: eventSchemaType[];
   incubatorOptions: Option[];
   sponsorOptions: Option[];
+  memberOptions: Option[];
   heroURL?: string;
   shotURL?: string;
   changes: StartupChangeSchemaType[];
@@ -125,6 +126,7 @@ export const StartupInfoUpdate = (props: StartupInfoUpdateProps) => {
             shotURL={props.shotURL}
             incubatorOptions={props.incubatorOptions}
             sponsorOptions={props.sponsorOptions}
+            memberOptions={props.memberOptions}
           />
         )) || <>Loading...</>}
       </div>
