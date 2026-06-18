@@ -59,7 +59,7 @@
     "front-matter": "^4.0.2",
     "js-yaml": "^4.1.0",
     "jsonwebtoken": "^9.0.2",
-    "juice": "^9.1.0",
+    "juice": "^12.1.0",
     "knex": "^3.2.9",
     "kysely": "^0.28.16",
     "leaflet": "^1.9.4",
