@@ -130,7 +130,7 @@ export default async function Page() {
             imageSvg={false}
             imageUrl={`/static/images/logo-betagouv.jpg`}
             linkProps={{
-              href: `https://airtable.com/appmmy7DR3T8jqsTx/pagPeUwMDA7PskrDQ/form`,
+              href: `/services/ops`,
             }}
           />
         </div>
