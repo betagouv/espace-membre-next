@@ -57,7 +57,7 @@
     "deep-object-diff": "^1.1.9",
     "ejs": "^3.1.9",
     "front-matter": "^4.0.2",
-    "js-yaml": "^4.1.0",
+    "js-yaml": "^4.2.0",
     "jsonwebtoken": "^9.0.2",
     "juice": "^9.1.0",
     "knex": "^3.2.9",
