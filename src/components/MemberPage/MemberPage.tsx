@@ -53,6 +53,7 @@ export interface MemberPageProps {
   userInfos: memberWrapperSchemaType["userInfos"];
   matomoInfo?: matomoUserSchemaType;
   sentryInfo?: sentryUserSchemaType;
+  matrixId?: string;
   isExpired: boolean;
   changes: PrivateMemberChangeSchemaType[];
   startups: Awaited<ReturnType<typeof getUserStartups>>;
@@ -72,6 +73,7 @@ export default function MemberPage({
   authorizations,
   matomoInfo,
   sentryInfo,
+  matrixId,
   isExpired,
   startups,
   changes,
@@ -222,6 +224,7 @@ export default function MemberPage({
           userInfos={userInfos}
           matomoInfo={matomoInfo}
           sentryInfo={sentryInfo}
+          matrixId={matrixId}
           isCurrentUser={isCurrentUser}
         />
       ),

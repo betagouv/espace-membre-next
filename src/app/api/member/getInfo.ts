@@ -45,6 +45,12 @@ export const getUserInformations = async (id) => {
       }
     });
 
+  const matrixAccount = await db
+    .selectFrom("matrix_accounts")
+    .select("matrix_id")
+    .where("user_id", "=", dbUser.uuid)
+    .executeTakeFirst();
+
   return {
     id,
     changes,
@@ -53,5 +59,6 @@ export const getUserInformations = async (id) => {
     startups,
     matomoInfo,
     sentryInfo,
+    matrixId: matrixAccount?.matrix_id,
   };
 };

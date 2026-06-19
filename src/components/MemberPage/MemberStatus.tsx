@@ -235,6 +235,7 @@ export const MemberStatus = ({
   userInfos,
   matomoInfo,
   sentryInfo,
+  matrixId,
   isCurrentUser,
 }: {
   isExpired: MemberPageProps["isExpired"];
@@ -242,6 +243,7 @@ export const MemberStatus = ({
   userInfos: MemberPageProps["userInfos"];
   matomoInfo: MemberPageProps["matomoInfo"];
   sentryInfo: MemberPageProps["sentryInfo"];
+  matrixId: MemberPageProps["matrixId"];
   isCurrentUser: boolean;
 }) => {
   const rows = [
@@ -268,6 +270,14 @@ export const MemberStatus = ({
     userInfos.primary_email?.endsWith("@beta.gouv.fr") &&
       emailInfos &&
       emailStatusRow(emailInfos, userInfos),
+    // Matrix account status
+    matrixId && [
+      <>Compte Matrix</>,
+      <Badge key="matrix-status" severity="success" as="span">
+        Actif
+      </Badge>,
+      <a href={`https://tchap.gouv.fr/#/user/${matrixId}`} target="_blank" rel="noreferrer">{matrixId}</a>,
+    ],
     // Matomo account status
     MatomoInfoRow(matomoInfo, isCurrentUser),
     // Sentry account status
