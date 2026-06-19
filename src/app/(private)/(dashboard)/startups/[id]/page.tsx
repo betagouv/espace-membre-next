@@ -124,7 +124,8 @@ export default async function Page({ params }: Props) {
   // for the "add member select"
   const allMembers = await getActiveUsers()
     .clearSelect()
-    .select(["username", "fullname", "id"])
+    .select(["users.username", "users.fullname", "users.uuid"])
+    .groupBy(["users.username", "users.fullname", "users.uuid"])
     .execute();
 
   const canEditMembers = await canEditStartup(session, dbSe.uuid);

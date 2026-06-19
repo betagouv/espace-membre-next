@@ -38,7 +38,6 @@ describe("verifyNewMember", () => {
     gender: null,
     secondary_email: "johndoe@example.com",
     average_nb_of_days: null,
-    tjm: null,
     legal_status: null,
     workplace_insee_code: null,
     osm_city: null,
