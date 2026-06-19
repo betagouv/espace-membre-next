@@ -84,9 +84,15 @@ export const StartupMembers = ({
 }: {
   startupInfos: startupSchemaType;
   members: memberSchemaType[];
-  allMembers: { username: string; fullname: string }[];
+  allMembers: { username: string; fullname: string; uuid: string }[];
   canEditMembers: boolean;
 }) => {
+  const contactDinum = allMembers.find(
+    (m) => m.uuid === startupInfos.contact_dinum,
+  );
+  const contactIncubator = allMembers.find(
+    (m) => m.uuid === startupInfos.contact_incubator,
+  );
   const [showAddMember, setShowAddMember] = useState(false);
   const router = useRouter();
 
@@ -151,6 +157,27 @@ export const StartupMembers = ({
           l'équipe
         </a>
       </div>
+      {(contactDinum || contactIncubator) && (
+        <div className={fr.cx("fr-mb-4w")}>
+          <h3>Points de contact</h3>
+          {contactDinum && (
+            <p>
+              <strong>Point de contact DINUM :</strong>{" "}
+              <a href={`/community/${contactDinum.username}`}>
+                {contactDinum.fullname}
+              </a>
+            </p>
+          )}
+          {contactIncubator && (
+            <p>
+              <strong>Point de contact Incubateur :</strong>{" "}
+              <a href={`/community/${contactIncubator.username}`}>
+                {contactIncubator.fullname}
+              </a>
+            </p>
+          )}
+        </div>
+      )}
       {(activeMembers.length && (
         <Accordion
           titleAs="h2"

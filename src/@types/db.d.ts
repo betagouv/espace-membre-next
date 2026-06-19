@@ -366,6 +366,8 @@ export interface Startups {
   analyse_risques_url: string | null;
   budget_url: string | null;
   contact: string | null;
+  contact_dinum: string | null;
+  contact_incubator: string | null;
   created_at: Generated<Timestamp>;
   dashlord_url: string | null;
   description: string | null;

@@ -153,6 +153,18 @@ export const startupSchema = z.object({
     })
     .min(1)
     .describe("Incubateur ou fabrique numérique"),
+  contact_dinum: z
+    .preprocess(
+      (val) => (val === "" ? null : val),
+      z.string().uuid().nullable().optional(),
+    )
+    .describe("Point de contact DINUM"),
+  contact_incubator: z
+    .preprocess(
+      (val) => (val === "" ? null : val),
+      z.string().uuid().nullable().optional(),
+    )
+    .describe("Point de contact Incubateur"),
   contact: z
     .string({
       errorMap: () => ({
