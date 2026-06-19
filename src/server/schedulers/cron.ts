@@ -5,7 +5,6 @@ import { recreateEmailIfUserActive } from "./recreateEmailIfUserActive";
 import { syncMatomoAccounts } from "./serviceScheduler/syncMatomoAccounts";
 import { syncSentryAccounts } from "./serviceScheduler/syncSentryAccounts";
 import { sendEmailToStartupToUpdatePhase } from "./startups/sendEmailToStartupToUpdatePhase";
-import { unblockEmailsThatAreActive } from "./unblockEmailsThatAreActive";
 import { matomoClient } from "../config/matomo.config";
 import { sentryClient } from "../config/sentry.config";
 import config from "@/server/config";
@@ -59,14 +58,6 @@ const servicesJobs: EspaceMembreCronJobType[] = [
 export const espaceMembreCronJobs: EspaceMembreCronJobType[] = [
   ...startupJobs,
   ...servicesJobs,
-  {
-    cronTime: "0 0 * * 1", // every week at 0:00 on monday
-    onTick: unblockEmailsThatAreActive,
-    isActive: true,
-    name: "Unblock blacklisted email",
-    description:
-      "Unblock emails from MAILING_LIST_NEWSLETTER Brevo mailing-list",
-  },
   {
     cronTime: "0 * * * *", // Every hour
     onTick: recreateEmailIfUserActive,
