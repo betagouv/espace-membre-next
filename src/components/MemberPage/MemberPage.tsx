@@ -213,7 +213,7 @@ export default function MemberPage({
       ),
     },
     {
-      label: "Statut des comptes",
+      label: "Outils",
       tabId: "statut-comptes",
       isDefault: tab === "statut-comptes",
 
