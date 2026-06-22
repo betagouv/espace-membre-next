@@ -14,7 +14,6 @@ export enum OPS_DEMANDE_TYPE {
   MAILING_LIST = "Création d'une mailing list @beta.gouv.fr",
   TALLY = "Création d'un compte tally",
   AUTRE = "Autre",
-  EMAIL_BOUNCE = "Mon email bounce",
 }
 
 // Order shown in the form (matches the airtable form).
@@ -27,7 +26,6 @@ export const OPS_DEMANDE_CHOICES: OPS_DEMANDE_TYPE[] = [
   OPS_DEMANDE_TYPE.SENTRY,
   OPS_DEMANDE_TYPE.UPDOWN,
   OPS_DEMANDE_TYPE.TALLY,
-  OPS_DEMANDE_TYPE.EMAIL_BOUNCE,
   OPS_DEMANDE_TYPE.AUTRE,
 ];
 
@@ -117,7 +115,6 @@ export const OPS_DEMANDE_FIELDS: Record<OPS_DEMANDE_TYPE, OpsFieldKey[]> = {
   [OPS_DEMANDE_TYPE.TALLY]: ["commentaires"],
   [OPS_DEMANDE_TYPE.SSL_CERTIGNA]: ["commentaires"],
   [OPS_DEMANDE_TYPE.MAILING_LIST]: ["commentaires"],
-  [OPS_DEMANDE_TYPE.EMAIL_BOUNCE]: ["commentaires"],
   [OPS_DEMANDE_TYPE.AUTRE]: ["commentaires"],
 };
 
@@ -127,7 +124,6 @@ export const OPS_DEMANDE_COMMENT_REQUIRED: OPS_DEMANDE_TYPE[] = [
   OPS_DEMANDE_TYPE.CLOUD_RESOURCES,
   OPS_DEMANDE_TYPE.DNS_RECORD,
   OPS_DEMANDE_TYPE.TALLY,
-  OPS_DEMANDE_TYPE.EMAIL_BOUNCE,
 ];
 
 export enum OPS_STATUT {
