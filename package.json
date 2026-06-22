@@ -43,7 +43,7 @@
     "@mui/material": "^5.15.10",
     "@sentry/nextjs": "^10.26.0",
     "@sentry/node": "^10.26.0",
-    "@sindresorhus/slugify": "^1.1.0",
+    "@sindresorhus/slugify": "^3.0.0",
     "@socialgouv/matomo-next": "^1.9.1",
     "@types/chai": "^5.2.2",
     "@types/sinon": "^17.0.4",
