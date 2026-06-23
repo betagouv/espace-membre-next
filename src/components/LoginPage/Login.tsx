@@ -2,7 +2,9 @@
 import React from "react";
 
 import { fr } from "@codegouvfr/react-dsfr";
+import Accordion from "@codegouvfr/react-dsfr/Accordion";
 import { Alert } from "@codegouvfr/react-dsfr/Alert";
+import Badge from "@codegouvfr/react-dsfr/Badge";
 import Button from "@codegouvfr/react-dsfr/Button";
 import { ButtonsGroup } from "@codegouvfr/react-dsfr/ButtonsGroup";
 import { Input } from "@codegouvfr/react-dsfr/Input";
@@ -168,7 +170,71 @@ export const LoginPage = function () {
     }
   };
 
-  const connectForm = (
+  const connectForm = showProConnect ? (
+    <div
+      style={{
+        padding: "4rem",
+        backgroundColor: fr.colors.decisions.background.alt.blueFrance.default,
+      }}
+    >
+      <fieldset
+        className="fr-fieldset"
+        id="login-1760-fieldset"
+        aria-labelledby="login-1760-fieldset-legend login-1760-fieldset-messages"
+      >
+        <legend className="fr-fieldset__legend" id="login-1760-fieldset-legend">
+          <h2 className="fr-h3">Me connecter</h2>
+        </legend>
+      </fieldset>
+      <div className={fr.cx("fr-mb-3w")}>
+        <div className={fr.cx("fr-mb-1w")}>
+          <Badge severity="success" small noIcon>
+            Recommandé
+          </Badge>
+        </div>
+        <ProConnectButton onClick={() => signIn("proconnect")} />
+      </div>
+      <p className={fr.cx("fr-hr-or")} aria-hidden="true">
+        ou
+      </p>
+      <form
+        onSubmit={sendLogin}
+        method="POST"
+        id="login_form"
+        noValidate
+      >
+        <Accordion label="Se connecter par email" titleAs="h3">
+          <Input
+            hintText="Tu peux te connecter avec ton email en @beta.gouv.fr ou avec ton email secondaire."
+            label="Mon email"
+            nativeInputProps={{
+              type: "email",
+              placeholder: "prenom.nom@beta.gouv.fr",
+              onChange: (e) => setEmail(e.target.value),
+              required: true,
+              defaultValue: email,
+            }}
+            state={formErrors ? "error" : "default"}
+            stateRelatedMessage={formErrors}
+          />
+          <ButtonsGroup
+            buttons={[
+              {
+                children: isSaving
+                  ? "Envoi du lien de connexion..."
+                  : "Recevoir le lien de connexion",
+                onClick: () => {},
+                disabled: isSaving,
+                type: "submit",
+                priority: "secondary",
+              },
+            ]}
+          />
+        </Accordion>
+      </form>
+      <hr className={fr.cx("fr-mt-2w")} />
+    </div>
+  ) : (
     <form
       onSubmit={sendLogin}
       method="POST"
@@ -212,14 +278,6 @@ export const LoginPage = function () {
           },
         ]}
       />
-      {showProConnect && (
-        <>
-          <hr />
-          ou :<br />
-          <br />
-          <ProConnectButton onClick={() => signIn("proconnect")} />
-        </>
-      )}
       <hr />
     </form>
   );
