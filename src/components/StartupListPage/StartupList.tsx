@@ -164,6 +164,8 @@ export const StartupList = ({ startups, incubators }: StartupListProps) => {
             );
           } else if (filter.type === "sans_suivi_dinum") {
             return !result.contact_dinum;
+          } else if (filter.type === "sans_suivi_incubateur") {
+            return !result.contact_incubator;
           }
         }).length === filters.length // or > 0 for or query
       );
@@ -269,9 +271,15 @@ export const StartupList = ({ startups, incubators }: StartupListProps) => {
         id: "sans_suivi_dinum",
         label: "Sans suivi DINUM",
       },
+      {
+        type: "sans_suivi_incubateur",
+        group: "Suivi",
+        id: "sans_suivi_incubateur",
+        label: "Sans suivi incubateur",
+      },
       ...allContacts.map((c) => ({
         type: "contact",
-        group: "Suivie par",
+        group: "Suivi par",
         id: c.id,
         label: c.label,
       })),
