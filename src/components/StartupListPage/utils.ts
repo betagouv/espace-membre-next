@@ -9,6 +9,8 @@ export const startupsFilterSchema = z.object({
     "incubator",
     "startup",
     "phase",
+    "contact",
+    "sans_suivi_dinum",
   ]),
   value: z.union([z.string(), z.boolean()]).optional(),
 });

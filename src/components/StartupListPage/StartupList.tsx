@@ -157,6 +157,13 @@ export const StartupList = ({ startups, incubators }: StartupListProps) => {
             return result.incubatorId === filter.value.toString();
           } else if (filter.type === "techno" && filter.value) {
             return (result.techno || []).includes(filter.value.toString());
+          } else if (filter.type === "contact" && filter.value) {
+            return (
+              result.contact_dinum === filter.value ||
+              result.contact_incubator === filter.value
+            );
+          } else if (filter.type === "sans_suivi_dinum") {
+            return !result.contact_dinum;
           }
         }).length === filters.length // or > 0 for or query
       );
@@ -203,6 +210,33 @@ export const StartupList = ({ startups, incubators }: StartupListProps) => {
     .sort()
     .map((t) => ({ id: t, label: t }));
 
+  const allContacts = useMemo(() => {
+    const seen = new Set<string>();
+    const contacts: { id: string; label: string }[] = [];
+    for (const s of startups) {
+      if (
+        s.contact_dinum &&
+        s.contact_dinum_fullname &&
+        !seen.has(s.contact_dinum)
+      ) {
+        seen.add(s.contact_dinum);
+        contacts.push({ id: s.contact_dinum, label: s.contact_dinum_fullname });
+      }
+      if (
+        s.contact_incubator &&
+        s.contact_incubator_fullname &&
+        !seen.has(s.contact_incubator)
+      ) {
+        seen.add(s.contact_incubator);
+        contacts.push({
+          id: s.contact_incubator,
+          label: s.contact_incubator_fullname,
+        });
+      }
+    }
+    return contacts.sort((a, b) => a.label.localeCompare(b.label));
+  }, [startups]);
+
   const searchOptions = useMemo(
     () => [
       ...Object.entries(PHASE_READABLE_NAME).map(([id, label]) => ({
@@ -217,12 +251,6 @@ export const StartupList = ({ startups, incubators }: StartupListProps) => {
         id: s.uuid,
         label: s.title,
       })),
-      ...startups.map((s) => ({
-        type: "startup",
-        group: "Startups",
-        id: s.uuid,
-        label: s.name,
-      })),
       ...allThematiques.map((s) => ({
         type: "thematique",
         group: "Thématiques",
@@ -235,6 +263,24 @@ export const StartupList = ({ startups, incubators }: StartupListProps) => {
         id: s.id,
         label: s.label,
       })),
+      {
+        type: "sans_suivi_dinum",
+        group: "Suivi",
+        id: "sans_suivi_dinum",
+        label: "Sans suivi DINUM",
+      },
+      ...allContacts.map((c) => ({
+        type: "contact",
+        group: "Suivie par",
+        id: c.id,
+        label: c.label,
+      })),
+      ...startups.map((s) => ({
+        type: "startup",
+        group: "Startups",
+        id: s.uuid,
+        label: s.name,
+      })),
       ...allTechnos.map((s) => ({
         type: "techno",
         group: "Technologies",
@@ -242,7 +288,7 @@ export const StartupList = ({ startups, incubators }: StartupListProps) => {
         label: s.label,
       })),
     ],
-    [],
+    [allContacts],
   );
 
   const defaultFilterValue = searchOptions
