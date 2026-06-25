@@ -17,8 +17,6 @@
     "e2e": "npx playwright test",
     "test": "NODE_ENV=test ts-mocha --paths -p tsconfig.json src/**/*.spec.ts __tests__/*.ts --exit --require ts-node/register --require ts-node/esm --icu-data-dir=./node_modules/full-icu --require ./__tests__/env-setup.ts --timeout 30000",
     "seed": "NODE_OPTIONS='--import tsx/esm' knex seed:run",
-    "predev": "only-include-used-icons",
-    "prebuild": "only-include-used-icons",
     "postinstall": "is-ci || husky install",
     "kysely-codegen": "./node_modules/.bin/kysely-codegen --include-pattern=\"(public|pgboss).*\" --out-file ./src/@types/db.d.ts",
     "staging-import-from-www": "node dist/src/scripts/import-from-www",
