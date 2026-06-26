@@ -3,6 +3,7 @@
 import React from "react";
 
 import { fr } from "@codegouvfr/react-dsfr";
+import * as Sentry from "@sentry/nextjs";
 import { Alert } from "@codegouvfr/react-dsfr/Alert";
 import { Button } from "@codegouvfr/react-dsfr/Button";
 import Input from "@codegouvfr/react-dsfr/Input";
@@ -52,25 +53,39 @@ export const OpsRequestForm = ({ defaultValues }: OpsRequestFormProps) => {
     }
     setIsSaving(true);
     setAlertMessage(null);
-    const res = await submitOpsRequest(data);
-    if (res.success) {
-      setAlertMessage({
-        title: "Demande envoyée",
-        message:
-          "Ta demande d'OPS a bien été enregistrée. L'équipe ops va la traiter.",
-        type: "success",
-      });
-      window.scrollTo({ top: 20, behavior: "smooth" });
-      setTimeout(() => router.push("/services"), 1500);
-    } else {
+    try {
+      const res = await submitOpsRequest(data);
+      if (res?.success) {
+        setAlertMessage({
+          title: "Demande envoyée",
+          message:
+            "Ta demande d'OPS a bien été enregistrée. L'équipe ops va la traiter.",
+          type: "success",
+        });
+        window.scrollTo({ top: 20, behavior: "smooth" });
+        setTimeout(() => router.push("/services"), 1500);
+      } else {
+        setAlertMessage({
+          title: "Une erreur est survenue",
+          message:
+            res?.message ||
+            "La demande n'a pas pu être envoyée. Recharge la page et réessaie.",
+          type: "warning",
+        });
+        window.scrollTo({ top: 20, behavior: "smooth" });
+      }
+    } catch (e) {
+      Sentry.captureException(e);
       setAlertMessage({
         title: "Une erreur est survenue",
-        message: res.message || "",
+        message:
+          "La demande n'a pas pu être envoyée. Recharge la page et réessaie.",
         type: "warning",
       });
       window.scrollTo({ top: 20, behavior: "smooth" });
+    } finally {
+      setIsSaving(false);
     }
-    setIsSaving(false);
   };
 
   return (
