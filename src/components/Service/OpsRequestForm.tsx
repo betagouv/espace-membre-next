@@ -20,6 +20,7 @@ import { AlertMessageType } from "@/models/common";
 import {
   OPS_DEMANDE_CHOICES,
   OPS_DEMANDE_FIELDS,
+  OPS_DEMANDE_TYPE,
   OPS_FIELDS,
 } from "@/models/ops";
 
@@ -105,6 +106,15 @@ export const OpsRequestForm = ({ defaultValues }: OpsRequestFormProps) => {
             },
           }))}
         />
+
+        {demande === OPS_DEMANDE_TYPE.SCALINGO_APP && (
+          <Alert
+            className="fr-mb-4v"
+            severity="error"
+            small
+            description="Attention si votre startup fait partie de la fabrique de l'écologie, ou que votre incubateur dispose de son propre compte scalingo, merci de contacter directement votre référent.e tech."
+          />
+        )}
 
         {fields.map((key) => {
           const field = OPS_FIELDS[key];
