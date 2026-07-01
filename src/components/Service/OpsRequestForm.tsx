@@ -119,6 +119,28 @@ export const OpsRequestForm = ({ defaultValues }: OpsRequestFormProps) => {
         {fields.map((key) => {
           const field = OPS_FIELDS[key];
           const error = errors[key];
+          if (field.type === "select") {
+            return (
+              <RadioButtons
+                key={key}
+                legend={field.label}
+                hintText={field.hint}
+                state={error ? "error" : undefined}
+                stateRelatedMessage={error?.message}
+                options={(field.options ?? []).map((option) => ({
+                  label:
+                    option === field.defaultValue
+                      ? `${option} (recommandé)`
+                      : option,
+                  nativeInputProps: {
+                    value: option,
+                    defaultChecked: option === field.defaultValue,
+                    ...register(key),
+                  },
+                }))}
+              />
+            );
+          }
           if (field.type === "textarea") {
             return (
               <Input
