@@ -32,12 +32,17 @@ export interface OpsField {
   key: string;
   label: string;
   hint?: string;
-  type?: "text" | "email" | "textarea";
+  type?: "text" | "email" | "textarea" | "select";
+  // Options for the "select" type (rendered as radio buttons).
+  options?: string[];
+  // Default-checked option for the "select" type.
+  defaultValue?: string;
   required?: boolean;
 }
 
 export type OpsFieldKey =
   | "nomApp"
+  | "zoneScalingo"
   | "emailCollaborateur"
   | "handleOvh"
   | "zoneDns"
@@ -49,6 +54,15 @@ export type OpsFieldKey =
 
 export const OPS_FIELDS: Record<OpsFieldKey, OpsField> = {
   nomApp: { key: "nomApp", label: "Nom de l'app à créer", required: true },
+  zoneScalingo: {
+    key: "zoneScalingo",
+    label: "Zone Scalingo",
+    hint: "SecNum est recommandé (zone SecNumCloud, plus sécurisée). Choisis osc-fr1 uniquement si ton app a des contraintes techniques incompatibles.",
+    type: "select",
+    options: ["SecNum", "osc-fr1"],
+    defaultValue: "SecNum",
+    required: true,
+  },
   emailCollaborateur: {
     key: "emailCollaborateur",
     label: "Email à indiquer en collaborateur",
@@ -97,6 +111,7 @@ export const OPS_FIELDS: Record<OpsFieldKey, OpsField> = {
 export const OPS_DEMANDE_FIELDS: Record<OPS_DEMANDE_TYPE, OpsFieldKey[]> = {
   [OPS_DEMANDE_TYPE.SCALINGO_APP]: [
     "nomApp",
+    "zoneScalingo",
     "emailCollaborateur",
     "commentaires",
   ],

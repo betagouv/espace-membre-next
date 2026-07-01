@@ -23,6 +23,7 @@ export const opsRequestSchema = z
     projet: z.string().optional(),
     // Per-demande conditional fields (see OPS_DEMANDE_FIELDS).
     nomApp: z.string().optional(),
+    zoneScalingo: z.string().optional(),
     emailCollaborateur: z.string().optional(),
     handleOvh: z.string().optional(),
     zoneDns: z.string().optional(),
