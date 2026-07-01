@@ -59,8 +59,8 @@ export const OPS_FIELDS: Record<OpsFieldKey, OpsField> = {
     label: "Zone Scalingo",
     hint: "osc-secnum-fr1 est recommandé (zone SecNumCloud, plus sécurisée). Choisis osc-fr1 uniquement si tu es en dev/preprod et n'exploite pas de données sensibles.",
     type: "select",
-    options: ["SecNum", "osc-fr1"],
-    defaultValue: "SecNum",
+    options: ["osc-secnum-fr1", "osc-fr1"],
+    defaultValue: "osc-secnum-fr1",
     required: true,
   },
   emailCollaborateur: {
