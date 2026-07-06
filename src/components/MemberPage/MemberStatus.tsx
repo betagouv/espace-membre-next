@@ -289,7 +289,7 @@ export const MemberStatus = ({
           Non trouvé
         </Badge>
       ),
-      <div>
+      <div key="matrix-info">
         {matrixId && (
           <div className={fr.cx("fr-mb-2w")}>
             <a
