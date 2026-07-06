@@ -12,6 +12,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { useRouter } from "next/navigation";
 import { useForm } from "react-hook-form";
 
+import SESelect, { StartupType } from "@/components/SESelect";
 import { submitOpsRequest } from "@/app/api/services/ops/actions";
 import {
   opsRequestSchema,
@@ -27,13 +28,18 @@ import {
 
 interface OpsRequestFormProps {
   defaultValues?: Partial<opsRequestSchemaType>;
+  startupOptions?: StartupType[];
 }
 
-export const OpsRequestForm = ({ defaultValues }: OpsRequestFormProps) => {
+export const OpsRequestForm = ({
+  defaultValues,
+  startupOptions = [],
+}: OpsRequestFormProps) => {
   const {
     register,
     handleSubmit,
     watch,
+    setValue,
     formState: { errors, isSubmitting },
   } = useForm<opsRequestSchemaType>({
     resolver: zodResolver(opsRequestSchema),
@@ -134,6 +140,32 @@ export const OpsRequestForm = ({ defaultValues }: OpsRequestFormProps) => {
         {fields.map((key) => {
           const field = OPS_FIELDS[key];
           const error = errors[key];
+          if (field.type === "startup") {
+            return (
+              <div key={key} className={fr.cx("fr-mb-3w")}>
+                <SESelect
+                  label={field.label}
+                  hint={field.hint}
+                  isMulti={false}
+                  inputReadOnly
+                  placeholder="Sélectionne un produit"
+                  startups={startupOptions}
+                  state={error ? "error" : "default"}
+                  stateMessageRelated={error?.message}
+                  onChange={(startup) => {
+                    setValue("startupId", startup?.value ?? "", {
+                      shouldValidate: true,
+                      shouldDirty: true,
+                    });
+                    setValue("startupName", startup?.label ?? "", {
+                      shouldDirty: true,
+                    });
+                  }}
+                />
+                <input type="hidden" {...register("startupName")} />
+              </div>
+            );
+          }
           if (field.type === "select") {
             return (
               <RadioButtons

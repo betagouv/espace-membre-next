@@ -8,6 +8,8 @@ export enum OPS_DEMANDE_TYPE {
   DNS_DOMAIN = "Création/délégation de domaine/zone DNS (OVH)",
   DNS_RECORD = "Ajouter un record sur mon domaine OVH (CNAME, A, ...)",
   BREVO = "Ajout d'un compte Brevo",
+  MATOMO = "Ajout d'un compte Matomo",
+  SENTRY = "Ajout d'un compte Sentry",
   UPDOWN = "Ajout d'un site sur updown.io",
   SSL_CERTIGNA = "Demande de certificat SSL Certigna",
   MAILING_LIST = "Création d'une mailing list @beta.gouv.fr",
@@ -22,6 +24,8 @@ export const OPS_DEMANDE_CHOICES: OPS_DEMANDE_TYPE[] = [
   OPS_DEMANDE_TYPE.DNS_DOMAIN,
   OPS_DEMANDE_TYPE.DNS_RECORD,
   OPS_DEMANDE_TYPE.BREVO,
+  OPS_DEMANDE_TYPE.MATOMO,
+  OPS_DEMANDE_TYPE.SENTRY,
   OPS_DEMANDE_TYPE.UPDOWN,
   OPS_DEMANDE_TYPE.TALLY,
   OPS_DEMANDE_TYPE.AUTRE,
@@ -32,7 +36,7 @@ export interface OpsField {
   key: string;
   label: string;
   hint?: string;
-  type?: "text" | "email" | "textarea" | "select";
+  type?: "text" | "email" | "textarea" | "select" | "startup";
   // Options for the "select" type (rendered as radio buttons).
   options?: string[];
   // Default-checked option for the "select" type.
@@ -50,6 +54,9 @@ export type OpsFieldKey =
   | "emailAssocier"
   | "urlSurveiller"
   | "emailsNotifier"
+  | "startupId"
+  | "siteType"
+  | "siteName"
   | "commentaires";
 
 export const OPS_FIELDS: Record<OpsFieldKey, OpsField> = {
@@ -99,6 +106,27 @@ export const OPS_FIELDS: Record<OpsFieldKey, OpsField> = {
     type: "textarea",
     required: true,
   },
+  startupId: {
+    key: "startupId",
+    label: "Produit concerné",
+    hint: "Sélectionne le produit (startup) : sert à créer/rattacher l'équipe Sentry ou le site Matomo.",
+    type: "startup",
+    required: true,
+  },
+  siteType: {
+    key: "siteType",
+    label: "Type de site à suivre",
+    type: "select",
+    options: ["website", "mobileapp"],
+    defaultValue: "website",
+    required: true,
+  },
+  siteName: {
+    key: "siteName",
+    label: "Nom du site (optionnel)",
+    hint: "Laisse vide pour utiliser l'URL comme nom.",
+    required: false,
+  },
   commentaires: {
     key: "commentaires",
     label: "Commentaires",
@@ -119,6 +147,14 @@ export const OPS_DEMANDE_FIELDS: Record<OPS_DEMANDE_TYPE, OpsFieldKey[]> = {
   [OPS_DEMANDE_TYPE.DNS_DOMAIN]: ["handleOvh", "zoneDns", "commentaires"],
   [OPS_DEMANDE_TYPE.DNS_RECORD]: ["commentaires"],
   [OPS_DEMANDE_TYPE.BREVO]: ["emailAssocier", "commentaires"],
+  [OPS_DEMANDE_TYPE.MATOMO]: [
+    "startupId",
+    "urlSite",
+    "siteType",
+    "siteName",
+    "commentaires",
+  ],
+  [OPS_DEMANDE_TYPE.SENTRY]: ["startupId", "emailAssocier", "commentaires"],
   [OPS_DEMANDE_TYPE.UPDOWN]: [
     "urlSurveiller",
     "emailsNotifier",
@@ -162,4 +198,22 @@ export const GRIST_OPS_COLUMNS = {
   notes: "Notes",
   prenomNom: "Prenom_Nom",
   statut: "Statut",
+  // Structured fields used by the n8n automations (Sentry / Matomo).
+  userUuid: "User_uuid",
+  username: "Username",
+  startupId: "Startup_id",
+  startupName: "Startup_name",
+  teamSlug: "Team_slug",
+  siteUrl: "Site_url",
+  siteType: "Site_type",
+  siteName: "Site_name",
 } as const;
+
+// Field keys whose values already have dedicated Grist columns and must not be
+// duplicated inside the free-form "Demande_libre" summary.
+export const OPS_STRUCTURED_FIELD_KEYS: OpsFieldKey[] = [
+  "startupId",
+  "urlSite",
+  "siteType",
+  "siteName",
+];

@@ -68,6 +68,9 @@ interface AutoCompleteProps<
   placeholder?: string;
   optionKeyField?: string;
   optionLabelField?: string;
+  // When true the text input can't be typed into: the value can only be
+  // picked from the proposed options (dropdown-only).
+  inputReadOnly?: boolean;
   renderInput?: (params: AutocompleteRenderInputParams) => React.ReactNode;
 }
 
@@ -89,6 +92,7 @@ export default function AutoComplete<
   optionLabelField = "label",
   value: valueFromProps,
   defaultValue,
+  inputReadOnly,
   renderInput,
   ...props
 }: AutoCompleteProps<
@@ -124,8 +128,10 @@ export default function AutoComplete<
         {...params}
         inputProps={{
           ...params.inputProps,
+          readOnly: inputReadOnly,
           style: {
             padding: `0.75rem 0.5rem`,
+            ...(inputReadOnly ? { cursor: "pointer" } : {}),
           },
         }}
         variant="standard"
@@ -138,7 +144,7 @@ export default function AutoComplete<
         placeholder={placeholder}
       />
     ),
-    [placeholder],
+    [placeholder, inputReadOnly],
   );
 
   return (
