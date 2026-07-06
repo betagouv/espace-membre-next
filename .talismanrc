@@ -24,7 +24,7 @@ fileignoreconfig:
 - filename: src/components/EventsList/EventsList.tsx
   checksum: 01f943fd703c4c5d4e3298bb73487c482b8aa789be160f0ba9421b29102f7a00
 - filename: src/components/MemberPage/MemberStatus.tsx
-  checksum: 7154d6a6aa76c6cbaa0263178159eccbe8dc1419e6ba22be160d9282807fa525
+  checksum: 54cbe163b4cc0d9b5d2a21e965d7d1e0da48237af6b95dfc46e74acabb41ea15
 - filename: src/components/MemberPage/MemberWaitingValidationNotice.tsx
   checksum: 4243d7f9fb28db14113849647ba3126d456aa935c7169722d844ae11b3d06443
 - filename: src/components/StartupForm/EventsEditor.tsx

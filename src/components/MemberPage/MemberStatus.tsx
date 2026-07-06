@@ -9,6 +9,8 @@ import { BadgeEmailPlan } from "../BadgeEmailPlan";
 import { EmailStatusCode } from "@/models/member";
 import { EMAIL_STATUS_READABLE_FORMAT } from "@/models/misc";
 import { ACCOUNT_SERVICE_STATUS } from "@/models/services";
+import Image from "next/image";
+import { fr } from "@codegouvfr/react-dsfr";
 
 const legacyEmailStatuses = P.union(
   EmailStatusCode.EMAIL_REDIRECTION_ACTIVE,
@@ -115,7 +117,12 @@ const MatomoInfoRow = (
 ) => {
   const status = !!matomo ? matomo.status : "unset";
   return [
-    <>Compte Matomo</>,
+    <>
+      Compte{" "}
+      <a href="https://stats.beta.gouv.fr" target="_blank">
+        Matomo
+      </a>
+    </>,
     match(status)
       .with(ACCOUNT_SERVICE_STATUS.ACCOUNT_FOUND, () => (
         <Badge key="matomo-status" severity="success" as="span">
@@ -271,12 +278,42 @@ export const MemberStatus = ({
       emailInfos &&
       emailStatusRow(emailInfos, userInfos),
     // Matrix account status
-    matrixId && [
-      <>Compte Matrix</>,
-      <Badge key="matrix-status" severity="success" as="span">
-        Actif
-      </Badge>,
-      <a href={`https://tchap.gouv.fr/#/user/${matrixId}`} target="_blank" rel="noreferrer">{matrixId}</a>,
+    [
+      <>Compte Tchap</>,
+      matrixId ? (
+        <Badge key="matrix-status" severity="success" as="span">
+          Actif
+        </Badge>
+      ) : (
+        <Badge key="matrix-status" severity="warning" as="span">
+          Non trouvé
+        </Badge>
+      ),
+      <div key="matrix-info">
+        {matrixId && (
+          <div className={fr.cx("fr-mb-2w")}>
+            <a
+              href={`https://tchap.gouv.fr/#/user/${matrixId}`}
+              target="_blank"
+              rel="noreferrer"
+            >
+              {matrixId}
+            </a>
+          </div>
+        )}
+        Rejoindre{" "}
+        <a href="https://tchap.gouv.fr/#/room/#betagouvfrgKBP8KrQi4k:agent.dinum.tchap.gouv.fr">
+          l'espace Tchap{" "}
+          <Image
+            width="100"
+            height="20"
+            className={fr.cx("fr-ml-1w")}
+            style={{ verticalAlign: "middle" }}
+            alt="beta.gouv.fr Tchap channel icon"
+            src="/static/images/espace-tchap-beta.png"
+          />
+        </a>
+      </div>,
     ],
     // Matomo account status
     MatomoInfoRow(matomoInfo, isCurrentUser),
