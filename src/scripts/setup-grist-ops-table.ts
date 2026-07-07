@@ -110,6 +110,10 @@ const columns: GristColumn[] = [
     id: GRIST_OPS_COLUMNS.siteName,
     fields: { label: "Nom du site (Matomo)", type: "Text" },
   },
+  {
+    id: GRIST_OPS_COLUMNS.projetRattachement,
+    fields: { label: "Projet à relier (Scalingo)", type: "Text" },
+  },
 ];
 
 async function main() {

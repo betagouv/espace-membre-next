@@ -42,6 +42,9 @@ export interface OpsField {
   // Default-checked option for the "select" type.
   defaultValue?: string;
   required?: boolean;
+  // Show a warning message above the field as soon as the user types
+  // (e.g. remind them to check the spelling for a free-text link).
+  warnOnInput?: string;
 }
 
 export type OpsFieldKey =
@@ -55,8 +58,8 @@ export type OpsFieldKey =
   | "urlSurveiller"
   | "emailsNotifier"
   | "startupId"
-  | "siteType"
   | "siteName"
+  | "projetRattachement"
   | "commentaires";
 
 export const OPS_FIELDS: Record<OpsFieldKey, OpsField> = {
@@ -113,19 +116,19 @@ export const OPS_FIELDS: Record<OpsFieldKey, OpsField> = {
     type: "startup",
     required: true,
   },
-  siteType: {
-    key: "siteType",
-    label: "Type de site à suivre",
-    type: "select",
-    options: ["website", "mobileapp"],
-    defaultValue: "website",
-    required: true,
-  },
   siteName: {
     key: "siteName",
     label: "Nom du site (optionnel)",
     hint: "Laisse vide pour utiliser l'URL comme nom.",
     required: false,
+  },
+  projetRattachement: {
+    key: "projetRattachement",
+    label: "Projet à relier (optionnel)",
+    hint: "Nom du produit/startup auquel rattacher cette app.",
+    required: false,
+    warnOnInput:
+      "Vérifie bien l'orthographe du projet : il doit correspondre exactement au bon produit pour être relié.",
   },
   commentaires: {
     key: "commentaires",
@@ -141,6 +144,7 @@ export const OPS_DEMANDE_FIELDS: Record<OPS_DEMANDE_TYPE, OpsFieldKey[]> = {
     "nomApp",
     "zoneScalingo",
     "emailCollaborateur",
+    "projetRattachement",
     "commentaires",
   ],
   [OPS_DEMANDE_TYPE.CLOUD_RESOURCES]: ["commentaires"],
@@ -150,7 +154,6 @@ export const OPS_DEMANDE_FIELDS: Record<OPS_DEMANDE_TYPE, OpsFieldKey[]> = {
   [OPS_DEMANDE_TYPE.MATOMO]: [
     "startupId",
     "urlSite",
-    "siteType",
     "siteName",
     "commentaires",
   ],
@@ -207,6 +210,7 @@ export const GRIST_OPS_COLUMNS = {
   siteUrl: "Site_url",
   siteType: "Site_type",
   siteName: "Site_name",
+  projetRattachement: "Projet_rattachement",
 } as const;
 
 // Field keys whose values already have dedicated Grist columns and must not be
@@ -214,6 +218,6 @@ export const GRIST_OPS_COLUMNS = {
 export const OPS_STRUCTURED_FIELD_KEYS: OpsFieldKey[] = [
   "startupId",
   "urlSite",
-  "siteType",
   "siteName",
+  "projetRattachement",
 ];

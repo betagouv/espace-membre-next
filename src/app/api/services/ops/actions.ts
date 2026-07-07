@@ -80,8 +80,11 @@ export const submitOpsRequest = withErrorHandling(
       [GRIST_OPS_COLUMNS.startupName]: parsed.startupName ?? "",
       [GRIST_OPS_COLUMNS.teamSlug]: teamSlug,
       [GRIST_OPS_COLUMNS.siteUrl]: parsed.urlSite ?? "",
-      [GRIST_OPS_COLUMNS.siteType]: parsed.siteType ?? "",
+      // Matomo ne gère que des sites "website" pour l'instant.
+      [GRIST_OPS_COLUMNS.siteType]:
+        parsed.demande === OPS_DEMANDE_TYPE.MATOMO ? "website" : "",
       [GRIST_OPS_COLUMNS.siteName]: parsed.siteName ?? "",
+      [GRIST_OPS_COLUMNS.projetRattachement]: parsed.projetRattachement ?? "",
     };
 
     await addGristRecords(config.GRIST_OPS_DOC_ID, config.GRIST_OPS_TABLE_ID, [

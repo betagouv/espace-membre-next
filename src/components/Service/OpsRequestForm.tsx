@@ -202,17 +202,26 @@ export const OpsRequestForm = ({
             );
           }
           return (
-            <Input
-              key={key}
-              label={field.label}
-              hintText={field.hint}
-              state={error ? "error" : undefined}
-              stateRelatedMessage={error?.message}
-              nativeInputProps={{
-                type: field.type === "email" ? "email" : "text",
-                ...register(key),
-              }}
-            />
+            <div key={key}>
+              <Input
+                label={field.label}
+                hintText={field.hint}
+                state={error ? "error" : undefined}
+                stateRelatedMessage={error?.message}
+                nativeInputProps={{
+                  type: field.type === "email" ? "email" : "text",
+                  ...register(key),
+                }}
+              />
+              {!!field.warnOnInput && !!watch(key) && (
+                <Alert
+                  className={fr.cx("fr-mt-1v", "fr-mb-2v")}
+                  severity="warning"
+                  small
+                  description={field.warnOnInput}
+                />
+              )}
+            </div>
           );
         })}
 

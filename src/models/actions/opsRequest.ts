@@ -34,8 +34,8 @@ export const opsRequestSchema = z
     // Structured Sentry / Matomo fields (feed dedicated Grist columns).
     startupId: z.string().optional(),
     startupName: z.string().optional(),
-    siteType: z.string().optional(),
     siteName: z.string().optional(),
+    projetRattachement: z.string().optional(),
     commentaires: z.string().optional(),
     prenomNom: z.string().optional(),
     statut: z.nativeEnum(OPS_STATUT).optional(),

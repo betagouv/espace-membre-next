@@ -1,0 +1,174 @@
+{
+  "nodes": [
+    {
+      "parameters": {
+        "method": "PUT",
+        "url": "=https://matrix.agent.dinum.tchap.gouv.fr/_matrix/client/v3/rooms/%21VxFWdbcSlumKPvpVRP%3Aagent.dinum.tchap.gouv.fr/send/m.reaction/{{ $now.toMillis() }}",
+        "authentication": "predefinedCredentialType",
+        "nodeCredentialType": "httpBearerAuth",
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={\n  \"m.relates_to\": {\n    \"rel_type\": \"m.annotation\",\n    \"event_id\": \"{{ $('HTTP Request').item.json.event_id }}\",\n    \"key\": \"✅\"\n  }\n}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.3,
+      "position": [
+        2000,
+        -460
+      ],
+      "name": "Réaction ✅ Sentry",
+      "credentials": {
+        "httpBearerAuth": {
+          "id": "6qUBj09suUuQl1zL",
+          "name": "tchap betabot-admin"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "method": "PUT",
+        "url": "=https://matrix.agent.dinum.tchap.gouv.fr/_matrix/client/v3/rooms/%21VxFWdbcSlumKPvpVRP%3Aagent.dinum.tchap.gouv.fr/send/m.room.message/{{ $now.toMillis() }}",
+        "authentication": "predefinedCredentialType",
+        "nodeCredentialType": "httpBearerAuth",
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={\n  \"msgtype\": \"m.text\",\n  \"body\": \"✅ Ton accès Sentry a bien été créé pour {{ $('Code in JavaScript').item.json.ref }}.\",\n  \"m.relates_to\": {\n    \"m.in_reply_to\": {\n      \"event_id\": \"{{ $('HTTP Request').item.json.event_id }}\"\n    }\n  }\n}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.3,
+      "position": [
+        2200,
+        -460
+      ],
+      "name": "Message valid Sentry",
+      "credentials": {
+        "httpBearerAuth": {
+          "id": "6qUBj09suUuQl1zL",
+          "name": "tchap betabot-admin"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "method": "PUT",
+        "url": "=https://matrix.agent.dinum.tchap.gouv.fr/_matrix/client/v3/rooms/%21VxFWdbcSlumKPvpVRP%3Aagent.dinum.tchap.gouv.fr/send/m.room.message/{{ $now.toMillis() }}",
+        "authentication": "predefinedCredentialType",
+        "nodeCredentialType": "httpBearerAuth",
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={\n  \"msgtype\": \"m.text\",\n  \"body\": \"❌ Une erreur est survenue lors de la création automatique de ton accès Sentry. Les administrateurs ont été prévenus et reviendront vers toi au plus vite. 🙏\",\n  \"m.relates_to\": {\n    \"m.in_reply_to\": {\n      \"event_id\": \"{{ $('HTTP Request').item.json.event_id }}\"\n    }\n  }\n}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.3,
+      "position": [
+        2000,
+        -240
+      ],
+      "name": "Message erreur Sentry",
+      "credentials": {
+        "httpBearerAuth": {
+          "id": "6qUBj09suUuQl1zL",
+          "name": "tchap betabot-admin"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "method": "PUT",
+        "url": "=https://matrix.agent.dinum.tchap.gouv.fr/_matrix/client/v3/rooms/%21EXXIJSRHavommMfajM%3Aagent.dinum.tchap.gouv.fr/send/m.room.message/{{ $now.toMillis() }}",
+        "authentication": "predefinedCredentialType",
+        "nodeCredentialType": "httpBearerAuth",
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={\n  \"msgtype\": \"m.text\",\n  \"body\": {{ JSON.stringify(\"⚠️ Échec auto Sentry pour \" + $('Code in JavaScript').item.json.ref + \" (demandeur : \" + $('Code in JavaScript').item.json.Prenom_Nom + \"). Détails : \" + ($('Code in JavaScript').item.json.Demande_libre || '').replaceAll('\\n',' ') + \". À traiter manuellement.\") }}\n}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.3,
+      "position": [
+        2200,
+        -240
+      ],
+      "name": "Message Max Sentry",
+      "credentials": {
+        "httpBearerAuth": {
+          "id": "6qUBj09suUuQl1zL",
+          "name": "tchap betabot-admin"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "method": "PUT",
+        "url": "=https://matrix.agent.dinum.tchap.gouv.fr/_matrix/client/v3/rooms/%21OFFKWePeEFKSgCprSA:agent.dinum.tchap.gouv.fr/send/m.room.message/{{ $now.toMillis() }}",
+        "authentication": "predefinedCredentialType",
+        "nodeCredentialType": "httpBearerAuth",
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={\n  \"msgtype\": \"m.text\",\n  \"body\": {{ JSON.stringify(\"⚠️ Échec auto Sentry pour \" + $('Code in JavaScript').item.json.ref + \" (demandeur : \" + $('Code in JavaScript').item.json.Prenom_Nom + \"). Détails : \" + ($('Code in JavaScript').item.json.Demande_libre || '').replaceAll('\\n',' ') + \". À traiter manuellement.\") }}\n}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.3,
+      "position": [
+        2400,
+        -240
+      ],
+      "name": "Message Julien Sentry",
+      "credentials": {
+        "httpBearerAuth": {
+          "id": "6qUBj09suUuQl1zL",
+          "name": "tchap betabot-admin"
+        }
+      }
+    }
+  ],
+  "connections": {
+    "Réaction ✅ Sentry": {
+      "main": [
+        [
+          {
+            "node": "Message valid Sentry",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Message erreur Sentry": {
+      "main": [
+        [
+          {
+            "node": "Message Max Sentry",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Message Max Sentry": {
+      "main": [
+        [
+          {
+            "node": "Message Julien Sentry",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Message valid Sentry": {
+      "main": [
+        []
+      ]
+    },
+    "Message Julien Sentry": {
+      "main": [
+        []
+      ]
+    }
+  }
+}
