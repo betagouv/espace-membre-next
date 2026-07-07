@@ -31,7 +31,9 @@ function choiceWidget(choices: string[]): string {
 const columns: GristColumn[] = [
   {
     id: GRIST_OPS_COLUMNS.date,
-    fields: { label: "Date", type: "Date" },
+    // DateTime (secondes epoch) pour que Grist affiche une vraie date/heure
+    // au lieu du timestamp brut.
+    fields: { label: "Date", type: "DateTime:Europe/Paris" },
   },
   {
     id: GRIST_OPS_COLUMNS.tchapId,
@@ -113,6 +115,39 @@ const columns: GristColumn[] = [
   {
     id: GRIST_OPS_COLUMNS.projetRattachement,
     fields: { label: "Projet à relier (Scalingo)", type: "Text" },
+  },
+  // One dedicated column per demande-specific field.
+  {
+    id: GRIST_OPS_COLUMNS.nomApp,
+    fields: { label: "Nom de l'app (Scalingo)", type: "Text" },
+  },
+  {
+    id: GRIST_OPS_COLUMNS.zoneScalingo,
+    fields: { label: "Zone Scalingo", type: "Text" },
+  },
+  {
+    id: GRIST_OPS_COLUMNS.emailCollaborateur,
+    fields: { label: "Email collaborateur", type: "Text" },
+  },
+  {
+    id: GRIST_OPS_COLUMNS.handleOvh,
+    fields: { label: "Handle OVH", type: "Text" },
+  },
+  {
+    id: GRIST_OPS_COLUMNS.zoneDns,
+    fields: { label: "Zone DNS", type: "Text" },
+  },
+  {
+    id: GRIST_OPS_COLUMNS.emailAssocier,
+    fields: { label: "Email à associer", type: "Text" },
+  },
+  {
+    id: GRIST_OPS_COLUMNS.urlSurveiller,
+    fields: { label: "URL à surveiller (updown)", type: "Text" },
+  },
+  {
+    id: GRIST_OPS_COLUMNS.emailsNotifier,
+    fields: { label: "Emails à notifier (updown)", type: "Text" },
   },
 ];
 

@@ -20,7 +20,7 @@ export default async function OpsRequestPage() {
 
   const user = await getUserBasicInfo({ uuid: session.user.uuid });
   const matrixId = await getMatrixIdByUserId(session.user.uuid);
-  const email = user?.secondary_email || user?.primary_email || "";
+  const email = user?.primary_email || user?.secondary_email || "";
 
   // Startups the user can act on (admins see all) — used by the Sentry / Matomo
   // demandes to pick the concerned product.

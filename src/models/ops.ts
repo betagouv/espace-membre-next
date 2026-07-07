@@ -150,7 +150,7 @@ export const OPS_DEMANDE_FIELDS: Record<OPS_DEMANDE_TYPE, OpsFieldKey[]> = {
   [OPS_DEMANDE_TYPE.CLOUD_RESOURCES]: ["commentaires"],
   [OPS_DEMANDE_TYPE.DNS_DOMAIN]: ["handleOvh", "zoneDns", "commentaires"],
   [OPS_DEMANDE_TYPE.DNS_RECORD]: ["commentaires"],
-  [OPS_DEMANDE_TYPE.BREVO]: ["emailAssocier", "commentaires"],
+  [OPS_DEMANDE_TYPE.BREVO]: ["startupId", "emailAssocier", "commentaires"],
   [OPS_DEMANDE_TYPE.MATOMO]: [
     "startupId",
     "urlSite",
@@ -211,13 +211,32 @@ export const GRIST_OPS_COLUMNS = {
   siteType: "Site_type",
   siteName: "Site_name",
   projetRattachement: "Projet_rattachement",
+  // One dedicated column per demande-specific field (no more free-form
+  // grouping in "Demande_libre", which was painful to split downstream).
+  nomApp: "Nom_app",
+  zoneScalingo: "Zone_scalingo",
+  emailCollaborateur: "Email_collaborateur",
+  handleOvh: "Handle_ovh",
+  zoneDns: "Zone_dns",
+  emailAssocier: "Email_associer",
+  urlSurveiller: "Url_surveiller",
+  emailsNotifier: "Emails_notifier",
 } as const;
 
-// Field keys whose values already have dedicated Grist columns and must not be
-// duplicated inside the free-form "Demande_libre" summary.
-export const OPS_STRUCTURED_FIELD_KEYS: OpsFieldKey[] = [
-  "startupId",
-  "urlSite",
-  "siteName",
-  "projetRattachement",
-];
+// Maps every form field key to its own dedicated Grist column. Each field gets
+// its own cell so downstream (n8n) never has to parse a concatenated string.
+export const OPS_FIELD_TO_GRIST_COLUMN: Record<OpsFieldKey, string> = {
+  nomApp: GRIST_OPS_COLUMNS.nomApp,
+  zoneScalingo: GRIST_OPS_COLUMNS.zoneScalingo,
+  emailCollaborateur: GRIST_OPS_COLUMNS.emailCollaborateur,
+  handleOvh: GRIST_OPS_COLUMNS.handleOvh,
+  zoneDns: GRIST_OPS_COLUMNS.zoneDns,
+  urlSite: GRIST_OPS_COLUMNS.siteUrl,
+  emailAssocier: GRIST_OPS_COLUMNS.emailAssocier,
+  urlSurveiller: GRIST_OPS_COLUMNS.urlSurveiller,
+  emailsNotifier: GRIST_OPS_COLUMNS.emailsNotifier,
+  startupId: GRIST_OPS_COLUMNS.startupId,
+  siteName: GRIST_OPS_COLUMNS.siteName,
+  projetRattachement: GRIST_OPS_COLUMNS.projetRattachement,
+  commentaires: GRIST_OPS_COLUMNS.notes,
+};
