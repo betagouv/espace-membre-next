@@ -3,6 +3,7 @@
 import { getServerSession } from "next-auth";
 
 import { addGristRecords, GristRecordFields } from "@/lib/grist";
+import { db } from "@/lib/kysely";
 import { generateSentryTeamSlug } from "@/lib/sentry";
 import {
   opsRequestSchema,
@@ -46,6 +47,19 @@ export const submitOpsRequest = withErrorHandling(
         ? generateSentryTeamSlug(parsed.startupName)
         : "";
 
+    // Incubateur du produit sélectionné (ex: la Ruche). Peut être absent si le
+    // produit n'est rattaché à aucun incubateur.
+    const incubateur = parsed.startupId
+      ? (
+          await db
+            .selectFrom("startups")
+            .innerJoin("incubators", "incubators.uuid", "startups.incubator_id")
+            .select("incubators.title")
+            .where("startups.uuid", "=", parsed.startupId)
+            .executeTakeFirst()
+        )?.title ?? ""
+      : "";
+
     const fields: GristRecordFields = {
       // Grist Date columns expect seconds since epoch.
       [GRIST_OPS_COLUMNS.date]: Math.floor(Date.now() / 1000),
@@ -59,6 +73,7 @@ export const submitOpsRequest = withErrorHandling(
       [GRIST_OPS_COLUMNS.userUuid]: session.user.uuid ?? "",
       [GRIST_OPS_COLUMNS.username]: session.user.id ?? "",
       [GRIST_OPS_COLUMNS.startupName]: parsed.startupName ?? "",
+      [GRIST_OPS_COLUMNS.incubateur]: incubateur,
       [GRIST_OPS_COLUMNS.teamSlug]: teamSlug,
       // Matomo ne gère que des sites "website" pour l'instant.
       [GRIST_OPS_COLUMNS.siteType]:

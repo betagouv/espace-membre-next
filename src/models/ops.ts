@@ -60,6 +60,7 @@ export type OpsFieldKey =
   | "startupId"
   | "siteName"
   | "projetRattachement"
+  | "nomWorkspace"
   | "commentaires";
 
 export const OPS_FIELDS: Record<OpsFieldKey, OpsField> = {
@@ -130,6 +131,12 @@ export const OPS_FIELDS: Record<OpsFieldKey, OpsField> = {
     warnOnInput:
       "Vérifie bien l'orthographe du projet : il doit correspondre exactement au bon produit pour être relié.",
   },
+  nomWorkspace: {
+    key: "nomWorkspace",
+    label: "Nom du workspace",
+    hint: "Nom du workspace Tally à créer.",
+    required: true,
+  },
   commentaires: {
     key: "commentaires",
     label: "Commentaires",
@@ -163,7 +170,7 @@ export const OPS_DEMANDE_FIELDS: Record<OPS_DEMANDE_TYPE, OpsFieldKey[]> = {
     "emailsNotifier",
     "commentaires",
   ],
-  [OPS_DEMANDE_TYPE.TALLY]: ["commentaires"],
+  [OPS_DEMANDE_TYPE.TALLY]: ["nomWorkspace", "commentaires"],
   [OPS_DEMANDE_TYPE.SSL_CERTIGNA]: ["commentaires"],
   [OPS_DEMANDE_TYPE.MAILING_LIST]: ["commentaires"],
   [OPS_DEMANDE_TYPE.AUTRE]: ["commentaires"],
@@ -174,7 +181,6 @@ export const OPS_DEMANDE_FIELDS: Record<OPS_DEMANDE_TYPE, OpsFieldKey[]> = {
 export const OPS_DEMANDE_COMMENT_REQUIRED: OPS_DEMANDE_TYPE[] = [
   OPS_DEMANDE_TYPE.CLOUD_RESOURCES,
   OPS_DEMANDE_TYPE.DNS_RECORD,
-  OPS_DEMANDE_TYPE.TALLY,
 ];
 
 export enum OPS_STATUT {
@@ -221,6 +227,9 @@ export const GRIST_OPS_COLUMNS = {
   emailAssocier: "Email_associer",
   urlSurveiller: "Url_surveiller",
   emailsNotifier: "Emails_notifier",
+  nomWorkspace: "Nom_workspace",
+  // Incubateur du produit sélectionné (dérivé server-side du startupId).
+  incubateur: "Incubateur",
 } as const;
 
 // Maps every form field key to its own dedicated Grist column. Each field gets
@@ -238,5 +247,6 @@ export const OPS_FIELD_TO_GRIST_COLUMN: Record<OpsFieldKey, string> = {
   startupId: GRIST_OPS_COLUMNS.startupId,
   siteName: GRIST_OPS_COLUMNS.siteName,
   projetRattachement: GRIST_OPS_COLUMNS.projetRattachement,
+  nomWorkspace: GRIST_OPS_COLUMNS.nomWorkspace,
   commentaires: GRIST_OPS_COLUMNS.notes,
 };

@@ -36,6 +36,7 @@ export const opsRequestSchema = z
     startupName: z.string().optional(),
     siteName: z.string().optional(),
     projetRattachement: z.string().optional(),
+    nomWorkspace: z.string().optional(),
     commentaires: z.string().optional(),
     prenomNom: z.string().optional(),
     statut: z.nativeEnum(OPS_STATUT).optional(),

@@ -149,6 +149,14 @@ const columns: GristColumn[] = [
     id: GRIST_OPS_COLUMNS.emailsNotifier,
     fields: { label: "Emails à notifier (updown)", type: "Text" },
   },
+  {
+    id: GRIST_OPS_COLUMNS.nomWorkspace,
+    fields: { label: "Nom du workspace (Tally)", type: "Text" },
+  },
+  {
+    id: GRIST_OPS_COLUMNS.incubateur,
+    fields: { label: "Incubateur", type: "Text" },
+  },
 ];
 
 async function main() {
