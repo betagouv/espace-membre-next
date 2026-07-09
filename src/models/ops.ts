@@ -8,6 +8,8 @@ export enum OPS_DEMANDE_TYPE {
   DNS_DOMAIN = "Création/délégation de domaine/zone DNS (OVH)",
   DNS_RECORD = "Ajouter un record sur mon domaine OVH (CNAME, A, ...)",
   BREVO = "Ajout d'un compte Brevo",
+  MATOMO = "Ajout d'un compte Matomo",
+  SENTRY = "Ajout d'un compte Sentry",
   UPDOWN = "Ajout d'un site sur updown.io",
   SSL_CERTIGNA = "Demande de certificat SSL Certigna",
   MAILING_LIST = "Création d'une mailing list @beta.gouv.fr",
@@ -22,6 +24,8 @@ export const OPS_DEMANDE_CHOICES: OPS_DEMANDE_TYPE[] = [
   OPS_DEMANDE_TYPE.DNS_DOMAIN,
   OPS_DEMANDE_TYPE.DNS_RECORD,
   OPS_DEMANDE_TYPE.BREVO,
+  OPS_DEMANDE_TYPE.MATOMO,
+  OPS_DEMANDE_TYPE.SENTRY,
   OPS_DEMANDE_TYPE.UPDOWN,
   OPS_DEMANDE_TYPE.TALLY,
   OPS_DEMANDE_TYPE.AUTRE,
@@ -32,12 +36,15 @@ export interface OpsField {
   key: string;
   label: string;
   hint?: string;
-  type?: "text" | "email" | "textarea" | "select";
+  type?: "text" | "email" | "textarea" | "select" | "startup";
   // Options for the "select" type (rendered as radio buttons).
   options?: string[];
   // Default-checked option for the "select" type.
   defaultValue?: string;
   required?: boolean;
+  // Show a warning message above the field as soon as the user types
+  // (e.g. remind them to check the spelling for a free-text link).
+  warnOnInput?: string;
 }
 
 export type OpsFieldKey =
@@ -50,6 +57,10 @@ export type OpsFieldKey =
   | "emailAssocier"
   | "urlSurveiller"
   | "emailsNotifier"
+  | "startupId"
+  | "siteName"
+  | "projetRattachement"
+  | "nomWorkspace"
   | "commentaires";
 
 export const OPS_FIELDS: Record<OpsFieldKey, OpsField> = {
@@ -99,6 +110,33 @@ export const OPS_FIELDS: Record<OpsFieldKey, OpsField> = {
     type: "textarea",
     required: true,
   },
+  startupId: {
+    key: "startupId",
+    label: "Produit concerné",
+    hint: "Sélectionne le produit (startup) : sert à créer/rattacher l'équipe Sentry ou le site Matomo.",
+    type: "startup",
+    required: true,
+  },
+  siteName: {
+    key: "siteName",
+    label: "Nom du site (optionnel)",
+    hint: "Laisse vide pour utiliser l'URL comme nom.",
+    required: false,
+  },
+  projetRattachement: {
+    key: "projetRattachement",
+    label: "Projet à relier (optionnel)",
+    hint: "Nom du produit/startup auquel rattacher cette app.",
+    required: false,
+    warnOnInput:
+      "Vérifie bien l'orthographe du projet : il doit correspondre exactement au bon produit pour être relié.",
+  },
+  nomWorkspace: {
+    key: "nomWorkspace",
+    label: "Nom du workspace",
+    hint: "Nom du workspace Tally à créer.",
+    required: true,
+  },
   commentaires: {
     key: "commentaires",
     label: "Commentaires",
@@ -113,18 +151,26 @@ export const OPS_DEMANDE_FIELDS: Record<OPS_DEMANDE_TYPE, OpsFieldKey[]> = {
     "nomApp",
     "zoneScalingo",
     "emailCollaborateur",
+    "projetRattachement",
     "commentaires",
   ],
   [OPS_DEMANDE_TYPE.CLOUD_RESOURCES]: ["commentaires"],
   [OPS_DEMANDE_TYPE.DNS_DOMAIN]: ["handleOvh", "zoneDns", "commentaires"],
   [OPS_DEMANDE_TYPE.DNS_RECORD]: ["commentaires"],
-  [OPS_DEMANDE_TYPE.BREVO]: ["emailAssocier", "commentaires"],
+  [OPS_DEMANDE_TYPE.BREVO]: ["startupId", "emailAssocier", "commentaires"],
+  [OPS_DEMANDE_TYPE.MATOMO]: [
+    "startupId",
+    "urlSite",
+    "siteName",
+    "commentaires",
+  ],
+  [OPS_DEMANDE_TYPE.SENTRY]: ["startupId", "emailAssocier", "commentaires"],
   [OPS_DEMANDE_TYPE.UPDOWN]: [
     "urlSurveiller",
     "emailsNotifier",
     "commentaires",
   ],
-  [OPS_DEMANDE_TYPE.TALLY]: ["commentaires"],
+  [OPS_DEMANDE_TYPE.TALLY]: ["nomWorkspace", "commentaires"],
   [OPS_DEMANDE_TYPE.SSL_CERTIGNA]: ["commentaires"],
   [OPS_DEMANDE_TYPE.MAILING_LIST]: ["commentaires"],
   [OPS_DEMANDE_TYPE.AUTRE]: ["commentaires"],
@@ -135,7 +181,6 @@ export const OPS_DEMANDE_FIELDS: Record<OPS_DEMANDE_TYPE, OpsFieldKey[]> = {
 export const OPS_DEMANDE_COMMENT_REQUIRED: OPS_DEMANDE_TYPE[] = [
   OPS_DEMANDE_TYPE.CLOUD_RESOURCES,
   OPS_DEMANDE_TYPE.DNS_RECORD,
-  OPS_DEMANDE_TYPE.TALLY,
 ];
 
 export enum OPS_STATUT {
@@ -162,4 +207,46 @@ export const GRIST_OPS_COLUMNS = {
   notes: "Notes",
   prenomNom: "Prenom_Nom",
   statut: "Statut",
+  // Structured fields used by the n8n automations (Sentry / Matomo).
+  userUuid: "User_uuid",
+  username: "Username",
+  startupId: "Startup_id",
+  startupName: "Startup_name",
+  teamSlug: "Team_slug",
+  siteUrl: "Site_url",
+  siteType: "Site_type",
+  siteName: "Site_name",
+  projetRattachement: "Projet_rattachement",
+  // One dedicated column per demande-specific field (no more free-form
+  // grouping in "Demande_libre", which was painful to split downstream).
+  nomApp: "Nom_app",
+  zoneScalingo: "Zone_scalingo",
+  emailCollaborateur: "Email_collaborateur",
+  handleOvh: "Handle_ovh",
+  zoneDns: "Zone_dns",
+  emailAssocier: "Email_associer",
+  urlSurveiller: "Url_surveiller",
+  emailsNotifier: "Emails_notifier",
+  nomWorkspace: "Nom_workspace",
+  // Incubateur du produit sélectionné (dérivé server-side du startupId).
+  incubateur: "Incubateur",
 } as const;
+
+// Maps every form field key to its own dedicated Grist column. Each field gets
+// its own cell so downstream (n8n) never has to parse a concatenated string.
+export const OPS_FIELD_TO_GRIST_COLUMN: Record<OpsFieldKey, string> = {
+  nomApp: GRIST_OPS_COLUMNS.nomApp,
+  zoneScalingo: GRIST_OPS_COLUMNS.zoneScalingo,
+  emailCollaborateur: GRIST_OPS_COLUMNS.emailCollaborateur,
+  handleOvh: GRIST_OPS_COLUMNS.handleOvh,
+  zoneDns: GRIST_OPS_COLUMNS.zoneDns,
+  urlSite: GRIST_OPS_COLUMNS.siteUrl,
+  emailAssocier: GRIST_OPS_COLUMNS.emailAssocier,
+  urlSurveiller: GRIST_OPS_COLUMNS.urlSurveiller,
+  emailsNotifier: GRIST_OPS_COLUMNS.emailsNotifier,
+  startupId: GRIST_OPS_COLUMNS.startupId,
+  siteName: GRIST_OPS_COLUMNS.siteName,
+  projetRattachement: GRIST_OPS_COLUMNS.projetRattachement,
+  nomWorkspace: GRIST_OPS_COLUMNS.nomWorkspace,
+  commentaires: GRIST_OPS_COLUMNS.notes,
+};

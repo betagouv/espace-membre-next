@@ -31,7 +31,9 @@ function choiceWidget(choices: string[]): string {
 const columns: GristColumn[] = [
   {
     id: GRIST_OPS_COLUMNS.date,
-    fields: { label: "Date", type: "Date" },
+    // DateTime (secondes epoch) pour que Grist affiche une vraie date/heure
+    // au lieu du timestamp brut.
+    fields: { label: "Date", type: "DateTime:Europe/Paris" },
   },
   {
     id: GRIST_OPS_COLUMNS.tchapId,
@@ -73,6 +75,88 @@ const columns: GristColumn[] = [
       widgetOptions: choiceWidget(OPS_STATUT_CHOICES as unknown as string[]),
     },
   },
+  // Structured fields consumed by the n8n Sentry / Matomo automations.
+  {
+    id: GRIST_OPS_COLUMNS.userUuid,
+    fields: { label: "User UUID", type: "Text" },
+  },
+  {
+    id: GRIST_OPS_COLUMNS.username,
+    fields: { label: "Username", type: "Text" },
+  },
+  {
+    id: GRIST_OPS_COLUMNS.startupId,
+    fields: { label: "Startup ID", type: "Text" },
+  },
+  {
+    id: GRIST_OPS_COLUMNS.startupName,
+    fields: { label: "Startup", type: "Text" },
+  },
+  {
+    id: GRIST_OPS_COLUMNS.teamSlug,
+    fields: { label: "Team slug (Sentry)", type: "Text" },
+  },
+  {
+    id: GRIST_OPS_COLUMNS.siteUrl,
+    fields: { label: "URL du site (Matomo)", type: "Text" },
+  },
+  {
+    id: GRIST_OPS_COLUMNS.siteType,
+    fields: {
+      label: "Type de site (Matomo)",
+      type: "Choice",
+      widgetOptions: choiceWidget(["website", "mobileapp"]),
+    },
+  },
+  {
+    id: GRIST_OPS_COLUMNS.siteName,
+    fields: { label: "Nom du site (Matomo)", type: "Text" },
+  },
+  {
+    id: GRIST_OPS_COLUMNS.projetRattachement,
+    fields: { label: "Projet à relier (Scalingo)", type: "Text" },
+  },
+  // One dedicated column per demande-specific field.
+  {
+    id: GRIST_OPS_COLUMNS.nomApp,
+    fields: { label: "Nom de l'app (Scalingo)", type: "Text" },
+  },
+  {
+    id: GRIST_OPS_COLUMNS.zoneScalingo,
+    fields: { label: "Zone Scalingo", type: "Text" },
+  },
+  {
+    id: GRIST_OPS_COLUMNS.emailCollaborateur,
+    fields: { label: "Email collaborateur", type: "Text" },
+  },
+  {
+    id: GRIST_OPS_COLUMNS.handleOvh,
+    fields: { label: "Handle OVH", type: "Text" },
+  },
+  {
+    id: GRIST_OPS_COLUMNS.zoneDns,
+    fields: { label: "Zone DNS", type: "Text" },
+  },
+  {
+    id: GRIST_OPS_COLUMNS.emailAssocier,
+    fields: { label: "Email à associer", type: "Text" },
+  },
+  {
+    id: GRIST_OPS_COLUMNS.urlSurveiller,
+    fields: { label: "URL à surveiller (updown)", type: "Text" },
+  },
+  {
+    id: GRIST_OPS_COLUMNS.emailsNotifier,
+    fields: { label: "Emails à notifier (updown)", type: "Text" },
+  },
+  {
+    id: GRIST_OPS_COLUMNS.nomWorkspace,
+    fields: { label: "Nom du workspace (Tally)", type: "Text" },
+  },
+  {
+    id: GRIST_OPS_COLUMNS.incubateur,
+    fields: { label: "Incubateur", type: "Text" },
+  },
 ];
 
 async function main() {
@@ -87,25 +171,60 @@ async function main() {
     );
   }
 
-  const url = `${apiUrl}/docs/${docId}/tables`;
-  const body = {
-    tables: [{ id: tableId, columns }],
+  const authHeaders = {
+    Authorization: `Bearer ${apiKey}`,
+    "Content-Type": "application/json",
   };
 
-  console.log(`Création de la table "${tableId}" dans le doc ${docId}...`);
-  const res = await fetch(url, {
-    method: "POST",
-    headers: {
-      Authorization: `Bearer ${apiKey}`,
-      "Content-Type": "application/json",
-    },
-    body: JSON.stringify(body),
+  // Check whether the table already exists. IMPORTANT: POSTing to /tables with
+  // an existing id does NOT fail — Grist silently creates a suffixed duplicate
+  // (e.g. "Demandes_OPS2"). So we must look first and never blind-create.
+  const listRes = await fetch(`${apiUrl}/docs/${docId}/tables`, {
+    headers: authHeaders,
   });
-
-  const text = await res.text();
-  if (!res.ok) {
-    throw new Error(`Échec (${res.status}): ${text}`);
+  if (!listRes.ok) {
+    throw new Error(
+      `Impossible de lister les tables (${listRes.status}): ${await listRes.text()}`,
+    );
   }
+  const { tables } = (await listRes.json()) as { tables: { id: string }[] };
+  const tableExists = tables.some((t) => t.id === tableId);
+
+  if (!tableExists) {
+    console.log(`Création de la table "${tableId}" dans le doc ${docId}...`);
+    const createRes = await fetch(`${apiUrl}/docs/${docId}/tables`, {
+      method: "POST",
+      headers: authHeaders,
+      body: JSON.stringify({ tables: [{ id: tableId, columns }] }),
+    });
+    if (!createRes.ok) {
+      throw new Error(
+        `Échec création table (${createRes.status}): ${await createRes.text()}`,
+      );
+    }
+    console.log("Table créée.");
+    return;
+  }
+
+  // Table already there: add only the missing columns. Grist ignores columns
+  // whose id already exists, so this is safe to re-run.
+  console.log(
+    `Table "${tableId}" existante — ajout des colonnes manquantes...`,
+  );
+  const colRes = await fetch(
+    `${apiUrl}/docs/${docId}/tables/${tableId}/columns`,
+    {
+      method: "POST",
+      headers: authHeaders,
+      body: JSON.stringify({ columns }),
+    },
+  );
+  if (!colRes.ok) {
+    throw new Error(
+      `Échec ajout colonnes (${colRes.status}): ${await colRes.text()}`,
+    );
+  }
+  console.log("Colonnes à jour.");
 }
 
 main()

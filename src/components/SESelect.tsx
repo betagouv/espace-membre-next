@@ -18,6 +18,7 @@ export default function SESelect({
   label,
   state,
   stateMessageRelated,
+  inputReadOnly,
 }: {
   startups: StartupType[];
   onChange?: any;
@@ -31,6 +32,7 @@ export default function SESelect({
   label?: string;
   state?: "default" | "success" | "error" | undefined;
   stateMessageRelated?: string;
+  inputReadOnly?: boolean;
 }) {
   const onTagsChange = (values) => {
     onChange(values);
@@ -53,6 +55,7 @@ export default function SESelect({
         onSelect={onTagsChange}
         onBlur={onBlur}
         defaultValue={initialValue}
+        inputReadOnly={inputReadOnly}
         // sx={{ width: "500px" }}
       />
       {!!state && !!stateMessageRelated && (

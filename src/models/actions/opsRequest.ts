@@ -31,6 +31,12 @@ export const opsRequestSchema = z
     emailAssocier: z.string().optional(),
     urlSurveiller: z.string().optional(),
     emailsNotifier: z.string().optional(),
+    // Structured Sentry / Matomo fields (feed dedicated Grist columns).
+    startupId: z.string().optional(),
+    startupName: z.string().optional(),
+    siteName: z.string().optional(),
+    projetRattachement: z.string().optional(),
+    nomWorkspace: z.string().optional(),
     commentaires: z.string().optional(),
     prenomNom: z.string().optional(),
     statut: z.nativeEnum(OPS_STATUT).optional(),
