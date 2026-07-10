@@ -316,9 +316,9 @@ export const MemberStatus = ({
       </div>,
     ],
     // Matomo account status
-    MatomoInfoRow(matomoInfo, isCurrentUser),
+    //MatomoInfoRow(matomoInfo, isCurrentUser),
     // Sentry account status
-    sentryInfoRow(sentryInfo),
+    //sentryInfoRow(sentryInfo),
   ].filter((z) => !!z);
 
   return (
