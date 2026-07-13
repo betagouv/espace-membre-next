@@ -39,7 +39,7 @@
     "@luma-team/mjml-react": "^0.2.1",
     "@mui/base": "^5.0.0-beta.69",
     "@mui/material": "^5.15.10",
-    "@sentry/nextjs": "^10.26.0",
+    "@sentry/nextjs": "^10.63.0",
     "@sentry/node": "^10.26.0",
     "@sindresorhus/slugify": "^1.1.0",
     "@socialgouv/matomo-next": "^1.9.1",
