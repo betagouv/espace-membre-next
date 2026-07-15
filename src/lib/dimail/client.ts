@@ -36,9 +36,9 @@ export type DimailMailboxResult = {
 };
 
 export type DimailMailboxesResult = {
-  type: string;
-  status: string;
-  active: string;
+  type: "alias" | "mailbox";
+  imap_active: "yes" | "no" | "wait" | "unknown";
+  smtp_active: "yes" | "no" | "wait" | "unknown";
   email: string;
 }[];
 
@@ -202,7 +202,7 @@ export async function getAllMailboxes({
   domain_name: string;
 }): Promise<{ success: boolean; mailboxes?: DimailMailboxesResult }> {
   const res = await client.get<DimailMailboxesResult>(
-    `/domains/${encodeURIComponent(domain_name)}/mailboxes`,
+    `/v2/domains/${encodeURIComponent(domain_name)}/mailboxes`,
   );
   if (res.status !== 200) {
     return { success: false };
