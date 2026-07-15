@@ -35,6 +35,13 @@ export type DimailMailboxResult = {
   password: string;
 };
 
+export type DimailPatchMailboxResult = {
+  imap_active?: "no" | "yes";
+  extras?: {
+    ox?: { given_name?: string; sur_name?: string; display_name?: string };
+  };
+};
+
 export type DimailMailboxesResult = {
   type: "alias" | "mailbox";
   imap_active: "yes" | "no" | "wait" | "unknown";
@@ -176,14 +183,14 @@ export async function patchMailbox({
   user_name: string;
   domain_name: string;
   data: {
-    active?: "no" | "yes";
-    givenName?: string;
-    surName?: string;
-    displayName?: string;
+    imap_active?: "no" | "yes";
+    extras?: {
+      ox?: { given_name?: string; sur_name?: string; display_name?: string };
+    };
   };
 }): Promise<{ success: boolean; password?: string }> {
-  const res = await client.patch<DimailMailboxResult>(
-    `/domains/${encodeURIComponent(domain_name)}/mailboxes/${encodeURIComponent(user_name)}`,
+  const res = await client.patch<DimailPatchMailboxResult>(
+    `/v2/domains/${encodeURIComponent(domain_name)}/mailboxes/${encodeURIComponent(user_name)}`,
     data,
   );
   if (res.status !== 200) {
