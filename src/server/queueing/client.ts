@@ -2,18 +2,6 @@ import * as Sentry from "@sentry/nextjs";
 import PgBoss from "pg-boss";
 
 import {
-  createSentryServiceAccount,
-  createSentryServiceAccountTopic,
-} from "./workers/create-sentry-account";
-import {
-  createSentryTeam,
-  createSentryTeamTopic,
-} from "./workers/create-sentry-team";
-import {
-  createOrUpdateMatomoServiceAccount,
-  createOrUpdateMatomoServiceAccountTopic,
-} from "./workers/create-update-matomo-account";
-import {
   sendEmailToIncubatorTeam,
   sendEmailToIncubatorTeamTopic,
 } from "./workers/send-email-to-incubator";
@@ -97,29 +85,6 @@ export const pgBossWorker: {
   description: string;
 }[] = [
   {
-    topic: createOrUpdateMatomoServiceAccountTopic,
-    worker: createOrUpdateMatomoServiceAccount,
-    description:
-      "Créer ou update un compte matomo quand un utilisateur en fait la demande",
-  },
-  {
-    topic: createSentryServiceAccountTopic,
-    worker: createSentryServiceAccount,
-    description:
-      "Créer un compte sentry quand un utilisateur en fait la demande",
-  },
-  {
-    topic: createSentryTeamTopic,
-    worker: createSentryTeam,
-    description:
-      "Créer une équipe sentry quand un utilisateur en fait la demande",
-  },
-  {
-    topic: updateSentryServiceAccountTopic,
-    worker: updateSentryServiceAccount,
-    description: `Ajoute une équipe au compte sentry d'un utilisateur`,
-  },
-  {
     topic: sendNewMemberValidationEmailTopic,
     worker: sendNewMemberValidationEmail,
     description: `Envoie un email aux membres de la startup d'un nouveau membre pour que quelqu'un valide sa fiche`,
@@ -147,7 +112,7 @@ export const pgBossWorker: {
   {
     topic: syncDinumEmailsTopic,
     worker: syncDinumEmails,
-    description: `Synchzonise la table dinum_emails`,
+    description: `Synchronise la table dinum_emails`,
   },
   {
     topic: cleanTeamsMembersTopic,
