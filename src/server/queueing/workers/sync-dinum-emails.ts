@@ -1,5 +1,6 @@
 import { getAllMailboxes, getAllAliases } from "@/lib/dimail/client";
 import { db } from "@/lib/kysely";
+import { EmailStatusCode } from "@/models/member";
 import pAll from "p-all";
 import PgBoss from "pg-boss";
 
@@ -41,7 +42,7 @@ export async function syncDinumEmailsJob(domain: string) {
     mailboxesResult.mailboxes?.map((m) => ({
       type: m.type,
       email: m.email,
-      status: m.status,
+      status: m.imap_active === "yes" ? "enabled" : "disabled",
       destination: null,
     })) || [];
 
@@ -57,6 +58,7 @@ export async function syncDinumEmailsJob(domain: string) {
     //  exclude duplicate emails
     [...mailboxes, ...aliases]
       .filter(
+        // uniques
         (account, idx, allAccounts) =>
           !allAccounts
             .slice(0, idx)
@@ -88,8 +90,76 @@ export async function syncDinumEmailsJob(domain: string) {
     .execute();
 }
 
-export async function syncDinumEmails(job: PgBoss.Job<void>) {
+const setEmailsActives = async () => {
+  const emailsToMarkAsActive = await db
+    .selectFrom("dinum_emails")
+    .select(["user_id", "email"])
+    .where("user_id", "is not", null)
+    .where("type", "=", "mailbox")
+    .where("status", "=", "enabled")
+    .execute();
+
+  const updateUsersEmailsActive = await db
+    .updateTable("users")
+    .set("primary_email_status", EmailStatusCode.EMAIL_ACTIVE)
+    .where("primary_email_status", "=", EmailStatusCode.EMAIL_SUSPENDED)
+    .where("primary_email", "like", "%@beta.gouv.fr")
+    .where(
+      "uuid",
+      "in",
+      emailsToMarkAsActive.map((r) => r.user_id),
+    )
+    .returning("username")
+    .execute();
+
+  console.log(
+    `Users emails marked as active: ${updateUsersEmailsActive.length}`,
+  );
+  console.log(
+    updateUsersEmailsActive.map((r) => ` - ${r.username}`).join("\n"),
+  );
+};
+
+const setEmailsSuspendeds = async () => {
+  const emailsToMarkAsSuspended = await db
+    .selectFrom("dinum_emails")
+    .select(["user_id", "email"])
+    .where("user_id", "is not", null)
+    .where("type", "=", "mailbox")
+    .where("status", "=", "disabled")
+    .execute();
+
+  const updateUsersEmailSuspended = await db
+    .updateTable("users")
+    .set("primary_email_status", EmailStatusCode.EMAIL_SUSPENDED)
+    .where("primary_email_status", "=", EmailStatusCode.EMAIL_ACTIVE)
+    .where("primary_email", "like", "%@beta.gouv.fr")
+    .where(
+      "uuid",
+      "in",
+      emailsToMarkAsSuspended.map((r) => r.user_id),
+    )
+    .returning("username")
+    .execute();
+  console.log(
+    `Users emails marked as suspended: ${updateUsersEmailSuspended.map((x) => x.username).length}`,
+  );
+  console.log(
+    updateUsersEmailSuspended.map((r) => ` - ${r.username}`).join("\n"),
+  );
+};
+
+const startSync = async () => {
   console.log("start job sync dinum_emails tables");
   await syncDinumEmailsJob(DIMAIL_MAILBOX_DOMAIN);
   await syncDinumEmailsJob("ext.beta.gouv.fr"); // legacy, todo remove
+  await setEmailsSuspendeds();
+  await setEmailsActives();
+};
+
+export async function syncDinumEmails(job: PgBoss.Job<void>) {
+  console.log("start pgboss job sync dinum_emails tables");
+  await startSync();
 }
+
+startSync();
