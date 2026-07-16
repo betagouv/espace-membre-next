@@ -11,7 +11,6 @@ import { StartupDescription } from "./StartupDescription";
 import { StartupHeader } from "./StartupHeader";
 import { StartupHistory } from "./StartupHistory";
 import { StartupMembers } from "./StartupMembers";
-import { StartupTools } from "./StartupTools";
 import { FicheHeader } from "../FicheHeader";
 import LastChange from "../LastChange";
 import { StartupFiles } from "../StartupFiles";
@@ -66,8 +65,6 @@ export default function StartupPage({
   allMembers,
   phases,
   changes,
-  matomoSites,
-  sentryTeams,
   incubator,
   sponsors,
   files,
@@ -122,14 +119,6 @@ export default function StartupPage({
       tabId: "events",
       isDefault: hash === "events",
       content: <StartupHistory phases={phases} events={events} />,
-    },
-    {
-      label: "Outils",
-      tabId: "tools",
-      isDefault: hash === "tools",
-      content: (
-        <StartupTools matomoSites={matomoSites} sentryTeams={sentryTeams} />
-      ),
     },
     {
       label: "Documents",
