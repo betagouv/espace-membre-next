@@ -118,7 +118,7 @@ const sentryWebpackPluginOptions = {
   authToken: process.env.SENTRY_AUTH_TOKEN,
   url: "https://sentry.incubateur.net",
   errorHandler: (err, invokeErr, compilation) => {
-    compilation.warnings.push("Sentry CLI Plugin: " + err.message);
+    console.error("Sentry CLI Plugin: " + err.message);
   },
   // For all available options, see:
   // https://www.npmjs.com/package/@sentry/webpack-plugin#Options
