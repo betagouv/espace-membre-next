@@ -149,7 +149,7 @@ const setEmailsSuspendeds = async () => {
   );
 };
 
-const startSync = async () => {
+export const startSync = async () => {
   console.log("start job sync dinum_emails tables");
   await syncDinumEmailsJob(DIMAIL_MAILBOX_DOMAIN);
   await syncDinumEmailsJob("ext.beta.gouv.fr"); // legacy, todo remove
