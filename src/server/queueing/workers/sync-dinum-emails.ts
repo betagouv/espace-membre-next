@@ -161,5 +161,3 @@ export async function syncDinumEmails(job: PgBoss.Job<void>) {
   console.log("start pgboss job sync dinum_emails tables");
   await startSync();
 }
-
-startSync();
