@@ -15,9 +15,7 @@ import { FicheHeader } from "../FicheHeader";
 import LastChange from "../LastChange";
 import { StartupFiles } from "../StartupFiles";
 import { getStartupFiles } from "@/app/api/startups/files/list";
-import { matomoSiteSchemaType } from "@/models/matomoSite";
 import { memberBaseInfoSchemaType } from "@/models/member";
-import { sentryTeamSchemaType } from "@/models/sentryTeam";
 import { phaseSchemaType, startupSchemaType } from "@/models/startup";
 import { StartupChangeSchemaType } from "@/models/startupChange";
 import { getCurrentPhase } from "@/utils/startup";
@@ -35,8 +33,6 @@ export interface StartupPageProps {
   members: memberBaseInfoSchemaType[];
   phases: phaseSchemaType[];
   changes: StartupChangeSchemaType[];
-  sentryTeams: sentryTeamSchemaType[];
-  matomoSites: matomoSiteSchemaType[];
   incubator: {
     title: string;
     uuid: string;

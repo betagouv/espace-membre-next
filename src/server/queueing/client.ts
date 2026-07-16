@@ -18,10 +18,6 @@ import {
   sendNewMemberVerificationEmailTopic,
 } from "./workers/send-verification-email";
 import {
-  updateSentryServiceAccount,
-  updateSentryServiceAccountTopic,
-} from "./workers/update-sentry-account";
-import {
   createDimailMailbox,
   createDimailMailboxTopic,
 } from "./workers/create-dimail-mailbox";

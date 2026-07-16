@@ -98,8 +98,6 @@ export default async function Page({
         avatar={userInformations?.avatar}
         changes={userInformations?.changes}
         userInfos={userInformations?.baseInfo}
-        matomoInfo={userInformations.matomoInfo}
-        sentryInfo={userInformations.sentryInfo}
         matrixId={userInformations.matrixId}
         startups={userInformations.startups}
         onboarding={onboarding}

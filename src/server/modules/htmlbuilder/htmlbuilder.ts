@@ -9,8 +9,6 @@ import {
   EmailVerificationWaiting,
   EMAIL_TYPES,
   EmailLogin,
-  EmailMatomoAccountCreated,
-  EmailMatomoAccountUpdated,
   EmailNewMemberValidation,
   EmailProps,
   EmailStartupMembersDidNotChangeInXMonths,
@@ -27,14 +25,6 @@ import {
   LoginEmail,
   LoginEmailTitle,
 } from "@/server/views/templates/emails/LoginEmail/LoginEmail";
-import {
-  MatomoAccountCreatedEmail,
-  MatomoAccountCreatedEmailTitle,
-} from "@/server/views/templates/emails/MatomoAccountCreatedEmail/MatomoAccountCreatedEmail";
-import {
-  MatomoAccountUpdatedEmail,
-  MatomoAccountUpdatedEmailTitle,
-} from "@/server/views/templates/emails/MatomoAccountUpdatedEmail/MatomoAccountUpdatedEmail";
 import {
   MemberValidationEmail,
   MemberValidationEmailTitle,
@@ -79,12 +69,6 @@ const TEMPLATES_BY_TYPE: Record<
   [EMAIL_TYPES.EMAIL_STARTUP_NEW_MEMBER_ARRIVAL]: (
     params: EmailStartupNewMemberArrival["variables"],
   ) => StartupNewMemberArrivalEmail(params),
-  [EMAIL_TYPES.EMAIL_MATOMO_ACCOUNT_CREATED]: (
-    params: EmailMatomoAccountCreated["variables"],
-  ) => MatomoAccountCreatedEmail(params),
-  [EMAIL_TYPES.EMAIL_MATOMO_ACCOUNT_UPDATED]: (
-    params: EmailMatomoAccountUpdated["variables"],
-  ) => MatomoAccountUpdatedEmail(params),
 };
 
 const SUBJECTS_BY_TYPE: Record<EmailProps["type"], string | SubjectFunction> = {
@@ -98,8 +82,6 @@ const SUBJECTS_BY_TYPE: Record<EmailProps["type"], string | SubjectFunction> = {
     StartupMembersDidNotChangeInXMonthsEmailTitle(),
   [EMAIL_TYPES.EMAIL_STARTUP_NEW_MEMBER_ARRIVAL]:
     StartupNewMemberArrivalEmailTitle(),
-  [EMAIL_TYPES.EMAIL_MATOMO_ACCOUNT_CREATED]: MatomoAccountCreatedEmailTitle(),
-  [EMAIL_TYPES.EMAIL_MATOMO_ACCOUNT_UPDATED]: MatomoAccountUpdatedEmailTitle(),
 };
 
 const MARKDOWN_BY_TYPE: Record<EmailProps["type"], boolean> = {
@@ -111,8 +93,6 @@ const MARKDOWN_BY_TYPE: Record<EmailProps["type"], boolean> = {
   [EMAIL_TYPES.EMAIL_TEAM_COMPOSITION]: false,
   [EMAIL_TYPES.EMAIL_STARTUP_MEMBERS_DID_NOT_CHANGE_IN_X_MONTHS]: false,
   [EMAIL_TYPES.EMAIL_STARTUP_NEW_MEMBER_ARRIVAL]: false,
-  [EMAIL_TYPES.EMAIL_MATOMO_ACCOUNT_CREATED]: false,
-  [EMAIL_TYPES.EMAIL_MATOMO_ACCOUNT_UPDATED]: false,
 };
 
 const htmlBuilder: HtmlBuilderType = {

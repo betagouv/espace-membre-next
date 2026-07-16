@@ -3,9 +3,6 @@ import { db } from "@/lib/kysely";
 import { getUserBasicInfo, getUserStartups } from "@/lib/kysely/queries/users";
 import { getAvatarUrl } from "@/lib/s3";
 import { memberChangeToModel, memberBaseInfoToModel } from "@/models/mapper";
-import { matomoServiceInfoToModel } from "@/models/mapper/matomoMapper";
-import { sentryServiceInfoToModel } from "@/models/mapper/sentryMapper";
-import { SERVICES } from "@/models/services";
 
 export const getUserInformations = async (id) => {
   // informations needed
@@ -21,30 +18,6 @@ export const getUserInformations = async (id) => {
 
   const startups = await getUserStartups(dbUser.uuid);
 
-  const matomoInfo = await db
-    .selectFrom("service_accounts")
-    .selectAll()
-    .where("user_id", "=", dbUser.uuid)
-    .where("account_type", "=", SERVICES.MATOMO)
-    .executeTakeFirst()
-    .then((account) => {
-      if (account) {
-        return matomoServiceInfoToModel(account);
-      }
-    });
-
-  const sentryInfo = await db
-    .selectFrom("service_accounts")
-    .selectAll()
-    .where("user_id", "=", dbUser.uuid)
-    .where("account_type", "=", SERVICES.SENTRY)
-    .executeTakeFirst()
-    .then((account) => {
-      if (account) {
-        return sentryServiceInfoToModel(account);
-      }
-    });
-
   const matrixAccount = await db
     .selectFrom("matrix_accounts")
     .select("matrix_id")
@@ -57,8 +30,6 @@ export const getUserInformations = async (id) => {
     avatar,
     baseInfo,
     startups,
-    matomoInfo,
-    sentryInfo,
     matrixId: matrixAccount?.matrix_id,
   };
 };
