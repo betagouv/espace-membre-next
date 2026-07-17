@@ -40,8 +40,6 @@
       title: "Si tu utilises Scalingo : [supprimer ton compte](https://dashboard.scalingo.com/account/authentication)"
     - id: offboarding-desactiver-comptes
       title: Désactiver tous tes comptes ou abonnements liés à ta mission
-    - id: offboarding-rediriger-email
-      title: "Sur [#incubateur-secretariat](https://mattermost.incubateur.net/betagouv/channels/incubateur-secretariat), demander à ce qu'on rediriger ton adresse @beta.gouv.fr vers departs@beta.gouv.fr"
     - id: offboarding-rendre-badges
       title: Rendre tes badges d'accès aux locaux (Ségur, Plateforme de l'inclusion, etc)
     - id: offboarding-retour-experience
