@@ -4,8 +4,6 @@
 | ------- | ---------------------------- | ----------------------------------------------- | ----------------------------------------------------------------------------- |
 | ❌      | `0 5 * * 1`                  | `createMailingListForStartups`                  | Créé des mailings-list OVH pour les startups                                  |
 | ❌      | `30 09 01 Jan,Apr,Jul,Oct *` | `sendEmailToStartupToUpdatePhase`               | Envoie par mail une relance pour mise à jour de la phase de la SE             |
-| ✅      | `30 14 * * *`                | `syncMatomoAccounts`                            | Sync les comptes matomo des membres actifs                                    |
-| ✅      | `30 14 * * *`                | `syncSentryAccounts`                            | Sync les comptes sentry des membres actifs                                    |
 | ✅      | `0 * * * *`                  | `recreateEmailIfUserActive`                     | Recreate email for user active again                                          |
 | ✅      | `0 10 1 * *`                 | `sendMessageToActiveUsersWithoutSecondaryEmail` | Send message to active user without secondary email to update secondary email |
 
