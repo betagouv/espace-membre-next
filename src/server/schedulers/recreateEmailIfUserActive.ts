@@ -11,6 +11,16 @@ let createDimailMailboxForUser =
 import { getActiveUsers } from "@/lib/kysely/queries/users";
 import { DIMAIL_MAILBOX_DOMAIN } from "@/lib/dimail/utils";
 
+const getUserMailBox = async (uuid) =>
+  (
+    await db
+      .selectFrom("dinum_emails")
+      .select("email")
+      .where("user_id", "=", uuid)
+      .where("type", "=", "mailbox")
+      .executeTakeFirstOrThrow()
+  ).email;
+
 // pour les comptes actifs en EMAIL_SUSPENDED/EMAIL_DELETED avec un secondary_email
 // reactive ou recréé l'email et le passe en ACTIVE
 // todo: N8N
@@ -36,9 +46,13 @@ export async function recreateEmailIfUserActive() {
           console.log(
             `set DIMAIL email imap_active for ${dbUser.username} (${dbUser.primary_email})`,
           );
+          const mailbox = await getUserMailBox(dbUser.uuid);
+          console.log(
+            `set DIMAIL email imap_active for ${dbUser.username} (${mailbox})`,
+          );
           await patchMailbox({
             domain_name: DIMAIL_MAILBOX_DOMAIN,
-            user_name: dbUser.primary_email.split("@")[0],
+            user_name: mailbox.split("@")[0],
             data: {
               imap_active: "yes",
             },
