@@ -16,8 +16,8 @@
       title: Lire la documentation sur nos [standards de qualité](https://doc.incubateur.net/communaute/gerer-son-produit/readme-doc-incubateur-net)
 - title: 🧰 La première semaine – Explorer les outils de la communauté
   items:
-    - id: onboarding-canaux-mattermost
-      title: Découvrir [les canaux mattermost recommandés](https://doc.incubateur.net/communaute/les-outils-de-la-communaute/mattermost/canaux-recommandes)
+    - id: onboarding-canaux-tchap
+      title: Découvrir [les canaux Tchap recommandés](https://doc.incubateur.net/communaute/les-outils-de-la-communaute/tchap)
     - id: onboarding-observatoire
       title: Consulter [l'observatoire de beta.gouv.fr](https://espace-membre.incubateur.net/metabase). Pour [y contribuer](https://espace-membre.incubateur.net/)
     - id: onboarding-carte-membres
@@ -25,7 +25,7 @@
     - id: onboarding-lieux-partages
       title: Découvrir [les lieux où travailler ou organiser des événements](https://doc.incubateur.net/communaute/travailler-chez-beta.gouv.fr/vie-quotidienne-et-bien-etre/travailler-dans-les-lieux-partages/ou-travailler)
     - id: onboarding-agenda
-      title: T'abonner à [l'agenda public de l'incubateur](https://calendar.google.com/calendar/u/0/r?cid=MGllb25xYXAxcjVqZWFsNXVnZXVob292bGdAZ3JvdXAuY2FsZW5kYXIuZ29vZ2xlLmNvbQ)
+      title: T'abonner à [l'agenda public de l'incubateur](http://messagerie.numerique.gouv.fr/appsuite/api/share/0366722a002da2b9366722802da84e5eb694970c9c989a65/1/2/Y2FsOi8vMC8yMjczNA)
 - title: 🧭 La première semaine - Appréhender l’environnement de travail
   items:
     - id: onboarding-doc-incubateur
