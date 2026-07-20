@@ -25,7 +25,7 @@
     - id: onboarding-lieux-partages
       title: Découvrir [les lieux où travailler ou organiser des événements](https://doc.incubateur.net/communaute/travailler-chez-beta.gouv.fr/vie-quotidienne-et-bien-etre/travailler-dans-les-lieux-partages/ou-travailler)
     - id: onboarding-agenda
-      title: T'abonner à [l'agenda public de l'incubateur](http://messagerie.numerique.gouv.fr/appsuite/api/share/0366722a002da2b9366722802da84e5eb694970c9c989a65/1/2/Y2FsOi8vMC8yMjczNA)
+      title: T'abonner à [l'agenda public de l'incubateur](https://messagerie.numerique.gouv.fr/appsuite/api/share/0366722a002da2b9366722802da84e5eb694970c9c989a65/1/2/Y2FsOi8vMC8yMjczNA)
 - title: 🧭 La première semaine - Appréhender l’environnement de travail
   items:
     - id: onboarding-doc-incubateur
