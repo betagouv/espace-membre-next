@@ -1,4 +1,3 @@
-import Accordion from "@codegouvfr/react-dsfr/Accordion";
 import Badge from "@codegouvfr/react-dsfr/Badge";
 import Button from "@codegouvfr/react-dsfr/Button";
 import Table from "@codegouvfr/react-dsfr/Table";
@@ -8,7 +7,6 @@ import { MemberPageProps } from "./MemberPage";
 import { BadgeEmailPlan } from "../BadgeEmailPlan";
 import { EmailStatusCode } from "@/models/member";
 import { EMAIL_STATUS_READABLE_FORMAT } from "@/models/misc";
-import { ACCOUNT_SERVICE_STATUS } from "@/models/services";
 import Image from "next/image";
 import { fr } from "@codegouvfr/react-dsfr";
 
@@ -111,145 +109,16 @@ const emailStatusRow = (
   ];
 };
 
-const MatomoInfoRow = (
-  matomo: MemberPageProps["matomoInfo"],
-  isCurrentUser: boolean,
-) => {
-  const status = !!matomo ? matomo.status : "unset";
-  return [
-    <>
-      Compte{" "}
-      <a href="https://stats.beta.gouv.fr" target="_blank">
-        Matomo
-      </a>
-    </>,
-    match(status)
-      .with(ACCOUNT_SERVICE_STATUS.ACCOUNT_FOUND, () => (
-        <Badge key="matomo-status" severity="success" as="span">
-          Actif
-        </Badge>
-      ))
-      .with(ACCOUNT_SERVICE_STATUS.ACCOUNT_CREATION_PENDING, () => (
-        <Badge key="matomo-status" severity="info" as="span">
-          Création en cours
-        </Badge>
-      ))
-      .otherwise(() => (
-        <Badge key="matomo-status" as="span">
-          Pas de compte
-        </Badge>
-      )),
-    !!matomo ? (
-      <Accordion key="matomo-access" label={"Accès Matomo"}>
-        <Table
-          data={matomo.metadata.sites.map((s) => [
-            s.url ? (
-              <a href={s.url} target="_blank">
-                {s.name}
-              </a>
-            ) : (
-              s.name
-            ),
-            s.type,
-            s.accessLevel,
-          ])}
-          headers={["nom", "type", "niveau d'accès"]}
-        />
-      </Accordion>
-    ) : isCurrentUser ? (
-      <>
-        "Tu n'as pas de compte Matomo. Si tu en as besoin, tu peux{" "}
-        <a href="/services/matomo">faire une demande de compte Matomo</a>.
-      </>
-    ) : (
-      <>
-        Ce membre n'a pas de compte matomo, un demande peut être faite depuis
-        son espace-membre
-      </>
-    ),
-  ];
-};
-
-const sentryInfoRow = (sentry: MemberPageProps["sentryInfo"]) => {
-  return [
-    <>Compte Sentry</>,
-    match(sentry && sentry.status)
-      .with(ACCOUNT_SERVICE_STATUS.ACCOUNT_FOUND, () => (
-        <Badge key="sentry-status" severity="success" as="span">
-          Actif
-        </Badge>
-      ))
-      .with(ACCOUNT_SERVICE_STATUS.ACCOUNT_CREATION_PENDING, () => (
-        <Badge key="sentry-status" severity="info" as="span">
-          Creation en cours
-        </Badge>
-      ))
-      .with(ACCOUNT_SERVICE_STATUS.ACCOUNT_INVITATION_SENT, () => (
-        <Badge key="sentry-status" severity="info" as="span">
-          Invitation envoyée
-        </Badge>
-      ))
-      .otherwise(() => (
-        <Badge key="matomo-status" as="span">
-          Pas de compte
-        </Badge>
-      )),
-    match([sentry && sentry.status, !!sentry])
-      .with([P._, false], () => (
-        <>
-          "Tu n'as pas de compte Sentry. Si tu en as besoin, tu peux{" "}
-          <a href="/services/sentry">faire une demande de compte Sentry</a>.
-        </>
-      ))
-      .with([ACCOUNT_SERVICE_STATUS.ACCOUNT_INVITATION_SENT, P._], () => {
-        return <>Une invitation t'a été envoyée par email.</>;
-      })
-      .with([ACCOUNT_SERVICE_STATUS.ACCOUNT_FOUND, true], () => (
-        <Accordion key="sentry-info" label={"Accès Sentry"}>
-          <Table
-            data={sentry!.metadata.teams.map((s) => [
-              s.slug ? (
-                <a href={s.slug} target="_blank">
-                  {s.name}
-                </a>
-              ) : (
-                s.name
-              ),
-              s.projects.length,
-              s.role,
-            ])}
-            headers={["nom", "projets", "niveau d'accès"]}
-          />
-        </Accordion>
-      ))
-      .with([ACCOUNT_SERVICE_STATUS.ACCOUNT_CREATION_PENDING, P._], () => (
-        <p>Ton compte va être créé dans quelques instants</p>
-      ))
-      .otherwise(() => {
-        return (
-          <p>
-            Ton compte ne semble pas dans un état attendu tu peux consulter un
-            admin pour qu'il jette un oeil au problème.
-          </p>
-        );
-      }),
-  ];
-};
-
 export const MemberStatus = ({
   isExpired,
   emailInfos,
   userInfos,
-  matomoInfo,
-  sentryInfo,
   matrixId,
   isCurrentUser,
 }: {
   isExpired: MemberPageProps["isExpired"];
   emailInfos: MemberPageProps["emailInfos"];
   userInfos: MemberPageProps["userInfos"];
-  matomoInfo: MemberPageProps["matomoInfo"];
-  sentryInfo: MemberPageProps["sentryInfo"];
   matrixId: MemberPageProps["matrixId"];
   isCurrentUser: boolean;
 }) => {
@@ -315,10 +184,6 @@ export const MemberStatus = ({
         </a>
       </div>,
     ],
-    // Matomo account status
-    //MatomoInfoRow(matomoInfo, isCurrentUser),
-    // Sentry account status
-    //sentryInfoRow(sentryInfo),
   ].filter((z) => !!z);
 
   return (
