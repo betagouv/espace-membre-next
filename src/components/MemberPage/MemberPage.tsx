@@ -51,8 +51,6 @@ export interface MemberPageProps {
   emailRedirections: memberWrapperSchemaType["emailRedirections"];
   authorizations: memberWrapperSchemaType["authorizations"];
   userInfos: memberWrapperSchemaType["userInfos"];
-  matomoInfo?: matomoUserSchemaType;
-  sentryInfo?: sentryUserSchemaType;
   matrixId?: string;
   isExpired: boolean;
   changes: PrivateMemberChangeSchemaType[];
@@ -71,8 +69,6 @@ export default function MemberPage({
   emailRedirections,
   userInfos,
   authorizations,
-  matomoInfo,
-  sentryInfo,
   matrixId,
   isExpired,
   startups,
@@ -222,8 +218,6 @@ export default function MemberPage({
           isExpired={isExpired}
           emailInfos={emailInfos}
           userInfos={userInfos}
-          matomoInfo={matomoInfo}
-          sentryInfo={sentryInfo}
           matrixId={matrixId}
           isCurrentUser={isCurrentUser}
         />

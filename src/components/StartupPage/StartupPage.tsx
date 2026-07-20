@@ -11,14 +11,11 @@ import { StartupDescription } from "./StartupDescription";
 import { StartupHeader } from "./StartupHeader";
 import { StartupHistory } from "./StartupHistory";
 import { StartupMembers } from "./StartupMembers";
-import { StartupTools } from "./StartupTools";
 import { FicheHeader } from "../FicheHeader";
 import LastChange from "../LastChange";
 import { StartupFiles } from "../StartupFiles";
 import { getStartupFiles } from "@/app/api/startups/files/list";
-import { matomoSiteSchemaType } from "@/models/matomoSite";
 import { memberBaseInfoSchemaType } from "@/models/member";
-import { sentryTeamSchemaType } from "@/models/sentryTeam";
 import { phaseSchemaType, startupSchemaType } from "@/models/startup";
 import { StartupChangeSchemaType } from "@/models/startupChange";
 import { getCurrentPhase } from "@/utils/startup";
@@ -36,8 +33,6 @@ export interface StartupPageProps {
   members: memberBaseInfoSchemaType[];
   phases: phaseSchemaType[];
   changes: StartupChangeSchemaType[];
-  sentryTeams: sentryTeamSchemaType[];
-  matomoSites: matomoSiteSchemaType[];
   incubator: {
     title: string;
     uuid: string;
@@ -66,8 +61,6 @@ export default function StartupPage({
   allMembers,
   phases,
   changes,
-  matomoSites,
-  sentryTeams,
   incubator,
   sponsors,
   files,
@@ -122,14 +115,6 @@ export default function StartupPage({
       tabId: "events",
       isDefault: hash === "events",
       content: <StartupHistory phases={phases} events={events} />,
-    },
-    {
-      label: "Outils",
-      tabId: "tools",
-      isDefault: hash === "tools",
-      content: (
-        <StartupTools matomoSites={matomoSites} sentryTeams={sentryTeams} />
-      ),
     },
     {
       label: "Documents",

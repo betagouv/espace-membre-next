@@ -1,9 +1,5 @@
 import { incubatorSchemaType } from "@/models/incubator";
-import { CreateOrUpdateMatomoAccountDataSchemaType } from "@/models/jobs/services";
-import {
-  memberBaseInfoSchemaType,
-  memberPublicInfoSchemaType,
-} from "@/models/member";
+import { memberPublicInfoSchemaType } from "@/models/member";
 import { missionSchemaType } from "@/models/mission";
 import { startupSchemaType, userStartupSchemaType } from "@/models/startup";
 
@@ -120,28 +116,6 @@ export type EmailStartupNewMemberArrival = {
   };
 };
 
-export type EmailMatomoAccountCreated = {
-  type: EMAIL_TYPES.EMAIL_MATOMO_ACCOUNT_CREATED;
-  variables: {
-    fullname: string;
-    matomoResetUrl: string;
-    email: string;
-    newSite: CreateOrUpdateMatomoAccountDataSchemaType["newSite"];
-    sites: CreateOrUpdateMatomoAccountDataSchemaType["sites"];
-  };
-};
-
-export type EmailMatomoAccountUpdated = {
-  type: EMAIL_TYPES.EMAIL_MATOMO_ACCOUNT_UPDATED;
-  variables: {
-    fullname: string;
-    matomoUrl: string;
-    email: string;
-    newSite: CreateOrUpdateMatomoAccountDataSchemaType["newSite"];
-    sites: CreateOrUpdateMatomoAccountDataSchemaType["sites"];
-  };
-};
-
 export type EmailVariants =
   | EmailLogin
   | EmailCreatedDimail
@@ -150,9 +124,7 @@ export type EmailVariants =
   | EmailVerificationWaiting
   | EmailNewMemberValidation
   | EmailTeamComposition
-  | EmailStartupMembersDidNotChangeInXMonths
-  | EmailMatomoAccountCreated
-  | EmailMatomoAccountUpdated;
+  | EmailStartupMembersDidNotChangeInXMonths;
 
 export type EmailProps = BaseEmail & EmailVariants;
 
