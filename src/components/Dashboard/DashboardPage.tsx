@@ -2,11 +2,13 @@ import { fr } from "@codegouvfr/react-dsfr";
 import { Badge } from "@codegouvfr/react-dsfr/Badge";
 import Button from "@codegouvfr/react-dsfr/Button";
 import { Tile } from "@codegouvfr/react-dsfr/Tile";
+import cityHall from "@codegouvfr/react-dsfr/dsfr/artwork/pictograms/buildings/city-hall.svg";
 import school from "@codegouvfr/react-dsfr/dsfr/artwork/pictograms/buildings/school.svg";
 import avatar from "@codegouvfr/react-dsfr/dsfr/artwork/pictograms/digital/avatar.svg";
 import calendar from "@codegouvfr/react-dsfr/dsfr/artwork/pictograms/digital/calendar.svg";
 import internet from "@codegouvfr/react-dsfr/dsfr/artwork/pictograms/digital/internet.svg";
 import emailpicto from "@codegouvfr/react-dsfr/dsfr/artwork/pictograms/digital/mail-send.svg";
+import conclusion from "@codegouvfr/react-dsfr/dsfr/artwork/pictograms/document/conclusion.svg";
 import document from "@codegouvfr/react-dsfr/dsfr/artwork/pictograms/document/document.svg";
 import community from "@codegouvfr/react-dsfr/dsfr/artwork/pictograms/environment/human-cooperation.svg";
 import locationFrance from "@codegouvfr/react-dsfr/dsfr/artwork/pictograms/map/location-france.svg";
@@ -256,6 +258,33 @@ export function DashboardPage(props: DashboardPageProps) {
             imageUrl={(locationFrance as StaticImageData).src}
             linkProps={{
               href: routes["metabase"](),
+            }}
+          />
+        </div>
+      </div>
+      <h2 className={fr.cx("fr-pt-4w")}>Demandes</h2>
+      <div className={fr.cx("fr-grid-row", "fr-grid-row--gutters")}>
+        <div className={fr.cx("fr-col-12", "fr-col-lg-6")}>
+          <Tile
+            className={fr.cx("fr-tile--sm")}
+            title="Demande d'accès au bâtiment Ségur"
+            desc="Demander un accès au bâtiment Ségur."
+            orientation="horizontal"
+            imageUrl={(cityHall as StaticImageData).src}
+            linkProps={{
+              href: routes["segurAccessRequest"](),
+            }}
+          />
+        </div>
+        <div className={fr.cx("fr-col-12", "fr-col-lg-6")}>
+          <Tile
+            className={fr.cx("fr-tile--sm")}
+            title="Demandes OPS"
+            desc="Accès Scalingo, délégation DNS et autres besoins ops."
+            orientation="horizontal"
+            imageUrl={(conclusion as StaticImageData).src}
+            linkProps={{
+              href: routes["serviceList"](),
             }}
           />
         </div>

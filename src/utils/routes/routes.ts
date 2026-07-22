@@ -43,4 +43,5 @@ export const routes = {
     `/organizations/${organizationId}/info-form`,
   organizationCreate: () => `/organizations/create-form`,
   serviceList: () => `/services`,
+  segurAccessRequest: () => `/demandes/segur`,
 } as const;

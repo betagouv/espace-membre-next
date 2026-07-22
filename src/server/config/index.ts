@@ -111,6 +111,12 @@ export default {
   GRIST_API_KEY: process.env.GRIST_API_KEY,
   GRIST_OPS_DOC_ID: process.env.GRIST_OPS_DOC_ID,
   GRIST_OPS_TABLE_ID: process.env.GRIST_OPS_TABLE_ID || "Demandes_OPS",
+  GRIST_SEGUR_DOC_ID: process.env.GRIST_SEGUR_DOC_ID,
+  GRIST_SEGUR_TABLE_ID: process.env.GRIST_SEGUR_TABLE_ID || "Demandes_Segur",
+  DS_TOKEN: process.env.DS_TOKEN,
+  DS_DEMARCHE_NUMBER: process.env.DS_DEMARCHE_NUMBER
+    ? parseInt(process.env.DS_DEMARCHE_NUMBER)
+    : null,
   user: {
     statusOptions: userStatusOptions,
     minStartDate: "2013-07-01",

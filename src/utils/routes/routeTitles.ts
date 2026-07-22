@@ -65,4 +65,7 @@ export const routeTitles: {
   serviceList: function (): string {
     return "Mes outils";
   },
+  segurAccessRequest: function (): string {
+    return "Demande d'accès au bâtiment Ségur";
+  },
 };
