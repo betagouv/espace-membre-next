@@ -227,6 +227,9 @@ export const isPublicServiceEmail = async function (email: string) {
     "yahoo.fr",
     "yahoo.com",
     "multi.coop",
+    "outlook.com",
+    "malt.com",
+    "free.fr",
   ]);
   if (blockedDomains.has(domain)) {
     return false;
