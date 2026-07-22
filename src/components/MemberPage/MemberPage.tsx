@@ -20,8 +20,6 @@ import { memberWrapperSchemaType } from "@/models/member";
 import { PrivateMemberChangeSchemaType } from "@/models/memberChange";
 import { checklistSchemaType } from "@/models/checklist";
 
-import { matomoUserSchemaType } from "@/models/matomo";
-import { sentryUserSchemaType } from "@/models/sentry";
 import LastChange from "../LastChange";
 import { FicheHeader } from "../FicheHeader";
 import { MemberWaitingValidationNotice } from "./MemberWaitingValidationNotice";
