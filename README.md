@@ -85,18 +85,19 @@ VerifyMember-->CreateEmail
 CreateEmail-->SendEmailInvitation
 ```
 
-### Member Offboarding
+### Member Offboarding (N8N)
 
-- J-30 : Message J-30 (N8N)
-- J-15 : Message J-15 (N8N)
-- J-1 : Message J-1 (N8N)
-- J+1 : Message J+1 (N8N)
-- J+1 : GitHub account is removed from organisation (N8N)
-- J+5 : email is set as SUSPENDED [⚠ BROKEN]
-- J+30 : Message J+30 (N8N)
-- J+30 : mattermost account is removed from community and added to alumni (N8N)
-- J+30 : matomo account is disabled (N8N)
-- J+30 : sentry account is disabled (N8N)
+- J-30 : Message J-30
+- J-15 : Message J-15
+- J-1 : Message J-1
+- J+1 : Message J+1
+- J+1 : GitHub account is removed from organisation
+- J+5 : email is set as SUSPENDED
+- J+30 : Message J+30
+- J+30 : mattermost account is removed from community and added to alumni
+- J+30 : tchap account is removed from beta.gouv.fr
+- J+30 : matomo account is disabled
+- J+30 : sentry account is disabled
 
 see [CRON.md](./CRON.md)
 
@@ -125,9 +126,6 @@ App-->Brevo
 App-->Matomo
 App-->Sentry
 
-
 Cron--->Brevo
 Cron--->DIMAIL
-Cron--->Matomo
-Cron--->Sentry
 ```
