@@ -48,7 +48,7 @@
     "@types/sinon": "^17.0.4",
     "airtable": "^0.12.2",
     "aws-sdk": "^2.1664.0",
-    "axios": "^1.8.4",
+    "axios": "^1.18.0",
     "crisp-sdk-web": "^1.0.25",
     "cron": "^2.4.4",
     "date-fns": "^4.1.0",
