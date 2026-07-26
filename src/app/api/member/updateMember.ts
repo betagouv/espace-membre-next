@@ -1,7 +1,9 @@
 "use server";
 
+import { getServerSession } from "next-auth/next";
 import { z } from "zod";
 
+import { canEditMember } from "@/lib/canEditMember";
 import { addEvent } from "@/lib/events";
 import { db } from "@/lib/kysely";
 import {
@@ -17,6 +19,8 @@ import {
 } from "@/models/actions/member";
 import { userInfosToModel } from "@/models/mapper";
 import { EmailStatusCode } from "@/models/member";
+import { authOptions } from "@/utils/authoptions";
+import { AuthorizationError } from "@/utils/error";
 
 export async function updateMember(
   data:
@@ -37,11 +41,21 @@ export async function updateMember(
     | {} = {}, // quick hack to update primary_email,secondary_email and primary_email_status on verify
   created_by_username: string,
 ) {
-  // todo: auth
+  const session = await getServerSession(authOptions);
+  if (!session || !session.user?.uuid) {
+    throw new AuthorizationError();
+  }
   const { missions, ...memberData } = data;
   const previousInfo = await getUserInfos({ uuid: memberUuid });
   if (!previousInfo) {
     throw new Error("User does not exists");
+  }
+  const isSelfEdit = session.user.uuid === memberUuid;
+  if (
+    !isSelfEdit &&
+    !(await canEditMember({ memberUuid, sessionUser: session.user }))
+  ) {
+    throw new AuthorizationError();
   }
   try {
     await db.transaction().execute(async (trx) => {
