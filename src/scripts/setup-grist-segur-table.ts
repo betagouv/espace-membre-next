@@ -95,6 +95,10 @@ const columns: GristColumn[] = [
     },
   },
   {
+    id: GRIST_SEGUR_COLUMNS.mailEnvoye,
+    fields: { label: "Mail de confirmation envoyé", type: "Bool" },
+  },
+  {
     id: GRIST_SEGUR_COLUMNS.userUuid,
     fields: { label: "User UUID", type: "Text" },
   },

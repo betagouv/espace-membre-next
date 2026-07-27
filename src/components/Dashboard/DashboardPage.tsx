@@ -284,7 +284,7 @@ export function DashboardPage(props: DashboardPageProps) {
             orientation="horizontal"
             imageUrl={(conclusion as StaticImageData).src}
             linkProps={{
-              href: routes["serviceList"](),
+              href: routes["opsRequest"](),
             }}
           />
         </div>

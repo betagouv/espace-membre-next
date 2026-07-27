@@ -61,6 +61,8 @@ export const GRIST_SEGUR_COLUMNS = {
   periodeRecurrente: "Periode_recurrente",
   engagement: "Engagement",
   statut: "Statut",
+  // Automation: idempotency flag for the n8n confirmation-email workflow.
+  mailEnvoye: "Mail_envoye",
   // Meta.
   userUuid: "User_uuid",
   username: "Username",

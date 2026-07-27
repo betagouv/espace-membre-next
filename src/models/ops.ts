@@ -14,6 +14,7 @@ export enum OPS_DEMANDE_TYPE {
   SSL_CERTIGNA = "Demande de certificat SSL Certigna",
   MAILING_LIST = "Création d'une mailing list @beta.gouv.fr",
   TALLY = "Création d'un compte tally",
+  WELCOME_TO_THE_JUNGLE = "Ajout d'un compte Welcome to the Jungle",
   AUTRE = "Autre",
 }
 
@@ -28,6 +29,7 @@ export const OPS_DEMANDE_CHOICES: OPS_DEMANDE_TYPE[] = [
   OPS_DEMANDE_TYPE.SENTRY,
   OPS_DEMANDE_TYPE.UPDOWN,
   OPS_DEMANDE_TYPE.TALLY,
+  OPS_DEMANDE_TYPE.WELCOME_TO_THE_JUNGLE,
   OPS_DEMANDE_TYPE.AUTRE,
 ];
 
@@ -171,6 +173,7 @@ export const OPS_DEMANDE_FIELDS: Record<OPS_DEMANDE_TYPE, OpsFieldKey[]> = {
     "commentaires",
   ],
   [OPS_DEMANDE_TYPE.TALLY]: ["nomWorkspace", "commentaires"],
+  [OPS_DEMANDE_TYPE.WELCOME_TO_THE_JUNGLE]: ["emailAssocier", "commentaires"],
   [OPS_DEMANDE_TYPE.SSL_CERTIGNA]: ["commentaires"],
   [OPS_DEMANDE_TYPE.MAILING_LIST]: ["commentaires"],
   [OPS_DEMANDE_TYPE.AUTRE]: ["commentaires"],

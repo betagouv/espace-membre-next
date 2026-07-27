@@ -58,6 +58,9 @@ export const submitSegurRequest = withErrorHandling(
       [GRIST_SEGUR_COLUMNS.periodeRecurrente]: parsed.periodeRecurrente ?? "",
       [GRIST_SEGUR_COLUMNS.engagement]: parsed.engagement ?? false,
       [GRIST_SEGUR_COLUMNS.statut]: parsed.statut ?? SEGUR_STATUT.A_TRAITER,
+      // false at creation; the n8n workflow flips it to true after sending the
+      // confirmation email, so a request is never notified twice.
+      [GRIST_SEGUR_COLUMNS.mailEnvoye]: false,
       [GRIST_SEGUR_COLUMNS.userUuid]: session.user.uuid ?? "",
       [GRIST_SEGUR_COLUMNS.username]: session.user.id ?? "",
     };
