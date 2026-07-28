@@ -25,6 +25,15 @@ utiles du projet.
 
 copier [`.env.development`](./.env.development) en `.env`
 
+Deux variables donnent des droits particuliers. Chacune est une liste de
+`username` (`prenom.nom`) séparés par des virgules :
+
+- `ESPACE_MEMBRE_ADMIN` : administrateurs de l'espace membre.
+- `ESPACE_MEMBRE_ANIMATION` : équipe d'animation. Seule habilitée, avec les
+  administrateurs, à cocher les items de checklist réservés (cf.
+  [`restrictedChecklistItems.ts`](./src/utils/checklists/restrictedChecklistItems.ts)),
+  par exemple la participation à l'atelier d'embarquement.
+
 ### Lancer en mode développement
 
 Un environnement Docker Compose permet de lancer l'application et ses

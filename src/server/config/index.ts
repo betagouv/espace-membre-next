@@ -127,6 +127,12 @@ export default {
   ESPACE_MEMBRE_ADMIN: process.env.ESPACE_MEMBRE_ADMIN
     ? process.env.ESPACE_MEMBRE_ADMIN.split(",")
     : [],
+  // Membres de l'équipe animation, autorisés à valider les items de checklist
+  // réservés (cf. src/utils/checklists/restrictedChecklistItems.ts).
+  ESPACE_MEMBRE_ANIMATION: (process.env.ESPACE_MEMBRE_ANIMATION ?? "")
+    .split(",")
+    .map((username) => username.trim())
+    .filter(Boolean),
   MAILING_LIST_NEWSLETTER: parseInt(getOrThrowError("MAILING_LIST_NEWSLETTER")),
   MAILING_LIST_ONBOARDING: process.env.MAILING_LIST_ONBOARDING
     ? parseInt(process.env.MAILING_LIST_ONBOARDING)
