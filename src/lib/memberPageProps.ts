@@ -1,6 +1,7 @@
 import { MemberPageProps } from "@/components/MemberPage/MemberPage";
 import { userInfos } from "@/lib/utils";
 import { canEditMember as _canEditMember } from "@/lib/canEditMember";
+import { canValidateRestrictedChecklistItem } from "@/lib/canValidateRestrictedChecklistItem";
 import { getUserChecklists } from "@/lib/checklists/getUserChecklists";
 import {
   getUserStartups,
@@ -68,11 +69,16 @@ export async function buildMemberPageProps({
   const canValidateMember =
     canEditMember && session.user.uuid !== user.userInfos.uuid;
 
+  const canValidateRestrictedItems = await canValidateRestrictedChecklistItem(
+    session.user,
+  );
+
   return {
     isAdmin,
     isCurrentUser,
     canEditMember,
     canValidateMember,
+    canValidateRestrictedItems,
     authorizations: user.authorizations,
     emailInfos: user.emailInfos,
     emailRedirections: user.emailRedirections,

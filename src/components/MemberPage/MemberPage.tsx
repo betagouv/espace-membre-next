@@ -55,6 +55,7 @@ export interface MemberPageProps {
   startups: Awaited<ReturnType<typeof getUserStartups>>;
   canEditMember: boolean;
   canValidateMember: boolean;
+  canValidateRestrictedItems?: boolean;
   isAdmin: boolean;
   isCurrentUser: boolean;
   onboarding?: UserChecklist;
@@ -73,6 +74,7 @@ export default function MemberPage({
   changes,
   canEditMember,
   canValidateMember,
+  canValidateRestrictedItems = false,
   isAdmin,
   avatar,
   isCurrentUser,
@@ -175,6 +177,7 @@ export default function MemberPage({
         <ChecklistTabPanel
           offset={1}
           readOnly={!canEditMember}
+          canValidateRestrictedItems={canValidateRestrictedItems}
           userEvents={onboarding.userEvents}
           userInfos={userInfos}
           checklistObject={onboarding.checklistObject}
@@ -194,6 +197,7 @@ export default function MemberPage({
       content: (
         <ChecklistTabPanel
           readOnly={!canEditMember}
+          canValidateRestrictedItems={canValidateRestrictedItems}
           userEvents={offboarding.userEvents}
           userInfos={userInfos}
           checklistObject={offboarding.checklistObject}

@@ -15,6 +15,7 @@ export const ChecklistTabPanel = ({
   checklistObject,
   intro,
   readOnly,
+  canValidateRestrictedItems = false,
   offset = 0,
 }: {
   userEvents: userEventSchemaType[];
@@ -22,6 +23,7 @@ export const ChecklistTabPanel = ({
   userInfos: memberWrapperSchemaType["userInfos"];
   intro: ReactNode;
   readOnly: boolean;
+  canValidateRestrictedItems?: boolean;
   offset?: number;
 }) => {
   const [userEventIds, setUserEventIds] = useState<string[]>(
@@ -43,6 +45,7 @@ export const ChecklistTabPanel = ({
       />
       <Checklist
         readOnly={readOnly}
+        canValidateRestrictedItems={canValidateRestrictedItems}
         userUuid={userInfos.uuid}
         userEventIds={userEventIds}
         handleUserEventIdsChange={setUserEventIds}
