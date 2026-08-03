@@ -7,6 +7,7 @@ import { userInfos } from "@/server/controllers/utils";
 import { authOptions } from "@/utils/authoptions";
 import { routeTitles } from "@/utils/routes/routeTitles";
 import { getUserIncubators } from "@/lib/kysely/queries/users";
+import { canValidateRestrictedChecklistItem } from "@/lib/canValidateRestrictedChecklistItem";
 import { getUserChecklists } from "@/utils/checklists/getUserChecklists";
 import MemberPage from "@/components/MemberPage/MemberPage";
 
@@ -55,6 +56,9 @@ export default async function Page() {
       startups={userInformations.startups}
       canEditMember={true}
       canValidateMember={false}
+      canValidateRestrictedItems={canValidateRestrictedChecklistItem(
+        session.user.id,
+      )}
       isCurrentUser={true}
       onboarding={onboarding}
       offboarding={offboarding}

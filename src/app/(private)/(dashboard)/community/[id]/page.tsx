@@ -9,6 +9,7 @@ import { userInfos } from "@/server/controllers/utils";
 import { authOptions } from "@/utils/authoptions";
 import { getUserIncubators } from "@/lib/kysely/queries/users";
 import { canEditMember as _canEditMember } from "@/lib/canEditMember";
+import { canValidateRestrictedChecklistItem } from "@/lib/canValidateRestrictedChecklistItem";
 import { getUserChecklists } from "@/utils/checklists/getUserChecklists";
 
 type Props = {
@@ -91,6 +92,9 @@ export default async function Page({
         isCurrentUser={isCurrentUser}
         canEditMember={canEditMember}
         canValidateMember={canValidateMember}
+        canValidateRestrictedItems={canValidateRestrictedChecklistItem(
+          session.user.id,
+        )}
         authorizations={user.authorizations}
         emailInfos={user.emailInfos}
         emailRedirections={user.emailRedirections}

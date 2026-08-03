@@ -105,6 +105,21 @@ test("recent member expiring soon only sees offboarding panel, not onboarding", 
   }
 });
 
+test("the atelier onboarding item is not checkable by a member", async ({
+  page,
+}) => {
+  // valid.member ne fait pas partie de ESPACE_MEMBRE_ANIMATION : la case
+  // attestant la participation à l'embarquement doit lui être inaccessible.
+  await page.goto("/account?tab=embarquement");
+  await page.waitForURL(/\/account/);
+  await expect(page.getByText("Bienvenue dans la communauté")).toBeVisible();
+
+  const activePanel = page.locator(".fr-tabs__panel--selected");
+  await expect(
+    activePanel.locator('input[value="onboarding-atelier-onboarding"]'),
+  ).toBeDisabled();
+});
+
 test("checking an onboarding item increases the progress bar on account and dashboard", async ({
   page,
 }) => {
