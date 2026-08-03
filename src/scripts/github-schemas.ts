@@ -79,6 +79,8 @@ const domaines = [
   "Data",
   "Support",
   "Autre",
+  "Attributaire",
+  "Data",
 ] as const;
 
 const preventDuplicates = (val, ctx) => {

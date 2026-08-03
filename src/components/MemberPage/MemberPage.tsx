@@ -20,8 +20,6 @@ import { memberWrapperSchemaType } from "@/models/member";
 import { PrivateMemberChangeSchemaType } from "@/models/memberChange";
 import { checklistSchemaType } from "@/models/checklist";
 
-import { matomoUserSchemaType } from "@/models/matomo";
-import { sentryUserSchemaType } from "@/models/sentry";
 import LastChange from "../LastChange";
 import { FicheHeader } from "../FicheHeader";
 import { MemberWaitingValidationNotice } from "./MemberWaitingValidationNotice";
@@ -51,8 +49,7 @@ export interface MemberPageProps {
   emailRedirections: memberWrapperSchemaType["emailRedirections"];
   authorizations: memberWrapperSchemaType["authorizations"];
   userInfos: memberWrapperSchemaType["userInfos"];
-  matomoInfo?: matomoUserSchemaType;
-  sentryInfo?: sentryUserSchemaType;
+  matrixId?: string;
   isExpired: boolean;
   changes: PrivateMemberChangeSchemaType[];
   startups: Awaited<ReturnType<typeof getUserStartups>>;
@@ -70,8 +67,7 @@ export default function MemberPage({
   emailRedirections,
   userInfos,
   authorizations,
-  matomoInfo,
-  sentryInfo,
+  matrixId,
   isExpired,
   startups,
   changes,
@@ -211,7 +207,7 @@ export default function MemberPage({
       ),
     },
     {
-      label: "Statut des comptes",
+      label: "Outils",
       tabId: "statut-comptes",
       isDefault: tab === "statut-comptes",
 
@@ -220,8 +216,7 @@ export default function MemberPage({
           isExpired={isExpired}
           emailInfos={emailInfos}
           userInfos={userInfos}
-          matomoInfo={matomoInfo}
-          sentryInfo={sentryInfo}
+          matrixId={matrixId}
           isCurrentUser={isCurrentUser}
         />
       ),

@@ -106,19 +106,34 @@ const selectLastStartupPhase = (selectFrom, startupId) =>
 export const getAllStartupsWithIncubatorAndPhase = async () => {
   const incubators = await getAllIncubators();
   // todo: better typing
-  const baseSelect = db
+  const startupsData = await db
     .selectFrom("startups")
+    .leftJoin(
+      "users as dinum_contact",
+      "dinum_contact.uuid",
+      "startups.contact_dinum",
+    )
+    .leftJoin(
+      "users as incub_contact",
+      "incub_contact.uuid",
+      "startups.contact_incubator",
+    )
     .select([
-      "uuid",
-      "ghid",
-      "name",
-      "pitch",
-      "thematiques",
-      "techno",
-      "incubator_id",
-      "usertypes",
-    ]);
-  const startupsData = await baseSelect
+      "startups.uuid",
+      "startups.ghid",
+      "startups.name",
+      "startups.pitch",
+      "startups.thematiques",
+      "startups.techno",
+      "startups.incubator_id",
+      "startups.usertypes",
+      "startups.contact_dinum",
+      "startups.contact_incubator",
+    ])
+    .select((eb) => [
+      eb.ref("dinum_contact.fullname").as("contact_dinum_fullname"),
+      eb.ref("incub_contact.fullname").as("contact_incubator_fullname"),
+    ])
     .select(({ selectFrom }) =>
       selectLastStartupPhase(selectFrom, "startups.uuid")
         .orderBy("start", "desc")
@@ -127,14 +142,25 @@ export const getAllStartupsWithIncubatorAndPhase = async () => {
     )
     .execute();
 
+  type StartupsDataRow = (typeof startupsData)[number] & {
+    phase: string | null;
+    contact_dinum_fullname: string | null;
+    contact_incubator_fullname: string | null;
+  };
+
   const startups = startupsData.map((s) => {
+    const row = s as StartupsDataRow;
     const incubator = incubators.find((i) => i.uuid === s.incubator_id);
     return {
       ...s,
-      phase: (s as typeof s & { phase: string | null }).phase,
+      phase: row.phase,
       thematiques: (s.thematiques as string[]) || [],
       techno: (s.techno as string[]) || [],
       usertypes: (s.usertypes as string[]) || [],
+      contact_dinum: s.contact_dinum,
+      contact_incubator: s.contact_incubator,
+      contact_dinum_fullname: row.contact_dinum_fullname,
+      contact_incubator_fullname: row.contact_incubator_fullname,
       incubatorName: incubator && incubator.title,
       incubatorId: s.incubator_id,
     };

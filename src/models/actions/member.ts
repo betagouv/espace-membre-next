@@ -55,7 +55,6 @@ export const memberInfoUpdateSchema = z.object({
     memberType: memberSchema.shape.memberType,
     gender: memberSchema.shape.gender,
     average_nb_of_days: memberSchema.shape.average_nb_of_days,
-    tjm: memberSchema.shape.tjm,
     legal_status: memberSchema.shape.legal_status,
     workplace_insee_code: memberSchema.shape.workplace_insee_code,
     osm_city: memberSchema.shape.osm_city,
@@ -97,7 +96,6 @@ export const memberValidateInfoSchema = z.object({
     })
     .max(5)
     .describe("Nombre de jour moyen travaillé par semaine"),
-  tjm: memberSchema.shape.tjm,
   legal_status: memberSchema.shape.legal_status,
   workplace_insee_code: memberSchema.shape.workplace_insee_code,
   osm_city: memberSchema.shape.osm_city,

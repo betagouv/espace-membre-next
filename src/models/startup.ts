@@ -49,12 +49,14 @@ export enum StartupEvent {
   EVENT_FAST = "fast",
   EVENT_NATIONAL_IMPACT = "national_impact",
   EVENT_OTHER = "other",
+  EVENT_EIG = "eig",
   EVENT_END = "end",
 }
 
 export const EVENT_READABLE_NAME = {
   product_launch: "Lancement du produit",
   committee: "Passage en comité",
+  eig: "EIG",
   fast: "FAST",
   national_impact: "Impact national validé",
   other: "Autre",
@@ -153,6 +155,18 @@ export const startupSchema = z.object({
     })
     .min(1)
     .describe("Incubateur ou fabrique numérique"),
+  contact_dinum: z
+    .preprocess(
+      (val) => (val === "" ? null : val),
+      z.string().uuid().nullable().optional(),
+    )
+    .describe("Point de contact DINUM"),
+  contact_incubator: z
+    .preprocess(
+      (val) => (val === "" ? null : val),
+      z.string().uuid().nullable().optional(),
+    )
+    .describe("Point de contact Incubateur"),
   contact: z
     .string({
       errorMap: () => ({

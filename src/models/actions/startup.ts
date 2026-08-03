@@ -9,6 +9,8 @@ export const startupInfoUpdateSchema = z.object({
     name: startupSchema.shape.name,
     pitch: startupSchema.shape.pitch,
     incubator_id: startupSchema.shape.incubator_id,
+    contact_dinum: startupSchema.shape.contact_dinum,
+    contact_incubator: startupSchema.shape.contact_incubator,
     contact: startupSchema.shape.contact,
     link: startupSchema.shape.link,
     repository: startupSchema.shape.repository,

@@ -15,7 +15,7 @@ export const airtableRecordToFormation = (
   const item = {
     id: record.fields["Record ID"],
     airtable_id: record.fields["Record ID"],
-    description: record.fields["Description"],
+    description: record.fields["Description"] || "",
     name: record.fields["Formation"],
     imageUrl: image ? image[0].url : undefined,
     created_at: new Date(record.fields["Created"] as string), // Make sure this is the correct field for "created_at"

@@ -399,22 +399,6 @@ export const BaseInfoUpdate = (props: BaseInfoUpdateProps) => {
             ))}
           </Select>
           <Input
-            label="TJM moyen HT (si tu es indépendant)"
-            hintText="Cette information est utilisée uniquement pour
-                                    faire des statistiques. Elle n'est pas affichée."
-            nativeInputProps={{
-              ...register("member.tjm", {
-                setValueAs: (
-                  // use this instead of valueAsNumber to handle undefined value
-                  v,
-                ) => (!v ? null : parseInt(v)),
-              }),
-              type: "number",
-            }}
-            state={errors.member?.tjm ? "error" : "default"}
-            stateRelatedMessage={errors.member?.tjm?.message}
-          />
-          <Input
             label="Nombre de jours moyen travaillés par semaine"
             hintText="Cette information est utilisée uniquement pour
                                     faire des statistiques. Elle n'est pas affichée."

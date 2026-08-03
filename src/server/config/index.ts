@@ -106,6 +106,13 @@ export default {
   host: process.env.HOSTNAME,
   port: parseInt(process.env.PORT || "3000", 10),
   domain: process.env.SECRETARIAT_DOMAIN || "beta.gouv.fr",
+  GRIST_API_URL:
+    process.env.GRIST_API_URL || "https://grist.numerique.gouv.fr/api",
+  GRIST_API_KEY: process.env.GRIST_API_KEY,
+  GRIST_OPS_DOC_ID: process.env.GRIST_OPS_DOC_ID,
+  GRIST_OPS_TABLE_ID: process.env.GRIST_OPS_TABLE_ID || "Demandes_OPS",
+  GRIST_SEGUR_DOC_ID: process.env.GRIST_SEGUR_DOC_ID,
+  GRIST_SEGUR_TABLE_ID: process.env.GRIST_SEGUR_TABLE_ID || "Demandes_Segur",
   DS_TOKEN: process.env.DS_TOKEN,
   DS_DEMARCHE_NUMBER: process.env.DS_DEMARCHE_NUMBER
     ? parseInt(process.env.DS_DEMARCHE_NUMBER)
@@ -116,8 +123,6 @@ export default {
     memberOptions: memberTypeOptions,
   },
   senderEmail: process.env.MAIL_SENDER || "espace-membre@incubateur.net",
-  githubOrganizationName: process.env.GITHUB_ORGANIZATION_NAME || "betagouv",
-  githubOrgAdminToken: process.env.GITHUB_ORG_ADMIN_TOKEN,
   sentryDSN: process.env.SENTRY_DSN || false,
   ESPACE_MEMBRE_ADMIN: process.env.ESPACE_MEMBRE_ADMIN
     ? process.env.ESPACE_MEMBRE_ADMIN.split(",")
@@ -133,11 +138,6 @@ export default {
     .NEWSLETTER_NUMBER_OF_DAYS_WITH_LAST_NEWSLETTER
     ? parseInt(process.env.NEWSLETTER_NUMBER_OF_DAYS_WITH_LAST_NEWSLETTER, 10)
     : 10,
-  incubateurMailingListName:
-    process.env.INCUBATEUR_MAILING_LIST_NAME || "incubateur",
-  JOBS_API: process.env.JOBS_API || "https://beta.gouv.fr/api/v2.5/jobs.json",
-  JOBS_WTTJ_API: process.env.JOBS_WTTJ_API,
-  leavesEmail: process.env.LEAVES_EMAIL || "depart@beta.gouv.fr",
   // If both emails of the users are already in sib update will not work
   FEATURE_SIB_USE_UPDATE_CONTACT_EMAIL:
     process.env.FEATURE_SIB_USE_UPDATE_CONTACT_EMAIL === "true",
@@ -166,7 +166,6 @@ export default {
     "PROTECTED_API_ALLOWED_ORIGINS",
     ["gouv.fr", "ademe.fr"],
   ),
-  SENTRY_WEBSITE_URL: process.env.SENTRY_WEBSITE_URL,
   FEATURE_TMP_SHOW_ONBOARDING_TO_EVERYONE:
     process.env.FEATURE_TMP_SHOW_ONBOARDING_TO_EVERYONE === "true",
 };

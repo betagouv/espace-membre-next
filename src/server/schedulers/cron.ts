@@ -1,13 +1,8 @@
 // NOTE: if you update this file, make sure you update the jobs
 // documentation file (CRON.md) file with `make cron-docs`.
 
-import { recreateEmailIfUserActive } from "./recreateEmailIfUserActive";
-import { syncMatomoAccounts } from "./serviceScheduler/syncMatomoAccounts";
-import { syncSentryAccounts } from "./serviceScheduler/syncSentryAccounts";
+import { recreateEmailIfUserActive } from "./recreateEmailIfUserActive"; // todo: n8n
 import { sendEmailToStartupToUpdatePhase } from "./startups/sendEmailToStartupToUpdatePhase";
-import { unblockEmailsThatAreActive } from "./unblockEmailsThatAreActive";
-import { matomoClient } from "../config/matomo.config";
-import { sentryClient } from "../config/sentry.config";
 import config from "@/server/config";
 
 export interface EspaceMembreCronJobType {
@@ -20,15 +15,8 @@ export interface EspaceMembreCronJobType {
   start?: boolean;
 }
 
+// todo: move to n8n
 const startupJobs: EspaceMembreCronJobType[] = [
-  /*{
-    // TODO: move to N8N and dimail ?
-    cronTime: "0 5 * * 1", // Every Monday at 05:00
-    onTick: createMailingListForStartups,
-    isActive: true,
-    name: "createMailingListForStartups",
-    description: "Créé des mailings-list OVH pour les startups",
-  },*/
   {
     cronTime: "30 09 01 Jan,Apr,Jul,Oct *", // 1st of Jan, Apr, Jul, Oct at 09:00:30
     onTick: sendEmailToStartupToUpdatePhase,
@@ -39,34 +27,9 @@ const startupJobs: EspaceMembreCronJobType[] = [
   },
 ];
 
-const servicesJobs: EspaceMembreCronJobType[] = [
-  {
-    cronTime: process.env.SYNC_MATOMO_ACCOUNT_CRON || "30 14 * * *", // Every day at 14:30
-    onTick: () => syncMatomoAccounts(matomoClient),
-    isActive: true,
-    name: "syncMatomoAccounts",
-    description: "Sync les comptes matomo des membres actifs",
-  },
-  {
-    cronTime: process.env.SYNC_SENTRY_ACCOUNT_CRON || "30 14 * * *", // Every day at 14:30
-    onTick: () => syncSentryAccounts(sentryClient),
-    isActive: true,
-    name: "syncSentryAccounts",
-    description: "Sync les comptes sentry des membres actifs",
-  },
-];
-
 export const espaceMembreCronJobs: EspaceMembreCronJobType[] = [
   ...startupJobs,
-  ...servicesJobs,
-  {
-    cronTime: "0 0 * * 1", // every week at 0:00 on monday
-    onTick: unblockEmailsThatAreActive,
-    isActive: true,
-    name: "Unblock blacklisted email",
-    description:
-      "Unblock emails from MAILING_LIST_NEWSLETTER Brevo mailing-list",
-  },
+  // todo: move to n8n ?
   {
     cronTime: "0 * * * *", // Every hour
     onTick: recreateEmailIfUserActive,

@@ -1,0 +1,255 @@
+// Shared definitions for the "Demandes d'OPS" form.
+// Used by the zod schema, the form UI, the server action and the Grist
+// table-setup script so they all agree on choices and column ids.
+
+export enum OPS_DEMANDE_TYPE {
+  SCALINGO_APP = "Création d'app Scalingo",
+  CLOUD_RESOURCES = "Ressources Clever cloud, OVH, scaleway",
+  DNS_DOMAIN = "Création/délégation de domaine/zone DNS (OVH)",
+  DNS_RECORD = "Ajouter un record sur mon domaine OVH (CNAME, A, ...)",
+  BREVO = "Ajout d'un compte Brevo",
+  MATOMO = "Ajout d'un compte Matomo",
+  SENTRY = "Ajout d'un compte Sentry",
+  UPDOWN = "Ajout d'un site sur updown.io",
+  SSL_CERTIGNA = "Demande de certificat SSL Certigna",
+  MAILING_LIST = "Création d'une mailing list @beta.gouv.fr",
+  TALLY = "Création d'un compte tally",
+  WELCOME_TO_THE_JUNGLE = "Ajout d'un compte Welcome to the Jungle",
+  AUTRE = "Autre",
+}
+
+// Order shown in the form (matches the airtable form).
+export const OPS_DEMANDE_CHOICES: OPS_DEMANDE_TYPE[] = [
+  OPS_DEMANDE_TYPE.SCALINGO_APP,
+  OPS_DEMANDE_TYPE.CLOUD_RESOURCES,
+  OPS_DEMANDE_TYPE.DNS_DOMAIN,
+  OPS_DEMANDE_TYPE.DNS_RECORD,
+  OPS_DEMANDE_TYPE.BREVO,
+  OPS_DEMANDE_TYPE.MATOMO,
+  OPS_DEMANDE_TYPE.SENTRY,
+  OPS_DEMANDE_TYPE.UPDOWN,
+  OPS_DEMANDE_TYPE.TALLY,
+  OPS_DEMANDE_TYPE.WELCOME_TO_THE_JUNGLE,
+  OPS_DEMANDE_TYPE.AUTRE,
+];
+
+// Per-demande conditional fields. Keys map to the zod schema and form inputs.
+export interface OpsField {
+  key: string;
+  label: string;
+  hint?: string;
+  type?: "text" | "email" | "textarea" | "select" | "startup";
+  // Options for the "select" type (rendered as radio buttons).
+  options?: string[];
+  // Default-checked option for the "select" type.
+  defaultValue?: string;
+  required?: boolean;
+  // Show a warning message above the field as soon as the user types
+  // (e.g. remind them to check the spelling for a free-text link).
+  warnOnInput?: string;
+}
+
+export type OpsFieldKey =
+  | "nomApp"
+  | "zoneScalingo"
+  | "emailCollaborateur"
+  | "handleOvh"
+  | "zoneDns"
+  | "urlSite"
+  | "emailAssocier"
+  | "urlSurveiller"
+  | "emailsNotifier"
+  | "startupId"
+  | "siteName"
+  | "projetRattachement"
+  | "nomWorkspace"
+  | "commentaires";
+
+export const OPS_FIELDS: Record<OpsFieldKey, OpsField> = {
+  nomApp: { key: "nomApp", label: "Nom de l'app à créer", required: true },
+  zoneScalingo: {
+    key: "zoneScalingo",
+    label: "Zone Scalingo",
+    hint: "osc-secnum-fr1 est recommandé (zone SecNumCloud, plus sécurisée). Choisis osc-fr1 uniquement si tu es en dev/preprod et n'exploite pas de données sensibles.",
+    type: "select",
+    options: ["osc-secnum-fr1", "osc-fr1"],
+    defaultValue: "osc-secnum-fr1",
+    required: true,
+  },
+  emailCollaborateur: {
+    key: "emailCollaborateur",
+    label: "Email à indiquer en collaborateur",
+    type: "email",
+    required: true,
+  },
+  handleOvh: {
+    key: "handleOvh",
+    label: "Handle OVH à qui déléguer",
+    hint: "ex: xy4234234-ovh",
+    required: true,
+  },
+  zoneDns: {
+    key: "zoneDns",
+    label: "Zone DNS à créer",
+    hint: "ex: startup.beta.gouv.fr",
+    required: true,
+  },
+  urlSite: { key: "urlSite", label: "URL du site", required: true },
+  emailAssocier: {
+    key: "emailAssocier",
+    label: "Email à associer",
+    type: "email",
+    required: true,
+  },
+  urlSurveiller: {
+    key: "urlSurveiller",
+    label: "URL à surveiller",
+    required: true,
+  },
+  emailsNotifier: {
+    key: "emailsNotifier",
+    label: "Emails à notifier",
+    type: "textarea",
+    required: true,
+  },
+  startupId: {
+    key: "startupId",
+    label: "Produit concerné",
+    hint: "Sélectionne le produit (startup) : sert à créer/rattacher l'équipe Sentry ou le site Matomo.",
+    type: "startup",
+    required: true,
+  },
+  siteName: {
+    key: "siteName",
+    label: "Nom du site (optionnel)",
+    hint: "Laisse vide pour utiliser l'URL comme nom.",
+    required: false,
+  },
+  projetRattachement: {
+    key: "projetRattachement",
+    label: "Projet à relier (optionnel)",
+    hint: "Nom du produit/startup auquel rattacher cette app.",
+    required: false,
+    warnOnInput:
+      "Vérifie bien l'orthographe du projet : il doit correspondre exactement au bon produit pour être relié.",
+  },
+  nomWorkspace: {
+    key: "nomWorkspace",
+    label: "Nom du workspace",
+    hint: "Nom du workspace Tally à créer.",
+    required: true,
+  },
+  commentaires: {
+    key: "commentaires",
+    label: "Commentaires",
+    type: "textarea",
+    required: false,
+  },
+};
+
+// Which fields to show (and require) per demande type.
+export const OPS_DEMANDE_FIELDS: Record<OPS_DEMANDE_TYPE, OpsFieldKey[]> = {
+  [OPS_DEMANDE_TYPE.SCALINGO_APP]: [
+    "nomApp",
+    "zoneScalingo",
+    "emailCollaborateur",
+    "projetRattachement",
+    "commentaires",
+  ],
+  [OPS_DEMANDE_TYPE.CLOUD_RESOURCES]: ["commentaires"],
+  [OPS_DEMANDE_TYPE.DNS_DOMAIN]: ["handleOvh", "zoneDns", "commentaires"],
+  [OPS_DEMANDE_TYPE.DNS_RECORD]: ["commentaires"],
+  [OPS_DEMANDE_TYPE.BREVO]: ["startupId", "emailAssocier", "commentaires"],
+  [OPS_DEMANDE_TYPE.MATOMO]: [
+    "startupId",
+    "urlSite",
+    "siteName",
+    "commentaires",
+  ],
+  [OPS_DEMANDE_TYPE.SENTRY]: ["startupId", "emailAssocier", "commentaires"],
+  [OPS_DEMANDE_TYPE.UPDOWN]: [
+    "urlSurveiller",
+    "emailsNotifier",
+    "commentaires",
+  ],
+  [OPS_DEMANDE_TYPE.TALLY]: ["nomWorkspace", "commentaires"],
+  [OPS_DEMANDE_TYPE.WELCOME_TO_THE_JUNGLE]: ["emailAssocier", "commentaires"],
+  [OPS_DEMANDE_TYPE.SSL_CERTIGNA]: ["commentaires"],
+  [OPS_DEMANDE_TYPE.MAILING_LIST]: ["commentaires"],
+  [OPS_DEMANDE_TYPE.AUTRE]: ["commentaires"],
+};
+
+// Demandes where the free-form "commentaires" is mandatory (it is the only
+// meaningful input for them).
+export const OPS_DEMANDE_COMMENT_REQUIRED: OPS_DEMANDE_TYPE[] = [
+  OPS_DEMANDE_TYPE.CLOUD_RESOURCES,
+  OPS_DEMANDE_TYPE.DNS_RECORD,
+];
+
+export enum OPS_STATUT {
+  A_TRAITER = "À traiter",
+  EN_COURS = "En cours",
+  TRAITE = "Traité",
+}
+
+export const OPS_STATUT_CHOICES: OPS_STATUT[] = [
+  OPS_STATUT.A_TRAITER,
+  OPS_STATUT.EN_COURS,
+  OPS_STATUT.TRAITE,
+];
+
+// Grist column ids for the OPS table. Keep in sync with the setup script
+// (src/scripts/setup-grist-ops-table.ts).
+export const GRIST_OPS_COLUMNS = {
+  date: "Date",
+  tchapId: "Tchap",
+  email: "Email",
+  demande: "Demande",
+  projet: "Projet",
+  demandeLibre: "Demande_libre",
+  notes: "Notes",
+  prenomNom: "Prenom_Nom",
+  statut: "Statut",
+  // Structured fields used by the n8n automations (Sentry / Matomo).
+  userUuid: "User_uuid",
+  username: "Username",
+  startupId: "Startup_id",
+  startupName: "Startup_name",
+  teamSlug: "Team_slug",
+  siteUrl: "Site_url",
+  siteType: "Site_type",
+  siteName: "Site_name",
+  projetRattachement: "Projet_rattachement",
+  // One dedicated column per demande-specific field (no more free-form
+  // grouping in "Demande_libre", which was painful to split downstream).
+  nomApp: "Nom_app",
+  zoneScalingo: "Zone_scalingo",
+  emailCollaborateur: "Email_collaborateur",
+  handleOvh: "Handle_ovh",
+  zoneDns: "Zone_dns",
+  emailAssocier: "Email_associer",
+  urlSurveiller: "Url_surveiller",
+  emailsNotifier: "Emails_notifier",
+  nomWorkspace: "Nom_workspace",
+  // Incubateur du produit sélectionné (dérivé server-side du startupId).
+  incubateur: "Incubateur",
+} as const;
+
+// Maps every form field key to its own dedicated Grist column. Each field gets
+// its own cell so downstream (n8n) never has to parse a concatenated string.
+export const OPS_FIELD_TO_GRIST_COLUMN: Record<OpsFieldKey, string> = {
+  nomApp: GRIST_OPS_COLUMNS.nomApp,
+  zoneScalingo: GRIST_OPS_COLUMNS.zoneScalingo,
+  emailCollaborateur: GRIST_OPS_COLUMNS.emailCollaborateur,
+  handleOvh: GRIST_OPS_COLUMNS.handleOvh,
+  zoneDns: GRIST_OPS_COLUMNS.zoneDns,
+  urlSite: GRIST_OPS_COLUMNS.siteUrl,
+  emailAssocier: GRIST_OPS_COLUMNS.emailAssocier,
+  urlSurveiller: GRIST_OPS_COLUMNS.urlSurveiller,
+  emailsNotifier: GRIST_OPS_COLUMNS.emailsNotifier,
+  startupId: GRIST_OPS_COLUMNS.startupId,
+  siteName: GRIST_OPS_COLUMNS.siteName,
+  projetRattachement: GRIST_OPS_COLUMNS.projetRattachement,
+  nomWorkspace: GRIST_OPS_COLUMNS.nomWorkspace,
+  commentaires: GRIST_OPS_COLUMNS.notes,
+};

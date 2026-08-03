@@ -1,17 +1,6 @@
 import { z } from "zod";
 
 import {
-  EventMatomoAccountPayloadSchema,
-  EventSentryAccountCreatedPayload,
-  EventSentryAccountRequestedPayload,
-  EventSentryAccountUpdatedPayload,
-  EventSentryAccountUpdateRequestedPayload,
-  EventServiceAccountDeletedPayload,
-  EventSentryCreateTeamPayload,
-  EventSentryCreateTeamRequestedTeamPayload,
-  EventSentryAccountUpdateFailedUserDoesNotExistPayload,
-} from "./serviceActionEvent";
-import {
   createMemberSchema,
   memberInfoUpdateSchema,
   memberValidateInfoSchema,
@@ -401,16 +390,7 @@ export type EventPayloads =
   | z.infer<typeof EventMemberUnblockEmailPayload>
   | z.infer<typeof EventOrganizationCreatedPayload>
   | z.infer<typeof EventOrganizationUpdatedPayload>
-  | z.infer<typeof EventServiceAccountDeletedPayload>
   | z.infer<typeof EventMemberEmailExpiredPayload>
-  | z.infer<typeof EventSentryAccountRequestedPayload>
-  | z.infer<typeof EventSentryAccountCreatedPayload>
-  | z.infer<typeof EventSentryAccountUpdateRequestedPayload>
-  | z.infer<typeof EventSentryAccountUpdatedPayload>
-  | z.infer<typeof EventSentryCreateTeamPayload>
-  | z.infer<typeof EventSentryCreateTeamRequestedTeamPayload>
-  | z.infer<typeof EventSentryAccountUpdateFailedUserDoesNotExistPayload>
-  | z.infer<typeof EventMatomoAccountPayloadSchema>
   | z.infer<typeof EventMemberCreatedPayload>
   | z.infer<typeof EventMemberValidatedPayload>
   | z.infer<typeof EventMemberVerifiedPayload>

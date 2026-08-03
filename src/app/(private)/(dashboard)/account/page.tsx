@@ -51,8 +51,7 @@ export default async function Page() {
       avatar={userInformations.avatar} // todo
       changes={userInformations.changes}
       userInfos={userInformations.baseInfo}
-      matomoInfo={userInformations.matomoInfo}
-      sentryInfo={userInformations.sentryInfo}
+      matrixId={userInformations.matrixId}
       startups={userInformations.startups}
       canEditMember={true}
       canValidateMember={false}

@@ -15,6 +15,7 @@ import { saveImage } from "@/utils/file";
 interface StartupInfoCreateProps {
   incubatorOptions: Option[];
   sponsorOptions: Option[];
+  memberOptions: Option[];
 }
 
 /* Pure component */
@@ -93,6 +94,7 @@ export const StartupInfoCreate = (props: StartupInfoCreateProps) => {
           save={save}
           incubatorOptions={props.incubatorOptions}
           sponsorOptions={props.sponsorOptions}
+          memberOptions={props.memberOptions}
         />
         <br />
         <br />

@@ -15,7 +15,6 @@ import {
   startupChangeToModel,
   startupToModel,
 } from "@/models/mapper";
-import { sentryTeamToModel } from "@/models/mapper/sentryMapper";
 import { getServerSession } from "next-auth";
 import { authOptions } from "@/utils/authoptions";
 import { canEditStartup } from "@/lib/canEditStartup";
@@ -95,18 +94,7 @@ export default async function Page({ params }: Props) {
     ])
     .where("startups_organizations.startup_id", "=", dbSe.uuid)
     .execute();
-  const sentryTeams = (
-    await db
-      .selectFrom("sentry_teams")
-      .where("startup_id", "=", dbSe.uuid)
-      .selectAll()
-      .execute()
-  ).map(sentryTeamToModel);
-  const matomoSites = await db
-    .selectFrom("matomo_sites")
-    .where("startup_id", "=", dbSe.uuid)
-    .selectAll()
-    .execute();
+
   const startup = startupToModel(dbSe);
   const startupMembers = (await getUsersByStartup(dbSe.uuid)).map((user) => {
     return memberBaseInfoToModel(user);
@@ -124,7 +112,8 @@ export default async function Page({ params }: Props) {
   // for the "add member select"
   const allMembers = await getActiveUsers()
     .clearSelect()
-    .select(["username", "fullname", "id"])
+    .select(["users.username", "users.fullname", "users.uuid"])
+    .groupBy(["users.username", "users.fullname", "users.uuid"])
     .execute();
 
   const canEditMembers = await canEditStartup(session, dbSe.uuid);
@@ -142,8 +131,6 @@ export default async function Page({ params }: Props) {
         startupInfos={startup}
         incubator={incubator}
         sponsors={sponsors}
-        sentryTeams={sentryTeams}
-        matomoSites={matomoSites}
         members={startupMembers}
         phases={phases}
         files={files}

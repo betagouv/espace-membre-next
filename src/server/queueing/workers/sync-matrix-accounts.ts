@@ -15,6 +15,14 @@ async function getCandidateEmails(user: UserRow): Promise<string[]> {
   const candidates: string[] = [];
   if (user.primary_email && (await isPublicServiceEmail(user.primary_email))) {
     candidates.push(user.primary_email);
+    if (
+      user.primary_email.endsWith("@beta.gouv.fr") &&
+      !user.primary_email.includes(".ext@beta")
+    ) {
+      candidates.push(
+        user.primary_email.replace("@beta.gouv.fr", ".ext@beta.gouv.fr"),
+      );
+    }
   }
   if (
     user.secondary_email &&

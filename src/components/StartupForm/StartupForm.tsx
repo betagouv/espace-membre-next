@@ -20,6 +20,7 @@ import SponsorBlock from "./SponsorBlock";
 import { TechnoEditor } from "./TechnoEditor";
 import { ThematiquesEditor } from "./ThematiquesEditor";
 import { UsertypesEditor } from "./UsertypesEditor";
+import AutoComplete from "../AutoComplete";
 import { ClientOnly } from "../ClientOnly";
 import UploadForm from "../UploadForm/UploadForm";
 import { ActionResponse } from "@/@types/serverAction";
@@ -87,6 +88,7 @@ export interface StartupFormProps {
   startupEvents?: eventSchemaType[];
   incubatorOptions: Option[];
   sponsorOptions: Option[];
+  memberOptions: Option[];
   save: (data: startupInfoUpdateSchemaType) => Promise<ActionResponse>;
 }
 
@@ -466,6 +468,87 @@ export function StartupForm(props: StartupFormProps) {
               </option>
             ))}
           </Select>
+          <div className="fr-select-group">
+            <label className="fr-label">
+              {
+                startupInfoUpdateSchema.shape.startup.shape.contact_dinum
+                  .description
+              }
+              <span className="fr-hint-text">
+                Responsable DINUM référent pour ce produit
+              </span>
+            </label>
+            <AutoComplete
+              options={props.memberOptions.map((m) => ({
+                id: m.value,
+                label: m.label,
+              }))}
+              autoComplete={true}
+              onSelect={(selected) => {
+                setValue(
+                  "startup.contact_dinum",
+                  (selected as any)?.id || null,
+                  { shouldDirty: true },
+                );
+              }}
+              defaultValue={
+                props.startup?.contact_dinum
+                  ? (props.memberOptions
+                      .filter((m) => m.value === props.startup?.contact_dinum)
+                      .map((m) => ({ id: m.value, label: m.label }))[0] ?? null)
+                  : null
+              }
+              optionKeyField="id"
+              multiple={false}
+              placeholder="Sélectionner un contact"
+            />
+            {errors?.startup?.contact_dinum && (
+              <p className="fr-error-text">
+                {errors.startup.contact_dinum.message as string}
+              </p>
+            )}
+          </div>
+          <div className="fr-select-group">
+            <label className="fr-label">
+              {
+                startupInfoUpdateSchema.shape.startup.shape.contact_incubator
+                  .description
+              }
+              <span className="fr-hint-text">
+                Responsable incubateur référent pour ce produit
+              </span>
+            </label>
+            <AutoComplete
+              options={props.memberOptions.map((m) => ({
+                id: m.value,
+                label: m.label,
+              }))}
+              onSelect={(selected) => {
+                setValue(
+                  "startup.contact_incubator",
+                  (selected as any)?.id || null,
+                  { shouldDirty: true },
+                );
+              }}
+              defaultValue={
+                props.startup?.contact_incubator
+                  ? (props.memberOptions
+                      .filter(
+                        (m) => m.value === props.startup?.contact_incubator,
+                      )
+                      .map((m) => ({ id: m.value, label: m.label }))[0] ?? null)
+                  : null
+              }
+              optionKeyField="id"
+              multiple={false}
+              placeholder="Sélectionner un contact"
+            />
+            {errors?.startup?.contact_incubator && (
+              <p className="fr-error-text">
+                {errors.startup.contact_incubator.message as string}
+              </p>
+            )}
+          </div>
           <SponsorBlock
             sponsors={sponsors}
             allSponsors={allSponsors}

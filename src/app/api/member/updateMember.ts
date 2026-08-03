@@ -64,7 +64,6 @@ export async function updateMember(
           bio: memberData.bio,
           gender: memberData.gender,
           average_nb_of_days: memberData.average_nb_of_days,
-          tjm: memberData.tjm,
           legal_status: memberData.legal_status,
           workplace_insee_code: memberData.workplace_insee_code,
           osm_city: memberData.osm_city,
