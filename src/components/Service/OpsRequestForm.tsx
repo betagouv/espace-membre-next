@@ -9,7 +9,6 @@ import { Button } from "@codegouvfr/react-dsfr/Button";
 import Input from "@codegouvfr/react-dsfr/Input";
 import { RadioButtons } from "@codegouvfr/react-dsfr/RadioButtons";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { useRouter } from "next/navigation";
 import { useForm } from "react-hook-form";
 
 import SESelect, { StartupType } from "@/components/SESelect";
@@ -25,6 +24,16 @@ import {
   OPS_DEMANDE_TYPE,
   OPS_FIELDS,
 } from "@/models/ops";
+
+// Doc de l'embarquement dev : prérequis obligatoire avant toute commande de
+// ressources.
+const EMBARQUEMENT_DEV_DOC_URL =
+  "https://doc.incubateur.net/communaute/travailler-a-beta-gouv/embarquement-dev";
+
+// Canal Tchap où l'équipe ops traite les demandes : lien de suivi donné à la
+// soumission du formulaire.
+const OPS_TCHAP_CHANNEL_URL =
+  "https://tchap.gouv.fr/#/room/!VxFWdbcSlumKPvpVRP:agent.dinum.tchap.gouv.fr";
 
 interface OpsRequestFormProps {
   defaultValues?: Partial<opsRequestSchemaType>;
@@ -46,7 +55,6 @@ export const OpsRequestForm = ({
     mode: "onChange",
     defaultValues,
   });
-  const router = useRouter();
   const [isSaving, setIsSaving] = React.useState(false);
   const [alertMessage, setAlertMessage] =
     React.useState<AlertMessageType | null>();
@@ -64,13 +72,31 @@ export const OpsRequestForm = ({
       const res = await submitOpsRequest(data);
       if (res?.success) {
         setAlertMessage({
-          title: "Demande envoyée",
-          message:
-            "Ta demande d'OPS a bien été enregistrée. L'équipe ops va la traiter.",
+          title: "Demande prise en compte",
+          message: (
+            <>
+              Ta demande d&apos;OPS a bien été prise en compte. L&apos;équipe
+              ops va la traiter. Tu peux suivre son avancement sur le canal{" "}
+              <a
+                className={fr.cx(
+                  "fr-link",
+                  "fr-link--icon-right",
+                  "fr-icon-external-link-line",
+                )}
+                href={OPS_TCHAP_CHANNEL_URL}
+                target="_blank"
+                rel="noopener noreferrer"
+              >
+                Demandes-OPS
+              </a>{" "}
+              sur Tchap.
+            </>
+          ),
           type: "success",
         });
+        // Pas de redirection automatique : l'utilisateur doit avoir le temps de
+        // lire la confirmation et de cliquer sur le lien du canal de suivi.
         window.scrollTo({ top: 20, behavior: "smooth" });
-        setTimeout(() => router.push("/services"), 1500);
       } else {
         setAlertMessage({
           title: "Une erreur est survenue",
@@ -106,6 +132,33 @@ export const OpsRequestForm = ({
           description={alertMessage.message}
         />
       )}
+      <Alert
+        className="fr-mb-4v"
+        severity="warning"
+        small
+        description={
+          <>
+            Attention, pour pouvoir commander des ressources, tu dois{" "}
+            <strong>obligatoirement</strong> avoir suivi{" "}
+            <a
+              className={fr.cx(
+                "fr-link",
+                "fr-link--icon-right",
+                "fr-icon-external-link-line",
+              )}
+              href={EMBARQUEMENT_DEV_DOC_URL}
+              target="_blank"
+              rel="noopener noreferrer"
+            >
+              l&apos;embarquement dev
+            </a>
+            . Si ce n&apos;est pas le cas, merci de prendre connaissance de la
+            doc indiquée et de t&apos;inscrire à la prochaine session avant de
+            faire ta demande. Ton produit doit également avoir sa fiche produit
+            publiée pour bénéficier de ces services.
+          </>
+        }
+      />
       <p className="fr-text--sm">
         Si votre type de demande n'apparaît pas dans les suggestions, posez
         directement vos questions sur le canal ~incubateur-ops.
