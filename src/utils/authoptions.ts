@@ -107,11 +107,7 @@ export const authOptions: NextAuthOptions = {
                     .select("user_id")
                     .distinct()
                     .where(({ eb }) =>
-                      eb
-                        .or([
-                          eb("email", "ilike", userinfo.email),
-                          eb("destination", "ilike", userinfo.email),
-                        ])
+                      eb("email", "ilike", userinfo.email)
                         .and("user_id", "is not", null),
                     ),
                 ),
