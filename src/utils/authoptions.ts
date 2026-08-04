@@ -98,7 +98,7 @@ export const authOptions: NextAuthOptions = {
               eb.or([
                 eb("primary_email", "ilike", userinfo.email),
                 eb("secondary_email", "ilike", userinfo.email),
-                // also check if user if from one of existing dinum_emails account
+                // also check if user owns one of existing dinum_emails account
                 eb(
                   "users.uuid",
                   "in",
@@ -106,7 +106,10 @@ export const authOptions: NextAuthOptions = {
                     .selectFrom("dinum_emails")
                     .select("user_id")
                     .distinct()
-                    .where("email", "ilike", userinfo.email),
+                    .where(({ eb }) =>
+                      eb("email", "ilike", userinfo.email)
+                        .and("user_id", "is not", null),
+                    ),
                 ),
               ]),
             )
@@ -164,7 +167,7 @@ export const authOptions: NextAuthOptions = {
     },
   },
   callbacks: {
-    async signIn({ user }) {
+    async signIn({ user, account }) {
       if (user.id) {
         // todo : this can be done in the call where user is fetch from db
         const dbUser = await getUserInfos({
@@ -183,6 +186,20 @@ export const authOptions: NextAuthOptions = {
           console.log(`Cannot login expired member ${user.id}`);
           throw new Error("ExpiredMember");
         }
+        const loginProvider = account?.provider === "proconnect" ? "proconnect" : "email";
+        await db
+          .insertInto("user_events")
+          .values({
+            field_id: `login.${loginProvider}`,
+            user_id: dbUser.uuid,
+            date: new Date(),
+          })
+          .onConflict((oc) =>
+            oc.column("field_id").column("user_id").doUpdateSet({
+              date: new Date(),
+            }),
+          )
+          .execute();
         return true; // if the email exists in the User collection, continue process
       } else {
         return false;

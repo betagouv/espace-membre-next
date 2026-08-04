@@ -7,6 +7,7 @@ import { getArrayFromEnv } from "./lib/env";
 interface UserJwtPayload {
   jti: string;
   iat: number;
+  exp: number;
 }
 
 export async function verifyAuth(req: NextRequest) {
