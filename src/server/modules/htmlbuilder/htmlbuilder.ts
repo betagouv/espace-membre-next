@@ -49,7 +49,7 @@ import { BusinessError } from "@/utils/error";
 
 const TEMPLATES_BY_TYPE: Record<
   EmailProps["type"],
-  string | null | ((params: any) => JSX.Element)
+  string | null | ((params: any) => React.JSX.Element)
 > = {
   EMAIL_LOGIN: (params: EmailLogin["variables"]) => LoginEmail(params),
   EMAIL_CREATED_DIMAIL: (params: EmailCreatedDimailType["variables"]) =>

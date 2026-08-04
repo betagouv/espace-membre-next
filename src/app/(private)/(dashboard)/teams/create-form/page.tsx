@@ -9,7 +9,7 @@ export const metadata: Metadata = {
   title: `${routeTitles.teamCreate()} / Espace Membre`,
 };
 
-export default async function Page(props) {
+export default async function Page() {
   const incubators = await db.selectFrom("incubators").selectAll().execute(); //await betagouv.sponsors();
   const members = (await getAllUsersInfo()).map((member) =>
     memberBaseInfoToModel(member),
@@ -26,7 +26,6 @@ export default async function Page(props) {
             label: team.title,
           };
         })}
-        {...props}
       />
     </>
   );

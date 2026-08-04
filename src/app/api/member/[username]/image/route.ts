@@ -4,10 +4,13 @@ import s3 from "@/lib/s3";
 
 export const revalidate = 3600; // 1 hour
 
-export const GET = async (
-  _: Request,
-  { params: { username } }: { params: { username: string } },
-) => {
+export const GET = async (_: Request, props: { params: Promise<{ username: string }> }) => {
+  const params = await props.params;
+
+  const {
+    username
+  } = params;
+
   if (!username) {
     return Response.json({});
   }

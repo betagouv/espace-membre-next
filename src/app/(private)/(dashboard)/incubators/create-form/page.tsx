@@ -8,7 +8,7 @@ export const metadata: Metadata = {
   title: `${routeTitles.incubatorCreate()} / Espace Membre`,
 };
 
-export default async function Page(props) {
+export default async function Page() {
   const sponsors = await db.selectFrom("organizations").selectAll().execute(); //await betagouv.sponsors();
   const startups = await db.selectFrom("startups").selectAll().execute(); //await betagouv.sponsors();
 
@@ -28,7 +28,7 @@ export default async function Page(props) {
             label: incubator.name,
           };
         })}
-        {...props}
+
       />
     </>
   );

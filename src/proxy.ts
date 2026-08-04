@@ -63,7 +63,7 @@ function getCorsHeaders(req: NextRequest): Record<string, string> {
   };
 }
 
-export async function middleware(req: NextRequest) {
+export async function proxy(req: NextRequest) {
   // control protected routes
   if (req.nextUrl.pathname.startsWith("/api/protected/")) {
     const headers = getCorsHeaders(req);
@@ -119,7 +119,6 @@ export async function middleware(req: NextRequest) {
   }
 }
 
-// See "Matching Paths" below to learn more
 export const config = {
   matcher: [
     /*

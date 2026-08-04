@@ -5,10 +5,13 @@ import { getStartup } from "@/lib/kysely/queries";
 import { getIncubator } from "@/lib/kysely/queries/incubators";
 import { incubatorToModel, startupToModel } from "@/models/mapper";
 
-export const GET = async (
-  _: NextRequest,
-  { params: { startupId } }: { params: { startupId: string } },
-) => {
+export const GET = async (_: NextRequest, props: { params: Promise<{ startupId: string }> }) => {
+  const params = await props.params;
+
+  const {
+    startupId
+  } = params;
+
   const dbStartup = await getStartup({ ghid: startupId });
 
   if (!dbStartup) {

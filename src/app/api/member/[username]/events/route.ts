@@ -6,14 +6,9 @@ import { AuthorizationError, withHttpErrorHandling } from "@/utils/error";
 
 async function getEventListByUsernameHanlder(
   req: Request,
-  {
-    params: { username },
-  }: {
-    params: {
-      username: string;
-    };
-  },
+  { params }: { params: Promise<{ username: string }> },
 ) {
+  const { username } = await params;
   const session = await getServerSession(authOptions);
 
   if (!session || !session.user.id) {

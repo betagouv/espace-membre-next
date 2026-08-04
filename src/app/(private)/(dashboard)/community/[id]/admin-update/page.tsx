@@ -10,11 +10,17 @@ import { getAvatarUrl } from "@/lib/s3";
 import { memberChangeToModel, userInfosToModel } from "@/models/mapper";
 import { authOptions } from "@/utils/authoptions";
 
-export const generateMetadata = async ({
-  params: { id },
-}: {
-  params: { id: string };
-}) => {
+export const generateMetadata = async (
+  props: {
+    params: Promise<{ id: string }>;
+  }
+) => {
+  const params = await props.params;
+
+  const {
+    id
+  } = params;
+
   const dbData = await getUserInfos({ username: id });
 
   return {
@@ -22,11 +28,17 @@ export const generateMetadata = async ({
   };
 };
 
-export default async function Page({
-  params: { id },
-}: {
-  params: { id: string };
-}) {
+export default async function Page(
+  props0: {
+    params: Promise<{ id: string }>;
+  }
+) {
+  const params = await props0.params;
+
+  const {
+    id
+  } = params;
+
   const session = await getServerSession(authOptions);
 
   if (!session) {

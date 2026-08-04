@@ -7,10 +7,13 @@ import { getAvatarUrl } from "@/lib/s3";
 import { memberBaseInfoToModel } from "@/models/mapper";
 import { isUserActive } from "@/utils/member";
 
-export async function GET(
-  _: Request,
-  { params: { username } }: { params: { username: string } },
-) {
+export async function GET(_: Request, props: { params: Promise<{ username: string }> }) {
+  const params = await props.params;
+
+  const {
+    username
+  } = params;
+
   const dbUser = await getUserBasicInfo({ username });
   if (!dbUser) {
     return Response.json(

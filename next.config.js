@@ -17,10 +17,6 @@ const cspHeader = `
 
 /** @type {import('next').NextConfig} */
 const nextConfig = {
-  eslint: {
-    dirs: ["src", "__tests__"],
-    ignoreDuringBuilds: true,
-  },
   productionBrowserSourceMaps: true,
   async headers() {
     return [
@@ -43,7 +39,6 @@ const nextConfig = {
   deploymentId: process.env.SOURCE_VERSION,
   async redirects() {
     return [
-      // Basic redirect
       {
         source: "/",
         destination: "/login",
@@ -51,24 +46,16 @@ const nextConfig = {
       },
     ];
   },
+  serverExternalPackages: [
+    "knex",
+    "sib-api-v3-sdk",
+    "mjml",
+    "@luma-team/mjml-react",
+  ],
   experimental: {
-    instrumentationHook: true,
-    serverComponentsExternalPackages: [
-      "knex",
-      "sib-api-v3-sdk",
-      "mjml",
-      "@luma-team/mjml-react",
-    ],
     serverActions: {
       bodySizeLimit: "10mb",
     },
-    // This is experimental but can
-    // be enabled to allow parallel threads
-    // with nextjs automatic static generation
-    // during prerendering it access the db and in review app in breaks because there is several connexion
-    // we could disable prerendering but it is not possible to disable it only at build time
-    workerThreads: false,
-    cpus: 1,
   },
   rewrites: async () => [
     {
@@ -76,11 +63,8 @@ const nextConfig = {
       destination: "/api/member/:username/image",
     },
   ],
-  // @todo upgrade to nextjs 15 to use
-  // expireTime: 0,
   webpack: (config, { isServer }) => {
     if (!isServer) {
-      // don't resolve 'fs' module on the client to prevent this error on build --> Error: Can't resolve 'fs'
       config.resolve.fallback = {
         fs: false,
       };
@@ -93,6 +77,8 @@ const nextConfig = {
   },
 };
 
+module.exports = nextConfig;
+
 const uploadToSentry =
   process.env.NODE_ENV === "production" &&
   process.env.SENTRY_RELEASE_UPLOAD === "true";
@@ -103,26 +89,22 @@ const uploadToSentry =
 const sentryWebpackPluginOptions = {
   debug: true,
   telemetry: false,
-  //silent: false,
   sourcemaps: {
     deleteSourcemapsAfterUpload: true,
     disable: !uploadToSentry,
   },
   release: {
-    name: process.env.SOURCE_VERSION, // https://doc.scalingo.com/platform/app/environment#build-environment-variables
+    name: process.env.SOURCE_VERSION,
     inject: uploadToSentry,
   },
   org: "betagouv",
   project: "espace-membre",
-  widenClientFileUpload: uploadToSentry, // https://sentry.zendesk.com/hc/en-us/articles/28813179249691-Frames-from-static-chunks-folder-are-not-source-mapped
+  widenClientFileUpload: uploadToSentry,
   authToken: process.env.SENTRY_AUTH_TOKEN,
   url: "https://sentry.incubateur.net",
   errorHandler: (err, invokeErr, compilation) => {
     console.error("Sentry CLI Plugin: " + err.message);
   },
-  // For all available options, see:
-  // https://www.npmjs.com/package/@sentry/webpack-plugin#Options
 };
 
-// Make sure adding Sentry options is the last code to run before exporting
 module.exports = withSentryConfig(nextConfig, sentryWebpackPluginOptions);

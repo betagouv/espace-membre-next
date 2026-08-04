@@ -6,7 +6,6 @@ import Button from "@codegouvfr/react-dsfr/Button";
 import Table from "@codegouvfr/react-dsfr/Table";
 import Tag from "@codegouvfr/react-dsfr/Tag";
 import { format } from "date-fns";
-import { revalidatePath } from "next/cache";
 import Link from "next/link";
 
 import { deleteFile } from "@/app/api/startups/files/delete";

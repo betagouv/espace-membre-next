@@ -1,12 +1,10 @@
 "use client";
 
-import { PropsWithChildren } from "react";
-
 import Alert from "@codegouvfr/react-dsfr/Alert";
 
 import frontConfig from "@/frontConfig";
 
-export default function Layout(props: PropsWithChildren) {
+export default function Layout({ children }: { children: React.ReactNode }) {
   return (
     <div className="fr-grid-row fr-grid-row-gutters fr-grid-row--center ">
       {!!frontConfig.NEXT_PUBLIC_ALERT_MESSAGE_PUBLIC && (
@@ -18,7 +16,7 @@ export default function Layout(props: PropsWithChildren) {
           title={frontConfig.NEXT_PUBLIC_ALERT_MESSAGE_PUBLIC.title}
         />
       )}
-      {props.children}
+      {children}
     </div>
   );
 }

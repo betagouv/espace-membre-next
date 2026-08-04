@@ -23,7 +23,7 @@ export const metadata: Metadata = {
   title: `${routeTitles.dashboard()} / Espace Membre`,
 };
 
-export default async function Page(props) {
+export default async function Page() {
   const session = await getServerSession(authOptions);
   if (!session) {
     return redirect("/login");
@@ -43,7 +43,7 @@ export default async function Page(props) {
 
   const lastestProducts = await getLatestsStartups();
   const lastestMembers = await getLatestsMembers();
-  const cookieStore = cookies();
+  const cookieStore = await cookies();
   const surveyCookie = cookieStore.get(SURVEY_BOX_COOKIE_NAME);
   const surveyCookieValue = (surveyCookie && surveyCookie.value) || null;
 
@@ -69,7 +69,6 @@ export default async function Page(props) {
   }
   return (
     <DashboardPage
-      {...props}
       surveyCookieValue={surveyCookieValue}
       latestProducts={lastestProducts}
       latestMembers={lastestMembers}

@@ -19,10 +19,11 @@ import { authOptions } from "@/utils/authoptions";
 import { routeTitles } from "@/utils/routes/routeTitles";
 
 type Props = {
-  params: { id: string };
+  params: Promise<{ id: string }>;
 };
 
-export async function generateMetadata({ params }: Props): Promise<Metadata> {
+export async function generateMetadata(props: Props): Promise<Metadata> {
+  const params = await props.params;
   // read route params
   const id = params.id;
   const team = await getTeam(id);
@@ -40,7 +41,7 @@ export default async function Page(props: Props) {
   }
 
   //todo
-  const uuid = props.params.id;
+  const uuid = (await props.params).id;
   const dbTeam = await getTeam(uuid);
 
   if (!dbTeam) {

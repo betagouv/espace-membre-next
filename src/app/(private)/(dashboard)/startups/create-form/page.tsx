@@ -10,7 +10,7 @@ export const metadata: Metadata = {
   title: `${routeTitles.startupCreate()} / Espace Membre`,
 };
 
-export default async function Page(props) {
+export default async function Page() {
   const incubators = await db.selectFrom("incubators").selectAll().execute(); //await betagouv.incubators();
   const sponsors = await db.selectFrom("organizations").selectAll().execute(); //await betagouv.sponsors();
   const activeUsers = await getActiveUsers()
@@ -39,7 +39,7 @@ export default async function Page(props) {
           value: u.uuid,
           label: u.fullname,
         }))}
-        {...props}
+
       />
     </>
   );
