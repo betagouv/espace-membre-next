@@ -13,7 +13,8 @@ export const getToken = (req) => {
 };
 
 export const getJwtTokenForUser = (token) => {
-  return jwt.sign(token, config.secret, {
+  const { exp, iat, jti, ...payload } = token;
+  return jwt.sign(payload, config.secret, {
     algorithm: "HS512",
     expiresIn: "7 days",
   });

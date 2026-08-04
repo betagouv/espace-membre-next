@@ -165,7 +165,7 @@ export const LoginPage = function () {
       }
     } catch (e) {
       setIsSaving(false);
-
+      setFormErrors(e instanceof Error ? e.message : String(e));
       console.log("error", e);
     }
   };
@@ -197,12 +197,7 @@ export const LoginPage = function () {
       <p className={fr.cx("fr-hr-or")} aria-hidden="true">
         ou
       </p>
-      <form
-        onSubmit={sendLogin}
-        method="POST"
-        id="login_form"
-        noValidate
-      >
+      <form onSubmit={sendLogin} method="POST" id="login_form" noValidate>
         <Accordion label="Se connecter par email" titleAs="h3">
           <Input
             hintText="Tu peux te connecter avec ton email en @beta.gouv.fr ou avec ton email secondaire."

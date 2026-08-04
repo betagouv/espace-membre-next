@@ -5,6 +5,7 @@ const validMemberFile = "./playwright-auth-valid.member.json";
 setup("authenticate as valid.member through magic link", async ({ page }) => {
   // fill login form
   await page.goto("/login");
+  await page.getByText("Se connecter par email").click();
   await page.getByLabel("Mon email").fill("valid.member@betagouv.ovh");
   await page.getByText("Recevoir le lien de connexion").click();
 
