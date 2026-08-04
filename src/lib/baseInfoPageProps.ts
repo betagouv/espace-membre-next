@@ -1,11 +1,32 @@
+import { z } from "zod";
+
 import { BaseInfoUpdateProps } from "@/components/BaseInfoUpdatePage/BaseInfoUpdate";
 import { getEventListByUsername } from "@/lib/events";
 import { getAllStartups } from "@/lib/kysely/queries";
 import { getUserInfos } from "@/lib/kysely/queries/users";
 import { getAvatarUrl } from "@/lib/s3";
 import { memberChangeToModel, userInfosToModel } from "@/models/mapper";
-import { memberInfoUpdateSchema } from "@/models/actions/member";
+import { memberSchema } from "@/models/member";
 import { redirect } from "next/navigation";
+
+const memberFormSchema = z.object({
+  fullname: memberSchema.shape.fullname,
+  role: memberSchema.shape.role,
+  link: memberSchema.shape.link,
+  avatar: memberSchema.shape.avatar,
+  github: memberSchema.shape.github,
+  competences: memberSchema.shape.competences,
+  teams: memberSchema.shape.teams,
+  missions: memberSchema.shape.missions,
+  domaine: memberSchema.shape.domaine,
+  bio: memberSchema.shape.bio,
+  memberType: memberSchema.shape.memberType,
+  gender: memberSchema.shape.gender,
+  average_nb_of_days: memberSchema.shape.average_nb_of_days,
+  legal_status: memberSchema.shape.legal_status,
+  workplace_insee_code: memberSchema.shape.workplace_insee_code,
+  osm_city: memberSchema.shape.osm_city,
+});
 
 export async function buildBaseInfoPageProps(
   username: string,
@@ -31,7 +52,7 @@ export async function buildBaseInfoPageProps(
     getAvatarUrl(username),
   ]);
 
-  const member = memberInfoUpdateSchema.shape.member.parse(userInfos);
+  const member = memberFormSchema.parse(userInfos);
 
   return {
     changes,
