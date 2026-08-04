@@ -12,7 +12,7 @@ rm -rf ./beta.gouv.fr || true
 git clone "https://$GITHUB_TOKEN@github.com/$GITHUB_REPOSITORY"
 
 # update beta.gouv local clone
-node ./dist/src/scripts/update-local-files
+npx tsx ./src/scripts/update-local-files
 
 cd beta.gouv.fr
 
