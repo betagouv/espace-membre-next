@@ -2,7 +2,6 @@ import axios from "axios";
 import { createCipheriv, createDecipheriv, randomBytes } from "crypto";
 import { compareAsc, startOfDay } from "date-fns";
 import _ from "lodash";
-import nodemailer from "nodemailer";
 
 import { getUserInfos } from "@/lib/kysely/queries/users";
 import { userInfosToModel } from "@/models/mapper";
@@ -43,47 +42,6 @@ export function decryptPassword(encryptedPassword) {
   let decrypted = decipher.update(encrypted, "hex", "utf8");
   decrypted += decipher.final("utf8");
   return decrypted;
-}
-
-const mailTransport = nodemailer.createTransport({
-  debug: process.env.MAIL_DEBUG === "true",
-  service: process.env.MAIL_SERVICE ? process.env.MAIL_SERVICE : null,
-  host: process.env.MAIL_SERVICE ? null : process.env.MAIL_HOST,
-  port: process.env.MAIL_SERVICE
-    ? null
-    : parseInt(process.env.MAIL_PORT || "25", 10),
-  ignoreTLS: process.env.MAIL_SERVICE
-    ? null
-    : process.env.MAIL_IGNORE_TLS === "true",
-  auth: {
-    user: process.env.MAIL_USER,
-    pass: process.env.MAIL_PASS,
-  },
-});
-
-export async function sendMail(
-  toEmail,
-  subject,
-  html,
-  extraParams = {},
-  attachments = [],
-) {
-  const mail = {
-    to: toEmail,
-    from: `Espace Membre BetaGouv <${config.senderEmail}>`,
-    subject,
-    html,
-    text: html.replace(/<(?:.|\n)*?>/gm, ""),
-    attachments,
-    headers: { "X-Mailjet-TrackOpen": "0", "X-Mailjet-TrackClick": "0" },
-    ...extraParams,
-  };
-
-  return new Promise((resolve, reject) => {
-    mailTransport.sendMail(mail, (error, info) =>
-      error ? reject(error) : resolve(info),
-    );
-  });
 }
 
 export function capitalizeWords(arr: string) {
