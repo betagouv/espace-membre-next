@@ -4,8 +4,8 @@ import * as nextAuth from "next-auth/next";
 import proxyquire from "proxyquire";
 import sinon from "sinon";
 
-import { createData, deleteData } from "./utils/fakeData.ts";
-import { testUsers } from "./utils/users-data.ts";
+import { createData, deleteData } from "./utils/fakeData";
+import { testUsers } from "./utils/users-data";
 import { db } from "@/lib/kysely";
 import { SponsorDomaineMinisteriel, SponsorType } from "@/models/sponsor";
 import { StartupPhase } from "@/models/startup";

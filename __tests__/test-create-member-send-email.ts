@@ -3,7 +3,7 @@ import PgBoss from "pg-boss";
 import proxyquire from "proxyquire";
 import sinon from "sinon";
 
-import { testUsers } from "./utils/users-data.ts";
+import { testUsers } from "./utils/users-data";
 import utils from "./utils";
 import { addEvent } from "@/lib/events";
 import { db } from "@/lib/kysely";

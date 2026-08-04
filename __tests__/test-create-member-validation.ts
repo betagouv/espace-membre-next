@@ -3,7 +3,7 @@ import { Selectable } from "kysely";
 import proxyquire from "proxyquire";
 import sinon from "sinon";
 
-import { testUsers } from "./utils/users-data.ts";
+import { testUsers } from "./utils/users-data";
 import utils from "./utils";
 import { Events, Users, Missions } from "@/@types/db";
 import { addEvent } from "@/lib/events";
