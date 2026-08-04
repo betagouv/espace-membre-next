@@ -3,12 +3,9 @@ import chaiHttp from "chai-http";
 import * as nextAuth from "next-auth/next";
 import sinon from "sinon";
 
-import utils from "./utils";
 import { createData, deleteData } from "./utils/fakeData";
 import { testUsers } from "./utils/users-data";
-import {
-  updateCommunicationEmail,
-} from "@/app/api/member/actions";
+import { updateCommunicationEmail } from "@/app/api/member/actions";
 import { db } from "@/lib/kysely";
 import { CommunicationEmailCode } from "@/models/member";
 
