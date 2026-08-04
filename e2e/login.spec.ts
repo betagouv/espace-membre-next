@@ -7,6 +7,7 @@ test("has title", async ({ page }) => {
 
 test("submit invalid login returns error message", async ({ page }) => {
   await page.goto("/");
+  await page.getByText("Se connecter par email").click();
   await page.getByLabel("Mon email").fill("pouet.pouet@betagouv.ovh");
   await page.getByText("Recevoir le lien de connexion").click();
   await page.waitForTimeout(2000);
@@ -20,6 +21,7 @@ test("submit invalid login returns error message", async ({ page }) => {
 
 test("submit expired login returns error message", async ({ page }) => {
   await page.goto("/");
+  await page.getByText("Se connecter par email").click();
   await page.getByLabel("Mon email").fill("expired.member@betagouv.ovh");
   await page.getByText("Recevoir le lien de connexion").click();
   await page.waitForTimeout(2000);
@@ -33,6 +35,7 @@ test("submit expired login returns error message", async ({ page }) => {
 
 test("submit mission-less login returns error message", async ({ page }) => {
   await page.goto("/");
+  await page.getByText("Se connecter par email").click();
   await page.getByLabel("Mon email").fill("empty.member@betagouv.ovh");
   await page.getByText("Recevoir le lien de connexion").click();
   await page.waitForTimeout(2000);
@@ -49,6 +52,7 @@ test("valid login sends magic link and show correct message", async ({
   browser,
 }) => {
   await page.goto("/");
+  await page.getByText("Se connecter par email").click();
   await page.getByLabel("Mon email").fill("valid.member@betagouv.ovh");
   await page.getByText("Recevoir le lien de connexion").click();
   await page.waitForTimeout(2000);
@@ -90,6 +94,7 @@ test("valid login sends magic link and redirect to the page pass in next searchP
   browser,
 }) => {
   await page.goto("/login?next=/community/valid.member");
+  await page.getByText("Se connecter par email").click();
   await page.getByLabel("Mon email").fill("valid.member@betagouv.ovh");
   await page.getByText("Recevoir le lien de connexion").click();
   await page.waitForTimeout(2000);
