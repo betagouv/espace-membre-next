@@ -5,7 +5,7 @@ import proxyquire from "proxyquire";
 import sinon from "sinon";
 
 import utils from "./utils";
-import { testUsers } from "./utils/users-data";
+import { testUsers } from "./utils/users-data.ts";
 import { Startups } from "@/@types/db";
 import { db } from "@/lib/kysely";
 import { Status } from "@/models/mission";
