@@ -2,14 +2,10 @@ import Button from "@codegouvfr/react-dsfr/Button";
 import type { Metadata, ResolvingMetadata } from "next";
 import { getServerSession } from "next-auth/next";
 
-import { getUserInformations } from "@/app/api/member/getInfo";
 import { BreadCrumbFiller } from "@/app/BreadCrumbProvider";
 import MemberPage from "@/components/MemberPage/MemberPage";
-import { userInfos } from "@/server/controllers/utils";
 import { authOptions } from "@/utils/authoptions";
-import { getUserIncubators } from "@/lib/kysely/queries/users";
-import { canEditMember as _canEditMember } from "@/lib/canEditMember";
-import { getUserChecklists } from "@/utils/checklists/getUserChecklists";
+import { buildMemberPageProps } from "@/lib/memberPageProps";
 
 type Props = {
   params: { id: string };
@@ -30,17 +26,19 @@ export default async function Page({
 }: {
   params: { id: string };
 }) {
-  // todo: merge with /account/page.tsx
   const session = await getServerSession(authOptions);
 
   if (!session || !session.user.id) {
     throw new Error(`You don't have the right to access this function`);
   }
 
-  // compile some account informations
-  let user: Awaited<ReturnType<typeof userInfos>>;
+  let memberPageProps;
   try {
-    user = await userInfos({ username: id }, session.user.id === id);
+    memberPageProps = await buildMemberPageProps({
+      session,
+      memberId: id,
+      isCurrentUser: session.user.id === id,
+    });
   } catch (e: any) {
     return (
       <>
@@ -54,56 +52,14 @@ export default async function Page({
       </>
     );
   }
-  // compile some other infos
-  const userInformations = await getUserInformations(id);
-
-  if (!userInformations) {
-    throw new Error("Cannot find user");
-  }
-
-  const isAdmin = !!session.user.isAdmin;
-
-  const isCurrentUser = session.user.id === id;
-
-  const canEditMember = await _canEditMember({
-    memberUuid: user.userInfos.uuid,
-    sessionUser: session.user,
-  });
-
-  const canValidateMember =
-    canEditMember && !(session.user.uuid === user.userInfos.uuid);
-
-  const { onboarding, offboarding } = await getUserChecklists(
-    user.userInfos.uuid,
-  );
-
-  const incubators = await getUserIncubators(userInformations.baseInfo.uuid);
 
   return (
     <>
       <BreadCrumbFiller
-        currentPage={user.userInfos.fullname}
-        currentItemId={user.userInfos.username}
+        currentPage={memberPageProps.userInfos.fullname}
+        currentItemId={memberPageProps.userInfos.username}
       />
-
-      <MemberPage
-        isAdmin={isAdmin}
-        isCurrentUser={isCurrentUser}
-        canEditMember={canEditMember}
-        canValidateMember={canValidateMember}
-        authorizations={user.authorizations}
-        emailInfos={user.emailInfos}
-        emailRedirections={user.emailRedirections}
-        isExpired={user.isExpired}
-        avatar={userInformations?.avatar}
-        changes={userInformations?.changes}
-        userInfos={userInformations?.baseInfo}
-        matrixId={userInformations.matrixId}
-        startups={userInformations.startups}
-        onboarding={onboarding}
-        offboarding={offboarding}
-        incubators={incubators}
-      />
+      <MemberPage {...memberPageProps} />
     </>
   );
 }
