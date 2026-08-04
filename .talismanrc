@@ -2,7 +2,7 @@ fileignoreconfig:
 - filename: .env.development
   checksum: baab9bc320877785c6ccf878f72a9b9257becfb719d4bcbcca1a2ba2bca49870
 - filename: .env.test
-  checksum: fd6fca10412ee1ed81d930e1e7a944586f56aca534412c43ef95f5381be9a97b
+  checksum: ac4a41141b6012a11636e64642152bbc339bf10380b564d35fe33870531d732a
 - filename: .github/workflows/nodejs.yml
   checksum: f6e47073886dc4ed95f91dc618254153743d03b6dc81310b8989633688c2fcda
 - filename: .github/workflows/playwright.yml
