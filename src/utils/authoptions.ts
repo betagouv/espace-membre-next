@@ -167,7 +167,7 @@ export const authOptions: NextAuthOptions = {
     },
   },
   callbacks: {
-    async signIn({ user }) {
+    async signIn({ user, account }) {
       if (user.id) {
         // todo : this can be done in the call where user is fetch from db
         const dbUser = await getUserInfos({
@@ -186,6 +186,20 @@ export const authOptions: NextAuthOptions = {
           console.log(`Cannot login expired member ${user.id}`);
           throw new Error("ExpiredMember");
         }
+        const loginProvider = account?.provider === "proconnect" ? "proconnect" : "email";
+        await db
+          .insertInto("user_events")
+          .values({
+            field_id: `login.${loginProvider}`,
+            user_id: dbUser.uuid,
+            date: new Date(),
+          })
+          .onConflict((oc) =>
+            oc.column("field_id").column("user_id").doUpdateSet({
+              date: new Date(),
+            }),
+          )
+          .execute();
         return true; // if the email exists in the User collection, continue process
       } else {
         return false;
