@@ -50,7 +50,6 @@ const nextConfig = {
     "knex",
     "sib-api-v3-sdk",
     "mjml",
-    "@luma-team/mjml-react",
   ],
   experimental: {
     serverActions: {

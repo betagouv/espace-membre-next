@@ -1,4 +1,3 @@
-import { renderToMjml } from "@luma-team/mjml-react";
 import ejs from "ejs";
 import mjml2html from "mjml";
 import TurndownService from "turndown";
@@ -49,7 +48,7 @@ import { BusinessError } from "@/utils/error";
 
 const TEMPLATES_BY_TYPE: Record<
   EmailProps["type"],
-  string | null | ((params: any) => React.JSX.Element)
+  string | null | ((params: any) => string)
 > = {
   EMAIL_LOGIN: (params: EmailLogin["variables"]) => LoginEmail(params),
   EMAIL_CREATED_DIMAIL: (params: EmailCreatedDimailType["variables"]) =>
@@ -111,7 +110,7 @@ const htmlBuilder: HtmlBuilderType = {
       }
     } else {
       // use mjml
-      const mjmlHtmlContent = renderToMjml(TEMPLATES_BY_TYPE[type](variables));
+      const mjmlHtmlContent = TEMPLATES_BY_TYPE[type](variables);
       const transformResult = await mjml2html(mjmlHtmlContent);
       if (transformResult.errors) {
         for (const err of transformResult.errors) {
@@ -146,7 +145,7 @@ const htmlBuilder: HtmlBuilderType = {
       }
     } else {
       // use mjml
-      const mjmlHtmlContent = renderToMjml(TEMPLATES_BY_TYPE[type](variables));
+      const mjmlHtmlContent = TEMPLATES_BY_TYPE[type](variables);
       const transformResult = await mjml2html(mjmlHtmlContent);
 
       if (transformResult.errors) {

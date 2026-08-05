@@ -36,7 +36,7 @@
     "@codegouvfr/react-dsfr": "^1.32.1",
     "@emotion/styled": "^11.14.1",
     "@hookform/resolvers": "^5.2.2",
-    "@luma-team/mjml-react": "^0.2.1",
+
     "@mui/base": "^5.0.0-beta.69",
     "@mui/material": "^5.15.10",
     "@sentry/nextjs": "^10.69.0",
