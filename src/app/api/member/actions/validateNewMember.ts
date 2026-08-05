@@ -20,7 +20,7 @@ import {
   AuthorizationError,
   BusinessError,
   withErrorHandling,
-} from "@/utils/error";
+} from "@/lib/error";
 import { sendNewMemberVerificationEmailTopic } from "@/server/queueing/workers/send-verification-email";
 import { canEditMember } from "@/lib/canEditMember";
 

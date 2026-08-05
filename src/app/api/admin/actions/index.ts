@@ -6,7 +6,7 @@ import {
   unblacklistContactEmail,
 } from "@/server/config/email.config";
 import { authOptions } from "@/server/authoptions";
-import { AuthorizationError } from "@/utils/error";
+import { AuthorizationError } from "@/lib/error";
 
 export async function unblockMemberEmailAddress(email: string) {
   const session = await getServerSession(authOptions);

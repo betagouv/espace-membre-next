@@ -1,7 +1,7 @@
 import { db } from "@/lib/kysely";
 import { getUserBasicInfo } from "@/lib/kysely/queries/users";
 import { memberPublicInfoToModel } from "@/models/mapper";
-import { BusinessError, NoDataError } from "@/utils/error";
+import { BusinessError, NoDataError } from "@/lib/error";
 
 export async function getMemberIfValidOrThrowError(userId: string) {
   const memberDbData = await getUserBasicInfo({ uuid: userId });

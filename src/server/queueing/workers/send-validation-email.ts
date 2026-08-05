@@ -14,7 +14,7 @@ import { incubatorToModel, userStartupToModel } from "@/models/mapper";
 import config from "@/server/config";
 import { sendEmail } from "@/server/config/email.config";
 import { EMAIL_TYPES } from "@/server/modules/email";
-import { BusinessError } from "@/utils/error";
+import { BusinessError } from "@/lib/error";
 
 export const sendNewMemberValidationEmailTopic =
   "send-new-member-validation-email";

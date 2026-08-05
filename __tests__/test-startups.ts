@@ -9,7 +9,7 @@ import { testUsers } from "./utils/users-data";
 import { db } from "@/lib/kysely";
 import { SponsorDomaineMinisteriel, SponsorType } from "@/models/sponsor";
 import { StartupPhase } from "@/models/startup";
-import { AuthorizationError } from "@/utils/error";
+import { AuthorizationError } from "@/lib/error";
 import utils from "./utils";
 import * as session from "@/server/helpers/session";
 import * as betagouv from "@betagouv";

@@ -10,7 +10,7 @@ import { addEvent } from "@/lib/events";
 import { db } from "@/lib/kysely";
 import { EventCode } from "@/models/actionEvent";
 import { Domaine, EmailStatusCode } from "@/models/member";
-import { AuthorizationError, BusinessError } from "@/utils/error";
+import { AuthorizationError, BusinessError } from "@/lib/error";
 
 describe(`Test creating new user flow : A new member cannot be validated by someone who is not an a team member`, () => {
   let sendEmailStub, getServerSessionStub, sendNewMemberValidationEmail;

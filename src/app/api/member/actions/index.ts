@@ -36,7 +36,7 @@ import {
   ValidationError,
   withErrorHandling,
   BusinessError,
-} from "@/utils/error";
+} from "@/lib/error";
 import { canEditMember as _canEditMember } from "@/lib/canEditMember";
 
 async function changeSecondaryEmailForUser(

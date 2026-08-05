@@ -17,7 +17,7 @@ import {
   startupSchemaType,
 } from "@/models/startup";
 import { StartupChangeSchemaType } from "@/models/startupChange";
-import { saveImage } from "@/utils/file";
+import { saveImage } from "@/lib/file";
 import { routeTitles } from "@/utils/routes/routeTitles";
 
 interface StartupInfoUpdateProps {

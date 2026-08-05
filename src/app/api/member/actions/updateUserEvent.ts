@@ -14,7 +14,7 @@ import {
   BusinessError,
   UnwrapPromise,
   withErrorHandling,
-} from "@/utils/error";
+} from "@/lib/error";
 
 export async function updateUserEvent({
   action_on_user_id,

@@ -13,7 +13,7 @@ import {
   NoDataError,
   UnwrapPromise,
   withErrorHandling,
-} from "@/utils/error";
+} from "@/lib/error";
 
 export async function updateIncubator({
   incubator,

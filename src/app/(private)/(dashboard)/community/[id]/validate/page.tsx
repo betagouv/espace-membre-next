@@ -7,7 +7,7 @@ import { validateNewMember } from "@/app/api/member/actions/validateNewMember";
 import { BreadCrumbFiller } from "@/app/BreadCrumbProvider";
 import { userInfos } from "@/server/controllers/utils";
 import { authOptions } from "@/server/authoptions";
-import { BusinessError } from "@/utils/error";
+import { BusinessError } from "@/lib/error";
 
 type Props = {
   params: { id: string };

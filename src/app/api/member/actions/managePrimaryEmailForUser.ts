@@ -18,7 +18,7 @@ import {
   withErrorHandling,
   AdminEmailNotAllowedError,
   BusinessError,
-} from "@/utils/error";
+} from "@/lib/error";
 
 export async function managePrimaryEmailForUser({
   username,

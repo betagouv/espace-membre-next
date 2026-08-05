@@ -20,7 +20,7 @@ import {
   StartupUniqueConstraintViolationError,
   UnwrapPromise,
   withErrorHandling,
-} from "@/utils/error";
+} from "@/lib/error";
 import { addMonths, differenceInDays } from "date-fns";
 import { ca } from "date-fns/locale";
 import { canEditStartup } from "@/lib/canEditStartup";

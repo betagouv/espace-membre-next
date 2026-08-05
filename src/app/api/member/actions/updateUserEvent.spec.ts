@@ -6,7 +6,7 @@ import sinon from "sinon";
 import { updateUserEvent } from "./updateUserEvent";
 import { Users } from "@/@types/db";
 import { db } from "@/lib/kysely";
-import { AuthorizationError } from "@/utils/error";
+import { AuthorizationError } from "@/lib/error";
 import { createData, deleteData } from "__tests__/utils/fakeData";
 import {
   memberJulienD,

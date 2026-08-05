@@ -7,7 +7,7 @@ import {
   getContactInfo,
 } from "@/lib/email/sendInBlue";
 import { authOptions } from "@/server/authoptions";
-import { AuthorizationError, withHttpErrorHandling } from "@/utils/error";
+import { AuthorizationError, withHttpErrorHandling } from "@/lib/error";
 
 export const GET = withHttpErrorHandling(async function (
   req: Request,

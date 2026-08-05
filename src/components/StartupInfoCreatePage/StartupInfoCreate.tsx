@@ -10,7 +10,7 @@ import { safeCreateStartup } from "@/app/api/startups/actions";
 import { startupInfoUpdateSchemaType } from "@/models/actions/startup";
 import { Option } from "@/models/misc";
 import { StartupChangeSchemaType } from "@/models/startupChange";
-import { saveImage } from "@/utils/file";
+import { saveImage } from "@/lib/file";
 
 interface StartupInfoCreateProps {
   incubatorOptions: Option[];

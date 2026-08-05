@@ -11,7 +11,7 @@ import {
 } from "@/app/api/incubators/actions/createIncubator";
 import { incubatorUpdateSchemaType } from "@/models/actions/incubator";
 import { Option } from "@/models/misc";
-import { saveImage } from "@/utils/file";
+import { saveImage } from "@/lib/file";
 
 interface IncubatorInfoCreateProps {
   sponsorOptions: Option[];

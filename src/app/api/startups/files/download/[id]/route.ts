@@ -7,7 +7,7 @@ import {
   AuthorizationError,
   BusinessError,
   withHttpErrorHandling,
-} from "@/utils/error";
+} from "@/lib/error";
 
 async function getFileHandler(
   req: NextRequest,

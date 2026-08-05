@@ -8,7 +8,7 @@ import {
   AdminAuthorizationError,
   AuthorizationError,
   withHttpErrorHandling,
-} from "@/utils/error";
+} from "@/lib/error";
 
 async function getBrevoEventsHandler(
   req: Request,

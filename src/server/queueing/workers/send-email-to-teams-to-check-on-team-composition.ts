@@ -6,7 +6,7 @@ import { memberBaseInfoToModel, startupToModel } from "@/models/mapper";
 import { memberBaseInfoSchemaType } from "@/models/member";
 import config from "@/server/config";
 import { sendEmail } from "@/server/config/email.config";
-import { BusinessError } from "@/utils/error";
+import { BusinessError } from "@/lib/error";
 import { EMAIL_TYPES } from "@modules/email";
 
 export const sendEmailToTeamsToCheckOnTeamCompositionTopic =

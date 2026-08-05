@@ -22,7 +22,7 @@ import {
   AuthorizationError,
   BusinessError,
   withErrorHandling,
-} from "@/utils/error";
+} from "@/lib/error";
 
 export const submitOpsRequest = withErrorHandling(
   async (data: opsRequestSchemaType) => {

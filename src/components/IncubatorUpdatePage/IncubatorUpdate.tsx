@@ -14,7 +14,7 @@ import { incubatorUpdateSchemaType } from "@/models/actions/incubator";
 import { incubatorSchemaType } from "@/models/incubator";
 import { Option } from "@/models/misc";
 import { startupSchemaType } from "@/models/startup";
-import { saveImage } from "@/utils/file";
+import { saveImage } from "@/lib/file";
 import { routeTitles } from "@/utils/routes/routeTitles";
 
 interface IncubatorUpdateProps {

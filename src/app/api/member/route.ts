@@ -27,7 +27,7 @@ import {
   AuthorizationError,
   MemberUniqueConstraintViolationError,
   withHttpErrorHandling,
-} from "@/utils/error";
+} from "@/lib/error";
 
 const createUsername = (firstName, lastName) =>
   `${slugify(firstName)}.${slugify(lastName)}`;

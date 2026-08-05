@@ -5,7 +5,7 @@ import { updateMember } from "../../updateMember";
 import { getUserInfos } from "@/lib/kysely/queries/users";
 import { memberInfoUpdateSchema } from "@/models/actions/member";
 import { authOptions } from "@/server/authoptions";
-import { withHttpErrorHandling } from "@/utils/error";
+import { withHttpErrorHandling } from "@/lib/error";
 
 async function memberInfoUpdateHandler(
   req,

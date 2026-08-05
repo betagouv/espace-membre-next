@@ -14,7 +14,7 @@ import {
   AuthorizationError,
   BusinessError,
   withErrorHandling,
-} from "@/utils/error";
+} from "@/lib/error";
 
 export const submitSegurRequest = withErrorHandling(
   async (data: segurRequestSchemaType) => {
