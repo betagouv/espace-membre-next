@@ -22,7 +22,7 @@
     "resolveJsonModule": true,
     "noImplicitAny": false,
     "isolatedModules": true,
-    "jsx": "react-jsx",
+    "jsx": "preserve",
     "incremental": true,
     "baseUrl": ".",
     "paths": {
