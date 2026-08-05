@@ -1,3 +1,4 @@
+import React from "react";
 import { MjmlText } from "@luma-team/mjml-react";
 
 import { StandardLayout } from "@/components/emails/layouts/StandardEmail";

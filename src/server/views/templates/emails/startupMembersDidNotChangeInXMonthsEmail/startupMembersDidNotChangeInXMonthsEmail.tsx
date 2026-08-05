@@ -1,3 +1,4 @@
+import React from "react";
 import { MjmlButton, MjmlText } from "@luma-team/mjml-react";
 import { format } from "date-fns";
 
