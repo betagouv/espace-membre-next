@@ -5,7 +5,7 @@ import { getAllIncubators } from "@/lib/kysely/queries/incubators";
 import { getUserBasicInfo, getUserStartups } from "@/lib/kysely/queries/users";
 import { getAvatarUrl } from "@/lib/s3";
 import { memberBaseInfoToModel } from "@/models/mapper";
-import { isUserActive } from "@/utils/member";
+import { isUserActive } from "@/lib/member";
 
 export async function GET(
   _: Request,

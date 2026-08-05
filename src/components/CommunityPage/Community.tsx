@@ -21,9 +21,9 @@ import {
   type CommunityFilterSchemaType,
 } from "./utils";
 import AutoComplete from "../AutoComplete";
-import { isUserActive } from "@/utils/member";
+import { isUserActive } from "@/lib/member";
 import { routes } from "@/utils/routes/routes";
-import { copyToClipboard } from "@/utils/copyToClipBoard";
+import { copyToClipboard } from "@/lib/copyToClipBoard";
 
 // to fix ReferenceError: window is not defined
 const MapComponent = dynamic(() => import("../Map").then((mod) => mod.Map), {

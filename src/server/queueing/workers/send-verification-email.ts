@@ -2,7 +2,7 @@ import PgBoss from "pg-boss";
 import { randomBytes } from "node:crypto";
 
 import { addEvent } from "@/lib/events";
-import { hashToken } from "@/utils/auth/hashToken";
+import { hashToken } from "@/lib/auth/hashToken";
 import { createVerificationToken } from "@/utils/pgAdpter";
 import { getBaseUrl } from "@/utils/url";
 import { EventCode, SYSTEM_NAME } from "@/models/actionEvent/actionEvent";

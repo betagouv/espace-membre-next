@@ -7,7 +7,7 @@ import ProgressBar from "../ProgressBar";
 import { memberWrapperSchemaType } from "@/models/member";
 import { checklistSchemaType } from "@/models/checklist";
 import { userEventSchemaType } from "@/models/userEvent";
-import { computeProgress } from "@/utils/checklists/computeProgress";
+import { computeProgress } from "@/lib/checklists/computeProgress";
 
 export const ChecklistTabPanel = ({
   userEvents,

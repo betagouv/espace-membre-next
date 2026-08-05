@@ -3,7 +3,7 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { redirect } from "next/navigation";
 import { getServerSession } from "next-auth";
-import { parseICS } from "@/utils/ical";
+import { parseICS } from "@/lib/ical";
 
 import { EventsList } from "@/components/EventsList/EventsList";
 import { authOptions } from "@/utils/authoptions";

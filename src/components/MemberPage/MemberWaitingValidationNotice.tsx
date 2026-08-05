@@ -3,7 +3,7 @@ import Button from "@codegouvfr/react-dsfr/Button";
 import { fr } from "@codegouvfr/react-dsfr/fr";
 
 import { MemberPageProps } from "./MemberPage";
-import { getLastMissionDate } from "@/utils/member";
+import { getLastMissionDate } from "@/lib/member";
 import { getUserIncubators } from "@/lib/kysely/queries/users";
 import Link from "next/link";
 

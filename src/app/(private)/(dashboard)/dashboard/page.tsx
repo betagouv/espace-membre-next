@@ -17,7 +17,7 @@ import { EmailStatusCode } from "@/models/member";
 import { routeTitles } from "@/utils/routes/routeTitles";
 import { getServerSession } from "next-auth";
 import { authOptions } from "@/utils/authoptions";
-import { getUserChecklists } from "@/utils/checklists/getUserChecklists";
+import { getUserChecklists } from "@/lib/checklists/getUserChecklists";
 
 export const metadata: Metadata = {
   title: `${routeTitles.dashboard()} / Espace Membre`,

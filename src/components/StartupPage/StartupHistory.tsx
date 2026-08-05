@@ -4,7 +4,7 @@ import { Table } from "@codegouvfr/react-dsfr/Table";
 
 import { StartupPageProps } from "./StartupPage";
 import { StartupPhase, PHASE_READABLE_NAME } from "@/models/startup";
-import { frenchSmallDate } from "@/utils/date";
+import { frenchSmallDate } from "@/lib/date";
 
 // @ts-ignore
 import "./timeline.css";

@@ -18,7 +18,7 @@ import { getStartupFiles } from "@/app/api/startups/files/list";
 import { memberBaseInfoSchemaType } from "@/models/member";
 import { phaseSchemaType, startupSchemaType } from "@/models/startup";
 import { StartupChangeSchemaType } from "@/models/startupChange";
-import { getCurrentPhase } from "@/utils/startup";
+import { getCurrentPhase } from "@/lib/startup";
 
 //@ts-ignore
 import "./timeline.css";

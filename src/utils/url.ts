@@ -1,4 +1,4 @@
-import { isBrowser } from "./platform";
+import { isBrowser } from "@/lib/platform";
 
 export function getBaseUrl() {
   if (process.env.APP_BASE_URL) {

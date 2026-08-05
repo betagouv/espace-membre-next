@@ -1,7 +1,7 @@
 import { MemberPageProps } from "@/components/MemberPage/MemberPage";
 import { userInfos } from "@/server/controllers/utils";
 import { canEditMember as _canEditMember } from "@/lib/canEditMember";
-import { getUserChecklists } from "@/utils/checklists/getUserChecklists";
+import { getUserChecklists } from "@/lib/checklists/getUserChecklists";
 import {
   getUserStartups,
   getUserIncubators,

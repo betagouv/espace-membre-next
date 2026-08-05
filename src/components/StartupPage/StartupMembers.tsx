@@ -7,7 +7,7 @@ import {
   memberPublicInfoSchemaType,
   memberSchemaType,
 } from "@/models/member";
-import { getLastMissionDate, getFirstMissionDate } from "@/utils/member";
+import { getLastMissionDate, getFirstMissionDate } from "@/lib/member";
 import Button from "@codegouvfr/react-dsfr/Button";
 import { useState } from "react";
 import MemberSelect from "../MemberSelect";

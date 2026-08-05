@@ -11,7 +11,7 @@ import Link from "next/link";
 
 import { deleteFile } from "@/app/api/startups/files/delete";
 import { getStartupFiles } from "@/app/api/startups/files/list";
-import { frenchSmallDate } from "@utils/date";
+import { frenchSmallDate } from "@/lib/date";
 
 import "./FileList.css";
 

@@ -11,7 +11,7 @@ import {
   EmailStatusCode,
 } from "@/models/member";
 import { ACCOUNT_SERVICE_STATUS } from "@/models/services";
-import { getChecklistObject } from "@/utils/checklists/getChecklistObject";
+import { getChecklistObject } from "@/lib/checklists/getChecklistObject";
 
 export const metadata: Metadata = {
   title: `Components Demo`,
