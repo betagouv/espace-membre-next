@@ -97,6 +97,7 @@
     "compilerOptions": {
       "allowSyntheticDefaultImports": true,
       "module": "commonjs",
+      "moduleResolution": "node",
       "target": "es6",
       "jsx": "react-jsx"
     },
