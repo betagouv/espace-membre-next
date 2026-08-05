@@ -1,7 +1,7 @@
 import { isAfter } from "date-fns/isAfter";
 import { isBefore } from "date-fns/isBefore";
 import { sql, ExpressionBuilder, Kysely, SelectExpression } from "kysely";
-import { UpdateObjectExpression } from "kysely/dist/cjs/parser/update-set-parser";
+
 import _ from "lodash";
 
 import { DB } from "@/@types/db"; // generated with `npm run kysely-codegen`
@@ -258,14 +258,14 @@ function withEndDate(
 
 export async function updateUser(
   uuid: string,
-  userData: UpdateObjectExpression<DB, "users">,
+  userData: Record<string, unknown>,
   db: Kysely<DB> = database,
 ) {
   // Insert or update the mission and return the mission ID
   const result = await db
     .updateTable("users")
     .where("uuid", "=", uuid)
-    .set(userData)
+    .set(userData as any)
     .execute();
 
   if (!result) {

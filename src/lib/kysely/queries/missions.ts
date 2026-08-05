@@ -1,6 +1,4 @@
 import { InsertResult, Kysely, Transaction } from "kysely";
-import { InsertExpression } from "kysely/dist/cjs/parser/insert-values-parser";
-import { UpdateObjectExpression } from "kysely/dist/cjs/parser/update-set-parser";
 
 import { DB, Missions } from "@/@types/db"; // generated with `npm run kysely-codegen`
 import { db as database, jsonArrayFrom } from "@/lib/kysely";
@@ -13,8 +11,9 @@ export async function deleteMission(
 }
 
 export async function createMission(
-  mission: InsertExpression<DB, "missions"> & {
+  mission: {
     startups?: string[] | undefined;
+    [key: string]: unknown;
   },
   db: Kysely<DB> | Transaction<DB> = database,
 ) {
@@ -24,7 +23,7 @@ export async function createMission(
     delete mission.startups;
     const result = await db
       .insertInto("missions")
-      .values(mission)
+      .values(mission as any)
       .returningAll()
       .execute();
     if (result && result.length) {
@@ -54,8 +53,9 @@ export async function createMission(
 
 export async function updateMission(
   uuid: string,
-  mission: UpdateObjectExpression<DB, "missions", "missions"> & {
+  mission: {
     startups?: string[] | undefined;
+    [key: string]: unknown;
   },
   db: Kysely<DB> | Transaction<DB>,
 ): Promise<number> {
@@ -79,9 +79,7 @@ export async function updateMission(
 
     const result = await trx
       .updateTable("missions")
-      .set({
-        ...missionData,
-      })
+      .set(missionData as any)
       .where("uuid", "=", uuid)
       .execute();
 

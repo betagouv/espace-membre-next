@@ -119,6 +119,11 @@
     "build",
     "dist",
     ".next",
-    "storybook"
+    "storybook",
+    "__tests__",
+    "**/*.spec.ts",
+    "**/*.spec.tsx",
+    "**/*.test.ts",
+    "**/*.test.tsx"
   ]
 }

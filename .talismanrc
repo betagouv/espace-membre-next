@@ -41,6 +41,8 @@ fileignoreconfig:
   checksum: 777854cc51487a9f8f857ce5cb3e2bfe813c402848eef135d5aa0caff6086659
 - filename: src/lib/dimail/client.ts
   checksum: b43b16ede6c1744a50d3624f4dcb6e07cce09959524b0b655c45bc82e9d06a22
+- filename: src/lib/kysely/queries/missions.ts
+  checksum: 1c702efe5a0ad90ed027543a4011057a3e96e10e83377b5c2e380b709b34430d
 - filename: src/lib/s3.ts
   checksum: a74621f69d4d7e4cdb99c05d127fcdc4a3f81aed2dc921146272f3deed3e283e
 - filename: src/models/misc.ts
