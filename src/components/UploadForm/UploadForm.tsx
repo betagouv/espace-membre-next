@@ -3,7 +3,7 @@ import { useState, useRef, ChangeEvent } from "react";
 
 import { ButtonProps } from "@codegouvfr/react-dsfr/Button";
 import ButtonsGroup from "@codegouvfr/react-dsfr/ButtonsGroup";
-import Skeleton from "@mui/material/Skeleton/Skeleton";
+import Skeleton from "@mui/material/Skeleton";
 import { format } from "date-fns";
 import { PlaceholderValue } from "next/dist/shared/lib/get-img-props";
 

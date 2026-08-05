@@ -48,10 +48,12 @@ export default function SEIncubateurSelect({
         renderInput={(params) => (
           <TextField
             {...params}
-            inputProps={{
-              ...params.inputProps,
-              style: {
-                padding: `0.75rem 0.5rem`,
+            slotProps={{
+              htmlInput: {
+                ...params.slotProps.htmlInput,
+                style: {
+                  padding: `0.75rem 0.5rem`,
+                },
               },
             }}
             variant="standard"

@@ -1,14 +1,11 @@
 import React, { useCallback, useState } from "react";
 
 import { fr } from "@codegouvfr/react-dsfr";
-import { UseAutocompleteProps } from "@mui/base";
-import { InternalStandardProps as StandardProps } from "@mui/material";
 import MuiAutocomplete, {
   AutocompleteValue as MuiAutocompleteValue,
   createFilterOptions,
   AutocompleteRenderInputParams,
 } from "@mui/material/Autocomplete";
-import { ChipProps, ChipTypeMap } from "@mui/material/Chip";
 import TextField from "@mui/material/TextField";
 
 type AutoCompleteValue<
@@ -40,15 +37,8 @@ interface AutoCompleteProps<
   DisableClearable extends boolean | undefined,
   FreeSolo extends boolean | undefined,
   GroupOptions extends boolean | undefined,
-  ChipComponent extends React.ElementType = ChipTypeMap["defaultComponent"],
->
-  extends
-    UseAutocompleteProps<Value, Multiple, DisableClearable, FreeSolo>,
-    StandardProps<
-      React.HTMLAttributes<HTMLDivElement>,
-      "defaultValue" | "onChange" | "onSelect" | "children"
-    > {
-  ChipProps?: ChipProps<ChipComponent>;
+> {
+  id?: string;
   unstable_isActiveElementInListbox?: (
     listbox: React.RefObject<HTMLElement | null>,
   ) => boolean;
@@ -57,6 +47,14 @@ interface AutoCompleteProps<
   freeSolo?: FreeSolo;
   options: readonly Value[];
   groupOptions?: GroupOptions;
+  value?: AutoCompleteValue<Value, Multiple, DisableClearable, FreeSolo>;
+  autoComplete?: boolean;
+  selectOnFocus?: boolean;
+  clearOnBlur?: boolean;
+  groupBy?: (option: Value) => string;
+  getOptionKey?: (option: Value) => string | number;
+  getOptionLabel?: (option: Value) => string;
+  onBlur?: React.FocusEventHandler<HTMLDivElement>;
   onChange?: (
     event: React.SyntheticEvent,
     value: AutoCompleteValue<Value, Multiple, DisableClearable, FreeSolo>,
@@ -65,11 +63,10 @@ interface AutoCompleteProps<
     value: AutoCompleteSelect<Value, Multiple, DisableClearable>,
     event: React.SyntheticEvent,
   ) => void;
+  style?: React.CSSProperties;
   placeholder?: string;
   optionKeyField?: string;
   optionLabelField?: string;
-  // When true the text input can't be typed into: the value can only be
-  // picked from the proposed options (dropdown-only).
   inputReadOnly?: boolean;
   renderInput?: (params: AutocompleteRenderInputParams) => React.ReactNode;
 }
@@ -126,12 +123,14 @@ export default function AutoComplete<
     (params: AutocompleteRenderInputParams) => (
       <TextField
         {...params}
-        inputProps={{
-          ...params.inputProps,
-          readOnly: inputReadOnly,
-          style: {
-            padding: `0.75rem 0.5rem`,
-            ...(inputReadOnly ? { cursor: "pointer" } : {}),
+        slotProps={{
+          htmlInput: {
+            ...params.slotProps.htmlInput,
+            readOnly: inputReadOnly,
+            style: {
+              padding: `0.75rem 0.5rem`,
+              ...(inputReadOnly ? { cursor: "pointer" } : {}),
+            },
           },
         }}
         variant="standard"

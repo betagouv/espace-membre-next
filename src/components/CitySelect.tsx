@@ -86,28 +86,29 @@ export function Search(props: SearchProps) {
 
   return (
     <Autocomplete
-      // freeSolo
-      PopperComponent={(props) => (
-        <Popper
-          {...props}
-          style={{
-            ...props.style,
-            width: undefined,
-          }}
-          className={cx(
-            props.className,
-            css({
-              zIndex: 100000,
-              width: "40em",
-              [fr.breakpoints.down("lg")]: {
-                width: "calc(100vw - 3rem)",
-              },
-            }),
-            overlayClassName,
-          )}
-          placement="bottom-start"
-        />
-      )}
+      slots={{
+        popper: (props: any) => (
+          <Popper
+            {...props}
+            style={{
+              ...props.style,
+              width: undefined,
+            }}
+            className={cx(
+              props.className,
+              css({
+                zIndex: 100000,
+                width: "40em",
+                [fr.breakpoints.down("lg")]: {
+                  width: "calc(100vw - 3rem)",
+                },
+              }),
+              overlayClassName,
+            )}
+            placement="bottom-start"
+          />
+        ),
+      }}
       loading={loading}
       className={className}
       fullWidth
@@ -149,15 +150,14 @@ export function Search(props: SearchProps) {
         return option === value;
       }}
       renderInput={(params) => (
-        <div ref={params.InputProps.ref}>
+        <div ref={params.slotProps.input.ref}>
           <input
-            {...params.inputProps}
+            {...params.slotProps.htmlInput}
             className={cx(
-              params.inputProps.className,
+              params.slotProps.htmlInput.className,
               nativeInputProps.className,
             )}
             value={isEditing ? value : selectedValue}
-            // defaultValue={defaultValue}
             id={nativeInputProps.id}
             placeholder={nativeInputProps.placeholder}
             type={nativeInputProps.type}

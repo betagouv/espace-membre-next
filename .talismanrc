@@ -19,6 +19,8 @@ fileignoreconfig:
   checksum: 6f1851774271e3f0d3fcdf1feac4cd6ba03f6e75922fd839a94b276589a77b76
 - filename: src/app/(private)/(dashboard)/services/page.tsx
   checksum: daebae004c8c06af9a88aaf57a1fad4b0a6efcb7920cf9628e0c1fd1985569ab
+- filename: src/components/AutoComplete.tsx
+  checksum: 357b81fd8d3ef242265334ae91a0144c2ff7cca1118b9a47ae23d0a89c0b6a31
 - filename: src/components/Checklist.tsx
   checksum: 7bcd2b7b8aa2c603855af404f89c24d9bb02ba6e7b4a2a8503ef7b1b72902178
 - filename: src/components/EventsList/EventsList.tsx

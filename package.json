@@ -37,8 +37,7 @@
     "@emotion/styled": "^11.14.1",
     "@hookform/resolvers": "^5.2.2",
 
-    "@mui/base": "^5.0.0-beta.69",
-    "@mui/material": "^5.15.10",
+    "@mui/material": "^9.3.0",
     "@sentry/nextjs": "^10.69.0",
     "@sentry/node": "^10.26.0",
     "@sindresorhus/slugify": "^1.1.0",
@@ -84,7 +83,7 @@
     "sib-api-v3-sdk": "^8.5.0",
     "ts-custom-error": "^3.3.1",
     "ts-pattern": "^5.5.0",
-    "tss-react": "^4.9.4",
+    "tss-react": "^4.9.21",
     "tsx": "^4.21.0",
     "turndown": "^7.2.0",
     "unescape": "^1.0.1",
