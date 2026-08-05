@@ -8,7 +8,7 @@ import { getAllStartups } from "@/lib/kysely/queries";
 import { getUserInfos } from "@/lib/kysely/queries/users";
 import { getAvatarUrl } from "@/lib/s3";
 import { memberChangeToModel, userInfosToModel } from "@/models/mapper";
-import { authOptions } from "@/utils/authoptions";
+import { authOptions } from "@/server/authoptions";
 
 export const generateMetadata = async ({
   params: { id },

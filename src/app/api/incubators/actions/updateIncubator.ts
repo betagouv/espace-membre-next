@@ -7,7 +7,7 @@ import { getServerSession } from "next-auth";
 import { db } from "@/lib/kysely";
 import { incubatorUpdateSchemaType } from "@/models/actions/incubator";
 import { incubatorSchemaType } from "@/models/incubator";
-import { authOptions } from "@/utils/authoptions";
+import { authOptions } from "@/server/authoptions";
 import {
   AuthorizationError,
   NoDataError,

@@ -21,7 +21,7 @@ async function sendVerificationRequest(params) {
     type: EMAIL_TYPES.EMAIL_LOGIN,
     variables: {
       loginUrlWithToken: `${process.env.NEXTAUTH_URL}/signin${urlObj.search}`,
-      fullname: "", // @todo add fullname
+      fullname: "",
     },
     toEmail: [identifier],
   });
@@ -50,7 +50,7 @@ export const authOptions: NextAuthOptions = {
       name: "Pro Connect",
       type: "oauth",
       version: "2.0",
-      idToken: true, // todo: should use builtin function instead of token below
+      idToken: true,
       options: {
         clientId: process.env.PRO_CONNECT_ID || "",
         clientSecret: process.env.PRO_CONNECT_SECRET || "",
@@ -58,11 +58,11 @@ export const authOptions: NextAuthOptions = {
       wellKnown:
         process.env.NEXT_PUBLIC_PRO_CONNECT_BASE_URL +
         "/api/v2/.well-known/openid-configuration",
-      allowDangerousEmailAccountLinking: true, // cause errors
+      allowDangerousEmailAccountLinking: true,
       checks: ["nonce", "state"],
       authorization: {
         params: {
-          scope: "openid uid given_name usual_name email", // "openid uid given_name usual_name email siret",
+          scope: "openid uid given_name usual_name email",
           acr_values: "eidas1",
           nonce: uuidv4(),
           state: uuidv4(),
@@ -76,7 +76,6 @@ export const authOptions: NextAuthOptions = {
         userinfo_encrypted_response_enc: "RS256",
       },
 
-      // special JARM JWT for ProConnect user info
       userinfo: {
         request: async ({ tokens }) => {
           const userInfoRequest = await fetch(
@@ -88,9 +87,7 @@ export const authOptions: NextAuthOptions = {
               },
             },
           ).then((r) => r.text());
-          // User info returns a JWT token instead of a JSON object, we decode it
           const userinfo = jwt.decode(userInfoRequest) as ProConnectProfile;
-          // ensure we have a related user
           const dbUser = await db
             .selectFrom("users")
             .select(["username"])
@@ -98,7 +95,6 @@ export const authOptions: NextAuthOptions = {
               eb.or([
                 eb("primary_email", "ilike", userinfo.email),
                 eb("secondary_email", "ilike", userinfo.email),
-                // also check if user owns one of existing dinum_emails account
                 eb(
                   "users.uuid",
                   "in",
@@ -139,9 +135,8 @@ export const authOptions: NextAuthOptions = {
   pages: {
     signIn: "/login",
     signOut: "/auth/signout",
-    error: "/login", // Error code passed in query string as ?error=
-    verifyRequest: "/auth/verify-request", // (used for check email message)
-    // newUser: "/auth/new-user", // New users will be directed here on first sign in (leave the property out if not of interest)
+    error: "/login",
+    verifyRequest: "/auth/verify-request",
   },
   jwt: {
     async encode({ secret, token }) {
@@ -154,7 +149,6 @@ export const authOptions: NextAuthOptions = {
             algorithm: "HS512",
           } as VerifyOptions);
           if (!decoded["uuid"]) {
-            // in case it was an old session without uuid
             return null;
           }
           return decoded as JwtPayload;
@@ -169,7 +163,6 @@ export const authOptions: NextAuthOptions = {
   callbacks: {
     async signIn({ user, account }) {
       if (user.id) {
-        // todo : this can be done in the call where user is fetch from db
         const dbUser = await getUserInfos({
           username: user.id,
           options: {
@@ -200,7 +193,7 @@ export const authOptions: NextAuthOptions = {
             }),
           )
           .execute();
-        return true; // if the email exists in the User collection, continue process
+        return true;
       } else {
         return false;
       }

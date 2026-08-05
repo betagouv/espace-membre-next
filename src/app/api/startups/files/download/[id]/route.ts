@@ -2,7 +2,7 @@ import { NextRequest } from "next/server";
 import { getServerSession } from "next-auth";
 
 import { db } from "@/lib/kysely";
-import { authOptions } from "@/utils/authoptions";
+import { authOptions } from "@/server/authoptions";
 import {
   AuthorizationError,
   BusinessError,

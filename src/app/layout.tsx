@@ -14,7 +14,7 @@ import { Matomo } from "@/app/Matomo";
 import Header from "@/components/Header";
 import { LiveChatProvider } from "@/components/live-chat/LiveChatProvider";
 import { Skiplinks } from "@/components/Skiplinks";
-import { authOptions } from "@/utils/authoptions";
+import { authOptions } from "@/server/authoptions";
 import type { Metadata } from "next";
 
 import {

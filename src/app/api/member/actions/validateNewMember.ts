@@ -15,7 +15,7 @@ import { memberBaseInfoToModel } from "@/models/mapper";
 import { EmailStatusCode } from "@/models/member";
 import { getBossClientInstance } from "@/server/queueing/client";
 import { sendEmailToTeamWhenNewMemberTopic } from "@/server/queueing/workers/send-email-to-team-when-new-member";
-import { authOptions } from "@/utils/authoptions";
+import { authOptions } from "@/server/authoptions";
 import {
   AuthorizationError,
   BusinessError,

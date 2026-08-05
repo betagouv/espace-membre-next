@@ -21,7 +21,7 @@ import {
   createDimailMailbox,
   createDimailMailboxTopic,
 } from "./workers/create-dimail-mailbox";
-import { gracefulExit } from "@/utils/gracefulExit";
+import { gracefulExit } from "@/server/gracefulExit";
 import {
   syncDinumEmails,
   syncDinumEmailsTopic,

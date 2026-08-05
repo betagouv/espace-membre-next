@@ -9,7 +9,7 @@ import {
 } from "@/models/actions/segurRequest";
 import { GRIST_SEGUR_COLUMNS, SEGUR_STATUT } from "@/models/segur";
 import config from "@/server/config";
-import { authOptions } from "@/utils/authoptions";
+import { authOptions } from "@/server/authoptions";
 import {
   AuthorizationError,
   BusinessError,

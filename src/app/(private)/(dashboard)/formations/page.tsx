@@ -8,7 +8,7 @@ import {
   fetchAirtableInscription,
 } from "@/lib/airtable";
 import config from "@/server/config";
-import { authOptions } from "@/utils/authoptions";
+import { authOptions } from "@/server/authoptions";
 import { routeTitles } from "@/utils/routes/routeTitles";
 
 export const metadata: Metadata = {

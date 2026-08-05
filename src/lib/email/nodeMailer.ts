@@ -5,7 +5,7 @@ import {
   HtmlBuilderType,
   SendEmail,
   SendEmailProps,
-} from "@modules/email";
+} from "@/lib/email/email";
 
 interface SendEmailFromNodemailerDeps {
   MAIL_DEBUG: string;

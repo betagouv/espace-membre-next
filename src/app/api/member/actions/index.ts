@@ -28,7 +28,7 @@ import {
 } from "@/server/config/email.config";
 import { capitalizeWords, userInfos } from "@/server/controllers/utils";
 import { Contact, MAILING_LIST_TYPE } from "@/server/modules/email";
-import { authOptions } from "@/utils/authoptions";
+import { authOptions } from "@/server/authoptions";
 import {
   AuthorizationError,
   NoDataError,

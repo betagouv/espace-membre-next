@@ -3,7 +3,7 @@ import { redirect } from "next/navigation";
 import { getServerSession } from "next-auth";
 import type { Session } from "next-auth";
 
-import { authOptions } from "@/utils/authoptions";
+import { authOptions } from "@/server/authoptions";
 import { routeTitles } from "@/utils/routes/routeTitles";
 import { buildMemberPageProps } from "@/lib/memberPageProps";
 import MemberPage from "@/components/MemberPage/MemberPage";

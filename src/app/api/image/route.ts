@@ -8,7 +8,7 @@ import { z } from "zod";
 import { getFileName } from "./utils";
 import s3 from "@/lib/s3";
 import { imagePostApiSchemaType } from "@/models/actions/image";
-import { authOptions } from "@/utils/authoptions";
+import { authOptions } from "@/server/authoptions";
 
 export async function DELETE(req: NextRequest) {
   const {

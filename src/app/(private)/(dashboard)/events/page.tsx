@@ -6,7 +6,7 @@ import { getServerSession } from "next-auth";
 import { parseICS } from "@/lib/ical";
 
 import { EventsList } from "@/components/EventsList/EventsList";
-import { authOptions } from "@/utils/authoptions";
+import { authOptions } from "@/server/authoptions";
 import { routeTitles } from "@/utils/routes/routeTitles";
 
 export const metadata: Metadata = {

@@ -5,7 +5,7 @@ import {
   RemoveContactsFromMailingListProps,
   UpdateContactEmailProps,
   Contact,
-} from "@modules/email";
+} from "@/lib/email/email";
 
 const sentEmails: Array<SendEmailProps> = []; // For testing purposes only
 const sentCampaignEmails: Array<SendCampaignEmailProps> = []; // For testing purposes only

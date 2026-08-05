@@ -14,7 +14,7 @@ import s3 from "@/lib/s3";
 import { startupChangeToModel, startupToModel } from "@/models/mapper";
 import { sponsorSchema } from "@/models/sponsor";
 import { eventSchema, phaseSchema } from "@/models/startup";
-import { authOptions } from "@/utils/authoptions";
+import { authOptions } from "@/server/authoptions";
 import { routeTitles } from "@/utils/routes/routeTitles";
 
 type Props = {

@@ -1,8 +1,8 @@
 import SibApiV3Sdk from "sib-api-v3-sdk";
 
-import config from "@/server/config";
-import { BusinessError } from "@/utils/error";
-import { objectArrayToCSV } from "@controllers/utils";
+import config from "@/lib/config";
+import { BusinessError } from "@/lib/error";
+import { objectArrayToCSV } from "@/server/controllers/utils";
 import {
   EmailProps,
   SendEmail,
@@ -17,7 +17,7 @@ import {
   Contact,
   EmailVariants,
   EMAIL_TYPES,
-} from "@modules/email";
+} from "@/lib/email/email";
 
 const TEMPLATE_ID_BY_TYPE: Record<EmailProps["type"], number> = {
   EMAIL_LOGIN: 0,

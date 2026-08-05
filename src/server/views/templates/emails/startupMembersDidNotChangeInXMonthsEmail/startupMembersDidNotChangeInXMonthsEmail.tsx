@@ -4,7 +4,7 @@ import { format } from "date-fns";
 
 import { StandardLayout } from "@/components/emails/layouts/StandardEmail";
 import { EmailStartupMembersDidNotChangeInXMonths } from "@/server/modules/email";
-import { getBaseUrl } from "@/utils/url";
+import { getBaseUrl } from "@/lib/url";
 
 export function StartupMembersDidNotChangeInXMonthsEmailTitle() {
   return `Vérifie les produits de ton incubateur.`;

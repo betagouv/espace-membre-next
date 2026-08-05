@@ -2,8 +2,8 @@ import { getServerSession } from "next-auth";
 
 import { db } from "@/lib/kysely";
 import { brevoEmailEventDataSchema } from "@/models/brevoEvent";
-import { getSendEventForUser } from "@/server/infra/email/sendInBlue";
-import { authOptions } from "@/utils/authoptions";
+import { getSendEventForUser } from "@/lib/email/sendInBlue";
+import { authOptions } from "@/server/authoptions";
 import {
   AdminAuthorizationError,
   AuthorizationError,

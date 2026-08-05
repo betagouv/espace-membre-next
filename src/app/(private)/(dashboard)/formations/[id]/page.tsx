@@ -14,7 +14,7 @@ import { fetchAirtableFormationById } from "@/lib/airtable";
 import { getUserInfos } from "@/lib/kysely/queries/users";
 import { userInfosToModel } from "@/models/mapper";
 import { CommunicationEmailCode, Domaine } from "@/models/member";
-import { authOptions } from "@/utils/authoptions";
+import { authOptions } from "@/server/authoptions";
 import { durationBetweenDate } from "@/lib/date";
 
 const mdParser = new MarkdownIt({

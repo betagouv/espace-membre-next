@@ -7,7 +7,7 @@ import { OrganizationUpdate } from "@/components/organization/OrganizationUpdate
 import { db } from "@/lib/kysely";
 import { getOrganization } from "@/lib/kysely/queries/organizations";
 import { organizationToModel } from "@/models/mapper";
-import { authOptions } from "@/utils/authoptions";
+import { authOptions } from "@/server/authoptions";
 import { routeTitles } from "@/utils/routes/routeTitles";
 
 type Props = {

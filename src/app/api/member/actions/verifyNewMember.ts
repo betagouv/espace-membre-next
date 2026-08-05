@@ -6,7 +6,7 @@ import { updateMember } from "../updateMember";
 import { memberValidateInfoSchemaType } from "@/models/actions/member";
 import { Domaine, EmailStatusCode } from "@/models/member";
 import { isPublicServiceEmail, isAdminEmail } from "@/server/controllers/utils";
-import { authOptions } from "@/utils/authoptions";
+import { authOptions } from "@/server/authoptions";
 import { AdminEmailNotAllowedError } from "@/utils/error";
 import { getBossClientInstance } from "@/server/queueing/client";
 import { createDimailMailboxTopic } from "@/server/queueing/workers/create-dimail-mailbox";

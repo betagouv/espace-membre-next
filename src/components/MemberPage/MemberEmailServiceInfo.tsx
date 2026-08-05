@@ -10,7 +10,7 @@ import {
   brevoEmailInfoDataSchema,
   brevoEmailInfoDataSchemaType,
 } from "@/models/brevoInfo";
-import { SIBContact } from "@/server/infra/email/sendInBlue";
+import { SIBContact } from "@/lib/email/sendInBlue";
 
 const ContactCard = (contact: SIBContact) => {
   // Parse and validate the data

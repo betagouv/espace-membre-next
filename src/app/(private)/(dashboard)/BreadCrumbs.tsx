@@ -4,7 +4,7 @@ import { usePathname } from "next/navigation";
 
 import { useInfoContext } from "@/app/BreadCrumbProvider";
 import { routeTitles } from "@/utils/routes/routeTitles";
-import { hasPathnameThisMatch, hasPathnameThisRegex } from "@/utils/url";
+import { hasPathnameThisMatch, hasPathnameThisRegex } from "@/lib/url";
 import React from "react";
 import { routes } from "@/utils/routes/routes";
 

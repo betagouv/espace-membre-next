@@ -3,8 +3,8 @@ import { randomBytes } from "node:crypto";
 
 import { addEvent } from "@/lib/events";
 import { hashToken } from "@/lib/auth/hashToken";
-import { createVerificationToken } from "@/utils/pgAdpter";
-import { getBaseUrl } from "@/utils/url";
+import { createVerificationToken } from "@/server/pgAdpter";
+import { getBaseUrl } from "@/lib/url";
 import { EventCode, SYSTEM_NAME } from "@/models/actionEvent/actionEvent";
 
 import { getUserBasicInfo } from "@/lib/kysely/queries/users";

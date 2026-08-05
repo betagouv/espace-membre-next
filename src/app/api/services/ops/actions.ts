@@ -17,7 +17,7 @@ import {
   OpsFieldKey,
 } from "@/models/ops";
 import config from "@/server/config";
-import { authOptions } from "@/utils/authoptions";
+import { authOptions } from "@/server/authoptions";
 import {
   AuthorizationError,
   BusinessError,

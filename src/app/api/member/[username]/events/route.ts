@@ -1,7 +1,7 @@
 import { getServerSession } from "next-auth";
 
 import { getEventListByUsername } from "@/lib/events";
-import { authOptions } from "@/utils/authoptions";
+import { authOptions } from "@/server/authoptions";
 import { AuthorizationError, withHttpErrorHandling } from "@/utils/error";
 
 async function getEventListByUsernameHanlder(

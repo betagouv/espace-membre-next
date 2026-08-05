@@ -1,2 +1,2 @@
-export * from "./nodeMailer";
-export * from "./fakeMailer";
+export * from "@/lib/email/fakeMailer";
+export * from "@/lib/email/nodeMailer";

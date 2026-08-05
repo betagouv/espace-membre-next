@@ -45,8 +45,7 @@ export function hasPathnameThisRegex(
   if (!pathname) {
     return false;
   }
-  const patternString: string = regexPathname; // Matches one or more digits
-  // Convert the string to a RegExp object
+  const patternString: string = regexPathname;
   const regex: RegExp = new RegExp(patternString);
 
   return regex.test(pathname);

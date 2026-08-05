@@ -15,7 +15,7 @@ import {
   memberPublicInfoToModel,
   teamToModel,
 } from "@/models/mapper";
-import { authOptions } from "@/utils/authoptions";
+import { authOptions } from "@/server/authoptions";
 import { routeTitles } from "@/utils/routes/routeTitles";
 
 type Props = {

@@ -5,8 +5,8 @@ import { brevoEmailInfoDataSchema } from "@/models/brevoInfo";
 import {
   getAllTransacBlockedContacts,
   getContactInfo,
-} from "@/server/infra/email/sendInBlue";
-import { authOptions } from "@/utils/authoptions";
+} from "@/lib/email/sendInBlue";
+import { authOptions } from "@/server/authoptions";
 import { AuthorizationError, withHttpErrorHandling } from "@/utils/error";
 
 export const GET = withHttpErrorHandling(async function (

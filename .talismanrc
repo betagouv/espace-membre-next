@@ -35,6 +35,10 @@ fileignoreconfig:
   checksum: eadc2f2e6e18c331613266eab493ddac385b8fa083d0f4ad21596b89b2cf59ab
 - filename: src/components/StartupPage/StartupMembers.tsx
   checksum: 6a20aba25aa570f49f0413babcb256d1db870522851f2e865088df7fe6e583a9
+- filename: src/lib/auth/hashToken.ts
+  checksum: 8349543ad0dc5c9fbf09ab2b87276cfd3ee12bafdb8515da711657522f32904d
+- filename: src/lib/config.ts
+  checksum: 518a52174c33e1e08cd39254f1c9b5b9562e0a3b66e799a0a7516d86ae90ede5
 - filename: src/lib/dimail/client.spec.ts
   checksum: 777854cc51487a9f8f857ce5cb3e2bfe813c402848eef135d5aa0caff6086659
 - filename: src/lib/dimail/client.ts

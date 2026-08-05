@@ -10,7 +10,7 @@ import {
   getUserStartupsActive,
 } from "@/lib/kysely/queries/users";
 import { userStartupToModel } from "@/models/mapper/startupMapper";
-import { authOptions } from "@/utils/authoptions";
+import { authOptions } from "@/server/authoptions";
 
 export default async function OpsRequestPage() {
   const session = await getServerSession(authOptions);

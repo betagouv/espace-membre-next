@@ -11,7 +11,6 @@ export async function gracefulExit(error?: Error) {
 
   console.log("Exiting the application gracefully...");
 
-  // Perform any necessary cleanup or finalization tasks here
   try {
     await Promise.all([stopBossClientInstance(), Sentry.close(2000)]);
   } finally {

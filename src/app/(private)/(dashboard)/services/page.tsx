@@ -3,7 +3,7 @@ import { Tile } from "@codegouvfr/react-dsfr/Tile";
 import { redirect } from "next/navigation";
 import { getServerSession } from "next-auth";
 
-import { authOptions } from "@/utils/authoptions";
+import { authOptions } from "@/server/authoptions";
 
 export default async function Page() {
   const session = await getServerSession(authOptions);

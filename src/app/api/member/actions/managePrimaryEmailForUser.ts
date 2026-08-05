@@ -11,7 +11,7 @@ import {
   isAdminEmail,
   userInfos,
 } from "@/server/controllers/utils";
-import { authOptions } from "@/utils/authoptions";
+import { authOptions } from "@/server/authoptions";
 import {
   AuthorizationError,
   UnwrapPromise,
