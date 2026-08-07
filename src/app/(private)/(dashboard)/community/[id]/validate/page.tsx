@@ -6,7 +6,7 @@ import { getServerSession } from "next-auth/next";
 import { validateNewMember } from "@/app/api/member/actions/validateNewMember";
 import { BreadCrumbFiller } from "@/app/BreadCrumbProvider";
 import { userInfos } from "@/lib/utils";
-import { authOptions } from "@/server/authoptions";
+import { authOptions } from "@/lib/authoptions";
 import { BusinessError } from "@/lib/error";
 
 type Props = {

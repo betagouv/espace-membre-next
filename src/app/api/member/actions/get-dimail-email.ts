@@ -1,7 +1,7 @@
 "use server";
 
 import { getServerSession } from "next-auth";
-import { authOptions } from "@/server/authoptions";
+import { authOptions } from "@/lib/authoptions";
 import { AuthorizationError, withErrorHandling } from "@/lib/error";
 import { getUserBasicInfo } from "@/lib/kysely/queries/users";
 import { memberBaseInfoToModel } from "@/models/mapper";

@@ -8,7 +8,7 @@ import { getAllStartups } from "@/lib/kysely/queries";
 import { getUserInfos } from "@/lib/kysely/queries/users";
 import { getAvatarUrl } from "@/lib/s3";
 import { memberChangeToModel, userInfosToModel } from "@/models/mapper";
-import { authOptions } from "@/server/authoptions";
+import { authOptions } from "@/lib/authoptions";
 import { routeTitles } from "@/utils/routes/routeTitles";
 
 export const metadata: Metadata = {

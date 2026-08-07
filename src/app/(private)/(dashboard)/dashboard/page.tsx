@@ -16,7 +16,7 @@ import { userInfosToModel } from "@/models/mapper";
 import { EmailStatusCode } from "@/models/member";
 import { routeTitles } from "@/utils/routes/routeTitles";
 import { getServerSession } from "next-auth";
-import { authOptions } from "@/server/authoptions";
+import { authOptions } from "@/lib/authoptions";
 import { getUserChecklists } from "@/lib/checklists/getUserChecklists";
 
 export const metadata: Metadata = {

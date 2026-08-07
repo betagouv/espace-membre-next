@@ -5,7 +5,7 @@ import { getServerSession } from "next-auth";
 import { addEvent } from "@/lib/events";
 import { db } from "@/lib/kysely";
 import { EventCode } from "@/models/actionEvent/actionEvent";
-import { authOptions } from "@/server/authoptions";
+import { authOptions } from "@/lib/authoptions";
 import { getUserBasicInfo } from "@/lib/kysely/queries/users";
 import { EmailStatusCode } from "@/models/member";
 import { canEditMember } from "@/lib/canEditMember";

@@ -6,7 +6,7 @@ import {
   getAllTransacBlockedContacts,
   getContactInfo,
 } from "@/lib/email/sendInBlue";
-import { authOptions } from "@/server/authoptions";
+import { authOptions } from "@/lib/authoptions";
 import { AuthorizationError, withHttpErrorHandling } from "@/lib/error";
 
 export const GET = withHttpErrorHandling(async function (

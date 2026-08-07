@@ -16,7 +16,7 @@ import {
   startupToModel,
 } from "@/models/mapper";
 import { getServerSession } from "next-auth";
-import { authOptions } from "@/server/authoptions";
+import { authOptions } from "@/lib/authoptions";
 import { canEditStartup } from "@/lib/canEditStartup";
 
 type Props = {

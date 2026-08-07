@@ -2,7 +2,7 @@ import { PropsWithChildren } from "react";
 
 import { PrivateLayout } from "@/app/(private)/(dashboard)/PrivateLayout";
 import { getServerSession } from "next-auth";
-import { authOptions } from "@/server/authoptions";
+import { authOptions } from "@/lib/authoptions";
 import { redirect } from "next/navigation";
 import React from "react";
 

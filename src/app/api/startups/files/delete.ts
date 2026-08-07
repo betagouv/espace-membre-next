@@ -3,7 +3,7 @@
 import { getServerSession } from "next-auth";
 
 import { db } from "@/lib/kysely";
-import { authOptions } from "@/server/authoptions";
+import { authOptions } from "@/lib/authoptions";
 
 export async function deleteFile({ uuid }: { uuid: string }) {
   const session = await getServerSession(authOptions);

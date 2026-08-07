@@ -5,7 +5,7 @@ import {
   smtpBlockedContactsEmailDelete,
   unblacklistContactEmail,
 } from "@/server/config/email.config";
-import { authOptions } from "@/server/authoptions";
+import { authOptions } from "@/lib/authoptions";
 import { AuthorizationError } from "@/lib/error";
 
 export async function unblockMemberEmailAddress(email: string) {

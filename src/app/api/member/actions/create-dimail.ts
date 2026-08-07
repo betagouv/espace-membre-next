@@ -3,7 +3,7 @@
 import { getServerSession } from "next-auth";
 import { getBossClientInstance } from "@/server/queueing/client";
 import { createDimailMailboxTopic } from "@/server/queueing/workers/create-dimail-mailbox";
-import { authOptions } from "@/server/authoptions";
+import { authOptions } from "@/lib/authoptions";
 import { AuthorizationError, withErrorHandling } from "@/lib/error";
 import { getUserBasicInfo } from "@/lib/kysely/queries/users";
 import { memberBaseInfoToModel } from "@/models/mapper";

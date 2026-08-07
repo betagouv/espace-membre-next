@@ -3,11 +3,11 @@ import { NextAuthOptions, User } from "next-auth";
 import EmailProvider from "next-auth/providers/email";
 import { v4 as uuidv4 } from "uuid";
 
-import customPostgresAdapter from "./pgAdpter";
+import customPostgresAdapter from "@/lib/pgAdpter";
 import { db } from "@/lib/kysely";
 import { getUserInfos } from "@/lib/kysely/queries/users";
 import { memberBaseInfoToModel } from "@/models/mapper";
-import config from "@/server/config";
+import config from "@/lib/config";
 import { getAdmin } from "@/server/config/admin.config";
 import { sendEmail } from "@/server/config/email.config";
 import { checkUserIsExpired } from "@/lib/utils";

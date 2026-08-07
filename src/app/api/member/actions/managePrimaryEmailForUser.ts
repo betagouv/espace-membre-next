@@ -11,7 +11,7 @@ import {
   isAdminEmail,
   userInfos,
 } from "@/lib/utils";
-import { authOptions } from "@/server/authoptions";
+import { authOptions } from "@/lib/authoptions";
 import {
   AuthorizationError,
   UnwrapPromise,

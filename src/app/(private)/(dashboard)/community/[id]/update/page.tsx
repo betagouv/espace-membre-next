@@ -7,7 +7,7 @@ import { MemberUpdate } from "@/components/MemberUpdate/MemberUpdate";
 import { getAllStartups } from "@/lib/kysely/queries";
 import { getUserBasicInfo } from "@/lib/kysely/queries/users";
 import { memberBaseInfoToModel } from "@/models/mapper";
-import { authOptions } from "@/server/authoptions";
+import { authOptions } from "@/lib/authoptions";
 import { routeTitles } from "@/utils/routes/routeTitles";
 import { canEditMember } from "@/lib/canEditMember";
 

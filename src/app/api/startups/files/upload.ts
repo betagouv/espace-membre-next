@@ -4,7 +4,7 @@ import { getServerSession } from "next-auth";
 
 import { db } from "@/lib/kysely";
 import { DocSchemaType } from "@/models/startupFiles";
-import { authOptions } from "@/server/authoptions";
+import { authOptions } from "@/lib/authoptions";
 
 const commonFileFields = [
   "startups_files.filename",

@@ -21,7 +21,7 @@ import { isPublicServiceEmail, isAdminEmail } from "@/lib/utils";
 import { getBossClientInstance } from "@/server/queueing/client";
 import { sendNewMemberValidationEmailTopic } from "@/server/queueing/workers/send-validation-email";
 import { sendNewMemberVerificationEmailTopic } from "@/server/queueing/workers/send-verification-email";
-import { authOptions } from "@/server/authoptions";
+import { authOptions } from "@/lib/authoptions";
 import {
   AdminEmailNotAllowedError,
   AuthorizationError,

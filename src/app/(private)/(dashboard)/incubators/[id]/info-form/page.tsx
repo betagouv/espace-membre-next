@@ -8,7 +8,7 @@ import { db } from "@/lib/kysely";
 import { getIncubator } from "@/lib/kysely/queries/incubators";
 import s3 from "@/lib/s3";
 import { incubatorToModel } from "@/models/mapper";
-import { authOptions } from "@/server/authoptions";
+import { authOptions } from "@/lib/authoptions";
 import { routeTitles } from "@/utils/routes/routeTitles";
 
 type Props = {

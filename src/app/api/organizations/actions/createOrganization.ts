@@ -12,7 +12,7 @@ import {
   organizationUpdateSchemaType,
   organizationUpdateSchema,
 } from "@/models/actions/organization";
-import { authOptions } from "@/server/authoptions";
+import { authOptions } from "@/lib/authoptions";
 
 export async function createOrganization({
   organization,

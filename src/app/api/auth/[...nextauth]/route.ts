@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import NextAuth from "next-auth/next";
 
-import { authOptions } from "@/server/authoptions";
+import { authOptions } from "@/lib/authoptions";
 
 const nextAuth = NextAuth(authOptions);
 

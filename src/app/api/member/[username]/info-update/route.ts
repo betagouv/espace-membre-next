@@ -4,7 +4,7 @@ import { getServerSession } from "next-auth";
 import { updateMember } from "../../updateMember";
 import { getUserInfos } from "@/lib/kysely/queries/users";
 import { memberInfoUpdateSchema } from "@/models/actions/member";
-import { authOptions } from "@/server/authoptions";
+import { authOptions } from "@/lib/authoptions";
 import { withHttpErrorHandling } from "@/lib/error";
 
 async function memberInfoUpdateHandler(

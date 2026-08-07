@@ -2,7 +2,7 @@ import { NextRequest } from "next/server";
 import { getServerSession } from "next-auth/next";
 
 import { searchUsers } from "@/lib/kysely/queries/search";
-import { authOptions } from "@/server/authoptions";
+import { authOptions } from "@/lib/authoptions";
 import { AuthorizationError, withHttpErrorHandling } from "@/lib/error";
 
 async function SearchUserHandler(req: NextRequest) {

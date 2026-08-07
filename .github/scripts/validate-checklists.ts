@@ -3,7 +3,7 @@ import path from "node:path";
 import yaml from "yaml";
 import { checklistSchema } from "../../src/models/checklist";
 
-const checklistsDir = path.resolve(__dirname, "../src/lib/checklists");
+const checklistsDir = path.resolve(__dirname, "../../src/lib/checklists");
 const files = ["onboarding.yml", "offboarding.yml"];
 
 let allPassed = true;

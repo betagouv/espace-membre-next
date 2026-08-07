@@ -6,7 +6,7 @@ import AccountVerifyClientPage from "./AccountVerifyClientPage";
 import { getAllStartups } from "@/lib/kysely/queries";
 import { getUserInfos } from "@/lib/kysely/queries/users";
 import { userInfosToModel } from "@/models/mapper";
-import { authOptions } from "@/server/authoptions";
+import { authOptions } from "@/lib/authoptions";
 import { routeTitles } from "@/utils/routes/routeTitles";
 
 export const metadata: Metadata = {

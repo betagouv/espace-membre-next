@@ -13,7 +13,7 @@ import { startupInfoUpdateSchemaType } from "@/models/actions/startup";
 import { startupEventToModel } from "@/models/mapper";
 import { sponsorSchema } from "@/models/sponsor";
 import { phaseSchema } from "@/models/startup";
-import { authOptions } from "@/server/authoptions";
+import { authOptions } from "@/lib/authoptions";
 import {
   AuthorizationError,
   NoDataError,

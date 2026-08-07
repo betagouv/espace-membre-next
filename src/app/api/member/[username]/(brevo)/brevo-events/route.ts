@@ -3,7 +3,7 @@ import { getServerSession } from "next-auth";
 import { db } from "@/lib/kysely";
 import { brevoEmailEventDataSchema } from "@/models/brevoEvent";
 import { getSendEventForUser } from "@/lib/email/sendInBlue";
-import { authOptions } from "@/server/authoptions";
+import { authOptions } from "@/lib/authoptions";
 import {
   AdminAuthorizationError,
   AuthorizationError,
