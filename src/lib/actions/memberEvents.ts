@@ -8,7 +8,7 @@ import { AuthorizationError, withErrorHandling } from "@/lib/error";
 
 async function getMemberEventsByUsernameAction(username: string) {
   const session = await getServerSession(authOptions);
-  if (!session || !session.user.id) {
+  if (!session?.user?.id) {
     throw new AuthorizationError();
   }
   if (!session.user.isAdmin) {

@@ -1,5 +1,3 @@
-import axios from "axios";
-
 export type Commune = {
   code: string;
   nom: string;

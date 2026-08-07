@@ -19,7 +19,7 @@ import {
 
 async function getBrevoEmailInfoAction(username: string) {
   const session = await getServerSession(authOptions);
-  if (!session || !session.user.id) {
+  if (!session?.user?.id) {
     throw new AuthorizationError();
   }
 
@@ -58,7 +58,7 @@ async function getBrevoEmailInfoAction(username: string) {
 
 async function getBrevoEventsAction(username: string) {
   const session = await getServerSession(authOptions);
-  if (!session || !session.user.id) {
+  if (!session?.user?.id) {
     throw new AuthorizationError();
   }
   if (!session.user.isAdmin) {

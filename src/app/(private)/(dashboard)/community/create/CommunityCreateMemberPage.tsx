@@ -14,7 +14,6 @@ import { Mission } from "@/components/BaseInfoUpdatePage/MissionsEditor";
 import SEIncubateurSelect from "@/components/SEIncubateurSelect";
 import { createMember } from "@/lib/actions/createMember";
 import {
-  createMemberResponseSchema,
   createMemberSchema,
   createMemberSchemaInputType,
   createMemberSchemaType,

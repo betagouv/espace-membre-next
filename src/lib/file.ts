@@ -1,5 +1,3 @@
-import { z } from "zod";
-
 import { getSignedUrl } from "@/lib/actions/image";
 
 class MockFile {
@@ -29,7 +27,10 @@ export const saveImage = async ({
   const result = await getSignedUrl({
     fileObjIdentifier,
     fileIdentifier: fileIdentifier as "shot" | "hero" | "avatar" | "logo",
-    fileRelativeObjType: fileRelativeObjType as "startup" | "member" | "incubator",
+    fileRelativeObjType: fileRelativeObjType as
+      | "startup"
+      | "member"
+      | "incubator",
     fileType: "image/jpeg",
   });
 

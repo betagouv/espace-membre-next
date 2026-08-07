@@ -10,8 +10,6 @@ import { getUserTeamsIncubators } from "@/lib/kysely/queries/incubators";
 import { createMission } from "@/lib/kysely/queries/missions";
 import { EventCode } from "@/models/actionEvent";
 import {
-  createMemberResponseSchema,
-  createMemberResponseSchemaType,
   createMemberSchema,
   createMemberSchemaType,
 } from "@/models/actions/member";
@@ -35,38 +33,40 @@ import {
 const createUsername = (firstName: string, lastName: string) =>
   `${slugify(firstName)}.${slugify(lastName)}`;
 
+async function getStartupIncubatorIds(
+  userStartups: string[],
+): Promise<string[]> {
+  if (!userStartups.length) return [];
+  const startupIncubators = await db
+    .selectFrom("startups")
+    .where("uuid", "in", userStartups)
+    .selectAll()
+    .execute();
+  return startupIncubators
+    .map((m) => m.incubator_id)
+    .filter((incubator): incubator is string => !!incubator);
+}
+
 const isSessionUserMemberOfUserIncubatorTeams = async function (
   sessionUserUuid: string,
   userMissions: createMemberSchemaType["missions"],
   incubator_id: createMemberSchemaType["incubator_id"],
 ): Promise<boolean> {
-  const sessionUserIncubators = await getUserTeamsIncubators(sessionUserUuid);
-  const sessionUserIncubatorIds = sessionUserIncubators.map(
+  const sessionUserIncubatorIds = (await getUserTeamsIncubators(sessionUserUuid)).map(
     (incubator) => incubator.uuid,
   );
   const userStartups = userMissions.flatMap((m) => m.startups || []);
-  const startupIncubators = userStartups.length
-    ? await db
-        .selectFrom("startups")
-        .where("uuid", "in", userStartups)
-        .selectAll()
-        .execute()
-    : [];
-  const startupIncubatorIds = startupIncubators
-    .map((m) => m.incubator_id)
-    .filter((incubator): incubator is string => !!incubator);
+  const startupIncubatorIds = await getStartupIncubatorIds(userStartups);
 
-  const incubatorIds = Array.from(new Set([...startupIncubatorIds]));
-  if (incubator_id && !incubatorIds.includes(incubator_id)) {
-    incubatorIds.push(incubator_id);
-  }
+  const incubatorIds = new Set(startupIncubatorIds);
+  if (incubator_id) incubatorIds.add(incubator_id);
 
-  return incubatorIds.some((el) => sessionUserIncubatorIds.includes(el));
+  return [...incubatorIds].some((el) => sessionUserIncubatorIds.includes(el));
 };
 
 async function createMemberAction(input: createMemberSchemaType) {
   const session = await getServerSession(authOptions);
-  if (!session || !session.user.id) {
+  if (!session?.user?.id) {
     throw new AuthorizationError();
   }
   const { member, missions, incubator_id } = createMemberSchema.parse(input);
