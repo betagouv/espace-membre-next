@@ -9,6 +9,7 @@ export default [
   globalIgnores(["**/*.spec.ts"]),
   {
     rules: {
+      "@typescript-eslint/no-unused-vars": ["error", { "vars": "all", "args": "none", "ignoreRestSiblings": true, "caughtErrors": "none" }],
       "react/no-unescaped-entities": "off",
       "react/no-children-prop": "warn",
       "import/no-named-as-default": "warn",

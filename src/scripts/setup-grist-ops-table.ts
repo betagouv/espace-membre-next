@@ -1,4 +1,3 @@
-/* eslint-disable no-console */
 // One-off script: creates the "Demandes_OPS" table (and its columns) in the
 // configured Grist document so the OPS request form can write to it.
 //

@@ -1,7 +1,11 @@
 import { syncMatrixAccounts } from "@/server/queueing/workers/sync-matrix-accounts";
 
 async function main() {
-  await syncMatrixAccounts({ id: "manual", name: "sync-matrix-accounts", data: null } as any);
+  await syncMatrixAccounts({
+    id: "manual",
+    name: "sync-matrix-accounts",
+    data: null,
+  } as any);
 }
 
 main()

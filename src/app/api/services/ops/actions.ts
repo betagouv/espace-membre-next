@@ -50,14 +50,14 @@ export const submitOpsRequest = withErrorHandling(
     // Incubateur du produit sélectionné (ex: la Ruche). Peut être absent si le
     // produit n'est rattaché à aucun incubateur.
     const incubateur = parsed.startupId
-      ? (
+      ? ((
           await db
             .selectFrom("startups")
             .innerJoin("incubators", "incubators.uuid", "startups.incubator_id")
             .select("incubators.title")
             .where("startups.uuid", "=", parsed.startupId)
             .executeTakeFirst()
-        )?.title ?? ""
+        )?.title ?? "")
       : "";
 
     const fields: GristRecordFields = {

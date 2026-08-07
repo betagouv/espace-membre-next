@@ -103,8 +103,11 @@ export const authOptions: NextAuthOptions = {
                     .select("user_id")
                     .distinct()
                     .where(({ eb }) =>
-                      eb("email", "ilike", userinfo.email)
-                        .and("user_id", "is not", null),
+                      eb("email", "ilike", userinfo.email).and(
+                        "user_id",
+                        "is not",
+                        null,
+                      ),
                     ),
                 ),
               ]),
@@ -179,7 +182,8 @@ export const authOptions: NextAuthOptions = {
           console.log(`Cannot login expired member ${user.id}`);
           throw new Error("ExpiredMember");
         }
-        const loginProvider = account?.provider === "proconnect" ? "proconnect" : "email";
+        const loginProvider =
+          account?.provider === "proconnect" ? "proconnect" : "email";
         await db
           .insertInto("user_events")
           .values({

@@ -79,7 +79,6 @@ export default function StartupPage({
       // eslint-disable-next-line react-hooks/set-state-in-effect
       setHash(window.location.hash.replace("#", ""));
     } else {
-      // eslint-disable-next-line react-hooks/set-state-in-effect
       setHash(tabs[0].tabId);
     }
     window.addEventListener("hashchange", onHashChange);

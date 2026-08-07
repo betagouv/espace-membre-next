@@ -6,11 +6,7 @@ import { getServerSession } from "next-auth/next";
 import { addEvent } from "@/lib/events";
 import { db } from "@/lib/kysely";
 import { EventCode } from "@/models/actionEvent/actionEvent";
-import {
-  isPublicServiceEmail,
-  isAdminEmail,
-  userInfos,
-} from "@/lib/utils";
+import { isPublicServiceEmail, isAdminEmail, userInfos } from "@/lib/utils";
 import { authOptions } from "@/lib/authoptions";
 import {
   AuthorizationError,
