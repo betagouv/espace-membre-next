@@ -5,7 +5,6 @@ import {
   PHASE_READABLE_NAME,
   startupSchemaType,
 } from "@/models/startup";
-import routes from "@/routes/routes";
 import { sendEmail } from "@/server/config/email.config";
 import { EMAIL_TYPES } from "@/lib/email/email";
 

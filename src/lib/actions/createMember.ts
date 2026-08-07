@@ -53,8 +53,10 @@ const isSessionUserMemberOfUserIncubatorTeams = async function (
   userMissions: createMemberSchemaType["missions"],
   incubator_id: createMemberSchemaType["incubator_id"],
 ): Promise<boolean> {
-  const sessionUserIncubatorIds = (await getUserTeamsIncubators(sessionUserUuid)).map(
-    (incubator) => incubator.uuid,
+  const sessionUserIncubatorIds = new Set(
+    (await getUserTeamsIncubators(sessionUserUuid)).map(
+      (incubator) => incubator.uuid,
+    ),
   );
   const userStartups = userMissions.flatMap((m) => m.startups || []);
   const startupIncubatorIds = await getStartupIncubatorIds(userStartups);
@@ -62,7 +64,7 @@ const isSessionUserMemberOfUserIncubatorTeams = async function (
   const incubatorIds = new Set(startupIncubatorIds);
   if (incubator_id) incubatorIds.add(incubator_id);
 
-  return [...incubatorIds].some((el) => sessionUserIncubatorIds.includes(el));
+  return [...incubatorIds].some((el) => sessionUserIncubatorIds.has(el));
 };
 
 async function createMemberAction(input: createMemberSchemaType) {

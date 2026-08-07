@@ -1,4 +1,4 @@
-import { routes, routeTitles } from "@/lib/routes";
+import { routes } from "@/lib/routes";
 import { fr } from "@codegouvfr/react-dsfr";
 import { Badge } from "@codegouvfr/react-dsfr/Badge";
 import Button from "@codegouvfr/react-dsfr/Button";

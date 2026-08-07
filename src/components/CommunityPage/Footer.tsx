@@ -1,4 +1,4 @@
-import { routes, routeTitles } from "@/lib/routes";
+import { routes } from "@/lib/routes";
 import { fr } from "@codegouvfr/react-dsfr/fr";
 import DataVisualization from "@codegouvfr/react-dsfr/picto/DataVisualization";
 import Tile from "@codegouvfr/react-dsfr/Tile";

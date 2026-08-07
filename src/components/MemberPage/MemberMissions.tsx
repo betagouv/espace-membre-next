@@ -1,4 +1,4 @@
-import { routes, routeTitles } from "@/lib/routes";
+import { routes } from "@/lib/routes";
 import { fr } from "@codegouvfr/react-dsfr/fr";
 import Table from "@codegouvfr/react-dsfr/Table";
 import Tag from "@codegouvfr/react-dsfr/Tag";

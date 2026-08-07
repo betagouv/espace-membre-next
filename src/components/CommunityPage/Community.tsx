@@ -1,5 +1,5 @@
 "use client";
-import { routes, routeTitles } from "@/lib/routes";
+import { routes } from "@/lib/routes";
 import React, { startTransition, useCallback, useMemo, useState } from "react";
 
 import Button from "@codegouvfr/react-dsfr/Button";

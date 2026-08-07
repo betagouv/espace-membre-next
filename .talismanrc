@@ -52,7 +52,7 @@ fileignoreconfig:
 - filename: src/lib/dimail/client.ts
   checksum: b43b16ede6c1744a50d3624f4dcb6e07cce09959524b0b655c45bc82e9d06a22
 - filename: src/lib/hstore.ts
-  checksum: 69f9357ec84b8f4438a165b5825b0876c1f297ff10cf820903dfad369565b8d6
+  checksum: 4875c83d95ffdac95c1b9847f3d27d2ffdf0b1cbbc0a6c83ccb6ae9abf25a81d
 - filename: src/lib/routes.ts
   checksum: e2a041fe934441a29c6274fcb06f378a217c25c89d3f96a5c82cee4164a5e4ee
 - filename: src/lib/s3.ts

@@ -1,9 +1,6 @@
 function isBuffer(obj) {
   return (
-    obj &&
-    obj.constructor &&
-    typeof obj.constructor.isBuffer === "function" &&
-    obj.constructor.isBuffer(obj)
+    obj?.constructor?.isBuffer?.(obj) === true
   );
 }
 
@@ -13,7 +10,6 @@ function keyIdentity(key) {
 
 function flatten(target, opts) {
   opts = opts || {};
-
   const delimiter = opts.delimiter || ".";
   const maxDepth = opts.maxDepth;
   const transformKey = opts.transformKey || keyIdentity;
@@ -60,7 +56,6 @@ function flatten(target, opts) {
 
 function unflatten(target, opts) {
   opts = opts || {};
-
   const delimiter = opts.delimiter || ".";
   const overwrite = opts.overwrite || false;
   const transformKey = opts.transformKey || keyIdentity;
@@ -74,12 +69,12 @@ function unflatten(target, opts) {
     return target;
   }
 
-  function getkey(key) {
-    const parsedKey = Number(key);
-    return isNaN(parsedKey) || key.indexOf(".") !== -1 || opts.object
-      ? key
-      : parsedKey;
-  }
+   function getkey(key) {
+     const parsedKey = Number(key);
+     return (Number.isNaN(parsedKey) || key.includes(".") || opts.object)
+       ? key
+       : parsedKey;
+   }
 
   function addKeys(keyPrefix, recipient, target) {
     return Object.keys(target).reduce(function (result, key) {
@@ -121,39 +116,51 @@ function unflatten(target, opts) {
   }, {});
 
   Object.keys(target).forEach(function (key) {
+    if (key === "__proto__") {
+      return;
+    }
+
     const split = key.split(delimiter).map(transformKey);
     let key1 = getkey(split.shift());
     let key2 = getkey(split[0]);
     let recipient = result;
 
-    while (key2 !== undefined) {
-      if (key1 === "__proto__") {
-        return;
-      }
-
-      const type = Object.prototype.toString.call(recipient[key1]);
-      const isobject = type === "[object Object]" || type === "[object Array]";
-
-      if (!overwrite && !isobject && typeof recipient[key1] !== "undefined") {
-        return;
-      }
-
-      if ((overwrite && !isobject) || (!overwrite && recipient[key1] == null)) {
-        recipient[key1] = typeof key2 === "number" && !opts.object ? [] : {};
-      }
-
-      recipient = recipient[key1];
-      if (split.length > 0) {
-        key1 = getkey(split.shift());
-        key2 = getkey(split[0]);
-      }
-    }
+    processKeyPath();
 
     if (key.endsWith("__isArray")) {
       const baseKey = key.slice(0, -9);
       if (!result[baseKey]) result[baseKey] = [];
     } else {
       recipient[key1] = unflatten(target[key], opts);
+    }
+
+    function processKeyPath() {
+      while (key2 !== undefined) {
+        if (key1 === "__proto__") {
+          return;
+        }
+
+        const type = Object.prototype.toString.call(recipient[key1]);
+        const isobject = type === "[object Object]" || type === "[object Array]";
+
+        if (!overwrite && !isobject && recipient[key1] !== undefined) {
+          return;
+        }
+
+        if ((overwrite && !isobject) || (!overwrite && recipient[key1] == null)) {
+          recipient[key1] = isArrayKey(key2) ? [] : {};
+        }
+
+        recipient = recipient[key1];
+        if (split.length > 0) {
+          key1 = getkey(split.shift());
+          key2 = getkey(split[0]);
+        }
+      }
+    }
+
+    function isArrayKey(key2) {
+      return typeof key2 === "number" && !opts.object;
     }
   });
 
@@ -207,10 +214,10 @@ function to_string(input) {
 
 function escape_string(input) {
   if (input === null || input === undefined) return "NULL";
-  return String(input).replace(/\\/g, "\\\\").replace(/"/g, '\\"');
+  return String(input).replaceAll("\\", "\\\\").replaceAll('"', '\"');
 }
 
 function unescape_string(input) {
   if (input === "NULL") return null;
-  return String(input).replace(/\\"/g, '"').replace(/\\\\/g, "\\");
+  return String(input).replaceAll('\"', '"').replaceAll("\\\\", "\\");
 }
