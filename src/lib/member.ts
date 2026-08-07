@@ -1,8 +1,10 @@
 import { format } from "date-fns";
 import { fr } from "date-fns/locale/fr";
 
-import { memberSchemaType } from "@/models/member";
+import { memberSchemaType, EmailInfos, EMAIL_PLAN_TYPE } from "@/models/member";
 import { missionSchemaType } from "@/models/mission";
+import { getDimailEmail } from "@/lib/kysely/queries/dimail";
+import config from "@/lib/config";
 
 export const getLastMission = (
   missions: missionSchemaType[],
@@ -44,3 +46,16 @@ export const getFirstMissionDate = (
 export const isUserActive = (missions: memberSchemaType["missions"]) => {
   return missions.filter((m) => !m.end || m.end > new Date()).length > 0;
 };
+
+export async function emailInfos(id: string): Promise<EmailInfos | null> {
+  const email = `${id}@${config.domain}`;
+  const dimailEmail = await getDimailEmail(email);
+  if (dimailEmail) {
+    return {
+      email,
+      emailPlan: EMAIL_PLAN_TYPE.EMAIL_PLAN_OPI,
+      isBlocked: false,
+    };
+  }
+  return null;
+}
