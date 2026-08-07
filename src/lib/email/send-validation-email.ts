@@ -1,7 +1,7 @@
 import { isAfter } from "date-fns/isAfter";
 import { isBefore } from "date-fns/isBefore";
 
-import { getMemberIfValidOrThrowError } from "@/server/queueing/workers/utils";
+import { getMemberIfValidOrThrowError } from "@/lib/member";
 import { getIncubator } from "@/lib/kysely/queries/incubators";
 import { getIncubatorTeamMembers } from "@/lib/kysely/queries/teams";
 import { getUserStartups } from "@/lib/kysely/queries/users";

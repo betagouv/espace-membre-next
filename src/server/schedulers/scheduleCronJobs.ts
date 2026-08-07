@@ -1,5 +1,6 @@
 import * as Sentry from "@sentry/node";
-import { CronJob } from "cron";
+// This import needs the full path because ./cron.json shadows the npm package "cron"
+import { CronJob } from "cron/lib/cron.js";
 
 import { EspaceMembreCronJobType, espaceMembreCronJobs } from "./cron";
 import { db } from "@/lib/kysely";
