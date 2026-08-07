@@ -22,7 +22,7 @@ import {
   type CommunityFilterSchemaType,
 } from "./utils";
 import AutoComplete from "../AutoComplete";
-import { isUserActive } from "@/lib/member";
+import { isUserActive } from "@/lib/member.utils";
 
 import { copyToClipboard } from "@/lib/copyToClipBoard";
 

@@ -104,7 +104,7 @@ export default {
   secure: isSecure,
   protocol: isSecure ? "https" : "http",
   host: process.env.HOSTNAME,
-   port: Number.parseInt(process.env.PORT || "3000", 10),
+  port: Number.parseInt(process.env.PORT || "3000", 10),
   domain: process.env.SECRETARIAT_DOMAIN || "beta.gouv.fr",
   GRIST_API_URL:
     process.env.GRIST_API_URL || "https://grist.numerique.gouv.fr/api",
@@ -114,9 +114,9 @@ export default {
   GRIST_SEGUR_DOC_ID: process.env.GRIST_SEGUR_DOC_ID,
   GRIST_SEGUR_TABLE_ID: process.env.GRIST_SEGUR_TABLE_ID || "Demandes_Segur",
   DS_TOKEN: process.env.DS_TOKEN,
-   DS_DEMARCHE_NUMBER: process.env.DS_DEMARCHE_NUMBER
-     ? Number.parseInt(process.env.DS_DEMARCHE_NUMBER)
-     : null,
+  DS_DEMARCHE_NUMBER: process.env.DS_DEMARCHE_NUMBER
+    ? Number.parseInt(process.env.DS_DEMARCHE_NUMBER)
+    : null,
   user: {
     statusOptions: userStatusOptions,
     minStartDate: "2013-07-01",
@@ -127,17 +127,22 @@ export default {
   ESPACE_MEMBRE_ADMIN: process.env.ESPACE_MEMBRE_ADMIN
     ? process.env.ESPACE_MEMBRE_ADMIN.split(",")
     : [],
-   MAILING_LIST_NEWSLETTER: Number.parseInt(getOrThrowError("MAILING_LIST_NEWSLETTER")),
-   MAILING_LIST_ONBOARDING: process.env.MAILING_LIST_ONBOARDING
-     ? Number.parseInt(process.env.MAILING_LIST_ONBOARDING)
-     : null,
-   MAILING_LIST_REMINDER: process.env.MAILING_LIST_REMINDER
-     ? Number.parseInt(process.env.MAILING_LIST_REMINDER)
-     : null,
-   NEWSLETTER_NUMBER_OF_DAYS_WITH_LAST_NEWSLETTER: process.env
-     .NEWSLETTER_NUMBER_OF_DAYS_WITH_LAST_NEWSLETTER
-     ? Number.parseInt(process.env.NEWSLETTER_NUMBER_OF_DAYS_WITH_LAST_NEWSLETTER, 10)
-     : 10,
+  MAILING_LIST_NEWSLETTER: Number.parseInt(
+    getOrThrowError("MAILING_LIST_NEWSLETTER"),
+  ),
+  MAILING_LIST_ONBOARDING: process.env.MAILING_LIST_ONBOARDING
+    ? Number.parseInt(process.env.MAILING_LIST_ONBOARDING)
+    : null,
+  MAILING_LIST_REMINDER: process.env.MAILING_LIST_REMINDER
+    ? Number.parseInt(process.env.MAILING_LIST_REMINDER)
+    : null,
+  NEWSLETTER_NUMBER_OF_DAYS_WITH_LAST_NEWSLETTER: process.env
+    .NEWSLETTER_NUMBER_OF_DAYS_WITH_LAST_NEWSLETTER
+    ? Number.parseInt(
+        process.env.NEWSLETTER_NUMBER_OF_DAYS_WITH_LAST_NEWSLETTER,
+        10,
+      )
+    : 10,
   // If both emails of the users are already in sib update will not work
   FEATURE_SIB_USE_UPDATE_CONTACT_EMAIL:
     process.env.FEATURE_SIB_USE_UPDATE_CONTACT_EMAIL === "true",

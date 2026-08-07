@@ -214,10 +214,10 @@ function to_string(input) {
 
 function escape_string(input) {
   if (input === null || input === undefined) return "NULL";
-  return String(input).replaceAll("\\", "\\\\").replaceAll('"', '\"');
+  return String(input).replaceAll("\\", "\\\\").replaceAll('"', '\\"');
 }
 
 function unescape_string(input) {
   if (input === "NULL") return null;
-  return String(input).replaceAll('\"', '"').replaceAll("\\\\", "\\");
+  return String(input).replaceAll('\\"', '"').replaceAll("\\\\", "\\");
 }

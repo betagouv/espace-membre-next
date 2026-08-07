@@ -3,7 +3,7 @@ import Button from "@codegouvfr/react-dsfr/Button";
 import { fr } from "@codegouvfr/react-dsfr/fr";
 
 import { MemberPageProps } from "./MemberPage";
-import { getLastMissionDate } from "@/lib/member";
+import { getLastMissionDate } from "@/lib/member.utils";
 
 export const MemberExpirationNotice = ({
   userInfos,
