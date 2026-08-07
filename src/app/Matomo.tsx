@@ -6,7 +6,7 @@ import { init, push } from "@socialgouv/matomo-next";
 import { usePathname, useSearchParams } from "next/navigation";
 import { useEffectOnce } from "react-use";
 
-import config from "@/frontConfig";
+import config from "@/lib/frontConfig";
 
 export interface MatomoProps {
   nonce?: string;

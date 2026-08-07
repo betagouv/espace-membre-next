@@ -15,7 +15,7 @@ import { CompetencesEditor } from "@/components/BaseInfoUpdatePage/CompetencesEd
 import { Mission } from "@/components/BaseInfoUpdatePage/MissionsEditor";
 import CitySelect from "@/components/CitySelect";
 import GenderSelect from "@/components/GenderSelect";
-import { memberTypeOptions } from "@/frontConfig";
+import { memberTypeOptions } from "@/lib/frontConfig";
 import {
   memberValidateInfoSchema,
   memberValidateInfoSchemaInputType,

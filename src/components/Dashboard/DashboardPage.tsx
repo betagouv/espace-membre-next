@@ -18,7 +18,7 @@ import Link from "next/link";
 import ProgressBar from "../ProgressBar";
 import { getLatests as getLatestsProducts } from "@/lib/kysely/queries/startups";
 import { getLatests as getLatestsMembers } from "@/lib/kysely/queries/users";
-import frontConfig from "@/frontConfig";
+import frontConfig from "@/lib/frontConfig";
 import { routes } from "@/utils/routes/routes";
 
 type LatestProductsReturnType = Awaited<ReturnType<typeof getLatestsProducts>>;

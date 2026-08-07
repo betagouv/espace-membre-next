@@ -13,7 +13,7 @@ import Link from "next/link";
 import { useSearchParams } from "next/navigation";
 import { signIn } from "next-auth/react";
 
-import config from "@/frontConfig";
+import config from "@/lib/frontConfig";
 
 const ConnectBlock = ({ children }) => {
   return (

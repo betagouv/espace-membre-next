@@ -8,7 +8,7 @@ import { addMonths } from "date-fns/addMonths";
 import { useFieldArray, useWatch } from "react-hook-form";
 
 import SESelect from "../SESelect";
-import { userStatusOptions } from "@/frontConfig";
+import { userStatusOptions } from "@/lib/frontConfig";
 import { Option } from "@/models/misc";
 import {
   Status,
