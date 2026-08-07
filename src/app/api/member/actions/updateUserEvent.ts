@@ -8,13 +8,13 @@ import { addEvent } from "@/lib/events";
 import { db } from "@/lib/kysely";
 import { getUserInfos } from "@/lib/kysely/queries/users";
 import { EventCode } from "@/models/actionEvent/actionEvent";
-import { authOptions } from "@/utils/authoptions";
+import { authOptions } from "@/lib/authoptions";
 import {
   AuthorizationError,
   BusinessError,
   UnwrapPromise,
   withErrorHandling,
-} from "@/utils/error";
+} from "@/lib/error";
 
 export async function updateUserEvent({
   action_on_user_id,

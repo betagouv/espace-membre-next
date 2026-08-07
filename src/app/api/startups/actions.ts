@@ -13,14 +13,14 @@ import { startupInfoUpdateSchemaType } from "@/models/actions/startup";
 import { startupEventToModel } from "@/models/mapper";
 import { sponsorSchema } from "@/models/sponsor";
 import { phaseSchema } from "@/models/startup";
-import { authOptions } from "@/utils/authoptions";
+import { authOptions } from "@/lib/authoptions";
 import {
   AuthorizationError,
   NoDataError,
   StartupUniqueConstraintViolationError,
   UnwrapPromise,
   withErrorHandling,
-} from "@/utils/error";
+} from "@/lib/error";
 import { addMonths, differenceInDays } from "date-fns";
 import { ca } from "date-fns/locale";
 import { canEditStartup } from "@/lib/canEditStartup";

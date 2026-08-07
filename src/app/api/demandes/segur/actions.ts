@@ -9,12 +9,12 @@ import {
 } from "@/models/actions/segurRequest";
 import { GRIST_SEGUR_COLUMNS, SEGUR_STATUT } from "@/models/segur";
 import config from "@/server/config";
-import { authOptions } from "@/utils/authoptions";
+import { authOptions } from "@/lib/authoptions";
 import {
   AuthorizationError,
   BusinessError,
   withErrorHandling,
-} from "@/utils/error";
+} from "@/lib/error";
 
 export const submitSegurRequest = withErrorHandling(
   async (data: segurRequestSchemaType) => {

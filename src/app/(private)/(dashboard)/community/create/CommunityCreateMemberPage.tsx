@@ -12,15 +12,14 @@ import { useFieldArray, useForm } from "react-hook-form";
 
 import { Mission } from "@/components/BaseInfoUpdatePage/MissionsEditor";
 import SEIncubateurSelect from "@/components/SEIncubateurSelect";
+import { createMember } from "@/lib/actions/createMember";
 import {
-  createMemberResponseSchema,
   createMemberSchema,
   createMemberSchemaInputType,
   createMemberSchemaType,
 } from "@/models/actions/member";
 import { DOMAINE_OPTIONS, Domaine } from "@/models/member";
 import { Option } from "@/models/misc";
-import routes, { computeRoute } from "@/routes/routes";
 
 // data from secretariat API
 export interface BaseInfoUpdateProps {
@@ -91,23 +90,14 @@ export default function CommunityCreateMemberPage(props: BaseInfoUpdateProps) {
     }
     setIsSaving(true);
     setSuccess(null);
-    // todo: use server actions
-    const response = await fetch(computeRoute(routes.ACCOUNT_POST_INFO_API), {
-      method: "POST", // Specify the method
-      body: JSON.stringify(input), // Convert the values object to JSON
-      headers: {
-        "Content-Type": "application/json", // Specify the content type
-      },
-    });
+    const result = await createMember(input);
     setIsSaving(false);
-    const data = await response.json();
-    if (response.ok) {
-      const responseData = createMemberResponseSchema.parse(data);
+    if (result.success) {
       setSuccess(true);
       setAlertMessage({
         title: "C'est presque bon !",
         type: "info",
-        message: responseData.validated
+        message: result.data.validated
           ? `${firstname} ${lastname} va recevoir un email pour l'inviter à se connecter à l'espace membre et compléter sa fiche`
           : `La fiche de ${firstname} ${lastname} est en attente de validation par un membre de l'équipe transverse de son incubateur.`,
       });
@@ -116,7 +106,7 @@ export default function CommunityCreateMemberPage(props: BaseInfoUpdateProps) {
       setAlertMessage({
         title: "Erreur lors de la création de la fiche",
         type: "error",
-        message: data.message,
+        message: result.message,
       });
     }
     document.body.scrollIntoView();

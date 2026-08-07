@@ -13,7 +13,7 @@ import { missionSchemaType } from "@/models/mission";
 import { startupSchemaType } from "@/models/startup";
 import config from "@/server/config";
 import { sendEmail } from "@/server/config/email.config";
-import { EMAIL_TYPES } from "@/server/modules/email";
+import { EMAIL_TYPES } from "@/lib/email/email";
 
 export const sendEmailToTeamWhenNewMemberTopic =
   "send-email-to-team-when-new-member";

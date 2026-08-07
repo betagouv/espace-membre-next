@@ -1,3 +1,4 @@
+import { routeTitles } from "@/lib/routes";
 import { Metadata } from "next";
 import { redirect } from "next/navigation";
 import { getServerSession } from "next-auth";
@@ -14,8 +15,8 @@ import s3 from "@/lib/s3";
 import { startupChangeToModel, startupToModel } from "@/models/mapper";
 import { sponsorSchema } from "@/models/sponsor";
 import { eventSchema, phaseSchema } from "@/models/startup";
-import { authOptions } from "@/utils/authoptions";
-import { routeTitles } from "@/utils/routes/routeTitles";
+import { authOptions } from "@/lib/authoptions";
+
 
 type Props = {
   params: { id: string };

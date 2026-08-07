@@ -18,7 +18,7 @@ import {
   MjmlWrapper,
 } from "@luma-team/mjml-react";
 
-import { getBaseUrl } from "@/utils/url";
+import { getBaseUrl } from "@/lib/url";
 
 export interface StandardLayoutProps {
   title: string;

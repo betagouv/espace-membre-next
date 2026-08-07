@@ -4,7 +4,7 @@ import { getServerSession } from "next-auth/next";
 
 import { BreadCrumbFiller } from "@/app/BreadCrumbProvider";
 import MemberPage from "@/components/MemberPage/MemberPage";
-import { authOptions } from "@/utils/authoptions";
+import { authOptions } from "@/lib/authoptions";
 import { buildMemberPageProps } from "@/lib/memberPageProps";
 
 type Props = {

@@ -1,8 +1,9 @@
+import { routes } from "@/lib/routes";
 import { fr } from "@codegouvfr/react-dsfr/fr";
 import DataVisualization from "@codegouvfr/react-dsfr/picto/DataVisualization";
 import Tile from "@codegouvfr/react-dsfr/Tile";
 
-import { routes } from "@/utils/routes/routes";
+
 
 export const Footer = () => (
   <div className={fr.cx("fr-grid-row", "fr-grid-row--gutters")}>

@@ -9,7 +9,7 @@ import { addEvent } from "@/lib/events";
 import { db } from "@/lib/kysely";
 import { EventCode } from "@/models/actionEvent/actionEvent";
 import { teamUpdateSchemaType } from "@/models/actions/team";
-import { authOptions } from "@/utils/authoptions";
+import { authOptions } from "@/lib/authoptions";
 
 export async function updateTeam({
   teamWrapper: { team, members },

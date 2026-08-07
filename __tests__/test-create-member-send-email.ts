@@ -17,7 +17,7 @@ import {
 } from "@/models/mapper";
 import { Domaine } from "@/models/member";
 import config from "@/server/config";
-import { EMAIL_TYPES } from "@/server/modules/email";
+import { EMAIL_TYPES } from "@/lib/email/email";
 
 describe("Test creating new user flow : sending email", () => {
   let sendEmailStub, getServerSessionStub, sendNewMemberValidationEmail;

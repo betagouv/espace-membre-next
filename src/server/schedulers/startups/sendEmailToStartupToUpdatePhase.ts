@@ -5,9 +5,8 @@ import {
   PHASE_READABLE_NAME,
   startupSchemaType,
 } from "@/models/startup";
-import routes from "@/routes/routes";
 import { sendEmail } from "@/server/config/email.config";
-import { EMAIL_TYPES } from "@modules/email";
+import { EMAIL_TYPES } from "@/lib/email/email";
 
 /*
 remind new startups to update their phases
@@ -61,10 +60,7 @@ export const sendEmailToStartupToUpdatePhase = async (
           phase,
           readablePhase: PHASE_READABLE_NAME[phase],
           startup: startup.name,
-          link: `https://espace-membre.incubateur.net/${routes.STARTUP_GET_INFO_UPDATE_FORM.replace(
-            ":startup",
-            startup.uuid,
-          )}`,
+          link: `https://espace-membre.incubateur.net/startups/${startup.uuid}`,
         },
         forceTemplate: true,
         toEmail: [`${startup.mailing_list}@beta.gouv.fr`],

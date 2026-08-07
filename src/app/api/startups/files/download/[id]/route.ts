@@ -2,12 +2,12 @@ import { NextRequest } from "next/server";
 import { getServerSession } from "next-auth";
 
 import { db } from "@/lib/kysely";
-import { authOptions } from "@/utils/authoptions";
+import { authOptions } from "@/lib/authoptions";
 import {
   AuthorizationError,
   BusinessError,
   withHttpErrorHandling,
-} from "@/utils/error";
+} from "@/lib/error";
 
 async function getFileHandler(
   req: NextRequest,

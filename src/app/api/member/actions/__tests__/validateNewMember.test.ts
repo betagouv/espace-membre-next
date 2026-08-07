@@ -10,7 +10,7 @@ import * as bossClient from "@/server/queueing/client";
 import { validateNewMember } from "../validateNewMember";
 import { EmailStatusCode } from "@/models/member";
 import { EventCode } from "@/models/actionEvent";
-import { AuthorizationError, BusinessError } from "@/utils/error";
+import { AuthorizationError, BusinessError } from "@/lib/error";
 
 describe("validateNewMember", () => {
   let getServerSessionStub: sinon.SinonStub;

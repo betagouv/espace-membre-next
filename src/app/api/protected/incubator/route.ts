@@ -8,7 +8,7 @@ import {
   getAllIncubatorsMembers,
 } from "@/lib/kysely/queries/incubators";
 import { incubatorToModel, startupToModel } from "@/models/mapper";
-import { convertSearchParamsToRecord } from "@/utils/url";
+import { convertSearchParamsToRecord } from "@/lib/url";
 
 const enum IncubatorIncludes {
   STARTUPS = "startups",

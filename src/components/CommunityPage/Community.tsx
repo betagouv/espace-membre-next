@@ -1,4 +1,5 @@
 "use client";
+import { routes } from "@/lib/routes";
 import React, { startTransition, useCallback, useMemo, useState } from "react";
 
 import Button from "@codegouvfr/react-dsfr/Button";
@@ -21,9 +22,9 @@ import {
   type CommunityFilterSchemaType,
 } from "./utils";
 import AutoComplete from "../AutoComplete";
-import { isUserActive } from "@/utils/member";
-import { routes } from "@/utils/routes/routes";
-import { copyToClipboard } from "@/utils/copyToClipBoard";
+import { isUserActive } from "@/lib/member.utils";
+
+import { copyToClipboard } from "@/lib/copyToClipBoard";
 
 // to fix ReferenceError: window is not defined
 const MapComponent = dynamic(() => import("../Map").then((mod) => mod.Map), {

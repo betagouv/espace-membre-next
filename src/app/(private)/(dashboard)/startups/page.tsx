@@ -1,9 +1,10 @@
+import { routeTitles } from "@/lib/routes";
 import { Metadata } from "next";
 
 import { SearchFiles } from "./SearchFiles";
 import { getStartupFiles } from "@/app/api/startups/files/list";
 import { StartupList } from "@/components/StartupListPage";
-import { routeTitles } from "@/utils/routes/routeTitles";
+
 import { getAllIncubators } from "@/lib/kysely/queries/incubators";
 import { fr } from "@codegouvfr/react-dsfr";
 import Button from "@codegouvfr/react-dsfr/Button";

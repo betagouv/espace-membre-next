@@ -132,8 +132,6 @@ const css = `.markdown-body {
 .markdown-body li+li {
   margin-top: 0.25em;
 }
-
-
 /* BETA overrides for accessibility ==> */
 
 .markdown-body h1,

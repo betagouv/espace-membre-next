@@ -1,3 +1,4 @@
+import { routeTitles } from "@/lib/routes";
 import type { Metadata } from "next";
 import { cookies } from "next/headers";
 import { redirect } from "next/navigation";
@@ -14,10 +15,10 @@ import {
 } from "@/lib/kysely/queries/users";
 import { userInfosToModel } from "@/models/mapper";
 import { EmailStatusCode } from "@/models/member";
-import { routeTitles } from "@/utils/routes/routeTitles";
+
 import { getServerSession } from "next-auth";
-import { authOptions } from "@/utils/authoptions";
-import { getUserChecklists } from "@/utils/checklists/getUserChecklists";
+import { authOptions } from "@/lib/authoptions";
+import { getUserChecklists } from "@/lib/checklists/getUserChecklists";
 
 export const metadata: Metadata = {
   title: `${routeTitles.dashboard()} / Espace Membre`,

@@ -1,4 +1,5 @@
 "use client";
+import { routeTitles } from "@/lib/routes";
 import React from "react";
 
 import { fr } from "@codegouvfr/react-dsfr";
@@ -8,6 +9,7 @@ import LastChange from "../LastChange";
 import { StartupForm, StartupFormProps } from "../StartupForm/StartupForm";
 import { ActionResponse } from "@/@types/serverAction";
 import { safeUpdateStartup, updateStartup } from "@/app/api/startups/actions";
+import { deleteImage } from "@/lib/actions/image";
 import { startupInfoUpdateSchemaType } from "@/models/actions/startup";
 import { Option } from "@/models/misc";
 import { sponsorSchemaType } from "@/models/sponsor";
@@ -17,8 +19,8 @@ import {
   startupSchemaType,
 } from "@/models/startup";
 import { StartupChangeSchemaType } from "@/models/startupChange";
-import { saveImage } from "@/utils/file";
-import { routeTitles } from "@/utils/routes/routeTitles";
+import { saveImage } from "@/lib/file";
+
 
 interface StartupInfoUpdateProps {
   startup: startupSchemaType;
@@ -71,30 +73,18 @@ export const StartupInfoUpdate = (props: StartupInfoUpdateProps) => {
         }
 
         if (data.shouldDeleteHero) {
-          await fetch("/api/image", {
-            method: "DELETE",
-            headers: {
-              "Content-Type": "application/json",
-            },
-            body: JSON.stringify({
-              fileObjIdentifier: res.data.ghid,
-              fileIdentifier: "hero",
-              fileRelativeObjType: "startup",
-            }),
+          await deleteImage({
+            fileObjIdentifier: res.data.ghid,
+            fileIdentifier: "hero",
+            fileRelativeObjType: "startup",
           });
         }
 
         if (data.shouldDeleteShot) {
-          await fetch("/api/image", {
-            method: "DELETE",
-            headers: {
-              "Content-Type": "application/json",
-            },
-            body: JSON.stringify({
-              fileObjIdentifier: res.data.ghid,
-              fileIdentifier: "shot",
-              fileRelativeObjType: "startup",
-            }),
+          await deleteImage({
+            fileObjIdentifier: res.data.ghid,
+            fileIdentifier: "shot",
+            fileRelativeObjType: "startup",
           });
         }
       }

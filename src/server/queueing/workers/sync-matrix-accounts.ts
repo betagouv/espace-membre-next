@@ -1,6 +1,6 @@
 import PgBoss from "pg-boss";
 import { db } from "@/lib/kysely";
-import { isPublicServiceEmail } from "@/server/controllers/utils";
+import { isPublicServiceEmail } from "@/lib/utils";
 import { lookupMatrixIdsByEmails } from "@/lib/matrix/client";
 
 export const syncMatrixAccountsTopic = "sync-matrix-accounts";

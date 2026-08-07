@@ -17,12 +17,12 @@ import {
   OpsFieldKey,
 } from "@/models/ops";
 import config from "@/server/config";
-import { authOptions } from "@/utils/authoptions";
+import { authOptions } from "@/lib/authoptions";
 import {
   AuthorizationError,
   BusinessError,
   withErrorHandling,
-} from "@/utils/error";
+} from "@/lib/error";
 
 export const submitOpsRequest = withErrorHandling(
   async (data: opsRequestSchemaType) => {
@@ -50,14 +50,14 @@ export const submitOpsRequest = withErrorHandling(
     // Incubateur du produit sélectionné (ex: la Ruche). Peut être absent si le
     // produit n'est rattaché à aucun incubateur.
     const incubateur = parsed.startupId
-      ? (
+      ? ((
           await db
             .selectFrom("startups")
             .innerJoin("incubators", "incubators.uuid", "startups.incubator_id")
             .select("incubators.title")
             .where("startups.uuid", "=", parsed.startupId)
             .executeTakeFirst()
-        )?.title ?? ""
+        )?.title ?? "")
       : "";
 
     const fields: GristRecordFields = {

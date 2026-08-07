@@ -1,9 +1,10 @@
+import { routeTitles } from "@/lib/routes";
 import { Metadata } from "next";
 
 import { OrganizationCreate } from "@/components/organization/OrganizationCreatePage";
 import { db } from "@/lib/kysely";
 import { organizationToModel } from "@/models/mapper";
-import { routeTitles } from "@/utils/routes/routeTitles";
+
 
 export const metadata: Metadata = {
   title: `${routeTitles.organizationCreate()} / Espace Membre`,

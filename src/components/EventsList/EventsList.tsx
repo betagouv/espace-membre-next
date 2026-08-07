@@ -3,7 +3,7 @@ import Card from "@codegouvfr/react-dsfr/Card";
 import { format } from "date-fns";
 import { fr as frLocale } from "date-fns/locale/fr";
 import MarkdownIt from "markdown-it";
-import { CalendarResponse } from "@/utils/ical";
+import { CalendarResponse } from "@/lib/ical";
 
 // @ts-ignore
 import "./EventsList.css";

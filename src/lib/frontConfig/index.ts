@@ -1,0 +1,60 @@
+import { z } from "zod";
+
+import { MemberType } from "@/models/member";
+
+const isSecure = (process.env.SECURE || "true") === "true";
+
+export const userStatusOptions = [
+  { name: "Indépendant", key: "independent" },
+  {
+    name: "Agent Public (fonctionnaire ou sous contrat stage, alternance, CDD ou CDI avec une structure publique)",
+    key: "admin",
+  },
+  { name: "Société de service", key: "service" },
+];
+
+export const memberTypeOptions = [
+  { name: `Membre d'une startup ou d'un incubateur`, key: MemberType.BETA },
+  {
+    name: "Responsable de compte chez un attributaire",
+    key: MemberType.ATTRIBUTAIRE,
+  },
+  {
+    name: `Membre d'un autre service DINUM (etalab, ...)`,
+    key: MemberType.DINUM,
+  },
+  { name: `Autre`, key: MemberType.OTHER },
+];
+
+const alertMessageSchema = z.object({
+  description: z.string().optional(),
+  title: z.string(),
+  severity: z.enum(["info", "warning"]),
+});
+
+// eslint-disable-next-line import/no-anonymous-default-export
+export default {
+  protocol: isSecure ? "https" : "http",
+  NEXT_PUBLIC_ALERT_MESSAGE_PRIVATE: process.env
+    .NEXT_PUBLIC_ALERT_MESSAGE_PRIVATE
+    ? alertMessageSchema.parse(
+        JSON.parse(process.env.NEXT_PUBLIC_ALERT_MESSAGE_PRIVATE),
+      )
+    : undefined,
+  NEXT_PUBLIC_ALERT_MESSAGE_PUBLIC: process.env.NEXT_PUBLIC_ALERT_MESSAGE_PUBLIC
+    ? alertMessageSchema.parse(
+        JSON.parse(process.env.NEXT_PUBLIC_ALERT_MESSAGE_PUBLIC),
+      )
+    : undefined,
+  NEXT_PUBLIC_CHAT_SUPPORT_SERVICE:
+    process.env.NEXT_PUBLIC_CHAT_SUPPORT_SERVICE,
+  matomoUrl: process.env.NEXT_PUBLIC_MATOMO_URL,
+  matomoSiteId: process.env.NEXT_PUBLIC_MATOMO_SITE_ID,
+  FEATURE_SHOW_UPLOAD_IMAGE_PRODUCT_WIDGET:
+    process.env.NEXT_PUBLIC_FEATURE_SHOW_UPLOAD_IMAGE_PRODUCT_WIDGET,
+  FEATURE_SHOW_PROCONNECT_LOGIN:
+    process.env.NEXT_PUBLIC_FEATURE_SHOW_PROCONNECT_LOGIN,
+  newsletterContentUrl:
+    process.env.NEWSLETTER_CONTENT_URL ||
+    "https://docs.numerique.gouv.fr/docs/8354b3be-0f1f-4690-8f89-a6c4a738f374",
+};

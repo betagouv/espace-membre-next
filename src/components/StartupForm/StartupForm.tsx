@@ -24,7 +24,7 @@ import AutoComplete from "../AutoComplete";
 import { ClientOnly } from "../ClientOnly";
 import UploadForm from "../UploadForm/UploadForm";
 import { ActionResponse } from "@/@types/serverAction";
-import frontConfig from "@/frontConfig";
+import frontConfig from "@/lib/frontConfig";
 import {
   startupInfoUpdateSchema,
   startupInfoUpdateSchemaInputType,

@@ -1,7 +1,8 @@
+import { routeTitles } from "@/lib/routes";
 import Link from "next/link";
 import type { Metadata } from "next";
 
-import { routeTitles } from "@/utils/routes/routeTitles";
+
 import { fr } from "@codegouvfr/react-dsfr";
 
 export const metadata: Metadata = {

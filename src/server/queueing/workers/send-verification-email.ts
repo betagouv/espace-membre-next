@@ -2,16 +2,16 @@ import PgBoss from "pg-boss";
 import { randomBytes } from "node:crypto";
 
 import { addEvent } from "@/lib/events";
-import { hashToken } from "@/utils/auth/hashToken";
-import { createVerificationToken } from "@/utils/pgAdpter";
-import { getBaseUrl } from "@/utils/url";
+import { hashToken } from "@/lib/auth/hashToken";
+import { createVerificationToken } from "@/lib/pgAdpter";
+import { getBaseUrl } from "@/lib/url";
 import { EventCode, SYSTEM_NAME } from "@/models/actionEvent/actionEvent";
 
 import { getUserBasicInfo } from "@/lib/kysely/queries/users";
 import { SendNewMemberVerificationEmailSchemaType } from "@/models/jobs/member";
 import config from "@/server/config";
 import { sendEmail } from "@/server/config/email.config";
-import { EMAIL_TYPES } from "@/server/modules/email";
+import { EMAIL_TYPES } from "@/lib/email/email";
 
 export const sendNewMemberVerificationEmailTopic =
   "send-new-member-verification-email";

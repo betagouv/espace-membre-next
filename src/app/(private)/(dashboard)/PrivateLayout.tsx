@@ -1,5 +1,5 @@
 import Alert from "@codegouvfr/react-dsfr/Alert";
-import frontConfig from "@/frontConfig";
+import frontConfig from "@/lib/frontConfig";
 import React from "react";
 import { BreadCrumbs } from "./BreadCrumbs";
 

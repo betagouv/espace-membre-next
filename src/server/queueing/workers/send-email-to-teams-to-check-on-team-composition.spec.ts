@@ -12,7 +12,7 @@ import {
   startupToModel,
 } from "@/models/mapper";
 import config from "@/server/config";
-import { EMAIL_TYPES } from "@/server/modules/email";
+import { EMAIL_TYPES } from "@/lib/email/email";
 import { testUsers } from "__tests__/utils/users-data";
 import utils from "__tests__/utils/utils";
 

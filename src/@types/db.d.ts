@@ -171,7 +171,6 @@ export interface KnexMigrationsLock {
   is_locked: number | null;
 }
 
-
 export interface MatomoSites {
   created_at: Generated<Timestamp>;
   id: Generated<string>;

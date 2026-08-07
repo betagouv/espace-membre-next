@@ -1,6 +1,6 @@
 name: Node.js CI
 
-on: [ push ]
+on: [push]
 
 jobs:
   build:
@@ -34,6 +34,8 @@ jobs:
           HASH_SALT: fakesaltfortestenv
           GITHUB_FORK: dummy-github-fork
           MAILING_LIST_NEWSLETTER: 0
+      - name: Validate checklists YAML
+        run: npx ts-node .github/scripts/validate-checklists.ts
       - run: npm run test
         env:
           CI: true

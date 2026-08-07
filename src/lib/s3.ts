@@ -1,6 +1,6 @@
 import { S3, Endpoint } from "aws-sdk";
 
-import config from "@/server/config";
+import config from "@/lib/config";
 
 let s3;
 if (process.env.NODE_ENV === "test" || process.env.CI) {

@@ -1,4 +1,5 @@
 "use client";
+import { routeTitles } from "@/lib/routes";
 import React from "react";
 
 import { fr } from "@codegouvfr/react-dsfr";
@@ -9,7 +10,7 @@ import { updateOrganization } from "@/app/api/organizations/actions/updateOrgani
 import { organizationUpdateSchemaType } from "@/models/actions/organization";
 import { Option } from "@/models/misc";
 import { sponsorSchemaType } from "@/models/sponsor";
-import { routeTitles } from "@/utils/routes/routeTitles";
+
 
 interface OrganizationUpdateProps {
   organization: sponsorSchemaType;

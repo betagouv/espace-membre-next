@@ -13,7 +13,7 @@ import { db } from "@/lib/kysely";
 import { Domaine, EmailStatusCode } from "@/models/member";
 import config from "@/server/config";
 import { stopBossClientInstance } from "@/server/queueing/client";
-import knex from "@db";
+import knex from "@/lib/db";
 
 const testUtils = {
   getJWT(id: string) {

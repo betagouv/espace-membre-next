@@ -105,8 +105,6 @@ Membre du réseau beta.gouv dont il suit et diffuse [l'approche](https://beta.go
 - **développant, selon la méthodologie "startup d'Etat", des services publics numériques** à impact répondant à leurs besoins ;
 - **transformant les méthodologies et outils des agents publics de XXX** ;
 - **s'impliquant dans la structuration et l'écosystème des communs numériques**
-
-
 `;
 export function IncubatorForm(props: IncubatorFormProps) {
   const {

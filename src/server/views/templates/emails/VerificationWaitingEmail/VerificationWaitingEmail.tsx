@@ -3,7 +3,7 @@ import React from "react";
 import { MjmlText, MjmlButton } from "@luma-team/mjml-react";
 
 import { StandardLayout } from "@/components/emails/layouts/StandardEmail";
-import { EmailVerificationWaiting } from "@/server/modules/email";
+import { EmailVerificationWaiting } from "@/lib/email/email";
 export function VerificationWaitingEmailTitle() {
   return `Ta fiche a été validée.`;
 }

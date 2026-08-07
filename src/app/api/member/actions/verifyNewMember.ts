@@ -5,9 +5,9 @@ import { getServerSession } from "next-auth";
 import { updateMember } from "../updateMember";
 import { memberValidateInfoSchemaType } from "@/models/actions/member";
 import { Domaine, EmailStatusCode } from "@/models/member";
-import { isPublicServiceEmail, isAdminEmail } from "@/server/controllers/utils";
-import { authOptions } from "@/utils/authoptions";
-import { AdminEmailNotAllowedError } from "@/utils/error";
+import { isPublicServiceEmail, isAdminEmail } from "@/lib/utils";
+import { authOptions } from "@/lib/authoptions";
+import { AdminEmailNotAllowedError } from "@/lib/error";
 import { getBossClientInstance } from "@/server/queueing/client";
 import { createDimailMailboxTopic } from "@/server/queueing/workers/create-dimail-mailbox";
 

@@ -30,7 +30,7 @@ const mockDb = {
 
 const { createDimailMailboxForUser } = proxyquire("./create-dimail-mailbox", {
   "@/lib/kysely/queries/users": { getUserBasicInfo: mockGetUserBasicInfo },
-  "@lib/dimail/client": {
+  "@/lib/dimail/client": {
     createMailbox: mockCreateMailbox,
     createAlias: mockCreateAlias,
   },

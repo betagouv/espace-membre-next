@@ -19,6 +19,8 @@ fileignoreconfig:
   checksum: 6f1851774271e3f0d3fcdf1feac4cd6ba03f6e75922fd839a94b276589a77b76
 - filename: src/app/(private)/(dashboard)/services/page.tsx
   checksum: daebae004c8c06af9a88aaf57a1fad4b0a6efcb7920cf9628e0c1fd1985569ab
+- filename: src/app/api/member/route.ts
+  checksum: 70c62cc99b6a82c2b8ef217dd083531e311a863bb637921a4c15628aed1ac119
 - filename: src/components/Checklist.tsx
   checksum: 7bcd2b7b8aa2c603855af404f89c24d9bb02ba6e7b4a2a8503ef7b1b72902178
 - filename: src/components/EventsList/EventsList.tsx
@@ -35,10 +37,24 @@ fileignoreconfig:
   checksum: eadc2f2e6e18c331613266eab493ddac385b8fa083d0f4ad21596b89b2cf59ab
 - filename: src/components/StartupPage/StartupMembers.tsx
   checksum: 6a20aba25aa570f49f0413babcb256d1db870522851f2e865088df7fe6e583a9
+- filename: src/lib/actions/image.ts
+  checksum: 3482e0b52c661f24a115fad091f54289876651d8250a2e3fb8d691726221e7b4
+- filename: src/lib/auth/hashToken.ts
+  checksum: 8349543ad0dc5c9fbf09ab2b87276cfd3ee12bafdb8515da711657522f32904d
+- filename: src/lib/checklists/offboarding.yml
+  checksum: 384a97d6f52970048feb3e4f140a4c9993a190c15acb431cb3035001f3f3f755
+- filename: src/lib/checklists/onboarding.yml
+  checksum: 1ab3c4ca78b0893cf2c612862c11e3ac79401ac773332140fe8f78ee14c0ebc6
+- filename: src/lib/config.ts
+  checksum: 518a52174c33e1e08cd39254f1c9b5b9562e0a3b66e799a0a7516d86ae90ede5
 - filename: src/lib/dimail/client.spec.ts
   checksum: 777854cc51487a9f8f857ce5cb3e2bfe813c402848eef135d5aa0caff6086659
 - filename: src/lib/dimail/client.ts
   checksum: b43b16ede6c1744a50d3624f4dcb6e07cce09959524b0b655c45bc82e9d06a22
+- filename: src/lib/hstore.ts
+  checksum: 4875c83d95ffdac95c1b9847f3d27d2ffdf0b1cbbc0a6c83ccb6ae9abf25a81d
+- filename: src/lib/routes.ts
+  checksum: e2a041fe934441a29c6274fcb06f378a217c25c89d3f96a5c82cee4164a5e4ee
 - filename: src/lib/s3.ts
   checksum: a74621f69d4d7e4cdb99c05d127fcdc4a3f81aed2dc921146272f3deed3e283e
 - filename: src/models/misc.ts

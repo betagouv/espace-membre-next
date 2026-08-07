@@ -1,3 +1,4 @@
+import { routes } from "@/lib/routes";
 import { fr } from "@codegouvfr/react-dsfr/fr";
 import Table from "@codegouvfr/react-dsfr/Table";
 import Tag from "@codegouvfr/react-dsfr/Tag";
@@ -5,7 +6,7 @@ import { format } from "date-fns";
 import { fr as frLocale } from "date-fns/locale/fr";
 
 import { MemberPageProps } from "./MemberPage";
-import { routes } from "@/utils/routes/routes";
+
 
 export const MemberMissions = ({
   startups,

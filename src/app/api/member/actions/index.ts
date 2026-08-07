@@ -26,9 +26,9 @@ import {
   addContactsToMailingLists,
   removeContactsFromMailingList,
 } from "@/server/config/email.config";
-import { capitalizeWords, userInfos } from "@/server/controllers/utils";
-import { Contact, MAILING_LIST_TYPE } from "@/server/modules/email";
-import { authOptions } from "@/utils/authoptions";
+import { capitalizeWords, userInfos } from "@/lib/utils";
+import { Contact, MAILING_LIST_TYPE } from "@/lib/email/email";
+import { authOptions } from "@/lib/authoptions";
 import {
   AuthorizationError,
   NoDataError,
@@ -36,7 +36,7 @@ import {
   ValidationError,
   withErrorHandling,
   BusinessError,
-} from "@/utils/error";
+} from "@/lib/error";
 import { canEditMember as _canEditMember } from "@/lib/canEditMember";
 
 async function changeSecondaryEmailForUser(

@@ -12,7 +12,7 @@ import {
 } from "@luma-team/mjml-react";
 
 import { StandardLayout } from "@/components/emails/layouts/StandardEmail";
-import { EmailNewMemberValidation } from "@/server/modules/email";
+import { EmailNewMemberValidation } from "@/lib/email/email";
 
 export function MemberValidationEmailTitle() {
   return `Nouveau membre à valider`;

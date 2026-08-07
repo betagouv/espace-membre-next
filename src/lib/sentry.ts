@@ -1,10 +1,10 @@
 import * as Sentry from "@sentry/node";
 import slugify from "@sindresorhus/slugify";
-import { CustomError as LibraryCustomError } from "ts-custom-error";
 import { z } from "zod";
 
 import { AccountService, SERVICES } from "@/models/services";
-import config from "@/server/config";
+import config from "@/lib/config";
+import { CustomError } from "@/lib/error";
 
 export enum SentryRole {
   admin = "admin",
@@ -403,27 +403,9 @@ export class SentryService implements AccountService {
   }
 }
 
-export class CustomError extends LibraryCustomError {
-  public constructor(
-    public readonly code: string,
-    message: string = "",
-  ) {
-    super(message);
-  }
-
-  public json(): object {
-    return {
-      code: this.code,
-      message: this.message,
-    };
-  }
-}
-
 const t = (key: string) => {
   return key;
 };
-
-export class UnexpectedError extends CustomError {}
 
 export class SentryError extends CustomError {
   public constructor(

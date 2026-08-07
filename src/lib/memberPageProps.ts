@@ -1,7 +1,7 @@
 import { MemberPageProps } from "@/components/MemberPage/MemberPage";
-import { userInfos } from "@/server/controllers/utils";
+import { userInfos } from "@/lib/utils";
 import { canEditMember as _canEditMember } from "@/lib/canEditMember";
-import { getUserChecklists } from "@/utils/checklists/getUserChecklists";
+import { getUserChecklists } from "@/lib/checklists/getUserChecklists";
 import {
   getUserStartups,
   getUserIncubators,
@@ -35,21 +35,27 @@ export async function buildMemberPageProps({
 
   const baseInfo = memberBaseInfoToModel(dbUser);
 
-  const [changes, avatar, startups, matrixAccount, { onboarding, offboarding }, incubators] =
-    await Promise.all([
-      getEventListByUsername(memberId).then((events) =>
-        events.map(memberChangeToModel),
-      ),
-      getAvatarUrl(dbUser.username),
-      getUserStartups(dbUser.uuid),
-      db
-        .selectFrom("matrix_accounts")
-        .select("matrix_id")
-        .where("user_id", "=", dbUser.uuid)
-        .executeTakeFirst(),
-      getUserChecklists(user.userInfos.uuid),
-      getUserIncubators(dbUser.uuid),
-    ]);
+  const [
+    changes,
+    avatar,
+    startups,
+    matrixAccount,
+    { onboarding, offboarding },
+    incubators,
+  ] = await Promise.all([
+    getEventListByUsername(memberId).then((events) =>
+      events.map(memberChangeToModel),
+    ),
+    getAvatarUrl(dbUser.username),
+    getUserStartups(dbUser.uuid),
+    db
+      .selectFrom("matrix_accounts")
+      .select("matrix_id")
+      .where("user_id", "=", dbUser.uuid)
+      .executeTakeFirst(),
+    getUserChecklists(user.userInfos.uuid),
+    getUserIncubators(dbUser.uuid),
+  ]);
 
   const isAdmin = !!session.user.isAdmin;
   const canEditMember = isCurrentUser

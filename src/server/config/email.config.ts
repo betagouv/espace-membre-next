@@ -11,8 +11,8 @@ import {
   fakeGetAllContactsFromList,
   fakeUnblacklistContactEmail,
   fakeGetContactInfo,
-} from "@infra/email";
-import { makeSendinblue } from "@infra/email/sendInBlue";
+} from "@/lib/email";
+import { makeSendinblue } from "@/lib/email/sendInBlue";
 import {
   AddContactsToMailingLists,
   GetAllContacts,
@@ -26,8 +26,8 @@ import {
   UpdateContactEmail,
   UnblacklistContactEmail,
   GetContactInfo,
-} from "@modules/email";
-import htmlBuilder from "@modules/htmlbuilder/htmlbuilder";
+} from "@/lib/email/email";
+import htmlBuilder from "@/lib/htmlbuilder";
 
 let sendEmail: SendEmail = fakeSendEmail;
 let addContactsToMailingLists: AddContactsToMailingLists =

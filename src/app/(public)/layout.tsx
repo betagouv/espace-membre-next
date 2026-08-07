@@ -4,7 +4,7 @@ import { PropsWithChildren } from "react";
 
 import Alert from "@codegouvfr/react-dsfr/Alert";
 
-import frontConfig from "@/frontConfig";
+import frontConfig from "@/lib/frontConfig";
 
 export default function Layout(props: PropsWithChildren) {
   return (

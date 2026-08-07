@@ -1,15 +1,12 @@
 "use client";
+import { routes, routeTitles } from "@/lib/routes";
 import React from "react";
-
-import { routes } from "@/utils/routes/routes";
-
 import { Header, HeaderProps } from "@codegouvfr/react-dsfr/Header";
 import { usePathname, useRouter } from "next/navigation";
 import { signOut, useSession } from "next-auth/react";
 import { v4 as uuidv4 } from "uuid";
 
 import { useLiveChat } from "@/components/live-chat/useLiveChat";
-import { routeTitles } from "@/utils/routes/routeTitles";
 
 const isCurrentPath = (pathname, rootPath) => pathname.startsWith(rootPath);
 

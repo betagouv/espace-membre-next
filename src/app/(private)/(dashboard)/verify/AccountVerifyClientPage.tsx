@@ -15,7 +15,7 @@ import { CompetencesEditor } from "@/components/BaseInfoUpdatePage/CompetencesEd
 import { Mission } from "@/components/BaseInfoUpdatePage/MissionsEditor";
 import CitySelect from "@/components/CitySelect";
 import GenderSelect from "@/components/GenderSelect";
-import { memberTypeOptions } from "@/frontConfig";
+import { memberTypeOptions } from "@/lib/frontConfig";
 import {
   memberValidateInfoSchema,
   memberValidateInfoSchemaInputType,
@@ -438,7 +438,7 @@ export default function AccountVerifyClientPage({
                             hintText="Tu pourras changer plus tard"
                             nativeInputProps={{
                               ...register("average_nb_of_days", {
-                                setValueAs: ( 
+                                setValueAs: (
                                   // use this instead of valueAsNumber to handle undefined value
                                   v,
                                 ) => (!v ? null : parseInt(v)),

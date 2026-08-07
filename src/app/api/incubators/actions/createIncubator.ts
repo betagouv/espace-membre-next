@@ -12,12 +12,12 @@ import {
 } from "@/models/actions/incubator";
 import { incubatorSchemaType } from "@/models/incubator";
 import { incubatorToModel } from "@/models/mapper";
-import { authOptions } from "@/utils/authoptions";
+import { authOptions } from "@/lib/authoptions";
 import {
   AuthorizationError,
   UnwrapPromise,
   withErrorHandling,
-} from "@/utils/error";
+} from "@/lib/error";
 
 export async function createIncubator({
   incubator,

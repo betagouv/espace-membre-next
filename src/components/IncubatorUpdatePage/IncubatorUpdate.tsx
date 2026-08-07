@@ -1,4 +1,5 @@
 "use client";
+import { routeTitles } from "@/lib/routes";
 import React from "react";
 
 import { fr } from "@codegouvfr/react-dsfr";
@@ -14,8 +15,9 @@ import { incubatorUpdateSchemaType } from "@/models/actions/incubator";
 import { incubatorSchemaType } from "@/models/incubator";
 import { Option } from "@/models/misc";
 import { startupSchemaType } from "@/models/startup";
-import { saveImage } from "@/utils/file";
-import { routeTitles } from "@/utils/routes/routeTitles";
+import { saveImage } from "@/lib/file";
+import { deleteImage } from "@/lib/actions/image";
+
 
 interface IncubatorUpdateProps {
   incubator: incubatorSchemaType;
@@ -47,16 +49,10 @@ export const IncubatorUpdate = (props: IncubatorUpdateProps) => {
         }
 
         if (data.shouldDeleteLogo) {
-          await fetch("/api/image", {
-            method: "DELETE",
-            headers: {
-              "Content-Type": "application/json",
-            },
-            body: JSON.stringify({
-              fileObjIdentifier: res.data.ghid,
-              fileIdentifer: "hero",
-              fileRelativeObjType: "startup",
-            }),
+          await deleteImage({
+            fileObjIdentifier: res.data.ghid,
+            fileIdentifier: "logo",
+            fileRelativeObjType: "incubator",
           });
         }
       }

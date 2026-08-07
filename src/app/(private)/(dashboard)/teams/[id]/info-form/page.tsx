@@ -1,3 +1,4 @@
+import { routeTitles } from "@/lib/routes";
 import { Metadata } from "next";
 import { redirect } from "next/navigation";
 import { getServerSession } from "next-auth";
@@ -15,8 +16,8 @@ import {
   memberPublicInfoToModel,
   teamToModel,
 } from "@/models/mapper";
-import { authOptions } from "@/utils/authoptions";
-import { routeTitles } from "@/utils/routes/routeTitles";
+import { authOptions } from "@/lib/authoptions";
+
 
 type Props = {
   params: { id: string };

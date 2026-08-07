@@ -1,12 +1,12 @@
 import { expect } from "chai";
 import sinon from "sinon";
 import * as nextAuth from "next-auth/next";
-import * as controllerUtils from "@/server/controllers/utils";
+import * as controllerUtils from "@/lib/utils";
 import * as updateMemberModule from "@/app/api/member/updateMember";
 import * as bossClient from "@/server/queueing/client";
 import { verifyNewMember } from "../verifyNewMember";
 import { Domaine, EmailStatusCode } from "@/models/member";
-import { AdminEmailNotAllowedError } from "@/utils/error";
+import { AdminEmailNotAllowedError } from "@/lib/error";
 
 describe("verifyNewMember", () => {
   let getServerSessionStub: sinon.SinonStub;

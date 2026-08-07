@@ -8,7 +8,7 @@ import * as Sentry from "@sentry/nextjs";
 import axios from "axios";
 import { useSession } from "next-auth/react";
 
-import frontConfig from "@/frontConfig";
+import frontConfig from "@/lib/frontConfig";
 
 export default function SignClientPage() {
   const [error, setError] = React.useState<string>("");

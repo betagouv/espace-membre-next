@@ -2,7 +2,6 @@ import { addMonths } from "date-fns/addMonths";
 import { toZonedTime } from "date-fns-tz";
 import { z } from "zod";
 
-import { FileType } from "@/lib/file";
 import { memberSchema } from "@/models/member";
 
 const checkMissionsAreNotMoreThan6Months = (missions, ctx) => {
@@ -60,8 +59,8 @@ export const memberInfoUpdateSchema = z.object({
     osm_city: memberSchema.shape.osm_city,
   }),
   picture: z
-    .instanceof(FileType)
-    .refine((file) => file.size > 0, "File is required")
+    .any()
+    .refine((file) => file?.size > 0, "File is required")
     .nullable()
     .optional(),
   shouldDeletePicture: z.boolean().optional().nullable(),
