@@ -1,6 +1,6 @@
 import crypto from "crypto";
 import axios from "axios";
-import config from "@/server/config";
+import config from "@/lib/config";
 
 const BATCH_SIZE = 50;
 

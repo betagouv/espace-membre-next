@@ -10,7 +10,7 @@ import {
   isPublicServiceEmail,
   isAdminEmail,
   userInfos,
-} from "@/lib/controllers";
+} from "@/lib/utils";
 import { authOptions } from "@/server/authoptions";
 import {
   AuthorizationError,

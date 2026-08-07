@@ -1,8 +1,4 @@
 import axios from "axios";
-import { createCipheriv, createDecipheriv, randomBytes } from "crypto";
-import { compareAsc, startOfDay } from "date-fns";
-import _ from "lodash";
-import nodemailer from "nodemailer";
 
 import { getUserInfos } from "@/lib/kysely/queries/users";
 import { userInfosToModel } from "@/models/mapper";
@@ -16,75 +12,6 @@ import {
 import config from "@/lib/config";
 import { getDimailEmailsByUser } from "@/lib/kysely/queries/dimail";
 
-export function encryptPassword(password) {
-  const iv = randomBytes(16);
-
-  const cipher = createCipheriv(
-    "aes-256-cbc",
-    new Uint8Array(Buffer.from(config.PASSWORD_ENCRYPT_KEY!, "hex")),
-    new Uint8Array(iv),
-  );
-  let encrypted = cipher.update(password, "utf8", "hex");
-  encrypted += cipher.final("hex");
-  return `${iv.toString("hex")}:${encrypted}`;
-}
-
-export function decryptPassword(encryptedPassword) {
-  const key = Buffer.from(config.PASSWORD_ENCRYPT_KEY!, "hex");
-  const [ivHex, encrypted] = encryptedPassword.split(":");
-  const iv = Buffer.from(ivHex, "hex");
-
-  const decipher = createDecipheriv(
-    "aes-256-cbc",
-    new Uint8Array(key),
-    new Uint8Array(iv),
-  );
-  let decrypted = decipher.update(encrypted, "hex", "utf8");
-  decrypted += decipher.final("utf8");
-  return decrypted;
-}
-
-const mailTransport = nodemailer.createTransport({
-  debug: process.env.MAIL_DEBUG === "true",
-  service: process.env.MAIL_SERVICE ? process.env.MAIL_SERVICE : null,
-  host: process.env.MAIL_SERVICE ? null : process.env.MAIL_HOST,
-  port: process.env.MAIL_SERVICE
-    ? null
-    : parseInt(process.env.MAIL_PORT || "25", 10),
-  ignoreTLS: process.env.MAIL_SERVICE
-    ? null
-    : process.env.MAIL_IGNORE_TLS === "true",
-  auth: {
-    user: process.env.MAIL_USER,
-    pass: process.env.MAIL_PASS,
-  },
-});
-
-export async function sendMail(
-  toEmail,
-  subject,
-  html,
-  extraParams = {},
-  attachments = [],
-) {
-  const mail = {
-    to: toEmail,
-    from: `Espace Membre BetaGouv <${config.senderEmail}>`,
-    subject,
-    html,
-    text: html.replace(/<(?:.|\n)*?>/gm, ""),
-    attachments,
-    headers: { "X-Mailjet-TrackOpen": "0", "X-Mailjet-TrackClick": "0" },
-    ...extraParams,
-  };
-
-  return new Promise((resolve, reject) => {
-    mailTransport.sendMail(mail, (error, info) =>
-      error ? reject(error) : resolve(info),
-    );
-  });
-}
-
 export function capitalizeWords(arr: string) {
   return arr
     .split("")
@@ -93,15 +20,6 @@ export function capitalizeWords(arr: string) {
     })
     .join("");
 }
-
-export function buildBetaEmail(id: string) {
-  return `${id}@${config.domain}`;
-}
-
-export const isBetaEmail = (email) =>
-  email && email.endsWith(`${config.domain}`);
-
-export const getBetaEmailId = (email) => email && email.split("@")[0];
 
 export function objectArrayToCSV<T extends Record<string, any>>(
   arr: T[],
@@ -147,41 +65,6 @@ export function checkUserIsExpired(
     userEndDate.getTime() + minDaysOfExpiration * 24 * 3600 * 1000 <=
     today.getTime()
   );
-}
-
-export function getActiveUsers<
-  T extends memberSchemaType[] | memberBaseInfoSchemaType[],
->(users: T, minDaysOfExpiration = 0): T {
-  return users.filter(
-    (u) => !checkUserIsExpired(u, minDaysOfExpiration - 1),
-  ) as T;
-}
-
-export function getExpiredUsers<
-  T extends memberSchemaType[] | memberBaseInfoSchemaType[],
->(users: T, minDaysOfExpiration = 0): T {
-  return users.filter((u) =>
-    checkUserIsExpired(u, minDaysOfExpiration - 1),
-  ) as T;
-}
-
-export function getExpiredUsersForXDays<
-  T extends memberSchemaType[] | memberBaseInfoSchemaType[],
->(users: T, nbDays: number): T {
-  const date = new Date();
-  date.setDate(date.getDate() - nbDays);
-  return users.filter((user) => {
-    const latestMission = user.missions.reduce((a, v) =>
-      !v.end || (a.end ? new Date(v.end) > new Date(a.end) : false) ? v : a,
-    );
-    return latestMission.end
-      ? compareAsc(startOfDay(latestMission.end), startOfDay(date)) === 0
-      : false;
-  }) as T;
-}
-
-export function requiredError(formValidationErrors, field) {
-  formValidationErrors.push(`${field} : le champ n'est pas renseigné`);
 }
 
 export function isAdminEmail(email: string): boolean {
@@ -311,10 +194,4 @@ export async function userInfos(
       }`,
     );
   }
-}
-
-export function sleep(ms) {
-  return new Promise((resolve) => {
-    setTimeout(resolve, ms);
-  });
 }

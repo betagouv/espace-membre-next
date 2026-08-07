@@ -1,4 +1,4 @@
-import { isBrowser } from "@/lib/platform";
+const isBrowser = typeof document !== "undefined";
 
 export function getBaseUrl() {
   if (process.env.APP_BASE_URL) {

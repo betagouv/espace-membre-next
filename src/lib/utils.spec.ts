@@ -2,8 +2,8 @@ import { expect } from "chai";
 import sinon from "sinon";
 import axios from "axios";
 
-import { isPublicServiceEmail } from "@/lib/controllers";
-import config from "@/server/config";
+import { isPublicServiceEmail } from "@/lib/utils";
+import config from "@/lib/config";
 
 describe("isPublicServiceEmail", () => {
   let axiosGetStub: sinon.SinonStub;

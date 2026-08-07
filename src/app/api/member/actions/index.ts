@@ -26,7 +26,7 @@ import {
   addContactsToMailingLists,
   removeContactsFromMailingList,
 } from "@/server/config/email.config";
-import { capitalizeWords, userInfos } from "@/lib/controllers";
+import { capitalizeWords, userInfos } from "@/lib/utils";
 import { Contact, MAILING_LIST_TYPE } from "@/lib/email/email";
 import { authOptions } from "@/server/authoptions";
 import {

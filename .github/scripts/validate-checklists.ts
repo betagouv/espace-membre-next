@@ -1,7 +1,7 @@
 import fs from "node:fs";
 import path from "node:path";
 import yaml from "yaml";
-import { checklistSchema } from "../src/models/checklist";
+import { checklistSchema } from "../../src/models/checklist";
 
 const checklistsDir = path.resolve(__dirname, "../src/lib/checklists");
 const files = ["onboarding.yml", "offboarding.yml"];

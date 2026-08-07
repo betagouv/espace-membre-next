@@ -1,4 +1,4 @@
-import config from "@/server/config";
+import config from "@/lib/config";
 
 // Minimal Grist REST API client.
 // Docs: https://support.getgrist.com/api/

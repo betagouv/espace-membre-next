@@ -10,7 +10,7 @@ import { memberBaseInfoToModel } from "@/models/mapper";
 import config from "@/server/config";
 import { getAdmin } from "@/server/config/admin.config";
 import { sendEmail } from "@/server/config/email.config";
-import { checkUserIsExpired } from "@/lib/controllers";
+import { checkUserIsExpired } from "@/lib/utils";
 import { getJwtTokenForUser } from "@/lib/session";
 import { EMAIL_TYPES } from "@/lib/email/email";
 
