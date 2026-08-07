@@ -1,4 +1,5 @@
 "use client";
+import { routeTitles } from "@/lib/routes";
 import React from "react";
 
 import { fr } from "@codegouvfr/react-dsfr";
@@ -13,7 +14,7 @@ import {
 } from "@/models/member";
 import { Option } from "@/models/misc";
 import { teamSchemaType } from "@/models/team";
-import { routeTitles } from "@/utils/routes/routeTitles";
+
 
 interface TeamUpdateProps {
   team: teamSchemaType;

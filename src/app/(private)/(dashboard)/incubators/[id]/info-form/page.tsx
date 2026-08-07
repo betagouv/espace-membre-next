@@ -1,3 +1,4 @@
+import { routeTitles } from "@/lib/routes";
 import { Metadata } from "next";
 import { redirect } from "next/navigation";
 import { getServerSession } from "next-auth";
@@ -9,7 +10,7 @@ import { getIncubator } from "@/lib/kysely/queries/incubators";
 import s3 from "@/lib/s3";
 import { incubatorToModel } from "@/models/mapper";
 import { authOptions } from "@/lib/authoptions";
-import { routeTitles } from "@/utils/routes/routeTitles";
+
 
 type Props = {
   params: { id: string };

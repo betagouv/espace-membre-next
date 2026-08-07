@@ -1,10 +1,11 @@
+import { routeTitles } from "@/lib/routes";
 import { Metadata } from "next";
 
 import { TeamCreate } from "@/components/team/TeamCreatePage";
 import { db } from "@/lib/kysely";
 import { getAllUsersInfo } from "@/lib/kysely/queries/users";
 import { memberBaseInfoToModel } from "@/models/mapper";
-import { routeTitles } from "@/utils/routes/routeTitles";
+
 export const metadata: Metadata = {
   title: `${routeTitles.teamCreate()} / Espace Membre`,
 };

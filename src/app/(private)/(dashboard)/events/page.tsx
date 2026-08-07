@@ -1,3 +1,4 @@
+import { routeTitles } from "@/lib/routes";
 import { fr } from "@codegouvfr/react-dsfr";
 import type { Metadata } from "next";
 import Link from "next/link";
@@ -7,7 +8,7 @@ import { parseICS } from "@/lib/ical";
 
 import { EventsList } from "@/components/EventsList/EventsList";
 import { authOptions } from "@/lib/authoptions";
-import { routeTitles } from "@/utils/routes/routeTitles";
+
 
 export const metadata: Metadata = {
   title: `${routeTitles.eventsList()} / Espace Membre`,

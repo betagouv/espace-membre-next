@@ -20,7 +20,7 @@ import {
   importFromZip,
   withTeams,
 } from "./utils";
-import { db, sql } from "@lib/kysely";
+import { db, sql } from "@/lib/kysely";
 
 const md = markdownit({ html: true });
 

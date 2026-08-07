@@ -1,8 +1,9 @@
+import { routeTitles } from "@/lib/routes";
 import { Metadata } from "next";
 
 import { StartupInfoCreate } from "@/components/StartupInfoCreatePage";
 import { getActiveUsers } from "@/lib/kysely/queries/users";
-import { routeTitles } from "@/utils/routes/routeTitles";
+
 import { db } from "@/lib/kysely";
 
 export const metadata: Metadata = {

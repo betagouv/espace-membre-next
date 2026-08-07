@@ -1,7 +1,7 @@
 import pAll from "p-all";
 
 import { importFromZip, MarkdownData } from "./utils";
-import { db } from "@lib/kysely";
+import { db } from "@/lib/kysely";
 
 const insertData = async (markdownData: MarkdownData) => {
   // insert teams

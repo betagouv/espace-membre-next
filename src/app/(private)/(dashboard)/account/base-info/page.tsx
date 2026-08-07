@@ -1,3 +1,4 @@
+import { routeTitles } from "@/lib/routes";
 import type { Metadata } from "next";
 import { redirect } from "next/navigation";
 import { getServerSession } from "next-auth";
@@ -9,7 +10,7 @@ import { getUserInfos } from "@/lib/kysely/queries/users";
 import { getAvatarUrl } from "@/lib/s3";
 import { memberChangeToModel, userInfosToModel } from "@/models/mapper";
 import { authOptions } from "@/lib/authoptions";
-import { routeTitles } from "@/utils/routes/routeTitles";
+
 
 export const metadata: Metadata = {
   title: `${routeTitles.accountEditBaseInfo()} / Espace Membre`,

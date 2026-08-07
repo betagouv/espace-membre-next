@@ -1,3 +1,4 @@
+import { routeTitles } from "@/lib/routes";
 import type { Metadata } from "next";
 import { redirect } from "next/navigation";
 import { getServerSession } from "next-auth";
@@ -7,7 +8,7 @@ import { getAllStartups } from "@/lib/kysely/queries";
 import { getUserInfos } from "@/lib/kysely/queries/users";
 import { userInfosToModel } from "@/models/mapper";
 import { authOptions } from "@/lib/authoptions";
-import { routeTitles } from "@/utils/routes/routeTitles";
+
 
 export const metadata: Metadata = {
   title: `${routeTitles.verifyMember()} / Espace Membre`,

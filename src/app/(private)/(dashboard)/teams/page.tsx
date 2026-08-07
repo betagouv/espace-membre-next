@@ -1,8 +1,9 @@
+import { routeTitles } from "@/lib/routes";
 import { Metadata } from "next";
 
 import { TeamList } from "@/components/team/TeamListPage";
 import { getAllTeamsOptions } from "@/lib/kysely/queries/teams";
-import { routeTitles } from "@/utils/routes/routeTitles";
+
 
 export const metadata: Metadata = {
   title: `${routeTitles.teamList()} / Espace Membre`,

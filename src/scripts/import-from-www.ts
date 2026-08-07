@@ -12,7 +12,7 @@ import {
 } from "./github-schemas";
 import { importFromZip, MarkdownData } from "./utils";
 import config from "@/server/config";
-import { db } from "@lib/kysely";
+import { db } from "@/lib/kysely";
 
 const { Readable } = require("stream");
 

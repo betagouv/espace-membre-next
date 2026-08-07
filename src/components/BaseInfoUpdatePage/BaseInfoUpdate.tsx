@@ -1,4 +1,5 @@
 "use client";
+import { routeTitles } from "@/lib/routes";
 import React from "react";
 
 import { fr } from "@codegouvfr/react-dsfr";
@@ -28,7 +29,7 @@ import {
 import { statusOptions, DOMAINE_OPTIONS, memberSchema } from "@/models/member";
 import { PrivateMemberChangeSchemaType } from "@/models/memberChange";
 import { Option } from "@/models/misc";
-import { routeTitles } from "@/utils/routes/routeTitles";
+
 
 // data from secretariat API
 export interface BaseInfoUpdateProps {

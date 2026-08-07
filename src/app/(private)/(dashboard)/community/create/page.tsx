@@ -1,9 +1,10 @@
+import { routeTitles } from "@/lib/routes";
 import type { Metadata } from "next";
 
 import CommunityCreateMemberPage from "./CommunityCreateMemberPage";
 import { getAllStartups } from "@/lib/kysely/queries";
 import { getAllIncubatorsOptions } from "@/lib/kysely/queries/incubators";
-import { routeTitles } from "@/utils/routes/routeTitles";
+
 
 export const metadata: Metadata = {
   title: `${routeTitles.communityCreateMember()} / Espace Membre`,

@@ -1,4 +1,5 @@
 "use client";
+import { routeTitles } from "@/lib/routes";
 import React from "react";
 
 import { fr } from "@codegouvfr/react-dsfr";
@@ -19,7 +20,7 @@ import {
 } from "@/models/startup";
 import { StartupChangeSchemaType } from "@/models/startupChange";
 import { saveImage } from "@/lib/file";
-import { routeTitles } from "@/utils/routes/routeTitles";
+
 
 interface StartupInfoUpdateProps {
   startup: startupSchemaType;

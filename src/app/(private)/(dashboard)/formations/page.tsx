@@ -1,3 +1,4 @@
+import { routeTitles } from "@/lib/routes";
 import type { Metadata } from "next";
 import { redirect } from "next/navigation";
 import { getServerSession } from "next-auth";
@@ -9,7 +10,7 @@ import {
 } from "@/lib/airtable";
 import config from "@/server/config";
 import { authOptions } from "@/lib/authoptions";
-import { routeTitles } from "@/utils/routes/routeTitles";
+
 
 export const metadata: Metadata = {
   title: `${routeTitles.formationList()} / Espace Membre`,

@@ -1,12 +1,11 @@
 "use client";
+import { routes, routeTitles } from "@/lib/routes";
 import { Breadcrumb } from "@codegouvfr/react-dsfr/Breadcrumb";
 import { usePathname } from "next/navigation";
 
 import { useInfoContext } from "@/app/BreadCrumbProvider";
-import { routeTitles } from "@/utils/routes/routeTitles";
 import { hasPathnameThisMatch, hasPathnameThisRegex } from "@/lib/url";
 import React from "react";
-import { routes } from "@/utils/routes/routes";
 
 const isCurrentPath = (pathname, rootPath) => pathname.startsWith(rootPath);
 

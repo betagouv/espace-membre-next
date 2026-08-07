@@ -1,8 +1,9 @@
+import { routeTitles } from "@/lib/routes";
 import { Metadata } from "next";
 
 import { IncubatorCreate } from "@/components/IncubatorCreatePage";
 import { db } from "@/lib/kysely";
-import { routeTitles } from "@/utils/routes/routeTitles";
+
 
 export const metadata: Metadata = {
   title: `${routeTitles.incubatorCreate()} / Espace Membre`,

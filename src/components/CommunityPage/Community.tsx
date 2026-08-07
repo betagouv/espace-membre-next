@@ -1,4 +1,5 @@
 "use client";
+import { routes, routeTitles } from "@/lib/routes";
 import React, { startTransition, useCallback, useMemo, useState } from "react";
 
 import Button from "@codegouvfr/react-dsfr/Button";
@@ -22,7 +23,7 @@ import {
 } from "./utils";
 import AutoComplete from "../AutoComplete";
 import { isUserActive } from "@/lib/member";
-import { routes } from "@/utils/routes/routes";
+
 import { copyToClipboard } from "@/lib/copyToClipBoard";
 
 // to fix ReferenceError: window is not defined

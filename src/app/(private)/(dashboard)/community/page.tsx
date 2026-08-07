@@ -1,3 +1,4 @@
+import { routeTitles } from "@/lib/routes";
 import type { Metadata } from "next";
 
 import communes from "./communes.json";
@@ -11,7 +12,7 @@ import { getAllUsersInfo } from "@/lib/kysely/queries/users";
 import { competencesList } from "@/models/competences";
 import { memberBaseInfoToModel } from "@/models/mapper";
 import { DOMAINE_OPTIONS } from "@/models/member";
-import { routeTitles } from "@/utils/routes/routeTitles";
+
 import { EMAIL_STATUS_READABLE_FORMAT } from "@/models/misc";
 
 export const metadata: Metadata = {

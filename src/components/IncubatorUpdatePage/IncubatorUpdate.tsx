@@ -1,4 +1,5 @@
 "use client";
+import { routeTitles } from "@/lib/routes";
 import React from "react";
 
 import { fr } from "@codegouvfr/react-dsfr";
@@ -16,7 +17,7 @@ import { Option } from "@/models/misc";
 import { startupSchemaType } from "@/models/startup";
 import { saveImage } from "@/lib/file";
 import { deleteImage } from "@/lib/actions/image";
-import { routeTitles } from "@/utils/routes/routeTitles";
+
 
 interface IncubatorUpdateProps {
   incubator: incubatorSchemaType;
