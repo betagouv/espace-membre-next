@@ -55,6 +55,7 @@ const nextConfig = {
     instrumentationHook: true,
     serverComponentsExternalPackages: [
       "knex",
+      "pg",
       "sib-api-v3-sdk",
       "mjml",
       "@luma-team/mjml-react",
@@ -83,6 +84,9 @@ const nextConfig = {
       // don't resolve 'fs' module on the client to prevent this error on build --> Error: Can't resolve 'fs'
       config.resolve.fallback = {
         fs: false,
+        dns: false,
+        net: false,
+        tls: false,
       };
     }
     config.module.rules.push({
