@@ -14,29 +14,7 @@ import config from "@/server/config";
 import { sendEmail } from "@/server/config/email.config";
 import { EMAIL_TYPES } from "@/lib/email/email";
 import { BusinessError } from "@/lib/error";
-
-// Add a simple retry wrapper for email operations
-async function withEmailRetry<T>(
-  operation: () => Promise<T>,
-  retryLimit: number = 3,
-): Promise<T> {
-  let lastError: Error | undefined;
-  for (let attempt = 1; attempt <= retryLimit; attempt++) {
-    try {
-      return await operation();
-    } catch (error) {
-      lastError = error as Error;
-      console.error(`Attempt ${attempt} failed for validation email:`, error);
-      if (attempt < retryLimit) {
-        // Exponential backoff: wait 1s, 2s, 4s, etc.
-        await new Promise((resolve) =>
-          setTimeout(resolve, 1000 * Math.pow(2, attempt - 1))
-        );
-      }
-    }
-  }
-  throw lastError || new Error("Email operation failed");
-}
+import { withRetry } from "@/lib/withRetry";
 
 export async function sendNewMemberValidationEmail(
   data: SendNewMemberValidationEmailSchemaType,
@@ -89,7 +67,7 @@ export async function sendNewMemberValidationEmail(
       ),
     ) as string[];
 
-    await withEmailRetry(async () => {
+    await withRetry(async () => {
       await sendEmail({
         toEmail: memberEmails,
         type: EMAIL_TYPES.EMAIL_NEW_MEMBER_VALIDATION,
@@ -100,7 +78,7 @@ export async function sendNewMemberValidationEmail(
           validationLink: `${config.protocol}://${config.host}/community/${newMember.username}/validate`,
         },
       });
-    }, 50);
+    }, undefined, "validation email");
     console.log(`Validation email sent for new member ${newMember.fullname}`);
   }
 }

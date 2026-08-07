@@ -11,29 +11,7 @@ import { SendNewMemberVerificationEmailSchemaType } from "@/models/jobs/member";
 import config from "@/server/config";
 import { sendEmail } from "@/server/config/email.config";
 import { EMAIL_TYPES } from "@/lib/email/email";
-
-// Add a simple retry wrapper for email operations
-async function withEmailRetry<T>(
-  operation: () => Promise<T>,
-  retryLimit: number = 3,
-): Promise<T> {
-  let lastError: Error | undefined;
-  for (let attempt = 1; attempt <= retryLimit; attempt++) {
-    try {
-      return await operation();
-    } catch (error) {
-      lastError = error as Error;
-      console.error(`Attempt ${attempt} failed for verification email:`, error);
-      if (attempt < retryLimit) {
-        // Exponential backoff: wait 1s, 2s, 4s, etc.
-        await new Promise((resolve) =>
-          setTimeout(resolve, 1000 * Math.pow(2, attempt - 1))
-        );
-      }
-    }
-  }
-  throw lastError || new Error("Email operation failed");
-}
+import { withRetry } from "@/lib/withRetry";
 
 export async function sendNewMemberVerificationEmail(
   data: SendNewMemberVerificationEmailSchemaType,
@@ -63,7 +41,7 @@ export async function sendNewMemberVerificationEmail(
   url.searchParams.set("token", token);
   url.searchParams.set("email", dbUser.secondary_email!);
 
-  await withEmailRetry(async () => {
+  await withRetry(async () => {
     await sendEmail({
       type: EMAIL_TYPES.EMAIL_VERIFICATION_WAITING,
       toEmail: [dbUser.secondary_email!],
@@ -79,7 +57,7 @@ export async function sendNewMemberVerificationEmail(
       created_by_username: SYSTEM_NAME,
       action_on_username: dbUser.username,
     });
-  }, 5);
+    }, undefined, "verification email");
 
   console.log(`Verification email sent for new member ${dbUser.fullname}`);
 }
