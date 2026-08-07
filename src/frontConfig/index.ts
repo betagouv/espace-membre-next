@@ -34,15 +34,7 @@ const alertMessageSchema = z.object({
 
 // eslint-disable-next-line import/no-anonymous-default-export
 export default {
-  secret: process.env.SESSION_SECRET,
-  secure: isSecure,
   protocol: isSecure ? "https" : "http",
-  host: process.env.HOSTNAME || "127.0.0.1",
-  port: process.env.PORT || 8100,
-  domain: process.env.SECRETARIAT_DOMAIN || "beta.gouv.fr",
-  ESPACE_MEMBRE_ADMIN: process.env.ESPACE_MEMBRE_ADMIN
-    ? process.env.ESPACE_MEMBRE_ADMIN.split(",")
-    : [],
   NEXT_PUBLIC_ALERT_MESSAGE_PRIVATE: process.env
     .NEXT_PUBLIC_ALERT_MESSAGE_PRIVATE
     ? alertMessageSchema.parse(
@@ -56,9 +48,6 @@ export default {
     : undefined,
   NEXT_PUBLIC_CHAT_SUPPORT_SERVICE:
     process.env.NEXT_PUBLIC_CHAT_SUPPORT_SERVICE,
-  SUPPORT_EMAIL: process.env.NEXT_SUPPORT_EMAIL,
-  tchap_api: process.env.TCHAP_API,
-  HASH_SALT: process.env.HASH_SALT,
   matomoUrl: process.env.NEXT_PUBLIC_MATOMO_URL,
   matomoSiteId: process.env.NEXT_PUBLIC_MATOMO_SITE_ID,
   FEATURE_SHOW_UPLOAD_IMAGE_PRODUCT_WIDGET:

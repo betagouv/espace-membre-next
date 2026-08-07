@@ -4,7 +4,7 @@ import { z } from "zod";
 
 import { AccountService, SERVICES } from "@/models/services";
 import config from "@/lib/config";
-import { CustomError, UnexpectedError } from "@/lib/error";
+import { CustomError } from "@/lib/error";
 
 export enum SentryRole {
   admin = "admin",

@@ -1,5 +1,5 @@
 import { sql } from "kysely";
-import { Account, Awaitable } from "next-auth";
+import { Account } from "next-auth";
 import {
   Adapter,
   AdapterAccount,
@@ -9,7 +9,6 @@ import {
 } from "next-auth/adapters";
 
 import { db } from "@/lib/kysely";
-import betagouv from "@/lib/betagouv";
 
 export const createVerificationToken = async ({
   identifier,
@@ -316,7 +315,7 @@ export default function customPostgresAdapter(): Adapter {
         };
       } else {
         // Handle the case where no token is found or it's already expired
-        throw new Error("No valid token found");
+        throw new Error(`No valid token found: ${token}`);
       }
     };
 

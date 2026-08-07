@@ -21,7 +21,7 @@ const nextConfig = {
     dirs: ["src", "__tests__"],
     ignoreDuringBuilds: true,
   },
-  productionBrowserSourceMaps: true,
+  productionBrowserSourceMaps: false,
   async headers() {
     return [
       {

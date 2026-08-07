@@ -20,20 +20,6 @@ export type ApiCommuneJson = {
   };
 };
 
-export async function fetchCommuneDetails(
-  codeCommune: string,
-): Promise<Commune | null> {
-  const response = await axios(
-    `https://geo.api.gouv.fr/communes/${codeCommune}?fields=nom,code,departement,region,codesPostaux`,
-  );
-  if (response.status === 401) {
-    return null;
-  }
-  const apiCommune = response.data as ApiCommuneJson;
-  const commune: Commune = { ...apiCommune };
-  return commune;
-}
-
 export async function searchCommunes(value) {
   const input = value;
 
