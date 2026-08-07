@@ -56,6 +56,7 @@ const nextConfig = {
     serverComponentsExternalPackages: [
       "knex",
       "pg",
+      "pg-native",
       "sib-api-v3-sdk",
       "mjml",
       "@luma-team/mjml-react",
