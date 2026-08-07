@@ -10,6 +10,7 @@ import { getUserTeamsIncubators } from "@/lib/kysely/queries/incubators";
 import { createMission } from "@/lib/kysely/queries/missions";
 import { EventCode } from "@/models/actionEvent";
 import {
+  createMemberResponseSchemaType,
   createMemberSchema,
   createMemberSchemaType,
 } from "@/models/actions/member";
