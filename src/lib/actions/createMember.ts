@@ -20,9 +20,8 @@ import {
 } from "@/models/jobs/member";
 import { EmailStatusCode } from "@/models/member";
 import { isPublicServiceEmail, isAdminEmail } from "@/lib/utils";
-import { getBossClientInstance } from "@/server/queueing/client";
-import { sendNewMemberValidationEmailTopic } from "@/server/queueing/workers/send-validation-email";
-import { sendNewMemberVerificationEmailTopic } from "@/server/queueing/workers/send-verification-email";
+import { sendNewMemberValidationEmail } from "@/lib/email/send-validation-email";
+import { sendNewMemberVerificationEmail } from "@/lib/email/send-verification-email";
 import { authOptions } from "@/lib/authoptions";
 import {
   AdminEmailNotAllowedError,
@@ -113,29 +112,18 @@ async function createMemberAction(input: createMemberSchemaType) {
       }
       return user;
     });
-    const bossClient = await getBossClientInstance();
     if (userIsValidatedStraightAway) {
-      await bossClient.send(
-        sendNewMemberVerificationEmailTopic,
+      await sendNewMemberVerificationEmail(
         SendNewMemberVerificationEmailSchema.parse({
           userId: dbUser.uuid,
         }),
-        {
-          retryLimit: 5,
-          retryBackoff: true,
-        },
       );
     } else {
-      await bossClient.send(
-        sendNewMemberValidationEmailTopic,
+      await sendNewMemberValidationEmail(
         SendNewMemberValidationEmailSchema.parse({
           userId: dbUser.uuid,
           incubator_id,
         }),
-        {
-          retryLimit: 50,
-          retryBackoff: true,
-        },
       );
     }
     await addEvent({

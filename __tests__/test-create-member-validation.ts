@@ -29,7 +29,7 @@ describe(`Test creating new user flow : A new member cannot be validated by some
     sendEmailStub = sinon.stub().resolves(); // Resolves like a real async function
     // Use proxyquire to replace bossClient module
     sendNewMemberValidationEmail = proxyquire(
-      "@/server/queueing/workers/send-validation-email",
+      "@/lib/email/send-validation-email",
       {
         "@/server/config/email.config": { sendEmail: sendEmailStub },
       },

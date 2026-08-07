@@ -13,15 +13,14 @@ import {
 } from "@/models/jobs/member";
 import { memberBaseInfoToModel } from "@/models/mapper";
 import { EmailStatusCode } from "@/models/member";
-import { getBossClientInstance } from "@/server/queueing/client";
-import { sendEmailToTeamWhenNewMemberTopic } from "@/server/queueing/workers/send-email-to-team-when-new-member";
 import { authOptions } from "@/lib/authoptions";
 import {
   AuthorizationError,
   BusinessError,
   withErrorHandling,
 } from "@/lib/error";
-import { sendNewMemberVerificationEmailTopic } from "@/server/queueing/workers/send-verification-email";
+import { sendEmailToTeamWhenNewMember } from "@/lib/email/send-email-to-team-when-new-member";
+import { sendNewMemberVerificationEmail } from "@/lib/email/send-verification-email";
 import { canEditMember } from "@/lib/canEditMember";
 
 export async function validateNewMember({
@@ -102,33 +101,22 @@ export async function validateNewMember({
     })
     .execute();
 
-  await addEvent({
-    created_by_username: session.user.id,
-    action_code: EventCode.MEMBER_VALIDATED,
-    action_on_username: newMember.username,
-  });
+    await addEvent({
+      created_by_username: session.user.id,
+      action_code: EventCode.MEMBER_VALIDATED,
+      action_on_username: newMember.username,
+    });
 
-  const bossClient = await getBossClientInstance();
-  await bossClient.send(
-    sendEmailToTeamWhenNewMemberTopic,
-    SendEmailToTeamWhenNewMemberSchema.parse({
-      userId: newMember.uuid,
-    }),
-    {
-      retryLimit: 2,
-      retryBackoff: true,
-    },
-  );
-  await bossClient.send(
-    sendNewMemberVerificationEmailTopic,
-    SendNewMemberVerificationEmailSchema.parse({
-      userId: newMember.uuid,
-    }),
-    {
-      retryLimit: 2,
-      retryBackoff: true,
-    },
-  );
+    await sendEmailToTeamWhenNewMember(
+      SendEmailToTeamWhenNewMemberSchema.parse({
+        userId: newMember.uuid,
+      }),
+    );
+    await sendNewMemberVerificationEmail(
+      SendNewMemberVerificationEmailSchema.parse({
+        userId: newMember.uuid,
+      }),
+    );
 }
 
 export const safeValidateNewMember = withErrorHandling(validateNewMember);

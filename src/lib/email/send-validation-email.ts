@@ -1,11 +1,10 @@
 import { isAfter } from "date-fns/isAfter";
 import { isBefore } from "date-fns/isBefore";
-import PgBoss from "pg-boss";
 
-import { getMemberIfValidOrThrowError } from "./utils";
+import { getMemberIfValidOrThrowError } from "@/server/queueing/workers/utils";
 import { getIncubator } from "@/lib/kysely/queries/incubators";
 import { getIncubatorTeamMembers } from "@/lib/kysely/queries/teams";
-import { getUserBasicInfo, getUserStartups } from "@/lib/kysely/queries/users";
+import { getUserStartups } from "@/lib/kysely/queries/users";
 import {
   SendNewMemberValidationEmailSchema,
   SendNewMemberValidationEmailSchemaType,
@@ -16,17 +15,37 @@ import { sendEmail } from "@/server/config/email.config";
 import { EMAIL_TYPES } from "@/lib/email/email";
 import { BusinessError } from "@/lib/error";
 
-export const sendNewMemberValidationEmailTopic =
-  "send-new-member-validation-email";
+// Add a simple retry wrapper for email operations
+async function withEmailRetry<T>(
+  operation: () => Promise<T>,
+  retryLimit: number = 3,
+): Promise<T> {
+  let lastError: Error | undefined;
+  for (let attempt = 1; attempt <= retryLimit; attempt++) {
+    try {
+      return await operation();
+    } catch (error) {
+      lastError = error as Error;
+      console.error(`Attempt ${attempt} failed for validation email:`, error);
+      if (attempt < retryLimit) {
+        // Exponential backoff: wait 1s, 2s, 4s, etc.
+        await new Promise((resolve) =>
+          setTimeout(resolve, 1000 * Math.pow(2, attempt - 1))
+        );
+      }
+    }
+  }
+  throw lastError || new Error("Email operation failed");
+}
 
 export async function sendNewMemberValidationEmail(
-  job: PgBoss.Job<SendNewMemberValidationEmailSchemaType>,
+  data: SendNewMemberValidationEmailSchemaType,
 ) {
-  const data = SendNewMemberValidationEmailSchema.parse(job.data);
-  const newMember = await getMemberIfValidOrThrowError(data.userId);
+  const validatedData = SendNewMemberValidationEmailSchema.parse(data);
+  const newMember = await getMemberIfValidOrThrowError(validatedData.userId);
   const now = new Date();
   // we fetch also startups for missions in the futur
-  const userStartups = (await getUserStartups(data.userId)).filter(
+  const userStartups = (await getUserStartups(validatedData.userId)).filter(
     (startup) => {
       return isBefore(now, startup.end ?? Infinity);
     },
@@ -38,7 +57,7 @@ export async function sendNewMemberValidationEmail(
 
   const incubatorIds = Array.from(
     new Set(
-      [data.incubator_id, ...startupIncubatorIds].filter(
+      [validatedData.incubator_id, ...startupIncubatorIds].filter(
         (id): id is string => typeof id === "string",
       ),
     ),
@@ -46,7 +65,7 @@ export async function sendNewMemberValidationEmail(
   if (!incubatorIds.length) {
     throw new BusinessError(
       "NewMemberDoesNotHaveIncubators",
-      `NewMember ${data.userId} is not linked to any incubators`,
+      `NewMember ${validatedData.userId} is not linked to any incubators`,
     );
   }
   for (const incubatorId of incubatorIds) {
@@ -69,16 +88,19 @@ export async function sendNewMemberValidationEmail(
         membersForTeam.map((m) => m.primary_email).filter((email) => !!email),
       ),
     ) as string[];
-    await sendEmail({
-      toEmail: memberEmails,
-      type: EMAIL_TYPES.EMAIL_NEW_MEMBER_VALIDATION,
-      variables: {
-        startups: userStartups.map((startup) => userStartupToModel(startup)),
-        incubator: incubatorToModel(incubator),
-        userInfos: newMember,
-        validationLink: `${config.protocol}://${config.host}/community/${newMember.username}/validate`,
-      },
-    });
+
+    await withEmailRetry(async () => {
+      await sendEmail({
+        toEmail: memberEmails,
+        type: EMAIL_TYPES.EMAIL_NEW_MEMBER_VALIDATION,
+        variables: {
+          startups: userStartups.map((startup) => userStartupToModel(startup)),
+          incubator: incubatorToModel(incubator),
+          userInfos: newMember,
+          validationLink: `${config.protocol}://${config.host}/community/${newMember.username}/validate`,
+        },
+      });
+    }, 50);
     console.log(`Validation email sent for new member ${newMember.fullname}`);
   }
 }

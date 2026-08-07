@@ -1,5 +1,4 @@
 import { addDays, subDays } from "date-fns";
-import PgBoss from "pg-boss";
 import proxyquire from "proxyquire";
 import sinon from "sinon";
 
@@ -38,7 +37,7 @@ describe("Test creating new user flow : sending email", () => {
     sendEmailStub = sinon.stub().resolves(); // Resolves like a real async function
     // Use proxyquire to replace bossClient module
     sendNewMemberValidationEmail = proxyquire(
-      "@/server/queueing/workers/send-validation-email",
+      "@/lib/email/send-validation-email",
       {
         "@/server/config/email.config": { sendEmail: sendEmailStub },
       },
@@ -182,11 +181,9 @@ describe("Test creating new user flow : sending email", () => {
 
   it("should send email to all members of incubator's teams", async () => {
     await sendNewMemberValidationEmail({
-      data: {
-        userId: newUser.uuid,
-        incubator_id: newIncubatorA.uuid,
-      },
-    } as unknown as PgBoss.Job<SendNewMemberValidationEmailSchemaType>);
+      userId: newUser.uuid,
+      incubator_id: newIncubatorA.uuid,
+    });
     const memberDbData = await getUserBasicInfo({ uuid: newUser.uuid });
     const startups = (await getUserStartups(newUser.uuid)).map((s) =>
       userStartupToModel(s),
