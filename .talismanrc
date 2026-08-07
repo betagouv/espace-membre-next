@@ -37,6 +37,10 @@ fileignoreconfig:
   checksum: 6a20aba25aa570f49f0413babcb256d1db870522851f2e865088df7fe6e583a9
 - filename: src/lib/auth/hashToken.ts
   checksum: 8349543ad0dc5c9fbf09ab2b87276cfd3ee12bafdb8515da711657522f32904d
+- filename: src/lib/checklists/offboarding.yml
+  checksum: 384a97d6f52970048feb3e4f140a4c9993a190c15acb431cb3035001f3f3f755
+- filename: src/lib/checklists/onboarding.yml
+  checksum: 1ab3c4ca78b0893cf2c612862c11e3ac79401ac773332140fe8f78ee14c0ebc6
 - filename: src/lib/config.ts
   checksum: 518a52174c33e1e08cd39254f1c9b5b9562e0a3b66e799a0a7516d86ae90ede5
 - filename: src/lib/dimail/client.spec.ts

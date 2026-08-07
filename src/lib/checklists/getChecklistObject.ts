@@ -18,7 +18,7 @@ export async function getChecklistObject(
 
   const filePath = path.join(
     process.cwd(),
-    "src/utils/checklists",
+    "src/lib/checklists",
     `${type}.yml`,
   );
   const fileContents = await fs.readFile(filePath, "utf-8");
