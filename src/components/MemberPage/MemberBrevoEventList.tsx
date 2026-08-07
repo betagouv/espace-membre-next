@@ -5,10 +5,9 @@ import Accordion from "@codegouvfr/react-dsfr/Accordion";
 import { Table } from "@codegouvfr/react-dsfr/Table";
 import { format } from "date-fns";
 import { fr as frFns } from "date-fns/locale";
-import { z } from "zod";
 
+import { getBrevoEvents } from "@/lib/actions/memberBrevo";
 import {
-  brevoEmailEventDataSchema,
   brevoEmailEventDataSchemaType,
   brevoEmailEventSchemaType,
 } from "@/models/brevoEvent";
@@ -56,12 +55,10 @@ const MemberBrevoEventList = ({ userId }) => {
 
       setLoading(true);
       try {
-        const response = await fetch(`/api/member/${userId}/brevo-events`);
-        if (!response.ok) {
-          throw new Error("Network response was not ok");
+        const result = await getBrevoEvents(userId);
+        if (result.success) {
+          setEventData(result.data as unknown as brevoEmailEventDataSchemaType);
         }
-        const data = await response.json();
-        setEventData(brevoEmailEventDataSchema.parse(data));
       } catch (error) {
         console.error("Failed to fetch events:", error);
       } finally {

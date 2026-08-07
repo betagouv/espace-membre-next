@@ -1,3 +1,5 @@
+"use server";
+
 import slugify from "@sindresorhus/slugify";
 import { revalidatePath } from "next/cache";
 import { getServerSession } from "next-auth";
@@ -8,6 +10,7 @@ import { getUserTeamsIncubators } from "@/lib/kysely/queries/incubators";
 import { createMission } from "@/lib/kysely/queries/missions";
 import { EventCode } from "@/models/actionEvent";
 import {
+  createMemberResponseSchema,
   createMemberResponseSchemaType,
   createMemberSchema,
   createMemberSchemaType,
@@ -26,10 +29,10 @@ import {
   AdminEmailNotAllowedError,
   AuthorizationError,
   MemberUniqueConstraintViolationError,
-  withHttpErrorHandling,
+  withErrorHandling,
 } from "@/lib/error";
 
-const createUsername = (firstName, lastName) =>
+const createUsername = (firstName: string, lastName: string) =>
   `${slugify(firstName)}.${slugify(lastName)}`;
 
 const isSessionUserMemberOfUserIncubatorTeams = async function (
@@ -61,14 +64,12 @@ const isSessionUserMemberOfUserIncubatorTeams = async function (
   return incubatorIds.some((el) => sessionUserIncubatorIds.includes(el));
 };
 
-// user creation
-export const POST = withHttpErrorHandling(async (req: Request) => {
+async function createMemberAction(input: createMemberSchemaType) {
   const session = await getServerSession(authOptions);
   if (!session || !session.user.id) {
     throw new AuthorizationError();
   }
-  const rawdata = await req.json();
-  const { member, missions, incubator_id } = createMemberSchema.parse(rawdata);
+  const { member, missions, incubator_id } = createMemberSchema.parse(input);
   const hasPublicServiceEmail = await isPublicServiceEmail(member.email);
   if (hasPublicServiceEmail && isAdminEmail(member.email)) {
     throw new AdminEmailNotAllowedError();
@@ -92,7 +93,6 @@ export const POST = withHttpErrorHandling(async (req: Request) => {
           fullname: `${member.firstname} ${member.lastname}`,
           username,
           role: "",
-          // if session user is from incubator team, member is valided straight away
           primary_email_status: userIsValidatedStraightAway
             ? EmailStatusCode.EMAIL_VERIFICATION_WAITING
             : EmailStatusCode.MEMBER_VALIDATION_WAITING,
@@ -100,7 +100,6 @@ export const POST = withHttpErrorHandling(async (req: Request) => {
         .returning("uuid")
         .executeTakeFirstOrThrow();
       for (const mission of missions) {
-        // Now, use the same transaction to link to an organization
         await createMission(
           {
             ...mission,
@@ -113,7 +112,6 @@ export const POST = withHttpErrorHandling(async (req: Request) => {
     });
     const bossClient = await getBossClientInstance();
     if (userIsValidatedStraightAway) {
-      // send verification email
       await bossClient.send(
         sendNewMemberVerificationEmailTopic,
         SendNewMemberVerificationEmailSchema.parse({
@@ -125,7 +123,6 @@ export const POST = withHttpErrorHandling(async (req: Request) => {
         },
       );
     } else {
-      // send validation email
       await bossClient.send(
         sendNewMemberValidationEmailTopic,
         SendNewMemberValidationEmailSchema.parse({
@@ -148,21 +145,20 @@ export const POST = withHttpErrorHandling(async (req: Request) => {
         incubator_id,
       },
     });
-    let response: createMemberResponseSchemaType = {
+    revalidatePath("/community", "layout");
+    const response: createMemberResponseSchemaType = {
       uuid: dbUser.uuid,
       validated: userIsValidatedStraightAway,
     };
-    revalidatePath("/community", "layout");
-    return Response.json(response);
+    return response;
   } catch (error: any) {
     if (
       error.message.includes("duplicate key value violates unique constraint")
     ) {
-      // Handle unique constraint violation
       throw new MemberUniqueConstraintViolationError(username);
     }
-    // Handle other potential errors (logging, rethrowing, etc.)
-    console.error("Unexpected error:", error);
     throw error;
   }
-});
+}
+
+export const createMember = withErrorHandling(createMemberAction);

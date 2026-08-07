@@ -9,6 +9,7 @@ import {
   createIncubator,
   safeCreateIncubator,
 } from "@/app/api/incubators/actions/createIncubator";
+import { deleteImage } from "@/lib/actions/image";
 import { incubatorUpdateSchemaType } from "@/models/actions/incubator";
 import { Option } from "@/models/misc";
 import { saveImage } from "@/lib/file";
@@ -36,16 +37,10 @@ export const IncubatorCreate = (props: IncubatorInfoCreateProps) => {
         }
 
         if (data.shouldDeleteLogo) {
-          await fetch("/api/image", {
-            method: "DELETE",
-            headers: {
-              "Content-Type": "application/json",
-            },
-            body: JSON.stringify({
-              fileObjIdentifier: res.data.ghid,
-              fileIdentifer: "hero",
-              fileRelativeObjType: "startup",
-            }),
+          await deleteImage({
+            fileObjIdentifier: res.data.ghid,
+            fileIdentifier: "logo",
+            fileRelativeObjType: "incubator",
           });
         }
       }

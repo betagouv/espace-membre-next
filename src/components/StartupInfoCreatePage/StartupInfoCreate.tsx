@@ -7,6 +7,7 @@ import slugify from "@sindresorhus/slugify";
 import { StartupForm } from "../StartupForm/StartupForm";
 import { ActionResponse } from "@/@types/serverAction";
 import { safeCreateStartup } from "@/app/api/startups/actions";
+import { deleteImage } from "@/lib/actions/image";
 import { startupInfoUpdateSchemaType } from "@/models/actions/startup";
 import { Option } from "@/models/misc";
 import { StartupChangeSchemaType } from "@/models/startupChange";
@@ -53,30 +54,18 @@ export const StartupInfoCreate = (props: StartupInfoCreateProps) => {
         }
 
         if (data.shouldDeleteHero) {
-          await fetch("/api/image", {
-            method: "DELETE",
-            headers: {
-              "Content-Type": "application/json",
-            },
-            body: JSON.stringify({
-              fileObjIdentifier: res.data.ghid,
-              fileIdentifer: "hero",
-              fileRelativeObjType: "startup",
-            }),
+          await deleteImage({
+            fileObjIdentifier: res.data.ghid,
+            fileIdentifier: "hero",
+            fileRelativeObjType: "startup",
           });
         }
 
         if (data.shouldDeleteShot) {
-          await fetch("/api/image", {
-            method: "DELETE",
-            headers: {
-              "Content-Type": "application/json",
-            },
-            body: JSON.stringify({
-              fileObjIdentifier: res.data.ghid,
-              fileIdentifer: "shot",
-              fileRelativeObjType: "startup",
-            }),
+          await deleteImage({
+            fileObjIdentifier: res.data.ghid,
+            fileIdentifier: "shot",
+            fileRelativeObjType: "startup",
           });
         }
       }

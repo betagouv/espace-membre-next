@@ -6,10 +6,8 @@ import {
   unblockMemberEmailAddress,
   unblockMemberEmailAddressFromCampaign,
 } from "@/app/api/admin/actions";
-import {
-  brevoEmailInfoDataSchema,
-  brevoEmailInfoDataSchemaType,
-} from "@/models/brevoInfo";
+import { getBrevoEmailInfo } from "@/lib/actions/memberBrevo";
+import { brevoEmailInfoDataSchemaType } from "@/models/brevoInfo";
 import { SIBContact } from "@/lib/email/sendInBlue";
 
 const ContactCard = (contact: SIBContact) => {
@@ -98,15 +96,12 @@ const MemberEmailServiceInfo = ({
   useEffect(() => {
     const fetchEvents = async () => {
       if (!userId) return;
-      // todo: move to server-side
       setLoading(true);
       try {
-        const response = await fetch(`/api/member/${userId}/brevo-emails-info`);
-        if (!response.ok) {
-          throw new Error("Network response was not ok");
+        const result = await getBrevoEmailInfo(userId);
+        if (result.success) {
+          setEmailServiceInfo(result.data);
         }
-        const data = await response.json();
-        setEmailServiceInfo(brevoEmailInfoDataSchema.parse(data));
       } catch (error) {
         console.error("Failed to fetch events:", error);
       } finally {

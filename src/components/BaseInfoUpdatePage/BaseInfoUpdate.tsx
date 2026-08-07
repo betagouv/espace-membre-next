@@ -8,7 +8,6 @@ import Input from "@codegouvfr/react-dsfr/Input";
 import Select from "@codegouvfr/react-dsfr/Select";
 import { zodResolver } from "@hookform/resolvers/zod";
 import * as Sentry from "@sentry/nextjs";
-import axios from "axios";
 import Link from "next/link";
 import { useSession } from "next-auth/react";
 import { useForm } from "react-hook-form";
@@ -19,7 +18,8 @@ import CitySelect from "../CitySelect";
 import GenderSelect from "../GenderSelect";
 import LastChange from "../LastChange";
 import UploadForm from "../UploadForm/UploadForm";
-import { imagePostApiSchemaType } from "@/models/actions/image";
+import { getSignedUrl, deleteImage } from "@/lib/actions/image";
+import { updateMemberInfo } from "@/lib/actions/updateMemberInfo";
 import {
   memberInfoUpdateSchema,
   memberInfoUpdateSchemaInputType,
@@ -28,7 +28,6 @@ import {
 import { statusOptions, DOMAINE_OPTIONS, memberSchema } from "@/models/member";
 import { PrivateMemberChangeSchemaType } from "@/models/memberChange";
 import { Option } from "@/models/misc";
-import routes, { computeRoute } from "@/routes/routes";
 import { routeTitles } from "@/utils/routes/routeTitles";
 
 // data from secretariat API
@@ -40,7 +39,6 @@ export interface BaseInfoUpdateProps {
   username: string;
 }
 
-// todo: use action
 const postMemberData = async ({
   values,
   username,
@@ -50,22 +48,19 @@ const postMemberData = async ({
 }) => {
   const { member, picture, shouldDeletePicture } = values;
   if (picture) {
-    const imageBody: imagePostApiSchemaType = {
+    const result = await getSignedUrl({
       fileIdentifier: "avatar",
       fileRelativeObjType: "member",
       fileObjIdentifier: username,
       fileType: "image/jpeg",
       revalidateMemberImage: true,
-    };
-    const response = await fetch("/api/image", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify(imageBody),
     });
-    const { signedUrl } = await response.json();
 
+    if (!result.success) {
+      throw new Error(result.message);
+    }
+
+    const { signedUrl } = result.data;
     const uploadResponse = await fetch(signedUrl, {
       method: "PUT",
       headers: {
@@ -82,34 +77,18 @@ const postMemberData = async ({
     }
   }
   if (shouldDeletePicture) {
-    await fetch("/api/image", {
-      method: "DELETE",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({
-        fileRelativeObjType: "member",
-        fileObjIdentifier: username,
-        fileIdentifier: "avatar",
-        revalidateMemberImage: true,
-      }),
+    await deleteImage({
+      fileRelativeObjType: "member",
+      fileObjIdentifier: username,
+      fileIdentifier: "avatar",
+      revalidateMemberImage: true,
     });
   }
-  const {
-    data: { message },
-  }: {
-    data: { username: string; message: string };
-  } = await axios.put(
-    computeRoute(routes.ACCOUNT_POST_BASE_INFO_FORM).replace(
-      ":username",
-      username,
-    ),
-    member,
-    {
-      withCredentials: true,
-    },
-  );
-  return { username, message };
+  const result = await updateMemberInfo({ username, memberData: member });
+  if (!result.success) {
+    throw new Error(result.message);
+  }
+  return { username, message: "Success" };
 };
 
 export const BaseInfoUpdate = (props: BaseInfoUpdateProps) => {

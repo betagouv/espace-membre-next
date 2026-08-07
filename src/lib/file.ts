@@ -1,55 +1,28 @@
-import { z } from "zod";
-
-import {
-  imagePostApiSchema,
-  imagePostApiSchemaType,
-} from "@/models/actions/image";
-
-class MockFile {
-  size: number;
-  name: string;
-  type: string;
-  constructor(buffer: Buffer, name: string, type: string) {
-    this.size = buffer.length;
-    this.name = name;
-    this.type = type;
-  }
-}
-
-export const FileType = typeof File !== "undefined" ? File : MockFile;
-
-const saveImageSchema = z.object({
-  fileIdentifier: imagePostApiSchema.shape.fileIdentifier,
-  fileRelativeObjType: imagePostApiSchema.shape.fileRelativeObjType,
-  fileObjIdentifier: imagePostApiSchema.shape.fileObjIdentifier,
-  file: z
-    .instanceof(FileType)
-    .refine((file) => file.size > 0, "File is required"),
-});
-type saveImageSchemaType = z.infer<typeof saveImageSchema>;
+import { getSignedUrl } from "@/lib/actions/image";
 
 export const saveImage = async ({
   fileIdentifier,
   fileRelativeObjType,
   fileObjIdentifier,
   file,
-}: saveImageSchemaType) => {
-  const imageBody: imagePostApiSchemaType = {
+}: {
+  fileIdentifier: string;
+  fileRelativeObjType: string;
+  fileObjIdentifier: string;
+  file: File;
+}) => {
+  const result = await getSignedUrl({
     fileObjIdentifier,
-    fileIdentifier,
-    fileRelativeObjType,
+    fileIdentifier: fileIdentifier as "shot" | "hero" | "avatar" | "logo",
+    fileRelativeObjType: fileRelativeObjType as "startup" | "member" | "incubator",
     fileType: "image/jpeg",
-  };
-
-  const response = await fetch("/api/image", {
-    method: "POST",
-    headers: {
-      "Content-Type": "application/json",
-    },
-    body: JSON.stringify(imageBody),
   });
-  const { signedUrl } = await response.json();
 
+  if (!result.success) {
+    throw new Error(result.message);
+  }
+
+  const { signedUrl } = result.data;
   const uploadResponse = await fetch(signedUrl, {
     method: "PUT",
     headers: {

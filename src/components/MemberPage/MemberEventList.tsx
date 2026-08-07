@@ -6,6 +6,7 @@ import { Table } from "@codegouvfr/react-dsfr/Table";
 import { format } from "date-fns";
 import { fr as frDateFns } from "date-fns/locale";
 
+import { getMemberEventsByUsername } from "@/lib/actions/memberEvents";
 import {
   EventActionFromDB,
   EventCodeToReadable,
@@ -21,12 +22,10 @@ const MemberEventList = ({ userId }) => {
 
       setLoading(true);
       try {
-        const response = await fetch(`/api/member/${userId}/events`);
-        if (!response.ok) {
-          throw new Error("Network response was not ok");
+        const result = await getMemberEventsByUsername(userId);
+        if (result.success) {
+          setEvents(result.data as EventActionFromDB[]);
         }
-        const data: EventActionFromDB[] = await response.json();
-        setEvents(data);
       } catch (error) {
         console.error("Failed to fetch events:", error);
       } finally {

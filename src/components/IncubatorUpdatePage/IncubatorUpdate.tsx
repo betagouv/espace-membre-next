@@ -15,6 +15,7 @@ import { incubatorSchemaType } from "@/models/incubator";
 import { Option } from "@/models/misc";
 import { startupSchemaType } from "@/models/startup";
 import { saveImage } from "@/lib/file";
+import { deleteImage } from "@/lib/actions/image";
 import { routeTitles } from "@/utils/routes/routeTitles";
 
 interface IncubatorUpdateProps {
@@ -47,16 +48,10 @@ export const IncubatorUpdate = (props: IncubatorUpdateProps) => {
         }
 
         if (data.shouldDeleteLogo) {
-          await fetch("/api/image", {
-            method: "DELETE",
-            headers: {
-              "Content-Type": "application/json",
-            },
-            body: JSON.stringify({
-              fileObjIdentifier: res.data.ghid,
-              fileIdentifer: "hero",
-              fileRelativeObjType: "startup",
-            }),
+          await deleteImage({
+            fileObjIdentifier: res.data.ghid,
+            fileIdentifier: "logo",
+            fileRelativeObjType: "incubator",
           });
         }
       }
