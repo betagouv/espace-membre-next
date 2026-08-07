@@ -1,6 +1,5 @@
 import * as Sentry from "@sentry/node";
-import cron from "cron";
-const { CronJob } = cron;
+import { CronJob } from "cron";
 
 import { EspaceMembreCronJobType, espaceMembreCronJobs } from "./cron";
 import { db } from "@/lib/kysely";
