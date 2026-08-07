@@ -2,7 +2,7 @@ import React from "react";
 import { MjmlText } from "@luma-team/mjml-react";
 
 import { StandardLayout } from "@/components/emails/layouts/StandardEmail";
-import { EmailCreatedDimail as EmailCreatedDimailType } from "@/server/modules/email";
+import { EmailCreatedDimail as EmailCreatedDimailType } from "@/lib/email/email";
 export function EmailCreatedDimailTitle() {
   return "Ta boite mail betagouv est prête 🙂";
 }

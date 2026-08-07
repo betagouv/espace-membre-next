@@ -14,7 +14,7 @@ import { format } from "date-fns";
 import { fr } from "date-fns/locale";
 
 import { StandardLayout } from "@/components/emails/layouts/StandardEmail";
-import { EmailStartupNewMemberArrival } from "@/server/modules/email";
+import { EmailStartupNewMemberArrival } from "@/lib/email/email";
 export function StartupNewMemberArrivalEmailTitle() {
   return `Une nouvelle personne arrive dans votre équipe !`;
 }

@@ -7,7 +7,7 @@ import {
 } from "@/models/startup";
 import routes from "@/routes/routes";
 import { sendEmail } from "@/server/config/email.config";
-import { EMAIL_TYPES } from "@modules/email";
+import { EMAIL_TYPES } from "@/lib/email/email";
 
 /*
 remind new startups to update their phases

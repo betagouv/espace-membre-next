@@ -1,10 +1,10 @@
 import chai from "chai";
 
-import htmlBuilder from "../src/server/modules/htmlbuilder/htmlbuilder";
+import htmlBuilder from "../src/lib/htmlbuilder";
 import { incubatorSchemaType } from "@/models/incubator";
 import { memberBaseInfoSchemaType } from "@/models/member";
 import { userStartupSchemaType } from "@/models/startup";
-import { EMAIL_TYPES } from "@modules/email";
+import { EMAIL_TYPES } from "@/lib/email/email";
 chai.should();
 
 describe(`Test EMAIL_VERIFICATION_WAITING`, () => {

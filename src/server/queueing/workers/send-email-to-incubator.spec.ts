@@ -11,7 +11,7 @@ import { EventCode } from "@/models/actionEvent";
 import { incubatorToModel, startupToModel } from "@/models/mapper";
 import { Domaine } from "@/models/member";
 import { PHASE_READABLE_NAME } from "@/models/startup";
-import { EMAIL_TYPES } from "@/server/modules/email";
+import { EMAIL_TYPES } from "@/lib/email/email";
 import testUsers from "__tests__/users.json";
 import utils from "__tests__/utils";
 

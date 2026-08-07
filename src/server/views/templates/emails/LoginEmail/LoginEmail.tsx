@@ -3,7 +3,7 @@ import React from "react";
 import { MjmlText, MjmlButton } from "@luma-team/mjml-react";
 
 import { StandardLayout } from "@/components/emails/layouts/StandardEmail";
-import { EmailLogin } from "@/server/modules/email";
+import { EmailLogin } from "@/lib/email/email";
 
 export function LoginEmailTitle() {
   return `Connexion à l'espace membre BetaGouv`;

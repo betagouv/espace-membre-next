@@ -3,7 +3,7 @@ import { Metadata } from "next";
 import { StartupInfoCreate } from "@/components/StartupInfoCreatePage";
 import { db } from "@/lib/kysely";
 import { getActiveUsers } from "@/lib/kysely/queries/users";
-import betagouv from "@/server/betagouv";
+import betagouv from "@/lib/betagouv";
 import { routeTitles } from "@/utils/routes/routeTitles";
 
 export const metadata: Metadata = {

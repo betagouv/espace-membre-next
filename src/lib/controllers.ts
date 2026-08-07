@@ -13,11 +13,11 @@ import {
   memberSchemaType,
   memberWrapperSchemaType,
 } from "@/models/member";
-import config from "@/server/config";
+import config from "@/lib/config";
 import { getDimailEmailsByUser } from "@/lib/kysely/queries/dimail";
 
 export function encryptPassword(password) {
-  const iv = randomBytes(16); // Generate a secure, random IV
+  const iv = randomBytes(16);
 
   const cipher = createCipheriv(
     "aes-256-cbc",
@@ -26,10 +26,9 @@ export function encryptPassword(password) {
   );
   let encrypted = cipher.update(password, "utf8", "hex");
   encrypted += cipher.final("hex");
-  return `${iv.toString("hex")}:${encrypted}`; // Combine iv and encrypted content
+  return `${iv.toString("hex")}:${encrypted}`;
 }
 
-// Function to decrypt the password
 export function decryptPassword(encryptedPassword) {
   const key = Buffer.from(config.PASSWORD_ENCRYPT_KEY!, "hex");
   const [ivHex, encrypted] = encryptedPassword.split(":");
@@ -108,13 +107,13 @@ export function objectArrayToCSV<T extends Record<string, any>>(
   arr: T[],
 ): string {
   if (arr.length === 0) {
-    return ""; // or handle empty array case as needed
+    return "";
   }
 
-  const replacer = (key, value) => (value === null ? "" : value); // specify how you want to handle null values here
+  const replacer = (key, value) => (value === null ? "" : value);
   const header = Object.keys(arr[0]);
   const csv = [
-    header.join(";"), // header row first
+    header.join(";"),
     ...arr.map((row) =>
       header
         .map((fieldName) => JSON.stringify(row[fieldName], replacer))
@@ -128,12 +127,6 @@ export function checkUserIsExpired(
   user: memberSchemaType | memberBaseInfoSchemaType,
   minDaysOfExpiration: number = 1,
 ) {
-  // Le membre est considéré comme expiré si:
-  // - il/elle existe
-  // - il/elle a une date de fin
-  // - son/sa date de fin est passée ou pas de mission
-  // todo what to do with user.end
-
   if (!user) return false;
   if (!user.missions || !user.missions.length) return true;
   const latestMission = user.missions.reduce((a, v) =>
@@ -177,13 +170,10 @@ export function getExpiredUsersForXDays<
 >(users: T, nbDays: number): T {
   const date = new Date();
   date.setDate(date.getDate() - nbDays);
-  // Assuming you need to compare dates, convert to YYYY-MM-DD format.
-  // const formattedDate = date.toISOString().slice(0, 10);
   return users.filter((user) => {
     const latestMission = user.missions.reduce((a, v) =>
       !v.end || (a.end ? new Date(v.end) > new Date(a.end) : false) ? v : a,
     );
-    // Compare the normalized dates
     return latestMission.end
       ? compareAsc(startOfDay(latestMission.end), startOfDay(date)) === 0
       : false;
@@ -195,21 +185,14 @@ export function requiredError(formValidationErrors, field) {
 }
 
 export function isAdminEmail(email: string): boolean {
-  // a user should not use an admin email as access are personnal
-  // Basic email format regex (RFC 5322 compliant)
   const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
-  // Regex to block suspicious email patterns
   const blacklistRegex =
     /.*(?:admin|administrator|support|root|sysadmin|superuser|team|staff|moderator|service|helpdesk|contact|management|no-reply|noreply|master|info).*/i;
-  // Check if the email matches the valid email regex and does not match the blacklist
   return emailRegex.test(email) && blacklistRegex.test(email);
 }
 
 export const isPublicServiceEmail = async function (email: string) {
-  // if (process.env.NODE_ENV === "development") {
-  //   return true;
-  // }
   const normalizedEmail = String(email).trim().toLowerCase();
   const atIndex = normalizedEmail.lastIndexOf("@");
   if (atIndex <= 0 || atIndex === normalizedEmail.length - 1) {
@@ -249,7 +232,6 @@ export const isPublicServiceEmail = async function (email: string) {
   if (/@betagouv\.ovh$/.test(normalizedEmail)) {
     return true;
   }
-  // todo: remove ?
   try {
     if (config.tchap_api) {
       console.log(`Tchap API: test ${email}`);
@@ -266,12 +248,10 @@ export const isPublicServiceEmail = async function (email: string) {
     return false;
   } catch (e) {
     console.error("Tchap API error", e);
-    //throw new Error("Get response from tchap error");
     return false;
   }
 };
 
-// todo: remove
 export async function userInfos(
   params: { username: string } | { uuid: string },
   isCurrentUser: boolean,
@@ -283,7 +263,6 @@ export async function userInfos(
         options: { withDetails: true },
       }),
     );
-    // TODO: check if email Dimail
     const dinumEmails = await getDimailEmailsByUser(userInfos.uuid, "mailbox");
     const dinumAliases = await getDimailEmailsByUser(userInfos.uuid, "alias");
 
@@ -306,9 +285,6 @@ export async function userInfos(
 
     const isExpired = checkUserIsExpired(userInfos);
 
-    // On peut créer une redirection & changer un password si:
-    // - le membre n'est pas expiré·e (le membre ne devrait de toute façon pas pouvoir se connecter)
-    // - et que l'on est le membre connecté·e pour créer ces propres redirections.
     const canChangePassword = !!(!isExpired && isCurrentUser && emailInfos);
     const canChangeEmails = !!(!isExpired && isCurrentUser);
     const hasPublicServiceEmail = userInfos.primary_email

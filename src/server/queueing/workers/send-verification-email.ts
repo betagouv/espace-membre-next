@@ -11,7 +11,7 @@ import { getUserBasicInfo } from "@/lib/kysely/queries/users";
 import { SendNewMemberVerificationEmailSchemaType } from "@/models/jobs/member";
 import config from "@/server/config";
 import { sendEmail } from "@/server/config/email.config";
-import { EMAIL_TYPES } from "@/server/modules/email";
+import { EMAIL_TYPES } from "@/lib/email/email";
 
 export const sendNewMemberVerificationEmailTopic =
   "send-new-member-verification-email";

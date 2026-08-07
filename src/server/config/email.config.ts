@@ -27,7 +27,7 @@ import {
   UnblacklistContactEmail,
   GetContactInfo,
 } from "@/lib/email/email";
-import htmlBuilder from "@modules/htmlbuilder/htmlbuilder";
+import htmlBuilder from "@/lib/htmlbuilder";
 
 let sendEmail: SendEmail = fakeSendEmail;
 let addContactsToMailingLists: AddContactsToMailingLists =

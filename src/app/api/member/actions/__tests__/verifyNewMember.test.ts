@@ -1,7 +1,7 @@
 import { expect } from "chai";
 import sinon from "sinon";
 import * as nextAuth from "next-auth/next";
-import * as controllerUtils from "@/server/controllers/utils";
+import * as controllerUtils from "@/lib/controllers";
 import * as updateMemberModule from "@/app/api/member/updateMember";
 import * as bossClient from "@/server/queueing/client";
 import { verifyNewMember } from "../verifyNewMember";

@@ -3,7 +3,7 @@ import { MjmlButton, MjmlText } from "@luma-team/mjml-react";
 import { format } from "date-fns";
 
 import { StandardLayout } from "@/components/emails/layouts/StandardEmail";
-import { EmailStartupMembersDidNotChangeInXMonths } from "@/server/modules/email";
+import { EmailStartupMembersDidNotChangeInXMonths } from "@/lib/email/email";
 import { getBaseUrl } from "@/lib/url";
 
 export function StartupMembersDidNotChangeInXMonthsEmailTitle() {

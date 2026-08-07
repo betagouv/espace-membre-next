@@ -2,7 +2,7 @@ import { expect } from "chai";
 import sinon from "sinon";
 import axios from "axios";
 
-import { isPublicServiceEmail } from "./utils";
+import { isPublicServiceEmail } from "@/lib/controllers";
 import config from "@/server/config";
 
 describe("isPublicServiceEmail", () => {

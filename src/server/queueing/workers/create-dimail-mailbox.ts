@@ -11,7 +11,7 @@ import {
   DIMAIL_MAILBOX_DOMAIN,
 } from "@lib/dimail/utils";
 import { sendEmail } from "@/server/config/email.config";
-import { EMAIL_TYPES } from "@/server/modules/email";
+import { EMAIL_TYPES } from "@/lib/email/email";
 
 export const createDimailMailboxTopic = "create-dimail-mailbox";
 

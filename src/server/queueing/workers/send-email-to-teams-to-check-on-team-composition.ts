@@ -7,7 +7,7 @@ import { memberBaseInfoSchemaType } from "@/models/member";
 import config from "@/server/config";
 import { sendEmail } from "@/server/config/email.config";
 import { BusinessError } from "@/lib/error";
-import { EMAIL_TYPES } from "@modules/email";
+import { EMAIL_TYPES } from "@/lib/email/email";
 
 export const sendEmailToTeamsToCheckOnTeamCompositionTopic =
   "send-email-to-teams-to-check-on-team-composition";

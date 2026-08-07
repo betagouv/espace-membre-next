@@ -10,9 +10,9 @@ import { memberBaseInfoToModel } from "@/models/mapper";
 import config from "@/server/config";
 import { getAdmin } from "@/server/config/admin.config";
 import { sendEmail } from "@/server/config/email.config";
-import { checkUserIsExpired } from "@/server/controllers/utils";
-import { getJwtTokenForUser } from "@/server/helpers/session";
-import { EMAIL_TYPES } from "@/server/modules/email";
+import { checkUserIsExpired } from "@/lib/controllers";
+import { getJwtTokenForUser } from "@/lib/session";
+import { EMAIL_TYPES } from "@/lib/email/email";
 
 async function sendVerificationRequest(params) {
   const { identifier, url } = params;

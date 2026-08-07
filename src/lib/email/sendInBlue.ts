@@ -2,7 +2,7 @@ import SibApiV3Sdk from "sib-api-v3-sdk";
 
 import config from "@/lib/config";
 import { BusinessError } from "@/lib/error";
-import { objectArrayToCSV } from "@/server/controllers/utils";
+import { objectArrayToCSV } from "@/lib/controllers";
 import {
   EmailProps,
   SendEmail,

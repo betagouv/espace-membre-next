@@ -24,18 +24,16 @@
       "@config/*": ["src/server/config/*"],
       "@controllers/*": ["./src/server/controllers/*"],
       "@components/*": ["./src/server/views/pages/components/*"],
-      "@infra/*": ["./src/server/infra/*"],
       "@lib/*": ["src/lib/*"],
       "@utils/*": ["src/utils/*"],
       "@models/*": ["./src/server/models/*"],
-      "@modules/*": ["./src/server/modules/*"],
       "@schedulers/*": ["./src/server/schedulers/*"],
       "@services/*": ["./src/server/services/*"],
       "@views": ["./src/server/views/index.ts"],
       "@views/*": ["./src/server/views/*"],
-      "@db": ["./src/server/db/index.ts"],
-      "@db/*": ["./src/server/db/*"],
-      "@betagouv": ["./src/server/betagouv.ts"]
+      "@db": ["src/lib/db.ts"],
+      "@db/*": ["src/lib/db.ts"],
+      "@betagouv": ["src/lib/betagouv.ts"]
     },
     "plugins": [
       {

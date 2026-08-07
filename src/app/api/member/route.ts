@@ -17,7 +17,7 @@ import {
   SendNewMemberVerificationEmailSchema,
 } from "@/models/jobs/member";
 import { EmailStatusCode } from "@/models/member";
-import { isPublicServiceEmail, isAdminEmail } from "@/server/controllers/utils";
+import { isPublicServiceEmail, isAdminEmail } from "@/lib/controllers";
 import { getBossClientInstance } from "@/server/queueing/client";
 import { sendNewMemberValidationEmailTopic } from "@/server/queueing/workers/send-validation-email";
 import { sendNewMemberVerificationEmailTopic } from "@/server/queueing/workers/send-verification-email";

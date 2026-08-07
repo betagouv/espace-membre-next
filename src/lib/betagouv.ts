@@ -2,7 +2,7 @@ import axios from "axios";
 
 import { getDimailEmail } from "@/lib/kysely/queries/dimail";
 import { EmailInfos, EMAIL_PLAN_TYPE } from "@/models/member";
-import config from "@/server/config";
+import config from "@/lib/config";
 
 const betaGouv = {
   emailInfos: async (id: string): Promise<EmailInfos | null> => {

@@ -15,7 +15,7 @@ import {
 import { PHASE_READABLE_NAME } from "@/models/startup";
 import { sendEmail } from "@/server/config/email.config";
 import { BusinessError } from "@/lib/error";
-import { EMAIL_TYPES } from "@modules/email";
+import { EMAIL_TYPES } from "@/lib/email/email";
 
 export const sendEmailToIncubatorTeamTopic = "send-email-to-incubator-team";
 

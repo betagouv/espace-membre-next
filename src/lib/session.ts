@@ -1,6 +1,6 @@
 import jwt from "jsonwebtoken";
 
-import config from "@/server/config";
+import config from "@/lib/config";
 
 export const getToken = (req) => {
   if (req.cookies) {

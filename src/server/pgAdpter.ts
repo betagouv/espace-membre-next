@@ -9,7 +9,7 @@ import {
 } from "next-auth/adapters";
 
 import { db } from "@/lib/kysely";
-import betagouv from "@/server/betagouv";
+import betagouv from "@/lib/betagouv";
 
 export const createVerificationToken = async ({
   identifier,

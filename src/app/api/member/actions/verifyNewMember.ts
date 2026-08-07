@@ -5,7 +5,7 @@ import { getServerSession } from "next-auth";
 import { updateMember } from "../updateMember";
 import { memberValidateInfoSchemaType } from "@/models/actions/member";
 import { Domaine, EmailStatusCode } from "@/models/member";
-import { isPublicServiceEmail, isAdminEmail } from "@/server/controllers/utils";
+import { isPublicServiceEmail, isAdminEmail } from "@/lib/controllers";
 import { authOptions } from "@/server/authoptions";
 import { AdminEmailNotAllowedError } from "@/lib/error";
 import { getBossClientInstance } from "@/server/queueing/client";
