@@ -6,7 +6,11 @@ import { updateMember } from "@/app/api/member/updateMember";
 import { getUserInfos } from "@/lib/kysely/queries/users";
 import { memberInfoUpdateSchema } from "@/models/actions/member";
 import { authOptions } from "@/lib/authoptions";
-import { withErrorHandling } from "@/lib/error";
+import {
+  AuthorizationError,
+  NoDataError,
+  withErrorHandling,
+} from "@/lib/error";
 
 async function updateMemberInfoAction({
   username,
@@ -17,13 +21,13 @@ async function updateMemberInfoAction({
 }) {
   const session = await getServerSession(authOptions);
   if (!session || (session.user.id !== username && !session.user.isAdmin)) {
-    throw new Error("You don't have the right to access this function");
+    throw new AuthorizationError();
   }
 
   const data = memberInfoUpdateSchema.shape.member.parse(memberData);
   const previousInfo = await getUserInfos({ username });
   if (!previousInfo) {
-    throw new Error("User does not exist");
+    throw new NoDataError("Utilisateur introuvable.");
   }
 
   await updateMember(data, previousInfo.uuid, undefined, session.user.id);

@@ -1,4 +1,19 @@
+import { z } from "zod";
+
 import { getSignedUrl } from "@/lib/actions/image";
+
+class MockFile {
+  size: number;
+  name: string;
+  type: string;
+  constructor(buffer: Buffer, name: string, type: string) {
+    this.size = buffer.length;
+    this.name = name;
+    this.type = type;
+  }
+}
+
+export const FileType = typeof File !== "undefined" ? File : MockFile;
 
 export const saveImage = async ({
   fileIdentifier,

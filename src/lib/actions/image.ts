@@ -7,7 +7,11 @@ import { z } from "zod";
 import { getFileName } from "@/app/api/image/utils";
 import s3 from "@/lib/s3";
 import { authOptions } from "@/lib/authoptions";
-import { withErrorHandling } from "@/lib/error";
+import {
+  AuthorizationError,
+  BusinessError,
+  withErrorHandling,
+} from "@/lib/error";
 
 const getSignedUrlSchema = z.object({
   fileObjIdentifier: z.string(),
@@ -24,12 +28,6 @@ const deleteImageSchema = z.object({
   revalidateMemberImage: z.boolean().optional(),
 });
 
-const getImageSchema = z.object({
-  fileObjIdentifier: z.string(),
-  fileRelativeObjType: z.enum(["startup", "member", "incubator"]),
-  fileIdentifier: z.enum(["shot", "hero", "avatar", "logo"]),
-});
-
 async function getSignedUrlAction(input: z.infer<typeof getSignedUrlSchema>) {
   const params = getSignedUrlSchema.parse(input);
   const session = await getServerSession(authOptions);
@@ -39,10 +37,13 @@ async function getSignedUrlAction(input: z.infer<typeof getSignedUrlSchema>) {
       params.fileRelativeObjType === "member" &&
       !session.user.isAdmin)
   ) {
-    throw new Error("You don't have the right to access this function");
+    throw new AuthorizationError();
   }
   if (!s3) {
-    throw new Error("s3 is not defined");
+    throw new BusinessError(
+      "serviceUnavailable",
+      "Le service de stockage d'images est momentanément indisponible.",
+    );
   }
 
   const s3Params = {
@@ -73,7 +74,7 @@ async function deleteImageAction(
       params.fileRelativeObjType === "member" &&
       !session.user.isAdmin)
   ) {
-    throw new Error("You don't have the right to access this function");
+    throw new AuthorizationError();
   }
 
   await s3

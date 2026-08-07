@@ -83,28 +83,26 @@ async function getBrevoEventsAction(username: string) {
     resp.primary_email = {
       email: dbUser.primary_email,
       events: [],
-      error: null,
     };
     try {
       resp.primary_email["events"] = await getSendEventForUser(
         dbUser.primary_email,
       );
     } catch (e) {
-      resp.primary_email["error"] = e;
+      console.error("Failed to fetch brevo events for primary email:", e);
     }
   }
   if (dbUser?.secondary_email) {
     resp.secondary_email = {
       email: dbUser.secondary_email,
       events: [],
-      error: null,
     };
     try {
       resp.secondary_email["events"] = await getSendEventForUser(
         dbUser.secondary_email,
       );
     } catch (e) {
-      resp.secondary_email["error"] = e;
+      console.error("Failed to fetch brevo events for secondary email:", e);
     }
   }
 

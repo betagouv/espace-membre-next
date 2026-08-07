@@ -1,6 +1,5 @@
 import { z } from "zod";
 
-import { FileType } from "@/lib/file";
 import { incubatorSchema } from "@/models/incubator";
 
 export const incubatorUpdateSchema = z.object({
@@ -17,8 +16,8 @@ export const incubatorUpdateSchema = z.object({
     highlighted_startups: incubatorSchema.shape.highlighted_startups,
   }),
   logo: z
-    .instanceof(FileType)
-    .refine((file) => file.size > 0, "File is required")
+    .any()
+    .refine((file) => file?.size > 0, "File is required")
     .nullable()
     .optional(),
   shouldDeleteLogo: z.boolean().optional(),
