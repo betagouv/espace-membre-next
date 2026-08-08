@@ -1,10 +1,10 @@
 "use server";
 
 import { getServerSession } from "next-auth";
+import slugify from "@sindresorhus/slugify";
 
 import { addGristRecords, GristRecordFields } from "@/lib/grist";
 import { db } from "@/lib/kysely";
-import { generateSentryTeamSlug } from "@/lib/sentry";
 import {
   opsRequestSchema,
   opsRequestSchemaType,
@@ -24,6 +24,12 @@ import {
   withErrorHandling,
 } from "@/lib/error";
 
+const MAX_SENTRY_TEAM_SLUG_CHARACTERS = 50;
+
+export function generateSentryTeamSlug(name: string) {
+  return slugify(name).slice(0, MAX_SENTRY_TEAM_SLUG_CHARACTERS);
+}
+
 export const submitOpsRequest = withErrorHandling(
   async (data: opsRequestSchemaType) => {
     const session = await getServerSession(authOptions);
@@ -40,8 +46,6 @@ export const submitOpsRequest = withErrorHandling(
       );
     }
 
-    // Sentry team slug is derived from the startup name (same rule as the
-    // legacy pg-boss worker) so n8n doesn't have to recompute it.
     const teamSlug =
       parsed.demande === OPS_DEMANDE_TYPE.SENTRY && parsed.startupName
         ? generateSentryTeamSlug(parsed.startupName)

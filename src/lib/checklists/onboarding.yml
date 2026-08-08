@@ -9,7 +9,7 @@
     - id: onboarding-video-presentation
       title: Lire l'email de bienvenue et regarder [la vidéo de présentation de beta.gouv.fr](https://tube.numerique.gouv.fr/w/uoqH4BLXqLFS2HsLZRcBLJ)
     - id: onboarding-atelier-onboarding
-      title: Participer à [L'embarquement en visioconférence obligatoire dans la communauté](https://espace-membre.incubateur.net/formations?filter=Nouveaux+membres)
+      title: Participer à [L'embarquement en visioconférence obligatoire dans la communauté](https://espace-membre.beta.gouv.fr/formations?filter=Nouveaux+membres)
     - id: onboarding-valeurs-beta
       title: Prendre connaissance des [valeurs de beta.gouv.fr](https://doc.incubateur.net/communaute/decouvrir-beta.gouv.fr/valeurs)
     - id: onboarding-standards-beta
@@ -19,9 +19,9 @@
     - id: onboarding-canaux-tchap
       title: Découvrir [les canaux Tchap recommandés](https://doc.incubateur.net/communaute/les-outils-de-la-communaute/tchap)
     - id: onboarding-observatoire
-      title: Consulter [l'observatoire de beta.gouv.fr](https://espace-membre.incubateur.net/metabase). Pour [y contribuer](https://espace-membre.incubateur.net/)
+      title: Consulter [l'observatoire de beta.gouv.fr](https://espace-membre.beta.gouv.fr/metabase). Pour [y contribuer](https://espace-membre.beta.gouv.fr/)
     - id: onboarding-carte-membres
-      title: Publier un message pour signaler ton arrivée aux membres de la communauté beta.gouv près de chez toi via ton [canal mattermost local](https://doc.incubateur.net/communaute/les-outils-de-la-communaute/mattermost/canaux-recommandes). Si aucun ne correspond, tu peux regarder si d'autres membres de la communauté sont près de chez toi sur la [carte des membres](https://espace-membre.incubateur.net/community).
+      title: Publier un message pour signaler ton arrivée aux membres de la communauté beta.gouv près de chez toi via ton canal Tchap local. Si aucun ne correspond, tu peux regarder si d'autres membres de la communauté sont près de chez toi sur la [carte des membres](https://espace-membre.beta.gouv.fr/community).
     - id: onboarding-lieux-partages
       title: Découvrir [les lieux où travailler ou organiser des événements](https://doc.incubateur.net/communaute/travailler-chez-beta.gouv.fr/vie-quotidienne-et-bien-etre/travailler-dans-les-lieux-partages/ou-travailler)
     - id: onboarding-agenda
@@ -32,8 +32,8 @@
       title: Lire la [documentation de l'incubateur auquel tu es rattaché.e](https://doc.incubateur.net/communaute/travailler-chez-beta.gouv.fr/to-do-darrivee)
     - id: onboarding-doc-metier
       title: Consulter [les pages spécifiques à ton corps de métier](https://doc.incubateur.net/communaute/travailler-chez-beta.gouv.fr/les-differents-metiers)
-    - id: onboarding-equipe-mattermost
-      title: Rejoindre les canaux de ton équipe sur Mattermost
+    - id: onboarding-equipe-tchap
+      title: Rejoindre les canaux de ton équipe sur Tchap
     - id: onboarding-equipe-produit
       title: T'imprégner du service numérique auquel tu es rattaché via sa fiche produit sur [beta.gouv.fr/startups](https://beta.gouv.fr/startups)
     - id: onboarding-equipe-rituels

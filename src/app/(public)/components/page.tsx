@@ -10,7 +10,6 @@ import {
   Domaine,
   EmailStatusCode,
 } from "@/models/member";
-import { ACCOUNT_SERVICE_STATUS } from "@/models/services";
 import { getChecklistObject } from "@/lib/checklists/getChecklistObject";
 
 export const metadata: Metadata = {
@@ -80,72 +79,6 @@ const sampleMember: { member: MemberPageProps } = {
       link: "https://fr.wikipedia.org/wiki/Ada_Lovelace",
     },
     isCurrentUser: false,
-    mattermostInfo: {
-      hasMattermostAccount: true,
-      isInactiveOrNotInTeam: false,
-      mattermostUserName: "ada.lovelace",
-    },
-    matomoInfo: {
-      email: "unemaildetest@gmail.com",
-      account_type: "matomo",
-      status: ACCOUNT_SERVICE_STATUS.ACCOUNT_FOUND,
-      service_user_id: "unemaildetest@gmail.co",
-      metadata: {
-        sites: [
-          {
-            id: 46,
-            url: "https://totobogosss",
-            name: "supertoto",
-            type: "website",
-            accessLevel: "admin",
-          },
-          {
-            id: 47,
-            url: "https://iiiiii",
-            name: "supertata",
-            type: "website",
-            accessLevel: "admin",
-          },
-        ],
-      },
-    },
-    sentryInfo: {
-      email: "unemaildetest@gmail.com",
-      account_type: "sentry",
-      service_user_id: "168",
-      status: ACCOUNT_SERVICE_STATUS.ACCOUNT_FOUND,
-      metadata: {
-        organisationRole: "admin",
-        pending: false,
-        expired: false,
-        inviteStatus: "approved",
-        teams: [
-          {
-            slug: "monservice-prod",
-            name: "monservice-prod",
-            id: "123",
-            role: null,
-            memberCount: 3,
-            projects: [
-              {
-                name: "projet",
-                id: "145",
-                slug: "projet1",
-                plateform: "typescript",
-              },
-            ],
-          },
-          {
-            name: "nis2",
-            slug: "nis2",
-            role: null,
-            id: "124",
-            memberCount: 3,
-            projects: [],
-          },
-        ],
-      },
-    },
     redirections: [{ from: "ada@love.com", id: "42", to: "some@one.com" }],
     authorizations: {
       canChangePassword: false,

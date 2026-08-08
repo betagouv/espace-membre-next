@@ -49,11 +49,6 @@ export default function BlocConfigurerEmailPrincipal({
         avec Betagouv. Ce doit être un email d'agent public. Il s'agit par
         défaut de {userInfos.primary_email}. .
       </p>
-      <p>
-        <i className={fr.cx("fr-icon--md", "fr-icon-warning-fill")} /> L'email
-        du compte mattermost doit être le même que l'adresse primaire. Pensez à
-        le changer si ce n'est pas le cas.
-      </p>
       {(canChangeEmails || isAdmin) && (
         <form
           method="POST"
