@@ -1,5 +1,6 @@
 import { z } from "zod";
 
+import { incubatorApiResponseSchema } from "./incubator";
 import { missionSchemaShape } from "./mission";
 
 // todo: extract types from single "phases" array ?
@@ -298,3 +299,49 @@ export const userStartupSchema = z.object({
 });
 
 export type userStartupSchemaType = z.infer<typeof userStartupSchema>;
+
+// Schema de reponse pour l'API protegee /api/protected/startups.
+// Projection ciblee et permissive : identite du produit et rattachement
+// incubateur, sans les nombreuses URL internes. Il decrit le contrat de sortie.
+export const startupApiResponseSchema = z.object({
+  uuid: z.string(),
+  ghid: z.string(),
+  name: z.string(),
+  pitch: z.string().nullable().optional(),
+  incubator_id: z.string().nullable().optional(),
+  contact: z.string().nullable().optional(),
+  description: z.string().nullable().optional(),
+  link: z.string().nullable().optional(),
+  repository: z.string().nullable().optional(),
+  mailing_list: z.string().nullable().optional(),
+  accessibility_status: z.string().nullable().optional(),
+  dsfr_status: z.string().nullable().optional(),
+  techno: z.array(z.string()).optional(),
+  thematiques: z.array(z.string()).optional(),
+  usertypes: z.array(z.string()).optional(),
+});
+export type startupApiResponseSchemaType = z.infer<
+  typeof startupApiResponseSchema
+>;
+
+// Startup enrichie de son incubateur, pour /api/protected/startups/{ghid}.
+export const startupWithIncubatorApiResponseSchema =
+  startupApiResponseSchema.extend({
+    incubator: incubatorApiResponseSchema.nullable(),
+  });
+export type startupWithIncubatorApiResponseSchemaType = z.infer<
+  typeof startupWithIncubatorApiResponseSchema
+>;
+
+// Startup vue depuis un incubateur (/api/protected/incubators/{ghid}/startups),
+// avec la phase courante calculee par getIncubatorStartups.
+export const incubatorStartupApiResponseSchema = z.object({
+  uuid: z.string(),
+  ghid: z.string().nullable(),
+  name: z.string(),
+  pitch: z.string().nullable(),
+  phase: z.string().nullable(),
+});
+export type incubatorStartupApiResponseSchemaType = z.infer<
+  typeof incubatorStartupApiResponseSchema
+>;

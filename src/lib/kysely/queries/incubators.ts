@@ -1,3 +1,7 @@
+import { ExpressionBuilder } from "kysely";
+
+import { withMemberMissionsGhids } from "./users";
+import { DB } from "@/@types/db";
 import { db, jsonArrayFrom } from "@/lib/kysely";
 import { StartupPhase } from "@/models/startup";
 
@@ -75,6 +79,13 @@ export async function getIncubator(uuid: string) {
     .executeTakeFirstOrThrow();
 }
 
+/** Return an incubator by its ghid (acronyme), or undefined if unknown */
+export async function getIncubatorByGhid(ghid: string) {
+  return await selectIncubator()
+    .where("incubators.ghid", "=", ghid)
+    .executeTakeFirst();
+}
+
 export async function getAllIncubatorsMembers() {
   return db
     .selectFrom("incubators")
@@ -112,6 +123,69 @@ export async function getAllIncubatorsMembers() {
           ),
       ).as("members"),
     ])
+    .execute();
+}
+
+// Membres rattaches a un incubateur, par ses startups ET/OU ses equipes.
+// Contrairement a getAllIncubatorsMembers, AUCUN filtre de date n'est applique :
+// les deux chemins de rattachement se comportent de facon identique et la route
+// renvoie par defaut tous les rattaches, y compris les missions terminees.
+// Chaque membre porte deux booleens (viaStartups / viaTeams) permettant de
+// deduire le discriminant "attachment", ses missions (startups en GHID) et les
+// GHID des equipes de cet incubateur auxquelles il appartient.
+export function getIncubatorMembers(incubatorUuid: string) {
+  const attachedByStartup = (eb: ExpressionBuilder<DB, "users">) =>
+    eb
+      .selectFrom("missions")
+      .innerJoin(
+        "missions_startups",
+        "missions_startups.mission_id",
+        "missions.uuid",
+      )
+      .innerJoin("startups", "startups.uuid", "missions_startups.startup_id")
+      .select("missions.uuid")
+      .whereRef("missions.user_id", "=", "users.uuid")
+      .where("startups.incubator_id", "=", incubatorUuid);
+
+  const attachedByTeam = (eb: ExpressionBuilder<DB, "users">) =>
+    eb
+      .selectFrom("users_teams")
+      .innerJoin("teams", "teams.uuid", "users_teams.team_id")
+      .select("users_teams.uuid")
+      .whereRef("users_teams.user_id", "=", "users.uuid")
+      .where("teams.incubator_id", "=", incubatorUuid);
+
+  return db
+    .selectFrom("users")
+    .select([
+      "users.uuid",
+      "users.username",
+      "users.fullname",
+      "users.github",
+      "users.primary_email",
+      "users.secondary_email",
+      "users.communication_email",
+      "users.primary_email_status",
+    ])
+    .select((eb) => [
+      withMemberMissionsGhids(eb, incubatorUuid),
+      jsonArrayFrom(
+        eb
+          .selectFrom("teams")
+          .innerJoin("users_teams", "users_teams.team_id", "teams.uuid")
+          .select("teams.ghid")
+          .whereRef("users_teams.user_id", "=", "users.uuid")
+          .where("teams.incubator_id", "=", incubatorUuid),
+      )
+        .$notNull()
+        .as("incubatorTeams"),
+      eb.exists(attachedByStartup(eb)).as("viaStartups"),
+      eb.exists(attachedByTeam(eb)).as("viaTeams"),
+    ])
+    .where((eb) =>
+      eb.or([eb.exists(attachedByStartup(eb)), eb.exists(attachedByTeam(eb))]),
+    )
+    .orderBy("users.fullname", "asc")
     .execute();
 }
 

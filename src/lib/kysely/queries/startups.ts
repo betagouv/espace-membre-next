@@ -4,6 +4,7 @@ import { Startups } from "@/@types/db";
 import { db } from "@/lib/kysely";
 import { StartupPhase } from "@/models/startup";
 import { getAllIncubators } from "./incubators";
+import { withMemberMissionsGhids } from "./users";
 
 export const getLatests = () =>
   db
@@ -84,6 +85,40 @@ WHERE fs.startup_id IS NULL AND NOT EXISTS (
     Selectable<Startups> & { current_phase: StartupPhase }
   >(rawQuery);
   return result.rows;
+}
+
+// Membres d'une startup pour l'API protegee : toute personne ayant une mission
+// sur cette startup. Missions exposees avec les startups en GHID.
+export function getStartupMembers(startupUuid: string) {
+  return db
+    .selectFrom("users")
+    .select([
+      "users.uuid",
+      "users.username",
+      "users.fullname",
+      "users.github",
+      "users.primary_email",
+      "users.secondary_email",
+      "users.communication_email",
+      "users.primary_email_status",
+    ])
+    .select((eb) => [withMemberMissionsGhids(eb)])
+    .where((eb) =>
+      eb.exists(
+        eb
+          .selectFrom("missions")
+          .innerJoin(
+            "missions_startups",
+            "missions_startups.mission_id",
+            "missions.uuid",
+          )
+          .select("missions.uuid")
+          .whereRef("missions.user_id", "=", "users.uuid")
+          .where("missions_startups.startup_id", "=", startupUuid),
+      ),
+    )
+    .orderBy("users.fullname", "asc")
+    .execute();
 }
 
 const selectLastStartupPhase = (selectFrom, startupId) =>

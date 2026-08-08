@@ -172,6 +172,44 @@ function withMissions(eb: ExpressionBuilder<DB, "users">) {
     .as("missions");
 }
 
+// Missions d'un membre pour l'API protegee : les startups sont agregees en GHID
+// (et non en uuid). Si un incubateur est fourni, on ne garde que les missions
+// rattachees a une startup de cet incubateur, et seuls ses GHID sont agreges.
+export function withMemberMissionsGhids(
+  eb: ExpressionBuilder<DB, "users">,
+  incubatorId?: string,
+) {
+  return jsonArrayFrom(
+    eb
+      .selectFrom("missions")
+      .leftJoin(
+        "missions_startups",
+        "missions_startups.mission_id",
+        "missions.uuid",
+      )
+      .leftJoin("startups", "startups.uuid", "missions_startups.startup_id")
+      .select((eb2) => [
+        "missions.start",
+        "missions.end",
+        "missions.status",
+        "missions.employer",
+        sql<
+          Array<string>
+        >`coalesce(array_agg(startups.ghid order by startups.ghid) filter (where startups.ghid is not null), '{}')`.as(
+          "startups",
+        ),
+      ])
+      .whereRef("missions.user_id", "=", "users.uuid")
+      .$if(!!incubatorId, (qb) =>
+        qb.where("startups.incubator_id", "=", incubatorId!),
+      )
+      .orderBy("missions.start", "asc")
+      .groupBy("missions.uuid"),
+  )
+    .$notNull()
+    .as("missions");
+}
+
 function withTeams(eb: ExpressionBuilder<DB, "users">) {
   return jsonArrayFrom(
     eb
