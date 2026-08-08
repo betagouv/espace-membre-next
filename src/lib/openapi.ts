@@ -147,6 +147,10 @@ export function buildOpenApiDocument() {
         description: "Membres de l'incubateur",
         content: jsonArray(IncubatorMember),
       },
+      422: {
+        description: "Paramètre de requête invalide (status attendu: active)",
+        content: json(errorSchema),
+      },
       404: notFound,
     },
   });
