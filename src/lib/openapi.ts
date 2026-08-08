@@ -68,6 +68,12 @@ export function buildOpenApiDocument() {
   const usernameParams = z.object({
     username: z.string().openapi({ description: "Identifiant du membre" }),
   });
+  const phaseQuery = z.object({
+    phase: z.string().optional().openapi({
+      description:
+        "Filtre sur la phase courante, valeurs separees par des virgules (ex: construction,acceleration). Aucun filtre par defaut.",
+    }),
+  });
 
   const jsonArray = (schema: z.ZodTypeAny) => ({
     "application/json": { schema: z.array(schema) },
@@ -107,7 +113,7 @@ export function buildOpenApiDocument() {
     method: "get",
     path: "/api/protected/incubators/{ghid}/startups",
     summary: "Liste les startups d'un incubateur",
-    request: { params: ghidParams },
+    request: { params: ghidParams, query: phaseQuery },
     responses: {
       200: {
         description: "Startups de l'incubateur",
@@ -145,6 +151,7 @@ export function buildOpenApiDocument() {
     method: "get",
     path: "/api/protected/startups",
     summary: "Liste toutes les startups",
+    request: { query: phaseQuery },
     responses: {
       200: { description: "Liste des startups", content: jsonArray(Startup) },
     },
