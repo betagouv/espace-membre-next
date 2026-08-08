@@ -17,9 +17,13 @@ import {
   startupWithIncubatorApiResponseSchema,
 } from "@/models/startup";
 
-// La patch de zod (ajout de .openapi) est confinee a ce module : les modeles
-// restent independants de zod-to-openapi, ce qui rend ce fichier retirable sans
-// toucher au reste de l'API.
+// extendZodWithOpenApi patche le prototype zod PARTAGE par tout le repo (ajout de
+// .openapi et wrapping de .optional/.nullable/.pick/...). C'est idempotent et sans
+// effet sur la validation, mais ce n'est PAS confine a ce module. On l'accepte
+// parce que la route /api/protected/openapi.json est generee statiquement au build
+// (dynamic = "force-static") : ce patch ne s'execute donc qu'au build, jamais dans
+// le serveur en production. Les modeles n'importent pas zod-to-openapi, ce qui
+// garde ce fichier + la route retirables sans toucher au reste de l'API.
 extendZodWithOpenApi(z);
 
 const errorSchema = z.object({ error: z.unknown() });
