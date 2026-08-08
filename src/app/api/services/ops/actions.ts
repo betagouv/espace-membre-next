@@ -26,7 +26,7 @@ import {
 
 const MAX_SENTRY_TEAM_SLUG_CHARACTERS = 50;
 
-export function generateSentryTeamSlug(name: string) {
+function generateSentryTeamSlug(name: string) {
   return slugify(name).slice(0, MAX_SENTRY_TEAM_SLUG_CHARACTERS);
 }
 
