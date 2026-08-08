@@ -59,8 +59,10 @@ fileignoreconfig:
   checksum: e2a041fe934441a29c6274fcb06f378a217c25c89d3f96a5c82cee4164a5e4ee
 - filename: src/lib/s3.ts
   checksum: a74621f69d4d7e4cdb99c05d127fcdc4a3f81aed2dc921146272f3deed3e283e
+- filename: src/models/member.ts
+  checksum: 494b87eccfd0b71b01c11ed153d9d6097463cff08be0bf6332e047d637dc151f
 - filename: src/models/misc.ts
-  checksum: 0294a10f151fe53549f7bdfd6081d5a69d7572bb633b7813adc49bfac2f2f241
+  checksum: 71f4eb334cf4d187e4b2b848ec3ed3d2c8af083f8a8ec5bb776b763e2b6e0446
 - filename: src/server/queueing/workers/create-dimail-mailbox.spec.ts
   checksum: 7961ed68360545e4e2c72bf9884e12943467175bdeed35b38bfc177613fc0b15
 - filename: src/server/queueing/workers/send-verification-email.ts

@@ -10,11 +10,6 @@ import { EMAIL_STATUS_READABLE_FORMAT } from "@/models/misc";
 import Image from "next/image";
 import { fr } from "@codegouvfr/react-dsfr";
 
-const legacyEmailStatuses = P.union(
-  EmailStatusCode.EMAIL_CREATION_PENDING,
-  EmailStatusCode.EMAIL_UNSET,
-);
-
 const emailStatusRow = (
   emailInfos: MemberPageProps["emailInfos"],
   userInfos: MemberPageProps["userInfos"],
