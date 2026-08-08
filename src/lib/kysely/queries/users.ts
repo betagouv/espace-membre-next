@@ -139,25 +139,6 @@ export async function getAllUsersInfo(db: Kysely<DB> = database) {
   return userInfos.rows;
 }
 
-export async function getAllExpiredUsers(
-  expirationDate: Date,
-  db: Kysely<DB> = database,
-) {
-  const query = protectedDataSelect(db)
-    .select((eb) => [withMissions(eb), withTeams(eb)])
-    .where("primary_email", "is not", null)
-    .where("primary_email_status", "in", [
-      EmailStatusCode.EMAIL_DELETED,
-      EmailStatusCode.EMAIL_EXPIRED,
-      EmailStatusCode.EMAIL_SUSPENDED,
-    ])
-    .where("primary_email_status_updated_at", "<", expirationDate)
-    .compile();
-
-  const userInfos = await db.executeQuery(query);
-  return userInfos.rows;
-}
-
 /* UTILS */
 
 function withMissions(eb: ExpressionBuilder<DB, "users">) {

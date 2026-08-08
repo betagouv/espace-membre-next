@@ -11,12 +11,7 @@ import Image from "next/image";
 import { fr } from "@codegouvfr/react-dsfr";
 
 const legacyEmailStatuses = P.union(
-  EmailStatusCode.EMAIL_REDIRECTION_ACTIVE,
-  EmailStatusCode.EMAIL_ACTIVE_AND_PASSWORD_DEFINITION_PENDING,
   EmailStatusCode.EMAIL_CREATION_PENDING,
-  EmailStatusCode.EMAIL_RECREATION_PENDING,
-  EmailStatusCode.EMAIL_REDIRECTION_PENDING,
-  EmailStatusCode.EMAIL_EXPIRED,
   EmailStatusCode.EMAIL_UNSET,
 );
 
@@ -58,8 +53,7 @@ const emailStatusRow = (
           </Badge>
         ),
       )
-      .with(legacyEmailStatuses, () => <>{userInfos.primary_email_status}</>)
-      .exhaustive(),
+      .otherwise(() => <>{userInfos.primary_email_status}</>),
     <>
       {emailInfos && <BadgeEmailPlan plan={emailInfos.emailPlan} />}
 
@@ -103,8 +97,9 @@ const emailStatusRow = (
             }
           </>
         ))
-        .with(legacyEmailStatuses, () => <>{userInfos.primary_email_status}</>)
-        .exhaustive()}
+        .otherwise(() => (
+          <>{userInfos.primary_email_status}</>
+        ))}
     </>,
   ];
 };

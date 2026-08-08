@@ -48,15 +48,6 @@ const emailStatusRow = (
             {EMAIL_STATUS_READABLE_FORMAT[userInfos.primary_email_status]}
           </Badge>
         ))}
-      {userInfos.primary_email_status ===
-        EmailStatusCode.EMAIL_ACTIVE_AND_PASSWORD_DEFINITION_PENDING && (
-        <span>
-          Le mot de passe doit être défini. Rendez vous dans{" "}
-          <a href={"/account?tab=compte-email#password"}>
-            Changer mon mot de passe
-          </a>
-        </span>
-      )}
     </>,
   ];
 };
@@ -147,10 +138,8 @@ export default function EmailContainer({
   ].filter((z) => !!z);
 
   const infoStatus = [
-    EmailStatusCode.EMAIL_RECREATION_PENDING,
     EmailStatusCode.EMAIL_CREATION_WAITING,
     EmailStatusCode.EMAIL_CREATION_PENDING,
-    EmailStatusCode.EMAIL_REDIRECTION_PENDING,
     EmailStatusCode.EMAIL_VERIFICATION_WAITING,
   ];
 
