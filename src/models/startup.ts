@@ -300,9 +300,23 @@ export const userStartupSchema = z.object({
 
 export type userStartupSchemaType = z.infer<typeof userStartupSchema>;
 
+// Phase d'une startup exposee par l'API protegee. Le nom est brut : la liste des
+// phases considerees comme terminales est une decision metier qui appartient au
+// consommateur, l'API n'expose pas de booleen actif/inactif.
+export const startupPhaseApiResponseSchema = z.object({
+  name: z.string(),
+  start: z.coerce.date(),
+  end: z.coerce.date().nullable(),
+});
+export type startupPhaseApiResponseSchemaType = z.infer<
+  typeof startupPhaseApiResponseSchema
+>;
+
 // Schema de reponse pour l'API protegee /api/protected/startups.
 // Projection ciblee et permissive : identite du produit et rattachement
 // incubateur, sans les nombreuses URL internes. Il decrit le contrat de sortie.
+// phases est ordonne chronologiquement (par date de debut) et current_phase
+// reprend le nom de la derniere phase.
 export const startupApiResponseSchema = z.object({
   uuid: z.string(),
   ghid: z.string(),
@@ -319,6 +333,8 @@ export const startupApiResponseSchema = z.object({
   techno: z.array(z.string()).optional(),
   thematiques: z.array(z.string()).optional(),
   usertypes: z.array(z.string()).optional(),
+  phases: z.array(startupPhaseApiResponseSchema),
+  current_phase: z.string().nullable(),
 });
 export type startupApiResponseSchemaType = z.infer<
   typeof startupApiResponseSchema
@@ -334,13 +350,14 @@ export type startupWithIncubatorApiResponseSchemaType = z.infer<
 >;
 
 // Startup vue depuis un incubateur (/api/protected/incubators/{ghid}/startups),
-// avec la phase courante calculee par getIncubatorStartups.
+// avec ses phases ordonnees chronologiquement et sa phase courante.
 export const incubatorStartupApiResponseSchema = z.object({
   uuid: z.string(),
   ghid: z.string().nullable(),
   name: z.string(),
   pitch: z.string().nullable(),
-  phase: z.string().nullable(),
+  phases: z.array(startupPhaseApiResponseSchema),
+  current_phase: z.string().nullable(),
 });
 export type incubatorStartupApiResponseSchemaType = z.infer<
   typeof incubatorStartupApiResponseSchema

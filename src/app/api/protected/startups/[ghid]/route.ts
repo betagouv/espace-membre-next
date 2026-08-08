@@ -1,7 +1,8 @@
 import { HttpStatusCode } from "axios";
 
-import { getStartup } from "@/lib/kysely/queries";
 import { getIncubator } from "@/lib/kysely/queries/incubators";
+import { getStartupWithPhases } from "@/lib/kysely/queries/startups";
+import { currentPhaseName } from "@/lib/startupPhase";
 import { incubatorToModel, startupToModel } from "@/models/mapper";
 import { startupWithIncubatorApiResponseSchema } from "@/models/startup";
 
@@ -10,7 +11,7 @@ export const GET = async (
   _: Request,
   { params: { ghid } }: { params: { ghid: string } },
 ) => {
-  const dbStartup = await getStartup({ ghid });
+  const dbStartup = await getStartupWithPhases(ghid);
   if (!dbStartup) {
     return Response.json(
       { error: "No startup found for this ghid" },
@@ -26,6 +27,8 @@ export const GET = async (
   const body = startupWithIncubatorApiResponseSchema.parse({
     ...startup,
     incubator,
+    phases: dbStartup.phases,
+    current_phase: currentPhaseName(dbStartup.phases),
   });
   return Response.json(body);
 };
