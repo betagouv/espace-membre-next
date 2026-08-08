@@ -3,7 +3,6 @@ import { ExpressionBuilder } from "kysely";
 import { withMemberMissionsGhids } from "./users";
 import { DB } from "@/@types/db";
 import { db, jsonArrayFrom } from "@/lib/kysely";
-import { StartupPhase } from "@/models/startup";
 
 /** Return all incubators */
 export function getAllIncubators() {
