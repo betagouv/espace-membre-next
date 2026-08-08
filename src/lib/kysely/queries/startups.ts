@@ -102,7 +102,7 @@ export function getStartupMembers(startupUuid: string) {
       "users.communication_email",
       "users.primary_email_status",
     ])
-    .select((eb) => [withMemberMissions(eb)])
+    .select((eb) => [withMemberMissions(eb, { startupId: startupUuid })])
     .where((eb) =>
       eb.exists(
         eb

@@ -167,7 +167,7 @@ export function getIncubatorMembers(incubatorUuid: string) {
       "users.primary_email_status",
     ])
     .select((eb) => [
-      withMemberMissions(eb, incubatorUuid),
+      withMemberMissions(eb, { incubatorId: incubatorUuid }),
       jsonArrayFrom(
         eb
           .selectFrom("teams")

@@ -175,11 +175,12 @@ function withMissions(eb: ExpressionBuilder<DB, "users">) {
 // Missions d'un membre pour l'API protegee : chaque startup d'une mission est
 // exposee par son couple { uuid, ghid }. Le ghid est l'identifiant public
 // reutilisable en entree des routes ; l'uuid ne sert qu'a la correlation et n'est
-// jamais accepte en entree. Si un incubateur est fourni, on ne garde que les
-// missions rattachees a une startup de cet incubateur.
+// jamais accepte en entree. Le scope restreint les missions (et les startups
+// agregees) a un incubateur ou a une startup precise ; sans scope, toutes les
+// missions du membre sont renvoyees.
 export function withMemberMissions(
   eb: ExpressionBuilder<DB, "users">,
-  incubatorId?: string,
+  scope: { incubatorId?: string; startupId?: string } = {},
 ) {
   return jsonArrayFrom(
     eb
@@ -203,8 +204,11 @@ export function withMemberMissions(
         ),
       ])
       .whereRef("missions.user_id", "=", "users.uuid")
-      .$if(!!incubatorId, (qb) =>
-        qb.where("startups.incubator_id", "=", incubatorId!),
+      .$if(!!scope.incubatorId, (qb) =>
+        qb.where("startups.incubator_id", "=", scope.incubatorId!),
+      )
+      .$if(!!scope.startupId, (qb) =>
+        qb.where("startups.uuid", "=", scope.startupId!),
       )
       .orderBy("missions.start", "asc")
       .groupBy("missions.uuid"),
