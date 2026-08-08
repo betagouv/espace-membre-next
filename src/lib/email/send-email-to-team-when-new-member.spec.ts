@@ -1,5 +1,4 @@
 import { Selectable } from "kysely";
-import PgBoss from "pg-boss";
 import proxyquire from "proxyquire";
 import sinon from "sinon";
 
@@ -35,7 +34,7 @@ describe("sendEmailToTeamWhenNewMember()", () => {
     sendEmailStub = sinon.stub().resolves(); // Resolves like a real async function
     // Use proxyquire to replace bossClient module
     sendEmailToTeamWhenNewMember = proxyquire(
-      "@/server/queueing/workers/send-email-to-team-when-new-member",
+      "@/lib/email/send-email-to-team-when-new-member",
       {
         "@/server/config/email.config": { sendEmail: sendEmailStub },
       },
@@ -54,8 +53,8 @@ describe("sendEmailToTeamWhenNewMember()", () => {
       throw new Error("test: error in test setup, newMember should exists");
     }
     await sendEmailToTeamWhenNewMember({
-      data: { userId: newMember.uuid },
-    } as unknown as PgBoss.Job<void>);
+      userId: newMember.uuid,
+    });
     const startups = await getUserStartups(newMember.uuid);
     const usersByStartup = (await getUsersByStartup(startups[0].uuid)).filter(
       (user) => user.uuid !== newMember.uuid,

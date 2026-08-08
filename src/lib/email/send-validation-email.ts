@@ -1,11 +1,10 @@
 import { isAfter } from "date-fns/isAfter";
 import { isBefore } from "date-fns/isBefore";
-import PgBoss from "pg-boss";
 
-import { getMemberIfValidOrThrowError } from "./utils";
+import { getMemberIfValidOrThrowError } from "@/lib/member";
 import { getIncubator } from "@/lib/kysely/queries/incubators";
 import { getIncubatorTeamMembers } from "@/lib/kysely/queries/teams";
-import { getUserBasicInfo, getUserStartups } from "@/lib/kysely/queries/users";
+import { getUserStartups } from "@/lib/kysely/queries/users";
 import {
   SendNewMemberValidationEmailSchema,
   SendNewMemberValidationEmailSchemaType,
@@ -15,18 +14,16 @@ import config from "@/server/config";
 import { sendEmail } from "@/server/config/email.config";
 import { EMAIL_TYPES } from "@/lib/email/email";
 import { BusinessError } from "@/lib/error";
-
-export const sendNewMemberValidationEmailTopic =
-  "send-new-member-validation-email";
+import { withRetry } from "@/lib/withRetry";
 
 export async function sendNewMemberValidationEmail(
-  job: PgBoss.Job<SendNewMemberValidationEmailSchemaType>,
+  data: SendNewMemberValidationEmailSchemaType,
 ) {
-  const data = SendNewMemberValidationEmailSchema.parse(job.data);
-  const newMember = await getMemberIfValidOrThrowError(data.userId);
+  const validatedData = SendNewMemberValidationEmailSchema.parse(data);
+  const newMember = await getMemberIfValidOrThrowError(validatedData.userId);
   const now = new Date();
   // we fetch also startups for missions in the futur
-  const userStartups = (await getUserStartups(data.userId)).filter(
+  const userStartups = (await getUserStartups(validatedData.userId)).filter(
     (startup) => {
       return isBefore(now, startup.end ?? Infinity);
     },
@@ -38,7 +35,7 @@ export async function sendNewMemberValidationEmail(
 
   const incubatorIds = Array.from(
     new Set(
-      [data.incubator_id, ...startupIncubatorIds].filter(
+      [validatedData.incubator_id, ...startupIncubatorIds].filter(
         (id): id is string => typeof id === "string",
       ),
     ),
@@ -46,7 +43,7 @@ export async function sendNewMemberValidationEmail(
   if (!incubatorIds.length) {
     throw new BusinessError(
       "NewMemberDoesNotHaveIncubators",
-      `NewMember ${data.userId} is not linked to any incubators`,
+      `NewMember ${validatedData.userId} is not linked to any incubators`,
     );
   }
   for (const incubatorId of incubatorIds) {
@@ -69,16 +66,19 @@ export async function sendNewMemberValidationEmail(
         membersForTeam.map((m) => m.primary_email).filter((email) => !!email),
       ),
     ) as string[];
-    await sendEmail({
-      toEmail: memberEmails,
-      type: EMAIL_TYPES.EMAIL_NEW_MEMBER_VALIDATION,
-      variables: {
-        startups: userStartups.map((startup) => userStartupToModel(startup)),
-        incubator: incubatorToModel(incubator),
-        userInfos: newMember,
-        validationLink: `${config.protocol}://${config.host}/community/${newMember.username}/validate`,
-      },
-    });
+
+    await withRetry(async () => {
+      await sendEmail({
+        toEmail: memberEmails,
+        type: EMAIL_TYPES.EMAIL_NEW_MEMBER_VALIDATION,
+        variables: {
+          startups: userStartups.map((startup) => userStartupToModel(startup)),
+          incubator: incubatorToModel(incubator),
+          userInfos: newMember,
+          validationLink: `${config.protocol}://${config.host}/community/${newMember.username}/validate`,
+        },
+      });
+    }, undefined, "validation email");
     console.log(`Validation email sent for new member ${newMember.fullname}`);
   }
 }

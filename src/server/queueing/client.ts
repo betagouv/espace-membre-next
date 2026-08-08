@@ -9,14 +9,7 @@ import {
   sendEmailToTeamsToCheckOnTeamComposition,
   sendEmailToTeamsToCheckOnTeamCompositionTopic,
 } from "./workers/send-email-to-teams-to-check-on-team-composition";
-import {
-  sendNewMemberValidationEmail,
-  sendNewMemberValidationEmailTopic,
-} from "./workers/send-validation-email";
-import {
-  sendNewMemberVerificationEmail,
-  sendNewMemberVerificationEmailTopic,
-} from "./workers/send-verification-email";
+
 import {
   createDimailMailbox,
   createDimailMailboxTopic,
@@ -80,16 +73,6 @@ export const pgBossWorker: {
   worker: (job: PgBoss.Job<any>) => Promise<void>;
   description: string;
 }[] = [
-  {
-    topic: sendNewMemberValidationEmailTopic,
-    worker: sendNewMemberValidationEmail,
-    description: `Envoie un email aux membres de la startup d'un nouveau membre pour que quelqu'un valide sa fiche`,
-  },
-  {
-    topic: sendNewMemberVerificationEmailTopic,
-    worker: sendNewMemberVerificationEmail,
-    description: `Envoie un email au nouveau membre pour l'inviter à compléter sa fiche`,
-  },
   {
     topic: sendEmailToTeamsToCheckOnTeamCompositionTopic,
     worker: sendEmailToTeamsToCheckOnTeamComposition,
