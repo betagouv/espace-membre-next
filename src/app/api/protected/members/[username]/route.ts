@@ -2,7 +2,11 @@ import { HttpStatusCode } from "axios";
 import { isAfter, isBefore } from "date-fns";
 
 import { getAllIncubators } from "@/lib/kysely/queries/incubators";
-import { getUserBasicInfo, getUserStartups } from "@/lib/kysely/queries/users";
+import {
+  getMemberApiMissions,
+  getUserBasicInfo,
+  getUserStartups,
+} from "@/lib/kysely/queries/users";
 import { isUserActive } from "@/lib/member.utils";
 import { getAvatarUrl } from "@/lib/s3";
 import { incubatorToModel, memberBaseInfoToModel } from "@/models/mapper";
@@ -45,11 +49,16 @@ export async function GET(
     incubator: findIncubator(startup.incubator_id),
     isCurrent:
       isAfter(now, startup.start ?? 0) &&
-      isBefore(now, startup.end ?? Infinity),
+      (!startup.end || isBefore(now, startup.end)),
   }));
+
+  // Missions exposees avec les startups en { uuid, ghid }, coherentes avec les
+  // routes de listing (l'ancienne route depreciee renvoyait des uuid bruts).
+  const missions = await getMemberApiMissions(dbUser.uuid);
 
   const body = memberDetailApiResponseSchema.parse({
     ...member,
+    missions,
     avatar: avatar ?? null,
     teams,
     startups,

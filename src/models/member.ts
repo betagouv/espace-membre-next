@@ -419,14 +419,25 @@ export enum IncubatorMemberAttachment {
   BOTH = "both",
 }
 
-// Mission telle qu'exposee par l'API protegee : les startups sont des GHID
-// (pas des uuid internes) pour eviter au consommateur une jointure.
+// Startup telle qu'exposee dans une mission de l'API protegee : couple
+// { uuid, ghid }. Le ghid est l'identifiant public reutilisable en entree des
+// routes ; l'uuid n'est present que pour la correlation et n'est jamais accepte
+// en entree.
+export const protectedMissionStartupSchema = z.object({
+  uuid: z.string(),
+  ghid: z.string(),
+});
+export type protectedMissionStartupSchemaType = z.infer<
+  typeof protectedMissionStartupSchema
+>;
+
+// Mission telle qu'exposee par l'API protegee.
 export const protectedApiMissionSchema = z.object({
   start: z.coerce.date(),
   end: z.coerce.date().nullable().optional(),
   status: z.string().nullable().optional(),
   employer: z.string().nullable().optional(),
-  startups: z.array(z.string()),
+  startups: z.array(protectedMissionStartupSchema),
 });
 export type protectedApiMissionSchemaType = z.infer<
   typeof protectedApiMissionSchema
@@ -463,7 +474,7 @@ export const memberDetailMissionSchema = z.object({
   end: z.coerce.date().nullable().optional(),
   status: z.string().nullable().optional(),
   employer: z.string().nullable().optional(),
-  startups: z.array(z.string()).optional(),
+  startups: z.array(protectedMissionStartupSchema).optional(),
 });
 
 export const memberDetailTeamSchema = teamSchema.extend({

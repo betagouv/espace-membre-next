@@ -4,7 +4,7 @@ import { DB, Startups } from "@/@types/db";
 import { db, jsonArrayFrom } from "@/lib/kysely";
 import { StartupPhase } from "@/models/startup";
 import { getAllIncubators } from "./incubators";
-import { withMemberMissionsGhids } from "./users";
+import { withMemberMissions } from "./users";
 
 export const getLatests = () =>
   db
@@ -102,7 +102,7 @@ export function getStartupMembers(startupUuid: string) {
       "users.communication_email",
       "users.primary_email_status",
     ])
-    .select((eb) => [withMemberMissionsGhids(eb)])
+    .select((eb) => [withMemberMissions(eb)])
     .where((eb) =>
       eb.exists(
         eb

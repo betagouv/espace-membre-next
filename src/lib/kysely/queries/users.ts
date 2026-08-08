@@ -172,10 +172,12 @@ function withMissions(eb: ExpressionBuilder<DB, "users">) {
     .as("missions");
 }
 
-// Missions d'un membre pour l'API protegee : les startups sont agregees en GHID
-// (et non en uuid). Si un incubateur est fourni, on ne garde que les missions
-// rattachees a une startup de cet incubateur, et seuls ses GHID sont agreges.
-export function withMemberMissionsGhids(
+// Missions d'un membre pour l'API protegee : chaque startup d'une mission est
+// exposee par son couple { uuid, ghid }. Le ghid est l'identifiant public
+// reutilisable en entree des routes ; l'uuid ne sert qu'a la correlation et n'est
+// jamais accepte en entree. Si un incubateur est fourni, on ne garde que les
+// missions rattachees a une startup de cet incubateur.
+export function withMemberMissions(
   eb: ExpressionBuilder<DB, "users">,
   incubatorId?: string,
 ) {
@@ -188,14 +190,15 @@ export function withMemberMissionsGhids(
         "missions.uuid",
       )
       .leftJoin("startups", "startups.uuid", "missions_startups.startup_id")
-      .select((eb2) => [
+      .select([
+        "missions.uuid",
         "missions.start",
         "missions.end",
         "missions.status",
         "missions.employer",
         sql<
-          Array<string>
-        >`coalesce(array_agg(startups.ghid order by startups.ghid) filter (where startups.ghid is not null), '{}')`.as(
+          Array<{ uuid: string; ghid: string }>
+        >`coalesce(jsonb_agg(jsonb_build_object('uuid', startups.uuid, 'ghid', startups.ghid) order by startups.ghid) filter (where startups.uuid is not null), '[]'::jsonb)`.as(
           "startups",
         ),
       ])
@@ -208,6 +211,21 @@ export function withMemberMissionsGhids(
   )
     .$notNull()
     .as("missions");
+}
+
+// Missions d'un membre exposees par l'API protegee (startups en { uuid, ghid }),
+// sans scope incubateur : successeur formalise, utilise par la fiche detaillee
+// /api/protected/members/{username}.
+export async function getMemberApiMissions(
+  userUuid: string,
+  db: Kysely<DB> = database,
+) {
+  const row = await db
+    .selectFrom("users")
+    .select((eb) => [withMemberMissions(eb)])
+    .where("users.uuid", "=", userUuid)
+    .executeTakeFirst();
+  return row?.missions ?? [];
 }
 
 function withTeams(eb: ExpressionBuilder<DB, "users">) {

@@ -123,10 +123,12 @@ describe("GET /api/protected/incubators/[ghid]/members", () => {
       IncubatorMemberAttachment.BOTH,
     );
 
-    // Les startups des missions sont des GHID, pas des uuid internes.
-    expect(
-      byUsername["test-api-startup-active"].missions[0].startups,
-    ).to.deep.equal(["test-api-startup"]);
+    // Chaque startup de mission est exposee par son couple { uuid, ghid }.
+    const missionStartups =
+      byUsername["test-api-startup-active"].missions[0].startups;
+    expect(missionStartups).to.have.length(1);
+    expect(missionStartups[0].ghid).to.equal("test-api-startup");
+    expect(missionStartups[0].uuid).to.be.a("string");
     // L'appartenance a une equipe de l'incubateur est exposee par GHID.
     expect(byUsername["test-api-team-only"].teams).to.deep.equal([
       "test-api-team",

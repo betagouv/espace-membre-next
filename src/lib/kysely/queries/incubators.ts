@@ -1,6 +1,6 @@
 import { ExpressionBuilder } from "kysely";
 
-import { withMemberMissionsGhids } from "./users";
+import { withMemberMissions } from "./users";
 import { DB } from "@/@types/db";
 import { db, jsonArrayFrom } from "@/lib/kysely";
 
@@ -167,7 +167,7 @@ export function getIncubatorMembers(incubatorUuid: string) {
       "users.primary_email_status",
     ])
     .select((eb) => [
-      withMemberMissionsGhids(eb, incubatorUuid),
+      withMemberMissions(eb, incubatorUuid),
       jsonArrayFrom(
         eb
           .selectFrom("teams")
