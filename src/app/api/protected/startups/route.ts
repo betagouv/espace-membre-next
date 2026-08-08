@@ -6,6 +6,9 @@ import { currentPhaseName, parsePhaseFilter } from "@/lib/startupPhase";
 import { startupToModel } from "@/models/mapper";
 import { startupApiResponseSchema } from "@/models/startup";
 
+// Route de données live : à rendre à la demande, jamais à prérender au build.
+export const dynamic = "force-dynamic";
+
 export const GET = async (req: NextRequest) => {
   const phaseFilter = parsePhaseFilter(req.nextUrl.searchParams.get("phase"));
 
