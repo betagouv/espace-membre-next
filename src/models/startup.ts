@@ -349,15 +349,16 @@ export type startupWithIncubatorApiResponseSchemaType = z.infer<
   typeof startupWithIncubatorApiResponseSchema
 >;
 
-// Startup vue depuis un incubateur (/api/protected/incubators/{ghid}/startups),
-// avec ses phases ordonnees chronologiquement et sa phase courante.
-export const incubatorStartupApiResponseSchema = z.object({
-  uuid: z.string(),
-  ghid: z.string().nullable(),
-  name: z.string(),
-  pitch: z.string().nullable(),
-  phases: z.array(startupPhaseApiResponseSchema),
-  current_phase: z.string().nullable(),
+// Startup vue depuis un incubateur (/api/protected/incubators/{ghid}/startups) :
+// meme contrat que /api/protected/startups restreint a l'identite du produit et
+// a ses phases, pour garantir un ghid et un pitch coherents entre les deux routes.
+export const incubatorStartupApiResponseSchema = startupApiResponseSchema.pick({
+  uuid: true,
+  ghid: true,
+  name: true,
+  pitch: true,
+  phases: true,
+  current_phase: true,
 });
 export type incubatorStartupApiResponseSchemaType = z.infer<
   typeof incubatorStartupApiResponseSchema

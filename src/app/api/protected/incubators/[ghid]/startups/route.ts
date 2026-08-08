@@ -4,6 +4,7 @@ import { z } from "zod";
 
 import { getIncubatorByGhid } from "@/lib/kysely/queries/incubators";
 import { getStartupsWithPhases } from "@/lib/kysely/queries/startups";
+import { startupToModel } from "@/models/mapper";
 import { currentPhaseName, parsePhaseFilter } from "@/lib/startupPhase";
 import { incubatorStartupApiResponseSchema } from "@/models/startup";
 
@@ -22,14 +23,17 @@ export const GET = async (
   const phaseFilter = parsePhaseFilter(req.nextUrl.searchParams.get("phase"));
 
   const rows = await getStartupsWithPhases(incubator.uuid);
-  let startups = rows.map((row) => ({
-    uuid: row.uuid,
-    ghid: row.ghid,
-    name: row.name,
-    pitch: row.pitch,
-    phases: row.phases,
-    current_phase: currentPhaseName(row.phases),
-  }));
+  let startups = rows.map((row) => {
+    const startup = startupToModel(row);
+    return {
+      uuid: startup.uuid,
+      ghid: startup.ghid,
+      name: startup.name,
+      pitch: startup.pitch,
+      phases: row.phases,
+      current_phase: currentPhaseName(row.phases),
+    };
+  });
 
   // Pas de filtre par defaut. ?phase=... ne conserve que les startups dont la
   // phase courante figure dans la liste demandee.
