@@ -24,6 +24,7 @@ import {
   OPS_DEMANDE_TYPE,
   OPS_FIELDS,
 } from "@/models/ops";
+import Link from "next/link";
 
 // Doc de l'embarquement dev : prérequis obligatoire avant toute commande de
 // ressources.
@@ -161,7 +162,8 @@ export const OpsRequestForm = ({
       />
       <p className="fr-text--sm">
         Si votre type de demande n'apparaît pas dans les suggestions, posez
-        directement vos questions sur le canal ~incubateur-ops.
+        directement vos questions sur le{" "}
+        <Link href={OPS_TCHAP_CHANNEL_URL}>canal Tchap demandes-OPS</Link>
       </p>
       <form onSubmit={handleSubmit(onSubmit)}>
         {/* Identifiant Tchap et email : préremplis et masqués, mais envoyés à Grist. */}

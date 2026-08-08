@@ -248,68 +248,6 @@ export function BreadCrumbs() {
           text: "Modifier ma fiche",
           isActive: hasPathnameThisMatch(pathname, accountEditBaseInfoLink),
         },
-        {
-          href: "/services",
-          text: "Outils",
-          isActive: hasPathnameThisMatch(pathname, "/services"),
-          items: [
-            {
-              href: "/services/sentry",
-              text: "Sentry",
-              isActive: hasPathnameThisMatch(pathname, "/services/sentry"),
-              items: [
-                {
-                  href: "/services/sentry/request",
-                  text: "Ajouter une équipe",
-                  isActive: hasPathnameThisMatch(
-                    pathname,
-                    "/services/sentry/request",
-                  ),
-                  items: [
-                    {
-                      href: "/services/sentry/request/new",
-                      text: "Créer une nouvelle équipe",
-                      isActive: hasPathnameThisMatch(
-                        pathname,
-                        "/services/sentry/request/new",
-                      ),
-                    },
-                  ],
-                },
-              ],
-            },
-            {
-              href: "/services/matomo",
-              text: "Matomo",
-              isActive: hasPathnameThisMatch(pathname, "/services/matomo"),
-              items: [
-                {
-                  href: "/services/matomo/request",
-                  text: "Ajouter un site",
-                  isActive: hasPathnameThisMatch(
-                    pathname,
-                    "/services/matomo/request",
-                  ),
-                  items: [
-                    {
-                      href: "/services/matomo/request/new",
-                      text: "Créer un nouveau site",
-                      isActive: hasPathnameThisMatch(
-                        pathname,
-                        "/services/matomo/request/new",
-                      ),
-                    },
-                  ],
-                },
-              ],
-            },
-            {
-              href: "/services/mattermost",
-              text: "Mattermost",
-              isActive: hasPathnameThisMatch(pathname, "/services/mattermost"),
-            },
-          ],
-        },
       ],
     },
     {

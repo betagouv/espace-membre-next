@@ -1,12 +1,10 @@
 import { isAfter } from "date-fns/isAfter";
 import { isBefore } from "date-fns/isBefore";
 import { sql, ExpressionBuilder, Kysely, SelectExpression } from "kysely";
-import { UpdateObjectExpression } from "kysely/dist/cjs/parser/update-set-parser";
 import _ from "lodash";
 
 import { DB } from "@/@types/db"; // generated with `npm run kysely-codegen`
 import { db as database, jsonArrayFrom } from "@/lib/kysely";
-import { EmailStatusCode } from "@/models/member";
 
 export const MEMBER_PROTECTED_INFO: SelectExpression<DB, "users">[] = [
   "users.uuid",
@@ -139,25 +137,6 @@ export async function getAllUsersInfo(db: Kysely<DB> = database) {
   return userInfos.rows;
 }
 
-export async function getAllExpiredUsers(
-  expirationDate: Date,
-  db: Kysely<DB> = database,
-) {
-  const query = protectedDataSelect(db)
-    .select((eb) => [withMissions(eb), withTeams(eb)])
-    .where("primary_email", "is not", null)
-    .where("primary_email_status", "in", [
-      EmailStatusCode.EMAIL_DELETED,
-      EmailStatusCode.EMAIL_EXPIRED,
-      EmailStatusCode.EMAIL_SUSPENDED,
-    ])
-    .where("primary_email_status_updated_at", "<", expirationDate)
-    .compile();
-
-  const userInfos = await db.executeQuery(query);
-  return userInfos.rows;
-}
-
 /* UTILS */
 
 function withMissions(eb: ExpressionBuilder<DB, "users">) {
@@ -254,25 +233,6 @@ function withEndDate(
     ])
     .limit(1)
     .as("end");
-}
-
-export async function updateUser(
-  uuid: string,
-  userData: UpdateObjectExpression<DB, "users">,
-  db: Kysely<DB> = database,
-) {
-  // Insert or update the mission and return the mission ID
-  const result = await db
-    .updateTable("users")
-    .where("uuid", "=", uuid)
-    .set(userData)
-    .execute();
-
-  if (!result) {
-    throw new Error("Failed to insert or update mission");
-  }
-
-  return result.length;
 }
 
 export async function getUserStartups(uuid: string, db: Kysely<DB> = database) {
