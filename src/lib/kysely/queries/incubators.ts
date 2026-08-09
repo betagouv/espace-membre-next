@@ -15,15 +15,20 @@ export async function getAllIncubatorsOptions() {
   }));
 }
 
-/** Return incubator startups */
+/** Return incubator startups (including startups it co-incubates) */
 export function getIncubatorStartups(uuid: string) {
   return db
     .selectFrom("startups")
+    .innerJoin(
+      "startups_incubators",
+      "startups_incubators.startup_id",
+      "startups.uuid",
+    )
     .select(({ selectFrom }) => [
-      "uuid",
-      "name",
-      "pitch",
-      "ghid",
+      "startups.uuid",
+      "startups.name",
+      "startups.pitch",
+      "startups.ghid",
       selectFrom("phases")
         .select("name")
         .whereRef("phases.startup_id", "=", "startups.uuid")
@@ -43,9 +48,40 @@ export function getIncubatorStartups(uuid: string) {
         .limit(1)
         .as("phase"),
     ])
-    .where("incubator_id", "=", uuid)
-    .orderBy("name")
+    .where("startups_incubators.incubator_id", "=", uuid)
+    .orderBy("startups.name")
     .execute();
+}
+
+/** Return all incubators (full model) linked to a startup via the N:N join table */
+export function getStartupIncubators(startupId: string) {
+  return selectIncubator()
+    .innerJoin(
+      "startups_incubators",
+      "startups_incubators.incubator_id",
+      "incubators.uuid",
+    )
+    .where("startups_incubators.startup_id", "=", startupId)
+    .orderBy("incubators.title")
+    .execute();
+}
+
+/** Return every (startup_id, incubator_id) pair from the N:N join table */
+export function getAllStartupsIncubators() {
+  return db
+    .selectFrom("startups_incubators")
+    .select(["startup_id", "incubator_id"])
+    .execute();
+}
+
+/** Return the incubator uuids linked to a startup via the N:N join table */
+export async function getStartupIncubatorIds(startupId: string) {
+  const rows = await db
+    .selectFrom("startups_incubators")
+    .select("incubator_id")
+    .where("startup_id", "=", startupId)
+    .execute();
+  return rows.map((row) => row.incubator_id);
 }
 
 function selectIncubator() {
@@ -93,6 +129,11 @@ export async function getAllIncubatorsMembers() {
             "missions.uuid",
           )
           .leftJoin("startups", "startups.uuid", "missions_startups.startup_id")
+          .leftJoin(
+            "startups_incubators",
+            "startups_incubators.startup_id",
+            "startups.uuid",
+          )
           // only include active users
           .where((eb) =>
             eb.or([
@@ -100,7 +141,7 @@ export async function getAllIncubatorsMembers() {
               eb("missions.end", ">=", new Date()),
             ]),
           )
-          .whereRef("startups.incubator_id", "=", "incubators.uuid")
+          .whereRef("startups_incubators.incubator_id", "=", "incubators.uuid")
           .union(() =>
             // team members affiliated to incubator
             eb

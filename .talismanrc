@@ -73,6 +73,8 @@ fileignoreconfig:
   checksum: 92e8908b1d03cb63c51d8a56aa909ebaeab6f0ca3078ae044110019a0f9f2a16
 - filename: src/utils/routes/routes.ts
   checksum: 6a38b15c7efd08ecb470db5946a6cd826b3553b11f54069cf1bc6df335763ca2
+- filename: migrations/20260618000001_add_startups_incubators_table.ts
+  checksum: bede298828d3b776caa717960fd6afb95f5f344a158246e265309e14d6dfa5ab
 scopeconfig:
 - scope: node
 version: "1.0"

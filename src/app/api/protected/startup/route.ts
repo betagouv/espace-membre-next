@@ -3,7 +3,10 @@ import { NextRequest } from "next/server";
 import { z } from "zod";
 
 import { getAllStartups } from "@/lib/kysely/queries";
-import { getAllIncubators } from "@/lib/kysely/queries/incubators";
+import {
+  getAllIncubators,
+  getAllStartupsIncubators,
+} from "@/lib/kysely/queries/incubators";
 import { incubatorToModel, startupToModel } from "@/models/mapper";
 import { convertSearchParamsToRecord } from "@/lib/url";
 
@@ -39,9 +42,17 @@ export const GET = async (req: NextRequest) => {
   if (searchParams.includes?.length) {
     const withIncubator = searchParams.includes === StartupIncludes.INCUBATORS;
     const incubators = withIncubator ? await getAllIncubators() : [];
+    const links = withIncubator ? await getAllStartupsIncubators() : [];
+    const incubatorIdsByStartup = new Map<string, string[]>();
+    for (const link of links) {
+      const ids = incubatorIdsByStartup.get(link.startup_id) ?? [];
+      ids.push(link.incubator_id);
+      incubatorIdsByStartup.set(link.startup_id, ids);
+    }
 
     type StartupWithIncubator = (typeof startups)[0] & {
       incubator: ReturnType<typeof incubatorToModel> | null;
+      incubators: ReturnType<typeof incubatorToModel>[];
     };
     for (const startup of startups) {
       if (withIncubator) {
@@ -54,6 +65,14 @@ export const GET = async (req: NextRequest) => {
               organization_name: null,
             })
           : null;
+        (startup as StartupWithIncubator).incubators = (
+          incubatorIdsByStartup.get(startup.uuid) ?? []
+        )
+          .map((id) => incubators.find((incubator) => incubator.uuid === id))
+          .filter((incubator) => incubator !== undefined)
+          .map((incubator) =>
+            incubatorToModel({ ...incubator, organization_name: null }),
+          );
       }
     }
   }
