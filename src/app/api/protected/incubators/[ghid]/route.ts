@@ -1,7 +1,7 @@
 import { HttpStatusCode } from "axios";
 
 import { getIncubatorByGhid } from "@/lib/kysely/queries/incubators";
-import { incubatorApiResponseSchema } from "@/models/incubator";
+import { incubatorApiResponseSchema } from "@/models/api/incubator";
 import { incubatorToModel } from "@/models/mapper";
 
 export const GET = async (

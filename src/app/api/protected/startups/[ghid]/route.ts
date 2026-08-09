@@ -4,7 +4,7 @@ import { getIncubator } from "@/lib/kysely/queries/incubators";
 import { getStartupWithPhases } from "@/lib/kysely/queries/startups";
 import { currentPhaseName } from "@/lib/startupPhase";
 import { incubatorToModel, startupToModel } from "@/models/mapper";
-import { startupWithIncubatorApiResponseSchema } from "@/models/startup";
+import { startupWithIncubatorApiResponseSchema } from "@/models/api/startup";
 
 // On conserve la semantique existante : le parametre de chemin est le ghid.
 export const GET = async (

@@ -6,7 +6,7 @@ import { getIncubatorByGhid } from "@/lib/kysely/queries/incubators";
 import { getStartupsWithPhases } from "@/lib/kysely/queries/startups";
 import { startupToModel } from "@/models/mapper";
 import { currentPhaseName, parsePhaseFilter } from "@/lib/startupPhase";
-import { incubatorStartupApiResponseSchema } from "@/models/startup";
+import { incubatorStartupApiResponseSchema } from "@/models/api/startup";
 
 export const GET = async (
   req: NextRequest,

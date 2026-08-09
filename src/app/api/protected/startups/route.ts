@@ -4,7 +4,7 @@ import { z } from "zod";
 import { getStartupsWithPhases } from "@/lib/kysely/queries/startups";
 import { currentPhaseName, parsePhaseFilter } from "@/lib/startupPhase";
 import { startupToModel } from "@/models/mapper";
-import { startupApiResponseSchema } from "@/models/startup";
+import { startupApiResponseSchema } from "@/models/api/startup";
 
 // Route de données live : à rendre à la demande, jamais à prérender au build.
 export const dynamic = "force-dynamic";

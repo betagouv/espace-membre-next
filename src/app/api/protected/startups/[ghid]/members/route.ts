@@ -3,11 +3,8 @@ import { z } from "zod";
 
 import { getStartup } from "@/lib/kysely/queries";
 import { getStartupMembers } from "@/lib/kysely/queries/startups";
-import {
-  CommunicationEmailCode,
-  EmailStatusCode,
-  protectedMemberSchema,
-} from "@/models/member";
+import { protectedMemberSchema } from "@/models/api/member";
+import { CommunicationEmailCode, EmailStatusCode } from "@/models/member";
 
 export const GET = async (
   _: Request,

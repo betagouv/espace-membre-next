@@ -8,11 +8,10 @@ import {
 } from "@/lib/kysely/queries/incubators";
 import { convertSearchParamsToRecord } from "@/lib/url";
 import {
-  CommunicationEmailCode,
-  EmailStatusCode,
   IncubatorMemberAttachment,
   incubatorMemberSchema,
-} from "@/models/member";
+} from "@/models/api/member";
+import { CommunicationEmailCode, EmailStatusCode } from "@/models/member";
 
 const queryInput = z.object({
   status: z.literal("active").optional(),

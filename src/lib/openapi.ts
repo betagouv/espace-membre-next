@@ -5,17 +5,17 @@ import {
 } from "@asteasolutions/zod-to-openapi";
 import { z } from "zod";
 
-import { incubatorApiResponseSchema } from "@/models/incubator";
+import { incubatorApiResponseSchema } from "@/models/api/incubator";
 import {
   incubatorMemberSchema,
   memberDetailApiResponseSchema,
   protectedMemberSchema,
-} from "@/models/member";
+} from "@/models/api/member";
 import {
   incubatorStartupApiResponseSchema,
   startupApiResponseSchema,
   startupWithIncubatorApiResponseSchema,
-} from "@/models/startup";
+} from "@/models/api/startup";
 
 // extendZodWithOpenApi patche le prototype zod PARTAGE par tout le repo (ajout de
 // .openapi et wrapping de .optional/.nullable/.pick/...). C'est idempotent et sans

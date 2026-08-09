@@ -10,7 +10,7 @@ import {
 import { isUserActive } from "@/lib/member.utils";
 import { getAvatarUrl } from "@/lib/s3";
 import { incubatorToModel, memberBaseInfoToModel } from "@/models/mapper";
-import { memberDetailApiResponseSchema } from "@/models/member";
+import { memberDetailApiResponseSchema } from "@/models/api/member";
 
 export async function GET(
   _: Request,

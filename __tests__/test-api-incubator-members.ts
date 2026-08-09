@@ -4,7 +4,7 @@ import { NextRequest } from "next/server";
 
 import { createData, deleteData, FakeDataInterface } from "./utils/fakeData";
 import { GET } from "@/app/api/protected/incubators/[ghid]/members/route";
-import { IncubatorMemberAttachment } from "@/models/member";
+import { IncubatorMemberAttachment } from "@/models/api/member";
 
 const now = new Date();
 
