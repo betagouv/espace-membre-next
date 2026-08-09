@@ -1,4 +1,4 @@
-import { test, expect } from "@playwright/test";
+import { test, expect, type Page } from "@playwright/test";
 
 import { db } from "@/lib/kysely";
 
@@ -6,6 +6,17 @@ test.use({ storageState: "./playwright-auth-valid.member.json" });
 
 const VALID_MEMBER_UUID = "23dd9fed-9c84-432c-a566-f785702147fc";
 const FAR_FUTURE_END = new Date("2030-03-01");
+
+// A armer avant l'interaction qui declenche l'action.
+// networkidle ne convient pas ici : revalidatePath relance des requetes RSC et
+// le prefetch des liens, donc le reseau ne se tait jamais.
+const waitForServerAction = (page: Page) =>
+  page.waitForResponse(
+    (response) =>
+      response.request().method() === "POST" &&
+      response.url().includes("/account"),
+    { timeout: 15000 },
+  );
 
 test("onboarding panel is shown on dashboard for a recently created member with no upcoming departure", async ({
   page,
@@ -137,6 +148,8 @@ test("checking an onboarding item increases the progress bar on account and dash
     const checkbox = await activePanel
       .locator("input[type=checkbox]:not([disabled]) + label")
       .first();
+
+    const persisted = waitForServerAction(page);
     await checkbox.check();
 
     // Progress bar should update immediately in client state
@@ -145,7 +158,7 @@ test("checking an onboarding item increases the progress bar on account and dash
     expect(accountProgress).toBeGreaterThan(initialProgress);
 
     // Wait for the server action to persist the event before navigating
-    await page.waitForLoadState("networkidle");
+    await persisted;
 
     // Dashboard should now reflect the saved progress
     await page.goto("/dashboard");
@@ -212,13 +225,15 @@ test("checking an offboarding item increases the progress bar on account and das
     const checkbox = await activePanel
       .locator("input[type=checkbox]:not([disabled]) + label")
       .first();
+
+    const persisted = waitForServerAction(page);
     await checkbox.check();
 
     await expect(progressText).not.toHaveText(initialProgressStr!);
     const accountProgress = parseInt((await progressText.textContent()) ?? "0");
     expect(accountProgress).toBeGreaterThan(initialProgress);
 
-    await page.waitForLoadState("networkidle");
+    await persisted;
 
     // Dashboard offboarding panel should reflect the updated progress
     await page.goto("/dashboard");
