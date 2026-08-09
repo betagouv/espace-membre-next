@@ -5,7 +5,7 @@ import { z } from "zod";
 import { getAllStartups } from "@/lib/kysely/queries";
 import {
   getAllIncubators,
-  getAllIncubatorsMembers,
+  getAllIncubatorsActiveMembers,
 } from "@/lib/kysely/queries/incubators";
 import { incubatorToModel, startupToModel } from "@/models/mapper";
 import { convertSearchParamsToRecord } from "@/lib/url";
@@ -77,7 +77,7 @@ export const GET = async (req: NextRequest) => {
     }
 
     if (withMembers) {
-      const incubatorMembersList = await getAllIncubatorsMembers();
+      const incubatorMembersList = await getAllIncubatorsActiveMembers();
       type IncubatorWithMembers = (typeof incubators)[0] & {
         members: { uuid: string; fullname: string }[];
       };

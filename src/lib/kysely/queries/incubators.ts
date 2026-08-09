@@ -85,7 +85,7 @@ export async function getIncubatorByGhid(ghid: string) {
     .executeTakeFirst();
 }
 
-export async function getAllIncubatorsMembers() {
+export async function getAllIncubatorsActiveMembers() {
   return db
     .selectFrom("incubators")
     .select(({ selectFrom, eb }) => [
@@ -126,7 +126,8 @@ export async function getAllIncubatorsMembers() {
 }
 
 // Membres rattaches a un incubateur, par ses startups ET/OU ses equipes.
-// Contrairement a getAllIncubatorsMembers, AUCUN filtre de date n'est applique :
+// Contrairement a getAllIncubatorsActiveMembers, AUCUN filtre de date n'est
+// applique :
 // les deux chemins de rattachement se comportent de facon identique et la route
 // renvoie par defaut tous les rattaches, y compris les missions terminees.
 // Chaque membre porte deux booleens (viaStartups / viaTeams) permettant de
