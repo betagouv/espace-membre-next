@@ -162,10 +162,7 @@ export const startupSchema = z.object({
     })
     .min(1)
     .describe("Incubateur principal ou fabrique numérique"),
-  incubator_ids: z
-    .array(z.string().uuid())
-    .optional()
-    .describe("Incubateurs"),
+  incubator_ids: z.array(z.string().uuid()).optional().describe("Incubateurs"),
   contact_dinum: z
     .preprocess(
       (val) => (val === "" ? null : val),
@@ -306,7 +303,7 @@ export const userStartupSchema = z.object({
   end: missionSchemaShape.end,
   start: missionSchemaShape.start,
   incubator_id: startupSchema.shape.incubator_id,
-  incubator_ids: z.array(z.string()),
+  incubator_ids: z.array(z.string().uuid()),
 });
 
 export type userStartupSchemaType = z.infer<typeof userStartupSchema>;

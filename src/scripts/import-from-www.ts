@@ -109,6 +109,20 @@ const insertData = async (markdownData: MarkdownData) => {
       const incubator_id = incubators.find(
         (o) => o.ghid === startup.attributes.incubator,
       )?.uuid;
+      // Le frontmatter ne porte `incubators` que pour les produits co-incubés ;
+      // `incubator` reste la valeur historique et sert de principal. On le
+      // réinjecte en tête pour garantir la contrainte, le fichier distant
+      // n'offrant aucune garantie de cohérence entre les deux champs.
+      const linkedIncubatorIds = Array.from(
+        new Set(
+          [
+            incubator_id,
+            ...(startup.attributes.incubators || []).map(
+              (ghid) => incubators.find((o) => o.ghid === ghid)?.uuid,
+            ),
+          ].filter((uuid): uuid is string => !!uuid),
+        ),
+      );
       // startups_principal_incubator_linked est différée : la startup et son
       // lien d'incubateur doivent atterrir dans la même transaction.
       const startupDb = await db.transaction().execute(async (trx) => {
@@ -138,10 +152,15 @@ const insertData = async (markdownData: MarkdownData) => {
           .returning(["uuid", "ghid"])
           .executeTakeFirstOrThrow();
 
-        if (incubator_id) {
+        if (linkedIncubatorIds.length) {
           await trx
             .insertInto("startups_incubators")
-            .values({ startup_id: inserted.uuid, incubator_id })
+            .values(
+              linkedIncubatorIds.map((linkedIncubatorId) => ({
+                startup_id: inserted.uuid,
+                incubator_id: linkedIncubatorId,
+              })),
+            )
             .execute();
         }
 

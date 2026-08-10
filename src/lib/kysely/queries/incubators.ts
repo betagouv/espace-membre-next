@@ -66,11 +66,24 @@ export function getStartupIncubators(startupId: string) {
     .execute();
 }
 
-/** Return every (startup_id, incubator_id) pair from the N:N join table */
+/**
+ * Return every (startup_id, incubator_id) pair from the N:N join table.
+ * Ordered by incubator title so every caller builds a stable list: the rendered
+ * order and the API payload must not shift from one request to the next.
+ */
 export function getAllStartupsIncubators() {
   return db
     .selectFrom("startups_incubators")
-    .select(["startup_id", "incubator_id"])
+    .innerJoin(
+      "incubators",
+      "incubators.uuid",
+      "startups_incubators.incubator_id",
+    )
+    .select([
+      "startups_incubators.startup_id",
+      "startups_incubators.incubator_id",
+    ])
+    .orderBy("incubators.title")
     .execute();
 }
 
@@ -78,8 +91,14 @@ export function getAllStartupsIncubators() {
 export async function getStartupIncubatorIds(startupId: string) {
   const rows = await db
     .selectFrom("startups_incubators")
-    .select("incubator_id")
-    .where("startup_id", "=", startupId)
+    .innerJoin(
+      "incubators",
+      "incubators.uuid",
+      "startups_incubators.incubator_id",
+    )
+    .select("startups_incubators.incubator_id")
+    .where("startups_incubators.startup_id", "=", startupId)
+    .orderBy("incubators.title")
     .execute();
   return rows.map((row) => row.incubator_id);
 }

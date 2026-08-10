@@ -1,5 +1,4 @@
 import * as Sentry from "@sentry/node";
-import _ from "lodash";
 import PgBoss from "pg-boss";
 
 import { getLastEventListStartupUuids } from "@/lib/events";
@@ -29,7 +28,9 @@ export async function sendEmailToIncubatorTeam(job: PgBoss.Job<void>) {
   // Grouped through the join table so a co-incubated startup is reported to
   // every incubator carrying it. Grouping on startups.incubator_id also built a
   // bogus "null" bucket for startups without any incubator.
-  const startupsById = new Map(startups.map((startup) => [startup.uuid, startup]));
+  const startupsById = new Map(
+    startups.map((startup) => [startup.uuid, startup]),
+  );
   const startupsByIncubator: Record<string, typeof startups> = {};
   for (const link of await getAllStartupsIncubators()) {
     const startup = startupsById.get(link.startup_id);
