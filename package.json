@@ -25,6 +25,7 @@
     "job:sync-dinum-emails": "tsx src/scripts/sync-dinum-emails",
     "job:sync-matrix-accounts": "tsx src/scripts/sync-matrix-accounts",
     "job:clean-teams-members": "tsx src/scripts/clean-teams-members",
+    "job:recreate-email-if-user-active": "tsx src/scripts/recreate-email-if-user-active",
     "export-to-www": "./src/scripts/export-to-www.sh",
     "start-cron-jobs-dev": "ts-node src/server/schedulers/scheduleCronJobs.ts",
     "start-pgboss-jobs-dev": "ts-node src/server/schedulers/schedulePgBossJobs.ts",

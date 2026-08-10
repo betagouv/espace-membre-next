@@ -11,6 +11,9 @@
     },
     {
       "command": "0 8-18 * * * [[ \"$APP\" = \"espace-membre-cron\" ]] && npm run job:sync-dinum-emails || echo 'skip sync-dinum-emails'"
+    },
+    {
+      "command": "0 * * * * [[ \"$APP\" = \"espace-membre-cron\" ]] && npm run job:recreate-email-if-user-active || echo 'skip recreate-email-if-user-active'"
     }
   ]
 }

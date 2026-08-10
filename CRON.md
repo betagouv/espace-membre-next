@@ -1,10 +1,13 @@
 # Liste des cron jobs
 
+> `recreateEmailIfUserActive` a été retiré de ce scheduler node-cron : c'est désormais un script Node.js
+> standalone (`npm run job:recreate-email-if-user-active`) planifié par le Scalingo Scheduler (voir la
+> section « Liste des jobs Scalingo Scheduler » ci-dessous).
+
 | enabled | fréquence                    | code                                            | description                                                                   |
 | ------- | ---------------------------- | ----------------------------------------------- | ----------------------------------------------------------------------------- |
 | ❌      | `0 5 * * 1`                  | `createMailingListForStartups`                  | Créé des mailings-list OVH pour les startups                                  |
 | ❌      | `30 09 01 Jan,Apr,Jul,Oct *` | `sendEmailToStartupToUpdatePhase`               | Envoie par mail une relance pour mise à jour de la phase de la SE             |
-| ✅      | `0 * * * *`                  | `recreateEmailIfUserActive`                     | Recreate email for user active again                                          |
 | ✅      | `0 10 1 * *`                 | `sendMessageToActiveUsersWithoutSecondaryEmail` | Send message to active user without secondary email to update secondary email |
 
 # Liste des jobs pg-boss
@@ -32,3 +35,4 @@
 | `0 3 * * *`       | `npm run job:sync-matrix-accounts`   | Indexe les comptes Matrix (Tchap) des utilisateurs via le Matrix Identity Server  |
 | `0 8 * * *`       | `npm run job:clean-teams-members`    | Supprime les membres expirés des équipes incubateurs                            |
 | `0 8-18 * * *`    | `npm run job:sync-dinum-emails`      | Met à jour la table dinum_emails depuis l'API dimail                            |
+| `0 * * * *`       | `npm run job:recreate-email-if-user-active` | Recrée/réactive l'email des comptes actifs repassés en EMAIL_SUSPENDED    |
