@@ -1,7 +1,6 @@
 import { incubatorSchemaType } from "@/models/incubator";
 import { memberPublicInfoSchemaType } from "@/models/member";
-import { missionSchemaType } from "@/models/mission";
-import { startupSchemaType, userStartupSchemaType } from "@/models/startup";
+import { userStartupSchemaType } from "@/models/startup";
 
 export enum EMAIL_TYPES {
   EMAIL_LOGIN = "EMAIL_LOGIN",
@@ -9,8 +8,6 @@ export enum EMAIL_TYPES {
   EMAIL_STARTUP_ASK_PHASE = "EMAIL_STARTUP_ASK_PHASE",
   EMAIL_VERIFICATION_WAITING = "EMAIL_VERIFICATION_WAITING",
   EMAIL_NEW_MEMBER_VALIDATION = "EMAIL_NEW_MEMBER_VALIDATION",
-  EMAIL_TEAM_COMPOSITION = "EMAIL_TEAM_COMPOSITION",
-  EMAIL_STARTUP_MEMBERS_DID_NOT_CHANGE_IN_X_MONTHS = "EMAIL_STARTUP_MEMBERS_DID_NOT_CHANGE_IN_X_MONTHS",
   EMAIL_STARTUP_NEW_MEMBER_ARRIVAL = "EMAIL_STARTUP_NEW_MEMBER_ARRIVAL",
   EMAIL_MATOMO_ACCOUNT_CREATED = "EMAIL_MATOMO_ACCOUNT_CREATED",
   EMAIL_MATOMO_ACCOUNT_UPDATED = "EMAIL_MATOMO_ACCOUNT_UPDATED",
@@ -83,31 +80,6 @@ export type EmailNewMemberValidation = {
   };
 };
 
-export type EmailTeamComposition = {
-  type: EMAIL_TYPES.EMAIL_TEAM_COMPOSITION;
-  variables: {
-    activeMembers: {
-      member: memberPublicInfoSchemaType;
-      activeMission: missionSchemaType;
-    }[];
-    startup: startupSchemaType;
-    memberAccountLink: string;
-  };
-};
-
-export type EmailStartupMembersDidNotChangeInXMonths = {
-  type: EMAIL_TYPES.EMAIL_STARTUP_MEMBERS_DID_NOT_CHANGE_IN_X_MONTHS;
-  variables: {
-    startupWrappers: {
-      startup: startupSchemaType;
-      activeMembers: number;
-      lastModification?: Date;
-      currentPhase: string;
-    }[];
-    incubator: incubatorSchemaType;
-  };
-};
-
 export type EmailStartupNewMemberArrival = {
   type: EMAIL_TYPES.EMAIL_STARTUP_NEW_MEMBER_ARRIVAL;
   variables: {
@@ -122,9 +94,7 @@ export type EmailVariants =
   | EmailStartupNewMemberArrival
   | EmailStartupAskPhase
   | EmailVerificationWaiting
-  | EmailNewMemberValidation
-  | EmailTeamComposition
-  | EmailStartupMembersDidNotChangeInXMonths;
+  | EmailNewMemberValidation;
 
 export type EmailProps = BaseEmail & EmailVariants;
 
@@ -263,13 +233,6 @@ export const EmailDocumentation: Record<
   },
   [EMAIL_TYPES.EMAIL_NEW_MEMBER_VALIDATION]: {
     description: "Demande de validation pour un nouveau membre.",
-  },
-  [EMAIL_TYPES.EMAIL_TEAM_COMPOSITION]: {
-    description: "Email résumant la composition actuelle d’une équipe.",
-  },
-  [EMAIL_TYPES.EMAIL_STARTUP_MEMBERS_DID_NOT_CHANGE_IN_X_MONTHS]: {
-    description:
-      "Alerte lorsqu'aucun changement n’a été fait sur l’équipe d’une startup depuis X mois.",
   },
   [EMAIL_TYPES.EMAIL_STARTUP_NEW_MEMBER_ARRIVAL]: {
     description:
