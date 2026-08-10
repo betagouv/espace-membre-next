@@ -53,7 +53,7 @@ describe("Test startup server action", () => {
             startup: {
               contact: "",
               description: "",
-              incubator_id: "",
+              incubator_ids: [],
               name: "",
               pitch: "",
             },
@@ -120,9 +120,16 @@ describe("Test startup server action", () => {
       await updateStartup({
         formData: {
           startup: {
-            contact: "",
-            description: "la description de la startup",
-            incubator_id: startup.incubator_id,
+            contact: "lamissiondelastartup@beta.gouv.fr",
+            description: "la description de la startup de test",
+            incubator_ids: [
+              (
+                await db
+                  .selectFrom("incubators")
+                  .selectAll()
+                  .executeTakeFirstOrThrow()
+              ).uuid,
+            ],
             name: "title de la se",
             pitch: "lamissiondelastartup",
           },
@@ -146,7 +153,9 @@ describe("Test startup server action", () => {
         .executeTakeFirstOrThrow();
       updatedStartup.pitch?.should.equals("lamissiondelastartup");
       updatedStartup.name.should.equals("title de la se");
-      updatedStartup.description?.should.equals("la description de la startup");
+      updatedStartup.description?.should.equals(
+        "la description de la startup de test",
+      );
     });
   });
 
@@ -203,15 +212,17 @@ describe("Test startup server action", () => {
         formData: {
           startup: {
             pitch: "lamissiondelastartup",
-            description: "la description de la startup",
+            description: "la description de la startup de test",
             name: "title de la se",
             contact: "lamissiondelastartup@beta.gouv.fr",
-            incubator_id: (
-              await db
-                .selectFrom("incubators")
-                .selectAll()
-                .executeTakeFirstOrThrow()
-            ).uuid,
+            incubator_ids: [
+              (
+                await db
+                  .selectFrom("incubators")
+                  .selectAll()
+                  .executeTakeFirstOrThrow()
+              ).uuid,
+            ],
           },
           startupPhases: [
             {

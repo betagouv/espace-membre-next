@@ -102,15 +102,24 @@ const testUtils = {
     incubator_id: string,
     name: string,
   ): Promise<Selectable<Startups>> {
-    const insertedStartup = await db
-      .insertInto("startups")
-      .values({
-        ghid: name,
-        name: name,
-        incubator_id,
-      })
-      .returningAll()
-      .executeTakeFirstOrThrow();
+    // startups_principal_incubator_linked est différée : la startup et son lien
+    // d'incubateur doivent atterrir dans la même transaction.
+    const insertedStartup = await db.transaction().execute(async (trx) => {
+      const inserted = await trx
+        .insertInto("startups")
+        .values({
+          ghid: name,
+          name: name,
+          incubator_id,
+        })
+        .returningAll()
+        .executeTakeFirstOrThrow();
+      await trx
+        .insertInto("startups_incubators")
+        .values({ startup_id: inserted.uuid, incubator_id })
+        .execute();
+      return inserted;
+    });
     await db
       .insertInto("phases")
       .values({
