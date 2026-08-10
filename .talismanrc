@@ -8,7 +8,7 @@ fileignoreconfig:
 - filename: .github/workflows/playwright.yml
   checksum: 2bf3b8babdc7578c6e99e67c1cf8022a26fb4ac9bd6d411019e064f68f766a00
 - filename: README.md
-  checksum: 81d7bd9e901892da915aa4d6bf21f4897e8a3f2e8502204f245220e5c5ea86e4
+  checksum: 9f3ceb61b1e3140608bc4c88b210ba9e94f3d277b055c2b3ad71f75961942a5c
 - filename: __tests__/test-email.ts
   checksum: f03a9616b14cd5f84bca8479451f5f96fa6c9ddae51a911bab05e6d1e886e9b4
 - filename: __tests__/test-user.ts
