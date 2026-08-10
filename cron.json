@@ -1,19 +1,19 @@
 {
   "jobs": [
     {
-      "command": "0 18 * * MON-FRI \\[ \"$APP\" = \"espace-membre-cron2\" \\] && npm run export-to-www || echo 'skip export'"
+      "command": "0 18 * * MON-FRI \\[ \"$APP\" = \"espace-membre-cron\" \\] && npm run export-to-www || echo 'skip export'"
     },
     {
-      "command": "0 3 * * * \\[ \"$APP\" = \"espace-membre-cron2\" \\] && npm run job:sync-matrix-accounts || echo 'skip sync-matrix-accounts'"
+      "command": "0 3 * * * \\[ \"$APP\" = \"espace-membre-cron\" \\] && npm run job:sync-matrix-accounts || echo 'skip sync-matrix-accounts'"
     },
     {
-      "command": "0 8 * * * \\[ \"$APP\" = \"espace-membre-cron2\" \\] && npm run job:clean-teams-members || echo 'skip clean-teams-members'"
+      "command": "0 8 * * * \\[ \"$APP\" = \"espace-membre-cron\" \\] && npm run job:clean-teams-members || echo 'skip clean-teams-members'"
     },
     {
-      "command": "0 8-18 * * * \\[ \"$APP\" = \"espace-membre-cron2\" \\] && npm run job:sync-dinum-emails || echo 'skip sync-dinum-emails'"
+      "command": "0 8-18 * * * \\[ \"$APP\" = \"espace-membre-cron\" \\] && npm run job:sync-dinum-emails || echo 'skip sync-dinum-emails'"
     },
     {
-      "command": "0 * * * * \\[ \"$APP\" = \"espace-membre-cron2\" \\] && npm run job:recreate-email-if-user-active || echo 'skip recreate-email-if-user-active'"
+      "command": "0 * * * * \\[ \"$APP\" = \"espace-membre-cron\" \\] && npm run job:recreate-email-if-user-active || echo 'skip recreate-email-if-user-active'"
     }
   ]
 }
