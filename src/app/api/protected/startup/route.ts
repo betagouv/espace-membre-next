@@ -22,6 +22,43 @@ const queryInput = z.object({
   // })).refine(items => new Set(items).size === items.length, "Il ne peut y avoir plusieurs inclusions identiques.").optional()
 });
 
+type IncubatorRow = Awaited<ReturnType<typeof getAllIncubators>>[number];
+
+const toIncubatorModel = (incubator: IncubatorRow) =>
+  incubatorToModel({ ...incubator, organization_name: null });
+
+/**
+ * Attach the primary incubator and the full co-incubation list to each startup.
+ * The list keeps the order of getAllStartupsIncubators so the payload is stable.
+ */
+const attachIncubators = async <
+  T extends { uuid: string; incubator_id: string },
+>(
+  startups: T[],
+) => {
+  const incubatorsByUuid = new Map(
+    (await getAllIncubators()).map((incubator) => [incubator.uuid, incubator]),
+  );
+  const linkedIdsByStartup = new Map<string, string[]>();
+  for (const link of await getAllStartupsIncubators()) {
+    const ids = linkedIdsByStartup.get(link.startup_id) ?? [];
+    ids.push(link.incubator_id);
+    linkedIdsByStartup.set(link.startup_id, ids);
+  }
+
+  return startups.map((startup) => {
+    const primary = incubatorsByUuid.get(startup.incubator_id);
+    return {
+      ...startup,
+      incubator: primary ? toIncubatorModel(primary) : null,
+      incubators: (linkedIdsByStartup.get(startup.uuid) ?? [])
+        .map((id) => incubatorsByUuid.get(id))
+        .filter((incubator) => incubator !== undefined)
+        .map(toIncubatorModel),
+    };
+  });
+};
+
 export const GET = async (req: NextRequest) => {
   const {
     success,
@@ -39,43 +76,9 @@ export const GET = async (req: NextRequest) => {
 
   const startups = (await getAllStartups()).map(startupToModel);
 
-  if (searchParams.includes?.length) {
-    const withIncubator = searchParams.includes === StartupIncludes.INCUBATORS;
-    const incubators = withIncubator ? await getAllIncubators() : [];
-    const links = withIncubator ? await getAllStartupsIncubators() : [];
-    const incubatorIdsByStartup = new Map<string, string[]>();
-    for (const link of links) {
-      const ids = incubatorIdsByStartup.get(link.startup_id) ?? [];
-      ids.push(link.incubator_id);
-      incubatorIdsByStartup.set(link.startup_id, ids);
-    }
-
-    type StartupWithIncubator = (typeof startups)[0] & {
-      incubator: ReturnType<typeof incubatorToModel> | null;
-      incubators: ReturnType<typeof incubatorToModel>[];
-    };
-    for (const startup of startups) {
-      if (withIncubator) {
-        const incubator = incubators.find(
-          (incubator) => startup.incubator_id === incubator.uuid,
-        );
-        (startup as StartupWithIncubator).incubator = incubator
-          ? incubatorToModel({
-              ...incubator,
-              organization_name: null,
-            })
-          : null;
-        (startup as StartupWithIncubator).incubators = (
-          incubatorIdsByStartup.get(startup.uuid) ?? []
-        )
-          .map((id) => incubators.find((incubator) => incubator.uuid === id))
-          .filter((incubator) => incubator !== undefined)
-          .map((incubator) =>
-            incubatorToModel({ ...incubator, organization_name: null }),
-          );
-      }
-    }
-  }
-
-  return Response.json(startups);
+  return Response.json(
+    searchParams.includes === StartupIncludes.INCUBATORS
+      ? await attachIncubators(startups)
+      : startups,
+  );
 };
