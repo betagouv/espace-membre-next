@@ -9,9 +9,10 @@
 
 # Liste des jobs pg-boss
 
+> `send-email-to-teams-to-check-on-team-composition` et `send-email-to-incubator-team` ont été retirés de pg-boss
+> et sont désormais gérés par des workflows n8n (voir `docs/n8n/`).
+
 | fréquence      | topic                                              | description                                                                                                  |
 | -------------- | -------------------------------------------------- | ------------------------------------------------------------------------------------------------------------ |
-| `0 8 1 */3 *`  | `send-email-to-teams-to-check-on-team-composition` | Envoie un email aux équipes produits pour qu'ils vérifient la composition de leur équipe                     |
-| `0 8 1 */3 *`  | `send-email-to-incubator-team`                     | Envoie un email aux équipes incubateur pour qu'ils vérifient les produits qui n'ont pas changé depuis X mois |
 | `0 8-18 * * *` | `sync-dinum-emails`                                | Met à jour la table dinum_emails depuis l'API dimail                                                         |
 | `0 3 * * *`    | `sync-matrix-accounts`                             | Indexe les comptes Matrix (Tchap) des utilisateurs via le Matrix Identity Server                             |
