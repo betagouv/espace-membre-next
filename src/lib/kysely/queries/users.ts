@@ -1,7 +1,6 @@
 import { isAfter } from "date-fns/isAfter";
 import { isBefore } from "date-fns/isBefore";
 import { sql, ExpressionBuilder, Kysely, SelectExpression } from "kysely";
-import _ from "lodash";
 
 import { DB } from "@/@types/db"; // generated with `npm run kysely-codegen`
 import { db as database, jsonArrayFrom } from "@/lib/kysely";
@@ -68,20 +67,6 @@ export async function getUsersByStartup(
     .execute();
 }
 
-export async function getUsersByStartupIds(
-  startupUuids: string[],
-  db: Kysely<DB> = database,
-) {
-  const data = await protectedDataSelect(db)
-    .select((eb) => [withMissions(eb), withTeams(eb)])
-    .leftJoin("missions", "missions.user_id", "users.uuid")
-    .leftJoin("missions_startups", "missions.uuid", "mission_id")
-    .select("startup_id")
-    .where("missions_startups.startup_id", "in", startupUuids)
-    .execute();
-  const grouped = _.groupBy(data, "startup_id");
-  return grouped;
-}
 /** Return member informations */
 export async function getUserBasicInfo(
   params: { username: string } | { uuid: string } | { primary_email: string },

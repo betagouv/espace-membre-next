@@ -2,15 +2,6 @@ import * as Sentry from "@sentry/nextjs";
 import PgBoss from "pg-boss";
 
 import {
-  sendEmailToIncubatorTeam,
-  sendEmailToIncubatorTeamTopic,
-} from "./workers/send-email-to-incubator";
-import {
-  sendEmailToTeamsToCheckOnTeamComposition,
-  sendEmailToTeamsToCheckOnTeamCompositionTopic,
-} from "./workers/send-email-to-teams-to-check-on-team-composition";
-
-import {
   createDimailMailbox,
   createDimailMailboxTopic,
 } from "./workers/create-dimail-mailbox";
@@ -73,16 +64,6 @@ export const pgBossWorker: {
   worker: (job: PgBoss.Job<any>) => Promise<void>;
   description: string;
 }[] = [
-  {
-    topic: sendEmailToTeamsToCheckOnTeamCompositionTopic,
-    worker: sendEmailToTeamsToCheckOnTeamComposition,
-    description: `Envoie un email aux membres d'un produit pour qu'il valide sa composition`,
-  },
-  {
-    topic: sendEmailToIncubatorTeamTopic,
-    worker: sendEmailToIncubatorTeam,
-    description: `Envoie un email aux membres des incubateurs pour leur lister les produits qui n'ont pas changé depuis X mois`,
-  },
   {
     topic: createDimailMailboxTopic,
     worker: createDimailMailbox,

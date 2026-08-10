@@ -2,8 +2,6 @@
 // documentation file (CRON.md) file with `make cron-docs`.
 
 import { getBossClientInstance, startBossClientInstance } from "./client";
-import { sendEmailToIncubatorTeamTopic } from "./workers/send-email-to-incubator";
-import { sendEmailToTeamsToCheckOnTeamCompositionTopic } from "./workers/send-email-to-teams-to-check-on-team-composition";
 import { syncDinumEmailsTopic } from "./workers/sync-dinum-emails";
 import { cleanTeamsMembersTopic } from "./workers/clean-teams-members";
 import { syncMatrixAccountsTopic } from "./workers/sync-matrix-accounts";
@@ -15,16 +13,6 @@ export type PgBossJobType = {
 };
 
 export const pgBossJobs: PgBossJobType[] = [
-  {
-    topic: sendEmailToTeamsToCheckOnTeamCompositionTopic,
-    frequency: `0 8 1 */3 *`,
-    description: `Envoie un email aux équipes produits pour qu'ils vérifient la composition de leur équipe`,
-  },
-  {
-    topic: sendEmailToIncubatorTeamTopic,
-    frequency: `0 8 1 */3 *`,
-    description: `Envoie un email aux équipes incubateur pour qu'ils vérifient les produits qui n'ont pas changé depuis X mois`,
-  },
   {
     topic: syncDinumEmailsTopic,
     frequency: `0 8-18 * * *`,
