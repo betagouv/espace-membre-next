@@ -17,6 +17,3 @@ die:
 
 sh:
 	$(DOCKER-RUN) web /bin/bash
-
-cron-docs:
-	$(DOCKER-RUN) web npx ts-node generate-cron-md.ts
