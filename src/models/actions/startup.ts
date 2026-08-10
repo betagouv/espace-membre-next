@@ -7,7 +7,10 @@ export const startupInfoUpdateSchema = z.object({
   startup: z.object({
     name: startupSchema.shape.name,
     pitch: startupSchema.shape.pitch,
-    incubator_id: startupSchema.shape.incubator_id,
+    incubator_ids: z
+      .array(z.string().uuid())
+      .min(1, "Au moins un incubateur est obligatoire")
+      .describe("Incubateurs"),
     contact_dinum: startupSchema.shape.contact_dinum,
     contact_incubator: startupSchema.shape.contact_incubator,
     contact: startupSchema.shape.contact,

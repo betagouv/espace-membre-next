@@ -39,8 +39,8 @@ export const canEditMember = async ({
   // Collect incubator IDs from the target user's current startups
   const startups = await getUserStartups(targetUser.uuid);
   const startupIncubatorIds = startups
-    .filter((s) => s.incubator_id && isAfter(now, s.start ?? 0))
-    .map((s) => s.incubator_id);
+    .filter((s) => isAfter(now, s.start ?? 0))
+    .flatMap((s) => s.incubator_ids ?? []);
 
   // Collect incubator IDs from the target user's teams
   const teamIncubatorIds = (targetUser.teams ?? [])

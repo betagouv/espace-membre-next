@@ -4,29 +4,69 @@ export async function seed(knex) {
   await populateUsers(knex);
   console.log("Populated users table with fake accounts");
 
-  const incubId = uuidv4();
-  await knex("incubators").insert([
-    {
-      uuid: incubId,
-      title: "Incubateur test",
-      ghid: "inc1",
-    },
-  ]);
+  // Startups go first: deleting them cascades the incubator links, which would
+  // otherwise block the incubators deletion.
+  await knex("startups").delete();
+  await knex("incubators").delete();
 
-  await knex("startups").insert([
+  const incubators = [
+    { uuid: uuidv4(), title: "Incubateur test", ghid: "inc1" },
+    { uuid: uuidv4(), title: "Incubateur test B", ghid: "inc2" },
+  ];
+  await knex("incubators").insert(incubators);
+  const [incubator1, incubator2] = incubators;
+
+  // The first incubator of each list is the derived primary one, mirroring what
+  // the app does on write. The third startup is co-incubated on purpose, so the
+  // multi-incubator case is testable straight out of the seed.
+  const startups = [
+    { uuid: uuidv4(), ghid: "startup-1", name: "Startup 1", incubators: [incubator1] },
+    { uuid: uuidv4(), ghid: "startup-2", name: "Startup 2", incubators: [incubator1] },
     {
       uuid: uuidv4(),
-      ghid: "startup-1",
-      name: "Startup 1",
-      incubator_id: incubId,
+      ghid: "startup-co-incubee",
+      name: "Startup co-incubée",
+      incubators: [incubator1, incubator2],
     },
-    {
-      uuid: uuidv4(),
-      ghid: "startup-2",
-      name: "Startup 2",
-      incubator_id: incubId,
-    },
-  ]);
+  ];
+
+  // startups_principal_incubator_linked is deferred, so a startup and its links
+  // have to land in the same transaction.
+  await knex.transaction(async (trx) => {
+    await trx("startups").insert(
+      startups.map(({ uuid, ghid, name, incubators: [primary] }) => ({
+        uuid,
+        ghid,
+        name,
+        incubator_id: primary.uuid,
+      })),
+    );
+    await trx("startups_incubators").insert(
+      startups.flatMap((startup) =>
+        startup.incubators.map((incubator) => ({
+          startup_id: startup.uuid,
+          incubator_id: incubator.uuid,
+        })),
+      ),
+    );
+  });
+  // Attach a member to the co-incubated startup, otherwise nobody belongs to any
+  // startup and both the community search and the permission checks have nothing
+  // to chew on. missions_startups cascades, so re-running the seed stays safe.
+  const coIncubated = startups.find(
+    (startup) => startup.incubators.length > 1,
+  )!;
+  const validMemberMission = await knex("missions")
+    .join("users", "users.uuid", "missions.user_id")
+    .where("users.username", "valid.member")
+    .select("missions.uuid")
+    .first();
+  if (validMemberMission) {
+    await knex("missions_startups").insert({
+      mission_id: validMemberMission.uuid,
+      startup_id: coIncubated.uuid,
+    });
+  }
   console.log("Inserted fake startups");
 }
 

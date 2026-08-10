@@ -1,21 +1,33 @@
 import { CompiledQuery, Selectable } from "kysely";
 
 import { Startups } from "@/@types/db";
-import { db } from "@/lib/kysely";
+import { db, jsonArrayFrom } from "@/lib/kysely";
 import { StartupPhase } from "@/models/startup";
-import { getAllIncubators } from "./incubators";
+import { getAllIncubators, getAllStartupsIncubators } from "./incubators";
 
 export const getLatests = () =>
   db
     .selectFrom("startups")
-    .innerJoin("incubators", "incubators.uuid", "startups.incubator_id")
-    .select([
+    // Aggregated instead of joined: a join would make a co-incubated startup
+    // eat several of the 10 slots, and the previous innerJoin on the nullable
+    // incubator_id silently hid startups without any incubator.
+    .select((eb) => [
       "startups.created_at",
       "startups.uuid",
       "startups.name",
       "startups.pitch",
-      "incubators.title as incubator",
-      "incubators.uuid as incubatorUuid",
+      jsonArrayFrom(
+        eb
+          .selectFrom("startups_incubators")
+          .innerJoin(
+            "incubators",
+            "incubators.uuid",
+            "startups_incubators.incubator_id",
+          )
+          .select(["incubators.uuid", "incubators.title"])
+          .whereRef("startups_incubators.startup_id", "=", "startups.uuid")
+          .orderBy("incubators.title"),
+      ).as("incubators"),
     ])
     .orderBy("created_at", "desc")
     .limit(10)
@@ -105,6 +117,14 @@ const selectLastStartupPhase = (selectFrom, startupId) =>
 
 export const getAllStartupsWithIncubatorAndPhase = async () => {
   const incubators = await getAllIncubators();
+  // Resolved in JS rather than joined: a join on the N:N table would duplicate
+  // co-incubated startups in the list.
+  const incubatorIdsByStartup = new Map<string, string[]>();
+  for (const link of await getAllStartupsIncubators()) {
+    const ids = incubatorIdsByStartup.get(link.startup_id) ?? [];
+    ids.push(link.incubator_id);
+    incubatorIdsByStartup.set(link.startup_id, ids);
+  }
   // todo: better typing
   const startupsData = await db
     .selectFrom("startups")
@@ -151,6 +171,10 @@ export const getAllStartupsWithIncubatorAndPhase = async () => {
   const startups = startupsData.map((s) => {
     const row = s as StartupsDataRow;
     const incubator = incubators.find((i) => i.uuid === s.incubator_id);
+    const linkedIncubators = (incubatorIdsByStartup.get(s.uuid) ?? [])
+      .map((id) => incubators.find((i) => i.uuid === id))
+      .filter((i) => i !== undefined)
+      .map((i) => ({ uuid: i.uuid, title: i.title }));
     return {
       ...s,
       phase: row.phase,
@@ -163,6 +187,8 @@ export const getAllStartupsWithIncubatorAndPhase = async () => {
       contact_incubator_fullname: row.contact_incubator_fullname,
       incubatorName: incubator && incubator.title,
       incubatorId: s.incubator_id,
+      incubators: linkedIncubators,
+      incubatorIds: linkedIncubators.map((i) => i.uuid),
     };
   });
   return startups;

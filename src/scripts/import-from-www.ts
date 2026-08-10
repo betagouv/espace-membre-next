@@ -109,32 +109,44 @@ const insertData = async (markdownData: MarkdownData) => {
       const incubator_id = incubators.find(
         (o) => o.ghid === startup.attributes.incubator,
       )?.uuid;
-      const query = db
-        .insertInto("startups")
-        .values({
-          name: startup.attributes.title || startup.attributes.ghid,
-          contact: startup.attributes.contact,
-          incubator_id,
-          link: startup.attributes.link,
-          repository: startup.attributes.repository,
-          accessibility_status: startup.attributes.accessibility_status,
-          analyse_risques: startup.attributes.analyse_risques,
-          analyse_risques_url: startup.attributes.analyse_risques_url,
-          budget_url: startup.attributes.budget_url,
-          dashlord_url: startup.attributes.dashlord_url,
-          mon_service_securise: startup.attributes.mon_service_securise,
-          pitch: startup.attributes.mission,
-          stats: startup.attributes.stats,
-          stats_url: startup.attributes.stats_url,
-          thematiques: JSON.stringify(startup.attributes.thematiques),
-          usertypes: JSON.stringify(startup.attributes.usertypes),
-          techno: JSON.stringify(startup.attributes.techno),
-          description: startup.body,
-          ghid: startup.attributes.ghid,
-        })
-        .returning(["uuid", "ghid"]);
+      // startups_principal_incubator_linked est différée : la startup et son
+      // lien d'incubateur doivent atterrir dans la même transaction.
+      const startupDb = await db.transaction().execute(async (trx) => {
+        const inserted = await trx
+          .insertInto("startups")
+          .values({
+            name: startup.attributes.title || startup.attributes.ghid,
+            contact: startup.attributes.contact,
+            incubator_id,
+            link: startup.attributes.link,
+            repository: startup.attributes.repository,
+            accessibility_status: startup.attributes.accessibility_status,
+            analyse_risques: startup.attributes.analyse_risques,
+            analyse_risques_url: startup.attributes.analyse_risques_url,
+            budget_url: startup.attributes.budget_url,
+            dashlord_url: startup.attributes.dashlord_url,
+            mon_service_securise: startup.attributes.mon_service_securise,
+            pitch: startup.attributes.mission,
+            stats: startup.attributes.stats,
+            stats_url: startup.attributes.stats_url,
+            thematiques: JSON.stringify(startup.attributes.thematiques),
+            usertypes: JSON.stringify(startup.attributes.usertypes),
+            techno: JSON.stringify(startup.attributes.techno),
+            description: startup.body,
+            ghid: startup.attributes.ghid,
+          })
+          .returning(["uuid", "ghid"])
+          .executeTakeFirstOrThrow();
 
-      const startupDb = await query.executeTakeFirstOrThrow();
+        if (incubator_id) {
+          await trx
+            .insertInto("startups_incubators")
+            .values({ startup_id: inserted.uuid, incubator_id })
+            .execute();
+        }
+
+        return inserted;
+      });
 
       // phases
       const phaseNames = startup.attributes.phases?.map((p) => p.name) || [];

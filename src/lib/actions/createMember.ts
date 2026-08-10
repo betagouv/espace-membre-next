@@ -33,18 +33,17 @@ import {
 const createUsername = (firstName: string, lastName: string) =>
   `${slugify(firstName)}.${slugify(lastName)}`;
 
-async function getStartupIncubatorIds(
+async function getIncubatorIdsOfStartups(
   userStartups: string[],
 ): Promise<string[]> {
   if (!userStartups.length) return [];
   const startupIncubators = await db
-    .selectFrom("startups")
-    .where("uuid", "in", userStartups)
-    .selectAll()
+    .selectFrom("startups_incubators")
+    .select("incubator_id")
+    .where("startup_id", "in", userStartups)
+    .distinct()
     .execute();
-  return startupIncubators
-    .map((m) => m.incubator_id)
-    .filter((incubator): incubator is string => !!incubator);
+  return startupIncubators.map((m) => m.incubator_id);
 }
 
 const isSessionUserMemberOfUserIncubatorTeams = async function (
@@ -58,7 +57,7 @@ const isSessionUserMemberOfUserIncubatorTeams = async function (
     ),
   );
   const userStartups = userMissions.flatMap((m) => m.startups || []);
-  const startupIncubatorIds = await getStartupIncubatorIds(userStartups);
+  const startupIncubatorIds = await getIncubatorIdsOfStartups(userStartups);
 
   const incubatorIds = new Set(startupIncubatorIds);
   if (incubator_id) incubatorIds.add(incubator_id);

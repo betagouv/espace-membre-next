@@ -6,7 +6,6 @@ import { Alert } from "@codegouvfr/react-dsfr/Alert";
 import { Button } from "@codegouvfr/react-dsfr/Button";
 import { Checkbox } from "@codegouvfr/react-dsfr/Checkbox";
 import { Input } from "@codegouvfr/react-dsfr/Input";
-import { Select } from "@codegouvfr/react-dsfr/Select";
 import { zodResolver } from "@hookform/resolvers/zod";
 import _ from "lodash";
 import MarkdownIt from "markdown-it";
@@ -75,7 +74,7 @@ const NEW_PRODUCT_DATA: startupInfoUpdateSchemaType["startup"] = {
   pitch: "",
   description: "",
   contact: "",
-  incubator_id: "",
+  incubator_ids: [],
 };
 
 // data from secretariat API
@@ -139,7 +138,9 @@ export function StartupForm(props: StartupFormProps) {
     resolver: zodResolver(startupInfoUpdateSchema),
     mode: "onChange",
     defaultValues: {
-      startup: props.startup || NEW_PRODUCT_DATA,
+      startup: props.startup
+        ? { ...props.startup, incubator_ids: props.startup.incubator_ids ?? [] }
+        : NEW_PRODUCT_DATA,
       startupSponsors: (props.startupSponsors || []).map((s) => s.uuid),
       startupPhases: props.startupPhases || [
         {
@@ -449,25 +450,51 @@ export function StartupForm(props: StartupFormProps) {
             )}
           </div>
           <hr />
-          <Select
-            label={
-              startupInfoUpdateSchema.shape.startup.shape.incubator_id
-                .description
-            }
-            nativeSelectProps={register("startup.incubator_id")}
-            hint="Structure dans laquelle est portée votre produit"
-            state={errors?.startup?.incubator_id ? "error" : "default"}
-            stateRelatedMessage={errors?.startup?.incubator_id?.message}
-          >
-            <option value="" disabled hidden>
-              Séléctionnez un incubateur
-            </option>
-            {props.incubatorOptions.map((incubator) => (
-              <option value={incubator.value} key={incubator.value}>
-                {incubator.label}
-              </option>
-            ))}
-          </Select>
+          <div className="fr-select-group">
+            <label className="fr-label">
+              {
+                startupInfoUpdateSchema.shape.startup.shape.incubator_ids
+                  .description
+              }
+              <span className="fr-hint-text">
+                Structure(s) dans laquelle/lesquelles est porté votre produit.
+                Un produit co-incubé peut en avoir plusieurs.
+              </span>
+            </label>
+            <AutoComplete
+              options={props.incubatorOptions.map((incubator) => ({
+                id: incubator.value,
+                label: incubator.label,
+              }))}
+              multiple={true}
+              optionKeyField="id"
+              inputReadOnly={true}
+              onSelect={(selected) => {
+                setValue(
+                  "startup.incubator_ids",
+                  ((selected as { id: string }[]) || []).map((s) => s.id),
+                  { shouldDirty: true, shouldValidate: true },
+                );
+              }}
+              defaultValue={(props.startup?.incubator_ids || [])
+                .map((id) =>
+                  props.incubatorOptions.find(
+                    (incubator) => incubator.value === id,
+                  ),
+                )
+                .filter((incubator) => incubator !== undefined)
+                .map((incubator) => ({
+                  id: incubator.value,
+                  label: incubator.label,
+                }))}
+              placeholder="Sélectionner un ou plusieurs incubateurs"
+            />
+            {errors?.startup?.incubator_ids && (
+              <p className="fr-error-text">
+                {errors.startup.incubator_ids.message as string}
+              </p>
+            )}
+          </div>
           <div className="fr-select-group">
             <label className="fr-label">
               {

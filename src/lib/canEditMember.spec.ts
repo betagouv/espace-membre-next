@@ -113,6 +113,7 @@ describe("canEditMember", () => {
         start: pastDate,
         end: null,
         incubator_id: incubatorA.uuid,
+        incubator_ids: [incubatorA.uuid],
       },
     ]);
     getTeamsForUserStub.resolves([{ incubator_id: incubatorA.uuid }]);
@@ -214,6 +215,7 @@ describe("canEditMember", () => {
         start: futureDate,
         end: null,
         incubator_id: incubatorA.uuid,
+        incubator_ids: [incubatorA.uuid],
       },
     ]);
     getTeamsForUserStub.resolves([{ incubator_id: incubatorA.uuid }]);
@@ -242,9 +244,40 @@ describe("canEditMember", () => {
         start: pastDate,
         end: null,
         incubator_id: incubatorB.uuid,
+        incubator_ids: [incubatorB.uuid],
       },
     ]);
     getTeamsForUserStub.resolves([{ incubator_id: incubatorB.uuid }]);
+
+    const result = await canEditMember({
+      memberUuid: "user-uuid",
+      sessionUser: mockSessionUser as any,
+    });
+
+    expect(result).to.be.true;
+  });
+
+  it("should return true when session user's team matches an additional incubator of a co-incubated startup", async () => {
+    const pastDate = new Date("2020-01-01");
+
+    getUserBasicInfoStub
+      .onFirstCall()
+      .resolves({ uuid: "user-uuid", teams: undefined });
+    getUserBasicInfoStub
+      .onSecondCall()
+      .resolves({ legal_status: "independant" });
+    getUserStartupsStub.resolves([
+      {
+        uuid: "startup-uuid",
+        name: "Startup co-incubée",
+        start: pastDate,
+        end: null,
+        // le principal est A, mais la startup est aussi portée par C
+        incubator_id: incubatorA.uuid,
+        incubator_ids: [incubatorA.uuid, incubatorC.uuid],
+      },
+    ]);
+    getTeamsForUserStub.resolves([{ incubator_id: incubatorC.uuid }]);
 
     const result = await canEditMember({
       memberUuid: "user-uuid",
@@ -279,6 +312,7 @@ describe("canEditMember", () => {
         start: pastDate,
         end: null,
         incubator_id: incubatorA.uuid,
+        incubator_ids: [incubatorA.uuid],
       },
     ]);
     getTeamsForUserStub.resolves([{ incubator_id: incubatorC.uuid }]);
@@ -326,6 +360,7 @@ describe("canEditMember", () => {
         start: pastDate,
         end: null,
         incubator_id: null,
+        incubator_ids: [],
       },
     ]);
     getTeamsForUserStub.resolves([{ incubator_id: incubatorA.uuid }]);
@@ -553,6 +588,7 @@ describe("canEditMember", () => {
         start: pastDate,
         end: null,
         incubator_id: incubatorA.uuid,
+        incubator_ids: [incubatorA.uuid],
       },
     ]);
 

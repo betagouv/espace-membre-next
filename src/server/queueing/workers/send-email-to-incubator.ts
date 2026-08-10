@@ -3,7 +3,10 @@ import _ from "lodash";
 import PgBoss from "pg-boss";
 
 import { getLastEventListStartupUuids } from "@/lib/events";
-import { getAllIncubators } from "@/lib/kysely/queries/incubators";
+import {
+  getAllIncubators,
+  getAllStartupsIncubators,
+} from "@/lib/kysely/queries/incubators";
 import { getStartupsWithoutAnyUpdateForThePastXMonthsRaw } from "@/lib/kysely/queries/startups";
 import { getIncubatorTeamMembers } from "@/lib/kysely/queries/teams";
 import { getUsersByStartupIds } from "@/lib/kysely/queries/users";
@@ -23,7 +26,16 @@ export async function sendEmailToIncubatorTeam(job: PgBoss.Job<void>) {
   console.log("Start send email to incubator team");
   const startups = await getStartupsWithoutAnyUpdateForThePastXMonthsRaw();
   const incubators = await getAllIncubators();
-  const startupsByIncubator = _.groupBy(startups, "incubator_id");
+  // Grouped through the join table so a co-incubated startup is reported to
+  // every incubator carrying it. Grouping on startups.incubator_id also built a
+  // bogus "null" bucket for startups without any incubator.
+  const startupsById = new Map(startups.map((startup) => [startup.uuid, startup]));
+  const startupsByIncubator: Record<string, typeof startups> = {};
+  for (const link of await getAllStartupsIncubators()) {
+    const startup = startupsById.get(link.startup_id);
+    if (!startup) continue;
+    (startupsByIncubator[link.incubator_id] ??= []).push(startup);
+  }
   console.log(
     `found ${startups.length} startups and ${
       Object.keys(startupsByIncubator).length

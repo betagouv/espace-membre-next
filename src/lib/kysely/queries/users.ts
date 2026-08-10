@@ -254,6 +254,14 @@ export async function getUserStartups(uuid: string, db: Kysely<DB> = database) {
       "startups.mailing_list",
       "missions.end",
       "startups.incubator_id",
+      // Correlated subquery aggregating to a uuid[]: a join would multiply the
+      // rows of a co-incubated startup, and a json aggregate would break the
+      // DISTINCT below (json has no equality operator in Postgres).
+      sql<string[]>`(
+        SELECT COALESCE(ARRAY_AGG(startups_incubators.incubator_id), '{}')
+        FROM startups_incubators
+        WHERE startups_incubators.startup_id = startups.uuid
+      )`.as("incubator_ids"),
     ])
     .distinct()
     .where("users.uuid", "=", uuid)
