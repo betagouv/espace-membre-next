@@ -2,9 +2,6 @@
 // documentation file (CRON.md) file with `make cron-docs`.
 
 import { getBossClientInstance, startBossClientInstance } from "./client";
-import { syncDinumEmailsTopic } from "./workers/sync-dinum-emails";
-import { cleanTeamsMembersTopic } from "./workers/clean-teams-members";
-import { syncMatrixAccountsTopic } from "./workers/sync-matrix-accounts";
 
 export type PgBossJobType = {
   topic: string;
@@ -12,23 +9,10 @@ export type PgBossJobType = {
   description: string;
 };
 
-export const pgBossJobs: PgBossJobType[] = [
-  {
-    topic: syncDinumEmailsTopic,
-    frequency: `0 8-18 * * *`,
-    description: `Met à jour la table dinum_emails`,
-  },
-  {
-    topic: cleanTeamsMembersTopic,
-    frequency: `0 8 * * *`,
-    description: `Supprime les membres expirés des équipes incubateurs`,
-  },
-  {
-    topic: syncMatrixAccountsTopic,
-    frequency: `0 3 * * *`,
-    description: `Indexe les comptes Matrix (Tchap) des utilisateurs`,
-  },
-];
+// sync-dinum-emails, clean-teams-members and sync-matrix-accounts moved to
+// standalone scripts (`npm run job:*`) scheduled via the Scalingo Scheduler
+// (cron.json) instead of pg-boss cron scheduling. See CRON.md.
+export const pgBossJobs: PgBossJobType[] = [];
 
 export async function scheduleBossCronTasks() {
   const bossClient = await getBossClientInstance();
