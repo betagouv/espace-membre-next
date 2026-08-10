@@ -1,4 +1,4 @@
-import { getAllIncubatorsMembers } from "@/lib/kysely/queries/incubators";
+import { getAllIncubatorsActiveMembers } from "@/lib/kysely/queries/incubators";
 import { memberBaseInfoSchemaType } from "@/models/member";
 import { Option } from "@/models/misc";
 
@@ -15,7 +15,7 @@ export interface CommunityProps {
   primaryEmailStatusOptions: Option[];
   domaineOptions: Option[];
   competenceOptions: Option[];
-  incubatorMembers: Awaited<ReturnType<typeof getAllIncubatorsMembers>>;
+  incubatorMembers: Awaited<ReturnType<typeof getAllIncubatorsActiveMembers>>;
 }
 
 export * from "./Community";

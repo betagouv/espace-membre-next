@@ -6,16 +6,18 @@ import { getUserBasicInfo, getUserStartups } from "@/lib/kysely/queries/users";
 import { getAvatarUrl } from "@/lib/s3";
 import { memberBaseInfoToModel } from "@/models/mapper";
 import { isUserActive } from "@/lib/member.utils";
+import { deprecationHeaders } from "@/lib/deprecation";
 
 export async function GET(
   _: Request,
   { params: { username } }: { params: { username: string } },
 ) {
+  const headers = deprecationHeaders(`/api/protected/members/${username}`);
   const dbUser = await getUserBasicInfo({ username });
   if (!dbUser) {
     return Response.json(
       { error: "No user found for this username" },
-      { status: HttpStatusCode.NotFound },
+      { status: HttpStatusCode.NotFound, headers },
     );
   }
   const incubators = await getAllIncubators();
@@ -49,11 +51,14 @@ export async function GET(
     };
   });
 
-  return Response.json({
-    ...member,
-    avatar: avatar ?? null,
-    teams,
-    startups,
-    isActive,
-  });
+  return Response.json(
+    {
+      ...member,
+      avatar: avatar ?? null,
+      teams,
+      startups,
+      isActive,
+    },
+    { headers },
+  );
 }

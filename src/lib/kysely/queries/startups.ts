@@ -1,9 +1,10 @@
-import { CompiledQuery, Selectable } from "kysely";
+import { CompiledQuery, ExpressionBuilder, Selectable } from "kysely";
 
-import { Startups } from "@/@types/db";
-import { db } from "@/lib/kysely";
+import { DB, Startups } from "@/@types/db";
+import { db, jsonArrayFrom } from "@/lib/kysely";
 import { StartupPhase } from "@/models/startup";
 import { getAllIncubators } from "./incubators";
+import { withMemberMissions } from "./users";
 
 export const getLatests = () =>
   db
@@ -84,6 +85,79 @@ WHERE fs.startup_id IS NULL AND NOT EXISTS (
     Selectable<Startups> & { current_phase: StartupPhase }
   >(rawQuery);
   return result.rows;
+}
+
+// Membres d'une startup pour l'API protegee : toute personne ayant une mission
+// sur cette startup. Missions exposees avec les startups en GHID.
+export function getStartupMembers(startupUuid: string) {
+  return db
+    .selectFrom("users")
+    .select([
+      "users.uuid",
+      "users.username",
+      "users.fullname",
+      "users.github",
+      "users.primary_email",
+      "users.secondary_email",
+      "users.communication_email",
+      "users.primary_email_status",
+    ])
+    .select((eb) => [withMemberMissions(eb, { startupId: startupUuid })])
+    .where((eb) =>
+      eb.exists(
+        eb
+          .selectFrom("missions")
+          .innerJoin(
+            "missions_startups",
+            "missions_startups.mission_id",
+            "missions.uuid",
+          )
+          .select("missions.uuid")
+          .whereRef("missions.user_id", "=", "users.uuid")
+          .where("missions_startups.startup_id", "=", startupUuid),
+      ),
+    )
+    .orderBy("users.fullname", "asc")
+    .execute();
+}
+
+// Phases d'une startup, ordonnees chronologiquement (par date de debut).
+function withStartupPhases(eb: ExpressionBuilder<DB, "startups">) {
+  return jsonArrayFrom(
+    eb
+      .selectFrom("phases")
+      .select(["phases.name", "phases.start", "phases.end"])
+      .whereRef("phases.startup_id", "=", "startups.uuid")
+      .orderBy("phases.start", "asc")
+      .orderBy("phases.end", "asc"),
+  )
+    .$notNull()
+    .as("phases");
+}
+
+// Startups enrichies de leurs phases, pour l'API protegee. Filtrable par
+// incubateur. Le calcul de la phase courante est laisse a l'appelant (dernier
+// element chronologique) pour rester coherent avec l'ordre du tableau phases.
+export function getStartupsWithPhases(incubatorUuid?: string) {
+  return db
+    .selectFrom("startups")
+    .selectAll("startups")
+    .select((eb) => [withStartupPhases(eb)])
+    .$if(!!incubatorUuid, (qb) =>
+      qb.where("startups.incubator_id", "=", incubatorUuid!),
+    )
+    .orderBy("startups.name", "asc")
+    .execute();
+}
+
+// Une startup et ses phases, resolue par ghid. Undefined si inconnue.
+export async function getStartupWithPhases(ghid: string) {
+  return db
+    .selectFrom("startups")
+    .selectAll("startups")
+    .select((eb) => [withStartupPhases(eb)])
+    .where("startups.ghid", "=", ghid)
+    .executeTakeFirst();
 }
 
 const selectLastStartupPhase = (selectFrom, startupId) =>

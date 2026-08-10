@@ -6,7 +6,7 @@ import { Community } from "@/components/CommunityPage";
 import { getAllStartups } from "@/lib/kysely/queries";
 import {
   getAllIncubatorsOptions,
-  getAllIncubatorsMembers,
+  getAllIncubatorsActiveMembers,
 } from "@/lib/kysely/queries/incubators";
 import { getAllUsersInfo } from "@/lib/kysely/queries/users";
 import { competencesList } from "@/models/competences";
@@ -27,7 +27,7 @@ export default async function Page() {
   const startups = await getAllStartups();
   const title = routeTitles.community();
 
-  const incubatorMembers = await getAllIncubatorsMembers();
+  const incubatorMembers = await getAllIncubatorsActiveMembers();
 
   const usersWithGeoLoc = users.map((u) => ({
     ...u,
