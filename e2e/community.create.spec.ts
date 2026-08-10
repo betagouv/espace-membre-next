@@ -121,16 +121,23 @@ test("can create a new member", async ({ page }) => {
 
   await submitButton.click();
 
-  await expect(page.getByText("C'est presque bon !").first()).toBeVisible();
-
-  // cleanup
   const username = `${firstname.toLowerCase()}.${lastname.toLowerCase()}`;
-  const res = await db
-    .deleteFrom("users")
-    .where("username", "=", username)
-    .executeTakeFirstOrThrow();
+  try {
+    await expect(page.getByText("C'est presque bon !").first()).toBeVisible();
 
-  expect(res.numDeletedRows.toString()).toEqual("1");
+    const res = await db
+      .deleteFrom("users")
+      .where("username", "=", username)
+      .executeTakeFirstOrThrow();
+
+    expect(res.numDeletedRows.toString()).toEqual("1");
+  } finally {
+    // La fiche est inseree en base avant l'envoi de l'email de notification :
+    // si l'assertion ci-dessus echoue, le membre existe quand meme. Sans ce
+    // nettoyage il reste en base avec une mission active et fausse le comptage
+    // des specs suivantes (community.spec).
+    await db.deleteFrom("users").where("username", "=", username).execute();
+  }
 });
 
 test("shows error when creating member with duplicate username", async ({

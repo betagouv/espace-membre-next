@@ -5,11 +5,12 @@ import { z } from "zod";
 import { getAllStartups } from "@/lib/kysely/queries";
 import {
   getAllIncubators,
-  getAllIncubatorsMembers,
+  getAllIncubatorsActiveMembers,
   getAllStartupsIncubators,
 } from "@/lib/kysely/queries/incubators";
 import { incubatorToModel, startupToModel } from "@/models/mapper";
 import { convertSearchParamsToRecord } from "@/lib/url";
+import { deprecationHeaders } from "@/lib/deprecation";
 
 const enum IncubatorIncludes {
   STARTUPS = "startups",
@@ -35,6 +36,7 @@ const queryInput = z.object({
 });
 
 export const GET = async (req: NextRequest) => {
+  const headers = deprecationHeaders("/api/protected/incubators");
   const {
     success,
     data: searchParams,
@@ -45,7 +47,7 @@ export const GET = async (req: NextRequest) => {
   if (!success) {
     return Response.json(
       { error: error.flatten().fieldErrors },
-      { status: HttpStatusCode.UnprocessableEntity },
+      { status: HttpStatusCode.UnprocessableEntity, headers },
     );
   }
 
@@ -85,7 +87,7 @@ export const GET = async (req: NextRequest) => {
     }
 
     if (withMembers) {
-      const incubatorMembersList = await getAllIncubatorsMembers();
+      const incubatorMembersList = await getAllIncubatorsActiveMembers();
       type IncubatorWithMembers = (typeof incubators)[0] & {
         members: { uuid: string; fullname: string }[];
       };
@@ -99,5 +101,5 @@ export const GET = async (req: NextRequest) => {
     }
   }
 
-  return Response.json(incubators);
+  return Response.json(incubators, { headers });
 };

@@ -1,5 +1,7 @@
 import { v4 as uuidv4 } from "uuid";
 
+const ANOTHER_MEMBER_UUID = "13dd9fed-9c84-432c-a566-f785702147fc";
+
 export async function seed(knex) {
   await populateUsers(knex);
   console.log("Populated users table with fake accounts");
@@ -20,8 +22,18 @@ export async function seed(knex) {
   // the app does on write. The third startup is co-incubated on purpose, so the
   // multi-incubator case is testable straight out of the seed.
   const startups = [
-    { uuid: uuidv4(), ghid: "startup-1", name: "Startup 1", incubators: [incubator1] },
-    { uuid: uuidv4(), ghid: "startup-2", name: "Startup 2", incubators: [incubator1] },
+    {
+      uuid: uuidv4(),
+      ghid: "startup-1",
+      name: "Startup 1",
+      incubators: [incubator1],
+    },
+    {
+      uuid: uuidv4(),
+      ghid: "startup-2",
+      name: "Startup 2",
+      incubators: [incubator1],
+    },
     {
       uuid: uuidv4(),
       ghid: "startup-co-incubee",
@@ -68,6 +80,29 @@ export async function seed(knex) {
     });
   }
   console.log("Inserted fake startups");
+
+  // Equipe transverse de l'incubateur, avec un membre a mission active.
+  // La creation d'une fiche membre envoie un email de validation a cette equipe
+  // et echoue si personne ne peut la recevoir : sans elle, le parcours de
+  // creation n'est pas testable. another.member (et non valid.member, qui joue
+  // l'utilisateur connecte dans les tests) tient ce role.
+  const teamId = uuidv4();
+  await knex("teams").insert([
+    {
+      uuid: teamId,
+      ghid: "team-1",
+      name: "Equipe transverse",
+      incubator_id: incubator1.uuid,
+    },
+  ]);
+  await knex("users_teams").insert([
+    {
+      uuid: uuidv4(),
+      user_id: ANOTHER_MEMBER_UUID,
+      team_id: teamId,
+    },
+  ]);
+  console.log("Inserted fake team");
 }
 
 const workplace_insee_codes = [
@@ -103,7 +138,7 @@ const populateUsers = async (knex) => {
       role: "Développement",
     },
     {
-      uuid: "13dd9fed-9c84-432c-a566-f785702147fc",
+      uuid: ANOTHER_MEMBER_UUID,
       username: "another.member",
       fullname: "Another member",
       primary_email: "another.member@betagouv.ovh",
@@ -147,7 +182,7 @@ const populateUsers = async (knex) => {
 
   // add a valid mission for another.member
   await knex("missions").insert({
-    user_id: "13dd9fed-9c84-432c-a566-f785702147fc",
+    user_id: ANOTHER_MEMBER_UUID,
     start: new Date("2023-05-01"),
     end: new Date("2030-07-01"),
   });

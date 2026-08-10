@@ -9,6 +9,7 @@ import {
 } from "@/lib/kysely/queries/incubators";
 import { incubatorToModel, startupToModel } from "@/models/mapper";
 import { convertSearchParamsToRecord } from "@/lib/url";
+import { deprecationHeaders } from "@/lib/deprecation";
 
 const enum StartupIncludes {
   INCUBATORS = "incubators",
@@ -60,6 +61,7 @@ const attachIncubators = async <
 };
 
 export const GET = async (req: NextRequest) => {
+  const headers = deprecationHeaders("/api/protected/startups");
   const {
     success,
     data: searchParams,
@@ -70,7 +72,7 @@ export const GET = async (req: NextRequest) => {
   if (!success) {
     return Response.json(
       { error: error.flatten().fieldErrors },
-      { status: HttpStatusCode.UnprocessableEntity },
+      { status: HttpStatusCode.UnprocessableEntity, headers },
     );
   }
 
@@ -80,5 +82,6 @@ export const GET = async (req: NextRequest) => {
     searchParams.includes === StartupIncludes.INCUBATORS
       ? await attachIncubators(startups)
       : startups,
+    { headers },
   );
 };
