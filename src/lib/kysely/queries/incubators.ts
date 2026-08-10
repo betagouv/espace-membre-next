@@ -202,10 +202,17 @@ export function getIncubatorMembers(incubatorUuid: string) {
         "missions_startups.mission_id",
         "missions.uuid",
       )
-      .innerJoin("startups", "startups.uuid", "missions_startups.startup_id")
+      // Par la table de liaison : une personne en mission sur un produit
+      // co-incube est rattachee a CHACUN de ses incubateurs. Le tout est
+      // consomme dans un exists(), la duplication est donc sans effet.
+      .innerJoin(
+        "startups_incubators",
+        "startups_incubators.startup_id",
+        "missions_startups.startup_id",
+      )
       .select("missions.uuid")
       .whereRef("missions.user_id", "=", "users.uuid")
-      .where("startups.incubator_id", "=", incubatorUuid);
+      .where("startups_incubators.incubator_id", "=", incubatorUuid);
 
   const attachedByTeam = (eb: ExpressionBuilder<DB, "users">) =>
     eb

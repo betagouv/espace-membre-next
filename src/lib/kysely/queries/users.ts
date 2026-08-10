@@ -204,8 +204,22 @@ export function withMemberMissions(
         ),
       ])
       .whereRef("missions.user_id", "=", "users.uuid")
+      // EXISTS et non une jointure : l'agregat de startups ci-dessus serait
+      // duplique. Passe par la table de liaison pour couvrir la co-incubation.
       .$if(!!scope.incubatorId, (qb) =>
-        qb.where("startups.incubator_id", "=", scope.incubatorId!),
+        qb.where((eb) =>
+          eb.exists(
+            eb
+              .selectFrom("startups_incubators")
+              .select("startups_incubators.startup_id")
+              .whereRef("startups_incubators.startup_id", "=", "startups.uuid")
+              .where(
+                "startups_incubators.incubator_id",
+                "=",
+                scope.incubatorId!,
+              ),
+          ),
+        ),
       )
       .$if(!!scope.startupId, (qb) =>
         qb.where("startups.uuid", "=", scope.startupId!),

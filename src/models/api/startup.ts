@@ -24,7 +24,10 @@ export const startupApiResponseSchema = z.object({
   ghid: z.string(),
   name: z.string(),
   pitch: z.string().nullable().optional(),
+  // incubator_id ne porte que l'incubateur principal, qui n'a pas de sens
+  // metier : un produit co-incube expose tous les siens dans incubator_ids.
   incubator_id: z.string().nullable().optional(),
+  incubator_ids: z.array(z.string()),
   contact: z.string().nullable().optional(),
   description: z.string().nullable().optional(),
   link: z.string().nullable().optional(),
@@ -46,6 +49,7 @@ export type startupApiResponseSchemaType = z.infer<
 export const startupWithIncubatorApiResponseSchema =
   startupApiResponseSchema.extend({
     incubator: incubatorApiResponseSchema.nullable(),
+    incubators: z.array(incubatorApiResponseSchema),
   });
 export type startupWithIncubatorApiResponseSchemaType = z.infer<
   typeof startupWithIncubatorApiResponseSchema

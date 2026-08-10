@@ -1,6 +1,6 @@
 import { HttpStatusCode } from "axios";
 
-import { getIncubator } from "@/lib/kysely/queries/incubators";
+import { getStartupIncubators } from "@/lib/kysely/queries/incubators";
 import { getStartupWithPhases } from "@/lib/kysely/queries/startups";
 import { currentPhaseName } from "@/lib/startupPhase";
 import { incubatorToModel, startupToModel } from "@/models/mapper";
@@ -20,13 +20,19 @@ export const GET = async (
   }
 
   const startup = startupToModel(dbStartup);
-  const incubator = startup.incubator_id
-    ? incubatorToModel(await getIncubator(startup.incubator_id))
-    : null;
+  // Une seule requete, triee par titre, qui couvre aussi le cas d'un produit
+  // sans incubateur principal : incubator en est deduit.
+  const incubators = (await getStartupIncubators(dbStartup.uuid)).map(
+    incubatorToModel,
+  );
+  const incubator =
+    incubators.find(({ uuid }) => uuid === startup.incubator_id) ?? null;
 
   const body = startupWithIncubatorApiResponseSchema.parse({
     ...startup,
     incubator,
+    incubators,
+    incubator_ids: incubators.map(({ uuid }) => uuid),
     phases: dbStartup.phases,
     current_phase: currentPhaseName(dbStartup.phases),
   });

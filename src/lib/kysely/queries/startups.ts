@@ -151,15 +151,27 @@ function withStartupPhases(eb: ExpressionBuilder<DB, "startups">) {
 // incubateur. Le calcul de la phase courante est laisse a l'appelant (dernier
 // element chronologique) pour rester coherent avec l'ordre du tableau phases.
 export function getStartupsWithPhases(incubatorUuid?: string) {
-  return db
-    .selectFrom("startups")
-    .selectAll("startups")
-    .select((eb) => [withStartupPhases(eb)])
-    .$if(!!incubatorUuid, (qb) =>
-      qb.where("startups.incubator_id", "=", incubatorUuid!),
-    )
-    .orderBy("startups.name", "asc")
-    .execute();
+  return (
+    db
+      .selectFrom("startups")
+      .selectAll("startups")
+      .select((eb) => [withStartupPhases(eb)])
+      // EXISTS et non une jointure : un produit co-incube doit remonter pour
+      // chacun de ses incubateurs, sans etre duplique dans la liste.
+      .$if(!!incubatorUuid, (qb) =>
+        qb.where((eb) =>
+          eb.exists(
+            eb
+              .selectFrom("startups_incubators")
+              .select("startups_incubators.startup_id")
+              .whereRef("startups_incubators.startup_id", "=", "startups.uuid")
+              .where("startups_incubators.incubator_id", "=", incubatorUuid!),
+          ),
+        ),
+      )
+      .orderBy("startups.name", "asc")
+      .execute()
+  );
 }
 
 // Une startup et ses phases, resolue par ghid. Undefined si inconnue.
