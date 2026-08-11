@@ -21,6 +21,7 @@ describe("syncMatrixAccounts", () => {
     const queryBuilder: any = {};
     queryBuilder.leftJoin = sinon.stub().returns(queryBuilder);
     queryBuilder.select = sinon.stub().returns(queryBuilder);
+    queryBuilder.where = sinon.stub().returns(queryBuilder);
     queryBuilder.groupBy = sinon.stub().returns({ execute: selectExecuteStub });
 
     const onConflictStub = sinon.stub().returns({ execute: insertExecuteStub });
@@ -33,7 +34,7 @@ describe("syncMatrixAccounts", () => {
 
     const mod = proxyquire("./sync-matrix-accounts", {
       "@/lib/kysely": { db: dbStub, "@noCallThru": true },
-      "@/server/controllers/utils": {
+      "@/lib/utils": {
         isPublicServiceEmail: isPublicServiceEmailStub,
         "@noCallThru": true,
       },
