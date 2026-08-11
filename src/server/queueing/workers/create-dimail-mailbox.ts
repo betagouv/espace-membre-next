@@ -1,8 +1,10 @@
 import PgBoss from "pg-boss";
 import * as Sentry from "@sentry/nextjs";
 
+import { addEvent } from "@/lib/events";
 import { db } from "@/lib/kysely";
 import { getUserBasicInfo } from "@/lib/kysely/queries/users";
+import { EventCode, SYSTEM_NAME } from "@/models/actionEvent/actionEvent";
 import { CreateDimailAdressDataSchemaType } from "@/models/jobs/services";
 import { EmailStatusCode } from "@/models/member";
 import { createMailbox, createAlias } from "@/lib/dimail/client";
@@ -99,14 +101,28 @@ export async function createDimailMailboxForUser(userUuid: string) {
   // keep primary_email so the user dont change its current login
   // set newly created email otherwise
   const primaryEmail = dbUser.primary_email || mailboxInfos.email;
-  await db
-    .updateTable("users")
-    .set({
-      primary_email: primaryEmail,
-      primary_email_status: EmailStatusCode.EMAIL_ACTIVE,
-    })
-    .where("uuid", "=", userUuid)
-    .execute();
+  await db.transaction().execute(async (trx) => {
+    await trx
+      .updateTable("users")
+      .set({
+        primary_email: primaryEmail,
+        primary_email_status: EmailStatusCode.EMAIL_ACTIVE,
+      })
+      .where("uuid", "=", userUuid)
+      .execute();
+
+    await addEvent(
+      {
+        action_code: EventCode.DIMAIL_MAILBOX_CREATED,
+        created_by_username: SYSTEM_NAME,
+        action_on_username: dbUser.username,
+        action_metadata: {
+          email: mailboxInfos.email,
+        },
+      },
+      trx,
+    );
+  });
 
   // MAJ de la table dinum_emails
   // update the dinum_emails in the database with the original or new email to mark migrated

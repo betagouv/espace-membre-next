@@ -4,7 +4,9 @@ import _ from "lodash";
 import { revalidatePath } from "next/cache";
 import { getServerSession } from "next-auth";
 
+import { addEvent } from "@/lib/events";
 import { db } from "@/lib/kysely";
+import { EventCode } from "@/models/actionEvent/actionEvent";
 import { incubatorUpdateSchemaType } from "@/models/actions/incubator";
 import { incubatorSchemaType } from "@/models/incubator";
 import { authOptions } from "@/lib/authoptions";
@@ -46,6 +48,19 @@ export async function updateIncubator({
       .where("uuid", "=", incubatorUuid)
       .returningAll()
       .executeTakeFirstOrThrow();
+
+    await addEvent(
+      {
+        action_code: EventCode.INCUBATOR_UPDATED,
+        created_by_username: session.user.id,
+        action_metadata: {
+          value: { ...updatedIncubator },
+          old_value: { ...previousIncubatorData },
+        },
+      },
+      trx,
+    );
+
     revalidatePath("/incubators");
   });
   if (!updatedIncubator) {

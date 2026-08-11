@@ -5,7 +5,9 @@ import { revalidatePath } from "next/cache";
 import { getServerSession } from "next-auth";
 import { z } from "zod";
 
+import { addEvent } from "@/lib/events";
 import { db } from "@/lib/kysely";
+import { EventCode } from "@/models/actionEvent/actionEvent";
 import {
   incubatorUpdateSchema,
   incubatorUpdateSchemaType,
@@ -39,8 +41,22 @@ export async function createIncubator({
       })
       .returningAll()
       .executeTakeFirst();
-  });
 
+    if (!newIncubator) {
+      throw new Error("Incubator data could not be inserted into db");
+    }
+
+    await addEvent(
+      {
+        action_code: EventCode.INCUBATOR_CREATED,
+        created_by_username: session.user.id,
+        action_metadata: {
+          value: { ...newIncubator },
+        },
+      },
+      trx,
+    );
+  });
   if (!newIncubator) {
     throw new Error("Incubator data could not be inserted into db");
   }
