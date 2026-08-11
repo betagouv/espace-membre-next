@@ -49,36 +49,41 @@ export async function updateUserEvent({
     throw new BusinessError("UserNotDefined", "User does not exist");
   }
   const eventDate = date || new Date();
-  if (!value) {
-    await db
-      .deleteFrom("user_events")
-      .where("field_id", "=", field_id)
-      .where("user_id", "=", user_id)
-      .execute();
-  } else {
-    await db
-      .insertInto("user_events")
-      .values({
-        field_id,
-        user_id,
-        date: eventDate,
-      })
-      .onConflict((oc) => {
-        return oc.column("field_id").column("user_id").doUpdateSet({
+  await db.transaction().execute(async (trx) => {
+    if (!value) {
+      await trx
+        .deleteFrom("user_events")
+        .where("field_id", "=", field_id)
+        .where("user_id", "=", user_id)
+        .execute();
+    } else {
+      await trx
+        .insertInto("user_events")
+        .values({
+          field_id,
+          user_id,
           date: eventDate,
-        });
-      })
-      .execute();
-  }
-  await addEvent({
-    action_code: EventCode.MEMBER_USER_EVENTS_UPDATED,
-    created_by_username: session.user.id,
-    action_on_username: user.username,
-    action_metadata: {
-      field_id,
-      value,
-      date: !!value ? eventDate : null,
-    },
+        })
+        .onConflict((oc) => {
+          return oc.column("field_id").column("user_id").doUpdateSet({
+            date: eventDate,
+          });
+        })
+        .execute();
+    }
+    await addEvent(
+      {
+        action_code: EventCode.MEMBER_USER_EVENTS_UPDATED,
+        created_by_username: session.user.id,
+        action_on_username: user.username,
+        action_metadata: {
+          field_id,
+          value,
+          date: !!value ? eventDate : null,
+        },
+      },
+      trx,
+    );
   });
   revalidatePath(`/account`);
   revalidatePath(`/community/${user.username}`);

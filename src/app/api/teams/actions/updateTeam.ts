@@ -75,27 +75,30 @@ export async function updateTeam({
 
     revalidatePath("/teams");
 
-    await addEvent({
-      action_code: EventCode.TEAM_UPDATED,
-      created_by_username: session.user.id,
-      action_metadata: {
-        value: {
-          uuid: udpatedTeam.uuid,
-          ghid: udpatedTeam.ghid,
-          name: udpatedTeam.name,
-          mission: encodeURIComponent(udpatedTeam.mission || ""),
-          incubator_id: udpatedTeam.incubator_id,
-          memberIds: memberIds.map((m) => m.uuid),
-        },
-        old_value: {
-          uuid: previousTeamData.uuid,
-          ghid: previousTeamData.ghid,
-          name: previousTeamData.name,
-          mission: encodeURIComponent(previousTeamData.mission || ""),
-          incubator_id: previousTeamData.incubator_id,
-          memberIds: previousMembers.map((m) => m.uuid),
+    await addEvent(
+      {
+        action_code: EventCode.TEAM_UPDATED,
+        created_by_username: session.user.id,
+        action_metadata: {
+          value: {
+            uuid: udpatedTeam.uuid,
+            ghid: udpatedTeam.ghid,
+            name: udpatedTeam.name,
+            mission: encodeURIComponent(udpatedTeam.mission || ""),
+            incubator_id: udpatedTeam.incubator_id,
+            memberIds: memberIds.map((m) => m.uuid),
+          },
+          old_value: {
+            uuid: previousTeamData.uuid,
+            ghid: previousTeamData.ghid,
+            name: previousTeamData.name,
+            mission: encodeURIComponent(previousTeamData.mission || ""),
+            incubator_id: previousTeamData.incubator_id,
+            memberIds: previousMembers.map((m) => m.uuid),
+          },
         },
       },
-    });
+      trx,
+    );
   });
 }

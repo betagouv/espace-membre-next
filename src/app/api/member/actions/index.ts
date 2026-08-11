@@ -61,21 +61,26 @@ async function changeSecondaryEmailForUser(
   if (!user) {
     throw new NoDataError("Users not found");
   }
-  await db
-    .updateTable("users")
-    .set({
-      secondary_email,
-    })
-    .where("username", "=", username)
-    .execute();
-  addEvent({
-    action_code: EventCode.MEMBER_SECONDARY_EMAIL_UPDATED,
-    created_by_username: session.user.id,
-    action_on_username: username,
-    action_metadata: {
-      value: secondary_email,
-      old_value: user.secondary_email || "",
-    },
+  await db.transaction().execute(async (trx) => {
+    await trx
+      .updateTable("users")
+      .set({
+        secondary_email,
+      })
+      .where("username", "=", username)
+      .execute();
+    await addEvent(
+      {
+        action_code: EventCode.MEMBER_SECONDARY_EMAIL_UPDATED,
+        created_by_username: session.user.id,
+        action_on_username: username,
+        action_metadata: {
+          value: secondary_email,
+          old_value: user.secondary_email || "",
+        },
+      },
+      trx,
+    );
   });
   revalidatePath("/account", "layout");
 }
@@ -99,23 +104,28 @@ export async function updateCommunicationEmail(
   let hasBothEmailsSet = dbUser.primary_email && dbUser.secondary_email;
   // @todo send error when emails are not both set
   if (communication_email != previousCommunicationEmail && hasBothEmailsSet) {
-    await db
-      .updateTable("users")
-      .set({
-        communication_email,
-      })
-      .where("username", "=", session.user.id)
-      .execute();
-    await addEvent({
-      action_code: EventCode.MEMBER_COMMUNICATION_EMAIL_UPDATE,
-      created_by_username: session.user.id,
-      action_on_username: session.user.id,
-      action_metadata: {
-        value: communication_email,
-        old_value: dbUser
-          ? (dbUser.communication_email as CommunicationEmailCode)
-          : undefined,
-      },
+    await db.transaction().execute(async (trx) => {
+      await trx
+        .updateTable("users")
+        .set({
+          communication_email,
+        })
+        .where("username", "=", session.user.id)
+        .execute();
+      await addEvent(
+        {
+          action_code: EventCode.MEMBER_COMMUNICATION_EMAIL_UPDATE,
+          created_by_username: session.user.id,
+          action_on_username: session.user.id,
+          action_metadata: {
+            value: communication_email,
+            old_value: dbUser
+              ? (dbUser.communication_email as CommunicationEmailCode)
+              : undefined,
+          },
+        },
+        trx,
+      );
     });
     const newEmail =
       communication_email === CommunicationEmailCode.PRIMARY
@@ -298,22 +308,27 @@ export async function manageSecondaryEmailForUser({
       throw new BusinessError("Users not found");
     }
 
-    await db
-      .updateTable("users")
-      .set({
-        secondary_email: secondaryEmail,
-      })
-      .where("username", "=", username)
-      .execute();
+    await db.transaction().execute(async (trx) => {
+      await trx
+        .updateTable("users")
+        .set({
+          secondary_email: secondaryEmail,
+        })
+        .where("username", "=", username)
+        .execute();
 
-    await addEvent({
-      action_code: EventCode.MEMBER_SECONDARY_EMAIL_UPDATED,
-      created_by_username: session.user.id,
-      action_on_username: username,
-      action_metadata: {
-        value: secondaryEmail,
-        old_value: user.secondary_email || "",
-      },
+      await addEvent(
+        {
+          action_code: EventCode.MEMBER_SECONDARY_EMAIL_UPDATED,
+          created_by_username: session.user.id,
+          action_on_username: username,
+          action_metadata: {
+            value: secondaryEmail,
+            old_value: user.secondary_email || "",
+          },
+        },
+        trx,
+      );
     });
 
     console.log(`${session.user.id} a mis à jour son adresse mail secondaire.`);

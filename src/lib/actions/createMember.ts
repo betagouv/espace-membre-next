@@ -110,6 +110,19 @@ async function createMemberAction(input: createMemberSchemaType) {
           trx,
         );
       }
+      await addEvent(
+        {
+          created_by_username: session.user.id,
+          action_on_username: username,
+          action_code: EventCode.MEMBER_CREATED,
+          action_metadata: {
+            member,
+            missions,
+            incubator_id,
+          },
+        },
+        trx,
+      );
       return user;
     });
     if (userIsValidatedStraightAway) {
@@ -126,16 +139,6 @@ async function createMemberAction(input: createMemberSchemaType) {
         }),
       );
     }
-    await addEvent({
-      created_by_username: session.user.id,
-      action_on_username: username,
-      action_code: EventCode.MEMBER_CREATED,
-      action_metadata: {
-        member,
-        missions,
-        incubator_id,
-      },
-    });
     revalidatePath("/community", "layout");
     const response: createMemberResponseSchemaType = {
       uuid: dbUser.uuid,

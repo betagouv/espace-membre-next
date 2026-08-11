@@ -1,11 +1,12 @@
 "use server";
 
 import { getServerSession } from "next-auth/next";
+import { z } from "zod";
 
 import { addEvent, getLastEvent } from "@/lib/events";
 import { db } from "@/lib/kysely";
 import { getUserBasicInfo } from "@/lib/kysely/queries/users";
-import { EventCode, EventMemberCreatedPayload } from "@/models/actionEvent";
+import { EventCode } from "@/models/actionEvent";
 import { validateNewMemberSchemaType } from "@/models/actions/member";
 import {
   SendEmailToTeamWhenNewMemberSchema,
@@ -22,6 +23,16 @@ import {
 import { sendEmailToTeamWhenNewMember } from "@/lib/email/send-email-to-team-when-new-member";
 import { sendNewMemberVerificationEmail } from "@/lib/email/send-verification-email";
 import { canEditMember } from "@/lib/canEditMember";
+
+// A pending member has no team/startup mission yet, so there is nowhere
+// else to persist which incubator their candidature belongs to until
+// they're validated. We read it back from the MEMBER_CREATED audit event
+// as a deliberate, narrowly-typed exception to "the audit log is not
+// application state" — only the one field we need, not the full event
+// payload shape.
+const MemberCreatedEventMetadata = z.object({
+  incubator_id: z.string().uuid().optional().nullable(),
+});
 
 export async function validateNewMember({
   memberUuid,
@@ -48,8 +59,9 @@ export async function validateNewMember({
       `L'événement de création du membre n'as pas été trouvé pour ${memberUuid}.`,
     );
   }
-  const eventMemberCreatedData =
-    EventMemberCreatedPayload.safeParse(eventMemberCreated);
+  const eventMemberCreatedData = MemberCreatedEventMetadata.safeParse(
+    eventMemberCreated.action_metadata,
+  );
   if (!eventMemberCreatedData.success) {
     console.log(eventMemberCreatedData.error);
     throw new BusinessError(
@@ -57,7 +69,7 @@ export async function validateNewMember({
       `L'événement de création du membre ${memberUuid} n'as pas le format attendu.`,
     );
   }
-  const incubator_id = eventMemberCreatedData.data.action_metadata.incubator_id;
+  const incubator_id = eventMemberCreatedData.data.incubator_id;
   const event = await db
     .selectFrom("events")
     .selectAll()
@@ -93,30 +105,35 @@ export async function validateNewMember({
     );
   }
 
-  await db
-    .updateTable("users")
-    .where("uuid", "=", memberUuid)
-    .set({
-      primary_email_status: EmailStatusCode.EMAIL_VERIFICATION_WAITING,
-    })
-    .execute();
+  await db.transaction().execute(async (trx) => {
+    await trx
+      .updateTable("users")
+      .where("uuid", "=", memberUuid)
+      .set({
+        primary_email_status: EmailStatusCode.EMAIL_VERIFICATION_WAITING,
+      })
+      .execute();
 
-    await addEvent({
-      created_by_username: session.user.id,
-      action_code: EventCode.MEMBER_VALIDATED,
-      action_on_username: newMember.username,
-    });
+    await addEvent(
+      {
+        created_by_username: session.user.id,
+        action_code: EventCode.MEMBER_VALIDATED,
+        action_on_username: newMember.username,
+      },
+      trx,
+    );
+  });
 
-    await sendEmailToTeamWhenNewMember(
-      SendEmailToTeamWhenNewMemberSchema.parse({
-        userId: newMember.uuid,
-      }),
-    );
-    await sendNewMemberVerificationEmail(
-      SendNewMemberVerificationEmailSchema.parse({
-        userId: newMember.uuid,
-      }),
-    );
+  await sendEmailToTeamWhenNewMember(
+    SendEmailToTeamWhenNewMemberSchema.parse({
+      userId: newMember.uuid,
+    }),
+  );
+  await sendNewMemberVerificationEmail(
+    SendNewMemberVerificationEmailSchema.parse({
+      userId: newMember.uuid,
+    }),
+  );
 }
 
 export const safeValidateNewMember = withErrorHandling(validateNewMember);

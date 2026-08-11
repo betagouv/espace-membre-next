@@ -126,7 +126,7 @@ export interface MatrixAccounts {
 
 export interface Events {
   action_code: string;
-  action_metadata: string | null;
+  action_metadata: Json | null;
   action_on_startup: string | null;
   action_on_username: string | null;
   created_at: Generated<Timestamp>;

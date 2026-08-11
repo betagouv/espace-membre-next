@@ -17,7 +17,7 @@ describe("Add events", () => {
       .selectAll()
       .orderBy("created_at", "desc")
       .executeTakeFirst();
-    res.action_metadata.should.equal(`"value"=>"toto@gmail.com"`);
+    res.action_metadata.should.deep.equal({ value: "toto@gmail.com" });
     res.created_by_username.should.equal("membre.actif");
     res.action_on_username.should.equal("membre.expire");
   });

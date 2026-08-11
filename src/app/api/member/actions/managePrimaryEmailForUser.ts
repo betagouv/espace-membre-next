@@ -43,23 +43,30 @@ export async function managePrimaryEmailForUser({
     throw new AdminEmailNotAllowedError();
   }
 
-  await db
-    .updateTable("users")
-    .where("username", "=", username)
-    .set({
-      primary_email: primaryEmail,
-      username,
-    })
-    .execute();
+  await db.transaction().execute(async (trx) => {
+    await trx
+      .updateTable("users")
+      .where("username", "=", username)
+      .set({
+        primary_email: primaryEmail,
+        username,
+      })
+      .execute();
 
-  await addEvent({
-    action_code: EventCode.MEMBER_PRIMARY_EMAIL_UPDATED,
-    created_by_username: session.user.id,
-    action_on_username: username,
-    action_metadata: {
-      value: primaryEmail,
-      old_value: user ? user.userInfos.primary_email || undefined : undefined,
-    },
+    await addEvent(
+      {
+        action_code: EventCode.MEMBER_PRIMARY_EMAIL_UPDATED,
+        created_by_username: session.user.id,
+        action_on_username: username,
+        action_metadata: {
+          value: primaryEmail,
+          old_value: user
+            ? user.userInfos.primary_email || undefined
+            : undefined,
+        },
+      },
+      trx,
+    );
   });
 
   console.log(`${session?.user.id} a mis à jour son adresse mail primaire.`);

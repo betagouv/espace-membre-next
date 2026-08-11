@@ -102,19 +102,23 @@ export async function updateMember(
           );
         }
       }
+
+      await addEvent(
+        {
+          action_code: EventCode.MEMBER_BASE_INFO_UPDATED,
+          created_by_username: created_by_username,
+          action_on_username: previousInfo.username,
+          action_metadata: {
+            value: data,
+            old_value: userInfosToModel(previousInfo),
+          },
+        },
+        trx,
+      );
     });
   } catch (error) {
     console.error("Transaction failed:", error);
     throw error;
   }
-  await addEvent({
-    action_code: EventCode.MEMBER_BASE_INFO_UPDATED,
-    created_by_username: created_by_username,
-    action_on_username: previousInfo.username,
-    action_metadata: {
-      value: data,
-      old_value: userInfosToModel(previousInfo),
-    },
-  });
   return true;
 }

@@ -33,7 +33,7 @@ describe("validateNewMember", () => {
   };
 
   const mockUserData = {
-    uuid: "member-uuid",
+    uuid: "22222222-2222-2222-2222-222222222222",
     username: "testmember",
     primary_email_status: EmailStatusCode.MEMBER_VALIDATION_WAITING,
   };
@@ -47,7 +47,7 @@ describe("validateNewMember", () => {
     action_code: EventCode.MEMBER_CREATED,
     action_on_username: "testmember",
     action_metadata: {
-      incubator_id: "incubator-1",
+      incubator_id: "11111111-1111-1111-1111-111111111111",
     },
   };
 
@@ -70,6 +70,12 @@ describe("validateNewMember", () => {
       .stub(canEditMemberLib, "canEditMember")
       .resolves(true);
     addEventStub = sinon.stub(eventsLib, "addEvent").resolves();
+
+    // validateNewMember runs the status update + audit event in one
+    // transaction; run the callback against the (already stubbed) db.
+    sinon.stub(kyselyLib.db, "transaction").returns({
+      execute: (cb: any) => cb(kyselyLib.db),
+    } as any);
 
     bossClientSendStub = sinon.stub().resolves();
     getBossClientInstanceStub = sinon

@@ -367,39 +367,42 @@ export async function updateStartup({
       startupSponsors,
       sponsorsUuidToRemove,
     );
-    await addEvent({
-      action_code: EventCode.STARTUP_INFO_UPDATED,
-      created_by_username: session.user.id,
-      action_on_startup: startupUuid,
-      action_metadata: {
-        value: {
-          startup,
-          startupEvents,
-          startupPhases,
-          startupSponsorIds: [...sponsorUuidToAdd, ...existingSponsorsUuid],
-        },
-        old_value: {
-          startup: {
-            ...previousStartupData,
-            pitch: previousStartupData.pitch || "",
-            incubator_id: previousStartupData.incubator_id || "",
-            contact: previousStartupData.contact || "",
-            description: previousStartupData.description || "",
-            dsfr_status: previousStartupData.dsfr_status || "",
-            techno: previousStartupData.techno as string[],
-            thematiques: previousStartupData.thematiques as string[],
-            usertypes: previousStartupData.usertypes as string[],
+    await addEvent(
+      {
+        action_code: EventCode.STARTUP_INFO_UPDATED,
+        created_by_username: session.user.id,
+        action_on_startup: startupUuid,
+        action_metadata: {
+          value: {
+            startup,
+            startupEvents,
+            startupPhases,
+            startupSponsorIds: [...sponsorUuidToAdd, ...existingSponsorsUuid],
           },
-          startupEvents: previousStartupEvents.map((event) =>
-            startupEventToModel(event),
-          ),
-          startupPhases: previousStartupPhases,
-          startupSponsorIds: previousStartupSponsors.map(
-            (sponsor) => sponsor.uuid,
-          ),
+          old_value: {
+            startup: {
+              ...previousStartupData,
+              pitch: previousStartupData.pitch || "",
+              incubator_id: previousStartupData.incubator_id || "",
+              contact: previousStartupData.contact || "",
+              description: previousStartupData.description || "",
+              dsfr_status: previousStartupData.dsfr_status || "",
+              techno: previousStartupData.techno as string[],
+              thematiques: previousStartupData.thematiques as string[],
+              usertypes: previousStartupData.usertypes as string[],
+            },
+            startupEvents: previousStartupEvents.map((event) =>
+              startupEventToModel(event),
+            ),
+            startupPhases: previousStartupPhases,
+            startupSponsorIds: previousStartupSponsors.map(
+              (sponsor) => sponsor.uuid,
+            ),
+          },
         },
       },
-    });
+      trx,
+    );
 
     revalidatePath("/startups");
 

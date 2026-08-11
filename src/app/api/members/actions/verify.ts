@@ -26,15 +26,21 @@ export async function verify({ uuid }: { uuid: string }) {
   const user = await getUserBasicInfo({ uuid });
   if (!user) return false;
 
-  db.updateTable("users")
-    .set("primary_email_status", EmailStatusCode.EMAIL_ACTIVE)
-    .where("uuid", "=", uuid)
-    .executeTakeFirst();
+  await db.transaction().execute(async (trx) => {
+    await trx
+      .updateTable("users")
+      .set("primary_email_status", EmailStatusCode.EMAIL_ACTIVE)
+      .where("uuid", "=", uuid)
+      .executeTakeFirst();
 
-  await addEvent({
-    action_code: EventCode.MEMBER_VERIFIED,
-    created_by_username: session.user.id,
-    action_on_username: user.username,
+    await addEvent(
+      {
+        action_code: EventCode.MEMBER_VERIFIED,
+        created_by_username: session.user.id,
+        action_on_username: user.username,
+      },
+      trx,
+    );
   });
   return true;
 }

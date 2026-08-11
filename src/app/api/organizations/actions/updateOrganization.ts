@@ -47,17 +47,20 @@ export async function updateOrganization({
 
     revalidatePath("/organizations");
 
-    await addEvent({
-      action_code: EventCode.ORGANIZATION_UPDATED,
-      created_by_username: session.user.id,
-      action_metadata: {
-        value: {
-          ...res,
-        },
-        old_value: {
-          ...previousOrganizationData,
+    await addEvent(
+      {
+        action_code: EventCode.ORGANIZATION_UPDATED,
+        created_by_username: session.user.id,
+        action_metadata: {
+          value: {
+            ...res,
+          },
+          old_value: {
+            ...previousOrganizationData,
+          },
         },
       },
-    });
+      trx,
+    );
   });
 }

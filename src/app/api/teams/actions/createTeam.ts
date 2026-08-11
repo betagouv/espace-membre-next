@@ -59,19 +59,22 @@ export async function createTeam({
 
     revalidatePath("/teams");
 
-    await addEvent({
-      action_code: EventCode.TEAM_CREATED,
-      created_by_username: session.user.id,
-      action_metadata: {
-        value: {
-          uuid: res.uuid,
-          ghid: res.ghid,
-          name: res.name,
-          mission: encodeURIComponent(res.mission || ""),
-          incubator_id: res.incubator_id,
-          memberIds: memberIds.map((m) => m.uuid),
+    await addEvent(
+      {
+        action_code: EventCode.TEAM_CREATED,
+        created_by_username: session.user.id,
+        action_metadata: {
+          value: {
+            uuid: res.uuid,
+            ghid: res.ghid,
+            name: res.name,
+            mission: encodeURIComponent(res.mission || ""),
+            incubator_id: res.incubator_id,
+            memberIds: memberIds.map((m) => m.uuid),
+          },
         },
       },
-    });
+      trx,
+    );
   });
 }

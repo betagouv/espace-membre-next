@@ -44,14 +44,17 @@ export async function createOrganization({
 
     revalidatePath("/organizations");
 
-    await addEvent({
-      action_code: EventCode.ORGANIZATION_CREATED,
-      created_by_username: session.user.id,
-      action_metadata: {
-        value: {
-          ...res,
+    await addEvent(
+      {
+        action_code: EventCode.ORGANIZATION_CREATED,
+        created_by_username: session.user.id,
+        action_metadata: {
+          value: {
+            ...res,
+          },
         },
       },
-    });
+      trx,
+    );
   });
 }
