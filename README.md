@@ -15,6 +15,12 @@ L'espace membre de l’incubateur
 - tâches de maintenance (cf [Cron Jobs](#cron-jobs)) : emails,
   mattermost, brevo, github
 
+## API en lecture
+
+La doc OPENAPI est dispo sur `/api/protected/openapi.json`.
+
+Vous pouvez y accéder avec un header `X-Api-Key` à demander à l'équipe animation
+
 ## Dev de l'app Espace Membre
 
 Un fichier [`Makefile`](./Makefile) ainsi que la partie `scripts` du
