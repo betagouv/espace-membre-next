@@ -72,6 +72,18 @@ export async function middleware(req: NextRequest) {
       return NextResponse.json({}, { headers });
     }
 
+    // the OpenAPI doc is also readable by logged-in users, not just API key holders
+    if (req.nextUrl.pathname === "/api/protected/openapi.json") {
+      const verifiedToken = await verifyAuth(req).catch(() => null);
+      if (verifiedToken) {
+        const response = NextResponse.next();
+        Object.entries(headers).forEach(([key, value]) =>
+          response.headers.set(key, value),
+        );
+        return response;
+      }
+    }
+
     const PROTECTED_API_KEYS = getArrayFromEnv("PROTECTED_API_KEYS");
     if (!req.headers.has("X-Api-Key")) {
       return NextResponse.json(

@@ -59,6 +59,8 @@ fileignoreconfig:
   checksum: e2a041fe934441a29c6274fcb06f378a217c25c89d3f96a5c82cee4164a5e4ee
 - filename: src/lib/s3.ts
   checksum: a74621f69d4d7e4cdb99c05d127fcdc4a3f81aed2dc921146272f3deed3e283e
+- filename: src/middleware.ts
+  checksum: 3467fbdbbcae62e35af58cf82fdd8723ac9b5abcc5a16065c80cee7ccbb5d519
 - filename: src/models/member.ts
   checksum: 494b87eccfd0b71b01c11ed153d9d6097463cff08be0bf6332e047d637dc151f
 - filename: src/models/misc.ts
