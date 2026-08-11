@@ -17,6 +17,7 @@ describe("recreateEmailIfUserActive", () => {
   let getDimailEmailStub: sinon.SinonStub;
   let patchMailboxStub: sinon.SinonStub;
   let createDimailMailboxForUserStub: sinon.SinonStub;
+  let getUserMailBoxStub: sinon.SinonStub;
   let dbUpdateTableStub: sinon.SinonStub;
 
   const fakeUser = {
@@ -43,6 +44,10 @@ describe("recreateEmailIfUserActive", () => {
       "createDimailMailboxForUser",
       createDimailMailboxForUserStub,
     );
+    getUserMailBoxStub = sinon
+      .stub()
+      .resolves("test@test-opi-email.beta.gouv.fr");
+    recreateModule.__set__("getUserMailBox", getUserMailBoxStub);
     dbUpdateTableStub = sinon.stub(db, "updateTable").returns({
       set: sinon.stub().returnsThis(),
       where: sinon.stub().returnsThis(),
@@ -86,12 +91,13 @@ describe("recreateEmailIfUserActive", () => {
       .true;
   });
 
-  it("should do nothing if no primary_email", async () => {
+  it("should create mailbox if user has no primary_email", async () => {
     (getActiveUsersStub().execute as sinon.SinonStub).resolves([
       { ...fakeUser, primary_email: null },
     ]);
     await recreateEmailIfUserActive();
     expect(patchMailboxStub.notCalled).to.be.true;
-    expect(createDimailMailboxForUserStub.notCalled).to.be.true;
+    expect(createDimailMailboxForUserStub.calledOnceWith(fakeUser.uuid)).to.be
+      .true;
   });
 });

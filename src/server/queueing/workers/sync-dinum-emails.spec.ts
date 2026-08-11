@@ -99,8 +99,8 @@ describe("syncDinumEmailsJob", () => {
     getAllMailboxesStub.resolves({
       success: true,
       mailboxes: [
-        { type: "mailbox", email: "user1@test.com", status: "active" },
-        { type: "mailbox", email: "user2@test.com", status: "inactive" },
+        { type: "mailbox", email: "user1@test.com", imap_active: "yes" },
+        { type: "mailbox", email: "user2@test.com", imap_active: "no" },
       ],
     });
 
@@ -143,7 +143,7 @@ describe("syncDinumEmailsJob", () => {
     expect(mailbox1).to.deep.include({
       type: "mailbox",
       email: "user1@test.com",
-      status: "active",
+      status: "enabled",
       destination: null,
     });
 
@@ -153,7 +153,7 @@ describe("syncDinumEmailsJob", () => {
     expect(mailbox2).to.deep.include({
       type: "mailbox",
       email: "user2@test.com",
-      status: "inactive",
+      status: "disabled",
       destination: null,
     });
 
@@ -194,7 +194,7 @@ describe("syncDinumEmailsJob", () => {
     getAllMailboxesStub.resolves({
       success: true,
       mailboxes: [
-        { type: "mailbox", email: "user1@test.com", status: "active" },
+        { type: "mailbox", email: "user1@test.com", imap_active: "yes" },
       ],
     });
 
@@ -218,7 +218,7 @@ describe("syncDinumEmailsJob", () => {
     expect(insertedData[0]).to.deep.include({
       type: "mailbox",
       email: "user1@test.com",
-      status: "active",
+      status: "enabled",
       destination: null,
     });
   });
