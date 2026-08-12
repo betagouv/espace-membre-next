@@ -37,6 +37,9 @@ export const makeSendEmailNodemailer = (
   } = deps;
   const transport = {
     debug: MAIL_DEBUG === "true",
+    // Nodemailer n'ecrit rien sans logger, meme avec debug : les deux vont
+    // ensemble, sinon le drapeau est inerte.
+    logger: MAIL_DEBUG === "true",
     service: MAIL_SERVICE ? MAIL_SERVICE : null,
     host: MAIL_SERVICE ? null : MAIL_HOST,
     port: MAIL_SERVICE ? null : parseInt(MAIL_PORT || "25", 10),

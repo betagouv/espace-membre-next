@@ -88,6 +88,11 @@ export const buildEmailHeader: Record<
 
 export const EMAIL_CONFIG = {
   MAIL_DEBUG: process.env.MAIL_DEBUG!,
+  // Coupe tout envoi reel et journalise le contenu a la place. Prevu pour les
+  // environnements de recette, dont les review apps, ou les destinataires
+  // importes ne sont pas de vraies adresses : sans ca, aucun lien de connexion
+  // n'est recuperable.
+  MAIL_FAKE: process.env.MAIL_FAKE!,
   MAIL_HOST: process.env.MAIL_HOST!,
   MAIL_IGNORE_TLS: process.env.MAIL_IGNORE_TLS!,
   MAIL_PASS: process.env.MAIL_PASS!,
@@ -101,6 +106,7 @@ export const EMAIL_CONFIG = {
 
 const {
   MAIL_DEBUG,
+  MAIL_FAKE,
   MAIL_HOST,
   MAIL_IGNORE_TLS,
   MAIL_PASS,
@@ -112,7 +118,7 @@ const {
   SIB_APIKEY_PRIVATE,
 } = EMAIL_CONFIG;
 
-if (process.env.NODE_ENV !== "test") {
+if (process.env.NODE_ENV !== "test" && MAIL_FAKE !== "true") {
   try {
     const sendInBlue = makeSendinblue({
       MAIL_SENDER,
