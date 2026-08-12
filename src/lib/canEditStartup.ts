@@ -9,10 +9,9 @@ export const canEditStartup = async (session, startupUuid: string | null) => {
   if (!startup) return false;
 
   // A startup can be co-incubated: a member of any linked incubator may edit it.
+  // The primary incubator is always part of that list, the database enforces it
+  // through startups_principal_incubator_linked.
   const incubatorIds = await getStartupIncubatorIds(startupUuid);
-  if (startup.incubator_id && !incubatorIds.includes(startup.incubator_id)) {
-    incubatorIds.push(startup.incubator_id);
-  }
 
   if (incubatorIds.length) {
     const teamMemberUuids = (

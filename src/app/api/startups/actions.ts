@@ -40,10 +40,10 @@ export async function getStartup({ uuid }: { uuid: string }) {
 }
 
 /**
- * Reconcile the startups_incubators join table, which is the source of truth
- * for the startup <-> incubator relation.
+ * Replace the incubators linked to a startup in startups_incubators, which is
+ * the source of truth for the relation. Passing an empty list unlinks them all.
  */
-async function syncStartupIncubators(
+async function setStartupIncubators(
   trx: Transaction<DB>,
   startupUuid: string,
   incubatorIds: string[],
@@ -138,7 +138,7 @@ export async function createStartup({
 
       const startupUuid = res.uuid;
 
-      await syncStartupIncubators(trx, startupUuid, incubator_ids);
+      await setStartupIncubators(trx, startupUuid, incubator_ids);
 
       // Create new sponsors
       for (const newSponsor of newSponsors) {
@@ -335,7 +335,7 @@ export async function updateStartup({
       .returning(["uuid", "ghid"])
       .executeTakeFirstOrThrow();
 
-    await syncStartupIncubators(trx, startupUuid, incubator_ids);
+    await setStartupIncubators(trx, startupUuid, incubator_ids);
 
     // create new sponsors
     for (const newSponsor of newSponsors) {

@@ -85,10 +85,9 @@ export const memberDetailStartupSchema = z.object({
   end: z.coerce.date().nullable(),
   mailing_list: z.string().nullable(),
   // incubator_id / incubator ne portent que l'incubateur principal. Un produit
-  // co-incube expose la liste complete dans incubator_ids / incubators.
+  // co-incube expose la liste complete dans incubators.
   incubator_id: z.string().nullable(),
   incubator: incubatorApiResponseSchema.nullable(),
-  incubator_ids: z.array(z.string()),
   incubators: z.array(incubatorApiResponseSchema),
   isCurrent: z.boolean(),
 });

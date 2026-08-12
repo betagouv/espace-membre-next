@@ -46,8 +46,11 @@ export type startupApiResponseSchemaType = z.infer<
 >;
 
 // Startup enrichie de son incubateur, pour /api/protected/startups/{ghid}.
-export const startupWithIncubatorApiResponseSchema =
-  startupApiResponseSchema.extend({
+// incubator_ids est omis : la liste complete est ici deja portee par incubators,
+// qui la rend deductible.
+export const startupWithIncubatorApiResponseSchema = startupApiResponseSchema
+  .omit({ incubator_ids: true })
+  .extend({
     incubator: incubatorApiResponseSchema.nullable(),
     incubators: z.array(incubatorApiResponseSchema),
   });

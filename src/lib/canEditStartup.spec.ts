@@ -87,6 +87,9 @@ describe("canEditStartup", () => {
 
   it("should return true when user is a member of the incubator team", async () => {
     getStartupStub.resolves(mockStartup);
+    // Le principal fait toujours partie des liens, la contrainte
+    // startups_principal_incubator_linked le garantit en base.
+    getStartupIncubatorIdsStub.resolves(["incubator-uuid"]);
     getIncubatorTeamMembersStub.resolves([
       { uuid: "session-user-uuid" },
       { uuid: "other-user-uuid" },

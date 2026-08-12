@@ -32,7 +32,6 @@ export const GET = async (
     ...startup,
     incubator,
     incubators,
-    incubator_ids: incubators.map(({ uuid }) => uuid),
     phases: dbStartup.phases,
     current_phase: currentPhaseName(dbStartup.phases),
   });
