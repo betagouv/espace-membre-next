@@ -85,13 +85,13 @@ describe("GET /api/protected/incubators/[ghid]/members", () => {
 
   it("renvoie 404 pour un incubateur inconnu", async () => {
     const res = await GET(makeReq(), {
-      params: { ghid: "incubateur-inexistant" },
+      params: Promise.resolve({ ghid: "incubateur-inexistant" }),
     });
     expect(res.status).to.equal(404);
   });
 
   it("renvoie par defaut tous les rattaches, missions terminees comprises", async () => {
-    const res = await GET(makeReq(), { params: { ghid: "test-api-incub" } });
+    const res = await GET(makeReq(), { params: Promise.resolve({ ghid: "test-api-incub" }) });
     expect(res.status).to.equal(200);
     const body = await res.json();
 
@@ -107,7 +107,7 @@ describe("GET /api/protected/incubators/[ghid]/members", () => {
   });
 
   it("expose le discriminant attachment et les GHID de startups des missions", async () => {
-    const res = await GET(makeReq(), { params: { ghid: "test-api-incub" } });
+    const res = await GET(makeReq(), { params: Promise.resolve({ ghid: "test-api-incub" }) });
     const body = await res.json();
     const byUsername = Object.fromEntries(
       body.map((member: { username: string }) => [member.username, member]),
@@ -136,7 +136,7 @@ describe("GET /api/protected/incubators/[ghid]/members", () => {
   });
 
   it("n'expose pas les champs exclus (bio, domaine, role, avatar, etc.)", async () => {
-    const res = await GET(makeReq(), { params: { ghid: "test-api-incub" } });
+    const res = await GET(makeReq(), { params: Promise.resolve({ ghid: "test-api-incub" }) });
     const body = await res.json();
     const member = body[0];
 
@@ -170,7 +170,7 @@ describe("GET /api/protected/incubators/[ghid]/members", () => {
 
   it("filtre les membres inactifs avec ?status=active", async () => {
     const res = await GET(makeReq("status=active"), {
-      params: { ghid: "test-api-incub" },
+      params: Promise.resolve({ ghid: "test-api-incub" }),
     });
     expect(res.status).to.equal(200);
     const body = await res.json();

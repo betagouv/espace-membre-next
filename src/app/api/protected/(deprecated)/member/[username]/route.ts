@@ -10,8 +10,9 @@ import { deprecationHeaders } from "@/lib/deprecation";
 
 export async function GET(
   _: Request,
-  { params: { username } }: { params: { username: string } },
+  segmentData: { params: Promise<{ username: string }> },
 ) {
+  const { username } = await segmentData.params;
   const headers = deprecationHeaders(`/api/protected/members/${username}`);
   const dbUser = await getUserBasicInfo({ username });
   if (!dbUser) {

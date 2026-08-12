@@ -22,10 +22,11 @@ const mdParser = new MarkdownIt({
 });
 
 export async function generateMetadata(
-  { params }: Props,
+  props: Props,
   parent: ResolvingMetadata,
 ): Promise<Metadata> {
   // fetch data
+  const params = await props.params;
   const formation = await fetchAirtableFormationById(params.id);
   return {
     title: `${formation.name} / Espace Membre`,
@@ -33,7 +34,7 @@ export async function generateMetadata(
 }
 
 type Props = {
-  params: { id: string };
+  params: Promise<{ id: string }>;
 };
 
 enum AirtableDomaine {
@@ -65,7 +66,8 @@ const DomaineToAirtableDomaine: Record<Domaine, AirtableDomaine> = {
   [Domaine.DATA]: AirtableDomaine["Data"],
 };
 
-export default async function Page({ params }: Props) {
+export default async function Page(props: Props) {
+  const params = await props.params;
   const session = await getServerSession(authOptions);
 
   if (!session) {
