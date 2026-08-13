@@ -1,24 +1,37 @@
-import nextConfig from "eslint-config-next/core-web-vitals";
-import { globalIgnores } from "eslint/config";
+import path from "node:path";
+import { fileURLToPath } from "node:url";
+import { FlatCompat } from "@eslint/eslintrc";
 
 import prettierRecommended from "eslint-plugin-prettier/recommended";
 
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
+
+const compat = new FlatCompat({
+  baseDirectory: __dirname,
+});
+
 export default [
-  ...nextConfig,
+  {
+    ignores: [
+      ".next/**",
+      "dist/**",
+      "build/**",
+      "**/*.spec.ts",
+      "node_modules/**",
+    ],
+  },
+  ...compat.config({
+    extends: ["next/core-web-vitals"],
+  }),
   prettierRecommended,
-  globalIgnores(["**/*.spec.ts"]),
   {
     rules: {
-      "@typescript-eslint/no-unused-vars": ["error", { "vars": "all", "args": "none", "ignoreRestSiblings": true, "caughtErrors": "none" }],
       "react/no-unescaped-entities": "off",
       "react/no-children-prop": "warn",
       "import/no-named-as-default": "warn",
       "import/no-named-as-default-member": "warn",
       "import/named": "warn",
-      // RGAA / WCAG: enable the full jsx-a11y "recommended" rule set on top of the
-      // subset already enabled by eslint-config-next. Rules are kept at "warn" so
-      // CI stays green; existing violations will be fixed incrementally in
-      // dedicated PRs (1 PR per chantier d'accessibilité).
       "jsx-a11y/alt-text": "warn",
       "jsx-a11y/anchor-has-content": "warn",
       "jsx-a11y/anchor-is-valid": "warn",

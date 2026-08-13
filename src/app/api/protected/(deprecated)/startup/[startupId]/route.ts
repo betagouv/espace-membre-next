@@ -8,8 +8,9 @@ import { deprecationHeaders } from "@/lib/deprecation";
 
 export const GET = async (
   _: NextRequest,
-  { params: { startupId } }: { params: { startupId: string } },
+  segmentData: { params: Promise<{ startupId: string }> },
 ) => {
+  const { startupId } = await segmentData.params;
   const headers = deprecationHeaders(`/api/protected/startups/${startupId}`);
   const dbStartup = await getStartup({ ghid: startupId });
 

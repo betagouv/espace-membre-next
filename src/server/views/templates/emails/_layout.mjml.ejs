@@ -1,0 +1,124 @@
+<mjml>
+  <mj-head>
+    <mj-title><%= title %></mj-title>
+    <mj-attributes>
+      <mj-section padding="10px 0px"></mj-section>
+      <mj-column padding="0px 0px"></mj-column>
+      <mj-divider css-class="divider" border-width="1px" border-color="#000000"></mj-divider>
+      <mj-text css-class="light-text" color="#3a3a3a" font-size="14px" line-height="24px"></mj-text>
+      <mj-button
+        background-color="#000091"
+        border-radius="0px"
+        css-class="light-button"
+        color="#f5f5fe"
+        font-size="16px"
+        font-weight="400"
+        line-height="24px"
+        padding="8px 16px"
+      ></mj-button>
+      <mj-all font-family="arial, sans-serif"></mj-all>
+    </mj-attributes>
+    <mj-style>
+      hr {
+      color: #000000; // Otherwise it's grey
+      }
+
+      th {
+      background: none !important; // Prevent the heading column/row to have a color
+      }
+
+      a {
+      color: #000091;
+      text-underline-offset: 3px;
+      }
+
+      h1,
+      h2 {
+      // Bigger headings were rendering all tight on multiple lines
+      line-height: 1.2em;
+      }
+
+      // dsfr hr
+      .fr-hr-or {
+      font-size: .875rem;
+      line-height: 1.5rem;
+      text-transform: uppercase;
+      font-weight: 700;
+      display: flex;
+      flex-direction: row;
+      align-items: center;
+      justify-content: center;
+      flex-wrap: nowrap;
+      }
+
+      .fr-hr-or:after,.fr-hr-or:before {
+      content: "";
+      display: inline-flex;
+      height: 1px;
+      width: 40%;
+      background-color: #000000;
+      --idle: transparent;
+      --hover: #000000;
+      --active: #000000;
+      }
+
+      .fr-hr-or:before {
+      margin-right: .75rem
+      }
+
+      .fr-hr-or:after {
+      margin-left: .75rem
+      }
+
+      .member-info th, .member-info td {
+      border: 1px solid #000;
+      padding: 10px;
+      }
+    </mj-style>
+  </mj-head>
+  <mj-body width="500px">
+    <mj-wrapper css-class="light-body">
+      <mj-section css-class="header-section">
+        <mj-group>
+          <mj-column css-class="logo-section" vertical-align="middle" width="24%">
+            <mj-image
+              src="<%= baseUrl %>/static/images/home-illustration.png"
+              alt="logo"
+              padding-right="0px"
+            />
+          </mj-column>
+          <mj-column vertical-align="middle" width="76%">
+            <mj-text font-size="20px" font-weight="700" padding-bottom="2px">
+              Espace-membre beta.gouv.fr
+            </mj-text>
+            <mj-text font-size="16px" padding-top="2px">
+              Communauté beta.gouv.fr
+            </mj-text>
+          </mj-column>
+        </mj-group>
+      </mj-section>
+      <mj-section css-class="light-main-section" background-color="#f6f6f6">
+        <mj-group>
+          <mj-column>
+            <%- content %>
+          </mj-column>
+        </mj-group>
+      </mj-section>
+      <mj-section css-class="footer-section">
+        <mj-group>
+          <mj-column>
+            <mj-text
+              align="center"
+              color="#666666"
+              font-size="12px"
+              padding-top="2px"
+              padding-bottom="0px"
+            >
+              <%= currentYear %> © Espace-Membre
+            </mj-text>
+          </mj-column>
+        </mj-group>
+      </mj-section>
+    </mj-wrapper>
+  </mj-body>
+</mjml>

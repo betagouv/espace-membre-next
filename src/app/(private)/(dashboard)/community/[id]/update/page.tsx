@@ -16,11 +16,10 @@ export const metadata: Metadata = {
   title: `${routeTitles.accountEditBaseInfo()} / Espace Membre`,
 };
 
-export default async function Page({
-  params: { id },
-}: {
-  params: { id: string };
+export default async function Page(segmentData: {
+  params: Promise<{ id: string }>;
 }) {
+  const { id } = await segmentData.params;
   const session = await getServerSession(authOptions);
 
   if (!session) {

@@ -14,8 +14,9 @@ import { memberDetailApiResponseSchema } from "@/models/api/member";
 
 export async function GET(
   _: Request,
-  { params: { username } }: { params: { username: string } },
+  segmentData: { params: Promise<{ username: string }> },
 ) {
+  const { username } = await segmentData.params;
   const dbUser = await getUserBasicInfo({ username });
   if (!dbUser) {
     return Response.json(

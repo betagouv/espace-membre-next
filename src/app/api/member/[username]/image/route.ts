@@ -6,8 +6,9 @@ export const revalidate = 3600; // 1 hour
 
 export const GET = async (
   _: Request,
-  { params: { username } }: { params: { username: string } },
+  segmentData: { params: Promise<{ username: string }> },
 ) => {
+  const { username } = await segmentData.params;
   if (!username) {
     return Response.json({});
   }

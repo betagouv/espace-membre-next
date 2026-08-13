@@ -19,8 +19,9 @@ const queryInput = z.object({
 
 export const GET = async (
   req: NextRequest,
-  { params: { ghid } }: { params: { ghid: string } },
+  segmentData: { params: Promise<{ ghid: string }> },
 ) => {
+  const { ghid } = await segmentData.params;
   const {
     success,
     data: searchParams,
