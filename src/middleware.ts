@@ -107,7 +107,7 @@ async function handleProtectedApiRoute(req: NextRequest) {
   return response;
 }
 
-export async function proxy(req: NextRequest) {
+export async function middleware(req: NextRequest) {
   // control protected routes
   if (req.nextUrl.pathname.startsWith("/api/protected/")) {
     return handleProtectedApiRoute(req);
