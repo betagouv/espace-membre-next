@@ -51,14 +51,7 @@ const nextConfig = {
       },
     ];
   },
-  serverExternalPackages: [
-    "knex",
-    "pg",
-    "pg-native",
-    "sib-api-v3-sdk",
-    "mjml",
-    "@luma-team/mjml-react",
-  ],
+  serverExternalPackages: ["knex", "pg", "pg-native", "sib-api-v3-sdk", "mjml"],
   experimental: {
     serverActions: {
       bodySizeLimit: "10mb",
