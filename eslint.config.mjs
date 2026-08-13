@@ -1,6 +1,5 @@
 import path from "node:path";
 import { fileURLToPath } from "node:url";
-import { fixupConfigRules } from "@eslint/compat";
 import { FlatCompat } from "@eslint/eslintrc";
 
 import prettierRecommended from "eslint-plugin-prettier/recommended";
@@ -14,7 +13,13 @@ const compat = new FlatCompat({
 
 export default [
   {
-    ignores: [".next/**", "dist/**", "build/**", "**/*.spec.ts", "node_modules/**"],
+    ignores: [
+      ".next/**",
+      "dist/**",
+      "build/**",
+      "**/*.spec.ts",
+      "node_modules/**",
+    ],
   },
   ...compat.config({
     extends: ["next/core-web-vitals"],
@@ -22,7 +27,6 @@ export default [
   prettierRecommended,
   {
     rules: {
-
       "react/no-unescaped-entities": "off",
       "react/no-children-prop": "warn",
       "import/no-named-as-default": "warn",

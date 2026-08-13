@@ -28,7 +28,7 @@ export async function generateMetadata(
   };
 }
 
-export default async function Page(props: Props) {
+export default async function Page(props: Readonly<Props>) {
   const params = await props.params;
   const dbOrganization = await getOrganization(params.id);
   if (!dbOrganization) {

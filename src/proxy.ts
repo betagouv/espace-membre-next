@@ -43,7 +43,10 @@ const allowedOrigins = getArrayFromEnv("PROTECTED_API_ALLOWED_ORIGINS", [
 ]).flatMap((origin) =>
   origin === "*"
     ? /https:\/\/.*/
-    : [new RegExp(`https://.*\\.${origin}`), new RegExp(`https://${origin}`)],
+    : [
+        new RegExp(String.raw`https://.*\.${origin}`),
+        new RegExp(`https://${origin}`),
+      ],
 );
 
 const corsOptions = {
@@ -63,47 +66,51 @@ function getCorsHeaders(req: NextRequest): Record<string, string> {
   };
 }
 
+async function handleProtectedApiRoute(req: NextRequest) {
+  const headers = getCorsHeaders(req);
+  if (req.method === "OPTIONS") {
+    // preflight request
+    return NextResponse.json({}, { headers });
+  }
+
+  // the OpenAPI doc is also readable by logged-in users, not just API key holders
+  if (req.nextUrl.pathname === "/api/protected/openapi.json") {
+    const verifiedToken = await verifyAuth(req).catch(() => null);
+    if (verifiedToken) {
+      const response = NextResponse.next();
+      Object.entries(headers).forEach(([key, value]) =>
+        response.headers.set(key, value),
+      );
+      return response;
+    }
+  }
+
+  const PROTECTED_API_KEYS = getArrayFromEnv("PROTECTED_API_KEYS");
+  if (!req.headers.has("X-Api-Key")) {
+    return NextResponse.json(
+      { error: { message: "Api key is required." } },
+      { status: HttpStatusCode.UnprocessableEntity, headers },
+    );
+  }
+  const apiKey = req.headers.get("X-Api-Key") ?? "";
+  if (!PROTECTED_API_KEYS.includes(apiKey)) {
+    return NextResponse.json(
+      { error: { message: "Invalid api key." } },
+      { status: HttpStatusCode.Unauthorized, headers },
+    );
+  }
+
+  const response = NextResponse.next();
+  Object.entries(headers).forEach(([key, value]) =>
+    response.headers.set(key, value),
+  );
+  return response;
+}
+
 export async function proxy(req: NextRequest) {
   // control protected routes
   if (req.nextUrl.pathname.startsWith("/api/protected/")) {
-    const headers = getCorsHeaders(req);
-    if (req.method === "OPTIONS") {
-      // preflight request
-      return NextResponse.json({}, { headers });
-    }
-
-    // the OpenAPI doc is also readable by logged-in users, not just API key holders
-    if (req.nextUrl.pathname === "/api/protected/openapi.json") {
-      const verifiedToken = await verifyAuth(req).catch(() => null);
-      if (verifiedToken) {
-        const response = NextResponse.next();
-        Object.entries(headers).forEach(([key, value]) =>
-          response.headers.set(key, value),
-        );
-        return response;
-      }
-    }
-
-    const PROTECTED_API_KEYS = getArrayFromEnv("PROTECTED_API_KEYS");
-    if (!req.headers.has("X-Api-Key")) {
-      return NextResponse.json(
-        { error: { message: "Api key is required." } },
-        { status: HttpStatusCode.UnprocessableEntity, headers },
-      );
-    }
-    const apiKey = req.headers.get("X-Api-Key") ?? "";
-    if (!PROTECTED_API_KEYS.includes(apiKey)) {
-      return NextResponse.json(
-        { error: { message: "Invalid api key." } },
-        { status: HttpStatusCode.Unauthorized, headers },
-      );
-    }
-
-    const response = NextResponse.next();
-    Object.entries(headers).forEach(([key, value]) =>
-      response.headers.set(key, value),
-    );
-    return response;
+    return handleProtectedApiRoute(req);
   }
 
   // validate the user is authenticated

@@ -43,13 +43,13 @@ enum AirtableDomaine {
   "Chargé.e de Support usagers" = "Chargé.e de Support usagers",
   "Développpeur.euse" = "Développeur.euse",
   "UX Designer" = "UX Designer",
-  "Coach" = "Coach",
+  Coach = "Coach",
   "Animateur.ice" = "Animateur.ice",
   "Product Owner" = "Product Owner",
   "Growth Hacker" = "Growth Hacker",
-  "Data" = "Data",
-  "Attributaire" = "Attributaire",
-  "Support" = "Support",
+  Data = "Data",
+  Attributaire = "Attributaire",
+  Support = "Support",
 }
 
 const DomaineToAirtableDomaine: Record<Domaine, AirtableDomaine> = {
@@ -66,7 +66,7 @@ const DomaineToAirtableDomaine: Record<Domaine, AirtableDomaine> = {
   [Domaine.DATA]: AirtableDomaine["Data"],
 };
 
-export default async function Page(props: Props) {
+export default async function Page(props: Readonly<Props>) {
   const params = await props.params;
   const session = await getServerSession(authOptions);
 
