@@ -1,4 +1,4 @@
-export async function up(knex) {
+exports.up = function(knex) {
     return knex
         .raw(
             `
@@ -21,7 +21,7 @@ export async function up(knex) {
         );
 }
 
-export async function down(knex) {
+exports.down = function(knex) {
     return knex
         .raw(
             `

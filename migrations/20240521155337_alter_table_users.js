@@ -1,4 +1,4 @@
-export async function up(knex) {
+exports.up = function(knex) {
     return knex.schema.alterTable("users", (table) => {
         table.dropColumn("startups");
         table.dropColumn("missions");
@@ -11,7 +11,7 @@ export async function up(knex) {
     });
 }
 
-export async function down(knex) {
+exports.down = function(knex) {
     return knex.schema.alterTable("users", (table) => {
         table.dropColumn("incubator_id");
         table.dropColumn("competences");

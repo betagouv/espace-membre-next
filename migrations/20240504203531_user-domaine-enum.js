@@ -1,4 +1,4 @@
-export async function up(knex) {
+exports.up = async function(knex) {
     await knex("users").whereNull("domaine").update({
         domaine: "Autre",
     });
@@ -30,7 +30,7 @@ export async function up(knex) {
     });
 }
 
-export async function down(knex) {
+exports.down = async function(knex) {
     await knex.schema.table("users", function (table) {
         table.string("domaine").notNullable().alter();
     });

@@ -1,4 +1,4 @@
-export async function up(knex) {
+exports.up = async function(knex) {
     await knex.raw("DROP TYPE IF EXISTS startups_phase_enum");
     await knex.schema.createTable("phases", function (table) {
         table
@@ -39,7 +39,7 @@ ALTER TABLE phases ADD CONSTRAINT startups_phase_check CHECK ("start" < "end");
 `);
 }
 
-export async function down(knex) {
+exports.down = async function(knex) {
     await knex.schema.dropTable("phases");
     return knex.raw("DROP TYPE IF EXISTS startups_phase_enum");
 }

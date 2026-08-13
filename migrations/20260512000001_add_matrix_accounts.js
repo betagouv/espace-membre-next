@@ -1,4 +1,4 @@
-export async function up(knex) {
+exports.up = async function(knex) {
   await knex.schema.createTable("matrix_accounts", (table) => {
     table.uuid("id").primary().defaultTo(knex.raw("gen_random_uuid()"));
     table
@@ -13,6 +13,6 @@ export async function up(knex) {
   });
 }
 
-export async function down(knex) {
+exports.down = function(knex) {
   return knex.schema.dropTableIfExists("matrix_accounts");
 }

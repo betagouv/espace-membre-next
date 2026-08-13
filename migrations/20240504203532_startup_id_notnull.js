@@ -1,4 +1,4 @@
-export async function up(knex) {
+exports.up = async function(knex) {
     await knex("startups").whereNull("id").update({
         id: "",
     });
@@ -7,7 +7,7 @@ export async function up(knex) {
     });
 }
 
-export async function down(knex) {
+exports.down = function(knex) {
     return knex.schema.table("startups", function (table) {
         table.string("id").nullable().alter();
     });

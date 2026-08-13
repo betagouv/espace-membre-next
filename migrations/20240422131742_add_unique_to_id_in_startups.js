@@ -1,10 +1,10 @@
-export async function up(knex) {
+exports.up = function(knex) {
     return knex.schema.table("startups", function (table) {
         table.string("id").unique().alter();
     });
 }
 
-export async function down(knex) {
+exports.down = function(knex) {
     return knex.schema.table("startups", function (table) {
         table.string("id").dropUnique().alter();
     });

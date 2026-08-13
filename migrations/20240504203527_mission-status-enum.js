@@ -1,4 +1,4 @@
-export async function up(knex) {
+exports.up = async function(knex) {
     return knex.schema.table("missions", function (table) {
         table
             .enu("status", ["independent", "admin", "service"], {
@@ -9,7 +9,7 @@ export async function up(knex) {
     });
 }
 
-export async function down(knex) {
+exports.down = async function(knex) {
     await knex.raw("DROP IF EXIST TYPE missions_status_enum");
     return knex.schema.table("missions", function (table) {
         table.string("status").alter();

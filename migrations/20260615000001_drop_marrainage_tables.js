@@ -1,10 +1,10 @@
-export async function up(knex) {
+exports.up = async function(knex) {
     await knex.schema.dropTableIfExists("marrainage_groups_members");
     await knex.schema.dropTableIfExists("marrainage_groups");
     await knex.schema.dropTableIfExists("marrainage");
 }
 
-export async function down(knex) {
+exports.down = async function(knex) {
     await knex.schema.createTable("marrainage", (table) => {
         table.text("username").primary();
         table.text("last_onboarder").notNullable();

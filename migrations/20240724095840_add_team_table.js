@@ -1,4 +1,4 @@
-export async function up(knex) {
+exports.up = async function(knex) {
     return knex.schema.createTable("teams", (table) => {
         table
             .uuid("uuid")
@@ -19,6 +19,6 @@ export async function up(knex) {
     });
 }
 
-export async function down(knex) {
+exports.down = async function(knex) {
     return await knex.schema.dropTable("teams");
 }

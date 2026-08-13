@@ -1,4 +1,4 @@
-export async function up(knex) {
+exports.up = async function(knex) {
     await knex.schema.alterTable("startups", (table) => {
         table
             .uuid("contact_dinum")
@@ -13,7 +13,7 @@ export async function up(knex) {
     });
 }
 
-export async function down(knex) {
+exports.down = async function(knex) {
     await knex.schema.alterTable("startups", (table) => {
         table.dropColumn("contact_dinum");
         table.dropColumn("contact_incubator");

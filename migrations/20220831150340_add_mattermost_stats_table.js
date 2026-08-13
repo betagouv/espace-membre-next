@@ -1,5 +1,5 @@
 
-export async function up(knex){
+exports.up = function(knex) {
     return knex.schema
     .createTable('mattermost_member_infos', (table) => {
         table.text('username').defaultTo('primary')
@@ -9,7 +9,7 @@ export async function up(knex){
 }
 
 
-export async function down(knex) {
+exports.down = function(knex) {
     return knex.schema
     .dropTable('mattermost_member_infos')
 }

@@ -1,4 +1,4 @@
-export async function up(knex) {
+exports.up = function(knex) {
   return knex.schema.table("dinum_emails", function (table) {
     table.string("destination");
     table.string("type");
@@ -6,7 +6,7 @@ export async function up(knex) {
   });
 }
 
-export async function down(knex) {
+exports.down = function(knex) {
   return knex.schema.table("dinum_emails", function (table) {
     table.dropColumn("destination");
     table.dropColumn("type");
