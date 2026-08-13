@@ -8,8 +8,9 @@ import { CommunicationEmailCode, EmailStatusCode } from "@/models/member";
 
 export const GET = async (
   _: Request,
-  { params: { ghid } }: { params: { ghid: string } },
+  segmentData: { params: Promise<{ ghid: string }> },
 ) => {
+  const { ghid } = await segmentData.params;
   const dbStartup = await getStartup({ ghid });
   if (!dbStartup) {
     return Response.json(

@@ -8,24 +8,24 @@ import { authOptions } from "@/lib/authoptions";
 import { buildMemberPageProps } from "@/lib/memberPageProps";
 
 type Props = {
-  params: { id: string };
+  params: Promise<{ id: string }>;
 };
 
 export async function generateMetadata(
-  { params }: Props,
+  props: Props,
   parent: ResolvingMetadata,
 ): Promise<Metadata> {
+  const params = await props.params;
   const id = params.id;
   return {
     title: `Membre ${id} / Espace Membre`,
   };
 }
 
-export default async function Page({
-  params: { id },
-}: {
-  params: { id: string };
+export default async function Page(props: {
+  params: Promise<{ id: string }>;
 }) {
+  const { id } = await props.params;
   const session = await getServerSession(authOptions);
 
   if (!session || !session.user.id) {

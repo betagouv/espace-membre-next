@@ -20,14 +20,15 @@ import { authOptions } from "@/lib/authoptions";
 import { canEditStartup } from "@/lib/canEditStartup";
 
 type Props = {
-  params: { id: string };
+  params: Promise<{ id: string }>;
 };
 
 export async function generateMetadata(
-  { params }: Props,
+  props: Props,
   parent: ResolvingMetadata,
 ): Promise<Metadata> {
   // read route params
+  const params = await props.params;
   let query: { ghid: string } | { uuid: string } = {
     ghid: params.id,
   };
@@ -42,7 +43,8 @@ export async function generateMetadata(
   };
 }
 
-export default async function Page({ params }: Props) {
+export default async function Page(props: Props) {
+  const params = await props.params;
   let query: { ghid: string } | { uuid: string } = {
     ghid: params.id,
   };

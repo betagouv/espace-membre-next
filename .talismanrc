@@ -9,6 +9,8 @@ fileignoreconfig:
   checksum: 2bf3b8babdc7578c6e99e67c1cf8022a26fb4ac9bd6d411019e064f68f766a00
 - filename: README.md
   checksum: 9f3ceb61b1e3140608bc4c88b210ba9e94f3d277b055c2b3ad71f75961942a5c
+- filename: __tests__/htmlbuilder.spec.ts
+  checksum: 3204d46ffc02fc0eef7abed2ad9c2d9f342d49a03c69f0066907443d48d84980
 - filename: __tests__/test-email.ts
   checksum: f03a9616b14cd5f84bca8479451f5f96fa6c9ddae51a911bab05e6d1e886e9b4
 - filename: __tests__/test-user.ts
@@ -19,6 +21,8 @@ fileignoreconfig:
   checksum: 6f1851774271e3f0d3fcdf1feac4cd6ba03f6e75922fd839a94b276589a77b76
 - filename: src/app/(private)/(dashboard)/services/page.tsx
   checksum: daebae004c8c06af9a88aaf57a1fad4b0a6efcb7920cf9628e0c1fd1985569ab
+- filename: src/app/(public)/login/page.tsx
+  checksum: 20924a45d0763b0ac98b53f4f2953fbfbd54e636b4accf8d05c84c35a9b3c5ab
 - filename: src/app/api/member/route.ts
   checksum: 70c62cc99b6a82c2b8ef217dd083531e311a863bb637921a4c15628aed1ac119
 - filename: src/components/Checklist.tsx
@@ -65,14 +69,20 @@ fileignoreconfig:
   checksum: 494b87eccfd0b71b01c11ed153d9d6097463cff08be0bf6332e047d637dc151f
 - filename: src/models/misc.ts
   checksum: 71f4eb334cf4d187e4b2b848ec3ed3d2c8af083f8a8ec5bb776b763e2b6e0446
+- filename: src/proxy.ts
+  checksum: f1487d61722d98af1ebf111e8db40eeb4f682763b933572866121b291c689235
 - filename: src/server/queueing/workers/create-dimail-mailbox.spec.ts
   checksum: 7961ed68360545e4e2c72bf9884e12943467175bdeed35b38bfc177613fc0b15
 - filename: src/server/queueing/workers/send-verification-email.ts
   checksum: 6c4a7bbf33011000ba4223060c62f0631458c2308e27a987a61fac50a44eddfe
 - filename: src/server/schedulers/emailScheduler.ts
   checksum: 9984a43d1096596c3e87f3333e733f6ade807f2017132469f9acc8cec9a0f344
+- filename: src/server/views/templates/emails/EmailCreatedDimail/EmailCreatedDimail.mjml.ejs
+  checksum: b609d42897009197b4e2c28f5e3de1505ca483377b308d4541904bbf00970c05
 - filename: src/server/views/templates/emails/EmailCreatedDimail/EmailCreatedDimail.tsx
   checksum: 92e8908b1d03cb63c51d8a56aa909ebaeab6f0ca3078ae044110019a0f9f2a16
+- filename: src/server/views/templates/emails/VerificationWaitingEmail/VerificationWaitingEmail.mjml.ejs
+  checksum: 0c638ca8be2247143eba8d682089bcad6da1075976d932689aa222da2405e36c
 - filename: src/utils/routes/routes.ts
   checksum: 6a38b15c7efd08ecb470db5946a6cd826b3553b11f54069cf1bc6df335763ca2
 scopeconfig:

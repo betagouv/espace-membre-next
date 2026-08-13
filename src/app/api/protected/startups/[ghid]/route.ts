@@ -9,8 +9,9 @@ import { startupWithIncubatorApiResponseSchema } from "@/models/api/startup";
 // On conserve la semantique existante : le parametre de chemin est le ghid.
 export const GET = async (
   _: Request,
-  { params: { ghid } }: { params: { ghid: string } },
+  segmentData: { params: Promise<{ ghid: string }> },
 ) => {
+  const { ghid } = await segmentData.params;
   const dbStartup = await getStartupWithPhases(ghid);
   if (!dbStartup) {
     return Response.json(
