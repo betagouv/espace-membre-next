@@ -104,7 +104,7 @@ describe("dimail client", () => {
   describe("patchMailbox", () => {
     it("should call axios.patch and return success", async () => {
       const scope = nock(process.env.DIMAIL_API_URL as string)
-        .patch("/domains/domain.com/mailboxes/user")
+        .patch("/v2/domains/domain.com/mailboxes/user")
         .reply(200, {});
 
       const result = await clientModule.patchMailbox({
