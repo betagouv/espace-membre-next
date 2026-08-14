@@ -159,7 +159,9 @@ export const StartupList = ({ startups, incubators }: StartupListProps) => {
           } else if (filter.type === "usertype" && filter.value) {
             return (result.usertypes || []).includes(filter.value.toString());
           } else if (filter.type === "incubator" && filter.value) {
-            return result.incubatorIds.includes(filter.value.toString());
+            return result.incubators.some(
+              (incubator) => incubator.uuid === filter.value!.toString(),
+            );
           } else if (filter.type === "techno" && filter.value) {
             return (result.techno || []).includes(filter.value.toString());
           } else if (filter.type === "contact" && filter.value) {

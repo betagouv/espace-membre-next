@@ -190,7 +190,6 @@ export const getAllStartupsWithIncubatorAndPhase = async () => {
 
   const startups = startupsData.map((s) => {
     const row = s as StartupsDataRow;
-    const incubator = incubators.find((i) => i.uuid === s.incubator_id);
     const linkedIncubators = (incubatorIdsByStartup.get(s.uuid) ?? [])
       .map((id) => incubators.find((i) => i.uuid === id))
       .filter((i) => i !== undefined)
@@ -205,10 +204,10 @@ export const getAllStartupsWithIncubatorAndPhase = async () => {
       contact_incubator: s.contact_incubator,
       contact_dinum_fullname: row.contact_dinum_fullname,
       contact_incubator_fullname: row.contact_incubator_fullname,
-      incubatorName: incubator && incubator.title,
-      incubatorId: s.incubator_id,
+      // incubators suffit : le titre, les identifiants et l'incubateur
+      // principal (toujours dans startups.incubator_id, remonté par le spread)
+      // s'en déduisent.
       incubators: linkedIncubators,
-      incubatorIds: linkedIncubators.map((i) => i.uuid),
     };
   });
   return startups;
