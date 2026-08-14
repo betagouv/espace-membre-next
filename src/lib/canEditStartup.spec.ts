@@ -5,6 +5,7 @@ import proxyquire from "proxyquire";
 describe("canEditStartup", () => {
   let canEditStartup: typeof import("./canEditStartup").canEditStartup;
   let getStartupStub: sinon.SinonStub;
+  let getStartupIncubatorIdsStub: sinon.SinonStub;
   let getIncubatorTeamMembersStub: sinon.SinonStub;
   let isStartupAgentStub: sinon.SinonStub;
 
@@ -24,6 +25,7 @@ describe("canEditStartup", () => {
     sinon.restore();
 
     getStartupStub = sinon.stub();
+    getStartupIncubatorIdsStub = sinon.stub().resolves([]);
     getIncubatorTeamMembersStub = sinon.stub();
     isStartupAgentStub = sinon.stub();
 
@@ -31,6 +33,9 @@ describe("canEditStartup", () => {
       "./kysely/queries": {
         getStartup: getStartupStub,
         isStartupAgent: isStartupAgentStub,
+      },
+      "./kysely/queries/incubators": {
+        getStartupIncubatorIds: getStartupIncubatorIdsStub,
       },
       "./kysely/queries/teams": {
         getIncubatorTeamMembers: getIncubatorTeamMembersStub,
@@ -82,6 +87,9 @@ describe("canEditStartup", () => {
 
   it("should return true when user is a member of the incubator team", async () => {
     getStartupStub.resolves(mockStartup);
+    // Le principal fait toujours partie des liens, la contrainte
+    // startups_principal_incubator_linked le garantit en base.
+    getStartupIncubatorIdsStub.resolves(["incubator-uuid"]);
     getIncubatorTeamMembersStub.resolves([
       { uuid: "session-user-uuid" },
       { uuid: "other-user-uuid" },
@@ -92,6 +100,25 @@ describe("canEditStartup", () => {
     expect(result).to.be.true;
     expect(getIncubatorTeamMembersStub.calledOnceWith("incubator-uuid")).to.be
       .true;
+    expect(isStartupAgentStub.notCalled).to.be.true;
+  });
+
+  it("should return true when user is a member of an additional incubator team (co-incubation)", async () => {
+    getStartupStub.resolves(mockStartup);
+    getStartupIncubatorIdsStub.resolves([
+      "incubator-uuid",
+      "secondary-incubator-uuid",
+    ]);
+    getIncubatorTeamMembersStub
+      .withArgs("incubator-uuid")
+      .resolves([{ uuid: "other-user-uuid" }]);
+    getIncubatorTeamMembersStub
+      .withArgs("secondary-incubator-uuid")
+      .resolves([{ uuid: "session-user-uuid" }]);
+
+    const result = await canEditStartup(mockSession, "startup-uuid");
+
+    expect(result).to.be.true;
     expect(isStartupAgentStub.notCalled).to.be.true;
   });
 

@@ -267,13 +267,27 @@ const createStartup = async function (
       data.incubators!.find((t) => t.ghid === startup.incubator)!,
       data,
     );
-    await db
-      .updateTable("startups")
-      .set({
-        incubator_id: insertedIncubator.uuid,
-      })
-      .where("startups.uuid", "=", insertedStartup.uuid)
-      .execute();
+    // startups_principal_incubator_linked est différée : le principal et son
+    // lien doivent atterrir dans la même transaction.
+    await db.transaction().execute(async (trx) => {
+      await trx
+        .updateTable("startups")
+        .set({
+          incubator_id: insertedIncubator.uuid,
+        })
+        .where("startups.uuid", "=", insertedStartup.uuid)
+        .execute();
+      await trx
+        .insertInto("startups_incubators")
+        .values({
+          startup_id: insertedStartup.uuid,
+          incubator_id: insertedIncubator.uuid,
+        })
+        .onConflict((oc) =>
+          oc.columns(["startup_id", "incubator_id"]).doNothing(),
+        )
+        .execute();
+    });
   }
   return insertedStartup;
 };

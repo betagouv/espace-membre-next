@@ -88,7 +88,17 @@ export async function searchUsers(
         conditions.push(eb("domaine", "in", domaines));
       }
       if (incubators.length) {
-        conditions.push(eb("startups.incubator_id", "in", incubators));
+        // EXISTS rather than a join: the select above aggregates startup names,
+        // and joining the N:N table would duplicate them.
+        conditions.push(
+          eb.exists(
+            eb
+              .selectFrom("startups_incubators")
+              .select("startups_incubators.startup_id")
+              .whereRef("startups_incubators.startup_id", "=", "startups.uuid")
+              .where("startups_incubators.incubator_id", "in", incubators),
+          ),
+        );
       }
       if (startups.length) {
         conditions.push(eb("startups.uuid", "in", startups));

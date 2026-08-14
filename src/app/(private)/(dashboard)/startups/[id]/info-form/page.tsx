@@ -10,6 +10,7 @@ import { StartupInfoUpdate } from "@/components/StartupInfoUpdatePage";
 import { getEventListByStartupUuid } from "@/lib/events";
 import { db } from "@/lib/kysely";
 import { getStartup } from "@/lib/kysely/queries";
+import { getStartupIncubatorIds } from "@/lib/kysely/queries/incubators";
 import { getActiveUsers } from "@/lib/kysely/queries/users";
 import s3 from "@/lib/s3";
 import { startupChangeToModel, startupToModel } from "@/models/mapper";
@@ -67,6 +68,15 @@ export default async function Page(props) {
   if (!startup) {
     redirect("/startups");
   }
+  // The primary incubator is guaranteed to be part of the join table, so it is
+  // listed first only to keep the form order stable.
+  const linkedIncubatorIds = await getStartupIncubatorIds(startup.uuid);
+  startup.incubator_ids = startup.incubator_id
+    ? [
+        startup.incubator_id,
+        ...linkedIncubatorIds.filter((id) => id !== startup.incubator_id),
+      ]
+    : linkedIncubatorIds;
   const startupSponsors = z
     .array(sponsorSchema)
     .parse(

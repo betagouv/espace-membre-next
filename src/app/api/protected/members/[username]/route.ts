@@ -48,6 +48,9 @@ export async function GET(
   const startups = (await getUserStartups(dbUser.uuid)).map((startup) => ({
     ...startup,
     incubator: findIncubator(startup.incubator_id),
+    incubators: (startup.incubator_ids ?? [])
+      .map(findIncubator)
+      .filter((incubator) => incubator !== null),
     isCurrent:
       isAfter(now, startup.start ?? 0) &&
       (!startup.end || isBefore(now, startup.end)),

@@ -39,6 +39,7 @@ const sampleMember: { member: MemberPageProps } = {
         ghid: "math-pour-tous",
         mailing_list: "math-pour-tous",
         incubator_id: null,
+        incubator_ids: [],
       },
     ],
     avatar: "/static/images/ada.jpg",

@@ -1,15 +1,21 @@
 "use server";
 
 import slugify from "@sindresorhus/slugify";
+import { Transaction } from "kysely";
 import _ from "lodash";
 import { revalidatePath } from "next/cache";
 import { getServerSession } from "next-auth";
 import { z } from "zod";
 
+import { DB } from "@/@types/db";
 import { addEvent } from "@/lib/events";
 import { db } from "@/lib/kysely";
+import { getStartupIncubatorIds } from "@/lib/kysely/queries/incubators";
 import { EventCode } from "@/models/actionEvent/actionEvent";
-import { startupInfoUpdateSchemaType } from "@/models/actions/startup";
+import {
+  startupInfoUpdateSchema,
+  startupInfoUpdateSchemaType,
+} from "@/models/actions/startup";
 import { startupEventToModel } from "@/models/mapper";
 import { sponsorSchema } from "@/models/sponsor";
 import { phaseSchema } from "@/models/startup";
@@ -33,9 +39,50 @@ export async function getStartup({ uuid }: { uuid: string }) {
     .executeTakeFirstOrThrow();
 }
 
+/**
+ * Replace the incubators linked to a startup in startups_incubators, which is
+ * the source of truth for the relation. Passing an empty list unlinks them all.
+ */
+async function setStartupIncubators(
+  trx: Transaction<DB>,
+  startupUuid: string,
+  incubatorIds: string[],
+) {
+  const uniqueIncubatorIds = Array.from(new Set(incubatorIds.filter(Boolean)));
+  await trx
+    .deleteFrom("startups_incubators")
+    .where("startup_id", "=", startupUuid)
+    .execute();
+  if (uniqueIncubatorIds.length) {
+    await trx
+      .insertInto("startups_incubators")
+      .values(
+        uniqueIncubatorIds.map((incubator_id) => ({
+          startup_id: startupUuid,
+          incubator_id,
+        })),
+      )
+      .execute();
+  }
+}
+
+/**
+ * Derive the legacy "primary" incubator kept on startups.incubator_id for
+ * unversioned API consumers. Keeping the previous one when it is still selected
+ * avoids the exposed value flip-flopping on every unrelated edit.
+ */
+function derivePrimaryIncubatorId(
+  incubatorIds: string[],
+  previousIncubatorId?: string | null,
+) {
+  return previousIncubatorId && incubatorIds.includes(previousIncubatorId)
+    ? previousIncubatorId
+    : incubatorIds[0];
+}
+
 export async function createStartup({
   formData: {
-    startup,
+    startup: unsafeStartup,
     startupSponsors,
     startupEvents,
     startupPhases,
@@ -57,14 +104,23 @@ export async function createStartup({
     throw new AuthorizationError();
   }
 
+  // The form schema is the only place holding the invariants (at least one
+  // incubator, contact normalization); it has to be enforced server-side too.
+  const startup = startupInfoUpdateSchema.shape.startup.parse(unsafeStartup);
+
   try {
     return await db.transaction().execute(async (trx) => {
+      // incubator_ids feeds the startups_incubators join table, not the
+      // startups row, which only carries the derived primary incubator.
+      const { incubator_ids, ...startupData } = startup;
+      const incubator_id = derivePrimaryIncubatorId(incubator_ids);
       // Insert startup data
       const res = await trx
         .insertInto("startups")
         .values({
           ghid: slugify(startup.name),
-          ...startup,
+          ...startupData,
+          incubator_id,
           techno: startup.techno ? JSON.stringify(startup.techno) : undefined,
           usertypes: startup.usertypes
             ? JSON.stringify(startup.usertypes)
@@ -81,6 +137,8 @@ export async function createStartup({
       }
 
       const startupUuid = res.uuid;
+
+      await setStartupIncubators(trx, startupUuid, incubator_ids);
 
       // Create new sponsors
       for (const newSponsor of newSponsors) {
@@ -183,7 +241,7 @@ export async function createStartup({
 
 export async function updateStartup({
   formData: {
-    startup,
+    startup: unsafeStartup,
     startupSponsors,
     startupPhases,
     startupEvents,
@@ -207,6 +265,11 @@ export async function updateStartup({
       `You don't have the right to access this function`,
     );
   }
+
+  // The form schema is the only place holding the invariants (at least one
+  // incubator, contact normalization); it has to be enforced server-side too.
+  const startup = startupInfoUpdateSchema.shape.startup.parse(unsafeStartup);
+
   const previousStartupData = await db
     .selectFrom("startups")
     .selectAll()
@@ -244,13 +307,22 @@ export async function updateStartup({
         .selectAll()
         .execute(),
     );
+  const previousIncubatorIds = await getStartupIncubatorIds(startupUuid);
 
   return await db.transaction().execute(async (trx) => {
+    // incubator_ids feeds the startups_incubators join table, not the startups
+    // row, which only carries the derived primary incubator.
+    const { incubator_ids, ...startupData } = startup;
+    const incubator_id = derivePrimaryIncubatorId(
+      incubator_ids,
+      previousStartupData.incubator_id,
+    );
     // update startup data
     const res = await trx
       .updateTable("startups")
       .set({
-        ...startup,
+        ...startupData,
+        incubator_id,
         techno: startup.techno ? JSON.stringify(startup.techno) : undefined,
         usertypes: startup.usertypes
           ? JSON.stringify(startup.usertypes)
@@ -262,6 +334,8 @@ export async function updateStartup({
       .where("uuid", "=", startupUuid)
       .returning(["uuid", "ghid"])
       .executeTakeFirstOrThrow();
+
+    await setStartupIncubators(trx, startupUuid, incubator_ids);
 
     // create new sponsors
     for (const newSponsor of newSponsors) {
@@ -382,7 +456,7 @@ export async function updateStartup({
           startup: {
             ...previousStartupData,
             pitch: previousStartupData.pitch || "",
-            incubator_id: previousStartupData.incubator_id || "",
+            incubator_ids: previousIncubatorIds,
             contact: previousStartupData.contact || "",
             description: previousStartupData.description || "",
             dsfr_status: previousStartupData.dsfr_status || "",

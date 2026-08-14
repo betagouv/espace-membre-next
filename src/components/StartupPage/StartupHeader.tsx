@@ -13,12 +13,12 @@ const serialize = createSerializer({
 
 export function StartupHeader({
   startupInfos,
-  incubator,
+  incubators,
   sponsors,
   currentPhase,
 }: Pick<
   StartupPageProps,
-  "startupInfos" | "changes" | "incubator" | "sponsors"
+  "startupInfos" | "changes" | "incubators" | "sponsors"
 > & { currentPhase: StartupPhase | null }) {
   return (
     <>
@@ -48,15 +48,16 @@ export function StartupHeader({
         )}
       </div>
       <div className={fr.cx("fr-col-12")}>
-        {incubator && (
+        {incubators.map((displayedIncubator) => (
           <Tag
+            key={displayedIncubator.uuid}
             iconId="fr-icon-building-line"
             className={fr.cx("fr-mr-1w", "fr-mb-1w")}
-            linkProps={{ href: `/incubators/${incubator.uuid}` }}
+            linkProps={{ href: `/incubators/${displayedIncubator.uuid}` }}
           >
-            {incubator.title}
+            {displayedIncubator.title}
           </Tag>
-        )}
+        ))}
         {(sponsors?.length &&
           sponsors.map((sponsor) => (
             <Tag

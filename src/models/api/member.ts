@@ -73,9 +73,13 @@ export const memberDetailMissionSchema = z.object({
   startups: z.array(protectedMissionStartupSchema).optional(),
 });
 
-export const memberDetailTeamSchema = teamSchema.extend({
-  incubator: incubatorApiResponseSchema.nullable(),
-});
+// incubator_id est omis : une équipe n'a qu'un incubateur, l'objet incubator
+// le porte déjà et son identifiant s'en déduit.
+export const memberDetailTeamSchema = teamSchema
+  .omit({ incubator_id: true })
+  .extend({
+    incubator: incubatorApiResponseSchema.nullable(),
+  });
 
 export const memberDetailStartupSchema = z.object({
   uuid: z.string(),
@@ -84,8 +88,11 @@ export const memberDetailStartupSchema = z.object({
   start: z.coerce.date().nullable(),
   end: z.coerce.date().nullable(),
   mailing_list: z.string().nullable(),
+  // incubator_id / incubator ne portent que l'incubateur principal. Un produit
+  // co-incube expose la liste complete dans incubators.
   incubator_id: z.string().nullable(),
   incubator: incubatorApiResponseSchema.nullable(),
+  incubators: z.array(incubatorApiResponseSchema),
   isCurrent: z.boolean(),
 });
 

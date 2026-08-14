@@ -189,8 +189,22 @@ export function withMemberMissions(
         ),
       ])
       .whereRef("missions.user_id", "=", "users.uuid")
+      // EXISTS et non une jointure : l'agregat de startups ci-dessus serait
+      // duplique. Passe par la table de liaison pour couvrir la co-incubation.
       .$if(!!scope.incubatorId, (qb) =>
-        qb.where("startups.incubator_id", "=", scope.incubatorId!),
+        qb.where((eb) =>
+          eb.exists(
+            eb
+              .selectFrom("startups_incubators")
+              .select("startups_incubators.startup_id")
+              .whereRef("startups_incubators.startup_id", "=", "startups.uuid")
+              .where(
+                "startups_incubators.incubator_id",
+                "=",
+                scope.incubatorId!,
+              ),
+          ),
+        ),
       )
       .$if(!!scope.startupId, (qb) =>
         qb.where("startups.uuid", "=", scope.startupId!),
@@ -299,6 +313,14 @@ export async function getUserStartups(uuid: string, db: Kysely<DB> = database) {
       "startups.mailing_list",
       "missions.end",
       "startups.incubator_id",
+      // Correlated subquery aggregating to a uuid[]: a join would multiply the
+      // rows of a co-incubated startup, and a json aggregate would break the
+      // DISTINCT below (json has no equality operator in Postgres).
+      sql<string[]>`(
+        SELECT COALESCE(ARRAY_AGG(startups_incubators.incubator_id), '{}')
+        FROM startups_incubators
+        WHERE startups_incubators.startup_id = startups.uuid
+      )`.as("incubator_ids"),
     ])
     .distinct()
     .where("users.uuid", "=", uuid)

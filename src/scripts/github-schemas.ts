@@ -30,6 +30,7 @@ export const startup = z.object({
   mission: z.string(),
   sponsors: z.array(z.string()).optional(),
   incubator: z.string(),
+  incubators: z.array(z.string()).optional(),
   contact: z.string(),
   link: z.string().optional().nullable(),
   repository: z.string().optional().nullable(),

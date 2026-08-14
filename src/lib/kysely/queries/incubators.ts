@@ -18,15 +18,20 @@ export async function getAllIncubatorsOptions() {
   }));
 }
 
-/** Return incubator startups */
+/** Return incubator startups (including startups it co-incubates) */
 export function getIncubatorStartups(uuid: string) {
   return db
     .selectFrom("startups")
+    .innerJoin(
+      "startups_incubators",
+      "startups_incubators.startup_id",
+      "startups.uuid",
+    )
     .select(({ selectFrom }) => [
-      "uuid",
-      "name",
-      "pitch",
-      "ghid",
+      "startups.uuid",
+      "startups.name",
+      "startups.pitch",
+      "startups.ghid",
       selectFrom("phases")
         .select("name")
         .whereRef("phases.startup_id", "=", "startups.uuid")
@@ -46,9 +51,59 @@ export function getIncubatorStartups(uuid: string) {
         .limit(1)
         .as("phase"),
     ])
-    .where("incubator_id", "=", uuid)
-    .orderBy("name")
+    .where("startups_incubators.incubator_id", "=", uuid)
+    .orderBy("startups.name")
     .execute();
+}
+
+/** Return all incubators (full model) linked to a startup via the N:N join table */
+export function getStartupIncubators(startupId: string) {
+  return selectIncubator()
+    .innerJoin(
+      "startups_incubators",
+      "startups_incubators.incubator_id",
+      "incubators.uuid",
+    )
+    .where("startups_incubators.startup_id", "=", startupId)
+    .orderBy("incubators.title")
+    .execute();
+}
+
+/**
+ * Return every (startup_id, incubator_id) pair from the N:N join table.
+ * Ordered by incubator title so every caller builds a stable list: the rendered
+ * order and the API payload must not shift from one request to the next.
+ */
+export function getAllStartupsIncubators() {
+  return db
+    .selectFrom("startups_incubators")
+    .innerJoin(
+      "incubators",
+      "incubators.uuid",
+      "startups_incubators.incubator_id",
+    )
+    .select([
+      "startups_incubators.startup_id",
+      "startups_incubators.incubator_id",
+    ])
+    .orderBy("incubators.title")
+    .execute();
+}
+
+/** Return the incubator uuids linked to a startup via the N:N join table */
+export async function getStartupIncubatorIds(startupId: string) {
+  const rows = await db
+    .selectFrom("startups_incubators")
+    .innerJoin(
+      "incubators",
+      "incubators.uuid",
+      "startups_incubators.incubator_id",
+    )
+    .select("startups_incubators.incubator_id")
+    .where("startups_incubators.startup_id", "=", startupId)
+    .orderBy("incubators.title")
+    .execute();
+  return rows.map((row) => row.incubator_id);
 }
 
 function selectIncubator() {
@@ -103,6 +158,11 @@ export async function getAllIncubatorsActiveMembers() {
             "missions.uuid",
           )
           .leftJoin("startups", "startups.uuid", "missions_startups.startup_id")
+          .leftJoin(
+            "startups_incubators",
+            "startups_incubators.startup_id",
+            "startups.uuid",
+          )
           // only include active users
           .where((eb) =>
             eb.or([
@@ -110,7 +170,7 @@ export async function getAllIncubatorsActiveMembers() {
               eb("missions.end", ">=", new Date()),
             ]),
           )
-          .whereRef("startups.incubator_id", "=", "incubators.uuid")
+          .whereRef("startups_incubators.incubator_id", "=", "incubators.uuid")
           .union(() =>
             // team members affiliated to incubator
             eb
@@ -142,10 +202,17 @@ export function getIncubatorMembers(incubatorUuid: string) {
         "missions_startups.mission_id",
         "missions.uuid",
       )
-      .innerJoin("startups", "startups.uuid", "missions_startups.startup_id")
+      // Par la table de liaison : une personne en mission sur un produit
+      // co-incube est rattachee a CHACUN de ses incubateurs. Le tout est
+      // consomme dans un exists(), la duplication est donc sans effet.
+      .innerJoin(
+        "startups_incubators",
+        "startups_incubators.startup_id",
+        "missions_startups.startup_id",
+      )
       .select("missions.uuid")
       .whereRef("missions.user_id", "=", "users.uuid")
-      .where("startups.incubator_id", "=", incubatorUuid);
+      .where("startups_incubators.incubator_id", "=", incubatorUuid);
 
   const attachedByTeam = (eb: ExpressionBuilder<DB, "users">) =>
     eb

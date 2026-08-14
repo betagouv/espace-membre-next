@@ -147,6 +147,13 @@ export const startupSchema = z.object({
     .min(1)
     .describe("Objectif du produit"),
   sponsors: z.array(z.string()).optional(),
+  // FIXME: la notion d'incubateur "principal" n'a pas de sens métier (rien
+  // n'établit qu'un incubateur prime sur un autre pour une startup co-incubée).
+  // Elle n'existe que pour ne pas casser les consommateurs de l'API protégée,
+  // qui n'est pas versionnée. La source de vérité est incubator_ids (table
+  // startups_incubators) ; incubator_id en est une projection dérivée côté
+  // serveur et contrainte par la FK startups_principal_incubator_linked.
+  // À supprimer dès que les dépendants se seront adaptés.
   incubator_id: z
     .string({
       errorMap: (issue, ctx) => ({
@@ -154,7 +161,8 @@ export const startupSchema = z.object({
       }),
     })
     .min(1)
-    .describe("Incubateur ou fabrique numérique"),
+    .describe("Incubateur principal ou fabrique numérique"),
+  incubator_ids: z.array(z.string().uuid()).optional().describe("Incubateurs"),
   contact_dinum: z
     .preprocess(
       (val) => (val === "" ? null : val),

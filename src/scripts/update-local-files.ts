@@ -110,6 +110,21 @@ const getChanges = async (markdownData) => {
       eb.ref("startups.name").as("title"),
       eb.ref("startups.pitch").as("mission"),
       eb.ref("incubators.ghid").as("incubator"),
+      // Correlated subquery on purpose: aggregating over a join here would
+      // multiply the sponsors ARRAY_AGG below.
+      // NULL below one link so extractValidValues drops the key entirely: only
+      // co-incubated startups carry "incubators" in the www frontmatter, the
+      // mono-incubator ones keep "incubator" alone and stay untouched.
+      sql<Array<string> | null>`(
+        SELECT CASE WHEN COUNT(*) > 1
+          THEN ARRAY_AGG(linked_incubators.ghid ORDER BY linked_incubators.ghid)
+          ELSE NULL
+        END
+        FROM startups_incubators
+        JOIN incubators AS linked_incubators
+          ON linked_incubators.uuid = startups_incubators.incubator_id
+        WHERE startups_incubators.startup_id = startups.uuid
+      )`.as("incubators"),
       eb.ref("dinum_contact.username").as("contact_dinum"),
       eb.ref("incub_contact.username").as("contact_incubator"),
       sql<

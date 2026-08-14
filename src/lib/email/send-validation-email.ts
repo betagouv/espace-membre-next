@@ -29,9 +29,9 @@ export async function sendNewMemberValidationEmail(
     },
   );
 
-  const startupIncubatorIds = userStartups
-    .map((startup) => startup.incubator_id)
-    .filter((incubator): incubator is string => !!incubator);
+  const startupIncubatorIds = userStartups.flatMap(
+    (startup) => startup.incubator_ids ?? [],
+  );
 
   const incubatorIds = Array.from(
     new Set(
@@ -46,6 +46,11 @@ export async function sendNewMemberValidationEmail(
       `NewMember ${validatedData.userId} is not linked to any incubators`,
     );
   }
+  // A co-incubated startup notifies several incubators. One of them without an
+  // animation team must not prevent the others from being notified, so failures
+  // are collected and only raised when nothing could be sent at all.
+  const incubatorsWithoutTeam: string[] = [];
+  let sentCount = 0;
   for (const incubatorId of incubatorIds) {
     const incubator = await getIncubator(incubatorId);
     if (!incubator) {
@@ -56,10 +61,8 @@ export async function sendNewMemberValidationEmail(
     }
     const membersForTeam = await getIncubatorTeamMembers(incubatorId);
     if (!membersForTeam.length) {
-      throw new BusinessError(
-        "validationMemberListIsEmpty",
-        `There is no member in animation teams for incubator ${incubatorId}`,
-      );
+      incubatorsWithoutTeam.push(incubatorId);
+      continue;
     }
     const memberEmails = Array.from(
       new Set(
@@ -79,6 +82,14 @@ export async function sendNewMemberValidationEmail(
         },
       });
     }, undefined, "validation email");
+    sentCount++;
     console.log(`Validation email sent for new member ${newMember.fullname}`);
+  }
+
+  if (!sentCount) {
+    throw new BusinessError(
+      "validationMemberListIsEmpty",
+      `There is no member in animation teams for incubators ${incubatorsWithoutTeam.join(", ")}`,
+    );
   }
 }

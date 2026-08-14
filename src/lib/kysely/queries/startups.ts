@@ -2,20 +2,32 @@ import { ExpressionBuilder } from "kysely";
 
 import { DB } from "@/@types/db";
 import { db, jsonArrayFrom } from "@/lib/kysely";
-import { getAllIncubators } from "./incubators";
+import { getAllIncubators, getAllStartupsIncubators } from "./incubators";
 import { withMemberMissions } from "./users";
 
 export const getLatests = () =>
   db
     .selectFrom("startups")
-    .innerJoin("incubators", "incubators.uuid", "startups.incubator_id")
-    .select([
+    // Aggregated instead of joined: a join would make a co-incubated startup
+    // eat several of the 10 slots, and the previous innerJoin on the nullable
+    // incubator_id silently hid startups without any incubator.
+    .select((eb) => [
       "startups.created_at",
       "startups.uuid",
       "startups.name",
       "startups.pitch",
-      "incubators.title as incubator",
-      "incubators.uuid as incubatorUuid",
+      jsonArrayFrom(
+        eb
+          .selectFrom("startups_incubators")
+          .innerJoin(
+            "incubators",
+            "incubators.uuid",
+            "startups_incubators.incubator_id",
+          )
+          .select(["incubators.uuid", "incubators.title"])
+          .whereRef("startups_incubators.startup_id", "=", "startups.uuid")
+          .orderBy("incubators.title"),
+      ).as("incubators"),
     ])
     .orderBy("created_at", "desc")
     .limit(10)
@@ -73,15 +85,27 @@ function withStartupPhases(eb: ExpressionBuilder<DB, "startups">) {
 // incubateur. Le calcul de la phase courante est laisse a l'appelant (dernier
 // element chronologique) pour rester coherent avec l'ordre du tableau phases.
 export function getStartupsWithPhases(incubatorUuid?: string) {
-  return db
-    .selectFrom("startups")
-    .selectAll("startups")
-    .select((eb) => [withStartupPhases(eb)])
-    .$if(!!incubatorUuid, (qb) =>
-      qb.where("startups.incubator_id", "=", incubatorUuid!),
-    )
-    .orderBy("startups.name", "asc")
-    .execute();
+  return (
+    db
+      .selectFrom("startups")
+      .selectAll("startups")
+      .select((eb) => [withStartupPhases(eb)])
+      // EXISTS et non une jointure : un produit co-incube doit remonter pour
+      // chacun de ses incubateurs, sans etre duplique dans la liste.
+      .$if(!!incubatorUuid, (qb) =>
+        qb.where((eb) =>
+          eb.exists(
+            eb
+              .selectFrom("startups_incubators")
+              .select("startups_incubators.startup_id")
+              .whereRef("startups_incubators.startup_id", "=", "startups.uuid")
+              .where("startups_incubators.incubator_id", "=", incubatorUuid!),
+          ),
+        ),
+      )
+      .orderBy("startups.name", "asc")
+      .execute()
+  );
 }
 
 // Une startup et ses phases, resolue par ghid. Undefined si inconnue.
@@ -113,6 +137,14 @@ const selectLastStartupPhase = (selectFrom, startupId) =>
 
 export const getAllStartupsWithIncubatorAndPhase = async () => {
   const incubators = await getAllIncubators();
+  // Resolved in JS rather than joined: a join on the N:N table would duplicate
+  // co-incubated startups in the list.
+  const incubatorIdsByStartup = new Map<string, string[]>();
+  for (const link of await getAllStartupsIncubators()) {
+    const ids = incubatorIdsByStartup.get(link.startup_id) ?? [];
+    ids.push(link.incubator_id);
+    incubatorIdsByStartup.set(link.startup_id, ids);
+  }
   // todo: better typing
   const startupsData = await db
     .selectFrom("startups")
@@ -133,7 +165,6 @@ export const getAllStartupsWithIncubatorAndPhase = async () => {
       "startups.pitch",
       "startups.thematiques",
       "startups.techno",
-      "startups.incubator_id",
       "startups.usertypes",
       "startups.contact_dinum",
       "startups.contact_incubator",
@@ -158,7 +189,10 @@ export const getAllStartupsWithIncubatorAndPhase = async () => {
 
   const startups = startupsData.map((s) => {
     const row = s as StartupsDataRow;
-    const incubator = incubators.find((i) => i.uuid === s.incubator_id);
+    const linkedIncubators = (incubatorIdsByStartup.get(s.uuid) ?? [])
+      .map((id) => incubators.find((i) => i.uuid === id))
+      .filter((i) => i !== undefined)
+      .map((i) => ({ uuid: i.uuid, title: i.title }));
     return {
       ...s,
       phase: row.phase,
@@ -169,8 +203,9 @@ export const getAllStartupsWithIncubatorAndPhase = async () => {
       contact_incubator: s.contact_incubator,
       contact_dinum_fullname: row.contact_dinum_fullname,
       contact_incubator_fullname: row.contact_incubator_fullname,
-      incubatorName: incubator && incubator.title,
-      incubatorId: s.incubator_id,
+      // La liste suffit à l'affichage comme au filtre : ni les identifiants ni
+      // les titres n'ont besoin d'être exposés à côté.
+      incubators: linkedIncubators,
     };
   });
   return startups;

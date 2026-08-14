@@ -55,9 +55,19 @@ const CardProduct = ({
       }),
     }}
     start={
-      <Badge noIcon severity="error" as="span">
-        {product.incubator}
-      </Badge>
+      <>
+        {product.incubators.map((incubator) => (
+          <Badge
+            key={incubator.uuid}
+            noIcon
+            severity="error"
+            as="span"
+            className={fr.cx("fr-mr-1v")}
+          >
+            {incubator.title}
+          </Badge>
+        ))}
+      </>
     }
   />
 );

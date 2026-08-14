@@ -434,6 +434,12 @@ export interface StartupsFiles {
   uuid: Generated<string>;
 }
 
+export interface StartupsIncubators {
+  incubator_id: string;
+  startup_id: string;
+  uuid: Generated<string>;
+}
+
 export interface StartupsOrganizations {
   organization_id: string;
   startup_id: string;
@@ -542,6 +548,7 @@ export interface DB {
   startup_events: StartupEvents;
   startups: Startups;
   startups_files: StartupsFiles;
+  startups_incubators: StartupsIncubators;
   startups_organizations: StartupsOrganizations;
   tasks: Tasks;
   teams: Teams;

@@ -112,24 +112,29 @@ const getStartupRow = ({
       )) ||
         null}
     </>,
-    startup.incubatorId && (
-      <button
-        type="button"
-        style={{
-          background: "transparent",
-          border: 0,
-          padding: 0,
-          cursor: "pointer",
-        }}
-        className={fr.cx("fr-link", "fr-link")}
-        title="Chercher toutes les startups de cet incubateur"
-        onClick={() => {
-          onIncubatorClick(startup.incubatorId || "");
-        }}
-      >
-        {startup.incubatorName}
-      </button>
-    ),
+    <>
+      {startup.incubators.map((incubator, idx) => (
+        <span key={incubator.uuid}>
+          <button
+            type="button"
+            style={{
+              background: "transparent",
+              border: 0,
+              padding: 0,
+              cursor: "pointer",
+            }}
+            className={fr.cx("fr-link", "fr-link")}
+            title="Chercher toutes les startups de cet incubateur"
+            onClick={() => {
+              onIncubatorClick(incubator.uuid);
+            }}
+          >
+            {incubator.title}
+          </button>
+          {idx < startup.incubators.length - 1 && ", "}
+        </span>
+      ))}
+    </>,
   ];
 };
 
@@ -154,7 +159,9 @@ export const StartupList = ({ startups, incubators }: StartupListProps) => {
           } else if (filter.type === "usertype" && filter.value) {
             return (result.usertypes || []).includes(filter.value.toString());
           } else if (filter.type === "incubator" && filter.value) {
-            return result.incubatorId === filter.value.toString();
+            return result.incubators.some(
+              (incubator) => incubator.uuid === filter.value!.toString(),
+            );
           } else if (filter.type === "techno" && filter.value) {
             return (result.techno || []).includes(filter.value.toString());
           } else if (filter.type === "contact" && filter.value) {

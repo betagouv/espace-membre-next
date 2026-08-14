@@ -33,12 +33,14 @@ export interface StartupPageProps {
   members: memberBaseInfoSchemaType[];
   phases: phaseSchemaType[];
   changes: StartupChangeSchemaType[];
-  incubator: {
+  // Every incubator carrying the startup: a single one, or several when it is
+  // co-incubated. Empty when the startup has no incubator yet.
+  incubators: {
     title: string;
     uuid: string;
     ghid: string | null;
     short_description: string | null;
-  };
+  }[];
   sponsors: {
     uuid: string;
     name: string;
@@ -61,7 +63,7 @@ export default function StartupPage({
   allMembers,
   phases,
   changes,
-  incubator,
+  incubators,
   sponsors,
   files,
   events,
@@ -132,7 +134,7 @@ export default function StartupPage({
       <StartupHeader
         startupInfos={startupInfos}
         changes={changes}
-        incubator={incubator}
+        incubators={incubators}
         sponsors={sponsors}
         currentPhase={currentPhase}
       />

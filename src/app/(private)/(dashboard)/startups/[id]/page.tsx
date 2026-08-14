@@ -72,16 +72,22 @@ export default async function Page(props: Props) {
       .where("startup_id", "=", dbSe.uuid)
       .execute()
   ).map((phase) => phaseToModel(phase));
-  const incubator = await db
+  const incubators = await db
     .selectFrom("incubators")
+    .innerJoin(
+      "startups_incubators",
+      "startups_incubators.incubator_id",
+      "incubators.uuid",
+    )
     .select([
       "incubators.title",
       "incubators.short_description",
       "incubators.ghid",
       "incubators.uuid",
     ])
-    .where("uuid", "=", dbSe.incubator_id)
-    .executeTakeFirstOrThrow();
+    .where("startups_incubators.startup_id", "=", dbSe.uuid)
+    .orderBy("incubators.title")
+    .execute();
   const sponsors = await db
     .selectFrom("organizations")
     .leftJoin(
@@ -131,7 +137,7 @@ export default async function Page(props: Props) {
         allMembers={allMembers}
         changes={changes.map((change) => startupChangeToModel(change))}
         startupInfos={startup}
-        incubator={incubator}
+        incubators={incubators}
         sponsors={sponsors}
         members={startupMembers}
         phases={phases}

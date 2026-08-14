@@ -6,6 +6,7 @@ import { getAllStartups } from "@/lib/kysely/queries";
 import {
   getAllIncubators,
   getAllIncubatorsActiveMembers,
+  getAllStartupsIncubators,
 } from "@/lib/kysely/queries/incubators";
 import { incubatorToModel, startupToModel } from "@/models/mapper";
 import { convertSearchParamsToRecord } from "@/lib/url";
@@ -64,12 +65,21 @@ export const GET = async (req: NextRequest) => {
 
     if (withStartups) {
       const startups = await getAllStartups();
+      const links = await getAllStartupsIncubators();
+      const startupIdsByIncubator = new Map<string, Set<string>>();
+      for (const link of links) {
+        const ids = startupIdsByIncubator.get(link.incubator_id) ?? new Set();
+        ids.add(link.startup_id);
+        startupIdsByIncubator.set(link.incubator_id, ids);
+      }
       type IncubatorWithStartups = (typeof incubators)[0] & {
         startups: ReturnType<typeof startupToModel>[];
       };
       for (const incubator of incubators) {
-        const incubatorStartups = startups.filter(
-          (startup) => startup.incubator_id === incubator.uuid,
+        const linkedStartupIds =
+          startupIdsByIncubator.get(incubator.uuid) ?? new Set();
+        const incubatorStartups = startups.filter((startup) =>
+          linkedStartupIds.has(startup.uuid),
         );
         (incubator as IncubatorWithStartups).startups =
           incubatorStartups.map(startupToModel);
