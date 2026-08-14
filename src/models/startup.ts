@@ -303,7 +303,6 @@ export const userStartupSchema = z.object({
   end: missionSchemaShape.end,
   start: missionSchemaShape.start,
   incubator_id: startupSchema.shape.incubator_id,
-  incubator_ids: z.array(z.string().uuid()),
 });
 
 export type userStartupSchemaType = z.infer<typeof userStartupSchema>;

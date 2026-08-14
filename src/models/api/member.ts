@@ -73,9 +73,13 @@ export const memberDetailMissionSchema = z.object({
   startups: z.array(protectedMissionStartupSchema).optional(),
 });
 
-export const memberDetailTeamSchema = teamSchema.extend({
-  incubator: incubatorApiResponseSchema.nullable(),
-});
+// incubator_id est omis : une équipe n'a qu'un incubateur, l'objet incubator
+// le porte déjà et son identifiant s'en déduit.
+export const memberDetailTeamSchema = teamSchema
+  .omit({ incubator_id: true })
+  .extend({
+    incubator: incubatorApiResponseSchema.nullable(),
+  });
 
 export const memberDetailStartupSchema = z.object({
   uuid: z.string(),

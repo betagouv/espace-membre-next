@@ -165,7 +165,6 @@ export const getAllStartupsWithIncubatorAndPhase = async () => {
       "startups.pitch",
       "startups.thematiques",
       "startups.techno",
-      "startups.incubator_id",
       "startups.usertypes",
       "startups.contact_dinum",
       "startups.contact_incubator",
@@ -204,9 +203,8 @@ export const getAllStartupsWithIncubatorAndPhase = async () => {
       contact_incubator: s.contact_incubator,
       contact_dinum_fullname: row.contact_dinum_fullname,
       contact_incubator_fullname: row.contact_incubator_fullname,
-      // incubators suffit : le titre, les identifiants et l'incubateur
-      // principal (toujours dans startups.incubator_id, remonté par le spread)
-      // s'en déduisent.
+      // La liste suffit à l'affichage comme au filtre : ni les identifiants ni
+      // les titres n'ont besoin d'être exposés à côté.
       incubators: linkedIncubators,
     };
   });

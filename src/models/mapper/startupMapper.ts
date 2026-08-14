@@ -35,7 +35,6 @@ export function userStartupToModel(
   return {
     ghid: startup.ghid!,
     incubator_id: startup.incubator_id!,
-    incubator_ids: startup.incubator_ids ?? [],
     end: startup.end,
     start: startup.start!,
     name: startup.name!,
