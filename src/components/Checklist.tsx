@@ -6,6 +6,7 @@ import MarkdownIt from "markdown-it";
 import { safeUpdateUserEvent } from "@/app/api/member/actions/updateUserEvent";
 import { Domaine } from "@/models/member";
 import { checklistSchemaType } from "@/models/checklist";
+import { isVisibleForDomaine } from "@/lib/checklists/filterByDomaine";
 import Accordion from "@codegouvfr/react-dsfr/Accordion";
 
 const mdParser = new MarkdownIt({
@@ -33,10 +34,6 @@ export default function Checklist({
   userUuid: string;
   readOnly: boolean;
 }) {
-  const isVisible = (domaines?: string[]) => {
-    if (!domaines) return true;
-    return domaines.includes(domaine);
-  };
   const onChange = async (e, field_id) => {
     const value = e.target.checked;
     if (userEventIds.includes(field_id) && !value) {
@@ -59,9 +56,13 @@ export default function Checklist({
   return (
     <div>
       {sections.map((section, i) => {
+        if (!isVisibleForDomaine(section.domaines, domaine)) return null;
+        const visibleItems = section.items.filter((item) =>
+          isVisibleForDomaine(item.domaines, domaine),
+        );
+        if (visibleItems.length === 0) return null;
         const expand =
-          i === 0 || section.items.some((i) => userEventIds.includes(i.id));
-        if (!isVisible(section.domaines)) return null;
+          i === 0 || visibleItems.some((i) => userEventIds.includes(i.id));
         return (
           <Accordion
             key={section.title + i}
@@ -69,7 +70,7 @@ export default function Checklist({
             defaultExpanded={expand}
           >
             <Checkbox
-              options={section.items.map((item, index) => ({
+              options={visibleItems.map((item, index) => ({
                 label: (
                   <span
                     dangerouslySetInnerHTML={{
