@@ -30,8 +30,9 @@ export const ChecklistTabPanel = ({
       .map((event) => event.field_id),
   );
   const progress = useMemo(
-    () => computeProgress(userEventIds, checklistObject, offset),
-    [userEventIds, checklistObject, offset],
+    () =>
+      computeProgress(userEventIds, checklistObject, offset, userInfos.domaine),
+    [userEventIds, checklistObject, offset, userInfos.domaine],
   );
   return (
     <>
