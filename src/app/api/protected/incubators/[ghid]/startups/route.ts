@@ -10,8 +10,9 @@ import { incubatorStartupApiResponseSchema } from "@/models/api/startup";
 
 export const GET = async (
   req: NextRequest,
-  { params: { ghid } }: { params: { ghid: string } },
+  segmentData: { params: Promise<{ ghid: string }> },
 ) => {
+  const { ghid } = await segmentData.params;
   const incubator = await getIncubatorByGhid(ghid);
   if (!incubator) {
     return Response.json(

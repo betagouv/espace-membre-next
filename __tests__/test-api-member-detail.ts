@@ -65,14 +65,14 @@ describe("GET /api/protected/members/[username]", () => {
 
   it("renvoie 404 pour un membre inconnu", async () => {
     const res = await GET(makeReq(), {
-      params: { username: "membre-inexistant" },
+      params: Promise.resolve({ username: "membre-inexistant" }),
     });
     expect(res.status).to.equal(404);
   });
 
   it("expose les startups de mission en { uuid, ghid }", async () => {
     const res = await GET(makeReq(), {
-      params: { username: "test-detail-member" },
+      params: Promise.resolve({ username: "test-detail-member" }),
     });
     expect(res.status).to.equal(200);
     const body = await res.json();
@@ -86,7 +86,7 @@ describe("GET /api/protected/members/[username]", () => {
 
   it("isCurrent vaut true pour une mission sans date de fin", async () => {
     const res = await GET(makeReq(), {
-      params: { username: "test-detail-member" },
+      params: Promise.resolve({ username: "test-detail-member" }),
     });
     const body = await res.json();
     const startup = body.startups.find(
@@ -98,7 +98,7 @@ describe("GET /api/protected/members/[username]", () => {
 
   it("expose la fiche detaillee (PII assumee : role, domaine, avatar, isActive)", async () => {
     const res = await GET(makeReq(), {
-      params: { username: "test-detail-member" },
+      params: Promise.resolve({ username: "test-detail-member" }),
     });
     const body = await res.json();
     expect(body).to.have.property("role");

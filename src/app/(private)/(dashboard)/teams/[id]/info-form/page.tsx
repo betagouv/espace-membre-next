@@ -20,11 +20,12 @@ import { authOptions } from "@/lib/authoptions";
 
 
 type Props = {
-  params: { id: string };
+  params: Promise<{ id: string }>;
 };
 
-export async function generateMetadata({ params }: Props): Promise<Metadata> {
+export async function generateMetadata(props: Props): Promise<Metadata> {
   // read route params
+  const params = await props.params;
   const id = params.id;
   const team = await getTeam(id);
 
@@ -41,7 +42,7 @@ export default async function Page(props: Props) {
   }
 
   //todo
-  const uuid = props.params.id;
+  const { id: uuid } = await props.params;
   const dbTeam = await getTeam(uuid);
 
   if (!dbTeam) {

@@ -6,8 +6,9 @@ import { incubatorToModel } from "@/models/mapper";
 
 export const GET = async (
   _: Request,
-  { params: { ghid } }: { params: { ghid: string } },
+  segmentData: { params: Promise<{ ghid: string }> },
 ) => {
+  const { ghid } = await segmentData.params;
   const dbIncubator = await getIncubatorByGhid(ghid);
   if (!dbIncubator) {
     return Response.json(

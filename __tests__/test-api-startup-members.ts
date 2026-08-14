@@ -43,13 +43,13 @@ describe("GET /api/protected/startups/[ghid]/members", () => {
 
   it("renvoie 404 pour une startup inconnue", async () => {
     const res = await GET(makeReq(), {
-      params: { ghid: "startup-inexistante" },
+      params: Promise.resolve({ ghid: "startup-inexistante" }),
     });
     expect(res.status).to.equal(404);
   });
 
   it("renvoie les membres de la startup avec missions[].startups en { uuid, ghid }", async () => {
-    const res = await GET(makeReq(), { params: { ghid: "test-sm-startup" } });
+    const res = await GET(makeReq(), { params: Promise.resolve({ ghid: "test-sm-startup" }) });
     expect(res.status).to.equal(200);
     const body = await res.json();
 
@@ -65,7 +65,7 @@ describe("GET /api/protected/startups/[ghid]/members", () => {
   });
 
   it("n'expose pas les champs exclus (bio, domaine, role, etc.)", async () => {
-    const res = await GET(makeReq(), { params: { ghid: "test-sm-startup" } });
+    const res = await GET(makeReq(), { params: Promise.resolve({ ghid: "test-sm-startup" }) });
     const body = await res.json();
     const member = body[0];
 

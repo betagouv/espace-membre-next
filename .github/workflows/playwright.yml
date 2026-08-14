@@ -22,7 +22,7 @@ jobs:
             - name: Start local environment
               run: |
                   cp .env.test .env
-                  docker compose up -d
+                  docker compose up -d db maildev
                   sleep 15
                   yarn migrate
                   yarn seed

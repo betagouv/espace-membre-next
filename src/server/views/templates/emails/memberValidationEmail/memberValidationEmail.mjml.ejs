@@ -1,0 +1,27 @@
+<mj-text>
+  <h1><%= title %></h1>
+  <p>Bonjour,</p>
+  <p>
+    Tu reçois cet email car tu fais partie d'une équipe transverse de
+    l'incubateur : <%= incubator.title %>
+  </p>
+  <p>
+    Une nouvelle fiche membre a été créée avec une mission qui concerne
+    ton incubateur. Merci de valider cette fiche si tu es au courant de
+    l'arrivée de cette personne.
+  </p>
+  <p>
+    <ul>
+      <li>Prénom Nom : <%= userInfos.fullname %></li>
+      <li>Domaine : <%= userInfos.domaine %></li>
+      <li>Produits : <%= startups.map((s) => s.name).join(", ") %></li>
+    </ul>
+  </p>
+</mj-text>
+<mj-text>
+  <p>
+    Cette personne est-elle bien un membre de ton incubateur ? Si oui,
+    clique sur le bouton ci-dessous.
+  </p>
+</mj-text>
+<mj-button href="<%= validationLink %>">Valider le membre</mj-button>

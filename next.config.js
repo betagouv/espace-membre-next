@@ -51,16 +51,8 @@ const nextConfig = {
       },
     ];
   },
+  serverExternalPackages: ["knex", "pg", "pg-native", "sib-api-v3-sdk", "mjml"],
   experimental: {
-    instrumentationHook: true,
-    serverComponentsExternalPackages: [
-      "knex",
-      "pg",
-      "pg-native",
-      "sib-api-v3-sdk",
-      "mjml",
-      "@luma-team/mjml-react",
-    ],
     serverActions: {
       bodySizeLimit: "10mb",
     },
@@ -78,8 +70,7 @@ const nextConfig = {
       destination: "/api/member/:username/image",
     },
   ],
-  // @todo upgrade to nextjs 15 to use
-  // expireTime: 0,
+  expireTime: 0,
   webpack: (config, { isServer }) => {
     if (!isServer) {
       // don't resolve 'fs' module on the client to prevent this error on build --> Error: Can't resolve 'fs'
