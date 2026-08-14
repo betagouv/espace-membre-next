@@ -10,11 +10,10 @@ import { getAvatarUrl } from "@/lib/s3";
 import { memberChangeToModel, userInfosToModel } from "@/models/mapper";
 import { authOptions } from "@/lib/authoptions";
 
-export const generateMetadata = async ({
-  params: { id },
-}: {
-  params: { id: string };
+export const generateMetadata = async (props: {
+  params: Promise<{ id: string }>;
 }) => {
+  const { id } = await props.params;
   const dbData = await getUserInfos({ username: id });
 
   return {
@@ -22,11 +21,10 @@ export const generateMetadata = async ({
   };
 };
 
-export default async function Page({
-  params: { id },
-}: {
-  params: { id: string };
+export default async function Page(segmentData: {
+  params: Promise<{ id: string }>;
 }) {
+  const { id } = await segmentData.params;
   const session = await getServerSession(authOptions);
 
   if (!session) {

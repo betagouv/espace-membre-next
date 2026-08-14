@@ -13,11 +13,12 @@ import { authOptions } from "@/lib/authoptions";
 
 
 type Props = {
-  params: { id: string };
+  params: Promise<{ id: string }>;
 };
 
-export async function generateMetadata({ params }: Props): Promise<Metadata> {
+export async function generateMetadata(props: Props): Promise<Metadata> {
   // read route params
+  const params = await props.params;
   const id = params.id;
   const incubator = await getIncubator(id);
 
@@ -34,7 +35,7 @@ export default async function Page(props: Props) {
   if (!session) {
     redirect("/login");
   }
-  const uuid = props.params.id;
+  const { id: uuid } = await props.params;
   const dbIncubator = await getIncubator(uuid);
 
   if (!dbIncubator) {

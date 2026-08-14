@@ -15,14 +15,15 @@ import { memberBaseInfoSchema, memberSchema } from "@/models/member";
 import { incubator } from "@/scripts/github-schemas";
 
 type Props = {
-  params: { id: string };
+  params: Promise<{ id: string }>;
 };
 
 export async function generateMetadata(
-  { params }: Props,
+  props: Props,
   parent: ResolvingMetadata,
 ): Promise<Metadata> {
   // read route params
+  const params = await props.params;
   const id = params.id;
 
   const team = await getTeam(id);
@@ -31,7 +32,8 @@ export async function generateMetadata(
   };
 }
 
-export default async function Page({ params }: Props) {
+export default async function Page(props: Props) {
+  const params = await props.params;
   const dbTeam = await getTeam(params.id);
 
   if (!dbTeam) {
