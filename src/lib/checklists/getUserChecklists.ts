@@ -1,9 +1,10 @@
 import { MemberPageProps } from "@/components/MemberPage/MemberPage";
 import { getUserEvents } from "@/lib/kysely/queries/userEvents";
+import { Domaine } from "@/models/member";
 import { computeProgress } from "./computeProgress";
 import { getChecklistObject } from "./getChecklistObject";
 
-export const getUserChecklists = async (uuid: string) => {
+export const getUserChecklists = async (uuid: string, domaine: Domaine) => {
   const userEvents = await getUserEvents(uuid);
   const userEventIds = userEvents.map((u) => u.field_id);
 
@@ -15,6 +16,7 @@ export const getUserChecklists = async (uuid: string) => {
       userEventIds,
       checklistOnboardingObject,
       1,
+      domaine,
     );
     onboarding = {
       progress,
@@ -26,7 +28,12 @@ export const getUserChecklists = async (uuid: string) => {
   let offboarding: MemberPageProps["offboarding"];
   const checklistOffboardingObject = await getChecklistObject("offboarding");
   if (checklistOffboardingObject) {
-    const progress = computeProgress(userEventIds, checklistOffboardingObject);
+    const progress = computeProgress(
+      userEventIds,
+      checklistOffboardingObject,
+      0,
+      domaine,
+    );
     offboarding = {
       progress,
       userEvents,

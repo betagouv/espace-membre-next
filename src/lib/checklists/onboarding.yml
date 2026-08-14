@@ -60,6 +60,12 @@
       title: Participer à un point de rencontre grâce aux [clubs métiers](https://doc.incubateur.net/communaute/decouvrir-beta.gouv.fr/la-communaute/les-rituels/clubs-de-partage-dexperience)
     - id: onboarding-objectifs
       title: Co-construire tes livrables et objectifs de mission avec le responsable de l'équipe produit si tu es prestataire
+    - id: onboarding-embarquement-dev
+      title: Participer à l'embarquement dev
+      # afficher cette entrée uniquement si le membre est dans un de ces domaine
+      # liste des domaines possibles : https://github.com/betagouv/espace-membre-next/blob/741f3378906c95b1d407848b2d28829d181e3fcd/src/models/member.ts#L141
+      domaines:
+        - Développement
 - title: 🧠 Au cours des premiers mois
   items:
     - id: onboarding-rituels-suivi

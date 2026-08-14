@@ -1,6 +1,7 @@
 import * as chai from "chai";
 import { computeProgress } from "./computeProgress";
 import { checklistSchemaType } from "@/models/checklist";
+import { Domaine } from "@/models/member";
 
 const { expect } = chai;
 
@@ -94,5 +95,72 @@ describe("computeProgress", () => {
     const progress = computeProgress(userEventIds, mockChecklist);
     const expectedProgress = (2 / 5) * 100; // 40%, duplicates don't add extra progress
     expect(progress).to.equal(expectedProgress);
+  });
+
+  describe("domaine filtering", () => {
+    const checklistWithDomaineRestrictedItem: checklistSchemaType = [
+      {
+        title: "Section 1",
+        items: [
+          { id: "item-1", title: "Item 1" },
+          {
+            id: "item-2",
+            title: "Item 2 - dev only",
+            domaines: [Domaine.DEVELOPPEMENT],
+          },
+        ],
+      },
+    ];
+
+    it("should not count domaine-restricted items for a non-matching domaine", () => {
+      const progress = computeProgress(
+        [],
+        checklistWithDomaineRestrictedItem,
+        0,
+        Domaine.DESIGN,
+      );
+      expect(progress).to.equal(0); // total is 1 (item-1 only), 0 completed
+    });
+
+    it("should count domaine-restricted items as completed for a matching domaine", () => {
+      const progress = computeProgress(
+        ["item-1", "item-2"],
+        checklistWithDomaineRestrictedItem,
+        0,
+        Domaine.DEVELOPPEMENT,
+      );
+      expect(progress).to.equal(100); // both items visible and both completed
+    });
+
+    it("should ignore domaine-restricted items when no domaine is provided", () => {
+      const progress = computeProgress(
+        [],
+        checklistWithDomaineRestrictedItem,
+        0,
+      );
+      const expectedProgress = (0 / 2) * 100; // both items counted, none completed
+      expect(progress).to.equal(expectedProgress);
+    });
+
+    it("should exclude entire sections restricted to a non-matching domaine", () => {
+      const checklistWithRestrictedSection: checklistSchemaType = [
+        {
+          title: "General section",
+          items: [{ id: "item-1", title: "Item 1" }],
+        },
+        {
+          title: "Dev only section",
+          domaines: [Domaine.DEVELOPPEMENT],
+          items: [{ id: "item-2", title: "Item 2" }],
+        },
+      ];
+      const progress = computeProgress(
+        ["item-1"],
+        checklistWithRestrictedSection,
+        0,
+        Domaine.DESIGN,
+      );
+      expect(progress).to.equal(100); // only item-1 counts, and it's completed
+    });
   });
 });

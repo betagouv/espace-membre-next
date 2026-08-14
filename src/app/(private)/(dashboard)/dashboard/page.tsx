@@ -50,7 +50,10 @@ export default async function Page(props) {
 
   let onboarding: DashboardPageProps["onboarding"];
   let offboarding: DashboardPageProps["offboarding"];
-  const checklists = await getUserChecklists(session.user.uuid);
+  const checklists = await getUserChecklists(
+    session.user.uuid,
+    userInfos.domaine,
+  );
   if (userInfos.created_at >= new Date("2025-01-01")) {
     onboarding = checklists.onboarding;
   }
