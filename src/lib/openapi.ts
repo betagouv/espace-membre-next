@@ -116,7 +116,10 @@ export function buildOpenApiDocument() {
     Object.fromEntries(
       [401, 403, 405, 422, 503, ...codes]
         .filter((code, i, all) => all.indexOf(code) === i)
-        .sort()
+        // Comparateur obligatoire : sort() sans argument trie sur la
+        // representation TEXTUELLE. Ca passe tant que tous les codes ont trois
+        // chiffres, et ca casserait au premier code a deux ou quatre.
+        .sort((a, b) => a - b)
         .map((code) => [
           String(code),
           { description: PROBLEM_DESCRIPTIONS[code], content: problemContent },

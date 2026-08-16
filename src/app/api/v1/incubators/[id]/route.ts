@@ -51,7 +51,13 @@ async function toRepresentation(row: {
     const [found] = await resolveHighlightedGhids(startupUuid);
     if (found?.ghid) ghids.push(found.ghid);
   }
-  return { ...row, highlighted_startups: ghids.sort() };
+  // localeCompare et non sort() nu : le tri par defaut compare des unites
+  // UTF-16, donc `e-inspe` dans sa graphie accentuee passe apres `z`. La base
+  // porte de vrais ghid accentues, importes de beta.gouv.fr.
+  return {
+    ...row,
+    highlighted_startups: ghids.sort((a, b) => a.localeCompare(b, "fr")),
+  };
 }
 
 export const GET = withApiV1<{ id: string }>(
