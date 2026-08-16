@@ -37,7 +37,7 @@ import {
   withErrorHandling,
   BusinessError,
 } from "@/lib/error";
-import { canEditMember as _canEditMember } from "@/lib/canEditMember";
+import { canEditMember as _canEditMember } from "@/lib/authorization/member";
 
 async function changeSecondaryEmailForUser(
   secondary_email: string,

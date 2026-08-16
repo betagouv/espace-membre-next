@@ -16,6 +16,7 @@ test("incubator detail page and form page", async ({ page }) => {
         .insertInto("incubators")
         .values({
             title: "Mon super incubateur",
+            ghid: "mon-super-incubateur-e2e",
         })
         .returning("uuid")
         .executeTakeFirst();

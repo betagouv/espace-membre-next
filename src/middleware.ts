@@ -1,7 +1,9 @@
-import { HttpStatusCode } from "axios";
+import { StatusCodes } from "http-status-codes";
 import { jwtVerify } from "jose";
 import { NextRequest, NextResponse } from "next/server";
 
+import { extractBearerToken } from "./lib/api/bearer";
+import { problem } from "./lib/api/problem";
 import { getArrayFromEnv } from "./lib/env";
 
 interface UserJwtPayload {
@@ -50,8 +52,11 @@ const allowedOrigins = getArrayFromEnv("PROTECTED_API_ALLOWED_ORIGINS", [
 );
 
 const corsOptions = {
-  "Access-Control-Allow-Methods": "GET, POST, PUT, DELETE, OPTIONS",
-  "Access-Control-Allow-Headers": "*",
+  "Access-Control-Allow-Methods": "GET, POST, PUT, PATCH, DELETE, OPTIONS",
+  // Authorization est un « CORS non-wildcard request-header name » : l'etoile
+  // ne le couvre pas, le navigateur exige son nom en clair dans le preflight.
+  // Sans lui, aucun appel navigateur a /api/v1 ne peut aboutir.
+  "Access-Control-Allow-Headers": "Authorization, Content-Type, *",
 };
 
 function getCorsHeaders(req: NextRequest): Record<string, string> {
@@ -66,51 +71,57 @@ function getCorsHeaders(req: NextRequest): Record<string, string> {
   };
 }
 
-async function handleProtectedApiRoute(req: NextRequest) {
+// La spec et sa page de doc sont publiques : ni session ni jeton.
+const API_V1_PUBLIC_PATHS = new Set(["/api/v1/openapi.json", "/api/v1/docs"]);
+
+// Branche soeur de l'ancienne branche /api/protected/. Le middleware tourne en
+// Edge : il ne peut pas joindre Postgres, donc il ne fait ici que le CORS et un
+// rejet de surface. La verification reelle (etat de la clef, porteur, portees,
+// perimetre) se fait dans withApiV1, en runtime Node.
+async function handleApiV1Route(req: NextRequest) {
   const headers = getCorsHeaders(req);
+
   if (req.method === "OPTIONS") {
-    // preflight request
-    return NextResponse.json({}, { headers });
+    return new NextResponse(null, { status: StatusCodes.NO_CONTENT, headers });
   }
 
-  // the OpenAPI doc is also readable by logged-in users, not just API key holders
-  if (req.nextUrl.pathname === "/api/protected/openapi.json") {
-    const verifiedToken = await verifyAuth(req).catch(() => null);
-    if (verifiedToken) {
-      const response = NextResponse.next();
-      Object.entries(headers).forEach(([key, value]) =>
-        response.headers.set(key, value),
-      );
-      return response;
-    }
-  }
-
-  const PROTECTED_API_KEYS = getArrayFromEnv("PROTECTED_API_KEYS");
-  if (!req.headers.has("X-Api-Key")) {
-    return NextResponse.json(
-      { error: { message: "Api key is required." } },
-      { status: HttpStatusCode.UnprocessableEntity, headers },
+  const forward = () => {
+    const response = NextResponse.next();
+    Object.entries(headers).forEach(([key, value]) =>
+      response.headers.set(key, value),
     );
-  }
-  const apiKey = req.headers.get("X-Api-Key") ?? "";
-  if (!PROTECTED_API_KEYS.includes(apiKey)) {
-    return NextResponse.json(
-      { error: { message: "Invalid api key." } },
-      { status: HttpStatusCode.Unauthorized, headers },
-    );
+    return response;
+  };
+
+  if (API_V1_PUBLIC_PATHS.has(req.nextUrl.pathname)) return forward();
+
+  // Defense en profondeur, sans base : une requete sans jeton bien forme n'a
+  // aucune chance d'aboutir, autant ne pas la laisser atteindre le pool pg.
+  // extractBearerToken est le MEME code que celui du wrapper : les deux etages
+  // ne peuvent pas diverger.
+  if (!extractBearerToken(req.headers.get("authorization"))) {
+    return problem("unauthorized", {
+      detail:
+        "Un jeton d'API est requis : en-tete Authorization: Bearer em1_...",
+      instance: req.nextUrl.pathname,
+      headers: {
+        ...headers,
+        "WWW-Authenticate":
+          'Bearer realm="espace-membre", error="invalid_request"',
+      },
+    });
   }
 
-  const response = NextResponse.next();
-  Object.entries(headers).forEach(([key, value]) =>
-    response.headers.set(key, value),
-  );
-  return response;
+  return forward();
 }
 
 export async function middleware(req: NextRequest) {
-  // control protected routes
-  if (req.nextUrl.pathname.startsWith("/api/protected/")) {
-    return handleProtectedApiRoute(req);
+  // API v1 : authentification par jeton, jamais par session. Cette branche doit
+  // rester AVANT le controle de session ci-dessous et RETOURNER, sinon une
+  // requete portant un cookie valide passerait par un autre chemin
+  // d'autorisation que celle qui n'en porte pas.
+  if (req.nextUrl.pathname.startsWith("/api/v1/")) {
+    return handleApiV1Route(req);
   }
 
   // validate the user is authenticated
@@ -125,7 +136,7 @@ export async function middleware(req: NextRequest) {
         JSON.stringify({
           error: { message: "authentication required" },
         }),
-        { status: HttpStatusCode.Unauthorized },
+        { status: StatusCodes.UNAUTHORIZED },
       );
     }
     // otherwise, redirect to the set token page

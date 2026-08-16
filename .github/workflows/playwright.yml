@@ -29,7 +29,6 @@ jobs:
                   yarn build
                   yarn start -p 8100 &
               env:
-                  PROTECTED_API_KEYS: test-api-key
                   DATABASE_URL: postgres://secretariat:secretariat@127.0.0.1:5432/secretariat
                   SHOULD_SEND_NL: true
                   SESSION_SECRET: fakesessionsecret

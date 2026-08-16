@@ -30,15 +30,6 @@ export async function getTeam(uuid: string) {
     .executeTakeFirst();
 }
 
-export function getTeamsForUser(userUuid: string) {
-  return db
-    .selectFrom("teams")
-    .selectAll()
-    .innerJoin("users_teams", "team_id", "teams.uuid")
-    .where("user_id", "=", userUuid)
-    .execute();
-}
-
 export function getTeamsForIncubator(incubatorId: string) {
   return db
     .selectFrom("teams")
@@ -47,6 +38,12 @@ export function getTeamsForIncubator(incubatorId: string) {
     .execute();
 }
 
+/**
+ * ATTENTION : exclut deux fois les missions a end IS NULL (le where de la
+ * sous-requete distinctOn et celui du leftJoin), donc toutes les missions
+ * ouvertes. Ne pas l'utiliser pour une decision d'acces : voir
+ * getIncubatorTeamMembersWithMissions dans queries/authorization.ts.
+ */
 export function getIncubatorTeamMembers(incubatorId: string) {
   const today = new Date();
   return db

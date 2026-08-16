@@ -127,6 +127,9 @@ export default {
   ESPACE_MEMBRE_ADMIN: process.env.ESPACE_MEMBRE_ADMIN
     ? process.env.ESPACE_MEMBRE_ADMIN.split(",")
     : [],
+  API_KEYS_CREATION_DISABLED: process.env.API_KEYS_CREATION_DISABLED === "true",
+  API_KEYS_AUTH_DISABLED: process.env.API_KEYS_AUTH_DISABLED === "true",
+  API_KEYS_BLOCKED_USERS: getArrayFromEnv("API_KEYS_BLOCKED_USERS"),
   MAILING_LIST_NEWSLETTER: Number.parseInt(
     getOrThrowError("MAILING_LIST_NEWSLETTER"),
   ),
@@ -165,8 +168,9 @@ export default {
   S3_BUCKET: process.env.S3_BUCKET,
   S3_GET_HOST: process.env.S3_GET_HOST,
   S3_REGION: process.env.S3_REGION,
-  // basic protection for public api routes
-  PROTECTED_API_KEYS: getArrayFromEnv("PROTECTED_API_KEYS"),
+  // Pilote le CORS de /api/v1. Conserve sous son nom historique : la variable
+  // est deja positionnee sur Scalingo, la renommer imposerait une action
+  // d'exploitation hors de ce lot.
   PROTECTED_API_ALLOWED_ORIGINS: getArrayFromEnv(
     "PROTECTED_API_ALLOWED_ORIGINS",
     ["gouv.fr", "ademe.fr"],

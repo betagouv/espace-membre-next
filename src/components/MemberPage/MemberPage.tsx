@@ -1,5 +1,8 @@
 "use client";
 
+import { ApiKeysTab } from "@/components/ApiKeys/ApiKeysTab";
+import { ApiKeyRow } from "@/components/ApiKeys/ApiKeyTable";
+import { PerimeterOption } from "@/components/ApiKeys/PerimeterSelect";
 import { useState, useEffect } from "react";
 
 import { fr } from "@codegouvfr/react-dsfr";
@@ -60,6 +63,16 @@ export interface MemberPageProps {
   onboarding?: UserChecklist;
   offboarding?: UserChecklist;
   incubators: Awaited<ReturnType<typeof getUserIncubators>>;
+  canSeeApiKeys: boolean;
+  apiKeys: ApiKeyRow[];
+  // Les deux listes du formulaire de clefs, calculees par le serveur : la
+  // lecture liste les rattachements vivants, l'ecriture ce qui est reellement
+  // ecrivable, et ce ne sont pas les memes ensembles.
+  perimeterOptions: {
+    read: { incubators: PerimeterOption[]; startups: PerimeterOption[] };
+    write: { incubators: PerimeterOption[]; startups: PerimeterOption[] };
+  };
+  apiKeyCreationDisabled: boolean;
 }
 
 export default function MemberPage({
@@ -79,6 +92,10 @@ export default function MemberPage({
   onboarding,
   offboarding,
   incubators,
+  canSeeApiKeys,
+  apiKeys,
+  perimeterOptions,
+  apiKeyCreationDisabled,
 }: MemberPageProps) {
   const [tab, setTab] = useState<null | string>(null);
 
@@ -234,6 +251,23 @@ export default function MemberPage({
           emailRedirections={emailRedirections}
           authorizations={authorizations}
         ></EmailContainer>
+      ),
+    },
+    canSeeApiKeys && {
+      label: "Clefs d'API",
+      tabId: "clefs-api",
+      isDefault: tab === "clefs-api",
+      content: (
+        <ApiKeysTab
+          apiKeys={apiKeys}
+          ownerUuid={userInfos.uuid}
+          incubators={perimeterOptions.read.incubators}
+          startups={perimeterOptions.read.startups}
+          writeIncubators={perimeterOptions.write.incubators}
+          writeStartups={perimeterOptions.write.startups}
+          isAdmin={isAdmin}
+          creationDisabled={apiKeyCreationDisabled}
+        />
       ),
     },
     isAdmin && {

@@ -3,7 +3,7 @@
 import { revalidatePath } from "next/cache";
 import { getServerSession } from "next-auth/next";
 
-import { canEditMember } from "@/lib/canEditMember";
+import { canEditMember } from "@/lib/authorization/member";
 import { addEvent } from "@/lib/events";
 import { db } from "@/lib/kysely";
 import { getUserInfos } from "@/lib/kysely/queries/users";
