@@ -37,14 +37,55 @@ const CONFIGURATION = {
   // déjà pas en production, mais la détection d'hôte retombe sur « afficher »
   // quand l'URL n'est pas analysable.
   showDeveloperTools: "never",
+  // L'application force le thème clair (`src/dsfr-bootstrap/defaultColorScheme`).
+  // Scalar, lui, retombe sur `system` et pose sa classe sur le `document.body`
+  // PARTAGÉ : sur un poste en thème sombre, la doc virait au noir au milieu
+  // d'une page claire. On l'aligne, et on retire la bascule pour qu'un visiteur
+  // ne puisse pas les redésynchroniser d'un clic.
+  forceDarkModeState: "light",
+  hideDarkModeToggle: true,
   // « Powered by Scalar » n'a aucune option, à aucun palier commercial : le lien
   // est rendu sans condition, le CSS est la seule voie. Les deux sélecteurs
   // s'appuient sur une classe littérale et un href, jamais sur le `data-v-*`
   // voisin, qui est un hash de build.
+  // « Ask AI » n'a pas d'option non plus, et son bouton ne porte aucune classe
+  // propre. `t-doc__sidebar` est en revanche une classe littérale de Scalar, et
+  // le bouton est le DERNIER de son conteneur, la recherche étant le premier :
+  // sans `:last-child`, la règle emportait aussi la recherche, vérifié.
   customCss:
     ".api-reference-toolbar{display:none!important}" +
-    " .darklight-reference a[href='https://www.scalar.com']{display:none!important}",
+    " .darklight-reference a[href='https://www.scalar.com']{display:none!important}" +
+    " .t-doc__sidebar button.bg-sidebar-b-search:last-child{display:none!important}",
 };
+
+/**
+ * Deux corrections que la configuration de Scalar ne couvre pas.
+ *
+ * Le conteneur du layout racine plafonne à 1248px : une documentation d'API a
+ * besoin de toute la largeur, sa navigation latérale et son panneau d'exemples
+ * étant déjà deux colonnes.
+ *
+ * Et les variables de Scalar sont mappées sur les tokens du DSFR, en dur : la
+ * feuille du DSFR n'est pas chargée ici, `var(--background-default-grey)` y
+ * serait indéfinie. Ce bloc est hors cascade layer, là où le thème de Scalar
+ * vit dans `@layer scalar-theme`, donc il l'emporte sans `!important`.
+ */
+const PAGE_CSS = `
+#root-container{max-width:none;padding:0}
+body{
+  --scalar-background-1:#fff;
+  --scalar-background-2:#f6f6f6;
+  --scalar-background-3:#eee;
+  --scalar-color-1:#3a3a3a;
+  --scalar-color-2:#666;
+  --scalar-color-3:#929292;
+  --scalar-color-accent:#000091;
+  --scalar-border-color:#ddd;
+  --scalar-color-green:#18753c;
+  --scalar-color-red:#ce0500;
+  --scalar-color-orange:#b34000;
+  --scalar-color-blue:#0063cb;
+}`;
 
 type ScalarGlobal = {
   createApiReference: (target: string, configuration: unknown) => void;
@@ -58,6 +99,7 @@ export default function ApiDocsPage() {
 
   return (
     <>
+      <style>{PAGE_CSS}</style>
       <div id={MOUNT_ID} />
       <Script src={SCALAR_BUNDLE} strategy="afterInteractive" onReady={mount} />
     </>
