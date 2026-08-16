@@ -204,8 +204,8 @@ Les permissions sont vérifiées côté serveur (routes sous
   [`src/lib/authorization/member.ts`](./src/lib/authorization/member.ts) (fonction `canEditMember`).
 - **Member** : peut modifier son propre compte. L'édition d'une fiche produit est
   conditionnée à l'appartenance à une équipe d'un des incubateurs liés au produit,
-  ou au statut d'agent public actif sur ce produit (`isStartupAgent`). Il ne peut
-  pas modifier la fiche d'un autre membre en dehors du cas ci-dessus.
+  ou au statut d'agent public actif sur ce produit. Il ne peut pas modifier la
+  fiche d'un autre membre en dehors du cas ci-dessus.
 - **Anonymous** : aucun accès aux pages privées (redirection vers `/login`).
 
 ### Matrice des droits
@@ -231,18 +231,17 @@ dont la lecture soit réservée entre membres. La liste de périmètres proposé
 formulaire ne décrit donc pas un droit, seulement les rattachements vivants de la
 personne, pour l'aider à se restreindre.
 
-**« Agent public en mission »** veut dire trois conditions cumulées, vérifiées par
-`isStartupAgent` : une mission commencée et non terminée sur ce produit, une fin
-de mission nulle comptant comme une mission ouverte donc vivante, et un
-`legal_status` valant `fonctionnaire` ou `contractuel`. Un membre sans statut
-déclaré, cas de tout compte jamais vérifié, ne remplit jamais cette ligne.
+**« Agent public en mission »** veut dire trois conditions cumulées : une mission
+commencée et non terminée sur ce produit, une mission sans date de fin comptant
+comme ouverte donc vivante, et un `legal_status` valant `fonctionnaire` ou
+`contractuel`. Un membre sans statut déclaré, cas de tout compte jamais vérifié,
+ne remplit jamais cette ligne.
 
 **L'écriture sur un incubateur passe uniquement par l'équipe**, jamais par une
 mission, et un périmètre de clef de nature produit ne l'ouvre pas non plus : la
 portée `incubators:write` exige un périmètre global ou incubateur. Créer une clef
-d'application demande en plus d'être *vivant* au sens de `isIncubatorLead`, donc
-de porter une mission non expirée : siéger dans l'équipe ne suffit pas si toutes
-les missions sont terminées.
+d'application demande en plus de porter une mission non expirée : siéger dans
+l'équipe ne suffit pas si toutes les missions sont terminées.
 
 Toutes les décisions d'accès vivent dans
 [`src/lib/authorization/`](./src/lib/authorization/) : les prédicats `can*`

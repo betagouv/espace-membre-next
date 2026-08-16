@@ -1,4 +1,6 @@
 fileignoreconfig:
+- filename: docs/api-keys.md
+  checksum: 29a384f51ae05f25d9a85e822ee4a1fb20ff43c447a91999cfd7474305a34f02
 - filename: .env.development
   checksum: baab9bc320877785c6ccf878f72a9b9257becfb719d4bcbcca1a2ba2bca49870
 - filename: .env.test
