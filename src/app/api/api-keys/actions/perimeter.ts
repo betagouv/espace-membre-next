@@ -29,5 +29,11 @@ export async function perimeterLabelOf(perimeter: ApiPerimeter) {
           .select("startups.ghid")
           .where("startups.uuid", "=", perimeter.uuid)
           .executeTakeFirst();
-  return `${perimeter.kind}/${row?.ghid ?? ""}`;
+  // Repli sur l'uuid, jamais sur la chaine vide : un `incubator/` ne satisfait
+  // pas perimeterLabelSchema, et ce libelle part dans des evenements et des
+  // courriels, ou une forme non analysable ne se rattrape plus. Le cas se
+  // produit quand la cible a disparu, les perimetres ne portant aucune clef
+  // etrangere, et aussi a la creation d'une clef de LECTURE, dont l'uuid n'est
+  // verifie par personne puisque la lecture est libre.
+  return `${perimeter.kind}/${row?.ghid ?? perimeter.uuid}`;
 }

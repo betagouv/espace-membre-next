@@ -93,7 +93,17 @@ export async function createServiceApiKey(input: ApiKeyCreate) {
             manageUrl: `${getBaseUrl()}/incubators/${data.owner_incubator_id}/api-keys`,
             scopesLabel: data.scopes.join(", "),
             perimeterLabel: await perimeterLabelOf(data.read_perimeter),
-            createdByFullname: subject.username,
+            // Le gabarit affiche « creee le ... par ... » : un username y
+            // serait un identifiant technique la ou le lecteur attend un nom.
+            // AuthSubject ne porte que le username, d'ou cette resolution.
+            createdByFullname:
+              (
+                await db
+                  .selectFrom("users")
+                  .select("users.fullname")
+                  .where("users.uuid", "=", subject.uuid)
+                  .executeTakeFirst()
+              )?.fullname ?? subject.username,
           },
         });
       }

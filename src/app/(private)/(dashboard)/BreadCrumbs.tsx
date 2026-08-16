@@ -183,18 +183,28 @@ export function BreadCrumbs() {
             },
           ],
         },
-        {
-          href: routes.adminApiKeys(),
-          text: routeTitles.admin(),
-          isActive: hasPathnameThisMatch(pathname, "/admin"),
-          items: [
-            {
-              href: routes.adminApiKeys(),
-              text: routeTitles.adminApiKeys(),
-              isActive: hasPathnameThisMatch(pathname, routes.adminApiKeys()),
-            },
-          ],
-        },
+        // Les pages /admin redirigent un non-admin : leur proposer l'entree
+        // serait la meme impasse que le lien de creation d'incubateur, masque
+        // plus haut pour cette raison.
+        ...(session?.user?.isAdmin
+          ? [
+              {
+                href: routes.adminApiKeys(),
+                text: routeTitles.admin(),
+                isActive: hasPathnameThisMatch(pathname, "/admin"),
+                items: [
+                  {
+                    href: routes.adminApiKeys(),
+                    text: routeTitles.adminApiKeys(),
+                    isActive: hasPathnameThisMatch(
+                      pathname,
+                      routes.adminApiKeys(),
+                    ),
+                  },
+                ],
+              },
+            ]
+          : []),
         {
           href: organizationListLink,
           text: "Sponsors",
