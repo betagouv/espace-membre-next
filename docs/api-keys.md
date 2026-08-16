@@ -74,7 +74,7 @@ ne confirment ni ne révoquent au chargement : ils mènent à une page où le ge
 reste à faire, parce que les passerelles de messagerie déréférencent les liens
 pour analyse. Un rappel sans réponse ne révoque rien.
 
-Un balayage quotidien à 07:30 révoque, avec le motif dans `revoked_reason` :
+Un balayage quotidien à 08:00 révoque, avec le motif dans `revoked_reason` :
 
 | `unused` | 180 jours sans usage, ou sans usage depuis la création |
 | --- | --- |
