@@ -32,7 +32,22 @@ const PAGE = `<!doctype html>
   <body>
     <script id="api-reference" data-url="/api/v1/openapi.json"></script>
     <script>
-      var configuration = { withDefaultFonts: false };
+      var configuration = {
+        withDefaultFonts: false,
+        // Share et Deploy ne sont pas deux widgets separes, ce sont les deux
+        // enfants du panneau Developer Tools : une seule option les eteint.
+        // Le defaut vaut "localhost", donc la barre est deja absente en
+        // production, mais la detection retombe sur "affiche" quand l'URL
+        // n'est pas analysable. "never" rend le comportement deterministe.
+        showDeveloperTools: "never",
+        // « Powered by Scalar » n'a AUCUNE option, a aucun palier commercial :
+        // le lien est rendu sans condition. Le CSS est la seule voie. Les deux
+        // selecteurs sont des classes litterales et un href, pas des hash de
+        // build ; le data-v-* voisin, lui, change a chaque version.
+        customCss:
+          ".api-reference-toolbar{display:none!important}" +
+          " .darklight-reference a[href='https://www.scalar.com']{display:none!important}",
+      };
       document.getElementById("api-reference")
         .dataset.configuration = JSON.stringify(configuration);
     </script>
