@@ -7,7 +7,6 @@ import { NextRequest } from "next/server";
 import proxyquire from "proxyquire";
 import sinon from "sinon";
 
-import { GET as getDocs } from "@/app/api/v1/docs/route";
 import { GET as listIncubatorMembers } from "@/app/api/v1/incubators/[id]/members/route";
 import { GET as getIncubator } from "@/app/api/v1/incubators/[id]/route";
 import { GET as listIncubatorStartups } from "@/app/api/v1/incubators/[id]/startups/route";
@@ -273,7 +272,9 @@ describe("api v1 smoke", () => {
     expect(res.status).to.equal(200);
   });
 
-  // Les deux routes publiques : aucune clef, mais elles doivent rendre.
+  // La seule route publique restante : aucune clef, mais elle doit rendre.
+  // La page de documentation a quitte /api/v1 pour /api/docs, ce n'est plus
+  // une route mais une page, hors du perimetre de ce fichier.
   it("GET /api/v1/openapi.json", async () => {
     const res = await getOpenApi(
       new NextRequest("http://localhost/api/v1/openapi.json"),
@@ -281,12 +282,6 @@ describe("api v1 smoke", () => {
     expect(res.status).to.equal(200);
     const document = (await res.json()) as { openapi: string };
     expect(document.openapi).to.match(/^3\.1/);
-  });
-
-  it("GET /api/v1/docs", async () => {
-    const res = await getDocs(new NextRequest("http://localhost/api/v1/docs"));
-    expect(res.status).to.equal(200);
-    expect(res.headers.get("content-type")).to.include("text/html");
   });
 
   /**
@@ -301,7 +296,7 @@ describe("api v1 smoke", () => {
       uncoveredRoutes(onDisk, source),
       "routes sans appel dans ce fichier",
     ).to.deep.equal([]);
-    expect(onDisk.length, "le compte de routes a change").to.equal(12);
+    expect(onDisk.length, "le compte de routes a change").to.equal(11);
   });
 
   // La garde doit echouer sur une route non couverte, sinon elle ne garde rien.

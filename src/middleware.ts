@@ -72,7 +72,9 @@ function getCorsHeaders(req: NextRequest): Record<string, string> {
 }
 
 // La spec et sa page de doc sont publiques : ni session ni jeton.
-const API_V1_PUBLIC_PATHS = new Set(["/api/v1/openapi.json", "/api/v1/docs"]);
+// La page de documentation a quitte /api/v1 pour /api/docs : elle n'est plus une
+// route d'API mais une page, exclue du config.matcher plus bas.
+const API_V1_PUBLIC_PATHS = new Set(["/api/v1/openapi.json"]);
 
 // Branche soeur de l'ancienne branche /api/protected/. Le middleware tourne en
 // Edge : il ne peut pas joindre Postgres, donc il ne fait ici que le CORS et un
@@ -149,6 +151,14 @@ export async function middleware(req: NextRequest) {
   }
 }
 
+// `api/docs` est la page de documentation publique. Elle n'est pas servie par la
+// branche publique du middleware, qui ne reconnait que le prefixe versionne :
+// sans son exclusion du matcher ci-dessous, elle repondrait 401 JSON, et pas
+// meme une redirection vers /login, son chemin commencant par `/api/`.
+// Le commentaire vit ICI et non dans le tableau : la garde de
+// __tests__/test-api-guard.ts verifie que le matcher n'exclut jamais la surface
+// versionnee, et elle lit le bloc `matcher: [...]` en entier, commentaires
+// compris.
 export const config = {
   matcher: [
     /*
@@ -160,6 +170,6 @@ export const config = {
      * - favicon.ico, sitemap.xml, robots.txt (metadata files)
      */
     // "/dashboard",
-    "/((?!accessibilite|keskispasse|components|login|signin|api/hook|api/auth|api/public|static/|_next/static|_next/image|favicon.ico|sitemap.xml|robots.txt).*)",
+    "/((?!accessibilite|keskispasse|components|login|signin|api/docs|api/hook|api/auth|api/public|static/|_next/static|_next/image|favicon.ico|sitemap.xml|robots.txt).*)",
   ],
 };

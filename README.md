@@ -18,7 +18,7 @@ L'espace membre de l’incubateur
 ## API v1
 
 La documentation interactive est publique sur
-[`/api/v1/docs`](https://espace-membre.incubateur.net/api/v1/docs), et le document
+[`/api/docs`](https://espace-membre.incubateur.net/api/docs), et le document
 OpenAPI 3.1 qui l'alimente sur
 [`/api/v1/openapi.json`](https://espace-membre.incubateur.net/api/v1/openapi.json).
 

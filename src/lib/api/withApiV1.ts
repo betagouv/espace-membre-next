@@ -288,7 +288,7 @@ export function withApiV1<
   };
 }
 
-/** Pour /api/v1/openapi.json et /api/v1/docs : aucune clef, mais un wrapper
+/** Pour /api/v1/openapi.json : aucune clef, mais un wrapper
  *  quand meme, pour satisfaire le test de garde et pour le meme filet. */
 export function publicApiV1(handler: (req: NextRequest) => Promise<Response>) {
   return async (req: NextRequest) => {

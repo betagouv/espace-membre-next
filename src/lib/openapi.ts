@@ -459,7 +459,7 @@ export function buildOpenApiDocument() {
 
   registry.registerPath({
     method: "get",
-    path: "/api/v1/docs",
+    path: "/api/docs",
     operationId: "getApiDocs",
     tags: ["Meta"],
     summary: "Page de documentation interactive",

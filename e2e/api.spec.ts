@@ -23,6 +23,6 @@ test("Serves the OpenAPI document publicly", async ({ baseURL }) =>
     }));
 
 test("Serves the documentation page publicly", async ({ baseURL }) =>
-    fetch(`${baseURL}/api/v1/docs`).then((r) => {
+    fetch(`${baseURL}/api/docs`).then((r) => {
         expect(r.status).toBe(200);
     }));

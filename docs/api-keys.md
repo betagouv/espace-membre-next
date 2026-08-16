@@ -1,6 +1,6 @@
 # Clefs d'API
 
-Documentation interactive sur [`/api/v1/docs`](https://espace-membre.incubateur.net/api/v1/docs),
+Documentation interactive sur [`/api/docs`](https://espace-membre.incubateur.net/api/docs),
 document OpenAPI sur [`/api/v1/openapi.json`](https://espace-membre.incubateur.net/api/v1/openapi.json).
 Cette page-ci décrit le modèle de clefs, pas les endpoints.
 
