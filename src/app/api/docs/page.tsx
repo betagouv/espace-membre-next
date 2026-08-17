@@ -65,13 +65,21 @@ const CONFIGURATION = {
  * besoin de toute la largeur, sa navigation latérale et son panneau d'exemples
  * étant déjà deux colonnes.
  *
+ * Il porte aussi `overflow: hidden`, ce qui NEUTRALISE le `position: sticky` de
+ * la navigation latérale de Scalar : un `overflow` autre que `visible` sur un
+ * ancêtre fait coller l'élément dans la boîte de défilement de cet ancêtre, or
+ * celle-ci ne défile pas, c'est le document qui défile. Le menu suivait donc la
+ * page au lieu de rester en vue. Il n'y a rien à corriger sur `top`, qui vaut 0
+ * à juste titre : l'en-tête DSFR est en `position: relative` et disparaît au
+ * défilement, la bascule est continue.
+ *
  * Et les variables de Scalar sont mappées sur les tokens du DSFR, en dur : la
  * feuille du DSFR n'est pas chargée ici, `var(--background-default-grey)` y
  * serait indéfinie. Ce bloc est hors cascade layer, là où le thème de Scalar
  * vit dans `@layer scalar-theme`, donc il l'emporte sans `!important`.
  */
 const PAGE_CSS = `
-#root-container{max-width:none;padding:0}
+#root-container{max-width:none;padding:0;overflow:visible}
 body{
   --scalar-background-1:#fff;
   --scalar-background-2:#f6f6f6;
