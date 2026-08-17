@@ -112,11 +112,26 @@ Tous les emails envoyés par le code de l'espace membre seront visibles depuis l
 > `[[ "$APP" = "espace-membre-cron" ]]`), planifiée via [`cron.json`](./cron.json)
 > (Scalingo Scheduler).
 
+> ⚠️ **Scalingo plafonne le nombre d'entrées de `cron.json` à cinq.** Une sixième
+> fait échouer le déploiement, avec un `400 Bad Request → You exceeded the max
+> amount of cron tasks possible (max is 5)`. Le fichier est à ce plafond : pour
+> ajouter un job, il faut soit l'enchaîner dans une entrée existante, comme le
+> couple de 8h ci-dessous, soit demander un relèvement au support Scalingo.
+
+Enchaîner deux commandes dans une seule entrée n'est pas qu'un contournement du
+plafond : quand l'ordre compte, c'est plus sûr que deux entrées rapprochées. Les
+clefs d'API doivent résoudre les destinataires de leurs rappels **avant** que
+`clean-teams-members` ne vide `users_teams` des membres expirés, sinon les
+rappels partent à un ensemble vide. Deux entrées à des heures voisines ne rendent
+cet ordre que probable, une exécution longue pouvant les croiser ; le
+chaînage l'impose. Le séparateur est `;` et non `&&`, les deux jobs étant
+indépendants : l'échec du premier ne doit pas empêcher le second.
+
 | fréquence (UTC)    | commande                                    | description                                                              |
 | ------------------ | ------------------------------------------- | ------------------------------------------------------------------------ |
 | `0 18 * * MON-FRI` | `npm run export-to-www`                     | Exporte les données vers le site beta.gouv.fr                            |
 | `0 3 * * *`        | `npm run job:sync-matrix-accounts`          | Indexe les comptes Matrix (Tchap) des utilisateurs                       |
-| `0 8 * * *`        | `npm run job:clean-teams-members`           | Supprime les membres expirés des équipes incubateurs                     |
+| `0 8 * * *`        | `npm run job:api-keys-maintenance` **puis** `npm run job:clean-teams-members` | Révoque les clefs d'API inactives, orphelines ou bloquées et envoie leurs rappels, **puis** supprime les membres expirés des équipes incubateurs |
 | `0 8-18 * * *`     | `npm run job:sync-dinum-emails`             | Met à jour la table `dinum_emails` depuis l'API Dimail                   |
 | `0 * * * *`        | `npm run job:recreate-email-if-user-active` | Recrée/réactive l'email des comptes actifs repassés en `EMAIL_SUSPENDED` |
 

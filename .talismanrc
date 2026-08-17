@@ -1,4 +1,6 @@
 fileignoreconfig:
+- filename: README.md
+  checksum: 3c5b263528d41c73f36e09b7fa7a22db9e20c341f42233ea9d2ea07dc40f8967
 - filename: cron.json
   checksum: 6d3fc5892887afedbc0c1efd813b0023d29ca54f69cf2f4680600fa69d96025d
 - filename: docs/api-keys.md
