@@ -115,7 +115,7 @@
     "husky": "^9.1.6",
     "is-ci": "^4.1.0",
     "kysely-codegen": "^0.20.0",
-    "nock": "^13.5.1",
+    "nock": "^14.0.17",
     "node-talisman": "^1.29.11",
     "prettier": "^3",
     "proxyquire": "^2.1.3",
