@@ -57,7 +57,7 @@
     "jsonwebtoken": "^9.0.2",
     "juice": "^9.1.0",
     "knex": "^3.2.9",
-    "kysely": "^0.28.16",
+    "kysely": "^0.29.5",
     "leaflet": "^1.9.4",
     "leaflet.markercluster": "^1.5.3",
     "lodash": "^4.17.21",
