@@ -6,7 +6,7 @@ import sinon from "sinon";
 import { updateUserEvent } from "./updateUserEvent";
 import { Users } from "@/@types/db";
 import { db } from "@/lib/kysely";
-import { AuthorizationError } from "@/lib/error";
+import { AuthorizationError, BusinessError } from "@/lib/error";
 import { createData, deleteData } from "__tests__/utils/fakeData";
 import {
   memberJulienD,
@@ -14,12 +14,19 @@ import {
   testUsers,
 } from "__tests__/utils/users-data";
 
+// Un item de checklist ordinaire, auto-déclaratif.
+const FIELD_ID = "onboarding-valeurs-beta";
+// L'item marqué `restricted: true` dans onboarding.yml.
+const RESTRICTED_FIELD_ID = "onboarding-atelier-onboarding";
+
 describe("Update user event server action", () => {
   let getServerSessionStub, updateUserEventHandler: typeof updateUserEvent;
+  let canValidateRestrictedStub: sinon.SinonStub;
   let user: Selectable<Users>;
 
   beforeEach(async () => {
     getServerSessionStub = sinon.stub();
+    canValidateRestrictedStub = sinon.stub().resolves(false);
     await createData(testUsers);
 
     // Use proxyquire to replace bossClient module
@@ -28,6 +35,10 @@ describe("Update user event server action", () => {
       {
         "next-auth/next": { getServerSession: getServerSessionStub },
         "next/cache": { revalidatePath: sinon.stub().resolves() },
+        "@/lib/canValidateRestrictedChecklistItem": {
+          canValidateRestrictedChecklistItem: canValidateRestrictedStub,
+          "@noCallThru": true,
+        },
       },
     ).updateUserEvent as typeof updateUserEvent;
     user = await db
@@ -54,7 +65,7 @@ describe("Update user event server action", () => {
     await updateUserEventHandler({
       value: true,
       action_on_user_id: user.uuid,
-      field_id: "a-field-id",
+      field_id: FIELD_ID,
     });
   });
   it("should delete event if it exist if value is true", async () => {
@@ -71,14 +82,14 @@ describe("Update user event server action", () => {
       .values({
         user_id: user.uuid,
         date: new Date(),
-        field_id: "a-field-id",
+        field_id: FIELD_ID,
       })
       .returningAll()
       .executeTakeFirstOrThrow();
     await updateUserEventHandler({
       value: false,
       action_on_user_id: user.uuid,
-      field_id: "a-field-id",
+      field_id: FIELD_ID,
     });
     const event = await db
       .selectFrom("user_events")
@@ -104,12 +115,12 @@ describe("Update user event server action", () => {
     await updateUserEventHandler({
       value: true,
       action_on_user_id: otherUser.uuid,
-      field_id: "a-field-id",
+      field_id: FIELD_ID,
     });
     const event = await db
       .selectFrom("user_events")
       .where("user_id", "=", otherUser.uuid)
-      .where("field_id", "=", "a-field-id")
+      .where("field_id", "=", FIELD_ID)
       .executeTakeFirstOrThrow();
     event.should.be.exist;
   });
@@ -129,14 +140,14 @@ describe("Update user event server action", () => {
       .values({
         user_id: user.uuid,
         date: new Date(),
-        field_id: "a-field-id",
+        field_id: FIELD_ID,
       })
       .returningAll()
       .executeTakeFirstOrThrow();
     await updateUserEventHandler({
       value: true,
       action_on_user_id: user.uuid,
-      field_id: "a-field-id",
+      field_id: FIELD_ID,
       date: today,
     });
     const event = await db
@@ -167,7 +178,7 @@ describe("Update user event server action", () => {
       .values({
         user_id: otherUser.uuid,
         date: new Date(),
-        field_id: "a-field-id",
+        field_id: FIELD_ID,
       })
       .returningAll()
       .executeTakeFirstOrThrow();
@@ -175,7 +186,7 @@ describe("Update user event server action", () => {
     await updateUserEventHandler({
       value: false,
       action_on_user_id: otherUser.uuid,
-      field_id: "a-field-id",
+      field_id: FIELD_ID,
     });
     const event = await db
       .selectFrom("user_events")
@@ -195,7 +206,7 @@ describe("Update user event server action", () => {
       .values({
         user_id: otherUser.uuid,
         date: new Date(),
-        field_id: "a-field-id",
+        field_id: FIELD_ID,
       })
       .returningAll()
       .executeTakeFirstOrThrow();
@@ -213,7 +224,7 @@ describe("Update user event server action", () => {
       await updateUserEventHandler({
         value: false,
         action_on_user_id: otherUser.uuid,
-        field_id: "a-field-id",
+        field_id: FIELD_ID,
       });
     } catch (e) {
       thrown = e;
@@ -248,7 +259,7 @@ describe("Update user event server action", () => {
       await updateUserEventHandler({
         value: true,
         action_on_user_id: otherUser.uuid,
-        field_id: "a-field-id",
+        field_id: FIELD_ID,
       });
     } catch (e) {
       thrown = e;
@@ -259,7 +270,7 @@ describe("Update user event server action", () => {
     const event = await db
       .selectFrom("user_events")
       .where("user_id", "=", otherUser.uuid)
-      .where("field_id", "=", "a-field-id")
+      .where("field_id", "=", FIELD_ID)
       .executeTakeFirst();
     expect(event).to.be.undefined;
   });
@@ -272,7 +283,163 @@ describe("Update user event server action", () => {
       await updateUserEventHandler({
         value: true,
         action_on_user_id: user.uuid,
+        field_id: FIELD_ID,
+      });
+    } catch (e) {
+      thrown = e;
+    }
+    expect(thrown).to.be.instanceOf(AuthorizationError);
+  });
+
+  it("should throw BusinessError when the field_id is not a real checklist item", async () => {
+    getServerSessionStub.resolves({
+      user: { id: membreActif.username, isAdmin: false, uuid: user.uuid },
+    });
+
+    let thrown: unknown;
+    try {
+      await updateUserEventHandler({
+        value: true,
+        action_on_user_id: user.uuid,
         field_id: "a-field-id",
+      });
+    } catch (e) {
+      thrown = e;
+    }
+    expect(thrown).to.be.instanceOf(BusinessError);
+
+    const event = await db
+      .selectFrom("user_events")
+      .where("user_id", "=", user.uuid)
+      .where("field_id", "=", "a-field-id")
+      .executeTakeFirst();
+    expect(event).to.be.undefined;
+  });
+
+  it("should throw BusinessError when the field_id is a disabled checklist item", async () => {
+    // onboarding-fiche-membre est `disabled` + `defaultValue` : il est deja
+    // compte par l'offset de computeProgress, une ligne en base le compterait
+    // une seconde fois et permettrait d'atteindre 100% sans l'atelier.
+    getServerSessionStub.resolves({
+      user: { id: membreActif.username, isAdmin: false, uuid: user.uuid },
+    });
+
+    let thrown: unknown;
+    try {
+      await updateUserEventHandler({
+        value: true,
+        action_on_user_id: user.uuid,
+        field_id: "onboarding-fiche-membre",
+      });
+    } catch (e) {
+      thrown = e;
+    }
+    expect(thrown).to.be.instanceOf(BusinessError);
+  });
+
+  it("should throw AuthorizationError when a member checks a restricted item on themselves", async () => {
+    canValidateRestrictedStub.resolves(false);
+    getServerSessionStub.resolves({
+      user: { id: membreActif.username, isAdmin: false, uuid: user.uuid },
+    });
+
+    let thrown: unknown;
+    try {
+      await updateUserEventHandler({
+        value: true,
+        action_on_user_id: user.uuid,
+        field_id: RESTRICTED_FIELD_ID,
+      });
+    } catch (e) {
+      thrown = e;
+    }
+    expect(thrown).to.be.instanceOf(AuthorizationError);
+
+    const event = await db
+      .selectFrom("user_events")
+      .where("user_id", "=", user.uuid)
+      .where("field_id", "=", RESTRICTED_FIELD_ID)
+      .executeTakeFirst();
+    expect(event).to.be.undefined;
+  });
+
+  it("should throw AuthorizationError when a member unchecks a restricted item on themselves", async () => {
+    canValidateRestrictedStub.resolves(false);
+    const userEvent = await db
+      .insertInto("user_events")
+      .values({
+        user_id: user.uuid,
+        date: new Date(),
+        field_id: RESTRICTED_FIELD_ID,
+      })
+      .returningAll()
+      .executeTakeFirstOrThrow();
+    getServerSessionStub.resolves({
+      user: { id: membreActif.username, isAdmin: false, uuid: user.uuid },
+    });
+
+    let thrown: unknown;
+    try {
+      await updateUserEventHandler({
+        value: false,
+        action_on_user_id: user.uuid,
+        field_id: RESTRICTED_FIELD_ID,
+      });
+    } catch (e) {
+      thrown = e;
+    }
+    expect(thrown).to.be.instanceOf(AuthorizationError);
+
+    // L'evenement ne doit PAS avoir ete supprime.
+    const event = await db
+      .selectFrom("user_events")
+      .where("uuid", "=", userEvent.uuid)
+      .executeTakeFirst();
+    expect(event).to.not.be.undefined;
+  });
+
+  it("should let the animation team check a restricted item for a member it cannot otherwise edit", async () => {
+    canValidateRestrictedStub.resolves(true);
+    getServerSessionStub.resolves({
+      user: { id: membreActif.username, isAdmin: false, uuid: user.uuid },
+    });
+    const otherUser = await db
+      .selectFrom("users")
+      .selectAll()
+      .where("username", "=", memberJulienD.username)
+      .executeTakeFirstOrThrow();
+
+    await updateUserEventHandler({
+      value: true,
+      action_on_user_id: otherUser.uuid,
+      field_id: RESTRICTED_FIELD_ID,
+    });
+
+    const event = await db
+      .selectFrom("user_events")
+      .where("user_id", "=", otherUser.uuid)
+      .where("field_id", "=", RESTRICTED_FIELD_ID)
+      .executeTakeFirst();
+    expect(event).to.not.be.undefined;
+  });
+
+  it("should not let the animation team edit a non restricted item of a member it cannot edit", async () => {
+    canValidateRestrictedStub.resolves(true);
+    getServerSessionStub.resolves({
+      user: { id: membreActif.username, isAdmin: false, uuid: user.uuid },
+    });
+    const otherUser = await db
+      .selectFrom("users")
+      .selectAll()
+      .where("username", "=", memberJulienD.username)
+      .executeTakeFirstOrThrow();
+
+    let thrown: unknown;
+    try {
+      await updateUserEventHandler({
+        value: true,
+        action_on_user_id: otherUser.uuid,
+        field_id: FIELD_ID,
       });
     } catch (e) {
       thrown = e;
