@@ -112,6 +112,14 @@ const allColumns: GristColumn[] = [
     fields: { label: "Mail de confirmation envoyé", type: "Bool" },
   },
   {
+    id: GRIST_SEGUR_COLUMNS.statutNotifie,
+    fields: {
+      label: "Statut notifié au demandeur",
+      type: "Choice",
+      widgetOptions: choiceWidget(SEGUR_STATUT_CHOICES as unknown as string[]),
+    },
+  },
+  {
     id: GRIST_SEGUR_COLUMNS.userUuid,
     fields: { label: "User UUID", type: "Text" },
   },

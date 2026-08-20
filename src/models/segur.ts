@@ -38,12 +38,14 @@ export enum SEGUR_STATUT {
   A_TRAITER = "À traiter",
   EN_COURS = "En cours",
   TRAITE = "Traité",
+  REFUSE = "Refusé",
 }
 
 export const SEGUR_STATUT_CHOICES: SEGUR_STATUT[] = [
   SEGUR_STATUT.A_TRAITER,
   SEGUR_STATUT.EN_COURS,
   SEGUR_STATUT.TRAITE,
+  SEGUR_STATUT.REFUSE,
 ];
 
 // Grist column ids for the Ségur table. Keep in sync with the setup script
@@ -71,6 +73,10 @@ export const GRIST_SEGUR_COLUMNS = {
   statut: "Statut",
   // Automation: idempotency flag for the n8n confirmation-email workflow.
   mailEnvoye: "Mail_envoye",
+  // Dernier statut pour lequel le demandeur a été prévenu. Le workflow n8n
+  // compare cette colonne à `Statut` : elles diffèrent, il envoie et recopie.
+  // Sans elle, un changement de statut renverrait le même mail à chaque passage.
+  statutNotifie: "Statut_notifie",
   // Meta.
   userUuid: "User_uuid",
   username: "Username",
@@ -94,6 +100,7 @@ export const SEGUR_ACCES_COLUMN_IDS: string[] = [
   GRIST_SEGUR_COLUMNS.precisions,
   GRIST_SEGUR_COLUMNS.statut,
   GRIST_SEGUR_COLUMNS.mailEnvoye,
+  GRIST_SEGUR_COLUMNS.statutNotifie,
   GRIST_SEGUR_COLUMNS.userUuid,
   GRIST_SEGUR_COLUMNS.username,
 ];
@@ -112,6 +119,7 @@ export const SEGUR_REUNION_COLUMN_IDS: string[] = [
   GRIST_SEGUR_COLUMNS.precisions,
   GRIST_SEGUR_COLUMNS.statut,
   GRIST_SEGUR_COLUMNS.mailEnvoye,
+  GRIST_SEGUR_COLUMNS.statutNotifie,
   GRIST_SEGUR_COLUMNS.userUuid,
   GRIST_SEGUR_COLUMNS.username,
 ];
