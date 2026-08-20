@@ -18,7 +18,6 @@ import {
   EmailStatusCode,
 } from "@/models/member";
 import { EMAIL_STATUS_READABLE_FORMAT } from "@/models/misc";
-import { DimailEmailCreationInvite } from "../../DimailEmailCreationInvite";
 import { match } from "ts-pattern";
 
 const EmailLink = ({ email }: { email: string }) => (
@@ -137,12 +136,6 @@ export default function EmailContainer({
     [],
   ].filter((z) => !!z);
 
-  const infoStatus = [
-    EmailStatusCode.EMAIL_CREATION_WAITING,
-    EmailStatusCode.EMAIL_CREATION_PENDING,
-    EmailStatusCode.EMAIL_VERIFICATION_WAITING,
-  ];
-
   return (
     <div className="fr-mb-14v">
       <h2>Email</h2>
@@ -173,12 +166,6 @@ export default function EmailContainer({
           <WebMailButtons plan={emailInfos.emailPlan} />
         </div>
       )}
-      {userInfos.primary_email_status == EmailStatusCode.EMAIL_DELETED &&
-        userInfos.secondary_email && (
-          <DimailEmailCreationInvite
-            secondaryEmail={userInfos.secondary_email}
-          />
-        )}
       {!!emailIsBeingCreated && (
         <Alert
           description={`Ton email @beta.gouv.fr est en train d'être créé, tu recevras un email sur ${userInfos.secondary_email} dès que celui-ci sera actif.`}
