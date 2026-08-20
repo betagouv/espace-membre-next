@@ -1,5 +1,6 @@
 // One-off script: creates the "Demandes_Segur" table (and its columns) in the
-// configured Grist document so the Ségur access request form can write to it.
+// configured Grist document so the Ségur request forms (accès aux bureaux et
+// salle de réunion) can write to it.
 //
 // Usage (once GRIST_API_KEY / GRIST_SEGUR_DOC_ID are set in .env):
 //   npm run grist:setup-segur
@@ -9,8 +10,9 @@
 import config from "@/server/config";
 import {
   GRIST_SEGUR_COLUMNS,
+  SEGUR_ACCES_COLUMN_IDS,
   SEGUR_PERIODE_CHOICES,
-  SEGUR_SALLE_REUNION_CHOICES,
+  SEGUR_REUNION_COLUMN_IDS,
   SEGUR_STATUT_CHOICES,
 } from "@/models/segur";
 
@@ -27,7 +29,8 @@ function choiceWidget(choices: string[]): string {
   return JSON.stringify({ choices });
 }
 
-const columns: GristColumn[] = [
+// Catalogue de toutes les colonnes ; chaque table en prend un sous-ensemble.
+const allColumns: GristColumn[] = [
   {
     id: GRIST_SEGUR_COLUMNS.date,
     fields: { label: "Date", type: "DateTime:Europe/Paris" },
@@ -49,6 +52,10 @@ const columns: GristColumn[] = [
     fields: { label: "Mails des autres membres", type: "Text" },
   },
   {
+    id: GRIST_SEGUR_COLUMNS.nbPersonnes,
+    fields: { label: "Nombre de personnes", type: "Int" },
+  },
+  {
     id: GRIST_SEGUR_COLUMNS.dateDebut,
     fields: { label: "Date souhaitée de venue", type: "Text" },
   },
@@ -61,14 +68,20 @@ const columns: GristColumn[] = [
     fields: { label: "Précisions", type: "Text" },
   },
   {
-    id: GRIST_SEGUR_COLUMNS.salleReunion,
-    fields: {
-      label: "Demande de salle de réunion",
-      type: "Choice",
-      widgetOptions: choiceWidget(
-        SEGUR_SALLE_REUNION_CHOICES as unknown as string[],
-      ),
-    },
+    id: GRIST_SEGUR_COLUMNS.datesReunion,
+    fields: { label: "Date(s) de la réunion", type: "Text" },
+  },
+  {
+    id: GRIST_SEGUR_COLUMNS.heureDebut,
+    fields: { label: "Heure de début", type: "Text" },
+  },
+  {
+    id: GRIST_SEGUR_COLUMNS.heureFin,
+    fields: { label: "Heure de fin", type: "Text" },
+  },
+  {
+    id: GRIST_SEGUR_COLUMNS.materiel,
+    fields: { label: "Matériel nécessaire", type: "Text" },
   },
   {
     id: GRIST_SEGUR_COLUMNS.joursRecurrents,
@@ -108,37 +121,19 @@ const columns: GristColumn[] = [
   },
 ];
 
-async function main() {
-  const apiUrl = (config.GRIST_API_URL || "").replace(/\/$/, "");
-  const apiKey = config.GRIST_API_KEY;
-  const docId = config.GRIST_SEGUR_DOC_ID;
-  const tableId = config.GRIST_SEGUR_TABLE_ID;
+type AuthHeaders = Record<string, string>;
 
-  if (!apiKey || !docId) {
-    throw new Error(
-      "GRIST_API_KEY et GRIST_SEGUR_DOC_ID doivent être renseignés dans .env",
-    );
-  }
+async function setupTable(
+  apiUrl: string,
+  authHeaders: AuthHeaders,
+  docId: string,
+  tableId: string,
+  columnIds: string[],
+  existingTableIds: Set<string>,
+) {
+  const columns = allColumns.filter((c) => columnIds.includes(c.id));
 
-  const authHeaders = {
-    Authorization: `Bearer ${apiKey}`,
-    "Content-Type": "application/json",
-  };
-
-  // Grist silently creates a suffixed duplicate if we POST an existing table id,
-  // so we must look first and never blind-create.
-  const listRes = await fetch(`${apiUrl}/docs/${docId}/tables`, {
-    headers: authHeaders,
-  });
-  if (!listRes.ok) {
-    throw new Error(
-      `Impossible de lister les tables (${listRes.status}): ${await listRes.text()}`,
-    );
-  }
-  const { tables } = (await listRes.json()) as { tables: { id: string }[] };
-  const tableExists = tables.some((t) => t.id === tableId);
-
-  if (!tableExists) {
+  if (!existingTableIds.has(tableId)) {
     console.log(`Création de la table "${tableId}" dans le doc ${docId}...`);
     const createRes = await fetch(`${apiUrl}/docs/${docId}/tables`, {
       method: "POST",
@@ -150,27 +145,98 @@ async function main() {
         `Échec création table (${createRes.status}): ${await createRes.text()}`,
       );
     }
-    console.log("Table créée.");
+    console.log(`Table "${tableId}" créée.`);
+    return;
+  }
+
+  // Même piège que pour les tables : POSTer une colonne déjà présente ne la
+  // laisse pas tranquille, Grist crée un doublon suffixé (Date2, Email2...).
+  // On liste donc l'existant et on n'envoie que ce qui manque vraiment.
+  const existingRes = await fetch(
+    `${apiUrl}/docs/${docId}/tables/${tableId}/columns`,
+    { headers: authHeaders },
+  );
+  if (!existingRes.ok) {
+    throw new Error(
+      `Impossible de lister les colonnes de "${tableId}" (${existingRes.status}): ${await existingRes.text()}`,
+    );
+  }
+  const { columns: existingColumns } = (await existingRes.json()) as {
+    columns: { id: string }[];
+  };
+  const existingIds = new Set(existingColumns.map((c) => c.id));
+  const missing = columns.filter((c) => !existingIds.has(c.id));
+
+  if (missing.length === 0) {
+    console.log(`Table "${tableId}" : colonnes déjà à jour.`);
     return;
   }
 
   console.log(
-    `Table "${tableId}" existante — ajout des colonnes manquantes...`,
+    `Table "${tableId}" : ajout de ${missing.map((c) => c.id).join(", ")}`,
   );
   const colRes = await fetch(
     `${apiUrl}/docs/${docId}/tables/${tableId}/columns`,
     {
       method: "POST",
       headers: authHeaders,
-      body: JSON.stringify({ columns }),
+      body: JSON.stringify({ columns: missing }),
     },
   );
   if (!colRes.ok) {
     throw new Error(
-      `Échec ajout colonnes (${colRes.status}): ${await colRes.text()}`,
+      `Échec ajout colonnes sur "${tableId}" (${colRes.status}): ${await colRes.text()}`,
     );
   }
-  console.log("Colonnes à jour.");
+  console.log(`Table "${tableId}" : colonnes à jour.`);
+}
+
+async function main() {
+  const apiUrl = (config.GRIST_API_URL || "").replace(/\/$/, "");
+  const apiKey = config.GRIST_API_KEY;
+  const docId = config.GRIST_SEGUR_DOC_ID;
+
+  if (!apiKey || !docId) {
+    throw new Error(
+      "GRIST_API_KEY et GRIST_SEGUR_DOC_ID doivent être renseignés dans .env",
+    );
+  }
+
+  const authHeaders: AuthHeaders = {
+    Authorization: `Bearer ${apiKey}`,
+    "Content-Type": "application/json",
+  };
+
+  // Grist crée un doublon suffixé si on POST un id de table existant : on
+  // regarde d'abord, on ne crée jamais à l'aveugle.
+  const listRes = await fetch(`${apiUrl}/docs/${docId}/tables`, {
+    headers: authHeaders,
+  });
+  if (!listRes.ok) {
+    throw new Error(
+      `Impossible de lister les tables (${listRes.status}): ${await listRes.text()}`,
+    );
+  }
+  const { tables } = (await listRes.json()) as { tables: { id: string }[] };
+  const existingTableIds = new Set(tables.map((t) => t.id));
+
+  // Une table par type de demande.
+  await setupTable(
+    apiUrl,
+    authHeaders,
+    docId,
+    config.GRIST_SEGUR_TABLE_ID,
+    SEGUR_ACCES_COLUMN_IDS,
+    existingTableIds,
+  );
+  await setupTable(
+    apiUrl,
+    authHeaders,
+    docId,
+    config.GRIST_SEGUR_REUNION_TABLE_ID,
+    SEGUR_REUNION_COLUMN_IDS,
+    existingTableIds,
+  );
 }
 
 main()

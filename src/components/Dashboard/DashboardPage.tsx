@@ -278,8 +278,8 @@ export function DashboardPage(props: DashboardPageProps) {
         <div className={fr.cx("fr-col-12", "fr-col-lg-6")}>
           <Tile
             className={fr.cx("fr-tile--sm")}
-            title="Demande d'accès au bâtiment Ségur"
-            desc="Demander un accès au bâtiment Ségur."
+            title="Demandes Ségur"
+            desc="Demander un accès au bâtiment Ségur ou réserver une salle de réunion."
             orientation="horizontal"
             imageUrl={(cityHall as StaticImageData).src}
             linkProps={{

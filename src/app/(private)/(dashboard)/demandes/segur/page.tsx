@@ -26,7 +26,7 @@ export default async function SegurAccessRequestPage() {
 
   return (
     <div>
-      <h1>Demande d'accès aux bureaux Ségur</h1>
+      <h1>Demandes Ségur</h1>
       <SegurRequestForm
         defaultValues={{
           prenomNom: user?.fullname || "",

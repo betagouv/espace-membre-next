@@ -113,6 +113,10 @@ export default {
   GRIST_OPS_TABLE_ID: process.env.GRIST_OPS_TABLE_ID || "Demandes_OPS",
   GRIST_SEGUR_DOC_ID: process.env.GRIST_SEGUR_DOC_ID,
   GRIST_SEGUR_TABLE_ID: process.env.GRIST_SEGUR_TABLE_ID || "Demandes_Segur",
+  // Les réservations de salle vont dans leur propre table. L'identifiant réel
+  // est au singulier, contrairement au libellé affiché dans Grist.
+  GRIST_SEGUR_REUNION_TABLE_ID:
+    process.env.GRIST_SEGUR_REUNION_TABLE_ID || "Demande_Segur_reunion",
   DS_TOKEN: process.env.DS_TOKEN,
   DS_DEMARCHE_NUMBER: process.env.DS_DEMARCHE_NUMBER
     ? Number.parseInt(process.env.DS_DEMARCHE_NUMBER)
