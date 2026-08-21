@@ -11,10 +11,15 @@ export type Generated<T> =
     ? ColumnType<S, I | undefined, U>
     : ColumnType<T, T | undefined, T>;
 
-export type Int8 = ColumnType<string, bigint | number | string>;
+export type Int8 = ColumnType<
+  string,
+  bigint | number | string,
+  bigint | number | string
+>;
 
 export type Interval = ColumnType<
   IPostgresInterval,
+  IPostgresInterval | number | string,
   IPostgresInterval | number | string
 >;
 
@@ -32,7 +37,7 @@ export type JsonValue = JsonArray | JsonObject | JsonPrimitive;
 
 export type MissionsStatusEnum = "admin" | "independent" | "service";
 
-export type Numeric = ColumnType<string, number | string>;
+export type Numeric = ColumnType<string, number | string, number | string>;
 
 export type PgbossJobState =
   | "active"
@@ -43,7 +48,7 @@ export type PgbossJobState =
   | "failed"
   | "retry";
 
-export type Timestamp = ColumnType<Date, Date | string>;
+export type Timestamp = ColumnType<Date, Date | string, Date | string>;
 
 export type UsersDomaineEnum =
   | "Animation"
@@ -71,6 +76,32 @@ export interface Accounts {
   token_type: string | null;
   type: string;
   userId: string;
+}
+
+export interface ApiKeys {
+  confirmed_at: Timestamp | null;
+  created_at: Generated<Timestamp>;
+  created_by_user_id: string;
+  expires_at: Timestamp | null;
+  kind: string;
+  last_used_at: Timestamp | null;
+  name: string;
+  owner_incubator_id: string | null;
+  owner_user_id: string | null;
+  read_perimeter_id: string | null;
+  read_perimeter_kind: string;
+  reminder_last_sent_at: Timestamp | null;
+  reminder_stage: Generated<number>;
+  revoked_at: Timestamp | null;
+  revoked_by_user_id: string | null;
+  revoked_reason: string | null;
+  scopes: string[];
+  token_hash: string;
+  token_prefix: string;
+  updated_at: Generated<Timestamp>;
+  uuid: Generated<string>;
+  write_perimeter_id: string | null;
+  write_perimeter_kind: string | null;
 }
 
 export interface BadgeRequests {
@@ -116,14 +147,6 @@ export interface DinumEmails {
   uuid: Generated<string>;
 }
 
-export interface MatrixAccounts {
-  id: Generated<string>;
-  user_id: string;
-  matrix_id: string;
-  created_at: Generated<Timestamp>;
-  updated_at: Generated<Timestamp>;
-}
-
 export interface Events {
   action_code: string;
   action_metadata: string | null;
@@ -149,7 +172,7 @@ export interface Incubators {
   address: string | null;
   contact: string | null;
   description: string | null;
-  ghid: string | null;
+  ghid: string;
   github: string | null;
   highlighted_startups: string[] | null;
   owner_id: string | null;
@@ -182,6 +205,20 @@ export interface MatomoSites {
   url: string | null;
 }
 
+export interface MatrixAccounts {
+  created_at: Generated<Timestamp>;
+  id: Generated<string>;
+  matrix_id: string;
+  updated_at: Generated<Timestamp>;
+  user_id: string;
+}
+
+export interface MattermostMemberInfos {
+  last_activity_at: Timestamp | null;
+  mattermost_user_id: string | null;
+  username: Generated<string | null>;
+}
+
 export interface Missions {
   employer: string | null;
   end: Timestamp | null;
@@ -196,6 +233,17 @@ export interface MissionsStartups {
   mission_id: string;
   startup_id: string;
   uuid: Generated<string>;
+}
+
+export interface Newsletters {
+  brevo_url: string | null;
+  created_at: Generated<Timestamp>;
+  id: Generated<string>;
+  publish_at: Timestamp | null;
+  sent_at: Timestamp | null;
+  url: string;
+  validator: string | null;
+  year_week: string | null;
 }
 
 export interface Organizations {
@@ -522,6 +570,7 @@ export interface VerificationTokens {
 
 export interface DB {
   accounts: Accounts;
+  api_keys: ApiKeys;
   badge_requests: BadgeRequests;
   community: Community;
   dinum_emails: DinumEmails;
@@ -530,10 +579,12 @@ export interface DB {
   incubators: Incubators;
   knex_migrations: KnexMigrations;
   knex_migrations_lock: KnexMigrationsLock;
-  matrix_accounts: MatrixAccounts;
   matomo_sites: MatomoSites;
+  matrix_accounts: MatrixAccounts;
+  mattermost_member_infos: MattermostMemberInfos;
   missions: Missions;
   missions_startups: MissionsStartups;
+  newsletters: Newsletters;
   organizations: Organizations;
   "pgboss.archive": PgbossArchive;
   "pgboss.job": PgbossJob;

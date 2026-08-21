@@ -95,10 +95,13 @@ describe("Test startup server action", () => {
         .selectAll()
         .where("username", "=", "membre.actif")
         .executeTakeFirstOrThrow();
+      // Le role Member ne peut plus editer une fiche produit : il faut etre
+      // admin, membre d'une equipe d'un incubateur lie, ou agent public actif
+      // sur le produit.
       const mockSession = {
         user: {
           id: "membre.actif",
-          isAdmin: false,
+          isAdmin: true,
           uuid: user.uuid,
         },
       };
@@ -183,10 +186,13 @@ describe("Test startup server action", () => {
         .selectAll()
         .where("username", "=", "membre.actif")
         .executeTakeFirstOrThrow();
+      // Le role Member ne peut plus editer une fiche produit : il faut etre
+      // admin, membre d'une equipe d'un incubateur lie, ou agent public actif
+      // sur le produit.
       const mockSession = {
         user: {
           id: "membre.actif",
-          isAdmin: false,
+          isAdmin: true,
           uuid: user.uuid,
         },
       };

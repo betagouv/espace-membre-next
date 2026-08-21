@@ -11,6 +11,7 @@ import {
   HtmlBuilderType,
   SubjectFunction,
 } from "@/lib/email/email";
+import { ApiKeyReminderEmailTitle } from "@/server/views/templates/emails/ApiKeyReminderEmail/ApiKeyReminderEmail";
 import { EmailCreatedDimailTitle } from "@/server/views/templates/emails/EmailCreatedDimail/EmailCreatedDimail";
 import { LoginEmailTitle } from "@/server/views/templates/emails/LoginEmail/LoginEmail";
 import { MemberValidationEmailTitle } from "@/server/views/templates/emails/memberValidationEmail/memberValidationEmail";
@@ -46,6 +47,10 @@ const TEMPLATES_BY_TYPE: Record<EmailProps["type"], string | null> = {
     EMAILS_DIR,
     "StartupNewMemberArrivalEmail/StartupNewMemberArrivalEmail.mjml.ejs",
   ),
+  [EMAIL_TYPES.EMAIL_API_KEY_REMINDER]: path.join(
+    EMAILS_DIR,
+    "ApiKeyReminderEmail/ApiKeyReminderEmail.mjml.ejs",
+  ),
 };
 
 const SUBJECTS_BY_TYPE: Record<EmailProps["type"], string | SubjectFunction> = {
@@ -56,6 +61,8 @@ const SUBJECTS_BY_TYPE: Record<EmailProps["type"], string | SubjectFunction> = {
   EMAIL_NEW_MEMBER_VALIDATION: MemberValidationEmailTitle(),
   [EMAIL_TYPES.EMAIL_STARTUP_NEW_MEMBER_ARRIVAL]:
     StartupNewMemberArrivalEmailTitle(),
+  // La FONCTION et non son appel : le sujet depend de la branche `event`.
+  [EMAIL_TYPES.EMAIL_API_KEY_REMINDER]: ApiKeyReminderEmailTitle,
 };
 
 // Legacy plain-HTML/markdown .ejs templates (see the orphaned .ejs files
@@ -68,6 +75,7 @@ const MARKDOWN_BY_TYPE: Record<EmailProps["type"], boolean> = {
   EMAIL_VERIFICATION_WAITING: false,
   EMAIL_NEW_MEMBER_VALIDATION: false,
   [EMAIL_TYPES.EMAIL_STARTUP_NEW_MEMBER_ARRIVAL]: false,
+  [EMAIL_TYPES.EMAIL_API_KEY_REMINDER]: false,
 };
 
 function getSubjectForType(type: EmailProps["type"], variables: any): string {

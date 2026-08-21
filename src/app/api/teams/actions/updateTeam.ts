@@ -3,33 +3,25 @@
 import slugify from "@sindresorhus/slugify";
 import _ from "lodash";
 import { revalidatePath } from "next/cache";
-import { getServerSession } from "next-auth";
 
 import { addEvent } from "@/lib/events";
 import { db } from "@/lib/kysely";
 import { EventCode } from "@/models/actionEvent/actionEvent";
-import { teamUpdateSchemaType } from "@/models/actions/team";
-import { authOptions } from "@/lib/authoptions";
+import { teamUpdateSchema, teamUpdateSchemaType } from "@/models/actions/team";
+import { assertCanEditTeam } from "@/lib/authorization/team";
 
 export async function updateTeam({
-  teamWrapper: { team, members },
+  teamWrapper,
   teamUuid,
 }: {
   teamWrapper: teamUpdateSchemaType;
   teamUuid: string;
 }) {
-  const session = await getServerSession(authOptions);
-  if (!session || !session.user.id) {
-    throw new Error(`You don't have the right to access this function`);
-  }
-  const previousTeamData = await db
-    .selectFrom("teams")
-    .selectAll()
-    .where("uuid", "=", teamUuid)
-    .executeTakeFirst();
-  if (!previousTeamData) {
-    throw new Error("Cannot find team");
-  }
+  const { team, members } = teamUpdateSchema.parse(teamWrapper);
+  const { subject, team: previousTeamData } = await assertCanEditTeam(
+    teamUuid,
+    team.incubator_id,
+  );
 
   await db.transaction().execute(async (trx) => {
     // update team data
@@ -77,7 +69,7 @@ export async function updateTeam({
 
     await addEvent({
       action_code: EventCode.TEAM_UPDATED,
-      created_by_username: session.user.id,
+      created_by_username: subject.username,
       action_metadata: {
         value: {
           uuid: udpatedTeam.uuid,

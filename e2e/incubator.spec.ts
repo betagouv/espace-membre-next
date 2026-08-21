@@ -16,6 +16,7 @@ test("incubator detail page and form page", async ({ page }) => {
         .insertInto("incubators")
         .values({
             title: "Mon super incubateur",
+            ghid: "mon-super-incubateur-e2e",
         })
         .returning("uuid")
         .executeTakeFirst();
@@ -36,9 +37,19 @@ test("incubator detail page and form page", async ({ page }) => {
     }
 });
 
-test("incubator create page", async ({ page }) => {
+/**
+ * La création d'incubateur est désormais réservée aux admins, jusqu'à sa page
+ * d'entrée : offrir le formulaire à quelqu'un dont le submit sera refusé lui
+ * fait perdre sa saisie. `valid.member` n'est pas admin, et aucun compte ne
+ * l'est en e2e puisque .env.test ne définit pas ESPACE_MEMBRE_ADMIN.
+ *
+ * Le chemin admin, lui, n'est pas couvert ici : il faudrait un second état
+ * d'authentification et un admin déclaré dans l'environnement de test.
+ */
+test("incubator create page redirects a non-admin", async ({ page }) => {
     await page.goto(`/incubators/create-form`);
+    await page.waitForURL("/dashboard");
     await expect(
-        page.getByText("Créer une fiche incubateur").first()
-    ).toBeVisible();
+        page.getByText("Créer une fiche incubateur")
+    ).toHaveCount(0);
 });

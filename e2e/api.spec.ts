@@ -1,22 +1,28 @@
 import { test, expect } from "@playwright/test";
 
-test("Cannot fetch protected route", async ({ baseURL }) =>
-    fetch(`${baseURL}/api/protected/startup`).then((r) => {
-        expect(r.status).toBeGreaterThan(400);
+test("Rejects an API call without a token", async ({ baseURL }) =>
+    fetch(`${baseURL}/api/v1/startups`).then(async (r) => {
+        expect(r.status).toBe(401);
+        expect(r.headers.get("content-type")).toContain(
+            "application/problem+json",
+        );
     }));
 
-test("Cannot fetch protected route with an invalid API token", async ({
-    baseURL,
-}) =>
-    fetch(`${baseURL}/api/protected/startup`, {
-        headers: { "X-Api-Key": "something" },
+test("Rejects an API call with a malformed token", async ({ baseURL }) =>
+    fetch(`${baseURL}/api/v1/startups`, {
+        headers: { Authorization: "Bearer something" },
     }).then((r) => {
-        expect(r.status).toBeGreaterThan(400);
+        expect(r.status).toBe(401);
     }));
 
-test("Fetch protected route with an API token", async ({ baseURL }) =>
-    fetch(`${baseURL}/api/protected/startup`, {
-        headers: { "X-Api-Key": "test-api-key" },
-    }).then((r) => {
+test("Serves the OpenAPI document publicly", async ({ baseURL }) =>
+    fetch(`${baseURL}/api/v1/openapi.json`).then(async (r) => {
+        expect(r.status).toBe(200);
+        const document = await r.json();
+        expect(document.openapi).toBe("3.1.0");
+    }));
+
+test("Serves the documentation page publicly", async ({ baseURL }) =>
+    fetch(`${baseURL}/api/docs`).then((r) => {
         expect(r.status).toBe(200);
     }));
