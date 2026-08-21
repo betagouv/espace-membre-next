@@ -4,6 +4,7 @@ import {
   canEditMember as _canEditMember,
   canViewMemberApiKeys,
 } from "@/lib/authorization/member";
+import { canValidateRestrictedChecklistItem } from "@/lib/canValidateRestrictedChecklistItem";
 import { toAuthSubject } from "@/lib/authorization/subject";
 import { isApiKeyCreationDisabled } from "@/server/config/apiKeys.config";
 import { toApiKeyRow } from "@/lib/api-keys/listItem";
@@ -90,11 +91,16 @@ export async function buildMemberPageProps({
   const canValidateMember =
     canEditMember && session.user.uuid !== user.userInfos.uuid;
 
+  const canValidateRestrictedItems = await canValidateRestrictedChecklistItem(
+    session.user,
+  );
+
   return {
     isAdmin,
     isCurrentUser,
     canEditMember,
     canValidateMember,
+    canValidateRestrictedItems,
     authorizations: user.authorizations,
     emailInfos: user.emailInfos,
     emailRedirections: user.emailRedirections,

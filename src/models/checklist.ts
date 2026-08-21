@@ -8,6 +8,9 @@ export const itemSchema = z.object({
   domaines: z.array(z.nativeEnum(Domaine)).optional(),
   disabled: z.boolean().optional(),
   defaultValue: z.boolean().optional(),
+  // Item non auto-déclaratif : seuls l'équipe d'animation et les admins
+  // peuvent le cocher ou le décocher.
+  restricted: z.boolean().optional(),
 });
 
 export const sectionSchema = z.object({

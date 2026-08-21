@@ -59,6 +59,18 @@ utiles du projet.
 
 copier [`.env.development`](./.env.development) en `.env`
 
+`ESPACE_MEMBRE_ADMIN` liste les administrateurs de l'espace membre, sous forme
+de `username` (`prenom.nom`) séparés par des virgules.
+
+Les items de checklist marqués `restricted: true` dans
+[`onboarding.yml`](./src/lib/checklists/onboarding.yml), par exemple la
+participation à l'atelier d'embarquement, ne sont pas auto-déclaratifs : seuls
+les administrateurs et les membres de l'équipe d'animation de la DINUM peuvent
+les cocher. Cette équipe est identifiée par son `ghid`
+`dinum-animation-beta-gouv-fr` dans la table `teams` — plusieurs incubateurs ont
+une équipe nommée « Animation », le `ghid` est ce qui les distingue. Il n'y a
+pas de variable d'environnement : l'appartenance est lue en base.
+
 ### Lancer en mode développement
 
 Un environnement Docker Compose permet de lancer l'application et ses
