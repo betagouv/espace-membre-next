@@ -1,7 +1,7 @@
 import { Badge } from "@codegouvfr/react-dsfr/Badge";
 import Button from "@codegouvfr/react-dsfr/Button";
 import Card from "@codegouvfr/react-dsfr/Card";
-import { format } from "date-fns/format";
+import { formatInTimeZone } from "date-fns-tz";
 import { fr } from "date-fns/locale/fr";
 import MarkdownIt from "markdown-it";
 import type { Metadata, ResolvingMetadata } from "next";
@@ -225,9 +225,14 @@ export default async function Page(props: Readonly<Props>) {
               }
               title={
                 formation.startDate
-                  ? format(formation.startDate, "d MMMM à HH'h'mm", {
-                      locale: fr,
-                    })
+                  ? // Fuseau explicite : sans lui le serveur en UTC et le
+                    // navigateur affichent deux heures différentes.
+                    formatInTimeZone(
+                      formation.startDate,
+                      "Europe/Paris",
+                      "d MMMM à HH'h'mm",
+                      { locale: fr },
+                    )
                   : "Formation en ligne"
               }
               titleAs="h2"

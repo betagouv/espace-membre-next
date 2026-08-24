@@ -59,6 +59,9 @@ export async function fetchGristFormations(): Promise<Formation[]> {
 
   return formats.map((format) => {
     const f = format.fields;
+    // La colonne Image ne contient que des identifiants de pièces jointes :
+    // l'URL passe par la route qui les relaie avec la clé d'API.
+    const [imageId] = choiceList(f[GRIST_FORMATIONS_COLUMNS.image]);
     const session = nextSessionByFormat.get(format.id);
     const s = session?.fields ?? {};
     const start = toDate(s[GRIST_SESSIONS_COLUMNS.debut]);
@@ -77,6 +80,7 @@ export async function fetchGristFormations(): Promise<Formation[]> {
       name: String(f[GRIST_FORMATIONS_COLUMNS.titre] ?? ""),
       description: String(f[GRIST_FORMATIONS_COLUMNS.description] ?? ""),
       created_at: new Date(),
+      imageUrl: imageId ? `/api/formations/image/${imageId}` : undefined,
       is_embarquement: false,
       isELearning:
         f[GRIST_FORMATIONS_COLUMNS.modalite] === FORMATION_MODALITE.E_LEARNING,

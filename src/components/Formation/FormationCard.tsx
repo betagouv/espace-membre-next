@@ -2,7 +2,7 @@ import { ReactNode } from "react";
 
 import { Badge } from "@codegouvfr/react-dsfr/Badge";
 import { Card } from "@codegouvfr/react-dsfr/Card";
-import { format } from "date-fns/format";
+import { formatInTimeZone } from "date-fns-tz";
 import { fr } from "date-fns/locale/fr";
 
 import { Formation } from "@/models/formation";
@@ -81,9 +81,15 @@ export default function FormationCard({
       titleAs="h2"
       endDetail={
         formation.start
-          ? format(formation.start, "d MMMM à HH'h'mm", {
-              locale: fr,
-            })
+          ? // Fuseau explicite : sans lui, le serveur (UTC en conteneur) et le
+            // navigateur (Paris) affichent deux heures différentes, et React
+            // signale une erreur d'hydratation.
+            formatInTimeZone(
+              formation.start,
+              "Europe/Paris",
+              "d MMMM à HH'h'mm",
+              { locale: fr },
+            )
           : undefined
       }
     ></Card>

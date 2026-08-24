@@ -103,3 +103,29 @@ export async function uploadGristAttachments(
 
   return (await response.json()) as number[];
 }
+
+// Stream one attachment out of a Grist document.
+// Le magasin de pièces jointes est protégé par la clé d'API : le navigateur ne
+// peut pas y accéder directement, il faut relayer.
+export async function getGristAttachment(
+  docId: string,
+  attachmentId: number,
+): Promise<{ body: ArrayBuffer; contentType: string }> {
+  const url = gristApiUrl(
+    `/docs/${docId}/attachments/${attachmentId}/download`,
+  );
+  const response = await fetch(url, { headers: gristHeaders() });
+
+  if (!response.ok) {
+    const text = await response.text();
+    throw new Error(
+      `Grist téléchargement de pièce jointe a échoué (${response.status}): ${text}`,
+    );
+  }
+
+  return {
+    body: await response.arrayBuffer(),
+    contentType:
+      response.headers.get("content-type") || "application/octet-stream",
+  };
+}
