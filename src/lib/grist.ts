@@ -46,3 +46,27 @@ export async function addGristRecords(
   const data = (await response.json()) as { records: { id: number }[] };
   return data.records.map((r) => r.id);
 }
+
+// Fetch records from a Grist table, optionally filtered.
+// `filter` maps a column id to the accepted values, e.g. { ghid: ["jean.dupont"] }.
+export async function getGristRecords(
+  docId: string,
+  tableId: string,
+  filter?: Record<string, unknown[]>,
+): Promise<{ id: number; fields: GristRecordFields }[]> {
+  const query = filter
+    ? `?filter=${encodeURIComponent(JSON.stringify(filter))}`
+    : "";
+  const url = gristApiUrl(`/docs/${docId}/tables/${tableId}/records${query}`);
+  const response = await fetch(url, { headers: gristHeaders() });
+
+  if (!response.ok) {
+    const text = await response.text();
+    throw new Error(`Grist getRecords a échoué (${response.status}): ${text}`);
+  }
+
+  const data = (await response.json()) as {
+    records: { id: number; fields: GristRecordFields }[];
+  };
+  return data.records;
+}
