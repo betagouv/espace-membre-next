@@ -98,6 +98,19 @@ function formatToFormation(format: GristRow, session?: GristRow): Formation {
       created_at: new Date(),
       imageUrl: imageId ? `/api/formations/image/${imageId}` : undefined,
       sessionId: session ? String(session.id) : undefined,
+      animatorTchap:
+        String(f[GRIST_FORMATIONS_COLUMNS.animateurTchap] ?? "") || undefined,
+      statut: String(f[GRIST_FORMATIONS_COLUMNS.statut] ?? "") || undefined,
+      lienAdmin:
+        String(f[GRIST_FORMATIONS_COLUMNS.lienAdmin] ?? "") || undefined,
+      lienSupport:
+        String(f[GRIST_FORMATIONS_COLUMNS.lienSupport] ?? "") || undefined,
+      lienFeedback:
+        String(f[GRIST_FORMATIONS_COLUMNS.lienFeedback] ?? "") || undefined,
+      gestionInscriptions:
+        !!f[GRIST_FORMATIONS_COLUMNS.gestionInscriptions] || undefined,
+      duree: Number(f[GRIST_FORMATIONS_COLUMNS.duree] ?? 0) || undefined,
+      modalite: String(f[GRIST_FORMATIONS_COLUMNS.modalite] ?? "") || undefined,
       is_embarquement: false,
       isELearning:
         f[GRIST_FORMATIONS_COLUMNS.modalite] === FORMATION_MODALITE.E_LEARNING,
@@ -152,6 +165,53 @@ export async function fetchGristInscriptions(
 
   return inscriptions.map((inscription) => ({
     sessionId: String(inscription.fields[GRIST_INSCRIPTIONS_COLUMNS.session]),
+    onWaitingList:
+      !!inscription.fields[GRIST_INSCRIPTIONS_COLUMNS.surListeDAttente],
+  }));
+}
+
+export type GristParticipant = {
+  name: string;
+  email: string;
+  onWaitingList: boolean;
+};
+
+/**
+ * Participants d'une session, pour l'animateur·ice et l'équipe d'animation.
+ * Le nom vient de la table Membres, l'email de l'inscription.
+ */
+export async function fetchGristSessionParticipants(
+  sessionId: string,
+): Promise<GristParticipant[]> {
+  if (!config.GRIST_API_KEY || !config.GRIST_FORMATIONS_DOC_ID) return [];
+  const docId = config.GRIST_FORMATIONS_DOC_ID;
+
+  const inscriptions = await getGristRecords(
+    docId,
+    config.GRIST_FORMATIONS_INSCRIPTIONS_TABLE_ID,
+    { [GRIST_INSCRIPTIONS_COLUMNS.session]: [Number(sessionId)] },
+  );
+  if (inscriptions.length === 0) return [];
+
+  // La table Membres compte plusieurs milliers de lignes : on la lit une fois
+  // et on résout les références en mémoire.
+  const membres = await getGristRecords(
+    docId,
+    config.GRIST_FORMATIONS_MEMBRES_TABLE_ID,
+  );
+  const nameByRowId = new Map(
+    membres.map((m) => [
+      m.id,
+      String(m.fields["name"] ?? m.fields["ghid"] ?? ""),
+    ]),
+  );
+
+  return inscriptions.map((inscription) => ({
+    name:
+      nameByRowId.get(
+        Number(inscription.fields[GRIST_INSCRIPTIONS_COLUMNS.membre]),
+      ) || "Membre inconnu",
+    email: String(inscription.fields[GRIST_INSCRIPTIONS_COLUMNS.email] ?? ""),
     onWaitingList:
       !!inscription.fields[GRIST_INSCRIPTIONS_COLUMNS.surListeDAttente],
   }));

@@ -1,18 +1,24 @@
 "use server";
 
 import { fromZonedTime } from "date-fns-tz";
+import { revalidatePath } from "next/cache";
 import { getServerSession } from "next-auth";
 
+import { canManageFormation } from "@/lib/canManageFormation";
+import { fetchGristFormationById } from "@/lib/formationsGrist";
 import {
   addGristRecords,
   getGristRecords,
   GristRecordFields,
+  updateGristRecords,
   uploadGristAttachments,
 } from "@/lib/grist";
 import { isAnimationTeamMember } from "@/lib/isAnimationTeamMember";
 import {
   formationProposalSchema,
   formationProposalSchemaType,
+  formationUpdateSchema,
+  formationUpdateSchemaType,
 } from "@/models/actions/formationProposal";
 import {
   FORMATION_DUREES,
@@ -241,5 +247,83 @@ export const registerToFormationSession = withErrorHandling(
     );
 
     return { ok: true, alreadyRegistered: false, onWaitingList };
+  },
+);
+
+/**
+ * Modifie une formation.
+ *
+ * Réservé à l'équipe d'animation et à la personne qui l'anime : le droit est
+ * recalculé ici à partir de la formation enregistrée, jamais reçu du client.
+ * Le statut n'est pas modifiable par ce chemin — une proposition ne se valide
+ * pas elle-même.
+ */
+export const updateFormation = withErrorHandling(
+  async (data: formationUpdateSchemaType) => {
+    const session = await getServerSession(authOptions);
+    if (!session?.user) {
+      throw new AuthorizationError("Tu dois être connecté·e.");
+    }
+
+    const parsed = formationUpdateSchema.parse(data);
+
+    if (!config.GRIST_API_KEY || !config.GRIST_FORMATIONS_DOC_ID) {
+      throw new BusinessError(
+        "gristNotConfigured",
+        "L'intégration Grist n'est pas configurée.",
+      );
+    }
+
+    const formation = await fetchGristFormationById(parsed.formationId);
+    if (!formation) {
+      throw new BusinessError(
+        "FormationInconnue",
+        "Cette formation n'existe pas.",
+      );
+    }
+    if (!(await canManageFormation(session.user, formation))) {
+      throw new AuthorizationError(
+        "Seule l'équipe d'animation ou la personne qui anime peut modifier cette formation.",
+      );
+    }
+
+    const dureeHeures =
+      FORMATION_DUREES.find((d) => d.label === parsed.duree)?.hours ?? null;
+
+    await updateGristRecords(
+      config.GRIST_FORMATIONS_DOC_ID,
+      config.GRIST_FORMATIONS_FORMATS_TABLE_ID,
+      [
+        {
+          id: Number(parsed.formationId),
+          fields: {
+            [GRIST_FORMATIONS_COLUMNS.titre]: parsed.titre,
+            [GRIST_FORMATIONS_COLUMNS.description]: parsed.description,
+            [GRIST_FORMATIONS_COLUMNS.modalite]: parsed.modalite,
+            [GRIST_FORMATIONS_COLUMNS.thematiques]: [
+              "L",
+              ...parsed.thematiques,
+            ],
+            [GRIST_FORMATIONS_COLUMNS.audience]: ["L", ...parsed.audience],
+            [GRIST_FORMATIONS_COLUMNS.capacite]: parsed.capacite ?? null,
+            [GRIST_FORMATIONS_COLUMNS.duree]: dureeHeures,
+            [GRIST_FORMATIONS_COLUMNS.lienAdmin]: parsed.lienVisioAdmin ?? "",
+            [GRIST_FORMATIONS_COLUMNS.lienSupport]: parsed.lienSupport ?? "",
+            [GRIST_FORMATIONS_COLUMNS.lienFeedback]: parsed.lienFeedback ?? "",
+            [GRIST_FORMATIONS_COLUMNS.gestionInscriptions]:
+              parsed.gestionInscriptions ?? false,
+            [GRIST_FORMATIONS_COLUMNS.animateur]: parsed.animateur,
+            [GRIST_FORMATIONS_COLUMNS.animateurTchap]:
+              parsed.animateurTchap ?? "",
+            [GRIST_FORMATIONS_COLUMNS.emailOrganisateur]:
+              parsed.emailOrganisateur,
+          },
+        },
+      ],
+    );
+
+    revalidatePath(`/formations/${parsed.formationId}`);
+    revalidatePath("/formations");
+    return { ok: true };
   },
 );

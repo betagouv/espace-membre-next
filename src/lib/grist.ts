@@ -129,3 +129,24 @@ export async function getGristAttachment(
       response.headers.get("content-type") || "application/octet-stream",
   };
 }
+
+// Update existing records in a Grist table.
+export async function updateGristRecords(
+  docId: string,
+  tableId: string,
+  records: { id: number; fields: GristRecordFields }[],
+): Promise<void> {
+  const url = gristApiUrl(`/docs/${docId}/tables/${tableId}/records`);
+  const response = await fetch(url, {
+    method: "PATCH",
+    headers: gristHeaders({ "Content-Type": "application/json" }),
+    body: JSON.stringify({ records }),
+  });
+
+  if (!response.ok) {
+    const text = await response.text();
+    throw new Error(
+      `Grist updateRecords a échoué (${response.status}): ${text}`,
+    );
+  }
+}

@@ -13,8 +13,13 @@ import { BreadCrumbFiller } from "@/app/BreadCrumbProvider";
 import {
   fetchGristFormationById,
   fetchGristInscriptions,
+  fetchGristSessionParticipants,
 } from "@/lib/formationsGrist";
 import { FormationRegisterButton } from "@/components/Formation/FormationRegisterButton";
+import { FormationManagePanel } from "@/components/Formation/FormationManagePanel";
+import { canManageFormation } from "@/lib/canManageFormation";
+import { FORMATION_DUREES } from "@/models/formationsGrist";
+import { formationUpdateSchemaType } from "@/models/actions/formationProposal";
 import { notFound } from "next/navigation";
 import { getUserInfos } from "@/lib/kysely/queries/users";
 import { userInfosToModel } from "@/models/mapper";
@@ -117,6 +122,15 @@ export default async function Page(props: Readonly<Props>) {
   const gristInscription = formation.sessionId
     ? inscriptions.find((i) => i.sessionId === formation.sessionId)
     : undefined;
+
+  // Panneau de gestion : réservé à l'équipe d'animation et à la personne qui
+  // anime. Le droit est recalculé côté serveur, l'affichage n'en est que la
+  // conséquence.
+  const canManage = await canManageFormation(session.user, formation);
+  const participants =
+    canManage && formation.sessionId
+      ? await fetchGristSessionParticipants(formation.sessionId)
+      : [];
 
   const dbUser = userInfosToModel(
     await getUserInfos({
@@ -258,6 +272,32 @@ export default async function Page(props: Readonly<Props>) {
             </p>
           </div>
         </div>
+        {canManage && (
+          <FormationManagePanel
+            statut={formation.statut}
+            participants={participants}
+            defaultValues={{
+              formationId: formation.id,
+              titre: formation.name,
+              description: formation.description,
+              modalite: (formation.modalite ??
+                "") as formationUpdateSchemaType["modalite"],
+              thematiques: formation.category ?? [],
+              audience: formation.audience ?? [],
+              capacite: formation.maxSeats,
+              duree: FORMATION_DUREES.find((d) => d.hours === formation.duree)
+                ?.label,
+              lienVisioAdmin: formation.lienAdmin ?? "",
+              lienSupport: formation.lienSupport ?? "",
+              lienFeedback: formation.lienFeedback ?? "",
+              animateur: formation.animator ?? "",
+              animateurTchap: formation.animatorTchap ?? "",
+              emailOrganisateur: formation.animatorEmail ?? "",
+              gestionInscriptions: formation.gestionInscriptions ?? false,
+            }}
+          />
+        )}
+
         <div className="fr-my-4w">
           <Link
             href="/formations"

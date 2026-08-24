@@ -117,3 +117,17 @@ export const formationProposalSchema = z
 export type formationProposalSchemaType = z.infer<
   typeof formationProposalSchema
 >;
+
+/**
+ * Modification d'une formation existante. Reprend les champs du dépôt, sans
+ * l'image ni les dates : la session se gère à part, et remplacer l'illustration
+ * demande un nouvel envoi de fichier.
+ */
+export const formationUpdateSchema = formationProposalSchema
+  .innerType()
+  .omit({ image: true, dateDebut: true, dateFin: true })
+  .extend({
+    formationId: z.string().min(1),
+  });
+
+export type formationUpdateSchemaType = z.infer<typeof formationUpdateSchema>;
