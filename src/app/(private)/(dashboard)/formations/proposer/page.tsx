@@ -4,6 +4,7 @@ import { getServerSession } from "next-auth";
 
 import { FormationProposalForm } from "@/components/Formation/FormationProposalForm";
 import { isAnimationTeamMember } from "@/lib/isAnimationTeamMember";
+import { getUserBasicInfo } from "@/lib/kysely/queries/users";
 import { routeTitles } from "@/lib/routes";
 import { authOptions } from "@/lib/authoptions";
 
@@ -21,6 +22,15 @@ export default async function FormationProposalPage() {
   // moment de l'enregistrement, jamais reçu du client.
   const isAnimation = await isAnimationTeamMember(session.user);
 
+  // Pré-remplit l'animateur·ice et l'email avec le profil du déposant, qui
+  // propose le plus souvent une formation qu'il ou elle animera.
+  const user = await getUserBasicInfo({ uuid: session.user.uuid });
+  const defaultValues = {
+    animateur: user?.fullname || "",
+    animateurTchap: user?.primary_email || "",
+    emailOrganisateur: user?.primary_email || user?.secondary_email || "",
+  };
+
   return (
     <div className="fr-container fr-container--fluid">
       <h1>{isAnimation ? "Créer une formation" : "Proposer une formation"}</h1>
@@ -29,7 +39,10 @@ export default async function FormationProposalPage() {
           ? "La formation sera ajoutée au catalogue, tu pourras ensuite planifier des sessions."
           : "Tu connais un sujet et tu veux le partager avec la communauté ? Propose une formation, l'équipe d'animation reviendra vers toi."}
       </p>
-      <FormationProposalForm isAnimation={isAnimation} />
+      <FormationProposalForm
+        isAnimation={isAnimation}
+        defaultValues={defaultValues}
+      />
     </div>
   );
 }

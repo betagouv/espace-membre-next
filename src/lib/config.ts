@@ -119,6 +119,8 @@ export default {
     process.env.GRIST_FORMATIONS_FORMATS_TABLE_ID || "Formats",
   GRIST_FORMATIONS_MEMBRES_TABLE_ID:
     process.env.GRIST_FORMATIONS_MEMBRES_TABLE_ID || "Membres",
+  GRIST_FORMATIONS_SESSIONS_TABLE_ID:
+    process.env.GRIST_FORMATIONS_SESSIONS_TABLE_ID || "Sessions",
   DS_TOKEN: process.env.DS_TOKEN,
   DS_DEMARCHE_NUMBER: process.env.DS_DEMARCHE_NUMBER
     ? Number.parseInt(process.env.DS_DEMARCHE_NUMBER)
