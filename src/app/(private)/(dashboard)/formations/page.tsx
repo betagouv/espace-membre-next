@@ -4,10 +4,8 @@ import { redirect } from "next/navigation";
 import { getServerSession } from "next-auth";
 
 import FormationList from "@/components/Formation/FormationList";
-import {
-  fetchAirtableFormations,
-  fetchAirtableInscription,
-} from "@/lib/airtable";
+import { fetchAirtableInscription } from "@/lib/airtable";
+import { fetchGristFormations } from "@/lib/formationsGrist";
 import config from "@/server/config";
 import { authOptions } from "@/lib/authoptions";
 import { isAnimationTeamMember } from "@/lib/isAnimationTeamMember";
@@ -24,16 +22,22 @@ export default async function Page() {
   if (!session) {
     redirect("/login");
   }
-  // Airtable indisponible ne doit pas emporter toute la page : on affiche le
-  // catalogue vide avec une alerte, le bouton de proposition reste utilisable.
-  let formations: Awaited<ReturnType<typeof fetchAirtableFormations>> = [];
+  // Le catalogue vient de Grist. Les inscriptions restent sur Airtable le temps
+  // que la migration soit terminée : une panne de l'un ne doit pas emporter
+  // l'autre, ni toute la page.
+  let formations: Awaited<ReturnType<typeof fetchGristFormations>> = [];
   let inscriptions: Awaited<ReturnType<typeof fetchAirtableInscription>> = [];
   let catalogueError = false;
   try {
-    formations = await fetchAirtableFormations();
-    inscriptions = await fetchAirtableInscription(session.user.id);
+    formations = await fetchGristFormations();
   } catch {
     catalogueError = true;
+  }
+  try {
+    inscriptions = await fetchAirtableInscription(session.user.id);
+  } catch {
+    // Sans inscriptions, le catalogue s'affiche : on perd seulement les
+    // pastilles « Inscrit ».
   }
   const isAnimation = await isAnimationTeamMember(session.user);
   return (

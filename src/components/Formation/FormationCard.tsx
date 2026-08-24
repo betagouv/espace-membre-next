@@ -46,6 +46,15 @@ export default function FormationCard({
     );
   }
 
+  // imageUrl et imageAlt forment une union dans le type du composant : les deux
+  // ou aucun. Et une chaîne vide vaut 0 dans son `imageUrl.length && ...`
+  // interne, qui afficherait « 0 » sur la carte.
+  const imageProps:
+    | { imageUrl: string; imageAlt: string }
+    | { imageUrl?: never; imageAlt?: never } = formation.imageUrl
+    ? { imageUrl: formation.imageUrl, imageAlt: "" }
+    : {};
+
   return (
     <Card
       background
@@ -60,12 +69,13 @@ export default function FormationCard({
         </span>
       }
       enlargeLink
-      imageAlt={``}
-      imageUrl={formation.imageUrl || ""}
+      {...imageProps}
       linkProps={{
         href: `/formations/${formation.airtable_id}`,
       }}
-      start={badges}
+      // Un tableau vide vaut 0 dans le `length && ...` interne du composant,
+      // qui afficherait « 0 » sur la carte.
+      start={badges.length ? badges : undefined}
       size="medium"
       title={formation.name}
       titleAs="h2"
