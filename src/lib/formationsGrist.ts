@@ -57,12 +57,27 @@ export async function fetchGristFormations(): Promise<Formation[]> {
     }
   }
 
-  return formats.map((format) => {
+  return formats.map((format) =>
+    formatToFormation(format, nextSessionByFormat.get(format.id)),
+  );
+}
+
+/**
+ * Une formation par son identifiant de ligne Grist, pour la page de détail.
+ */
+export async function fetchGristFormationById(
+  id: string,
+): Promise<Formation | undefined> {
+  const formations = await fetchGristFormations();
+  return formations.find((formation) => formation.id === id);
+}
+
+function formatToFormation(format: GristRow, session?: GristRow): Formation {
+  {
     const f = format.fields;
     // La colonne Image ne contient que des identifiants de pièces jointes :
     // l'URL passe par la route qui les relaie avec la clé d'API.
     const [imageId] = choiceList(f[GRIST_FORMATIONS_COLUMNS.image]);
-    const session = nextSessionByFormat.get(format.id);
     const s = session?.fields ?? {};
     const start = toDate(s[GRIST_SESSIONS_COLUMNS.debut]);
     const capacite = Number(
@@ -99,5 +114,5 @@ export async function fetchGristFormations(): Promise<Formation[]> {
       availableSeats:
         typeof placesRestantes === "number" ? placesRestantes : capacite,
     } satisfies Formation;
-  });
+  }
 }

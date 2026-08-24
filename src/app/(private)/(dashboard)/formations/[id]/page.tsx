@@ -10,7 +10,8 @@ import { redirect } from "next/navigation";
 import { getServerSession } from "next-auth";
 
 import { BreadCrumbFiller } from "@/app/BreadCrumbProvider";
-import { fetchAirtableFormationById } from "@/lib/airtable";
+import { fetchGristFormationById } from "@/lib/formationsGrist";
+import { notFound } from "next/navigation";
 import { getUserInfos } from "@/lib/kysely/queries/users";
 import { userInfosToModel } from "@/models/mapper";
 import { CommunicationEmailCode, Domaine } from "@/models/member";
@@ -27,9 +28,9 @@ export async function generateMetadata(
 ): Promise<Metadata> {
   // fetch data
   const params = await props.params;
-  const formation = await fetchAirtableFormationById(params.id);
+  const formation = await fetchGristFormationById(params.id);
   return {
-    title: `${formation.name} / Espace Membre`,
+    title: `${formation?.name ?? "Formation"} / Espace Membre`,
   };
 }
 
@@ -102,7 +103,10 @@ export default async function Page(props: Readonly<Props>) {
     // Return the modified URL as a string
     return url.toString();
   };
-  const formation = await fetchAirtableFormationById(params.id);
+  const formation = await fetchGristFormationById(params.id);
+  if (!formation) {
+    notFound();
+  }
 
   const dbUser = userInfosToModel(
     await getUserInfos({
