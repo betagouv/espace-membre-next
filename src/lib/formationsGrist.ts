@@ -4,6 +4,7 @@ import {
   FORMATION_MODALITE,
   FORMATION_STATUT,
   GRIST_FORMATIONS_COLUMNS,
+  GRIST_INSCRIPTIONS_COLUMNS,
   GRIST_SESSIONS_COLUMNS,
 } from "@/models/formationsGrist";
 import config from "@/server/config";
@@ -96,6 +97,7 @@ function formatToFormation(format: GristRow, session?: GristRow): Formation {
       description: String(f[GRIST_FORMATIONS_COLUMNS.description] ?? ""),
       created_at: new Date(),
       imageUrl: imageId ? `/api/formations/image/${imageId}` : undefined,
+      sessionId: session ? String(session.id) : undefined,
       is_embarquement: false,
       isELearning:
         f[GRIST_FORMATIONS_COLUMNS.modalite] === FORMATION_MODALITE.E_LEARNING,
@@ -115,4 +117,42 @@ function formatToFormation(format: GristRow, session?: GristRow): Formation {
         typeof placesRestantes === "number" ? placesRestantes : capacite,
     } satisfies Formation;
   }
+}
+
+export type GristInscription = {
+  sessionId: string;
+  onWaitingList: boolean;
+};
+
+/**
+ * Inscriptions du membre, par identifiant de session.
+ *
+ * La table Membres est indexée sur le ghid : un membre absent n'a simplement
+ * aucune inscription.
+ */
+export async function fetchGristInscriptions(
+  ghid: string,
+): Promise<GristInscription[]> {
+  if (!config.GRIST_API_KEY || !config.GRIST_FORMATIONS_DOC_ID) return [];
+  const docId = config.GRIST_FORMATIONS_DOC_ID;
+
+  const membres = await getGristRecords(
+    docId,
+    config.GRIST_FORMATIONS_MEMBRES_TABLE_ID,
+    { ghid: [ghid] },
+  );
+  const membreRowId = membres[0]?.id;
+  if (!membreRowId) return [];
+
+  const inscriptions = await getGristRecords(
+    docId,
+    config.GRIST_FORMATIONS_INSCRIPTIONS_TABLE_ID,
+    { [GRIST_INSCRIPTIONS_COLUMNS.membre]: [membreRowId] },
+  );
+
+  return inscriptions.map((inscription) => ({
+    sessionId: String(inscription.fields[GRIST_INSCRIPTIONS_COLUMNS.session]),
+    onWaitingList:
+      !!inscription.fields[GRIST_INSCRIPTIONS_COLUMNS.surListeDAttente],
+  }));
 }

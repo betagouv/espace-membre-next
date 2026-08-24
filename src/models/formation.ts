@@ -25,6 +25,9 @@ export const formationSchema = z.object({
   availableSeats: z.number(),
   maxSeats: z.number().optional(),
   waitingListUsernames: z.array(z.string()).optional(),
+  // Identifiant de la session Grist à venir, quand la formation en a une :
+  // c'est à elle qu'on s'inscrit, pas au format.
+  sessionId: z.string().optional(),
 });
 
 export type Formation = z.infer<typeof formationSchema>;

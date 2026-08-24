@@ -80,6 +80,16 @@ export const GRIST_FORMATIONS_COLUMNS = {
   emailOrganisateur: "Email_organisateur",
 } as const;
 
+// Identifiants de colonnes de la table Inscriptions.
+export const GRIST_INSCRIPTIONS_COLUMNS = {
+  membre: "membre",
+  session: "Session",
+  createdAt: "created_at",
+  surListeDAttente: "Sur_liste_d_attente",
+  present: "present",
+  email: "Email",
+} as const;
+
 // Identifiants de colonnes de la table Sessions, remplie quand la date de la
 // formation est déjà fixée au moment de la proposition.
 export const GRIST_SESSIONS_COLUMNS = {

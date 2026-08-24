@@ -10,7 +10,11 @@ import { redirect } from "next/navigation";
 import { getServerSession } from "next-auth";
 
 import { BreadCrumbFiller } from "@/app/BreadCrumbProvider";
-import { fetchGristFormationById } from "@/lib/formationsGrist";
+import {
+  fetchGristFormationById,
+  fetchGristInscriptions,
+} from "@/lib/formationsGrist";
+import { FormationRegisterButton } from "@/components/Formation/FormationRegisterButton";
 import { notFound } from "next/navigation";
 import { getUserInfos } from "@/lib/kysely/queries/users";
 import { userInfosToModel } from "@/models/mapper";
@@ -108,6 +112,12 @@ export default async function Page(props: Readonly<Props>) {
     notFound();
   }
 
+  // Inscription du membre à la session à venir, s'il y en a une.
+  const inscriptions = await fetchGristInscriptions(session.user.id);
+  const gristInscription = formation.sessionId
+    ? inscriptions.find((i) => i.sessionId === formation.sessionId)
+    : undefined;
+
   const dbUser = userInfosToModel(
     await getUserInfos({
       uuid: session.user.uuid,
@@ -196,32 +206,12 @@ export default async function Page(props: Readonly<Props>) {
                           marginTop: 5,
                         }}
                       >
-                        {!isMemberRegistered ? (
-                          <Button
-                            linkProps={{
-                              href: buildInscriptionLink(
-                                formation.inscriptionLink,
-                                {
-                                  fullname: dbUser.fullname,
-                                  email,
-                                  username: dbUser.username,
-                                  domaine: dbUser.domaine,
-                                },
-                              ),
-                              target: "_blank",
-                            }}
-                          >
-                            {formation.availableSeats <= 0
-                              ? `M'inscrire sur liste d'attente`
-                              : `M'inscrire`}
-                          </Button>
-                        ) : isInWaitingList ? (
-                          <Badge as="span">Inscrit sur liste d'attente</Badge>
-                        ) : (
-                          <Badge severity="success" as="span">
-                            Inscrit
-                          </Badge>
-                        )}
+                        <FormationRegisterButton
+                          sessionId={formation.sessionId}
+                          isRegistered={!!gristInscription}
+                          isOnWaitingList={!!gristInscription?.onWaitingList}
+                          seatsLeft={formation.availableSeats}
+                        />
                       </span>
                     </>
                   )}

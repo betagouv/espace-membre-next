@@ -18,6 +18,7 @@ import {
   FORMATION_DUREES,
   FORMATION_STATUT,
   GRIST_FORMATIONS_COLUMNS,
+  GRIST_INSCRIPTIONS_COLUMNS,
   GRIST_SESSIONS_COLUMNS,
 } from "@/models/formationsGrist";
 import config from "@/server/config";
@@ -149,5 +150,96 @@ export const submitFormationProposal = withErrorHandling(
     }
 
     return { ok: true, statut };
+  },
+);
+
+/**
+ * Inscrit le membre connecté à une session de formation.
+ *
+ * Bascule sur liste d'attente quand la capacité est atteinte, et ne crée
+ * jamais de doublon : une deuxième demande renvoie l'état déjà enregistré.
+ */
+export const registerToFormationSession = withErrorHandling(
+  async (sessionId: string) => {
+    const session = await getServerSession(authOptions);
+    if (!session?.user) {
+      throw new AuthorizationError("Tu dois être connecté·e.");
+    }
+
+    if (!config.GRIST_API_KEY || !config.GRIST_FORMATIONS_DOC_ID) {
+      throw new BusinessError(
+        "gristNotConfigured",
+        "L'intégration Grist n'est pas configurée.",
+      );
+    }
+    const docId = config.GRIST_FORMATIONS_DOC_ID;
+
+    const sessionRowId = Number(sessionId);
+    if (!Number.isInteger(sessionRowId) || sessionRowId <= 0) {
+      throw new BusinessError("SessionInconnue", "Cette session n'existe pas.");
+    }
+
+    const membreRowId = await findMembreRowId(session.user.id);
+    if (!membreRowId) {
+      throw new BusinessError(
+        "MembreIntrouvable",
+        "Ton compte n'a pas été trouvé dans l'annuaire des formations.",
+      );
+    }
+
+    // Les inscriptions de la session servent deux fois : détecter un doublon,
+    // et compter les places prises.
+    const inscriptions = await getGristRecords(
+      docId,
+      config.GRIST_FORMATIONS_INSCRIPTIONS_TABLE_ID,
+      { [GRIST_INSCRIPTIONS_COLUMNS.session]: [sessionRowId] },
+    );
+
+    const existing = inscriptions.find(
+      (i) =>
+        Number(i.fields[GRIST_INSCRIPTIONS_COLUMNS.membre]) === membreRowId,
+    );
+    if (existing) {
+      return {
+        ok: true,
+        alreadyRegistered: true,
+        onWaitingList:
+          !!existing.fields[GRIST_INSCRIPTIONS_COLUMNS.surListeDAttente],
+      };
+    }
+
+    const [sessionRow] = (
+      await getGristRecords(docId, config.GRIST_FORMATIONS_SESSIONS_TABLE_ID)
+    ).filter((row) => row.id === sessionRowId);
+    if (!sessionRow) {
+      throw new BusinessError("SessionInconnue", "Cette session n'existe pas.");
+    }
+
+    // Capacité atteinte : on inscrit quand même, sur liste d'attente. Une
+    // capacité absente vaut « pas de limite ».
+    const capacite = Number(
+      sessionRow.fields[GRIST_SESSIONS_COLUMNS.capacite] ?? 0,
+    );
+    const inscrits = inscriptions.filter(
+      (i) => !i.fields[GRIST_INSCRIPTIONS_COLUMNS.surListeDAttente],
+    ).length;
+    const onWaitingList = capacite > 0 && inscrits >= capacite;
+
+    await addGristRecords(
+      docId,
+      config.GRIST_FORMATIONS_INSCRIPTIONS_TABLE_ID,
+      [
+        {
+          [GRIST_INSCRIPTIONS_COLUMNS.membre]: membreRowId,
+          [GRIST_INSCRIPTIONS_COLUMNS.session]: sessionRowId,
+          [GRIST_INSCRIPTIONS_COLUMNS.createdAt]: new Date().toISOString(),
+          [GRIST_INSCRIPTIONS_COLUMNS.surListeDAttente]: onWaitingList,
+          [GRIST_INSCRIPTIONS_COLUMNS.present]: false,
+          [GRIST_INSCRIPTIONS_COLUMNS.email]: session.user.email ?? "",
+        },
+      ],
+    );
+
+    return { ok: true, alreadyRegistered: false, onWaitingList };
   },
 );
