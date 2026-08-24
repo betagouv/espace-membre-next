@@ -7,6 +7,8 @@ import {
   FORMATION_THEMATIQUES,
 } from "@/models/formationsGrist";
 
+export const MAX_IMAGE_BYTES = 5 * 1024 * 1024;
+
 const optionalUrl = z
   .string()
   .trim()
@@ -70,8 +72,28 @@ export const formationProposalSchema = z
       .trim()
       .email("Email invalide"),
     gestionInscriptions: z.boolean().optional(),
+    // Illustration facultative. Le type File n'existe pas dans zod : on valide
+    // la taille et le type dans le superRefine ci-dessous.
+    image: z.any().optional(),
   })
   .superRefine((data, ctx) => {
+    const image = data.image;
+    if (image instanceof File && image.size > 0) {
+      if (!image.type.startsWith("image/")) {
+        ctx.addIssue({
+          code: z.ZodIssueCode.custom,
+          path: ["image"],
+          message: "Le fichier doit être une image",
+        });
+      }
+      if (image.size > MAX_IMAGE_BYTES) {
+        ctx.addIssue({
+          code: z.ZodIssueCode.custom,
+          path: ["image"],
+          message: "L'image ne doit pas dépasser 5 Mo",
+        });
+      }
+    }
     if (data.dateFin && !data.dateDebut) {
       ctx.addIssue({
         code: z.ZodIssueCode.custom,

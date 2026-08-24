@@ -8,6 +8,7 @@ import { Button } from "@codegouvfr/react-dsfr/Button";
 import Checkbox from "@codegouvfr/react-dsfr/Checkbox";
 import Input from "@codegouvfr/react-dsfr/Input";
 import { RadioButtons } from "@codegouvfr/react-dsfr/RadioButtons";
+import { Upload } from "@codegouvfr/react-dsfr/Upload";
 import Select from "@codegouvfr/react-dsfr/SelectNext";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useRouter } from "next/navigation";
@@ -53,7 +54,13 @@ export const FormationProposalForm = ({
     React.useState<AlertMessageType | null>(null);
 
   const onSubmit = async (data: formationProposalSchemaType) => {
-    const res = await submitFormationProposal(data);
+    // react-hook-form rend une FileList : on n'envoie que le premier fichier,
+    // et rien du tout si le champ est vide.
+    const fileList = data.image as FileList | undefined;
+    const res = await submitFormationProposal({
+      ...data,
+      image: fileList?.[0],
+    });
     if (res.success) {
       setAlertMessage({
         title: isAnimation ? "Formation créée" : "Proposition envoyée",
@@ -132,9 +139,16 @@ export const FormationProposalForm = ({
         }))}
       />
 
-      <div className={fr.cx("fr-grid-row", "fr-grid-row--gutters")}>
+      {/* alignItems + fr-mb-0 : le texte d'aide rend une colonne plus haute que
+          l'autre, et la marge basse de .fr-input-group varie selon le
+          breakpoint — sans ça les deux champs ne sont pas alignés. */}
+      <div
+        className={fr.cx("fr-grid-row", "fr-grid-row--gutters", "fr-mb-3w")}
+        style={{ alignItems: "flex-end" }}
+      >
         <div className={fr.cx("fr-col-12", "fr-col-md-6")}>
           <Input
+            className={fr.cx("fr-mb-0")}
             label="Date de début de formation (facultatif)"
             hintText="Si la date est déjà fixée. Une session sera créée avec la formation."
             state={errors.dateDebut ? "error" : "default"}
@@ -147,6 +161,7 @@ export const FormationProposalForm = ({
         </div>
         <div className={fr.cx("fr-col-12", "fr-col-md-6")}>
           <Input
+            className={fr.cx("fr-mb-0")}
             label="Date de fin de formation (facultatif)"
             state={errors.dateFin ? "error" : "default"}
             stateRelatedMessage={errors.dateFin?.message}
@@ -169,9 +184,13 @@ export const FormationProposalForm = ({
         }}
       />
 
-      <div className={fr.cx("fr-grid-row", "fr-grid-row--gutters")}>
+      <div
+        className={fr.cx("fr-grid-row", "fr-grid-row--gutters", "fr-mb-3w")}
+        style={{ alignItems: "flex-end" }}
+      >
         <div className={fr.cx("fr-col-12", "fr-col-md-6")}>
           <Select
+            className={fr.cx("fr-mb-0")}
             label="Durée (facultatif)"
             state={errors.duree ? "error" : "default"}
             stateRelatedMessage={errors.duree?.message}
@@ -189,6 +208,7 @@ export const FormationProposalForm = ({
         </div>
         <div className={fr.cx("fr-col-12", "fr-col-md-6")}>
           <Input
+            className={fr.cx("fr-mb-0")}
             label="Limite de participants (facultatif)"
             state={errors.capacite ? "error" : "default"}
             stateRelatedMessage={errors.capacite?.message}
@@ -255,6 +275,17 @@ export const FormationProposalForm = ({
         nativeInputProps={{
           type: "email",
           ...register("emailOrganisateur"),
+        }}
+      />
+
+      <Upload
+        label="Image ou bannière de la formation (facultatif)"
+        hint="Une illustration pour le catalogue. JPG ou PNG, 5 Mo maximum."
+        state={errors.image ? "error" : "default"}
+        stateRelatedMessage={errors.image?.message?.toString()}
+        nativeInputProps={{
+          accept: "image/*",
+          ...register("image"),
         }}
       />
 

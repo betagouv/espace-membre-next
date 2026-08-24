@@ -7,6 +7,7 @@ import {
   addGristRecords,
   getGristRecords,
   GristRecordFields,
+  uploadGristAttachments,
 } from "@/lib/grist";
 import { isAnimationTeamMember } from "@/lib/isAnimationTeamMember";
 import {
@@ -70,6 +71,14 @@ export const submitFormationProposal = withErrorHandling(
       : FORMATION_STATUT.PROPOSEE;
 
     const referentRowId = await findMembreRowId(session.user.id);
+
+    // L'illustration passe par le magasin de pièces jointes du document : la
+    // colonne Image ne stocke que des identifiants.
+    const image = parsed.image;
+    const attachmentIds =
+      image instanceof File && image.size > 0
+        ? await uploadGristAttachments(config.GRIST_FORMATIONS_DOC_ID, [image])
+        : [];
     const dureeHeures =
       FORMATION_DUREES.find((d) => d.label === parsed.duree)?.hours ?? null;
 
@@ -92,6 +101,9 @@ export const submitFormationProposal = withErrorHandling(
       [GRIST_FORMATIONS_COLUMNS.animateur]: parsed.animateur,
       [GRIST_FORMATIONS_COLUMNS.animateurTchap]: parsed.animateurTchap ?? "",
       [GRIST_FORMATIONS_COLUMNS.emailOrganisateur]: parsed.emailOrganisateur,
+      [GRIST_FORMATIONS_COLUMNS.image]: attachmentIds.length
+        ? ["L", ...attachmentIds]
+        : null,
     };
 
     const [formatRowId] = await addGristRecords(

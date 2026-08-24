@@ -70,3 +70,36 @@ export async function getGristRecords(
   };
   return data.records;
 }
+
+// Upload files to a Grist document's attachment store.
+// Returns the attachment ids, to be written into an Attachments column
+// as ["L", ...ids].
+export async function uploadGristAttachments(
+  docId: string,
+  files: File[],
+): Promise<number[]> {
+  if (files.length === 0) return [];
+
+  const form = new FormData();
+  for (const file of files) {
+    form.append("upload", file, file.name);
+  }
+
+  const url = gristApiUrl(`/docs/${docId}/attachments`);
+  const response = await fetch(url, {
+    method: "POST",
+    // Pas de Content-Type explicite : fetch pose lui-même la frontière
+    // multipart, la fixer à la main casserait la requête.
+    headers: gristHeaders(),
+    body: form,
+  });
+
+  if (!response.ok) {
+    const text = await response.text();
+    throw new Error(
+      `Grist upload de pièce jointe a échoué (${response.status}): ${text}`,
+    );
+  }
+
+  return (await response.json()) as number[];
+}

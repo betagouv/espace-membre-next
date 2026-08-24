@@ -76,6 +76,7 @@ export const GRIST_FORMATIONS_COLUMNS = {
   gestionInscriptions: "Gestion_inscriptions",
   animateur: "Animateur",
   animateurTchap: "Animateur_tchap",
+  image: "Image",
   emailOrganisateur: "Email_organisateur",
 } as const;
 
