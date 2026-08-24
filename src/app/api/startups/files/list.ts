@@ -38,8 +38,10 @@ export async function getStartupFiles({
       throw new AuthorizationError();
     }
   }
-  // Note: when called without uuid/ghid, all file metadata is returned to
-  // authenticated members. File content (base64) is not included in this query.
+  // Note: when called without uuid/ghid (e.g. the startup list page), file
+  // metadata across all startups is returned to any authenticated member.
+  // File content (base64) is not selected here. The uuid-filtered path
+  // enforces canEditStartup above.
   const files = await db
     .selectFrom(["startups", "startups_files"])
     .select(commonFileFields)
