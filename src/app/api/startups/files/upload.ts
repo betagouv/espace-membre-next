@@ -2,7 +2,9 @@
 import { revalidatePath } from "next/cache";
 import { getServerSession } from "next-auth";
 
+import { canEditStartup } from "@/lib/canEditStartup";
 import { db } from "@/lib/kysely";
+import { AuthorizationError } from "@/lib/error";
 import { DocSchemaType } from "@/models/startupFiles";
 import { authOptions } from "@/lib/authoptions";
 
@@ -43,7 +45,11 @@ export async function uploadStartupFile(
   }
   const base64 = Buffer.from(content);
 
-  // todo: ensure user can upload files here
+  const canEdit = await canEditStartup(session, uuid);
+  if (!canEdit) {
+    throw new AuthorizationError();
+  }
+
   const inserted = await db
     .insertInto("startups_files")
     .values({

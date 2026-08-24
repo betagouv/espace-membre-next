@@ -3,7 +3,9 @@
 import { ExpressionWrapper } from "kysely";
 import { getServerSession } from "next-auth";
 
+import { canEditStartup } from "@/lib/canEditStartup";
 import { db } from "@/lib/kysely";
+import { AuthorizationError } from "@/lib/error";
 import { authOptions } from "@/lib/authoptions";
 
 const commonFileFields = [
@@ -28,9 +30,16 @@ export async function getStartupFiles({
 } = {}) {
   const session = await getServerSession(authOptions);
   if (!session || !session.user.id) {
-    throw new Error(`You don't have the right to access this function`);
+    throw new AuthorizationError();
   }
-  // todo: ensure user can download files here
+  if (uuid) {
+    const canEdit = await canEditStartup(session, uuid);
+    if (!canEdit) {
+      throw new AuthorizationError();
+    }
+  }
+  // Note: when called without uuid/ghid, all file metadata is returned to
+  // authenticated members. File content (base64) is not included in this query.
   const files = await db
     .selectFrom(["startups", "startups_files"])
     .select(commonFileFields)
