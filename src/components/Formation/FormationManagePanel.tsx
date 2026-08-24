@@ -269,6 +269,7 @@ export const FormationManagePanel = ({
                 <Input
                   className={fr.cx("fr-mb-0")}
                   label="Limite de participants"
+                  hintText="Appliquée à la session à venir."
                   state={errors.capacite ? "error" : "default"}
                   stateRelatedMessage={errors.capacite?.message}
                   nativeInputProps={{

@@ -322,6 +322,26 @@ export const updateFormation = withErrorHandling(
       ],
     );
 
+    // La capacité vit à deux endroits : celle du format sert de modèle aux
+    // futures sessions, celle de la session gouverne les inscriptions. Ne
+    // modifier que la première n'aurait aucun effet visible.
+    if (formation.sessionId) {
+      await updateGristRecords(
+        config.GRIST_FORMATIONS_DOC_ID,
+        config.GRIST_FORMATIONS_SESSIONS_TABLE_ID,
+        [
+          {
+            id: Number(formation.sessionId),
+            fields: {
+              [GRIST_SESSIONS_COLUMNS.capacite]: parsed.capacite ?? null,
+              [GRIST_SESSIONS_COLUMNS.lienVisioAdmin]:
+                parsed.lienVisioAdmin ?? "",
+            },
+          },
+        ],
+      );
+    }
+
     revalidatePath(`/formations/${parsed.formationId}`);
     revalidatePath("/formations");
     return { ok: true };
