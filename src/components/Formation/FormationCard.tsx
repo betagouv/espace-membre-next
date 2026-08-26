@@ -55,10 +55,6 @@ export default function FormationCard({
     ? { imageUrl: formation.imageUrl, imageAlt: "" }
     : {};
 
-  // Une formation peut être programmée plusieurs fois. La carte annonce la date
-  // la plus proche ; le reste se voit sur la page de la formation.
-  const autresDates = Math.max(0, (formation.sessions?.length ?? 0) - 1);
-
   return (
     <Card
       background
@@ -88,12 +84,14 @@ export default function FormationCard({
           ? // Fuseau explicite : sans lui, le serveur (UTC en conteneur) et le
             // navigateur (Paris) affichent deux heures différentes, et React
             // signale une erreur d'hydratation.
-            `${formatInTimeZone(
+            formatInTimeZone(
               formation.start,
               "Europe/Paris",
               "d MMMM à HH'h'mm",
-              { locale: fr },
-            )}${autresDates ? ` (+ ${autresDates} autre${autresDates > 1 ? "s" : ""} date${autresDates > 1 ? "s" : ""})` : ""}`
+              {
+                locale: fr,
+              },
+            )
           : undefined
       }
     ></Card>

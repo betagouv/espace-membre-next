@@ -138,13 +138,30 @@ export default function FormationList({
       setSelectedFilters([...selectedFilters, tag]);
     }
   };
+  // Au catalogue on choisit une séance, pas un sujet : une formation
+  // programmée cinq fois occupe cinq cartes, chacune avec sa date et ses
+  // places. Une formation sans date garde une carte, qui l'annonce.
+  const formationsParDate: Formation[] = formations.flatMap((formation) => {
+    const sessions = formation.sessions ?? [];
+    if (sessions.length === 0) return [formation];
+    return sessions.map((session) => ({
+      ...formation,
+      sessionId: session.id,
+      start: session.start,
+      startDate: session.start,
+      formation_date: session.start,
+      maxSeats: session.maxSeats,
+      availableSeats: session.availableSeats ?? 0,
+    }));
+  });
+
   const filteredFormations: Formation[] = selectedFilters.length
-    ? formations.filter((formation) => {
+    ? formationsParDate.filter((formation) => {
         return selectedFilters.reduce((acc, filter) => {
           return !!(applyFilter(formation, filter) && acc);
         }, true);
       })
-    : formations;
+    : formationsParDate;
   filteredFormations.sort((a, b) => {
     return (a.start && b.start && a.start.getTime() - b.start.getTime()) || 0;
   });
@@ -170,7 +187,9 @@ export default function FormationList({
         <div className="fr-grid-row fr-grid-row--gutters">
           {filteredFormations.map((formation) => (
             <div
-              key={formation.id}
+              // Une même formation revient autant de fois qu'elle a de dates :
+              // la date fait partie de l'identité de la carte.
+              key={`${formation.id}-${formation.sessionId ?? "sans-date"}`}
               className="fr-col-md-4 fr-col-lg-4 fr-col-sm-12"
             >
               <FormationCard
