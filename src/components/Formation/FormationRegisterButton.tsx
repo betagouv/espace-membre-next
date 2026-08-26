@@ -22,11 +22,13 @@ export const FormationRegisterButton = ({
   isRegistered,
   isOnWaitingList,
   seatsLeft,
+  isAnimator = false,
 }: {
   sessionId?: string;
   isRegistered: boolean;
   isOnWaitingList: boolean;
   seatsLeft: number;
+  isAnimator?: boolean;
 }) => {
   const [state, setState] = React.useState<State>(
     isRegistered ? (isOnWaitingList ? "attente" : "inscrit") : "idle",
@@ -34,6 +36,16 @@ export const FormationRegisterButton = ({
   const [pending, setPending] = React.useState(false);
   const [error, setError] = React.useState<string | null>(null);
   const router = useRouter();
+
+  // On n'assiste pas à sa propre formation : proposer l'inscription n'aurait
+  // pas de sens, et prendrait une place aux participants.
+  if (isAnimator) {
+    return (
+      <Badge severity="info" as="span">
+        Tu animes cette formation
+      </Badge>
+    );
+  }
 
   if (!sessionId) {
     return (

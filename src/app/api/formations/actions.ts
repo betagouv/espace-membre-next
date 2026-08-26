@@ -4,7 +4,10 @@ import { fromZonedTime } from "date-fns-tz";
 import { revalidatePath } from "next/cache";
 import { getServerSession } from "next-auth";
 
-import { canManageFormation } from "@/lib/canManageFormation";
+import {
+  canManageFormation,
+  isFormationAnimator,
+} from "@/lib/canManageFormation";
 import { fetchGristFormationById } from "@/lib/formationsGrist";
 import {
   addGristRecords,
@@ -216,6 +219,21 @@ export const registerToFormationSession = withErrorHandling(
     ).filter((row) => row.id === sessionRowId);
     if (!sessionRow) {
       throw new BusinessError("SessionInconnue", "Cette session n'existe pas.");
+    }
+
+    // On n'assiste pas à sa propre formation. Le bouton est déjà masqué, mais
+    // l'action doit refuser aussi : cacher un bouton ne protège rien.
+    const formatRowId = Number(
+      sessionRow.fields[GRIST_SESSIONS_COLUMNS.format],
+    );
+    const formation = formatRowId
+      ? await fetchGristFormationById(String(formatRowId))
+      : undefined;
+    if (formation && isFormationAnimator(session.user, formation)) {
+      throw new BusinessError(
+        "AnimateurNeSInscritPas",
+        "Tu animes cette formation, tu n'as pas besoin de t'y inscrire.",
+      );
     }
 
     // Capacité atteinte : on inscrit quand même, sur liste d'attente. Une

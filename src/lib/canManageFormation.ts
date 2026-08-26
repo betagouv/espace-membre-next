@@ -13,20 +13,35 @@ import { Formation } from "@/models/formation";
  * vaut le ghid, ou par l'email de l'organisateur·trice. Les deux sont saisis à
  * la main dans le formulaire : la comparaison ignore la casse et les espaces.
  */
+const normalize = (value?: string) => (value ?? "").trim().toLowerCase();
+
+/**
+ * La personne connectée anime-t-elle cette formation ?
+ *
+ * Reconnue par la partie locale de son adresse Tchap, qui vaut le ghid, ou par
+ * l'email de l'organisateur·trice. Les deux sont saisis à la main dans le
+ * formulaire : la comparaison ignore la casse et les espaces.
+ */
+export const isFormationAnimator = (
+  sessionUser: Session["user"] | undefined,
+  formation: Pick<Formation, "animatorTchap" | "animatorEmail">,
+): boolean => {
+  if (!sessionUser?.uuid) return false;
+
+  const ghid = normalize(sessionUser.id);
+  const tchapGhid = normalize(formation.animatorTchap).split("@")[0];
+  if (ghid && tchapGhid && ghid === tchapGhid) return true;
+
+  const email = normalize(sessionUser.email);
+  const animatorEmail = normalize(formation.animatorEmail);
+  return !!email && !!animatorEmail && email === animatorEmail;
+};
+
 export const canManageFormation = async (
   sessionUser: Session["user"] | undefined,
   formation: Pick<Formation, "animatorTchap" | "animatorEmail">,
 ): Promise<boolean> => {
   if (!sessionUser?.uuid) return false;
-  if (await isAnimationTeamMember(sessionUser)) return true;
-
-  const normalize = (value?: string) => (value ?? "").trim().toLowerCase();
-  const ghid = normalize(sessionUser.id);
-  const email = normalize(sessionUser.email);
-
-  const tchapGhid = normalize(formation.animatorTchap).split("@")[0];
-  if (ghid && tchapGhid && ghid === tchapGhid) return true;
-
-  const animatorEmail = normalize(formation.animatorEmail);
-  return !!email && !!animatorEmail && email === animatorEmail;
+  if (isFormationAnimator(sessionUser, formation)) return true;
+  return isAnimationTeamMember(sessionUser);
 };

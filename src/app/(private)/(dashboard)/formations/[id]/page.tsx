@@ -17,7 +17,10 @@ import {
 } from "@/lib/formationsGrist";
 import { FormationRegisterButton } from "@/components/Formation/FormationRegisterButton";
 import { FormationManagePanel } from "@/components/Formation/FormationManagePanel";
-import { canManageFormation } from "@/lib/canManageFormation";
+import {
+  canManageFormation,
+  isFormationAnimator,
+} from "@/lib/canManageFormation";
 import { FORMATION_DUREES } from "@/models/formationsGrist";
 import { formationUpdateSchemaType } from "@/models/actions/formationProposal";
 import { notFound } from "next/navigation";
@@ -127,6 +130,7 @@ export default async function Page(props: Readonly<Props>) {
   // anime. Le droit est recalculé côté serveur, l'affichage n'en est que la
   // conséquence.
   const canManage = await canManageFormation(session.user, formation);
+  const isAnimator = isFormationAnimator(session.user, formation);
   const participants =
     canManage && formation.sessionId
       ? await fetchGristSessionParticipants(formation.sessionId)
@@ -225,6 +229,7 @@ export default async function Page(props: Readonly<Props>) {
                           isRegistered={!!gristInscription}
                           isOnWaitingList={!!gristInscription?.onWaitingList}
                           seatsLeft={formation.availableSeats}
+                          isAnimator={isAnimator}
                         />
                       </span>
                     </>
