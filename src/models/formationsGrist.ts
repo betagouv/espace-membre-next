@@ -144,3 +144,16 @@ export const MAX_FORMATION_OCCURRENCES = 52;
 // « Toutes les 12 semaines » ou « tous les 12 mois » couvre largement les
 // besoins ; au-delà on ne programme plus, on planifie.
 export const MAX_FORMATION_INTERVALLE = 12;
+
+/**
+ * Banque d'illustrations proposées au moment de créer une formation.
+ *
+ * Évite que chacun cherche une image : la plupart des formations se rangent
+ * dans quelques thèmes qui ont déjà la leur.
+ */
+export const GRIST_IMAGES_COLUMNS = {
+  nom: "Nom",
+  image: "Image",
+  categorie: "Categorie",
+  active: "Active",
+} as const;

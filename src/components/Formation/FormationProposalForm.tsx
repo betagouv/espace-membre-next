@@ -27,6 +27,7 @@ import {
   FORMATION_THEMATIQUES,
 } from "@/models/formationsGrist";
 import { routes } from "@/lib/routes";
+import { FormationImage } from "@/lib/formationsGrist";
 
 // Un input number ou url vidé renvoie "" : on le transforme en undefined pour
 // que les champs facultatifs restent facultatifs.
@@ -34,21 +35,28 @@ const emptyAsUndefined = (value: unknown) =>
   value === "" || value === null ? undefined : value;
 
 export const FormationProposalForm = ({
+  images = [],
   isAnimation,
   defaultValues,
 }: {
+  // Illustrations proposées par le document Grist, vide si la banque est
+  // indisponible : l'envoi d'un fichier reste alors le seul chemin.
+  images?: FormationImage[];
   isAnimation: boolean;
   defaultValues?: Partial<formationProposalSchemaType>;
 }) => {
   const {
     register,
     handleSubmit,
+    setValue,
+    watch,
     formState: { errors, isSubmitting },
   } = useForm<formationProposalSchemaType>({
     resolver: zodResolver(formationProposalSchema),
     mode: "onChange",
     defaultValues: { thematiques: [], audience: [], ...defaultValues },
   });
+  const imageId = watch("imageId");
   const router = useRouter();
   const [alertMessage, setAlertMessage] =
     React.useState<AlertMessageType | null>(null);
@@ -267,16 +275,87 @@ export const FormationProposalForm = ({
         }}
       />
 
-      <Upload
-        label="Image ou bannière de la formation"
-        hint="Elle illustre la formation au catalogue. JPG ou PNG, 5 Mo maximum."
-        state={errors.image ? "error" : "default"}
-        stateRelatedMessage={errors.image?.message?.toString()}
-        nativeInputProps={{
-          accept: "image/*",
-          ...register("image"),
-        }}
-      />
+      <fieldset className={fr.cx("fr-fieldset")}>
+        <legend className={fr.cx("fr-fieldset__legend")}>
+          Image ou bannière de la formation
+          <span className={fr.cx("fr-hint-text")}>
+            Elle illustre la formation au catalogue.
+          </span>
+        </legend>
+
+        {images.length > 0 && (
+          <div
+            style={{
+              display: "grid",
+              gridTemplateColumns: "repeat(auto-fill, minmax(9rem, 1fr))",
+              gap: "0.75rem",
+              marginBottom: "1rem",
+            }}
+          >
+            {images.map((image) => {
+              const choisie = imageId === image.id;
+              return (
+                <button
+                  type="button"
+                  key={image.id}
+                  aria-pressed={choisie}
+                  onClick={() =>
+                    // Recliquer sur l'illustration choisie la retire : c'est le
+                    // seul moyen de revenir à l'envoi d'un fichier.
+                    setValue("imageId", choisie ? "" : image.id, {
+                      shouldValidate: true,
+                    })
+                  }
+                  style={{
+                    padding: 0,
+                    border: choisie
+                      ? "3px solid var(--border-active-blue-france)"
+                      : "1px solid var(--border-default-grey)",
+                    background: "none",
+                    cursor: "pointer",
+                    textAlign: "left",
+                  }}
+                >
+                  {/* eslint-disable-next-line @next/next/no-img-element */}
+                  <img
+                    src={image.url}
+                    alt={image.nom}
+                    style={{
+                      width: "100%",
+                      height: "5.5rem",
+                      objectFit: "cover",
+                      display: "block",
+                    }}
+                  />
+                  <span
+                    className={fr.cx("fr-text--xs", "fr-px-1v", "fr-py-1v")}
+                    style={{ display: "block" }}
+                  >
+                    {image.nom}
+                  </span>
+                </button>
+              );
+            })}
+          </div>
+        )}
+
+        <input type="hidden" {...register("imageId")} />
+
+        {!imageId && (
+          <Upload
+            label={
+              images.length > 0 ? "Ou envoie la tienne" : "Envoie une image"
+            }
+            hint="JPG ou PNG, 5 Mo maximum."
+            state={errors.image ? "error" : "default"}
+            stateRelatedMessage={errors.image?.message?.toString()}
+            nativeInputProps={{
+              accept: "image/*",
+              ...register("image"),
+            }}
+          />
+        )}
+      </fieldset>
 
       {!isAnimation && (
         <Alert

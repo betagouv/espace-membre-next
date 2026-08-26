@@ -8,6 +8,7 @@ import {
   FORMATION_MODALITE,
   FORMATION_STATUT,
   GRIST_FORMATIONS_COLUMNS,
+  GRIST_IMAGES_COLUMNS,
   GRIST_INSCRIPTIONS_COLUMNS,
   GRIST_SESSIONS_COLUMNS,
 } from "@/models/formationsGrist";
@@ -385,4 +386,43 @@ export async function fetchGristParticipantsForSessions(
     ];
   }
   return parSession;
+}
+
+export type FormationImage = {
+  id: string;
+  nom: string;
+  categorie?: string;
+  /** URL relayée par l'application : la clé d'API ne sort jamais du serveur. */
+  url: string;
+};
+
+/**
+ * Illustrations proposées au moment de créer une formation.
+ *
+ * Une panne de la banque d'images ne doit pas empêcher de déposer une
+ * formation : l'appelant reçoit une liste vide et l'envoi de fichier reste
+ * disponible.
+ */
+export async function fetchGristFormationImages(): Promise<FormationImage[]> {
+  if (!config.GRIST_API_KEY || !config.GRIST_FORMATIONS_DOC_ID) return [];
+
+  const rows = await getGristRecords(
+    config.GRIST_FORMATIONS_DOC_ID,
+    config.GRIST_FORMATIONS_IMAGES_TABLE_ID,
+  );
+
+  return rows
+    .filter((row) => !!row.fields[GRIST_IMAGES_COLUMNS.active])
+    .map((row) => {
+      const [attachmentId] = choiceList(row.fields[GRIST_IMAGES_COLUMNS.image]);
+      return { row, attachmentId };
+    })
+    .filter(({ attachmentId }) => !!attachmentId)
+    .map(({ row, attachmentId }) => ({
+      id: String(attachmentId),
+      nom: String(row.fields[GRIST_IMAGES_COLUMNS.nom] ?? "Illustration"),
+      categorie:
+        String(row.fields[GRIST_IMAGES_COLUMNS.categorie] ?? "") || undefined,
+      url: `/api/formations/image/${attachmentId}`,
+    }));
 }

@@ -132,9 +132,12 @@ export const submitFormationProposal = withErrorHandling(
 
     // L'illustration passe par le magasin de pièces jointes du document : la
     // colonne Image ne stocke que des identifiants.
+    // Une illustration de la banque est déjà dans le magasin de pièces jointes
+    // du document : on la référence, sans la dupliquer.
     const image = getImageFile(parsed.image);
-    const attachmentIds =
-      image && image.size > 0
+    const attachmentIds = parsed.imageId
+      ? [Number(parsed.imageId)].filter(Number.isInteger)
+      : image && image.size > 0
         ? await uploadGristAttachments(config.GRIST_FORMATIONS_DOC_ID, [image])
         : [];
     const dureeHeures =

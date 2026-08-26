@@ -3,6 +3,7 @@ import { redirect } from "next/navigation";
 import { getServerSession } from "next-auth";
 
 import { FormationProposalForm } from "@/components/Formation/FormationProposalForm";
+import { fetchGristFormationImages } from "@/lib/formationsGrist";
 import { isAnimationTeamMember } from "@/lib/isAnimationTeamMember";
 import { getUserBasicInfo } from "@/lib/kysely/queries/users";
 import { routeTitles } from "@/lib/routes";
@@ -31,6 +32,15 @@ export default async function FormationProposalPage() {
     emailOrganisateur: user?.primary_email || user?.secondary_email || "",
   };
 
+  // Une panne de la banque d'images ne doit pas empêcher de déposer une
+  // formation : sans elle, l'envoi d'un fichier reste disponible.
+  let images: Awaited<ReturnType<typeof fetchGristFormationImages>> = [];
+  try {
+    images = await fetchGristFormationImages();
+  } catch {
+    // La liste vide suffit.
+  }
+
   return (
     <div className="fr-container fr-container--fluid">
       <h1>{isAnimation ? "Créer une formation" : "Proposer une formation"}</h1>
@@ -40,6 +50,7 @@ export default async function FormationProposalPage() {
           : "Tu connais un sujet et tu veux le partager avec la communauté ? Propose une formation, l'équipe d'animation reviendra vers toi."}
       </p>
       <FormationProposalForm
+        images={images}
         isAnimation={isAnimation}
         defaultValues={defaultValues}
       />

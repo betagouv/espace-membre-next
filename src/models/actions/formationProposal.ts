@@ -107,16 +107,21 @@ export const formationProposalSchema = z
     // Le type File n'existe pas dans zod : présence, type et taille sont
     // validés dans le superRefine ci-dessous.
     image: z.any(),
+    // Illustration choisie dans la banque du document, plutôt qu'envoyée.
+    // C'est l'identifiant d'une pièce jointe déjà présente : rien à téléverser.
+    imageId: z.string().trim().optional(),
   })
   .superRefine((data, ctx) => {
     requireVisioWhenRemote(data, ctx);
 
     const image = getImageFile(data.image);
+    // Une illustration choisie dans la banque dispense d'en envoyer une.
+    if (data.imageId) return;
     if (!image || image.size === 0) {
       ctx.addIssue({
         code: z.ZodIssueCode.custom,
         path: ["image"],
-        message: "Une image est requise",
+        message: "Choisis une illustration ou envoie la tienne",
       });
       return;
     }
@@ -167,7 +172,7 @@ const requireVisioWhenRemote = (
 
 export const formationUpdateSchema = formationProposalSchema
   .innerType()
-  .omit({ image: true, dateDebut: true })
+  .omit({ image: true, imageId: true, dateDebut: true })
   .extend({
     formationId: z.string().min(1),
   })
